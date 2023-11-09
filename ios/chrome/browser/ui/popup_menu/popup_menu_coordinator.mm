@@ -658,8 +658,7 @@ using base::UserMetricsAction;
 #pragma mark - UISheetPresentationControllerDelegate
 
 - (void)sheetPresentationControllerDidChangeSelectedDetentIdentifier:
-    (UISheetPresentationController*)sheetPresentationController
-    API_AVAILABLE(ios(15)) {
+    (UISheetPresentationController*)sheetPresentationController {
   [self popupMenuScrolledVertically];
 }
 
