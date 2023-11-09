@@ -32,7 +32,7 @@ public class AwJUnit4ClassRunnerWithParameters extends AwJUnit4ClassRunner {
         this.mParameters = test.getParameters().toArray(new Object[test.getParameters().size()]);
 
         // Appease logdog stream name validation
-        this.mName = test.getName().replace('[', '_').replace(']', '_');
+        this.mName = test.getName().replace("[", "__").replace(']', '_');
     }
 
     @Override
