@@ -154,7 +154,9 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
     return absl::nullopt;
   }
   bool ShouldIncludeCredentials() const override { return false; }
-  double GetMinAllowedTimestampForReferrerChains() const override { return 0; }
+  base::Time GetMinAllowedTimestampForReferrerChains() const override {
+    return base::Time();
+  }
 };
 
 class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {

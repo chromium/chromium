@@ -166,7 +166,7 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Removes URLs that were recorded before |min_allowed_timestamp|. If
   // |should_remove_subresource_url| is true, also removes subresource URLs.
   static void SanitizeReferrerChainEntries(ReferrerChain* referrer_chain,
-                                           double min_allowed_timestamp,
+                                           base::Time min_allowed_timestamp,
                                            bool should_remove_subresource_url);
 
   // Returns the endpoint that the URL lookup will be sent to.
@@ -206,7 +206,7 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   virtual bool ShouldIncludeCredentials() const = 0;
 
   // Gets the minimum timestamp allowed for referrer chains.
-  virtual double GetMinAllowedTimestampForReferrerChains() const = 0;
+  virtual base::Time GetMinAllowedTimestampForReferrerChains() const = 0;
 
   // Called to get cache from |cache_manager|. Returns the cached response if
   // there's a cache hit; nullptr otherwise.
