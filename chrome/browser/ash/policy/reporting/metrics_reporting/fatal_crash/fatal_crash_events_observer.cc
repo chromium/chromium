@@ -285,6 +285,8 @@ MetricData FatalCrashEventsObserver::FillFatalCrashTelemetry(
     const CrashEventInfoPtr& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   MetricData metric_data;
+  metric_data.mutable_event_data()->set_type(MetricEventType::CRASH_FATALLY);
+
   FatalCrashTelemetry& data =
       *metric_data.mutable_telemetry_data()->mutable_fatal_crash_telemetry();
 

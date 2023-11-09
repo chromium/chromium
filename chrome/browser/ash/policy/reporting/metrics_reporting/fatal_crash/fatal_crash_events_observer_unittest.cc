@@ -173,6 +173,9 @@ class FatalCrashEventsObserverTestBase : public ::ash::NoSessionAshTestBase {
   // by the caller. This is useful when the caller needs to wait for fatal crash
   // telemetry for multiple times from the same observer, as the observer's
   // OnEventObserved callback cannot be set twice.
+  //
+  // Also performs some simple verifications, such as event types and the
+  // existence of fatal crash telemetry in the resulted `MetricData`.
   FatalCrashTelemetry WaitForFatalCrashTelemetry(
       CrashEventInfoPtr crash_event_info,
       FatalCrashEventsObserver* fatal_crash_events_observer = nullptr,
@@ -196,6 +199,11 @@ class FatalCrashEventsObserverTestBase : public ::ash::NoSessionAshTestBase {
         EventInfo::NewCrashEventInfo(std::move(crash_event_info)));
 
     auto metric_data = result_metric_data->Take();
+
+    EXPECT_TRUE(metric_data.has_event_data());
+    EXPECT_TRUE(metric_data.event_data().has_type());
+    EXPECT_EQ(metric_data.event_data().type(), MetricEventType::CRASH_FATALLY);
+
     EXPECT_TRUE(metric_data.has_telemetry_data());
     EXPECT_TRUE(metric_data.telemetry_data().has_fatal_crash_telemetry());
     return std::move(metric_data.telemetry_data().fatal_crash_telemetry());
