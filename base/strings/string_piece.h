@@ -18,7 +18,6 @@ template <typename CharT, typename Traits = std::char_traits<CharT>>
 using BasicStringPiece = std::basic_string_view<CharT, Traits>;
 using StringPiece = std::string_view;
 using StringPiece16 = std::u16string_view;
-using WStringPiece = std::wstring_view;
 
 }  // namespace base
 
