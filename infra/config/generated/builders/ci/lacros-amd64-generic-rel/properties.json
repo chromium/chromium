@@ -51,10 +51,6 @@
         {
           "builder": "lacros-amd64-generic-rel",
           "group": "tryserver.chromium.chromiumos"
-        },
-        {
-          "builder": "lacros-amd64-generic-rel-orchestrator",
-          "group": "tryserver.chromium.chromiumos"
         }
       ]
     }

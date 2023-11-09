@@ -74,7 +74,6 @@ chromium/try/ios-simulator-noncq
 chromium/try/ios-simulator-siso
 chromium/try/lacros-amd64-generic-rel
 chromium/try/lacros-amd64-generic-rel-non-skylab
-chromium/try/lacros-amd64-generic-rel-orchestrator
 chromium/try/lacros-arm-generic-rel
 chromium/try/lacros-arm-generic-rel-skylab
 chromium/try/lacros-arm64-generic-rel-skylab
