@@ -29,7 +29,7 @@ bool ShouldSuppressNotifications(
     const mojom::SupportSessionParams& params,
     const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
-    return enterprise_params.value().suppress_notifications;
+    return enterprise_params->suppress_notifications;
   }
 
   // On non-debug builds, do not allow setting this value through the Mojom API.
@@ -44,7 +44,7 @@ bool ShouldSuppressUserDialog(
     const mojom::SupportSessionParams& params,
     const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
-    return enterprise_params.value().suppress_user_dialogs;
+    return enterprise_params->suppress_user_dialogs;
   }
 
   // On non-debug builds, do not allow setting this value through the Mojom API.
@@ -59,7 +59,7 @@ bool ShouldTerminateUponInput(
     const mojom::SupportSessionParams& params,
     const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
-    return enterprise_params.value().terminate_upon_input;
+    return enterprise_params->terminate_upon_input;
   }
 
   // On non-debug builds, do not allow setting this value through the Mojom API.
@@ -78,7 +78,7 @@ bool ShouldCurtainLocalUserSession(
   }
 
   if (enterprise_params.has_value()) {
-    return enterprise_params.value().curtain_local_user_session;
+    return enterprise_params->curtain_local_user_session;
   }
 
   // On non-debug builds, do not allow setting this value through the Mojom API.
@@ -92,7 +92,7 @@ bool ShouldCurtainLocalUserSession(
 bool ShouldShowTroubleshootingTools(
     const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
-    return enterprise_params.value().show_troubleshooting_tools;
+    return enterprise_params->show_troubleshooting_tools;
   }
   return false;
 }
@@ -100,7 +100,7 @@ bool ShouldShowTroubleshootingTools(
 bool ShouldAllowTroubleshootingTools(
     const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
-    return enterprise_params.value().allow_troubleshooting_tools;
+    return enterprise_params->allow_troubleshooting_tools;
   }
   return false;
 }
@@ -108,7 +108,7 @@ bool ShouldAllowTroubleshootingTools(
 bool ShouldAllowReconnections(
     const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
-    return enterprise_params.value().allow_reconnections;
+    return enterprise_params->allow_reconnections;
   }
   return false;
 }
@@ -116,7 +116,7 @@ bool ShouldAllowReconnections(
 bool ShouldAllowFileTransfer(
     const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
-    return enterprise_params.value().allow_file_transfer;
+    return enterprise_params->allow_file_transfer;
   }
   return false;
 }
@@ -191,7 +191,7 @@ void It2MeNativeMessageHostAsh::Connect(
           .Set(kAllowFileTransfer, ShouldAllowFileTransfer(enterprise_params))
           .Set(kIsEnterpriseAdminUser, enterprise_params.has_value());
   if (params.authorized_helper.has_value()) {
-    message.Set(kAuthorizedHelper, params.authorized_helper.value());
+    message.Set(kAuthorizedHelper, *params.authorized_helper);
   }
 
   if (reconnect_params.has_value()) {
@@ -199,22 +199,18 @@ void It2MeNativeMessageHostAsh::Connect(
     // prevent anyone else from snooping in and connecting to the session.
     CHECK(params.authorized_helper.has_value());
 
-    // TODO(b/283091055): Send the reconnection params in the connect message,
-    // and use them to reconnect to an existing client.
-    LOG(WARNING) << "Should reconnect to existing client, but that's not "
-                    "implemented yet!";
-    NOTIMPLEMENTED();
+    message.Set(kReconnectParamsDict,
+                ReconnectParams::ToDict(*reconnect_params));
   }
 
-  native_message_host_->OnMessage(base::WriteJson(message).value());
+  native_message_host_->OnMessage(*base::WriteJson(message));
 }
 
 void It2MeNativeMessageHostAsh::Disconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  native_message_host_->OnMessage(
-      base::WriteJson(base::Value::Dict().Set(kMessageType, kDisconnectMessage))
-          .value());
+  native_message_host_->OnMessage(*base::WriteJson(
+      base::Value::Dict().Set(kMessageType, kDisconnectMessage)));
 
   // Notify the owner that the host has been disconnected.  This will result in
   // the destruction of this object so do not access member variables after this
@@ -314,7 +310,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
       return;
     }
     remote_->OnHostStateReceivedAccessCode(
-        *access_code, base::Seconds(access_code_lifetime.value()));
+        *access_code, base::Seconds(*access_code_lifetime));
   } else if (*new_state == kHostStateConnecting) {
     remote_->OnHostStateConnecting();
   } else if (*new_state == kHostStateConnected) {
@@ -385,8 +381,8 @@ void It2MeNativeMessageHostAsh::HandleNatPolicyChangedMessage(
   }
 
   mojom::NatPolicyStatePtr nat_policy = mojom::NatPolicyState::New();
-  nat_policy->nat_enabled = nat_enabled.value();
-  nat_policy->relay_enabled = relay_enabled.value();
+  nat_policy->nat_enabled = *nat_enabled;
+  nat_policy->relay_enabled = *relay_enabled;
   remote_->OnNatPolicyChanged(std::move(nat_policy));
 }
 
