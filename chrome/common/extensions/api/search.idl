@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // Use the <code>chrome.search</code> API to search via the default provider.
-[modernised_enums]
 namespace search {
   enum Disposition {
     // Specifies that the search results display in the calling tab or the tab

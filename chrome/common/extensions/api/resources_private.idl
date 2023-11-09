@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // resourcesPrivate.
-[modernised_enums]
 namespace resourcesPrivate {
   enum Component { identity, pdf };
 

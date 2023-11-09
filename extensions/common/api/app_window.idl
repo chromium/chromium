@@ -7,7 +7,6 @@
 // associated with any Chrome browser windows. See the <a
 // href="https://github.com/GoogleChrome/chrome-app-samples/tree/master/samples/window-state">
 // Window State Sample</a> for a demonstration of these options.
-[modernised_enums]
 namespace app.window {
 
   // Previously named Bounds.

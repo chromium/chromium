@@ -4,7 +4,7 @@
 
 // Use the <code>chrome.fileSystemProvider</code> API to create file systems,
 // that can be accessible from the file manager on Chrome OS.
-[implemented_in="chrome/browser/chromeos/extensions/file_system_provider/file_system_provider_api.h", modernised_enums]
+[implemented_in="chrome/browser/chromeos/extensions/file_system_provider/file_system_provider_api.h"]
 namespace fileSystemProvider {
   // Error codes used by providing extensions in response to requests as well
   // as in case of errors when calling methods of the API. For success,

@@ -44,25 +44,15 @@ class CppTypeGenerator(object):
         if support_errors else 'std::optional<{typename}>')
           .format(typename=typename))
 
-  def IsEnumModernised(self, type_):
-    """ Determines if a given enum type belongs to a namespace set with the
-    attribute [modernised_enums]
-    """
-    return type_.namespace.compiler_options.get('modernised_enums', False)
-
-
   def GetEnumNoneValue(self, type_, full_name=True):
     """Gets the enum value in the given model. Property indicating no value has
     been set.
     """
-    if self.IsEnumModernised(type_):
-      prefix = ''
-      if full_name:
-        classname = cpp_util.Classname(type_.name)
-        prefix = '{typename}::'.format(typename=classname)
-      return '{enum_name}kNone'.format(enum_name=prefix)
-
-    return '%s_NONE' % self.FollowRef(type_).unix_name.upper()
+    prefix = ''
+    if full_name:
+      classname = cpp_util.Classname(type_.name)
+      prefix = '{typename}::'.format(typename=classname)
+    return '{enum_name}kNone'.format(enum_name=prefix)
 
   def GetEnumDefaultValue(self, type_, current_namespace):
     """Gets the representation for an enum default initialised, which is the
@@ -124,14 +114,6 @@ class CppTypeGenerator(object):
 
     return result
 
-  def GetEnumLastValue(self, type_):
-    """Gets the enum value in the given model.Property indicating the last value
-    for the type.
-    """
-    # TODO(crbug.com/1421546): This function should be deleted once all enums
-    # are migrated to scoped ones.
-    return '%s_LAST' % self.FollowRef(type_).unix_name.upper()
-
   def GetEnumValue(self, type_, enum_value, full_name=True):
     """Gets the enum value of the given model.Property of the given type.
 
@@ -140,26 +122,15 @@ class CppTypeGenerator(object):
 
     e.g Enum::kValue
     """
-    if self.IsEnumModernised(type_):
-      prefix = ''
-      if full_name:
-        classname = cpp_util.Classname(type_.name)
-        prefix = '{classname}::'.format(classname=classname)
-      # We kCamelCase the string, also removing any _ from the name, to allow
-      # SHOUTY_CASE keys to be kCamelCase as well.
-      return '{prefix}k{name}'.format(
-                prefix=prefix,
-                name=self.FormatStringForEnumValue(enum_value.name))
-    else:
-      prefix = (type_.cpp_enum_prefix_override or
-                self.FollowRef(type_).unix_name)
-      value = cpp_util.Classname(enum_value.name.upper())
-      value = '%s_%s' % (prefix.upper(), value)
-      # To avoid collisions with built-in OS_* preprocessor definitions, we add
-      # a trailing slash to enum names that start with OS_.
-      if value.startswith('OS_'):
-        value += '_'
-      return value
+    prefix = ''
+    if full_name:
+      classname = cpp_util.Classname(type_.name)
+      prefix = '{classname}::'.format(classname=classname)
+    # We kCamelCase the string, also removing any _ from the name, to allow
+    # SHOUTY_CASE keys to be kCamelCase as well.
+    return '{prefix}k{name}'.format(
+              prefix=prefix,
+              name=self.FormatStringForEnumValue(enum_value.name))
 
   def GetCppType(self, type_, is_optional=False):
     """Translates a model.Property or model.Type into its C++ type.

@@ -5,7 +5,6 @@
 // developerPrivate API.
 // This is a private API exposing developing and debugging functionalities for
 // apps and extensions.
-[modernised_enums]
 namespace developerPrivate {
 
   // DEPRECATED: Prefer ExtensionType.

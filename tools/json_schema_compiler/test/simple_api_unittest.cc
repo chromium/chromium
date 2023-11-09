@@ -431,7 +431,7 @@ TEST(JsonSchemaCompilerSimpleTest, ManifestKeyParsing_Success_AllKeys) {
   EXPECT_THAT(*manifest_keys.key_obj->obj_optional_enum_array,
               ::testing::ElementsAre(enums::Enumeration::kThree));
 
-  EXPECT_EQ(simple_api::TEST_ENUM_ONE, manifest_keys.key_enum);
+  EXPECT_EQ(simple_api::TestEnum::kOne, manifest_keys.key_enum);
 
   EXPECT_EQ("ref_string", manifest_keys.key_ref.string);
   EXPECT_EQ(true, manifest_keys.key_ref.boolean);
@@ -444,9 +444,9 @@ TEST(JsonSchemaCompilerSimpleTest, ManifestKeyParsing_Success_AllKeys) {
               ::testing::ElementsAre("one", "two"));
   EXPECT_EQ(enums::Enumeration::kTwo, manifest_keys.key_ref.opt_external_enum);
   EXPECT_THAT(manifest_keys.key_enum_array,
-              ::testing::ElementsAre(simple_api::TEST_ENUM_TWO,
-                                     simple_api::TEST_ENUM_ONE));
-  EXPECT_EQ(simple_api::_3D_YES, manifest_keys._3d_key);
+              ::testing::ElementsAre(simple_api::TestEnum::kTwo,
+                                     simple_api::TestEnum::kOne));
+  EXPECT_EQ(simple_api::_3D::kYes, manifest_keys._3d_key);
 }
 
 // Ensure leaving out optional keys is not a manifest parse error.
@@ -470,7 +470,7 @@ TEST(JsonSchemaCompilerSimpleTest,
 
   EXPECT_EQ("abc", manifest_keys.key_string);
   EXPECT_FALSE(manifest_keys.key_obj);
-  EXPECT_EQ(simple_api::TEST_ENUM_TWO, manifest_keys.key_enum);
+  EXPECT_EQ(simple_api::TestEnum::kTwo, manifest_keys.key_enum);
 
   EXPECT_EQ("ref_string", manifest_keys.key_ref.string);
   EXPECT_EQ(true, manifest_keys.key_ref.boolean);
@@ -478,5 +478,5 @@ TEST(JsonSchemaCompilerSimpleTest,
   EXPECT_EQ(32, manifest_keys.key_ref.integer);
   EXPECT_FALSE(manifest_keys.key_ref.array);
   EXPECT_EQ(enums::Enumeration::kNone, manifest_keys.key_ref.opt_external_enum);
-  EXPECT_EQ(simple_api::_3D_NONE, manifest_keys._3d_key);
+  EXPECT_EQ(simple_api::_3D::kNone, manifest_keys._3d_key);
 }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Use the <code>chrome.os.telemetry</code> API to get telemetry data.
-[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/telemetry/telemetry_api.h", modernised_enums]
+[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/telemetry/telemetry_api.h"]
 namespace os.telemetry {
 // Note: Please update documentation as well when this interface is changed.
 // The documentation lives here: //docs/telemetry_extension/api_overview.md.

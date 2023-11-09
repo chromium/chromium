@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Movable Objects.
-[use_movable_types=true, modernised_enums] namespace objectsMovable {
+[use_movable_types=true] namespace objectsMovable {
   enum Foo {
     BAR,
     BAZ

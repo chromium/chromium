@@ -2,9 +2,6 @@
   {
     "namespace": "objects",
     "description": "The objects API.",
-    "compiler_options": {
-      "modernised_enums": true
-    },
     "types": [
       {
         "id": "firstState",

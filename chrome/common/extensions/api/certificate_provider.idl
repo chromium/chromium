@@ -4,7 +4,6 @@
 
 // Use this API to expose certificates to the platform which can use these
 // certificates for TLS authentications.
-[modernised_enums]
 namespace certificateProvider {
 
   // Types of supported cryptographic signature algorithms.

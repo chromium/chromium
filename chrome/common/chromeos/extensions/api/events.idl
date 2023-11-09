@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Use the <code>chrome.os.events</code> API to subscribe to real time events.
-[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/events/events_api.h", modernised_enums]
+[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/events/events_api.h"]
 namespace os.events {
 // Note: Please update documentation as well when this interface is changed.
 // The documentation lives here: //docs/telemetry_extension/api_overview.md.

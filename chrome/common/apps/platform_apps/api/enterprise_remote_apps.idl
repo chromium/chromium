@@ -4,7 +4,7 @@
 
 // Use the <code>chrome.enterprise.remoteApps</code> API to add remote apps to
 // the ChromeOS launcher.
-[modernised_enums, platforms=("chromeos", "lacros")]
+[platforms=("chromeos", "lacros")]
 namespace enterprise.remoteApps {
   callback VoidCallback = void ();
   callback StringCallback = void (DOMString result);

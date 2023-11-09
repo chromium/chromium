@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // Use the <code>chrome.identity</code> API to get OAuth2 access tokens.
-[modernised_enums]
 namespace identity {
 
   dictionary AccountInfo {

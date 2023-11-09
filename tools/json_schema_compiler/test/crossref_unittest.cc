@@ -41,9 +41,10 @@ TEST(JsonSchemaCompilerCrossrefTest, CrossrefTypePopulateAndToValue) {
   EXPECT_EQ(4, crossref_type.test_type.integer);
   EXPECT_EQ("bling", crossref_type.test_type.string);
   EXPECT_EQ(true, crossref_type.test_type.boolean);
-  EXPECT_EQ(simple_api::TEST_ENUM_ONE, crossref_type.test_enum_required);
-  EXPECT_EQ(simple_api::TEST_ENUM_TWO, crossref_type.test_enum_optional);
-  EXPECT_EQ(simple_api::TEST_ENUM_NONE, crossref_type.test_enum_optional_extra);
+  EXPECT_EQ(simple_api::TestEnum::kOne, crossref_type.test_enum_required);
+  EXPECT_EQ(simple_api::TestEnum::kTwo, crossref_type.test_enum_optional);
+  EXPECT_EQ(simple_api::TestEnum::kNone,
+            crossref_type.test_enum_optional_extra);
 
   // Test ToValue of the compiled type --> value.
   base::Value::Dict crossref_value = crossref_type.ToValue();

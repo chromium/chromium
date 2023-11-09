@@ -547,8 +547,6 @@ class IDLSchema(object):
           compiler_options['implemented_in'] = node.value
         elif node.name == 'generate_error_messages':
           compiler_options['generate_error_messages'] = True
-        elif node.name == 'modernised_enums':
-          compiler_options['modernised_enums'] = True
         elif node.name == 'deprecated':
           deprecated = str(node.value)
         elif node.name == 'documentation_title':

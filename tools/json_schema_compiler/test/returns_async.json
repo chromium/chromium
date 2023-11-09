@@ -2,9 +2,6 @@
   {
     "namespace": "returns_async",
     "description": "The returns async API",
-    "compiler_options": {
-      "modernised_enums": true
-    },
     "types": [
       {
         "id": "Enumeration",

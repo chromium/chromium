@@ -4,7 +4,6 @@
 
 // Use the <code>chrome.processes</code> API to interact with the browser's
 // processes.
-[modernised_enums]
 namespace processes {
   // The types of the browser processes.
   enum ProcessType {

@@ -4,7 +4,7 @@
 
 // Use the <code>chrome.downloads</code> API to programmatically initiate,
 // monitor, manipulate, and search for downloads.
-[permissions=downloads, modernised_enums]
+[permissions=downloads]
 namespace downloads {
   [inline_doc] dictionary HeaderNameValuePair {
     // Name of the HTTP header.

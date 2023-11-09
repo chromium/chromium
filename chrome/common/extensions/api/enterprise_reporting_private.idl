@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // Private API for reporting Chrome browser status to admin console.
-[modernised_enums]
 namespace enterprise.reportingPrivate {
 
   // Invoked by <code>UploadChromeDesktopReport</code> when the upload is

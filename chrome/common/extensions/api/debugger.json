@@ -6,9 +6,6 @@
   {
     "namespace": "debugger",
     "description": "The <code>chrome.debugger</code> API serves as an alternate transport for Chrome's <a href='https://developer.chrome.com/devtools/docs/debugger-protocol'>remote debugging protocol</a>. Use <code>chrome.debugger</code> to attach to one or more tabs to instrument network interaction, debug JavaScript, mutate the DOM and CSS, etc. Use the Debuggee <code>tabId</code> to target tabs with sendCommand and route events by <code>tabId</code> from onEvent callbacks.",
-    "compiler_options": {
-      "modernised_enums": true
-    },
     "types": [
       {
         "id": "Debuggee",

@@ -43,7 +43,7 @@
 // DirectoryEntry). Since these cannot be directly sent or received by the C++
 // code, there exists an additional layer, in file_manager_private_internal.idl,
 // that provides translation from or to W3C Entry objects.
-[modernised_enums, platforms=("chromeos"),
+[platforms=("chromeos"),
  implemented_in="chrome/browser/ash/extensions/file_manager/file_manager_private_api_functions.h"]
 namespace fileManagerPrivate {
 // Type of the mounted volume.

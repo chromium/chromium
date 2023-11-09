@@ -9,8 +9,7 @@
     "namespace": "manifestTypes",
     "description": "Schemas for structured manifest entries",
     "compiler_options": {
-      "generate_error_messages": true,
-      "modernised_enums": true
+      "generate_error_messages": true
     },
     "types": [
       {

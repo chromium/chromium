@@ -25,8 +25,6 @@ class _Generator(object):
     self._type_helper = cpp_type_generator
     self._generate_error_messages = namespace.compiler_options.get(
         'generate_error_messages', False)
-    self._modernised_enums = namespace.compiler_options.get(
-        'modernised_enums', False)
 
   def Generate(self):
     """Generates a Code object with the .h for a single namespace.
@@ -153,8 +151,7 @@ class _Generator(object):
     """Generate a code object with the  declaration of a C++ enum.
     """
     c = Code()
-    c.Sblock('enum {enum_type} {name} {{'.format(
-      enum_type=('class' if self._modernised_enums else ''),
+    c.Sblock('enum class {name} {{'.format(
       name=enum_name))
 
     # Explicitly initialize kNone to 0, since we rely on default initialization
@@ -169,13 +166,8 @@ class _Generator(object):
       c.Append(current_enum_string + ',')
 
     # Adding kMaxValue, which is friendly to enumaration histogram macros.
-    if self._modernised_enums:
-      c.Append('kMaxValue = {last_key_value},'.format(
-                last_key_value=current_enum_string))
-    else:
-      c.Append('{last_key} = {last_key_value},'.format(
-          last_key=self._type_helper.GetEnumLastValue(type_),
-          last_key_value=current_enum_string))
+    c.Append('kMaxValue = {last_key_value},'.format(
+              last_key_value=current_enum_string))
 
     c.Eblock('};')
     return c

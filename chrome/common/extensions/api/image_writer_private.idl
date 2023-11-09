@@ -7,7 +7,6 @@
 //
 // See the design doc for a detailed description of this API.
 // https://goo.gl/KzMEFq
-[modernised_enums]
 namespace imageWriterPrivate {
   // The different stages of a write call.
   //

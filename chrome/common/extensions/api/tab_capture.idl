@@ -4,7 +4,6 @@
 
 // Use the <code>chrome.tabCapture</code> API to interact with tab media
 // streams.
-[modernised_enums]
 namespace tabCapture {
 
   enum TabCaptureState {

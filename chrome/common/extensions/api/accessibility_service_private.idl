@@ -6,7 +6,6 @@
 // browser.
 
 [platforms=("chromeos", "lacros"),
-  modernised_enums,
   implemented_in="chrome/browser/chromeos/extensions/accessibility_service_private.h"]
 
 namespace accessibilityServicePrivate {
