@@ -54,7 +54,7 @@ std::unique_ptr<TemplateURLData> ConvertSearchProvider(
     const std::string& install_parameter) {
   std::unique_ptr<TemplateURLData> data;
   if (search_provider.prepopulated_id) {
-    data = TemplateURLPrepopulateData::GetPrepopulatedEngine(
+    data = TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
         prefs, *search_provider.prepopulated_id);
     if (data) {
       // We need to override the prepopulate_id and Sync GUID of the generated
