@@ -25,7 +25,7 @@ function testStreamTransfer(streamType, track) {
 
 promise_test(async t => {
   var video = document.createElement('video');
-  video.src = "/media/movie_5.mp4";
+  video.src = "/media/movie_5.webm";
   await test_driver.bless("Play video element", () => {
     return video.play();
   });
