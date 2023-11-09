@@ -17,6 +17,9 @@ class RgbVideoFrame;
 constexpr size_t kMaxNumberOfColorsInPalette = 256;
 constexpr uint8_t kMaxColorBitDepth = 8;
 
+// TODO(http://b/308444948): This code is going away soon and will be replaced
+// with a more efficient Octree-based color quantizer.
+
 // Performs color quantization on the given `rgb_video_frame` and fills
 // `out_color_palette` with the most important 256 colors in the image, and also
 // fills `out_pixel_color_indices` with the indices of the chosen colors from
@@ -24,6 +27,16 @@ constexpr uint8_t kMaxColorBitDepth = 8;
 void BuildColorPaletteAndPixelIndices(const RgbVideoFrame& rgb_video_frame,
                                       ColorTable& out_color_palette,
                                       ColorIndices& out_pixel_color_indices);
+
+// Extracts a color palette from the given `rgb_video_frame` and returns it.
+ColorTable BuildColorPalette(const RgbVideoFrame& rgb_video_frame);
+
+// For each pixel in the given `rgb_video_frame`, fills in
+// `out_pixel_color_indices` with an index of a color in the given
+// `color_palette`.
+void BuildPixelIndices(const RgbVideoFrame& rgb_video_frame,
+                       const ColorTable& color_palette,
+                       ColorIndices& out_pixel_color_indices);
 
 // Calculates and returns the color bit depth based on the size of the given
 // `color_palette`. The color bit depth is the least number of bits needed to be

@@ -51,7 +51,6 @@ class RgbVideoFrame {
  public:
   explicit RgbVideoFrame(const SkBitmap& bitmap);
   RgbVideoFrame(RgbVideoFrame&&);
-  RgbVideoFrame(const RgbVideoFrame&) = delete;
   RgbVideoFrame& operator=(const RgbVideoFrame&) = delete;
   ~RgbVideoFrame();
 
@@ -69,7 +68,13 @@ class RgbVideoFrame {
     return const_cast<RgbVideoFrame*>(this)->pixel_color(row, column);
   }
 
+  RgbVideoFrame Clone() const;
+
  private:
+  // Copy constructor made private so as not to be used implicitly. `Clone()`
+  // above should be used explicitly if needed.
+  RgbVideoFrame(const RgbVideoFrame& other);
+
   // The width and height of the video frame.
   const int width_;
   const int height_;

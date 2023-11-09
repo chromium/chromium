@@ -37,4 +37,15 @@ RgbVideoFrame::RgbVideoFrame(RgbVideoFrame&&) = default;
 
 RgbVideoFrame::~RgbVideoFrame() = default;
 
+RgbVideoFrame RgbVideoFrame::Clone() const {
+  return RgbVideoFrame(*this);
+}
+
+RgbVideoFrame::RgbVideoFrame(const RgbVideoFrame& other)
+    : width_(other.width_),
+      height_(other.height_),
+      data_(new RgbColor[width_ * height_]) {
+  std::memcpy(&data_[0], &other.data_[0], num_pixels() * sizeof(RgbColor));
+}
+
 }  // namespace recording
