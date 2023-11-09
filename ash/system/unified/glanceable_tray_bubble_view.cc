@@ -37,6 +37,8 @@
 
 namespace ash {
 
+using BoundsType = CalendarView::CalendarSlidingSurfaceBoundsType;
+
 namespace {
 
 // The view that parents glanceable bubbles. It's a flex layout view that
@@ -182,7 +184,10 @@ void GlanceableTrayBubbleView::InitializeContents() {
                 bubble->calendar_view_->event_list_view()) {
               return;
             }
-            bubble->calendar_view_->SetCalendarSlidingSurfaceBounds(false);
+            bubble->calendar_view_->SetCalendarSlidingSurfaceBounds(
+                bubble->calendar_view_->up_next_view()
+                    ? BoundsType::UP_NEXT_VIEW_BOUNDS
+                    : BoundsType::CALENDAR_BOTTOM_BOUNDS);
           },
           base::Unretained(this)));
 

@@ -114,13 +114,26 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   CalendarUpNextView* up_next_view() { return up_next_view_; }
   CalendarEventListView* event_list_view() { return event_list_view_; }
 
+  enum class CalendarSlidingSurfaceBoundsType {
+    // The bounds should be `event_list_view_`'s bounds. This is used when the
+    // `event_list_view_` is showing.
+    EVENT_LIST_VIEW_BOUNDS,
+
+    // The bounds should be `up_next_view_`'s bounds. This is used mostly when
+    // the `up_next_view_` is showing.
+    UP_NEXT_VIEW_BOUNDS,
+
+    // The bounds should be at the bottom of the calendar bubble. This is used
+    // when neither the `event_list_view_` or the `up_next_view_` is showing.
+    CALENDAR_BOTTOM_BOUNDS
+  };
+
   // Sets the bounds of the container of the `up_next_view_` and
   // `event_list_view_` to be flush with the bottom of the scroll view. Only the
-  // position will be animated, so give the view its final bounds. The
-  // `event_list_view_open` need to be passed in, because under some cases, the
-  // `event_list_view_` is still there but we want to use the `up_next_view_`'s
-  // bounds.
-  void SetCalendarSlidingSurfaceBounds(bool event_list_view_open);
+  // position will be animated, so give the view its final bounds.
+  // `CalendarSlidingSurfaceBoundsType` needs to be passed in to determine the
+  // state of the bounds.
+  void SetCalendarSlidingSurfaceBounds(CalendarSlidingSurfaceBoundsType type);
 
  private:
   // The header of each month view which shows the month's name. If the year of
@@ -343,9 +356,6 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // Removes the `up_next_view_`.
   void RemoveUpNextView();
 
-  // Callback after the animation showing the up next view has ended.
-  void OnShowUpNextAnimationEnded();
-
   // Animates scrolling the Calendar `scroll_view_` by the given offset. Uses
   // layer transforms to mimic scrolling and then sets a final scroll position
   // on the scroll view to give the illusion of animating scrolling.
@@ -368,6 +378,22 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
 
   // Returns the calculated height of a single visible row.
   int GetSingleVisibleRowHeight();
+
+  // Fades in or out the `up_next_view_`.
+  void FadeInUpNextView();
+  void FadeOutUpNextView();
+
+  // Callback after the `FadeInUpNextView()`/`FadeOutUpNextView()` animation has
+  // ended.
+  void OnFadeInUpNextViewAnimationEnded();
+  void OnFadeOutUpNextViewAnimationEnded();
+
+  // Stops the `check_upcoming_events_timer_` if it's running. This is used when
+  // `up_next_view_` fades out, the timer needs to stop as well.
+  void StopUpNextTimer();
+
+  // Checks if `up_next_view_` exists and is visible.
+  bool IsUpNextViewVisible() const;
 
   // Setters for animation flags.
   void set_should_header_animate(bool should_animate) {

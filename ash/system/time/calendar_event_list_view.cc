@@ -294,12 +294,13 @@ std::unique_ptr<views::View> CalendarEventListView::CreateChildEventListView(
 }
 
 void CalendarEventListView::UpdateListItems() {
-  content_view_->RemoveAllChildViews();
-
   // Resets `current_or_next_event_view_` and `current_or_next_event_index_`
-  // since the `event_list_view_` has been updated.
+  // since the `event_list_view_` has been updated. This has to be reset before
+  // `RemoveAllChildViews()` is called otherwise it will become a dangling ptr.
   current_or_next_event_view_ = nullptr;
   current_or_next_event_index_ = 0;
+
+  content_view_->RemoveAllChildViews();
 
   const auto [multi_day_events, all_other_events] =
       calendar_view_controller_->SelectedDateEventsSplitByMultiDayAndSameDay();

@@ -64,6 +64,9 @@
 #include "ui/views/view_utils.h"
 
 namespace ash {
+
+using BoundsType = CalendarView::CalendarSlidingSurfaceBoundsType;
+
 namespace {
 
 // The paddings in each view.
@@ -80,7 +83,6 @@ constexpr int kChevronInBetweenPadding = 16;
 constexpr int kMonthHeaderLabelTopPadding = 14;
 constexpr int kMonthHeaderLabelBottomPadding = 2;
 constexpr int kEventListViewHorizontalOffset = 1;
-constexpr int kUpNextAnimationYOffset = 20;
 // Adds a gap between the bottom visible row in the scrollview and the top of
 // the event list view when open.
 constexpr int kCalendarEventListViewOpenMargin = 8;
@@ -154,9 +156,6 @@ constexpr char kCloseEventListCalendarSlidingSurfaceAnimationHistogram[] =
     "Ash.CalendarView.CloseEventList.CalendarSlidingSurface."
     "AnimationSmoothness";
 
-constexpr char kCloseEventListUpNextViewAnimationHistogram[] =
-    "Ash.CalendarView.CloseEventList.UpNextView.AnimationSmoothness";
-
 constexpr char kMonthViewOpenEventListAnimationHistogram[] =
     "Ash.CalendarView.OpenEventList.MonthView.AnimationSmoothness";
 
@@ -172,8 +171,11 @@ constexpr char kCalendarSlidingSurfaceOpenEventListAnimationHistogram[] =
 constexpr char kUpNextViewOpenEventListAnimationHistogram[] =
     "Ash.CalendarView.OpenEventList.UpNextView.AnimationSmoothness";
 
-constexpr char kShowUpNextViewAnimationHistogram[] =
-    "Ash.CalendarView.ShowUpNextView.AnimationSmoothness";
+constexpr char kFadeInUpNextViewAnimationHistogram[] =
+    "Ash.CalendarView.FadeInUpNextView.AnimationSmoothness";
+
+constexpr char kFadeOutUpNextViewAnimationHistogram[] =
+    "Ash.CalendarView.FadeOutUpNextView.AnimationSmoothness";
 
 constexpr char kSmoothScrollMonthViewWhenShowingTodaysDateCell[] =
     "Ash.CalendarView.SmoothScrollToTodaysDateCell.MonthView."
@@ -575,8 +577,9 @@ CalendarView::~CalendarView() {
     calendar_sliding_surface_->RemoveChildViewT(event_list_view_.get());
     event_list_view_ = nullptr;
   }
-  check_upcoming_events_timer_.Stop();
+  StopUpNextTimer();
   RemoveUpNextView();
+  up_next_view_ = nullptr;
   content_view_->RemoveAllChildViews();
 }
 
@@ -950,14 +953,14 @@ void CalendarView::OnViewBoundsChanged(views::View* observed_view) {
   // is shown, `event_list_view_` should update its height to fill out the
   // remaining space.
   if (observed_view == this && event_list_view_) {
-    SetCalendarSlidingSurfaceBounds(true);
+    SetCalendarSlidingSurfaceBounds(BoundsType::EVENT_LIST_VIEW_BOUNDS);
     return;
   }
 
   // For screen density or orientation changes, we need to redraw the up next
   // views position and adjust the scroll view height accordingly.
-  if (observed_view == this && up_next_view_) {
-    SetCalendarSlidingSurfaceBounds(false);
+  if (observed_view == this && IsUpNextViewVisible()) {
+    SetCalendarSlidingSurfaceBounds(BoundsType::UP_NEXT_VIEW_BOUNDS);
     ClipScrollViewHeight(ScrollViewState::UP_NEXT_SHOWING);
     return;
   }
@@ -1108,7 +1111,9 @@ void CalendarView::OnEventsFetched(
 
   MaybeUpdateLoadingBarVisibility();
 
-  // Only show up next for events that are the same month as `base::Time::Now`.
+  // Only show up next for events that are the same month as `base::Time::Now`
+  // and if the user hasn't scrolled which is checked in
+  // `MaybeShowUpNextView()`.
   if (start_time == calendar_utils::GetStartOfMonthUTC(
                         base::Time::NowFromSystemTime().UTCMidnight())) {
     MaybeShowUpNextView();
@@ -1155,7 +1160,7 @@ void CalendarView::OpenEventList() {
   event_list_view_->SetFocusBehavior(FocusBehavior::NEVER);
 
   const int previous_surface_y = calendar_sliding_surface_->y();
-  SetCalendarSlidingSurfaceBounds(true);
+  SetCalendarSlidingSurfaceBounds(BoundsType::EVENT_LIST_VIEW_BOUNDS);
 
   set_should_months_animate(false);
   gfx::Vector2dF moving_up_location = gfx::Vector2dF(
@@ -1167,8 +1172,9 @@ void CalendarView::OpenEventList() {
   // If the `up_next_view_` is showing, then we want to start the animation from
   // there, otherwise we start from the bottom of the screen.
   const int y_transform_start_position =
-      up_next_view_ ? previous_surface_y - calendar_sliding_surface_->y()
-                    : calendar_sliding_surface_->y();
+      IsUpNextViewVisible()
+          ? previous_surface_y - calendar_sliding_surface_->y()
+          : calendar_sliding_surface_->y();
 
   std::unique_ptr<ui::InterpolatedTranslation> list_view_sliding_up =
       std::make_unique<ui::InterpolatedTranslation>(
@@ -1210,7 +1216,7 @@ void CalendarView::OpenEventList() {
                                 std::move(list_view_sliding_up),
                                 gfx::Tween::EASE_IN_OUT_2);
 
-  if (up_next_view_) {
+  if (IsUpNextViewVisible()) {
     auto up_next_reporter = calendar_metrics::CreateAnimationReporter(
         up_next_view_, kUpNextViewOpenEventListAnimationHistogram);
 
@@ -1244,16 +1250,18 @@ void CalendarView::CloseEventList() {
   scroll_view_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
                                          /*send_native_event=*/true);
   // Increase the scroll height before the animation starts, so that it's
-  // already full height when animating the event list view sliding down.
-  ClipScrollViewHeight(up_next_view_ ? ScrollViewState::UP_NEXT_SHOWING
-                                     : ScrollViewState::FULL_HEIGHT);
+  // already full height when animating `event_list_view_` sliding down.
+  ClipScrollViewHeight(IsUpNextViewVisible() ? ScrollViewState::UP_NEXT_SHOWING
+                                             : ScrollViewState::FULL_HEIGHT);
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
 
   // Move EventListView to the top of the up next view if showing, or off the
   // bottom of the CalendarView.
   const int previous_surface_y = calendar_sliding_surface_->y();
-  SetCalendarSlidingSurfaceBounds(false);
+  SetCalendarSlidingSurfaceBounds(IsUpNextViewVisible()
+                                      ? BoundsType::UP_NEXT_VIEW_BOUNDS
+                                      : BoundsType::CALENDAR_BOTTOM_BOUNDS);
   std::unique_ptr<ui::InterpolatedTranslation> list_view_sliding_down =
       std::make_unique<ui::InterpolatedTranslation>(
           gfx::PointF(0.f, previous_surface_y - calendar_sliding_surface_->y()),
@@ -1284,23 +1292,10 @@ void CalendarView::CloseEventList() {
       .SetDuration(kAnimationDurationForClosingEvents)
       .SetOpacity(event_list_view_, 0.f, gfx::Tween::FAST_OUT_SLOW_IN);
 
-  // Fade in the up next view.
-  if (up_next_view_) {
-    if (!up_next_view_->GetVisible()) {
-      up_next_view_->SetVisible(true);
-    }
-
-    auto up_next_reporter = calendar_metrics::CreateAnimationReporter(
-        up_next_view_, kCloseEventListUpNextViewAnimationHistogram);
-
-    views::AnimationBuilder()
-        .SetPreemptionStrategy(
-            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-        .Once()
-        .SetOpacity(up_next_view_, 0.f)
-        .At(kUpNextAnimationStartDelay)
-        .SetDuration(kAnimationDurationForClosingEvents)
-        .SetOpacity(up_next_view_, 1.f, gfx::Tween::EASE_OUT);
+  // If `up_next_view_` should be shown, fades out the up next view if the user
+  // has scrolled. Otherwise fades in.
+  if (!calendar_view_controller_->UpcomingEvents().empty()) {
+    user_has_scrolled_ ? FadeOutUpNextView() : FadeInUpNextView();
   }
 }
 
@@ -1315,7 +1310,8 @@ void CalendarView::OnSelectedDateUpdated() {
 void CalendarView::OnCalendarLoaded() {
   // We might have some cached upcoming events so we can show the
   // `up_next_view_` as soon as the calendar has loaded i.e. before waiting for
-  // the event fetch to complete.
+  // the event fetch to complete. Don't display the up next view if user has
+  // scrolled.
   MaybeShowUpNextView();
 }
 
@@ -1416,6 +1412,9 @@ void CalendarView::ScrollOneMonthAndAutoScroll(bool scroll_up) {
   }
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
                                  PositionOfCurrentMonth());
+
+  // Starts to fade out `up_next_view_` after `scroll_view_` has been updated.
+  FadeOutUpNextView();
 }
 
 void CalendarView::ScrollOneMonthWithAnimation(bool scroll_up) {
@@ -1773,6 +1772,9 @@ void CalendarView::OnContentsScrolled() {
   } else if (scroll_view_->GetVisibleRect().y() >= next_label_->y()) {
     ScrollDownOneMonth();
   }
+
+  // Fades out `up_next_view_` after the user has scrolled.
+  FadeOutUpNextView();
 }
 
 void CalendarView::OnMonthArrowButtonActivated(bool up,
@@ -1828,6 +1830,15 @@ void CalendarView::OnOpenEventListAnimationComplete() {
   RestoreMonthStatus();
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
                                  PositionOfSelectedDate());
+
+  // If the selected date is not on the same row with todays date, the
+  // `scroll_view_` should scroll, and `user_has_scrolled_` should be true to
+  // hide the `up_next_view_` when the `event_list_view_` is closed.
+  if (!calendar_view_controller_->IsSelectedDateInCurrentMonth() ||
+      calendar_view_controller_->selected_date_row_index() !=
+          calendar_view_controller_->today_row() - 1) {
+    user_has_scrolled_ = true;
+  }
   // Clip the height to a bit more than the height of a row.
   ClipScrollViewHeight(ScrollViewState::EVENT_LIST_SHOWING);
 
@@ -1915,6 +1926,13 @@ void CalendarView::OnResetToTodayFadeInAnimationComplete() {
       event_list_view_ ? views::ScrollView::ScrollBarMode::kDisabled
                        : views::ScrollView::ScrollBarMode::kHiddenButEnabled);
   SetHeaderAndContentViewOpacity(/*opacity=*/1.0f);
+
+  // Resets `user_has_scrolled_` and `check_upcoming_events_timer_` since after
+  // resetting to today, `up_next_view_` state should be reset.
+  user_has_scrolled_ = false;
+  check_upcoming_events_timer_.Reset();
+
+  MaybeShowUpNextView();
 }
 
 void CalendarView::FocusPreferredDateCellViewOrFirstVisible(bool prefer_today) {
@@ -1989,7 +2007,7 @@ int CalendarView::CalculateFirstFullyVisibleRow() {
   return row_index;
 }
 
-void CalendarView::SetCalendarSlidingSurfaceBounds(bool event_list_view_open) {
+void CalendarView::SetCalendarSlidingSurfaceBounds(BoundsType type) {
   const int x_position = scroll_view_->x() + kEventListViewHorizontalOffset;
   const int width = scroll_view_->GetVisibleRect().width() -
                     kEventListViewHorizontalOffset * 2;
@@ -1997,30 +2015,36 @@ void CalendarView::SetCalendarSlidingSurfaceBounds(bool event_list_view_open) {
                                      scroll_view_->GetBoundsInScreen().y() -
                                      GetSingleVisibleRowHeight();
 
-  // If the event list view is showing, position the calendar sliding surface
-  // where the opened event list view will be.
-  if (event_list_view_open) {
-    calendar_sliding_surface_->SetBounds(
-        x_position, scroll_view_->y() + GetSingleVisibleRowHeight(), width,
-        event_list_view_height);
-    return;
-  }
+  switch (type) {
+    // If the event list view is showing, position the calendar sliding surface
+    // where the opened event list view will be.
+    case BoundsType::EVENT_LIST_VIEW_BOUNDS: {
+      calendar_sliding_surface_->SetBounds(
+          x_position, scroll_view_->y() + GetSingleVisibleRowHeight(), width,
+          event_list_view_height);
+      break;
+    }
 
-  // If the event list view is not showing and the up next view is showing,
-  // position the calendar sliding surface where the up next view will be.
-  if (up_next_view_) {
-    const int up_next_view_preferred_height =
-        up_next_view_->GetPreferredSize().height();
-    calendar_sliding_surface_->SetBounds(
-        x_position, GetLocalBounds().bottom() - up_next_view_preferred_height,
-        width, event_list_view_height);
-    return;
-  }
+    // If the event list view is not showing and the up next view is showing,
+    // position the calendar sliding surface where the up next view will be.
+    case BoundsType::UP_NEXT_VIEW_BOUNDS: {
+      const int up_next_view_preferred_height =
+          up_next_view_->GetPreferredSize().height();
+      calendar_sliding_surface_->SetBounds(
+          x_position, GetLocalBounds().bottom() - up_next_view_preferred_height,
+          width, event_list_view_height);
+      break;
+    }
 
-  // If neither event list nor up next are showing, position the calendar
-  // sliding surface off the bottom of the screen.
-  calendar_sliding_surface_->SetBounds(x_position, GetVisibleBounds().bottom(),
-                                       width, event_list_view_height);
+    // If neither event list nor up next are showing, position the calendar
+    // sliding surface off the bottom of the screen.
+    case BoundsType::CALENDAR_BOTTOM_BOUNDS: {
+      calendar_sliding_surface_->SetBounds(x_position,
+                                           GetVisibleBounds().bottom(), width,
+                                           event_list_view_height);
+      break;
+    }
+  }
 }
 
 void CalendarView::MaybeShowUpNextView() {
@@ -2029,16 +2053,26 @@ void CalendarView::MaybeShowUpNextView() {
     return;
   }
 
-  if (up_next_view_) {
-    up_next_view_->RefreshEvents();
+  if (user_has_scrolled_) {
     return;
   }
 
-  // If the `event_list_view_` is currently showing and the `up_next_view_` is
-  // not, then early return. In this scenario we want the up next view to be
-  // there when the user closes the `event_list_view_` but we don't want all the
-  // scrollview clipping or bounds changing to happen.
+  // If the `event_list_view_` is currently showing, then early return.
+  // `event_list_view_` should be checked before `up_next_view_` since if
+  // `event_list_view_` is showing, we don't want to refresh or fade in the
+  // `up_next_view_`.
   if (event_list_view_) {
+    return;
+  }
+
+  if (up_next_view_) {
+    up_next_view_->RefreshEvents();
+
+    // If `up_next_view_` is invisible (i.e. has faded out), fade it in to make
+    // it visible.
+    if (!up_next_view_->GetVisible()) {
+      FadeInUpNextView();
+    }
     return;
   }
 
@@ -2048,58 +2082,9 @@ void CalendarView::MaybeShowUpNextView() {
           base::BindRepeating(&CalendarView::OpenEventListForTodaysDate,
                               base::Unretained(this))));
 
-  // If the event list and up next views aren't currently displayed, then
-  // construct the view and put the calendar into the state of showing the up
-  // next view.
-  ClipScrollViewHeight(ScrollViewState::UP_NEXT_SHOWING);
-  SetCalendarSlidingSurfaceBounds(false);
-
-  // Translate the up next view `kUpNextAnimationYOffset` off the screen and
-  // animate sliding up.
-  std::unique_ptr<ui::InterpolatedTranslation> up_next_sliding_up =
-      std::make_unique<ui::InterpolatedTranslation>(
-          gfx::PointF(0.f, kUpNextAnimationYOffset), gfx::PointF());
-
-  auto up_next_view_reporter = calendar_metrics::CreateAnimationReporter(
-      up_next_view_, kShowUpNextViewAnimationHistogram);
-
-  // Animate the `up_next_view_` in.
-  views::AnimationBuilder()
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .OnAborted(base::BindOnce(&CalendarView::OnShowUpNextAnimationEnded,
-                                weak_factory_.GetWeakPtr()))
-      .OnEnded(base::BindOnce(&CalendarView::OnShowUpNextAnimationEnded,
-                              weak_factory_.GetWeakPtr()))
-      .Once()
-      .SetOpacity(up_next_view_, 0.f)
-      .At(base::Milliseconds(0))
-      .SetDuration(kAnimationDurationForClosingEvents)
-      .SetOpacity(up_next_view_, 1.f)
-      .SetInterpolatedTransform(calendar_sliding_surface_,
-                                std::move(up_next_sliding_up),
-                                gfx::Tween::FAST_OUT_SLOW_IN_2);
-}
-
-void CalendarView::OnShowUpNextAnimationEnded() {
-  // If todays date cell is null or the user has scrolled at all, then don't
-  // auto scroll.
-  if (!calendar_view_controller_->todays_date_cell_view() ||
-      user_has_scrolled_) {
-    return;
-  }
-
-  // If todays date cell is not visible in the `scroll_view_`, i.e. it's hidden
-  // behind the up next view, then smooth scroll to it.
-  if (!scroll_view_->GetBoundsInScreen().Intersects(
-          calendar_view_controller_->todays_date_cell_view()
-              ->GetBoundsInScreen())) {
-    const int offset = calendar_view_controller_->todays_date_cell_view()
-                           ->GetBoundsInScreen()
-                           .bottom() -
-                       calendar_sliding_surface_->GetBoundsInScreen().y();
-    AnimateScrollByOffset(offset);
-  }
+  // Sets the visibility to manually trigger the fade in animation.
+  up_next_view_->SetVisible(false);
+  FadeInUpNextView();
 }
 
 void CalendarView::RemoveUpNextView() {
@@ -2107,10 +2092,11 @@ void CalendarView::RemoveUpNextView() {
     return;
   }
 
-  calendar_sliding_surface_->RemoveChildViewT(up_next_view_.get());
-  up_next_view_ = nullptr;
-
-  SetCalendarSlidingSurfaceBounds(event_list_view_);
+  // Sets the `up_next_view_` to be invisible instead of removing it.
+  up_next_view_->SetVisible(false);
+  SetCalendarSlidingSurfaceBounds(event_list_view_
+                                      ? BoundsType::EVENT_LIST_VIEW_BOUNDS
+                                      : BoundsType::CALENDAR_BOTTOM_BOUNDS);
   ClipScrollViewHeight(event_list_view_ ? ScrollViewState::EVENT_LIST_SHOWING
                                         : ScrollViewState::FULL_HEIGHT);
 }
@@ -2200,6 +2186,9 @@ void CalendarView::OnAnimateScrollByOffsetComplete(int offset) {
 
   SetShouldMonthsAnimateAndScrollEnabled(true);
   RestoreMonthStatus();
+
+  // Sets the value so that `user_has_scrolled_` is not set when auto-scrolled.
+  base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
                                  scroll_view_->GetVisibleRect().y() + offset);
 }
@@ -2207,6 +2196,142 @@ void CalendarView::OnAnimateScrollByOffsetComplete(int offset) {
 int CalendarView::GetSingleVisibleRowHeight() {
   return calendar_view_controller_->row_height() +
          kCalendarEventListViewOpenMargin;
+}
+
+void CalendarView::FadeInUpNextView() {
+  // If `up_next_view_` is already visible, don't perform the animation again.
+  if (IsUpNextViewVisible()) {
+    return;
+  }
+
+  // Disables scrolling when `up_next_view_` is animating.
+  SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/false);
+
+  ClipScrollViewHeight(ScrollViewState::UP_NEXT_SHOWING);
+  // Sets the `calendar_sliding_surface_` bounds to be at the animation end
+  // position to animate properly.
+  SetCalendarSlidingSurfaceBounds(BoundsType::UP_NEXT_VIEW_BOUNDS);
+
+  // Translate the `up_next_view_` off the screen and animate sliding up.
+  std::unique_ptr<ui::InterpolatedTranslation> up_next_sliding_up =
+      std::make_unique<ui::InterpolatedTranslation>(
+          gfx::PointF(0.f, calendar_sliding_surface_->y()), gfx::PointF());
+
+  up_next_view_->SetVisible(true);
+  auto up_next_view_reporter = calendar_metrics::CreateAnimationReporter(
+      up_next_view_, kFadeInUpNextViewAnimationHistogram);
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnAborted(base::BindOnce(&CalendarView::OnFadeInUpNextViewAnimationEnded,
+                                weak_factory_.GetWeakPtr()))
+      .OnEnded(base::BindOnce(&CalendarView::OnFadeInUpNextViewAnimationEnded,
+                              weak_factory_.GetWeakPtr()))
+      .Once()
+      .SetOpacity(up_next_view_, 0.f)
+      .At(kUpNextAnimationStartDelay)
+      .SetDuration(kAnimationDurationForClosingEvents)
+      .SetOpacity(up_next_view_, 1.f)
+      .SetInterpolatedTransform(calendar_sliding_surface_,
+                                std::move(up_next_sliding_up),
+                                gfx::Tween::FAST_OUT_SLOW_IN_2);
+}
+
+void CalendarView::FadeOutUpNextView() {
+  // Ensure the height of `scroll_view_` is updated before performing the
+  // animation. There's a corner case that after closing the `event_list_view_`,
+  // `up_next_view_` is still invisible when this method is called, and will
+  // skip the animation. So we need to clip the height here to show the
+  // `scroll_view_` properly.
+  ClipScrollViewHeight(ScrollViewState::FULL_HEIGHT);
+
+  // If `up_next_view_` is already invisible, don't perform the animation again.
+  if (!IsUpNextViewVisible()) {
+    return;
+  }
+
+  // Disables scrolling when `up_next_view_` is animating.
+  SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/false);
+
+  // Moves `up_next_view_` off the bottom of the `CalendarView`. Sets the
+  // `calendar_sliding_surface_` bounds to be at the animation end position to
+  // animate properly.
+  const int previous_surface_y = calendar_sliding_surface_->y();
+  SetCalendarSlidingSurfaceBounds(BoundsType::CALENDAR_BOTTOM_BOUNDS);
+
+  std::unique_ptr<ui::InterpolatedTranslation> up_next_view_sliding_down =
+      std::make_unique<ui::InterpolatedTranslation>(
+          gfx::PointF(0.f, previous_surface_y - calendar_sliding_surface_->y()),
+          gfx::PointF());
+
+  auto up_next_reporter = calendar_metrics::CreateAnimationReporter(
+      up_next_view_, kFadeOutUpNextViewAnimationHistogram);
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnAborted(
+          base::BindOnce(&CalendarView::OnFadeOutUpNextViewAnimationEnded,
+                         weak_factory_.GetWeakPtr()))
+      .OnEnded(base::BindOnce(&CalendarView::OnFadeOutUpNextViewAnimationEnded,
+                              weak_factory_.GetWeakPtr()))
+      .Once()
+      .SetOpacity(up_next_view_, 1.f)
+      .At(base::Milliseconds(0))
+      .SetDuration(kAnimationDurationForClosingEvents)
+      .SetOpacity(up_next_view_, 0.f)
+      .SetInterpolatedTransform(calendar_sliding_surface_,
+                                std::move(up_next_view_sliding_down),
+                                gfx::Tween::FAST_OUT_SLOW_IN);
+
+  // Stops the `check_upcoming_events_timer_` when `up_next_view_` starts fading
+  // out. This is needed when the `up_next_view_` fades out. The timer is
+  // stopped so that we don't check if we still want the `up_next_view_` to be
+  // back until the user presses the `reset_to_today_button_` and restarts the
+  // timer.
+  StopUpNextTimer();
+}
+
+void CalendarView::OnFadeInUpNextViewAnimationEnded() {
+  // `user_has_scrolled_` should always be false since this method is only
+  // called in `FadeInUpNextView()` which is only called when
+  // `user_has_scrolled_` is false.
+  DCHECK(!user_has_scrolled_);
+
+  // `todays_date_cell_view()` should not be a nullptr since we'll only fade in
+  // `up_next_view_` when it's on today's month.
+  DCHECK(calendar_view_controller_->todays_date_cell_view());
+
+  // Resets the scrolling state after the animation completes.
+  SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/true);
+
+  // If todays date cell is not visible in the `scroll_view_`, i.e. it's hidden
+  // behind the up next view, then smooth scroll to it.
+  if (!scroll_view_->GetBoundsInScreen().Intersects(
+          calendar_view_controller_->todays_date_cell_view()
+              ->GetBoundsInScreen())) {
+    const int offset = calendar_view_controller_->todays_date_cell_view()
+                           ->GetBoundsInScreen()
+                           .bottom() -
+                       calendar_sliding_surface_->GetBoundsInScreen().y();
+    AnimateScrollByOffset(offset);
+  }
+}
+
+void CalendarView::OnFadeOutUpNextViewAnimationEnded() {
+  up_next_view_->SetVisible(false);
+  SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/true);
+}
+
+void CalendarView::StopUpNextTimer() {
+  if (check_upcoming_events_timer_.IsRunning()) {
+    check_upcoming_events_timer_.Stop();
+  }
+}
+
+bool CalendarView::IsUpNextViewVisible() const {
+  return up_next_view_ && up_next_view_->GetVisible();
 }
 
 BEGIN_METADATA(CalendarView, GlanceableTrayChildBubble)
