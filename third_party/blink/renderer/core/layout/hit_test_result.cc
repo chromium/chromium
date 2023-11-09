@@ -248,9 +248,7 @@ void HitTestResult::SetToShadowHostIfInUAShadowRoot() {
 }
 
 CompositorElementId HitTestResult::GetScrollableContainer() const {
-  DCHECK(InnerNode());
-  // TODO(1303411): Some users encounter InnerNode() == null here, but we don't
-  // know why. Return an invalid element ID in this case, which we check for in
+  // If no node was found, return an invalid element ID, which we check for in
   // InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest.
   if (!InnerNode())
     return CompositorElementId();
