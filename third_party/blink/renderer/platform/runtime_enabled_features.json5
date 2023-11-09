@@ -947,11 +947,6 @@
       status: "stable",
     },
     {
-      name: "CSSMixBlendModePlusLighter",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       // Support for CSS Nesting Level 1.
       //
       // https://csswg.sesse.net/css-nesting-1/

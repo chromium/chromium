@@ -1442,8 +1442,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kSaturation ||
              value_id == CSSValueID::kColor ||
              value_id == CSSValueID::kLuminosity ||
-             (RuntimeEnabledFeatures::CSSMixBlendModePlusLighterEnabled() &&
-              value_id == CSSValueID::kPlusLighter);
+             value_id == CSSValueID::kPlusLighter;
     case CSSPropertyID::kWebkitBoxAlign:
       return value_id == CSSValueID::kStretch ||
              value_id == CSSValueID::kStart || value_id == CSSValueID::kEnd ||
