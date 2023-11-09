@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
@@ -14,7 +13,6 @@
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -277,15 +275,6 @@ void StartWebRequestProxyingWebTransport(
   request.request_initiator = initiator_origin;
 
   const int process_id = render_process_host.GetID();
-  content::RenderFrameHost* frame =
-      content::RenderFrameHost::FromID(process_id, frame_routing_id);
-  // Doesn't record UKMs if the frame is not given or in the prerendering state
-  // as the policy disallow it and GetPageUkmSourceId doesn't return a valid ID.
-  const ukm::SourceIdObj& ukm_source_id =
-      (frame && !frame->IsInLifecycleState(
-                    content::RenderFrameHost::LifecycleState::kPrerendering))
-          ? ukm::SourceIdObj::FromInt64(frame->GetPageUkmSourceId())
-          : ukm::kInvalidSourceIdObj;
 
   WebRequestInfoInitParams params =
       WebRequestInfoInitParams(request_id, process_id, frame_routing_id,
@@ -293,7 +282,7 @@ void StartWebRequestProxyingWebTransport(
                                /*is_download=*/false,
                                /*is_async=*/true,
                                /*is_service_worker_script=*/false,
-                               /*navigation_id=*/absl::nullopt, ukm_source_id);
+                               /*navigation_id=*/absl::nullopt);
   params.web_request_type = WebRequestResourceType::WEB_TRANSPORT;
 
   auto proxy = std::make_unique<WebTransportHandshakeProxy>(

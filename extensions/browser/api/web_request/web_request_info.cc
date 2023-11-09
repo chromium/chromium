@@ -22,7 +22,6 @@
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_data_stream.h"
 #include "net/base/upload_file_element_reader.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -164,8 +163,7 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
     bool is_download,
     bool is_async,
     bool is_service_worker_script,
-    absl::optional<int64_t> navigation_id,
-    ukm::SourceIdObj ukm_source_id)
+    absl::optional<int64_t> navigation_id)
     : id(request_id),
       url(request.url),
       render_process_id(render_process_id),
@@ -176,8 +174,7 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
       is_async(is_async),
       extra_request_headers(request.headers),
       is_service_worker_script(is_service_worker_script),
-      navigation_id(std::move(navigation_id)),
-      ukm_source_id(ukm_source_id) {
+      navigation_id(std::move(navigation_id)) {
   web_request_type = ToWebRequestResourceType(request, is_download);
 
   DCHECK_EQ(is_navigation_request, this->navigation_id.has_value());
@@ -246,7 +243,6 @@ WebRequestInfo::WebRequestInfo(WebRequestInfoInitParams params)
       web_view_embedder_process_id(params.web_view_embedder_process_id),
       is_service_worker_script(params.is_service_worker_script),
       navigation_id(std::move(params.navigation_id)),
-      ukm_source_id(params.ukm_source_id),
       parent_routing_id(params.parent_routing_id) {}
 
 WebRequestInfo::~WebRequestInfo() = default;

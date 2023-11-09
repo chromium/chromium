@@ -335,8 +335,6 @@ static_library("common") {
     "frame_context_data.h",
     "hashed_extension_id.cc",
     "hashed_extension_id.h",
-    "identifiability_metrics.cc",
-    "identifiability_metrics.h",
     "image_util.cc",
     "image_util.h",
     "install_warning.cc",

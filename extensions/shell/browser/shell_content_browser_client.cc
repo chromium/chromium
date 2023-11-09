@@ -271,7 +271,6 @@ ShellContentBrowserClient::GetNavigationUIData(
 
 void ShellContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
     int frame_tree_node_id,
-    ukm::SourceIdObj ukm_source_id,
     NonNetworkURLLoaderFactoryMap* factories) {
   DCHECK(factories);
 
@@ -280,7 +279,7 @@ void ShellContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
   factories->emplace(
       extensions::kExtensionScheme,
       extensions::CreateExtensionNavigationURLLoaderFactory(
-          web_contents->GetBrowserContext(), ukm_source_id,
+          web_contents->GetBrowserContext(),
           !!extensions::WebViewGuest::FromWebContents(web_contents)));
 }
 

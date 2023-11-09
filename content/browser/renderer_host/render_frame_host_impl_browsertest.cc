@@ -206,7 +206,6 @@ class FirstPartySchemeContentBrowserClient
 
   void RegisterNonNetworkNavigationURLLoaderFactories(
       int frame_tree_node_id,
-      ukm::SourceIdObj ukm_source_id,
       NonNetworkURLLoaderFactoryMap* factories) override {
     mojo::PendingRemote<network::mojom::URLLoaderFactory> trustme_remote;
     trustme_factory_->Clone(trustme_remote.InitWithNewPipeAndPassReceiver());

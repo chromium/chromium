@@ -956,7 +956,6 @@ static_library("extensions") {
     "//services/audio/public/cpp",
     "//services/data_decoder/public/cpp",
     "//services/device/public/mojom",
-    "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/mojom",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",

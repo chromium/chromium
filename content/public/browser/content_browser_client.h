@@ -1670,7 +1670,6 @@ class CONTENT_EXPORT ContentBrowserClient {
                mojo::PendingRemote<network::mojom::URLLoaderFactory>>;
   virtual void RegisterNonNetworkNavigationURLLoaderFactories(
       int frame_tree_node_id,
-      ukm::SourceIdObj ukm_source_id,
       NonNetworkURLLoaderFactoryMap* factories);
 
   // Allows the embedder to register per-scheme URLLoaderFactory

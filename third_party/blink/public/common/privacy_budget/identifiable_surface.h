@@ -114,15 +114,11 @@ class IdentifiableSurface {
     // GenericFamilyType.
     kGenericFontLookup = 4,
 
-    // Represents an attempt to access files made publicly accessible by
-    // extensions via web_accessible_resources. This may be recorded both in the
-    // renderer and the browser. Browser-side events will be associated with
-    // the top frame's navigation ID, not a child frame. Render-side events are
-    // associated with document's ID.
-    kExtensionFileAccess = 5,
+    // Reserved 5.
+    // Was kExtensionFileAccess.
 
-    // Extension running content-script. Input is the extension ID.
-    kExtensionContentScript = 6,
+    // Reserved 6.
+    // Was kExtensionContentScript.
 
     // Represents making a measurement of one of the above surfacess. This
     // metric is retained even if filtering discards the surface.
@@ -158,8 +154,8 @@ class IdentifiableSurface {
     // FontSelectionRequest (i.e. weight, width and slope).
     kLocalFontLookupAsLastResort = 14,
 
-    // Extension cancelled a network request. Input is the extension ID.
-    kExtensionCancelRequest = 15,
+    // Reserved 15.
+    // Was kExtensionCancelRequest.
 
     // WebGLRenderingContext.getShaderPrecisionFormat() is a high entropy API
     // that leaks entropy about the underlying GL implementation.

@@ -270,8 +270,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
                                     : nullptr,
       request_for_info, factory_->IsForDownload(),
       !(options_ & network::mojom::kURLLoadOptionSynchronous),
-      factory_->IsForServiceWorkerScript(), factory_->navigation_id_,
-      ukm_source_id_));
+      factory_->IsForServiceWorkerScript(), factory_->navigation_id_));
 
   // The value of `has_any_extra_headers_listeners_` is constant for the
   // lifetime of InProgressRequest and determines whether the request is made

@@ -1394,7 +1394,7 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
       &bypass_redirect_checks_);
 
   GetContentClient()->browser()->RegisterNonNetworkNavigationURLLoaderFactories(
-      frame_tree_node_id_, ukm_id, &non_network_url_loader_factories_);
+      frame_tree_node_id_, &non_network_url_loader_factories_);
 
   bool is_nav_allowed =
       base::FeatureList::IsEnabled(

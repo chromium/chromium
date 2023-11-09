@@ -20,7 +20,6 @@
 #include "ipc/ipc_message.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -46,8 +45,7 @@ struct WebRequestInfoInitParams {
       bool is_download,
       bool is_async,
       bool is_service_worker_script,
-      absl::optional<int64_t> navigation_id,
-      ukm::SourceIdObj ukm_source_id);
+      absl::optional<int64_t> navigation_id);
 
   WebRequestInfoInitParams(const WebRequestInfoInitParams&) = delete;
   WebRequestInfoInitParams(WebRequestInfoInitParams&& other);
@@ -75,7 +73,6 @@ struct WebRequestInfoInitParams {
   ExtensionApiFrameIdMap::FrameData frame_data;
   bool is_service_worker_script = false;
   absl::optional<int64_t> navigation_id;
-  ukm::SourceIdObj ukm_source_id = ukm::kInvalidSourceIdObj;
   content::GlobalRenderFrameHostId parent_routing_id;
 
  private:
@@ -173,9 +170,6 @@ struct WebRequestInfo {
 
   // Valid if this request corresponds to a navigation.
   const absl::optional<int64_t> navigation_id;
-
-  // UKM source to associate metrics with for this request.
-  const ukm::SourceIdObj ukm_source_id;
 
   // ID of the RenderFrameHost corresponding to the parent frame. Only valid for
   // document subresource and sub-frame requests.

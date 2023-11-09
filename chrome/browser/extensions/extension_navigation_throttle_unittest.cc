@@ -23,12 +23,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/identifiability_metrics.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
-#include "third_party/blink/public/common/privacy_budget/scoped_identifiability_test_sample_collector.h"
 #include "url/gurl.h"
 
 using content::NavigationThrottle;
@@ -117,39 +112,22 @@ class ExtensionNavigationThrottleUnitTest
     test_handle.set_starting_site_instance(host->GetSiteInstance());
     auto throttle = std::make_unique<ExtensionNavigationThrottle>(&test_handle);
 
-    {
-      blink::test::ScopedIdentifiabilityTestSampleCollector metrics;
-
-      EXPECT_EQ(expected_will_start_result,
-                throttle->WillStartRequest().action())
-          << extension_url;
-
-      ExpectExtensionAccessResult(expected_will_start_result, extension_url,
-                                  test_handle.GetNavigationId(),
-                                  metrics.entries());
-    }
+    EXPECT_EQ(expected_will_start_result, throttle->WillStartRequest().action())
+        << extension_url;
 
     // Second subtest: server redirect to
     // |extension_url|.
-    {
-      blink::test::ScopedIdentifiabilityTestSampleCollector metrics;
+    GURL http_url("https://example.com");
+    test_handle.set_url(http_url);
 
-      GURL http_url("https://example.com");
-      test_handle.set_url(http_url);
+    EXPECT_EQ(NavigationThrottle::PROCEED,
+              throttle->WillStartRequest().action())
+        << http_url;
 
-      EXPECT_EQ(NavigationThrottle::PROCEED,
-                throttle->WillStartRequest().action())
-          << http_url;
-      EXPECT_EQ(0u, metrics.entries().size());
-
-      test_handle.set_url(extension_url);
-      EXPECT_EQ(expected_will_start_result,
-                throttle->WillRedirectRequest().action())
-          << extension_url;
-      ExpectExtensionAccessResult(expected_will_start_result, extension_url,
-                                  test_handle.GetNavigationId(),
-                                  metrics.entries());
-    }
+    test_handle.set_url(extension_url);
+    EXPECT_EQ(expected_will_start_result,
+              throttle->WillRedirectRequest().action())
+        << extension_url;
   }
 
   const Extension* extension() { return extension_.get(); }
@@ -159,44 +137,6 @@ class ExtensionNavigationThrottleUnitTest
   content::RenderFrameHostTester* render_frame_host_tester(
       content::RenderFrameHost* host) {
     return content::RenderFrameHostTester::For(host);
-  }
-
-  void ExpectExtensionAccessResult(
-      NavigationThrottle::ThrottleAction expected_action,
-      const GURL& extension_url,
-      int64_t navigation_id,
-      const std::vector<
-          blink::test::ScopedIdentifiabilityTestSampleCollector::Entry>&
-          entries) {
-    // If throttle doesn't intervene, recording will be done by
-    // ExtensionURLLoaderFactory, not the throttle.
-    if (expected_action == NavigationThrottle::PROCEED) {
-      EXPECT_EQ(0u, entries.size());
-      return;
-    }
-
-    ExtensionResourceAccessResult expected;
-    if (expected_action == NavigationThrottle::BLOCK_REQUEST) {
-      expected = ExtensionResourceAccessResult::kFailure;
-    } else if (expected_action == NavigationThrottle::CANCEL) {
-      expected = ExtensionResourceAccessResult::kCancel;
-    } else {
-      ADD_FAILURE() << "Unhandled action:" << expected_action;
-      return;
-    }
-
-    ukm::SourceId source_id = ukm::ConvertToSourceId(
-        navigation_id, ukm::SourceIdObj::Type::NAVIGATION_ID);
-
-    ASSERT_EQ(1u, entries.size());
-    EXPECT_EQ(source_id, entries[0].source);
-    ASSERT_EQ(1u, entries[0].metrics.size());
-    EXPECT_EQ(blink::IdentifiableSurface::FromTypeAndToken(
-                  blink::IdentifiableSurface::Type::kExtensionFileAccess,
-                  base::as_bytes(base::make_span(
-                      ExtensionSet::GetExtensionIdByURL(extension_url)))),
-              entries[0].metrics[0].surface);
-    EXPECT_EQ(blink::IdentifiableToken(expected), entries[0].metrics[0].value);
   }
 
  private:

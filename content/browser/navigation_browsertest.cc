@@ -3063,7 +3063,6 @@ class NavigationUrlRewriteBrowserTest : public NavigationBaseBrowserTest {
 
     void RegisterNonNetworkNavigationURLLoaderFactories(
         int frame_tree_node_id,
-        ukm::SourceIdObj ukm_source_id,
         NonNetworkURLLoaderFactoryMap* factories) override {
       mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
       fake_url_loader_factory_->Clone(

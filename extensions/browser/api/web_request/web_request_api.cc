@@ -500,13 +500,10 @@ void WebRequestAPI::ProxyWebSocket(
       WebRequestEventRouter::Get(browser_context)
           ->HasAnyExtraHeadersListener(browser_context);
 
-  const ukm::SourceIdObj& ukm_source_id =
-      ukm::SourceIdObj::FromInt64(frame->GetPageUkmSourceId());
-
   WebRequestProxyingWebSocket::StartProxying(
       std::move(factory), url, site_for_cookies, user_agent,
       std::move(handshake_client), has_extra_headers,
-      frame->GetProcess()->GetID(), frame->GetRoutingID(), ukm_source_id,
+      frame->GetProcess()->GetID(), frame->GetRoutingID(),
       &request_id_generator_, frame->GetLastCommittedOrigin(),
       frame->GetProcess()->GetBrowserContext(), proxies_.get());
 }

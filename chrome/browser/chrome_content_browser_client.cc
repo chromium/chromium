@@ -5871,7 +5871,6 @@ ChromeContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
 
 void ChromeContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
     int frame_tree_node_id,
-    ukm::SourceIdObj ukm_source_id,
     NonNetworkURLLoaderFactoryMap* factories) {
 #if BUILDFLAG(ENABLE_EXTENSIONS) || BUILDFLAG(IS_CHROMEOS_ASH) || \
     !BUILDFLAG(IS_ANDROID)
@@ -5885,7 +5884,7 @@ void ChromeContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
     factories->emplace(
         extensions::kExtensionScheme,
         extensions::CreateExtensionNavigationURLLoaderFactory(
-            browser_context, ukm_source_id,
+            browser_context,
             !!extensions::WebViewGuest::FromWebContents(web_contents)));
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

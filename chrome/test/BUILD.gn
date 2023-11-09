@@ -3667,8 +3667,6 @@ if (!is_android) {
         "../browser/extensions/file_iframe_apitest.cc",
         "../browser/extensions/google_docs_offline_ukm_browsertest.cc",
         "../browser/extensions/gpu_browsertest.cc",
-        "../browser/extensions/identifiability_metrics_test_util.cc",
-        "../browser/extensions/identifiability_metrics_test_util.h",
         "../browser/extensions/isolated_world_csp_browsertest.cc",
         "../browser/extensions/lazy_background_page_apitest.cc",
         "../browser/extensions/manifest_v3_browsertest.cc",

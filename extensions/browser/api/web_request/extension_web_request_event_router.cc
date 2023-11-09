@@ -36,7 +36,6 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/identifiability_metrics.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 
 using content::BrowserThread;
@@ -991,16 +990,12 @@ int WebRequestEventRouter::OnBeforeRequest(
           ClearPendingCallbacks(browser_context, *request);
           DCHECK_EQ(1u, actions.size());
           OnDNRActionMatched(browser_context, *request, action);
-          RecordNetworkRequestBlocked(request->ukm_source_id,
-                                      action.extension_id);
           return net::ERR_BLOCKED_BY_CLIENT;
         case DNRRequestAction::Type::COLLAPSE:
           ClearPendingCallbacks(browser_context, *request);
           DCHECK_EQ(1u, actions.size());
           OnDNRActionMatched(browser_context, *request, action);
           *should_collapse_initiator = true;
-          RecordNetworkRequestBlocked(request->ukm_source_id,
-                                      action.extension_id);
           return net::ERR_BLOCKED_BY_CLIENT;
         case DNRRequestAction::Type::ALLOW:
         case DNRRequestAction::Type::ALLOW_ALL_REQUESTS:
@@ -2365,8 +2360,6 @@ int WebRequestEventRouter::ExecuteDeltas(
   int rv = net::OK;
   if (canceled_by_extension) {
     rv = net::ERR_BLOCKED_BY_CLIENT;
-    RecordNetworkRequestBlocked(request->ukm_source_id,
-                                canceled_by_extension.value());
     TRACE_EVENT2("extensions", "NetworkRequestBlockedByClient", "extension",
                  canceled_by_extension.value(), "id", request->id);
   }

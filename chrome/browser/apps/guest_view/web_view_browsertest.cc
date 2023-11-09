@@ -31,7 +31,6 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
-#include "chrome/browser/extensions/identifiability_metrics_test_util.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
@@ -117,7 +116,6 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature_channel.h"
-#include "extensions/common/identifiability_metrics.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -577,7 +575,6 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
         std::make_unique<device::ScopedGeolocationOverrider>(10, 20);
 
     host_resolver()->AddRule("*", "127.0.0.1");
-    identifiability_metrics_test_helper_.SetUpOnMainThread();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -839,9 +836,6 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
   WebViewTest() = default;
 
   ~WebViewTest() override = default;
-
-  extensions::IdentifiabilityMetricsTestHelper
-      identifiability_metrics_test_helper_;
 
  private:
   bool UsesFakeSpeech() {
@@ -5621,7 +5615,6 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWebViewTest, ClassificationInGuest) {
 IN_PROC_BROWSER_TEST_F(WebViewTest, LoadDisallowedExtensionURLInSubframe) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   base::RunLoop run_loop;
-  identifiability_metrics_test_helper_.PrepareForTest(&run_loop);
 
   LoadAppWithGuest("web_view/simple");
   content::RenderFrameHost* guest = GetGuestView()->GetGuestMainFrame();
@@ -5653,26 +5646,6 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, LoadDisallowedExtensionURLInSubframe) {
   // The navigation should be aborted and the iframe should be left at its old
   // URL.
   EXPECT_EQ(webview_subframe->GetLastCommittedURL(), iframe_url);
-
-  // Check that a proper UKM event was logged for failed extension file access.
-  // First, find the source ID corresponding to the logged event, then make
-  // sure that the corresponding metric contains a failed
-  // ExtensionResourceAccessResult.
-  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      identifiability_metrics_test_helper_.NavigateToBlankAndWaitForMetrics(
-          guest, &run_loop);
-  std::set<ukm::SourceId> source_ids = extensions::
-      IdentifiabilityMetricsTestHelper::GetSourceIDsForSurfaceAndExtension(
-          merged_entries,
-          blink::IdentifiableSurface::Type::kExtensionFileAccess,
-          extension->id());
-  ASSERT_EQ(1u, source_ids.size());
-
-  const auto& entry = merged_entries[*source_ids.begin()];
-  ASSERT_EQ(1u, entry->metrics.size());
-  EXPECT_EQ(blink::IdentifiableToken(
-                extensions::ExtensionResourceAccessResult::kFailure),
-            entry->metrics.begin()->second);
 }
 
 class PopupWaiter : public content::WebContentsObserver {

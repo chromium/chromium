@@ -18,7 +18,6 @@
 #include "extensions/common/user_script.h"
 #include "extensions/renderer/injection_host.h"
 #include "extensions/renderer/script_injector.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8-forward.h"
 
@@ -140,9 +139,6 @@ class ScriptInjection {
   // This injection's request id. This will be -1 unless the injection is
   // currently waiting on permission.
   int64_t request_id_;
-
-  // Identifies the frame we're injecting into.
-  ukm::SourceIdObj ukm_source_id_;
 
   // Whether or not the injection is complete, either via injecting the script
   // or because it will never complete.

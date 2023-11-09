@@ -19,7 +19,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -53,7 +52,6 @@ class WebRequestProxyingWebSocket
       bool has_extra_headers,
       int process_id,
       int render_frame_id,
-      ukm::SourceIdObj ukm_source_id,
       content::BrowserContext* browser_context,
       WebRequestAPI::RequestIDGenerator* request_id_generator,
       WebRequestAPI::ProxySet* proxies);
@@ -100,7 +98,6 @@ class WebRequestProxyingWebSocket
       bool has_extra_headers,
       int process_id,
       int render_frame_id,
-      ukm::SourceIdObj ukm_source_id,
       WebRequestAPI::RequestIDGenerator* request_id_generator,
       const url::Origin& origin,
       content::BrowserContext* browser_context,

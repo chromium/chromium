@@ -12,7 +12,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "fuchsia_web/webengine/browser/content_directory_loader_factory.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 
 class WebEngineBrowserMainParts;
 
@@ -41,7 +40,6 @@ class WebEngineContentBrowserClient final
       mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override;
   void RegisterNonNetworkNavigationURLLoaderFactories(
       int frame_tree_node_id,
-      ukm::SourceIdObj ukm_source_id,
       NonNetworkURLLoaderFactoryMap* factories) override;
   void RegisterNonNetworkSubresourceURLLoaderFactories(
       int render_process_id,
