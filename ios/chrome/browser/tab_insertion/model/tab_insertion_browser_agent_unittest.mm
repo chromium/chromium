@@ -19,6 +19,10 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
+
 namespace {
 
 const char kURL1[] = "https://www.some.url.com";
@@ -51,13 +55,17 @@ class TabInsertionBrowserAgentTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
-    SessionRestorationServiceFactory::GetForBrowserState(browser_state_.get())
-        ->SetSessionID(browser_.get(), "browser");
+    if (web::features::UseSessionSerializationOptimizations()) {
+      SessionRestorationServiceFactory::GetForBrowserState(browser_state_.get())
+          ->SetSessionID(browser_.get(), "browser");
+    }
   }
 
   void TearDown() override {
-    SessionRestorationServiceFactory::GetForBrowserState(browser_state_.get())
-        ->Disconnect(browser_.get());
+    if (web::features::UseSessionSerializationOptimizations()) {
+      SessionRestorationServiceFactory::GetForBrowserState(browser_state_.get())
+          ->Disconnect(browser_.get());
+    }
     PlatformTest::TearDown();
   }
 
