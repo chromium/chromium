@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
@@ -332,7 +332,7 @@ void ChromeBrowserCloudManagementController::InvalidatePolicies() {
 void ChromeBrowserCloudManagementController::UnenrollCallback(
     const std::string& metric_name,
     bool success) {
-  UMA_HISTOGRAM_BOOLEAN(
+  base::UmaHistogramBoolean(
       base::StrCat(
           {"Enterprise.MachineLevelUserCloudPolicyEnrollment.", metric_name}),
       success);
@@ -442,7 +442,7 @@ void ChromeBrowserCloudManagementController::
         << "No DM token returned from browser registration.";
     RecordEnrollmentResult(
         ChromeBrowserCloudManagementEnrollmentResult::kFailedToFetch);
-    UMA_HISTOGRAM_TIMES(
+    base::UmaHistogramTimes(
         "Enterprise.MachineLevelUserCloudPolicyEnrollment.RequestFailureTime",
         enrollment_time);
     MachineLevelUserCloudPolicyManager* policy_manager =
@@ -456,7 +456,7 @@ void ChromeBrowserCloudManagementController::
 
   VLOG_POLICY(1, CBCM_ENROLLMENT) << "DM token retrieved from server.";
 
-  UMA_HISTOGRAM_TIMES(
+  base::UmaHistogramTimes(
       "Enterprise.MachineLevelUserCloudPolicyEnrollment.RequestSuccessTime",
       enrollment_time);
 
@@ -526,7 +526,7 @@ void ChromeBrowserCloudManagementController::DeferrableCreatePolicyManagerImpl(
 
 void ChromeBrowserCloudManagementController::RecordEnrollmentResult(
     ChromeBrowserCloudManagementEnrollmentResult result) {
-  UMA_HISTOGRAM_ENUMERATION(
+  base::UmaHistogramEnumeration(
       "Enterprise.MachineLevelUserCloudPolicyEnrollment.Result", result);
   for (auto& observer : observers_) {
     observer.OnEnrollmentResultRecorded();
