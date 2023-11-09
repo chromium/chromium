@@ -119,6 +119,13 @@ void PasswordSelectionScreen::InspectContext(UserContext* user_context) {
 }
 
 void PasswordSelectionScreen::ProcessOptions() {
+  if (auth_factors_config_.HasConfiguredFactor(
+          cryptohome::AuthFactorType::kSmartCard)) {
+    LOG(WARNING) << "Login using Smartcard, no password should be set up";
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return;
+  }
+
   if (context()->skip_post_login_screens_for_tests) {
     LOG(WARNING) << "Skipping post-login screens, assuming that user has "
                     "online password";

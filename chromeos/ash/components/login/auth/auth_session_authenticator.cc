@@ -312,12 +312,12 @@ void AuthSessionAuthenticator::DoCompleteLogin(
         // If Local passwords are enabled, password setup would
         // happen later in OOBE flow.
       }
-      // In addition to factors suitable for authentication, fetch a set of
-      // supported factor types for new users.
-      steps.push_back(
-          base::BindOnce(&AuthFactorEditor::GetAuthFactorsConfiguration,
-                         auth_factor_editor_->AsWeakPtr()));
     }       // challenge-response
+    // In addition to factors suitable for authentication, fetch a set of
+    // supported factor types for new users.
+    steps.push_back(
+        base::BindOnce(&AuthFactorEditor::GetAuthFactorsConfiguration,
+                       auth_factor_editor_->AsWeakPtr()));
   } else {  // existing user
     if (!challenge_response_auth) {
       // Password-based login
