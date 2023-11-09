@@ -98,10 +98,7 @@ CSSAtRuleID CssAtRuleID(StringView name) {
     return CSSAtRuleID::kCSSAtRuleInvalid;
   }
   if (EqualIgnoringASCIICase(name, "starting-style")) {
-    if (RuntimeEnabledFeatures::CSSStartingStyleEnabled()) {
-      return CSSAtRuleID::kCSSAtRuleStartingStyle;
-    }
-    return CSSAtRuleID::kCSSAtRuleInvalid;
+    return CSSAtRuleID::kCSSAtRuleStartingStyle;
   }
   if (EqualIgnoringASCIICase(name, "-webkit-keyframes")) {
     return CSSAtRuleID::kCSSAtRuleWebkitKeyframes;

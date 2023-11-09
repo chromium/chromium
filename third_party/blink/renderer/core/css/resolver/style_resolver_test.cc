@@ -3414,8 +3414,6 @@ TEST_F(StyleResolverTest, HasAutoAnchorPositioning) {
 }
 
 TEST_F(StyleResolverTest, CssRulesForElementExcludeStartingStyle) {
-  ScopedCSSStartingStyleForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       @starting-style {
@@ -3443,8 +3441,6 @@ TEST_F(StyleResolverTest, CssRulesForElementExcludeStartingStyle) {
 }
 
 TEST_F(StyleResolverTest, PseudoCSSRulesForElementExcludeStartingStyle) {
-  ScopedCSSStartingStyleForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       @starting-style {

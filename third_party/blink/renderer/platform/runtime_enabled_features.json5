@@ -1122,11 +1122,6 @@
       status: "experimental",
     },
     {
-      // https://drafts.csswg.org/css-transitions-2/#defining-before-change-style-the-starting-style-rule
-      name: "CSSStartingStyle",
-      status: "stable",
-    },
-    {
       // Explainer: https://drafts.csswg.org/css-values/#round-func
       name: "CSSSteppedValueFunctions",
       status: "experimental",
