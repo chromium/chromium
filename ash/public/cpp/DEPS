@@ -6,6 +6,7 @@ include_rules = [
   "+chromeos/ui/base/chromeos_ui_constants.h",
   "+cc/metrics",
   "+components/prefs",
+  "+components/manta/proto",
   "+components/language/core/browser",
   "+components/tab_groups",
   "+components/sync_device_info",

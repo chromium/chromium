@@ -439,6 +439,7 @@ component("cpp") {
     "//chromeos/ui/vector_icons",
     "//components/access_code_cast/common:metrics",
     "//components/language/core/browser:browser",
+    "//components/manta/proto",
     "//components/pref_registry",
     "//components/prefs",
     "//components/sync/model",

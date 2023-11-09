@@ -4824,6 +4824,7 @@ static_library("test_support") {
     "//components/desks_storage:test_support",
     "//components/keyed_service/core",
     "//components/login",
+    "//components/manta/proto",
     "//components/ownership",
     "//components/policy:generated",
     "//components/policy/core/common:common_constants",

@@ -58,10 +58,11 @@ std::string MakeFakeJpgData() {
   return std::string(encoded_data.begin(), encoded_data.end());
 }
 
-std::vector<ash::SeaPenImage> MakeFakeSeaPenImages() {
+std::vector<ash::SeaPenImage> MakeFakeSeaPenImages(const std::string& query) {
   std::vector<ash::SeaPenImage> result;
   for (int i = 0; i < base::RandInt(0, 6); i++) {
-    result.emplace_back(MakeFakeJpgData(), base::RandInt(0, INT32_MAX));
+    result.emplace_back(MakeFakeJpgData(), base::RandInt(0, INT32_MAX), query,
+                        manta::proto::RESOLUTION_1024);
   }
   return result;
 }
@@ -82,7 +83,8 @@ class FakeSeaPenFetcher : public SeaPenFetcher {
              OnWallpaperSearchComplete callback) override {
     VLOG(1) << "Running query: " << query;
     sequenced_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&MakeFakeSeaPenImages), std::move(callback));
+        FROM_HERE, base::BindOnce(&MakeFakeSeaPenImages, query),
+        std::move(callback));
   }
 
  private:
@@ -130,16 +132,19 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
     manta::proto::RequestConfig& request_config =
         *request.mutable_request_config();
     request_config.set_num_outputs(6);
-    request_config.set_image_resolution(
-        manta::proto::ImageResolution::RESOLUTION_1024);
+    auto target_resolution = manta::proto::ImageResolution::RESOLUTION_1024;
+    request_config.set_image_resolution(target_resolution);
     manta::proto::InputData& input_data = *request.add_input_data();
     input_data.set_text(query);
-    snapper_provider_->Call(request,
-                            base::BindOnce(&SeaPenFetcherImpl::OnSnapperDone,
-                                           weak_ptr_factory_.GetWeakPtr()));
+    snapper_provider_->Call(
+        request, base::BindOnce(&SeaPenFetcherImpl::OnSnapperDone,
+                                weak_ptr_factory_.GetWeakPtr(), query,
+                                target_resolution));
   }
 
-  void OnSnapperDone(std::unique_ptr<manta::proto::Response> response,
+  void OnSnapperDone(const std::string& query,
+                     manta::proto::ImageResolution resolution,
+                     std::unique_ptr<manta::proto::Response> response,
                      manta::MantaStatus status) {
     DCHECK(pending_callback_);
     if (status.status_code != manta::MantaStatusCode::kOk || !response) {
@@ -159,7 +164,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       }
       images.emplace_back(
           std::move(*data.mutable_image()->mutable_serialized_bytes()),
-          data.generation_seed());
+          data.generation_seed(), query, resolution);
     }
     std::move(pending_callback_).Run(std::move(images));
   }
