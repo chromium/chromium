@@ -37,7 +37,7 @@ class PdmChangeWaiter : public PersonalDataManagerObserver {
   PdmChangeWaiter(const PdmChangeWaiter&) = delete;
   PdmChangeWaiter& operator=(const PdmChangeWaiter&) = delete;
 
-  ~PdmChangeWaiter() override = default;
+  ~PdmChangeWaiter() override {}
 
   // PersonalDataManagerObserver:
   void OnPersonalDataChanged() override {
