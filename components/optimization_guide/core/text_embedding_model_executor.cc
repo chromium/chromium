@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/text_embedding_model_executor.h"
 
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
@@ -47,10 +48,10 @@ TextEmbeddingModelExecutor::Execute(ModelExecutionTask* execution_task,
   return *status_or_result;
 }
 
-std::unique_ptr<TextEmbeddingModelExecutor::ModelExecutionTask>
+base::expected<std::unique_ptr<TextEmbeddingModelExecutor::ModelExecutionTask>,
+               ExecutionStatus>
 TextEmbeddingModelExecutor::BuildModelExecutionTask(
-    base::MemoryMappedFile* model_file,
-    ExecutionStatus* out_status) {
+    base::MemoryMappedFile* model_file) {
   tflite::task::text::TextEmbedderOptions options;
   *options.mutable_base_options()
        ->mutable_model_file()
@@ -67,10 +68,9 @@ TextEmbeddingModelExecutor::BuildModelExecutionTask(
   if (maybe_text_embedder.ok()) {
     return std::move(maybe_text_embedder.value());
   }
-  *out_status = ExecutionStatus::kErrorModelFileNotValid;
   DLOG(ERROR) << "Unable to load Text Embedder model: "
               << maybe_text_embedder.status().ToString();
-  return nullptr;
+  return base::unexpected(ExecutionStatus::kErrorModelFileNotValid);
 }
 
 }  // namespace optimization_guide

@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/execution_status.h"
 #include "components/optimization_guide/core/model_enums.h"
 #include "components/optimization_guide/core/model_execution_timeout_watchdog.h"
@@ -310,10 +311,11 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
       ExecutionStatus* out_status,
       InputType args) = 0;
 
-  // Builds a model execution task using |model_file|.
-  virtual std::unique_ptr<ModelExecutionTaskType> BuildModelExecutionTask(
-      base::MemoryMappedFile* model_file,
-      ExecutionStatus* out_status) = 0;
+  // Builds a model execution task using |model_file|. On error, the returned
+  // `ExecutionStatus` will never be `ExecutionStatus::kSuccess`.
+  virtual base::expected<std::unique_ptr<ModelExecutionTaskType>,
+                         ExecutionStatus>
+  BuildModelExecutionTask(base::MemoryMappedFile* model_file) = 0;
 
  private:
   // Loads the model file in the background thread, and calls a callback on
@@ -398,9 +400,10 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
       return;
     }
 
-    ExecutionStatus build_model_status;
-    loaded_model_ =
-        BuildModelExecutionTask(model_fb_.get(), &build_model_status);
+    auto build_result = BuildModelExecutionTask(model_fb_.get());
+    if (build_result.has_value()) {
+      loaded_model_ = std::move(build_result.value());
+    }
 
     // Local histogram used in integration testing.
     base::BooleanHistogram::FactoryGet(
@@ -410,7 +413,8 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
         base::Histogram::kNoFlags)
         ->Add(!!loaded_model_);
 
-    std::move(model_loaded_callback).Run(build_model_status);
+    std::move(model_loaded_callback)
+        .Run(build_result.error_or(ExecutionStatus::kSuccess));
   }
 
   // Loads the model file if not loaded yet on the background thread, and batch
