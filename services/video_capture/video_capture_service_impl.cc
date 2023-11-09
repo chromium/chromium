@@ -182,7 +182,6 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
             gpu::SchedulingPriority::kNormal, gpu::kNullSurfaceHandle,
             GURL(std::string("chrome://gpu/VideoCapture")),
             false /* automatic flushes */, false /* support locking */,
-            false /* support grcontext */,
             gpu::SharedMemoryLimits::ForMailboxContext(),
             gpu::ContextCreationAttribs(),
             viz::command_buffer_metrics::ContextType::VIDEO_CAPTURE);

@@ -26,13 +26,13 @@ void OnGpuChannelEstablished(
   gpu::ContextCreationAttribs attributes;
   attributes.bind_generates_resource = false;
   attributes.enable_raster_interface = true;
+  attributes.enable_grcontext = true;
 
   int32_t stream_id = kGpuStreamIdDefault;
   gpu::SchedulingPriority stream_priority = kGpuStreamPriorityUI;
 
   constexpr bool automatic_flushes = false;
   constexpr bool support_locking = false;
-  constexpr bool support_grcontext = true;
 
   auto context_provider =
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
@@ -41,7 +41,7 @@ void OnGpuChannelEstablished(
           GURL(std::string("chrome://gpu/"
                            "BrowserGpuVideoAcceleratorFactories::"
                            "CreateGpuVideoAcceleratorFactories")),
-          automatic_flushes, support_locking, support_grcontext,
+          automatic_flushes, support_locking,
           gpu::SharedMemoryLimits::ForMailboxContext(), attributes,
           viz::command_buffer_metrics::ContextType::UNKNOWN);
   context_provider->BindToCurrentSequence();

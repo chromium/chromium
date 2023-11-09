@@ -666,6 +666,8 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
               .status_values[gpu::GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] ==
           gpu::kGpuFeatureStatusEnabled;
   attributes.enable_gles2_interface = !attributes.enable_oop_rasterization;
+  attributes.enable_grcontext =
+      !attributes.enable_oop_rasterization && web_attributes.support_grcontext;
 
   attributes.gpu_preference = web_attributes.prefer_low_power_gpu
                                   ? gl::GpuPreference::kLowPower
@@ -678,14 +680,12 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
 
   constexpr bool automatic_flushes = true;
   constexpr bool support_locking = false;
-  const bool use_grcontext =
-      !attributes.enable_oop_rasterization && web_attributes.support_grcontext;
 
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
           std::move(gpu_channel_host), kGpuStreamIdDefault,
           kGpuStreamPriorityDefault, gpu::kNullSurfaceHandle,
-          GURL(document_url), automatic_flushes, support_locking, use_grcontext,
+          GURL(document_url), automatic_flushes, support_locking,
           gpu::SharedMemoryLimits(), attributes,
           viz::command_buffer_metrics::ContextType::WEBGL));
 }
@@ -738,7 +738,6 @@ RendererBlinkPlatformImpl::CreateWebGPUGraphicsContext3DProvider(
 
   constexpr bool automatic_flushes = true;
   constexpr bool support_locking = false;
-  constexpr bool support_grcontext = true;
 
   // WebGPU GPUBuffers, which are backed by shared memory transfer buffers, may
   // be accessed as ArrayBuffers from JavaScript. As such, the underlying
@@ -756,9 +755,8 @@ RendererBlinkPlatformImpl::CreateWebGPUGraphicsContext3DProvider(
           std::move(gpu_channel_host), kGpuStreamIdDefault,
           kGpuStreamPriorityDefault, gpu::kNullSurfaceHandle,
           GURL(document_url), automatic_flushes, support_locking,
-          support_grcontext, gpu::SharedMemoryLimits::ForWebGPUContext(),
-          attributes, viz::command_buffer_metrics::ContextType::WEBGPU,
-          buffer_mapper));
+          gpu::SharedMemoryLimits::ForWebGPUContext(), attributes,
+          viz::command_buffer_metrics::ContextType::WEBGPU, buffer_mapper));
 #endif
 }
 

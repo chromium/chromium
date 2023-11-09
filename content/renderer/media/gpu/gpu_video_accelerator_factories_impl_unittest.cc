@@ -142,7 +142,6 @@ class MockContextProviderCommandBuffer
             gpu::kNullSurfaceHandle,
             GURL(),
             false,
-            false,
             true,
             gpu::SharedMemoryLimits(),
             gpu::ContextCreationAttribs(),

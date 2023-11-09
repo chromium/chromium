@@ -31,9 +31,8 @@ GraphicsDelegateWin::GraphicsDelegateWin() {
       gpu_channel_host_, content::kGpuStreamIdDefault,
       content::kGpuStreamPriorityUI, gpu::kNullSurfaceHandle,
       GURL(std::string("chrome://gpu/VrUiWin")), false /* automatic flushes */,
-      false /* support locking */, false /* support grcontext */,
-      gpu::SharedMemoryLimits::ForMailboxContext(), attributes,
-      viz::command_buffer_metrics::ContextType::XR_COMPOSITING);
+      false /* support locking */, gpu::SharedMemoryLimits::ForMailboxContext(),
+      attributes, viz::command_buffer_metrics::ContextType::XR_COMPOSITING);
 
   if (context_provider_->BindToCurrentSequence() ==
       gpu::ContextResult::kSuccess) {

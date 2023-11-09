@@ -809,19 +809,19 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
   attributes.bind_generates_resource = false;
   attributes.lose_context_when_out_of_memory = true;
   attributes.enable_gles2_interface = true;
+  attributes.enable_grcontext = true;
   attributes.enable_raster_interface = true;
   attributes.enable_oop_rasterization = false;
 
   constexpr bool automatic_flushes = false;
   constexpr bool support_locking = false;
-  bool support_grcontext = true;
   // VideoResourceUpdater is the only usage of gles2 interface from this
   // RasterContextProvider. Thus, if we use RasterInterface in
   // VideoResourceUpdater, enabling gles2 interface is no longer needed.
   if (base::FeatureList::IsEnabled(
           media::kRasterInterfaceInVideoResourceUpdater)) {
     attributes.enable_gles2_interface = false;
-    support_grcontext = false;
+    attributes.enable_grcontext = false;
   }
   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager =
       Platform::Current()->GetGpuMemoryBufferManager();
@@ -830,7 +830,7 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
           gpu_channel_host, kGpuStreamIdDefault, kGpuStreamPriorityDefault,
           gpu::kNullSurfaceHandle, GURL(url), automatic_flushes,
-          support_locking, support_grcontext, limits, attributes,
+          support_locking, limits, attributes,
           viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR);
 
 #if BUILDFLAG(IS_ANDROID)

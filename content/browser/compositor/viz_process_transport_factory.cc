@@ -99,8 +99,7 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
   return base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
       std::move(gpu_channel_host), kGpuStreamIdDefault, kGpuStreamPriorityUI,
       gpu::kNullSurfaceHandle, std::move(url), kAutomaticFlushes,
-      supports_locking, /*supports_grcontext=*/false, memory_limits, attributes,
-      type);
+      supports_locking, memory_limits, attributes, type);
 }
 
 bool IsContextLost(viz::RasterContextProvider* context_provider) {

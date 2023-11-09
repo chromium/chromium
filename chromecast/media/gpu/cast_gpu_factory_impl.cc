@@ -285,7 +285,6 @@ void CastGpuFactoryImpl::SetupContext() {
       gpu::SchedulingPriority::kHigh, gpu::kNullSurfaceHandle,
       GURL("chrome://gpu/CastVideoAcceleratorFactory"),
       false /* automatic_flushes */, false /* support_locking */,
-      false /* support_grcontext */,
       gpu::SharedMemoryLimits::ForMailboxContext(), attributes,
       viz::command_buffer_metrics::ContextType::MEDIA);
   DCHECK(context_provider_);

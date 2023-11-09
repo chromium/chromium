@@ -315,8 +315,7 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateOffscreenContext(
       gpu::kNullSurfaceHandle,
       GURL("chrome://gpu/RenderThreadImpl::CreateOffscreenContext/" +
            viz::command_buffer_metrics::ContextTypeToString(type)),
-      automatic_flushes, support_locking, support_grcontext, limits, attributes,
-      type);
+      automatic_flushes, support_locking, limits, attributes, type);
 }
 
 // Hook that allows single-sample metric code from //components/metrics to

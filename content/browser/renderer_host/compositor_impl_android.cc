@@ -115,6 +115,7 @@ gpu::ContextCreationAttribs GetCompositorContextAttributes(
 
   attributes.enable_swap_timestamps_if_supported = true;
   attributes.enable_raster_interface = true;
+  attributes.enable_grcontext = true;
 
   return attributes;
 }
@@ -134,7 +135,6 @@ void CreateContextProviderAfterGpuChannelEstablished(
 
   constexpr bool automatic_flushes = false;
   constexpr bool support_locking = false;
-  constexpr bool support_grcontext = false;
 
   gpu::ContextCreationAttribs attributes;
   attributes.bind_generates_resource = false;
@@ -143,8 +143,7 @@ void CreateContextProviderAfterGpuChannelEstablished(
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
           std::move(gpu_channel_host), stream_id, stream_priority, handle,
           GURL(std::string("chrome://gpu/Compositor::CreateContextProvider")),
-          automatic_flushes, support_locking, support_grcontext,
-          shared_memory_limits, attributes,
+          automatic_flushes, support_locking, shared_memory_limits, attributes,
           viz::command_buffer_metrics::ContextType::UNKNOWN);
   std::move(callback).Run(std::move(context_provider));
 }
@@ -632,7 +631,6 @@ void CompositorImpl::OnGpuChannelEstablished(
 
   constexpr bool support_locking = false;
   constexpr bool automatic_flushes = false;
-  constexpr bool support_grcontext = true;
   display_color_spaces_ = display::Screen::GetScreen()
                               ->GetDisplayNearestWindow(root_window_)
                               .GetColorSpaces();
@@ -643,7 +641,7 @@ void CompositorImpl::OnGpuChannelEstablished(
           gpu::kNullSurfaceHandle,
           GURL(std::string("chrome://gpu/CompositorImpl::") +
                std::string("CompositorContextProvider")),
-          automatic_flushes, support_locking, support_grcontext,
+          automatic_flushes, support_locking,
           GetCompositorContextSharedMemoryLimits(root_window_),
           GetCompositorContextAttributes(
               display_color_spaces_.GetRasterColorSpace(),
