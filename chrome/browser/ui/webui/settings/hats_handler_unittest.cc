@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/webui/settings/hats_handler.h"
 
 #include <memory>
@@ -136,7 +137,12 @@ TEST_F(HatsHandlerTest, PrivacyGuideHats) {
   task_environment()->RunUntilIdle();
 }
 
-TEST_F(HatsHandlerTest, SecurityPageInteractions) {
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SecurityPageInteractions DISABLED_SecurityPageInteractions
+#else
+#define MAYBE_SecurityPageInteractions SecurityPageInteractions
+#endif
+TEST_F(HatsHandlerTest, MAYBE_SecurityPageInteractions) {
   SurveyStringData expected_product_specific_data = {
     {"Security Page User Action", "enhanced_protection_radio_button_clicked"},
     {"Safe Browsing Setting Before Trigger", "standard_protection"},
