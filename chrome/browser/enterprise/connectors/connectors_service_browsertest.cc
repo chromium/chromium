@@ -370,14 +370,11 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
 
 class ConnectorsServiceAnalysisProfileBrowserTest
     : public ConnectorsServiceProfileBrowserTest,
-      public testing::WithParamInterface<std::tuple<AnalysisConnector,
-                                                    ManagementStatus,
-                                                    const char*,
-                                                    bool,
-                                                    bool>> {
+      public testing::WithParamInterface<
+          std::tuple<ManagementStatus, const char*, bool, bool>> {
  public:
   ConnectorsServiceAnalysisProfileBrowserTest()
-      : ConnectorsServiceProfileBrowserTest(std::get<1>(GetParam())) {
+      : ConnectorsServiceProfileBrowserTest(std::get<0>(GetParam())) {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     if (enterprise_connectors_enabled_on_mgs()) {
@@ -392,16 +389,15 @@ class ConnectorsServiceAnalysisProfileBrowserTest
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
-  AnalysisConnector connector() { return std::get<0>(GetParam()); }
-  const char* settings_value() { return std::get<2>(GetParam()); }
+  const char* settings_value() { return std::get<1>(GetParam()); }
 
   // Returns whether the kEnterpriseConnectorsEnabledOnMGS feature should be
   // enabled or not.
   bool enterprise_connectors_enabled_on_mgs() {
-    return std::get<3>(GetParam());
+    return std::get<2>(GetParam());
   }
 
-  bool enable_relaxed_affiliation() { return std::get<4>(GetParam()); }
+  bool enable_relaxed_affiliation() { return std::get<3>(GetParam()); }
 
   bool is_cloud() {
     return strcmp(settings_value(), kNormalCloudAnalysisSettingsPref) == 0;
@@ -543,7 +539,6 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     ConnectorsServiceAnalysisProfileBrowserTest,
     testing::Combine(
-        testing::Values(FILE_ATTACHED, FILE_DOWNLOADED, BULK_DATA_ENTRY, PRINT),
         testing::Values(ManagementStatus::AFFILIATED,
                         ManagementStatus::UNAFFILIATED,
                         ManagementStatus::UNMANAGED),
@@ -554,14 +549,14 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        DeviceReporting) {
-  SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
+  SetPrefs(ConnectorPref(FILE_ATTACHED), ConnectorScopePref(FILE_ATTACHED),
            settings_value(), /*profile_scope*/ false);
   SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
            ConnectorScopePref(ReportingConnector::SECURITY_EVENT),
            settings_value(), /*profile_scope*/ false);
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
-          ->GetAnalysisSettings(GURL(kTestUrl), connector());
+          ->GetAnalysisSettings(GURL(kTestUrl), FILE_ATTACHED);
 
   // Expect no local analysis settings on platforms where it is unsupported.
 #if !BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -602,14 +597,14 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        ProfileReporting) {
-  SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
+  SetPrefs(ConnectorPref(FILE_DOWNLOADED), ConnectorScopePref(FILE_DOWNLOADED),
            settings_value());
   SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
            ConnectorScopePref(ReportingConnector::SECURITY_EVENT),
            kNormalReportingSettingsPref);
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
-          ->GetAnalysisSettings(GURL(kTestUrl), connector());
+          ->GetAnalysisSettings(GURL(kTestUrl), FILE_DOWNLOADED);
 
   // Expect no local analysis settings on platforms where it is unsupported.
 #if !BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -703,11 +698,10 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        NoReporting) {
-  SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
-           settings_value());
+  SetPrefs(ConnectorPref(PRINT), ConnectorScopePref(PRINT), settings_value());
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
-          ->GetAnalysisSettings(GURL(kTestUrl), connector());
+          ->GetAnalysisSettings(GURL(kTestUrl), PRINT);
 
   // Expect no local analysis settings on platforms where it is unsupported.
 #if !BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -809,11 +803,11 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 // is cleaned up.
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        Affiliation) {
-  SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
+  SetPrefs(ConnectorPref(BULK_DATA_ENTRY), ConnectorScopePref(BULK_DATA_ENTRY),
            settings_value());
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
-          ->GetAnalysisSettings(GURL(kTestUrl), connector());
+          ->GetAnalysisSettings(GURL(kTestUrl), BULK_DATA_ENTRY);
 
   if (settings_value() == kNormalLocalAnalysisSettingsPref) {
     // Expect no local analysis settings on platforms where it is unsupported.
