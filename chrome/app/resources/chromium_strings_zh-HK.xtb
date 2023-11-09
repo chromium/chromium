@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
-<translation id="1001716830750249114">前往 Chromium 版本設定頁面</translation>
+<translation id="1001716830750249114">去 Chromium 版本設定頁面</translation>
 <translation id="1026101648481255140">繼續安裝</translation>
 <translation id="1029669172902658969">重新啟動以更新 &amp;Chromium 作業系統</translation>
 <translation id="1040916596585577953">Chromium 建議你審核此擴充程式</translation>
@@ -35,7 +35,7 @@
 您已向網站和應用程式授予的權限，可能會套用到此帳戶。您可在「<ph name="SETTINGS_LINK_BEGIN" />設定<ph name="SETTINGS_LINK_END" />」中管理 Google 帳戶。</translation>
 <translation id="1640672724030957280">正在下載…</translation>
 <translation id="1708666629004767631">更新、更安全的 Chromium 版本現已推出。</translation>
-<translation id="1715127912119967311">為協助改善這些功能，Chromium 會將你和功能的互動資料傳送給 Google。人工審查員可能會讀取、處理這些資料，並加上註解。</translation>
+<translation id="1715127912119967311">為協助改善這些功能，Chromium 會向 Google 傳送你與功能的互動資料。人手審查員可能會讀取、處理這些資料，並加上註解。</translation>
 <translation id="17264556997921157">您可以查看及移除網站用來向您顯示廣告的感興趣主題。Chromium 會根據您最近的瀏覽記錄，推測您感興趣的主題。</translation>
 <translation id="1733725117201708356">Chromium 即將刪除瀏覽資料</translation>
 <translation id="1745121272106313518">Chromium 將會在 <ph name="REMAINING_TIME" />後重新啟動</translation>

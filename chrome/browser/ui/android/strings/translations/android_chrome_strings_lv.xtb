@@ -737,6 +737,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="4864369630010738180">Pierakstīšanās...</translation>
 <translation id="4866368707455379617">Nevar instalēt moduli <ph name="MODULE" /> pārlūkprogrammai Chrome.</translation>
 <translation id="4871568871368204250">Sinhronizācijas izslēgšana</translation>
+<translation id="4874961007154620743">Ja šī funkcija būs izslēgta, jums joprojām tiks rādīti ieteikumi, kas pārlūkā Chrome tiek nodrošināti lokāli.</translation>
 <translation id="4875775213178255010">Satura ieteikumi</translation>
 <translation id="4877678010818027629">Atvērt inkognito režīmā</translation>
 <translation id="4878404682131129617">Neizdevās iestatīt porta pārsūtīšanu, izmantojot starpniekserveri.</translation>
@@ -1556,6 +1557,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Valodas pakotne “<ph name="LANG" />” ir gatava.</translation>
 <translation id="8937772741022875483">Vai noņemt jūsu Chrome darbības no Digitālās labjutības?</translation>
+<translation id="893938492099608175">Ja tas ir atļauts iestatījumos, pārlūks Chrome var arī nosūtīt sīkfailus, jūsu pašreizējo URL un jūsu atrašanās vietas datus.</translation>
 <translation id="8942627711005830162">Atvērt citā logā</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> — šo valodu nevarēja lejupielādēt. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="8955719471735800169">Augšup</translation>

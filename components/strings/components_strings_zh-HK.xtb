@@ -98,7 +98,7 @@
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1178821169867863726">12 x 16 吋</translation>
 <translation id="1181037720776840403">移除</translation>
-<translation id="1181381397492575884">Chrome 會禁止網站使用第三方 Cookie 追蹤瀏覽網站的使用者。前往「<ph name="LINK" />」設定頁面。</translation>
+<translation id="1181381397492575884">Chrome 會禁止網站使用第三方 Cookie 追蹤瀏覽網站的使用者。前往設定即可<ph name="LINK" />。</translation>
 <translation id="1186201132766001848">檢查密碼</translation>
 <translation id="1190491977647722791">紙 (重磅)</translation>
 <translation id="1195073053842921378">此地址將會從此裝置上刪除</translation>
@@ -119,7 +119,7 @@
 <translation id="1225570101506606926">桌球</translation>
 <translation id="1225607422885279949">Google 會為您尋找折扣</translation>
 <translation id="1227224963052638717">不明政策。</translation>
-<translation id="1227677022489889280">請提供要移動的原因 (必填)</translation>
+<translation id="1227677022489889280">請提供移動的原因 (必填)</translation>
 <translation id="1228893227497259893">實體識別碼錯誤</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (自動偵測)</translation>
 <translation id="1232569758102978740">無標題</translation>
@@ -1208,7 +1208,7 @@
 <translation id="3447644283769633681">封鎖所有第三方 Cookie</translation>
 <translation id="3447661539832366887">此裝置的擁有者已停用恐龍遊戲。</translation>
 <translation id="3447884698081792621">顯示憑證 (核發者：<ph name="ISSUER" />)</translation>
-<translation id="3450323514459570273">可以要求控制 MIDI 裝置並重設程式</translation>
+<translation id="3450323514459570273">網站可要求控制 MIDI 裝置及將其重新編程</translation>
 <translation id="3452404311384756672">擷取間隔：</translation>
 <translation id="3453962258458347894">重試次數</translation>
 <translation id="3461266716147554923"><ph name="URL" /> 要求查看複製到剪貼簿的文字和圖片</translation>
@@ -2004,7 +2004,7 @@
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="5051305769747448211">實況喜劇</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{如要使用「咫尺共享」傳送此檔案，請在裝置上騰出空間 (<ph name="DISK_SPACE_SIZE" />)}other{如要使用「咫尺共享」傳送這些檔案，請在裝置上騰出空間 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
-<translation id="505757197798929356">請提供要開啟的原因 (必填)</translation>
+<translation id="505757197798929356">請提供開啟的原因 (必填)</translation>
 <translation id="5060419232449737386">字幕設定</translation>
 <translation id="5060483733937416656">您已選擇透過 Windows Hello 在使用 <ph name="PROVIDER_ORIGIN" /> 的網站上進行驗證。此供應商可能已儲存您的付款方法相關資料，您可以 <ph name="LINK_TEXT" />。</translation>
 <translation id="5061227663725596739">您是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>
@@ -2124,7 +2124,7 @@
 <translation id="5288393065350884210">會計和核數</translation>
 <translation id="5289384342738547352">多份文件處理</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{請在今天內更新}=2{最遲請在明天完成更新}other{請在 # 天內更新}}</translation>
-<translation id="5292714443869769806">前往 <ph name="OPERATING_SYSTEM" /> 設定頁面</translation>
+<translation id="5292714443869769806">前往 <ph name="OPERATING_SYSTEM" /> 設定</translation>
 <translation id="5293919335876685914">雙門房車</translation>
 <translation id="5296589789433599000">烹飪和食譜</translation>
 <translation id="5299298092464848405">解析政策時發生錯誤</translation>
@@ -2434,7 +2434,7 @@
 <translation id="5951495562196540101">無法使用消費者帳戶註冊 (有可用套裝授權)。</translation>
 <translation id="5953516610448771166">此媒體無法使用即時字幕功能。如要取得字幕，請封鎖此網站的 <ph name="CONTENT_SETTINGS" />。</translation>
 <translation id="5955063559762970069">酒店和住宿</translation>
-<translation id="595873925609605681">如果網站功能無法正常運作，請<ph name="BEGIN_LINK" />嘗試暫時允許使用第三方 Cookie<ph name="END_LINK" />。</translation>
+<translation id="595873925609605681">如果網站功能無法運作，請<ph name="BEGIN_LINK" />嘗試暫時允許使用第三方 Cookie<ph name="END_LINK" />。</translation>
 <translation id="5963413905009737549">區段</translation>
 <translation id="5964247741333118902">已嵌入的內容</translation>
 <translation id="5967260682280773804">36 x 48 吋</translation>
@@ -2739,7 +2739,7 @@
 <translation id="6556866813142980365">重做</translation>
 <translation id="6557715786897013164">14 x 17 吋</translation>
 <translation id="6560786330438719938">已安裝或解除安裝的應用程式及其使用頻率</translation>
-<translation id="6567084950885568327">控制 MIDI 裝置並重設程式</translation>
+<translation id="6567084950885568327">MIDI 裝置控制和重新編程</translation>
 <translation id="6568793038316600992">管理付款方法按鈕，啟動之後就可以喺 Chrome 設定度管理付款同信用卡資料</translation>
 <translation id="6569060085658103619">您正在查看擴充程式頁面</translation>
 <translation id="6569366777234823130">劇情電影</translation>
@@ -2908,7 +2908,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="691024665142758461">下載多個檔案</translation>
 <translation id="6915804003454593391">使用者：</translation>
-<translation id="6916193791494646625">請提供要下載的原因 (必填)</translation>
+<translation id="6916193791494646625">請提供下載的原因 (必填)</translation>
 <translation id="6916954549222464607">財務策劃和管理</translation>
 <translation id="6917795328362592458">系統發現您剛才使用的密碼因資料外洩而被洩露。為確保帳戶安全，「密碼管理工具」建議您檢查已儲存的密碼。</translation>
 <translation id="6925267999184670015">North American B+</translation>
@@ -3202,8 +3202,8 @@
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> 將得知你曾瀏覽 <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 吋</translation>
 <translation id="7469935732330206581">表格不安全</translation>
-<translation id="7470854469646445678">請提供要複製的原因 (必填)</translation>
-<translation id="7471007961486718967">請提供要傳輸的原因 (必填)</translation>
+<translation id="7470854469646445678">請提供複製的原因 (必填)</translation>
+<translation id="7471007961486718967">請提供轉移的原因 (必填)</translation>
 <translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="7481312909269577407">向前</translation>
 <translation id="7481603210197454575">Italian 信封</translation>
@@ -3250,7 +3250,7 @@
 <translation id="7550637293666041147">您的裝置使用者名稱和 Chrome 使用者名稱</translation>
 <translation id="7551484245293639699">旅遊保險</translation>
 <translation id="7552846755917812628">請嘗試按照以下提示操作：</translation>
-<translation id="7554242657529665960">來自系統管理員的訊息：「<ph name="ADMIN_MESSAGE" />」</translation>
+<translation id="7554242657529665960">來自管理員的訊息：「<ph name="ADMIN_MESSAGE" />」</translation>
 <translation id="7554475479213504905">仍要重新載入及顯示內容</translation>
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7555777498260651025">合家歡電視節目</translation>
@@ -3708,7 +3708,7 @@
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428634594422941299">知道了</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度管理 Cookie 偏好設定</translation>
-<translation id="8432419784006585012">可以要求使用 MIDI 裝置</translation>
+<translation id="8432419784006585012">網站可要求使用 MIDI 裝置</translation>
 <translation id="8433057134996913067">您會因此登出大多數網站。</translation>
 <translation id="8434014327286137412">將 IBAN 儲存至 Google 帳戶，下次就能更快完成付款程序</translation>
 <translation id="8434840396568290395">寵物</translation>
@@ -3768,7 +3768,7 @@
 <translation id="8543181531796978784">您可以<ph name="BEGIN_ERROR_LINK" />報告偵測問題<ph name="END_ERROR_LINK" />；或如果您瞭解安全性風險，也可以<ph name="BEGIN_LINK" />瀏覽這個不安全的網站<ph name="END_LINK" />。</translation>
 <translation id="8544303911974837265">聚酯纖維</translation>
 <translation id="854548366864113872">高價選項</translation>
-<translation id="8546254312340305428">請提供要上傳的原因 (必填)</translation>
+<translation id="8546254312340305428">請提供上載的原因 (必填)</translation>
 <translation id="8546350655047701518">將記錄匯出成 JSON 檔</translation>
 <translation id="8546667245446052521">紙 (封存用)</translation>
 <translation id="854892890027593466">C6/C5 信封</translation>
