@@ -70,10 +70,12 @@ TEST_F(BookmarksApiUnittest, Update) {
 // Regression test for https://crbug.com/1441071.
 TEST_F(BookmarksApiUnittest, Create) {
   auto create_function = base::MakeRefCounted<BookmarksCreateFunction>();
-  api_test_utils::RunFunction(
+  std::string error = api_test_utils::RunFunctionAndReturnError(
       create_function.get(),
-      base::StringPrintf(R"([{"parent_id": "%s"}])", url_node_id().c_str()),
+      base::StringPrintf(R"([{"parentId": "%s"}])", url_node_id().c_str()),
       profile());
+  ASSERT_EQ("Parameter 'parentId' does not specify a folder.", error);
+
   const bookmarks::BookmarkNode* url_node =
       model()->GetMostRecentlyAddedUserNodeForURL(url());
   ASSERT_TRUE(url_node->children().empty());

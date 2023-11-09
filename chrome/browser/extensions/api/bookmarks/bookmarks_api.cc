@@ -109,7 +109,11 @@ const BookmarkNode* BookmarksFunction::CreateBookmarkNode(
     return nullptr;
   }
   const BookmarkNode* parent = bookmarks::GetBookmarkNodeByID(model, parent_id);
-  if (!CanBeModified(parent, error) || !parent->is_folder()) {
+  if (!CanBeModified(parent, error)) {
+    return nullptr;
+  }
+  if (!parent->is_folder()) {
+    *error = bookmark_api_constants::kInvalidParentError;
     return nullptr;
   }
 
