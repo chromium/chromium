@@ -6,6 +6,7 @@
 #define COMPONENTS_METRICS_TEST_TEST_METRICS_LOG_UPLOADER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "third_party/metrics_proto/reporting_info.pb.h"
 
@@ -34,6 +35,7 @@ class TestMetricsLogUploader
  private:
   // MetricsLogUploader:
   void UploadLog(const std::string& compressed_log_data,
+                 const LogMetadata& log_metadata,
                  const std::string& log_hash,
                  const std::string& log_signature,
                  const ReportingInfo& reporting_info) override;

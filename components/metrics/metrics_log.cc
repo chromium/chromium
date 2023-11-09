@@ -66,8 +66,11 @@ LogMetadata::LogMetadata()
     : samples_count(absl::nullopt), user_id(absl::nullopt) {}
 LogMetadata::LogMetadata(
     const absl::optional<base::HistogramBase::Count> samples_count,
-    const absl::optional<uint64_t> user_id)
-    : samples_count(samples_count), user_id(user_id) {}
+    const absl::optional<uint64_t> user_id,
+    const absl::optional<metrics::UkmLogSourceType> log_source_type)
+    : samples_count(samples_count),
+      user_id(user_id),
+      log_source_type(log_source_type) {}
 LogMetadata::LogMetadata(const LogMetadata& other) = default;
 LogMetadata::~LogMetadata() = default;
 

@@ -23,6 +23,7 @@ void TestMetricsLogUploader::CompleteUpload(int response_code,
 }
 
 void TestMetricsLogUploader::UploadLog(const std::string& compressed_log_data,
+                                       const LogMetadata& log_metadata,
                                        const std::string& log_hash,
                                        const std::string& log_signature,
                                        const ReportingInfo& reporting_info) {

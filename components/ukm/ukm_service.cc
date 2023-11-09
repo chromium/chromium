@@ -89,6 +89,26 @@ int32_t LoadAndIncrementSessionId(PrefService* pref_service) {
   return session_id;
 }
 
+metrics::UkmLogSourceType GetLogSourceTypeFromSources(
+    const google::protobuf::RepeatedPtrField<Source>& sources) {
+  bool contains_appkm = false;
+  bool contains_ukm = false;
+  for (Source source : sources) {
+    if (source.type() == SourceType::APP_ID) {
+      contains_appkm = true;
+    } else {
+      contains_ukm = true;
+    }
+  }
+  if (contains_appkm && contains_ukm) {
+    return metrics::UkmLogSourceType::BOTH_UKM_AND_APPKM;
+  } else if (contains_appkm) {
+    return metrics::UkmLogSourceType::APPKM_ONLY;
+  } else {
+    return metrics::UkmLogSourceType::UKM_ONLY;
+  }
+}
+
 // Remove elements satisfying the predicate by moving them to the end of the
 // list then truncate.
 template <typename Predicate, typename ReadElements, typename WriteElements>
@@ -158,9 +178,13 @@ void PurgeDataFromUnsentLogStore(metrics::UnsentLogStore* ukm_log_store,
         UkmService::SerializeReportProtoToString(&report);
 
     // Replace the compressed log in the store by its filtered version.
+    metrics::LogMetadata log_metadata;
+    log_metadata.log_source_type =
+        GetLogSourceTypeFromSources(report.sources());
+
     const std::string old_compressed_log_data =
         ukm_log_store->ReplaceLogAtIndex(index, reserialized_log_data,
-                                         metrics::LogMetadata());
+                                         log_metadata);
 
     // Reached here only if some Sources satisfied the condition for purging, so
     // reserialized data should now be different.
@@ -542,7 +566,10 @@ void UkmService::BuildAndStoreLog(
 
   std::string serialized_log =
       UkmService::SerializeReportProtoToString(&report);
+
   metrics::LogMetadata log_metadata;
+  log_metadata.log_source_type = GetLogSourceTypeFromSources(report.sources());
+
   reporting_service_.ukm_log_store()->StoreLog(serialized_log, log_metadata,
                                                reason);
 }

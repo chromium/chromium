@@ -31,6 +31,7 @@
 #include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/log_decoder.h"
 #include "components/metrics/metrics_features.h"
+#include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/test/test_metrics_provider.h"
@@ -160,6 +161,37 @@ Report GetPersistedReport(TestingPrefServiceSimple& prefs) {
   return report;
 }
 
+metrics::LogMetadata GetPersistedLogMetadata(TestingPrefServiceSimple& prefs) {
+  EXPECT_GE(GetPersistedLogCount(prefs), 1);
+  metrics::UnsentLogStore result_unsent_log_store(
+      std::make_unique<UnsentLogStoreMetricsImpl>(), &prefs,
+      prefs::kUkmUnsentLogStore, /*metadata_pref_name=*/nullptr,
+      // Set to 3 so logs are not dropped in the test.
+      metrics::UnsentLogStore::UnsentLogStoreLimits{
+          .min_log_count = 3,
+      },
+      /*signing_key=*/std::string(),
+      /*logs_event_manager=*/nullptr);
+
+  result_unsent_log_store.LoadPersistedUnsentLogs();
+  result_unsent_log_store.StageNextLog();
+
+  return result_unsent_log_store.staged_log_metadata();
+}
+
+void AddSourceToReport(Report& report,
+                       int64_t other_id,
+                       SourceIdType id_type,
+                       std::string url) {
+  Source* proto_source = report.add_sources();
+  SourceId source_id = ConvertToSourceId(other_id, id_type);
+  proto_source->set_id(source_id);
+  proto_source->add_urls()->set_url(url);
+  // Add entry for the source.
+  Entry* entry = report.add_entries();
+  entry->set_source_id(source_id);
+}
+
 class ScopedUkmFeatureParams {
  public:
   explicit ScopedUkmFeatureParams(const base::FieldTrialParams& params) {
@@ -230,6 +262,10 @@ class UkmServiceTest : public testing::Test {
   int GetPersistedLogCount() { return ukm::GetPersistedLogCount(prefs_); }
 
   Report GetPersistedReport() { return ukm::GetPersistedReport(prefs_); }
+
+  metrics::LogMetadata GetPersistedLogMetadata() {
+    return ukm::GetPersistedLogMetadata(prefs_);
+  }
 
   static SourceId GetAllowlistedSourceId(int64_t id) {
     return ConvertToSourceId(id, SourceIdType::NAVIGATION_ID);
@@ -609,6 +645,54 @@ TEST_F(UkmServiceTest, PurgeMsbbDataFromUnsentLogStore) {
   EXPECT_EQ(source_id_3, filtered_report.entries(1).source_id());
 }
 
+TEST_F(UkmServiceTest, PurgeAppDataLogMetadataUpdate) {
+  UkmService service(&prefs_, &client_,
+                     std::make_unique<MockDemographicMetricsProvider>());
+  auto* unsent_log_store = service.reporting_service_.ukm_log_store();
+
+  // Initialize a Report to be saved to the log store.
+  Report report;
+  report.set_client_id(1);
+  report.set_session_id(1);
+  report.set_report_id(1);
+
+  // A URL from browser navigation.
+  std::string non_app_url = "https://www.google.ca";
+  // A URL with app:// scheme.
+  std::string app_url = "app://mgndgikekgjfcpckkfioiadnlibdjbkf";
+  // OS Settings is an app on ChromeOS without the app:// scheme.
+  std::string os_settings_url = "chrome://os-settings";
+
+  // Add sources to the Report.
+  AddSourceToReport(report, 1, SourceIdType::NAVIGATION_ID, non_app_url);
+  AddSourceToReport(report, 2, SourceIdType::APP_ID, app_url);
+  AddSourceToReport(report, 3, SourceIdType::APP_ID, os_settings_url);
+  AddSourceToReport(report, 4, SourceIdType::NAVIGATION_ID, app_url);
+
+  // Save the Report to the store.
+  std::string serialized_log;
+  report.SerializeToString(&serialized_log);
+
+  // Make sure that the serialized ukm report can be parsed.
+  ASSERT_TRUE(UkmService::LogCanBeParsed(serialized_log));
+
+  metrics::LogMetadata log_metadata;
+  log_metadata.log_source_type = metrics::UkmLogSourceType::BOTH_UKM_AND_APPKM;
+  unsent_log_store->StoreLog(
+      serialized_log, log_metadata,
+      metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+
+  // Do app data purging.
+  service.PurgeAppsData();
+
+  // Get the Report in the log store and verify log metadata is updated.
+  unsent_log_store->StageNextLog();
+  const metrics::LogMetadata updated_log_metadata =
+      unsent_log_store->staged_log_metadata();
+  EXPECT_EQ(updated_log_metadata.log_source_type,
+            metrics::UkmLogSourceType::UKM_ONLY);
+}
+
 TEST_F(UkmServiceTest, SourceSerialization) {
   UkmService service(&prefs_, &client_,
                      std::make_unique<MockDemographicMetricsProvider>());
@@ -637,6 +721,81 @@ TEST_F(UkmServiceTest, SourceSerialization) {
   EXPECT_EQ(id, proto_source.id());
   EXPECT_EQ(GURL("https://google.com/final").spec(),
             proto_source.urls(1).url());
+}
+
+TEST_F(UkmServiceTest, LogMetadataOnlyAppKMSourceType) {
+  UkmService service(&prefs_, &client_,
+                     std::make_unique<MockDemographicMetricsProvider>());
+  TestRecordingHelper recorder(&service);
+  EXPECT_EQ(GetPersistedLogCount(), 0);
+  service.Initialize();
+  task_runner_->RunUntilIdle();
+  service.UpdateRecording({UkmConsentType::APPS});
+  service.EnableReporting();
+  const GURL kAppURL("app://google.com/foobar");
+
+  SourceId id = GetAppIDSourceId(0);
+  recorder.UpdateSourceURL(id, kAppURL);
+
+  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  EXPECT_EQ(GetPersistedLogCount(), 1);
+
+  metrics::LogMetadata log_metadata = GetPersistedLogMetadata();
+  EXPECT_TRUE(log_metadata.log_source_type.has_value());
+  EXPECT_TRUE(log_metadata.log_source_type.value() ==
+              metrics::UkmLogSourceType::APPKM_ONLY);
+}
+
+TEST_F(UkmServiceTest, LogMetadataOnlyUKMSourceType) {
+  UkmService service(&prefs_, &client_,
+                     std::make_unique<MockDemographicMetricsProvider>());
+  TestRecordingHelper recorder(&service);
+  EXPECT_EQ(GetPersistedLogCount(), 0);
+  service.Initialize();
+  task_runner_->RunUntilIdle();
+  service.UpdateRecording({UkmConsentType::MSBB, UkmConsentType::APPS});
+  service.EnableReporting();
+  const GURL kURL("https://google.com/foobar");
+
+  SourceId id = GetAllowlistedSourceId(0);
+  recorder.UpdateSourceURL(id, kURL);
+
+  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  EXPECT_EQ(GetPersistedLogCount(), 1);
+
+  metrics::LogMetadata log_metadata = GetPersistedLogMetadata();
+  EXPECT_TRUE(log_metadata.log_source_type.has_value());
+  EXPECT_TRUE(log_metadata.log_source_type.value() ==
+              metrics::UkmLogSourceType::UKM_ONLY);
+}
+
+TEST_F(UkmServiceTest, LogMetadataBothSourceType) {
+  UkmService service(&prefs_, &client_,
+                     std::make_unique<MockDemographicMetricsProvider>());
+  TestRecordingHelper recorder(&service);
+  EXPECT_EQ(GetPersistedLogCount(), 0);
+  service.Initialize();
+  task_runner_->RunUntilIdle();
+  service.UpdateRecording({UkmConsentType::MSBB, UkmConsentType::APPS});
+  service.EnableReporting();
+
+  const GURL kAppURL("app://google.com/foobar");
+
+  SourceId app_id = GetAppIDSourceId(0);
+  recorder.UpdateSourceURL(app_id, kAppURL);
+
+  const GURL kURL("https://google.com/foobar");
+
+  SourceId id = GetAllowlistedSourceId(0);
+  recorder.UpdateSourceURL(id, kURL);
+
+  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  EXPECT_EQ(GetPersistedLogCount(), 1);
+
+  metrics::LogMetadata log_metadata = GetPersistedLogMetadata();
+  EXPECT_TRUE(log_metadata.log_source_type.has_value() &&
+              log_metadata.log_source_type.value() ==
+                  metrics::UkmLogSourceType::BOTH_UKM_AND_APPKM);
 }
 
 TEST_F(UkmServiceTest, AddEntryWithEmptyMetrics) {
