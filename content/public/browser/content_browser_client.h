@@ -2452,6 +2452,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   // in RenderFrameHostImpl. Currently in Chrome, this is true for all
   // extension origins.
   virtual bool ShouldUseFirstPartyStorageKey(const url::Origin& origin);
+
+  // Returns whether, when using SubCaptureTargets (cropTo, restrictTo),
+  // the sub-capture target tokens should be associated with the *outermost*
+  // main-frame or embedder. If not, then the direct main-frame will be used.
+  // This even allows changing the WebContents being captured, which is a very
+  // powerful feature, and is likely only appropriate on embedded systems
+  // where the Web application is trusted.
+  virtual bool UseOutermostMainFrameOrEmbedderForSubCaptureTargets() const;
 };
 
 }  // namespace content

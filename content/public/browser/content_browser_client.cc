@@ -1480,4 +1480,9 @@ bool ContentBrowserClient::ShouldUseFirstPartyStorageKey(
   return false;
 }
 
+bool ContentBrowserClient::UseOutermostMainFrameOrEmbedderForSubCaptureTargets()
+    const {
+  return false;
+}
+
 }  // namespace content

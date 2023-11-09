@@ -76,34 +76,22 @@ StartObservingWebContents(int render_process_id,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// Helper for getting the top-level WebContents associated with a given ID.
-// Returns nullptr if one does not exist (e.g. has gone away).
-WebContents* GetMainFrameWebContents(const GlobalRoutingID& global_routing_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (global_routing_id == GlobalRoutingID()) {
-    return nullptr;
-  }
-
-  RenderFrameHost* const rfh = RenderFrameHost::FromID(
-      global_routing_id.child_id, global_routing_id.route_id);
-  return rfh ? WebContents::FromRenderFrameHost(rfh->GetMainFrame()) : nullptr;
-}
-
 // Checks whether a track living in the WebContents indicated by
 // (render_process_id, render_frame_id) may be cropped to the crop-target
 // indicated by |crop_id|.
-bool MayCrop(const GlobalRoutingID& capturing_id,
-             const GlobalRoutingID& captured_id,
+bool MayCrop(GlobalRenderFrameHostId capturing_id,
+             GlobalRenderFrameHostId captured_id,
              const base::Token& crop_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebContents* const capturing_wc = GetMainFrameWebContents(capturing_id);
+  WebContents* const capturing_wc =
+      CropIdWebContentsHelper::GetRelevantWebContents(capturing_id);
   if (!capturing_wc) {
     return false;
   }
 
-  WebContents* const captured_wc = GetMainFrameWebContents(captured_id);
+  WebContents* const captured_wc =
+      CropIdWebContentsHelper::GetRelevantWebContents(captured_id);
   if (capturing_wc != captured_wc) {  // Null or not-same-tab.
     return false;
   }
@@ -142,7 +130,7 @@ MediaStreamDispatcherHost::CropCallback WrapCropCallback(
       },
       std::move(callback), std::move(bad_message_callback));
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 bool AllowedStreamTypeCombination(
     blink::mojom::MediaStreamType audio_stream_type,
@@ -658,9 +646,9 @@ void MediaStreamDispatcherHost::Crop(const base::UnguessableToken& device_id,
                                      CropCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  const GlobalRoutingID captured_id =
-      media_stream_manager_->video_capture_manager()->GetGlobalRoutingID(
-          device_id);
+  const GlobalRenderFrameHostId captured_id =
+      media_stream_manager_->video_capture_manager()
+          ->GetGlobalRenderFrameHostId(device_id);
 
   // Hop to the UI thread to verify that cropping to |crop_id| is permitted
   // from this particular context. Namely, cropping is currently only allowed
@@ -670,9 +658,10 @@ void MediaStreamDispatcherHost::Crop(const base::UnguessableToken& device_id,
   // when SelfOwnedReceiver properly supports this.
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&MayCrop,
-                     GlobalRoutingID(render_process_id_, render_frame_id_),
-                     captured_id, crop_id),
+      base::BindOnce(
+          &MayCrop,
+          GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
+          captured_id, crop_id),
       base::BindOnce(&MediaStreamDispatcherHost::OnCropValidationComplete,
                      weak_factory_.GetWeakPtr(), device_id, crop_id,
                      crop_version,

@@ -879,6 +879,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool ShouldUseFirstPartyStorageKey(const url::Origin& origin) override;
 
+  bool UseOutermostMainFrameOrEmbedderForSubCaptureTargets() const override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

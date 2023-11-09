@@ -26,6 +26,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_device_id.h"
 #include "media/audio/audio_system.h"
 #include "media/base/media_switches.h"
@@ -320,24 +321,20 @@ void MediaDevicesDispatcherHost::ProduceCropId(ProduceCropIdCallback callback) {
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          [](int render_process_id, int render_frame_id) {
-            RenderFrameHostImpl* const rfh =
-                RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
-            if (!rfh || !rfh->IsActive()) {
+          [](GlobalRenderFrameHostId rfh_id) {
+            WebContents* const wc =
+                CropIdWebContentsHelper::GetRelevantWebContents(rfh_id);
+            if (!wc) {
               return std::string();  // Might have been asynchronously closed.
             }
 
-            WebContents* const web_contents =
-                WebContents::FromRenderFrameHost(rfh->GetMainFrame());
-            DCHECK(web_contents);
-
             // No-op if already created.
-            CropIdWebContentsHelper::CreateForWebContents(web_contents);
+            CropIdWebContentsHelper::CreateForWebContents(wc);
 
-            return CropIdWebContentsHelper::FromWebContents(web_contents)
+            return CropIdWebContentsHelper::FromWebContents(wc)
                 ->ProduceCropId();
           },
-          render_process_id_, render_frame_id_),
+          GlobalRenderFrameHostId(render_process_id_, render_frame_id_)),
       std::move(callback));
 }
 #endif

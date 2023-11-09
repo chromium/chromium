@@ -13,6 +13,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -36,6 +37,17 @@ class CONTENT_EXPORT CropIdWebContentsHelper final
   // by producing too many crop-IDs. It's up to the Web-application to not
   // embed such iframes.
   constexpr static size_t kMaxCropIdsPerWebContents = 100;
+
+  // Returns the WebContents associated with a given GlobalRenderFrameHostId.
+  //
+  // This would normally be the WebContents for that very RFH.
+  // But if the relevant setting is set in ContentBrowserClient,
+  // this function returns the WebContents for the *outermost* main frame
+  // or embedder, traversing the parent tree across <iframe> and <webview>
+  // boundaries.
+  //
+  // If no such WebContents is found, nullptr is returned.
+  static WebContents* GetRelevantWebContents(GlobalRenderFrameHostId rfh_id);
 
   explicit CropIdWebContentsHelper(WebContents* web_contents);
   CropIdWebContentsHelper(const CropIdWebContentsHelper&) = delete;
