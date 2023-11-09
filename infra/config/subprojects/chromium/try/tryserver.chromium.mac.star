@@ -15,7 +15,7 @@ try_.defaults.set(
     builder_group = "tryserver.chromium.mac",
     pool = try_.DEFAULT_POOL,
     builderless = True,
-    os = os.MAC_ANY,
+    os = os.MAC_DEFAULT,
     ssd = True,
     compilator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
@@ -57,7 +57,6 @@ try_.builder(
         "ci/mac-arm64-on-arm64-rel",
     ],
     builderless = False,
-    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     gn_args = gn_args.config(
         configs = [
@@ -92,7 +91,6 @@ try_.builder(
         "ci/mac-intel-on-arm64-rel",
     ],
     builderless = False,
-    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     gn_args = gn_args.config(
         configs = [
@@ -109,7 +107,6 @@ try_.builder(
         "ci/mac-arm64-rel",
         "ci/mac-fieldtrial-tester",
     ],
-    os = os.MAC_DEFAULT,
     gn_args = "ci/mac-arm64-rel",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
@@ -171,7 +168,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "mac-rel-compilator",
     branch_selector = branches.selector.MAC_BRANCHES,
-    os = os.MAC_DEFAULT,
     # Allow both x64 and arm64 bots.
     cpu = None,
     main_list_view = "try",
@@ -203,7 +199,6 @@ This builder should be removed after migrating mac-rel from Ninja to Siso. b/277
 
 try_.compilator_builder(
     name = "mac-siso-rel-compilator",
-    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     contact_team_email = "chrome-build-team@google.com",
     main_list_view = "try",
@@ -296,7 +291,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "mac13-arm64-rel-compilator",
     branch_selector = branches.selector.MAC_BRANCHES,
-    os = os.MAC_DEFAULT,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
     main_list_view = "try",
@@ -373,7 +367,6 @@ try_.builder(
         "ci/Mac Builder",
         "ci/Mac12 Tests",
     ],
-    os = os.MAC_DEFAULT,
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
@@ -415,7 +408,6 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
-    os = os.MAC_DEFAULT,
     gn_args = gn_args.config(
         configs = [
             "ci/Mac Builder (dbg)",
@@ -534,7 +526,6 @@ ios_builder(
 ios_builder(
     name = "ios-m1-simulator",
     mirrors = ["ci/ios-m1-simulator"],
-    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
 )
 
@@ -574,7 +565,6 @@ try_.compilator_builder(
     branch_selector = branches.selector.IOS_BRANCHES,
     # Set builderless to False so that branch builders use builderful bots
     builderless = False,
-    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     ssd = None,
     main_list_view = "try",
@@ -609,7 +599,6 @@ This builder should be removed after migrating ios-simulator from Ninja to Siso.
 
 try_.compilator_builder(
     name = "ios-simulator-siso-compilator",
-    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     contact_team_email = "chrome-build-team@google.com",
     main_list_view = "try",
