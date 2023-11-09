@@ -53,6 +53,7 @@ class LayoutImageResourceStyleImage final : public LayoutImageResource {
   gfx::SizeF ImageSize(float multiplier) const override;
   gfx::SizeF ImageSizeWithDefaultSize(float multiplier,
                                       const gfx::SizeF&) const override;
+  IntrinsicSizingInfo GetNaturalDimensions(float multiplier) const override;
   RespectImageOrientationEnum ImageOrientation() const override;
   WrappedImagePtr ImagePtr() const override { return style_image_->Data(); }
 

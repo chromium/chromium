@@ -18,6 +18,10 @@ struct IntrinsicSizingInfo {
     return {gfx::SizeF(), gfx::SizeF(), false, false};
   }
 
+  bool IsNone() const {
+    return !has_width && !has_height && aspect_ratio.IsEmpty();
+  }
+
   // Because they are using float instead of LayoutUnit, we can't use
   // PhysicalSize here.
   gfx::SizeF size;
