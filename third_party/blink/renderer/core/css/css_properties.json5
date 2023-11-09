@@ -5253,7 +5253,6 @@
     },
     {
       name: "overlay",
-      runtime_flag: "CSSTopLayerForTransitions",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "keyword",

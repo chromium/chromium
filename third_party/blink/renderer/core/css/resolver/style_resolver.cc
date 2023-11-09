@@ -452,8 +452,6 @@ static CSSPropertyValueSet* UniversalOverlayUserAgentDeclaration() {
       Persistent<MutableCSSPropertyValueSet>, decl,
       (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
 
-  DCHECK(RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled());
-
   if (decl->IsEmpty()) {
     decl->SetProperty(CSSPropertyID::kOverlay,
                       *CSSIdentifierValue::Create(CSSValueID::kNone),
@@ -1416,10 +1414,8 @@ void StyleResolver::ApplyBaseStyleNoCache(
     // the UA sheets. Note that this is a universal rule in any namespace.
     // Adding this to the html.css would only do the override in the HTML
     // namespace since the sheet has a default namespace.
-    if (RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled()) {
-      cascade.MutableMatchResult().AddMatchedProperties(
-          UniversalOverlayUserAgentDeclaration(), CascadeOrigin::kUserAgent);
-    }
+    cascade.MutableMatchResult().AddMatchedProperties(
+        UniversalOverlayUserAgentDeclaration(), CascadeOrigin::kUserAgent);
 
     // This adds a CSSInitialColorValue to the cascade for the document
     // element. The CSSInitialColorValue will resolve to a color-scheme

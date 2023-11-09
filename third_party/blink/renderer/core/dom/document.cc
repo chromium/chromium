@@ -7915,8 +7915,7 @@ void Document::AddConsoleMessage(ConsoleMessage* message,
 
 void Document::AddToTopLayer(Element* element, const Element* before) {
   if (element->IsInTopLayer()) {
-    if (RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled() &&
-        IsScheduledForTopLayerRemoval(element)) {
+    if (IsScheduledForTopLayerRemoval(element)) {
       // Since the html spec currently says close() should remove the dialog
       // element from the top layer immediately, we need to remove any
       // transitioning elements out of the top layer in order to keep the
@@ -7953,10 +7952,6 @@ void Document::AddToTopLayer(Element* element, const Element* before) {
 
 void Document::ScheduleForTopLayerRemoval(Element* element,
                                           TopLayerReason reason) {
-  if (!RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled()) {
-    RemoveFromTopLayerImmediately(element);
-    return;
-  }
   if (!element->IsInTopLayer()) {
     return;
   }
@@ -7982,7 +7977,6 @@ void Document::RemoveFinishedTopLayerElements() {
   if (top_layer_elements_pending_removal_.empty()) {
     return;
   }
-  DCHECK(RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled());
   HeapVector<Member<Element>> to_remove;
   for (const auto& pending_removal : top_layer_elements_pending_removal_) {
     Element* element = pending_removal->element;
@@ -8003,12 +7997,10 @@ void Document::RemoveFromTopLayerImmediately(Element* element) {
   wtf_size_t position = top_layer_elements_.Find(element);
   DCHECK_NE(position, kNotFound);
   top_layer_elements_.EraseAt(position);
-  if (RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled()) {
-    for (unsigned i = 0; i < top_layer_elements_pending_removal_.size(); i++) {
-      if (top_layer_elements_pending_removal_[i]->element == element) {
-        top_layer_elements_pending_removal_.EraseAt(i);
-        break;
-      }
+  for (unsigned i = 0; i < top_layer_elements_pending_removal_.size(); i++) {
+    if (top_layer_elements_pending_removal_[i]->element == element) {
+      top_layer_elements_pending_removal_.EraseAt(i);
+      break;
     }
   }
   element->SetIsInTopLayer(false);

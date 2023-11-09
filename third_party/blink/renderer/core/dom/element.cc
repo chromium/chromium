@@ -7924,14 +7924,6 @@ void Element::SetIsInTopLayer(bool in_top_layer) {
       // would not change, but the layout object order may have.
       SetForceReattachLayoutTree();
     }
-
-    if (!RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled()) {
-      // Needs a style recalc to update the overlay property in
-      // StyleAdjuster.
-      SetNeedsStyleRecalc(
-          kLocalStyleChange,
-          StyleChangeReasonForTracing::Create(style_change_reason::kTopLayer));
-    }
   }
 }
 

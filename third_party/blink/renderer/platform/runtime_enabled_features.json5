@@ -1161,17 +1161,6 @@
       status: "stable",
     },
     {
-      // Support for transitioning top layer elements out of the top layer by
-      // allowing the new CSS overlay property to keep the element in the top
-      // layer with transition-name: overlay. Also, the HTML implementation is
-      // deferring removal of top layer elements from the top layer until the
-      // overlay property computes to 'none'.
-      //
-      // See: https://github.com/w3c/csswg-drafts/issues/8189
-      name: "CSSTopLayerForTransitions",
-      status: "stable",
-    },
-    {
       // Support for the 'border-box', 'content-box' and 'stroke-box' keywords
       // for the 'transform-box' property.
       name: "CSSTransformBoxAdditionalKeywords",

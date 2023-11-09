@@ -444,7 +444,6 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
                 used_property));
         break;
       case CSSPropertyID::kOverlay:
-        DCHECK(RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled());
         applicable_types->push_back(
             std::make_unique<CSSOverlayInterpolationType>(used_property));
         break;

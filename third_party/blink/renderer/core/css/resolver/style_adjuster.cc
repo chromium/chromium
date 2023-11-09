@@ -832,12 +832,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       AdjustStyleForSvgElement(*svg_element, builder);
     }
 
-    if (!RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled()) {
-      if (element && element->IsInTopLayer()) {
-        builder.SetOverlay(EOverlay::kAuto);
-      }
-    }
-
     bool is_document_element =
         element && element->GetDocument().documentElement() == element;
     // Per the spec, position 'static' and 'relative' in the top layer compute
