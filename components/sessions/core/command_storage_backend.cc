@@ -9,6 +9,8 @@
 #include <limits>
 #include <utility>
 
+#include "base/feature_list.h"
+#include "base/features.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -45,6 +47,13 @@ constexpr int32_t kFileSignature = 0x53534E53;
 
 // Length (in bytes) of the nonce (used when encrypting).
 constexpr int kNonceLength = 12;
+
+// Kill switch for the change to stop calling `File::Flush()` when appending
+// commands to a file. This can be removed if the change rolls out without
+// causing issues.
+BASE_FEATURE(kFlushAfterAppending,
+             "SessionStorageFlushAfterAppendingCommands",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The file header is the first bytes written to the file,
 // and is used to identify the file as one written by us.
@@ -653,7 +662,9 @@ bool CommandStorageBackend::AppendCommandsToFile(
     }
     commands_written_++;
   }
-  file->Flush();
+  if (base::FeatureList::IsEnabled(kFlushAfterAppending)) {
+    file->Flush();
+  }
   return true;
 }
 
