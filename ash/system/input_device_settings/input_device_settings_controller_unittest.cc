@@ -1224,11 +1224,16 @@ TEST_F(InputDeviceSettingsControllerTest, RestoreDefaultKeyboardRemappings) {
 TEST_F(InputDeviceSettingsControllerTest, MouseButtonPressed) {
   ui::DeviceDataManagerTestApi().SetMouseDevices({kSampleMouseUsb});
 
+  base::HistogramTester histogram_tester;
   controller_->OnMouseButtonPressed(kSampleMouseUsb.id,
                                     *mojom::Button::NewCustomizableButton(
                                         mojom::CustomizableButton::kMiddle));
   EXPECT_EQ(1u, observer_->num_mouse_settings_updated());
   EXPECT_EQ(1u, observer_->num_mouse_buttons_pressed());
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Mouse.ButtonRemapping.Registered."
+      "CustomizableButton",
+      /*expected_count=*/1u);
 
   controller_->OnMouseButtonPressed(
       kSampleMouseUsb.id,
@@ -1236,11 +1241,19 @@ TEST_F(InputDeviceSettingsControllerTest, MouseButtonPressed) {
   EXPECT_EQ(2u, observer_->num_mouse_settings_updated());
   EXPECT_EQ(2u, observer_->num_mouse_buttons_pressed());
 
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Mouse.ButtonRemapping.Registered."
+      "CustomizableButton",
+      /*expected_count=*/2u);
   controller_->OnMouseButtonPressed(
       kSampleMouseUsb.id,
       *mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kExtra));
   EXPECT_EQ(3u, observer_->num_mouse_settings_updated());
   EXPECT_EQ(3u, observer_->num_mouse_buttons_pressed());
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Mouse.ButtonRemapping.Registered."
+      "CustomizableButton",
+      /*expected_count=*/3u);
 
   auto* settings = controller_->GetMouseSettings(kSampleMouseUsb.id);
   ASSERT_TRUE(settings);
@@ -1262,11 +1275,23 @@ TEST_F(InputDeviceSettingsControllerTest, MouseButtonPressed) {
       *settings->button_remappings[2]->button);
   EXPECT_EQ("Other Button 2", settings->button_remappings[2]->name);
   EXPECT_EQ(nullptr, settings->button_remappings[2]->remapping_action.get());
+
+  // Press a same button again, the button register metrics should not emit.
+  controller_->OnMouseButtonPressed(kSampleMouseUsb.id,
+                                    *mojom::Button::NewCustomizableButton(
+                                        mojom::CustomizableButton::kMiddle));
+  EXPECT_EQ(3u, observer_->num_mouse_settings_updated());
+  EXPECT_EQ(4u, observer_->num_mouse_buttons_pressed());
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Mouse.ButtonRemapping.Registered."
+      "CustomizableButton",
+      /*expected_count=*/3u);
 }
 
 TEST_F(InputDeviceSettingsControllerTest, GraphicsTabletButtonPressed) {
   ui::DeviceDataManagerTestApi().SetGraphicsTabletDevices(
       {kSampleGraphicsTablet});
+  base::HistogramTester histogram_tester;
 
   mojom::ButtonPtr pen_button =
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward);
@@ -1278,6 +1303,14 @@ TEST_F(InputDeviceSettingsControllerTest, GraphicsTabletButtonPressed) {
   EXPECT_EQ(2u, observer_->num_graphics_tablets_settings_updated());
   EXPECT_EQ(1u, observer_->num_tablet_buttons_pressed());
   EXPECT_EQ(1u, observer_->num_pen_buttons_pressed());
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping.Registered."
+      "Vkey",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping.Registered."
+      "CustomizableButton",
+      /*expected_count=*/1u);
 
   auto* settings =
       controller_->GetGraphicsTabletSettings(kSampleGraphicsTablet.id);

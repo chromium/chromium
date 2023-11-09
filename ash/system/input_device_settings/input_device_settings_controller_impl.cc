@@ -61,6 +61,9 @@ namespace ash {
 namespace {
 
 const int kMaxButtonNameLength = 32;
+constexpr char kGraphicsTabletDeviceType[] = "GraphicsTablet";
+constexpr char kGraphicsTabletPenDeviceType[] = "GraphicsTabletPen";
+constexpr char kMouseDeviceType[] = "Mouse";
 
 mojom::MetaKey GetMetaKeyForKeyboard(const ui::KeyboardDevice& keyboard) {
   const auto device_type =
@@ -1824,6 +1827,7 @@ void InputDeviceSettingsControllerImpl::OnMouseButtonPressed(
   mouse_pref_handler_->UpdateMouseSettings(
       active_pref_service_, policy_handler_->mouse_policies(), mouse);
   DispatchCustomizableMouseButtonPressed(mouse, button);
+  metrics_manager_->RecordNewButtonRegisteredMetrics(button, kMouseDeviceType);
   DispatchMouseSettingsChanged(mouse_ptr->id);
 
   UpdateDuplicateDeviceSettings(
@@ -1869,9 +1873,13 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletButtonPressed(
   if (IsGraphicsTabletPenButton(button)) {
     AddButtonToButtonRemappingList(button, pen_button_remappings);
     DispatchCustomizablePenButtonPressed(graphics_tablet, button);
+    metrics_manager_->RecordNewButtonRegisteredMetrics(
+        button, kGraphicsTabletPenDeviceType);
   } else {
     AddButtonToButtonRemappingList(button, tablet_button_remappings);
     DispatchCustomizableTabletButtonPressed(graphics_tablet, button);
+    metrics_manager_->RecordNewButtonRegisteredMetrics(
+        button, kGraphicsTabletDeviceType);
   }
   // TODO(dpad): Update graphics tablet prefs.
   DispatchGraphicsTabletSettingsChanged(graphics_tablet_ptr->id);

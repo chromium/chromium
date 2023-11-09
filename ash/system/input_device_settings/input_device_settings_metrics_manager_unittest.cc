@@ -7,6 +7,7 @@
 #include "ash/accelerators/accelerator_encoding.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerator_actions.h"
+#include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
@@ -1139,6 +1140,35 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Settings.Device.Keyboard.External.Modifiers.NumberOfKeysReset",
       /*sample=*/3u, /*expected_bucket_count=*/1u);
+}
+
+TEST_F(InputDeviceSettingsMetricsManagerTest,
+       RecordNewButtonRegisteredMetrics) {
+  const auto mouse_customizable_button =
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle);
+  base::HistogramTester histogram_tester;
+
+  manager_->RecordNewButtonRegisteredMetrics(*mouse_customizable_button,
+                                             "Mouse");
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Mouse.ButtonRemapping.Registered."
+      "CustomizableButton",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Mouse.ButtonRemapping.Registered."
+      "CustomizableButton",
+      mojom::CustomizableButton::kMiddle, 1);
+
+  const auto vkey_button = mojom::Button::NewVkey(ui::VKEY_B);
+  manager_->RecordNewButtonRegisteredMetrics(*vkey_button, "GraphicsTabletPen");
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping.Registered."
+      "Vkey",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping.Registered."
+      "Vkey",
+      ui::VKEY_B, 1);
 }
 
 class SettingsUpdatedTimePeriodMetricsTest

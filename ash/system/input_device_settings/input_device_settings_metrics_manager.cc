@@ -993,4 +993,20 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardMouseComboDeviceMetric(
   }
 }
 
+void InputDeviceSettingsMetricsManager::RecordNewButtonRegisteredMetrics(
+    const mojom::Button& button,
+    const char* peripheral_kind) {
+  const std::string metric_name_prefix =
+      base::StrCat({"ChromeOS.Settings.Device.", peripheral_kind,
+                    ".ButtonRemapping.Registered."});
+  if (button.is_customizable_button()) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({metric_name_prefix, "CustomizableButton"}),
+        button.get_customizable_button());
+  } else if (button.is_vkey()) {
+    base::UmaHistogramSparse(base::StrCat({metric_name_prefix, "Vkey"}),
+                             button.get_vkey());
+  }
+}
+
 }  // namespace ash

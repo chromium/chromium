@@ -53,6 +53,8 @@ class ASH_EXPORT InputDeviceSettingsMetricsManager {
       const mojom::GraphicsTabletSettings& old_settings);
   void RecordKeyboardMouseComboDeviceMetric(const mojom::Keyboard& keyboard,
                                             const mojom::Mouse& mouse);
+  void RecordNewButtonRegisteredMetrics(const mojom::Button& button,
+                                        const char* peripheral_kind);
 
  private:
   base::flat_map<AccountId, base::flat_set<std::string>> recorded_keyboards_;
