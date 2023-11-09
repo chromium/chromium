@@ -575,7 +575,7 @@ class BookmarkManagerMediator
 
         if (mBookmarkModel.isBookmarkModelLoaded()) {
             BookmarkUiState searchState = null;
-            if (!mStateStack.isEmpty() && mStateStack.peek().mUiMode == BookmarkUiMode.SEARCHING) {
+            if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
                 searchState = mStateStack.pop();
             }
 
@@ -768,8 +768,7 @@ class BookmarkManagerMediator
 
     @Override
     public @BookmarkUiMode int getCurrentUiMode() {
-        if (mStateStack.isEmpty()) return BookmarkUiMode.LOADING;
-        return mStateStack.peek().mUiMode;
+        return mStateStack.isEmpty() ? BookmarkUiMode.LOADING : mStateStack.peek().mUiMode;
     }
 
     @Override
@@ -826,10 +825,6 @@ class BookmarkManagerMediator
 
     // Private methods.
 
-    private @Nullable BookmarkId getCurrentFolderId() {
-        return mStateStack.isEmpty() ? null : mStateStack.peek().mFolder;
-    }
-
     /**
      * Puts all UI elements to loading state. This state might be overridden synchronously by {@link
      * #updateForUrl(String)}, if the bookmark model is already loaded.
@@ -859,11 +854,13 @@ class BookmarkManagerMediator
                             mBookmarkModel.getDefaultFolderViewLocation(), mBookmarkModel);
         }
 
-        if (!mStateStack.isEmpty() && mStateStack.peek().equals(state)) return;
+        @BookmarkUiMode int currentUiMode = getCurrentUiMode();
+        @Nullable BookmarkUiState currentState = getCurrentUiState();
+        if (Objects.equals(currentState, state)) return;
 
         // The loading state is not persisted in history stack and once we have a valid state it
         // shall be removed.
-        if (!mStateStack.isEmpty() && mStateStack.peek().mUiMode == BookmarkUiMode.LOADING) {
+        if (!mStateStack.isEmpty() && currentUiMode == BookmarkUiMode.LOADING) {
             mStateStack.pop();
         }
 
@@ -875,21 +872,21 @@ class BookmarkManagerMediator
         boolean preserveFolderBookmarksOnEmptySearch = false;
         // Don't queue multiple consecutive search states. Instead replace the previous with the new
         // one.
-        if (getCurrentUiMode() == BookmarkUiMode.SEARCHING
+        if (currentUiMode == BookmarkUiMode.SEARCHING
                 && state.mUiMode == BookmarkUiMode.SEARCHING) {
             mStateStack.pop();
-        } else if (getCurrentUiMode() == BookmarkUiMode.FOLDER
+        } else if (currentUiMode == BookmarkUiMode.FOLDER
                 && !BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             preserveFolderBookmarksOnEmptySearch = true;
         } else if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
-                && getCurrentUiMode() != BookmarkUiMode.SEARCHING
+                && currentUiMode != BookmarkUiMode.SEARCHING
                 && state.mUiMode == BookmarkUiMode.SEARCHING) {
             // The initial state change to search should clear selection.
             mSelectionDelegate.clearSelection();
         }
 
         // Search states should only be the top most state. Back button should not restore them.
-        if (getCurrentUiMode() == BookmarkUiMode.SEARCHING
+        if (currentUiMode == BookmarkUiMode.SEARCHING
                 && state.mUiMode == BookmarkUiMode.FOLDER
                 && BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             mStateStack.pop();
@@ -1318,14 +1315,10 @@ class BookmarkManagerMediator
 
         propertyModel.set(
                 ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
-                (v) -> {
-                    bookmarkRowClicked(bookmarkId);
-                });
+                (v) -> bookmarkRowClicked(bookmarkId));
         propertyModel.set(
                 ImprovedBookmarkRowProperties.ROW_LONG_CLICK_LISTENER,
-                (v) -> {
-                    return bookmarkRowLongClicked(bookmarkId);
-                });
+                (v) -> bookmarkRowLongClicked(bookmarkId));
 
         return new ListItem(bookmarkListEntry.getViewType(), propertyModel);
     }
@@ -1592,6 +1585,10 @@ class BookmarkManagerMediator
 
     private @Nullable BookmarkUiState getCurrentUiState() {
         return mStateStack.isEmpty() ? null : mStateStack.peek();
+    }
+
+    private @Nullable BookmarkId getCurrentFolderId() {
+        return mStateStack.isEmpty() ? null : mStateStack.peek().mFolder;
     }
 
     @VisibleForTesting
