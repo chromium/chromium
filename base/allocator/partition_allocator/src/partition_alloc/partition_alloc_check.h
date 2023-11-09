@@ -160,6 +160,6 @@ struct PA_DEBUGKV_ALIGN DebugKv {
   static_assert(sizeof name <=                                            \
                 ::partition_alloc::internal::kDebugKeyMaxLength + 1);     \
   ::partition_alloc::internal::DebugKv PA_DEBUG_UNIQUE_NAME{name, value}; \
-  ::partition_alloc::internal::base::debug::Alias(&PA_DEBUG_UNIQUE_NAME);
+  ::partition_alloc::internal::base::debug::Alias(&PA_DEBUG_UNIQUE_NAME)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_CHECK_H_
