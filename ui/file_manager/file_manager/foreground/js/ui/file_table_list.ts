@@ -55,6 +55,10 @@ export class FileTableList extends TableList {
     self.onMergeItems_ = null;
   }
 
+  override get table(): FileTable {
+    return super.table as FileTable;
+  }
+
   override get dataModel(): FileListModel {
     return super.dataModel as FileListModel;
   }
@@ -126,16 +130,14 @@ export class FileTableList extends TableList {
   }
 
   get a11y(): A11yAnnounce {
-    // TODO: Remove the type case once FileTable is converted to TS.
-    return (this.table as unknown as FileTable).a11y!;
+    return this.table.a11y!;
   }
 
   /**
    * @param index Index of the list item.
    */
   getItemLabel(index: number): string {
-    // TODO: Remove the type case once FileTable is converted to TS.
-    return (this.table as unknown as FileTable).getItemLabel(index);
+    return this.table.getItemLabel(index);
   }
 
   /**

@@ -8,6 +8,27 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 export type SelectionChangeEvent =
     Event&{changes: Array<{index: number, selected: boolean}>};
+
+interface ListSelectionModelEventMap {
+  'change': SelectionChangeEvent;
+}
+
+export interface ListSelectionModel {
+  addEventListener<K extends keyof ListSelectionModelEventMap>(
+      type: K, listener: (e: ListSelectionModelEventMap[K]) => void,
+      options?: boolean|AddEventListenerOptions|undefined): void;
+  addEventListener(
+      type: string, callback: EventListenerOrEventListenerObject|null,
+      options?: AddEventListenerOptions|boolean): void;
+  removeEventListener<K extends keyof ListSelectionModelEventMap>(
+      type: K, listener: (ev: ListSelectionModelEventMap[K]) => any,
+      options?: boolean|EventListenerOptions): void;
+  removeEventListener(
+      type: string, listener: EventListenerOrEventListenerObject|null,
+      options?: boolean|EventListenerOptions): void;
+}
+
+
 /**
  * Creates a new selection model that is to be used with lists.
  *

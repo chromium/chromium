@@ -269,8 +269,7 @@ export function testSelectAll() {
 
   let changes: SelectionChangeEvent['changes']|null = null;
   sm.addEventListener('change', function(e) {
-    const event = e as SelectionChangeEvent;
-    changes = event.changes;
+    changes = e.changes;
   });
 
   sm.selectAll();
@@ -289,8 +288,7 @@ export function testSelectAllOnEmptyList() {
 
   let changes: SelectionChangeEvent['changes']|null = null;
   sm.addEventListener('change', function(e) {
-    const event = e as SelectionChangeEvent;
-    changes = event.changes;
+    changes = e.changes;
   });
 
   sm.selectAll();
