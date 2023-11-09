@@ -16,13 +16,13 @@ namespace on_device_model {
 
 // static
 std::unique_ptr<OnDeviceModel> OnDeviceModelService::CreateModel(
-    ModelAssets assets) {
+    mojom::LoadModelParamsPtr params) {
   if (!GetChromeMLInstance()) {
     return nullptr;
   }
 
   auto executor = ml::OnDeviceModelExecutor::Create(*GetChromeMLInstance(),
-                                                    std::move(assets));
+                                                    std::move(params->assets));
   if (!executor) {
     return nullptr;
   }

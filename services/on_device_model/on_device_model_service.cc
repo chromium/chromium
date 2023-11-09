@@ -19,8 +19,9 @@ class SessionWrapper : public mojom::Session {
   SessionWrapper(const SessionWrapper&) = delete;
   SessionWrapper& operator=(const SessionWrapper&) = delete;
 
-  void AddContext(mojom::InputOptionsPtr input) override {
-    session_->AddContext(std::move(input));
+  void AddContext(mojom::InputOptionsPtr input,
+                  mojo::PendingRemote<mojom::ContextClient> client) override {
+    session_->AddContext(std::move(input), std::move(client));
   }
 
   void Execute(
@@ -68,10 +69,10 @@ OnDeviceModelService::OnDeviceModelService(
 OnDeviceModelService::~OnDeviceModelService() = default;
 
 void OnDeviceModelService::LoadModel(
-    ModelAssets assets,
+    mojom::LoadModelParamsPtr params,
     mojo::PendingReceiver<mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
-  auto model_impl = CreateModel(std::move(assets));
+  auto model_impl = CreateModel(std::move(params));
   if (!model_impl) {
     std::move(callback).Run("Failed to create model.");
     return;

@@ -21,14 +21,17 @@ void OnDeviceModelServiceController::Execute(
         streaming_responder) {
   if (model_remote_) {
     model_remote_->StartSession(session_remote_.BindNewPipeAndPassReceiver());
-    session_remote_->Execute(on_device_model::mojom::InputOptions::New(
-                                 std::string(input), std::nullopt),
-                             std::move(streaming_responder));
+    session_remote_->Execute(
+        on_device_model::mojom::InputOptions::New(std::string(input),
+                                                  std::nullopt, std::nullopt),
+        std::move(streaming_responder));
     return;
   }
   LaunchService();
+  // TODO(b/302402959): Choose max_tokens based on device.
   service_remote_->LoadModel(
-      on_device_model::LoadModelAssets(model_path_),
+      on_device_model::mojom::LoadModelParams::New(
+          on_device_model::LoadModelAssets(model_path_), 4096),
       model_remote_.BindNewPipeAndPassReceiver(),
       base::BindOnce(&OnDeviceModelServiceController::OnLoadModelResult,
                      weak_ptr_factory_.GetWeakPtr()));

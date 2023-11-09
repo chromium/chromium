@@ -20,6 +20,22 @@ class SessionImpl : public OnDeviceModel::Session {
   void AddContext(mojom::InputOptionsPtr input) override {
     context_.push_back(input->text);
   }
+  void AddContext(mojom::InputOptionsPtr input,
+                  mojo::PendingRemote<mojom::ContextClient> client) override {
+    std::string text = input->text;
+    if (input->token_offset) {
+      text.erase(text.begin(), text.begin() + *input->token_offset);
+    }
+    if (input->max_tokens &&
+        *input->max_tokens < static_cast<int32_t>(text.size())) {
+      text.resize(*input->max_tokens);
+    }
+    context_.push_back(text);
+    if (client) {
+      mojo::Remote<mojom::ContextClient> remote(std::move(client));
+      remote->OnComplete(text.size());
+    }
+  }
 
   void Execute(
       mojom::InputOptionsPtr input,
@@ -53,7 +69,7 @@ class OnDeviceModelImpl : public OnDeviceModel {
 
 // static
 std::unique_ptr<OnDeviceModel> OnDeviceModelService::CreateModel(
-    ModelAssets assets) {
+    mojom::LoadModelParamsPtr params) {
   return std::make_unique<OnDeviceModelImpl>();
 }
 

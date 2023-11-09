@@ -164,7 +164,7 @@ class OnDeviceInternalsAppElement extends PolymerElement {
     if (this.session_ === null) {
       return;
     }
-    this.session_.addContext({text: this.contextText_});
+    this.session_.addContext({text: this.contextText_}, null);
     this.contextLength_ += this.contextText_.split(/(\s+)/).length;
     this.contextText_ = '';
   }

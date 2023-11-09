@@ -31,14 +31,15 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
   OnDeviceModelService& operator=(const OnDeviceModelService&) = delete;
 
   // mojom::OnDeviceModelService:
-  void LoadModel(ModelAssets assets,
+  void LoadModel(mojom::LoadModelParamsPtr params,
                  mojo::PendingReceiver<mojom::OnDeviceModel> model,
                  LoadModelCallback callback) override;
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback) override;
 
  private:
-  static std::unique_ptr<OnDeviceModel> CreateModel(ModelAssets assets);
+  static std::unique_ptr<OnDeviceModel> CreateModel(
+      mojom::LoadModelParamsPtr params);
 
   mojo::Receiver<mojom::OnDeviceModelService> receiver_;
   mojo::UniqueReceiverSet<mojom::OnDeviceModel> model_receivers_;

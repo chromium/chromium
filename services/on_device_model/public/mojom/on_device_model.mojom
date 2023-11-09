@@ -8,7 +8,8 @@ import "mojo/public/mojom/base/file.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
-// Streams a response from a call to execute a model.
+// Streams a response from a call to execute a model. Close this pipe to cancel
+// the call to |Execute()|.
 interface StreamingResponder {
   // This is called N times each time a new chunk of text is available.
   OnResponse(string text);
@@ -16,6 +17,14 @@ interface StreamingResponder {
   // This is called once when all text for the query has been returned.
   // OnResponse() will not be called after OnComplete() has been called.
   OnComplete();
+};
+
+// Notifies the caller when the model is done processing context. Close this
+// pipe to cancel the call to |AddContext()|.
+interface ContextClient {
+  // Called when the context has finished processing with the number of tokens
+  // processed.
+  OnComplete(uint32 tokens_processed);
 };
 
 // Options to control how the model handles input.
@@ -26,6 +35,10 @@ struct InputOptions {
   // The maximum number of tokens that should be processed. If not set, will
   // process all tokens from this input.
   int32? max_tokens;
+
+  // After text is tokenized, the offset into that vector to start processing.
+  // If not set, will start at the first token.
+  uint32? token_offset;
 };
 
 // A session for a model that allows adding context and then executing an input
@@ -33,7 +46,7 @@ struct InputOptions {
 interface Session {
   // Adds context to this session. Any context added here will build off of
   // previous calls to |AddContext()|.
-  AddContext(InputOptions input);
+  AddContext(InputOptions input, pending_remote<ContextClient>? client);
 
   // Executes model on the given input. The input will be added on top of the
   // context provided by |AddContext()|. The response will be streamed to
@@ -71,6 +84,16 @@ enum PerformanceClass {
   kVeryHigh,
 };
 
+// Params to describe the model to load.
+struct LoadModelParams {
+  // Assets for the model.
+  ModelAssets assets;
+
+  // The maximum number of input+output tokens the model can handle. This is
+  // needed when initializing the model.
+  uint32 max_tokens;
+};
+
 // A service which allows loading trusted models which are stored on-device and
 // which may process untrustworthy data.
 [ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
@@ -78,7 +101,7 @@ enum PerformanceClass {
 interface OnDeviceModelService {
   // Initializes a new model instance given `assets`. If an error is returned,
   // the model pipe will be reset.
-  LoadModel(ModelAssets assets, pending_receiver<OnDeviceModel> model) =>
+  LoadModel(LoadModelParams params, pending_receiver<OnDeviceModel> model) =>
       (string? error);
 
   // Returns the performance class based on benchmarks run on the device.

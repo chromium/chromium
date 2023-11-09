@@ -22,7 +22,9 @@ class FakeOnDeviceModel : public on_device_model::mojom::OnDeviceModel,
   }
 
   // on_device_model::mojom::Session:
-  void AddContext(on_device_model::mojom::InputOptionsPtr input) override {}
+  void AddContext(on_device_model::mojom::InputOptionsPtr input,
+                  mojo::PendingRemote<on_device_model::mojom::ContextClient>
+                      client) override {}
 
   void Execute(on_device_model::mojom::InputOptionsPtr input,
                mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
@@ -43,7 +45,7 @@ class FakeOnDeviceModelService
  private:
   // on_device_model::mojom::OnDeviceModelService:
   void LoadModel(
-      on_device_model::ModelAssets assets,
+      on_device_model::mojom::LoadModelParamsPtr params,
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
       LoadModelCallback callback) override {
     auto test_model = std::make_unique<FakeOnDeviceModel>();
