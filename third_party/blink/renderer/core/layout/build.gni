@@ -500,6 +500,8 @@ blink_core_sources_layout = [
   "overflow_model.h",
   "pointer_events_hit_rules.cc",
   "pointer_events_hit_rules.h",
+  "ruby_container.cc",
+  "ruby_container.h",
   "scroll_anchor.cc",
   "scroll_anchor.h",
   "selection_state.cc",

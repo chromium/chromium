@@ -36,6 +36,7 @@ class CORE_EXPORT LayoutRubyColumn final : public LayoutNGBlockFlow {
   LayoutRubyBase* RubyBase() const;
   // Creates the base if it doesn't already exist
   LayoutRubyBase& EnsureRubyBase();
+  void RemoveAllChildren();
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
   void AddChild(LayoutObject* child,
@@ -46,8 +47,7 @@ class CORE_EXPORT LayoutRubyColumn final : public LayoutNGBlockFlow {
   void UpdateAnonymousChildStyle(const LayoutObject* child,
                                  ComputedStyleBuilder& builder) const override;
 
- private:
-  LayoutRubyBase& CreateRubyBase() const;
+  static LayoutRubyBase& CreateRubyBase(const LayoutObject& reference);
 };
 
 template <>

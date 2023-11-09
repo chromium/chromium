@@ -10,12 +10,15 @@
 
 namespace blink {
 
+class RubyContainer;
+
 // Represents <ruby> with "display: block" or "display: inline-block".
 // If we supports "display: block ruby", we can remove this class.
 class CORE_EXPORT LayoutRubyAsBlock : public LayoutNGBlockFlow {
  public:
   explicit LayoutRubyAsBlock(Element*);
   ~LayoutRubyAsBlock() override;
+  void Trace(Visitor* visitor) const override;
 
   const char* GetName() const override {
     NOT_DESTROYED();
@@ -27,6 +30,18 @@ class CORE_EXPORT LayoutRubyAsBlock : public LayoutNGBlockFlow {
   void RemoveChild(LayoutObject* child) override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void RemoveLeftoverAnonymousBlock(LayoutBlock*) override;
+
+  void DidRemoveChildFromColumn(LayoutObject& child);
+
+ private:
+  Member<RubyContainer> ruby_container_;
+};
+
+template <>
+struct DowncastTraits<LayoutRubyAsBlock> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsRuby() && !object.IsLayoutInline();
+  }
 };
 
 }  // namespace blink

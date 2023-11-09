@@ -7,15 +7,24 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
+#include "third_party/blink/renderer/core/layout/ruby_container.h"
 
 namespace blink {
 
 LayoutRubyAsBlock::LayoutRubyAsBlock(Element* element)
-    : LayoutNGBlockFlow(element) {
+    : LayoutNGBlockFlow(element),
+      ruby_container_(RuntimeEnabledFeatures::RubySimplePairingEnabled()
+                          ? MakeGarbageCollected<RubyContainer>(*this)
+                          : nullptr) {
   UseCounter::Count(GetDocument(), WebFeature::kRenderRuby);
 }
 
 LayoutRubyAsBlock::~LayoutRubyAsBlock() = default;
+
+void LayoutRubyAsBlock::Trace(Visitor* visitor) const {
+  visitor->Trace(ruby_container_);
+  LayoutNGBlockFlow::Trace(visitor);
+}
 
 bool LayoutRubyAsBlock::IsOfType(LayoutObjectType type) const {
   NOT_DESTROYED();
@@ -28,6 +37,11 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
   // If the child is a ruby column, just add it normally.
   if (child->IsRubyColumn()) {
     LayoutNGBlockFlow::AddChild(child, before_child);
+    return;
+  }
+
+  if (RuntimeEnabledFeatures::RubySimplePairingEnabled()) {
+    ruby_container_->AddChild(child, before_child);
     return;
   }
 
@@ -71,10 +85,19 @@ void LayoutRubyAsBlock::RemoveChild(LayoutObject* child) {
     return;
   }
 
+  if (RuntimeEnabledFeatures::RubySimplePairingEnabled()) {
+    NOTREACHED();
+    return;
+  }
+
   // Otherwise find the containing column and remove it from there.
   auto* column = LayoutRubyAsInline::FindRubyColumnParent(child);
   DCHECK(column);
   column->RemoveChild(child);
+}
+
+void LayoutRubyAsBlock::DidRemoveChildFromColumn(LayoutObject& child) {
+  ruby_container_->DidRemoveChildFromColumn(child);
 }
 
 void LayoutRubyAsBlock::StyleDidChange(StyleDifference diff,

@@ -29,10 +29,17 @@ class CORE_EXPORT LayoutRubyBase final : public LayoutNGBlockFlow {
   void MoveChildren(LayoutRubyBase& to_base,
                     LayoutObject* before_child = nullptr);
 
+  // Returns true if this object was created for a RubyText without a
+  // corresponding RubyBase.
+  bool IsPlaceholder() const;
+  void SetPlaceholder();
+
  private:
   void MoveInlineChildrenTo(LayoutRubyBase& to_base,
                             LayoutObject* before_child);
   void MoveBlockChildrenTo(LayoutRubyBase& to_base, LayoutObject* before_child);
+
+  bool is_placeholder_ = false;
 };
 
 template <>

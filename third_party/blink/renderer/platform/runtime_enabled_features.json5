@@ -864,6 +864,7 @@
     },
     {
       name: "CssDisplayRuby",
+      depends_on: ["RubySimplePairing"],
     },
     {
       name: "CSSDynamicRangeLimit",
@@ -3264,6 +3265,10 @@
     // Spec: https://w3c.github.io/webrtc-svc/
     {
       name: "RTCSvcScalabilityMode",
+      status: "stable",
+    },
+    {
+      name: "RubySimplePairing",
       status: "stable",
     },
     {
