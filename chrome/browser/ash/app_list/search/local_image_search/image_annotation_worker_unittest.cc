@@ -63,9 +63,9 @@ class ImageAnnotationWorkerTest : public testing::Test {
         /*use_ica=*/false);
     bar_image_path_ = test_directory_.AppendASCII("bar.jpg");
     const base::FilePath test_db = test_directory_.AppendASCII("test.db");
-    storage_ = std::make_unique<AnnotationStorage>(
-        std::move(test_db), /*histogram_tag=*/"test",
-        /*annotation_worker=*/nullptr);
+    storage_ =
+        std::make_unique<AnnotationStorage>(std::move(test_db),
+                                            /*annotation_worker=*/nullptr);
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -121,7 +121,7 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessTheFolderAtInitTest) {
   ImageInfo webp_image({"bar6"}, webp_path, image_time, 24);
   ImageInfo WEBP_image({"bar7"}, WEBP_path, image_time, 24);
 
-  auto annotations = storage_->GetAllAnnotations();
+  auto annotations = storage_->GetAllAnnotationsForTest();
   EXPECT_THAT(annotations, testing::UnorderedElementsAreArray(
                                {jpg_image, jpeg_image, png_image, JPG_image,
                                 webp_image, WEBP_image}));
@@ -157,7 +157,7 @@ TEST_F(ImageAnnotationWorkerTest, MustIgnoreBadFiles) {
 
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(storage_->GetAllAnnotations().empty());
+  EXPECT_TRUE(storage_->GetAllAnnotationsForTest().empty());
   task_environment_.RunUntilIdle();
 }
 
@@ -177,7 +177,7 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessOnNewFileTest) {
   ImageInfo bar_image({"bar"}, bar_image_path_, bar_image_time,
                       /*file_size=*/16);
 
-  EXPECT_THAT(storage_->GetAllAnnotations(),
+  EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
               testing::ElementsAreArray({bar_image}));
 
   task_environment_.RunUntilIdle();
@@ -205,7 +205,7 @@ TEST_F(ImageAnnotationWorkerTest, MustUpdateOnFileUpdateTest) {
 
   ImageInfo bar_image_updated({"bar"}, bar_image_path_, bar_image_time_updated,
                               /*file_size=*/16);
-  EXPECT_THAT(storage_->GetAllAnnotations(),
+  EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
               testing::ElementsAreArray({bar_image_updated}));
 
   task_environment_.RunUntilIdle();
@@ -227,7 +227,7 @@ TEST_F(ImageAnnotationWorkerTest, MustRemoveOnFileDeleteTest) {
                                                   /*error=*/false);
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(storage_->GetAllAnnotations().empty());
+  EXPECT_TRUE(storage_->GetAllAnnotationsForTest().empty());
 
   task_environment_.RunUntilIdle();
 }
@@ -290,7 +290,7 @@ TEST_F(ImageAnnotationWorkerTest, ProcessDirectoryTest) {
   ImageInfo png_image1({"bar2"}, png_path1, image_time, 16);
 
   EXPECT_THAT(
-      storage_->GetAllAnnotations(),
+      storage_->GetAllAnnotationsForTest(),
       testing::UnorderedElementsAreArray({jpg_image, jpeg_image, png_image}));
 
   task_environment_.RunUntilIdle();
@@ -302,14 +302,14 @@ TEST_F(ImageAnnotationWorkerTest, ProcessDirectoryTest) {
                                                   /*error=*/false);
 
   EXPECT_THAT(
-      storage_->GetAllAnnotations(),
+      storage_->GetAllAnnotationsForTest(),
       testing::UnorderedElementsAreArray({jpg_image, jpeg_image1, png_image1}));
 
   base::DeletePathRecursively(test_images1);
   annotation_worker_->TriggerOnFileChangeForTests(test_images1,
                                                   /*error=*/false);
 
-  EXPECT_THAT(storage_->GetAllAnnotations(),
+  EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
               testing::UnorderedElementsAreArray({jpg_image}));
 }
 

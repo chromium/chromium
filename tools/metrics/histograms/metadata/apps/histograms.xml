@@ -351,6 +351,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.AnnotationStorage.DatabaseSize" units="MB"
+    expires_after="2024-10-31">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
+  <summary>
+    Record the size of the SQLite database in MB. Emitted when tha database
+    initialization is complete.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.Status"
+    enum="ImageAnnotationWorkerStatus" expires_after="2024-10-31">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
+  <summary>
+    The type of errors that occur in the annotation worker. Logged once per
+    error.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.AnnotationStorage.SqlDatabase.Status"
+    enum="SqlDatabaseStatus" expires_after="2024-10-31">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
+  <summary>
+    The type of errors that occur in the SQLite. Logged once per error.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.AnnotationStorage.Status"
+    enum="AnnotationStorageStatus" expires_after="2024-10-31">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
+  <summary>
+    The type of errors that occur in storage. Logged once per error.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.AnswerCardSearchProvider.SearchAnswerLoadingTime"
     units="ms" expires_after="2021-03-15">
   <owner>jennyz@chromium.org</owner>
@@ -685,6 +727,17 @@ chromium-metrics-reviews@google.com.
     the user does not launch any results.
   </summary>
   <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
+</histogram>
+
+<histogram name="Apps.AppList.LocalImageSearchProvider.Latency" units="ms"
+    expires_after="2024-10-31">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
+  <summary>
+    Latency in milliseconds from the beginning of a launcher search query to
+    local results being returned. Logged once per search query.
+  </summary>
 </histogram>
 
 <histogram name="Apps.AppList.NumberOfApps" units="count"

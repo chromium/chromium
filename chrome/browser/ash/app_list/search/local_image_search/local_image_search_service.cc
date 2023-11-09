@@ -13,7 +13,6 @@
 namespace app_list {
 namespace {
 
-constexpr char kHistogramTag[] = "AnnotationStorage";
 constexpr size_t kMinQueryLength = 3u;
 
 base::FilePath ConstructPathToAnnotationDb(const Profile* const profile) {
@@ -48,7 +47,6 @@ LocalImageSearchService::LocalImageSearchService(Profile* profile)
               {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
                base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
           ConstructPathToAnnotationDb(profile),
-          kHistogramTag,
           std::make_unique<ImageAnnotationWorker>(
               file_manager::util::GetMyFilesFolderForProfile(profile),
               GetTrashPaths(profile),

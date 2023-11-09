@@ -39,9 +39,9 @@ class AnnotationStorageTest : public testing::Test {
 
     test_directory_ = temp_dir.GetPath();
     base::FilePath test_db = test_directory_.AppendASCII("test.db");
-    storage_ = std::make_unique<AnnotationStorage>(
-        std::move(test_db), /*histogram_tag=*/"test",
-        /*annotation_worker=*/nullptr);
+    storage_ =
+        std::make_unique<AnnotationStorage>(std::move(test_db),
+                                            /*annotation_worker=*/nullptr);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -53,7 +53,7 @@ TEST_F(AnnotationStorageTest, EmptyStorage) {
   storage_->Initialize();
   task_environment_.RunUntilIdle();
 
-  auto annotations = storage_->GetAllAnnotations();
+  auto annotations = storage_->GetAllAnnotationsForTest();
   EXPECT_TRUE(annotations.empty());
 
   task_environment_.RunUntilIdle();
@@ -69,7 +69,7 @@ TEST_F(AnnotationStorageTest, Insert) {
 
   storage_->Insert(bar_image);
 
-  EXPECT_THAT(storage_->GetAllAnnotations(),
+  EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
               testing::ElementsAreArray({bar_image}));
   task_environment_.RunUntilIdle();
 
@@ -78,7 +78,7 @@ TEST_F(AnnotationStorageTest, Insert) {
 
   storage_->Insert(bar_image1);
 
-  EXPECT_THAT(storage_->GetAllAnnotations(),
+  EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
               testing::ElementsAreArray({bar_image, bar_image1}));
   task_environment_.RunUntilIdle();
 
@@ -88,7 +88,7 @@ TEST_F(AnnotationStorageTest, Insert) {
   storage_->Insert(foo_image);
 
   EXPECT_THAT(
-      storage_->GetAllAnnotations(),
+      storage_->GetAllAnnotationsForTest(),
       testing::UnorderedElementsAreArray({bar_image, bar_image1, foo_image}));
   task_environment_.RunUntilIdle();
 }
@@ -110,19 +110,19 @@ TEST_F(AnnotationStorageTest, Remove) {
 
   storage_->Remove(test_directory_.AppendASCII("bar.jpg"));
 
-  EXPECT_THAT(storage_->GetAllAnnotations(),
+  EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
               testing::ElementsAreArray({foo_image, foo_image1}));
 
   storage_->Remove(test_directory_.AppendASCII("bar.jpg"));
 
-  EXPECT_THAT(storage_->GetAllAnnotations(),
+  EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
               testing::ElementsAreArray({foo_image, foo_image1}));
 
   storage_->Remove(test_directory_.AppendASCII("foo.png"));
-  EXPECT_TRUE(storage_->GetAllAnnotations().empty());
+  EXPECT_TRUE(storage_->GetAllAnnotationsForTest().empty());
 
   storage_->Remove(test_directory_.AppendASCII("foo.png"));
-  EXPECT_TRUE(storage_->GetAllAnnotations().empty());
+  EXPECT_TRUE(storage_->GetAllAnnotationsForTest().empty());
 
   task_environment_.RunUntilIdle();
 }
@@ -352,7 +352,7 @@ TEST_F(AnnotationStorageTest, SchemaMigration) {
   sql_database->Close();
 
   storage_ = std::make_unique<AnnotationStorage>(
-      test_directory_.AppendASCII("test.db"), /*histogram_tag=*/"test",
+      test_directory_.AppendASCII("test.db"),
       /*annotation_worker=*/nullptr);
   storage_->Initialize();
   task_environment_.RunUntilIdle();
@@ -361,7 +361,7 @@ TEST_F(AnnotationStorageTest, SchemaMigration) {
                       base::Time::Now(), /*file_size=*/1);
 
   storage_->Insert(bar_image);
-  EXPECT_THAT(storage_->GetAllAnnotations(),
+  EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
               testing::ElementsAreArray({bar_image}));
   task_environment_.RunUntilIdle();
 }

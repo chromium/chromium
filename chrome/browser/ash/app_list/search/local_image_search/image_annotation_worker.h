@@ -116,6 +116,7 @@ class ImageAnnotationWorker {
   const bool use_ica_;
   const bool use_ocr_;
   base::queue<base::FilePath> files_to_process_;
+  int num_retries_left_ = 60;
 
   // Owned by this class.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

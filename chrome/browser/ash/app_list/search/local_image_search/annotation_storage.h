@@ -47,7 +47,6 @@ struct ImageInfo {
 class AnnotationStorage {
  public:
   AnnotationStorage(const base::FilePath& path_to_db,
-                    const std::string& histogram_tag,
                     std::unique_ptr<ImageAnnotationWorker> annotation_worker);
   AnnotationStorage(const AnnotationStorage&) = delete;
   AnnotationStorage& operator=(const AnnotationStorage&) = delete;
@@ -63,7 +62,7 @@ class AnnotationStorage {
   void Remove(const base::FilePath& image_path);
 
   // Returns all the stored annotations.
-  std::vector<ImageInfo> GetAllAnnotations();
+  std::vector<ImageInfo> GetAllAnnotationsForTest();
 
   // Returns all the stored file paths.
   std::vector<base::FilePath> GetAllFiles();
@@ -81,7 +80,6 @@ class AnnotationStorage {
 
  private:
   AnnotationStorage(const base::FilePath& path_to_db,
-                    const std::string& histogram_tag,
                     int current_version_number,
                     std::unique_ptr<ImageAnnotationWorker> annotation_worker);
 

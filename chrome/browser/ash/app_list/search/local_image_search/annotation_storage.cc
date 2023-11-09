@@ -7,7 +7,9 @@
 #include <algorithm>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/annotations_table.h"
@@ -30,6 +32,30 @@ using Mode = ::ash::string_matching::TokenizedString::Mode;
 constexpr double kRelevanceThreshold = 0.79;
 constexpr int kVersionNumber = 5;
 
+constexpr char kSqlDatabaseUmaTag[] =
+    "Apps.AppList.AnnotationStorage.SqlDatabase.Status";
+
+// These values persist to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class ErrorStatus {
+  kOk = 0,
+  kFailedToCreateNewSchema = 1,
+  kFailedToMigrateSchema = 2,
+  kFailedToInitializeDb = 3,
+  kFailedToInsertInDb = 4,
+  kFailedToRemoveFromDb = 5,
+  kFailedToGetAllFiles = 6,
+  kFailedToSearchByDirectory = 7,
+  kFailedToFindImagePath = 8,
+  kFailedToPrefixSearch = 9,
+  kMaxValue = kFailedToPrefixSearch,
+};
+
+void LogErrorUma(ErrorStatus status) {
+  base::UmaHistogramEnumeration("Apps.AppList.AnnotationStorage.Status",
+                                status);
+}
+
 // Initializes a new annotation table, returning a schema version number
 // on success. The database implements inverted index.
 // The table cannot exist when calling this function.
@@ -39,6 +65,7 @@ int CreateNewSchema(SqlDatabase* db) {
   if (!db || !AnnotationsTable::Create(db) || !DocumentsTable::Create(db) ||
       !InvertedIndexTable::Create(db)) {
     LOG(ERROR) << "Failed to create schema.";
+    LogErrorUma(ErrorStatus::kFailedToCreateNewSchema);
     return 0;
   }
 
@@ -53,6 +80,7 @@ int MigrateSchema(SqlDatabase* db, int current_version_number) {
   if (!db || !AnnotationsTable::Drop(db) || !DocumentsTable::Drop(db) ||
       !InvertedIndexTable::Drop(db)) {
     LOG(ERROR) << "Failed to drop schema.";
+    LogErrorUma(ErrorStatus::kFailedToMigrateSchema);
     return 0;
   }
 
@@ -75,13 +103,12 @@ ImageInfo::ImageInfo(const ImageInfo&) = default;
 
 AnnotationStorage::AnnotationStorage(
     const base::FilePath& path_to_db,
-    const std::string& histogram_tag,
     int current_version_number,
     std::unique_ptr<ImageAnnotationWorker> annotation_worker)
     : annotation_worker_(std::move(annotation_worker)),
       sql_database_(
           std::make_unique<SqlDatabase>(path_to_db,
-                                        histogram_tag,
+                                        kSqlDatabaseUmaTag,
                                         current_version_number,
                                         base::BindRepeating(CreateNewSchema),
                                         base::BindRepeating(MigrateSchema))) {
@@ -90,10 +117,8 @@ AnnotationStorage::AnnotationStorage(
 
 AnnotationStorage::AnnotationStorage(
     const base::FilePath& path_to_db,
-    const std::string& histogram_tag,
     std::unique_ptr<ImageAnnotationWorker> annotation_worker)
     : AnnotationStorage(path_to_db,
-                        histogram_tag,
                         kVersionNumber,
                         std::move(annotation_worker)) {}
 
@@ -103,11 +128,19 @@ void AnnotationStorage::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!sql_database_->Initialize()) {
     LOG(ERROR) << "Failed to initialize the db.";
+    LogErrorUma(ErrorStatus::kFailedToInitializeDb);
     return;
   }
   if (annotation_worker_ != nullptr) {
     // Owns `annotation_worker_`.
     annotation_worker_->Initialize(this);
+  }
+  LogErrorUma(ErrorStatus::kOk);
+
+  auto file_info = base::File::Info();
+  if (base::GetFileInfo(sql_database_->GetPathToDb(), &file_info)) {
+    base::UmaHistogramMemoryMB("Apps.AppList.AnnotationStorage.DatabaseSize",
+                               file_info.size / 1024 / 1024);
   }
 }
 
@@ -122,6 +155,7 @@ void AnnotationStorage::Insert(const ImageInfo& image_info) {
       !DocumentsTable::GetDocumentId(sql_database_.get(), image_info.path,
                                      document_id)) {
     LOG(ERROR) << "Failed to insert into the db.";
+    LogErrorUma(ErrorStatus::kFailedToInsertInDb);
     return;
   }
 
@@ -134,6 +168,7 @@ void AnnotationStorage::Insert(const ImageInfo& image_info) {
         !InvertedIndexTable::Insert(sql_database_.get(), annotation_id,
                                     document_id)) {
       LOG(ERROR) << "Failed to insert into the db.";
+      LogErrorUma(ErrorStatus::kFailedToInsertInDb);
       return;
     }
   }
@@ -147,10 +182,11 @@ void AnnotationStorage::Remove(const base::FilePath& image_path) {
       !DocumentsTable::Remove(sql_database_.get(), image_path) ||
       !AnnotationsTable::Prune(sql_database_.get())) {
     LOG(ERROR) << "Failed to remove from the db.";
+    LogErrorUma(ErrorStatus::kFailedToRemoveFromDb);
   }
 }
 
-std::vector<ImageInfo> AnnotationStorage::GetAllAnnotations() {
+std::vector<ImageInfo> AnnotationStorage::GetAllAnnotationsForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "GetAllAnnotations";
 
@@ -196,6 +232,7 @@ std::vector<base::FilePath> AnnotationStorage::GetAllFiles() {
   std::vector<base::FilePath> documents;
   if (!DocumentsTable::GetAllFiles(sql_database_.get(), documents)) {
     LOG(ERROR) << "Failed to get file paths from the db.";
+    LogErrorUma(ErrorStatus::kFailedToGetAllFiles);
     return {};
   }
 
@@ -211,6 +248,7 @@ std::vector<base::FilePath> AnnotationStorage::SearchByDirectory(
   if (!DocumentsTable::SearchByDirectory(sql_database_.get(), directory,
                                          files)) {
     LOG(ERROR) << "Failed to get file paths from the db.";
+    LogErrorUma(ErrorStatus::kFailedToSearchByDirectory);
     return {};
   }
 
@@ -238,6 +276,7 @@ std::vector<ImageInfo> AnnotationStorage::FindImagePath(
       sql_database_->GetStatementForQuery(SQL_FROM_HERE, kQuery);
   if (!statement) {
     LOG(ERROR) << "Couldn't create the statement";
+    LogErrorUma(ErrorStatus::kFailedToFindImagePath);
     return {};
   }
   // Safe on ChromeOS.
@@ -279,6 +318,7 @@ std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
       sql_database_->GetStatementForQuery(SQL_FROM_HERE, kQuery);
   if (!statement) {
     LOG(ERROR) << "Couldn't create the statement";
+    LogErrorUma(ErrorStatus::kFailedToPrefixSearch);
     return {};
   }
   statement->BindString(0, base::StrCat({base::UTF16ToUTF8(query_term), "%"}));
