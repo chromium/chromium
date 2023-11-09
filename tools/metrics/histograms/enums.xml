@@ -60867,6 +60867,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="OUTDATED"/>
 </enum>
 
+<enum name="SafetyHubCardState">
+  <int value="0" label="WARNING"/>
+  <int value="1" label="WEAK"/>
+  <int value="2" label="INFO"/>
+  <int value="3" label="SAFE"/>
+</enum>
+
 <enum name="SafetyTipInteraction">
   <int value="0" label="User dismissed the Safety Tip"/>
   <int value="1" label="User left the site with the Safety Tip"/>

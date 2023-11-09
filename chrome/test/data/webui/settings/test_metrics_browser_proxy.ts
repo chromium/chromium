@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions} from 'chrome://settings/settings.js';
+import {DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestMetricsBrowserProxy extends TestBrowserProxy implements
@@ -10,6 +10,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'recordAction',
+      'recordSafetyHubCardStateClicked',
       'recordSafetyCheckInteractionHistogram',
       'recordSafetyCheckNotificationsListCountHistogram',
       'recordSafetyCheckNotificationsModuleInteractionsHistogram',
@@ -30,6 +31,12 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordAction(action: string) {
     this.methodCalled('recordAction', action);
+  }
+
+  recordSafetyHubCardStateClicked(
+      histogramName: string, state: SafetyHubCardState) {
+    this.methodCalled(
+        'recordSafetyHubCardStateClicked', [histogramName, state]);
   }
 
   recordSafetyCheckInteractionHistogram(interaction: SafetyCheckInteractions) {

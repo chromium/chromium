@@ -43,6 +43,24 @@ export enum PrivacyElementInteractions {
 }
 
 /**
+ * Contains all Safety Hub card states.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with SafetyHubCardState in
+ * histograms/enums.xml and CardState in safety_hub/safety_hub_browser_proxy.ts.
+ */
+export enum SafetyHubCardState {
+  WARNING = 0,
+  WEAK = 1,
+  INFO = 2,
+  SAFE = 3,
+  // Max value should be updated whenever new entries are added.
+  MAX_VALUE = 4,
+}
+
+/**
  * Contains all safety check interactions.
  *
  * These values are persisted to logs. Entries should not be renumbered and
@@ -300,6 +318,14 @@ export interface MetricsBrowserProxy {
 
   /**
    * Helper function that calls recordHistogram for the
+   * Settings.SafetyHub.[card_name].StatusOnClick histogram
+   */
+  recordSafetyHubCardStateClicked(
+      histogramName: string, state: SafetyHubCardState): void;
+
+
+  /**
+   * Helper function that calls recordHistogram for the
    * SettingsPage.PrivacyElementInteractions histogram
    */
   recordSettingsPageHistogram(interaction: PrivacyElementInteractions): void;
@@ -413,6 +439,13 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       'Settings.SafetyCheck.UnusedSitePermissionsModuleEntryPointShown',
       visible,
     ]);
+  }
+
+  recordSafetyHubCardStateClicked(
+      histogramName: string, state: SafetyHubCardState) {
+    chrome.send(
+        'metricsHandler:recordHistogram',
+        [histogramName, state, SafetyHubCardState.MAX_VALUE]);
   }
 
   recordSettingsPageHistogram(interaction: PrivacyElementInteractions) {

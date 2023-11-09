@@ -17,6 +17,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/password_manager_proxy.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyHubCardState} from '../metrics_browser_proxy.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
@@ -95,6 +96,8 @@ export class SettingsSafetyHubPageElement extends
   private userEducationItemList_: SiteInfo[];
   private browserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -176,6 +179,10 @@ export class SettingsSafetyHubPageElement extends
   }
 
   private onPasswordsClick_() {
+    this.metricsBrowserProxy_.recordSafetyHubCardStateClicked(
+        'Settings.SafetyHub.PasswordsCard.StatusOnClick',
+        this.passwordCardData_.state as unknown as SafetyHubCardState);
+
     PasswordManagerImpl.getInstance().showPasswordManager(
         PasswordManagerPage.CHECKUP);
   }
@@ -188,6 +195,10 @@ export class SettingsSafetyHubPageElement extends
   }
 
   private onVersionClick_() {
+    this.metricsBrowserProxy_.recordSafetyHubCardStateClicked(
+        'Settings.SafetyHub.VersionCard.StatusOnClick',
+        this.versionCardData_.state as unknown as SafetyHubCardState);
+
     if (this.versionCardData_.state === CardState.WARNING) {
       this.performRestart(RestartType.RELAUNCH);
     } else {
@@ -205,6 +216,10 @@ export class SettingsSafetyHubPageElement extends
   }
 
   private onSafeBrowsingClick_() {
+    this.metricsBrowserProxy_.recordSafetyHubCardStateClicked(
+        'Settings.SafetyHub.SafeBrowsingCard.StatusOnClick',
+        this.safeBrowsingCardData_.state as unknown as SafetyHubCardState);
+
     Router.getInstance().navigateTo(
         routes.SECURITY, /* dynamicParams= */ undefined,
         /* removeSearch= */ true);

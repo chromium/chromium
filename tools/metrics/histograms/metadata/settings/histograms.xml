@@ -651,6 +651,40 @@ chromium-metrics-reviews@google.com.
   <summary>Resulting state of the safety check updates check.</summary>
 </histogram>
 
+<histogram name="Settings.SafetyHub.PasswordsCard.StatusOnClick"
+    enum="SafetyHubCardState" expires_after="2024-04-08">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>aisulu@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    Passwords Card is located on Safety Check page in settings and can be in one
+    of the multiple states. This is the Passwords Card state recorded on click.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.SafeBrowsingCard.StatusOnClick"
+    enum="SafetyHubCardState" expires_after="2024-04-08">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>aisulu@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    Safe Browsing Card is located on Safety Check page in settings and can be in
+    one of the multiple states. This is the Safe Browsing Card state recorded on
+    click.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.VersionCard.StatusOnClick"
+    enum="SafetyHubCardState" expires_after="2024-04-08">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>aisulu@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    Version Card is located on Safety Check page in settings and can be in one
+    of the multiple states. This is the Version Card state recorded on click.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SearchEngines.Interactions"
     enum="SettingsSearchEnginesInteractions" expires_after="2024-04-28">
   <owner>yoangela@chromium.org</owner>
