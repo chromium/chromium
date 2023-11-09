@@ -196,10 +196,8 @@ TEST_P(AppListItemViewPixelTest, AppListFolderItemsLayoutInIcon) {
   CreateFoldersContainingDifferentNumOfItems(max_items_in_folder);
   ShowAppList();
 
-  // If updating this revision, skip 5 (use 6) as it was used by a previous
-  // test.  Then delete this comment.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/4, GetItemViewAt(0),
+      GenerateScreenshotName(), /*revision_number=*/7, GetItemViewAt(0),
       GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3), GetItemViewAt(4)));
 }
 
@@ -235,10 +233,8 @@ TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
     GetItemViewAt(i)->OnDraggedViewEnter();
   }
 
-  // If updating this revision, skip 5 (use 6) as it was used by a previous
-  // test.  Then delete this comment.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/4, GetItemViewAt(0),
+      GenerateScreenshotName(), /*revision_number=*/8, GetItemViewAt(0),
       GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3), GetItemViewAt(4)));
 
   // Reset the states.

@@ -219,12 +219,12 @@ TEST_F(LocalAuthenticationRequestControllerImplPixelTest, FailedValidation) {
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Ready", /*revision_number=*/0, view));
+      "Ready", /*revision_number=*/1, view));
 
   SimulateValidation(false);
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Fail", /*revision_number=*/0, view));
+      "Fail", /*revision_number=*/1, view));
 }
 
 // Tests local authentication dialog theme change

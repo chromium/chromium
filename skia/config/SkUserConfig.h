@@ -237,6 +237,8 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_ENABLE_SKSL_IN_RASTER_PIPELINE
 
+#define SK_USE_PADDED_BLUR_UPSCALE
+
 /* When --disable-skia-runtime-opts is set in Chrome (or when SkGraphics::Init
    is not called), Skia will prefer precision over performance when computing
    reciprocals and inverse-square roots.

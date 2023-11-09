@@ -115,7 +115,7 @@ TEST_F(GlanceablesPixelTest, GlanceablesZeroState) {
   GetGlanceableTrayBubble()->GetTasksView()->ScrollViewToVisible();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "glanceables_zero_state", /*revision_number=*/3,
+      "glanceables_zero_state", /*revision_number=*/5,
       GetGlanceableTrayBubble()->GetBubbleView()));
 }
 
