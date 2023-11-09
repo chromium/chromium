@@ -82,6 +82,15 @@ gfx::RoundedCornersF GetRoundedCornersForPreviewView(
 
 WindowMiniViewBase::~WindowMiniViewBase() = default;
 
+void WindowMiniViewBase::UpdateFocusState(bool focus) {
+  if (is_focused_ == focus) {
+    return;
+  }
+
+  is_focused_ = focus;
+  views::FocusRing::Get(this)->SchedulePaint();
+}
+
 void WindowMiniViewBase::SetRoundedCornersRadius(
     const gfx::RoundedCornersF& exposed_rounded_corners) {
   header_view_rounded_corners_ =
@@ -95,21 +104,33 @@ void WindowMiniViewBase::SetRoundedCornersRadius(
                            exposed_rounded_corners.lower_left());
 }
 
-WindowMiniViewBase::WindowMiniViewBase() = default;
+WindowMiniViewBase::WindowMiniViewBase() {
+  InstallFocusRing();
+}
+
+void WindowMiniViewBase::InstallFocusRing() {
+  // In order to show the focus ring out of the content view, `border_inset`
+  // needs to be counted when setting the insets for the focus ring.
+  views::InstallRoundRectHighlightPathGenerator(
+      this, gfx::Insets(kFocusRingHaloInset),
+      chromeos::features::IsJellyrollEnabled() ? kFocusRingCornerRadius
+                                               : kBackdropBorderRoundingDp);
+  views::FocusRing::Install(this);
+  views::FocusRing* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetOutsetFocusRingDisabled(true);
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
+  focus_ring->SetHasFocusPredicate(
+      base::BindRepeating([](const views::View* view) {
+        const auto* v = views::AsViewClass<WindowMiniViewBase>(view);
+        CHECK(v);
+        return v->is_focused_;
+      }));
+}
 
 BEGIN_METADATA(WindowMiniViewBase, views::View)
 END_METADATA
 
 WindowMiniView::~WindowMiniView() = default;
-
-void WindowMiniView::UpdateFocusState(bool focus) {
-  if (is_focused_ == focus) {
-    return;
-  }
-
-  is_focused_ = focus;
-  views::FocusRing::Get(this)->SchedulePaint();
-}
 
 void WindowMiniView::SetBackdropVisibility(bool visible) {
   if (!backdrop_view_ && !visible) {
@@ -243,7 +264,6 @@ gfx::Size WindowMiniView::GetPreviewViewSize() const {
 
 WindowMiniView::WindowMiniView(aura::Window* source_window)
     : source_window_(source_window) {
-  InstallFocusRing();
   window_observation_.Observe(source_window);
   header_view_ = AddChildView(std::make_unique<WindowMiniViewHeaderView>(this));
 }
@@ -307,25 +327,6 @@ void WindowMiniView::OnWindowDestroying(aura::Window* window) {
 
 void WindowMiniView::OnWindowTitleChanged(aura::Window* window) {
   header_view_->UpdateTitleLabel(window);
-}
-
-void WindowMiniView::InstallFocusRing() {
-  // In order to show the focus ring on the content view, `border_inset`
-  // needs to be counted when setting the insets for the focus ring.
-  views::InstallRoundRectHighlightPathGenerator(
-      this, gfx::Insets(kFocusRingHaloInset),
-      chromeos::features::IsJellyrollEnabled() ? kFocusRingCornerRadius
-                                               : kBackdropBorderRoundingDp);
-  views::FocusRing::Install(this);
-  views::FocusRing* focus_ring = views::FocusRing::Get(this);
-  focus_ring->SetOutsetFocusRingDisabled(true);
-  focus_ring->SetColorId(ui::kColorAshFocusRing);
-  focus_ring->SetHasFocusPredicate(
-      base::BindRepeating([](const views::View* view) {
-        const auto* v = views::AsViewClass<WindowMiniView>(view);
-        CHECK(v);
-        return v->is_focused_;
-      }));
 }
 
 BEGIN_METADATA(WindowMiniView, WindowMiniViewBase)

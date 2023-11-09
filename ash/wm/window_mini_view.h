@@ -36,6 +36,9 @@ class WindowMiniViewBase : public views::View {
   WindowMiniViewBase& operator=(const WindowMiniViewBase&) = delete;
   ~WindowMiniViewBase() override;
 
+  // Shows or hides a focus ring around this.
+  void UpdateFocusState(bool focus);
+
   // Sets rounded corners on the exposed corners, the inner corners will be
   // sharp.
   void SetRoundedCornersRadius(
@@ -66,9 +69,6 @@ class WindowMiniViewBase : public views::View {
   // Returns the exposed rounded corners.
   virtual gfx::RoundedCornersF GetRoundedCorners() const = 0;
 
-  // Shows or hides a focus ring around this.
-  virtual void UpdateFocusState(bool focus) = 0;
-
  protected:
   WindowMiniViewBase();
 
@@ -76,6 +76,12 @@ class WindowMiniViewBase : public views::View {
   // otherwise the default rounded corners will be used.
   absl::optional<gfx::RoundedCornersF> header_view_rounded_corners_;
   absl::optional<gfx::RoundedCornersF> preview_view_rounded_corners_;
+
+ private:
+  void InstallFocusRing();
+
+  // True if this view is focused when using keyboard navigation.
+  bool is_focused_ = false;
 };
 
 // WindowMiniView is a view which contains a header and optionally a mirror of
@@ -109,7 +115,6 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   views::View* backdrop_view() { return backdrop_view_; }
   WindowPreviewView* preview_view() { return preview_view_; }
   const WindowPreviewView* preview_view() const { return preview_view_; }
-  bool is_mini_view_focused() const { return is_focused_; }
 
   // Sets the visibility of |backdrop_view_|. Creates it if it is null.
   void SetBackdropVisibility(bool visible);
@@ -130,7 +135,6 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   void SetShowPreview(bool show) override;
   int TryRemovingChildItem(aura::Window* destroying_window) override;
   gfx::RoundedCornersF GetRoundedCorners() const override;
-  void UpdateFocusState(bool focus) override;
 
  protected:
   explicit WindowMiniView(aura::Window* source_window);
@@ -156,8 +160,6 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   void OnWindowTitleChanged(aura::Window* window) override;
 
  private:
-  void InstallFocusRing();
-
   // The window this class is meant to be a header for. This class also may
   // optionally show a mirrored view of this window.
   raw_ptr<aura::Window, ExperimentalAsh> source_window_;
@@ -172,9 +174,6 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   // Optionally shows a preview of |window_|.
   raw_ptr<WindowPreviewView, DanglingUntriaged | ExperimentalAsh>
       preview_view_ = nullptr;
-
-  // True if `this` is focused when using keyboard navigation.
-  bool is_focused_ = false;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
