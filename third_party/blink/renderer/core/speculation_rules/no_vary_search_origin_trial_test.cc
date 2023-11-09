@@ -80,8 +80,6 @@ TEST(PrefetchNoVarySearchOriginTrialTest, CanEnableFromToken) {
   // This should have enabled the origin trial and all its dependent features.
   EXPECT_TRUE(
       RuntimeEnabledFeatures::NoVarySearchPrefetchEnabled(frame.DomWindow()));
-  EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesPrefetchProxyEnabled(
-      frame.DomWindow()));
   EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesNoVarySearchHintEnabled(
       frame.DomWindow()));
   EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesEagernessEnabled(

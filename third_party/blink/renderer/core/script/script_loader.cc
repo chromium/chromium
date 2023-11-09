@@ -572,10 +572,6 @@ PendingScript* ScriptLoader::PrepareScript(
       return nullptr;
 
     case ScriptTypeAtPrepare::kSpeculationRules:
-      if (!RuntimeEnabledFeatures::SpeculationRulesEnabled(context_window))
-        return nullptr;
-      break;
-
     case ScriptTypeAtPrepare::kWebBundle:
     case ScriptTypeAtPrepare::kClassic:
     case ScriptTypeAtPrepare::kModule:
@@ -1019,7 +1015,6 @@ PendingScript* ScriptLoader::PrepareScript(
         // Set the script’s result to result.
         // If the script’s result is not null, append it to the element’s node
         // document's list of speculation rule sets.
-        DCHECK(RuntimeEnabledFeatures::SpeculationRulesEnabled(context_window));
         auto* source = SpeculationRuleSet::Source::FromInlineScript(
             source_text, element_document, element_->GetDOMNodeId());
         speculation_rule_set_ =

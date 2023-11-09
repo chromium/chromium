@@ -518,11 +518,6 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   if (trial_name == "TrustTokens")
     return base::FeatureList::IsEnabled(network::features::kFledgePst);
 
-  if (trial_name == "SpeculationRulesPrefetch") {
-    return base::FeatureList::IsEnabled(
-        features::kSpeculationRulesPrefetchProxy);
-  }
-
   if (trial_name == "SpeculationRulesPrefetchFuture") {
     return base::FeatureList::IsEnabled(
         features::kSpeculationRulesPrefetchFuture);

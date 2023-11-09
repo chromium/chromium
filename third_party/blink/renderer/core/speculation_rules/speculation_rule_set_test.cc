@@ -156,7 +156,6 @@ class SpeculationRuleSetTest : public ::testing::Test {
   }
 
  private:
-  ScopedSpeculationRulesPrefetchProxyForTest enable_prefetch_{true};
   ScopedSpeculationRulesRelativeToDocumentForTest enable_relative_to_{true};
   ScopedPrerender2ForTest enable_prerender2_{true};
   Persistent<ExecutionContext> execution_context_;
@@ -882,9 +881,6 @@ TEST_F(SpeculationRuleSetTest, PropagatesAllRulesToBrowser) {
 // Tests that prefetch rules are ignored unless SpeculationRulesPrefetchProxy
 // is enabled.
 TEST_F(SpeculationRuleSetTest, PrerenderIgnorePrefetchRules) {
-  // Overwrite the kSpeculationRulesPrefetchProxy flag.
-  ScopedSpeculationRulesPrefetchProxyForTest enable_prefetch{false};
-
   DummyPageHolder page_holder;
   StubSpeculationHost speculation_host;
   const String speculation_script =

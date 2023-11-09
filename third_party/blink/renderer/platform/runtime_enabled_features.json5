@@ -3504,17 +3504,6 @@
     {
       name: "SparseObjectPaintProperties",
     },
-    // An origin trial feature name is required for this, even though it's
-    // actually enabled by the more specific trial. Having these as separate
-    // features will allow Blink to distinguish for which thing the trial
-    // was enabled.
-    {
-      name: "SpeculationRules",
-      status: "stable",
-      base_feature: "none",
-      implied_by: ["SpeculationRulesPrefetchProxy", "SpeculationRulesPrefetchWithSubresources", "Prerender2", "SpeculationRulesDocumentRules", "SpeculationRulesRelativeToDocument"],
-      origin_trial_feature_name: "SpeculationRules__DONOTUSE",
-    },
     {
       name: "SpeculationRulesDocumentRules",
       base_feature: "none",
@@ -3570,13 +3559,6 @@
       base_feature: "none",
       origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
       origin_trial_allows_third_party: true,
-    },
-    {
-      name: "SpeculationRulesPrefetchProxy",
-      origin_trial_feature_name: "SpeculationRulesPrefetch",
-      status: "stable",
-      copied_from_base_feature_if: "overridden",
-      implied_by: ["SpeculationRulesPrefetchFuture", "NoVarySearchPrefetch"],
     },
     {
       name: "SpeculationRulesPrefetchWithSubresources",

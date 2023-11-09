@@ -571,15 +571,9 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
   };
 
   for (SpeculationRuleSet* rule_set : rule_sets_) {
-    // If kSpeculationRulesPrefetchProxy is enabled, collect all prefetch
-    // speculation rules.
-    if (RuntimeEnabledFeatures::SpeculationRulesPrefetchProxyEnabled(
-            execution_context)) {
-      push_candidates(mojom::blink::SpeculationAction::kPrefetch, rule_set,
-                      rule_set->prefetch_rules());
-    }
+    push_candidates(mojom::blink::SpeculationAction::kPrefetch, rule_set,
+                    rule_set->prefetch_rules());
 
-    // Ditto for SpeculationRulesPrefetchWithSubresources.
     if (RuntimeEnabledFeatures::SpeculationRulesPrefetchWithSubresourcesEnabled(
             execution_context)) {
       push_candidates(
@@ -743,11 +737,8 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
         };
 
     for (SpeculationRuleSet* rule_set : rule_sets_) {
-      if (RuntimeEnabledFeatures::SpeculationRulesPrefetchProxyEnabled(
-              execution_context)) {
-        push_link_candidates(mojom::blink::SpeculationAction::kPrefetch,
-                             rule_set, rule_set->prefetch_rules());
-      }
+      push_link_candidates(mojom::blink::SpeculationAction::kPrefetch, rule_set,
+                           rule_set->prefetch_rules());
 
       if (RuntimeEnabledFeatures::
               SpeculationRulesPrefetchWithSubresourcesEnabled(

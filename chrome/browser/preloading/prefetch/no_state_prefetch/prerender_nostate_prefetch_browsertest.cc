@@ -1982,8 +1982,6 @@ class SpeculationNoStatePrefetchBrowserTest
     : public NoStatePrefetchBrowserTest {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kSpeculationRulesPrefetchProxy);
     NoStatePrefetchBrowserTest::SetUp();
   }
 
@@ -2014,9 +2012,6 @@ class SpeculationNoStatePrefetchBrowserTest
     }
     test_prerender->WaitForStop();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SpeculationNoStatePrefetchBrowserTest,

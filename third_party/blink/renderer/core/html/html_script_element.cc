@@ -370,9 +370,7 @@ bool HTMLScriptElement::IsPotentiallyRenderBlocking() const {
 }
 
 // static
-bool HTMLScriptElement::supports(ScriptState* script_state,
-                                 const AtomicString& type) {
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+bool HTMLScriptElement::supports(const AtomicString& type) {
   if (type == script_type_names::kClassic)
     return true;
   if (type == script_type_names::kModule)
@@ -380,8 +378,7 @@ bool HTMLScriptElement::supports(ScriptState* script_state,
   if (type == script_type_names::kImportmap)
     return true;
 
-  if ((type == script_type_names::kSpeculationrules) &&
-      RuntimeEnabledFeatures::SpeculationRulesEnabled(execution_context)) {
+  if (type == script_type_names::kSpeculationrules) {
     return true;
   }
   if (type == script_type_names::kWebbundle)
