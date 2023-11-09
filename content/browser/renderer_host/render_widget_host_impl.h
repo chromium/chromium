@@ -969,14 +969,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // ---------------------------------------------------------------------------
 
   bool IsMouseLocked() const;
-
-  // The View associated with the RenderWidgetHost. The lifetime of this object
-  // is associated with the lifetime of the Render process. If the Renderer
-  // crashes, its View is destroyed and this pointer becomes NULL, even though
-  // render_view_host_ lives on to load another URL (creating a new View while
-  // doing so).
-  base::WeakPtr<RenderWidgetHostViewBase> view_;
-
  private:
   FRIEND_TEST_ALL_PREFIXES(FullscreenDetectionTest,
                            EncompassingDivNotFullscreen);
@@ -1537,6 +1529,13 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // produce frames associated with `frame_sink_id_` only when it owns that
   // FrameSinkId.
   bool view_is_frame_sink_id_owner_{false};
+
+  // The View associated with the RenderWidgetHost. The lifetime of this object
+  // is associated with the lifetime of the Render process. If the Renderer
+  // crashes, its View is destroyed and this pointer becomes NULL, even though
+  // render_view_host_ lives on to load another URL (creating a new View while
+  // doing so).
+  base::WeakPtr<RenderWidgetHostViewBase> view_;
 
   base::WeakPtrFactory<RenderWidgetHostImpl> weak_factory_{this};
 };
