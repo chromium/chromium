@@ -80,7 +80,7 @@ BASE_FEATURE(kWinSboxRendererCloseKsecDD,
 // up `advapi32!RtlGenRandom`.
 BASE_FEATURE(kWinSboxWarmupProcessPrng,
              "WinSboxWarmupProcessPrng",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, launch the network service within an LPAC sandbox. If disabled,
 // the network service will run inside an App Container.
