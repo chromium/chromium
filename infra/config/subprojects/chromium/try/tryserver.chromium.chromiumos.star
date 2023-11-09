@@ -202,26 +202,38 @@ try_.builder(
     mirrors = ["ci/chromeos-arm64-generic-rel"],
 )
 
-try_.orchestrator_builder(
+try_.builder(
     name = "lacros-amd64-generic-rel",
     branch_selector = branches.selector.CROS_BRANCHES,
-    description_html = """\
-Lacros builder that runs Tast tests and gtests on ChromeOS devices via Skylab""",
     mirrors = [
         "ci/lacros-amd64-generic-rel",
     ],
-    compilator = "lacros-amd64-generic-rel-compilator",
+    builderless = not settings.is_main,
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
     tryjob = try_.job(),
 )
 
+# crbug/1298113: Temporary orchestrator/compilator builders to test
+# orchestrator compatability before converting lacros-amd64-generic-rel
+try_.orchestrator_builder(
+    name = "lacros-amd64-generic-rel-orchestrator",
+    description_html = """\
+Temporary orchestrator setup for lacros-amd-generic-rel""",
+    mirrors = [
+        "ci/lacros-amd64-generic-rel",
+    ],
+    compilator = "lacros-amd64-generic-rel-compilator",
+    contact_team_email = "chrome-browser-infra-team@google.com",
+    main_list_view = "try",
+)
+
 try_.compilator_builder(
     name = "lacros-amd64-generic-rel-compilator",
-    branch_selector = branches.selector.CROS_BRANCHES,
-    builderless = not settings.is_main,
+    description_html = """\
+Temporary compilator setup for lacros-amd-generic-rel""",
     cores = 8,
-    contact_team_email = "chrome-desktop-engprod@google.com",
+    contact_team_email = "chrome-browser-infra-team@google.com",
     main_list_view = "try",
 )
 

@@ -799,7 +799,7 @@ exempted_from_description_builders = {
         "ios16-sdk-simulator",
         "ios17-beta-simulator",
         "ios17-sdk-simulator",
-        "lacros-amd64-generic-rel-compilator",
+        "lacros-amd64-generic-rel",
         "lacros-amd64-generic-rel-non-skylab",
         "lacros-arm-generic-rel",
         "lacros-arm-generic-rel-skylab",
