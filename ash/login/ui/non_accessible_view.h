@@ -8,12 +8,15 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
 // A views::View instance that is not shown in the accessibility hierarchy.
 class ASH_EXPORT NonAccessibleView : public views::View {
+  METADATA_HEADER(NonAccessibleView, views::View)
+
  public:
   NonAccessibleView();
   explicit NonAccessibleView(const std::string& name);
@@ -24,7 +27,7 @@ class ASH_EXPORT NonAccessibleView : public views::View {
   ~NonAccessibleView() override;
 
   // views::View:
-  const char* GetClassName() const override;
+  std::string GetObjectName() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:

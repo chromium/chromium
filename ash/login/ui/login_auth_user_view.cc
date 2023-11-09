@@ -58,6 +58,8 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -217,6 +219,8 @@ void AnimateOpacity(T* view, bool towards_visible, bool observe_completion) {
 
 // Consists of challenge-response icon view and a label.
 class LoginAuthUserView::ChallengeResponseView : public views::View {
+  METADATA_HEADER(ChallengeResponseView, views::View)
+
  public:
   enum class State { kInitial, kAuthenticating, kFailure };
 
@@ -341,6 +345,9 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
   raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
   base::OneShotTimer reset_state_timer_;
 };
+
+BEGIN_METADATA(LoginAuthUserView, ChallengeResponseView, views::View)
+END_METADATA
 
 LoginAuthUserView::AuthMethodsMetadata::AuthMethodsMetadata() = default;
 LoginAuthUserView::AuthMethodsMetadata::~AuthMethodsMetadata() = default;
@@ -1443,5 +1450,8 @@ std::u16string LoginAuthUserView::GetMultiUserSignInDisableAuthMessage() const {
   }
   return l10n_util::GetStringUTF16(message_id);
 }
+
+BEGIN_METADATA(LoginAuthUserView)
+END_METADATA
 
 }  // namespace ash
