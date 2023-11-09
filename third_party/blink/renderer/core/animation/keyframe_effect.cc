@@ -148,8 +148,7 @@ KeyframeEffect* KeyframeEffect::Create(
     composite =
         EffectModel::StringToCompositeOperation(effect_options->composite())
             .value();
-    if (RuntimeEnabledFeatures::WebAnimationsAPIEnabled() &&
-        !effect_options->pseudoElement().empty()) {
+    if (!effect_options->pseudoElement().empty()) {
       pseudo = effect_options->pseudoElement();
       if (!ValidateAndCanonicalizePseudo(pseudo)) {
         // TODO(gtsteel): update when
@@ -355,9 +354,6 @@ void KeyframeEffect::setKeyframes(ScriptState* script_state,
 }
 
 void KeyframeEffect::SetKeyframes(StringKeyframeVector keyframes) {
-  Model()->SetComposite(
-      EffectInput::ResolveCompositeOperation(Model()->Composite(), keyframes));
-
   To<StringKeyframeEffectModel>(Model())->SetFrames(keyframes);
 
   // Changing the keyframes will invalidate any sampled effect, as well as

@@ -9,7 +9,7 @@ interface mixin DocumentOrShadowRoot {
     [Affects=Nothing] Selection? getSelection();
     // Web-Animation-API
     //https://drafts.csswg.org/web-animations/#extensions-to-the-documentorshadowroot-interface-mixin
-    [RuntimeEnabled=WebAnimationsAPI, Measure] sequence<Animation> getAnimations();
+    [Measure] sequence<Animation> getAnimations();
     // CSSOM View Module
     // https://drafts.csswg.org/cssom-view/#extensions-to-the-document-interface
     [Measure] Element? elementFromPoint(double x, double y);

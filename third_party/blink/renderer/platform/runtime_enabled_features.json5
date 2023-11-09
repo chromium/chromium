@@ -3953,12 +3953,6 @@
       copied_from_base_feature_if: "overridden",
     },
     {
-      name: "WebAnimationsAPI",
-      status: "stable",
-      implied_by: ["AnimationWorklet"],
-      base_feature: "none",
-    },
-    {
       name: "WebAnimationsSVG",
       status: "experimental",
       base_feature: "none",
