@@ -1231,15 +1231,15 @@ void StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA(
   }
 
   static_assert(kCurrentDeviceRegistrationVersion == 1);
-  const bool also_log_with_v1_suffix =
-      per_user_vault->local_device_registration_info()
-          .device_registered_version() == 1;
+  // There should be no way to downgrade registration version.
+  CHECK_EQ(per_user_vault->local_device_registration_info()
+               .device_registered_version(),
+           1);
 
   if (AreConnectionRequestsThrottled()) {
     // Keys download attempt is not possible.
     RecordVerifyRegistrationStatus(
-        TrustedVaultDownloadKeysStatusForUMA::kThrottledClientSide,
-        also_log_with_v1_suffix);
+        TrustedVaultDownloadKeysStatusForUMA::kThrottledClientSide);
     return;
   }
 
@@ -1248,9 +1248,8 @@ void StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA(
           ProtoStringToBytes(per_user_vault->local_device_registration_info()
                                  .private_key_material()));
   if (!key_pair) {
-    RecordVerifyRegistrationStatus(
-        TrustedVaultDownloadKeysStatusForUMA::kCorruptedLocalDeviceRegistration,
-        also_log_with_v1_suffix);
+    RecordVerifyRegistrationStatus(TrustedVaultDownloadKeysStatusForUMA::
+                                       kCorruptedLocalDeviceRegistration);
     return;
   }
 
@@ -1264,16 +1263,12 @@ void StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA(
               per_user_vault->vault_key().rbegin()->key_material()),
           per_user_vault->last_vault_key_version()),
       std::move(key_pair),
-      base::BindOnce(
-          [](bool also_log_with_v1_suffix,
-             TrustedVaultDownloadKeysStatus status,
-             const std::vector<std::vector<uint8_t>>& new_vault_keys,
-             int last_vault_key_version) {
-            RecordVerifyRegistrationStatus(
-                GetDownloadKeysStatusForUMAFromResponse(status),
-                also_log_with_v1_suffix);
-          },
-          also_log_with_v1_suffix));
+      base::BindOnce([](TrustedVaultDownloadKeysStatus status,
+                        const std::vector<std::vector<uint8_t>>& new_vault_keys,
+                        int last_vault_key_version) {
+        RecordVerifyRegistrationStatus(
+            GetDownloadKeysStatusForUMAFromResponse(status));
+      }));
 }
 
 void StandaloneTrustedVaultBackend::WriteDataToDisk() {

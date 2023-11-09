@@ -101,8 +101,7 @@ void TrustedVaultRegistrationVerifier::VerifyMembership(
         // known).
         RecordVerifyRegistrationStatus(
             GetDownloadKeysStatusForUMAFromResponse(status.value_or(
-                TrustedVaultDownloadKeysStatus::kKeyProofsVerificationFailed)),
-            /*also_log_with_v1_suffix=*/true);
+                TrustedVaultDownloadKeysStatus::kKeyProofsVerificationFailed)));
       }));
 
   ongoing_verify_registration_request_ = std::move(request);

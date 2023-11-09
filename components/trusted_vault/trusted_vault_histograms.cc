@@ -107,15 +107,10 @@ void RecordTrustedVaultDownloadKeysStatus(
   }
 }
 
-void RecordVerifyRegistrationStatus(TrustedVaultDownloadKeysStatusForUMA status,
-                                    bool also_log_with_v1_suffix) {
+void RecordVerifyRegistrationStatus(
+    TrustedVaultDownloadKeysStatusForUMA status) {
   base::UmaHistogramEnumeration(
-      "Sync.TrustedVaultVerifyDeviceRegistrationState", status);
-
-  if (also_log_with_v1_suffix) {
-    base::UmaHistogramEnumeration(
-        "Sync.TrustedVaultVerifyDeviceRegistrationStateV1", status);
-  }
+      "Sync.TrustedVaultVerifyDeviceRegistrationStateV1", status);
 }
 
 void RecordTrustedVaultFileReadStatus(TrustedVaultFileReadStatusForUMA status) {

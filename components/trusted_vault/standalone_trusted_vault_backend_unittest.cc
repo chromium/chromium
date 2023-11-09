@@ -2154,10 +2154,6 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldVerifyRegistration) {
       .Run(TrustedVaultDownloadKeysStatus::kNoNewKeys, {}, 0);
 
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultVerifyDeviceRegistrationState",
-      /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kNoNewKeys,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultVerifyDeviceRegistrationStateV1",
       /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kNoNewKeys,
       /*expected_bucket_count=*/1);
