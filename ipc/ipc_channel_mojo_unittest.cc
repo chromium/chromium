@@ -1381,14 +1381,9 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(SyncAssociatedInterface,
   DestroyProxy();
 }
 
-// https://crbug.com/1500485: This test causes problems on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SyncAssociatedInterfacePipeError \
-  DISABLED_SyncAssociatedInterfacePipeError
-#else
-#define MAYBE_SyncAssociatedInterfacePipeError SyncAssociatedInterfacePipeError
-#endif
-TEST_F(IPCChannelProxyMojoTest, MAYBE_SyncAssociatedInterfacePipeError) {
+// TODO(https://crbug.com/1500560): Disabled for flaky behavior of forced
+// process termination. Will be re-enabled with a fix.
+TEST_F(IPCChannelProxyMojoTest, DISABLED_SyncAssociatedInterfacePipeError) {
   // Regression test for https://crbug.com/1494461.
 
   Init("SyncAssociatedInterfacePipeError");
