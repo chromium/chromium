@@ -3322,11 +3322,6 @@
       base_feature: "none",
     },
     {
-      name: "ScriptElementSupports",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "ScriptingMediaFeature",
       status: "stable",
     },
