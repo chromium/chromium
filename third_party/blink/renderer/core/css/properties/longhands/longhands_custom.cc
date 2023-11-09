@@ -5604,8 +5604,6 @@ const CSSValue* ObjectViewBox::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  DCHECK(RuntimeEnabledFeatures::CSSObjectViewBoxEnabled());
-
   if (range.Peek().Id() == CSSValueID::kNone) {
     return css_parsing_utils::ConsumeIdent(range);
   }
@@ -5627,11 +5625,6 @@ const CSSValue* ObjectViewBox::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (!RuntimeEnabledFeatures::CSSObjectViewBoxEnabled()) {
-    DCHECK(!style.ObjectViewBox());
-    return CSSIdentifierValue::Create(CSSValueID::kNone);
-  }
-
   if (auto* basic_shape = style.ObjectViewBox()) {
     return ValueForBasicShape(style, basic_shape);
   }

@@ -976,11 +976,6 @@
       status: "stable",
     },
     {
-      name: "CSSObjectViewBox",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "CSSOffsetPathBasicShapesCircleAndEllipse",
       status: "stable",
     },

@@ -3634,7 +3634,6 @@
       converter: "ConvertObjectViewBox",
       keywords: ["none"],
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSObjectViewBox",
     },
     {
       name: "offset-anchor",
