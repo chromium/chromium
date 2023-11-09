@@ -119,7 +119,7 @@ public class ShowNtpAtStartupTest {
         StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
 
         verifyTabCountAndActiveTabUrl(
-            mActivityTestRule.getActivity(), 1, TAB_URL, /* expectHomeSurfaceUiShown */null);
+                mActivityTestRule.getActivity(), 1, TAB_URL, /* expectHomeSurfaceUiShown= */ null);
     }
 
     @Test
