@@ -775,8 +775,8 @@ public final class AnchoredPopupWindowTest {
         doReturn(mockPopup).when(mockFactory).createPopupWindow(any());
 
         AnchoredPopupWindow popupWindow = createAnchorPopupWindow(0);
-        popupWindow.setAnimationStyle(R.style.Animation_AppCompat_Dialog);
-        verify(mockPopup).setAnimationStyle(R.style.Animation_AppCompat_Dialog);
+        popupWindow.setAnimationStyle(R.style.DropdownPopupWindow);
+        verify(mockPopup).setAnimationStyle(R.style.DropdownPopupWindow);
 
         popupWindow.setAnimateFromAnchor(true);
         popupWindow.showPopupWindow();

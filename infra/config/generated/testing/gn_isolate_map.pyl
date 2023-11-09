@@ -1698,7 +1698,7 @@
     "type": "windowed_test_launcher",
   },
   "ui_junit_tests": {
-    "label": "//ui/android:ui_junit_tests",
+    "label": "//ui:ui_junit_tests",
     "type": "generated_script",
   },
   "ui_touch_selection_unittests": {

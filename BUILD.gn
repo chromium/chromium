@@ -382,7 +382,7 @@ group("gn_all") {
         "//tools/android/audio_focus_grabber:audio_focus_grabber_apk",
         "//tools/android/customtabs_benchmark:customtabs_benchmark_apk",
         "//tools/android/kerberos/SpnegoAuthenticator:spnego_authenticator_apk",
-        "//ui/android:ui_junit_tests",
+        "//ui:ui_junit_tests",
       ]
       deps -= [
         "//net:net_perftests",

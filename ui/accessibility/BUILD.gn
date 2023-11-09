@@ -492,6 +492,17 @@ if (is_android) {
     ]
   }
 
+  robolectric_library("ui_accessibility_junit_tests") {
+    testonly = true
+    sources = [ "android/javatests/src/org/chromium/ui/accessibility/AccessibilityStateTest.java" ]
+    deps = [
+      ":ax_base_java",
+      "//base:base_junit_test_support",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/junit:junit",
+    ]
+  }
+
   java_cpp_features("ui_accessibility_features_srcjar") {
     # External code should depend on ":ui_accessibility_features_java" instead.
     visibility = [ ":*" ]

@@ -200,6 +200,8 @@ public class AccessibilityState {
     private static boolean sInitialized;
     private static boolean sIsInTestingMode;
     private static Boolean sPreInitCachedValuePerformGesturesEnabled;
+    private static List<AccessibilityServiceInfo> sServiceInfoListForTesting;
+    private static String sEnabledServiceStringForTesting;
 
     private static boolean sExtraStateInitialized;
     private static boolean sDisplayInversionEnabled;
@@ -460,6 +462,47 @@ public class AccessibilityState {
         sHighContrastEnabled = highTextContrastEnabled == 1;
     }
 
+    protected static List<AccessibilityServiceInfo> getRunningServiceInfoList() {
+        if (sIsInTestingMode
+                && sServiceInfoListForTesting != null
+                && !sServiceInfoListForTesting.isEmpty()) {
+            return sServiceInfoListForTesting;
+        }
+
+        return sAccessibilityManager.getEnabledAccessibilityServiceList(
+                AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
+    }
+
+    protected static String getEnabledServiceString(Context context) {
+        if (sIsInTestingMode
+                && sEnabledServiceStringForTesting != null
+                && !sEnabledServiceStringForTesting.isEmpty()) {
+            return sEnabledServiceStringForTesting;
+        }
+
+        return Settings.Secure.getString(
+                context.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+    }
+
+    protected static List<String> getCanonicalizedEnabledServiceNames(String enabledServiceString) {
+        ArrayList<String> enabledServiceNames = new ArrayList<String>();
+        if (enabledServiceString != null && !enabledServiceString.isEmpty()) {
+            String[] serviceNames = enabledServiceString.split(":");
+            for (String name : serviceNames) {
+                // null or empty names can be skipped
+                if (name == null || name.isEmpty()) continue;
+                // Try to canonicalize the component name if possible.
+                ComponentName componentName = ComponentName.unflattenFromString(name);
+                if (componentName != null) {
+                    enabledServiceNames.add(componentName.flattenToShortString());
+                } else {
+                    enabledServiceNames.add(name);
+                }
+            }
+        }
+        return enabledServiceNames;
+    }
+
     static void updateAccessibilityServices() {
         long now = SystemClock.elapsedRealtimeNanos() / 1000;
         if (!sInitialized) {
@@ -489,13 +532,11 @@ public class AccessibilityState {
         boolean isAccessibilityToolPresent = false;
 
         // Get the list of currently running accessibility services.
-        List<AccessibilityServiceInfo> services =
-                sAccessibilityManager.getEnabledAccessibilityServiceList(
-                        AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
-        sServiceIds = new String[services.size()];
+        List<AccessibilityServiceInfo> serviceInfoList = getRunningServiceInfoList();
+        sServiceIds = new String[serviceInfoList.size()];
         ArrayList<String> runningServiceNames = new ArrayList<String>();
         int i = 0;
-        for (AccessibilityServiceInfo service : services) {
+        for (AccessibilityServiceInfo service : serviceInfoList) {
             if (service == null) continue;
             isAccessibilityToolPresent |= (Build.VERSION.SDK_INT < Build.VERSION_CODES.S
                     || service.isAccessibilityTool());
@@ -553,23 +594,8 @@ public class AccessibilityState {
 
         // Get the list of enabled accessibility services, from settings, in
         // case it's different.
-        ArrayList<String> enabledServiceNames = new ArrayList<String>();
-        String serviceNamesString = Settings.Secure.getString(
-                context.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
-        if (serviceNamesString != null && !serviceNamesString.isEmpty()) {
-            String[] serviceNames = serviceNamesString.split(":");
-            for (String name : serviceNames) {
-                // null or empty names can be skipped
-                if (name == null || name.isEmpty()) continue;
-                // Try to canonicalize the component name if possible.
-                ComponentName componentName = ComponentName.unflattenFromString(name);
-                if (componentName != null) {
-                    enabledServiceNames.add(componentName.flattenToShortString());
-                } else {
-                    enabledServiceNames.add(name);
-                }
-            }
-        }
+        List<String> enabledServiceNames =
+                getCanonicalizedEnabledServiceNames(getEnabledServiceString(context));
 
         // Compare the list of enabled package names to the list of running package names.
         // When the system setting containing the list of running accessibility services
@@ -1049,6 +1075,19 @@ public class AccessibilityState {
 
         // Explicitly set mask so events can be (ir)relevant to currently enabled service.
         sEventTypeMask = mask;
+    }
+
+    public static void setEnabledServiceInfoListForTesting(
+            List<AccessibilityServiceInfo> serviceInfoList) {
+        if (!sInitialized) initializeForTesting();
+
+        sServiceInfoListForTesting = serviceInfoList;
+    }
+
+    public static void setEnabledServiceStringForTesting(String enabledServiceString) {
+        if (!sInitialized) initializeForTesting();
+
+        sEnabledServiceStringForTesting = enabledServiceString;
     }
 
     private static void initializeForTesting() {

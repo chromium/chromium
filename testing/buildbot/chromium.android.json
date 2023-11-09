@@ -1082,7 +1082,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_junit_tests",
-        "test_id_prefix": "ninja://ui/android:ui_junit_tests/",
+        "test_id_prefix": "ninja://ui:ui_junit_tests/",
         "use_isolated_scripts_api": true
       },
       {
@@ -20580,7 +20580,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_junit_tests",
-        "test_id_prefix": "ninja://ui/android:ui_junit_tests/",
+        "test_id_prefix": "ninja://ui:ui_junit_tests/",
         "use_isolated_scripts_api": true
       },
       {
@@ -30089,7 +30089,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_junit_tests",
-        "test_id_prefix": "ninja://ui/android:ui_junit_tests/",
+        "test_id_prefix": "ninja://ui:ui_junit_tests/",
         "use_isolated_scripts_api": true
       },
       {

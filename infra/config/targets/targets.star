@@ -2076,7 +2076,7 @@ targets.windowed_test_launcher(
 
 targets.generated_script(
     name = "ui_junit_tests",
-    label = "//ui/android:ui_junit_tests",
+    label = "//ui:ui_junit_tests",
 )
 
 targets.windowed_test_launcher(

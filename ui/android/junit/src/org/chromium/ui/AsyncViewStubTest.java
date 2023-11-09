@@ -32,10 +32,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AsyncViewStubTest {
     private AsyncViewStub mAsyncViewStub;
     private final AtomicInteger mEventCount = new AtomicInteger();
-    private static final int MAIN_LAYOUT_RESOURCE_ID = org.chromium.test.ui.R.layout.main_view;
-    private static final int INFLATE_LAYOUT_RESOURCE_ID =
-            org.chromium.test.ui.R.layout.inflated_view;
-    private static final int STUB_ID = org.chromium.test.ui.R.id.view_stub;
+    private static final int MAIN_LAYOUT_RESOURCE_ID = org.chromium.ui.R.layout.main_view;
+    private static final int INFLATE_LAYOUT_RESOURCE_ID = org.chromium.ui.R.layout.inflated_view;
+    private static final int STUB_ID = org.chromium.ui.R.id.view_stub;
 
     @Before
     public void setUp() {
