@@ -104,18 +104,11 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
     )
     .unwrap();
 
-    // Run `cargo metadata` and process the output to get a list of crates we
-    // depend on.
-    let mut command = cargo_metadata::MetadataCommand::new();
-    if let Some(cargo_path) = args.get_one::<String>("cargo-path") {
-        command.cargo_path(cargo_path);
-    }
-    if let Some(rustc_path) = args.get_one::<String>("rustc-path") {
-        command.env("RUSTC", rustc_path);
-    }
-
-    command.current_dir(paths.third_party);
-    let dependencies = deps::collect_dependencies(&command.exec().unwrap(), None, None);
+    let dependencies = deps::collect_dependencies(
+        &run_cargo_metadata(paths.third_party.into(), args, Vec::new(), HashMap::new())?,
+        None,
+        None,
+    );
 
     // Compare cargo's dependency resolution with the crates we have on disk. We
     // want to ensure:
@@ -279,24 +272,6 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
     // Convert the `rust_src_root` to a Path hereafter.
     let rust_src_root = paths.root.join(Path::new(&rust_src_root));
 
-    // Run `cargo metadata` from the std package in the Rust source tree (which
-    // is a workspace).
-    let mut command = cargo_metadata::MetadataCommand::new();
-    if let Some(cargo_path) = args.get_one::<String>("cargo-path") {
-        command.cargo_path(cargo_path);
-    }
-    if let Some(rustc_path) = args.get_one::<String>("rustc-path") {
-        command.env("RUSTC", rustc_path);
-    }
-
-    command.current_dir(paths.std_fake_root);
-
-    // The Cargo.toml files in the Rust toolchain may use nightly Cargo
-    // features, but the cargo binary is beta. This env var enables the
-    // beta cargo binary to allow nightly features anyway.
-    // https://github.com/rust-lang/rust/commit/2e52f4deb0544480b6aefe2c0cc1e6f3c893b081
-    command.env("RUSTC_BOOTSTRAP", "1");
-
     // Delete the Cargo.lock if it exists.
     let mut std_fake_root_cargo_lock = paths.std_fake_root.to_path_buf();
     std_fake_root_cargo_lock.push("Cargo.lock");
@@ -308,12 +283,19 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
         }
     }
 
+    // The Cargo.toml files in the Rust toolchain may use nightly Cargo
+    // features, but the cargo binary is beta. This env var enables the
+    // beta cargo binary to allow nightly features anyway.
+    // https://github.com/rust-lang/rust/commit/2e52f4deb0544480b6aefe2c0cc1e6f3c893b081
+    let cargo_extra_env: HashMap<std::ffi::OsString, std::ffi::OsString> =
+        [("RUSTC_BOOTSTRAP".into(), "1".into())].into_iter().collect();
+
     // Use offline to constrain dependency resolution to those in the Rust src
     // tree and vendored crates. Ideally, we'd use "--locked" and use the
     // upstream Cargo.lock, but this is not straightforward since the rust-src
     // component is not a full Cargo workspace. Since the vendor dir we package
     // is generated with "--locked", the outcome should be the same.
-    command.other_options(vec!["--offline".to_string()]);
+    let cargo_extra_options = vec!["--offline".to_string()];
 
     // Compute the set of crates we need to build libstd. Note this
     // contains a few kinds of entries:
@@ -325,7 +307,12 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
     //   Rust codebase (see
     //   https://github.com/rust-lang/rust/tree/master/library/rustc-std-workspace-core)
     let mut dependencies = deps::collect_dependencies(
-        &command.exec().unwrap(),
+        &run_cargo_metadata(
+            paths.std_fake_root.into(),
+            args,
+            cargo_extra_options,
+            cargo_extra_env,
+        )?,
         Some(vec![config.resolve.root.clone()]),
         None,
     );
@@ -440,6 +427,31 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
     write_build_file(&paths.std_build.join("BUILD.gn"), gn_str).unwrap();
 
     Ok(())
+}
+
+/// Run cargo metadata command, optionally with extra flags and environment.
+fn run_cargo_metadata(
+    workspace_path: PathBuf,
+    args: &clap::ArgMatches,
+    extra_options: Vec<String>,
+    extra_env: HashMap<std::ffi::OsString, std::ffi::OsString>,
+) -> anyhow::Result<cargo_metadata::Metadata> {
+    let mut command = cargo_metadata::MetadataCommand::new();
+    command.current_dir(workspace_path);
+    if let Some(cargo_path) = args.get_one::<String>("cargo-path") {
+        command.cargo_path(cargo_path);
+    }
+    if let Some(rustc_path) = args.get_one::<String>("rustc-path") {
+        command.env("RUSTC", rustc_path);
+    }
+
+    command.other_options(extra_options);
+    for (k, v) in extra_env.into_iter() {
+        command.env(k, v);
+    }
+
+    log::debug!("invoking cargo with:\n`{:?}`", command.cargo_command());
+    command.exec().context("running cargo metadata")
 }
 
 fn build_file_path(crate_id: &VendoredCrate, paths: &paths::ChromiumPaths) -> PathBuf {
