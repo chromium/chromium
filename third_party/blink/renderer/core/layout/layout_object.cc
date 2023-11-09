@@ -420,7 +420,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     case EDisplay::kBlockRuby:
     case EDisplay::kRubyText:
       // TODO(crbug.com/880802): Returns a LayoutRuby* instance.
-      DCHECK(RuntimeEnabledFeatures::CssDisplayRubyEnabled());
+      NOTREACHED();
       return CreateBlockFlowOrListItem(element, style);
     case EDisplay::kLayoutCustom:
     case EDisplay::kInlineLayoutCustom:

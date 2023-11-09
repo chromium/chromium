@@ -865,7 +865,6 @@
     {
       name: "CssDisplayRuby",
       depends_on: ["RubySimplePairing"],
-      status: "test",
     },
     {
       name: "CSSDynamicRangeLimit",
