@@ -85,8 +85,8 @@ class ASH_EXPORT CastDetailedView : public TrayDetailedView,
   // associated `route`.
   std::unique_ptr<PillButton> CreateFreezeButton(const CastRoute& route);
 
-  // A mapping from the sink id to the receiver/activity data.
-  std::map<std::string, SinkAndRoute> sinks_and_routes_;
+  // A list of the receiver/activity data.
+  std::vector<SinkAndRoute> sinks_and_routes_;
 
   // A mapping from the view pointer to the associated activity sink id.
   std::map<views::View*, std::string> view_to_sink_map_;

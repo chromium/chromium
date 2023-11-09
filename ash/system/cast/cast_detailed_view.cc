@@ -104,11 +104,9 @@ void CastDetailedView::CreateItems() {
 void CastDetailedView::OnDevicesUpdated(
     const std::vector<SinkAndRoute>& sinks_routes) {
   sinks_and_routes_.clear();
-  // Add/update existing.
-  for (const auto& device : sinks_routes) {
-    sinks_and_routes_.insert(std::make_pair(device.sink.id, device));
+  for (const auto& sink_and_route : sinks_routes) {
+    sinks_and_routes_.push_back(sink_and_route);
   }
-
   // Update UI.
   UpdateReceiverListFromCachedData();
   Layout();
@@ -130,8 +128,8 @@ void CastDetailedView::UpdateReceiverListFromCachedData() {
 
   // Add a view for each receiver.
   for (auto& it : sinks_and_routes_) {
-    const CastSink& sink = it.second.sink;
-    const CastRoute& route = it.second.route;
+    const CastSink& sink = it.sink;
+    const CastRoute& route = it.route;
     HoverHighlightView* container = AddScrollListItem(
         item_container, SinkIconTypeToIcon(sink.sink_icon_type),
         base::UTF8ToUTF16(sink.name));
