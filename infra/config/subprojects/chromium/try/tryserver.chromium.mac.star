@@ -8,6 +8,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "cpu", "os", "reclient", "siso", "xcode")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 try_.defaults.set(
     executable = try_.DEFAULT_EXECUTABLE,
@@ -58,6 +59,12 @@ try_.builder(
     builderless = False,
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/mac-arm64-on-arm64-rel",
+            "release_try_builder",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -87,6 +94,12 @@ try_.builder(
     builderless = False,
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/mac-intel-on-arm64-rel",
+            "release_try_builder",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -97,6 +110,7 @@ try_.builder(
         "ci/mac-fieldtrial-tester",
     ],
     os = os.MAC_DEFAULT,
+    gn_args = "ci/mac-arm64-rel",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -133,6 +147,19 @@ try_.orchestrator_builder(
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_try_builder",
+            "reclient",
+            "no_symbols",
+            "use_clang_coverage",
+            "partial_code_coverage_instrumentation",
+            "enable_dangling_raw_ptr_feature_flag",
+            "enable_backup_ref_ptr_feature_flag",
+            "x64",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
@@ -198,6 +225,15 @@ try_.builder(
         "ci/mac11-arm64-rel-tests",
     ],
     builderless = True,
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "gpu_tests",
+            "release_try_builder",
+            "reclient",
+            "no_symbols",
+        ],
+    ),
 )
 
 try_.builder(
@@ -222,6 +258,15 @@ try_.builder(
         "ci/mac12-arm64-rel-tests",
     ],
     builderless = True,
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "gpu_tests",
+            "release_try_builder",
+            "reclient",
+            "no_symbols",
+        ],
+    ),
     main_list_view = "try",
 )
 
@@ -233,6 +278,15 @@ try_.orchestrator_builder(
         "ci/mac13-arm64-rel-tests",
     ],
     compilator = "mac13-arm64-rel-compilator",
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "gpu_tests",
+            "release_try_builder",
+            "reclient",
+            "no_symbols",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 100,
@@ -286,6 +340,13 @@ try_.builder(
         "ci/Mac Builder",
         "ci/Mac10.15 Tests",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "reclient",
+            "disable_nacl",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -297,6 +358,12 @@ try_.builder(
         "ci/Mac11 Tests",
     ],
     builderless = False,
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "reclient",
+        ],
+    ),
 )
 
 try_.builder(
@@ -307,6 +374,12 @@ try_.builder(
         "ci/Mac12 Tests",
     ],
     os = os.MAC_DEFAULT,
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "reclient",
+        ],
+    ),
 )
 
 try_.builder(
@@ -315,6 +388,12 @@ try_.builder(
         "ci/Mac Builder",
         "ci/Mac13 Tests",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "reclient",
+        ],
+    ),
 )
 
 try_.builder(
@@ -337,6 +416,12 @@ try_.builder(
         is_compile_only = True,
     ),
     os = os.MAC_DEFAULT,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Mac Builder (dbg)",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(),
@@ -351,6 +436,13 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_try_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -360,6 +452,7 @@ try_.builder(
         "ci/Mac Builder (dbg)",
         "ci/Mac13 Tests (dbg)",
     ],
+    gn_args = "ci/Mac Builder (dbg)",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -419,6 +512,7 @@ ios_builder(
     mirrors = [
         "ci/ios-catalyst",
     ],
+    gn_args = "ci/ios-catalyst",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -427,6 +521,7 @@ ios_builder(
     mirrors = [
         "ci/ios-device",
     ],
+    gn_args = "ci/ios-device",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -461,6 +556,14 @@ try_.orchestrator_builder(
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
+    gn_args = gn_args.config(
+        configs = [
+            "ci/ios-simulator",
+            "use_clang_coverage",
+            "partial_code_coverage_instrumentation",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
@@ -523,6 +626,14 @@ ios_builder(
     cpu = cpu.ARM64,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/ios-simulator-full-configs",
+            "use_clang_coverage",
+            "partial_code_coverage_instrumentation",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
@@ -545,6 +656,12 @@ ios_builder(
         "ci/ios-simulator-noncq",
     ],
     cpu = cpu.ARM64,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/ios-simulator-noncq",
+            "use_dummy_lastchange",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
         location_filters = [

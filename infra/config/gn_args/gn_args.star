@@ -420,6 +420,16 @@ gn_args.config(
 )
 
 gn_args.config(
+    "ios_catalyst",
+    args = {
+        "target_environment": "catalyst",
+    },
+    configs = [
+        "ios",
+    ],
+)
+
+gn_args.config(
     "ios_chromium_cert",
     args = {
         "ios_code_signing_identity_description": "iPhone Developer",
@@ -437,6 +447,13 @@ gn_args.config(
     "ios_disable_code_signing",
     args = {
         "ios_enable_code_signing": False,
+    },
+)
+
+gn_args.config(
+    "ios_google_cert",
+    args = {
+        "ios_code_signing_identity_description": "Apple Development",
     },
 )
 
@@ -510,9 +527,23 @@ gn_args.config(
 )
 
 gn_args.config(
+    "no_dsyms",
+    args = {
+        "enable_dsyms": False,
+    },
+)
+
+gn_args.config(
     "no_goma",
     args = {
         "use_goma": False,
+    },
+)
+
+gn_args.config(
+    "no_remoting",
+    args = {
+        "enable_remoting": False,
     },
 )
 
@@ -713,6 +744,13 @@ gn_args.config(
     configs = [
         "ubsan_vptr",
     ],
+)
+
+gn_args.config(
+    "updater",
+    args = {
+        "enable_updater": True,
+    },
 )
 
 gn_args.config(

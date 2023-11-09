@@ -529,20 +529,6 @@
       'codesearch-gen-chromium-win': 'codesearch_gen_chromium_bot_reclient',
     },
 
-    'chromium.mac': {
-      'Mac Builder': 'gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
-      'Mac Builder (dbg)': 'gpu_tests_debug_bot_reclient',
-      'ios-catalyst': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting_reclient',
-      'ios-device': 'ios_device_release_compile_only_reclient',
-      'ios-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
-      'ios-simulator-full-configs': 'ios_simulator_debug_static_bot_xctest_reclient',
-      'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest_reclient',
-      'mac-arm64-dbg': 'debug_bot_arm64_reclient',
-      'mac-arm64-on-arm64-rel': 'mac_arm64_release_bot_reclient',
-      'mac-arm64-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
-      'mac-intel-on-arm64-rel': 'release_bot_reclient_x64',
-    },
-
     'chromium.memory': {
       'Linux ASan LSan Builder': 'asan_lsan_release_trybot_reclient',
       'Linux CFI': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
@@ -1140,16 +1126,11 @@
       'gpu-try-mac-intel-dbg': 'gpu_tests_debug_bot_reclient',
       'ios-asan': 'ios_simulator_release_static_asan_bot_xctest_reclient',
       'ios-blink-dbg-fyi': 'ios_simulator_blink_xctest',
-      'ios-catalyst': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting_reclient',
-      'ios-device': 'ios_device_release_compile_only_reclient',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
-      'ios-simulator': 'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient',
       'ios-simulator-code-coverage': 'clang_code_coverage_ios_xctest_sim_reclient',
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
-      'ios-simulator-full-configs': 'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest_reclient',
-      'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest_reclient_use_dummy_lastchange',
       'ios-simulator-siso': 'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient',
       'ios-wpt-fyi-rel': 'ios_simulator_release_static_bot_xctest_reclient',
       'ios16-beta-simulator': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
@@ -1157,36 +1138,22 @@
       'ios17-beta-simulator': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
       'ios17-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
       'mac-arm64-clobber-rel': 'release_bot_mac_strip_minimal_symbols_arm64_reclient',
-      'mac-arm64-on-arm64-rel': 'mac_arm64_release_trybot_reclient',
       'mac-builder-next': 'mac_arm64_gpu_tests_debug_bot_minimal_symbols_no_nacl_reclient',
       'mac-clobber-rel': 'release_bot_mac_strip_minimal_symbols_reclient',
       'mac-code-coverage': 'clang_code_coverage_reclient',
       'mac-cr23-rel': 'release_trybot_minimal_symbols_reclient',
-      'mac-fieldtrial-tester': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
-      'mac-intel-on-arm64-rel': 'release_trybot_reclient_x64',
       'mac-osxbeta-rel': 'gpu_tests_debug_trybot_reclient',
       'mac-perfetto-rel': 'perfetto_release_trybot_reclient',
-      'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_reclient',
       'mac-siso-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_reclient',
       'mac10.15-wpt-content-shell-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',
-      'mac11-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols_reclient',
       'mac11-arm64-wpt-content-shell-fyi-rel': 'release_bot_blink_arm64_minimal_symbols_reclient',
       'mac11-wpt-content-shell-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',
-      'mac12-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols_reclient',
       'mac12-arm64-wpt-content-shell-fyi-rel': 'release_bot_blink_arm64_minimal_symbols_reclient',
-      'mac12-tests': 'release_trybot_reclient',
       'mac12-wpt-content-shell-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',
-      'mac13-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols_reclient',
       'mac13-arm64-siso-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols_reclient',
       'mac13-arm64-wpt-content-shell-fyi-rel': 'release_bot_blink_arm64_minimal_symbols_reclient',
-      'mac13-tests': 'release_trybot_reclient',
       'mac13-wpt-content-shell-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',
-      'mac_chromium_10.15_rel_ng': 'release_trybot_no_nacl_reclient',
-      'mac_chromium_11.0_rel_ng': 'release_trybot_reclient',
       'mac_chromium_asan_rel_ng': 'asan_dcheck_disable_nacl_release_bot_reclient',
-      'mac_chromium_compile_dbg_ng': 'gpu_tests_debug_bot_reclient_use_dummy_lastchange',
-      'mac_chromium_compile_rel_ng': 'gpu_tests_release_trybot_reclient',
-      'mac_chromium_dbg_ng': 'gpu_tests_debug_bot_reclient',
       'mac_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
       'mac_upload_clang': 'release_bot',
       'mac_upload_clang_arm': 'release_bot',
@@ -2126,10 +2093,6 @@
       'debug_bot',
     ],
 
-    'debug_bot_arm64_reclient': [
-      'debug_bot_reclient', 'arm64',
-    ],
-
     'debug_bot_blink': [
       'debug_bot_blink',
     ],
@@ -2292,12 +2255,6 @@
 
     'gpu_tests_debug_bot_reclient': [
       'gpu_tests', 'debug_bot_reclient',
-    ],
-
-    # When migrating to starlark, builders using this should instead just combine
-    # try_builder, debug, gpu_tests and reclient configs
-    'gpu_tests_debug_bot_reclient_use_dummy_lastchange': [
-      'gpu_tests', 'debug_bot_reclient', 'use_dummy_lastchange',
     ],
 
     'gpu_tests_debug_bot_x86_no_symbols': [
@@ -2503,10 +2460,6 @@
         'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'no_lld',
     ],
 
-    'ios_simulator_debug_static_bot_xctest_reclient_use_dummy_lastchange': [
-        'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'use_dummy_lastchange',
-    ],
-
     'ios_simulator_release_static_asan_bot_xctest_reclient': [
         'ios', 'ios_simulator', 'ios_cpu_x64', 'release_bot_reclient', 'asan', 'xctest',
     ],
@@ -2662,14 +2615,6 @@
 
     'mac_arm64_gpu_tests_release_trybot_no_symbols_reclient': [
       'arm64', 'gpu_tests', 'release_trybot_reclient', 'no_symbols',
-    ],
-
-    'mac_arm64_release_bot_reclient': [
-      'release_bot_reclient', 'arm64',
-    ],
-
-    'mac_arm64_release_trybot_reclient': [
-      'release_trybot_reclient', 'arm64',
     ],
 
     'mac_clang_tot_official': [
@@ -3052,10 +2997,6 @@
       'release_bot_reclient',
     ],
 
-    'release_bot_reclient_x64': [
-      'release_bot_reclient', 'x64',
-    ],
-
     'release_bot_x86_minimal_symbols': [
       'release_bot', 'x86', 'minimal_symbols',
     ],
@@ -3133,10 +3074,6 @@
       'release_trybot_minimal_symbols', 'tsan'
     ],
 
-    'release_trybot_no_nacl_reclient': [
-      'release_trybot_reclient', 'disable_nacl',
-    ],
-
     'release_trybot_no_symbols_chrome_for_testing_reclient_arm64': [
       'release_trybot_reclient', 'no_symbols', 'chrome_for_testing', 'arm64',
     ],
@@ -3152,10 +3089,6 @@
 
     'release_trybot_reclient': [
       'release_trybot_reclient',
-    ],
-
-    'release_trybot_reclient_x64': [
-       'release_trybot_reclient', 'x64',
     ],
 
     # TODO(crbug.com/1004523) Delete this once coverage mode is enabled on the

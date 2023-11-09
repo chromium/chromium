@@ -10,6 +10,7 @@ load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "cpu", "os", "reclient", "sheriff_rotations", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -85,6 +86,15 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "bling-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "disable_nacl",
+        ],
+    ),
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
 )
@@ -114,6 +124,13 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "bling-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "debug_builder",
+            "reclient",
+        ],
+    ),
 )
 
 ci.builder(
@@ -143,6 +160,13 @@ ci.builder(
         short_name = "a64",
     ),
     contact_team_email = "bling-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "arm64",
+        ],
+    ),
 )
 
 ci.builder(
@@ -168,6 +192,13 @@ ci.builder(
         short_name = "bld",
     ),
     contact_team_email = "bling-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "arm64",
+        ],
+    ),
 )
 
 ci.builder(
@@ -195,6 +226,16 @@ ci.builder(
         short_name = "bld",
     ),
     contact_team_email = "bling-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "disable_nacl",
+        ],
+    ),
 )
 
 ci.builder(
@@ -219,6 +260,13 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "a64",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "x64",
+        ],
     ),
 )
 
@@ -472,6 +520,19 @@ ios_builder(
             short_name = "ctl",
         ),
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "compile_only",
+            "debug_static_builder",
+            "reclient",
+            "ios_catalyst",
+            "x64",
+            "asan",
+            "libfuzzer",
+            "no_dsyms",
+            "no_remoting",
+        ],
+    ),
 )
 
 ios_builder(
@@ -504,6 +565,17 @@ ios_builder(
             short_name = "dev",
         ),
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "compile_only",
+            "ios_device",
+            "arm64",
+            "ios_google_cert",
+            "ios_disable_code_signing",
+            "release_builder",
+            "reclient",
+        ],
+    ),
 )
 
 ios_builder(
@@ -542,6 +614,15 @@ ios_builder(
         ),
     ],
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "debug_static_builder",
+            "reclient",
+            "ios_simulator",
+            "x64",
+            "xctest",
+        ],
+    ),
 )
 
 ios_builder(
@@ -580,6 +661,15 @@ ios_builder(
         ),
     ],
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "debug_static_builder",
+            "reclient",
+            "ios_simulator",
+            "x64",
+            "xctest",
+        ],
+    ),
 )
 
 ios_builder(
@@ -613,4 +703,13 @@ ios_builder(
             short_name = "non",
         ),
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "debug_static_builder",
+            "reclient",
+            "ios_simulator",
+            "x64",
+            "xctest",
+        ],
+    ),
 )
