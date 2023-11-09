@@ -262,6 +262,7 @@ export class PaymentsManagerExpectations {
   isValidIban: number = 0;
   authenticateUserAndFlipMandatoryAuthToggle: number = 0;
   getLocalCard: number = 0;
+  bulkDeleteAllCvcs: number = 0;
 }
 
 /**
@@ -284,17 +285,18 @@ export class TestPaymentsManager extends TestBrowserProxy implements
 
   constructor() {
     super([
-      'setPersonalDataManagerListener',
-      'removePersonalDataManagerListener',
+      'addVirtualCard',
+      'authenticateUserAndFlipMandatoryAuthToggle',
+      'bulkDeleteAllCvcs',
+      'clearCachedCreditCard',
       'getCreditCardList',
       'getIbanList',
-      'clearCachedCreditCard',
+      'getLocalCard',
+      'isValidIban',
       'removeCreditCard',
       'removeIban',
-      'addVirtualCard',
-      'isValidIban',
-      'authenticateUserAndFlipMandatoryAuthToggle',
-      'getLocalCard',
+      'removePersonalDataManagerListener',
+      'setPersonalDataManagerListener',
     ]);
 
     // Set these to have non-empty data.
@@ -393,6 +395,10 @@ export class TestPaymentsManager extends TestBrowserProxy implements
   }
   // </if>
 
+  bulkDeleteAllCvcs() {
+    this.methodCalled('bulkDeleteAllCvcs');
+  }
+
   /**
    * Verifies expectations.
    */
@@ -428,5 +434,8 @@ export class TestPaymentsManager extends TestBrowserProxy implements
     assertEquals(
         expected.getLocalCard, this.getCallCount('getLocalCard'),
         'getLocalCard mismatch');
+    assertEquals(
+        expected.bulkDeleteAllCvcs, this.getCallCount('bulkDeleteAllCvcs'),
+        'bulkDeleteAllCvcs mismatch');
   }
 }

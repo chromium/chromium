@@ -220,6 +220,7 @@ declare global {
       export function authenticateUserAndFlipMandatoryAuthToggle(): void;
       export function getLocalCard(guid: string): Promise<CreditCardEntry|null>;
       export function checkIfDeviceAuthAvailable(): Promise<boolean>;
+      export function bulkDeleteAllCvcs(): void;
 
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],

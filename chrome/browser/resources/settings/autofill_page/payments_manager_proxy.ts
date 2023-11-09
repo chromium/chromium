@@ -104,6 +104,13 @@ export interface PaymentsManagerProxy {
    */
   checkIfDeviceAuthAvailable(): Promise<boolean>;
   // </if>
+
+  /**
+   * Bulk delete all the CVCs (server and local) from the local webdata
+   * database. For server CVCs, this will also clear them from the Chrome
+   * sync server and thus other devices.
+   */
+  bulkDeleteAllCvcs(): void;
 }
 
 /**
@@ -192,6 +199,10 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
     return chrome.autofillPrivate.checkIfDeviceAuthAvailable();
   }
   // </if>
+
+  bulkDeleteAllCvcs() {
+    chrome.autofillPrivate.bulkDeleteAllCvcs();
+  }
 
   static getInstance(): PaymentsManagerProxy {
     return instance || (instance = new PaymentsManagerImpl());

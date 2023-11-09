@@ -667,10 +667,17 @@ export class SettingsPaymentsSectionElement extends
 
   /**
    * Method to bulk delete all the CVCs present on the local DB.
-   * TODO(crbug/1464441): Add the code to delete all the CVCs from the local DB.
    */
   private onShowBulkRemoveCvcConfirmationDialogClose_() {
     assert(this.cvcStorageAvailable_);
+    const confirmationDialog =
+        this.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+            '#bulkDeleteCvcConfirmDialog');
+    assert(confirmationDialog);
+
+    if (confirmationDialog.wasConfirmed()) {
+      this.paymentsManager_.bulkDeleteAllCvcs();
+    }
     this.showBulkRemoveCvcConfirmationDialog_ = false;
   }
 
