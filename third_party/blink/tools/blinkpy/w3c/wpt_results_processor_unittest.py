@@ -26,7 +26,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.host.port_factory = MockPortFactory(self.host)
         self.fs = self.host.filesystem
         self.path_finder = PathFinder(self.fs)
-        port = self.host.port_factory.get()
+        port = self.host.port_factory.get('test-linux-trusty')
 
         # Create a testing manifest containing any test files that we
         # might interact with.
@@ -563,6 +563,28 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 self.fs.join('/mock-checkout', 'out', 'Default',
                              'layout-test-results', 'external', 'wpt',
                              'variant_foo=baz-actual.txt')))
+
+    def test_extract_text_reset_results(self):
+        self.processor.reset_results = True
+        with self.fs.patch_builtins():
+            self._event(action='test_start', test='/variant.html?foo=baz')
+            self._event(action='test_status',
+                        test='/variant.html?foo=baz',
+                        subtest='passing subtest',
+                        status='PASS')
+            self._event(action='test_end',
+                        test='/variant.html?foo=baz',
+                        status='OK')
+        self.assertEqual(
+            self.fs.read_text_file(
+                self.path_finder.path_from_web_tests(
+                    'platform', 'test-linux-trusty', 'external', 'wpt',
+                    'variant_foo=baz-expected.txt')),
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                [PASS] passing subtest
+                Harness: the test ran to completion.
+                """))
 
     def test_extract_screenshots(self):
         self._event(action='test_start', test='/reftest.html')

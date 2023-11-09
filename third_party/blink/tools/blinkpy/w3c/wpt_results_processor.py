@@ -269,7 +269,8 @@ class WPTResultsProcessor:
                  sink: Optional[ResultSinkReporter] = None,
                  test_name_prefix: str = '',
                  failure_threshold: Optional[int] = None,
-                 crash_timeout_threshold: Optional[int] = None):
+                 crash_timeout_threshold: Optional[int] = None,
+                 reset_results: bool = False):
         self.fs = fs
         self.port = port
         self.artifacts_dir = artifacts_dir
@@ -300,6 +301,7 @@ class WPTResultsProcessor:
         }
         self.failure_threshold = failure_threshold or math.inf
         self.crash_timeout_threshold = crash_timeout_threshold or math.inf
+        self.reset_results = reset_results
         assert self.failure_threshold > 0
         assert self.crash_timeout_threshold > 0
 
@@ -661,20 +663,28 @@ class WPTResultsProcessor:
         actual_text = None
         actual_subpath = self.port.output_filename(
             result.name, test_failures.FILENAME_SUFFIX_ACTUAL, '.txt')
+        expected_subpath = self.port.output_filename(
+            result.name, test_failures.FILENAME_SUFFIX_EXPECTED, '.txt')
         if result.testharness_results:
             actual_text = format_testharness_baseline(
                 result.get_result(), '/html/dom/reflection' in result.name)
             artifacts.CreateArtifact('actual_text', actual_subpath,
                                      actual_text.encode())
+            if self.reset_results and self._iteration == 0 and result.actual not in {
+                    ResultType.Crash,
+                    ResultType.Timeout,
+            }:
+                source = self.fs.join(self.artifacts_dir, actual_subpath)
+                dest = self.fs.join(self.port.baseline_version_dir(),
+                                    expected_subpath)
+                self.fs.maybe_make_directory(self.fs.dirname(dest))
+                self.fs.copyfile(source, dest)
 
         expected_text = self.port.expected_text(result.name)
-        expected_subpath = self.port.output_filename(
-            result.name, test_failures.FILENAME_SUFFIX_EXPECTED, '.txt')
         if expected_text:
             expected_text = expected_text.decode().strip() + '\n'
             artifacts.CreateArtifact('expected_text', expected_subpath,
                                      expected_text.encode())
-
 
         if not actual_text or not expected_text:
             return
@@ -766,7 +776,11 @@ class WPTResultsProcessor:
                               artifacts_base_dir=self.fs.basename(
                                   self.artifacts_dir))
         image_diff_stats = None
-        if result.actual not in [ResultType.Pass, ResultType.Skip]:
+        # Dump output for `--reset-results`, even if the test passes, as the
+        # current port may fall back to a failing port.
+        if self.reset_results or result.actual not in [
+                ResultType.Pass, ResultType.Skip
+        ]:
             if result.test_type in {'testharness', 'wdspec'}:
                 self._write_text_results(result, artifacts)
             screenshots = (extra or {}).get('reftest_screenshots') or []
