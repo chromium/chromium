@@ -577,6 +577,11 @@ void LoginDisplayHostMojo::ShowGaiaDialog(const AccountId& prefilled_account) {
   UpdateWallpaper(prefilled_account);
 }
 
+void LoginDisplayHostMojo::StartUserRecovery(
+    const AccountId& account_to_recover) {
+  ShowGaiaDialog(account_to_recover);
+}
+
 void LoginDisplayHostMojo::ShowOsInstallScreen() {
   StartWizard(OsInstallScreenView::kScreenId);
   ShowDialog();

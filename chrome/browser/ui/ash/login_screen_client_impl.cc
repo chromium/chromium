@@ -14,6 +14,7 @@
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -191,14 +192,34 @@ void LoginScreenClientImpl::FocusOobeDialog() {
 }
 
 void LoginScreenClientImpl::ShowGaiaSignin(const AccountId& prefilled_account) {
+  MakePreAuthenticationChecks(
+      prefilled_account,
+      base::BindOnce(&LoginScreenClientImpl::ShowGaiaSigninInternal,
+                     weak_ptr_factory_.GetWeakPtr(), prefilled_account));
+}
+
+void LoginScreenClientImpl::StartUserRecovery(
+    const AccountId& account_to_recover) {
+  CHECK(!account_to_recover.empty());
+  MakePreAuthenticationChecks(
+      account_to_recover,
+      base::BindOnce(&LoginScreenClientImpl::StartUserRecoveryInternal,
+                     weak_ptr_factory_.GetWeakPtr(), account_to_recover));
+}
+
+void LoginScreenClientImpl::MakePreAuthenticationChecks(
+    const AccountId& account_id,
+    base::OnceClosure continuation) {
   if (time_show_gaia_signin_initiated_.is_null())
     time_show_gaia_signin_initiated_ = base::TimeTicks::Now();
   // Check trusted status as a workaround to ensure that device owner id is
   // ready. Device owner ID is necessary for IsApprovalRequired checks.
+  auto continuation_split = base::SplitOnceCallback(std::move(continuation));
   const ash::CrosSettingsProvider::TrustedStatus status =
       ash::CrosSettings::Get()->PrepareTrustedValues(
-          base::BindOnce(&LoginScreenClientImpl::ShowGaiaSignin,
-                         weak_ptr_factory_.GetWeakPtr(), prefilled_account));
+          base::BindOnce(&LoginScreenClientImpl::MakePreAuthenticationChecks,
+                         weak_ptr_factory_.GetWeakPtr(), account_id,
+                         std::move(continuation_split.second)));
   switch (status) {
     case ash::CrosSettingsProvider::TRUSTED:
       // Owner account ID is available. Record time spent waiting for owner
@@ -219,9 +240,8 @@ void LoginScreenClientImpl::ShowGaiaSignin(const AccountId& prefilled_account) {
       return;
   }
 
-  auto supervised_action = prefilled_account.empty()
-                               ? SupervisedAction::kAddUser
-                               : SupervisedAction::kReauth;
+  auto supervised_action = account_id.empty() ? SupervisedAction::kAddUser
+                                              : SupervisedAction::kReauth;
   if (ash::parent_access::ParentAccessService::Get().IsApprovalRequired(
           supervised_action)) {
     // Show the client native parent access widget and processed to GAIA signin
@@ -232,10 +252,11 @@ void LoginScreenClientImpl::ShowGaiaSignin(const AccountId& prefilled_account) {
     ash::ParentAccessController::Get()->ShowWidget(
         AccountId(),
         base::BindOnce(&LoginScreenClientImpl::OnParentAccessValidation,
-                       weak_ptr_factory_.GetWeakPtr(), prefilled_account),
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(continuation_split.first)),
         supervised_action, false /* extra_dimmer */, base::Time::Now());
   } else {
-    ShowGaiaSigninInternal(prefilled_account);
+    std::move(continuation_split.first).Run();
   }
 }
 
@@ -391,10 +412,11 @@ void LoginScreenClientImpl::OnUserImageChanged(const user_manager::User& user) {
 }
 
 void LoginScreenClientImpl::OnParentAccessValidation(
-    const AccountId& prefilled_account,
+    base::OnceClosure continuation,
     bool success) {
-  if (success)
-    ShowGaiaSigninInternal(prefilled_account);
+  if (success) {
+    std::move(continuation).Run();
+  }
 }
 
 void LoginScreenClientImpl::ShowGaiaSigninInternal(
@@ -406,4 +428,11 @@ void LoginScreenClientImpl::ShowGaiaSigninInternal(
     // Lock screen case.
     ash::LockScreenStartReauthDialog::Show();
   }
+}
+
+void LoginScreenClientImpl::StartUserRecoveryInternal(
+    const AccountId& account_to_recover) {
+  CHECK(ash::LoginDisplayHost::default_host())
+      << "Recovery is not supported on the lock screen";
+  ash::LoginDisplayHost::default_host()->StartUserRecovery(account_to_recover);
 }

@@ -2339,7 +2339,7 @@ void LockContentsView::RecoverUserButtonPressed() {
                           static_cast<int>(ReauthReason::kForgotPassword));
   RecordAndResetPasswordAttempts(
       AuthEventsRecorder::AuthenticationOutcome::kRecovery, account_id);
-  Shell::Get()->login_screen_controller()->ShowGaiaSignin(account_id);
+  Shell::Get()->login_screen_controller()->StartUserRecovery(account_id);
   HideAuthErrorMessage();
 }
 

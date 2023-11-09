@@ -53,6 +53,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
       const AccountId& account_id,
       const absl::optional<user_manager::UserType>& user_type) override;
   void ShowGaiaDialog(const AccountId& prefilled_account) override;
+  void StartUserRecovery(const AccountId& account_to_recover) override;
   void ShowAllowlistCheckFailedError() override;
   void ShowOsInstallScreen() override;
   void ShowGuestTosScreen() override;

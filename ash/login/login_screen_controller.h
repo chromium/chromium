@@ -87,6 +87,7 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   void OnMaxIncorrectPasswordAttempted(const AccountId& account_id);
   void FocusLockScreenApps(bool reverse);
   void ShowGaiaSignin(const AccountId& prefilled_account);
+  void StartUserRecovery(const AccountId& account_to_recover);
   void ShowOsInstallScreen();
   void OnRemoveUserWarningShown();
   void RemoveUser(const AccountId& account_id);

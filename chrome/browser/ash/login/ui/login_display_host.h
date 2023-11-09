@@ -153,6 +153,10 @@ class LoginDisplayHost {
   // dialog.
   virtual void ShowGaiaDialog(const AccountId& prefilled_account) = 0;
 
+  // Starts user cryptohome recovery flow (once user indicates that they've
+  // forgot their knowledge key).
+  virtual void StartUserRecovery(const AccountId& account_to_recovery) = 0;
+
   // Show a notification screen informing the user that an admin user privately
   // accessed the device using Chrome Remote Desktop.
   virtual void ShowRemoteActivityNotificationScreen() = 0;

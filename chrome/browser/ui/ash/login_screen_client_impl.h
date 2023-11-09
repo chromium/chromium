@@ -8,6 +8,7 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen_client.h"
 #include "ash/system/tray/system_tray_observer.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
@@ -111,6 +112,7 @@ class LoginScreenClientImpl : public ash::LoginScreenClient,
   void FocusLockScreenApps(bool reverse) override;
   void FocusOobeDialog() override;
   void ShowGaiaSignin(const AccountId& prefilled_account) override;
+  void StartUserRecovery(const AccountId& account_to_recover) override;
   void ShowOsInstallScreen() override;
   void OnRemoveUserWarningShown() override;
   void RemoveUser(const AccountId& account_id) override;
@@ -137,12 +139,15 @@ class LoginScreenClientImpl : public ash::LoginScreenClient,
                                       const std::string& locale,
                                       base::Value::List keyboard_layouts);
 
-  void ShowGaiaSigninInternal(const AccountId& prefilled_account);
+  void MakePreAuthenticationChecks(const AccountId& account_id,
+                                   base::OnceClosure continuation);
 
   // Called when the parent access code was validated with result equals
   // |success|.
-  void OnParentAccessValidation(const AccountId& prefilled_account,
-                                bool success);
+  void OnParentAccessValidation(base::OnceClosure continuation, bool success);
+
+  void ShowGaiaSigninInternal(const AccountId& prefilled_account);
+  void StartUserRecoveryInternal(const AccountId& account_to_recover);
 
   raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
 

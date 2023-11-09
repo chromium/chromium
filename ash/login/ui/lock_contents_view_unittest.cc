@@ -1107,7 +1107,7 @@ TEST_F(LockContentsViewUnitTest, AuthErrorLoginScreenRecoverUserButton) {
   views::Button* recover_user_button = buttons[1];
 
   // Expect the ShowGaiaSignin to be called due to button click.
-  EXPECT_CALL(*client, ShowGaiaSignin(users()[0].basic_user_info.account_id))
+  EXPECT_CALL(*client, StartUserRecovery(users()[0].basic_user_info.account_id))
       .Times(1);
 
   // Move mouse to the "Recover user" button and click it.

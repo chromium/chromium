@@ -124,6 +124,9 @@ bool FakeLoginDisplayHost::IsUserAllowlisted(
 
 void FakeLoginDisplayHost::ShowGaiaDialog(const AccountId& prefilled_account) {}
 
+void FakeLoginDisplayHost::StartUserRecovery(
+    const AccountId& account_to_recover) {}
+
 void FakeLoginDisplayHost::ShowAllowlistCheckFailedError() {}
 
 void FakeLoginDisplayHost::ShowOsInstallScreen() {}

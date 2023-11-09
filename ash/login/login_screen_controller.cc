@@ -244,6 +244,14 @@ void LoginScreenController::ShowGaiaSignin(const AccountId& prefilled_account) {
   client_->ShowGaiaSignin(prefilled_account);
 }
 
+void LoginScreenController::StartUserRecovery(
+    const AccountId& account_to_recover) {
+  if (!client_) {
+    return;
+  }
+  client_->StartUserRecovery(account_to_recover);
+}
+
 void LoginScreenController::ShowOsInstallScreen() {
   if (!client_) {
     return;
