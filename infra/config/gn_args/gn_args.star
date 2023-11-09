@@ -37,6 +37,14 @@ gn_args.config(
     ],
 )
 
+# It's significantly faster to build without static analysis checks.
+gn_args.config(
+    "android_fastbuild",
+    args = {
+        "android_static_analysis": "off",
+    },
+)
+
 # Builders never have a use for android:debuggable="true". They do not use
 # JWDP (java debugger), and do not need it to access application files
 # since they always use userdebug OS builds (which have root access).
@@ -47,6 +55,13 @@ gn_args.config(
     args = {
         "target_os": "android",
         "debuggable_apks": False,
+    },
+)
+
+gn_args.config(
+    "arm",
+    args = {
+        "target_cpu": "arm",
     },
 )
 
@@ -65,9 +80,26 @@ gn_args.config(
 )
 
 gn_args.config(
+    "arm_no_neon",
+    args = {
+        "arm_use_neon": False,
+    },
+    configs = [
+        "arm",
+    ],
+)
+
+gn_args.config(
     "asan",
     args = {
         "is_asan": True,
+    },
+)
+
+gn_args.config(
+    "cast_android",
+    args = {
+        "is_cast_android": True,
     },
 )
 
@@ -182,6 +214,56 @@ gn_args.config(
 )
 
 gn_args.config(
+    "compile_only",
+    configs = [
+        "no_symbols",
+    ],
+)
+
+# Keep in sync with //infra/build/recipes/recipe_modules/chromium_android/chromium_config.py
+gn_args.config(
+    "cronet_android",
+    args = {
+        "use_partition_alloc": False,
+        "enable_reporting": True,
+        "use_hashed_jni_names": True,
+        "default_min_sdk_version": 21,
+        "enable_base_tracing": False,
+        "clang_use_default_sample_profile": False,
+        "media_use_ffmpeg": False,
+        # https://crbug.com/1136963
+        "use_thin_lto": False,
+        "enable_resource_allowlist_generation": False,
+    },
+    configs = [
+        "cronet_common",
+    ],
+)
+
+gn_args.config(
+    "cronet_android_mainline_clang",
+    args = {
+        "clang_base_path": "//third_party/cronet_android_mainline_clang/linux-amd64",
+        "clang_use_chrome_plugins": False,
+        # https://crbug.com/1481060
+        "llvm_android_mainline": True,
+    },
+)
+
+# Keep in sync with //infra/build/recipes/recipe_modules/chromium_android/chromium_config.py
+gn_args.config(
+    "cronet_common",
+    args = {
+        "disable_file_support": True,
+        "enable_websockets": False,
+        "include_transport_security_state_preload_list": False,
+        "is_cronet_build": True,
+        "use_crash_key_stubs": True,
+        "use_platform_icu_alternatives": True,
+    },
+)
+
+gn_args.config(
     "dcheck_always_on",
     args = {
         "dcheck_always_on": True,
@@ -207,6 +289,15 @@ gn_args.config(
     configs = [
         "debug",
         "shared",
+        "minimal_symbols",
+    ],
+)
+
+gn_args.config(
+    "debug_static_builder",
+    configs = [
+        "debug",
+        "static",
         "minimal_symbols",
     ],
 )
@@ -262,6 +353,13 @@ gn_args.config(
     "extended_tracing",
     args = {
         "extended_tracing_enabled": True,
+    },
+)
+
+gn_args.config(
+    "fail_on_android_expectations",
+    args = {
+        "fail_on_android_expectations": True,
     },
 )
 
@@ -419,6 +517,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    "no_secondary_abi",
+    args = {
+        "skip_secondary_abi_for_cq": True,
+    },
+)
+
+gn_args.config(
     "no_symbols",
     args = {
         "symbol_level": 0,
@@ -518,6 +623,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    "release_java",
+    args = {
+        "is_java_debug": False,
+    },
+)
+
+gn_args.config(
     "release_try_builder",
     configs = [
         "release_builder",
@@ -527,9 +639,23 @@ gn_args.config(
 )
 
 gn_args.config(
+    "riscv64",
+    args = {
+        "target_cpu": "riscv64",
+    },
+)
+
+gn_args.config(
     "shared",
     args = {
         "is_component_build": True,
+    },
+)
+
+gn_args.config(
+    "stable_channel",
+    args = {
+        "android_channel": "stable",
     },
 )
 
@@ -611,6 +737,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    "use_java_coverage",
+    args = {
+        "use_jacoco_coverage": True,
+    },
+)
+
+gn_args.config(
     "v4l2_codec",
     # The build system dislikes enabling both V4L2 and VA-API.
     # Be explicit about which one we want to avoid platform defaults.
@@ -632,6 +765,38 @@ gn_args.config(
     "v8_release_branch",
     args = {
         "is_on_release_branch": True,
+    },
+)
+
+gn_args.config(
+    "webview_google",
+    args = {
+        "system_webview_package_name": "com.google.android.webview",
+    },
+)
+
+# For Android N-P, only userdebug/eng
+gn_args.config(
+    "webview_monochrome",
+    args = {
+        "system_webview_package_name": "com.google.android.apps.chrome",
+    },
+)
+
+# Mainly used by builders that use android emulator.
+# See https://bit.ly/3B1cyyt for more details.
+gn_args.config(
+    "webview_shell",
+    args = {
+        "system_webview_shell_package_name": "org.chromium.my_webview_shell",
+    },
+)
+
+# For Android >=Q, only userdebug/eng
+gn_args.config(
+    "webview_trichrome",
+    args = {
+        "system_webview_package_name": "com.google.android.webview.debug",
     },
 )
 

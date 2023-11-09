@@ -103,51 +103,6 @@
       'linux-blink-web-tests-force-accessibility-rel': 'release_bot_blink_accessibility_reclient',
     },
 
-    'chromium.android': {
-      'Android ASAN (dbg)': 'android_clang_asan_debug_bot_reclient',
-      'Android arm Builder (dbg)': 'android_without_codecs_debug_bot_reclient',
-      'Android arm64 Builder (dbg)': 'android_webview_google_debug_static_bot_arm64_reclient',
-      'Android arm64 Builder All Targets (dbg)': 'android_webview_google_debug_static_bot_arm64_reclient',
-      # Trigger testers on Android Q+
-      'Android x64 Builder (dbg)': 'android_debug_static_bot_x64_reclient_webview_trichrome_webview_shell',
-      'Android x64 Builder All Targets (dbg)': 'android_debug_static_bot_x64_reclient_webview_trichrome_webview_shell',
-      'Android x86 Builder (dbg)': 'android_debug_static_bot_x86_reclient',
-      'Cast Android (dbg)': 'android_cast_debug_static_bot_reclient',
-      'Deterministic Android': 'android_without_codecs_release_bot_minimal_symbols_reclient',
-      'Deterministic Android (dbg)': 'android_debug_bot_reclient',
-
-      'android-10-arm64-rel': 'android_release_bot_minimal_symbols_arm64_fastbuild_webview_trichrome_reclient',
-      'android-11-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome_reclient',
-      'android-12-x64-rel': 'android_release_bot_minimal_symbols_x64_fastbuild_webview_trichrome_reclient',
-      'android-13-x64-rel': 'android_release_bot_minimal_symbols_x64_fastbuild_webview_trichrome_reclient',
-      'android-arm64-proguard-rel': 'android_release_bot_minimal_symbols_arm64_webview_google_reclient',
-      'android-bfcache-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
-      'android-binary-size-generator': 'android_binary_size_reclient',
-      'android-cronet-arm-dbg': 'android_cronet_debug_static_bot_arm_no_neon_reclient_use_dummy_lastchange',
-      'android-cronet-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon_reclient',
-      'android-cronet-arm64-dbg': 'android_cronet_debug_static_bot_arm64_reclient',
-      'android-cronet-arm64-rel': 'android_cronet_release_bot_minimal_symbols_arm64_reclient',
-      'android-cronet-asan-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon_clang_asan_reclient',
-      'android-cronet-mainline-clang-arm64-dbg': 'android_cronet_mainline_clang_debug_static_bot_arm64_reclient',
-      'android-cronet-mainline-clang-arm64-rel': 'android_cronet_mainline_clang_release_bot_minimal_symbols_arm64_reclient',
-      'android-cronet-mainline-clang-x86-dbg': 'android_cronet_mainline_clang_debug_static_bot_x86_reclient',
-      'android-cronet-mainline-clang-x86-rel': 'android_cronet_mainline_clang_release_bot_minimal_symbols_x86_reclient',
-      'android-cronet-marshmallow-arm64-perf-rel': 'android_cronet_release_bot_minimal_symbols_arm64_reclient',
-      'android-cronet-riscv64-dbg': 'android_cronet_debug_static_bot_riscv64_reclient',
-      'android-cronet-riscv64-rel': 'android_cronet_release_bot_minimal_symbols_riscv64_reclient',
-      'android-cronet-x64-dbg': 'android_cronet_debug_static_bot_x64_reclient',
-      'android-cronet-x64-rel': 'android_cronet_release_bot_minimal_symbols_x64_reclient',
-      'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86_reclient',
-      'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86_reclient',
-      'android-oreo-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
-      'android-pie-arm64-rel': 'android_release_bot_minimal_symbols_arm64_webview_monochrome_reclient',
-      'android-pie-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
-      'android-weblayer-with-aosp-webview-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google',
-      # Use webview_monochrome as this builder triggers tests on Android O & P
-      'android-weblayer-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_disable_proguard_webview_monochrome',
-      'android-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome_reclient',
-    },
-
     'chromium.android.fyi': {
       'Android arm64 Builder (dbg) (reclient)': 'android_webview_google_debug_static_bot_arm64_reclient',
       'android-12l-x64-fyi-dbg': 'android_debug_static_bot_x64_reclient_webview_trichrome_webview_shell',
@@ -931,77 +886,23 @@
     },
 
     'tryserver.chromium.android': {
-      'android-10-arm64-rel': 'android_release_trybot_arm64_fastbuild_webview_trichrome_reclient',
-      'android-11-x86-rel': 'android_release_trybot_x86_fastbuild_webview_trichrome_reclient',
-      'android-12-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell_reclient',
-      'android-12-x64-dual-coverage-exp-rel': 'android_release_trybot_x64_dual_coverage_fastbuild_webview_trichrome_reclient',
-      'android-12-x64-rel': 'android_release_trybot_x64_dual_coverage_fastbuild_webview_trichrome_reclient',
-      'android-12l-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell_reclient',
-      'android-13-x64-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome_reclient',
-      'android-arm-compile-dbg': 'android_without_codecs_debug_bot_reclient',
-      'android-arm64-all-targets-dbg': 'android_debug_trybot_compile_only_arm64_fastbuild_reclient',
-      'android-arm64-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient',
       'android-arm64-siso-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient',
       'android-asan': 'android_clang_asan_release_trybot_reclient',
-      'android-asan-compile-dbg': 'android_clang_asan_debug_bot_reclient',
-      'android-bfcache-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
-      'android-binary-size': 'android_binary_size_reclient',
       'android-chrome-pie-x86-wpt-android-specific': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
       'android-chrome-pie-x86-wpt-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
       'android-clobber-rel': 'android_release_trybot_reclient',
       'android-code-coverage': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_java_coverage_reclient',
       'android-code-coverage-native': 'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage_reclient',
-      # TODO(crbug/597596): Switch this back to debug_trybot when cronet's
-      # shared library loading is fixed.
-      'android-cronet-arm-dbg': 'android_cronet_debug_static_bot_arm_no_neon_reclient',
-      'android-cronet-arm64-dbg': 'android_cronet_debug_static_bot_arm64_reclient',
-      'android-cronet-arm64-rel': 'android_cronet_release_bot_minimal_symbols_arm64_reclient',
-      'android-cronet-asan-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon_clang_asan_reclient',
       'android-cronet-lollipop-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon',
-      'android-cronet-mainline-clang-arm64-dbg': 'android_cronet_mainline_clang_debug_static_bot_arm64_reclient',
-      'android-cronet-mainline-clang-arm64-rel': 'android_cronet_mainline_clang_release_bot_minimal_symbols_arm64_reclient',
-      'android-cronet-mainline-clang-x86-dbg': 'android_cronet_mainline_clang_debug_static_bot_x86_reclient',
-      'android-cronet-mainline-clang-x86-rel': 'android_cronet_mainline_clang_release_bot_minimal_symbols_x86_reclient',
       'android-cronet-marshmallow-arm64-rel': 'android_cronet_release_trybot_arm64',
-      'android-cronet-riscv64-dbg': 'android_cronet_debug_static_bot_riscv64_reclient',
-      'android-cronet-riscv64-rel': 'android_cronet_release_bot_minimal_symbols_riscv64_reclient',
-      'android-cronet-x64-dbg-12-tests': 'android_cronet_debug_static_bot_x64_reclient',
-      'android-cronet-x64-dbg-13-tests': 'android_cronet_debug_static_bot_x64_reclient',
-      'android-cronet-x64-dbg-14-tests': 'android_cronet_debug_static_bot_x64_reclient',
-      'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86_reclient',
-      'android-cronet-x86-dbg-10-tests': 'android_cronet_debug_static_bot_x86_reclient_use_dummy_lastchange',
-      'android-cronet-x86-dbg-11-tests': 'android_cronet_debug_static_bot_x86_reclient',
-      'android-cronet-x86-dbg-lollipop-tests': 'android_cronet_debug_static_bot_x86_reclient_use_dummy_lastchange',
-      'android-cronet-x86-dbg-marshmallow-tests': 'android_cronet_debug_static_bot_x86_reclient',
-      'android-cronet-x86-dbg-nougat-tests': 'android_cronet_debug_static_bot_x86_reclient',
-      'android-cronet-x86-dbg-oreo-tests': 'android_cronet_debug_static_bot_x86_reclient',
-      'android-cronet-x86-dbg-pie-tests': 'android_cronet_debug_static_bot_x86_reclient',
-      'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86_reclient',
       'android-deterministic-dbg': 'android_debug_bot_reclient',
       'android-deterministic-rel': 'android_without_codecs_release_trybot_reclient',
       'android-fieldtrial-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome_reclient',
-      'android-oreo-arm64-dbg': 'android_debug_trybot_arm64_reclient',
-      'android-oreo-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_coverage_reclient',
       'android-perfetto-rel': 'perfetto_release_trybot_reclient_android',
-      'android-pie-arm64-dbg': 'android_debug_trybot_arm64_reclient',
-      'android-pie-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
       'android-weblayer-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
-      'android-webview-10-x86-rel-tests': 'android_release_trybot_x86_fastbuild_webview_trichrome_reclient',
-      'android-webview-12-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell_reclient',
-      'android-webview-13-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell_reclient',
-      'android-webview-oreo-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome_reclient',
-      'android-webview-pie-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome_reclient',
       'android-webview-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
-      'android-x64-cast': 'android_cast_debug_static_bot_compile_only_reclient',
-      'android-x86-dual-coverage-exp-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_dual_coverage_reclient',
-      'android-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_dual_coverage_reclient',
-      'android_arm64_dbg_recipe': 'android_debug_trybot_compile_only_arm64_fastbuild_reclient',
       'android_blink_rel': 'android_release_trybot_x64_reclient',
-      'android_compile_dbg': 'android_debug_trybot_compile_only_arm64_reclient',
-      'android_compile_x64_dbg': 'android_debug_trybot_compile_only_x64_reclient',
-      'android_compile_x86_dbg': 'android_debug_trybot_compile_only_x86_reclient',
       'android_coverage': 'android_debug_trybot_java_coverage',
-      'android_cronet': 'android_cronet_release_trybot_arm_no_neon_reclient',
       'android_n5x_swarming_dbg': 'android_debug_trybot_arm64_reclient',
       'android_optional_gpu_tests_rel': 'gpu_tests_android_release_trybot_reclient',
       'gpu-fyi-cq-android-arm64': 'gpu_tests_android_release_trybot_arm64_reclient',
@@ -1439,24 +1340,6 @@
       'afl', 'asan', 'shared_release_trybot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'skip_generate_fuzzer_owners',
     ],
 
-    'android_binary_size_reclient': [
-      'android', 'chrome_with_codecs', 'reclient', 'minimal_symbols',
-      'official_optimize', 'stable_channel', 'v8_release_branch', 'use_dummy_lastchange',
-    ],
-
-    'android_cast_debug_static_bot_compile_only_reclient': [
-      'android', 'cast_android', 'cast_receiver', 'clang', 'debug_static_bot_reclient', 'compile_only', 'use_dummy_lastchange',
-    ],
-
-    'android_cast_debug_static_bot_reclient': [
-      'android', 'cast_android', 'cast_receiver', 'clang', 'debug_static_bot_reclient',
-    ],
-
-    # TODO(1486663): Change back to debug_bot_reclient when unit_tests binary size issue is resolved.
-    'android_clang_asan_debug_bot_reclient': [
-      'android', 'clang', 'asan', 'debug_bot_reclient_nosymbols', 'strip_debug_info',
-    ],
-
     'android_clang_asan_release_bot_reclient': [
       'android', 'clang', 'asan', 'release_bot_reclient', 'strip_debug_info', 'minimal_symbols',
     ],
@@ -1465,69 +1348,12 @@
       'android', 'clang', 'asan', 'release_trybot_reclient', 'strip_debug_info', 'minimal_symbols',
     ],
 
-    'android_cronet_debug_static_bot_arm64_reclient': [
-      'android', 'cronet_android', 'debug_static_bot_reclient', 'arm64',
-    ],
-
-    'android_cronet_debug_static_bot_arm_no_neon_reclient': [
-      'android', 'cronet_android', 'debug_static_bot_reclient', 'arm_no_neon', 'release_java',
-    ],
-
-    'android_cronet_debug_static_bot_arm_no_neon_reclient_use_dummy_lastchange': [
-      'android', 'cronet_android', 'debug_static_bot_reclient', 'arm_no_neon', 'release_java', 'use_dummy_lastchange',
-    ],
-
     'android_cronet_debug_static_bot_riscv64_reclient': [
       'android', 'cronet_android', 'debug_static_bot_reclient', 'riscv64',
     ],
 
-    'android_cronet_debug_static_bot_x64_reclient': [
-      'android', 'cronet_android', 'debug_static_bot_reclient', 'x64',
-    ],
-
-    'android_cronet_debug_static_bot_x86_reclient': [
-      'android', 'cronet_android', 'debug_static_bot_reclient', 'x86',
-    ],
-
-    'android_cronet_debug_static_bot_x86_reclient_use_dummy_lastchange': [
-      'android', 'cronet_android', 'debug_static_bot_reclient', 'x86', 'use_dummy_lastchange',
-    ],
-
-    'android_cronet_mainline_clang_debug_static_bot_arm64_reclient': [
-      'android', 'cronet_android', 'debug_static_bot_reclient', 'arm64', 'cronet_android_mainline_clang',
-    ],
-
-    'android_cronet_mainline_clang_debug_static_bot_x86_reclient': [
-      'android', 'cronet_android', 'debug_static_bot_reclient', 'x86', 'cronet_android_mainline_clang',
-    ],
-
-    'android_cronet_mainline_clang_release_bot_minimal_symbols_arm64_reclient': [
-      'android', 'cronet_android', 'official_optimize', 'release_bot_reclient', 'minimal_symbols', 'arm64',
-      'strip_debug_info', 'cronet_android_mainline_clang',
-    ],
-
-    'android_cronet_mainline_clang_release_bot_minimal_symbols_x86_reclient': [
-      'android', 'cronet_android', 'official_optimize', 'release_bot_reclient', 'minimal_symbols', 'x86',
-      'strip_debug_info', 'cronet_android_mainline_clang',
-    ],
-
-    'android_cronet_release_bot_minimal_symbols_arm64_reclient': [
-      'android', 'cronet_android', 'official_optimize', 'release_bot_reclient', 'minimal_symbols', 'arm64',
-      'strip_debug_info',
-    ],
-
     'android_cronet_release_bot_minimal_symbols_arm_no_neon': [
       'android', 'cronet_android', 'official_optimize', 'release_bot', 'minimal_symbols', 'arm_no_neon',
-      'strip_debug_info',
-    ],
-
-    'android_cronet_release_bot_minimal_symbols_arm_no_neon_clang_asan_reclient': [
-      'android', 'cronet_android', 'release_bot_reclient', 'minimal_symbols', 'arm_no_neon', 'clang', 'asan',
-      'strip_debug_info',
-    ],
-
-    'android_cronet_release_bot_minimal_symbols_arm_no_neon_reclient': [
-      'android', 'cronet_android', 'official_optimize', 'release_bot_reclient', 'minimal_symbols', 'arm_no_neon',
       'strip_debug_info',
     ],
 
@@ -1536,28 +1362,14 @@
       'strip_debug_info',
     ],
 
-    'android_cronet_release_bot_minimal_symbols_x64_reclient': [
-      'android', 'cronet_android', 'official_optimize', 'release_bot_reclient', 'minimal_symbols', 'x64',
-      'strip_debug_info',
-    ],
-
     'android_cronet_release_bot_minimal_symbols_x86_clang_asan_reclient': [
       'android', 'cronet_android', 'release_bot_reclient', 'minimal_symbols', 'x86',
       'clang', 'asan', 'strip_debug_info',
     ],
 
-    'android_cronet_release_bot_minimal_symbols_x86_reclient': [
-      'android', 'cronet_android', 'official_optimize', 'release_bot_reclient', 'minimal_symbols', 'x86',
-      'strip_debug_info',
-    ],
-
     'android_cronet_release_trybot_arm64': [
       'android', 'cronet_android', 'official_optimize', 'release_trybot', 'arm64',
       'strip_debug_info',
-    ],
-
-    'android_cronet_release_trybot_arm_no_neon_reclient': [
-      'android', 'cronet_android', 'release_trybot_reclient', 'arm_no_neon',
     ],
 
     'android_debug_bot': [
@@ -1589,36 +1401,12 @@
       'webview_trichrome', 'webview_shell',
     ],
 
-    'android_debug_static_bot_x86_reclient': [
-      'android', 'debug_static_bot_reclient', 'x86', 'webview_shell',
-    ],
-
     'android_debug_trybot_arm64_reclient': [
       'android', 'debug_bot_reclient', 'arm64', 'use_dummy_lastchange',
     ],
 
-    'android_debug_trybot_compile_only_arm64_fastbuild_reclient': [
-      'android', 'debug_bot_reclient', 'compile_only', 'arm64', 'android_fastbuild', 'use_dummy_lastchange',
-    ],
-
-    'android_debug_trybot_compile_only_arm64_reclient': [
-      'android', 'debug_bot_reclient', 'compile_only', 'arm64', 'use_dummy_lastchange',
-    ],
-
-    'android_debug_trybot_compile_only_x64_reclient': [
-      'android', 'debug_bot_reclient', 'compile_only', 'x64', 'use_dummy_lastchange',
-    ],
-
-    'android_debug_trybot_compile_only_x86_reclient': [
-      'android', 'debug_bot_reclient', 'compile_only', 'x86', 'use_dummy_lastchange',
-    ],
-
     'android_debug_trybot_java_coverage': [
       'android', 'debug_bot', 'use_java_coverage', 'strip_debug_info', 'use_dummy_lastchange',
-    ],
-
-    'android_debug_trybot_x64_webview_trichrome_webview_shell_reclient': [
-      'android', 'debug_bot_reclient', 'x64', 'webview_trichrome', 'webview_shell', 'use_dummy_lastchange',
     ],
 
     # GN args to simulate Android developer builds.
@@ -1636,11 +1424,6 @@
 
     'android_official_optimize_reclient_trybot': [
       'official_optimize_reclient_trybot', 'android_without_codecs', 'full_symbols',
-    ],
-
-    'android_release_bot_minimal_symbols_arm64_fastbuild_webview_trichrome_reclient': [
-      'android', 'release_bot_reclient', 'minimal_symbols', 'arm64',
-      'strip_debug_info', 'android_fastbuild', 'webview_trichrome',
     ],
 
     'android_release_bot_minimal_symbols_arm64_reclient': [
@@ -1668,18 +1451,6 @@
       'no_secondary_abi', 'webview_shell'
     ],
 
-    'android_release_bot_minimal_symbols_x86_fastbuild_disable_proguard_webview_monochrome': [
-      'android', 'release_bot', 'minimal_symbols', 'x86',
-      'strip_debug_info', 'android_fastbuild', 'webview_monochrome',
-      'disable_proguard'
-    ],
-
-    'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google': [
-      'android', 'release_bot', 'minimal_symbols',
-      'android_fastbuild', 'x86', 'resource_allowlisting', 'disable_proguard',
-      'chrome_google'
-    ],
-
     'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google_reclient': [
       'android', 'release_bot_reclient', 'minimal_symbols',
       'android_fastbuild', 'x86', 'resource_allowlisting', 'disable_proguard',
@@ -1704,11 +1475,6 @@
       'webview_shell',
     ],
 
-    'android_release_trybot_arm64_fastbuild_webview_trichrome_reclient': [
-      'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
-      'android_fastbuild', 'webview_trichrome',
-    ],
-
     'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient': [
       'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
       'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
@@ -1723,19 +1489,8 @@
       'no_reclient', 'siso',
     ],
 
-    'android_release_trybot_arm64_webview_monochrome_reclient': [
-      'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
-      'webview_monochrome',
-    ],
-
     'android_release_trybot_reclient': [
       'android', 'release_trybot_reclient', 'strip_debug_info',
-    ],
-
-    'android_release_trybot_x64_dual_coverage_fastbuild_webview_trichrome_reclient': [
-      'android', 'release_trybot_reclient', 'strip_debug_info', 'x64',
-      'android_fastbuild', 'use_clang_coverage', 'use_java_coverage',
-      'partial_code_coverage_instrumentation', 'webview_trichrome', 'no_secondary_abi', 'webview_shell',
     ],
 
     'android_release_trybot_x64_fastbuild_webview_trichrome_reclient': [
@@ -1753,34 +1508,13 @@
       'android_fastbuild', 'webview_monochrome', 'webview_shell',
     ],
 
-    'android_release_trybot_x86_fastbuild_webview_monochrome_coverage_reclient': [
-      'android', 'release_trybot_reclient', 'strip_debug_info', 'x86',
-      'android_fastbuild', 'use_java_coverage', 'partial_code_coverage_instrumentation',
-      'webview_monochrome', 'webview_shell',
-    ],
-
-    'android_release_trybot_x86_fastbuild_webview_monochrome_dual_coverage_reclient': [
-      'android', 'release_trybot_reclient', 'strip_debug_info', 'x86',
-      'android_fastbuild', 'use_clang_coverage', 'use_java_coverage',
-      'partial_code_coverage_instrumentation', 'webview_monochrome', 'webview_shell',
-    ],
-
     'android_release_trybot_x86_fastbuild_webview_monochrome_reclient': [
       'android', 'release_trybot_reclient', 'strip_debug_info', 'x86',
       'android_fastbuild', 'webview_monochrome', 'webview_shell',
     ],
 
-    'android_release_trybot_x86_fastbuild_webview_trichrome_reclient': [
-      'android', 'release_trybot_reclient', 'strip_debug_info', 'x86',
-      'android_fastbuild', 'webview_trichrome', 'webview_shell',
-    ],
-
     'android_webview_google_debug_static_bot_arm64_reclient': [
       'android', 'debug_static_bot_reclient', 'arm64', 'webview_google',
-    ],
-
-    'android_without_codecs_debug_bot_reclient': [
-      'android_without_codecs', 'debug_bot_reclient',
     ],
 
     'android_without_codecs_release_bot_minimal_symbols_reclient': [
@@ -3667,10 +3401,6 @@
       'args_file': '//build/args/chromeos/brya.gni',
     },
 
-    'cast_android': {
-      'gn_args': 'is_cast_android=true'
-    },
-
     'cast_os': {
       'gn_args': 'is_castos=true'
     },
@@ -3842,13 +3572,6 @@
                   'enable_resource_allowlist_generation=false '),
     },
 
-    'cronet_android_mainline_clang': {
-      'gn_args': ('clang_base_path = \"//third_party/cronet_android_mainline_clang/linux-amd64\" '
-                  'clang_use_chrome_plugins=false '
-                  'llvm_android_mainline=true '  # https://crbug.com/1481060
-                 ),
-    },
-
     # Keep in sync with //infra/build/recipes/recipe_modules/chromium_android/chromium_config.py
     'cronet_common': {
       'gn_args': ('disable_file_support=true '
@@ -3892,11 +3615,6 @@
 
     'debug_bot_reclient': {
       'mixins': ['debug', 'shared', 'reclient', 'minimal_symbols'],
-    },
-
-    # TODO(1486663): Remove this when unit_tests binary size problem is resolved.
-    'debug_bot_reclient_nosymbols': {
-      'mixins': ['debug', 'shared', 'reclient', 'no_symbols'],
     },
 
     'debug_static_bot': {
@@ -4345,10 +4063,6 @@
       'mixins': ['release', 'static', 'reclient'],
     },
 
-    'release_java': {
-      'gn_args': 'is_java_debug=false',
-    },
-
     'release_trybot': {
       'mixins': ['release_bot', 'no_symbols', 'dcheck_always_on', 'use_dummy_lastchange'],
     },
@@ -4411,10 +4125,6 @@
 
     'skip_generate_fuzzer_owners': {
       'gn_args': 'generate_fuzzer_owners=false',
-    },
-
-    'stable_channel': {
-      'gn_args': 'android_channel="stable"',
     },
 
     # Ensures we don't have mulitple versions of Trichrome Library installed on

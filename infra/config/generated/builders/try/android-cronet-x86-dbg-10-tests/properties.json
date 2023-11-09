@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/android-cronet-x86-dbg-10-tests/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
