@@ -31,7 +31,6 @@
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "components/exo/test/shell_surface_builder.h"
-#include "components/exo/test/test_data_device_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -124,8 +123,6 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
 
     seat_ =
         std::make_unique<Seat>(std::make_unique<TestDataExchangeDelegate>());
-    data_device_ =
-        std::make_unique<DataDevice>(&data_device_delegate_, seat_.get());
     data_source_delegate_ = std::make_unique<TestDataSourceDelegate>();
     data_source_ = std::make_unique<DataSource>(data_source_delegate_.get());
     extended_drag_source_ = std::make_unique<ExtendedDragSource>(
@@ -138,7 +135,6 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
     extended_drag_source_.reset();
     data_source_.reset();
     data_source_delegate_.reset();
-    data_device_.reset();
     seat_.reset();
     test::ExoTestBase::TearDown();
   }
@@ -168,8 +164,6 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
   std::unique_ptr<DataSource> data_source_;
   std::unique_ptr<ExtendedDragSource> extended_drag_source_;
   std::unique_ptr<TestDataSourceDelegate> data_source_delegate_;
-  test::TestDataDeviceDelegate data_device_delegate_;
-  std::unique_ptr<DataDevice> data_device_;
 };
 
 }  // namespace
@@ -179,8 +173,8 @@ TEST_F(ExtendedDragSourceTest, DestroySource) {
 
   // Give |origin| a root window and start DragDropOperation.
   GetContext()->AddChild(origin.window());
-  data_device_->StartDrag(data_source_.get(), &origin,
-                          /*icon=*/nullptr, ui::mojom::DragEventSource::kMouse);
+  seat_->StartDrag(data_source_.get(), &origin,
+                   /*icon=*/nullptr, ui::mojom::DragEventSource::kMouse);
 
   // Ensure that destroying the data source invalidates its extended_drag_source
   // counterpart for the rest of its lifetime.
@@ -573,8 +567,8 @@ TEST_F(ExtendedDragSourceTest, CancelDraggingOperation) {
 
   // Start a DragDropOperation.
   drag_drop_controller_->set_should_block_during_drag_drop(true);
-  data_device_->StartDrag(data_source_.get(), surface, /*icon=*/nullptr,
-                          ui::mojom::DragEventSource::kMouse);
+  seat_->StartDrag(data_source_.get(), surface, /*icon=*/nullptr,
+                   ui::mojom::DragEventSource::kMouse);
 
   auto task_1 = base::BindLambdaForTesting([&]() {
     generator.MoveMouseBy(190, 190);
@@ -646,8 +640,8 @@ TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates_Touch) {
 
   // Start a DragDropOperation.
   drag_drop_controller_->set_should_block_during_drag_drop(true);
-  data_device_->StartDrag(data_source_.get(), origin_surface, /*icon=*/nullptr,
-                          ui::mojom::DragEventSource::kTouch);
+  seat_->StartDrag(data_source_.get(), origin_surface, /*icon=*/nullptr,
+                   ui::mojom::DragEventSource::kTouch);
 
   base::RunLoop loop;
   drag_drop_controller_->SetLoopClosureForTesting(
@@ -722,8 +716,8 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   // Start a DragDropOperation.
   drag_drop_controller_->set_should_block_during_drag_drop(true);
 
-  data_device_->StartDrag(data_source_.get(), origin_surface, /*icon=*/nullptr,
-                          ui::mojom::DragEventSource::kMouse);
+  seat_->StartDrag(data_source_.get(), origin_surface, /*icon=*/nullptr,
+                   ui::mojom::DragEventSource::kMouse);
   // Just move to the middle to avoid snapping.
   int x_movement = 300;
 
