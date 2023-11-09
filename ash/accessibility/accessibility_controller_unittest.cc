@@ -65,7 +65,8 @@ class AccessibilityControllerTest : public AshTestBase {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{media::kLiveCaption,
                               media::kLiveCaptionSystemWideOnChromeOS,
-                              ash::features::kOnDeviceSpeechRecognition},
+                              ash::features::kOnDeviceSpeechRecognition,
+                              ::features::kAccessibilityFaceGaze},
         /*disabled_feaures=*/{
             ::features::kAccessibilityDictationKeyboardImprovements});
     AshTestBase::SetUp();
@@ -102,6 +103,7 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs->FindPreference(prefs::kAccessibilityCaretHighlightEnabled));
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityCursorHighlightEnabled));
+  EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityCursorColorEnabled));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityDictationEnabled));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityDictationLocale));
   EXPECT_TRUE(
@@ -180,14 +182,15 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs->FindPreference(prefs::kAccessibilityVirtualKeyboardEnabled));
   EXPECT_TRUE(prefs->FindPreference(
       prefs::kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed));
-    EXPECT_TRUE(
-        prefs->FindPreference(prefs::kAccessibilityColorCorrectionEnabled));
-    EXPECT_TRUE(prefs->FindPreference(
-        prefs::kAccessibilityColorCorrectionHasBeenSetup));
-    EXPECT_TRUE(
-        prefs->FindPreference(prefs::kAccessibilityColorVisionCorrectionType));
-    EXPECT_TRUE(prefs->FindPreference(
-        prefs::kAccessibilityColorVisionCorrectionAmount));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityColorCorrectionEnabled));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityColorCorrectionHasBeenSetup));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityColorVisionCorrectionType));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityColorVisionCorrectionAmount));
+  EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityFaceGazeEnabled));
 }
 
 TEST_F(AccessibilityControllerTest, SetAutoclickEnabled) {
@@ -281,6 +284,26 @@ TEST_F(AccessibilityControllerTest, SetCursorHighlightEnabled) {
 
   controller->cursor_highlight().SetEnabled(false);
   EXPECT_FALSE(controller->cursor_highlight().enabled());
+  EXPECT_EQ(2, observer.status_changed_count_);
+
+  controller->RemoveObserver(&observer);
+}
+
+TEST_F(AccessibilityControllerTest, SetFaceGazeEnabled) {
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  EXPECT_FALSE(controller->face_gaze().enabled());
+
+  TestAccessibilityObserver observer;
+  controller->AddObserver(&observer);
+  EXPECT_EQ(0, observer.status_changed_count_);
+
+  controller->face_gaze().SetEnabled(true);
+  EXPECT_TRUE(controller->face_gaze().enabled());
+  EXPECT_EQ(1, observer.status_changed_count_);
+
+  controller->face_gaze().SetEnabled(false);
+  EXPECT_FALSE(controller->face_gaze().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
 
   controller->RemoveObserver(&observer);

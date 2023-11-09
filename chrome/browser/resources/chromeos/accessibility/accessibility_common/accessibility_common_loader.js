@@ -88,7 +88,22 @@ export class AccessibilityCommon {
     const faceGazeFeature =
         chrome.accessibilityPrivate.AccessibilityFeature.FACE_GAZE;
     chrome.accessibilityPrivate.isFeatureEnabled(faceGazeFeature, enabled => {
-      this.onFaceGazeFetched_(enabled);
+      if (!enabled) {
+        return;
+      }
+      // TODO(b/309121742): Add FaceGaze pref to the accessibilityFeatures
+      // extension API.
+      chrome.settingsPrivate.getPref(
+          AccessibilityCommon.FACEGAZE_PREF_NAME,
+          pref => this.onFaceGazeUpdated_(pref));
+      chrome.settingsPrivate.onPrefsChanged.addListener(prefs => {
+        for (const pref of prefs) {
+          if (pref.key === AccessibilityCommon.FACEGAZE_PREF_NAME) {
+            this.onFaceGazeUpdated_(pref);
+            break;
+          }
+        }
+      });
     });
 
     // AccessibilityCommon is an IME so it shows in the input methods list
@@ -120,15 +135,15 @@ export class AccessibilityCommon {
   }
 
   /**
-   * Called when the FaceGaze feature status is fetched.
-   * @param {boolean} enabled
+   * Called when the FaceGaze feature is fetched enabled or disabled.
+   * @param {*} details
    * @private
    */
-  onFaceGazeFetched_(enabled) {
-    if (enabled) {
+  onFaceGazeUpdated_(details) {
+    if (details.value && !this.faceGaze_) {
       // Initialize the FaceGaze extension.
       this.faceGaze_ = new FaceGaze();
-    } else if (!enabled && this.faceGaze_) {
+    } else if (!details.value && this.faceGaze_) {
       this.faceGaze_.onFaceGazeDisabled();
       this.faceGaze_ = null;
     }
@@ -203,6 +218,8 @@ export class AccessibilityCommon {
     }
   }
 }
+
+AccessibilityCommon.FACEGAZE_PREF_NAME = 'settings.a11y.face_gaze.enabled';
 
 InstanceChecker.closeExtraInstances();
 // Initialize the AccessibilityCommon extension.

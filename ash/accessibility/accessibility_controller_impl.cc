@@ -119,14 +119,14 @@ const FeatureData kFeatures[] = {
     {FeatureType::kCursorHighlight, prefs::kAccessibilityCursorHighlightEnabled,
      nullptr, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGHLIGHT_MOUSE_CURSOR},
     {FeatureType::kCursorColor, prefs::kAccessibilityCursorColorEnabled,
-     nullptr, 0, /*toggleable_in_quicksettings*/ false},
+     nullptr, 0, /*toggleable_in_quicksettings=*/false},
     {FeatureType::kDictation, prefs::kAccessibilityDictationEnabled,
      &kDictationMenuIcon, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION},
     {FeatureType::kColorCorrection, prefs::kAccessibilityColorCorrectionEnabled,
      &kColorCorrectionIcon, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_COLOR_CORRECTION},
     {FeatureType::kFocusHighlight, prefs::kAccessibilityFocusHighlightEnabled,
      nullptr, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGHLIGHT_KEYBOARD_FOCUS,
-     /*toggleable_in_quicksettings*/ true,
+     /*toggleable_in_quicksettings=*/true,
      /* conflicting_feature= */ FeatureType::kSpokenFeedback},
     {FeatureType::kFloatingMenu, prefs::kAccessibilityFloatingMenuEnabled,
      nullptr, IDS_ASH_FLOATING_ACCESSIBILITY_MAIN_MENU,
@@ -161,7 +161,10 @@ const FeatureData kFeatures[] = {
      &kSwitchAccessIcon, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SWITCH_ACCESS},
     {FeatureType::kVirtualKeyboard, prefs::kAccessibilityVirtualKeyboardEnabled,
      &kSystemMenuKeyboardLegacyIcon,
-     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD}};
+     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD},
+    {FeatureType::kFaceGaze, prefs::kAccessibilityFaceGazeEnabled, nullptr, 0,
+     /*toggleable_in_quicksettings=*/false},
+};
 
 // An array describing the confirmation dialogs for the features which have
 // them.
@@ -237,6 +240,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityFocusHighlightEnabled,
     prefs::kAccessibilityHighContrastEnabled,
     prefs::kAccessibilityLargeCursorEnabled,
+    prefs::kAccessibilityFaceGazeEnabled,
     prefs::kAccessibilityMonoAudioEnabled,
     prefs::kAccessibilityScreenMagnifierEnabled,
     prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled,
@@ -1365,6 +1369,11 @@ AccessibilityControllerImpl::color_correction() const {
   return GetFeature(FeatureType::kColorCorrection);
 }
 
+AccessibilityControllerImpl::Feature& AccessibilityControllerImpl::face_gaze()
+    const {
+  return GetFeature(FeatureType::kFaceGaze);
+}
+
 AccessibilityControllerImpl::Feature&
 AccessibilityControllerImpl::focus_highlight() const {
   return GetFeature(FeatureType::kFocusHighlight);
@@ -2203,16 +2212,16 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
       base::BindRepeating(
           &AccessibilityControllerImpl::UpdateCursorColorFromPrefs,
           base::Unretained(this)));
-    pref_change_registrar_->Add(
-        prefs::kAccessibilityColorVisionCorrectionAmount,
-        base::BindRepeating(
-            &AccessibilityControllerImpl::UpdateColorCorrectionFromPrefs,
-            base::Unretained(this)));
-    pref_change_registrar_->Add(
-        prefs::kAccessibilityColorVisionCorrectionType,
-        base::BindRepeating(
-            &AccessibilityControllerImpl::UpdateColorCorrectionFromPrefs,
-            base::Unretained(this)));
+  pref_change_registrar_->Add(
+      prefs::kAccessibilityColorVisionCorrectionAmount,
+      base::BindRepeating(
+          &AccessibilityControllerImpl::UpdateColorCorrectionFromPrefs,
+          base::Unretained(this)));
+  pref_change_registrar_->Add(
+      prefs::kAccessibilityColorVisionCorrectionType,
+      base::BindRepeating(
+          &AccessibilityControllerImpl::UpdateColorCorrectionFromPrefs,
+          base::Unretained(this)));
 
   // Load current state.
   for (const std::unique_ptr<Feature>& feature : features_) {
@@ -2230,7 +2239,11 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
   UpdateCursorColorFromPrefs();
   UpdateShortcutsEnabledFromPref();
   UpdateTabletModeShelfNavigationButtonsFromPref();
-    UpdateColorCorrectionFromPrefs();
+  UpdateColorCorrectionFromPrefs();
+
+  if (::features::IsAccessibilityFaceGazeEnabled()) {
+    UpdateFaceGazeFromPrefs();
+  }
 }
 
 void AccessibilityControllerImpl::UpdateAutoclickDelayFromPref() {
@@ -2400,6 +2413,13 @@ void AccessibilityControllerImpl::UpdateCursorColorFromPrefs() {
               : kDefaultCursorColor);
   NotifyAccessibilityStatusChanged();
   shell->UpdateCursorCompositingEnabled();
+}
+
+void AccessibilityControllerImpl::UpdateFaceGazeFromPrefs() {
+  if (!::features::IsAccessibilityFaceGazeEnabled()) {
+    return;
+  }
+  // TODO(b/309121742): Start getting camera data.
 }
 
 void AccessibilityControllerImpl::UpdateColorCorrectionFromPrefs() {
@@ -2887,6 +2907,9 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
             prefs::kAccessibilityColorCorrectionHasBeenSetup, true);
       }
       UpdateColorCorrectionFromPrefs();
+      break;
+    case FeatureType::kFaceGaze:
+      UpdateFaceGazeFromPrefs();
       break;
     case FeatureType::kFeatureCount:
     case FeatureType::kNoConflictingFeature:

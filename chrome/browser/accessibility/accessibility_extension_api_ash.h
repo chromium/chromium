@@ -33,7 +33,8 @@ class AccessibilityPrivateDarkenScreenFunction : public ExtensionFunction {
                              ACCESSIBILITY_PRIVATE_DARKENSCREEN)
 };
 
-// API function that enables or disables mouse events in ChromeVox / Magnifier.
+// API function that enables or disables mouse events in ChromeVox / Magnifier /
+// FaceGaze.
 class AccessibilityPrivateEnableMouseEventsFunction : public ExtensionFunction {
   ~AccessibilityPrivateEnableMouseEventsFunction() override {}
   ResponseAction Run() override;

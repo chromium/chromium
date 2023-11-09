@@ -301,15 +301,15 @@ void AccessibilityEventRewriter::OnMagnifierKeyReleased(
 void AccessibilityEventRewriter::MaybeSendMouseEvent(const ui::Event& event) {
   // Mouse moves are the only pertinent event for accessibility component
   // extensions.
+  AccessibilityControllerImpl* accessibility_controller =
+      Shell::Get()->accessibility_controller();
   if (send_mouse_events_ &&
       (event.type() == ui::ET_MOUSE_MOVED ||
        event.type() == ui::ET_MOUSE_DRAGGED) &&
-      (Shell::Get()
-           ->accessibility_controller()
-           ->fullscreen_magnifier()
-           .enabled() ||
-       Shell::Get()->accessibility_controller()->docked_magnifier().enabled() ||
-       Shell::Get()->accessibility_controller()->spoken_feedback().enabled())) {
+      (accessibility_controller->fullscreen_magnifier().enabled() ||
+       accessibility_controller->docked_magnifier().enabled() ||
+       accessibility_controller->spoken_feedback().enabled() ||
+       accessibility_controller->face_gaze().enabled())) {
     delegate_->DispatchMouseEvent(event.Clone());
   }
 }

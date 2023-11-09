@@ -295,6 +295,11 @@ js_library("dictation_context_checker") {
 
 js_library("facegaze") {
   sources = [ "facegaze/facegaze.js" ]
+  deps = [ "../common:event_handler" ]
+  externs_list = [
+    "$externs_path/automation.js",
+    "$externs_path/accessibility_private.js",
+  ]
 }
 
 action("pumpkin_test_files") {

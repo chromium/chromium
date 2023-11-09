@@ -233,6 +233,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   Feature& cursor_highlight() const;
   Feature& dictation() const;
   Feature& color_correction() const;
+  Feature& face_gaze() const;
   Feature& floating_menu() const;
   Feature& focus_highlight() const;
   FeatureWithDialog& fullscreen_magnifier() const;
@@ -561,6 +562,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void UpdateLargeCursorFromPref();
   void UpdateLiveCaptionFromPref();
   void UpdateCursorColorFromPrefs();
+  void UpdateFaceGazeFromPrefs();
   void UpdateColorCorrectionFromPrefs();
   void UpdateSwitchAccessKeyCodesFromPref(SwitchAccessCommand command);
   void UpdateSwitchAccessAutoScanEnabledFromPref();
