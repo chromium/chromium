@@ -7,6 +7,7 @@
 #include <string>
 #include <tuple>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -18,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/ui/mock_login_display_host.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -25,6 +27,7 @@
 #include "chromeos/crosapi/mojom/remoting.mojom.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/host/chromeos/features.h"
@@ -302,21 +305,18 @@ class CrdAdminSessionControllerTest : public ash::AshTestBase {
     session_manager().NotifyLoginOrLockScreenVisible();
   }
 
+  void SimulateRestart() {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ash::switches::kFirstExecAfterBoot);
+  }
+
   const aura::Window& GetLockScreenContainersContainer() {
     return CHECK_DEREF(ash::Shell::Get()->GetPrimaryRootWindow()->GetChildById(
         ash::kShellWindowId_LockScreenContainersContainer));
   }
 
-  bool IsNotificationViewVisible() {
-    const auto* notification_widget =
-        GetLockScreenContainersContainer().GetChildById(
-            ash::kShellWindowId_AdminWasPresentNotificationWindow);
-
-    if (!notification_widget) {
-      return false;
-    }
-
-    return notification_widget->IsVisible();
+  ash::MockLoginDisplayHost& login_display_host() {
+    return mock_login_display_host_;
   }
 
   void FlushObserverForTesting() { observer_.FlushForTesting(); }
@@ -345,6 +345,8 @@ class CrdAdminSessionControllerTest : public ash::AshTestBase {
     local_state().SetBoolean(pref_name, value);
   }
 
+  void DismissNotification() { SetPref(prefs::kRemoteAdminWasPresent, false); }
+
   TestingPrefServiceSimple& local_state() { return *local_state_.Get(); }
 
   session_manager::SessionManager& session_manager() {
@@ -352,6 +354,8 @@ class CrdAdminSessionControllerTest : public ash::AshTestBase {
   }
 
  private:
+  ScopedTestingLocalState local_state_;
+  testing::StrictMock<ash::MockLoginDisplayHost> mock_login_display_host_;
   TestFuture<Response> result_;
   TestFuture<base::TimeDelta> session_finish_result_;
   mojo::Remote<SupportHostObserver> observer_;
@@ -359,7 +363,6 @@ class CrdAdminSessionControllerTest : public ash::AshTestBase {
   CrdAdminSessionController session_controller_{
       std::make_unique<RemotingServiceWrapper>(&remoting_service_)};
   base::test::ScopedFeatureList feature_;
-  ScopedTestingLocalState local_state_;
 };
 
 // Fixture for tests parameterized over boolean values.
@@ -762,7 +765,7 @@ TEST_F(
 }
 
 TEST_F(CrdAdminSessionControllerTest,
-       ShouldNotSetRemoteAdminWasPresentPrefIfDisabledByFeature) {
+       ShouldNotShowActivityNotificationIfDisabledByFeature) {
   DisableFeature(kEnableCrdAdminRemoteAccessV2);
   TestFuture<void> done_signal;
   session_controller().Init(&local_state(), done_signal.GetCallback());
@@ -770,122 +773,118 @@ TEST_F(CrdAdminSessionControllerTest,
 
   SessionParameters parameters;
   parameters.curtain_local_user_session = true;
-
   SupportHostObserver& observer = StartCrdHostAndBindObserver(parameters);
   observer.OnHostStateConnected(kTestUserName);
   FlushObserverForTesting();
 
-  EXPECT_EQ(GetPref(prefs::kRemoteAdminWasPresent), false);
+  EXPECT_NO_CALLS(login_display_host(), ShowRemoteActivityNotificationScreen());
+
+  SimulateLoginScreenIsVisible();
 }
 
-TEST_F(CrdAdminSessionControllerTest, ShouldSetRemoteAdminWasPresentPref) {
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldShowActivityNotificationIfThePreviousSessionWasCurtained) {
   EnableFeature(kEnableCrdAdminRemoteAccessV2);
   InitControllerWithNoReconnectableSession();
 
   SessionParameters parameters;
   parameters.curtain_local_user_session = true;
-
   SupportHostObserver& observer = StartCrdHostAndBindObserver(parameters);
   observer.OnHostStateConnected(kTestUserName);
   FlushObserverForTesting();
 
-  EXPECT_EQ(GetPref(prefs::kRemoteAdminWasPresent), true);
+  EXPECT_CALL(login_display_host(), ShowRemoteActivityNotificationScreen())
+      .Times(1);
+
+  SimulateLoginScreenIsVisible();
 }
 
 TEST_F(CrdAdminSessionControllerTest,
-       ShouldNotSetRemoteAdminWasPresentPrefIfSessionIsUncurtained) {
+       ShouldNotShowActivityNotificationIfThePreviousSessionWasNotCurtained) {
   EnableFeature(kEnableCrdAdminRemoteAccessV2);
   InitControllerWithNoReconnectableSession();
 
   SessionParameters parameters;
   parameters.curtain_local_user_session = false;
-
   SupportHostObserver& observer = StartCrdHostAndBindObserver(parameters);
   observer.OnHostStateConnected(kTestUserName);
   FlushObserverForTesting();
 
-  EXPECT_EQ(GetPref(prefs::kRemoteAdminWasPresent), false);
-}
-
-TEST_F(CrdAdminSessionControllerTest,
-       ShouldShowNotificationIfRemoteAdminWasPresentPrefIsSet) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-  SetPref(prefs::kRemoteAdminWasPresent, true);
-  InitControllerWithNoReconnectableSession();
+  EXPECT_NO_CALLS(login_display_host(), ShowRemoteActivityNotificationScreen());
 
   SimulateLoginScreenIsVisible();
-
-  EXPECT_TRUE(IsNotificationViewVisible());
 }
 
 TEST_F(CrdAdminSessionControllerTest,
-       ShouldNotShowNotificationIfRemoteAdminPrefIsNotSet) {
+       ShouldShowActivityNotificationAgainIfUserDidNotDismissIt) {
   EnableFeature(kEnableCrdAdminRemoteAccessV2);
-  SetPref(prefs::kRemoteAdminWasPresent, false);
-  InitControllerWithNoReconnectableSession();
-
-  SimulateLoginScreenIsVisible();
-
-  EXPECT_FALSE(IsNotificationViewVisible());
-}
-
-TEST_F(CrdAdminSessionControllerTest,
-       ShouldDismissNotificationWidgetOnButtonClick) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-  SetPref(prefs::kRemoteAdminWasPresent, true);
-  InitControllerWithNoReconnectableSession();
-
-  SimulateLoginScreenIsVisible();
-
-  EXPECT_TRUE(IsNotificationViewVisible());
-
-  session_controller().ClickNotificationButtonForTesting();
-
-  EXPECT_FALSE(IsNotificationViewVisible());
-}
-
-TEST_F(CrdAdminSessionControllerTest,
-       ShouldResetStatePrefWhenCurrentSessionIsNotCurtained) {
-  EnableFeature(kEnableCrdAdminRemoteAccessV2);
-  SetPref(prefs::kRemoteAdminWasPresent, true);
   InitControllerWithNoReconnectableSession();
 
   SessionParameters parameters;
-  parameters.curtain_local_user_session = false;
-
+  parameters.curtain_local_user_session = true;
   SupportHostObserver& observer = StartCrdHostAndBindObserver(parameters);
   observer.OnHostStateConnected(kTestUserName);
   FlushObserverForTesting();
 
+  // The first time the notification is displayed.
+  EXPECT_CALL(login_display_host(), ShowRemoteActivityNotificationScreen())
+      .Times(1);
   SimulateLoginScreenIsVisible();
 
-  EXPECT_TRUE(GetPref(prefs::kRemoteAdminWasPresent));
+  SimulateRestart();
 
-  session_controller().ClickNotificationButtonForTesting();
+  EXPECT_CALL(login_display_host(), ShowRemoteActivityNotificationScreen())
+      .Times(1);
+  SimulateLoginScreenIsVisible();
+}
 
-  EXPECT_FALSE(GetPref(prefs::kRemoteAdminWasPresent));
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldNotShowActivityNotificationAgainIfUserDismissedIt) {
+  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+  InitControllerWithNoReconnectableSession();
+
+  SessionParameters parameters;
+  parameters.curtain_local_user_session = true;
+  SupportHostObserver& observer = StartCrdHostAndBindObserver(parameters);
+  observer.OnHostStateConnected(kTestUserName);
+  FlushObserverForTesting();
+  TerminateActiveSession();
+
+  // The first time the notification is displayed.
+  EXPECT_CALL(login_display_host(), ShowRemoteActivityNotificationScreen())
+      .Times(1);
+  SimulateLoginScreenIsVisible();
+
+  DismissNotification();
+  SimulateRestart();
+
+  EXPECT_NO_CALLS(login_display_host(), ShowRemoteActivityNotificationScreen());
+
+  SimulateLoginScreenIsVisible();
 }
 
 TEST_F(
     CrdAdminSessionControllerTest,
-    ShouldNotResetStatePrefWhenDismissingNotificationWithinACurtainedSession) {
+    ShouldShowActivityNotificationAgainIfUserDismissedItDuringACurtainedSession) {
   EnableFeature(kEnableCrdAdminRemoteAccessV2);
-  SetPref(prefs::kRemoteAdminWasPresent, true);
   InitControllerWithNoReconnectableSession();
 
   SessionParameters parameters;
   parameters.curtain_local_user_session = true;
-
   SupportHostObserver& observer = StartCrdHostAndBindObserver(parameters);
   SimilateClientConnects(observer);
 
+  // The first time the notification is displayed.
+  EXPECT_CALL(login_display_host(), ShowRemoteActivityNotificationScreen())
+      .Times(1);
   SimulateLoginScreenIsVisible();
 
-  EXPECT_TRUE(GetPref(prefs::kRemoteAdminWasPresent));
+  DismissNotification();
+  SimulateRestart();
 
-  session_controller().ClickNotificationButtonForTesting();
-
-  EXPECT_TRUE(GetPref(prefs::kRemoteAdminWasPresent));
+  EXPECT_CALL(login_display_host(), ShowRemoteActivityNotificationScreen())
+      .Times(1);
+  SimulateLoginScreenIsVisible();
 }
 
 TEST_F(CrdAdminSessionControllerTest,

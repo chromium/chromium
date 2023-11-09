@@ -119,6 +119,8 @@ BrowserPolicyConnectorAsh::CreateBackgroundTaskRunner() {
 BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh() {
   DCHECK(ash::InstallAttributes::IsInitialized());
 
+  crd_admin_session_controller_ = std::make_unique<CrdAdminSessionController>();
+
   // DBusThreadManager or DeviceSettingsService may be
   // uninitialized on unit tests.
   if (ash::DBusThreadManager::IsInitialized() &&
@@ -139,9 +141,6 @@ BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh() {
             base::BindRepeating(&GetChromePolicyDetails),
             CreateBackgroundTaskRunner(), device_policy_external_data_path,
             device_cloud_policy_store.get());
-
-    crd_admin_session_controller_ =
-        std::make_unique<CrdAdminSessionController>();
 
     device_cloud_policy_manager_ = new DeviceCloudPolicyManagerAsh(
         std::move(device_cloud_policy_store), std::move(external_data_manager),
@@ -346,6 +345,8 @@ void BrowserPolicyConnectorAsh::Shutdown() {
   }
 
   adb_sideloading_allowance_mode_policy_handler_.reset();
+
+  crd_admin_session_controller_->Shutdown();
 
   ChromeBrowserPolicyConnector::Shutdown();
 }

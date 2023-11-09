@@ -49,12 +49,14 @@
 #include "chrome/browser/ash/login/screens/mock_update_screen.h"
 #include "chrome/browser/ash/login/screens/mock_welcome_screen.h"
 #include "chrome/browser/ash/login/screens/mock_wrong_hwid_screen.h"
+#include "chrome/browser/ash/login/screens/remote_activity_notification_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/screens/wrong_hwid_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
+#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -62,6 +64,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
+#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
@@ -89,6 +92,7 @@
 #include "chrome/browser/ui/webui/ash/login/local_state_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
+#include "chrome/browser/ui/webui/ash/login/remote_activity_notification_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/touchpad_scroll_screen_handler.h"
@@ -127,6 +131,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "remoting/host/chromeos/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -2967,6 +2972,101 @@ IN_PROC_BROWSER_TEST_F(WizardControllerOobeConfigurationTest,
       WizardController::default_controller()->GetScreen<WelcomeScreen>();
   const base::Value::Dict& configuration = screen->GetConfigurationForTesting();
   EXPECT_FALSE(configuration.empty());
+}
+
+class WizardControllerRemoteActivityNotificationTest
+    : public WizardControllerTest,
+      public LocalStateMixin::Delegate {
+ public:
+  WizardControllerRemoteActivityNotificationTest(
+      const WizardControllerRemoteActivityNotificationTest&) = delete;
+  WizardControllerRemoteActivityNotificationTest& operator=(
+      const WizardControllerRemoteActivityNotificationTest&) = delete;
+
+ protected:
+  WizardControllerRemoteActivityNotificationTest() = default;
+  ~WizardControllerRemoteActivityNotificationTest() override = default;
+
+  // WizardControllerTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    WizardControllerTest::SetUpInProcessBrowserTestFixture();
+    feature_list_.InitAndEnableFeature(
+        remoting::features::kEnableCrdAdminRemoteAccessV2);
+    login_manager_mixin_.AppendRegularUsers(1);
+  }
+
+  void SetUpOnMainThread() override {
+    WizardControllerTest::SetUpOnMainThread();
+  }
+
+  // LocalStateMixin::Delegate:
+  void SetUpLocalState() override { StartupUtils::MarkOobeCompleted(); }
+
+  void SetPref(const std::string& pref, bool value) {
+    local_state()->SetBoolean(pref, value);
+  }
+
+  bool GetPref(const std::string& pref) {
+    return local_state()->GetBoolean(pref);
+  }
+
+  PrefService* local_state() { return g_browser_process->local_state(); }
+
+  bool IsCurrentScreen(OobeScreenId screen) {
+    BaseScreen* current_screen =
+        WizardController::default_controller()->current_screen();
+    const std::string actual_screen =
+        current_screen ? current_screen->screen_id().name : "nullptr";
+    const std::string expected_screen = screen.name;
+    return actual_screen == expected_screen;
+  }
+
+  bool IsRemoteActivityScreenVisible() {
+    return LoginScreenTestApi::IsOobeDialogVisible() &&
+           IsCurrentScreen(RemoteActivityNotificationView::kScreenId);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  LoginManagerMixin login_manager_mixin_{&mixin_host_};
+  LocalStateMixin local_state_mixin_{&mixin_host_, this};
+};
+
+class RemoteActivityNotificationTestWhenPrefIsSet
+    : public WizardControllerRemoteActivityNotificationTest {
+  void SetUpLocalState() override {
+    SetPref(prefs::kRemoteAdminWasPresent, true);
+  }
+};
+
+class RemoteActivityNotificationTestWhenPrefIsNotSet
+    : public WizardControllerRemoteActivityNotificationTest {
+  void SetUpLocalState() override {
+    SetPref(prefs::kRemoteAdminWasPresent, false);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(RemoteActivityNotificationTestWhenPrefIsSet,
+                       ShouldSetPrefOnRemoteActivityScreenExit) {
+  OobeScreenWaiter(RemoteActivityNotificationView::kScreenId).Wait();
+  CheckCurrentScreen(RemoteActivityNotificationView::kScreenId);
+  ASSERT_TRUE(GetPref(prefs::kRemoteAdminWasPresent));
+  ASSERT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+
+  test::OobeJS().ClickOnPath({"remote-activity-notification", "cancelButton"});
+
+  test::TestPredicateWaiter(base::BindRepeating([]() {
+    return !LoginScreenTestApi::IsOobeDialogVisible();
+  })).Wait();
+  EXPECT_FALSE(IsRemoteActivityScreenVisible());
+  EXPECT_FALSE(GetPref(prefs::kRemoteAdminWasPresent));
+}
+
+IN_PROC_BROWSER_TEST_F(RemoteActivityNotificationTestWhenPrefIsNotSet,
+                       NotificationShouldNotBeVisible) {
+  ASSERT_FALSE(GetPref(prefs::kRemoteAdminWasPresent));
+
+  EXPECT_FALSE(IsRemoteActivityScreenVisible());
 }
 
 class WizardControllerThemeSelectionTest : public WizardControllerTest {

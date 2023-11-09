@@ -57,6 +57,7 @@ class MockLoginDisplayHost : public LoginDisplayHost {
   MOCK_METHOD(void, ShowOsInstallScreen, (), (override));
   MOCK_METHOD(void, ShowGuestTosScreen, (), (override));
   MOCK_METHOD(void, ShowAllowlistCheckFailedError, (), (override));
+  MOCK_METHOD(void, ShowRemoteActivityNotificationScreen, (), (override));
   MOCK_METHOD(void, HideOobeDialog, (bool saml_video_timeout), (override));
   MOCK_METHOD(void, SetShelfButtonsEnabled, (bool), (override));
   MOCK_METHOD(void, UpdateOobeDialogState, (OobeDialogState state), (override));

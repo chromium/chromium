@@ -2606,8 +2606,6 @@ source_set("ash") {
     "policy/remote_commands/fake_screenshot_delegate.h",
     "policy/remote_commands/remote_activity_notification_controller.cc",
     "policy/remote_commands/remote_activity_notification_controller.h",
-    "policy/remote_commands/remote_activity_notification_view.cc",
-    "policy/remote_commands/remote_activity_notification_view.h",
     "policy/remote_commands/screenshot_delegate.cc",
     "policy/remote_commands/screenshot_delegate.h",
     "policy/remote_commands/start_crd_session_job_delegate.cc",

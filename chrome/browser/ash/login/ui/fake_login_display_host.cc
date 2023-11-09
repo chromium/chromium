@@ -130,6 +130,8 @@ void FakeLoginDisplayHost::ShowOsInstallScreen() {}
 
 void FakeLoginDisplayHost::ShowGuestTosScreen() {}
 
+void FakeLoginDisplayHost::ShowRemoteActivityNotificationScreen() {}
+
 void FakeLoginDisplayHost::HideOobeDialog(bool saml_page_closed) {}
 
 void FakeLoginDisplayHost::SetShelfButtonsEnabled(bool enabled) {}

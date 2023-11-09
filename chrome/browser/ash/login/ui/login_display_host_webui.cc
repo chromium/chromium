@@ -1018,6 +1018,10 @@ void LoginDisplayHostWebUI::ShowGuestTosScreen() {
   StartWizard(GuestTosScreenView::kScreenId);
 }
 
+void LoginDisplayHostWebUI::ShowRemoteActivityNotificationScreen() {
+  StartWizard(RemoteActivityNotificationView::kScreenId);
+}
+
 void LoginDisplayHostWebUI::HideOobeDialog(bool saml_page_closed) {
   NOTREACHED();
 }

@@ -2285,7 +2285,13 @@ void WizardController::OnRecommendAppsScreenExit(
 }
 
 void WizardController::OnRemoteActivityNotificationScreenExit() {
-  OnScreenExit(AppDownloadingScreenView::kScreenId, kDefaultExitReason);
+  // Remember the user acknowledged the message.
+  GetLocalState()->SetBoolean(::prefs::kRemoteAdminWasPresent, false);
+
+  // Cleanup OOBE state.
+  if (LoginDisplayHost::default_host()->HasUserPods()) {
+    LoginDisplayHost::default_host()->HideOobeDialog();
+  }
 }
 
 void WizardController::OnAppDownloadingScreenExit() {

@@ -56,6 +56,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   void ShowAllowlistCheckFailedError() override;
   void ShowOsInstallScreen() override;
   void ShowGuestTosScreen() override;
+  void ShowRemoteActivityNotificationScreen() override;
   void HideOobeDialog(bool saml_page_closed = false) override;
   void SetShelfButtonsEnabled(bool enabled) override;
   void UpdateOobeDialogState(OobeDialogState state) override;

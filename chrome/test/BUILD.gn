@@ -2020,6 +2020,10 @@ if (!is_android) {
       ]
     }
 
+    if (is_chromeos_ash) {
+      deps += [ "//remoting/host/chromeos:features" ]
+    }
+
     # Runtime dependencies
     data_deps = [
       "//chrome:browser_tests_pak",

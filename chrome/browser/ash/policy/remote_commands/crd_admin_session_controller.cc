@@ -14,7 +14,6 @@
 #include "ash/shell.h"
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
@@ -368,10 +367,8 @@ void CrdAdminSessionController::Init(PrefService* local_state,
   }
 }
 
-void CrdAdminSessionController::ClickNotificationButtonForTesting() {
-  CHECK(notification_controller_);
-  CHECK_IS_TEST();
-  notification_controller_->ClickNotificationButtonForTesting();  // IN-TEST
+void CrdAdminSessionController::Shutdown() {
+  notification_controller_ = nullptr;
 }
 
 StartCrdSessionJobDelegate& CrdAdminSessionController::GetDelegate() {

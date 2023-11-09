@@ -68,10 +68,9 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate {
 
   void Init(PrefService* local_state,
             base::OnceClosure done_callback = base::DoNothing());
+  void Shutdown();
 
   StartCrdSessionJobDelegate& GetDelegate();
-
-  void ClickNotificationButtonForTesting();
 
  private:
   class CrdHostSession;

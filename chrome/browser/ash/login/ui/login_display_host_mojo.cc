@@ -55,6 +55,7 @@
 #include "chrome/browser/ui/webui/ash/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/remote_activity_notification_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
@@ -583,6 +584,11 @@ void LoginDisplayHostMojo::ShowOsInstallScreen() {
 
 void LoginDisplayHostMojo::ShowGuestTosScreen() {
   StartWizard(GuestTosScreenView::kScreenId);
+  ShowDialog();
+}
+
+void LoginDisplayHostMojo::ShowRemoteActivityNotificationScreen() {
+  StartWizard(RemoteActivityNotificationView::kScreenId);
   ShowDialog();
 }
 

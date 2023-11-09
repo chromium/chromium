@@ -153,6 +153,10 @@ class LoginDisplayHost {
   // dialog.
   virtual void ShowGaiaDialog(const AccountId& prefilled_account) = 0;
 
+  // Show a notification screen informing the user that an admin user privately
+  // accessed the device using Chrome Remote Desktop.
+  virtual void ShowRemoteActivityNotificationScreen() = 0;
+
   // Show allowlist check failed error. Happens after user completes online
   // signin but allowlist check fails.
   virtual void ShowAllowlistCheckFailedError() = 0;

@@ -594,6 +594,7 @@ class WizardController : public OobeUI::Observer {
   friend class WizardControllerOnboardingResumeTest;
   friend class WizardControllerScreenPriorityTest;
   friend class WizardControllerManagementTransitionOobeTest;
+  friend class WizardControllerRemoteActivityNotificationTest;
 
   base::CallbackListSubscription accessibility_subscription_;
 
