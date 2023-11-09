@@ -16,6 +16,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace apps {
 
@@ -43,6 +44,9 @@ class BrowserShortcutsCrosapiPublisher
   // crosapi::mojom::AppShortcutPublisher overrides.
   void PublishShortcuts(std::vector<apps::ShortcutPtr> deltas,
                         PublishShortcutsCallback callback) override;
+  void RegisterAppShortcutController(
+      mojo::PendingRemote<crosapi::mojom::AppShortcutController> controller,
+      RegisterAppShortcutControllerCallback callback) override;
 
   // apps::ShortcutPublisher overrides.
   void LaunchShortcut(const std::string& host_app_id,
@@ -54,8 +58,10 @@ class BrowserShortcutsCrosapiPublisher
                       apps::UninstallSource uninstall_source) override;
 
   void OnCrosapiDisconnected();
+  void OnControllerDisconnected();
 
   mojo::Receiver<crosapi::mojom::AppShortcutPublisher> receiver_{this};
+  mojo::Remote<crosapi::mojom::AppShortcutController> controller_;
   const raw_ptr<apps::AppServiceProxy> proxy_;
 
   base::WeakPtrFactory<BrowserShortcutsCrosapiPublisher> weak_factory_{this};

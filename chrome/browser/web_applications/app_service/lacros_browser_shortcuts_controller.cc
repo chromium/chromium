@@ -70,11 +70,35 @@ void LacrosBrowserShortcutsController::Initialize() {
   provider_->on_registry_ready().Post(
       FROM_HERE,
       base::BindOnce(
-          &LacrosBrowserShortcutsController::InitializeOnRegistryReady,
+          &LacrosBrowserShortcutsController::RegisterControllerOnRegistryReady,
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void LacrosBrowserShortcutsController::InitializeOnRegistryReady() {
+void LacrosBrowserShortcutsController::RegisterControllerOnRegistryReady() {
+  auto* service = chromeos::LacrosService::Get();
+  if (service->GetInterfaceVersion<crosapi::mojom::AppShortcutPublisher>() <
+          int{crosapi::mojom::AppShortcutPublisher::MethodMinVersions::
+                  kRegisterAppShortcutControllerMinVersion} &&
+      !chromeos::BrowserParamsProxy::Get()->IsCrosapiDisabledForTesting()) {
+    LOG(WARNING)
+        << "Ash AppShortcutPublisher version "
+        << service->GetInterfaceVersion<crosapi::mojom::AppShortcutPublisher>()
+        << " does not support RegisterAppShortcutController().";
+    return;
+  }
+  service->GetRemote<crosapi::mojom::AppShortcutPublisher>()
+      ->RegisterAppShortcutController(
+          receiver_.BindNewPipeAndPassRemoteWithVersion(),
+          base::BindOnce(
+              &LacrosBrowserShortcutsController::InitializeOnControllerReady,
+              weak_ptr_factory_.GetWeakPtr()));
+}
+
+void LacrosBrowserShortcutsController::InitializeOnControllerReady(
+    crosapi::mojom::ControllerRegistrationResult result) {
+  if (result != crosapi::mojom::ControllerRegistrationResult::kSuccess) {
+    return;
+  }
   MaybePublishBrowserShortcuts(
       provider_->registrar_unsafe().GetAppIds(), false,
       base::BindOnce(&OnInitialBrowserShortcutsPublished));

@@ -251,4 +251,16 @@ interface AppShortcutPublisher {
   // |deltas| holds a sparse data structure that includes the update
   // AppShortcut data from the existing shortcut state in app service.
   PublishShortcuts@0(array<AppShortcut> deltas) => ();
+
+  // Lacros exposes an AppShortcutController interface to Ash. This allows
+  // Ash to launch, or otherwise interact with shortcuts that run in Lacros.
+  [MinVersion=1]
+  RegisterAppShortcutController@1(
+    pending_remote<AppShortcutController> controller) =>
+      (ControllerRegistrationResult result);
 };
+
+// Interacts with shortcuts that run in Lacros. Implemented in lacros-chrome
+// and called in ash-chrome.
+[Stable, Uuid="aa20b7ea-e177-4e14-b30e-cf54d9cde94c"]
+interface AppShortcutController {};

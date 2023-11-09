@@ -597,3 +597,10 @@ struct REMOVED_01 {
   // DEPRECATED
   uint8 position@2;
 };
+
+// Controller registration result in App Service.
+[Stable, Extensible]
+enum ControllerRegistrationResult {
+  [Default] kSuccess              = 0,
+  kFailed                         = 1,
+};

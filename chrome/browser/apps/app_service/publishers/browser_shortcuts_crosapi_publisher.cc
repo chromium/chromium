@@ -55,6 +55,22 @@ void BrowserShortcutsCrosapiPublisher::PublishShortcuts(
   std::move(callback).Run();
 }
 
+void BrowserShortcutsCrosapiPublisher::RegisterAppShortcutController(
+    mojo::PendingRemote<crosapi::mojom::AppShortcutController> controller,
+    RegisterAppShortcutControllerCallback callback) {
+  if (controller_.is_bound()) {
+    std::move(callback).Run(
+        crosapi::mojom::ControllerRegistrationResult::kFailed);
+    return;
+  }
+  controller_.Bind(std::move(controller));
+  controller_.set_disconnect_handler(base::BindOnce(
+      &BrowserShortcutsCrosapiPublisher::OnControllerDisconnected,
+      base::Unretained(this)));
+  std::move(callback).Run(
+      crosapi::mojom::ControllerRegistrationResult::kSuccess);
+}
+
 void BrowserShortcutsCrosapiPublisher::LaunchShortcut(
     const std::string& host_app_id,
     const std::string& local_shortcut_id,
@@ -73,6 +89,11 @@ void BrowserShortcutsCrosapiPublisher::RemoveShortcut(
 
 void BrowserShortcutsCrosapiPublisher::OnCrosapiDisconnected() {
   receiver_.reset();
+  controller_.reset();
+}
+
+void BrowserShortcutsCrosapiPublisher::OnControllerDisconnected() {
+  controller_.reset();
 }
 
 }  // namespace apps

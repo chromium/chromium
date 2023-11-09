@@ -39,6 +39,8 @@ class FakeShortcutPublisher : public crosapi::mojom::AppShortcutPublisher {
 
   void clear_deltas() { shortcut_deltas_.clear(); }
 
+  bool controller_registered() { return controller_registered_; }
+
   mojo::Receiver<crosapi::mojom::AppShortcutPublisher> receiver_{this};
 
  private:
@@ -52,7 +54,16 @@ class FakeShortcutPublisher : public crosapi::mojom::AppShortcutPublisher {
     std::move(callback).Run();
   }
 
+  void RegisterAppShortcutController(
+      mojo::PendingRemote<crosapi::mojom::AppShortcutController> controller,
+      RegisterAppShortcutControllerCallback callback) override {
+    controller_registered_ = true;
+    std::move(callback).Run(
+        crosapi::mojom::ControllerRegistrationResult::kSuccess);
+  }
+
   std::vector<apps::ShortcutPtr> shortcut_deltas_;
+  bool controller_registered_ = false;
 };
 
 class LacrosBrowserShortcutsControllerTest : public testing::Test,
@@ -122,6 +133,7 @@ TEST_F(LacrosBrowserShortcutsControllerTest, PublishShortcuts) {
       GURL("https://www.example.com/"), u"shortcut name");
 
   InitializeLacrosBrowserShortcutsController();
+  ASSERT_TRUE(fake_publisher()->controller_registered());
   ASSERT_EQ(fake_publisher()->get_deltas().size(), 1U);
   EXPECT_EQ(fake_publisher()->get_deltas().back()->shortcut_id, shortcut_id_1);
 
