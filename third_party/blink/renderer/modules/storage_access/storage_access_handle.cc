@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/storage_access/storage_access_handle.h"
 
+#include "base/types/pass_key.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_estimate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_usage_details.h"
@@ -15,6 +16,8 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
+
+using PassKey = base::PassKey<StorageAccessHandle>;
 
 // static
 const char StorageAccessHandle::kSupplementName[] = "StorageAccessHandle";
@@ -477,7 +480,7 @@ void StorageAccessHandle::InitBlobStorage() {
   remote_->BindBlobStorage(
       blob_storage_remote.InitWithNewEndpointAndPassReceiver());
   blob_storage_ = MakeGarbageCollected<PublicURLManager>(
-      GetSupplementable()->GetExecutionContext(),
+      PassKey(), GetSupplementable()->GetExecutionContext(),
       std::move(blob_storage_remote));
 }
 

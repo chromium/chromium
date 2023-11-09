@@ -30,6 +30,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/features.h"
@@ -145,6 +146,7 @@ PublicURLManager::PublicURLManager(ExecutionContext* execution_context)
 }
 
 PublicURLManager::PublicURLManager(
+    base::PassKey<StorageAccessHandle>,
     ExecutionContext* execution_context,
     mojo::PendingAssociatedRemote<mojom::blink::BlobURLStore>
         frame_url_store_remote)
