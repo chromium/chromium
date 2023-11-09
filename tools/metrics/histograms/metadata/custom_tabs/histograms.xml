@@ -245,6 +245,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.DeviceSpec" enum="PcctDeviceSpec"
+    expires_after="2024-11-09">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Reports some chosen specs of the device on which PCCT runs. We are
+    interested in understanding how many devices running PCCT will be able to
+    migrate to Activity Embedding later, which requires that the device not be a
+    low-end one and support picture-in-picture feature. Low-endness is defined
+    as the return value of API ActivityManager#isLowRamDevice. This is recorded
+    only once per Chrome session, when PCCT is launched.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.FeatureUsage" enum="CustomTabsFeatureUsed"
     expires_after="2024-03-17">
   <owner>donnd@chromium.org</owner>

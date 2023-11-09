@@ -14,7 +14,9 @@ import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -132,6 +134,8 @@ public class PartialCustomTabTestRule implements TestRule {
     @Mock PartialCustomTabHandleStrategyFactory mHandleStrategyFactory;
     @Mock DisplayMetrics mMetrics;
     @Mock ViewGroup mCompositorViewHolder;
+    @Mock PackageManager mPackageManager;
+    @Mock ActivityManager mActivityManager;
     @Captor ArgumentCaptor<View.OnAttachStateChangeListener> mAttachStateChangeListener;
 
     Context mContext;
@@ -240,6 +244,8 @@ public class PartialCustomTabTestRule implements TestRule {
                 .getSize(any(Point.class));
         mContext = ApplicationProvider.getApplicationContext();
         ContextUtils.initApplicationContextForTests(mContext);
+        when(mActivity.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(mActivityManager);
+        when(mActivity.getPackageManager()).thenReturn(mPackageManager);
     }
 
     private void commonTearDown() {
