@@ -72,13 +72,13 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
     _browsingDataCommandEndpoint = browsingDataCommandEndpoint;
 
     // Create all browsers.
-    _mainBrowser = Browser::Create(_browserState);
+    _mainBrowser = Browser::Create(_browserState, _sceneState);
     [self setupBrowser:_mainBrowser.get()];
     [self setupBrowser:_mainBrowser->CreateInactiveBrowser()];
 
     ChromeBrowserState* otrBrowserState =
         _browserState->GetOffTheRecordChromeBrowserState();
-    _otrBrowser = Browser::Create(otrBrowserState);
+    _otrBrowser = Browser::Create(otrBrowserState, _sceneState);
     [self setupBrowser:_otrBrowser.get()];
   }
   return self;
@@ -228,7 +228,7 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
   ChromeBrowserState* incognitoBrowserState =
       _browserState->GetOffTheRecordChromeBrowserState();
 
-  _otrBrowser = Browser::Create(incognitoBrowserState);
+  _otrBrowser = Browser::Create(incognitoBrowserState, _sceneState);
   [self setupBrowser:_otrBrowser.get()];
 
   // Recreate the off-the-record interface, but do not load the session as

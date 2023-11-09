@@ -8,6 +8,7 @@
 #import "base/memory/ptr_util.h"
 #import "ios/chrome/browser/main/browser_agent_util.h"
 #import "ios/chrome/browser/main/browser_web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -15,11 +16,14 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
 BrowserImpl::BrowserImpl(ChromeBrowserState* browser_state,
+                         SceneState* scene_state,
                          BrowserImpl* active_browser)
     : browser_state_(browser_state),
       command_dispatcher_([[CommandDispatcher alloc] init]),
+      scene_state_(scene_state),
       active_browser_(active_browser ?: this) {
   DCHECK(browser_state_);
+  DCHECK(scene_state_);
   DCHECK(active_browser_);
 
   // Only realize the WebState on activation for the active Browser.
@@ -50,6 +54,10 @@ CommandDispatcher* BrowserImpl::GetCommandDispatcher() {
   return command_dispatcher_;
 }
 
+SceneState* BrowserImpl::GetSceneState() {
+  return scene_state_;
+}
+
 void BrowserImpl::AddObserver(BrowserObserver* observer) {
   observers_.AddObserver(observer);
 }
@@ -78,7 +86,8 @@ Browser* BrowserImpl::CreateInactiveBrowser() {
   CHECK(!IsInactive()) << "This browser already is the inactive one.";
   CHECK(!inactive_browser_.get())
       << "This browser already links to its inactive counterpart.";
-  inactive_browser_ = std::make_unique<BrowserImpl>(browser_state_, this);
+  inactive_browser_ =
+      std::make_unique<BrowserImpl>(browser_state_, scene_state_, this);
   return inactive_browser_.get();
 }
 
@@ -89,6 +98,7 @@ void BrowserImpl::DestroyInactiveBrowser() {
 }
 
 // static
-std::unique_ptr<Browser> Browser::Create(ChromeBrowserState* browser_state) {
-  return std::make_unique<BrowserImpl>(browser_state);
+std::unique_ptr<Browser> Browser::Create(ChromeBrowserState* browser_state,
+                                         SceneState* scene_state) {
+  return std::make_unique<BrowserImpl>(browser_state, scene_state);
 }

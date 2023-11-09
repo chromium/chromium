@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -12,8 +13,10 @@
 
 TestBrowser::TestBrowser(
     ChromeBrowserState* browser_state,
+    SceneState* scene_state,
     std::unique_ptr<WebStateListDelegate> web_state_list_delegate)
     : browser_state_(browser_state),
+      scene_state_(scene_state),
       web_state_list_delegate_(std::move(web_state_list_delegate)),
       command_dispatcher_([[CommandDispatcher alloc] init]) {
   DCHECK(browser_state_);
@@ -22,9 +25,23 @@ TestBrowser::TestBrowser(
       std::make_unique<WebStateList>(web_state_list_delegate_.get());
 }
 
+TestBrowser::TestBrowser(ChromeBrowserState* browser_state,
+                         SceneState* scene_state)
+    : TestBrowser(browser_state,
+                  scene_state,
+                  std::make_unique<FakeWebStateListDelegate>()) {}
+
+TestBrowser::TestBrowser(
+    ChromeBrowserState* browser_state,
+    std::unique_ptr<WebStateListDelegate> web_state_list_delegate)
+    : TestBrowser(browser_state,
+                  [[SceneState alloc] initWithAppState:nil],
+                  std::move(web_state_list_delegate)) {}
+
 TestBrowser::TestBrowser(ChromeBrowserState* browser_state)
-    : TestBrowser(browser_state, std::make_unique<FakeWebStateListDelegate>()) {
-}
+    : TestBrowser(browser_state,
+                  [[SceneState alloc] initWithAppState:nil],
+                  std::make_unique<FakeWebStateListDelegate>()) {}
 
 TestBrowser::~TestBrowser() {
   for (auto& observer : observers_) {
@@ -44,6 +61,10 @@ WebStateList* TestBrowser::GetWebStateList() {
 
 CommandDispatcher* TestBrowser::GetCommandDispatcher() {
   return command_dispatcher_;
+}
+
+SceneState* TestBrowser::GetSceneState() {
+  return scene_state_;
 }
 
 void TestBrowser::AddObserver(BrowserObserver* observer) {

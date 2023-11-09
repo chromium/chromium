@@ -28,6 +28,7 @@ class BrowserImpl final : public Browser {
   // counterpart to that active browser. Otherwise, the created browser is
   // considered active by default.
   BrowserImpl(ChromeBrowserState* browser_state,
+              SceneState* scene_state,
               BrowserImpl* active_browser = nullptr);
 
   BrowserImpl(const BrowserImpl&) = delete;
@@ -39,6 +40,7 @@ class BrowserImpl final : public Browser {
   ChromeBrowserState* GetBrowserState() final;
   WebStateList* GetWebStateList() final;
   CommandDispatcher* GetCommandDispatcher() final;
+  SceneState* GetSceneState() final;
   void AddObserver(BrowserObserver* observer) final;
   void RemoveObserver(BrowserObserver* observer) final;
   base::WeakPtr<Browser> AsWeakPtr() final;
@@ -53,6 +55,7 @@ class BrowserImpl final : public Browser {
   std::unique_ptr<WebStateListDelegate> web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
   __strong CommandDispatcher* command_dispatcher_;
+  __weak SceneState* scene_state_;
   base::ObserverList<BrowserObserver, /* check_empty= */ true> observers_;
   Browser* const active_browser_;
   std::unique_ptr<Browser> inactive_browser_;

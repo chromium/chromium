@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/main/browser_impl.h"
 
+#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/fake_browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -17,15 +18,19 @@ class BrowserImplTest : public PlatformTest {
   BrowserImplTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
     chrome_browser_state_ = test_cbs_builder.Build();
+    scene_state_ =
+        [[FakeSceneState alloc] initWithAppState:nil
+                                    browserState:chrome_browser_state_.get()];
   }
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  FakeSceneState* scene_state_;
 };
 
 // Tests that the accessors return the expected values.
 TEST_F(BrowserImplTest, TestAccessors) {
-  BrowserImpl browser(chrome_browser_state_.get());
+  BrowserImpl browser(chrome_browser_state_.get(), scene_state_);
   EXPECT_EQ(chrome_browser_state_.get(), browser.GetBrowserState());
   EXPECT_TRUE(browser.GetWebStateList());
   EXPECT_TRUE(browser.GetCommandDispatcher());
@@ -55,7 +60,7 @@ TEST_F(BrowserImplTest, TestAccessors) {
 TEST_F(BrowserImplTest, BrowserDestroyed) {
   std::unique_ptr<FakeBrowserObserver> observer;
   {
-    BrowserImpl browser(chrome_browser_state_.get());
+    BrowserImpl browser(chrome_browser_state_.get(), scene_state_);
     observer = std::make_unique<FakeBrowserObserver>(&browser);
   }
   ASSERT_TRUE(observer);
@@ -65,7 +70,7 @@ TEST_F(BrowserImplTest, BrowserDestroyed) {
 // Tests that the BrowserDestroyed() callback is sent when destroying the
 // inactive Browser.
 TEST_F(BrowserImplTest, InactiveBrowserDestroyed) {
-  BrowserImpl browser(chrome_browser_state_.get());
+  BrowserImpl browser(chrome_browser_state_.get(), scene_state_);
   Browser* inactive_browser = browser.CreateInactiveBrowser();
   std::unique_ptr<FakeBrowserObserver> observer =
       std::make_unique<FakeBrowserObserver>(inactive_browser);

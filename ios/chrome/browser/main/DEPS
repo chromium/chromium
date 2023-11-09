@@ -42,6 +42,7 @@ specific_include_rules = {
   ],
   "^browser_impl.mm": [
     "+ios/chrome/browser/ui/commands/command_dispatcher.h",
+    "+ios/chrome/browser/shared/coordinator/scene/scene_state.h",
   ],
   "^test_browser.mm": [
     "+ios/chrome/browser/ui/commands/command_dispatcher.h",
