@@ -310,6 +310,7 @@ after discussions on the right group.
       <annotation id="managed_acccount_signin_restrictions_secure_connect"/>
     </sender>
     <sender name="Developer Tools">
+      <annotation id="devtools_cdp_console_insights"/>
       <annotation id="devtools_handle_front_end_messages"/>
       <annotation id="devtools_hard_coded_data_source"/>
       <annotation id="devtools_http_handler"/>

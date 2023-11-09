@@ -91,16 +91,29 @@ void AidaClient::SendAidaRequest(
   aida_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                   std::string("Bearer ") + access_token_);
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("devtools_cdp_network_resource", R"(
+      net::DefineNetworkTrafficAnnotation("devtools_cdp_console_insights", R"(
         semantics {
           sender: "Developer Tools via CDP"
           description:
-            "When user opens Developer Tools, the browser may fetch additional "
-            "resources from the network to enrich the debugging experience "
-            "(e.g. source map resources)."
-          trigger: "User opens Developer Tools to debug a web page."
-          data: "Any resources requested by Developer Tools."
-          destination: WEBSITE
+            "In Chrome DevTools, the user can ask for additional insights "
+            "regarding an error message. A prompt message for AIDA containing "
+            "the error message and sometimes more context such as stack trace, "
+            "surrounding code, or network headers is sent to the Chrome "
+            "backend via DevTools UI bindings, which in turn queries an AIDA "
+            "endpoint."
+          trigger: "User asks for more insights on a DevTools error message."
+          data: "Prompt for AIDA endpoint, containing instructions, error and "
+            "sometimes some additional context information."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "chrome-devtools@google.com"
+            }
+          }
+          user_data {
+            type: WEB_CONTENT
+          }
+          last_reviewed: "2023-11-09"
         }
         policy {
           cookies_allowed: YES
