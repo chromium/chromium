@@ -484,7 +484,7 @@ void RulesMonitorService::OnExtensionLoaded(
   if (!HasAPIPermission(*extension))
     return;
 
-  LoadRequestData load_data(extension->id());
+  LoadRequestData load_data(extension->id(), extension->version());
   int expected_ruleset_checksum;
 
   // Static rulesets.
@@ -618,7 +618,9 @@ void RulesMonitorService::UpdateDynamicRulesInternal(
     std::vector<int> rule_ids_to_remove,
     std::vector<api::declarative_net_request::Rule> rules_to_add,
     ApiCallback callback) {
-  if (!extension_registry_->enabled_extensions().Contains(extension_id)) {
+  const Extension* extension =
+      extension_registry_->enabled_extensions().GetByID(extension_id);
+  if (!extension) {
     // There is no enabled extension to respond to. While this is probably a
     // no-op, still dispatch the callback to ensure any related bookkeeping is
     // done.
@@ -626,7 +628,7 @@ void RulesMonitorService::UpdateDynamicRulesInternal(
     return;
   }
 
-  LoadRequestData data(extension_id);
+  LoadRequestData data(extension_id, extension->version());
 
   // Calculate available shared rule limits. These limits won't be affected by
   // another simultaneous api call since we ensure that for a given extension,
@@ -744,7 +746,7 @@ void RulesMonitorService::UpdateEnabledStaticRulesetsInternal(
     return;
   }
 
-  LoadRequestData load_data(extension_id);
+  LoadRequestData load_data(extension_id, extension->version());
   int expected_ruleset_checksum = -1;
   for (const RulesetID& id_to_enable : ids_to_enable) {
     const DNRManifestData::RulesetInfo& info =
@@ -845,11 +847,16 @@ void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
   LogMetricsAndUpdateChecksumsIfNeeded(load_data);
 
   // It's possible that the extension has been disabled since the initial load
-  // ruleset request. If it's disabled, do nothing.
+  // ruleset request, or the extension was updated to a new version while the
+  // ruleset for the old version was still loading (and is thus stale). In
+  // either case, do nothing.
+  // TODO(crbug.com/1493992, crbug.com/1386010): Add a test which will cause
+  // this block to be hit when the extension updates.
   const Extension* extension =
       extension_registry_->enabled_extensions().GetByID(load_data.extension_id);
-  if (!extension)
+  if (!extension || (load_data.extension_version != extension->version())) {
     return;
+  }
 
   // Load session-scoped ruleset.
   std::vector<api::declarative_net_request::Rule> session_rules =
