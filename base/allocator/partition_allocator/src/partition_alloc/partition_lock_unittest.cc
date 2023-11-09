@@ -164,7 +164,9 @@ TEST(PartitionAllocLockTest, AssertAcquired) {
 }
 
 // AssertAcquired() is only enforced with DCHECK()s.
-#if defined(GTEST_HAS_DEATH_TEST) && BUILDFLAG(PA_DCHECK_IS_ON)
+// DCHECKs don't work with EXPECT_DEATH on official builds.
+#if defined(GTEST_HAS_DEATH_TEST) && BUILDFLAG(PA_DCHECK_IS_ON) && \
+    (!defined(OFFICIAL_BUILD) || !defined(NDEBUG))
 
 TEST(PartitionAllocLockTest, AssertAcquiredDeathTest) {
   Lock lock;
@@ -198,7 +200,10 @@ TEST(PartitionAllocLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
   // EXPECT_DEATH() and multiple live threads.
   base::PlatformThreadForTesting::Join(handle);
 
+  // DCHECKs don't work with EXPECT_DEATH on official builds.
+#if BUILDFLAG(PA_DCHECK_IS_ON) && (!defined(OFFICIAL_BUILD) || !defined(NDEBUG))
   EXPECT_DEATH(lock.AssertAcquired(), "");
+#endif
 }
 
 #if BUILDFLAG(IS_APPLE)

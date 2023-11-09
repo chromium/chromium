@@ -4898,10 +4898,14 @@ TEST_P(PartitionAllocTest, CheckReservationType) {
   // Freeing releases direct-map super pages.
   address_to_check =
       partition_alloc::internal::base::bits::AlignDown(address, kSuperPageSize);
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+
+  // DCHECKs don't work with EXPECT_DEATH on official builds.
+#if BUILDFLAG(PA_DCHECK_IS_ON) && (!defined(OFFICIAL_BUILD) || !defined(NDEBUG))
   // Expect to DCHECK on unallocated region.
   EXPECT_DEATH_IF_SUPPORTED(IsReservationStart(address_to_check), "");
-#endif
+#endif  //  BUILDFLAG(PA_DCHECK_IS_ON) && (!defined(OFFICIAL_BUILD) ||
+        //  !defined(NDEBUG))
+
   EXPECT_FALSE(IsManagedByNormalBuckets(address_to_check));
   EXPECT_FALSE(IsManagedByDirectMap(address_to_check));
   EXPECT_FALSE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
