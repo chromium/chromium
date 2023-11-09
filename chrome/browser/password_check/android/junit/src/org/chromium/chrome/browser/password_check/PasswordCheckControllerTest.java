@@ -514,7 +514,6 @@ public class PasswordCheckControllerTest {
     @Test
     public void testOnChangePasswordButtonClick() {
         mMediator.onChangePasswordButtonClick(ANA);
-        verify(mDelegate).onManualPasswordChangeStarted(eq(ANA));
         verify(mChangePasswordDelegate).launchAppOrCctWithChangePasswordUrl(eq(ANA));
 
         assertThat(

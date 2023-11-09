@@ -3280,7 +3280,6 @@ static_library("browser") {
       "password_manager/android/password_accessory_controller_impl.cc",
       "password_manager/android/password_accessory_controller_impl.h",
       "password_manager/android/password_accessory_metrics_util.h",
-      "password_manager/android/password_change_success_tracker_bridge.cc",
       "password_manager/android/password_checkup_launcher_helper.cc",
       "password_manager/android/password_checkup_launcher_helper.h",
       "password_manager/android/password_checkup_launcher_helper_impl.cc",
