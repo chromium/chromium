@@ -917,12 +917,6 @@
       base_feature: "none",
     },
     {
-      // crbug.com/924069
-      name: "CSSHyphenateLimitChars",
-      status: "stable",
-      base_feature: "CSSHyphenateLimitChars",
-    },
-    {
       // If enabled,
       // image-set values without the `-webkit-` prefix
       // will be parsed.
