@@ -40,6 +40,9 @@ std::unique_ptr<testing::NiceMock<MockCWSInfoService>> GetMockCWSInfoService(
 // Adds seven extensions, of which one is installed by an external policy.
 void CreateMockExtensions(Profile* profile);
 
+// Deletes all mock extensions that are added by CreateMockExtensions.
+void CleanAllMockExtensions(Profile* profile);
+
 }  // namespace safety_hub_test_util
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_TEST_UTIL_H_

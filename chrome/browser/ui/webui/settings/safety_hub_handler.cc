@@ -15,8 +15,10 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/safety_hub/extensions_result.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
@@ -608,6 +610,7 @@ SafetyHubHandler::GetSafetyHubModulesWithRecommendations() {
   if (CardHasRecommendations(GetSafeBrowsingCardData())) {
     modules.insert(SafetyHubModule::kSafeBrowsing);
   }
+  // Extensions module
   if (GetNumberOfExtensionsThatNeedReview() > 0) {
     modules.insert(SafetyHubModule::kExtensions);
   }
@@ -733,10 +736,18 @@ void SafetyHubHandler::SendNotificationPermissionReviewList() {
       service->PopulateNotificationPermissionReviewData());
 }
 
-// TODO(1443466): Replace with the actual method implementation once blocking
-// https://crrev.com/c/4911755 is merged.
 int SafetyHubHandler::GetNumberOfExtensionsThatNeedReview() {
-  return 0;
+  extensions::CWSInfoService* cws_info_service =
+      extensions::CWSInfoServiceFactory::GetForProfile(profile_);
+  absl::optional<std::unique_ptr<SafetyHubService::Result>> sh_result =
+      SafetyHubExtensionsResult::GetResult(cws_info_service, profile_, false);
+  if (!sh_result.has_value()) {
+    return 0;
+  }
+
+  auto* result = static_cast<SafetyHubExtensionsResult*>(sh_result->get());
+
+  return result->GetNumTriggeringExtensions();
 }
 
 void SafetyHubHandler::SetClockForTesting(base::Clock* clock) {
