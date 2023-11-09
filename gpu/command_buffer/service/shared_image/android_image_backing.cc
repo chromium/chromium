@@ -36,15 +36,30 @@ AndroidImageBacking::~AndroidImageBacking() = default;
 bool AndroidImageBacking::BeginWrite(base::ScopedFD* fd_to_wait_on) {
   AutoLock auto_lock(this);
 
-  if (is_writing_ || !active_readers_.empty() || is_overlay_accessing_) {
-    LOG(ERROR) << "BeginWrite should only be called when there are no other "
-                  "readers or writers";
+  if (is_writing_) {
+    LOG(ERROR)
+        << "BeginWrite should only be called when there are no other writers";
+    return false;
+  }
+  if (!allow_concurrent_read_write() &&
+      (!active_readers_.empty() || is_overlay_accessing_)) {
+    LOG(ERROR)
+        << "BeginWrite should only be called when there are no other readers";
     return false;
   }
 
   is_writing_ = true;
-  (*fd_to_wait_on) =
-      gl::MergeFDs(std::move(read_sync_fd_), std::move(write_sync_fd_));
+  if (allow_concurrent_read_write()) {
+    if (write_sync_fd_.is_valid()) {
+      (*fd_to_wait_on) =
+          base::ScopedFD(HANDLE_EINTR(dup(write_sync_fd_.get())));
+    } else {
+      fd_to_wait_on->reset();
+    }
+  } else {
+    (*fd_to_wait_on) =
+        gl::MergeFDs(std::move(read_sync_fd_), std::move(write_sync_fd_));
+  }
 
   return true;
 }
@@ -67,7 +82,7 @@ bool AndroidImageBacking::BeginRead(const SharedImageRepresentation* reader,
                                     base::ScopedFD* fd_to_wait_on) {
   AutoLock auto_lock(this);
 
-  if (is_writing_) {
+  if (!allow_concurrent_read_write() && is_writing_) {
     LOG(ERROR) << "BeginRead should only be called when there are no writers";
     return false;
   }
@@ -99,8 +114,10 @@ void AndroidImageBacking::EndRead(const SharedImageRepresentation* reader,
 
   active_readers_.erase(reader);
 
-  read_sync_fd_ =
-      gl::MergeFDs(std::move(read_sync_fd_), std::move(end_read_fd));
+  if (!allow_concurrent_read_write()) {
+    read_sync_fd_ =
+        gl::MergeFDs(std::move(read_sync_fd_), std::move(end_read_fd));
+  }
 }
 
 base::ScopedFD AndroidImageBacking::TakeReadFence() {

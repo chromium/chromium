@@ -181,7 +181,8 @@ constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_VIDEO_DECODE |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |
-    SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE;
+    SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
+    SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
 
 }  // namespace
 
@@ -529,7 +530,7 @@ OverlayImage* AHardwareBufferImageBacking::BeginOverlayAccess(
 
   DCHECK(!is_overlay_accessing_);
 
-  if (is_writing_) {
+  if (!allow_concurrent_read_write() && is_writing_) {
     LOG(ERROR)
         << "BeginOverlayAccess should only be called when there are no writers";
     return nullptr;
@@ -556,8 +557,10 @@ void AHardwareBufferImageBacking::EndOverlayAccess() {
   DCHECK(is_overlay_accessing_);
   is_overlay_accessing_ = false;
 
-  auto fence_fd = overlay_image_->TakeEndFence();
-  read_sync_fd_ = gl::MergeFDs(std::move(read_sync_fd_), std::move(fence_fd));
+  if (!allow_concurrent_read_write()) {
+    auto fence_fd = overlay_image_->TakeEndFence();
+    read_sync_fd_ = gl::MergeFDs(std::move(read_sync_fd_), std::move(fence_fd));
+  }
 }
 
 // static
