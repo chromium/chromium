@@ -335,6 +335,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       bool is_fullscreen,
       blink::mojom::FullscreenOptionsPtr options);
 
+  // Returns whether the RFH can use Additional Windowing Controls (AWC) APIs.
+  // https://github.com/ivansandrk/additional-windowing-controls/blob/main/awc-explainer.md
+  virtual bool CanUseWindowingControls(RenderFrameHostImpl* requesting_frame);
+
   // Request to maximize window.
   virtual void Maximize() {}
 

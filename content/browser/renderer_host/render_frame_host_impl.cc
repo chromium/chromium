@@ -6782,10 +6782,7 @@ bool RenderFrameHostImpl::CanUseWindowingControls(
                       js_api_name}));
     return false;
   }
-  if (WebContents* web_contents = WebContents::FromRenderFrameHost(this)) {
-    return web_contents->GetDelegate()->CanUseWindowingControls(this);
-  }
-  return false;
+  return delegate_->CanUseWindowingControls(this);
 #endif
 }
 

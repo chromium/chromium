@@ -3978,6 +3978,12 @@ void WebContentsImpl::FullscreenStateChanged(
   }
 }
 
+bool WebContentsImpl::CanUseWindowingControls(
+    RenderFrameHostImpl* requesting_frame) {
+  return GetDelegate() &&
+         GetDelegate()->CanUseWindowingControls(requesting_frame);
+}
+
 void WebContentsImpl::Maximize() {
   if (!GetDelegate()) {
     return;

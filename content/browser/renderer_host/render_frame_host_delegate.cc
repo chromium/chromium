@@ -91,6 +91,10 @@ void RenderFrameHostDelegate::FullscreenStateChanged(
     bool is_fullscreen,
     blink::mojom::FullscreenOptionsPtr options) {}
 
+bool RenderFrameHostDelegate::CanUseWindowingControls(RenderFrameHostImpl*) {
+  return false;
+}
+
 bool RenderFrameHostDelegate::ShouldRouteMessageEvent(
     RenderFrameHostImpl* target_rfh) const {
   return false;
