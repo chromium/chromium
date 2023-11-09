@@ -710,7 +710,6 @@ mojom("gpu_preferences_interface") {
 mojom("vulkan_interface") {
   generate_java = true
   webui_module_path = "/"
-  use_typescript_sources = true
   generate_legacy_js_bindings = true
 
   # TODO(crbug.com/1062364): This interface code is used by some javascript

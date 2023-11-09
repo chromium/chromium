@@ -22,5 +22,4 @@ mojom("mojo_bindings") {
   sources = [ "compose.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/"
-  use_typescript_sources = true
 }
