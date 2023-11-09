@@ -343,7 +343,6 @@ void BluetoothDeviceFloss::CancelPairing() {
 
 void BluetoothDeviceFloss::Disconnect(base::OnceClosure callback,
                                       ErrorCallback error_callback) {
-  // TODO (b/223832034): Create API that does hard disconnect of a peer device
   FlossDBusManager::Get()->GetAdapterClient()->DisconnectAllEnabledProfiles(
       base::BindOnce(&BluetoothDeviceFloss::OnDisconnectAllEnabledProfiles,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
