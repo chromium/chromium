@@ -47,7 +47,8 @@ CroStatus::Or<scoped_refptr<VideoFrame>> CreateGpuMemoryBufferVideoFrame(
 }
 
 CroStatus::Or<scoped_refptr<VideoFrame>>
-CreateChromeOSCompressedGpuMemoryBufferVideoFrame(VideoPixelFormat format,
+CreateChromeOSCompressedGpuMemoryBufferVideoFrame(uint64_t modifier,
+                                                  VideoPixelFormat format,
                                                   const gfx::Size& coded_size,
                                                   const gfx::Rect& visible_rect,
                                                   const gfx::Size& natural_size,
@@ -59,8 +60,8 @@ CreateChromeOSCompressedGpuMemoryBufferVideoFrame(VideoPixelFormat format,
   DCHECK(gfx_format);
   return WrapChromeOSCompressedGpuMemoryBufferAsVideoFrame(
       visible_rect, natural_size,
-      std::make_unique<FakeChromeOSIntelCompressedGpuMemoryBuffer>(coded_size,
-                                                                   *gfx_format),
+      std::make_unique<FakeChromeOSIntelCompressedGpuMemoryBuffer>(
+          coded_size, *gfx_format, modifier),
       timestamp);
 }
 
@@ -348,8 +349,39 @@ TEST_P(PlatformVideoFramePoolTest, ModifierIsPassed) {
   EXPECT_TRUE(GetFrame(10));
 }
 
-TEST_P(PlatformVideoFramePoolTest, CompressedGpuMemoryBufferIsPassed) {
-  const VideoPixelFormat pixel_format = GetParam();
+class PlatformVideoFramePoolWithMediaCompressionTest
+    : public PlatformVideoFramePoolTestBase,
+      public testing::WithParamInterface<
+          std::tuple<VideoPixelFormat, uint64_t>> {
+ public:
+  PlatformVideoFramePoolWithMediaCompressionTest() = default;
+  ~PlatformVideoFramePoolWithMediaCompressionTest() override = default;
+
+  struct PrintToStringParamName {
+    template <class ParamType>
+    std::string operator()(
+        const testing::TestParamInfo<ParamType>& info) const {
+      return base::StringPrintf(
+          "%s_%s", VideoPixelFormatToString(std::get<0>(info.param)).c_str(),
+          IntelMediaCompressedModifierToString(std::get<1>(info.param))
+              .c_str());
+    }
+  };
+};
+
+constexpr uint64_t kCompressedBufferModifiers[] = {
+    I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS, I915_FORMAT_MOD_4_TILED_MTL_MC_CCS};
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PlatformVideoFramePoolWithMediaCompressionTest,
+    testing::Combine(testing::ValuesIn(kPixelFormats),
+                     testing::ValuesIn(kCompressedBufferModifiers)),
+    PlatformVideoFramePoolWithMediaCompressionTest::PrintToStringParamName());
+
+TEST_P(PlatformVideoFramePoolWithMediaCompressionTest,
+       CompressedGpuMemoryBufferIsPassed) {
+  const VideoPixelFormat pixel_format = std::get<0>(GetParam());
+  const uint64_t modifier = std::get<1>(GetParam());
   if (pixel_format != PIXEL_FORMAT_NV12 &&
       pixel_format != PIXEL_FORMAT_P016LE) {
     GTEST_SKIP() << "Pixel format doesn't support compressed GPU memory buffer";
@@ -357,11 +389,11 @@ TEST_P(PlatformVideoFramePoolTest, CompressedGpuMemoryBufferIsPassed) {
   const auto fourcc = Fourcc::FromVideoPixelFormat(pixel_format);
   ASSERT_TRUE(fourcc.has_value());
 
-  SetCreateFrameCB(
-      base::BindRepeating(&CreateChromeOSCompressedGpuMemoryBufferVideoFrame));
-  ASSERT_TRUE(Initialize(fourcc.value()));
+  SetCreateFrameCB(base::BindRepeating(
+      &CreateChromeOSCompressedGpuMemoryBufferVideoFrame, modifier));
 
-  EXPECT_EQ(layout_->modifier(), I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS);
+  ASSERT_TRUE(Initialize(fourcc.value()));
+  EXPECT_EQ(layout_->modifier(), modifier);
   constexpr size_t kExpectedNumberOfPlanes = 4u;
   EXPECT_EQ(layout_->planes().size(), kExpectedNumberOfPlanes);
   scoped_refptr<VideoFrame> frame = GetFrame(10);

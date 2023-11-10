@@ -16,8 +16,6 @@ namespace media {
 class FakeChromeOSIntelCompressedGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
  public:
   FakeChromeOSIntelCompressedGpuMemoryBuffer(const gfx::Size& size,
-                                             gfx::BufferFormat format);
-  FakeChromeOSIntelCompressedGpuMemoryBuffer(const gfx::Size& size,
                                              gfx::BufferFormat format,
                                              uint64_t modifier);
 

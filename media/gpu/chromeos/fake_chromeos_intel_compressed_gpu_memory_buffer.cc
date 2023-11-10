@@ -22,14 +22,6 @@ base::ScopedFD GetDummyFD() {
 
 FakeChromeOSIntelCompressedGpuMemoryBuffer::
     FakeChromeOSIntelCompressedGpuMemoryBuffer(const gfx::Size& size,
-                                               gfx::BufferFormat format)
-    : FakeChromeOSIntelCompressedGpuMemoryBuffer(
-          size,
-          format,
-          I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS) {}
-
-FakeChromeOSIntelCompressedGpuMemoryBuffer::
-    FakeChromeOSIntelCompressedGpuMemoryBuffer(const gfx::Size& size,
                                                gfx::BufferFormat format,
                                                uint64_t modifier)
     : size_(size), format_(format) {
