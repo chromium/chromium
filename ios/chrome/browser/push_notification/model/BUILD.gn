@@ -115,7 +115,3 @@ source_set("test_support") {
     "//base",
   ]
 }
-
-source_set("model") {
-  public_deps = [ ":push_notification_service" ]
-}
