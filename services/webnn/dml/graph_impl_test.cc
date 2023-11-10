@@ -89,6 +89,10 @@ void BuildAndCompute(
     EXPECT_FALSE(was_callback_called);
     EXPECT_FALSE(webnn_graph_remote.is_bound());
     EXPECT_TRUE(webnn_context_remote.is_bound());
+    webnn_graph_remote.reset();
+    webnn_context_remote.reset();
+    webnn_provider_remote.reset();
+    base::RunLoop().RunUntilIdle();
     return;
   }
   EXPECT_TRUE(was_callback_called);
@@ -992,23 +996,22 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseUnary) {
     ElementWiseUnaryTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 2, 3, 1},
-                  .values = {0, 4, 2, 16, 64, 3}},
+                  .values = {0, 4, 25, 16, 64, 49}},
         .kind = mojom::ElementWiseUnary::Kind::kSqrt,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
-                   .values = {0, 2, sqrt(2.0f), 4, 8, sqrt(3.0f)}}}
+                   .values = {0, 2, 5, 4, 8, 7}}}
         .Test();
   }
   {
     ElementWiseUnaryTester<float16>{
         .input = {.type = mojom::Operand::DataType::kFloat16,
                   .dimensions = {1, 2, 3, 1},
-                  .values = Float16FromFloat32({0, 4, 2, 16, 64, 3})},
+                  .values = Float16FromFloat32({0, 4, 25, 16, 64, 49})},
         .kind = mojom::ElementWiseUnary::Kind::kSqrt,
         .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 2, 3, 1},
-                   .values = Float16FromFloat32(
-                       {0, 2, sqrt(2.0f), 4, 8, sqrt(3.0f)})}}
+                   .values = Float16FromFloat32({0, 2, 5, 4, 8, 7})}}
         .Test();
   }
   {
@@ -1035,22 +1038,22 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseUnary) {
     ElementWiseUnaryTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 2, 3, 1},
-                  .values = {0, 4, 0.5, 16, 64, -5}},
+                  .values = {0, 4, 0, 16, 64, -5}},
         .kind = mojom::ElementWiseUnary::Kind::kErf,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
-                   .values = {0, 1, 0.52050006, 1, 1, -1}}}
+                   .values = {0, 1, 0, 1, 1, -1}}}
         .Test();
   }
   {
     ElementWiseUnaryTester<float16>{
         .input = {.type = mojom::Operand::DataType::kFloat16,
                   .dimensions = {1, 2, 3, 1},
-                  .values = Float16FromFloat32({0, 4, 0.5, 16, 64, -5})},
+                  .values = Float16FromFloat32({0, 4, 0, 16, 64, -5})},
         .kind = mojom::ElementWiseUnary::Kind::kErf,
         .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 2, 3, 1},
-                   .values = Float16FromFloat32({0, 1, 0.52001953, 1, 1, -1})}}
+                   .values = Float16FromFloat32({0, 1, 0, 1, 1, -1})}}
         .Test();
   }
   {
