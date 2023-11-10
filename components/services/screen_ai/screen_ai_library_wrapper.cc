@@ -99,12 +99,10 @@ bool ScreenAILibraryWrapper::Load(const base::FilePath& library_path) {
     }
   }
 
-#if !BUILDFLAG(IS_WIN)
   if (!LoadFunction(init_ocr_, "InitOCRUsingCallback") ||
       !LoadFunction(perform_ocr_, "PerformOCR")) {
     return false;
   }
-#endif
 
   // Main Content Extraction functions.
   if (!LoadFunction(init_main_content_extraction_,
