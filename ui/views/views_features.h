@@ -12,6 +12,7 @@
 namespace views::features {
 
 // Please keep alphabetized.
+VIEWS_EXPORT BASE_DECLARE_FEATURE(kDesktopWidgetReparentAura);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kEnablePlatformHighContrastInkDrop);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kEnableViewPaintOptimization);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kForceUseLegacyPreferredSize);

@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -43,6 +44,7 @@
 #include "ui/views/buildflags.h"
 #include "ui/views/drag_utils.h"
 #include "ui/views/views_delegate.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/drop_helper.h"
 #include "ui/views/widget/focus_manager_event_handler.h"
 #include "ui/views/widget/native_widget_delegate.h"
@@ -1413,7 +1415,10 @@ void NativeWidgetPrivate::ReparentNativeView(gfx::NativeView native_view,
   for (auto* widget : widgets)
     widget->NotifyNativeViewHierarchyWillChange();
 
-  if (Widget* child_widget = Widget::GetWidgetForNativeView(native_view)) {
+  Widget* child_widget = Widget::GetWidgetForNativeView(native_view);
+
+  if (base::FeatureList::IsEnabled(features::kDesktopWidgetReparentAura) &&
+      child_widget) {
     child_widget->native_widget_private()->ReparentNativeViewImpl(new_parent);
   } else {
     ReparentAuraWindow(native_view, new_parent);
