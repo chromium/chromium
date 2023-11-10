@@ -379,14 +379,6 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     return status;
   }
 
-  // TODO(b/1471182): Render passes with transforms are complicated because
-  // clipping combined with filters that expand their bounds mean we don't know
-  // their exact size yet. Disabling them temporarily until we fix all the bugs.
-  bool is_rpdq = !!quad->DynamicCast<AggregatedRenderPassDrawQuad>();
-  if (absl::holds_alternative<gfx::Transform>(candidate.transform) && is_rpdq) {
-    return CandidateStatus::kFailRpdqWithTransform;
-  }
-
   candidate.is_opaque =
       !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
 
@@ -424,10 +416,15 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     // Out of window clipping is enabled on Lacros only when it is supported.
     // TODO(crbug.com/1385509): Remove the condition on `quad_within_window`
     // when M117 becomes widely supported.
-    const bool can_delegate_clipping =
+    bool can_delegate_clipping =
         context_.supports_clip_rect &&
         (quad_within_window || context_.supports_out_of_window_clip_rect) &&
         transform_supports_clipping;
+
+    bool is_rpdq = !!quad->DynamicCast<AggregatedRenderPassDrawQuad>();
+    if (is_rpdq) {
+      can_delegate_clipping &= context_.transform_and_clip_rpdq;
+    }
 
     if (can_delegate_clipping) {
       // If we know the clip_rect won't intersect the display_rect at all, we

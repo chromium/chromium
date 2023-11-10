@@ -2982,8 +2982,8 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
           filters->MapRect(rpdq_params.filter_bounds, local_matrix);
 
       // If after applying the filter we would be clipped out, skip the draw.
-      gfx::Rect clip_rect =
-          quad->shared_quad_state->clip_rect.value_or(current_draw_rect_);
+      gfx::Rect clip_rect = quad->shared_quad_state->clip_rect.value_or(
+          current_frame()->current_render_pass->output_rect);
       gfx::Transform transform =
           quad->shared_quad_state->quad_to_target_transform;
       transform.Flatten();
@@ -3556,8 +3556,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   absl::optional<gfx::Transform> quad_to_target_transform_inverse;
   // We cannot handle rotation with clip rect or mask filter.
   if ((shared_quad_state->clip_rect ||
-       !shared_quad_state->mask_filter_info.IsEmpty()) &&
-      shared_quad_state->quad_to_target_transform.Preserves2dAxisAlignment()) {
+       !shared_quad_state->mask_filter_info.IsEmpty())) {
     quad_to_target_transform_inverse.emplace();
     // Flatten before inverting, since we're interested in how points
     // with z=0 in local space map to the clip rect, not in how the clip
@@ -3589,8 +3588,8 @@ void SkiaRenderer::PrepareRenderPassOverlay(
 
   // The |mask_filter_info| is in the device coordinate and with all transforms
   // (translation, scaling, rotation, etc), so remove them.
-  if (!shared_quad_state->mask_filter_info.IsEmpty() &&
-      shared_quad_state->quad_to_target_transform.Preserves2dAxisAlignment()) {
+  if (quad_to_target_transform_inverse &&
+      !shared_quad_state->mask_filter_info.IsEmpty()) {
     shared_quad_state->mask_filter_info.ApplyTransform(
         *quad_to_target_transform_inverse);
   }
@@ -3784,6 +3783,8 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     }
     OverlayCandidate::ApplyClip(*overlay, gfx::RectF(apply_clip));
     overlay->clip_rect = absl::nullopt;
+  } else {
+    overlay->display_rect = gfx::RectF(filter_bounds);
   }
 
   // Fill in |format| and |color_space| information based on selected backing.

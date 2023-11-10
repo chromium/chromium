@@ -12,6 +12,7 @@
 #include "base/process/process.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/version.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/linux/drm_util_linux.h"
@@ -114,6 +115,9 @@ void WaylandBufferManagerGpu::Initialize(
   supports_out_of_window_clip_rect_ =
       supported_surface_augmentor_version >=
       AUGMENTED_SURFACE_SET_CLIP_RECT_SINCE_VERSION + 2;
+  // Exo transformation fix landed in https://crrev.com/c/4961473
+  has_transformation_fix_ = server_version.IsValid() &&
+                            server_version >= base::Version("121.0.6113.0");
 
   supports_single_pixel_buffer_ = supports_single_pixel_buffer;
   BindHostInterface(std::move(remote_host));
