@@ -6978,6 +6978,26 @@
             ]
         }
     ],
+    "FencedFramesEnableM120Features": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FencedFramesM120FeaturesPart2"
+                    ]
+                }
+            ]
+        }
+    ],
     "FenderScriptScheduling": [
         {
             "platforms": [
