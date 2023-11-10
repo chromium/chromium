@@ -1871,6 +1871,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.regularTabsViewController.dropAnimationInProgress = NO;
 }
 
+- (void)pinnedViewControllerDragSessionWillBegin:
+    (PinnedTabsViewController*)pinnedTabsViewController {
+  self.dragSessionInProgress = YES;
+  [self.mutator dragAndDropSessionStarted];
+}
+
 - (void)pinnedViewControllerDragSessionDidEnd:
     (PinnedTabsViewController*)pinnedTabsViewController {
   self.dragSessionInProgress = NO;

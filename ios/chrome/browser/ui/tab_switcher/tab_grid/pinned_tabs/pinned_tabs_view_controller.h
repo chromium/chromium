@@ -58,6 +58,10 @@ class WebStateID;
     (PinnedTabsViewController*)pinnedTabsViewController;
 
 // Tells the delegate that a drag session did end.
+- (void)pinnedViewControllerDragSessionWillBegin:
+    (PinnedTabsViewController*)pinnedTabsViewController;
+
+// Tells the delegate that a drag session did end.
 - (void)pinnedViewControllerDragSessionDidEnd:
     (PinnedTabsViewController*)pinnedTabsViewController;
 
