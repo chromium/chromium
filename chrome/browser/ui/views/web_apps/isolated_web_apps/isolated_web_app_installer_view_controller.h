@@ -11,8 +11,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/installability_checker.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 
 class Profile;
 
@@ -51,6 +53,8 @@ class IsolatedWebAppInstallerViewController
                            InstallButtonLaunchesConfirmationDialog);
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
                            ConfirmationDialogMovesToInstallScreen);
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
+                           SuccessfulInstallationMovesToSuccessScreen);
 
   // Handles returning a default value if the controller has been deleted.
   static bool OnAcceptWrapper(
@@ -59,6 +63,10 @@ class IsolatedWebAppInstallerViewController
   bool OnAccept();
   void OnComplete();
   void Close();
+
+  void OnInstallComplete(
+      base::expected<InstallIsolatedWebAppCommandSuccess,
+                     InstallIsolatedWebAppCommandError> result);
 
   void OnConfirmInstallLearnMoreClicked();
 

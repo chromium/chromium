@@ -11,7 +11,9 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -154,6 +156,17 @@ void IsolatedWebAppInstallerViewController::Close() {
   }
 }
 
+void IsolatedWebAppInstallerViewController::OnInstallComplete(
+    base::expected<InstallIsolatedWebAppCommandSuccess,
+                   InstallIsolatedWebAppCommandError> result) {
+  if (result.has_value()) {
+    model_->SetStep(IsolatedWebAppInstallerModel::Step::kInstallSuccess);
+    OnModelChanged();
+    return;
+  }
+  // TODO(crbug.com/1479140): Show error dialog
+}
+
 void IsolatedWebAppInstallerViewController::OnConfirmInstallLearnMoreClicked() {
   // TODO(crbug.com/1479140): Implement
 }
@@ -223,11 +236,21 @@ void IsolatedWebAppInstallerViewController::OnChildDialogCanceled() {
 void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
   // TODO(crbug.com/1479140): Implement
   switch (model_->step()) {
-    case IsolatedWebAppInstallerModel::Step::kConfirmInstall:
+    case IsolatedWebAppInstallerModel::Step::kConfirmInstall: {
       model_->SetStep(IsolatedWebAppInstallerModel::Step::kInstall);
       model_->SetDialogContent(absl::nullopt);
       OnModelChanged();
+
+      const SignedWebBundleMetadata& metadata = model_->bundle_metadata();
+      web_app_provider_->scheduler().InstallIsolatedWebApp(
+          metadata.url_info(), metadata.location(), metadata.version(),
+          /*optional_keep_alive=*/nullptr,
+          /*optional_profile_keep_alive=*/nullptr,
+          base::BindOnce(
+              &IsolatedWebAppInstallerViewController::OnInstallComplete,
+              weak_ptr_factory_.GetWeakPtr()));
       break;
+    }
 
     default:
       NOTREACHED();

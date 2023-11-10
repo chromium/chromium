@@ -85,7 +85,8 @@ SignedWebBundleMetadata CreateMetadata(const std::u16string& app_name,
   auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
       web_package::SignedWebBundleId::CreateRandomForDevelopment());
   return SignedWebBundleMetadata::CreateForTesting(
-      url_info, app_name, base::Version(version), IconBitmaps());
+      url_info, DevModeBundle(base::FilePath()), app_name,
+      base::Version(version), IconBitmaps());
 }
 
 IsolatedWebAppInstallerModel::DialogContent CreateDummyDialog() {
@@ -176,7 +177,8 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
         base::FilePath::FromASCII(bundle_filename));
   }
 
-  void MockIconAndPageState(const IsolatedWebAppUrlInfo& url_info) {
+  void MockIconAndPageState(const IsolatedWebAppUrlInfo& url_info,
+                            const std::string& version = "7.7.7") {
     GURL iwa_url = url_info.origin().GetURL();
     auto& fake_web_contents_manager = static_cast<FakeWebContentsManager&>(
         fake_provider()->web_contents_manager());
@@ -195,7 +197,7 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
     page_state.manifest_url = iwa_url.Resolve("manifest.webmanifest");
     page_state.valid_manifest_for_web_app = true;
     page_state.opt_manifest =
-        CreateDefaultManifest(iwa_url, base::Version("7.7.7"));
+        CreateDefaultManifest(iwa_url, base::Version(version));
   }
 
  private:
@@ -306,6 +308,37 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   controller.OnChildDialogAccepted();
 
   EXPECT_TRUE(callback.Wait());
+}
+
+TEST_F(IsolatedWebAppInstallerViewControllerTest,
+       SuccessfulInstallationMovesToSuccessScreen) {
+  base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
+  IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
+  MockIconAndPageState(url_info, "1.0");
+
+  IsolatedWebAppInstallerModel model(bundle_path);
+  IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
+                                                   &model);
+  testing::StrictMock<MockView> view(&controller);
+  controller.SetViewForTesting(&view);
+
+  auto metadata = SignedWebBundleMetadata::CreateForTesting(
+      url_info, InstalledBundle(bundle_path), u"app name", base::Version("1.0"),
+      IconBitmaps());
+  model.SetSignedWebBundleMetadata(metadata);
+  model.SetStep(IsolatedWebAppInstallerModel::Step::kConfirmInstall);
+  model.SetDialogContent(CreateDummyDialog());
+
+  base::test::TestFuture<void> callback;
+  EXPECT_CALL(view, ShowInstallScreen(metadata));
+  EXPECT_CALL(view, ShowInstallSuccessScreen(metadata))
+      .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
+
+  controller.OnChildDialogAccepted();
+
+  EXPECT_TRUE(callback.Wait());
+  EXPECT_TRUE(
+      fake_provider()->registrar_unsafe().IsInstalled(url_info.app_id()));
 }
 
 }  // namespace web_app

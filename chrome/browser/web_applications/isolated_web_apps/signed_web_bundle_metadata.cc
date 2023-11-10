@@ -197,18 +197,19 @@ void SignedWebBundleMetadata::Create(Profile* profile,
 
   fetcher_ref.FetchAndReply(base::BindOnce(
       [](const IsolatedWebAppUrlInfo& url_info,
+         const IsolatedWebAppLocation& location,
          SignedWebBundleMetadataCallback callback,
          base::expected<WebAppInstallInfo, std::string> install_info) {
         std::move(callback).Run(install_info.transform(
-            [&url_info](const WebAppInstallInfo& install_info)
+            [&url_info, &location](const WebAppInstallInfo& install_info)
                 -> SignedWebBundleMetadata {
               return SignedWebBundleMetadata(
-                  url_info, install_info.title,
+                  url_info, location, install_info.title,
                   install_info.isolated_web_app_version,
                   install_info.icon_bitmaps);
             }));
       },
-      url_info,
+      url_info, location,
       std::move(callback).Then(base::OnceClosure(
           base::DoNothingWithBoundArgs(std::move(fetcher))))));
 }
@@ -216,18 +217,21 @@ void SignedWebBundleMetadata::Create(Profile* profile,
 // static
 SignedWebBundleMetadata SignedWebBundleMetadata::CreateForTesting(
     const IsolatedWebAppUrlInfo& url_info,
+    const IsolatedWebAppLocation& location,
     const std::u16string& app_name,
     const base::Version& version,
     const IconBitmaps& icons) {
-  return SignedWebBundleMetadata(url_info, app_name, version, icons);
+  return SignedWebBundleMetadata(url_info, location, app_name, version, icons);
 }
 
 SignedWebBundleMetadata::SignedWebBundleMetadata(
     const IsolatedWebAppUrlInfo& url_info,
+    const IsolatedWebAppLocation& location,
     const std::u16string& app_name,
     const base::Version& version,
     const IconBitmaps& icons)
     : url_info_(url_info),
+      location_(location),
       app_name_(app_name),
       version_(version),
       icons_(icons) {}
