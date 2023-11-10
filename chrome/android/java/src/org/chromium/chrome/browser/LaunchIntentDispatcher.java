@@ -247,6 +247,10 @@ public class LaunchIntentDispatcher {
      */
     public static boolean isCustomTabIntent(Intent intent) {
         if (intent == null) return false;
+        Log.w(
+                TAG,
+                "CustomTabsIntent#shouldAlwaysUseBrowserUI() = "
+                        + CustomTabsIntent.shouldAlwaysUseBrowserUI(intent));
         if (CustomTabsIntent.shouldAlwaysUseBrowserUI(intent)
                 || !intent.hasExtra(CustomTabsIntent.EXTRA_SESSION)) {
             return false;

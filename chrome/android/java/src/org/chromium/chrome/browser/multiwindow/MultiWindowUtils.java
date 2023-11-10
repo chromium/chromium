@@ -726,4 +726,23 @@ public class MultiWindowUtils implements ActivityStateListener {
     public static void launchIntentInInstance(Intent intent, int instanceId) {
         MultiInstanceManagerApi31.launchIntentInInstance(intent, instanceId);
     }
+
+    /**
+     * Determine whether a newly created ChromeTabbedActivity was allocated a new window ID. This
+     * method was introduced for the sole purpose of investigation/logging of the issue in the
+     * linked bug. It is expected that a valid new window ID is allocated in this scenario iff the
+     * following conditions are met: 1. At least 1 instance of Chrome is running. 2. The total
+     * number of currently persisted instances is the same as the number of running Chrome
+     * instances; it is possible that fewer instances are actively running at a given time, in which
+     * case the allocated window ID will be for one of the "restored" instances. TODO
+     * (crbug.com/1484026): Cleanup this method after the issue is resolved.
+     *
+     * @return {@code true} if a new instance will be used, {@code false} otherwise.
+     */
+    public static boolean willUseNewInstance() {
+        int runningInstanceCount =
+                MultiInstanceManagerApi31.getWindowIdsOfRunningTabbedActivities().size();
+        int instanceCount = getInstanceCount();
+        return runningInstanceCount >= 1 && instanceCount == runningInstanceCount;
+    }
 }

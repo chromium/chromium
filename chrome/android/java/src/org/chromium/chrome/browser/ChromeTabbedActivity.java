@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityComponent;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -287,6 +288,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             ChromeTabbedActivity2.class.getName(), MAIN_LAUNCHER_ACTIVITY_NAME);
 
     private static final String TAG_MULTI_INSTANCE = "MultiInstance";
+    private static final String SOURCE_ACTIVITY_REFERRER_OS = "android-app://android";
 
     /**
      * Identifies a histogram to use in {@link #maybeDispatchExplicitMainViewIntent(Intent, int)}.
@@ -2290,13 +2292,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             boolean preferNew = getExtraPreferNewFromIntent(intent);
             mWindowId = mMultiInstanceManager.allocInstanceId(
                     windowId, ApplicationStatus.getTaskId(this), preferNew);
-            Log.i(TAG_MULTI_INSTANCE,
-                    "Intent info -  has FLAG_ACTIVITY_MULTIPLE_TASK: "
-                            + ((intent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) != 0)
-                            + " , is from self: " + IntentUtils.isTrustedIntentFromSelf(intent)
-                            + " , has launcher category: "
-                            + intent.hasCategory(Intent.CATEGORY_LAUNCHER)
-                            + " , has activity referrer: " + getReferrer());
+            logIntentInfo(intent, mWindowId);
         }
         if (mWindowId == INVALID_WINDOW_ID) {
             Log.i(TAG, "Window ID not allocated. Finishing the activity");
@@ -2314,6 +2310,53 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         recordMaxWindowLimitExceededHistogram(/*limitExceeded=*/false);
 
         return super.isStartedUpCorrectly(intent);
+    }
+
+    private void logIntentInfo(Intent intent, int windowId) {
+        var logMessage =
+                "Intent info:\nAction: "
+                        + intent.getAction()
+                        + "\nContains LAUNCHER category: "
+                        + intent.hasCategory(Intent.CATEGORY_LAUNCHER)
+                        + "\nContains FLAG_ACTIVITY_MULTIPLE_TASK: "
+                        + ((intent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) != 0)
+                        + "\nContains FLAG_ACTIVITY_NEW_TASK: "
+                        + ((intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0)
+                        + "\nComponent class name: "
+                        + (intent.getComponent() == null
+                                ? "N/A"
+                                : intent.getComponent().getClassName())
+                        + "\nIs from self: "
+                        + IntentUtils.isTrustedIntentFromSelf(intent)
+                        + "\n@ExternalAppId of intent source: "
+                        + IntentHandler.determineExternalIntentSource(intent);
+        Log.i(TAG_MULTI_INSTANCE, logMessage);
+        // Only crash-report if a valid window ID is allocated to launch the intent.
+        if (windowId == INVALID_WINDOW_ID) return;
+
+        boolean willUseNewInstance = MultiWindowUtils.willUseNewInstance();
+        // Report an exception iff all the following conditions are satisfied:
+        // 1. The intent is a VIEW or MAIN action intent.
+        // 2. The intent will be launched in a new instance of Chrome.
+        // 3. The intent is not sourced from Chrome or the OS.
+        // 4. The intent is not a CATEGORY_LAUNCHER intent.
+        // 5. The device is a phone.
+        if ((Intent.ACTION_VIEW.equals(intent.getAction())
+                        || Intent.ACTION_MAIN.equals(intent.getAction()))
+                && willUseNewInstance
+                && (!IntentUtils.isTrustedIntentFromSelf(intent)
+                        && (getReferrer() == null
+                                || !getReferrer().toString().equals(SOURCE_ACTIVITY_REFERRER_OS)))
+                && !intent.hasCategory(Intent.CATEGORY_LAUNCHER)
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)) {
+            logMessage =
+                    "This is not a crash. Logging info for intent received in ChromeTabbedActivity"
+                            + " dispatched via AsyncInitializationActivity#onCreate() that could"
+                            + " potentially create a new Chrome instance, for investigation of"
+                            + " crbug.com/1484026.\n"
+                            + logMessage;
+            ChromePureJavaExceptionReporter.reportJavaException(new Throwable(logMessage));
+        }
     }
 
     private void recordMaxWindowLimitExceededHistogram(boolean limitExceeded) {
