@@ -24,7 +24,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <vector>
-#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #endif
 
 namespace logging {
