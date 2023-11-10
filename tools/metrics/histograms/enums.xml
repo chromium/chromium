@@ -30689,6 +30689,14 @@ Called by update_use_counter_feature_enum.py.-->
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel"/>
   <int value="4730"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use"/>
+  <int value="4731" label="ThirdPartyCookieDeprecation_AllowByExplicitSetting"/>
+  <int value="4732" label="ThirdPartyCookieDeprecation_AllowByGlobalSetting"/>
+  <int value="4733" label="ThirdPartyCookieDeprecation_AllowBy3PCDMetadata"/>
+  <int value="4734" label="ThirdPartyCookieDeprecation_AllowBy3PCD"/>
+  <int value="4735" label="ThirdPartyCookieDeprecation_AllowBy3PCDHeuristics"/>
+  <int value="4736" label="ThirdPartyCookieDeprecation_AllowByStorageAccess"/>
+  <int value="4737"
+      label="ThirdPartyCookieDeprecation_AllowByTopLevelStorageAccess"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
@@ -64867,6 +64875,23 @@ would be helpful to identify which type is being sent.
   <int value="0" label="Other"/>
   <int value="1" label="ChromeVox"/>
   <int value="2" label="SelectToSpeak"/>
+</enum>
+
+<enum name="ThirdPartyCookieAllowMechanism">
+  <int value="0" label="No allow mehanism apply (Not recorded)"/>
+  <int value="1"
+      label="Allow by explicit cookie content setting (e.g. Enterperise
+             Policy: CookiesAllowedForUrls, UserBypass)"/>
+  <int value="2"
+      label="Allow by global 3p cookie setting setting (e.g. Enterperise
+             Policy: BlockThirdPartyCookies, UX)"/>
+  <int value="3"
+      label="Allow by 3PCD metadata grants content settings (Global
+             Allowlist)"/>
+  <int value="4" label="Allow by third-party deprecation trial"/>
+  <int value="5" label="Allow by 3PCD heuristics"/>
+  <int value="6" label="Allow by Storage access API"/>
+  <int value="7" label="Allow by top-level Storage access API"/>
 </enum>
 
 <enum name="ThirdPartyCookieBlockState">

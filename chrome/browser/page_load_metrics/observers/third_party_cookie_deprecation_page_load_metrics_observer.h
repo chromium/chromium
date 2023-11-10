@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_THIRD_PARTY_COOKIE_DEPRECATION_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
 namespace tpcd::experiment {
@@ -66,6 +68,7 @@ class ThirdPartyCookieDeprecationMetricsObserver
 
   // Not owned and the lifetime of ExperimentManager will exceed |this|.
   raw_ptr<tpcd::experiment::ExperimentManager> experiment_manager_;
+  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_THIRD_PARTY_COOKIE_DEPRECATION_PAGE_LOAD_METRICS_OBSERVER_H_
