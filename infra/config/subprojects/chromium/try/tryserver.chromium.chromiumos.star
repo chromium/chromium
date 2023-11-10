@@ -95,7 +95,7 @@ try_.orchestrator_builder(
         equivalent_builder_percentage = 100,
         equivalent_builder_whitelist = "google/chromeos-pa@google.com",
         # Use dummypath to make sure it's not auto triggered.
-        location_filters = ["dummypath/*"],
+        location_filters = ["dummypath/.+"],
     ),
 )
 
