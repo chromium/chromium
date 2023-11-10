@@ -680,7 +680,7 @@ void MetricReportingManager::InitFatalCrashCollectors() {
 
   if (base::FeatureList::IsEnabled(kEnableFatalCrashEventsObserver)) {
     event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
-        FatalCrashEventsObserver::Create(), telemetry_report_queue_.get(),
+        FatalCrashEventsObserver::Create(), event_report_queue_.get(),
         &reporting_settings_, ash::kReportDeviceCrashReportInfo,
         metrics::kReportDeviceCrashReportInfoDefaultValue,
         /*collector_pool=*/this));
