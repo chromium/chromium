@@ -205,9 +205,7 @@ remoting::mojom::SupportSessionParamsPtr GetSessionParameters(
   auto result = remoting::mojom::SupportSessionParams::New();
   result->user_name = parameters.user_name;
   result->authorized_helper = parameters.admin_email;
-  // Note the oauth token must be prefixed with 'oauth2:', or it will be
-  // rejected by the CRD host.
-  result->oauth_access_token = "oauth2:" + parameters.oauth_token;
+  result->oauth_access_token = parameters.oauth_token;
 
   return result;
 }

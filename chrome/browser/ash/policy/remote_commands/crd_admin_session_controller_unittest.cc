@@ -383,7 +383,7 @@ TEST_F(CrdAdminSessionControllerTest, ShouldPassOAuthTokenToRemotingService) {
                                     session_finished_callback());
 
   ASSERT_FALSE(actual_parameters.is_null());
-  EXPECT_EQ(actual_parameters->oauth_access_token, "oauth2:<the-oauth-token>");
+  EXPECT_EQ(actual_parameters->oauth_access_token, "<the-oauth-token>");
 }
 
 TEST_F(CrdAdminSessionControllerTest, ShouldPassUserNameToRemotingService) {
