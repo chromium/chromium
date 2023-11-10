@@ -82,9 +82,8 @@ public class QueryTileUtils {
         // Cache the result so it will not change during the same browser session.
         if (sShowQueryTilesOnNTP != null) return sShowQueryTilesOnNTP;
         boolean queryTileEnabled =
-                (ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES)
-                        && ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES_IN_NTP))
-                || QueryTileUtilsJni.get().isQueryTilesEnabled();
+                ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES)
+                        && ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES_IN_NTP);
         sShowQueryTilesOnNTP = queryTileEnabled && shouldShowQueryTiles();
         return sShowQueryTilesOnNTP;
     }
