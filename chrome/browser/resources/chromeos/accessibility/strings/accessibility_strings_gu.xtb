@@ -332,7 +332,7 @@
 <translation id="3153024374267644603">વાણી ચાલુ કરો</translation>
 <translation id="3153928844647607688">કોષ્ટક <ph name="TABLENAME" />, <ph name="TABLECOLS" /> પ્રમાણે <ph name="TABLEROWS" /></translation>
 <translation id="3159493096109238499">બૈઝ</translation>
-<translation id="316542773973815724">નેવિગેશન</translation>
+<translation id="316542773973815724">નૅવિગેશન</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{જગ્યા}one{# જગ્યા}other{# જગ્યા}}</translation>
 <translation id="3179119189286472195">લિંક કરેલ નથી</translation>
 <translation id="320041337977930740">ડિસ્પ્લે શૈલીને 'એકબીજાની ઉપર જુઓ' પર બદલો</translation>
@@ -741,7 +741,7 @@
 <translation id="5968607524793740041">સંદર્ભ મેનૂ બતાવો</translation>
 <translation id="597121107011153418">{COUNT,plural, =1{# આઇટમ સાથે}one{# આઇટમ સાથે}other{# આઇટમ સાથે}}</translation>
 <translation id="5981446804259161541">આછો સ્યાન</translation>
-<translation id="5983179082906765664">નેવિગેશન ગ્રેન્યુલેરિટી વધારો</translation>
+<translation id="5983179082906765664">નૅવિગેશન ગ્રેન્યુલારિટી વધારો</translation>
 <translation id="5992285135956208197">ગ્રાફિક્સ દસ્તાવેજ</translation>
 <translation id="5999630716831179808">અવાજો</translation>
 <translation id="6006050241733874051">ફોર્મ</translation>
@@ -1072,7 +1072,7 @@
 <translation id="8476408756881832830">ChromeVox બોલી રહ્યું હોય ત્યારે પ્લેબેક થોભાવો</translation>
 <translation id="8476508772960940536">વિંડોનું વિહંગાવલોકન</translation>
 <translation id="8480873377842220259">હવે તમે થોડું મૂળભૂત નૅવિગેશન શીખશો. સ્ક્રીન પર કોઈપણ જગ્યાએ જવા માટે, તમે Search કી દબાવી રાખીને ઍરો કી દબાવી શકો છો. આગળ વધવા માટે, Search + જમણો ઍરો દબાવો.</translation>
-<translation id="8503360654911991865">નેવિગેશન ગ્રેન્યુલેરિટી ઘટાડો</translation>
+<translation id="8503360654911991865">નૅવિગેશન ગ્રેન્યુલારિટી ઘટાડો</translation>
 <translation id="8520472399088452386">સ્પિન બટન</translation>
 <translation id="8534394844575788431">ફોર્મેટિંગ</translation>
 <translation id="8542271685829952264">તમામ ChromeVox આદેશો અને શૉર્ટકટ વિશે વધુ જાણવા માટે, Search + Period દબાવો, પછી મેનૂ નૅવિગેટ કરવા માટે ઍરો કીનો, અને આદેશને સક્રિય કરવા માટે Enterનો ઉપયોગ કરો. Search+o પછી t દબાવીને અહીં પાછા ફરો.</translation>
