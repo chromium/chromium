@@ -135,6 +135,7 @@ export {SeaPenState} from './wallpaper/wallpaper_state.js';
 export {WallpaperSubpageElement} from './wallpaper/wallpaper_subpage_element.js';
 export {WallpaperSubpageTopElement} from './wallpaper/wallpaper_subpage_top_element.js';
 export {DailyRefreshType} from './wallpaper/wallpaper_state.js';
+export {TimeOfDayAcceptEvent, TimeOfDayWallpaperDialogElement} from './wallpaper/time_of_day_wallpaper_dialog_element.js';
 
 PersonalizationStore.getInstance().init(emptyState());
 const link = document.querySelector('link[rel=\'icon\']') as HTMLLinkElement;

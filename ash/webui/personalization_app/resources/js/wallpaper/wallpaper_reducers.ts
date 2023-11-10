@@ -427,6 +427,16 @@ function fullscreenReducer(
   }
 }
 
+function shouldShowTimeOfDayWallpaperDialogReducer(
+    state: boolean, action: Actions, _: PersonalizationState): boolean {
+  switch (action.name) {
+    case WallpaperActionName.SET_SHOULD_SHOW_TIME_OF_DAY_WALLPAPER_DIALOG:
+      return action.shouldShowDialog;
+    default:
+      return state;
+  }
+}
+
 function googlePhotosReducer(
     state: WallpaperState['googlePhotos'], action: Actions,
     _: PersonalizationState): WallpaperState['googlePhotos'] {
@@ -662,6 +672,8 @@ export const wallpaperReducers:
       pendingSelected: pendingSelectedReducer,
       dailyRefresh: dailyRefreshReducer,
       fullscreen: fullscreenReducer,
+      shouldShowTimeOfDayWallpaperDialog:
+          shouldShowTimeOfDayWallpaperDialogReducer,
       googlePhotos: googlePhotosReducer,
       seaPen: seaPenReducer,
     };

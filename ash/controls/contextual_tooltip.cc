@@ -62,6 +62,8 @@ std::string TooltipTypeToString(TooltipType type) {
       return "keyboard_backlight_wallpaper_color";
     case TooltipType::kTimeOfDayFeatureBanner:
       return "time_of_day_feature_banner";
+    case TooltipType::kTimeOfDayWallpaperDialog:
+      return "time_of_day_wallpaper_dialog";
   }
   return "invalid";
 }
@@ -133,7 +135,9 @@ bool ShouldShowNudge(PrefService* prefs,
       (type == TooltipType::kKeyboardBacklightColor &&
        success_count >= kSuccessLimitKeyboardBacklightColor) ||
       (type == TooltipType::kTimeOfDayFeatureBanner &&
-       success_count >= kSuccessLimitTimeOfDayFeatureBanner)) {
+       success_count >= kSuccessLimitTimeOfDayFeatureBanner) ||
+      (type == TooltipType::kTimeOfDayWallpaperDialog &&
+       success_count >= kSuccessLimitTimeOfDayWallpaperDialog)) {
     set_recheck_delay(base::TimeDelta());
     return false;
   }

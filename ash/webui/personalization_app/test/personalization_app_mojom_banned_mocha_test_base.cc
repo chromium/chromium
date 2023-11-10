@@ -279,6 +279,10 @@ class MockPersonalizationAppWallpaperProvider
               (override));
   MOCK_METHOD(void, ConfirmPreviewWallpaper, (), (override));
   MOCK_METHOD(void, CancelPreviewWallpaper, (), (override));
+  MOCK_METHOD(void,
+              ShouldShowTimeOfDayWallpaperDialog,
+              (ShouldShowTimeOfDayWallpaperDialogCallback callback),
+              (override));
 };
 
 class MockPersonalizationAppUserProvider

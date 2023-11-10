@@ -348,7 +348,17 @@ void AddStrings(content::WebUIDataSource* source) {
       {"timeOfDayBannerDescriptionNoScreensaver",
        IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION_NO_SCREENSAVER},
       {"timeOfDayWallpaperCollectionSublabel",
-       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_COLLECTION_SUBLABEL}};
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_COLLECTION_SUBLABEL},
+
+      // TODO(b/309715996): Add finalized strings.
+      {"timeOfDayWallpaperDialogTitle",
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_TITLE},
+      {"timeOfDayWallpaperDialogContent",
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONTENT},
+      {"timeOfDayWallpaperDialogBackButton",
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_BACK_BUTTON},
+      {"timeOfDayWallpaperDialogConfirmButton",
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONFIRM_BUTTON}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -515,6 +525,9 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean("isTimeOfDayWallpaperEnabled",
                      features::IsTimeOfDayWallpaperEnabled());
+
+  source->AddBoolean("isTimeOfDayWallpaperForcedAutoScheduleEnabled",
+                     features::IsTimeOfDayWallpaperForcedAutoScheduleEnabled());
 
   source->AddBoolean(
       "isSeaPenEnabled",

@@ -38,6 +38,7 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
       'isInTabletMode',
       'confirmPreviewWallpaper',
       'cancelPreviewWallpaper',
+      'shouldShowTimeOfDayWallpaperDialog',
     ]);
 
     /**
@@ -207,6 +208,7 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
   selectLocalImageResponse = true;
   updateDailyRefreshWallpaperResponse = true;
   isInTabletModeResponse = true;
+  shouldShowTimeOfDayWallpaperDialogResponse = true;
   wallpaperObserverUpdateTimeout = 0;
   wallpaperObserverRemote: WallpaperObserverInterface|null = null;
 
@@ -363,6 +365,12 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
 
   cancelPreviewWallpaper() {
     this.methodCalled('cancelPreviewWallpaper');
+  }
+
+  shouldShowTimeOfDayWallpaperDialog() {
+    this.methodCalled('shouldShowTimeOfDayWallpaperDialog');
+    return Promise.resolve(
+        {shouldShowDialog: this.shouldShowTimeOfDayWallpaperDialogResponse});
   }
 
   setCollections(collections: WallpaperCollection[]) {

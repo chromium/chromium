@@ -12,6 +12,8 @@
 #include <type_traits>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/controls/contextual_tooltip.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
@@ -22,6 +24,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/wallpaper/wallpaper_constants.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
@@ -490,6 +493,15 @@ void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(
   DCHECK(client);
   client->RecordWallpaperSourceUMA(ash::WallpaperType::kOnline);
 
+  if (IsTimeOfDayWallpaper(collection_id) &&
+      features::IsTimeOfDayWallpaperForcedAutoScheduleEnabled()) {
+    // Records the display count of the time of day wallpaper dialog when the
+    // user selects one to determine whether to show it the next time.
+    contextual_tooltip::HandleGesturePerformed(
+        profile_->GetPrefs(),
+        contextual_tooltip::TooltipType::kTimeOfDayWallpaperDialog);
+  }
+
   wallpaper_controller->SetOnlineWallpaper(
       ash::OnlineWallpaperParams(
           GetAccountId(profile_), collection_id,
@@ -761,6 +773,17 @@ void PersonalizationAppWallpaperProviderImpl::ConfirmPreviewWallpaper() {
 void PersonalizationAppWallpaperProviderImpl::CancelPreviewWallpaper() {
   WallpaperController::Get()->CancelPreviewWallpaper();
   SetMinimizedWindowStateForPreview(/*preview_mode=*/false);
+}
+
+void PersonalizationAppWallpaperProviderImpl::
+    ShouldShowTimeOfDayWallpaperDialog(
+        ShouldShowTimeOfDayWallpaperDialogCallback callback) {
+  std::move(callback).Run(
+      features::IsTimeOfDayWallpaperForcedAutoScheduleEnabled() &&
+      contextual_tooltip::ShouldShowNudge(
+          profile_->GetPrefs(),
+          contextual_tooltip::TooltipType::kTimeOfDayWallpaperDialog,
+          /*recheck_delay=*/nullptr));
 }
 
 wallpaper_handlers::GooglePhotosAlbumsFetcher*

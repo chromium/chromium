@@ -50,6 +50,8 @@ export enum WallpaperActionName {
   SET_SELECTED_IMAGE = 'set_selected_image',
   SET_UPDATED_DAILY_REFRESH_IMAGE = 'set_updated_daily_refreshed_image',
   SET_FULLSCREEN_ENABLED = 'set_fullscreen_enabled',
+  SET_SHOULD_SHOW_TIME_OF_DAY_WALLPAPER_DIALOG =
+      'set_shoud_show_time_of_day_wallpaper_dialog',
   SET_IMAGE_THUMBNAILS = 'set_image_thumbnails',
   SET_RECENT_WALLPAPER_IMAGES = 'set_recent_wallpaper_images',
 }
@@ -69,7 +71,7 @@ export type WallpaperActions = AppendGooglePhotosAlbumAction|
     SetDefaultImageThumbnailAction|SetLocalImageDataAction|SetLocalImagesAction|
     SetUpdatedDailyRefreshImageAction|SetSelectedImageAction|
     SetFullscreenEnabledAction|SetSeaPenThumbnailsAction|
-    SetRecentWallpaperImagesAction;
+    SetRecentWallpaperImagesAction|SetShouldShowTimeOfDayWallpaperDialog;
 
 export interface AppendGooglePhotosAlbumAction extends Action {
   name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUM;
@@ -556,6 +558,25 @@ export function setSelectedImageAction(image: CurrentWallpaper|
 }
 
 
+
+export interface SetShouldShowTimeOfDayWallpaperDialog extends Action {
+  name: WallpaperActionName.SET_SHOULD_SHOW_TIME_OF_DAY_WALLPAPER_DIALOG;
+  shouldShowDialog: boolean;
+}
+
+
+/**
+ * Sets the boolean that determines whether to show the time of day wallpaper
+ * dialog.
+ */
+export function setShouldShowTimeOfDayWallpaperDialog(
+    shouldShowDialog: boolean): SetShouldShowTimeOfDayWallpaperDialog {
+  assert(typeof shouldShowDialog === 'boolean');
+  return {
+    name: WallpaperActionName.SET_SHOULD_SHOW_TIME_OF_DAY_WALLPAPER_DIALOG,
+    shouldShowDialog,
+  };
+}
 
 export interface SetFullscreenEnabledAction extends Action {
   name: WallpaperActionName.SET_FULLSCREEN_ENABLED;

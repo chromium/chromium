@@ -187,6 +187,9 @@ class PersonalizationAppWallpaperProviderImpl
 
   void CancelPreviewWallpaper() override;
 
+  void ShouldShowTimeOfDayWallpaperDialog(
+      ShouldShowTimeOfDayWallpaperDialogCallback callback) override;
+
   wallpaper_handlers::GooglePhotosAlbumsFetcher*
   GetOrCreateGooglePhotosAlbumsFetcher();
 

@@ -557,6 +557,16 @@ export async function cancelPreviewWallpaper(
   provider.makeOpaque();
 }
 
+export async function getShouldShowTimeOfDayWallpaperDialog(
+    provider: WallpaperProviderInterface, store: PersonalizationStore) {
+  const {shouldShowDialog} =
+      await provider.shouldShowTimeOfDayWallpaperDialog();
+
+  // Dispatch action to set the should show dialog boolean.
+  store.dispatch(
+      action.setShouldShowTimeOfDayWallpaperDialog(shouldShowDialog));
+}
+
 /**
  * Fetches list of collections, then fetches list of images for each
  * collection.

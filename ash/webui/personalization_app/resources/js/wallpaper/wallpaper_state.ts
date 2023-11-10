@@ -127,6 +127,7 @@ export interface WallpaperState {
   pendingSelected: DisplayableImage|null;
   dailyRefresh: DailyRefreshState|null;
   fullscreen: boolean;
+  shouldShowTimeOfDayWallpaperDialog: boolean;
   googlePhotos: GooglePhotosState;
   seaPen: SeaPenState;
 }
@@ -158,6 +159,7 @@ export function emptyState(): WallpaperState {
     pendingSelected: null,
     dailyRefresh: null,
     fullscreen: false,
+    shouldShowTimeOfDayWallpaperDialog: false,
     googlePhotos: {
       enabled: undefined,
       albums: undefined,

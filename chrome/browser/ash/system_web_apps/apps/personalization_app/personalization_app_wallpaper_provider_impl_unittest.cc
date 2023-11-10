@@ -9,10 +9,12 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/functional/callback_helpers.h"
@@ -80,7 +82,6 @@ void AddAndLoginUser(const AccountId& account_id) {
   ash::FakeChromeUserManager* user_manager =
       static_cast<ash::FakeChromeUserManager*>(
           user_manager::UserManager::Get());
-
   user_manager->AddUser(account_id);
   user_manager->LoginUser(account_id);
   user_manager->SwitchActiveUser(account_id);
@@ -440,6 +441,52 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SetDailyRefreshBanned) {
       base::BindLambdaForTesting([](bool success) { NOTREACHED(); }));
   EXPECT_EQ("Invalid request to set wallpaper",
             bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(PersonalizationAppWallpaperProviderImplTest,
+       ShouldShowTimeOfDayWallpaperDialog) {
+  test_wallpaper_controller()->ClearCounts();
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kFeatureManagementTimeOfDayWallpaper,
+                             features::kTimeOfDayWallpaperForcedAutoSchedule},
+                            {});
+
+  auto image_info = GetDefaultImageInfo();
+  image_info.collection_id =
+      wallpaper_constants::kTimeOfDayWallpaperCollectionId;
+  std::vector<ash::OnlineWallpaperVariant> variants;
+  variants.emplace_back(image_info.asset_id, image_info.image_url,
+                        backdrop::Image::IMAGE_TYPE_UNKNOWN);
+
+  AddWallpaperImage(image_info);
+
+  base::test::TestFuture<bool> should_show_dialog_future;
+  wallpaper_provider_remote()->ShouldShowTimeOfDayWallpaperDialog(
+      should_show_dialog_future.GetCallback());
+  // Expects to return true before time of day wallpaper is set.
+  EXPECT_TRUE(should_show_dialog_future.Take());
+
+  base::test::TestFuture<bool> success_future;
+  wallpaper_provider_remote()->SelectWallpaper(image_info.asset_id,
+                                               /*preview_mode=*/false,
+                                               success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
+
+  EXPECT_EQ(1, test_wallpaper_controller()->set_online_wallpaper_count());
+  EXPECT_TRUE(
+      test_wallpaper_controller()->wallpaper_info().value().MatchesSelection(
+          ash::WallpaperInfo(
+              {GetTestAccountId(),
+               wallpaper_constants::kTimeOfDayWallpaperCollectionId,
+               ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+               /*preview_mode=*/false, /*from_user=*/true,
+               /*daily_refresh_enabled=*/false, image_info.unit_id, variants},
+              variants.front())));
+
+  wallpaper_provider_remote()->ShouldShowTimeOfDayWallpaperDialog(
+      should_show_dialog_future.GetCallback());
+  // Expects to return false after time of day wallpaper is set.
+  EXPECT_FALSE(should_show_dialog_future.Take());
 }
 
 class PersonalizationAppWallpaperProviderImplGooglePhotosTest
