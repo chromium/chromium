@@ -58,9 +58,6 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -328,12 +325,9 @@ void TabDragControllerTest::AddTabsAndResetBrowser(Browser* browser,
                                                    int additional_tabs,
                                                    const GURL& url) {
   for (int i = 0; i < additional_tabs; i++) {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
-    chrome::AddSelectedTabWithURL(browser, url,
-                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-    observer.Wait();
+    auto* contents = chrome::AddSelectedTabWithURL(
+        browser, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+    content::WaitForLoadStop(contents);
   }
   browser->window()->Show();
   StopAnimating(GetTabStripForBrowser(browser));
@@ -3455,14 +3449,16 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 namespace {
 
 // Invoked from the nested run loop.
-void CancelOnNewTabWhenDraggingStep2(
-    DetachToBrowserTabDragControllerTest* test,
-    const BrowserList* browser_list) {
+void CancelOnNewTabWhenDraggingStep2(DetachToBrowserTabDragControllerTest* test,
+                                     const BrowserList* browser_list,
+                                     base::OnceClosure quit_closure,
+                                     WebContents** contents_out) {
   ASSERT_TRUE(TabDragController::IsActive());
   ASSERT_EQ(2u, browser_list->size());
 
-  chrome::AddTabAt(browser_list->GetLastActive(), GURL(url::kAboutBlankURL),
-                   0, false);
+  *contents_out = chrome::AddAndReturnTabAt(
+      browser_list->GetLastActive(), GURL(url::kAboutBlankURL), 0, false);
+  std::move(quit_closure).Run();
 }
 
 }  // namespace
@@ -3480,16 +3476,20 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
       GetCenterInScreenCoordinates(tab_strip->tab_at(0));
   ASSERT_TRUE(PressInput(tab_0_center));
 
+  base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
+  WebContents* web_contents = nullptr;
   // Add another tab. This should trigger exiting the nested loop. Add at the
   // beginning to exercise past crash when model/tabstrip got out of sync.
   // crbug.com/474082
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
   ASSERT_TRUE(DragInputToNotifyWhenDone(
       tab_0_center + gfx::Vector2d(0, GetDetachY(tab_strip)),
-      base::BindOnce(&CancelOnNewTabWhenDraggingStep2, this, browser_list)));
-  observer.Wait();
+      base::BindOnce(&CancelOnNewTabWhenDraggingStep2, this, browser_list,
+                     std::move(quit_closure),
+                     base::Unretained(&web_contents))));
+  run_loop.Run();
+  ASSERT_TRUE(!!web_contents);
+  content::WaitForLoadStop(web_contents);
 
   // Should be two windows and not dragging.
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
