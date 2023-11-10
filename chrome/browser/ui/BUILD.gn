@@ -3463,9 +3463,6 @@ static_library("ui") {
       "webui/nearby_share/nearby_share_dialog_ui.h",
       "webui/nearby_share/shared_resources.cc",
       "webui/nearby_share/shared_resources.h",
-
-      # TODO(crbug.com/1442928): Move to under `enable_screen_ai_service` when
-      # PDF OCR becomes available on windows, macOS, and linux.
       "webui/ash/settings/pages/a11y/pdf_ocr_handler.cc",
       "webui/ash/settings/pages/a11y/pdf_ocr_handler.h",
       "webui/ash/settings/pages/a11y/select_to_speak_handler.cc",

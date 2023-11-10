@@ -280,8 +280,6 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
     {"accessibleImageLabelsTitle", IDS_SETTINGS_ACCESSIBLE_IMAGE_LABELS_TITLE},
     {"accessibleImageLabelsSubtitle",
      IDS_SETTINGS_ACCESSIBLE_IMAGE_LABELS_SUBTITLE},
-    {"pdfOcrTitle", IDS_SETTINGS_PDF_OCR_TITLE},
-    {"pdfOcrSubtitle", IDS_SETTINGS_PDF_OCR_SUBTITLE},
     {"settingsSliderRoleDescription",
      IDS_SETTINGS_SLIDER_MIN_MAX_ARIA_ROLE_DESCRIPTION},
     {"caretBrowsingTitle", IDS_SETTINGS_ENABLE_CARET_BROWSING_TITLE},
@@ -298,7 +296,13 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
      IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_TITLE},
     {"overscrollHistoryNavigationSubtitle",
      IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_SUBTITLE},
-#endif
+    {"pdfOcrDownloadCompleteLabel", IDS_SETTINGS_PDF_OCR_DOWNLOAD_COMPLETE},
+    {"pdfOcrDownloadErrorLabel", IDS_SETTINGS_PDF_OCR_DOWNLOAD_ERROR},
+    {"pdfOcrDownloadProgressLabel", IDS_SETTINGS_PDF_OCR_DOWNLOAD_PROGRESS},
+    {"pdfOcrDownloadingLabel", IDS_SETTINGS_PDF_OCR_DOWNLOADING},
+    {"pdfOcrTitle", IDS_SETTINGS_PDF_OCR_TITLE},
+    {"pdfOcrSubtitle", IDS_SETTINGS_PDF_OCR_SUBTITLE},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

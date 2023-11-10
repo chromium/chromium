@@ -26,6 +26,12 @@ using SettingsTest = SettingsBrowserTest;
 
 // Note: Keep tests below in alphabetical ordering.
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(SettingsTest, A11yPage) {
+  RunTest("settings/a11y_page_test.js", "mocha.run()");
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+
 // Copied from Polymer 2 test:
 // Times out on debug builders because the Settings page can take several
 // seconds to load in a Release build and several times that in a Debug build.

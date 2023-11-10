@@ -7985,6 +7985,12 @@ test("unit_tests") {
           [ "../browser/webauthn/local_credential_management_win_unittest.cc" ]
     }
 
+    if (is_linux || is_mac || is_win) {
+      sources += [
+        "../browser/ui/webui/settings/accessibility_main_handler_unittest.cc",
+      ]
+    }
+
     sources += [
       # Badging isn't supported on Android.
       "../browser/badging/badge_manager_unittest.cc",

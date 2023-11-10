@@ -168,6 +168,7 @@ build_webui_tests("build") {
 
   if (!is_chromeos) {
     files += [
+      "a11y_page_test.ts",
       "live_caption_section_test.ts",
       "live_translate_section_test.ts",
       "test_captions_browser_proxy.ts",
