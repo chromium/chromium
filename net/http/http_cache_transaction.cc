@@ -1233,8 +1233,10 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
   // No need to explicitly handle ERR_CACHE_ENTRY_NOT_SUITABLE as the
   // ShouldOpenOnlyMethods() check will handle it.
 
-  // We were unable to open or create an entry.
-  DLOG(WARNING) << "Unable to open or create cache entry";
+  if (mode_ & WRITE) {
+    // We were unable to open or create an entry.
+    DLOG(WARNING) << "Unable to open or create cache entry";
+  }
 
   if (ShouldOpenOnlyMethods()) {
     // These methods, on failure, should bypass the cache.
