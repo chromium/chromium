@@ -501,6 +501,7 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
   SkAlphaType surface_alpha_type = GetSkColorInfo().alphaType();
   gpu::Mailbox shared_image_mailbox;
 
+  scoped_refptr<gpu::ClientSharedImage> client_shared_image;
   if (!is_accelerated_ &&
       base::FeatureList::IsEnabled(kAlwaysUseMappableSIForSoftwareCanvas)) {
     CHECK(!gpu_memory_buffer_);
@@ -512,7 +513,7 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     // TODO(crbug.com/1478238): Add that usage flag back here once the issue is
     // resolved.
 
-    auto client_shared_image = shared_image_interface->CreateSharedImage(
+    client_shared_image = shared_image_interface->CreateSharedImage(
         GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
         surface_alpha_type, shared_image_usage_flags, "CanvasResourceRasterGmb",
         gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
@@ -521,14 +522,14 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     }
     shared_image_mailbox = client_shared_image->mailbox();
   } else if (gpu_memory_buffer_) {
-    auto client_shared_image = shared_image_interface->CreateSharedImage(
+    client_shared_image = shared_image_interface->CreateSharedImage(
         GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
         surface_alpha_type, shared_image_usage_flags, "CanvasResourceRasterGmb",
         gpu_memory_buffer_->CloneHandle());
     CHECK(client_shared_image);
     shared_image_mailbox = client_shared_image->mailbox();
   } else {
-    auto client_shared_image = shared_image_interface->CreateSharedImage(
+    client_shared_image = shared_image_interface->CreateSharedImage(
         GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
         surface_alpha_type, shared_image_usage_flags, "CanvasResourceRaster",
         gpu::kNullSurfaceHandle);
@@ -541,7 +542,7 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
 
   auto* raster_interface = RasterInterface();
   DCHECK(raster_interface);
-  owning_thread_data().shared_image_mailbox = shared_image_mailbox;
+  owning_thread_data().client_shared_image = client_shared_image;
 
   if (use_oop_rasterization_)
     return;

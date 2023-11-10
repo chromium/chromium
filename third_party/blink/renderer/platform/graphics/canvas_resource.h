@@ -13,6 +13,7 @@
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -394,7 +395,7 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   // before a resource is used on a different thread.
   struct OwningThreadData {
     bool mailbox_needs_new_sync_token = true;
-    gpu::Mailbox shared_image_mailbox;
+    scoped_refptr<gpu::ClientSharedImage> client_shared_image;
     gpu::SyncToken sync_token;
     size_t bitmap_image_read_refs = 0u;
     MailboxSyncMode mailbox_sync_mode = kUnverifiedSyncToken;
@@ -443,7 +444,10 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
 
   // Can be read on any thread but updated only on the owning thread.
   const gpu::Mailbox& mailbox() const {
-    return owning_thread_data_.shared_image_mailbox;
+    return owning_thread_data_.client_shared_image->mailbox();
+  }
+  gpu::ClientSharedImage* client_shared_image() const {
+    return owning_thread_data_.client_shared_image.get();
   }
   bool mailbox_needs_new_sync_token() const {
     return owning_thread_data_.mailbox_needs_new_sync_token;
