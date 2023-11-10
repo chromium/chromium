@@ -11,6 +11,7 @@
 #include <wrl/implements.h>
 
 #include <cstring>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -230,7 +231,7 @@ std::vector<CLSID> GetServers(bool is_internal, UpdaterScope scope) {
 bool InstallComInterfaces(UpdaterScope scope, bool is_internal) {
   VLOG(1) << __func__ << ": scope: " << scope
           << ": is_internal: " << is_internal;
-  const absl::optional<base::FilePath> versioned_directory =
+  const std::optional<base::FilePath> versioned_directory =
       GetVersionedInstallDirectory(scope);
   if (!versioned_directory) {
     return false;

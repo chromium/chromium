@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -16,7 +17,6 @@
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
@@ -42,13 +42,13 @@ class FakePolicyManager : public PolicyManagerInterface {
   bool HasActiveDevicePolicies() const override {
     return has_active_device_policies_;
   }
-  absl::optional<base::TimeDelta> GetLastCheckPeriod() const override {
-    return absl::nullopt;
+  std::optional<base::TimeDelta> GetLastCheckPeriod() const override {
+    return std::nullopt;
   }
-  absl::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
+  std::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
       const override {
     if (!suppressed_times_.valid())
-      return absl::nullopt;
+      return std::nullopt;
 
     return suppressed_times_;
   }
@@ -56,68 +56,66 @@ class FakePolicyManager : public PolicyManagerInterface {
       const UpdatesSuppressedTimes& suppressed_times) {
     suppressed_times_ = suppressed_times;
   }
-  absl::optional<std::string> GetDownloadPreference() const override {
+  std::optional<std::string> GetDownloadPreference() const override {
     return download_preference_.empty()
-               ? absl::nullopt
-               : absl::make_optional(download_preference_);
+               ? std::nullopt
+               : std::make_optional(download_preference_);
   }
   void SetDownloadPreference(const std::string& preference) {
     download_preference_ = preference;
   }
-  absl::optional<int> GetPackageCacheSizeLimitMBytes() const override {
-    return absl::nullopt;
+  std::optional<int> GetPackageCacheSizeLimitMBytes() const override {
+    return std::nullopt;
   }
-  absl::optional<int> GetPackageCacheExpirationTimeDays() const override {
-    return absl::nullopt;
+  std::optional<int> GetPackageCacheExpirationTimeDays() const override {
+    return std::nullopt;
   }
-  absl::optional<int> GetEffectivePolicyForAppInstalls(
+  std::optional<int> GetEffectivePolicyForAppInstalls(
       const std::string& app_id) const override {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<int> GetEffectivePolicyForAppUpdates(
+  std::optional<int> GetEffectivePolicyForAppUpdates(
       const std::string& app_id) const override {
     auto value = update_policies_.find(app_id);
     if (value == update_policies_.end())
-      return absl::nullopt;
+      return std::nullopt;
     return value->second;
   }
   void SetUpdatePolicy(const std::string& app_id, int update_policy) {
     update_policies_[app_id] = update_policy;
   }
-  absl::optional<std::string> GetTargetVersionPrefix(
+  std::optional<std::string> GetTargetVersionPrefix(
       const std::string& app_id) const override {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<bool> IsRollbackToTargetVersionAllowed(
+  std::optional<bool> IsRollbackToTargetVersionAllowed(
       const std::string& app_id) const override {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<std::string> GetProxyMode() const override {
-    return proxy_mode_.empty() ? absl::nullopt
-                               : absl::make_optional(proxy_mode_);
+  std::optional<std::string> GetProxyMode() const override {
+    return proxy_mode_.empty() ? std::nullopt : std::make_optional(proxy_mode_);
   }
   void SetProxyMode(const std::string& proxy_mode) { proxy_mode_ = proxy_mode; }
-  absl::optional<std::string> GetProxyPacUrl() const override {
-    return absl::nullopt;
+  std::optional<std::string> GetProxyPacUrl() const override {
+    return std::nullopt;
   }
-  absl::optional<std::string> GetProxyServer() const override {
-    return absl::nullopt;
+  std::optional<std::string> GetProxyServer() const override {
+    return std::nullopt;
   }
-  absl::optional<std::string> GetTargetChannel(
+  std::optional<std::string> GetTargetChannel(
       const std::string& app_id) const override {
     auto value = channels_.find(app_id);
     if (value == channels_.end())
-      return absl::nullopt;
+      return std::nullopt;
     return value->second;
   }
   void SetChannel(const std::string& app_id, std::string channel) {
     channels_[app_id] = std::move(channel);
   }
-  absl::optional<std::vector<std::string>> GetForceInstallApps()
-      const override {
-    return absl::nullopt;
+  std::optional<std::vector<std::string>> GetForceInstallApps() const override {
+    return std::nullopt;
   }
-  absl::optional<std::vector<std::string>> GetAppsWithPolicy() const override {
+  std::optional<std::vector<std::string>> GetAppsWithPolicy() const override {
     std::set<std::string> apps_with_policy;
     for (const auto& policy_entry : update_policies_) {
       apps_with_policy.insert(policy_entry.first);
@@ -219,23 +217,23 @@ TEST(PolicyService, SinglePolicyManager) {
       policy_service->GetTargetChannel("app1");
   ASSERT_TRUE(app1_channel);
   EXPECT_EQ(app1_channel.policy(), "test_channel");
-  EXPECT_EQ(app1_channel.conflict_policy(), absl::nullopt);
+  EXPECT_EQ(app1_channel.conflict_policy(), std::nullopt);
 
   PolicyStatus<std::string> app2_channel =
       policy_service->GetTargetChannel("app2");
   EXPECT_FALSE(app2_channel);
-  EXPECT_EQ(app2_channel.conflict_policy(), absl::nullopt);
+  EXPECT_EQ(app2_channel.conflict_policy(), std::nullopt);
 
   PolicyStatus<int> app1_update_status =
       policy_service->GetPolicyForAppUpdates("app1");
   EXPECT_FALSE(app1_update_status);
-  EXPECT_EQ(app1_update_status.conflict_policy(), absl::nullopt);
+  EXPECT_EQ(app1_update_status.conflict_policy(), std::nullopt);
 
   PolicyStatus<int> app2_update_status =
       policy_service->GetPolicyForAppUpdates("app2");
   EXPECT_TRUE(app2_update_status);
   EXPECT_EQ(app2_update_status.policy(), 3);
-  EXPECT_EQ(app2_update_status.conflict_policy(), absl::nullopt);
+  EXPECT_EQ(app2_update_status.conflict_policy(), std::nullopt);
 }
 
 TEST(PolicyService, MultiplePolicyManagers) {
@@ -322,7 +320,7 @@ TEST(PolicyService, MultiplePolicyManagers) {
   EXPECT_EQ(app2_update_policy.source, "group_policy");
   EXPECT_EQ(app2_update_policy.policy, 1);
   EXPECT_EQ(app2_update_status.policy(), 1);
-  EXPECT_EQ(app2_update_status.conflict_policy(), absl::nullopt);
+  EXPECT_EQ(app2_update_status.conflict_policy(), std::nullopt);
 
   PolicyStatus<std::string> download_preference_status =
       policy_service->GetDownloadPreference();
@@ -332,7 +330,7 @@ TEST(PolicyService, MultiplePolicyManagers) {
   EXPECT_EQ(download_preference_policy.source, "imaginary");
   EXPECT_EQ(download_preference_policy.policy, "cacheable");
   EXPECT_EQ(download_preference_status.policy(), "cacheable");
-  EXPECT_EQ(download_preference_status.conflict_policy(), absl::nullopt);
+  EXPECT_EQ(download_preference_status.conflict_policy(), std::nullopt);
 
   EXPECT_FALSE(policy_service->GetPackageCacheSizeLimitMBytes());
   EXPECT_EQ(policy_service->GetAllPoliciesAsString(),
@@ -434,7 +432,7 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
   PolicyStatus<int> app2_update_status =
       policy_service->GetPolicyForAppUpdates("app2");
   ASSERT_TRUE(app2_update_status);
-  EXPECT_EQ(app2_update_status.conflict_policy(), absl::nullopt);
+  EXPECT_EQ(app2_update_status.conflict_policy(), std::nullopt);
   const PolicyStatus<int>::Entry& app2_update_status_policy =
       app2_update_status.effective_policy().value();
   EXPECT_EQ(app2_update_status_policy.source, "Default");
@@ -447,7 +445,7 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
   EXPECT_EQ(download_preference_status.effective_policy().value().source,
             "imaginary");
   EXPECT_EQ(download_preference_status.policy(), "cacheable");
-  EXPECT_EQ(download_preference_status.conflict_policy(), absl::nullopt);
+  EXPECT_EQ(download_preference_status.conflict_policy(), std::nullopt);
 
   EXPECT_FALSE(policy_service->GetPackageCacheSizeLimitMBytes());
 

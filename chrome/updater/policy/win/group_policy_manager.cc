@@ -4,10 +4,11 @@
 
 #include "chrome/updater/policy/win/group_policy_manager.h"
 
+#include <userenv.h>
+
+#include <optional>
 #include <ostream>
 #include <string>
-
-#include <userenv.h>
 
 #include "base/check.h"
 #include "base/enterprise_util.h"
@@ -26,7 +27,6 @@
 #include "base/values.h"
 #include "base/win/registry.h"
 #include "chrome/updater/win/win_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -116,7 +116,7 @@ base::Value::Dict LoadGroupPolicies(bool should_take_policy_critical_section) {
 
 GroupPolicyManager::GroupPolicyManager(
     bool should_take_policy_critical_section,
-    const absl::optional<bool>& override_is_managed_device)
+    const std::optional<bool>& override_is_managed_device)
     : PolicyManager(LoadGroupPolicies(should_take_policy_critical_section)),
       is_managed_device_(override_is_managed_device.value_or(
           base::IsManagedOrEnterpriseDevice())) {}

@@ -4,6 +4,7 @@
 
 #include "chrome/updater/mac/setup/keystone.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -29,7 +30,6 @@
 #include "chrome/updater/util/mac_util.h"
 #include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Class to read the Keystone apps' client-regulated-counting data.
 @interface CountingMetricsStore : NSObject {
@@ -38,8 +38,8 @@
 
 + (instancetype)storeAtPath:(const base::FilePath&)path;
 
-- (absl::optional<int>)dateLastActiveForApp:(NSString*)appid;
-- (absl::optional<int>)dateLastRollcallForApp:(NSString*)appid;
+- (std::optional<int>)dateLastActiveForApp:(NSString*)appid;
+- (std::optional<int>)dateLastRollcallForApp:(NSString*)appid;
 
 @end
 
@@ -64,21 +64,21 @@
   return self;
 }
 
-- (absl::optional<int>)daynumValueOfKey:(NSString*)key forApp:(NSString*)appid {
+- (std::optional<int>)daynumValueOfKey:(NSString*)key forApp:(NSString*)appid {
   id appObject = [_metrics objectForKey:appid.lowercaseString];
   if (![appObject isKindOfClass:[NSDictionary class]]) {
     LOG(WARNING) << "Malformed input client-regulated-counting data.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   id daynumObject = appObject[key];
   if (!daynumObject) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (![daynumObject isKindOfClass:[NSNumber class]]) {
     LOG(WARNING) << "daynum is not a number.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // daynum the number of days since January 1, 2007. The accepted range is
@@ -86,17 +86,17 @@
   int daynum = [daynumObject intValue];
   if (daynum < 3000 || daynum > 50000) {
     LOG(WARNING) << "Ignored out-of-range daynum: " << daynum;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return daynum;
 }
 
-- (absl::optional<int>)dateLastActiveForApp:(NSString*)appid {
+- (std::optional<int>)dateLastActiveForApp:(NSString*)appid {
   return [self daynumValueOfKey:@"DayOfLastActive" forApp:appid];
 }
 
-- (absl::optional<int>)dateLastRollcallForApp:(NSString*)appid {
+- (std::optional<int>)dateLastRollcallForApp:(NSString*)appid {
   return [self daynumValueOfKey:@"DayOfLastRollcall" forApp:appid];
 }
 
@@ -121,7 +121,7 @@ bool CopyKeystoneBundle(UpdaterScope scope) {
     return false;
   }
 
-  const absl::optional<base::FilePath> dest_folder_path =
+  const std::optional<base::FilePath> dest_folder_path =
       GetKeystoneFolderPath(scope);
   if (!dest_folder_path)
     return false;
@@ -246,7 +246,7 @@ bool InstallKeystone(UpdaterScope scope) {
 }
 
 void UninstallKeystone(UpdaterScope scope) {
-  const absl::optional<base::FilePath> keystone_folder_path =
+  const std::optional<base::FilePath> keystone_folder_path =
       GetKeystoneFolderPath(scope);
   if (!keystone_folder_path) {
     LOG(ERROR) << "Can't find Keystone path.";

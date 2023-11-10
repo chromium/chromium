@@ -7,6 +7,7 @@
 #include <shlobj.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -29,7 +30,6 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/win_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -72,7 +72,7 @@ int Setup(UpdaterScope scope) {
     LOG(ERROR) << "GetTempDir failed.";
     return kErrorCreatingTempDir;
   }
-  const absl::optional<base::FilePath> versioned_dir =
+  const std::optional<base::FilePath> versioned_dir =
       GetVersionedInstallDirectory(scope);
   if (!versioned_dir) {
     LOG(ERROR) << "GetVersionedInstallDirectory failed.";

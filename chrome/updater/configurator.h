@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_CONFIGURATOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/update_client/configurator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class PrefService;
@@ -78,9 +78,9 @@ class Configurator : public update_client::Configurator {
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
-  absl::optional<bool> IsMachineExternallyManaged() const override;
+  std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
-  absl::optional<base::FilePath> GetCrxCachePath() const override;
+  std::optional<base::FilePath> GetCrxCachePath() const override;
 
   virtual GURL CrashUploadURL() const;
   virtual GURL DeviceManagementURL() const;
@@ -101,7 +101,7 @@ class Configurator : public update_client::Configurator {
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
-  const absl::optional<bool> is_managed_device_;
+  const std::optional<bool> is_managed_device_;
 };
 
 }  // namespace updater

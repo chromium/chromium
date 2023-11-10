@@ -9,6 +9,7 @@
 #include <wrl/implements.h>
 
 #include <ios>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -24,7 +25,6 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/win_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -33,7 +33,7 @@ class UpdaterInternalCallback
     : public DYNAMICIIDSIMPL(IUpdaterInternalCallback) {
  public:
   explicit UpdaterInternalCallback(
-      base::OnceCallback<void(absl::optional<RpcError>)> callback)
+      base::OnceCallback<void(std::optional<RpcError>)> callback)
       : callback_(std::move(callback)) {}
   UpdaterInternalCallback(const UpdaterInternalCallback&) = delete;
   UpdaterInternalCallback& operator=(const UpdaterInternalCallback&) = delete;
@@ -45,16 +45,16 @@ class UpdaterInternalCallback
   // Disconnects this callback from its subject and ensures the callbacks are
   // not posted after this function is called. Returns the completion callback
   // so that the owner of this object can take back the callback ownership.
-  base::OnceCallback<void(absl::optional<RpcError>)> Disconnect();
+  base::OnceCallback<void(std::optional<RpcError>)> Disconnect();
 
  private:
   ~UpdaterInternalCallback() override {
     if (callback_)
-      std::move(callback_).Run(absl::nullopt);
+      std::move(callback_).Run(std::nullopt);
   }
 
   // Called by IUpdaterInternalCallback::Run when the COM RPC call is done.
-  base::OnceCallback<void(absl::optional<RpcError>)> callback_;
+  base::OnceCallback<void(std::optional<RpcError>)> callback_;
 };
 
 IFACEMETHODIMP UpdaterInternalCallback::Run(LONG result) {
@@ -62,7 +62,7 @@ IFACEMETHODIMP UpdaterInternalCallback::Run(LONG result) {
   return S_OK;
 }
 
-base::OnceCallback<void(absl::optional<RpcError>)>
+base::OnceCallback<void(std::optional<RpcError>)>
 UpdaterInternalCallback::Disconnect() {
   VLOG(2) << __func__;
   return std::move(callback_);
@@ -85,13 +85,13 @@ class UpdateServiceInternalProxyImplImpl
                                   : __uuidof(UpdaterInternalUserClass);
   }
 
-  void Run(base::OnceCallback<void(absl::optional<RpcError>)> callback) {
+  void Run(base::OnceCallback<void(std::optional<RpcError>)> callback) {
     PostRPCTask(
         base::BindOnce(&UpdateServiceInternalProxyImplImpl::RunOnTaskRunner,
                        this, std::move(callback)));
   }
 
-  void Hello(base::OnceCallback<void(absl::optional<RpcError>)> callback) {
+  void Hello(base::OnceCallback<void(std::optional<RpcError>)> callback) {
     PostRPCTask(
         base::BindOnce(&UpdateServiceInternalProxyImplImpl::HelloOnTaskRunner,
                        this, std::move(callback)));
@@ -102,7 +102,7 @@ class UpdateServiceInternalProxyImplImpl
   ~UpdateServiceInternalProxyImplImpl() = default;
 
   void RunOnTaskRunner(
-      base::OnceCallback<void(absl::optional<RpcError>)> callback) {
+      base::OnceCallback<void(std::optional<RpcError>)> callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (HRESULT connection = ConnectToServer(); FAILED(connection)) {
       std::move(callback).Run(connection);
@@ -119,7 +119,7 @@ class UpdateServiceInternalProxyImplImpl
   }
 
   void HelloOnTaskRunner(
-      base::OnceCallback<void(absl::optional<RpcError>)> callback) {
+      base::OnceCallback<void(std::optional<RpcError>)> callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (HRESULT connection = ConnectToServer(); FAILED(connection)) {
       std::move(callback).Run(connection);
@@ -147,14 +147,14 @@ UpdateServiceInternalProxyImpl::~UpdateServiceInternalProxyImpl() {
 }
 
 void UpdateServiceInternalProxyImpl::Run(
-    base::OnceCallback<void(absl::optional<RpcError>)> callback) {
+    base::OnceCallback<void(std::optional<RpcError>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   impl_->Run(base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
 void UpdateServiceInternalProxyImpl::Hello(
-    base::OnceCallback<void(absl::optional<RpcError>)> callback) {
+    base::OnceCallback<void(std::optional<RpcError>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   impl_->Hello(base::BindPostTaskToCurrentDefault(std::move(callback)));

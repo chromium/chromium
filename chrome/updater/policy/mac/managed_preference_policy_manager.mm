@@ -4,6 +4,7 @@
 
 #include "chrome/updater/policy/mac/managed_preference_policy_manager.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/mac/managed_preference_policy_manager_impl.h"
 #include "chrome/updater/policy/manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -28,7 +28,7 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
  public:
   ManagedPreferencePolicyManager(
       CRUUpdatePolicyDictionary* policy,
-      const absl::optional<bool>& override_is_managed_device);
+      const std::optional<bool>& override_is_managed_device);
   ManagedPreferencePolicyManager(const ManagedPreferencePolicyManager&) =
       delete;
   ManagedPreferencePolicyManager& operator=(
@@ -39,27 +39,27 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
 
   bool HasActiveDevicePolicies() const override;
 
-  absl::optional<base::TimeDelta> GetLastCheckPeriod() const override;
-  absl::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
+  std::optional<base::TimeDelta> GetLastCheckPeriod() const override;
+  std::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
       const override;
-  absl::optional<std::string> GetDownloadPreference() const override;
-  absl::optional<int> GetPackageCacheSizeLimitMBytes() const override;
-  absl::optional<int> GetPackageCacheExpirationTimeDays() const override;
-  absl::optional<int> GetEffectivePolicyForAppInstalls(
+  std::optional<std::string> GetDownloadPreference() const override;
+  std::optional<int> GetPackageCacheSizeLimitMBytes() const override;
+  std::optional<int> GetPackageCacheExpirationTimeDays() const override;
+  std::optional<int> GetEffectivePolicyForAppInstalls(
       const std::string& app_id) const override;
-  absl::optional<int> GetEffectivePolicyForAppUpdates(
+  std::optional<int> GetEffectivePolicyForAppUpdates(
       const std::string& app_id) const override;
-  absl::optional<std::string> GetTargetVersionPrefix(
+  std::optional<std::string> GetTargetVersionPrefix(
       const std::string& app_id) const override;
-  absl::optional<bool> IsRollbackToTargetVersionAllowed(
+  std::optional<bool> IsRollbackToTargetVersionAllowed(
       const std::string& app_id) const override;
-  absl::optional<std::string> GetProxyMode() const override;
-  absl::optional<std::string> GetProxyPacUrl() const override;
-  absl::optional<std::string> GetProxyServer() const override;
-  absl::optional<std::string> GetTargetChannel(
+  std::optional<std::string> GetProxyMode() const override;
+  std::optional<std::string> GetProxyPacUrl() const override;
+  std::optional<std::string> GetProxyServer() const override;
+  std::optional<std::string> GetTargetChannel(
       const std::string& app_id) const override;
-  absl::optional<std::vector<std::string>> GetForceInstallApps() const override;
-  absl::optional<std::vector<std::string>> GetAppsWithPolicy() const override;
+  std::optional<std::vector<std::string>> GetForceInstallApps() const override;
+  std::optional<std::vector<std::string>> GetAppsWithPolicy() const override;
 
  private:
   ~ManagedPreferencePolicyManager() override;
@@ -70,7 +70,7 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
 
 ManagedPreferencePolicyManager::ManagedPreferencePolicyManager(
     CRUUpdatePolicyDictionary* policyDict,
-    const absl::optional<bool>& override_is_managed_device)
+    const std::optional<bool>& override_is_managed_device)
     : impl_([[CRUManagedPreferencePolicyManager alloc]
           initWithDictionary:policyDict]),
       is_managed_device_(override_is_managed_device.value_or(
@@ -86,46 +86,46 @@ std::string ManagedPreferencePolicyManager::source() const {
   return base::SysNSStringToUTF8(impl_.source);
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 ManagedPreferencePolicyManager::GetLastCheckPeriod() const {
   int minutes = [impl_ lastCheckPeriodMinutes];
   return minutes != kPolicyNotSet
-             ? absl::optional<base::TimeDelta>(base::Minutes(minutes))
-             : absl::nullopt;
+             ? std::optional<base::TimeDelta>(base::Minutes(minutes))
+             : std::nullopt;
 }
 
-absl::optional<UpdatesSuppressedTimes>
+std::optional<UpdatesSuppressedTimes>
 ManagedPreferencePolicyManager::GetUpdatesSuppressedTimes() const {
   UpdatesSuppressedTimes suppressed_times = [impl_ updatesSuppressed];
   return suppressed_times.valid()
-             ? absl::optional<UpdatesSuppressedTimes>(suppressed_times)
-             : absl::nullopt;
+             ? std::optional<UpdatesSuppressedTimes>(suppressed_times)
+             : std::nullopt;
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 ManagedPreferencePolicyManager::GetDownloadPreference() const {
   NSString* value = [impl_ downloadPreference];
-  return value ? absl::optional<std::string>(base::SysNSStringToUTF8(value))
-               : absl::nullopt;
+  return value ? std::optional<std::string>(base::SysNSStringToUTF8(value))
+               : std::nullopt;
 }
 
-absl::optional<int>
+std::optional<int>
 ManagedPreferencePolicyManager::GetPackageCacheSizeLimitMBytes() const {
-  return absl::nullopt;  // Not supported on Mac.
+  return std::nullopt;  // Not supported on Mac.
 }
 
-absl::optional<int>
+std::optional<int>
 ManagedPreferencePolicyManager::GetPackageCacheExpirationTimeDays() const {
-  return absl::nullopt;  // Not supported on Mac.
+  return std::nullopt;  // Not supported on Mac.
 }
 
-absl::optional<int>
+std::optional<int>
 ManagedPreferencePolicyManager::GetEffectivePolicyForAppInstalls(
     const std::string& app_id) const {
-  return absl::nullopt;  // Not supported on Mac.
+  return std::nullopt;  // Not supported on Mac.
 }
 
-absl::optional<int>
+std::optional<int>
 ManagedPreferencePolicyManager::GetEffectivePolicyForAppUpdates(
     const std::string& app_id) const {
   // Check app-specific settings first.
@@ -135,66 +135,66 @@ ManagedPreferencePolicyManager::GetEffectivePolicyForAppUpdates(
 
   // Then fallback to global-level policy if needed.
   update_policy = [impl_ defaultUpdatePolicy];
-  return update_policy != kPolicyNotSet ? absl::optional<int>(update_policy)
-                                        : absl::nullopt;
+  return update_policy != kPolicyNotSet ? std::optional<int>(update_policy)
+                                        : std::nullopt;
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 ManagedPreferencePolicyManager::GetTargetVersionPrefix(
     const std::string& app_id) const {
   NSString* value = [impl_ targetVersionPrefix:base::SysUTF8ToNSString(app_id)];
-  return value ? absl::optional<std::string>(base::SysNSStringToUTF8(value))
-               : absl::nullopt;
+  return value ? std::optional<std::string>(base::SysNSStringToUTF8(value))
+               : std::nullopt;
 }
 
-absl::optional<bool>
+std::optional<bool>
 ManagedPreferencePolicyManager::IsRollbackToTargetVersionAllowed(
     const std::string& app_id) const {
   int rollback_policy =
       [impl_ rollbackToTargetVersion:base::SysUTF8ToNSString(app_id)];
   return rollback_policy != kPolicyNotSet
-             ? absl::optional<bool>(rollback_policy != 0)
-             : absl::nullopt;
+             ? std::optional<bool>(rollback_policy != 0)
+             : std::nullopt;
 }
 
-absl::optional<std::string> ManagedPreferencePolicyManager::GetProxyMode()
+std::optional<std::string> ManagedPreferencePolicyManager::GetProxyMode()
     const {
   NSString* value = [impl_ proxyMode];
-  return value ? absl::optional<std::string>(base::SysNSStringToUTF8(value))
-               : absl::nullopt;
+  return value ? std::optional<std::string>(base::SysNSStringToUTF8(value))
+               : std::nullopt;
 }
 
-absl::optional<std::string> ManagedPreferencePolicyManager::GetProxyPacUrl()
+std::optional<std::string> ManagedPreferencePolicyManager::GetProxyPacUrl()
     const {
   NSString* value = [impl_ proxyPacURL];
-  return value ? absl::optional<std::string>(base::SysNSStringToUTF8(value))
-               : absl::nullopt;
+  return value ? std::optional<std::string>(base::SysNSStringToUTF8(value))
+               : std::nullopt;
 }
 
-absl::optional<std::string> ManagedPreferencePolicyManager::GetProxyServer()
+std::optional<std::string> ManagedPreferencePolicyManager::GetProxyServer()
     const {
   NSString* value = [impl_ proxyServer];
-  return value ? absl::optional<std::string>(base::SysNSStringToUTF8(value))
-               : absl::nullopt;
+  return value ? std::optional<std::string>(base::SysNSStringToUTF8(value))
+               : std::nullopt;
 }
 
-absl::optional<std::string> ManagedPreferencePolicyManager::GetTargetChannel(
+std::optional<std::string> ManagedPreferencePolicyManager::GetTargetChannel(
     const std::string& app_id) const {
   NSString* value = [impl_ targetChannel:base::SysUTF8ToNSString(app_id)];
-  return value ? absl::optional<std::string>(base::SysNSStringToUTF8(value))
-               : absl::nullopt;
+  return value ? std::optional<std::string>(base::SysNSStringToUTF8(value))
+               : std::nullopt;
 }
 
-absl::optional<std::vector<std::string>>
+std::optional<std::vector<std::string>>
 ManagedPreferencePolicyManager::GetForceInstallApps() const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::vector<std::string>>
+std::optional<std::vector<std::string>>
 ManagedPreferencePolicyManager::GetAppsWithPolicy() const {
   NSArray<NSString*>* apps_with_policy = [impl_ appsWithPolicy];
   if (!apps_with_policy) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<std::string> app_ids;
@@ -227,7 +227,7 @@ NSDictionary* ReadManagedPreferencePolicyDictionary() {
 }
 
 scoped_refptr<PolicyManagerInterface> CreateManagedPreferencePolicyManager(
-    const absl::optional<bool>& override_is_managed_device) {
+    const std::optional<bool>& override_is_managed_device) {
   NSDictionary* policyDict = ReadManagedPreferencePolicyDictionary();
   return base::MakeRefCounted<ManagedPreferencePolicyManager>(
       policyDict, override_is_managed_device);

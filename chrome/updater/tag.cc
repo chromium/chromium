@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/updater/certificate_tag.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace tagging {
@@ -98,7 +98,7 @@ constexpr char kDisallowedCharInTag = '/';
 constexpr uint8_t kTagMagicUtf8[] = {'G', 'a', 'c', 't', '2', '.',
                                      '0', 'O', 'm', 'a', 'h', 'a'};
 
-absl::optional<AppArgs::NeedsAdmin> ParseNeedsAdminEnum(base::StringPiece str) {
+std::optional<AppArgs::NeedsAdmin> ParseNeedsAdminEnum(base::StringPiece str) {
   if (base::EqualsCaseInsensitiveASCII("false", str))
     return AppArgs::NeedsAdmin::kNo;
 
@@ -108,18 +108,18 @@ absl::optional<AppArgs::NeedsAdmin> ParseNeedsAdminEnum(base::StringPiece str) {
   if (base::EqualsCaseInsensitiveASCII("prefers", str))
     return AppArgs::NeedsAdmin::kPrefers;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-// Returns absl::nullopt if parsing failed.
-absl::optional<bool> ParseBool(base::StringPiece str) {
+// Returns std::nullopt if parsing failed.
+std::optional<bool> ParseBool(base::StringPiece str) {
   if (base::EqualsCaseInsensitiveASCII("false", str))
     return false;
 
   if (base::EqualsCaseInsensitiveASCII("true", str))
     return true;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Functor used by associative containers of strings as a case-insensitive ASCII
@@ -196,7 +196,7 @@ ErrorCode ParseLanguage(base::StringPiece value, TagArgs* args) {
 }
 
 ErrorCode ParseFlighting(base::StringPiece value, TagArgs* args) {
-  const absl::optional<bool> flighting = ParseBool(value);
+  const std::optional<bool> flighting = ParseBool(value);
   if (!flighting.has_value())
     return ErrorCode::kGlobal_FlightingValueIsNotABoolean;
 
@@ -214,7 +214,7 @@ ErrorCode ParseUsageStats(base::StringPiece value, TagArgs* args) {
   } else if (tristate == 1) {
     args->usage_stats_enable = true;
   } else if (tristate == 2) {
-    args->usage_stats_enable = absl::nullopt;
+    args->usage_stats_enable = std::nullopt;
   } else {
     return ErrorCode::kGlobal_UsageStatsValueIsInvalid;
   }
@@ -331,7 +331,7 @@ namespace installer_data_attributes {
 // index to |current_app_index|.
 ErrorCode FindAppIdInTagArgs(base::StringPiece value,
                              TagArgs* args,
-                             absl::optional<size_t>* current_app_index) {
+                             std::optional<size_t>* current_app_index) {
   if (!base::IsStringASCII(value))
     return ErrorCode::kApp_AppIdIsNotValid;
 
@@ -350,7 +350,7 @@ ErrorCode FindAppIdInTagArgs(base::StringPiece value,
 
 ErrorCode ParseInstallerData(base::StringPiece value,
                              TagArgs* args,
-                             absl::optional<size_t>* current_app_index) {
+                             std::optional<size_t>* current_app_index) {
   if (!current_app_index->has_value())
     return ErrorCode::
         kAppInstallerData_InstallerDataCannotBeSpecifiedBeforeAppId;
@@ -369,7 +369,7 @@ ErrorCode ParseInstallerData(base::StringPiece value,
 using ParseInstallerDataAttributeFunPtr =
     ErrorCode (*)(base::StringPiece value,
                   TagArgs* args,
-                  absl::optional<size_t>* current_app_index);
+                  std::optional<size_t>* current_app_index);
 
 using InstallerDataParseTable = std::map<base::StringPiece,
                                          ParseInstallerDataAttributeFunPtr,
@@ -481,7 +481,7 @@ ErrorCode ParseTag(base::StringPiece tag, TagArgs* args) {
 ErrorCode ParseAppInstallerDataArgs(base::StringPiece app_installer_data_args,
                                     TagArgs* args) {
   // The currently tracked app index to apply installer data to.
-  absl::optional<size_t> current_app_index;
+  std::optional<size_t> current_app_index;
 
   // Installer data is assumed to be URL-encoded, so we don't unescape it.
   bool unescape_value = false;
@@ -553,7 +553,7 @@ std::vector<uint8_t> ReadFileTail(const base::FilePath& filename) {
   return buffer;
 }
 
-absl::optional<tagging::TagArgs> ParseTagBuffer(
+std::optional<tagging::TagArgs> ParseTagBuffer(
     const std::vector<uint8_t>& tag_buffer) {
   if (tag_buffer.empty()) {
     return {};
@@ -647,7 +647,7 @@ TagArgs::TagArgs(TagArgs&&) = default;
 TagArgs& TagArgs::operator=(TagArgs&&) = default;
 
 ErrorCode Parse(base::StringPiece tag,
-                absl::optional<base::StringPiece> app_installer_data_args,
+                std::optional<base::StringPiece> app_installer_data_args,
                 TagArgs* args) {
   if (!IsValidArgs(tag))
     return ErrorCode::kTagIsInvalid;
@@ -780,13 +780,13 @@ std::string ReadTag(std::vector<uint8_t>::const_iterator begin,
 
 std::string ExeReadTag(const base::FilePath& file) {
   const std::vector<uint8_t> contents = ReadEntireFile(file);
-  absl::optional<tagging::Binary> bin = Binary::Parse(contents);
+  std::optional<tagging::Binary> bin = Binary::Parse(contents);
   if (!bin) {
     LOG(ERROR) << __func__ << ": Could not parse binary: " << file;
     return {};
   }
 
-  absl::optional<base::span<const uint8_t>> tag = bin->tag();
+  std::optional<base::span<const uint8_t>> tag = bin->tag();
   if (!tag) {
     LOG(ERROR) << __func__ << ": No superfluous certificate in file: " << file;
     return {};
@@ -805,7 +805,7 @@ bool ExeWriteTag(const base::FilePath& in_file,
                  int padded_length,
                  const base::FilePath& out_file) {
   const std::vector<uint8_t> contents = ReadEntireFile(in_file);
-  absl::optional<tagging::Binary> bin = tagging::Binary::Parse(contents);
+  std::optional<tagging::Binary> bin = tagging::Binary::Parse(contents);
   if (!bin) {
     LOG(ERROR) << __func__ << ": Could not parse binary: " << in_file;
     return false;
@@ -849,7 +849,7 @@ bool ExeWriteTag(const base::FilePath& in_file,
   return true;
 }
 
-absl::optional<tagging::TagArgs> MsiReadTag(const base::FilePath& filename) {
+std::optional<tagging::TagArgs> MsiReadTag(const base::FilePath& filename) {
   return ParseTagBuffer(ReadFileTail(filename));
 }
 

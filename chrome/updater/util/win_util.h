@@ -10,6 +10,7 @@
 #include <wrl/implements.h>
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -35,7 +36,6 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_types.h"
 #include "chrome/updater/updater_scope.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -184,7 +184,7 @@ NamedObjectAttributes GetNamedObjectAttributes(const wchar_t* base_name,
 // Gets the security descriptor with the default DACL for the current process
 // user. The owner is the current user, the group is the current primary group.
 // Returns security attributes on success, nullopt on failure.
-absl::optional<CSecurityDesc> GetCurrentUserDefaultSecurityDescriptor();
+std::optional<CSecurityDesc> GetCurrentUserDefaultSecurityDescriptor();
 
 // Get security descriptor containing a DACL that grants the ACCESS_MASK access
 // to admins and system.
@@ -294,7 +294,7 @@ HResultOr<DWORD> RunElevated(const base::FilePath& file_path,
 // spawned process.
 HRESULT RunDeElevated(const std::wstring& path, const std::wstring& parameters);
 
-absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope);
+std::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope);
 
 // Causes the COM runtime not to handle exceptions. Failing to set this
 // up is a critical error, since ignoring exceptions may lead to corrupted
@@ -306,14 +306,14 @@ absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope);
 // a log file in the same directory as the MSI installer.
 std::wstring BuildMsiCommandLine(
     const std::wstring& arguments,
-    const absl::optional<base::FilePath>& installer_data_file,
+    const std::optional<base::FilePath>& installer_data_file,
     const base::FilePath& msi_installer);
 
 // Builds a command line running the provided `exe_installer`, `arguments`, and
 // `installer_data_file`.
 std::wstring BuildExeCommandLine(
     const std::wstring& arguments,
-    const absl::optional<base::FilePath>& installer_data_file,
+    const std::optional<base::FilePath>& installer_data_file,
     const base::FilePath& exe_installer);
 
 // Returns `true` if the service specified is currently running or starting.
@@ -325,7 +325,7 @@ bool IsServiceRunning(const std::wstring& service_name);
 HKEY UpdaterScopeToHKeyRoot(UpdaterScope scope);
 
 // Returns an OSVERSIONINFOEX for the current OS version.
-absl::optional<OSVERSIONINFOEX> GetOSVersion();
+std::optional<OSVERSIONINFOEX> GetOSVersion();
 
 // Compares the current OS to the supplied version.  The value of `oper` should
 // be one of the predicate values from `::VerSetConditionMask()`, for example,
@@ -347,7 +347,7 @@ bool EnableProcessHeapMetadataProtection();
 
 // Creates a unique temporary directory. The directory is created under a secure
 // location if the caller is admin.
-absl::optional<base::ScopedTempDir> CreateSecureTempDir();
+std::optional<base::ScopedTempDir> CreateSecureTempDir();
 
 // Signals the shutdown event that causes legacy GoogleUpdate processes to exit.
 // Returns a closure that resets the shutdown event when it goes out of scope.
@@ -413,11 +413,11 @@ template <typename T, typename I, typename... TArgs>
 
 // Returns the base install directory for the x86 versions of the updater.
 // Does not create the directory if it does not exist.
-[[nodiscard]] absl::optional<base::FilePath> GetInstallDirectoryX86(
+[[nodiscard]] std::optional<base::FilePath> GetInstallDirectoryX86(
     UpdaterScope scope);
 
 // Gets the contents under a given registry key.
-absl::optional<std::wstring> GetRegKeyContents(const std::wstring& reg_key);
+std::optional<std::wstring> GetRegKeyContents(const std::wstring& reg_key);
 
 // Returns the textual description of a system `error` as provided by the
 // operating system. The function assumes that the locale value for the calling

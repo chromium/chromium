@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -28,7 +29,6 @@
 #include "components/winhttp/network_fetcher.h"
 #include "components/winhttp/proxy_configuration.h"
 #include "components/winhttp/scoped_hinternet.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace updater {
@@ -36,7 +36,7 @@ namespace {
 
 // Factory method for the proxy configuration strategy.
 scoped_refptr<winhttp::ProxyConfiguration> GetProxyConfiguration(
-    absl::optional<PolicyServiceProxyConfiguration>
+    std::optional<PolicyServiceProxyConfiguration>
         policy_service_proxy_configuration) {
   if (policy_service_proxy_configuration) {
     return base::MakeRefCounted<winhttp::ProxyConfiguration>(winhttp::ProxyInfo{
@@ -182,7 +182,7 @@ void NetworkFetcher::DownloadToFileComplete(int /*response_code*/) {
 
 class NetworkFetcherFactory::Impl {
  public:
-  explicit Impl(absl::optional<PolicyServiceProxyConfiguration>
+  explicit Impl(std::optional<PolicyServiceProxyConfiguration>
                     policy_service_proxy_configuration)
       : proxy_configuration_(
             GetProxyConfiguration(policy_service_proxy_configuration)),
@@ -203,7 +203,7 @@ class NetworkFetcherFactory::Impl {
 };
 
 NetworkFetcherFactory::NetworkFetcherFactory(
-    absl::optional<PolicyServiceProxyConfiguration>
+    std::optional<PolicyServiceProxyConfiguration>
         policy_service_proxy_configuration)
     : impl_(std::make_unique<Impl>(policy_service_proxy_configuration)) {}
 NetworkFetcherFactory::~NetworkFetcherFactory() = default;

@@ -9,6 +9,7 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -48,7 +49,6 @@
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -59,8 +59,8 @@ HRESULT OpenCallerProcessHandle(DWORD proc_id,
 }
 
 // Extracts a string from a VARIANT if the VARIANT is VT_BSTR or VT_BSTR |
-// VT_BYREF. Returns absl::nullopt if the VARIANT is not a BSTR.
-absl::optional<std::wstring> StringFromVariant(const VARIANT& source) {
+// VT_BYREF. Returns std::nullopt if the VARIANT is not a BSTR.
+std::optional<std::wstring> StringFromVariant(const VARIANT& source) {
   if (V_VT(&source) == VT_BSTR) {
     return V_BSTR(&source);
   }
@@ -441,7 +441,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     // Holds the result of the IPC to retrieve the current version.
     struct CurrentVersionResult
         : public base::RefCountedThreadSafe<CurrentVersionResult> {
-      absl::optional<base::Version> current_version;
+      std::optional<base::Version> current_version;
       base::WaitableEvent completion_event;
 
      private:
@@ -635,8 +635,8 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   // Access to `state_update_` and `result_` must be serialized by using the
   // lock.
   mutable base::Lock lock_;
-  absl::optional<UpdateService::UpdateState> state_update_;
-  absl::optional<UpdateService::Result> result_;
+  std::optional<UpdateService::UpdateState> state_update_;
+  std::optional<UpdateService::Result> result_;
 };
 
 // This class implements the legacy Omaha3 IAppBundleWeb interface as expected
@@ -908,7 +908,7 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
        {substitution1, substitution2, substitution3, substitution4,
         substitution5, substitution6, substitution7, substitution8,
         substitution9}) {
-    const absl::optional<std::wstring> substitution_string =
+    const std::optional<std::wstring> substitution_string =
         StringFromVariant(substitution);
     if (!substitution_string) {
       break;
@@ -1090,7 +1090,7 @@ namespace {
 // Holds the result of the IPC to retrieve `last checked time`.
 struct LastCheckedTimeResult
     : public base::RefCountedThreadSafe<LastCheckedTimeResult> {
-  absl::optional<DATE> last_checked_time;
+  std::optional<DATE> last_checked_time;
   base::WaitableEvent completion_event;
 
  private:
@@ -1129,7 +1129,7 @@ class PolicyStatusResult
   }
 
   ValueGetter value_getter;
-  absl::optional<PolicyStatus<T>> value;
+  std::optional<PolicyStatus<T>> value;
   base::WaitableEvent completion_event;
 };
 
@@ -1378,7 +1378,7 @@ template <typename T>
       value.effective_policy()
           ? GetStringFromValue(value.effective_policy()->policy)
           : "",
-      value.conflict_policy() != absl::nullopt,
+      value.conflict_policy() != std::nullopt,
       value.conflict_policy() ? value.conflict_policy()->source : "",
       value.conflict_policy()
           ? GetStringFromValue(value.conflict_policy()->policy)

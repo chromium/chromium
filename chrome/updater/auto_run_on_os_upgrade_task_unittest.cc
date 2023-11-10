@@ -5,6 +5,7 @@
 #include "chrome/updater/auto_run_on_os_upgrade_task.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/base64.h"
@@ -76,8 +77,8 @@ class AutoRunOnOsUpgradeTaskTest : public testing::Test {
 };
 
 TEST_F(AutoRunOnOsUpgradeTaskTest, RunOnOsUpgradeForApp) {
-  const absl::optional<OSVERSIONINFOEX> current_os_version = GetOSVersion();
-  ASSERT_NE(current_os_version, absl::nullopt);
+  const std::optional<OSVERSIONINFOEX> current_os_version = GetOSVersion();
+  ASSERT_NE(current_os_version, std::nullopt);
   OSVERSIONINFOEX last_os_version = current_os_version.value();
   --last_os_version.dwMajorVersion;
 

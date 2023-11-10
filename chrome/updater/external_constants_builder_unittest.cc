@@ -4,6 +4,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/util/unit_test_util.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace updater {
@@ -38,7 +38,7 @@ class ExternalConstantsBuilderTests : public ::testing::Test {
 
  private:
   // This test runs non-elevated.
-  const absl::optional<base::FilePath> overrides_file_path_ =
+  const std::optional<base::FilePath> overrides_file_path_ =
       GetOverrideFilePath(UpdaterScope::kUser);
 };
 
@@ -75,7 +75,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
       .SetGroupPolicies(group_policies)
       .SetOverinstallTimeout(base::Seconds(3))
       .SetIdleCheckPeriod(base::Seconds(4))
-      .SetMachineManaged(absl::make_optional(true))
+      .SetMachineManaged(std::make_optional(true))
       .SetEnableDiffUpdates(true);
   EXPECT_TRUE(builder.Overwrite());
 
@@ -181,7 +181,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
           .SetUseCUP(true)
           .SetInitialDelay(base::Seconds(123.4))
           .SetServerKeepAliveTime(base::Seconds(2))
-          .SetMachineManaged(absl::make_optional(true))
+          .SetMachineManaged(std::make_optional(true))
           .SetGroupPolicies(group_policies)
           .SetEnableDiffUpdates(false)
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
@@ -190,7 +190,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
           .SetUseCUP(false)
           .SetInitialDelay(base::Seconds(937.6))
           .SetServerKeepAliveTime(base::Seconds(3))
-          .SetMachineManaged(absl::make_optional(false))
+          .SetMachineManaged(std::make_optional(false))
           .SetEnableDiffUpdates(true)
           .Overwrite());
 
@@ -230,7 +230,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
           .SetServerKeepAliveTime(base::Seconds(3))
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
           .SetGroupPolicies(group_policies)
-          .SetMachineManaged(absl::make_optional(true))
+          .SetMachineManaged(std::make_optional(true))
           .SetEnableDiffUpdates(true)
           .Overwrite());
 
@@ -307,7 +307,7 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
           .SetCrashUploadURL("https://crash.example.com")
           .SetDeviceManagementURL("https://dm.example.com")
           .SetGroupPolicies(group_policies)
-          .SetMachineManaged(absl::make_optional(false))
+          .SetMachineManaged(std::make_optional(false))
           .SetEnableDiffUpdates(true)
           .Overwrite());
 

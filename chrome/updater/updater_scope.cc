@@ -4,12 +4,13 @@
 
 #include "chrome/updater/updater_scope.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/tag.h"
@@ -27,7 +28,7 @@ bool IsSystemProcessForCommandLine(const base::CommandLine& command_line) {
 
 bool IsPrefersForCommandLine(const base::CommandLine& command_line) {
 #if BUILDFLAG(IS_WIN)
-  const absl::optional<tagging::TagArgs> tag_args =
+  const std::optional<tagging::TagArgs> tag_args =
       GetTagArgsForCommandLine(command_line).tag_args;
   return tag_args && !tag_args->apps.empty() &&
          tag_args->apps.front().needs_admin &&
@@ -46,7 +47,7 @@ UpdaterScope GetUpdaterScopeForCommandLine(
   }
 
   // Assume only one app is present since bundles are not supported.
-  const absl::optional<tagging::TagArgs> tag_args =
+  const std::optional<tagging::TagArgs> tag_args =
       GetTagArgsForCommandLine(command_line).tag_args;
   if (tag_args && !tag_args->apps.empty() &&
       tag_args->apps.front().needs_admin) {
@@ -66,7 +67,7 @@ UpdaterScope GetUpdaterScopeForCommandLine(
   // explicitly. This includes command line switches: '/healthcheck', '/regsvc',
   // '/regserver', and '/ping'. In this case, choose system scope if this
   // program is run as a system shim.
-  absl::optional<base::FilePath> system_shim_path =
+  std::optional<base::FilePath> system_shim_path =
       GetGoogleUpdateExePath(UpdaterScope::kSystem);
   base::FilePath exe_path;
   if (system_shim_path && base::PathService::Get(base::FILE_EXE, &exe_path) &&

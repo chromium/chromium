@@ -5,12 +5,12 @@
 #ifndef CHROME_UPDATER_REGISTRATION_DATA_H_
 #define CHROME_UPDATER_REGISTRATION_DATA_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/version.h"
 #include "chrome/updater/constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -63,10 +63,10 @@ struct RegistrationRequest {
   base::FilePath existence_checker_path;
 
   // Date-last-active. The value is the number of days since Jan 1, 2007.
-  absl::optional<int> dla;
+  std::optional<int> dla;
 
   // Date-last-rollcall. The value is the number of days since Jan 1, 2007.
-  absl::optional<int> dlrc;
+  std::optional<int> dlrc;
 
   // Opaque cohort string meaningful to the server.
   std::string cohort;

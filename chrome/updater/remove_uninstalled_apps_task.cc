@@ -4,6 +4,7 @@
 
 #include "chrome/updater/remove_uninstalled_apps_task.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "chrome/updater/util/util.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/update_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -66,12 +66,12 @@ std::vector<AppInfo> GetRegisteredApps(
 
 std::vector<PingInfo> GetAppIDsToRemove(
     const std::vector<AppInfo>& apps,
-    base::RepeatingCallback<absl::optional<int>(const std::string&,
-                                                const base::FilePath&)>
+    base::RepeatingCallback<std::optional<int>(const std::string&,
+                                               const base::FilePath&)>
         predicate) {
   std::vector<PingInfo> app_ids_to_remove;
   for (const auto& app : apps) {
-    absl::optional<int> remove_reason = predicate.Run(app.app_id_, app.ecp_);
+    std::optional<int> remove_reason = predicate.Run(app.app_id_, app.ecp_);
     if (remove_reason) {
       app_ids_to_remove.emplace_back(app.app_id_, app.app_version_,
                                      *remove_reason);

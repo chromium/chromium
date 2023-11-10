@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -36,7 +37,6 @@
 #include "components/update_client/unzip/in_process_unzipper.h"
 #include "components/update_client/unzipper.h"
 #include "components/version_info/version_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -60,7 +60,7 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
         return base::IsManagedOrEnterpriseDevice();
 #else
-        return absl::nullopt;
+        return std::nullopt;
 #endif
       }()) {
 #if BUILDFLAG(IS_LINUX)
@@ -199,8 +199,8 @@ Configurator::GetProtocolHandlerFactory() const {
   return std::make_unique<update_client::ProtocolHandlerFactoryJSON>();
 }
 
-absl::optional<bool> Configurator::IsMachineExternallyManaged() const {
-  const absl::optional<bool> is_managed_overridden =
+std::optional<bool> Configurator::IsMachineExternallyManaged() const {
+  const std::optional<bool> is_managed_overridden =
       external_constants_->IsMachineManaged();
   return is_managed_overridden.has_value() ? is_managed_overridden
                                            : is_managed_device_;
@@ -221,7 +221,7 @@ update_client::UpdaterStateProvider Configurator::GetUpdaterStateProvider()
   });
 }
 
-absl::optional<base::FilePath> Configurator::GetCrxCachePath() const {
+std::optional<base::FilePath> Configurator::GetCrxCachePath() const {
   return updater::GetCrxDiffCacheDirectory(GetUpdaterScope());
 }
 

@@ -4,6 +4,7 @@
 
 #include "chrome/updater/policy/service.h"
 
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -33,7 +34,6 @@
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/updater/policy/mac/managed_preference_policy_manager.h"
 #endif
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -303,9 +303,9 @@ PolicyStatus<int> PolicyService::DeprecatedGetLastCheckPeriodMinutes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(
       base::BindRepeating(&PolicyManagerInterface::GetLastCheckPeriod)
-          .Then(base::BindRepeating([](absl::optional<base::TimeDelta> period) {
-            return period ? absl::optional<int>(period->InMinutes())
-                          : absl::nullopt;
+          .Then(base::BindRepeating([](std::optional<base::TimeDelta> period) {
+            return period ? std::optional<int>(period->InMinutes())
+                          : std::nullopt;
           })));
 }
 
@@ -458,11 +458,11 @@ bool PolicyService::AreUpdatesSuppressedNow(const base::Time& now) const {
 
 template <typename T>
 PolicyStatus<T> PolicyService::QueryPolicy(
-    const base::RepeatingCallback<absl::optional<T>(
-        const PolicyManagerInterface*)>& policy_query_callback,
+    const base::RepeatingCallback<
+        std::optional<T>(const PolicyManagerInterface*)>& policy_query_callback,
     const base::RepeatingCallback<bool(const T&)>& validator) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  absl::optional<T> query_result;
+  std::optional<T> query_result;
   PolicyStatus<T> status;
   for (const scoped_refptr<PolicyManagerInterface>& policy_manager :
        policy_managers_.vector) {
@@ -481,11 +481,11 @@ PolicyStatus<T> PolicyService::QueryPolicy(
 template <typename T>
 PolicyStatus<T> PolicyService::QueryAppPolicy(
     const base::RepeatingCallback<
-        absl::optional<T>(const PolicyManagerInterface*, const std::string&)>&
+        std::optional<T>(const PolicyManagerInterface*, const std::string&)>&
         policy_query_callback,
     const std::string& app_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  absl::optional<T> query_result;
+  std::optional<T> query_result;
   PolicyStatus<T> status;
   for (const scoped_refptr<PolicyManagerInterface>& policy_manager :
        policy_managers_.vector) {
@@ -506,12 +506,12 @@ PolicyServiceProxyConfiguration::PolicyServiceProxyConfiguration(
 PolicyServiceProxyConfiguration& PolicyServiceProxyConfiguration::operator=(
     const PolicyServiceProxyConfiguration&) = default;
 
-absl::optional<PolicyServiceProxyConfiguration>
+std::optional<PolicyServiceProxyConfiguration>
 PolicyServiceProxyConfiguration::Get(
     scoped_refptr<PolicyService> policy_service) {
   PolicyStatus<std::string> proxy_mode = policy_service->GetProxyMode();
   if (!proxy_mode || proxy_mode.policy().compare(kProxyModeSystem) == 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   VLOG(2) << "Using policy proxy " << proxy_mode.policy();
 
@@ -540,7 +540,7 @@ PolicyServiceProxyConfiguration::Get(
 
   if (!is_policy_config_valid) {
     VLOG(1) << "Configuration set by policy was invalid.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return policy_service_proxy_configuration;

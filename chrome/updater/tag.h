@@ -6,13 +6,13 @@
 #define CHROME_UPDATER_TAG_H_
 
 #include <cstdint>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace tagging {
@@ -69,7 +69,7 @@ struct AppArgs {
   std::string install_data_index;
   std::string experiment_labels;
   std::string untrusted_data;
-  absl::optional<NeedsAdmin> needs_admin;
+  std::optional<NeedsAdmin> needs_admin;
 };
 
 std::ostream& operator<<(std::ostream&, const AppArgs::NeedsAdmin&);
@@ -105,9 +105,9 @@ struct TagArgs {
   std::string experiment_labels;
   std::string referral_id;
   std::string language;
-  absl::optional<BrowserType> browser_type;
-  absl::optional<bool> flighting = false;
-  absl::optional<bool> usage_stats_enable;
+  std::optional<BrowserType> browser_type;
+  std::optional<bool> flighting = false;
+  std::optional<bool> usage_stats_enable;
 
   // List of apps to install.
   std::vector<AppArgs> apps;
@@ -242,7 +242,7 @@ std::ostream& operator<<(std::ostream&, const ErrorCode&);
 //
 // Note: This method assumes all attribute names are ASCII.
 ErrorCode Parse(base::StringPiece tag,
-                absl::optional<base::StringPiece> app_installer_data_args,
+                std::optional<base::StringPiece> app_installer_data_args,
                 TagArgs* args);
 
 std::string ReadTag(std::vector<uint8_t>::const_iterator begin,
@@ -284,7 +284,7 @@ bool ExeWriteTag(const base::FilePath& in_file,
 // |  s   t                                                          |
 // +-----------------------------------------------------------------+
 // Extracts a tag from the end of the MSI `filename`.
-absl::optional<tagging::TagArgs> MsiReadTag(const base::FilePath& filename);
+std::optional<tagging::TagArgs> MsiReadTag(const base::FilePath& filename);
 
 // Tags `file` with `tag_string` and writes the result to `file` by default, or
 // to `out_file` if `out_file` is provided.

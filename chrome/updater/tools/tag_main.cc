@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -129,7 +130,7 @@ int TagMain(int argc, char** argv) {
       if (args.is_exe) {
         return tagging::ExeReadTag(args.in_filename);
       }
-      absl::optional<tagging::TagArgs> tag_args =
+      std::optional<tagging::TagArgs> tag_args =
           tagging::MsiReadTag(args.in_filename);
       return tag_args ? tag_args->tag_string : std::string();
     }();

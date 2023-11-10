@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -34,7 +35,6 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -59,7 +59,7 @@ constexpr int kUnknownSwitch = 101;
 constexpr int kBadCommand = 102;
 
 base::Value ValueFromString(const std::string& values) {
-  absl::optional<base::Value> results_value = base::JSONReader::Read(values);
+  std::optional<base::Value> results_value = base::JSONReader::Read(values);
   EXPECT_TRUE(results_value);
   return results_value->Clone();
 }

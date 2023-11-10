@@ -229,11 +229,11 @@ TEST(PersistedDataTest, LastOSVersion) {
   auto metadata =
       base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get());
 
-  EXPECT_EQ(metadata->GetLastOSVersion(), absl::nullopt);
+  EXPECT_EQ(metadata->GetLastOSVersion(), std::nullopt);
 
   // This will persist the current OS version into the persisted data.
   metadata->SetLastOSVersion();
-  EXPECT_NE(metadata->GetLastOSVersion(), absl::nullopt);
+  EXPECT_NE(metadata->GetLastOSVersion(), std::nullopt);
 
   // Compare the persisted data OS version to the version from `::GetVersionEx`.
   const OSVERSIONINFOEX metadata_os = metadata->GetLastOSVersion().value();

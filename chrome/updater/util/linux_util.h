@@ -5,7 +5,6 @@
 #ifndef CHROME_UPDATER_UTIL_LINUX_UTIL_H_
 #define CHROME_UPDATER_UTIL_LINUX_UTIL_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 

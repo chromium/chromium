@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_PERSISTED_DATA_H_
 #define CHROME_UPDATER_PERSISTED_DATA_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "chrome/updater/updater_scope.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -90,9 +90,9 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   // The getters return nullopt when the persisted data does not have the
   // corresponding value, or any node subtype is not expected along the
   // path to the target value.
-  absl::optional<int> GetDateLastActive(const std::string& id) const;
+  std::optional<int> GetDateLastActive(const std::string& id) const;
   void SetDateLastActive(const std::string& id, int dla);
-  absl::optional<int> GetDateLastRollcall(const std::string& id) const;
+  std::optional<int> GetDateLastRollcall(const std::string& id) const;
   void SetDateLastRollcall(const std::string& id, int dlrc);
 
   // These functions access the cohort values for the specified id.
@@ -141,7 +141,7 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
 
 #if BUILDFLAG(IS_WIN)
   // Retrieves the previously stored OS version.
-  absl::optional<OSVERSIONINFOEX> GetLastOSVersion() const;
+  std::optional<OSVERSIONINFOEX> GetLastOSVersion() const;
 
   // Stores the current os version.
   void SetLastOSVersion();
@@ -158,8 +158,8 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   base::Value::Dict* GetOrCreateAppKey(const std::string& id,
                                        base::Value::Dict& root);
 
-  absl::optional<int> GetInteger(const std::string& id,
-                                 const std::string& key) const;
+  std::optional<int> GetInteger(const std::string& id,
+                                const std::string& key) const;
   void SetInteger(const std::string& id, const std::string& key, int value);
   std::string GetString(const std::string& id, const std::string& key) const;
   void SetString(const std::string& id,

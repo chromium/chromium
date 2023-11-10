@@ -4,6 +4,7 @@
 
 #include "chrome/updater/update_service_impl.h"
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -78,7 +79,7 @@ TEST(UpdateServiceImplTest, TestGetComponentsInOrder) {
   metadata->SetAPKey("id1", "brand_key");
   metadata->SetBrandCode("id1", "BRND");
 
-  std::vector<absl::optional<update_client::CrxComponent>> crxs;
+  std::vector<std::optional<update_client::CrxComponent>> crxs;
   base::RunLoop loop;
   internal::GetComponents(
       base::MakeRefCounted<Configurator>(nullptr, CreateExternalConstants()),
@@ -86,7 +87,7 @@ TEST(UpdateServiceImplTest, TestGetComponentsInOrder) {
       UpdateService::PolicySameVersionUpdate::kNotAllowed,
       {"id1", "id2", "id3", "id4"},
       base::BindLambdaForTesting(
-          [&](const std::vector<absl::optional<update_client::CrxComponent>>&
+          [&](const std::vector<std::optional<update_client::CrxComponent>>&
                   out) {
             crxs = out;
             loop.Quit();
@@ -105,8 +106,8 @@ struct UpdateServiceImplGetInstallerTextTestCase {
   const UpdateService::ErrorCategory error_category;
   const int error_code;
   const std::string expected_completion_message;
-  absl::optional<int> extra_code;
-  absl::optional<bool> is_installer_error;
+  std::optional<int> extra_code;
+  std::optional<bool> is_installer_error;
 };
 
 class UpdateServiceImplGetInstallerTextTest

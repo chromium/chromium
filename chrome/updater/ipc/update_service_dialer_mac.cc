@@ -4,6 +4,8 @@
 
 #include "chrome/updater/ipc/update_service_dialer.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -12,7 +14,6 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -36,7 +37,7 @@ bool DialUpdateService(const base::FilePath& updater, bool internal) {
 }  // namespace
 
 bool DialUpdateService(UpdaterScope scope) {
-  absl::optional<base::FilePath> launcher = GetUpdateServiceLauncherPath(scope);
+  std::optional<base::FilePath> launcher = GetUpdateServiceLauncherPath(scope);
   if (!launcher) {
     return true;
   }
@@ -44,7 +45,7 @@ bool DialUpdateService(UpdaterScope scope) {
 }
 
 bool DialUpdateInternalService(UpdaterScope scope) {
-  absl::optional<base::FilePath> bundle = GetUpdaterAppBundlePath(scope);
+  std::optional<base::FilePath> bundle = GetUpdaterAppBundlePath(scope);
   if (!bundle) {
     return true;
   }

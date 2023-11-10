@@ -4,6 +4,7 @@
 
 #include <cstdlib>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -30,7 +31,6 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -65,7 +65,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void PrintLog() const override { RunCommand("print_log"); }
 
   void CopyLog() const override {
-    const absl::optional<base::FilePath> path =
+    const std::optional<base::FilePath> path =
         GetInstallDirectory(updater_scope_);
     ASSERT_TRUE(path);
     if (path)

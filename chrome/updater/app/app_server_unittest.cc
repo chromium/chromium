@@ -4,6 +4,7 @@
 
 #include "chrome/updater/app/app_server.h"
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -24,7 +25,6 @@
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
@@ -74,7 +74,7 @@ class AppServerTest : public AppServer {
 
 void ClearPrefs() {
   const UpdaterScope updater_scope = GetTestScope();
-  for (const absl::optional<base::FilePath>& path :
+  for (const std::optional<base::FilePath>& path :
        {GetInstallDirectory(updater_scope),
         GetVersionedInstallDirectory(updater_scope)}) {
     ASSERT_TRUE(path);

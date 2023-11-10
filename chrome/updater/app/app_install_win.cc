@@ -5,6 +5,7 @@
 #include "chrome/updater/app/app_install.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -65,7 +66,6 @@
 #pragma clang diagnostic pop
 
 #include "components/update_client/protocol_parser.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -299,7 +299,7 @@ class InstallProgressObserverIPC : public InstallProgressObserver {
 
 void SetUsageStats(UpdaterScope scope,
                    const std::string& app_id,
-                   absl::optional<bool> usage_stats) {
+                   std::optional<bool> usage_stats) {
   if (!usage_stats) {
     return;
   }
@@ -445,7 +445,7 @@ class AppInstallControllerImpl : public AppInstallController,
   // Contains the result of installing the application. This is populated
   // by the `StateChangeCallback` or the completion callback, if the
   // former callback was not posted.
-  absl::optional<ObserverCompletionInfo> observer_completion_info_;
+  std::optional<ObserverCompletionInfo> observer_completion_info_;
 
   // Called when InstallApp is done.
   base::OnceCallback<void(int)> callback_;
@@ -497,8 +497,8 @@ void AppInstallControllerImpl::DoInstallApp() {
   RegistrationRequest request;
   request.app_id = app_id_;
   request.version = base::Version(kNullVersion);
-  absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id_);
-  absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
+  std::optional<tagging::AppArgs> app_args = GetAppArgs(app_id_);
+  std::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
   if (app_args) {
     request.ap = app_args->ap;
   }
@@ -509,7 +509,7 @@ void AppInstallControllerImpl::DoInstallApp() {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&SetUsageStats, GetUpdaterScope(), app_id_,
-                     tag_args ? tag_args->usage_stats_enable : absl::nullopt),
+                     tag_args ? tag_args->usage_stats_enable : std::nullopt),
       base::BindOnce(
           &UpdateService::Install, update_service_, request,
           GetDecodedInstallDataFromAppArgs(app_id_),
@@ -616,12 +616,12 @@ void AppInstallControllerImpl::DoInstallAppOffline(
     VLOG(1) << "Failed to serialize install settings.";
   }
 
-  absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
+  std::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
   RegistrationRequest request;
   request.app_id = app_id_;
   request.version = base::Version(kNullVersion);
 
-  absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id_);
+  std::optional<tagging::AppArgs> app_args = GetAppArgs(app_id_);
   if (app_args) {
     request.ap = app_args->ap;
   }
@@ -635,7 +635,7 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&SetUsageStats, GetUpdaterScope(), app_id_,
-                     tag_args ? tag_args->usage_stats_enable : absl::nullopt),
+                     tag_args ? tag_args->usage_stats_enable : std::nullopt),
       base::BindOnce(
           &UpdateService::RegisterApp, update_service_, request,
           base::BindOnce(

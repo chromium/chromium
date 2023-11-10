@@ -7,6 +7,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -37,7 +38,6 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/mac_util.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -136,7 +136,7 @@ bool IsInstallScriptExecutable(const base::FilePath& script_path) {
 int RunExecutable(const base::FilePath& existence_checker_path,
                   const std::string& ap,
                   const std::string& arguments,
-                  const absl::optional<base::FilePath>& installer_data_file,
+                  const std::optional<base::FilePath>& installer_data_file,
                   const UpdaterScope& scope,
                   const base::Version& pv,
                   bool usage_stats_enabled,
@@ -171,7 +171,7 @@ int RunExecutable(const base::FilePath& existence_checker_path,
     command.AppendArg(pv.GetString());
 
     std::string env_path = "/bin:/usr/bin";
-    absl::optional<base::FilePath> ksadmin_path =
+    std::optional<base::FilePath> ksadmin_path =
         GetKSAdminPath(GetUpdaterScope());
     if (ksadmin_path) {
       env_path = base::StrCat({env_path, ":", ksadmin_path->DirName().value()});
@@ -379,16 +379,15 @@ int InstallFromApp(const base::FilePath& app_file_path,
 }
 }  // namespace
 
-int InstallFromArchive(
-    const base::FilePath& file_path,
-    const base::FilePath& existence_checker_path,
-    const std::string& ap,
-    const UpdaterScope& scope,
-    const base::Version& pv,
-    const std::string& arguments,
-    const absl::optional<base::FilePath>& installer_data_file,
-    const bool usage_stats_enabled,
-    const base::TimeDelta& timeout) {
+int InstallFromArchive(const base::FilePath& file_path,
+                       const base::FilePath& existence_checker_path,
+                       const std::string& ap,
+                       const UpdaterScope& scope,
+                       const base::Version& pv,
+                       const std::string& arguments,
+                       const std::optional<base::FilePath>& installer_data_file,
+                       const bool usage_stats_enabled,
+                       const base::TimeDelta& timeout) {
   const std::map<std::string,
                  int (*)(const base::FilePath&,
                          base::OnceCallback<int(const base::FilePath&)>)>

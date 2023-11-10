@@ -7,6 +7,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
 #include "third_party/crashpad/crashpad/handler/handler_main.h"
@@ -77,7 +77,7 @@ void StartCrashReporter(UpdaterScope updater_scope,
   base::FilePath handler_path;
   base::PathService::Get(base::FILE_EXE, &handler_path);
 
-  const absl::optional<base::FilePath> database_path =
+  const std::optional<base::FilePath> database_path =
       EnsureCrashDatabasePath(updater_scope);
   if (!database_path) {
     LOG(ERROR) << "Failed to get the database path.";
@@ -98,7 +98,7 @@ void StartCrashReporter(UpdaterScope updater_scope,
   crashpad::CrashpadClient& client = GetCrashpadClient();
   std::vector<base::FilePath> attachments;
 #if !BUILDFLAG(IS_MAC)  // Crashpad does not support attachments on macOS.
-  absl::optional<base::FilePath> log_file = GetLogFilePath(updater_scope);
+  std::optional<base::FilePath> log_file = GetLogFilePath(updater_scope);
   if (log_file) {
     attachments.push_back(*log_file);
   }

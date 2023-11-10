@@ -148,9 +148,9 @@ constexpr int kFailedToRegister = -8;
 
 int InstallUpdater(const base::FilePath& browser_path) {
   base::FilePath browser_plist = browser_path.Append("Contents/Info.plist");
-  absl::optional<std::string> browser_app_id =
+  std::optional<std::string> browser_app_id =
       ReadValueFromPlist(browser_plist, "KSProductID");
-  absl::optional<std::string> browser_version =
+  std::optional<std::string> browser_version =
       ReadValueFromPlist(browser_plist, "KSVersion");
   if (!browser_app_id || !browser_version) {
     return kFailedToReadBrowserPlist;

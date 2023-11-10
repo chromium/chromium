@@ -41,7 +41,6 @@
 #include "chrome/updater/util/util.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "chrome/updater/ipc/ipc_support.h"

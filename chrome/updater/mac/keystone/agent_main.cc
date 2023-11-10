@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -31,7 +32,6 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -188,7 +188,7 @@ void KSAgentApp::DoUpdate(const std::string& app_id, UpdaterScope scope) {
 
 void KSAgentApp::Wake() {
   for (UpdaterScope scope : {UpdaterScope::kSystem, UpdaterScope::kUser}) {
-    absl::optional<base::FilePath> path = GetUpdaterExecutablePath(scope);
+    std::optional<base::FilePath> path = GetUpdaterExecutablePath(scope);
     if (!path) {
       continue;
     }

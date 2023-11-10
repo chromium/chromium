@@ -6,6 +6,8 @@
 
 #include <shlobj.h>
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -48,7 +50,7 @@ TEST(InstallerTest, FindOfflineDir) {
           .Append(L"{8D5D0563-F2A0-40E3-932D-AFEAE261A9D1}");
   ASSERT_TRUE(base::CreateDirectory(offline_install_dir));
 
-  absl::optional<base::FilePath> offline_dir =
+  std::optional<base::FilePath> offline_dir =
       updater::FindOfflineDir(unpack_path);
   EXPECT_TRUE(offline_dir.has_value());
   EXPECT_EQ(offline_dir->BaseName(),

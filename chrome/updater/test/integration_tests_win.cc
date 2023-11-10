@@ -11,6 +11,7 @@
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -82,7 +83,6 @@
 #include "components/crx_file/crx_verifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace updater::test {
@@ -397,7 +397,7 @@ void CheckInstallation(UpdaterScope scope,
         });
   }
 
-  const absl::optional<base::FilePath> path =
+  const std::optional<base::FilePath> path =
       GetVersionedInstallDirectory(scope, base::Version(kUpdaterVersion));
   ASSERT_TRUE(path);
   EXPECT_TRUE(WaitFor([&]() { return is_installed == base::PathExists(*path); },
@@ -619,7 +619,7 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
 
   EXPECT_TRUE(DeleteRegKey(root, app_client_state_key));
 
-  const absl::optional<base::FilePath> updater_exe =
+  const std::optional<base::FilePath> updater_exe =
       GetUpdaterExecutablePath(scope);
   ASSERT_TRUE(updater_exe.has_value());
 
@@ -829,12 +829,12 @@ void Clean(UpdaterScope scope) {
         EXPECT_TRUE(task_scheduler->DeleteTask(task_name));
       });
 
-  const absl::optional<base::FilePath> target_path =
+  const std::optional<base::FilePath> target_path =
       GetGoogleUpdateExePath(scope);
   if (target_path)
     base::DeleteFile(*target_path);
 
-  absl::optional<base::FilePath> path = GetInstallDirectory(scope);
+  std::optional<base::FilePath> path = GetInstallDirectory(scope);
   ASSERT_TRUE(path);
   ASSERT_TRUE(base::DeletePathRecursively(*path)) << *path;
 }
@@ -867,7 +867,7 @@ void ExpectClean(UpdaterScope scope) {
                     CheckInstallationVersions::kCheckActiveAndSxS);
 
   // Check that the caches have been removed.
-  const absl::optional<base::FilePath> path = GetCacheBaseDirectory(scope);
+  const std::optional<base::FilePath> path = GetCacheBaseDirectory(scope);
   ASSERT_TRUE(path);
   EXPECT_TRUE(WaitFor(
       [&]() { return !base::PathExists(*path); },
@@ -1679,7 +1679,7 @@ void RunUninstallCmdLine(UpdaterScope scope) {
 }
 
 void RunHandoff(UpdaterScope scope, const std::string& app_id) {
-  const absl::optional<base::FilePath> installed_executable_path =
+  const std::optional<base::FilePath> installed_executable_path =
       GetUpdaterExecutablePath(scope);
   ASSERT_TRUE(installed_executable_path);
   ASSERT_TRUE(base::PathExists(*installed_executable_path));
@@ -1802,14 +1802,14 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
 
   // Set up a mock `GoogleUpdate.exe`, and the following mock directories:
   // `Download`, `Install`, and a versioned `1.2.3.4` directory.
-  const absl::optional<base::FilePath> google_update_exe =
+  const std::optional<base::FilePath> google_update_exe =
       GetGoogleUpdateExePath(scope);
   ASSERT_TRUE(google_update_exe.has_value());
   SetupMockUpdater(google_update_exe.value());
 }
 
 void RunFakeLegacyUpdater(UpdaterScope scope) {
-  const absl::optional<base::FilePath> google_update_exe =
+  const std::optional<base::FilePath> google_update_exe =
       GetGoogleUpdateExePath(scope);
   ASSERT_TRUE(base::PathExists(*google_update_exe));
 
@@ -1945,7 +1945,7 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
 
   // Expect only a single file `GoogleUpdate.exe` and nothing else under
   // `\Google\Update`.
-  const absl::optional<base::FilePath> google_update_exe =
+  const std::optional<base::FilePath> google_update_exe =
       GetGoogleUpdateExePath(scope);
   ASSERT_TRUE(google_update_exe.has_value());
   ExpectOnlyMockUpdater(google_update_exe.value());

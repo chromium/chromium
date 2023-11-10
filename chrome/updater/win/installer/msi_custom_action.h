@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 

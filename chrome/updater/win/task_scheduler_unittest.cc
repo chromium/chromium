@@ -11,6 +11,7 @@
 #include <taskschd.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -82,7 +83,7 @@ class TaskSchedulerTests : public ::testing::Test {
   }
 
   std::wstring GetRegKeyTaskCacheTasksContents() {
-    absl::optional<std::wstring> contents = GetRegKeyContents(
+    std::optional<std::wstring> contents = GetRegKeyContents(
         L"HKLM\\SOFTWARE\\Microsoft\\Windows "
         L"NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks");
     return contents ? *contents : L"";

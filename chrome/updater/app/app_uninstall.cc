@@ -4,6 +4,7 @@
 
 #include "chrome/updater/app/app_uninstall.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -33,7 +34,6 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
 #include "components/update_client/update_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/win/setup/uninstall.h"
@@ -44,7 +44,7 @@
 namespace updater {
 
 std::vector<base::FilePath> GetVersionExecutablePaths(UpdaterScope scope) {
-  const absl::optional<base::FilePath> updater_folder_path =
+  const std::optional<base::FilePath> updater_folder_path =
       GetInstallDirectory(scope);
   if (!updater_folder_path) {
     LOG(ERROR) << __func__ << ": failed to get the updater install directory.";

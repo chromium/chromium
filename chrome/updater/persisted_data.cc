@@ -4,6 +4,7 @@
 
 #include "chrome/updater/persisted_data.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/update_client/persisted_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -211,7 +211,7 @@ void PersistedData::SetAPKey(const std::string& id, const std::string& key) {
   SetString(id, kAPKey, key);
 }
 
-absl::optional<int> PersistedData::GetDateLastActive(
+std::optional<int> PersistedData::GetDateLastActive(
     const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetInteger(id, kDLA);
@@ -222,7 +222,7 @@ void PersistedData::SetDateLastActive(const std::string& id, int dla) {
   SetInteger(id, kDLA, dla);
 }
 
-absl::optional<int> PersistedData::GetDateLastRollcall(
+std::optional<int> PersistedData::GetDateLastRollcall(
     const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetInteger(id, kDLRC);
@@ -394,21 +394,21 @@ base::Value::Dict* PersistedData::GetOrCreateAppKey(const std::string& id,
   return app;
 }
 
-absl::optional<int> PersistedData::GetInteger(const std::string& id,
-                                              const std::string& key) const {
+std::optional<int> PersistedData::GetInteger(const std::string& id,
+                                             const std::string& key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pref_service_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   ScopedDictPrefUpdate update(pref_service_,
                               update_client::kPersistedDataPreference);
   base::Value::Dict* apps = update->FindDict("apps");
   if (!apps) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::Value::Dict* app = apps->FindDict(base::ToLowerASCII(id));
   if (!app) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return app->FindInt(key);
 }
@@ -482,7 +482,7 @@ void PersistedData::SetLastStarted(const base::Time& time) {
 }
 
 #if BUILDFLAG(IS_WIN)
-absl::optional<OSVERSIONINFOEX> PersistedData::GetLastOSVersion() const {
+std::optional<OSVERSIONINFOEX> PersistedData::GetLastOSVersion() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Unpacks the os version from a base-64-encoded string internally.
@@ -490,13 +490,13 @@ absl::optional<OSVERSIONINFOEX> PersistedData::GetLastOSVersion() const {
       pref_service_->GetString(kLastOSVersion);
 
   if (encoded_os_version.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
-  const absl::optional<std::vector<uint8_t>> decoded_os_version =
+  const std::optional<std::vector<uint8_t>> decoded_os_version =
       base::Base64Decode(encoded_os_version);
   if (!decoded_os_version ||
       decoded_os_version->size() != sizeof(OSVERSIONINFOEX)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return *reinterpret_cast<const OSVERSIONINFOEX*>(decoded_os_version->data());
@@ -509,7 +509,7 @@ void PersistedData::SetLastOSVersion() {
     return;
 
   // Get and set the current OS version.
-  absl::optional<OSVERSIONINFOEX> os_version = GetOSVersion();
+  std::optional<OSVERSIONINFOEX> os_version = GetOSVersion();
   if (!os_version)
     return;
 

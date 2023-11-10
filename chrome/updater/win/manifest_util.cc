@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -24,14 +25,13 @@
 #include "chrome/updater/win/protocol_parser_xml.h"
 #include "components/update_client/protocol_parser.h"
 #include "components/update_client/utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
 
 constexpr char kArchAmd64Omaha3[] = "x64";
 
-absl::optional<base::FilePath> GetOfflineManifest(
+std::optional<base::FilePath> GetOfflineManifest(
     const base::FilePath& offline_dir,
     const std::string& app_id) {
   // Check manifest with fixed name first.
@@ -44,14 +44,14 @@ absl::optional<base::FilePath> GetOfflineManifest(
   manifest_path =
       offline_dir.AppendASCII(app_id).AddExtension(FILE_PATH_LITERAL(".gup"));
   return base::PathExists(manifest_path)
-             ? absl::optional<base::FilePath>(manifest_path)
-             : absl::nullopt;
+             ? std::optional<base::FilePath>(manifest_path)
+             : std::nullopt;
 }
 
 std::unique_ptr<ProtocolParserXML> ParseOfflineManifest(
     const base::FilePath& offline_dir,
     const std::string& app_id) {
-  absl::optional<base::FilePath> manifest_path =
+  std::optional<base::FilePath> manifest_path =
       GetOfflineManifest(offline_dir, app_id);
   if (!manifest_path) {
     VLOG(2) << "Cannot find manifest file in: " << offline_dir;

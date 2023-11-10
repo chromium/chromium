@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -56,7 +57,6 @@
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <winhttp.h>
@@ -108,29 +108,27 @@ void GetComponents(
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
     const std::vector<std::string>& ids,
     base::OnceCallback<
-        void(const std::vector<absl::optional<update_client::CrxComponent>>&)>
+        void(const std::vector<std::optional<update_client::CrxComponent>>&)>
         callback) {
   VLOG(1) << __func__
           << ". Same version update: " << policy_same_version_update;
   const bool is_foreground = priority == UpdateService::Priority::kForeground;
   auto barrier_callback =
-      base::BarrierCallback<absl::optional<update_client::CrxComponent>>(
+      base::BarrierCallback<std::optional<update_client::CrxComponent>>(
           ids.size(),
           base::BindOnce(
               [](const std::vector<std::string>& ids,
-                 const std::vector<absl::optional<update_client::CrxComponent>>&
+                 const std::vector<std::optional<update_client::CrxComponent>>&
                      unordered) {
                 // Re-order the vector to match the order of `ids`.
-                std::vector<absl::optional<update_client::CrxComponent>>
-                    ordered;
+                std::vector<std::optional<update_client::CrxComponent>> ordered;
                 for (const auto& id : ids) {
                   auto it = std::find_if(
                       unordered.begin(), unordered.end(),
-                      [&id](absl::optional<update_client::CrxComponent> v) {
+                      [&id](std::optional<update_client::CrxComponent> v) {
                         return v && v->app_id == id;
                       });
-                  ordered.push_back(it != unordered.end() ? *it
-                                                          : absl::nullopt);
+                  ordered.push_back(it != unordered.end() ? *it : std::nullopt);
                 }
                 return ordered;
               },

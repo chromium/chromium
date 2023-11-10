@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_IPC_UPDATE_SERVICE_PROXY_POSIX_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
@@ -16,7 +17,6 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -111,7 +111,7 @@ class UpdateServiceProxyImpl
   friend class base::RefCountedThreadSafe<UpdateServiceProxyImpl>;
   ~UpdateServiceProxyImpl();
   void OnConnected(mojo::PendingReceiver<mojom::UpdateService> pending_receiver,
-                   absl::optional<mojo::PlatformChannelEndpoint> endpoint);
+                   std::optional<mojo::PlatformChannelEndpoint> endpoint);
   void OnDisconnected();
   void EnsureConnecting();
 

@@ -4,6 +4,7 @@
 
 #include "chrome/updater/crash_client.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/check.h"
@@ -21,7 +22,6 @@
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "third_party/crashpad/crashpad/client/prune_crash_reports.h"
@@ -57,7 +57,7 @@ CrashClient* CrashClient::GetInstance() {
 bool CrashClient::InitializeDatabaseOnly(UpdaterScope updater_scope) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const absl::optional<base::FilePath> database_path =
+  const std::optional<base::FilePath> database_path =
       EnsureCrashDatabasePath(updater_scope);
   if (!database_path) {
     LOG(ERROR) << "Failed to get the database path.";
@@ -126,7 +126,7 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
     LOG(ERROR) << "Failed to fetch pending crash reports: " << status_pending;
   }
 
-  absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
+  std::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
   std::string env_usage_stats;
   if ((tag_args && tag_args->usage_stats_enable &&
        *tag_args->usage_stats_enable) ||

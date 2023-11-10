@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/update_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 

@@ -4,11 +4,11 @@
 
 #include "chrome/updater/ipc/update_service_internal_proxy.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "chrome/updater/ipc/update_service_internal_proxy_posix.h"
@@ -47,7 +47,7 @@ void UpdateServiceInternalProxy::Hello(base::OnceClosure callback) {
 
 void UpdateServiceInternalProxy::RunDone(base::OnceClosure callback,
                                          int try_count,
-                                         absl::optional<RpcError> error) {
+                                         std::optional<RpcError> error) {
   if (error && CanRetry(try_count)) {
     proxy_->Run(base::BindOnce(&UpdateServiceInternalProxy::RunDone, this,
                                std::move(callback), try_count + 1));
@@ -58,7 +58,7 @@ void UpdateServiceInternalProxy::RunDone(base::OnceClosure callback,
 
 void UpdateServiceInternalProxy::HelloDone(base::OnceClosure callback,
                                            int try_count,
-                                           absl::optional<RpcError> error) {
+                                           std::optional<RpcError> error) {
   if (error && CanRetry(try_count)) {
     proxy_->Hello(base::BindOnce(&UpdateServiceInternalProxy::HelloDone, this,
                                  std::move(callback), try_count + 1));

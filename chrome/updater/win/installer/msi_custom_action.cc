@@ -9,6 +9,7 @@
 #include <msi.h>
 #include <msiquery.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "chrome/updater/tag.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -73,8 +73,8 @@ int MsiHandleImpl::ProcessMessage(INSTALLMESSAGE message_type,
 }
 
 // Gets the value of the property `name` from `msi_handle`.
-absl::optional<std::wstring> MsiGetProperty(MsiHandleInterface& msi_handle,
-                                            const std::wstring& name) {
+std::optional<std::wstring> MsiGetProperty(MsiHandleInterface& msi_handle,
+                                           const std::wstring& name) {
   DWORD value_length = 0;
   UINT result = ERROR_SUCCESS;
   std::vector<wchar_t> value;
@@ -83,18 +83,18 @@ absl::optional<std::wstring> MsiGetProperty(MsiHandleInterface& msi_handle,
     result = msi_handle.GetProperty(name, value, value_length);
   } while (result == ERROR_MORE_DATA && value_length <= 0xFFFF);
   return result == ERROR_SUCCESS && !value.empty()
-             ? absl::make_optional(std::wstring(value.begin(), value.end()))
-             : absl::nullopt;
+             ? std::make_optional(std::wstring(value.begin(), value.end()))
+             : std::nullopt;
 }
 
 // If the app installer failed with a custom error and provided a UI string,
 // returns that string.
-absl::optional<std::wstring> GetLastInstallerResultUIString(
+std::optional<std::wstring> GetLastInstallerResultUIString(
     const std::wstring& app_id) {
   if (app_id.empty()) {
     return {};
   }
-  auto key = [&app_id]() -> absl::optional<base::win::RegKey> {
+  auto key = [&app_id]() -> std::optional<base::win::RegKey> {
     if (base::win::RegKey client_state_key(HKEY_LOCAL_MACHINE,
                                            GetAppClientStateKey(app_id).c_str(),
                                            Wow6432(KEY_READ));
@@ -119,8 +119,8 @@ absl::optional<std::wstring> GetLastInstallerResultUIString(
                  key->ReadValue(kRegValueLastInstallerResultUIString, &val) ==
                      ERROR_SUCCESS &&
                  !val.empty()
-             ? absl::make_optional(val)
-             : absl::nullopt;
+             ? std::make_optional(val)
+             : std::nullopt;
 }
 
 }  // namespace

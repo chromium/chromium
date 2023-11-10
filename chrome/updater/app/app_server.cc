@@ -4,6 +4,7 @@
 
 #include "chrome/updater/app/app_server.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -34,7 +35,6 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
@@ -214,7 +214,7 @@ void AppServer::MaybeUninstall() {
       updater_scope(), prefs_->GetPrefService());
   if (ShouldUninstall(persisted_data->GetAppIds(), server_starts_,
                       persisted_data->GetHadApps())) {
-    absl::optional<base::FilePath> executable =
+    std::optional<base::FilePath> executable =
         GetUpdaterExecutablePath(updater_scope());
     if (executable) {
       base::CommandLine command_line(*executable);
