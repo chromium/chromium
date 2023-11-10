@@ -5,8 +5,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_STARSCAN_LOGGING_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_STARSCAN_LOGGING_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/allocation_guard.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.h"
+#include "partition_alloc/allocation_guard.h"
+#include "partition_alloc/partition_alloc_base/logging.h"
 
 namespace partition_alloc::internal {
 

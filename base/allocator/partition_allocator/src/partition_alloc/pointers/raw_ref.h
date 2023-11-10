@@ -9,11 +9,11 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/augmentations/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr.h"
+#include "partition_alloc/partition_alloc_base/augmentations/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/pointers/raw_ptr.h"
 
 namespace base {
 

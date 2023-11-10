@@ -7,11 +7,11 @@
 
 #include <cstddef>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_constants.h"
 
 namespace partition_alloc::internal {
 
@@ -21,9 +21,9 @@ namespace partition_alloc::internal {
 }  // namespace partition_alloc::internal
 
 #if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
-#include "base/allocator/partition_allocator/src/partition_alloc/pool_offset_freelist.h"  // IWYU pragma: export
+#include "partition_alloc/pool_offset_freelist.h"  // IWYU pragma: export
 #else
-#include "base/allocator/partition_allocator/src/partition_alloc/encoded_next_freelist.h"  // IWYU pragma: export
+#include "partition_alloc/encoded_next_freelist.h"  // IWYU pragma: export
 #endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
 
 namespace partition_alloc::internal {

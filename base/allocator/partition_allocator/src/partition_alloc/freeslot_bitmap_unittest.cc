@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/freeslot_bitmap.h"
+#include "partition_alloc/freeslot_bitmap.h"
 
 #include <cstdint>
 #include <limits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/freeslot_bitmap_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
+#include "partition_alloc/freeslot_bitmap_constants.h"
+#include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_forward.h"
+#include "partition_alloc/partition_page.h"
+#include "partition_alloc/partition_root.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // This test is disabled when MEMORY_TOOL_REPLACES_ALLOCATOR is defined because

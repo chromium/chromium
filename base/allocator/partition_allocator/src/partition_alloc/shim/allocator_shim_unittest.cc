@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
+#include "partition_alloc/shim/allocator_shim.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -14,12 +14,12 @@
 #include <sstream>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/memory/page_size.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc_base/memory/page_size.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,8 +29,8 @@
 #elif BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/third_party/apple_apsl/malloc.h"
+#include "partition_alloc/shim/allocator_interception_apple.h"
+#include "partition_alloc/third_party/apple_apsl/malloc.h"
 #else
 #include <malloc.h>
 #endif

@@ -13,12 +13,12 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/memory/scoped_refptr.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/no_destructor.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/metadata_allocator.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/starscan_fwd.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/write_protector.h"
+#include "partition_alloc/partition_alloc_base/memory/scoped_refptr.h"
+#include "partition_alloc/partition_alloc_base/no_destructor.h"
+#include "partition_alloc/starscan/metadata_allocator.h"
+#include "partition_alloc/starscan/pcscan.h"
+#include "partition_alloc/starscan/starscan_fwd.h"
+#include "partition_alloc/starscan/write_protector.h"
 
 namespace partition_alloc::internal {
 

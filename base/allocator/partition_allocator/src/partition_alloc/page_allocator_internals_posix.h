@@ -13,26 +13,26 @@
 
 #include <sys/mman.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/notreached.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/posix/eintr_wrapper.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
+#include "partition_alloc/oom.h"
+#include "partition_alloc/page_allocator.h"
+#include "partition_alloc/page_allocator_constants.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/partition_alloc_base/notreached.h"
+#include "partition_alloc/partition_alloc_base/posix/eintr_wrapper.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/thread_isolation/thread_isolation.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/apple/foundation_util.h"
+#include "partition_alloc/partition_alloc_base/apple/foundation_util.h"
 #if BUILDFLAG(IS_IOS)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/ios/ios_util.h"
+#include "partition_alloc/partition_alloc_base/ios/ios_util.h"
 #elif BUILDFLAG(IS_MAC)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/mac/mac_util.h"
+#include "partition_alloc/partition_alloc_base/mac/mac_util.h"
 #else
 #error "Unknown platform"
 #endif
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/apple/scoped_cftyperef.h"
+#include "partition_alloc/partition_alloc_base/apple/scoped_cftyperef.h"
 
 #include <Availability.h>
 #include <Security/Security.h>

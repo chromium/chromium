@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc.h"
 
 #include <string.h>
 
 #include <cstdint>
 #include <memory>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/memory_reclaimer.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_hooks.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_direct_map_extent.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_oom.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_stats.h"
+#include "partition_alloc/address_pool_manager.h"
+#include "partition_alloc/memory_reclaimer.h"
+#include "partition_alloc/partition_address_space.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_hooks.h"
+#include "partition_alloc/partition_direct_map_extent.h"
+#include "partition_alloc/partition_oom.h"
+#include "partition_alloc/partition_page.h"
+#include "partition_alloc/partition_root.h"
+#include "partition_alloc/partition_stats.h"
 
 #if BUILDFLAG(USE_STARSCAN)
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan.h"
+#include "partition_alloc/starscan/pcscan.h"
 #endif
 
 namespace partition_alloc {

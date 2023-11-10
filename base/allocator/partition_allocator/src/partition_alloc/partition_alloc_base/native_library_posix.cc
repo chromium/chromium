@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/native_library.h"
+#include "partition_alloc/partition_alloc_base/native_library.h"
 
 #include <dlfcn.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/files/file_path.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/files/file_path.h"
 
 namespace partition_alloc::internal::base {
 

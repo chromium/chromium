@@ -26,7 +26,7 @@
 
 #include <new>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_internals.h"
+#include "partition_alloc/shim/allocator_shim_internals.h"
 
 // __MALLOC_HOOK_VOLATILE not defined in all Glibc headers.
 #if !defined(__MALLOC_HOOK_VOLATILE)

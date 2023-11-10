@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/stack/stack.h"
+#include "partition_alloc/starscan/stack/stack.h"
 
 #include <memory>
 #include <ostream>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

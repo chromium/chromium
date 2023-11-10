@@ -8,14 +8,14 @@
 #include <algorithm>
 #include <cstring>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_ref_count.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/random.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_ref_count.h"
+#include "partition_alloc/random.h"
+#include "partition_alloc/tagging.h"
+#include "partition_alloc/thread_isolation/thread_isolation.h"
 
 // Prefetch *x into memory.
 #if defined(__clang__) || defined(COMPILER_GCC)
