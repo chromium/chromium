@@ -46,6 +46,13 @@ base::apple::ScopedCFTypeRef<CTFontRef> MatchUniqueFont(
     const AtomicString& unique_font_name,
     float size);
 
+PLATFORM_EXPORT
+base::apple::ScopedCFTypeRef<CTFontRef> MatchSystemUIFont(
+    FontSelectionValue desired_weight,
+    FontSelectionValue desired_slant,
+    FontSelectionValue desired_width,
+    float size);
+
 // Converts a blink::FontSelectionValue to the nearest AppKit font weight if
 // possible, otherwise returns the default font weight.
 int ToAppKitFontWeight(FontSelectionValue);
