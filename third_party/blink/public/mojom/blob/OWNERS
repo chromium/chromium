@@ -1,4 +1,4 @@
-file://storage/OWNERS
+file://storage/browser/blob/OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
