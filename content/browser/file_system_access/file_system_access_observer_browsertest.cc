@@ -478,8 +478,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveDirectory) {
   EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
 }
 
+/// TODO(crbug/1499075): Re-enable after fixing flakiness.
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
-                       ObserveDirectoryRecursively) {
+                       DISABLED_ObserveDirectoryRecursively) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
 
   // Set up the directory structure.
