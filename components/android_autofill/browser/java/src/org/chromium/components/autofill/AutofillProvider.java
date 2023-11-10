@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.view.ViewStructure;
 import android.view.autofill.AutofillValue;
 
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -37,21 +36,18 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 
 /**
- * This class works with Android autofill service to fill web form, it doesn't use chrome's
- * autofill service or suggestion UI. All methods are supposed to be called in UI thread.
+ * This class works with Android autofill service to fill web form, it doesn't use Chrome's autofill
+ * service or suggestion UI. All methods are supposed to be called in UI thread.
  *
- * AutofillProvider handles one autofill session at time, each call of
- * queryFormFieldAutofill cancels previous session and starts a new one, the
- * calling of other methods shall associate with current session.
+ * <p>AutofillProvider handles one autofill session at time, each call of startAutofillSession
+ * cancels previous session and starts a new one, the calling of other methods shall associate with
+ * current session.
  *
- * This class doesn't have 1:1 mapping to native AutofillProviderAndroid; the
- * normal ownership model is that this object is owned by the embedder-specific
- * Java WebContents wrapper (e.g., AwContents.java in //android_webview), and
- * AutofillProviderAndroid is owned by the embedder-specific C++ WebContents
- * wrapper (e.g., native AwContents in //android_webview).
- *
+ * <p>This class doesn't have 1:1 mapping to native AutofillProviderAndroid; the normal ownership
+ * model is that this object is owned by the embedder-specific Java WebContents wrapper (e.g.,
+ * AwContents.java in //android_webview), and AutofillProviderAndroid is owned by the
+ * embedder-specific C++ WebContents wrapper (e.g., native AwContents in //android_webview).
  */
-@RequiresApi(Build.VERSION_CODES.O)
 @JNINamespace("autofill")
 public class AutofillProvider {
     /**
@@ -85,7 +81,6 @@ public class AutofillProvider {
         mWebContents = webContents;
         mProviderName = providerName;
         try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped("AutofillProvider.constructor")) {
-            assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
             if (sAutofillManagerFactoryForTesting != null) {
                 mAutofillManager = sAutofillManagerFactoryForTesting.create(context);
             } else {
@@ -590,7 +585,7 @@ public class AutofillProvider {
         if (mRequest == null) return;
         mRequest.onQueryDone(success);
         mAutofillUMA.onServerTypeAvailable(
-                success ? mRequest.getForm() : null, /*afterSessionStarted*/ true);
+                success ? mRequest.getForm() : null, /* afterSessionStarted= */ true);
         mAutofillManager.onQueryDone(success);
     }
 

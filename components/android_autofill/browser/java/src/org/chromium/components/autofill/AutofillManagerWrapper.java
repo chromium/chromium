@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.autofill.AutofillManager;
 import android.view.autofill.AutofillValue;
 
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CollectionUtil;
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 /**
  * The class to call Android's AutofillManager.
  */
-@RequiresApi(Build.VERSION_CODES.O)
 public class AutofillManagerWrapper {
     // Don't change TAG, it is used for runtime log.
     // NOTE: As a result of the above, the tag below still references the name of this class from

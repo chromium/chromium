@@ -39,19 +39,17 @@ public class AutofillSelectionMenuItemProvider implements AdditionalSelectionMen
     @Override
     public List<SelectionMenuItem> getItems() {
         List<SelectionMenuItem> autofillItems = new ArrayList<>();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (mAutofillMenuItemTitle != 0 && mAutofillProvider.shouldQueryAutofillSuggestion()) {
-                SelectionMenuItem autofillItem =
-                        new SelectionMenuItem.Builder(mAutofillMenuItemTitle)
-                                .setId(android.R.id.autofill)
-                                .setOrderInCategory(Menu.CATEGORY_SECONDARY)
-                                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER
-                                        | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
-                                .setClickListener(v -> mAutofillProvider.queryAutofillSuggestion())
-                                .build();
-                autofillItems.add(autofillItem);
-            }
+        if (mAutofillMenuItemTitle == 0 || !mAutofillProvider.shouldQueryAutofillSuggestion()) {
+            return autofillItems;
         }
+        autofillItems.add(
+                new SelectionMenuItem.Builder(mAutofillMenuItemTitle)
+                        .setId(android.R.id.autofill)
+                        .setOrderInCategory(Menu.CATEGORY_SECONDARY)
+                        .setShowAsActionFlags(
+                                MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
+                        .setClickListener(v -> mAutofillProvider.queryAutofillSuggestion())
+                        .build());
         return autofillItems;
     }
 

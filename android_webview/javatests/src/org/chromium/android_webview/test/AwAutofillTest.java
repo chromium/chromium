@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.autofill.AutofillValue;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
@@ -87,8 +86,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
-@MinAndroidSdkLevel(Build.VERSION_CODES.O)
-@RequiresApi(Build.VERSION_CODES.O)
 public class AwAutofillTest extends AwParameterizedTest {
     public static final boolean DEBUG = false;
     public static final String TAG = "AutofillTest";

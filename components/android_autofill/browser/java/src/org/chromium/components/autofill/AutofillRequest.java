@@ -6,13 +6,10 @@ package org.chromium.components.autofill;
 
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.os.Build;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewStructure;
 import android.view.autofill.AutofillValue;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -28,7 +25,6 @@ import java.util.ArrayList;
  * - {@link #fillViewStructure}: Translates the FormData in this object into a ViewStructure.
  * - {@link #autofill}: Verifies that the autofill request by the framework is valid.
  */
-@RequiresApi(Build.VERSION_CODES.O)
 public class AutofillRequest {
     /**
      * A simple class representing the field that is currently focused by the user.
@@ -100,8 +96,13 @@ public class AutofillRequest {
 
             RectF bounds = field.getBoundsInContainerViewCoordinates();
             // Field has no scroll.
-            child.setDimens((int) bounds.left, (int) bounds.top, 0 /* scrollX*/, 0 /* scrollY */,
-                    (int) bounds.width(), (int) bounds.height());
+            child.setDimens(
+                    (int) bounds.left,
+                    (int) bounds.top,
+                    /* scrollX= */ 0,
+                    /* scrollY= */ 0,
+                    (int) bounds.width(),
+                    (int) bounds.height());
             child.setVisibility(field.getVisible() ? View.VISIBLE : View.INVISIBLE);
 
             ViewStructure.HtmlInfo.Builder builder =
