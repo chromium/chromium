@@ -16,7 +16,7 @@ class TestFormDataImporter : public FormDataImporter {
  public:
   TestFormDataImporter(
       AutofillClient* client,
-      payments::PaymentsClient* payments_client,
+      payments::PaymentsNetworkInterface* payments_network_interface,
       std::unique_ptr<CreditCardSaveManager> credit_card_save_manager,
       std::unique_ptr<IbanSaveManager> iban_save_manager,
       PersonalDataManager* personal_data_manager,

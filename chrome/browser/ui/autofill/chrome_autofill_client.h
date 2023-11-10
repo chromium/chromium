@@ -125,7 +125,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
   FormDataImporter* GetFormDataImporter() override;
-  payments::PaymentsClient* GetPaymentsClient() override;
+  payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
   StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   ukm::SourceId GetUkmSourceId() override;
@@ -340,7 +340,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   // These members are initialized lazily in their respective getters.
   // Therefore, do not access the members directly.
   std::unique_ptr<AutofillDownloadManager> download_manager_;
-  std::unique_ptr<payments::PaymentsClient> payments_client_;
+  std::unique_ptr<payments::PaymentsNetworkInterface>
+      payments_network_interface_;
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
   std::unique_ptr<CreditCardRiskBasedAuthenticator> risk_based_authenticator_;

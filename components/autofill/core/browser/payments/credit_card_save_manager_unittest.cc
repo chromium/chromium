@@ -35,7 +35,7 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
-#include "components/autofill/core/browser/payments/test_payments_client.h"
+#include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_credit_card_save_strike_database.h"
@@ -162,18 +162,18 @@ class MockVirtualCardEnrollmentManager
  public:
   MockVirtualCardEnrollmentManager(
       TestPersonalDataManager* personal_data_manager,
-      payments::TestPaymentsClient* payments_client,
+      payments::TestPaymentsNetworkInterface* payments_network_interface,
       TestAutofillClient* autofill_client)
       : TestVirtualCardEnrollmentManager(personal_data_manager,
-                                         payments_client,
+                                         payments_network_interface,
                                          autofill_client) {}
   MOCK_METHOD(
       void,
       InitVirtualCardEnroll,
       (const CreditCard& credit_card,
        VirtualCardEnrollmentSource virtual_card_enrollment_source,
-       absl::optional<
-           payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails>
+       absl::optional<payments::PaymentsNetworkInterface::
+                          GetDetailsForEnrollmentResponseDetails>
            get_details_for_enrollment_response_details,
        PrefService* user_prefs,
        VirtualCardEnrollmentManager::RiskAssessmentFunction
@@ -204,23 +204,23 @@ class CreditCardSaveManagerTest : public testing::Test {
                          /*strike_database=*/nullptr,
                          /*image_fetcher=*/nullptr);
     autofill_driver_ = std::make_unique<TestAutofillDriver>();
-    autofill_client_.set_test_payments_client(
-        std::make_unique<payments::TestPaymentsClient>(
+    autofill_client_.set_test_payments_network_interface(
+        std::make_unique<payments::TestPaymentsNetworkInterface>(
             autofill_client_.GetURLLoaderFactory(),
             autofill_client_.GetIdentityManager(), &personal_data()));
     virtual_card_enrollment_manager_ =
         std::make_unique<MockVirtualCardEnrollmentManager>(
-            autofill_client_.GetPersonalDataManager(), &payments_client(),
-            &autofill_client_);
+            autofill_client_.GetPersonalDataManager(),
+            &payments_network_interface(), &autofill_client_);
     ON_CALL(autofill_client_, GetVirtualCardEnrollmentManager())
         .WillByDefault(testing::Return(virtual_card_enrollment_manager_.get()));
-    credit_card_save_manager_ =
-        new TestCreditCardSaveManager(autofill_driver_.get(), &autofill_client_,
-                                      &payments_client(), &personal_data());
+    credit_card_save_manager_ = new TestCreditCardSaveManager(
+        autofill_driver_.get(), &autofill_client_,
+        &payments_network_interface(), &personal_data());
     credit_card_save_manager_->SetCreditCardUploadEnabled(true);
     autofill_client_.set_test_form_data_importer(
         std::make_unique<TestFormDataImporter>(
-            &autofill_client_, &payments_client(),
+            &autofill_client_, &payments_network_interface(),
             std::unique_ptr<CreditCardSaveManager>(credit_card_save_manager_),
             /*iban_save_manager=*/nullptr, &personal_data(), "en-US"));
     autofill_client_.GetStrikeDatabase();
@@ -412,9 +412,9 @@ class CreditCardSaveManagerTest : public testing::Test {
     return static_cast<MockPersonalDataManager&>(
         *autofill_client_.GetPersonalDataManager());
   }
-  payments::TestPaymentsClient& payments_client() {
-    return static_cast<payments::TestPaymentsClient&>(
-        *autofill_client_.GetPaymentsClient());
+  payments::TestPaymentsNetworkInterface& payments_network_interface() {
+    return static_cast<payments::TestPaymentsNetworkInterface&>(
+        *autofill_client_.GetPaymentsNetworkInterface());
   }
   TestStrikeDatabase& strike_database() {
     return static_cast<TestStrikeDatabase&>(
@@ -584,17 +584,21 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_OnlyCountryInAddresses) {
   FormSubmitted(credit_card_form);
   EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
-  EXPECT_TRUE(payments_client().client_behavior_signals_in_request().empty());
+  EXPECT_TRUE(payments_network_interface()
+                  .client_behavior_signals_in_request()
+                  .empty());
 
   // Verify that even though the full address profile was saved, only the
   // country was included in the upload details request to payments.
   EXPECT_EQ(1U, personal_data().GetProfiles().size());
   AutofillProfile only_country(AddressCountryCode("US"));
-  EXPECT_EQ(1U, payments_client().addresses_in_upload_details().size());
+  EXPECT_EQ(1U,
+            payments_network_interface().addresses_in_upload_details().size());
   // AutofillProfile::Compare will ignore the difference in guid between our
   // actual profile being sent and the expected one constructed here.
-  EXPECT_EQ(0, payments_client().addresses_in_upload_details()[0].Compare(
-                   only_country));
+  EXPECT_EQ(
+      0, payments_network_interface().addresses_in_upload_details()[0].Compare(
+             only_country));
 
   // Server did not send a server_id, expect copy of card is not stored.
   EXPECT_TRUE(personal_data().GetCreditCards().empty());
@@ -610,7 +614,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_OnlyCountryInAddresses) {
   // We should find that full addresses are included in the UploadCard request,
   // even though only countries were included in GetUploadDetails.
   EXPECT_THAT(
-      payments_client().addresses_in_upload_card(),
+      payments_network_interface().addresses_in_upload_card(),
       testing::UnorderedElementsAreArray({*personal_data().GetProfiles()[0]}));
 }
 #endif
@@ -920,9 +924,9 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NotSavedLocally) {
 
   credit_card_save_manager_->SetCreditCardUploadEnabled(true);
 
-  payments::PaymentsClient::UploadCardResponseDetails
+  payments::PaymentsNetworkInterface::UploadCardResponseDetails
       upload_card_response_details;
-  payments_client().SetUploadCardResponseDetailsForUploadCard(
+  payments_network_interface().SetUploadCardResponseDetailsForUploadCard(
       upload_card_response_details);
 
   // Create, fill and submit an address form in order to establish a recent
@@ -1547,7 +1551,7 @@ TEST_F(CreditCardSaveManagerTest,
   // Confirm that client_behavior_signals vector does contain the
   // FasterAndProtected signal.
   std::vector<ClientBehaviorConstants> client_behavior_signals_in_request =
-      payments_client().client_behavior_signals_in_request();
+      payments_network_interface().client_behavior_signals_in_request();
   EXPECT_THAT(
       client_behavior_signals_in_request,
       testing::Contains(ClientBehaviorConstants::kUsingFasterAndProtectedUi));
@@ -1576,7 +1580,7 @@ TEST_F(CreditCardSaveManagerTest,
   // Confirm that client_behavior_signals vector does not contain the
   // FasterAndProtected signal.
   std::vector<ClientBehaviorConstants> client_behavior_signals_in_request =
-      payments_client().client_behavior_signals_in_request();
+      payments_network_interface().client_behavior_signals_in_request();
   EXPECT_THAT(client_behavior_signals_in_request,
               testing::Not(testing::Contains(
                   ClientBehaviorConstants::kUsingFasterAndProtectedUi)));
@@ -1608,7 +1612,7 @@ TEST_F(CreditCardSaveManagerTest,
   // Confirm that client_behavior_signals vector does contain the
   // OfferingToSaveCvc signal.
   std::vector<ClientBehaviorConstants> client_behavior_signals_in_request =
-      payments_client().client_behavior_signals_in_request();
+      payments_network_interface().client_behavior_signals_in_request();
   EXPECT_THAT(client_behavior_signals_in_request,
               testing::Contains(ClientBehaviorConstants::kOfferingToSaveCvc));
 }
@@ -1638,7 +1642,7 @@ TEST_F(CreditCardSaveManagerTest,
   // Confirm that client_behavior_signals vector does not contain the
   // OfferingToSaveCvc signal.
   std::vector<ClientBehaviorConstants> client_behavior_signals_in_request =
-      payments_client().client_behavior_signals_in_request();
+      payments_network_interface().client_behavior_signals_in_request();
   EXPECT_THAT(client_behavior_signals_in_request,
               testing::Not(testing::Contains(
                   ClientBehaviorConstants::kOfferingToSaveCvc)));
@@ -1668,7 +1672,7 @@ TEST_F(
   // Confirm that client_behavior_signals vector does not contain the
   // OfferingToSaveCvc signal.
   std::vector<ClientBehaviorConstants> client_behavior_signals_in_request =
-      payments_client().client_behavior_signals_in_request();
+      payments_network_interface().client_behavior_signals_in_request();
   EXPECT_THAT(client_behavior_signals_in_request,
               testing::Not(testing::Contains(
                   ClientBehaviorConstants::kOfferingToSaveCvc)));
@@ -1698,7 +1702,7 @@ TEST_F(
   // Confirm that client_behavior_signals vector does not contain the
   // OfferingToSaveCvc signal.
   std::vector<ClientBehaviorConstants> client_behavior_signals_in_request =
-      payments_client().client_behavior_signals_in_request();
+      payments_network_interface().client_behavior_signals_in_request();
   EXPECT_THAT(client_behavior_signals_in_request,
               testing::Not(testing::Contains(
                   ClientBehaviorConstants::kOfferingToSaveCvc)));
@@ -1733,7 +1737,7 @@ TEST_F(CreditCardSaveManagerTest,
   // Confirm that client_behavior_signals vector does not contain the
   // OfferingToSaveCvc signal.
   std::vector<ClientBehaviorConstants> client_behavior_signals_in_request =
-      payments_client().client_behavior_signals_in_request();
+      payments_network_interface().client_behavior_signals_in_request();
   EXPECT_THAT(client_behavior_signals_in_request,
               testing::Not(testing::Contains(
                   ClientBehaviorConstants::kOfferingToSaveCvc)));
@@ -2289,7 +2293,7 @@ TEST_F(
   ExpectCardUploadDecision(
       histogram_tester,
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
-  EXPECT_TRUE(payments_client().detected_values_in_upload_details() &
+  EXPECT_TRUE(payments_network_interface().detected_values_in_upload_details() &
               CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
 }
 
@@ -2327,7 +2331,7 @@ TEST_F(
   ExpectCardUploadDecision(
       histogram_tester,
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
-  EXPECT_TRUE(payments_client().detected_values_in_upload_details() &
+  EXPECT_TRUE(payments_network_interface().detected_values_in_upload_details() &
               CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
 }
 
@@ -2428,8 +2432,9 @@ TEST_F(
   ExpectNoCardUploadDecision(
       histogram_tester,
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
-  EXPECT_FALSE(payments_client().detected_values_in_upload_details() &
-               CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
+  EXPECT_FALSE(
+      payments_network_interface().detected_values_in_upload_details() &
+      CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
 #endif
 }
 
@@ -2476,8 +2481,9 @@ TEST_F(
   ExpectNoCardUploadDecision(
       histogram_tester,
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
-  EXPECT_FALSE(payments_client().detected_values_in_upload_details() &
-               CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
+  EXPECT_FALSE(
+      payments_network_interface().detected_values_in_upload_details() &
+      CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
 #endif
 }
 
@@ -2524,8 +2530,9 @@ TEST_F(
   ExpectNoCardUploadDecision(
       histogram_tester,
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
-  EXPECT_FALSE(payments_client().detected_values_in_upload_details() &
-               CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
+  EXPECT_FALSE(
+      payments_network_interface().detected_values_in_upload_details() &
+      CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
 #endif
 }
 
@@ -2776,9 +2783,9 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
   EXPECT_TRUE(
-      payments_client().detected_values_in_upload_details() &
+      payments_network_interface().detected_values_in_upload_details() &
       CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
-  EXPECT_TRUE(payments_client().detected_values_in_upload_details() &
+  EXPECT_TRUE(payments_network_interface().detected_values_in_upload_details() &
               CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
 
 #endif
@@ -2824,7 +2831,7 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
   EXPECT_TRUE(
-      payments_client().detected_values_in_upload_details() &
+      payments_network_interface().detected_values_in_upload_details() &
       CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
 }
 
@@ -2862,7 +2869,7 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
   EXPECT_TRUE(
-      payments_client().detected_values_in_upload_details() &
+      payments_network_interface().detected_values_in_upload_details() &
       CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
 }
 
@@ -2900,7 +2907,7 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
   EXPECT_TRUE(
-      payments_client().detected_values_in_upload_details() &
+      payments_network_interface().detected_values_in_upload_details() &
       CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
 }
 
@@ -2939,7 +2946,7 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
   EXPECT_TRUE(
-      payments_client().detected_values_in_upload_details() &
+      payments_network_interface().detected_values_in_upload_details() &
       CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
 }
 
@@ -2979,7 +2986,7 @@ TEST_F(
   EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
   EXPECT_TRUE(
-      payments_client().detected_values_in_upload_details() &
+      payments_network_interface().detected_values_in_upload_details() &
       CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
 }
 
@@ -3075,7 +3082,8 @@ TEST_F(CreditCardSaveManagerTest, NothingIfNothingFound) {
 
   // Submit the form and check what detected_values for an upload save would be.
   FormSubmitted(credit_card_form);
-  int detected_values = payments_client().detected_values_in_upload_details();
+  int detected_values =
+      payments_network_interface().detected_values_in_upload_details();
   EXPECT_FALSE(detected_values & CreditCardSaveManager::DetectedValue::CVC);
   EXPECT_FALSE(detected_values &
                CreditCardSaveManager::DetectedValue::CARDHOLDER_NAME);
@@ -3106,7 +3114,7 @@ TEST_F(CreditCardSaveManagerTest, DetectCvc) {
   // the expected bit.
   FormSubmitted(credit_card_form);
   int expected_detected_value = CreditCardSaveManager::DetectedValue::CVC;
-  EXPECT_EQ(payments_client().detected_values_in_upload_details() &
+  EXPECT_EQ(payments_network_interface().detected_values_in_upload_details() &
                 expected_detected_value,
             expected_detected_value);
 }
@@ -3128,7 +3136,7 @@ TEST_F(CreditCardSaveManagerTest, DetectCardholderName) {
   FormSubmitted(credit_card_form);
   int expected_detected_value =
       CreditCardSaveManager::DetectedValue::CARDHOLDER_NAME;
-  EXPECT_EQ(payments_client().detected_values_in_upload_details() &
+  EXPECT_EQ(payments_network_interface().detected_values_in_upload_details() &
                 expected_detected_value,
             expected_detected_value);
 }
@@ -3156,7 +3164,7 @@ TEST_F(CreditCardSaveManagerTest, DetectAddressName) {
   FormSubmitted(credit_card_form);
   int expected_detected_value =
       CreditCardSaveManager::DetectedValue::ADDRESS_NAME;
-  EXPECT_EQ(payments_client().detected_values_in_upload_details() &
+  EXPECT_EQ(payments_network_interface().detected_values_in_upload_details() &
                 expected_detected_value,
             expected_detected_value);
 }
@@ -3185,7 +3193,7 @@ TEST_F(CreditCardSaveManagerTest, DetectCardholderAndAddressNameIfMatching) {
   int expected_detected_values =
       CreditCardSaveManager::DetectedValue::CARDHOLDER_NAME |
       CreditCardSaveManager::DetectedValue::ADDRESS_NAME;
-  EXPECT_EQ(payments_client().detected_values_in_upload_details() &
+  EXPECT_EQ(payments_network_interface().detected_values_in_upload_details() &
                 expected_detected_values,
             expected_detected_values);
 }
@@ -3210,7 +3218,8 @@ TEST_F(CreditCardSaveManagerTest, DetectNoUniqueNameIfNamesConflict) {
 
   // Submit the form and check what detected_values for an upload save would be.
   FormSubmitted(credit_card_form);
-  int detected_values = payments_client().detected_values_in_upload_details();
+  int detected_values =
+      payments_network_interface().detected_values_in_upload_details();
   EXPECT_FALSE(detected_values &
                CreditCardSaveManager::DetectedValue::CARDHOLDER_NAME);
   EXPECT_FALSE(detected_values &
@@ -3240,7 +3249,7 @@ TEST_F(CreditCardSaveManagerTest, DetectPostalCode) {
   FormSubmitted(credit_card_form);
   int expected_detected_value =
       CreditCardSaveManager::DetectedValue::POSTAL_CODE;
-  EXPECT_EQ(payments_client().detected_values_in_upload_details() &
+  EXPECT_EQ(payments_network_interface().detected_values_in_upload_details() &
                 expected_detected_value,
             expected_detected_value);
 }
@@ -3269,8 +3278,9 @@ TEST_F(CreditCardSaveManagerTest, DetectNoUniquePostalCodeIfZipsConflict) {
 
   // Submit the form and check what detected_values for an upload save would be.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(payments_client().detected_values_in_upload_details() &
-               CreditCardSaveManager::DetectedValue::POSTAL_CODE);
+  EXPECT_FALSE(
+      payments_network_interface().detected_values_in_upload_details() &
+      CreditCardSaveManager::DetectedValue::POSTAL_CODE);
 }
 
 TEST_F(CreditCardSaveManagerTest, DetectAddressLine) {
@@ -3296,7 +3306,7 @@ TEST_F(CreditCardSaveManagerTest, DetectAddressLine) {
   FormSubmitted(credit_card_form);
   int expected_detected_value =
       CreditCardSaveManager::DetectedValue::ADDRESS_LINE;
-  EXPECT_EQ(payments_client().detected_values_in_upload_details() &
+  EXPECT_EQ(payments_network_interface().detected_values_in_upload_details() &
                 expected_detected_value,
             expected_detected_value);
 }
@@ -3323,7 +3333,7 @@ TEST_F(CreditCardSaveManagerTest, DetectLocality) {
   // the expected bit.
   FormSubmitted(credit_card_form);
   int expected_detected_value = CreditCardSaveManager::DetectedValue::LOCALITY;
-  EXPECT_EQ(payments_client().detected_values_in_upload_details() &
+  EXPECT_EQ(payments_network_interface().detected_values_in_upload_details() &
                 expected_detected_value,
             expected_detected_value);
 }
@@ -3351,7 +3361,7 @@ TEST_F(CreditCardSaveManagerTest, DetectAdministrativeArea) {
   FormSubmitted(credit_card_form);
   int expected_detected_value =
       CreditCardSaveManager::DetectedValue::ADMINISTRATIVE_AREA;
-  EXPECT_EQ(payments_client().detected_values_in_upload_details() &
+  EXPECT_EQ(payments_network_interface().detected_values_in_upload_details() &
                 expected_detected_value,
             expected_detected_value);
 }
@@ -3379,7 +3389,7 @@ TEST_F(CreditCardSaveManagerTest, DetectCountryCode) {
   FormSubmitted(credit_card_form);
   int expected_detected_value =
       CreditCardSaveManager::DetectedValue::COUNTRY_CODE;
-  EXPECT_EQ(payments_client().detected_values_in_upload_details() &
+  EXPECT_EQ(payments_network_interface().detected_values_in_upload_details() &
                 expected_detected_value,
             expected_detected_value);
 }
@@ -3406,7 +3416,7 @@ TEST_F(CreditCardSaveManagerTest, DetectHasGooglePaymentAccount) {
   FormSubmitted(credit_card_form);
   int expected_detected_value =
       CreditCardSaveManager::DetectedValue::HAS_GOOGLE_PAYMENTS_ACCOUNT;
-  EXPECT_EQ(payments_client().detected_values_in_upload_details() &
+  EXPECT_EQ(payments_network_interface().detected_values_in_upload_details() &
                 expected_detected_value,
             expected_detected_value);
 }
@@ -3445,7 +3455,7 @@ TEST_F(CreditCardSaveManagerTest, DetectEverythingAtOnce) {
       CreditCardSaveManager::DetectedValue::ADMINISTRATIVE_AREA |
       CreditCardSaveManager::DetectedValue::POSTAL_CODE |
       CreditCardSaveManager::DetectedValue::COUNTRY_CODE;
-  EXPECT_EQ(payments_client().detected_values_in_upload_details() &
+  EXPECT_EQ(payments_network_interface().detected_values_in_upload_details() &
                 expected_detected_values,
             expected_detected_values);
 }
@@ -3478,7 +3488,7 @@ TEST_F(CreditCardSaveManagerTest, DetectSubsetOfPossibleFields) {
       CreditCardSaveManager::DetectedValue::LOCALITY |
       CreditCardSaveManager::DetectedValue::POSTAL_CODE |
       CreditCardSaveManager::DetectedValue::COUNTRY_CODE;
-  EXPECT_EQ(payments_client().detected_values_in_upload_details() &
+  EXPECT_EQ(payments_network_interface().detected_values_in_upload_details() &
                 expected_detected_values,
             expected_detected_values);
 }
@@ -3524,7 +3534,7 @@ TEST_F(CreditCardSaveManagerTest, DetectAddressComponentsAcrossProfiles) {
       CreditCardSaveManager::DetectedValue::LOCALITY |
       CreditCardSaveManager::DetectedValue::ADMINISTRATIVE_AREA |
       CreditCardSaveManager::DetectedValue::COUNTRY_CODE;
-  EXPECT_EQ(payments_client().detected_values_in_upload_details() &
+  EXPECT_EQ(payments_network_interface().detected_values_in_upload_details() &
                 expected_detected_values,
             expected_detected_values);
 }
@@ -4116,7 +4126,9 @@ TEST_F(CreditCardSaveManagerTest,
   FormSubmitted(credit_card_form);
   EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
-  EXPECT_TRUE(payments_client().client_behavior_signals_in_request().empty());
+  EXPECT_TRUE(payments_network_interface()
+                  .client_behavior_signals_in_request()
+                  .empty());
 }
 
 TEST_F(CreditCardSaveManagerTest,
@@ -4143,7 +4155,7 @@ TEST_F(CreditCardSaveManagerTest,
   // kUploadPaymentMethodBillableServiceNumber in the request.
   FormSubmitted(credit_card_form);
   EXPECT_EQ(payments::kUploadPaymentMethodBillableServiceNumber,
-            payments_client().billable_service_number_in_request());
+            payments_network_interface().billable_service_number_in_request());
 }
 
 TEST_F(CreditCardSaveManagerTest,
@@ -4174,7 +4186,8 @@ TEST_F(CreditCardSaveManagerTest,
   // Confirm that the preflight request contained billing customer number in the
   // request.
   FormSubmitted(credit_card_form);
-  EXPECT_EQ(123456L, payments_client().billing_customer_number_in_request());
+  EXPECT_EQ(123456L,
+            payments_network_interface().billing_customer_number_in_request());
 }
 
 TEST_F(CreditCardSaveManagerTest,
@@ -4199,8 +4212,9 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Confirm that the preflight request contained the correct UploadCardSource.
   FormSubmitted(credit_card_form);
-  EXPECT_EQ(payments::PaymentsClient::UploadCardSource::UPSTREAM_CHECKOUT_FLOW,
-            payments_client().upload_card_source_in_request());
+  EXPECT_EQ(payments::PaymentsNetworkInterface::UploadCardSource::
+                UPSTREAM_CHECKOUT_FLOW,
+            payments_network_interface().upload_card_source_in_request());
 }
 
 // Tests that a card with some strikes (but not max strikes) should still show
@@ -4721,9 +4735,9 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NumStrikesLoggedOnAdd) {
 // bubble is shown.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_NumStrikesLoggedOnUploadNotSuccess) {
-  payments::PaymentsClient::UploadCardResponseDetails
+  payments::PaymentsNetworkInterface::UploadCardResponseDetails
       upload_card_response_details;
-  payments_client().SetUploadCardResponseDetailsForUploadCard(
+  payments_network_interface().SetUploadCardResponseDetailsForUploadCard(
       upload_card_response_details);
   TestCreditCardSaveStrikeDatabase credit_card_save_strike_database =
       TestCreditCardSaveStrikeDatabase(&strike_database());
@@ -4755,7 +4769,7 @@ TEST_F(CreditCardSaveManagerTest, UploadSaveNotOfferedForUnsupportedCard) {
   std::vector<std::pair<int, int>> supported_card_bin_ranges{
       std::make_pair(4111, 4113), std::make_pair(34, 34),
       std::make_pair(300, 305)};
-  payments_client().SetSupportedBINRanges(supported_card_bin_ranges);
+  payments_network_interface().SetSupportedBINRanges(supported_card_bin_ranges);
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
@@ -4780,7 +4794,7 @@ TEST_F(CreditCardSaveManagerTest, LocalSaveNotOfferedForSavedUnsupportedCard) {
   std::vector<std::pair<int, int>> supported_card_bin_ranges{
       std::make_pair(4111, 4113), std::make_pair(34, 34),
       std::make_pair(300, 305)};
-  payments_client().SetSupportedBINRanges(supported_card_bin_ranges);
+  payments_network_interface().SetSupportedBINRanges(supported_card_bin_ranges);
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
@@ -4812,7 +4826,7 @@ TEST_F(CreditCardSaveManagerTest, UploadSaveOfferedForSupportedCard) {
   // Set supported BIN ranges.
   std::vector<std::pair<int, int>> supported_card_bin_ranges{
       std::make_pair(4111, 4113)};
-  payments_client().SetSupportedBINRanges(supported_card_bin_ranges);
+  payments_network_interface().SetSupportedBINRanges(supported_card_bin_ranges);
 
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
@@ -4832,10 +4846,11 @@ TEST_F(CreditCardSaveManagerTest, UploadSaveOfferedForSupportedCard) {
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 }
 
-// Tests that if payment client returns an invalid legal message upload should
-// not be offered.
+// Tests that if the PaymentsNetworkInterface returns an invalid legal message,
+// upload should not be offered.
 TEST_F(CreditCardSaveManagerTest, InvalidLegalMessageInOnDidGetUploadDetails) {
-  payments_client().SetUseInvalidLegalMessageInGetUploadDetails(true);
+  payments_network_interface().SetUseInvalidLegalMessageInGetUploadDetails(
+      true);
 
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
@@ -4871,7 +4886,8 @@ TEST_F(CreditCardSaveManagerTest, InvalidLegalMessageInOnDidGetUploadDetails) {
 // Tests that has_multiple_legal_lines is set correctly in
 // SaveCreditCardOptions.
 TEST_F(CreditCardSaveManagerTest, LegalMessageInOnDidGetUploadDetails) {
-  payments_client().SetUseLegalMessageWithMultipleLinesInGetUploadDetails(true);
+  payments_network_interface()
+      .SetUseLegalMessageWithMultipleLinesInGetUploadDetails(true);
 
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
@@ -4979,7 +4995,7 @@ TEST_P(SaveCvcTest, OnDidUploadCard_SaveServerCvc) {
 
   // Set up upload card response and upload.
   const int64_t kInstrumentId = 12345L;
-  payments::PaymentsClient::UploadCardResponseDetails
+  payments::PaymentsNetworkInterface::UploadCardResponseDetails
       upload_card_response_details;
   upload_card_response_details.instrument_id = kInstrumentId;
 
@@ -5221,7 +5237,7 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_save_manager_->set_upload_request_card(card);
 
   // Set up upload card response and upload.
-  payments::PaymentsClient::UploadCardResponseDetails
+  payments::PaymentsNetworkInterface::UploadCardResponseDetails
       upload_card_response_details;
   upload_card_response_details.instrument_id = 12345L;
 
@@ -5248,7 +5264,7 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_save_manager_->set_upload_request_card(card);
 
   // Set up upload card response without instrument_id and upload.
-  payments::PaymentsClient::UploadCardResponseDetails
+  payments::PaymentsNetworkInterface::UploadCardResponseDetails
       upload_card_response_details_without_instrument_id;
 
   // Confirm CVC is not added to AutofillTable if instrument_id was empty.
@@ -5275,7 +5291,7 @@ TEST_F(CreditCardSaveManagerTest, OnDidUploadCard_VirtualCardEnrollment) {
         feature_list.InitAndDisableFeature(
             features::kAutofillEnableUpdateVirtualCardEnrollment);
       }
-      payments::PaymentsClient::UploadCardResponseDetails
+      payments::PaymentsNetworkInterface::UploadCardResponseDetails
           upload_card_response_details;
       upload_card_response_details.card_art_url =
           GURL("https://www.example.com/");
@@ -5329,14 +5345,14 @@ TEST_F(
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kAutofillEnableUpdateVirtualCardEnrollment);
-  payments::PaymentsClient::UploadCardResponseDetails
+  payments::PaymentsNetworkInterface::UploadCardResponseDetails
       upload_card_response_details;
   upload_card_response_details.card_art_url = GURL("https://example.com/");
   upload_card_response_details.instrument_id = 9223372036854775807;
   upload_card_response_details.virtual_card_enrollment_state =
       CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible;
 
-  payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails
+  payments::PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails
       get_details_for_enrollment_response_details;
   get_details_for_enrollment_response_details.vcn_context_token =
       "test_context_token";
@@ -5350,8 +5366,8 @@ TEST_F(
 
   CreditCard arg_credit_card;
   VirtualCardEnrollmentSource arg_virtual_card_enrollment_source;
-  absl::optional<
-      payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails>
+  absl::optional<payments::PaymentsNetworkInterface::
+                     GetDetailsForEnrollmentResponseDetails>
       arg_get_details_for_enrollment_response_details;
   EXPECT_CALL(autofill_client_, GetVirtualCardEnrollmentManager).Times(1);
   EXPECT_CALL(*virtual_card_enrollment_manager_,

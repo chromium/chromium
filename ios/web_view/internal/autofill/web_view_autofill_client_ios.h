@@ -62,7 +62,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
   FormDataImporter* GetFormDataImporter() override;
-  payments::PaymentsClient* GetPaymentsClient() override;
+  payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
   StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   ukm::SourceId GetUkmSourceId() override;
@@ -145,7 +145,8 @@ class WebViewAutofillClientIOS : public AutofillClient {
   web::WebState* web_state_;
   __weak id<CWVAutofillClientIOSBridge> bridge_;
   signin::IdentityManager* identity_manager_;
-  std::unique_ptr<payments::PaymentsClient> payments_client_;
+  std::unique_ptr<payments::PaymentsNetworkInterface>
+      payments_network_interface_;
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   StrikeDatabase* strike_database_;

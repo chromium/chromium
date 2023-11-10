@@ -152,7 +152,7 @@ Refer to README.md for content description and update process.
  <item id="password_protection_request" added_in_milestone="62" content_hash_code="01869413" os_list="linux,windows,chromeos,android" file_path="components/safe_browsing/core/browser/password_protection/password_protection_request.cc" />
  <item id="password_requirements_spec_fetch" added_in_milestone="69" content_hash_code="005550dc" os_list="linux,windows,chromeos,android" file_path="components/password_manager/core/browser/generation/password_requirements_spec_fetcher_impl.cc" />
  <item id="payment_manifest_downloader" added_in_milestone="62" content_hash_code="01266484" os_list="linux,windows,chromeos,android" file_path="components/payments/core/payment_manifest_downloader.cc" />
- <item id="payments_sync_cards" added_in_milestone="62" content_hash_code="035e86b1" os_list="linux,windows,chromeos,android" file_path="components/autofill/core/browser/payments/payments_client.cc" />
+ <item id="payments_sync_cards" added_in_milestone="62" content_hash_code="035e86b1" os_list="linux,windows,chromeos,android" file_path="components/autofill/core/browser/payments/payments_network_interface.cc" />
  <item id="pdf_plugin_placeholder" added_in_milestone="63" content_hash_code="0101fbd5" os_list="linux,windows,chromeos" file_path="chrome/browser/plugins/plugin_observer.cc" />
  <item id="pepper_tcp_socket" added_in_milestone="65" content_hash_code="01a37664" os_list="linux,windows,chromeos" file_path="content/browser/renderer_host/pepper/pepper_socket_utils.cc" />
  <item id="pepper_udp_socket" added_in_milestone="70" content_hash_code="006ee842" os_list="linux,windows,chromeos" file_path="content/browser/renderer_host/pepper/pepper_socket_utils.cc" />

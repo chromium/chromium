@@ -28,7 +28,8 @@ class UpdateVirtualCardEnrollmentRequestTest
   ~UpdateVirtualCardEnrollmentRequestTest() override = default;
 
   void SetUp() override {
-    PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails request_details;
+    PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails
+        request_details;
     request_details.virtual_card_enrollment_request_type =
         std::get<0>(GetParam());
     request_details.virtual_card_enrollment_source = std::get<1>(GetParam());

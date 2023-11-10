@@ -39,7 +39,7 @@ void CreditCardCvcAuthenticator::Authenticate(
         payments::FullCardRequest::FailureType::GENERIC_FAILURE);
   }
   full_card_request_ = std::make_unique<payments::FullCardRequest>(
-      client_, client_->GetPaymentsClient(), personal_data_manager);
+      client_, client_->GetPaymentsNetworkInterface(), personal_data_manager);
 
   CreditCard::RecordType card_record_type = card->record_type();
   autofill_metrics::LogCvcAuthAttempt(card_record_type);
@@ -90,7 +90,7 @@ void CreditCardCvcAuthenticator::OnFullCardRequestSucceeded(
   if (!requester_)
     return;
 
-  payments::PaymentsClient::UnmaskResponseDetails response =
+  payments::PaymentsNetworkInterface::UnmaskResponseDetails response =
       full_card_request.unmask_response_details();
   requester_->OnCvcAuthenticationComplete(
       CvcAuthenticationResponse()
@@ -166,7 +166,7 @@ payments::FullCardRequest* CreditCardCvcAuthenticator::GetFullCardRequest() {
   // this function directly.
   if (!full_card_request_) {
     full_card_request_ = std::make_unique<payments::FullCardRequest>(
-        client_, client_->GetPaymentsClient(),
+        client_, client_->GetPaymentsNetworkInterface(),
         client_->GetPersonalDataManager());
   }
   return full_card_request_.get();

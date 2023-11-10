@@ -199,14 +199,14 @@ class LocalCardMigrationBrowserTest
     ASSERT_TRUE(SetupClients());
     chrome::NewTab(GetBrowser(0));
 
-    // Set up the URL loader factory for the payments client so we can intercept
-    // those network requests too.
+    // Set up the URL loader factory for the PaymentsNetworkInterface so we can
+    // intercept those network requests too.
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     ContentAutofillClient* client =
         ContentAutofillClient::FromWebContents(GetActiveWebContents());
-    client->GetPaymentsClient()->set_url_loader_factory_for_testing(
+    client->GetPaymentsNetworkInterface()->set_url_loader_factory_for_testing(
         test_shared_loader_factory_);
 
     // Set up this class as the ObserverForTest implementation.

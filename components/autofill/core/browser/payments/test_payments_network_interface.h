@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_PAYMENTS_CLIENT_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_PAYMENTS_CLIENT_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_PAYMENTS_NETWORK_INTERFACE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_PAYMENTS_NETWORK_INTERFACE_H_
 
 #include <memory>
 #include <set>
@@ -14,7 +14,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_requests/update_virtual_card_enrollment_request.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -24,21 +24,21 @@ class SharedURLLoaderFactory;
 
 namespace autofill::payments {
 
-class TestPaymentsClient : public payments::PaymentsClient {
+class TestPaymentsNetworkInterface : public payments::PaymentsNetworkInterface {
  public:
-  TestPaymentsClient(
+  TestPaymentsNetworkInterface(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_,
       signin::IdentityManager* identity_manager,
       PersonalDataManager* personal_data_manager);
 
-  TestPaymentsClient(const TestPaymentsClient&) = delete;
-  TestPaymentsClient& operator=(const TestPaymentsClient&) = delete;
+  TestPaymentsNetworkInterface(const TestPaymentsNetworkInterface&) = delete;
+  TestPaymentsNetworkInterface& operator=(const TestPaymentsNetworkInterface&) = delete;
 
-  ~TestPaymentsClient() override;
+  ~TestPaymentsNetworkInterface() override;
 
   void GetUnmaskDetails(
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              PaymentsClient::UnmaskDetails&)> callback,
+                              PaymentsNetworkInterface::UnmaskDetails&)> callback,
       const std::string& app_locale) override;
 
   void UnmaskCard(
@@ -61,9 +61,9 @@ class TestPaymentsClient : public payments::PaymentsClient {
           UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE) override;
 
   void UploadCard(
-      const payments::PaymentsClient::UploadRequestDetails& request_details,
+      const payments::PaymentsNetworkInterface::UploadRequestDetails& request_details,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              const PaymentsClient::UploadCardResponseDetails&)>
+                              const PaymentsNetworkInterface::UploadCardResponseDetails&)>
           callback) override;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -81,7 +81,7 @@ class TestPaymentsClient : public payments::PaymentsClient {
   void GetVirtualCardEnrollmentDetails(
       const GetDetailsForEnrollmentRequestDetails& request_details,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              const payments::PaymentsClient::
+                              const payments::PaymentsNetworkInterface::
                                   GetDetailsForEnrollmentResponseDetails&)>
           callback) override;
 
@@ -101,7 +101,7 @@ class TestPaymentsClient : public payments::PaymentsClient {
                            std::string relying_party_id);
 
   void SetUploadCardResponseDetailsForUploadCard(
-      const PaymentsClient::UploadCardResponseDetails&
+      const PaymentsNetworkInterface::UploadCardResponseDetails&
           upload_card_response_details);
 
   void SetSaveResultForCardsMigration(
@@ -126,14 +126,14 @@ class TestPaymentsClient : public payments::PaymentsClient {
     update_virtual_card_enrollment_result_ = result;
   }
 
-  payments::PaymentsClient::UnmaskDetails* unmask_details() {
+  payments::PaymentsNetworkInterface::UnmaskDetails* unmask_details() {
     return &unmask_details_;
   }
-  const absl::optional<payments::PaymentsClient::UnmaskRequestDetails>&
+  const absl::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
   unmask_request() const {
     return unmask_request_;
   }
-  const payments::PaymentsClient::SelectChallengeOptionRequestDetails*
+  const payments::PaymentsNetworkInterface::SelectChallengeOptionRequestDetails*
   select_challenge_option_request() {
     return &select_challenge_option_request_;
   }
@@ -154,7 +154,7 @@ class TestPaymentsClient : public payments::PaymentsClient {
   int64_t billing_customer_number_in_request() const {
     return billing_customer_number_;
   }
-  PaymentsClient::UploadCardSource upload_card_source_in_request() const {
+  PaymentsNetworkInterface::UploadCardSource upload_card_source_in_request() const {
     return upload_card_source_;
   }
 
@@ -169,14 +169,14 @@ class TestPaymentsClient : public payments::PaymentsClient {
   }
 
  private:
-  PaymentsClient::UploadCardResponseDetails upload_card_response_details_;
+  PaymentsNetworkInterface::UploadCardResponseDetails upload_card_response_details_;
   // Some metrics are affected by the latency of GetUnmaskDetails, so it is
   // useful to control whether or not GetUnmaskDetails() is responded to.
   bool should_return_unmask_details_ = true;
-  payments::PaymentsClient::UnmaskDetails unmask_details_;
-  absl::optional<payments::PaymentsClient::UnmaskRequestDetails>
+  payments::PaymentsNetworkInterface::UnmaskDetails unmask_details_;
+  absl::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>
       unmask_request_;
-  payments::PaymentsClient::SelectChallengeOptionRequestDetails
+  payments::PaymentsNetworkInterface::SelectChallengeOptionRequestDetails
       select_challenge_option_request_;
   std::vector<std::pair<int, int>> supported_card_bin_ranges_;
   std::vector<AutofillProfile> upload_details_addresses_;
@@ -186,7 +186,7 @@ class TestPaymentsClient : public payments::PaymentsClient {
   std::vector<ClientBehaviorConstants> client_behavior_signals_;
   int billable_service_number_;
   int64_t billing_customer_number_;
-  PaymentsClient::UploadCardSource upload_card_source_;
+  PaymentsNetworkInterface::UploadCardSource upload_card_source_;
   std::unique_ptr<std::unordered_map<std::string, std::string>> save_result_;
   bool use_invalid_legal_message_ = false;
   bool use_legal_message_with_multiple_lines_ = false;
@@ -195,12 +195,12 @@ class TestPaymentsClient : public payments::PaymentsClient {
       select_challenge_option_result_;
   absl::optional<AutofillClient::PaymentsRpcResult>
       update_virtual_card_enrollment_result_;
-  payments::PaymentsClient::GetDetailsForEnrollmentRequestDetails
+  payments::PaymentsNetworkInterface::GetDetailsForEnrollmentRequestDetails
       get_details_for_enrollment_request_details_;
-  payments::PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails
+  payments::PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails
       update_virtual_card_enrollment_request_details_;
 };
 
 }  // namespace autofill::payments
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_PAYMENTS_CLIENT_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_PAYMENTS_NETWORK_INTERFACE_H_

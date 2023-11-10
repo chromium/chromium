@@ -13,7 +13,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 
 namespace autofill {
 
@@ -94,9 +94,10 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
       const std::string& context_token,
       int64_t billing_customer_number);
 
-  // Have PaymentsClient send a SelectChallengeOptionRequest. This will also be
-  // invoked when user requests to get a new OTP code. The response's callback
-  // function is |OnDidSelectChallengeOption()| when server response returns.
+  // Have PaymentsNetworkInterface send a SelectChallengeOptionRequest. This
+  // will also be invoked when user requests to get a new OTP code. The
+  // response's callback function is |OnDidSelectChallengeOption()| when server
+  // response returns.
   void SendSelectChallengeOptionRequest();
 
   // Callback function invoked when the client receives the select challenge
@@ -114,7 +115,8 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   // the correct error message and end the session.
   void OnDidGetRealPan(
       AutofillClient::PaymentsRpcResult result,
-      payments::PaymentsClient::UnmaskResponseDetails& response_details);
+      payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+          response_details);
 
   // Reset the authenticator to initial states.
   virtual void Reset();
@@ -131,8 +133,8 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   // Invoked when risk data is fetched.
   void OnDidGetUnmaskRiskData(const std::string& risk_data);
 
-  // Have PaymentsClient send a UnmaskCardRequest for this card. The response's
-  // callback function is |OnDidGetRealPan()|.
+  // Have PaymentsNetworkInterface send a UnmaskCardRequest for this card. The
+  // response's callback function is |OnDidGetRealPan()|.
   void SendUnmaskCardRequest();
 
   // Card being unmasked.
@@ -158,19 +160,20 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   // The associated autofill client.
   raw_ptr<AutofillClient> autofill_client_;
 
-  // The associated payments client.
-  raw_ptr<payments::PaymentsClient> payments_client_;
+  // The associated PaymentsNetworkInterface.
+  raw_ptr<payments::PaymentsNetworkInterface> payments_network_interface_;
 
   // Weak pointer to object that is requesting authentication.
   base::WeakPtr<Requester> requester_;
 
   // This contains the details of the SelectChallengeOption request to be sent
   // to the server.
-  std::unique_ptr<payments::PaymentsClient::SelectChallengeOptionRequestDetails>
+  std::unique_ptr<
+      payments::PaymentsNetworkInterface::SelectChallengeOptionRequestDetails>
       select_challenge_option_request_;
 
   // This contains the details of the Unmask request to be sent to the server.
-  std::unique_ptr<payments::PaymentsClient::UnmaskRequestDetails>
+  std::unique_ptr<payments::PaymentsNetworkInterface::UnmaskRequestDetails>
       unmask_request_;
 
   // The timestamps when the requests are sent. Used for logging.

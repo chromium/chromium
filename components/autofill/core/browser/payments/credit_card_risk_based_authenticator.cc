@@ -43,8 +43,8 @@ void CreditCardRiskBasedAuthenticator::Authenticate(
   // Authenticate should not be called while there is an existing authentication
   // underway.
   DCHECK(!requester_);
-  unmask_request_details_ =
-      std::make_unique<payments::PaymentsClient::UnmaskRequestDetails>();
+  unmask_request_details_ = std::make_unique<
+      payments::PaymentsNetworkInterface::UnmaskRequestDetails>();
   card_ = std::move(card);
   requester_ = requester;
 
@@ -66,7 +66,7 @@ void CreditCardRiskBasedAuthenticator::Authenticate(
       payments::GetBillingCustomerId(
           autofill_client_->GetPersonalDataManager());
 
-  autofill_client_->GetPaymentsClient()->Prepare();
+  autofill_client_->GetPaymentsNetworkInterface()->Prepare();
   autofill_client_->LoadRiskData(
       base::BindOnce(&CreditCardRiskBasedAuthenticator::OnDidGetUnmaskRiskData,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -75,7 +75,7 @@ void CreditCardRiskBasedAuthenticator::Authenticate(
 void CreditCardRiskBasedAuthenticator::OnDidGetUnmaskRiskData(
     const std::string& risk_data) {
   unmask_request_details_->risk_data = risk_data;
-  autofill_client_->GetPaymentsClient()->UnmaskCard(
+  autofill_client_->GetPaymentsNetworkInterface()->UnmaskCard(
       *unmask_request_details_,
       base::BindOnce(
           &CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived,
@@ -84,7 +84,8 @@ void CreditCardRiskBasedAuthenticator::OnDidGetUnmaskRiskData(
 
 void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
     AutofillClient::PaymentsRpcResult result,
-    payments::PaymentsClient::UnmaskResponseDetails& response_details) {
+    payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+        response_details) {
   if (!requester_) {
     Reset();
     return;
@@ -136,7 +137,7 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
 
 void CreditCardRiskBasedAuthenticator::Reset() {
   weak_ptr_factory_.InvalidateWeakPtrs();
-  autofill_client_->GetPaymentsClient()->CancelRequest();
+  autofill_client_->GetPaymentsNetworkInterface()->CancelRequest();
   unmask_request_details_.reset();
   requester_.reset();
 }

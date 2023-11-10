@@ -71,7 +71,7 @@
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
@@ -346,22 +346,24 @@ signin::IdentityManager* ChromeAutofillClient::GetIdentityManager() {
 FormDataImporter* ChromeAutofillClient::GetFormDataImporter() {
   if (!form_data_importer_) {
     form_data_importer_ = std::make_unique<FormDataImporter>(
-        this, GetPaymentsClient(), GetPersonalDataManager(),
+        this, GetPaymentsNetworkInterface(), GetPersonalDataManager(),
         GetPersonalDataManager()->app_locale());
   }
   return form_data_importer_.get();
 }
 
-payments::PaymentsClient* ChromeAutofillClient::GetPaymentsClient() {
-  if (!payments_client_) {
-    payments_client_ = std::make_unique<payments::PaymentsClient>(
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext())
-            ->GetURLLoaderFactory(),
-        GetIdentityManager(), GetPersonalDataManager(),
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext())
-            ->IsOffTheRecord());
+payments::PaymentsNetworkInterface*
+ChromeAutofillClient::GetPaymentsNetworkInterface() {
+  if (!payments_network_interface_) {
+    payments_network_interface_ =
+        std::make_unique<payments::PaymentsNetworkInterface>(
+            Profile::FromBrowserContext(web_contents()->GetBrowserContext())
+                ->GetURLLoaderFactory(),
+            GetIdentityManager(), GetPersonalDataManager(),
+            Profile::FromBrowserContext(web_contents()->GetBrowserContext())
+                ->IsOffTheRecord());
   }
-  return payments_client_.get();
+  return payments_network_interface_.get();
 }
 
 StrikeDatabase* ChromeAutofillClient::GetStrikeDatabase() {

@@ -1,8 +1,8 @@
-// Copyright 2015 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 
 #include <memory>
 #include <set>
@@ -85,16 +85,16 @@ GURL GetRequestUrl(const std::string& path) {
 
 }  // namespace
 
-PaymentsClient::UnmaskDetails::UnmaskDetails() = default;
+PaymentsNetworkInterface::UnmaskDetails::UnmaskDetails() = default;
 
-PaymentsClient::UnmaskDetails::UnmaskDetails(const UnmaskDetails& other) {
+PaymentsNetworkInterface::UnmaskDetails::UnmaskDetails(const UnmaskDetails& other) {
   *this = other;
 }
 
-PaymentsClient::UnmaskDetails::UnmaskDetails(UnmaskDetails&&) = default;
+PaymentsNetworkInterface::UnmaskDetails::UnmaskDetails(UnmaskDetails&&) = default;
 
-PaymentsClient::UnmaskDetails& PaymentsClient::UnmaskDetails::operator=(
-    const PaymentsClient::UnmaskDetails& other) {
+PaymentsNetworkInterface::UnmaskDetails& PaymentsNetworkInterface::UnmaskDetails::operator=(
+    const PaymentsNetworkInterface::UnmaskDetails& other) {
   unmask_auth_method = other.unmask_auth_method;
   offer_fido_opt_in = other.offer_fido_opt_in;
   if (other.fido_request_options.has_value()) {
@@ -106,19 +106,19 @@ PaymentsClient::UnmaskDetails& PaymentsClient::UnmaskDetails::operator=(
   return *this;
 }
 
-PaymentsClient::UnmaskDetails& PaymentsClient::UnmaskDetails::operator=(
+PaymentsNetworkInterface::UnmaskDetails& PaymentsNetworkInterface::UnmaskDetails::operator=(
     UnmaskDetails&&) = default;
 
-PaymentsClient::UnmaskDetails::~UnmaskDetails() = default;
+PaymentsNetworkInterface::UnmaskDetails::~UnmaskDetails() = default;
 
-PaymentsClient::UnmaskRequestDetails::UnmaskRequestDetails() = default;
-PaymentsClient::UnmaskRequestDetails::UnmaskRequestDetails(
+PaymentsNetworkInterface::UnmaskRequestDetails::UnmaskRequestDetails() = default;
+PaymentsNetworkInterface::UnmaskRequestDetails::UnmaskRequestDetails(
     const UnmaskRequestDetails& other) {
   *this = other;
 }
-PaymentsClient::UnmaskRequestDetails&
-PaymentsClient::UnmaskRequestDetails::operator=(
-    const PaymentsClient::UnmaskRequestDetails& other) {
+PaymentsNetworkInterface::UnmaskRequestDetails&
+PaymentsNetworkInterface::UnmaskRequestDetails::operator=(
+    const PaymentsNetworkInterface::UnmaskRequestDetails& other) {
   billing_customer_number = other.billing_customer_number;
   card = other.card;
   risk_data = other.risk_data;
@@ -137,20 +137,20 @@ PaymentsClient::UnmaskRequestDetails::operator=(
   client_behavior_signals = other.client_behavior_signals;
   return *this;
 }
-PaymentsClient::UnmaskRequestDetails::~UnmaskRequestDetails() = default;
+PaymentsNetworkInterface::UnmaskRequestDetails::~UnmaskRequestDetails() = default;
 
-PaymentsClient::UnmaskResponseDetails::UnmaskResponseDetails() = default;
+PaymentsNetworkInterface::UnmaskResponseDetails::UnmaskResponseDetails() = default;
 
-PaymentsClient::UnmaskResponseDetails::UnmaskResponseDetails(
+PaymentsNetworkInterface::UnmaskResponseDetails::UnmaskResponseDetails(
     const UnmaskResponseDetails& other) {
   *this = other;
 }
 
-PaymentsClient::UnmaskResponseDetails::UnmaskResponseDetails(
+PaymentsNetworkInterface::UnmaskResponseDetails::UnmaskResponseDetails(
     UnmaskResponseDetails&&) = default;
 
-PaymentsClient::UnmaskResponseDetails&
-PaymentsClient::UnmaskResponseDetails::operator=(
+PaymentsNetworkInterface::UnmaskResponseDetails&
+PaymentsNetworkInterface::UnmaskResponseDetails::operator=(
     const UnmaskResponseDetails& other) {
   real_pan = other.real_pan;
   dcvv = other.dcvv;
@@ -170,19 +170,19 @@ PaymentsClient::UnmaskResponseDetails::operator=(
   return *this;
 }
 
-PaymentsClient::UnmaskResponseDetails&
-PaymentsClient::UnmaskResponseDetails::operator=(UnmaskResponseDetails&&) =
+PaymentsNetworkInterface::UnmaskResponseDetails&
+PaymentsNetworkInterface::UnmaskResponseDetails::operator=(UnmaskResponseDetails&&) =
     default;
 
-PaymentsClient::UnmaskResponseDetails::~UnmaskResponseDetails() = default;
+PaymentsNetworkInterface::UnmaskResponseDetails::~UnmaskResponseDetails() = default;
 
-PaymentsClient::UnmaskIbanRequestDetails::UnmaskIbanRequestDetails() = default;
-PaymentsClient::UnmaskIbanRequestDetails::UnmaskIbanRequestDetails(
+PaymentsNetworkInterface::UnmaskIbanRequestDetails::UnmaskIbanRequestDetails() = default;
+PaymentsNetworkInterface::UnmaskIbanRequestDetails::UnmaskIbanRequestDetails(
     const UnmaskIbanRequestDetails& other) = default;
-PaymentsClient::UnmaskIbanRequestDetails::~UnmaskIbanRequestDetails() = default;
+PaymentsNetworkInterface::UnmaskIbanRequestDetails::~UnmaskIbanRequestDetails() = default;
 
-PaymentsClient::OptChangeRequestDetails::OptChangeRequestDetails() = default;
-PaymentsClient::OptChangeRequestDetails::OptChangeRequestDetails(
+PaymentsNetworkInterface::OptChangeRequestDetails::OptChangeRequestDetails() = default;
+PaymentsNetworkInterface::OptChangeRequestDetails::OptChangeRequestDetails(
     const OptChangeRequestDetails& other) {
   app_locale = other.app_locale;
   reason = other.reason;
@@ -193,10 +193,10 @@ PaymentsClient::OptChangeRequestDetails::OptChangeRequestDetails(
   }
   card_authorization_token = other.card_authorization_token;
 }
-PaymentsClient::OptChangeRequestDetails::~OptChangeRequestDetails() = default;
+PaymentsNetworkInterface::OptChangeRequestDetails::~OptChangeRequestDetails() = default;
 
-PaymentsClient::OptChangeResponseDetails::OptChangeResponseDetails() = default;
-PaymentsClient::OptChangeResponseDetails::OptChangeResponseDetails(
+PaymentsNetworkInterface::OptChangeResponseDetails::OptChangeResponseDetails() = default;
+PaymentsNetworkInterface::OptChangeResponseDetails::OptChangeResponseDetails(
     const OptChangeResponseDetails& other) {
   user_is_opted_in = other.user_is_opted_in;
 
@@ -211,64 +211,64 @@ PaymentsClient::OptChangeResponseDetails::OptChangeResponseDetails(
     fido_request_options.reset();
   }
 }
-PaymentsClient::OptChangeResponseDetails::~OptChangeResponseDetails() = default;
+PaymentsNetworkInterface::OptChangeResponseDetails::~OptChangeResponseDetails() = default;
 
-PaymentsClient::UploadRequestDetails::UploadRequestDetails() = default;
-PaymentsClient::UploadRequestDetails::UploadRequestDetails(
+PaymentsNetworkInterface::UploadRequestDetails::UploadRequestDetails() = default;
+PaymentsNetworkInterface::UploadRequestDetails::UploadRequestDetails(
     const UploadRequestDetails& other) = default;
-PaymentsClient::UploadRequestDetails::~UploadRequestDetails() = default;
+PaymentsNetworkInterface::UploadRequestDetails::~UploadRequestDetails() = default;
 
-PaymentsClient::UploadIbanRequestDetails::UploadIbanRequestDetails() = default;
-PaymentsClient::UploadIbanRequestDetails::UploadIbanRequestDetails(
+PaymentsNetworkInterface::UploadIbanRequestDetails::UploadIbanRequestDetails() = default;
+PaymentsNetworkInterface::UploadIbanRequestDetails::UploadIbanRequestDetails(
     const UploadIbanRequestDetails& other) = default;
-PaymentsClient::UploadIbanRequestDetails::~UploadIbanRequestDetails() = default;
+PaymentsNetworkInterface::UploadIbanRequestDetails::~UploadIbanRequestDetails() = default;
 
-PaymentsClient::MigrationRequestDetails::MigrationRequestDetails() = default;
-PaymentsClient::MigrationRequestDetails::MigrationRequestDetails(
+PaymentsNetworkInterface::MigrationRequestDetails::MigrationRequestDetails() = default;
+PaymentsNetworkInterface::MigrationRequestDetails::MigrationRequestDetails(
     const MigrationRequestDetails& other) = default;
-PaymentsClient::MigrationRequestDetails::~MigrationRequestDetails() = default;
+PaymentsNetworkInterface::MigrationRequestDetails::~MigrationRequestDetails() = default;
 
-PaymentsClient::SelectChallengeOptionRequestDetails::
+PaymentsNetworkInterface::SelectChallengeOptionRequestDetails::
     SelectChallengeOptionRequestDetails() = default;
-PaymentsClient::SelectChallengeOptionRequestDetails::
+PaymentsNetworkInterface::SelectChallengeOptionRequestDetails::
     SelectChallengeOptionRequestDetails(
         const SelectChallengeOptionRequestDetails& other) = default;
-PaymentsClient::SelectChallengeOptionRequestDetails::
+PaymentsNetworkInterface::SelectChallengeOptionRequestDetails::
     ~SelectChallengeOptionRequestDetails() = default;
 
-PaymentsClient::GetDetailsForEnrollmentRequestDetails::
+PaymentsNetworkInterface::GetDetailsForEnrollmentRequestDetails::
     GetDetailsForEnrollmentRequestDetails() = default;
-PaymentsClient::GetDetailsForEnrollmentRequestDetails::
+PaymentsNetworkInterface::GetDetailsForEnrollmentRequestDetails::
     GetDetailsForEnrollmentRequestDetails(
         const GetDetailsForEnrollmentRequestDetails& other) = default;
-PaymentsClient::GetDetailsForEnrollmentRequestDetails::
+PaymentsNetworkInterface::GetDetailsForEnrollmentRequestDetails::
     ~GetDetailsForEnrollmentRequestDetails() = default;
 
-PaymentsClient::GetDetailsForEnrollmentResponseDetails::
+PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails::
     GetDetailsForEnrollmentResponseDetails() = default;
-PaymentsClient::GetDetailsForEnrollmentResponseDetails::
+PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails::
     GetDetailsForEnrollmentResponseDetails(
         const GetDetailsForEnrollmentResponseDetails& other) = default;
-PaymentsClient::GetDetailsForEnrollmentResponseDetails::
+PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails::
     ~GetDetailsForEnrollmentResponseDetails() = default;
 
-PaymentsClient::UploadCardResponseDetails::UploadCardResponseDetails() =
+PaymentsNetworkInterface::UploadCardResponseDetails::UploadCardResponseDetails() =
     default;
-PaymentsClient::UploadCardResponseDetails::~UploadCardResponseDetails() =
+PaymentsNetworkInterface::UploadCardResponseDetails::~UploadCardResponseDetails() =
     default;
 
-PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails::
+PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails::
     UpdateVirtualCardEnrollmentRequestDetails() = default;
-PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails::
+PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails::
     UpdateVirtualCardEnrollmentRequestDetails(
         const UpdateVirtualCardEnrollmentRequestDetails&) = default;
-PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails&
-PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails::operator=(
+PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails&
+PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails::operator=(
     const UpdateVirtualCardEnrollmentRequestDetails&) = default;
-PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails::
+PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails::
     ~UpdateVirtualCardEnrollmentRequestDetails() = default;
 
-PaymentsClient::PaymentsClient(
+PaymentsNetworkInterface::PaymentsNetworkInterface(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
     AccountInfoGetter* account_info_getter,
@@ -279,33 +279,33 @@ PaymentsClient::PaymentsClient(
       is_off_the_record_(is_off_the_record),
       has_retried_authorization_(false) {}
 
-PaymentsClient::~PaymentsClient() = default;
+PaymentsNetworkInterface::~PaymentsNetworkInterface() = default;
 
-void PaymentsClient::Prepare() {
+void PaymentsNetworkInterface::Prepare() {
   if (access_token_.empty())
     StartTokenFetch(false);
 }
 
-void PaymentsClient::GetUnmaskDetails(
+void PaymentsNetworkInterface::GetUnmaskDetails(
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            PaymentsClient::UnmaskDetails&)> callback,
+                            PaymentsNetworkInterface::UnmaskDetails&)> callback,
     const std::string& app_locale) {
   IssueRequest(std::make_unique<GetUnmaskDetailsRequest>(
       std::move(callback), app_locale,
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics()));
 }
 
-void PaymentsClient::UnmaskCard(
-    const PaymentsClient::UnmaskRequestDetails& request_details,
+void PaymentsNetworkInterface::UnmaskCard(
+    const PaymentsNetworkInterface::UnmaskRequestDetails& request_details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            PaymentsClient::UnmaskResponseDetails&)> callback) {
+                            PaymentsNetworkInterface::UnmaskResponseDetails&)> callback) {
   IssueRequest(std::make_unique<UnmaskCardRequest>(
       request_details,
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
       std::move(callback)));
 }
 
-void PaymentsClient::UnmaskIban(
+void PaymentsNetworkInterface::UnmaskIban(
     const UnmaskIbanRequestDetails& request_details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             const std::u16string&)> callback) {
@@ -315,17 +315,17 @@ void PaymentsClient::UnmaskIban(
       std::move(callback)));
 }
 
-void PaymentsClient::OptChange(
+void PaymentsNetworkInterface::OptChange(
     const OptChangeRequestDetails request_details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            PaymentsClient::OptChangeResponseDetails&)>
+                            PaymentsNetworkInterface::OptChangeResponseDetails&)>
         callback) {
   IssueRequest(std::make_unique<OptChangeRequest>(
       request_details, std::move(callback),
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics()));
 }
 
-void PaymentsClient::GetUploadDetails(
+void PaymentsNetworkInterface::GetUploadDetails(
     const std::vector<AutofillProfile>& addresses,
     const int detected_values,
     const std::vector<ClientBehaviorConstants>& client_behavior_signals,
@@ -344,8 +344,8 @@ void PaymentsClient::GetUploadDetails(
       billing_customer_number, upload_card_source));
 }
 
-void PaymentsClient::UploadCard(
-    const PaymentsClient::UploadRequestDetails& request_details,
+void PaymentsNetworkInterface::UploadCard(
+    const PaymentsNetworkInterface::UploadRequestDetails& request_details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             const UploadCardResponseDetails&)> callback) {
   IssueRequest(std::make_unique<UploadCardRequest>(
@@ -354,7 +354,7 @@ void PaymentsClient::UploadCard(
       std::move(callback)));
 }
 
-void PaymentsClient::GetIbanUploadDetails(
+void PaymentsNetworkInterface::GetIbanUploadDetails(
     const std::string& app_locale,
     int64_t billing_customer_number,
     int billable_service_number,
@@ -367,7 +367,7 @@ void PaymentsClient::GetIbanUploadDetails(
       std::move(callback)));
 }
 
-void PaymentsClient::UploadIban(
+void PaymentsNetworkInterface::UploadIban(
     const UploadIbanRequestDetails& details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback) {
   IssueRequest(std::make_unique<UploadIbanRequest>(
@@ -377,7 +377,7 @@ void PaymentsClient::UploadIban(
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-void PaymentsClient::MigrateCards(
+void PaymentsNetworkInterface::MigrateCards(
     const MigrationRequestDetails& request_details,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
     MigrateCardsCallback callback) {
@@ -388,7 +388,7 @@ void PaymentsClient::MigrateCards(
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-void PaymentsClient::SelectChallengeOption(
+void PaymentsNetworkInterface::SelectChallengeOption(
     const SelectChallengeOptionRequestDetails& request_details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             const std::string&)> callback) {
@@ -396,24 +396,24 @@ void PaymentsClient::SelectChallengeOption(
       request_details, std::move(callback)));
 }
 
-void PaymentsClient::GetVirtualCardEnrollmentDetails(
+void PaymentsNetworkInterface::GetVirtualCardEnrollmentDetails(
     const GetDetailsForEnrollmentRequestDetails& request_details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            const payments::PaymentsClient::
+                            const PaymentsNetworkInterface::
                                 GetDetailsForEnrollmentResponseDetails&)>
         callback) {
   IssueRequest(std::make_unique<GetDetailsForEnrollmentRequest>(
       request_details, std::move(callback)));
 }
 
-void PaymentsClient::UpdateVirtualCardEnrollment(
+void PaymentsNetworkInterface::UpdateVirtualCardEnrollment(
     const UpdateVirtualCardEnrollmentRequestDetails& request_details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback) {
   IssueRequest(std::make_unique<UpdateVirtualCardEnrollmentRequest>(
       request_details, std::move(callback)));
 }
 
-void PaymentsClient::CancelRequest() {
+void PaymentsNetworkInterface::CancelRequest() {
   request_.reset();
   resource_request_.reset();
   simple_url_loader_.reset();
@@ -422,16 +422,16 @@ void PaymentsClient::CancelRequest() {
   has_retried_authorization_ = false;
 }
 
-void PaymentsClient::set_url_loader_factory_for_testing(
+void PaymentsNetworkInterface::set_url_loader_factory_for_testing(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   url_loader_factory_ = std::move(url_loader_factory);
 }
 
-void PaymentsClient::set_access_token_for_testing(std::string access_token) {
+void PaymentsNetworkInterface::set_access_token_for_testing(std::string access_token) {
   access_token_ = access_token;
 }
 
-void PaymentsClient::IssueRequest(std::unique_ptr<PaymentsRequest> request) {
+void PaymentsNetworkInterface::IssueRequest(std::unique_ptr<PaymentsRequest> request) {
   request_ = std::move(request);
   has_retried_authorization_ = false;
 
@@ -444,7 +444,7 @@ void PaymentsClient::IssueRequest(std::unique_ptr<PaymentsRequest> request) {
   }
 }
 
-void PaymentsClient::InitializeResourceRequest() {
+void PaymentsNetworkInterface::InitializeResourceRequest() {
   resource_request_ = std::make_unique<network::ResourceRequest>();
   resource_request_->url = GetRequestUrl(request_->GetRequestUrlPath());
   resource_request_->load_flags = net::LOAD_DISABLE_CACHE;
@@ -461,7 +461,7 @@ void PaymentsClient::InitializeResourceRequest() {
       variations::SignedIn::kYes, resource_request_.get());
 }
 
-void PaymentsClient::OnSimpleLoaderComplete(
+void PaymentsNetworkInterface::OnSimpleLoaderComplete(
     std::unique_ptr<std::string> response_body) {
   int response_code = -1;
   if (simple_url_loader_->ResponseInfo() &&
@@ -475,7 +475,7 @@ void PaymentsClient::OnSimpleLoaderComplete(
   OnSimpleLoaderCompleteInternal(response_code, data);
 }
 
-void PaymentsClient::OnSimpleLoaderCompleteInternal(int response_code,
+void PaymentsNetworkInterface::OnSimpleLoaderCompleteInternal(int response_code,
                                                     const std::string& data) {
   VLOG(2) << "Got data: " << data;
 
@@ -557,7 +557,7 @@ void PaymentsClient::OnSimpleLoaderCompleteInternal(int response_code,
   request_->RespondToDelegate(result);
 }
 
-void PaymentsClient::AccessTokenFetchFinished(
+void PaymentsNetworkInterface::AccessTokenFetchFinished(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   DCHECK(token_fetcher_);
@@ -573,7 +573,7 @@ void PaymentsClient::AccessTokenFetchFinished(
     SetOAuth2TokenAndStartRequest();
 }
 
-void PaymentsClient::AccessTokenError(const GoogleServiceAuthError& error) {
+void PaymentsNetworkInterface::AccessTokenError(const GoogleServiceAuthError& error) {
   VLOG(1) << "Unhandled OAuth2 error: " << error.ToString();
   if (simple_url_loader_)
     simple_url_loader_.reset();
@@ -582,7 +582,7 @@ void PaymentsClient::AccessTokenError(const GoogleServiceAuthError& error) {
         AutofillClient::PaymentsRpcResult::kPermanentFailure);
 }
 
-void PaymentsClient::StartTokenFetch(bool invalidate_old) {
+void PaymentsNetworkInterface::StartTokenFetch(bool invalidate_old) {
   // We're still waiting for the last request to come back.
   if (!invalidate_old && token_fetcher_)
     return;
@@ -601,12 +601,12 @@ void PaymentsClient::StartTokenFetch(bool invalidate_old) {
   access_token_.clear();
   token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
       account_id, kTokenFetchId, payments_scopes,
-      base::BindOnce(&PaymentsClient::AccessTokenFetchFinished,
+      base::BindOnce(&PaymentsNetworkInterface::AccessTokenFetchFinished,
                      base::Unretained(this)),
       signin::AccessTokenFetcher::Mode::kImmediate);
 }
 
-void PaymentsClient::SetOAuth2TokenAndStartRequest() {
+void PaymentsNetworkInterface::SetOAuth2TokenAndStartRequest() {
   // Set OAuth2 token:
   DCHECK(resource_request_);
   resource_request_->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
@@ -655,7 +655,7 @@ void PaymentsClient::SetOAuth2TokenAndStartRequest() {
 
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&PaymentsClient::OnSimpleLoaderComplete,
+      base::BindOnce(&PaymentsNetworkInterface::OnSimpleLoaderComplete,
                      base::Unretained(this)));
 }
 

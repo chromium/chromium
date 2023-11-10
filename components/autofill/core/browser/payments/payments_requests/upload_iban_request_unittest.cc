@@ -24,7 +24,7 @@ constexpr char kNickname[] = "My IBAN";
 class UploadIbanRequestTest : public testing::Test {
  public:
   void SetUp() override {
-    PaymentsClient::UploadIbanRequestDetails request_details;
+    PaymentsNetworkInterface::UploadIbanRequestDetails request_details;
     request_details.app_locale = kAppLocale;
     request_details.billable_service_number = kBillableServiceNumber;
     request_details.billing_customer_number = kBillingCustomerNumber;

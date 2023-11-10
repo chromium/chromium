@@ -11,7 +11,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
@@ -155,7 +155,7 @@ bool IbanSaveManager::AttemptToOfferUploadSave(const Iban& import_candidate) {
   bool show_save_prompt =
       !GetIbanSaveStrikeDatabase()->ShouldBlockFeature(GetPartialIbanHashString(
           base::UTF16ToUTF8(iban_save_candidate_.value())));
-  client_->GetPaymentsClient()->GetIbanUploadDetails(
+  client_->GetPaymentsNetworkInterface()->GetIbanUploadDetails(
       personal_data_manager_->app_locale(),
       payments::GetBillingCustomerId(personal_data_manager_),
       payments::kUploadPaymentMethodBillableServiceNumber,

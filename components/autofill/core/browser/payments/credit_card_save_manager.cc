@@ -36,7 +36,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -85,11 +85,11 @@ std::u16string RemoveMiddleInitial(const std::u16string& name) {
 
 CreditCardSaveManager::CreditCardSaveManager(
     AutofillClient* client,
-    payments::PaymentsClient* payments_client,
+    payments::PaymentsNetworkInterface* payments_network_interface,
     const std::string& app_locale,
     PersonalDataManager* personal_data_manager)
     : client_(client),
-      payments_client_(payments_client),
+      payments_network_interface_(payments_network_interface),
       app_locale_(app_locale),
       personal_data_manager_(personal_data_manager) {}
 
@@ -219,10 +219,11 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
     const FormStructure& submitted_form,
     const CreditCard& card,
     const bool uploading_local_card) {
-  // Abort the uploading if |payments_client_| is nullptr.
-  if (!payments_client_)
+  // Abort the uploading if `payments_network_interface_` is nullptr.
+  if (!payments_network_interface_) {
     return;
-  upload_request_ = payments::PaymentsClient::UploadRequestDetails();
+  }
+  upload_request_ = payments::PaymentsNetworkInterface::UploadRequestDetails();
   upload_request_.card = card;
   uploading_local_card_ = uploading_local_card;
   show_save_prompt_.reset();
@@ -368,14 +369,15 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
         ClientBehaviorConstants::kOfferingToSaveCvc);
   }
 
-  payments_client_->GetUploadDetails(
+  payments_network_interface_->GetUploadDetails(
       country_only_profiles, upload_request_.detected_values,
       upload_request_.client_behavior_signals, app_locale_,
       base::BindOnce(&CreditCardSaveManager::OnDidGetUploadDetails,
                      weak_ptr_factory_.GetWeakPtr()),
       payments::kUploadPaymentMethodBillableServiceNumber,
       payments::GetBillingCustomerId(personal_data_manager_),
-      payments::PaymentsClient::UploadCardSource::UPSTREAM_CHECKOUT_FLOW);
+      payments::PaymentsNetworkInterface::UploadCardSource::
+          UPSTREAM_CHECKOUT_FLOW);
 }
 
 void CreditCardSaveManager::AttemptToOfferCvcUploadSave(
@@ -425,7 +427,7 @@ bool CreditCardSaveManager::IsCreditCardUploadEnabled() {
 
 void CreditCardSaveManager::OnDidUploadCard(
     AutofillClient::PaymentsRpcResult result,
-    const payments::PaymentsClient::UploadCardResponseDetails&
+    const payments::PaymentsNetworkInterface::UploadCardResponseDetails&
         upload_card_response_details) {
   if (observer_for_testing_) {
     observer_for_testing_->OnReceivedUploadCardResponse();
@@ -557,8 +559,9 @@ void CreditCardSaveManager::OnDidGetUploadDetails(
       return;
     }
 
-    // Do *not* call payments_client_->Prepare() here. We shouldn't send
-    // credentials until the user has explicitly accepted a prompt to upload.
+    // Do *not* call payments_network_interface_->Prepare() here. We shouldn't
+    // send credentials until the user has explicitly accepted a prompt to
+    // upload.
     if (!supported_card_bin_ranges.empty() &&
         !payments::IsCreditCardNumberSupported(upload_request_.card.number(),
                                                supported_card_bin_ranges)) {
@@ -787,7 +790,7 @@ void CreditCardSaveManager::LogStrikesPresentWhenCardSaved(
 
 void CreditCardSaveManager::SetProfilesForCreditCardUpload(
     const CreditCard& card,
-    payments::PaymentsClient::UploadRequestDetails* upload_request) {
+    payments::PaymentsNetworkInterface::UploadRequestDetails* upload_request) {
   std::vector<AutofillProfile> candidate_profiles;
   const base::Time now = AutofillClock::Now();
   const base::TimeDelta fifteen_minutes = base::Minutes(15);
@@ -1171,7 +1174,7 @@ void CreditCardSaveManager::SendUploadCardRequest() {
       uploading_local_card_
           ? AutofillMetrics::USER_ACCEPTED_UPLOAD_OF_LOCAL_CARD
           : AutofillMetrics::USER_ACCEPTED_UPLOAD_OF_NEW_CARD);
-  payments_client_->UploadCard(
+  payments_network_interface_->UploadCard(
       upload_request_, base::BindOnce(&CreditCardSaveManager::OnDidUploadCard,
                                       weak_ptr_factory_.GetWeakPtr()));
 }

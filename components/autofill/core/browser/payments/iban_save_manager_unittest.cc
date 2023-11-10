@@ -11,8 +11,8 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/iban.h"
-#include "components/autofill/core/browser/payments/mock_test_payments_client.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/mock_test_payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -59,8 +59,8 @@ class IbanSaveManagerTest : public testing::Test {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     autofill_client_.set_personal_data_manager(
         std::make_unique<TestPersonalDataManager>());
-    autofill_client_.set_test_payments_client(
-        std::make_unique<MockTestPaymentsClient>());
+    autofill_client_.set_test_payments_network_interface(
+        std::make_unique<MockTestPaymentsNetworkInterface>());
     autofill_client_.set_sync_service(&sync_service_);
     std::unique_ptr<TestStrikeDatabase> test_strike_database =
         std::make_unique<TestStrikeDatabase>();
@@ -85,7 +85,7 @@ class IbanSaveManagerTest : public testing::Test {
   void SetUpGetIbanUploadDetailsResponse(
       bool is_successful,
       bool includes_invalid_legal_message = false) {
-    ON_CALL(*payments_client(), GetIbanUploadDetails)
+    ON_CALL(*payments_network_interface(), GetIbanUploadDetails)
         .WillByDefault(
             [is_successful, includes_invalid_legal_message](
                 const std::string& app_locale, int64_t billing_customer_number,
@@ -115,9 +115,9 @@ class IbanSaveManagerTest : public testing::Test {
         *autofill_client_.GetPersonalDataManager());
   }
 
-  MockTestPaymentsClient* payments_client() {
-    return static_cast<MockTestPaymentsClient*>(
-        autofill_client_.GetPaymentsClient());
+  MockTestPaymentsNetworkInterface* payments_network_interface() {
+    return static_cast<MockTestPaymentsNetworkInterface*>(
+        autofill_client_.GetPaymentsNetworkInterface());
   }
 
   base::test::TaskEnvironment task_environment_;

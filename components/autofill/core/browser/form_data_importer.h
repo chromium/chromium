@@ -20,7 +20,6 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -31,6 +30,10 @@ namespace autofill {
 
 class AddressProfileSaveManager;
 class CreditCardSaveManager;
+
+namespace payments {
+class PaymentsNetworkInterface;
+}
 
 // Manages logic for importing address profiles and credit card information from
 // web forms into the user's Autofill profile via the PersonalDataManager.
@@ -55,10 +58,11 @@ class FormDataImporter : public PersonalDataManagerObserver {
   };
 
   // The parameters should outlive the FormDataImporter.
-  FormDataImporter(AutofillClient* client,
-                   payments::PaymentsClient* payments_client,
-                   PersonalDataManager* personal_data_manager,
-                   const std::string& app_locale);
+  FormDataImporter(
+      AutofillClient* client,
+      payments::PaymentsNetworkInterface* payments_network_interface,
+      PersonalDataManager* personal_data_manager,
+      const std::string& app_locale);
 
   FormDataImporter(const FormDataImporter&) = delete;
   FormDataImporter& operator=(const FormDataImporter&) = delete;

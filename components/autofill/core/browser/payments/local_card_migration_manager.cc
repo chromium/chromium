@@ -22,7 +22,7 @@
 #include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -49,14 +49,13 @@ MigratableCreditCard::~MigratableCreditCard() = default;
 
 LocalCardMigrationManager::LocalCardMigrationManager(
     AutofillClient* client,
-    payments::PaymentsClient* payments_client,
+    payments::PaymentsNetworkInterface* payments_network_interface,
     const std::string& app_locale,
     PersonalDataManager* personal_data_manager)
     : client_(client),
-      payments_client_(payments_client),
+      payments_network_interface_(payments_network_interface),
       app_locale_(app_locale),
-      personal_data_manager_(personal_data_manager) {
-}
+      personal_data_manager_(personal_data_manager) {}
 
 LocalCardMigrationManager::~LocalCardMigrationManager() {}
 
@@ -143,15 +142,17 @@ bool LocalCardMigrationManager::ShouldOfferLocalCardMigration(
 
 void LocalCardMigrationManager::AttemptToOfferLocalCardMigration(
     bool is_from_settings_page) {
-  // Abort the migration if |payments_client_| is nullptr.
-  if (!payments_client_)
+  // Abort the migration if `payments_network_interface_` is nullptr.
+  if (!payments_network_interface_) {
     return;
-  migration_request_ = payments::PaymentsClient::MigrationRequestDetails();
+  }
+  migration_request_ =
+      payments::PaymentsNetworkInterface::MigrationRequestDetails();
 
   if (observer_for_testing_)
     observer_for_testing_->OnDecideToRequestLocalCardMigration();
 
-  payments_client_->GetUploadDetails(
+  payments_network_interface_->GetUploadDetails(
       std::vector<AutofillProfile>(), GetDetectedValues(),
       /*client_behavior_signals=*/std::vector<ClientBehaviorConstants>(),
       app_locale_,
@@ -159,10 +160,11 @@ void LocalCardMigrationManager::AttemptToOfferLocalCardMigration(
                      weak_ptr_factory_.GetWeakPtr(), is_from_settings_page),
       payments::kMigrateCardsBillableServiceNumber,
       payments::GetBillingCustomerId(personal_data_manager_),
-      is_from_settings_page ? payments::PaymentsClient::UploadCardSource::
-                                  LOCAL_CARD_MIGRATION_SETTINGS_PAGE
-                            : payments::PaymentsClient::UploadCardSource::
-                                  LOCAL_CARD_MIGRATION_CHECKOUT_FLOW);
+      is_from_settings_page
+          ? payments::PaymentsNetworkInterface::UploadCardSource::
+                LOCAL_CARD_MIGRATION_SETTINGS_PAGE
+          : payments::PaymentsNetworkInterface::UploadCardSource::
+                LOCAL_CARD_MIGRATION_CHECKOUT_FLOW);
 }
 
 // Callback function when user agrees to migration on the intermediate dialog.
@@ -363,8 +365,9 @@ void LocalCardMigrationManager::OnDidGetMigrationRiskData(
     SendMigrateLocalCardsRequest();
 }
 
-// Send the migration request. Will call payments_client to create a new
-// PaymentsRequest. Also create a new callback function OnDidMigrateLocalCards.
+// Send the migration request. Will call `payments_network_interface` to create
+// a new PaymentsRequest. Also create a new callback function
+// OnDidMigrateLocalCards.
 void LocalCardMigrationManager::SendMigrateLocalCardsRequest() {
   if (observer_for_testing_)
     observer_for_testing_->OnSentMigrateCardsRequest();
@@ -372,7 +375,7 @@ void LocalCardMigrationManager::SendMigrateLocalCardsRequest() {
   migration_request_.app_locale = app_locale_;
   migration_request_.billing_customer_number =
       payments::GetBillingCustomerId(personal_data_manager_);
-  payments_client_->MigrateCards(
+  payments_network_interface_->MigrateCards(
       migration_request_, migratable_credit_cards_,
       base::BindOnce(&LocalCardMigrationManager::OnDidMigrateLocalCards,
                      weak_ptr_factory_.GetWeakPtr()));

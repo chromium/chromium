@@ -16,7 +16,7 @@
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/strike_databases/payments/fido_authentication_strike_database.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "device/fido/fido_constants.h"
@@ -128,7 +128,7 @@ class CreditCardFidoAuthenticator
   // Return user's opt in/out intention based on unmask detail response and
   // local pref.
   UserOptInIntention GetUserOptInIntention(
-      payments::PaymentsClient::UnmaskDetails& unmask_details);
+      payments::PaymentsNetworkInterface::UnmaskDetails& unmask_details);
 
   // Cancel the ongoing verification process. Used to reset states in this class
   // and in the FullCardRequest if any.
@@ -197,7 +197,7 @@ class CreditCardFidoAuthenticator
   // Sets prefstore to enable credit card authentication if rpc was successful.
   void OnDidGetOptChangeResult(
       AutofillClient::PaymentsRpcResult result,
-      payments::PaymentsClient::OptChangeResponseDetails& response);
+      payments::PaymentsNetworkInterface::OptChangeResponseDetails& response);
 
   // payments::FullCardRequest::ResultDelegate:
   void OnFullCardRequestSucceeded(
@@ -267,8 +267,8 @@ class CreditCardFidoAuthenticator
   // The associated autofill client. Weak reference.
   const raw_ptr<AutofillClient> autofill_client_;
 
-  // Payments client to make requests to Google Payments.
-  const raw_ptr<payments::PaymentsClient> payments_client_;
+  // Interface to make HTTP-based requests to Google Payments.
+  const raw_ptr<payments::PaymentsNetworkInterface> payments_network_interface_;
 
   // Authenticator pointer to facilitate WebAuthn.
   std::unique_ptr<webauthn::InternalAuthenticator> authenticator_;

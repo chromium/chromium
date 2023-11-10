@@ -91,7 +91,8 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
   autofill::FormDataImporter* GetFormDataImporter() override;
-  autofill::payments::PaymentsClient* GetPaymentsClient() override;
+  autofill::payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface()
+      override;
   autofill::StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   ukm::SourceId GetUkmSourceId() override;

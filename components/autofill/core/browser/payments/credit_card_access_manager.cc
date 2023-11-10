@@ -31,7 +31,7 @@
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/webauthn_callback_types.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -65,7 +65,7 @@ CreditCardAccessManager::CreditCardAccessManager(
     autofill_metrics::CreditCardFormEventLogger* form_event_logger)
     : driver_(driver),
       client_(client),
-      payments_client_(client_->GetPaymentsClient()),
+      payments_network_interface_(client_->GetPaymentsNetworkInterface()),
       personal_data_manager_(personal_data_manager),
       form_event_logger_(form_event_logger) {}
 
@@ -209,7 +209,7 @@ void CreditCardAccessManager::GetUnmaskDetailsIfUserIsVerifiable(
   if (is_user_verifiable_.value_or(false)) {
     unmask_details_request_in_progress_ = true;
     preflight_call_timestamp_ = AutofillTickClock::NowTicks();
-    payments_client_->GetUnmaskDetails(
+    payments_network_interface_->GetUnmaskDetails(
         base::BindOnce(&CreditCardAccessManager::OnDidGetUnmaskDetails,
                        weak_ptr_factory_.GetWeakPtr()),
         personal_data_manager_->app_locale());
@@ -221,7 +221,7 @@ void CreditCardAccessManager::GetUnmaskDetailsIfUserIsVerifiable(
 
 void CreditCardAccessManager::OnDidGetUnmaskDetails(
     AutofillClient::PaymentsRpcResult result,
-    payments::PaymentsClient::UnmaskDetails& unmask_details) {
+    payments::PaymentsNetworkInterface::UnmaskDetails& unmask_details) {
   // Log latency for preflight call.
   if (preflight_call_timestamp_.has_value()) {
     autofill_metrics::LogCardUnmaskPreflightDuration(
@@ -1043,7 +1043,7 @@ void CreditCardAccessManager::HandleDialogUserResponse(
     case WebauthnDialogCallbackType::kVerificationCancelled:
       // TODO(crbug.com/949269): Add tests and logging for canceling verify
       // pending dialog.
-      payments_client_->CancelRequest();
+      payments_network_interface_->CancelRequest();
       SignalCanFetchUnmaskDetails();
       ready_to_start_authentication_.Reset();
       unmask_details_request_in_progress_ = false;
@@ -1236,14 +1236,15 @@ void CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived(
 void CreditCardAccessManager::
     OnVirtualCardRiskBasedAuthenticationResponseReceived(
         AutofillClient::PaymentsRpcResult result,
-        payments::PaymentsClient::UnmaskResponseDetails& response_details) {
+        payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+            response_details) {
   selected_challenge_option_ = nullptr;
   virtual_card_unmask_response_details_ = response_details;
   if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     if (!response_details.real_pan.empty()) {
       // If the real pan is not empty, then complete card information has been
-      // fetched from the server (this is ensured in PaymentsClient). Pass the
-      // unmasked card to `accessor_` and end the session.
+      // fetched from the server (this is ensured in PaymentsNetworkInterface).
+      // Pass the unmasked card to `accessor_` and end the session.
       CHECK_EQ(response_details.card_type,
                AutofillClient::PaymentsRpcCardType::kVirtualCard);
       card_->SetNumber(base::UTF8ToUTF16(response_details.real_pan));
@@ -1483,12 +1484,12 @@ void CreditCardAccessManager::Reset() {
 #if !BUILDFLAG(IS_IOS)
   opt_in_intention_ = UserOptInIntention::kUnspecified;
 #endif
-  unmask_details_ = payments::PaymentsClient::UnmaskDetails();
+  unmask_details_ = payments::PaymentsNetworkInterface::UnmaskDetails();
   virtual_card_unmask_request_details_ =
-      payments::PaymentsClient::UnmaskRequestDetails();
+      payments::PaymentsNetworkInterface::UnmaskRequestDetails();
   selected_challenge_option_ = nullptr;
   virtual_card_unmask_response_details_ =
-      payments::PaymentsClient::UnmaskResponseDetails();
+      payments::PaymentsNetworkInterface::UnmaskResponseDetails();
   ready_to_start_authentication_.Reset();
   can_fetch_unmask_details_ = true;
   card_.reset();

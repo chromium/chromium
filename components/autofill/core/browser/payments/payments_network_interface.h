@@ -1,9 +1,9 @@
-// Copyright 2015 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_CLIENT_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_CLIENT_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_NETWORK_INTERFACE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_NETWORK_INTERFACE_H_
 
 #include <memory>
 #include <set>
@@ -71,12 +71,12 @@ inline constexpr int kMigrateCardsBillableServiceNumber = 70264;
 
 class PaymentsRequest;
 
-// PaymentsClient issues Payments RPCs and manages responses and failure
+// PaymentsNetworkInterface issues Payments RPCs and manages responses and failure
 // conditions. Only one request may be active at a time. Initiating a new
 // request will cancel a pending request.
 // Tests are located in
-// src/components/autofill/content/browser/payments/payments_client_unittest.cc.
-class PaymentsClient {
+// src/components/autofill/content/browser/payments/payments_network_interface_unittest.cc.
+class PaymentsNetworkInterface {
  public:
   // The names of the fields used to send non-location elements as part of an
   // address. Used in the implementation and in tests which verify that these
@@ -451,16 +451,16 @@ class PaymentsClient {
   // ownership requirements. |identity_manager| and |account_info_getter| must
   // all outlive |this|. Either delegate might be nullptr. |is_off_the_record|
   // denotes incognito mode.
-  PaymentsClient(
+  PaymentsNetworkInterface(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* const identity_manager,
       AccountInfoGetter* const account_info_getter,
       bool is_off_the_record = false);
 
-  PaymentsClient(const PaymentsClient&) = delete;
-  PaymentsClient& operator=(const PaymentsClient&) = delete;
+  PaymentsNetworkInterface(const PaymentsNetworkInterface&) = delete;
+  PaymentsNetworkInterface& operator=(const PaymentsNetworkInterface&) = delete;
 
-  virtual ~PaymentsClient();
+  virtual ~PaymentsNetworkInterface();
 
   // Starts fetching the OAuth2 token in anticipation of future Payments
   // requests. Called as an optimization, but not strictly necessary. Should
@@ -529,7 +529,7 @@ class PaymentsClient {
   virtual void UploadCard(
       const UploadRequestDetails& details,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              const PaymentsClient::UploadCardResponseDetails&)>
+                              const PaymentsNetworkInterface::UploadCardResponseDetails&)>
           callback);
 
   // Determine if the user meets the Payments service conditions for upload.
@@ -583,7 +583,7 @@ class PaymentsClient {
   virtual void GetVirtualCardEnrollmentDetails(
       const GetDetailsForEnrollmentRequestDetails& request_details,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              const payments::PaymentsClient::
+                              const PaymentsNetworkInterface::
                                   GetDetailsForEnrollmentResponseDetails&)>
           callback);
 
@@ -604,7 +604,7 @@ class PaymentsClient {
   void set_access_token_for_testing(std::string access_token);
 
  private:
-  friend class PaymentsClientTest;
+  friend class PaymentsNetworkInterfaceTest;
 
   // Initiates a Payments request using the state in `request`, ensuring that an
   // OAuth token is available first. Takes ownership of `request`.
@@ -635,10 +635,10 @@ class PaymentsClient {
   // The URL loader factory for the request.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  // Provided in constructor; not owned by PaymentsClient.
+  // Provided in constructor; not owned by PaymentsNetworkInterface.
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
-  // Provided in constructor; not owned by PaymentsClient.
+  // Provided in constructor; not owned by PaymentsNetworkInterface.
   const raw_ptr<AccountInfoGetter> account_info_getter_;
 
   // The current request.
@@ -658,19 +658,19 @@ class PaymentsClient {
 
   // Denotes incognito mode.
   // TODO(crbug.com/1409158): Remove this variable, as it should not be the
-  // PaymentsClient's responsibility to check if the user is off the record. The
-  // sole responsibility of the PaymentsClient is to send requests to the Google
-  // payments server.
+  // PaymentsNetworkInterface's responsibility to check if the user is off the record. The
+  // sole responsibility of the PaymentsNetworkInterface is to send requests to the Google
+  // Payments server.
   bool is_off_the_record_;
 
   // True if |request_| has already retried due to a 401 response from the
   // server.
   bool has_retried_authorization_;
 
-  base::WeakPtrFactory<PaymentsClient> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PaymentsNetworkInterface> weak_ptr_factory_{this};
 };
 
 }  // namespace payments
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_CLIENT_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_NETWORK_INTERFACE_H_

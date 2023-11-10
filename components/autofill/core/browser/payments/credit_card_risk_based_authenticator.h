@@ -10,7 +10,7 @@
 
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 
 namespace autofill {
 
@@ -87,7 +87,8 @@ class CreditCardRiskBasedAuthenticator {
     // handling logic with OnRiskBasedAuthenticationResponseReceived().
     virtual void OnVirtualCardRiskBasedAuthenticationResponseReceived(
         AutofillClient::PaymentsRpcResult result,
-        payments::PaymentsClient::UnmaskResponseDetails& response_details) = 0;
+        payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+            response_details) = 0;
   };
 
   explicit CreditCardRiskBasedAuthenticator(AutofillClient* client);
@@ -108,7 +109,8 @@ class CreditCardRiskBasedAuthenticator {
 
   void OnUnmaskResponseReceivedForTesting(
       AutofillClient::PaymentsRpcResult result,
-      payments::PaymentsClient::UnmaskResponseDetails& response_details) {
+      payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+          response_details) {
     OnUnmaskResponseReceived(result, response_details);
   }
 
@@ -119,7 +121,8 @@ class CreditCardRiskBasedAuthenticator {
   // Callback function invoked when an unmask response has been received.
   void OnUnmaskResponseReceived(
       AutofillClient::PaymentsRpcResult result,
-      payments::PaymentsClient::UnmaskResponseDetails& response_details);
+      payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+          response_details);
 
   // Reset the authenticator to its initial state.
   virtual void Reset();
@@ -135,7 +138,7 @@ class CreditCardRiskBasedAuthenticator {
 
   // This contains the details of the card unmask request to be sent to the
   // server.
-  std::unique_ptr<payments::PaymentsClient::UnmaskRequestDetails>
+  std::unique_ptr<payments::PaymentsNetworkInterface::UnmaskRequestDetails>
       unmask_request_details_;
 
   base::WeakPtrFactory<CreditCardRiskBasedAuthenticator> weak_ptr_factory_{

@@ -40,7 +40,7 @@
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
-#include "components/autofill/core/browser/payments/test_payments_client.h"
+#include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_address_normalizer.h"
 #include "components/autofill/core/browser/test_form_data_importer.h"
@@ -187,15 +187,15 @@ class TestAutofillClientTemplate : public T {
   FormDataImporter* GetFormDataImporter() override {
     if (!form_data_importer_) {
       set_test_form_data_importer(std::make_unique<FormDataImporter>(
-          /*client=*/this, /*payments_client=*/nullptr,
+          /*client=*/this, /*payments_network_interface=*/nullptr,
           /*personal_data_manager=*/nullptr, /*app_locale=*/"en-US"));
     }
 
     return form_data_importer_.get();
   }
 
-  payments::PaymentsClient* GetPaymentsClient() override {
-    return payments_client_.get();
+  payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface() override {
+    return payments_network_interface_.get();
   }
 
   StrikeDatabase* GetStrikeDatabase() override {
@@ -566,9 +566,10 @@ class TestAutofillClientTemplate : public T {
     test_strike_database_ = std::move(test_strike_database);
   }
 
-  void set_test_payments_client(
-      std::unique_ptr<payments::TestPaymentsClient> payments_client) {
-    payments_client_ = std::move(payments_client);
+  void set_test_payments_network_interface(
+      std::unique_ptr<payments::TestPaymentsNetworkInterface>
+          payments_network_interface) {
+    payments_network_interface_ = std::move(payments_network_interface);
   }
 
   void set_test_form_data_importer(
@@ -750,11 +751,12 @@ class TestAutofillClientTemplate : public T {
   // The below objects must be destroyed before `TestPersonalDataManager`
   // because they keep a reference to it.
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
-  std::unique_ptr<payments::PaymentsClient> payments_client_;
+  std::unique_ptr<payments::PaymentsNetworkInterface>
+      payments_network_interface_;
   std::unique_ptr<testing::NiceMock<MockIbanManager>> mock_iban_manager_;
 
-  // The below objects must be destroyed before `PaymentsClient` because they
-  // (or their members) keep a reference to it.
+  // The below objects must be destroyed before `PaymentsNetworkInterface`
+  // because they (or their members) keep a reference to it.
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
   std::unique_ptr<TestCreditCardRiskBasedAuthenticator>

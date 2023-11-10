@@ -110,8 +110,8 @@ class MockAutofillClient : public autofill::AutofillClient {
   MOCK_METHOD(syncer::SyncService*, GetSyncService, (), (override));
   MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
   MOCK_METHOD(autofill::FormDataImporter*, GetFormDataImporter, (), (override));
-  MOCK_METHOD(autofill::payments::PaymentsClient*,
-              GetPaymentsClient,
+  MOCK_METHOD(autofill::payments::PaymentsNetworkInterface*,
+              GetPaymentsNetworkInterface,
               (),
               (override));
   MOCK_METHOD(autofill::StrikeDatabase*, GetStrikeDatabase, (), (override));

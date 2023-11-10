@@ -15,7 +15,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -129,16 +129,16 @@ class FullCardRequestTest : public testing::Test {
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
-    payments_client_ = std::make_unique<PaymentsClient>(
+    payments_network_interface_ = std::make_unique<PaymentsNetworkInterface>(
         test_shared_loader_factory_, autofill_client_.GetIdentityManager(),
         &personal_data_);
     request_ = std::make_unique<FullCardRequest>(
-        &autofill_client_, payments_client_.get(), &personal_data_);
+        &autofill_client_, payments_network_interface_.get(), &personal_data_);
     personal_data_.SetAccountInfoForPayments(
         autofill_client_.GetIdentityManager()->GetPrimaryAccountInfo(
             signin::ConsentLevel::kSync));
-    // Silence the warning from PaymentsClient about matching sync and Payments
-    // server types.
+    // Silence the warning from PaymentsNetworkInterface about matching sync and
+    // Payments server types.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         "sync-url", "https://google.com");
   }
@@ -165,7 +165,7 @@ class FullCardRequestTest : public testing::Test {
   void OnDidGetRealPan(AutofillClient::PaymentsRpcResult result,
                        const std::string& real_pan,
                        bool is_virtual_card = false) {
-    payments::PaymentsClient::UnmaskResponseDetails response;
+    payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
     response.card_type = is_virtual_card
                              ? AutofillClient::PaymentsRpcCardType::kVirtualCard
                              : AutofillClient::PaymentsRpcCardType::kServerCard;
@@ -176,7 +176,7 @@ class FullCardRequestTest : public testing::Test {
                                const std::string& real_pan,
                                const std::string& dcvv,
                                bool is_virtual_card = false) {
-    payments::PaymentsClient::UnmaskResponseDetails response;
+    payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
     response.card_type = is_virtual_card
                              ? AutofillClient::PaymentsRpcCardType::kVirtualCard
                              : AutofillClient::PaymentsRpcCardType::kServerCard;
@@ -201,7 +201,7 @@ class FullCardRequestTest : public testing::Test {
   TestAutofillClient autofill_client_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  std::unique_ptr<PaymentsClient> payments_client_;
+  std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
   std::unique_ptr<FullCardRequest> request_;
 };
 
@@ -285,7 +285,7 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForMaskedServerCardViaFido) {
       result_delegate()->AsWeakPtr(), base::Value::Dict(),
       url::Origin::Create(GURL("https://example.com")),
       GURL("https://example.com"));
-  payments::PaymentsClient::UnmaskRequestDetails* request_details =
+  payments::PaymentsNetworkInterface::UnmaskRequestDetails* request_details =
       request()->GetUnmaskRequestDetailsForTesting();
   EXPECT_EQ(request_details->last_committed_primary_main_frame_origin->spec(),
             GURL("https://example.com/").spec());
@@ -430,7 +430,7 @@ TEST_F(FullCardRequestTest,
       GURL("https://example.com/"), "test_context_token", challenge_option,
       url::Origin::Create(GURL("https://example.com")));
   ASSERT_TRUE(request()->GetShouldUnmaskCardForTesting());
-  payments::PaymentsClient::UnmaskRequestDetails* request_details =
+  payments::PaymentsNetworkInterface::UnmaskRequestDetails* request_details =
       request()->GetUnmaskRequestDetailsForTesting();
   EXPECT_EQ(request_details->selected_challenge_option->type,
             CardUnmaskChallengeOptionType::kCvc);
@@ -448,7 +448,7 @@ TEST_F(FullCardRequestTest,
   details.exp_year = base::UTF8ToUTF16(test::NextYear());
   details.enable_fido_auth = false;
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  payments::PaymentsClient::UnmaskResponseDetails response;
+  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
   response.real_pan = "4111";
   response.dcvv = "123";
   response.expiration_month = "12";
@@ -469,7 +469,7 @@ TEST_F(FullCardRequestTest,
               CreditCard::RecordType::kMaskedServerCard, "server_id"))
           .with_merchant_domain_for_footprints(
               url::Origin::Create(GURL("http://example.com"))));
-  payments::PaymentsClient::UnmaskRequestDetails* request_details =
+  payments::PaymentsNetworkInterface::UnmaskRequestDetails* request_details =
       request()->GetUnmaskRequestDetailsForTesting();
   ASSERT_EQ(request_details->merchant_domain_for_footprints, absl::nullopt);
 
@@ -753,7 +753,7 @@ TEST_F(FullCardRequestTest, VirtualCardTryAgainFailure) {
   CardUnmaskDelegate::UserProvidedUnmaskDetails user_provided_details;
   user_provided_details.cvc = u"321";
   card_unmask_delegate()->OnUnmaskPromptAccepted(user_provided_details);
-  PaymentsClient::UnmaskResponseDetails response_details;
+  PaymentsNetworkInterface::UnmaskResponseDetails response_details;
   response_details.card_type =
       AutofillClient::PaymentsRpcCardType::kVirtualCard;
   response_details.context_token = "test_context_token";

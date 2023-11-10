@@ -156,7 +156,7 @@ void AutofillMergeTest::SetUp() {
   personal_data_.set_auto_accept_address_imports_for_testing(true);
   form_data_importer_ = std::make_unique<FormDataImporter>(
       &autofill_client_,
-      /*payments::PaymentsClient=*/nullptr, &personal_data_, "en");
+      /*payments_network_interface=*/nullptr, &personal_data_, "en");
 }
 
 void AutofillMergeTest::TearDown() {

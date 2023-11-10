@@ -24,7 +24,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/fido_authentication_strike_database.h"
@@ -58,7 +58,7 @@ CreditCardFidoAuthenticator::CreditCardFidoAuthenticator(AutofillDriver* driver,
                                                          AutofillClient* client)
     : autofill_driver_(driver),
       autofill_client_(client),
-      payments_client_(client->GetPaymentsClient()),
+      payments_network_interface_(client->GetPaymentsNetworkInterface()),
       user_is_verifiable_callback_received_(
           base::WaitableEvent::ResetPolicy::AUTOMATIC,
           base::WaitableEvent::InitialState::NOT_SIGNALED) {
@@ -173,7 +173,7 @@ bool CreditCardFidoAuthenticator::IsUserOptedIn() {
 }
 
 UserOptInIntention CreditCardFidoAuthenticator::GetUserOptInIntention(
-    payments::PaymentsClient::UnmaskDetails& unmask_details) {
+    payments::PaymentsNetworkInterface::UnmaskDetails& unmask_details) {
   // This local pref can be affected by the user toggling on the settings page.
   // And payments might not update in time. We derive user opt in/out intention
   // when we see the mismatch.
@@ -259,7 +259,7 @@ void CreditCardFidoAuthenticator::OnWebauthnOfferDialogUserResponse(
                   kDeclinedAfterAccepting
             : autofill_metrics::WebauthnOptInPromoUserDecisionMetric::
                   kDeclinedImmediately);
-    payments_client_->CancelRequest();
+    payments_network_interface_->CancelRequest();
     card_authorization_token_ = std::string();
     current_flow_ = NONE_FLOW;
     if (auto* strike_database = GetOrCreateFidoAuthenticationStrikeDatabase()) {
@@ -336,22 +336,22 @@ void CreditCardFidoAuthenticator::MakeCredential(
 
 void CreditCardFidoAuthenticator::OptChange(
     base::Value::Dict authenticator_response) {
-  payments::PaymentsClient::OptChangeRequestDetails request_details;
+  payments::PaymentsNetworkInterface::OptChangeRequestDetails request_details;
   request_details.app_locale =
       autofill_client_->GetPersonalDataManager()->app_locale();
 
   switch (current_flow_) {
     case OPT_IN_WITH_CHALLENGE_FLOW:
     case OPT_IN_FETCH_CHALLENGE_FLOW:
-      request_details.reason =
-          payments::PaymentsClient::OptChangeRequestDetails::ENABLE_FIDO_AUTH;
+      request_details.reason = payments::PaymentsNetworkInterface::
+          OptChangeRequestDetails::ENABLE_FIDO_AUTH;
       break;
     case OPT_OUT_FLOW:
-      request_details.reason =
-          payments::PaymentsClient::OptChangeRequestDetails::DISABLE_FIDO_AUTH;
+      request_details.reason = payments::PaymentsNetworkInterface::
+          OptChangeRequestDetails::DISABLE_FIDO_AUTH;
       break;
     case FOLLOWUP_AFTER_CVC_AUTH_FLOW:
-      request_details.reason = payments::PaymentsClient::
+      request_details.reason = payments::PaymentsNetworkInterface::
           OptChangeRequestDetails::ADD_CARD_FOR_FIDO_AUTH;
       break;
     default:
@@ -385,7 +385,7 @@ void CreditCardFidoAuthenticator::OptChange(
     opt_change_metric =
         autofill_metrics::WebauthnOptInParameters::kFetchingChallenge;
   }
-  payments_client_->OptChange(
+  payments_network_interface_->OptChange(
       request_details,
       base::BindOnce(&CreditCardFidoAuthenticator::OnDidGetOptChangeResult,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -441,7 +441,7 @@ void CreditCardFidoAuthenticator::OnDidMakeCredential(
 
 void CreditCardFidoAuthenticator::OnDidGetOptChangeResult(
     AutofillClient::PaymentsRpcResult result,
-    payments::PaymentsClient::OptChangeResponseDetails& response) {
+    payments::PaymentsNetworkInterface::OptChangeResponseDetails& response) {
   DCHECK(current_flow_ == OPT_IN_FETCH_CHALLENGE_FLOW ||
          current_flow_ == OPT_OUT_FLOW ||
          current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW ||
@@ -752,7 +752,7 @@ void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
       base::Value::Dict response =
           ParseAssertionResponse(std::move(assertion_response));
       full_card_request_ = std::make_unique<payments::FullCardRequest>(
-          autofill_client_, autofill_client_->GetPaymentsClient(),
+          autofill_client_, autofill_client_->GetPaymentsNetworkInterface(),
           autofill_client_->GetPersonalDataManager());
 
       absl::optional<GURL> last_committed_primary_main_frame_origin;

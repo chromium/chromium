@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/autofill/risk_util.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -42,12 +42,14 @@ void RunVirtualCardEnrollmentFieldsLoadedCallback(
 AutofillPaymentMethodsDelegate::AutofillPaymentMethodsDelegate(Profile* profile)
     : profile_(profile) {
   personal_data_manager_ = PersonalDataManagerFactory::GetForProfile(profile);
-  payments_client_ = std::make_unique<payments::PaymentsClient>(
-      profile->GetURLLoaderFactory(),
-      IdentityManagerFactory::GetForProfile(profile), personal_data_manager_);
+  payments_network_interface_ =
+      std::make_unique<payments::PaymentsNetworkInterface>(
+          profile->GetURLLoaderFactory(),
+          IdentityManagerFactory::GetForProfile(profile),
+          personal_data_manager_);
   virtual_card_enrollment_manager_ =
-      std::make_unique<VirtualCardEnrollmentManager>(personal_data_manager_,
-                                                     payments_client_.get());
+      std::make_unique<VirtualCardEnrollmentManager>(
+          personal_data_manager_, payments_network_interface_.get());
 }
 
 AutofillPaymentMethodsDelegate::~AutofillPaymentMethodsDelegate() = default;

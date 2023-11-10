@@ -23,7 +23,7 @@
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/wait_for_signal_or_timeout.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 
@@ -182,8 +182,8 @@ class CreditCardAccessManager
           response) override;
   void OnVirtualCardRiskBasedAuthenticationResponseReceived(
       AutofillClient::PaymentsRpcResult result,
-      payments::PaymentsClient::UnmaskResponseDetails& response_details)
-      override;
+      payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+          response_details) override;
 
   void SetUnmaskDetailsRequestInProgressForTesting(
       bool unmask_details_request_in_progress) {
@@ -281,7 +281,7 @@ class CreditCardAccessManager
   // not opted-in for FIDO auth, or if user does not select a card.
   void OnDidGetUnmaskDetails(
       AutofillClient::PaymentsRpcResult result,
-      payments::PaymentsClient::UnmaskDetails& unmask_details);
+      payments::PaymentsNetworkInterface::UnmaskDetails& unmask_details);
 
   // Determines what type of authentication is required. `fido_auth_enabled`
   // suggests whether the server has offered FIDO auth as an option.
@@ -463,8 +463,8 @@ class CreditCardAccessManager
   // The associated autofill client. Weak reference.
   const raw_ptr<AutofillClient> client_;
 
-  // Client to interact with Payments servers.
-  const raw_ptr<payments::PaymentsClient> payments_client_;
+  // Interface to make HTTP-based requests to Google Payments.
+  const raw_ptr<payments::PaymentsNetworkInterface> payments_network_interface_;
 
   // The personal data manager, used to save and load personal data to/from the
   // web database.
@@ -494,13 +494,13 @@ class CreditCardAccessManager
   // Struct to store necessary information to start an authentication. It is
   // populated before an authentication is offered. It includes suggested
   // authentication methods and other information to facilitate card unmasking.
-  payments::PaymentsClient::UnmaskDetails unmask_details_;
+  payments::PaymentsNetworkInterface::UnmaskDetails unmask_details_;
 
   // Structs to store information passed to and fetched from the server for
   // virtual card unmasking.
-  payments::PaymentsClient::UnmaskRequestDetails
+  payments::PaymentsNetworkInterface::UnmaskRequestDetails
       virtual_card_unmask_request_details_;
-  payments::PaymentsClient::UnmaskResponseDetails
+  payments::PaymentsNetworkInterface::UnmaskResponseDetails
       virtual_card_unmask_response_details_;
 
   // Struct to store response returned by CreditCardRiskBasedAuthenticator.

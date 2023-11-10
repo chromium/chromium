@@ -116,8 +116,8 @@ enum class WebauthnDialogCallbackType;
 enum class WebauthnDialogState;
 
 namespace payments {
-class PaymentsClient;
 class MandatoryReauthManager;
+class PaymentsNetworkInterface;
 }
 
 // A client interface that needs to be supplied to the Autofill component by the
@@ -478,8 +478,8 @@ class AutofillClient : public RiskDataLoader {
   // Gets the FormDataImporter instance owned by the client.
   virtual FormDataImporter* GetFormDataImporter() = 0;
 
-  // Gets the payments::PaymentsClient instance owned by the client.
-  virtual payments::PaymentsClient* GetPaymentsClient() = 0;
+  // Gets the payments::PaymentsNetworkInterface instance owned by the client.
+  virtual payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface() = 0;
 
   // Gets the StrikeDatabase associated with the client. Note: Nullptr may be
   // returned so check before use.

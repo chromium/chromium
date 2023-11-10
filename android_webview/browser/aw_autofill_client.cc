@@ -128,7 +128,8 @@ autofill::FormDataImporter* AwAutofillClient::GetFormDataImporter() {
   return nullptr;
 }
 
-autofill::payments::PaymentsClient* AwAutofillClient::GetPaymentsClient() {
+autofill::payments::PaymentsNetworkInterface*
+AwAutofillClient::GetPaymentsNetworkInterface() {
   return nullptr;
 }
 

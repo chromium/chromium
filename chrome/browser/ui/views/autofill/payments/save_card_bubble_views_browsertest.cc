@@ -51,7 +51,7 @@
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/manage_cards_prompt_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -203,14 +203,14 @@ class SaveCardBubbleViewsFullFormBrowserTest
     // that this method starts observing will also be the one to notify later.
     AddBlankTabAndShow(GetBrowser(0));
 
-    // Set up the URL loader factory for the payments client so we can intercept
-    // those network requests too.
+    // Set up the URL loader factory for the PaymentsNetworkInterface so we can
+    // intercept those network requests too.
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     autofill_manager()
         ->client()
-        .GetPaymentsClient()
+        .GetPaymentsNetworkInterface()
         ->set_url_loader_factory_for_testing(test_shared_loader_factory_);
 
     // Wait for Personal Data Manager to be fully loaded to prevent that

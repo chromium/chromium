@@ -12,7 +12,7 @@
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/test_authentication_requester.h"
-#include "components/autofill/core/browser/payments/test_payments_client.h"
+#include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -51,11 +51,12 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
 
     requester_ = std::make_unique<TestAuthenticationRequester>();
 
-    payments_client_ = new payments::TestPaymentsClient(
+    payments_network_interface_ = new payments::TestPaymentsNetworkInterface(
         autofill_client_.GetURLLoaderFactory(),
         autofill_client_.GetIdentityManager(), &personal_data_manager_);
-    autofill_client_.set_test_payments_client(
-        std::unique_ptr<payments::TestPaymentsClient>(payments_client_));
+    autofill_client_.set_test_payments_network_interface(
+        std::unique_ptr<payments::TestPaymentsNetworkInterface>(
+            payments_network_interface_));
     authenticator_ =
         std::make_unique<CreditCardOtpAuthenticator>(&autofill_client_);
 
@@ -72,7 +73,7 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
   void OnDidGetRealPan(AutofillClient::PaymentsRpcResult result,
                        const std::string& real_pan,
                        bool server_returned_decline_details = false) {
-    payments::PaymentsClient::UnmaskResponseDetails response;
+    payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
     if (result != AutofillClient::PaymentsRpcResult::kSuccess) {
       if (server_returned_decline_details) {
         AutofillErrorDialogContext context;
@@ -95,7 +96,7 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
 
   void OnDidGetRealPanWithFlowStatus(const std::string& flow_status,
                                      const std::string& context_token) {
-    payments::PaymentsClient::UnmaskResponseDetails response;
+    payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
     response.flow_status = flow_status;
     response.context_token = context_token;
     response.card_type = AutofillClient::PaymentsRpcCardType::kVirtualCard;
@@ -109,8 +110,9 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
 
   void verifySelectChallengeOptionRequest(const std::string& context_token,
                                           int64_t billing_customer_number) {
-    const payments::PaymentsClient::SelectChallengeOptionRequestDetails*
-        request = payments_client_->select_challenge_option_request();
+    const payments::PaymentsNetworkInterface::
+        SelectChallengeOptionRequestDetails* request =
+            payments_network_interface_->select_challenge_option_request();
     EXPECT_EQ(request->context_token, context_token);
     EXPECT_EQ(request->billing_customer_number, billing_customer_number);
     // Selected challenge option should stay the same for the entire session.
@@ -134,7 +136,7 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   TestAutofillClient autofill_client_;
   TestPersonalDataManager personal_data_manager_;
-  raw_ptr<payments::TestPaymentsClient> payments_client_;
+  raw_ptr<payments::TestPaymentsNetworkInterface> payments_network_interface_;
   std::unique_ptr<CreditCardOtpAuthenticator> authenticator_;
   CreditCard card_;
   CardUnmaskChallengeOption selected_otp_challenge_option_;
@@ -160,8 +162,8 @@ class CreditCardOtpAuthenticatorTest
 TEST_P(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccess) {
   base::HistogramTester histogram_tester;
   // Simulate user selects OTP challenge option. Current context_token is from
-  // previous unmask response. TestPaymentsClient will ack the select challenge
-  // option request and directly invoke the callback.
+  // previous unmask response. TestPaymentsNetworkInterface will ack the select
+  // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
       &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
@@ -176,17 +178,20 @@ TEST_P(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccess) {
             "context_token_from_previous_unmask_response");
 
   // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
-  // TestPaymentsClient just stores the unmask request detail, won't invoke the
-  // callback. OnDidGetRealPan below will manually invoke the callback.
+  // TestPaymentsNetworkInterface just stores the unmask request detail, won't
+  // invoke the callback. OnDidGetRealPan below will manually invoke the
+  // callback.
   authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"111111");
   // Verify the selected challenge option is correctly set in
   // UnmaskRequestDetails.
-  EXPECT_EQ(payments_client_->unmask_request()->selected_challenge_option->id,
+  EXPECT_EQ(payments_network_interface_->unmask_request()
+                ->selected_challenge_option->id,
             selected_otp_challenge_option_.id);
   // Verify that the otp is correctly set in UnmaskRequestDetails.
-  EXPECT_EQ(payments_client_->unmask_request()->otp, u"111111");
+  EXPECT_EQ(payments_network_interface_->unmask_request()->otp, u"111111");
   // Also verify that risk data is set in UnmaskRequestDetails.
-  EXPECT_FALSE(payments_client_->unmask_request()->risk_data.empty());
+  EXPECT_FALSE(
+      payments_network_interface_->unmask_request()->risk_data.empty());
 
   // Simulate server returns success and invoke the callback.
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
@@ -212,12 +217,12 @@ TEST_P(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccess) {
 TEST_P(CreditCardOtpAuthenticatorTest, SelectChallengeOptionFailsWithVcnError) {
   base::HistogramTester histogram_tester;
   // Simulate server returns virtual card permanent failure.
-  payments_client_->set_select_challenge_option_result(
+  payments_network_interface_->set_select_challenge_option_result(
       AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
 
   // Simulate user selects OTP challenge option. Current context_token is from
-  // previous unmask response. TestPaymentsClient will ack the select challenge
-  // option request and directly invoke the callback.
+  // previous unmask response. TestPaymentsNetworkInterface will ack the select
+  // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
       &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
@@ -252,12 +257,12 @@ TEST_P(CreditCardOtpAuthenticatorTest,
   base::HistogramTester histogram_tester;
   // Simulate server returns non-virtual card permanent failure, e.g. response
   // not complete.
-  payments_client_->set_select_challenge_option_result(
+  payments_network_interface_->set_select_challenge_option_result(
       AutofillClient::PaymentsRpcResult::kPermanentFailure);
 
   // Simulate user selects OTP challenge option. Current context_token is from
-  // previous unmask response. TestPaymentsClient will ack the select challenge
-  // option request and directly invoke the callback.
+  // previous unmask response. TestPaymentsNetworkInterface will ack the select
+  // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
       &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
@@ -289,8 +294,8 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerVcnError) {
   for (bool server_returned_decline_details : {true, false}) {
     base::HistogramTester histogram_tester;
     // Simulate user selects OTP challenge option. Current context_token is from
-    // previous unmask response. TestPaymentsClient will ack the select
-    // challenge option request and directly invoke the callback.
+    // previous unmask response. TestPaymentsNetworkInterface will ack the
+    // select challenge option request and directly invoke the callback.
     authenticator_->OnChallengeOptionSelected(
         &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
         /*context_token=*/"context_token_from_previous_unmask_response",
@@ -302,8 +307,9 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerVcnError) {
     // TODO(crbug.com/1243475): Verify the otp dialog is shown.
 
     // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
-    // TestPaymentsClient just stores the unmask request detail, won't invoke
-    // the callback. OnDidGetRealPan below will manually invoke the callback.
+    // TestPaymentsNetworkInterface just stores the unmask request detail, won't
+    // invoke the callback. OnDidGetRealPan below will manually invoke the
+    // callback.
     authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"111111");
     // Simulate server returns virtual card retrieval try again failure. We will
     // show the error dialog and end session.
@@ -346,8 +352,8 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerVcnError) {
 TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerNonVcnError) {
   base::HistogramTester histogram_tester;
   // Simulate user selects OTP challenge option. Current context_token is from
-  // previous unmask response. TestPaymentsClient will ack the select challenge
-  // option request and directly invoke the callback.
+  // previous unmask response. TestPaymentsNetworkInterface will ack the select
+  // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
       &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
@@ -359,8 +365,9 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerNonVcnError) {
   // TODO(crbug.com/1243475): Verify the otp dialog is shown.
 
   // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
-  // TestPaymentsClient just stores the unmask request detail, won't invoke the
-  // callback. OnDidGetRealPan below will manually invoke the callback.
+  // TestPaymentsNetworkInterface just stores the unmask request detail, won't
+  // invoke the callback. OnDidGetRealPan below will manually invoke the
+  // callback.
   authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"111111");
   // Simulate server returns non-Vcn try again failure. We will reuse virtual
   // card error dialog and end session.
@@ -391,8 +398,8 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerNonVcnError) {
 TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetry) {
   base::HistogramTester histogram_tester;
   // Simulate user selects OTP challenge option. Current context_token is from
-  // previous unmask response. TestPaymentsClient will ack the select challenge
-  // option request and directly invoke the callback.
+  // previous unmask response. TestPaymentsNetworkInterface will ack the select
+  // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
       &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
@@ -404,17 +411,20 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetry) {
   // TODO(crbug.com/1243475): Verify the otp dialog is shown.
 
   // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
-  // TestPaymentsClient just stores the unmask request detail, won't invoke the
-  // callback. OnDidGetRealPan below will manually invoke the callback.
+  // TestPaymentsNetworkInterface just stores the unmask request detail, won't
+  // invoke the callback. OnDidGetRealPan below will manually invoke the
+  // callback.
   authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"222222");
   // Verify the selected challenge option is correctly set in
   // UnmaskRequestDetails.
-  EXPECT_EQ(payments_client_->unmask_request()->selected_challenge_option->id,
+  EXPECT_EQ(payments_network_interface_->unmask_request()
+                ->selected_challenge_option->id,
             selected_otp_challenge_option_.id);
   // Verify that the otp is correctly set in UnmaskRequestDetails.
-  EXPECT_EQ(payments_client_->unmask_request()->otp, u"222222");
+  EXPECT_EQ(payments_network_interface_->unmask_request()->otp, u"222222");
   // Also verify that risk data is set in UnmaskRequestDetails.
-  EXPECT_FALSE(payments_client_->unmask_request()->risk_data.empty());
+  EXPECT_FALSE(
+      payments_network_interface_->unmask_request()->risk_data.empty());
 
   // Simulate otp mismatch, server returns flow_status indicating incorrect otp.
   OnDidGetRealPanWithFlowStatus(
@@ -429,11 +439,12 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetry) {
   authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"333333");
   // Verify that the new otp is correctly set in UnmaskRequestDetails together
   // with the latest context token.
-  EXPECT_EQ(payments_client_->unmask_request()->otp, u"333333");
-  EXPECT_EQ(payments_client_->unmask_request()->context_token,
+  EXPECT_EQ(payments_network_interface_->unmask_request()->otp, u"333333");
+  EXPECT_EQ(payments_network_interface_->unmask_request()->context_token,
             "context_token_from_incorrect_otp");
   // Also verify that risk data is still set in UnmaskRequestDetails.
-  EXPECT_FALSE(payments_client_->unmask_request()->risk_data.empty());
+  EXPECT_FALSE(
+      payments_network_interface_->unmask_request()->risk_data.empty());
 
   // Simulate server returns success for the second try and invoke the callback.
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
@@ -462,8 +473,8 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetry) {
 TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
   base::HistogramTester histogram_tester;
   // Simulate user selects OTP challenge option. Current context_token is from
-  // previous unmask response. TestPaymentsClient will ack the select challenge
-  // option request and directly invoke the callback.
+  // previous unmask response. TestPaymentsNetworkInterface will ack the select
+  // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
       &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
@@ -479,17 +490,20 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
   // TODO(crbug.com/1243475): Verify the otp dialog is shown.
 
   // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
-  // TestPaymentsClient just stores the unmask request detail, won't invoke the
-  // callback. OnDidGetRealPan below will manually invoke the callback.
+  // TestPaymentsNetworkInterface just stores the unmask request detail, won't
+  // invoke the callback. OnDidGetRealPan below will manually invoke the
+  // callback.
   authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"4444444");
   // Verify the selected challenge option is correctly set in
   // UnmaskRequestDetails.
-  EXPECT_EQ(payments_client_->unmask_request()->selected_challenge_option->id,
+  EXPECT_EQ(payments_network_interface_->unmask_request()
+                ->selected_challenge_option->id,
             selected_otp_challenge_option_.id);
   // Verify that the otp is correctly set in UnmaskRequestDetails.
-  EXPECT_EQ(payments_client_->unmask_request()->otp, u"4444444");
+  EXPECT_EQ(payments_network_interface_->unmask_request()->otp, u"4444444");
   // Also verify that risk data is set in UnmaskRequestDetails.
-  EXPECT_FALSE(payments_client_->unmask_request()->risk_data.empty());
+  EXPECT_FALSE(
+      payments_network_interface_->unmask_request()->risk_data.empty());
 
   // Simulate otp expired, server returns flow_status indicating expired otp.
   OnDidGetRealPanWithFlowStatus(
@@ -514,13 +528,14 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
   authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"555555");
   // Verify that the new otp is correctly set in UnmaskRequestDetails together
   // with the latest context token.
-  EXPECT_EQ(payments_client_->unmask_request()->otp, u"555555");
+  EXPECT_EQ(payments_network_interface_->unmask_request()->otp, u"555555");
   // Note here is NOT EQUAL. The context token is from the new select challenge
   // option response.
-  EXPECT_NE(payments_client_->unmask_request()->context_token,
+  EXPECT_NE(payments_network_interface_->unmask_request()->context_token,
             "context_token_from_expired_otp");
   // Also verify that risk data is still set in UnmaskRequestDetails.
-  EXPECT_FALSE(payments_client_->unmask_request()->risk_data.empty());
+  EXPECT_FALSE(
+      payments_network_interface_->unmask_request()->risk_data.empty());
 
   // Simulate server returns success for the second try and invoke the callback.
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
@@ -549,8 +564,8 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
 TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthCancelled) {
   base::HistogramTester histogram_tester;
   // Simulate user selects OTP challenge option. Current context_token is from
-  // previous unmask response. TestPaymentsClient will ack the select challenge
-  // option request and directly invoke the callback.
+  // previous unmask response. TestPaymentsNetworkInterface will ack the select
+  // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
       &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
@@ -638,7 +653,7 @@ TEST_P(CreditCardOtpAuthenticatorCardMetadataTest, MetadataSignal) {
   }
 
   // Simulate user selects OTP challenge option. Current context_token is from
-  // previous unmask response. TestPaymentsClient will ack the select
+  // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
       &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
@@ -646,19 +661,22 @@ TEST_P(CreditCardOtpAuthenticatorCardMetadataTest, MetadataSignal) {
       /*billing_customer_number=*/kTestBillingCustomerNumber);
 
   // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
-  // TestPaymentsClient just stores the unmask request detail, won't invoke
-  // the callback. OnDidGetRealPan below will manually invoke the callback.
+  // TestPaymentsNetworkInterface just stores the unmask request detail, won't
+  // invoke the callback. OnDidGetRealPan below will manually invoke the
+  // callback.
   authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"111111");
   // Verify the selected challenge option is correctly set in
   // UnmaskRequestDetails.
-  EXPECT_EQ(payments_client_->unmask_request()->selected_challenge_option->id,
+  EXPECT_EQ(payments_network_interface_->unmask_request()
+                ->selected_challenge_option->id,
             selected_otp_challenge_option_.id);
   // Verify that the otp is correctly set in UnmaskRequestDetails.
-  EXPECT_EQ(payments_client_->unmask_request()->otp, u"111111");
+  EXPECT_EQ(payments_network_interface_->unmask_request()->otp, u"111111");
   // Also verify that risk data is set in UnmaskRequestDetails.
-  EXPECT_FALSE(payments_client_->unmask_request()->risk_data.empty());
+  EXPECT_FALSE(
+      payments_network_interface_->unmask_request()->risk_data.empty());
   std::vector<ClientBehaviorConstants> signals =
-      payments_client_->unmask_request()->client_behavior_signals;
+      payments_network_interface_->unmask_request()->client_behavior_signals;
   if (MetadataEnabled() && CardNameAvailable() && CardArtAvailable()) {
     EXPECT_NE(
         signals.end(),

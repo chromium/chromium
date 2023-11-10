@@ -24,7 +24,7 @@
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #import "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
-#import "components/autofill/core/browser/payments/payments_client.h"
+#import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #import "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -97,15 +97,16 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
       bridge_(bridge),
       identity_manager_(IdentityManagerFactory::GetForBrowserState(
           browser_state->GetOriginalChromeBrowserState())),
-      payments_client_(std::make_unique<payments::PaymentsClient>(
-          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              browser_state_->GetURLLoaderFactory()),
-          identity_manager_,
-          personal_data_manager_,
-          browser_state_->IsOffTheRecord())),
+      payments_network_interface_(
+          std::make_unique<payments::PaymentsNetworkInterface>(
+              base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                  browser_state_->GetURLLoaderFactory()),
+              identity_manager_,
+              personal_data_manager_,
+              browser_state_->IsOffTheRecord())),
       form_data_importer_(std::make_unique<FormDataImporter>(
           this,
-          payments_client_.get(),
+          payments_network_interface_.get(),
           personal_data_manager_,
           GetApplicationContext()->GetApplicationLocale())),
       infobar_manager_(infobar_manager),
@@ -190,8 +191,9 @@ FormDataImporter* ChromeAutofillClientIOS::GetFormDataImporter() {
   return form_data_importer_.get();
 }
 
-payments::PaymentsClient* ChromeAutofillClientIOS::GetPaymentsClient() {
-  return payments_client_.get();
+payments::PaymentsNetworkInterface*
+ChromeAutofillClientIOS::GetPaymentsNetworkInterface() {
+  return payments_network_interface_.get();
 }
 
 StrikeDatabase* ChromeAutofillClientIOS::GetStrikeDatabase() {

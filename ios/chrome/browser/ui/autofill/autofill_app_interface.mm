@@ -205,8 +205,8 @@ class SaveCardInfobarEGTestHelper
         ->credit_card_save_manager_.get();
   }
 
-  // Access the PaymentsClient.
-  static payments::PaymentsClient* GetPaymentsClient() {
+  // Access the PaymentsNetworkInterface.
+  static payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface() {
     web::WebState* web_state = chrome_test_util::GetCurrentWebState();
     web::WebFramesManager* frames_manager =
         autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
@@ -216,7 +216,7 @@ class SaveCardInfobarEGTestHelper
     return AutofillDriverIOS::FromWebStateAndWebFrame(web_state, main_frame)
         ->GetAutofillManager()
         .client()
-        .GetPaymentsClient();
+        .GetPaymentsNetworkInterface();
   }
 
   // Delete all failed attempds registered on every cards.
@@ -302,19 +302,20 @@ class SaveCardInfobarEGTestHelper
   void SetUp() {
     test_url_loader_factory_ =
         std::make_unique<network::TestURLLoaderFactory>();
-    // Set up the URL loader factory for the PaymentsClient so we can intercept
-    // those network requests.
+    // Set up the URL loader factory for the PaymentsNetworkInterface so we can
+    // intercept those network requests.
     shared_url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             test_url_loader_factory_.get());
 
-    payments::PaymentsClient* payments_client =
-        SaveCardInfobarEGTestHelper::GetPaymentsClient();
-    payments_client->set_url_loader_factory_for_testing(
+    payments::PaymentsNetworkInterface* payments_network_interface =
+        SaveCardInfobarEGTestHelper::GetPaymentsNetworkInterface();
+    payments_network_interface->set_url_loader_factory_for_testing(
         shared_url_loader_factory_);
 
     // Set a fake access token to avoid fetch requests.
-    payments_client->set_access_token_for_testing("fake_access_token");
+    payments_network_interface->set_access_token_for_testing(
+        "fake_access_token");
 
     // Observe actions in CreditCardSaveManager.
     CreditCardSaveManager* credit_card_save_manager =

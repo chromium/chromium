@@ -4,17 +4,17 @@
 
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 
-#include "components/autofill/core/browser/payments/test_payments_client.h"
+#include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 
 namespace autofill {
 
 TestCreditCardSaveManager::TestCreditCardSaveManager(
     AutofillDriver* driver,
     AutofillClient* client,
-    payments::TestPaymentsClient* payments_client,
+    payments::TestPaymentsNetworkInterface* payments_network_interface,
     PersonalDataManager* personal_data_manager)
     : CreditCardSaveManager(client,
-                            payments_client,
+                            payments_network_interface,
                             "en-US",
                             personal_data_manager) {}
 
@@ -77,14 +77,14 @@ void TestCreditCardSaveManager::set_upload_request_card(
   upload_request_.card = std::move(card);
 }
 
-payments::PaymentsClient::UploadRequestDetails*
+payments::PaymentsNetworkInterface::UploadRequestDetails*
 TestCreditCardSaveManager::upload_request() {
   return &upload_request_;
 }
 
 void TestCreditCardSaveManager::OnDidUploadCard(
     AutofillClient::PaymentsRpcResult result,
-    const payments::PaymentsClient::UploadCardResponseDetails&
+    const payments::PaymentsNetworkInterface::UploadCardResponseDetails&
         upload_card_response_details) {
   credit_card_was_uploaded_ = true;
   CreditCardSaveManager::OnDidUploadCard(result, upload_card_response_details);

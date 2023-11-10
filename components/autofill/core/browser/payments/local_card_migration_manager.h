@@ -17,7 +17,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/strike_databases/payments/local_card_migration_strike_database.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -88,10 +88,11 @@ class LocalCardMigrationManager {
   };
 
   // The parameters should outlive the LocalCardMigrationManager.
-  LocalCardMigrationManager(AutofillClient* client,
-                            payments::PaymentsClient* payments_client,
-                            const std::string& app_locale,
-                            PersonalDataManager* personal_data_manager);
+  LocalCardMigrationManager(
+      AutofillClient* client,
+      payments::PaymentsNetworkInterface* payments_network_interface,
+      const std::string& app_locale,
+      PersonalDataManager* personal_data_manager);
 
   LocalCardMigrationManager(const LocalCardMigrationManager&) = delete;
   LocalCardMigrationManager& operator=(const LocalCardMigrationManager&) =
@@ -183,7 +184,7 @@ class LocalCardMigrationManager {
 
   // Handles Payments service requests.
   // Owned by BrowserAutofillManager.
-  raw_ptr<payments::PaymentsClient> payments_client_;
+  raw_ptr<payments::PaymentsNetworkInterface> payments_network_interface_;
 
  private:
   friend class LocalCardMigrationBrowserTest;
@@ -216,7 +217,7 @@ class LocalCardMigrationManager {
   // has accepted the main migration dialog.
   void OnDidGetMigrationRiskData(const std::string& risk_data);
 
-  // Finalizes the migration request and calls PaymentsClient.
+  // Finalizes the migration request and calls the PaymentsNetworkInterface.
   void SendMigrateLocalCardsRequest();
 
   // For testing.
@@ -241,7 +242,8 @@ class LocalCardMigrationManager {
   int credit_card_import_type_;
 
   // Collected information about a pending migration request.
-  payments::PaymentsClient::MigrationRequestDetails migration_request_;
+  payments::PaymentsNetworkInterface::MigrationRequestDetails
+      migration_request_;
 
   // The local credit cards to be uploaded. Owned by LocalCardMigrationManager.
   // The order of cards should not be changed.

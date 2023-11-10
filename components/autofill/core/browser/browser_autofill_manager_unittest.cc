@@ -52,7 +52,7 @@
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
-#include "components/autofill/core/browser/payments/test_payments_client.h"
+#include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_credit_card_save_strike_database.h"
@@ -609,19 +609,19 @@ class BrowserAutofillManagerTest : public testing::Test {
                                        /*is_off_the_record=*/false);
 
     autofill_driver_ = std::make_unique<NiceMock<MockAutofillDriver>>();
-    autofill_client_.set_test_payments_client(
-        std::make_unique<payments::TestPaymentsClient>(
+    autofill_client_.set_test_payments_network_interface(
+        std::make_unique<payments::TestPaymentsNetworkInterface>(
             autofill_client_.GetURLLoaderFactory(),
             autofill_client_.GetIdentityManager(), &personal_data()));
     auto credit_card_save_manager = std::make_unique<TestCreditCardSaveManager>(
         autofill_driver_.get(), &autofill_client_,
-        static_cast<payments::TestPaymentsClient*>(
-            autofill_client_.GetPaymentsClient()),
+        static_cast<payments::TestPaymentsNetworkInterface*>(
+            autofill_client_.GetPaymentsNetworkInterface()),
         &personal_data());
     credit_card_save_manager->SetCreditCardUploadEnabled(true);
     autofill_client_.set_test_form_data_importer(
         std::make_unique<autofill::TestFormDataImporter>(
-            &autofill_client_, autofill_client_.GetPaymentsClient(),
+            &autofill_client_, autofill_client_.GetPaymentsNetworkInterface(),
             std::move(credit_card_save_manager),
             /*iban_save_manager=*/nullptr, &personal_data(), "en-US"));
 
@@ -922,8 +922,8 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
   void PrepareForRealPanResponse(FormData* form, CreditCard* card) {
-    // This line silences the warning from PaymentsClient about matching sync
-    // and Payments server types.
+    // This line silences the warning from PaymentsNetworkInterface about
+    // matching sync and Payments server types.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         "sync-url", "https://google.com");
 
@@ -955,7 +955,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     full_card_request->OnUnmaskPromptAccepted(details);
 
     // Mock payments response.
-    payments::PaymentsClient::UnmaskResponseDetails response;
+    payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
     response.card_type = is_virtual_card
                              ? AutofillClient::PaymentsRpcCardType::kVirtualCard
                              : AutofillClient::PaymentsRpcCardType::kServerCard;

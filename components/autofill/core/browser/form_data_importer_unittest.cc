@@ -464,18 +464,18 @@ class MockVirtualCardEnrollmentManager
  public:
   MockVirtualCardEnrollmentManager(
       TestPersonalDataManager* personal_data_manager,
-      payments::TestPaymentsClient* payments_client,
+      payments::TestPaymentsNetworkInterface* payments_network_interface,
       TestAutofillClient* autofill_client)
       : TestVirtualCardEnrollmentManager(personal_data_manager,
-                                         payments_client,
+                                         payments_network_interface,
                                          autofill_client) {}
   MOCK_METHOD(
       void,
       InitVirtualCardEnroll,
       (const CreditCard& credit_card,
        VirtualCardEnrollmentSource virtual_card_enrollment_source,
-       absl::optional<
-           payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails>
+       absl::optional<payments::PaymentsNetworkInterface::
+                          GetDetailsForEnrollmentResponseDetails>
            get_details_for_enrollment_response_details,
        PrefService* user_prefs,
        VirtualCardEnrollmentManager::RiskAssessmentFunction
@@ -489,13 +489,14 @@ class MockVirtualCardEnrollmentManager
 // file.
 class MockCreditCardSaveManager : public TestCreditCardSaveManager {
  public:
-  MockCreditCardSaveManager(AutofillDriver* driver,
-                            AutofillClient* client,
-                            payments::TestPaymentsClient* payments_client,
-                            PersonalDataManager* personal_data_manager)
+  MockCreditCardSaveManager(
+      AutofillDriver* driver,
+      AutofillClient* client,
+      payments::TestPaymentsNetworkInterface* payments_network_interface,
+      PersonalDataManager* personal_data_manager)
       : TestCreditCardSaveManager(driver,
                                   client,
-                                  payments_client,
+                                  payments_network_interface,
                                   personal_data_manager) {}
   MOCK_METHOD(bool,
               AttemptToOfferCvcLocalSave,
@@ -547,10 +548,10 @@ class FormDataImporterTestBase {
 
     // Init the `form_data_importer()` with `personal_data_manager_`.
     autofill_client_->set_test_form_data_importer(
-        std::make_unique<FormDataImporter>(autofill_client_.get(),
-                                           /*payments_client=*/nullptr,
-                                           personal_data_manager_.get(),
-                                           kLocale));
+        std::make_unique<FormDataImporter>(
+            autofill_client_.get(),
+            /*payments_network_interface=*/nullptr,
+            personal_data_manager_.get(), kLocale));
 
     auto virtual_card_enrollment_manager =
         std::make_unique<MockVirtualCardEnrollmentManager>(

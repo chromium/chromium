@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/profile_requirement_utils.h"
@@ -142,14 +143,15 @@ FormDataImporter::ExtractedFormData::operator=(
 
 FormDataImporter::ExtractedFormData::~ExtractedFormData() = default;
 
-FormDataImporter::FormDataImporter(AutofillClient* client,
-                                   payments::PaymentsClient* payments_client,
-                                   PersonalDataManager* personal_data_manager,
-                                   const std::string& app_locale)
+FormDataImporter::FormDataImporter(
+    AutofillClient* client,
+    payments::PaymentsNetworkInterface* payments_network_interface,
+    PersonalDataManager* personal_data_manager,
+    const std::string& app_locale)
     : client_(client),
       credit_card_save_manager_(
           std::make_unique<CreditCardSaveManager>(client,
-                                                  payments_client,
+                                                  payments_network_interface,
                                                   app_locale,
                                                   personal_data_manager)),
       address_profile_save_manager_(
@@ -158,18 +160,19 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       iban_save_manager_(
           std::make_unique<IbanSaveManager>(personal_data_manager, client)),
-      local_card_migration_manager_(
-          std::make_unique<LocalCardMigrationManager>(client,
-                                                      payments_client,
-                                                      app_locale,
-                                                      personal_data_manager)),
+      local_card_migration_manager_(std::make_unique<LocalCardMigrationManager>(
+          client,
+          payments_network_interface,
+          app_locale,
+          personal_data_manager)),
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       personal_data_manager_(personal_data_manager),
       app_locale_(app_locale),
       virtual_card_enrollment_manager_(
-          std::make_unique<VirtualCardEnrollmentManager>(personal_data_manager,
-                                                         payments_client,
-                                                         client)),
+          std::make_unique<VirtualCardEnrollmentManager>(
+              personal_data_manager,
+              payments_network_interface,
+              client)),
       multistep_importer_(app_locale,
                           client_->GetVariationConfigCountryCode()) {
   if (personal_data_manager_)
