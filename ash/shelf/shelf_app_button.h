@@ -129,6 +129,7 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void Layout() override;
   void ChildPreferredSizeChanged(views::View* child) override;
+  void OnThemeChanged() override;
 
   // Update button state from ShelfItem.
   void ReflectItemStatus(const ShelfItem& item);

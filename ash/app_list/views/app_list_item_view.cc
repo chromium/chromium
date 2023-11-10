@@ -1729,6 +1729,14 @@ void AppListItemView::OnThemeChanged() {
           GetColorProvider()->GetColor(GetBackgroundLayerColorId()));
     }
   }
+
+  UpdateIconView(/*update_item_icon=*/true);
+
+  // Redraw progress indicator to adjust colors.
+  if (progress_indicator_) {
+    progress_indicator_->InvalidateLayer();
+  }
+
   SchedulePaint();
 }
 

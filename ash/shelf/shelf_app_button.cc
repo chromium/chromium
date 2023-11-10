@@ -1064,6 +1064,17 @@ void ShelfAppButton::ChildPreferredSizeChanged(views::View* child) {
   Layout();
 }
 
+void ShelfAppButton::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+
+  UpdateIconImage();
+
+  // Redraw progress indicator to adjust colors.
+  if (progress_indicator_) {
+    progress_indicator_->InvalidateLayer();
+  }
+}
+
 void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::ET_GESTURE_TAP_DOWN:
