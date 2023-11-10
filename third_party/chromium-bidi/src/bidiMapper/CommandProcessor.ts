@@ -180,6 +180,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#browsingContextProcessor.setViewport(
           this.#parser.parseSetViewportParams(command.params)
         );
+      case 'browsingContext.traverseHistory':
+        break;
       // keep-sorted end
 
       // CDP domain

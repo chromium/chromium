@@ -423,7 +423,8 @@ export class NetworkRequest {
       request: this.#getRequestData(),
       // Timestamp should be in milliseconds, while CDP provides it in seconds.
       timestamp: Math.round((this.#request.info?.wallTime ?? 0) * 1000),
-      intercepts: isBlocked ? intercepts : undefined,
+      // XXX: we should return correct types from the function.
+      intercepts: isBlocked ? (intercepts as [string, ...string[]]) : undefined,
     };
   }
 

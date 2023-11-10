@@ -81,6 +81,7 @@ export const enum ErrorCode {
   NoSuchElement = 'no such element',
   NoSuchFrame = 'no such frame',
   NoSuchHandle = 'no such handle',
+  NoSuchHistoryEntry = 'no such history entry',
   NoSuchIntercept = 'no such intercept',
   NoSuchNode = 'no such node',
   NoSuchRequest = 'no such request',
@@ -216,7 +217,8 @@ export type BrowsingContextCommand =
   | BrowsingContext.Navigate
   | BrowsingContext.Print
   | BrowsingContext.Reload
-  | BrowsingContext.SetViewport;
+  | BrowsingContext.SetViewport
+  | BrowsingContext.TraverseHistory;
 export type BrowsingContextEvent =
   | BrowsingContext.ContextCreated
   | BrowsingContext.ContextDestroyed
@@ -235,7 +237,8 @@ export type BrowsingContextResult =
   | BrowsingContext.GetTreeResult
   | BrowsingContext.LocateNodesResult
   | BrowsingContext.NavigateResult
-  | BrowsingContext.PrintResult;
+  | BrowsingContext.PrintResult
+  | BrowsingContext.TraverseHistoryResult;
 export namespace BrowsingContext {
   export type BrowsingContext = string;
 }
@@ -440,7 +443,7 @@ export namespace BrowsingContext {
     ownership?: Script.ResultOwnership;
     sandbox?: string;
     serializationOptions?: Script.SerializationOptions;
-    startNodes?: [...Script.SharedReference[]];
+    startNodes?: [Script.SharedReference, ...Script.SharedReference[]];
   };
 }
 export namespace BrowsingContext {
@@ -590,6 +593,21 @@ export namespace BrowsingContext {
   };
 }
 export namespace BrowsingContext {
+  export type TraverseHistory = {
+    method: 'browsingContext.traverseHistory';
+    params: BrowsingContext.TraverseHistoryParameters;
+  };
+}
+export namespace BrowsingContext {
+  export type TraverseHistoryParameters = {
+    context: BrowsingContext.BrowsingContext;
+    delta: JsInt;
+  };
+}
+export namespace BrowsingContext {
+  export type TraverseHistoryResult = Record<string, never>;
+}
+export namespace BrowsingContext {
   export type ContextCreated = {
     method: 'browsingContext.contextCreated';
     params: BrowsingContext.Info;
@@ -706,7 +724,7 @@ export namespace Network {
     redirectCount: JsUint;
     request: Network.RequestData;
     timestamp: JsUint;
-    intercepts?: [...Network.Intercept[]];
+    intercepts?: [Network.Intercept, ...Network.Intercept[]];
   };
 }
 export namespace Network {
@@ -734,7 +752,7 @@ export namespace Network {
     httpOnly: boolean;
     secure: boolean;
     sameSite: 'strict' | 'lax' | 'none';
-    expires?: JsUint;
+    expiry?: JsUint;
   };
 }
 export namespace Network {
@@ -820,7 +838,7 @@ export namespace Network {
     value: Network.BytesValue;
     domain?: string;
     httpOnly?: boolean;
-    expires?: string;
+    expiry?: string;
     maxAge?: JsInt;
     path?: string;
     sameSite?: 'strict' | 'lax' | 'none';
@@ -848,7 +866,7 @@ export namespace Network {
 }
 export namespace Network {
   export type AddInterceptParameters = {
-    phases: [...Network.InterceptPhase[]];
+    phases: [Network.InterceptPhase, ...Network.InterceptPhase[]];
     urlPatterns?: [...Network.UrlPattern[]];
   };
 }
@@ -1561,7 +1579,10 @@ export namespace Script {
   export type AddPreloadScriptParameters = {
     functionDeclaration: string;
     arguments?: [...Script.ChannelValue[]];
-    contexts?: [...BrowsingContext.BrowsingContext[]];
+    contexts?: [
+      BrowsingContext.BrowsingContext,
+      ...BrowsingContext.BrowsingContext[],
+    ];
     sandbox?: string;
   };
 }

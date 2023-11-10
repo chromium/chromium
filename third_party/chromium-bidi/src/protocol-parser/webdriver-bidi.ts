@@ -108,6 +108,7 @@ export const ErrorCodeSchema = z.lazy(() =>
     'no such element',
     'no such frame',
     'no such handle',
+    'no such history entry',
     'no such intercept',
     'no such node',
     'no such request',
@@ -291,6 +292,7 @@ export const BrowsingContextCommandSchema = z.lazy(() =>
     BrowsingContext.PrintSchema,
     BrowsingContext.ReloadSchema,
     BrowsingContext.SetViewportSchema,
+    BrowsingContext.TraverseHistorySchema,
   ])
 );
 export const BrowsingContextEventSchema = z.lazy(() =>
@@ -316,6 +318,7 @@ export const BrowsingContextResultSchema = z.lazy(() =>
     BrowsingContext.LocateNodesResultSchema,
     BrowsingContext.NavigateResultSchema,
     BrowsingContext.PrintResultSchema,
+    BrowsingContext.TraverseHistoryResultSchema,
   ])
 );
 export namespace BrowsingContext {
@@ -696,6 +699,25 @@ export namespace BrowsingContext {
   );
 }
 export namespace BrowsingContext {
+  export const TraverseHistorySchema = z.lazy(() =>
+    z.object({
+      method: z.literal('browsingContext.traverseHistory'),
+      params: BrowsingContext.TraverseHistoryParametersSchema,
+    })
+  );
+}
+export namespace BrowsingContext {
+  export const TraverseHistoryParametersSchema = z.lazy(() =>
+    z.object({
+      context: BrowsingContext.BrowsingContextSchema,
+      delta: JsIntSchema,
+    })
+  );
+}
+export namespace BrowsingContext {
+  export const TraverseHistoryResultSchema = z.lazy(() => z.object({}));
+}
+export namespace BrowsingContext {
   export const ContextCreatedSchema = z.lazy(() =>
     z.object({
       method: z.literal('browsingContext.contextCreated'),
@@ -887,7 +909,7 @@ export namespace Network {
       httpOnly: z.boolean(),
       secure: z.boolean(),
       sameSite: z.enum(['strict', 'lax', 'none']),
-      expires: JsUintSchema.optional(),
+      expiry: JsUintSchema.optional(),
     })
   );
 }
@@ -989,7 +1011,7 @@ export namespace Network {
       value: Network.BytesValueSchema,
       domain: z.string().optional(),
       httpOnly: z.boolean().optional(),
-      expires: z.string().optional(),
+      expiry: z.string().optional(),
       maxAge: JsIntSchema.optional(),
       path: z.string().optional(),
       sameSite: z.enum(['strict', 'lax', 'none']).optional(),

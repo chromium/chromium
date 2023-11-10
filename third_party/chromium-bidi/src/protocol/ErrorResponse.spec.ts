@@ -31,6 +31,7 @@ describe('Exception', () => {
     [ErrorCode.NoSuchElement]: undefined,
     [ErrorCode.NoSuchFrame]: undefined,
     [ErrorCode.NoSuchHandle]: undefined,
+    [ErrorCode.NoSuchHistoryEntry]: undefined,
     [ErrorCode.NoSuchIntercept]: undefined,
     [ErrorCode.NoSuchNode]: undefined,
     [ErrorCode.NoSuchRequest]: undefined,

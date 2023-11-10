@@ -77,6 +77,12 @@ export class NoSuchHandleException extends Exception {
   }
 }
 
+export class NoSuchHistoryEntryException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.NoSuchHistoryEntry, message, stacktrace);
+  }
+}
+
 export class NoSuchInterceptException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.NoSuchIntercept, message, stacktrace);
