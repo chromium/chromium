@@ -338,7 +338,7 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // `customized_desk_name` or `customized_desk_name
   // ({counter})` to resolve naming conflicts. CanCreateDesks() must be checked
   // before calling this.
-  const Desk* CreateNewDeskForSavedDesk(
+  Desk* CreateNewDeskForSavedDesk(
       DeskTemplateType template_type,
       const std::u16string& customized_desk_name = std::u16string());
 

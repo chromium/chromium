@@ -637,6 +637,7 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
     }
     desks_restore_util::UpdatePrimaryUserDeskGuidsPrefs();
     desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+    desks_restore_util::UpdatePrimaryUserDeskLacrosProfileIdPrefs();
     desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
     UMA_HISTOGRAM_ENUMERATION(kNewDeskHistogramName, source);
     ReportDesksCountHistogram();
@@ -1228,7 +1229,7 @@ void DesksController::CaptureActiveDeskAsSavedDesk(
       current_account_id_);
 }
 
-const Desk* DesksController::CreateNewDeskForSavedDesk(
+Desk* DesksController::CreateNewDeskForSavedDesk(
     DeskTemplateType template_type,
     const std::u16string& customized_desk_name) {
   DCHECK(CanCreateDesks());

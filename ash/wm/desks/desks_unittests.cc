@@ -9204,6 +9204,11 @@ TEST_P(DesksTest, DeskLacrosIdPrefs) {
   RemoveDesk(controller->GetDeskAtIndex(0));
   EXPECT_THAT(GetDeskRestoreLacrosProfileIds(GetPrimaryUserPrefService()),
               testing::ElementsAre(3001, 2001));
+
+  // Create a new desk, its lacros profile ID should default to 0.
+  NewDesk();
+  EXPECT_THAT(GetDeskRestoreLacrosProfileIds(GetPrimaryUserPrefService()),
+              testing::ElementsAre(3001, 2001, 0));
 }
 
 // Tests that windows are closed when the user interacts with the shelf.
