@@ -612,8 +612,6 @@ TEST_F(LazyLoadImagesTest, AttributeChangedFromUnsetToEager) {
 }
 
 TEST_F(LazyLoadImagesTest, ImageInsideLazyLoadedFrame) {
-  ScopedLazyFrameLoadingForTest scoped_lazy_frame_loading_for_test(true);
-
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
   main_resource.Complete(String::Format(

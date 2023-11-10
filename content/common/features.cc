@@ -273,10 +273,6 @@ BASE_FEATURE(kJavaScriptArrayGrouping,
              "JavaScriptArrayGrouping",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLazyFrameLoading,
-             "LazyFrameLoading",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables a fix for a macOS IME Live Conversion issue. crbug.com/1328530 and
 // crbug.com/1342551
 BASE_FEATURE(kMacImeLiveConversionFix,

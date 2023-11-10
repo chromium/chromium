@@ -262,7 +262,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableInstalledApp, raw_ref(features::kInstalledApp)},
     {wf::EnableLazyInitializeMediaControls,
      raw_ref(features::kLazyInitializeMediaControls)},
-    {wf::EnableLazyFrameLoading, raw_ref(features::kLazyFrameLoading)},
     {wf::EnableMachineLearningModelLoader,
      raw_ref(features::kEnableMachineLearningModelLoaderWebPlatformApi),
      kSetOnlyIfOverridden},
