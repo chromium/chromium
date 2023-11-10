@@ -31,20 +31,20 @@ class HotspotAllowedFlagHandlerTest : public ::testing::Test {
     shill_clients::Shutdown();
   }
 
-  void OnGetManagerCallback(bool expected_value,
+  void OnGetManagerCallback(const std::string& property_name,
+                            bool expected_value,
                             absl::optional<base::Value::Dict> result) {
     if (!result) {
       ADD_FAILURE() << "Error getting Shill manager properties";
       return;
     }
-    absl::optional<bool> tethering_allowed =
-        result->FindBool(shill::kTetheringAllowedProperty);
-    if (!tethering_allowed) {
+    absl::optional<bool> actual_value = result->FindBool(property_name);
+    if (!actual_value) {
       ADD_FAILURE()
           << "Error getting TetheringAllowed in Shill manager properties";
       return;
     }
-    EXPECT_EQ(expected_value, *tethering_allowed);
+    EXPECT_EQ(expected_value, *actual_value);
   }
 
  protected:
@@ -60,7 +60,8 @@ TEST_F(HotspotAllowedFlagHandlerTest, FeatureEnabled) {
   base::RunLoop().RunUntilIdle();
   ShillManagerClient::Get()->GetProperties(
       base::BindOnce(&HotspotAllowedFlagHandlerTest::OnGetManagerCallback,
-                     base::Unretained(this), /*expected_value=*/true));
+                     base::Unretained(this), shill::kTetheringAllowedProperty,
+                     /*expected_value=*/true));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -70,7 +71,32 @@ TEST_F(HotspotAllowedFlagHandlerTest, FeatureDisabled) {
   base::RunLoop().RunUntilIdle();
   ShillManagerClient::Get()->GetProperties(
       base::BindOnce(&HotspotAllowedFlagHandlerTest::OnGetManagerCallback,
-                     base::Unretained(this), /*expected_value=*/false));
+                     base::Unretained(this), shill::kTetheringAllowedProperty,
+                     /*expected_value=*/false));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(HotspotAllowedFlagHandlerTest, ExperimentalCarriersEnabled) {
+  feature_list_.InitAndEnableFeature(
+      features::kTetheringExperimentalFunctionality);
+  hotspot_allowed_flag_handler_->Init();
+  base::RunLoop().RunUntilIdle();
+  ShillManagerClient::Get()->GetProperties(base::BindOnce(
+      &HotspotAllowedFlagHandlerTest::OnGetManagerCallback,
+      base::Unretained(this), shill::kExperimentalTetheringFunctionality,
+      /*expected_value=*/true));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(HotspotAllowedFlagHandlerTest, ExperimentalCarriersDisabled) {
+  feature_list_.InitAndDisableFeature(
+      features::kTetheringExperimentalFunctionality);
+  hotspot_allowed_flag_handler_->Init();
+  base::RunLoop().RunUntilIdle();
+  ShillManagerClient::Get()->GetProperties(base::BindOnce(
+      &HotspotAllowedFlagHandlerTest::OnGetManagerCallback,
+      base::Unretained(this), shill::kExperimentalTetheringFunctionality,
+      /*expected_value=*/false));
   base::RunLoop().RunUntilIdle();
 }
 
