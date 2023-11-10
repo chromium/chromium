@@ -49,7 +49,6 @@ class TabUsageRecorderBrowserAgent;
 @class LayoutGuideCenter;
 @protocol LoadQueryCommands;
 class UrlLoadingBrowserAgent;
-class UrlLoadingNotifierBrowserAgent;
 @protocol VoiceSearchController;
 class WebStateUpdateBrowserAgent;
 
@@ -73,7 +72,6 @@ typedef struct {
   BOOL isOffTheRecord;
   PagePlaceholderBrowserAgent* pagePlaceholderBrowserAgent;
   UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
-  UrlLoadingNotifierBrowserAgent* urlLoadingNotifierBrowserAgent;
   id<VoiceSearchController> voiceSearchController;
   TabUsageRecorderBrowserAgent* tabUsageRecorderBrowserAgent;
   base::WeakPtr<WebStateList> webStateList;

@@ -246,14 +246,14 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     HostContentSettingsMap* settings_map =
         ios::HostContentSettingsMapFactory::GetForBrowserState(
             chrome_browser_state_.get());
-    UrlLoadingNotifierBrowserAgent* urlLoadingNotifier_ =
+    UrlLoadingNotifierBrowserAgent* url_loading_notifier =
         UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get());
 
     bubble_presenter_ = [[BubblePresenter alloc]
         initWithDeviceSwitcherResultDispatcher:nullptr
                         hostContentSettingsMap:(HostContentSettingsMap*)
                                                    settings_map
-                               loadingNotifier:urlLoadingNotifier_
+                               loadingNotifier:url_loading_notifier
                                    prefService:chrome_browser_state_.get()
                                                    ->GetPrefs()
                                     sceneState:scene_state_
@@ -285,9 +285,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     bookmarks_coordinator_ =
         [[BookmarksCoordinator alloc] initWithBrowser:browser_.get()];
 
-    url_loading_notifier_browser_agent_ =
-        UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get());
-
     tab_usage_recorder_browser_agent_ =
         TabUsageRecorderBrowserAgent::FromBrowser(browser_.get());
     page_placeholder_browser_agent_ =
@@ -307,8 +304,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.sideSwipeMediator = side_swipe_mediator_;
     dependencies.bookmarksCoordinator = bookmarks_coordinator_;
     dependencies.fullscreenController = fullscreen_controller_;
-    dependencies.urlLoadingNotifierBrowserAgent =
-        url_loading_notifier_browser_agent_;
     dependencies.tabUsageRecorderBrowserAgent =
         tab_usage_recorder_browser_agent_;
     dependencies.layoutGuideCenter =
@@ -332,7 +327,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         initWithWebStateList:browser_.get()->GetWebStateList()
               ntpCoordinator:NTPCoordinator_
                 browserState:chrome_browser_state_.get()
-             loadingNotifier:urlLoadingNotifier_];
+             loadingNotifier:url_loading_notifier];
     tab_events_mediator_.consumer = bvc_;
 
     // Force the view to load.
@@ -443,7 +438,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   FullscreenController* fullscreen_controller_;
   TabEventsMediator* tab_events_mediator_;
   NewTabPageCoordinator* NTPCoordinator_;
-  UrlLoadingNotifierBrowserAgent* url_loading_notifier_browser_agent_;
   TabUsageRecorderBrowserAgent* tab_usage_recorder_browser_agent_;
   SafeAreaProvider* safe_area_provider_;
   PagePlaceholderBrowserAgent* page_placeholder_browser_agent_;
