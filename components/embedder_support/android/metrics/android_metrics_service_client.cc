@@ -403,8 +403,6 @@ void AndroidMetricsServiceClient::RegisterForNotifications() {
                  content::NotificationService::AllSources());
   registrar_.Add(this, content::NOTIFICATION_LOAD_STOP,
                  content::NotificationService::AllSources());
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
-                 content::NotificationService::AllSources());
   registrar_.Add(this, content::NOTIFICATION_RENDER_WIDGET_HOST_HANG,
                  content::NotificationService::AllSources());
 }
@@ -615,6 +613,23 @@ bool AndroidMetricsServiceClient::ShouldStartUpFastForTesting() const {
   return fast_startup_for_testing_;
 }
 
+void AndroidMetricsServiceClient::OnRenderProcessHostCreated(
+    content::RenderProcessHost* host) {
+  if (!host_observation_.IsObservingSource(host)) {
+    host_observation_.AddObservation(host);
+  }
+}
+
+void AndroidMetricsServiceClient::RenderProcessExited(
+    content::RenderProcessHost* host,
+    const content::ChildProcessTerminationInfo& info) {
+  host_observation_.RemoveObservation(host);
+
+  if (did_start_metrics_) {
+    metrics_service_->OnApplicationNotIdle();
+  }
+}
+
 void AndroidMetricsServiceClient::Observe(
     int type,
     const content::NotificationSource& source,
@@ -624,7 +639,6 @@ void AndroidMetricsServiceClient::Observe(
   switch (type) {
     case content::NOTIFICATION_LOAD_STOP:
     case content::NOTIFICATION_LOAD_START:
-    case content::NOTIFICATION_RENDERER_PROCESS_CLOSED:
     case content::NOTIFICATION_RENDER_WIDGET_HOST_HANG:
       metrics_service_->OnApplicationNotIdle();
       break;

@@ -4283,16 +4283,19 @@ void RenderProcessHostImpl::UnregisterHost(int host_id) {
 // static
 void RenderProcessHostImpl::RegisterCreationObserver(
     RenderProcessHostCreationObserver* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
+         // Android unit tests trigger the thread uninitialized case.
+         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
   GetAllCreationObservers().push_back(observer);
 }
 
 // static
 void RenderProcessHostImpl::UnregisterCreationObserver(
     RenderProcessHostCreationObserver* observer) {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
-         // Chrome OS unit tests trigger the thread uninitialized case.
-         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
+  DCHECK(
+      BrowserThread::CurrentlyOn(BrowserThread::UI) ||
+      // Chrome OS and Android unit tests trigger the thread uninitialized case.
+      !BrowserThread::IsThreadInitialized(BrowserThread::UI));
   auto iter = base::ranges::find(GetAllCreationObservers(), observer);
   DCHECK(iter != GetAllCreationObservers().end());
   GetAllCreationObservers().erase(iter);
