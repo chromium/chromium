@@ -444,7 +444,7 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
   recordSafetyHubCardStateClicked(
       histogramName: string, state: SafetyHubCardState) {
     chrome.send(
-        'metricsHandler:recordHistogram',
+        'metricsHandler:recordInHistogram',
         [histogramName, state, SafetyHubCardState.MAX_VALUE]);
   }
 
