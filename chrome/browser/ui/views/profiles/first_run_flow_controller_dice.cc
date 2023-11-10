@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
@@ -478,7 +480,6 @@ void FirstRunFlowControllerDice::HandleIdentityStepsCompleted(
     PostHostClearedCallback post_host_cleared_callback,
     bool is_continue_callback) {
   CHECK(post_host_cleared_callback_->is_null());
-
   post_host_cleared_callback_ = std::move(post_host_cleared_callback);
 
   if (is_continue_callback) {
@@ -486,32 +487,7 @@ void FirstRunFlowControllerDice::HandleIdentityStepsCompleted(
     return;
   }
 
-  auto step_finished_callback =
-      base::BindOnce(&FirstRunFlowControllerDice::MaybeShowDefaultBrowserStep,
-                     base::Unretained(this));
-
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-    RegisterStep(
-        Step::kSearchEngineChoice,
-        ProfileManagementStepController::CreateForSearchEngineChoice(
-            host(), SearchEngineChoiceServiceFactory::GetForProfile(profile_),
-            std::move(step_finished_callback)));
-    SwitchToStep(Step::kSearchEngineChoice, /*reset_state=*/true);
-#else
-    NOTREACHED();
-#endif
-}
-
-void FirstRunFlowControllerDice::MaybeShowDefaultBrowserStep() {
-  auto step_finished_callback =
-      base::BindOnce(&FirstRunFlowControllerDice::FinishFlowAndRunInBrowser,
-                     // Unretained ok: the step is owned by `this`.
-                     base::Unretained(this), base::Unretained(profile_),
-                     std::move(post_host_cleared_callback_));
-  RegisterStep(Step::kDefaultBrowser,
-               std::make_unique<DefaultBrowserStepController>(
-                   host(), std::move(step_finished_callback)));
-  SwitchToStep(Step::kDefaultBrowser, /*reset_state=*/true);
+  SwitchToPostIdentitySteps();
 }
 
 std::unique_ptr<ProfilePickerDiceSignInProvider>
@@ -532,4 +508,41 @@ FirstRunFlowControllerDice::CreateSignedInFlowController(
                      // Unretained ok: the callback is passed to a step that
                      // the `this` will own and outlive.
                      base::Unretained(this)));
+}
+
+base::queue<ProfileManagementFlowController::Step>
+FirstRunFlowControllerDice::RegisterPostIdentitySteps() {
+  base::queue<ProfileManagementFlowController::Step> post_identity_steps;
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+  auto search_engine_choice_step_completed =
+      base::BindOnce(&FirstRunFlowControllerDice::AdvanceToNextPostIdentityStep,
+                     base::Unretained(this));
+  RegisterStep(
+      Step::kSearchEngineChoice,
+      ProfileManagementStepController::CreateForSearchEngineChoice(
+          host(), SearchEngineChoiceServiceFactory::GetForProfile(profile_),
+          std::move(search_engine_choice_step_completed)));
+  post_identity_steps.emplace(
+      ProfileManagementFlowController::Step::kSearchEngineChoice);
+#endif
+
+  auto default_browser_promo_step_completed =
+      base::BindOnce(&FirstRunFlowControllerDice::AdvanceToNextPostIdentityStep,
+                     base::Unretained(this));
+  RegisterStep(Step::kDefaultBrowser,
+               std::make_unique<DefaultBrowserStepController>(
+                   host(), std::move(default_browser_promo_step_completed)));
+  post_identity_steps.emplace(
+      ProfileManagementFlowController::Step::kDefaultBrowser);
+
+  RegisterStep(
+      Step::kFinishFlow,
+      ProfileManagementStepController::CreateForFinishFlowAndRunInBrowser(
+          host(),
+          base::BindOnce(&FirstRunFlowControllerDice::FinishFlowAndRunInBrowser,
+                         base::Unretained(this), base::Unretained(profile_),
+                         std::move(post_host_cleared_callback_))));
+  post_identity_steps.emplace(
+      ProfileManagementFlowController::Step::kFinishFlow);
+  return post_identity_steps;
 }

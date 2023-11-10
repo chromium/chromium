@@ -11,6 +11,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/autofill/popup_controller_common.h"
+#include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
@@ -25,6 +27,11 @@ ProfileManagementFlowControllerImpl::ProfileManagementFlowControllerImpl(
     ProfilePickerWebContentsHost* host,
     ClearHostClosure clear_host_callback)
     : ProfileManagementFlowController(host, std::move(clear_host_callback)) {}
+
+base::queue<ProfileManagementFlowController::Step>
+ProfileManagementFlowControllerImpl::RegisterPostIdentitySteps() {
+  return {};
+}
 
 ProfileManagementFlowControllerImpl::~ProfileManagementFlowControllerImpl() =
     default;
@@ -130,3 +137,18 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
   UnregisterStep(Step::kAccountSelection);
 }
 #endif
+
+void ProfileManagementFlowControllerImpl::SwitchToPostIdentitySteps() {
+  post_identity_steps_ = RegisterPostIdentitySteps();
+  AdvanceToNextPostIdentityStep();
+}
+
+void ProfileManagementFlowControllerImpl::AdvanceToNextPostIdentityStep() {
+  if (post_identity_steps_.empty()) {
+    return;
+  }
+
+  Step next_step = post_identity_steps_.front();
+  post_identity_steps_.pop();
+  SwitchToStep(next_step, /*reset_state=*/true);
+}

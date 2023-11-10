@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
@@ -43,17 +44,18 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
   void CancelPostSignInFlow() override;
 
  protected:
+  // ProfileManagementFlowControllerImpl
   bool PreFinishWithBrowser() override;
-
   std::unique_ptr<ProfilePickerDiceSignInProvider> CreateDiceSignInProvider()
       override;
-
   // `account_info` may not be set as the primary account yet.
   std::unique_ptr<ProfilePickerSignedInFlowController>
   CreateSignedInFlowController(
       Profile* signed_in_profile,
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents) override;
+  base::queue<ProfileManagementFlowController::Step> RegisterPostIdentitySteps()
+      override;
 
  private:
   void HandleIntroSigninChoice(IntroChoice choice);
@@ -67,8 +69,6 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
   void HandleIdentityStepsCompleted(
       PostHostClearedCallback post_host_cleared_callback,
       bool is_continue_callback = false);
-
-  void MaybeShowDefaultBrowserStep();
 
   const raw_ptr<Profile> profile_;
   ProfilePicker::FirstRunExitedCallback first_run_exited_callback_;

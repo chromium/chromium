@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
@@ -252,8 +253,38 @@ class PostSignInStepController : public ProfileManagementStepController {
   base::WeakPtrFactory<PostSignInStepController> weak_ptr_factory_{this};
 };
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+class FinishFlowAndRunInBrowserStepController
+    : public ProfileManagementStepController {
+ public:
+  FinishFlowAndRunInBrowserStepController(
+      ProfilePickerWebContentsHost* host,
+      base::OnceClosure finish_flow_and_run_in_browser_callback)
+      : ProfileManagementStepController(host),
+        finish_flow_and_run_in_browser_callback_(
+            std::move(finish_flow_and_run_in_browser_callback)) {
+    CHECK(finish_flow_and_run_in_browser_callback_);
+  }
 
+  void Show(base::OnceCallback<void(bool success)> step_shown_callback,
+            bool reset_state) override {
+    CHECK(reset_state);
+
+    if (step_shown_callback) {
+      std::move(step_shown_callback).Run(true);
+    }
+    std::move(finish_flow_and_run_in_browser_callback_).Run();
+  }
+
+  void OnNavigateBackRequested() override {
+    // Do nothing, navigating back is not allowed.
+    NOTREACHED_NORETURN();
+  }
+
+ private:
+  base::OnceClosure finish_flow_and_run_in_browser_callback_;
+};
+
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
 class SearchEngineChoiceStepController
     : public ProfileManagementStepController {
  public:
@@ -275,6 +306,10 @@ class SearchEngineChoiceStepController
             search_engines::ChoicePromo::kFre);
 
     if (!should_show_search_engine_choice_step) {
+      if (step_shown_callback) {
+        std::move(step_shown_callback).Run(false);
+      }
+
       std::move(step_completed_callback_).Run();
       return;
     }
@@ -323,7 +358,6 @@ class SearchEngineChoiceStepController
   // Callback to be executed when the step is completed.
   base::OnceClosure step_completed_callback_;
 };
-
 #endif  // BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
 
 }  // namespace
@@ -382,6 +416,15 @@ ProfileManagementStepController::CreateForSearchEngineChoice(
       host, search_engine_choice_service, std::move(callback));
 }
 #endif
+
+// static
+std::unique_ptr<ProfileManagementStepController>
+ProfileManagementStepController::CreateForFinishFlowAndRunInBrowser(
+    ProfilePickerWebContentsHost* host,
+    base::OnceClosure finish_flow_and_run_in_browser_callback) {
+  return std::make_unique<FinishFlowAndRunInBrowserStepController>(
+      host, std::move(finish_flow_and_run_in_browser_callback));
+}
 
 ProfileManagementStepController::ProfileManagementStepController(
     ProfilePickerWebContentsHost* host)
