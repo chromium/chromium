@@ -2650,11 +2650,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-feed-synthetic-capabilities",
-    "owners": [ "sczs@chromium.org", "adamta@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-fenced-frames",
     "owners": [ "dom@chromium.org", "shivanisha@chromium.org", "chrome-fenced-frames@google.com" ],
     "expiry_milestone": 130

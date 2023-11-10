@@ -47,10 +47,6 @@ BASE_FEATURE(kOverrideFeedSettings,
              "OverrideFeedSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableFeedSyntheticCapabilities,
-             "EnableFeedSyntheticCapabilities",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWebFeedFeedbackReroute,
              "WebFeedFeedbackReroute",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -170,10 +166,6 @@ bool IsStickyHeaderDisabledForFollowingFeed() {
 bool IsDotEnabledForNewFollowedContent() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kFeedHeaderSettings, kEnableDotForNewFollowedContent, false);
-}
-
-bool IsFeedSyntheticCapabilitiesEnabled() {
-  return base::FeatureList::IsEnabled(kEnableFeedSyntheticCapabilities);
 }
 
 int FollowingFeedHeaderHeight() {

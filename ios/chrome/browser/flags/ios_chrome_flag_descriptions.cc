@@ -386,11 +386,11 @@ const char kEnableFeedContainmentName[] = "Enables feed containment";
 const char kEnableFeedContainmentDescription[] =
     "If enabled, the feed is contained in a module on the Home surface.";
 
-const char kEnableFeedSyntheticCapabilitiesName[] =
-    "Enable Feed synthetic capabilities.";
-const char kEnableFeedSyntheticCapabilitiesDescription[] =
-    "If enabled synthethic capablities will be used to inform the server of "
-    "the client capabilities.";
+const char kEnableFeedCardMenuSignInPromoName[] =
+    "Enable Feed card menu sign-in promotion";
+const char kEnableFeedCardMenuSignInPromoDescription[] =
+    "Display a sign-in promotion UI when signed out users click on "
+    "personalization options within the feed card menu.";
 
 const char kEnableFollowIPHExpParamsName[] =
     "Enable Follow IPH Experiment Parameters";

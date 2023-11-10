@@ -283,9 +283,10 @@ extern const char kEnableDiscoverFeedTopSyncPromoDescription[];
 extern const char kEnableFeedHeaderSettingsName[];
 extern const char kEnableFeedHeaderSettingsDescription[];
 
-// Title and description for the flag to enable Feed synthetic capabilities.
-extern const char kEnableFeedSyntheticCapabilitiesName[];
-extern const char kEnableFeedSyntheticCapabilitiesDescription[];
+// Title and description for the flag to enable the sign-in promotion triggered
+// by the discover feed card menu.
+extern const char kEnableFeedCardMenuSignInPromoName[];
+extern const char kEnableFeedCardMenuSignInPromoDescription[];
 
 // Title and description for the flag to enable follow IPH experiment
 // parameters.
