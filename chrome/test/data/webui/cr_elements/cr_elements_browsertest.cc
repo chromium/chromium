@@ -162,7 +162,8 @@ class CrElementsWithPixelOutputTest : public WebUIMochaBrowserTest {
 };
 
 // TOD(crbug.com/906991): revisit after PlzDedicatedWorker launch.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_CrLottie DISABLED_CrLottie
 #else
 #define MAYBE_CrLottie CrLottie
