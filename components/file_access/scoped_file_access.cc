@@ -26,4 +26,13 @@ ScopedFileAccess ScopedFileAccess::Allowed() {
 #endif
 }
 
+// static
+ScopedFileAccess ScopedFileAccess::Denied() {
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  return ScopedFileAccess(/*allowed=*/false, base::ScopedFD());
+#else
+  return ScopedFileAccess(/*allowed=*/false);
+#endif
+}
+
 }  // namespace file_access

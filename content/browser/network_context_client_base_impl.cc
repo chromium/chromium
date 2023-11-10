@@ -17,6 +17,7 @@
 #include "content/public/browser/network_context_client_base.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -78,6 +79,10 @@ void OnScopedFilesAccessAcquired(
     network::mojom::NetworkContextClient::OnFileUploadRequestedCallback
         callback,
     file_access::ScopedFileAccess scoped_file_access) {
+  if (!scoped_file_access.is_allowed()) {
+    std::move(callback).Run(net::Error::ERR_ACCESS_DENIED, /*files=*/{});
+    return;
+  }
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&HandleFileUploadRequest, process_id, async, file_paths,

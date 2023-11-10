@@ -10,6 +10,8 @@
 
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -18,11 +20,13 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -44,6 +48,8 @@
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -77,7 +83,6 @@
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1200,6 +1205,36 @@ TEST_F(ChromeContentBrowserClientTest, IsolatedWebAppsDisabledOnSignInScreen) {
   EXPECT_FALSE(client.AreIsolatedWebAppsEnabled(sign_in_screen_profile.get()));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(ChromeContentBrowserClientTest, RequestFileAccessAllow) {
+  file_access::MockScopedFileAccessDelegate scoped_file_access;
+  base::test::TestFuture<file_access::ScopedFileAccess> continuation_callback;
+  base::FilePath path = base::FilePath(FILE_PATH_LITERAL("/path/to/file"));
+  EXPECT_CALL(scoped_file_access,
+              RequestFilesAccess(testing::ElementsAre(path), GURL(), _))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          file_access::ScopedFileAccess::Allowed()));
+  ChromeContentBrowserClient client;
+  client.RequestFilesAccess({path}, GURL(),
+                            continuation_callback.GetCallback());
+  EXPECT_TRUE(continuation_callback.Take().is_allowed());
+}
+
+TEST_F(ChromeContentBrowserClientTest, RequestFileAccessDeny) {
+  file_access::MockScopedFileAccessDelegate scoped_file_access;
+  base::test::TestFuture<file_access::ScopedFileAccess> continuation_callback;
+  base::FilePath path = base::FilePath(FILE_PATH_LITERAL("/path/to/file"));
+  EXPECT_CALL(scoped_file_access,
+              RequestFilesAccess(testing::ElementsAre(path), GURL(), _))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          file_access::ScopedFileAccess::Denied()));
+  ChromeContentBrowserClient client;
+  client.RequestFilesAccess({path}, GURL(),
+                            continuation_callback.GetCallback());
+  EXPECT_FALSE(continuation_callback.Take().is_allowed());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class ChromeContentBrowserClientSwitchTest
     : public ChromeRenderViewHostTestHarness {
