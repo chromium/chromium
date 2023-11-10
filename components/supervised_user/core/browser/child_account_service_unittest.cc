@@ -75,7 +75,7 @@ class ChildAccountServiceTest : public ::testing::Test {
     supervised_user_service_ = std::make_unique<SupervisedUserService>(
         identity_test_environment_->identity_manager(),
         kids_chrome_management_client_.get(), syncable_pref_service_,
-        settings_service_, sync_service_,
+        settings_service_, &sync_service_,
         /*check_webstore_url_callback=*/
         base::BindRepeating([](const GURL& url) { return false; }),
         std::make_unique<FakeURLFilterDelegate>(),

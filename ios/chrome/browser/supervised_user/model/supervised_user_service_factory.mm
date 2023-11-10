@@ -97,7 +97,7 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<supervised_user::SupervisedUserService>(
       IdentityManagerFactory::GetForBrowserState(browser_state),
       KidsChromeManagementClientFactory::GetForBrowserState(browser_state),
-      *user_prefs, *settings_service, *sync_service,
+      *user_prefs, *settings_service, sync_service,
       // iOS does not support extensions, check_webstore_url_callback returns
       // false.
       base::BindRepeating([](const GURL& url) { return false; }),

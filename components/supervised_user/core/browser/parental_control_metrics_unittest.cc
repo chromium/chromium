@@ -50,7 +50,7 @@ class ParentalControlMetricsTest : public testing::Test {
         std::make_unique<supervised_user::SupervisedUserService>(
             identity_test_env_.identity_manager(),
             kids_chrome_management_client_.get(), pref_service_,
-            settings_service_, sync_service_,
+            settings_service_, &sync_service_,
             /*check_webstore_url_callback=*/
             base::BindRepeating([](const GURL& url) { return false; }),
             std::make_unique<supervised_user::FakeURLFilterDelegate>(),

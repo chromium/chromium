@@ -76,7 +76,7 @@ KeyedService* SupervisedUserServiceFactory::BuildInstanceFor(Profile* profile) {
       *profile->GetPrefs(),
       *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
           profile->GetProfileKey()),
-      *SyncServiceFactory::GetInstance()->GetForProfile(profile),
+      SyncServiceFactory::GetInstance()->GetForProfile(profile),
       base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL),
       std::make_unique<FilterDelegateImpl>(),
       /*can_show_first_time_interstitial_banner=*/!profile->IsNewProfile());

@@ -152,7 +152,7 @@ SupervisedUserService::SupervisedUserService(
     KidsChromeManagementClient* kids_chrome_management_client,
     PrefService& user_prefs,
     SupervisedUserSettingsService& settings_service,
-    syncer::SyncService& sync_service,
+    syncer::SyncService* sync_service,
     ValidateURLSupportCallback check_webstore_url_callback,
     std::unique_ptr<SupervisedUserURLFilter::Delegate> url_filter_delegate,
     bool can_show_first_time_interstitial_banner)
@@ -205,7 +205,8 @@ void SupervisedUserService::SetActive(bool active) {
   // SupervisedUserSettingsModelTypeController.
   // TODO(crbug.com/946473): Get rid of this hack and instead call
   // DataTypePreconditionChanged from the controller.
-  if (sync_service_->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
+  if (sync_service_ &&
+      sync_service_->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
     // Trigger a reconfig by grabbing a SyncSetupInProgressHandle and
     // immediately releasing it again (via the temporary unique_ptr going away).
     sync_service_->GetSetupInProgressHandle();

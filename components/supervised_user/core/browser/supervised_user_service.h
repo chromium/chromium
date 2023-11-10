@@ -144,7 +144,7 @@ class SupervisedUserService : public KeyedService,
       KidsChromeManagementClient* kids_chrome_management_client,
       PrefService& user_prefs,
       supervised_user::SupervisedUserSettingsService& settings_service,
-      syncer::SyncService& sync_service,
+      syncer::SyncService* sync_service,
       ValidateURLSupportCallback check_webstore_url_callback,
       std::unique_ptr<supervised_user::SupervisedUserURLFilter::Delegate>
           url_filter_delegate,
@@ -197,7 +197,7 @@ class SupervisedUserService : public KeyedService,
   const raw_ref<supervised_user::SupervisedUserSettingsService>
       settings_service_;
 
-  const raw_ref<syncer::SyncService> sync_service_;
+  const raw_ptr<syncer::SyncService> sync_service_;
 
   raw_ptr<signin::IdentityManager> identity_manager_;
 
