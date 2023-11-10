@@ -98,8 +98,12 @@
 
   <!-- APP NOTIFICATION MANAGEMENT -->
   <template is="dom-if" route-path="/app-notifications-manager">
-    <os-settings-subpage page-title="$i18n{appNotificationsManagerLabel}">
-      <settings-app-notifications-manager-subpage prefs="{{prefs}}">
+    <os-settings-subpage
+        page-title="$i18n{appNotificationsManagerLabel}"
+        search-label="$i18n{appManagementSearchPrompt}"
+        search-term="{{searchTerm}}">
+      <settings-app-notifications-manager-subpage
+          prefs="{{prefs}}" search-term="[[searchTerm]]">
       </settings-app-notifications-manager-subpage>
     </os-settings-subpage>
   </template>
