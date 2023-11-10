@@ -74,7 +74,12 @@ InkDropHost::InkDropHost(View* view)
       ink_drop_event_handler_delegate_(this),
       ink_drop_event_handler_(view, &ink_drop_event_handler_delegate_) {}
 
-InkDropHost::~InkDropHost() = default;
+InkDropHost::~InkDropHost() {
+  // Destroy ink_drop_ early as it holds references to this
+  // and should not call methods on a partially-destructed
+  // InkDropHost as part of its destruction.
+  ink_drop_.reset();
+}
 
 std::unique_ptr<InkDrop> InkDropHost::CreateInkDrop() {
   if (create_ink_drop_callback_) {
