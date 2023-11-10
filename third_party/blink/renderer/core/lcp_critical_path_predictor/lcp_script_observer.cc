@@ -32,8 +32,7 @@ HashSet<String> LCPScriptObserver::GetExecutingScriptUrls() {
 
   // Gather (promise) microtasks in execution. This is required as Probes
   // do not yet have an implementation that covers microtasks.
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  DCHECK(isolate);
+  v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
   auto v8_stack_urls = GetScriptUrlsFromCurrentStack(isolate, 0);
   for (auto& url : v8_stack_urls) {
     if (url.empty()) {

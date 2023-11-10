@@ -65,9 +65,9 @@ Vector<String> GetScriptUrlsFromCurrentStack(v8::Isolate* isolate,
                                              wtf_size_t unique_url_count) {
   Vector<String> unique_urls;
 
-  DCHECK(isolate);
-  if (!isolate->InContext())
+  if (!isolate || !isolate->InContext()) {
     return unique_urls;
+  }
 
   // CurrentStackTrace is 10x faster than CaptureStackTrace if all that you
   // need is the url of the script at the top of the stack. See

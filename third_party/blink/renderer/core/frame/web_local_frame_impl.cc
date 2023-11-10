@@ -92,6 +92,7 @@
 #include <numeric>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -711,8 +712,11 @@ WebLocalFrame* WebLocalFrame::FromFrameToken(
 }
 
 WebLocalFrame* WebLocalFrame::FrameForCurrentContext() {
-  v8::Local<v8::Context> context =
-      v8::Isolate::GetCurrent()->GetCurrentContext();
+  v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
+  if (UNLIKELY(!isolate)) {
+    return nullptr;
+  }
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
   if (context.IsEmpty())
     return nullptr;
   return FrameForContext(context);

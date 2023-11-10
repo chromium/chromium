@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -101,8 +102,10 @@ String AdTracker::ScriptAtTopOfStack() {
   // CurrentStackTrace is 10x faster than CaptureStackTrace if all that you need
   // is the url of the script at the top of the stack. See crbug.com/1057211 for
   // more detail.
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  DCHECK(isolate);
+  v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
+  if (UNLIKELY(!isolate)) {
+    return String();
+  }
 
   v8::Local<v8::StackTrace> stack_trace =
       v8::StackTrace::CurrentStackTrace(isolate, /*frame_limit=*/1);
@@ -119,7 +122,10 @@ String AdTracker::ScriptAtTopOfStack() {
 
 ExecutionContext* AdTracker::GetCurrentExecutionContext() {
   // Determine the current ExecutionContext.
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
+  if (!isolate) {
+    return nullptr;
+  }
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   return context.IsEmpty() ? nullptr : ToExecutionContext(context);
 }

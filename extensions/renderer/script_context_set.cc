@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/script_context_set.h"
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
@@ -85,7 +86,10 @@ void ScriptContextSet::Remove(ScriptContext* context) {
 }
 
 ScriptContext* ScriptContextSet::GetCurrent() const {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
+  if (UNLIKELY(!isolate)) {
+    return nullptr;
+  }
   return isolate->InContext() ? GetByV8Context(isolate->GetCurrentContext())
                               : nullptr;
 }

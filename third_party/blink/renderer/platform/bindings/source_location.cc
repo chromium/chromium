@@ -51,7 +51,7 @@ std::unique_ptr<SourceLocation> SourceLocation::CaptureWithFullStackTrace() {
 // static
 std::unique_ptr<v8_inspector::V8StackTrace>
 SourceLocation::CaptureStackTraceInternal(bool full) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
   ThreadDebugger* debugger = ThreadDebugger::From(isolate);
   if (!debugger || !isolate->InContext())
     return nullptr;
