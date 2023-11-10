@@ -27,15 +27,11 @@ infoplist_read() {
   __CFPREFERENCES_AVOID_DAEMON=1 defaults read "${@}"
 }
 
-# 1. Install Keystone.
+# 1. Install GoogleUpdater.
 
-echo "Installing Keystone."
+echo "Installing GoogleUpdater."
 
-readonly KS_REG_FRAMEWORK="${INSTALLATION_PATH}/${FRAMEWORK_DIR}/Frameworks/KeystoneRegistration.framework"
-readonly KS_INSTALL="${KS_REG_FRAMEWORK}/Helpers/ksinstall"
-readonly KS_ARCHIVE="${KS_REG_FRAMEWORK}/Resources/Keystone.tbz"
-
-"${KS_INSTALL}" "--install=${KS_ARCHIVE}"
+"${INSTALLATION_PATH}/${FRAMEWORK_DIR}/Helpers/GoogleUpdater.app/Contents/MacOS/GoogleUpdater" "--install" "--system"
 
 
 # 2. Create the brand file, if specified.
@@ -58,9 +54,9 @@ else
   echo "Skipping the brand file."
 fi
 
-# 3. Register Chrome with Keystone.
+# 3. Register Chrome with GoogleUpdater via its ksadmin shim.
 
-echo "Registering Chrome with Keystone."
+echo "Registering Chrome with GoogleUpdater."
 
 readonly CHROME_APP_LOCATION="${INSTALLATION_PATH}/${APP_DIR}"
 readonly CHROME_APP_INFO_PLIST="${CHROME_APP_LOCATION}/Contents/Info.plist"

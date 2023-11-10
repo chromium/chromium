@@ -34,6 +34,8 @@
 #include "chrome/updater/mac/privileged_helper/server.h"
 #include "chrome/updater/mac/privileged_helper/service_protocol.h"
 #include "chrome/updater/updater_branding.h"
+#include "chrome/updater/util/mac_util.h"
+#include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
 
 @interface PrivilegedHelperServiceImpl
@@ -124,6 +126,8 @@ constexpr base::FilePath::CharType kFrameworksPath[] =
                       " Framework.framework/Helpers");
 constexpr base::FilePath::CharType kProductBundleName[] =
     FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING ".app");
+constexpr base::FilePath::CharType kKeystoneBundleName[] =
+    FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle");
 constexpr int kPermissionsMask = base::FILE_PERMISSION_USER_MASK |
                                  base::FILE_PERMISSION_GROUP_MASK |
                                  base::FILE_PERMISSION_READ_BY_OTHERS |
@@ -137,8 +141,21 @@ constexpr int kFailedToConfirmPermissionChanges = -3;
 constexpr int kFailedToCreateTempDir = -4;
 constexpr int kFailedToCopyToTempDir = -5;
 constexpr int kFailedToVerifyUpdater = -6;
+constexpr int kFailedToReadBrowserPlist = -7;
+constexpr int kFailedToRegister = -8;
+
+}  // namespace
 
 int InstallUpdater(const base::FilePath& browser_path) {
+  base::FilePath browser_plist = browser_path.Append("Contents/Info.plist");
+  absl::optional<std::string> browser_app_id =
+      ReadValueFromPlist(browser_plist, "KSProductID");
+  absl::optional<std::string> browser_version =
+      ReadValueFromPlist(browser_plist, "KSVersion");
+  if (!browser_app_id || !browser_version) {
+    return kFailedToReadBrowserPlist;
+  }
+
   std::string user_temp_dir(PATH_MAX, std::string::value_type());
   size_t len = confstr(_CS_DARWIN_USER_TEMP_DIR, user_temp_dir.data(),
                        user_temp_dir.size());
@@ -152,10 +169,10 @@ int InstallUpdater(const base::FilePath& browser_path) {
     return kFailedToCreateTempDir;
   }
 
-  if (!base::CopyDirectory(base::FilePath(browser_path)
-                               .Append(kFrameworksPath)
-                               .Append(kProductBundleName),
-                           temp_dir.GetPath(), true)) {
+  if (!CopyDir(base::FilePath(browser_path)
+                   .Append(kFrameworksPath)
+                   .Append(kProductBundleName),
+               temp_dir.GetPath(), false)) {
     return kFailedToCopyToTempDir;
   }
 
@@ -177,16 +194,53 @@ int InstallUpdater(const base::FilePath& browser_path) {
   if (!base::GetAppOutputWithExitCode(command, &output, &exit_code)) {
     return kFailedToInstall;
   }
-
   if (exit_code) {
     VLOG(0) << "Output from attempting to install system-level updater: "
             << output;
     VLOG(0) << "Exit code: " << exit_code;
+    return exit_code;
   }
-  return exit_code;
-}
 
-}  // namespace
+  base::CommandLine ksadmin_command(temp_dir.GetPath()
+                                        .Append(kProductBundleName)
+                                        .Append("Contents/Helpers")
+                                        .Append(kKeystoneBundleName)
+                                        .Append("Contents/Helpers/ksadmin"));
+  // ksadmin does not support --switch=value, only --switch value, except for
+  // logging arguments.
+  ksadmin_command.AppendArg("--register");
+  ksadmin_command.AppendArg("--productid");
+  ksadmin_command.AppendArg(*browser_app_id);
+  ksadmin_command.AppendArg("--tag-key");
+  ksadmin_command.AppendArg("KSChannelID");
+  ksadmin_command.AppendArg("--tag-path");
+  ksadmin_command.AppendArgPath(browser_plist);
+  ksadmin_command.AppendArg("--version");
+  ksadmin_command.AppendArg(*browser_version);
+  ksadmin_command.AppendArg("--version-key");
+  ksadmin_command.AppendArg("KSVersion");
+  ksadmin_command.AppendArg("--version-path");
+  ksadmin_command.AppendArgPath(browser_path.Append("Contents/Info.plist"));
+  ksadmin_command.AppendArg("--brand-path");
+  ksadmin_command.AppendArg("/Library/" COMPANY_SHORTNAME_STRING
+                            "/" BROWSER_PRODUCT_NAME_STRING " Brand.plist");
+  ksadmin_command.AppendArg("--brand-key");
+  ksadmin_command.AppendArg("KSBrandID");
+  ksadmin_command.AppendArg("--xcpath");
+  ksadmin_command.AppendArgPath(browser_path);
+  ksadmin_command.AppendArg("--system-store");
+  ksadmin_command.AppendSwitch(
+      base::StrCat({kLoggingModuleSwitch, kLoggingModuleSwitchValue}));
+  if (!base::GetAppOutputWithExitCode(ksadmin_command, &output, &exit_code)) {
+    return kFailedToRegister;
+  }
+  if (exit_code) {
+    VLOG(0) << "Output from attempting to register the browser: " << output;
+    VLOG(0) << "Exit code: " << exit_code;
+    return exit_code;
+  }
+  return 0;
+}
 
 bool VerifyUpdaterSignature(const base::FilePath& updater_app_bundle) {
   base::apple::ScopedCFTypeRef<SecRequirementRef> requirement;

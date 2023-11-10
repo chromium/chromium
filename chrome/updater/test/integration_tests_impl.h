@@ -362,6 +362,10 @@ void RunFakeLegacyUpdater(UpdaterScope scope);
 void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find);
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC)
+void PrivilegedHelperInstall(UpdaterScope scope);
+#endif  // BUILDFLAG(IS_WIN)
+
 void ExpectLegacyUpdaterMigrated(UpdaterScope scope);
 
 void RunRecoveryComponent(UpdaterScope scope,

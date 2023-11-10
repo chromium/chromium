@@ -411,6 +411,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC)
+  void PrivilegedHelperInstall() const override {
+    RunCommand("privileged_helper_install");
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   void ExpectLegacyUpdaterMigrated() const override {
     RunCommand("expect_legacy_updater_migrated");
   }

@@ -413,6 +413,10 @@ void AppTestHelper::FirstTaskRun() {
 #if BUILDFLAG(IS_WIN)
     {"run_fake_legacy_updater", WithSystemScope(Wrap(&RunFakeLegacyUpdater))},
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC)
+    {"privileged_helper_install",
+     WithSystemScope(Wrap(&PrivilegedHelperInstall))},
+#endif  // BUILDFLAG(IS_MAC)
     {"expect_legacy_updater_migrated",
      WithSystemScope(Wrap(&ExpectLegacyUpdaterMigrated))},
     {"run_recovery_component",
