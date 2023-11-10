@@ -374,6 +374,8 @@ static_library("common") {
     "mouse_shape_pump.h",
     "pairing_registry_delegate.cc",
     "pairing_registry_delegate.h",
+    "passthrough_register_support_host_request.cc",
+    "passthrough_register_support_host_request.h",
     "pin_hash.cc",
     "pin_hash.h",
     "policy_watcher.cc",

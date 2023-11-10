@@ -33,6 +33,7 @@
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "remoting/host/it2me/it2me_helpers.h"
 #include "remoting/host/it2me_desktop_environment.h"
+#include "remoting/host/passthrough_register_support_host_request.h"
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
 #include "remoting/protocol/it2me_host_authenticator_factory.h"
@@ -245,13 +246,8 @@ void It2MeHost::ConnectOnNetworkThread(
     // Generate a new host secret for this instance.
     host_secret_ = GenerateSupportHostSecret();
 
-    // Request registration of the host for support.
+    // Register this host instance in the backend service.
     register_request_ = std::move(connection_context->register_request);
-    register_request_->StartRequest(
-        signal_strategy_.get(), host_key_pair_, authorized_helper_,
-        std::move(chrome_os_enterprise_params_),
-        base::BindOnce(&It2MeHost::OnReceivedSupportID,
-                       base::Unretained(this)));
   } else {
     // Reconnections are only allowed for Chrome OS enterprise sessions.
     CHECK(SessionSupportsReconnections());
@@ -264,12 +260,14 @@ void It2MeHost::ConnectOnNetworkThread(
 
     // Skip the registration service call as the entry will be retrievable by
     // the `authorized_helper` for ~24 hours when 'allow_reconnections' is set.
-    host_context_->network_task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&It2MeHost::OnReceivedSupportID,
-                                  weak_factory_.GetWeakPtr(),
-                                  reconnect_params_->support_id,
-                                  base::Minutes(5), ErrorCode::OK));
+    register_request_ = std::make_unique<PassthroughRegisterSupportHostRequest>(
+        reconnect_params_->support_id);
   }
+  register_request_->StartRequest(
+      signal_strategy_.get(), host_key_pair_, authorized_helper_,
+      std::move(chrome_os_enterprise_params_),
+      base::BindOnce(&It2MeHost::OnReceivedSupportID,
+                     weak_factory_.GetWeakPtr()));
 
   HOST_LOG << "NAT traversal enabled: " << nat_traversal_enabled_;
   HOST_LOG << "Relay connections allowed: " << relay_connections_allowed_;
