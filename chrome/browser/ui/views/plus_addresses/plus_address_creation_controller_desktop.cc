@@ -5,7 +5,8 @@
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller_desktop.h"
 #include "base/notreached.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
-#include "chrome/browser/ui/plus_addresses/plus_address_creation_dialog_view.h"
+#include "chrome/browser/ui/views/plus_addresses/plus_address_creation_dialog_delegate.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -27,7 +28,7 @@ PlusAddressCreationControllerDesktop::~PlusAddressCreationControllerDesktop() =
 void PlusAddressCreationControllerDesktop::OfferCreation(
     const url::Origin& main_frame_origin,
     PlusAddressCallback callback) {
-  if (ui_modal_showing_) {
+  if (dialog_delegate_) {
     return;
   }
   PlusAddressService* plus_address_service =
@@ -49,18 +50,25 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
   relevant_origin_ = main_frame_origin;
   callback_ = std::move(callback);
 
+  PlusAddressMetrics::RecordModalEvent(
+      PlusAddressMetrics::PlusAddressModalEvent::kModalShown);
+  if (!suppress_ui_for_testing_) {
+    dialog_delegate_ = std::make_unique<PlusAddressCreationDialogDelegate>(
+        GetWeakPtr(), maybe_email.value());
+    constrained_window::ShowWebModalDialogViews(dialog_delegate_.get(),
+                                                &GetWebContents());
+  }
+
   plus_address_service->ReservePlusAddress(
       relevant_origin_,
       base::BindOnce(
           &PlusAddressCreationControllerDesktop::OnPlusAddressReserved,
-          GetWeakPtr(), maybe_email.value()));
+          GetWeakPtr()));
 }
 
 void PlusAddressCreationControllerDesktop::OnConfirmed() {
-  if (!plus_profile_.has_value()) {
-    // The UI should prevent any attempt to Confirm if Reserve() had failed.
-    NOTREACHED_NORETURN();
-  }
+  // The UI prevents any attempt to Confirm if Reserve() had failed.
+  CHECK(plus_profile_.has_value());
   PlusAddressMetrics::RecordModalEvent(
       PlusAddressMetrics::PlusAddressModalEvent::kModalConfirmed);
 
@@ -85,7 +93,7 @@ void PlusAddressCreationControllerDesktop::OnCanceled() {
       PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled);
 }
 void PlusAddressCreationControllerDesktop::OnDialogDestroyed() {
-  ui_modal_showing_ = false;
+  dialog_delegate_.reset();
   plus_profile_.reset();
 }
 
@@ -105,20 +113,19 @@ PlusAddressCreationControllerDesktop::GetWeakPtr() {
 }
 
 void PlusAddressCreationControllerDesktop::OnPlusAddressReserved(
-    const std::string& primary_email_address,
     const PlusProfileOrError& maybe_plus_profile) {
   if (!maybe_plus_profile.has_value()) {
     // TODO: crbug.com/1467623 - Handle error case.
+    if (dialog_delegate_) {
+      dialog_delegate_->OnRequestError();
+    }
     return;
   }
   plus_profile_ = maybe_plus_profile.value();
-  PlusAddressMetrics::RecordModalEvent(
-      PlusAddressMetrics::PlusAddressModalEvent::kModalShown);
-  if (!suppress_ui_for_testing_ && !ui_modal_showing_) {
-    ShowPlusAddressCreationDialogView(&GetWebContents(), GetWeakPtr(),
-                                      primary_email_address,
-                                      maybe_plus_profile->plus_address);
-    ui_modal_showing_ = true;
+  if (!suppress_ui_for_testing_) {
+    if (dialog_delegate_) {
+      dialog_delegate_->OnModalReadyForUse(maybe_plus_profile->plus_address);
+    }
   }
 }
 

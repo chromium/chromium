@@ -13,6 +13,8 @@
 
 namespace plus_addresses {
 
+class PlusAddressCreationDialogDelegate;
+
 class PlusAddressCreationControllerDesktop
     : public PlusAddressCreationController,
       public content::WebContentsUserData<
@@ -44,13 +46,13 @@ class PlusAddressCreationControllerDesktop
       PlusAddressCreationControllerDesktop>;
 
   // Populates `plus_profile_` with `maybe_plus_profile` if it's not an error.
-  void OnPlusAddressReserved(const std::string& primary_email_address,
-                             const PlusProfileOrError& maybe_plus_profile);
+  void OnPlusAddressReserved(const PlusProfileOrError& maybe_plus_profile);
   // Autofills `plus_address` in the targeted field by running callback_.
   void OnPlusAddressConfirmed(const PlusProfileOrError& maybe_plus_profile);
 
   base::WeakPtr<PlusAddressCreationControllerDesktop> GetWeakPtr();
 
+  std::unique_ptr<PlusAddressCreationDialogDelegate> dialog_delegate_;
   url::Origin relevant_origin_;
   PlusAddressCallback callback_;
   bool ui_modal_showing_ = false;

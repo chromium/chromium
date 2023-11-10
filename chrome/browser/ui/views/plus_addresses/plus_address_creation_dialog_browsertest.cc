@@ -106,6 +106,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogTest, BasicUiVerify) {
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogTest, DoubleInit) {
   // First, show the UI normally.
   ShowUi(std::string());
+  VerifyUi();
   base::test::TestFuture<const std::string&> future;
 
   // Then, manually re-trigger the UI, while the modal is still open, passing
@@ -116,8 +117,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogTest, DoubleInit) {
           browser()->tab_strip_model()->GetActiveWebContents());
   controller->OfferCreation(url::Origin::Create(GURL("https://test.example")),
                             future.GetCallback());
-
   controller->OnConfirmed();
+  DismissUi();
   EXPECT_FALSE(future.IsReady());
 }
 
