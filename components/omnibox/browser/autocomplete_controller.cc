@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <numeric>
+#include <queue>
 #include <set>
 #include <string>
 #include <unordered_set>
@@ -1832,6 +1833,9 @@ void AutocompleteController::OnUrlScoringModelDone(
   std::priority_queue<int> relevance_heap;
   std::priority_queue<std::pair<float, AutocompleteResult::iterator>>
       prediction_and_match_itr_heap;
+  // Likewise, keep the same number of shortcut boosted suggestions but reassign
+  // them to the highest scoring suggestions.
+  size_t boosted_shortcut_count = 0;
   for (auto& [prediction, stripped_destination_url] : results) {
     if (!prediction.has_value()) {
       continue;
@@ -1847,6 +1851,8 @@ void AutocompleteController::OnUrlScoringModelDone(
 
     relevance_heap.emplace(match_itr->relevance);
     prediction_and_match_itr_heap.emplace(prediction.value(), match_itr);
+    if (match_itr->shortcut_boosted)
+      boosted_shortcut_count++;
   }
 
   if (!relevance_heap.empty()) {
@@ -1873,6 +1879,13 @@ void AutocompleteController::OnUrlScoringModelDone(
       match_itr->RecordAdditionalInfo(
           "ml model output", prediction_and_match_itr_heap.top().first);
       match_itr->relevance = relevance_heap.top();
+      if (boosted_shortcut_count) {
+        match_itr->RecordAdditionalInfo("ML shortcut boosted", "true");
+        match_itr->shortcut_boosted = true;
+        boosted_shortcut_count--;
+      } else {
+        match_itr->shortcut_boosted = false;
+      }
     }
     relevance_heap.pop();
     prediction_and_match_itr_heap.pop();
