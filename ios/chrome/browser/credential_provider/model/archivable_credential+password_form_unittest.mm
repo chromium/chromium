@@ -20,7 +20,7 @@ using ArchivableCredentialPasswordFormTest = PlatformTest;
 TEST_F(ArchivableCredentialPasswordFormTest, Creation) {
   NSString* username = @"username_value";
   NSString* favicon = @"favicon_value";
-  NSString* keychainIdentifier = @"keychain_identifier_value";
+  NSString* password = @"Qwerty123!";
   NSString* url = @"http://www.alpha.example.com/path/and?args=8";
 
   PasswordForm passwordForm;
@@ -28,8 +28,7 @@ TEST_F(ArchivableCredentialPasswordFormTest, Creation) {
   passwordForm.username_element = u"username_element";
   passwordForm.password_element = u"password_element";
   passwordForm.username_value = base::SysNSStringToUTF16(username);
-  passwordForm.keychain_identifier =
-      base::SysNSStringToUTF8(keychainIdentifier);
+  passwordForm.password_value = base::SysNSStringToUTF16(password);
   passwordForm.url = GURL(base::SysNSStringToUTF16(url));
   ArchivableCredential* credential =
       [[ArchivableCredential alloc] initWithPasswordForm:passwordForm
@@ -39,7 +38,7 @@ TEST_F(ArchivableCredentialPasswordFormTest, Creation) {
   EXPECT_EQ(passwordForm.times_used_in_html_form, credential.rank);
   EXPECT_NSEQ(username, credential.user);
   EXPECT_NSEQ(favicon, credential.favicon);
-  EXPECT_NSEQ(keychainIdentifier, credential.keychainIdentifier);
+  EXPECT_NSEQ(password, credential.password);
   EXPECT_NSEQ(@"alpha.example.com", credential.serviceName);
   EXPECT_NSEQ(@"http://www.alpha.example.com/path/and?args=8|"
               @"username_element|username_value|password_element|",
@@ -98,13 +97,13 @@ TEST_F(ArchivableCredentialPasswordFormTest, BlockedCreation) {
 // Tests the creation of a PasswordForm from a Credential.
 TEST_F(ArchivableCredentialPasswordFormTest, PasswordFormFromCredential) {
   NSString* username = @"username_value";
-  NSString* keychainIdentifier = @"keychain_identifier_value";
+  NSString* password = @"password";
   NSString* url = @"http://www.alpha.example.com/path/and?args=8";
   NSString* recordIdentifier = @"recordIdentifier";
 
   id<Credential> credential =
       [[ArchivableCredential alloc] initWithFavicon:nil
-                                 keychainIdentifier:keychainIdentifier
+                                           password:password
                                                rank:1
                                    recordIdentifier:recordIdentifier
                                   serviceIdentifier:url
@@ -116,8 +115,7 @@ TEST_F(ArchivableCredentialPasswordFormTest, PasswordFormFromCredential) {
   PasswordForm passwordForm = PasswordFormFromCredential(credential);
   EXPECT_EQ(passwordForm.times_used_in_html_form, credential.rank);
   EXPECT_EQ(passwordForm.username_value, base::SysNSStringToUTF16(username));
-  EXPECT_EQ(passwordForm.keychain_identifier,
-            base::SysNSStringToUTF8(keychainIdentifier));
+  EXPECT_EQ(passwordForm.password_value, base::SysNSStringToUTF16(password));
   EXPECT_EQ(passwordForm.url, GURL("http://www.alpha.example.com/path/and"));
   EXPECT_EQ(passwordForm.signon_realm, "http://www.alpha.example.com/");
 }
@@ -127,7 +125,7 @@ TEST_F(ArchivableCredentialPasswordFormTest, PasswordFormFromCredential) {
 TEST_F(ArchivableCredentialPasswordFormTest, CreationWithMobileURL) {
   NSString* username = @"username_value";
   NSString* favicon = @"favicon_value";
-  NSString* keychainIdentifier = @"keychain_identifier_value";
+  NSString* password = @"qwerty123";
   NSString* url = @"http://m.alpha.example.com/path/and?args=8";
 
   PasswordForm passwordForm;
@@ -135,8 +133,7 @@ TEST_F(ArchivableCredentialPasswordFormTest, CreationWithMobileURL) {
   passwordForm.username_element = u"username_element";
   passwordForm.password_element = u"password_element";
   passwordForm.username_value = base::SysNSStringToUTF16(username);
-  passwordForm.keychain_identifier =
-      base::SysNSStringToUTF8(keychainIdentifier);
+  passwordForm.password_value = base::SysNSStringToUTF16(password);
   passwordForm.url = GURL(base::SysNSStringToUTF16(url));
   ArchivableCredential* credential =
       [[ArchivableCredential alloc] initWithPasswordForm:passwordForm
@@ -146,7 +143,7 @@ TEST_F(ArchivableCredentialPasswordFormTest, CreationWithMobileURL) {
   EXPECT_EQ(passwordForm.times_used_in_html_form, credential.rank);
   EXPECT_NSEQ(username, credential.user);
   EXPECT_NSEQ(favicon, credential.favicon);
-  EXPECT_NSEQ(keychainIdentifier, credential.keychainIdentifier);
+  EXPECT_NSEQ(password, credential.password);
   EXPECT_NSEQ(@"alpha.example.com", credential.serviceName);
   EXPECT_NSEQ(@"http://m.alpha.example.com/path/and?args=8|"
               @"username_element|username_value|password_element|",

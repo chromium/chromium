@@ -125,12 +125,8 @@ using base::SysUTF16ToNSString;
   NSURL* url = [NSURL URLWithString:identifier];
   NSString* recordIdentifier = RecordIdentifierForData(url, username);
 
-  NSString* uuid = [[NSUUID UUID] UUIDString];
-  if (!StorePasswordInKeychain(password, uuid)) {
-    return nil;
-  }
   return [[ArchivableCredential alloc] initWithFavicon:nil
-                                    keychainIdentifier:uuid
+                                              password:password
                                                   rank:1
                                       recordIdentifier:recordIdentifier
                                      serviceIdentifier:identifier
@@ -159,8 +155,7 @@ using base::SysUTF16ToNSString;
 
 // Alerts the host app that the user selected a credential.
 - (void)userSelectedCredential:(id<Credential>)credential {
-  NSString* password =
-      PasswordWithKeychainIdentifier(credential.keychainIdentifier);
+  NSString* password = credential.password;
   ASPasswordCredential* ASCredential =
       [ASPasswordCredential credentialWithUser:credential.user
                                       password:password];

@@ -14,7 +14,7 @@ using MemoryCredentialStoreTest = PlatformTest;
 
 ArchivableCredential* TestCredential() {
   return [[ArchivableCredential alloc] initWithFavicon:@"favicon"
-                                    keychainIdentifier:@"keychainIdentifier"
+                                              password:@"qwerty!"
                                                   rank:5
                                       recordIdentifier:@"recordIdentifier"
                                      serviceIdentifier:@"serviceIdentifier"
@@ -48,7 +48,7 @@ TEST_F(MemoryCredentialStoreTest, update) {
 
   ArchivableCredential* updatedCredential =
       [[ArchivableCredential alloc] initWithFavicon:@"other_favicon"
-                                 keychainIdentifier:@"other_keychainIdentifier"
+                                           password:@"Qwerty123!"
                                                rank:credential.rank + 10
                                    recordIdentifier:@"recordIdentifier"
                                   serviceIdentifier:@"other_serviceIdentifier"

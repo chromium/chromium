@@ -27,12 +27,12 @@ using ::testing::_;
 
 ArchivableCredential* TestCredential() {
   NSString* username = @"username_value";
-  NSString* keychainIdentifier = @"keychain_identifier_value";
+  NSString* password = @"qwerty123";
   NSString* url = @"http://www.alpha.example.com/path/and?args=8";
   NSString* recordIdentifier = @"recordIdentifier";
   NSString* note = @"note";
   return [[ArchivableCredential alloc] initWithFavicon:nil
-                                    keychainIdentifier:keychainIdentifier
+                                              password:password
                                                   rank:1
                                       recordIdentifier:recordIdentifier
                                      serviceIdentifier:url

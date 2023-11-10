@@ -160,7 +160,7 @@ TEST_F(CredentialProviderServiceTest, FirstSync) {
   password_manager::PasswordForm form;
   form.url = GURL("http://g.com");
   form.username_value = u"user";
-  form.keychain_identifier = "encrypted-pwd";
+  form.password_value = u"qwerty123";
   password_store_->AddLogin(form);
   base::RunLoop().RunUntilIdle();
 
@@ -172,8 +172,7 @@ TEST_F(CredentialProviderServiceTest, FirstSync) {
   ASSERT_EQ(credential_store_.credentials.count, 1u);
   EXPECT_NSEQ(credential_store_.credentials[0].serviceName, @"g.com");
   EXPECT_NSEQ(credential_store_.credentials[0].user, @"user");
-  EXPECT_NSEQ(credential_store_.credentials[0].keychainIdentifier,
-              @"encrypted-pwd");
+  EXPECT_NSEQ(credential_store_.credentials[0].password, @"qwerty123");
 }
 
 TEST_F(CredentialProviderServiceTest, TwoStores) {
@@ -230,24 +229,20 @@ TEST_F(CredentialProviderServiceTest, PasswordChanges) {
   form.signon_realm = "http://www.example.com/";
   form.action = GURL("http://www.example.com/action");
   form.password_element = u"pwd";
-  form.keychain_identifier = "example";
+  form.password_value = u"qwerty123";
   password_store_->AddLogin(form);
   task_environment_.RunUntilIdle();
 
   // Expect the store to be populated with 1 credential.
   ASSERT_EQ(1u, credential_store_.credentials.count);
-  NSString* keychainIdentifier =
-      credential_store_.credentials[0].keychainIdentifier;
 
-  form.keychain_identifier = "secret";
+  form.password_value = u"Qwerty123!";
   password_store_->UpdateLogin(form);
   task_environment_.RunUntilIdle();
 
-  // Expect that the credential in the store now has a different keychain
-  // identifier.
+  // Expect that the credential in the store now has the same password.
   ASSERT_EQ(1u, credential_store_.credentials.count);
-  EXPECT_NSNE(keychainIdentifier,
-              credential_store_.credentials[0].keychainIdentifier);
+  EXPECT_NSEQ(credential_store_.credentials[0].password, @"Qwerty123!");
 
   password_store_->RemoveLogin(form);
   task_environment_.RunUntilIdle();
