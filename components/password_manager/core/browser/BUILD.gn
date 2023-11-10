@@ -285,17 +285,17 @@ source_set("password_form") {
 
 source_set("password_store_interface") {
   sources = [
-    "interactions_stats.cc",
-    "interactions_stats.h",
-    "password_store_backend_error.cc",
-    "password_store_backend_error.h",
-    "password_store_change.cc",
-    "password_store_change.h",
-    "password_store_consumer.cc",
-    "password_store_consumer.h",
-    "password_store_interface.h",
-    "password_store_util.cc",
-    "password_store_util.h",
+    "password_store/interactions_stats.cc",
+    "password_store/interactions_stats.h",
+    "password_store/password_store_backend_error.cc",
+    "password_store/password_store_backend_error.h",
+    "password_store/password_store_change.cc",
+    "password_store/password_store_change.h",
+    "password_store/password_store_consumer.cc",
+    "password_store/password_store_consumer.h",
+    "password_store/password_store_interface.h",
+    "password_store/password_store_util.cc",
+    "password_store/password_store_util.h",
   ]
   deps = [
     ":password_form",

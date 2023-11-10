@@ -10,7 +10,7 @@
 #include "chrome/browser/password_manager/android/password_manager_error_message_helper_bridge.h"
 #include "components/messages/android/message_wrapper.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/password_manager/core/browser/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/prefs/pref_service.h"
 
 namespace content {

@@ -11,7 +11,7 @@
 
 #include "base/observer_list_types.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store_util.h"
+#include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 
 namespace password_manager {

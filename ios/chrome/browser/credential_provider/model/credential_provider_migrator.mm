@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/credential_provider/model/credential_provider_migrator.h"
 
 #import "components/password_manager/core/browser/password_form.h"
-#import "components/password_manager/core/browser/password_store_interface.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 

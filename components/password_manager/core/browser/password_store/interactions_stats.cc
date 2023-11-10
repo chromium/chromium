@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/interactions_stats.h"
+#include "components/password_manager/core/browser/password_store/interactions_stats.h"
 
 namespace password_manager {
 
@@ -14,4 +14,3 @@ bool operator==(const InteractionsStats& lhs, const InteractionsStats& rhs) {
 }
 
 } // namespace password_manager
- 

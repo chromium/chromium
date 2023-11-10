@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace password_manager {

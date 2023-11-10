@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_INTERACTIONS_STATS_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_INTERACTIONS_STATS_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_INTERACTIONS_STATS_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_INTERACTIONS_STATS_H_
 
 #include "base/time/time.h"
 #include "url/gurl.h"
@@ -29,4 +29,4 @@ bool operator==(const InteractionsStats& lhs, const InteractionsStats& rhs);
 
 } // namespace password_manager
 
-#endif // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_INTERACTIONS_STATS_H_
+#endif // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_INTERACTIONS_STATS_H_

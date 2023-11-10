@@ -28,7 +28,7 @@
 #import "components/language/core/browser/url_language_histogram.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
-#import "components/password_manager/core/browser/password_store_interface.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/sessions/core/tab_restore_service.h"

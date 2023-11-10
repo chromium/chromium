@@ -29,7 +29,7 @@
 #include "components/browser_sync/browser_sync_client.h"
 #include "components/history/core/browser/sync/history_delete_directives_model_type_controller.h"
 #include "components/history/core/browser/sync/history_model_type_controller.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_model_type_controller.h"
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_model_type_controller.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"

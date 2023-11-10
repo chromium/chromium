@@ -8,8 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
-#include "components/password_manager/core/browser/interactions_stats.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
+#include "components/password_manager/core/browser/password_store/interactions_stats.h"
 
 namespace ui {
 class ImageModel;

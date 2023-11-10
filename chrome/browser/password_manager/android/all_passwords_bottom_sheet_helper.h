@@ -8,7 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // This class helps to determine the visibility of the "All Passwords Sheet"

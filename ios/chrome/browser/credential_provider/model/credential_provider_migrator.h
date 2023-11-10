@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 
 @interface CredentialProviderMigrator : NSObject
 - (instancetype)

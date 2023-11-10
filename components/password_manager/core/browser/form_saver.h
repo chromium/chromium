@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 
 namespace password_manager {
 

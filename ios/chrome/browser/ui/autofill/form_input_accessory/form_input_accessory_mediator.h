@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "components/password_manager/core/browser/password_store_interface.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/form_input_navigator.h"
 #import "ios/chrome/browser/autofill/form_suggestion_client.h"
