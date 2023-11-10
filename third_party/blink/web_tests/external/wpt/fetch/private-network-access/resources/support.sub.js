@@ -470,6 +470,26 @@ async function iframeTest(t, { source, target, expected }) {
   assert_equals(result, expected);
 }
 
+const WindowOpenTestResult = {
+  SUCCESS: "success",
+  FAILURE: "failure",
+};
+
+async function windowOpenTest(t, { source, target, expected }) {
+  const targetUrl = preflightUrl(target);
+
+  const sourceUrl =
+      resolveUrl("resources/opener.html", sourceResolveOptions(source));
+  sourceUrl.searchParams.set("url", targetUrl);
+
+  const iframe = await appendIframe(t, document, sourceUrl);
+  const reply = futureMessage({ source: iframe.contentWindow });
+
+  iframe.contentWindow.postMessage({ url: targetUrl.href }, "*");
+
+  assert_equals(await reply, expected);
+}
+
 // Similar to `iframeTest`, but replaced iframes with fenced frames.
 async function fencedFrameTest(t, { source, target, expected }) {
   // Allows running tests in parallel.
