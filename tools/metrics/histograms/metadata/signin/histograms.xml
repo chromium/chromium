@@ -1429,7 +1429,7 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SignIn.Offered" enum="SigninAccessPoint"
-    expires_after="2023-12-19">
+    expires_after="2024-12-19">
   <owner>bsazonov@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
