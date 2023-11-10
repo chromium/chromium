@@ -1131,7 +1131,7 @@ TEST_P(FillingMethodMetricsUnitTest, recordedsFillingMethodForPopupType) {
   external_delegate_->DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 0}, kDefaultTriggerSource);
 
-  histogram_tester.ExpectUniqueSample("Autofill.FillingMethodUsed.",
+  histogram_tester.ExpectUniqueSample("Autofill.FillingMethodUsed",
                                       params.target_metric, 1);
 }
 
