@@ -1113,6 +1113,10 @@ void OverviewSession::ShowSavedDeskLibrary(
     const base::Uuid& item_to_focus,
     const std::u16string& saved_desk_name,
     aura::Window* const root_window) {
+  // Some windows such as the print preview may request activation due to
+  // occlusion computations. These should not cause use to exit overview.
+  base::AutoReset<bool> ignore(&ignore_activations_, true);
+
   if (Shell::Get()->tablet_mode_controller()->InTabletMode() ||
       IsShowingSavedDeskLibrary()) {
     return;
@@ -1173,11 +1177,9 @@ void OverviewSession::ShowSavedDeskLibrary(
 }
 
 void OverviewSession::HideSavedDeskLibrary() {
-  // Before hiding the saved desk library, we need to explicitly activate the
-  // focus window. Otherwise, some other window may get activated as the saved
-  // desk library is hidden, and this could in turn lead to exiting overview
-  // mode.
-  wm::ActivateWindow(GetOverviewFocusWindow());
+  // Some windows such as the print preview may request activation due to
+  // occlusion computations. These should not cause use to exit overview.
+  base::AutoReset<bool> ignore(&ignore_activations_, true);
 
   for (auto& grid : grid_list_)
     grid->HideSavedDeskLibrary(/*exit_overview=*/false);

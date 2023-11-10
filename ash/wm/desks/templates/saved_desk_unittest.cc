@@ -72,6 +72,7 @@
 #include "components/app_restore/window_properties.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/test/test_window_delegate.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -2373,6 +2374,42 @@ TEST_F(SavedDeskTest, WindowActivatableAfterSaveAndDeleteTemplate) {
 
   // Check that the window is active.
   EXPECT_EQ(test_window.get(), window_util::GetActiveWindow());
+}
+
+// Tests that we can open the saved desk library if the current active window
+// prior to entering overview is one that activates on occlusion change.
+// Regression test for http://b/307963349.
+TEST_F(SavedDeskTest, ShowLibraryWithWindowActivatingOnOcclusion) {
+  // Need at least one entry to show the saved desk library.
+  AddEntry(base::Uuid::GenerateRandomV4(), "template name", base::Time::Now(),
+           DeskTemplateType::kTemplate);
+
+  // Create a test window that has similar properties to a browser window with
+  // the print preview showing. Its occlusion state is tracked, and when
+  // occlusion state changes, the window gets activated.
+  auto window = CreateToplevelTestWindow(gfx::Rect(400, 300));
+  window->TrackOcclusionState();
+  window->Show();
+
+  auto* window_delegate =
+      static_cast<aura::test::TestWindowDelegate*>(window->delegate());
+  window_delegate->set_on_occlusion_changed(
+      base::BindLambdaForTesting([&]() { wm::ActivateWindow(window.get()); }));
+
+  // Entering overview also pauses the occlusion tracker. Wait a bit for it to
+  // unpause other occlusion won't try to be recomputed when showing the
+  // library.
+  ToggleOverview();
+  base::RunLoop loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, loop.QuitClosure(), base::Milliseconds(200));
+  loop.Run();
+
+  // Show the saved desk library. We should stay in overview, and there should
+  // be no u-a-f.
+  ShowSavedDeskLibrary();
+  WaitForSavedDeskLibrary();
+  EXPECT_TRUE(InOverviewSession());
 }
 
 TEST_F(SavedDeskTest, TemplateNameBounds) {

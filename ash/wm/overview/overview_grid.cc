@@ -1890,8 +1890,8 @@ void OverviewGrid::ShowSavedDeskLibrary() {
         /*desks=*/DesksController::Get()->desks(),
         /*notify_when_destroyed=*/true);
 
-    for (auto& overview_mode_item : window_list_) {
-      overview_mode_item->HideForSavedDeskLibrary(/*animate=*/true);
+    for (auto& overview_item : window_list_) {
+      overview_item->HideForSavedDeskLibrary(/*animate=*/true);
     }
   }
 
@@ -1905,8 +1905,7 @@ void OverviewGrid::ShowSavedDeskLibrary() {
   saved_desk_library_widget_->Show();
 
   // Fade in the widget from its current opacity.
-  PerformFadeInLayer(saved_desk_library_widget_->GetLayer(),
-                     /*animate=*/true);
+  PerformFadeInLayer(saved_desk_library_widget_->GetLayer(), /*animate=*/true);
 
   UpdateSaveDeskButtons();
 
