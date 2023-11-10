@@ -618,11 +618,19 @@ void CreditCardSaveManager::OfferCardLocalSave() {
     if (observer_for_testing_) {
       observer_for_testing_->OnOfferLocalSave();
     }
+    AutofillClient::CardSaveType card_save_type =
+        AutofillClient::CardSaveType::kCardSaveOnly;
+    // Show `kCardSaveWithCvc` prompt if flag is on and CVC is not empty.
+    if (!card_save_candidate_.cvc().empty() &&
+        personal_data_manager_->IsPaymentCvcStorageEnabled()) {
+      card_save_type = AutofillClient::CardSaveType::kCardSaveWithCvc;
+    }
     client_->ConfirmSaveCreditCardLocally(
         card_save_candidate_,
         AutofillClient::SaveCreditCardOptions()
             // TODO(crbug.com/1479239): Refactor SaveCreditCardOptions.
-            .with_show_prompt(show_save_prompt_.value_or(true)),
+            .with_show_prompt(show_save_prompt_.value_or(true))
+            .with_card_save_type(card_save_type),
         base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnLocalSave,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -670,6 +678,13 @@ void CreditCardSaveManager::OfferCardUploadSave() {
           return server_card->HasSameNumberAs(upload_request_.card) &&
                  !server_card->HasSameExpirationDateAs(upload_request_.card);
         });
+    AutofillClient::CardSaveType card_save_type =
+        AutofillClient::CardSaveType::kCardSaveOnly;
+    // Show `kCardSaveWithCvc` prompt if flag is on and CVC is not empty.
+    if (!upload_request_.card.cvc().empty() &&
+        personal_data_manager_->IsPaymentCvcStorageEnabled()) {
+      card_save_type = AutofillClient::CardSaveType::kCardSaveWithCvc;
+    }
     client_->ConfirmSaveCreditCardToCloud(
         upload_request_.card, legal_message_lines_,
         AutofillClient::SaveCreditCardOptions()
@@ -679,7 +694,8 @@ void CreditCardSaveManager::OfferCardUploadSave() {
                 should_request_expiration_date_from_user_)
             .with_show_prompt(show_save_prompt_.value_or(true))
             .with_same_last_four_as_server_card_but_different_expiration_date(
-                found_server_card_with_same_last_four_but_different_expiration),
+                found_server_card_with_same_last_four_but_different_expiration)
+            .with_card_save_type(card_save_type),
         base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnUploadSave,
                        weak_ptr_factory_.GetWeakPtr()));
     client_->LoadRiskData(

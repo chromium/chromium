@@ -5118,6 +5118,33 @@ class ProceedWithSavingIfApplicableTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Tests that the correct SaveCardOption is passed.
+TEST_P(ProceedWithSavingIfApplicableTest, CardWithCorrectSaveCardOption) {
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
+                              IsSaveCvcPrefEnabled());
+  credit_card_save_manager_->SetCreditCardUploadEnabled(
+      IsCreditCardUpstreamEnabled());
+
+  // Set up our credit card form data.
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen({credit_card_form});
+
+  // Edit the data, and submit.
+  credit_card_form.fields[0].value = u"Jane Doe";
+  credit_card_form.fields[1].value = u"4111111111111111";
+  credit_card_form.fields[2].value = ASCIIToUTF16(test::NextMonth());
+  credit_card_form.fields[3].value = ASCIIToUTF16(test::NextYear());
+  credit_card_form.fields[4].value = u"123";
+  FormSubmitted(credit_card_form);
+
+  EXPECT_EQ(autofill_client_.get_save_credit_card_options().card_save_type ==
+                AutofillClient::CardSaveType::kCardSaveWithCvc,
+            IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled());
+  EXPECT_EQ(autofill_client_.get_save_credit_card_options().card_save_type ==
+                AutofillClient::CardSaveType::kCardSaveOnly,
+            !IsSaveCvcFeatureEnabled() || !IsSaveCvcPrefEnabled());
+}
+
 // Tests that ProceedWithSavingIfApplicable should initiate card save or upload
 // flow with expected input.
 TEST_P(ProceedWithSavingIfApplicableTest, ProceedWithSavingIfApplicable_Card) {
