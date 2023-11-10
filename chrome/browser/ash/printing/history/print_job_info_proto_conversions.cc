@@ -60,6 +60,8 @@ proto::PrintJobInfo_PrintJobSource PrintJobSourceToProto(
       return proto::PrintJobInfo_PrintJobSource_EXTENSION;
     case ::printing::PrintJob::Source::kPrintPreviewIncognito:
       return proto::PrintJobInfo_PrintJobSource_PRINT_PREVIEW_INCOGNITO;
+    case ::printing::PrintJob::Source::kIsolatedWebApp:
+      return proto::PrintJobInfo_PrintJobSource_ISOLATED_WEB_APP;
     default:
       NOTREACHED();
   }

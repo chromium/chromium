@@ -72,6 +72,8 @@ idl::PrintJobSource PrintJobSourceProtoToIdl(
       return idl::PrintJobSource::kAndroidApp;
     case proto::PrintJobInfo_PrintJobSource_EXTENSION:
       return idl::PrintJobSource::kExtension;
+    case proto::PrintJobInfo_PrintJobSource_ISOLATED_WEB_APP:
+      return idl::PrintJobSource::kIsolatedWebApp;
     default:
       NOTREACHED();
   }

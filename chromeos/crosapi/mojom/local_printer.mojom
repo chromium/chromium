@@ -140,6 +140,7 @@ struct PrintJob {
     kArc,
     kExtension,
     kPrintPreviewIncognito,
+    [MinVersion=1] kIsolatedWebApp,
   };
 };
 
