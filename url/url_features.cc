@@ -26,6 +26,11 @@ BASE_FEATURE(kStandardCompliantHostCharacters,
              "StandardCompliantHostCharacters",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for crbug.com/1416006.
+BASE_FEATURE(kStandardCompliantNonSpecialSchemeURLParsing,
+             "StandardCompliantNonSpecialSchemeURLParsing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsUsingIDNA2008NonTransitional() {
   // If the FeatureList isn't available yet, fall back to the feature's default
   // state. This may happen during early startup, see crbug.com/1441956.
@@ -46,6 +51,17 @@ bool IsUsingStandardCompliantHostCharacters() {
   }
 
   return base::FeatureList::IsEnabled(kStandardCompliantHostCharacters);
+}
+
+bool IsUsingStandardCompliantNonSpecialSchemeURLParsing() {
+  // If the FeatureList isn't available yet, fall back to the feature's default
+  // state. This may happen during early startup, see crbug.com/1441956.
+  if (!base::FeatureList::GetInstance()) {
+    return kStandardCompliantNonSpecialSchemeURLParsing.default_state ==
+           base::FEATURE_ENABLED_BY_DEFAULT;
+  }
+  return base::FeatureList::IsEnabled(
+      kStandardCompliantNonSpecialSchemeURLParsing);
 }
 
 bool IsRecordingIDNA2008Metrics() {

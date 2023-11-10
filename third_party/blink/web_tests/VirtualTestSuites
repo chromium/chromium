@@ -2584,6 +2584,14 @@
     "expires": "Dec 21, 2023"
   },
   {
+    "prefix": "url-non-special",
+    "platforms": ["Linux"],
+    "bases": ["external/wpt/url"],
+    "args": ["--enable-features=StandardCompliantNonSpecialSchemeURLParsing"],
+    "owners": ["hayato@chromium.org"],
+    "expires": "Jul 1, 2024"
+  },
+  {
     "prefix": "cookie-deprecation-label",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
