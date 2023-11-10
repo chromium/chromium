@@ -216,7 +216,7 @@ void NetworkServiceProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
                                              int net_error) {
   // If the bad proxy was an IP Protection proxy, refresh the list of IP
   // protection proxies immediately.
-  if (IsProxyForIpProtection(bad_chain.proxy_server()) && ipp_config_cache_) {
+  if (IsProxyForIpProtection(bad_chain) && ipp_config_cache_) {
     ipp_config_cache_->RequestRefreshProxyList();
   }
 
@@ -231,15 +231,14 @@ void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
     net::HttpRequestHeaders* extra_headers) {
   // TODO(crbug.com/1491092): Handle proxy chains.
   CHECK(chain_index == 0);
-  const net::ProxyServer& proxy_server = proxy_chain.proxy_server();
 
   auto vlog = [](std::string message) {
     VLOG(2) << "NSPD::OnBeforeTunnelRequest() - " << message;
   };
-  if (IsInProxyConfig(proxy_server)) {
+  if (IsInProxyConfig(proxy_chain)) {
     MergeRequestHeaders(extra_headers, proxy_config_->connect_tunnel_headers);
   }
-  if (IsForIpProtection() && IsProxyForIpProtection(proxy_server)) {
+  if (IsForIpProtection() && IsProxyForIpProtection(proxy_chain)) {
     if (ipp_config_cache_) {
       absl::optional<network::mojom::BlindSignedAuthTokenPtr> token =
           ipp_config_cache_->GetAuthToken(chain_index);
@@ -312,12 +311,15 @@ void NetworkServiceProxyDelegate::ClearBadProxiesCache() {
 }
 
 bool NetworkServiceProxyDelegate::IsInProxyConfig(
-    const net::ProxyServer& proxy_server) const {
-  if (!proxy_server.is_valid() || proxy_server.is_direct()) {
+    const net::ProxyChain& proxy_chain) const {
+  if (!proxy_chain.IsValid() || proxy_chain.is_direct()) {
     return false;
   }
 
-  if (RulesContainsProxy(proxy_config_->rules, proxy_server)) {
+  // TODO(https://crbug.com/1491092): Support nested proxies.
+  if (proxy_chain.is_single_proxy() &&
+      RulesContainsProxy(proxy_config_->rules,
+                         proxy_chain.GetProxyServer(/*chain_index=*/0))) {
     return true;
   }
 
@@ -335,14 +337,17 @@ bool NetworkServiceProxyDelegate::IsForIpProtection() {
 }
 
 bool NetworkServiceProxyDelegate::IsProxyForIpProtection(
-    const net::ProxyServer& proxy_server) const {
+    const net::ProxyChain& proxy_chain) const {
   if (!ipp_config_cache_) {
     return false;
   }
 
   // This list will typically be quite short (2-3), so linear search is
   // adequate.
-  std::string proxy_server_host = proxy_server.GetHost();
+  // TODO(https://crbug.com/1491092): Update to support nested proxies.
+  CHECK(proxy_chain.is_single_proxy());
+  std::string proxy_server_host =
+      proxy_chain.GetProxyServer(/*chain_index=*/0).GetHost();
   return base::Contains(ipp_config_cache_->GetProxyList(), proxy_server_host);
 }
 

@@ -52,8 +52,6 @@ NET_EXPORT ProxyChain
 PacResultElementToProxyChain(std::string_view pac_result_element);
 NET_EXPORT ProxyServer
 PacResultElementToProxyServer(std::string_view pac_result_element);
-NET_EXPORT std::string ProxyChainToPacResultElement(
-    const ProxyChain& proxy_chain);
 NET_EXPORT std::string ProxyServerToPacResultElement(
     const ProxyServer& proxy_server);
 

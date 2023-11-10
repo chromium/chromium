@@ -545,8 +545,11 @@ void SpdySessionPool::OnSSLConfigForServersChanged(
       continue;
 
     // TODO(crbug.com/1491092): Update to support multi-proxy chains.
+    const ProxyChain& proxy_chain = session->spdy_session_key().proxy_chain();
+    CHECK(proxy_chain.length() <= 1);
     const ProxyServer& proxy_server =
-        session->spdy_session_key().proxy_server();
+        !proxy_chain.is_direct() ? proxy_chain.GetProxyServer(/*chain_index=*/0)
+                                 : net::ProxyServer::Direct();
     if (servers.contains(session->host_port_pair()) ||
         (proxy_server.is_http_like() && !proxy_server.is_http() &&
          servers.contains(proxy_server.host_port_pair()))) {

@@ -263,7 +263,8 @@ TEST_F(URLRequestHttpJobWithProxyTest, TestSuccessfulWithOneProxy) {
 
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
-          ProxyChainToPacResultElement(proxy_chain),
+          ProxyServerToPacResultElement(
+              proxy_chain.GetProxyServer(/*chain_index=*/0)),
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite writes[] = {MockWrite(kSimpleProxyGetMockWrite)};
@@ -306,7 +307,9 @@ TEST_F(URLRequestHttpJobWithProxyTest,
   // DIRECT.
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
-          ProxyChainToPacResultElement(proxy_chain) + "; DIRECT",
+          ProxyServerToPacResultElement(
+              proxy_chain.GetProxyServer(/*chain_index=*/0)) +
+              "; DIRECT",
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};

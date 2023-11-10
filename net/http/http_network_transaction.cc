@@ -1645,9 +1645,17 @@ int HttpNetworkTransaction::HandleSSLClientAuthError(int error) {
   //
   // See https://crbug.com/828965.
   bool is_server = !UsingHttpProxyWithoutTunnel();
-  HostPortPair host_port_pair =
-      is_server ? HostPortPair::FromURL(request_->url)
-                : proxy_info_.proxy_chain().proxy_server().host_port_pair();
+  HostPortPair host_port_pair;
+  // TODO(https://crbug.com/1491092): Remove check and return error when
+  // multi-proxy chain.
+  if (is_server) {
+    host_port_pair = HostPortPair::FromURL(request_->url);
+  } else {
+    CHECK(proxy_info_.proxy_chain().is_single_proxy());
+    host_port_pair = proxy_info_.proxy_chain()
+                         .GetProxyServer(/*chain_index=*/0)
+                         .host_port_pair();
+  }
 
   if (error == ERR_SSL_PROTOCOL_ERROR || IsClientCertificateError(error)) {
     DCHECK((is_server && IsSecureRequest()) ||
@@ -1977,17 +1985,20 @@ bool HttpNetworkTransaction::HaveAuth(HttpAuth::Target target) const {
 GURL HttpNetworkTransaction::AuthURL(HttpAuth::Target target) const {
   switch (target) {
     case HttpAuth::AUTH_PROXY: {
+      // TODO(https://crbug.com/1491092): Update to handle multi-proxy chain.
       if (!proxy_info_.proxy_chain().IsValid() ||
-          proxy_info_.proxy_chain().is_direct()) {
+          proxy_info_.proxy_chain().is_direct() ||
+          !proxy_info_.proxy_chain().is_single_proxy()) {
         return GURL();  // There is no proxy chain.
       }
       // TODO(https://crbug.com/1103768): Mapping proxy addresses to
       // URLs is a lossy conversion, shouldn't do this.
       const char* scheme =
           proxy_info_.is_secure_http_like() ? "https://" : "http://";
-      return GURL(
-          scheme +
-          proxy_info_.proxy_chain().proxy_server().host_port_pair().ToString());
+      return GURL(scheme + proxy_info_.proxy_chain()
+                               .GetProxyServer(/*chain_index=*/0)
+                               .host_port_pair()
+                               .ToString());
     }
     case HttpAuth::AUTH_SERVER:
       if (ForWebSocketHandshake()) {

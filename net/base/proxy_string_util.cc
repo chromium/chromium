@@ -128,13 +128,6 @@ ProxyServer PacResultElementToProxyServer(std::string_view pac_result_element) {
   return FromSchemeHostAndPort(scheme, pac_result_element.substr(space));
 }
 
-std::string ProxyChainToPacResultElement(const ProxyChain& proxy_chain) {
-  // TODO(https://crbug.com/1491092): Support converting a multi-hop ProxyChain
-  // to a PAC script format.
-  CHECK(!proxy_chain.is_multi_proxy());
-  return ProxyServerToPacResultElement(proxy_chain.proxy_server());
-}
-
 std::string ProxyServerToPacResultElement(const ProxyServer& proxy_server) {
   switch (proxy_server.scheme()) {
     case ProxyServer::SCHEME_DIRECT:

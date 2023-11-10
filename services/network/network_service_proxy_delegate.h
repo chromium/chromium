@@ -77,10 +77,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   // Checks if this CustomProxyConfig is supporting IP Protection.
   bool IsForIpProtection();
 
-  // Checks whether |proxy_server| is present in the current proxy config.
-  bool IsInProxyConfig(const net::ProxyServer& proxy_server) const;
+  // Checks whether `proxy_chain` is present in the current proxy config.
+  bool IsInProxyConfig(const net::ProxyChain& proxy_chain) const;
 
-  bool IsProxyForIpProtection(const net::ProxyServer& proxy_server) const;
+  bool IsProxyForIpProtection(const net::ProxyChain& proxy_chain) const;
 
   // Whether the current config may proxy |url|.
   bool MayProxyURL(const GURL& url) const;
