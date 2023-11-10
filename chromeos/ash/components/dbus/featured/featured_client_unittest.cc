@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 
+#include "base/barrier_closure.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -14,6 +15,8 @@
 #include "base/strings/escape.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/featured/fake_featured_client.h"
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #include "dbus/message.h"
@@ -278,13 +281,19 @@ TEST_F(FeaturedClientTest, ReadTrialsActivatedBeforeChromeStartup_FilesExist) {
   expected.insert({"test_trial_1", "test_group_1"});
   expected.insert({"test_trial_2", "test_group_2"});
 
+  base::RunLoop run_loop;
+  base::RepeatingClosure barrier_callback =
+      base::BarrierClosure(2, run_loop.QuitClosure());
   std::map<std::string, std::string> actual;
   FeaturedClient::InitializeForTesting(
       bus_.get(), active_trials_dir_,
-      base::BindLambdaForTesting([&actual](const std::string& trial_name,
-                                           const std::string& group_name) {
-        actual.insert({trial_name, group_name});
-      }));
+      base::BindLambdaForTesting(
+          [&actual, &barrier_callback](const std::string& trial_name,
+                                       const std::string& group_name) {
+            actual.insert({trial_name, group_name});
+            barrier_callback.Run();
+          }));
+  run_loop.Run();
   EXPECT_EQ(actual, expected);
 
   FeaturedClient::Shutdown();

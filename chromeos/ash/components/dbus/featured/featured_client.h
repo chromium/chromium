@@ -59,11 +59,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DBUS_FEATURED) FeaturedClient {
       const ::featured::SeedDetails& safe_seed,
       base::OnceCallback<void(bool success)> callback) = 0;
 
- protected:
-  // Initialize/Shutdown should be used instead.
-  FeaturedClient();
-  virtual ~FeaturedClient();
-
   // Returns true if the base component of |path| is of the format
   // `TrialName,GroupName`. |active_group| will contain the trial name and group
   // name specified by the filename. If the return value is false,
@@ -73,6 +68,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DBUS_FEATURED) FeaturedClient {
   // feature::PlatformFeatures::RecordActiveTrial() in chromiumos.
   static bool ParseTrialFilename(const base::FilePath& path,
                                  base::FieldTrial::ActiveGroup& active_group);
+
+ protected:
+  // Initialize/Shutdown should be used instead.
+  FeaturedClient();
+  virtual ~FeaturedClient();
 
  private:
   friend class FeaturedClientTest;
