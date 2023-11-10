@@ -605,7 +605,13 @@ as required builders.
 * [android-arm64-siso-rel](https://ci.chromium.org/p/chromium/builders/try/android-arm64-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-arm64-siso-rel""))
   * Experiment percentage: 10.0
 
+* [android-binary-size-siso](https://ci.chromium.org/p/chromium/builders/try/android-binary-size-siso) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-binary-size-siso""))
+  * Experiment percentage: 10.0
+
 * [android-x86-dual-coverage-exp-rel](https://ci.chromium.org/p/chromium/builders/try/android-x86-dual-coverage-exp-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-x86-dual-coverage-exp-rel""))
+  * Experiment percentage: 10.0
+
+* [android_compile_siso_dbg](https://ci.chromium.org/p/chromium/builders/try/android_compile_siso_dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android_compile_siso_dbg""))
   * Experiment percentage: 10.0
 
 * [chromeos-amd64-generic-siso-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-siso-rel""))
@@ -633,13 +639,22 @@ as required builders.
   * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=+file:tools/clang/scripts/update.py)
   * [`//ui/gl/features.gni`](https://cs.chromium.org/search?q=+file:ui/gl/features.gni)
 
+* [fuchsia-binary-size-siso](https://ci.chromium.org/p/chromium/builders/try/fuchsia-binary-size-siso) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-binary-size-siso""))
+  * Experiment percentage: 10.0
+
 * [ios-simulator-siso](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-siso) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator-siso""))
+  * Experiment percentage: 10.0
+
+* [linux-chromeos-compile-siso-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-compile-siso-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-chromeos-compile-siso-dbg""))
   * Experiment percentage: 10.0
 
 * [linux-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-siso-rel""))
   * Experiment percentage: 10.0
 
 * [linux_chromium_asan_siso_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_asan_siso_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_asan_siso_rel_ng""))
+  * Experiment percentage: 10.0
+
+* [linux_chromium_compile_siso_dbg_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_compile_siso_dbg_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_compile_siso_dbg_ng""))
   * Experiment percentage: 10.0
 
 * [linux_chromium_tsan_siso_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_tsan_siso_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_tsan_siso_rel_ng""))

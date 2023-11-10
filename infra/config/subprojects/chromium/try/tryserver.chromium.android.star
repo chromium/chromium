@@ -324,6 +324,51 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-binary-size-siso",
+    description_html = """\
+This builder shadows android-binary-size builder to compare between Siso builds and Ninja builds.<br/>
+This builder should be removed after migrating android-binary-size from Ninja to Siso. b/277863839
+""",
+    executable = "recipe:binary_size_trybot",
+    cores = 16,
+    ssd = True,
+    contact_team_email = "chrome-build-team@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "android",
+            "chrome_with_codecs",
+            "reclient",
+            "minimal_symbols",
+            "official_optimize",
+            "stable_channel",
+            "v8_release_branch",
+            "use_dummy_lastchange",
+        ],
+    ),
+    main_list_view = "try",
+    properties = {
+        "$build/binary_size": {
+            "analyze_targets": [
+                "//chrome/android:monochrome_public_minimal_apks",
+                "//chrome/android:trichrome_32_minimal_apks",
+                "//chrome/android:validate_expectations",
+                "//tools/binary_size:binary_size_trybot_py",
+            ],
+            "compile_targets": [
+                "monochrome_public_minimal_apks",
+                "monochrome_static_initializers",
+                "trichrome_32_minimal_apks",
+                "validate_expectations",
+            ],
+        },
+    },
+    siso_enabled = True,
+    tryjob = try_.job(
+        experiment_percentage = 10,
+    ),
+)
+
+try_.builder(
     name = "android-clobber-rel",
     mirrors = [
         "ci/android-archive-rel",
@@ -1020,6 +1065,38 @@ try_.builder(
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
+)
+
+try_.builder(
+    name = "android_compile_siso_dbg",
+    description_html = """\
+This builder shadows android_compile_dbg builder to compare between Siso builds and Ninja builds.<br/>
+This builder should be removed after migrating android_compile_dbg from Ninja to Siso. b/277863839
+""",
+    mirrors = builder_config.copy_from("try/android_compile_dbg"),
+    try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
+    cores = 32,
+    ssd = True,
+    contact_team_email = "chrome-build-team@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "android",
+            "debug_builder",
+            "reclient",
+            "compile_only",
+            "arm64",
+            "use_dummy_lastchange",
+        ],
+    ),
+    main_list_view = "try",
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    siso_enabled = True,
+    tryjob = try_.job(
+        experiment_percentage = 10,
+    ),
 )
 
 try_.builder(

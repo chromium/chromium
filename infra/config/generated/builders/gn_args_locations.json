@@ -169,6 +169,7 @@
     "android-asan-compile-dbg": "try/android-asan-compile-dbg/gn-args.json",
     "android-bfcache-rel": "try/android-bfcache-rel/gn-args.json",
     "android-binary-size": "try/android-binary-size/gn-args.json",
+    "android-binary-size-siso": "try/android-binary-size-siso/gn-args.json",
     "android-cronet-arm-dbg": "try/android-cronet-arm-dbg/gn-args.json",
     "android-cronet-arm64-dbg": "try/android-cronet-arm64-dbg/gn-args.json",
     "android-cronet-arm64-rel": "try/android-cronet-arm64-rel/gn-args.json",
@@ -207,6 +208,7 @@
     "android-x86-rel": "try/android-x86-rel/gn-args.json",
     "android_arm64_dbg_recipe": "try/android_arm64_dbg_recipe/gn-args.json",
     "android_compile_dbg": "try/android_compile_dbg/gn-args.json",
+    "android_compile_siso_dbg": "try/android_compile_siso_dbg/gn-args.json",
     "android_compile_x64_dbg": "try/android_compile_x64_dbg/gn-args.json",
     "android_compile_x86_dbg": "try/android_compile_x86_dbg/gn-args.json",
     "android_cronet": "try/android_cronet/gn-args.json"
@@ -224,6 +226,7 @@
     "linux-x64-castos-audio": "try/linux-x64-castos-audio/gn-args.json",
     "linux-x64-castos-dbg": "try/linux-x64-castos-dbg/gn-args.json",
     "linux_chromium_compile_dbg_ng": "try/linux_chromium_compile_dbg_ng/gn-args.json",
+    "linux_chromium_compile_siso_dbg_ng": "try/linux_chromium_compile_siso_dbg_ng/gn-args.json",
     "linux_chromium_dbg_ng": "try/linux_chromium_dbg_ng/gn-args.json",
     "network_service_linux": "try/network_service_linux/gn-args.json"
   },
