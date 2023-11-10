@@ -251,8 +251,7 @@ int StartHostMain(int argc, char** argv) {
 
   // google_apis::GetOAuth2ClientID/Secret need a static CommandLine.
   base::CommandLine::Init(argc, argv);
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   // This object instance is required by Chrome code (for example,
   // FilePath, LazyInstance, MessageLoop).
@@ -283,6 +282,8 @@ int StartHostMain(int argc, char** argv) {
     // Linux-specific, it isn't plumbed through the platform-independent daemon
     // controller code, and must be configured on the Linux delegate explicitly.
     DaemonControllerDelegateLinux::set_start_host_after_setup(false);
+    // Remove the switch from the command line to simplify arg count checks.
+    command_line->RemoveSwitch("no-start");
   }
 #endif  // BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_WIN)

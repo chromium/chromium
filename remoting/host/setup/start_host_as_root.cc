@@ -18,10 +18,20 @@ int StartHostAsRoot(int argc, char** argv) {
   DCHECK(getuid() == 0);
 
   base::CommandLine command_line(argc, argv);
-  std::string user_name = command_line.GetSwitchValueASCII("user-name");
+  std::string user_name;
+  if (command_line.HasSwitch("corp-user")) {
+    std::string corp_user_email = command_line.GetSwitchValueASCII("corp-user");
+    size_t at_symbol_pos = corp_user_email.find("@");
+    if (at_symbol_pos != std::string::npos) {
+      user_name = corp_user_email.substr(0, at_symbol_pos);
+    }
+  } else if (command_line.HasSwitch("user_name")) {
+    user_name = command_line.GetSwitchValueASCII("user-name");
+  }
   if (user_name.empty()) {
     fprintf(stderr,
-            "Must specify the --user-name option when running as root.\n");
+            "Must specify the --user-name or --corp-user option when running "
+            "as root.\n");
     return 1;
   }
 
