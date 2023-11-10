@@ -190,9 +190,18 @@ HttpsUpgradesInterceptor::MaybeCreateInterceptor(
       !g_browser_process->profile_manager()->IsValidProfile(profile)) {
     return nullptr;
   }
+
   PrefService* prefs = profile->GetPrefs();
   bool https_first_mode_enabled =
       prefs && prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
+
+  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
+    if (profile->IsIncognitoProfile() && prefs &&
+        prefs->GetBoolean(prefs::kHttpsFirstModeIncognito)) {
+      https_first_mode_enabled = true;
+    }
+  }
+
   return std::make_unique<HttpsUpgradesInterceptor>(
       frame_tree_node_id, https_first_mode_enabled, navigation_ui_data);
 }

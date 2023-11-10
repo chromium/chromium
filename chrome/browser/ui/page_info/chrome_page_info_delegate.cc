@@ -26,6 +26,7 @@
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
@@ -417,7 +418,14 @@ const std::u16string ChromePageInfoDelegate::GetClientApplicationName() {
 #endif
 
 bool ChromePageInfoDelegate::IsHttpsFirstModeEnabled() {
-  return GetProfile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled);
+  bool https_first_mode_fully_enabled =
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled);
+  bool https_first_mode_enabled_in_incognito =
+      base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kHttpsFirstModeIncognito);
+  return https_first_mode_fully_enabled ||
+         (GetProfile()->IsIncognitoProfile() &&
+          https_first_mode_enabled_in_incognito);
 }
 
 void ChromePageInfoDelegate::SetSecurityStateForTests(
