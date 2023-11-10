@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/chromeos/vulkan_image_processor_backend.h"
+#include "media/gpu/chromeos/vulkan_image_processor.h"
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -18,7 +18,7 @@
 
 namespace media {
 
-class VulkanImageProcessorBackend::VulkanRenderPass {
+class VulkanImageProcessor::VulkanRenderPass {
  public:
   VulkanRenderPass(const VulkanRenderPass&) = delete;
   VulkanRenderPass& operator=(const VulkanRenderPass&) = delete;
@@ -38,7 +38,7 @@ class VulkanImageProcessorBackend::VulkanRenderPass {
   const VkDevice logical_device_;
 };
 
-class VulkanImageProcessorBackend::VulkanShader {
+class VulkanImageProcessor::VulkanShader {
  public:
   VulkanShader(const VulkanShader&) = delete;
   VulkanShader& operator=(const VulkanShader&) = delete;
@@ -59,7 +59,7 @@ class VulkanImageProcessorBackend::VulkanShader {
   const VkDevice logical_device_;
 };
 
-class VulkanImageProcessorBackend::VulkanPipeline {
+class VulkanImageProcessor::VulkanPipeline {
  public:
   VulkanPipeline(const VulkanPipeline&) = delete;
   VulkanPipeline& operator=(const VulkanPipeline&) = delete;
@@ -73,7 +73,6 @@ class VulkanImageProcessorBackend::VulkanPipeline {
       const std::vector<VkDescriptorSetLayoutBinding>& ubo_bindings,
       std::unique_ptr<VulkanShader> vert_shader,
       std::unique_ptr<VulkanShader> frag_shader,
-      const gfx::Size& output_size,
       size_t push_constants_size,
       VkRenderPass render_pass,
       VkDevice logical_device);
@@ -99,7 +98,7 @@ class VulkanImageProcessorBackend::VulkanPipeline {
   const VkDevice logical_device_;
 };
 
-class VulkanImageProcessorBackend::VulkanDescriptorPool {
+class VulkanImageProcessor::VulkanDescriptorPool {
  public:
   VulkanDescriptorPool(const VulkanDescriptorPool&) = delete;
   VulkanDescriptorPool& operator=(const VulkanDescriptorPool&) = delete;
@@ -125,7 +124,7 @@ class VulkanImageProcessorBackend::VulkanDescriptorPool {
   const VkDevice logical_device_;
 };
 
-class VulkanImageProcessorBackend::VulkanDeviceQueueWrapper {
+class VulkanImageProcessor::VulkanDeviceQueueWrapper {
  public:
   VulkanDeviceQueueWrapper(const VulkanDeviceQueueWrapper&) = delete;
   VulkanDeviceQueueWrapper& operator=(const VulkanDeviceQueueWrapper&) = delete;
@@ -149,7 +148,7 @@ class VulkanImageProcessorBackend::VulkanDeviceQueueWrapper {
   const std::unique_ptr<gpu::VulkanDeviceQueue> vulkan_device_queue_;
 };
 
-class VulkanImageProcessorBackend::VulkanCommandPoolWrapper {
+class VulkanImageProcessor::VulkanCommandPoolWrapper {
  public:
   VulkanCommandPoolWrapper(const VulkanCommandPoolWrapper&) = delete;
   VulkanCommandPoolWrapper& operator=(const VulkanCommandPoolWrapper&) = delete;
@@ -159,18 +158,16 @@ class VulkanImageProcessorBackend::VulkanCommandPoolWrapper {
   static std::unique_ptr<VulkanCommandPoolWrapper> Create(
       gpu::VulkanDeviceQueue* device_queue);
 
-  gpu::VulkanCommandBuffer* GetPrimaryCommandBuffer();
+  std::unique_ptr<gpu::VulkanCommandBuffer> CreatePrimaryCommandBuffer();
 
  private:
   VulkanCommandPoolWrapper(
-      std::unique_ptr<gpu::VulkanCommandPool> command_pool,
-      std::unique_ptr<gpu::VulkanCommandBuffer> primary_command_buf);
+      std::unique_ptr<gpu::VulkanCommandPool> command_pool);
 
   const std::unique_ptr<gpu::VulkanCommandPool> command_pool_;
-  std::unique_ptr<gpu::VulkanCommandBuffer> primary_command_buf_;
 };
 
-class VulkanImageProcessorBackend::VulkanTextureImage {
+class VulkanImageProcessor::VulkanTextureImage {
  public:
   VulkanTextureImage(const VulkanTextureImage&) = delete;
   VulkanTextureImage& operator=(const VulkanTextureImage&) = delete;
@@ -210,22 +207,22 @@ class VulkanImageProcessorBackend::VulkanTextureImage {
   const VkDevice logical_device_;
 };
 
-VulkanImageProcessorBackend::VulkanRenderPass::VulkanRenderPass(
+VulkanImageProcessor::VulkanRenderPass::VulkanRenderPass(
     VkDevice logical_device,
     VkRenderPass render_pass)
     : render_pass_(render_pass), logical_device_(logical_device) {}
 
-VulkanImageProcessorBackend::VulkanRenderPass::~VulkanRenderPass() {
+VulkanImageProcessor::VulkanRenderPass::~VulkanRenderPass() {
   vkDestroyRenderPass(logical_device_, render_pass_, nullptr);
 }
 
-VkRenderPass VulkanImageProcessorBackend::VulkanRenderPass::Get() {
+VkRenderPass VulkanImageProcessor::VulkanRenderPass::Get() {
   return render_pass_;
 }
 
-std::unique_ptr<VulkanImageProcessorBackend::VulkanRenderPass>
-VulkanImageProcessorBackend::VulkanRenderPass::Create(VkFormat format,
-                                                      VkDevice logical_device) {
+std::unique_ptr<VulkanImageProcessor::VulkanRenderPass>
+VulkanImageProcessor::VulkanRenderPass::Create(VkFormat format,
+                                               VkDevice logical_device) {
   VkAttachmentDescription color_attachment{};
   color_attachment.format = format;
   color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -261,22 +258,22 @@ VulkanImageProcessorBackend::VulkanRenderPass::Create(VkFormat format,
   return base::WrapUnique(new VulkanRenderPass(logical_device, render_pass));
 }
 
-VulkanImageProcessorBackend::VulkanShader::VulkanShader(VkDevice logical_device,
-                                                        VkShaderModule shader)
+VulkanImageProcessor::VulkanShader::VulkanShader(VkDevice logical_device,
+                                                 VkShaderModule shader)
     : shader_(shader), logical_device_(logical_device) {}
 
-VulkanImageProcessorBackend::VulkanShader::~VulkanShader() {
+VulkanImageProcessor::VulkanShader::~VulkanShader() {
   vkDestroyShaderModule(logical_device_, shader_, nullptr);
 }
 
-VkShaderModule VulkanImageProcessorBackend::VulkanShader::Get() {
+VkShaderModule VulkanImageProcessor::VulkanShader::Get() {
   return shader_;
 }
 
-std::unique_ptr<VulkanImageProcessorBackend::VulkanShader>
-VulkanImageProcessorBackend::VulkanShader::Create(const uint32_t* shader_code,
-                                                  size_t shader_code_size,
-                                                  VkDevice logical_device) {
+std::unique_ptr<VulkanImageProcessor::VulkanShader>
+VulkanImageProcessor::VulkanShader::Create(const uint32_t* shader_code,
+                                           size_t shader_code_size,
+                                           VkDevice logical_device) {
   VkShaderModuleCreateInfo shader_info{};
   shader_info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   shader_info.codeSize = shader_code_size;
@@ -292,12 +289,12 @@ VulkanImageProcessorBackend::VulkanShader::Create(const uint32_t* shader_code,
   return base::WrapUnique(new VulkanShader(logical_device, shader));
 }
 
-VulkanImageProcessorBackend::VulkanPipeline::VulkanPipeline(
+VulkanImageProcessor::VulkanPipeline::VulkanPipeline(
     VkPipeline pipeline,
     VkDescriptorSetLayout descriptor_set_layout,
     VkPipelineLayout pipeline_layout,
-    std::unique_ptr<VulkanImageProcessorBackend::VulkanShader> vert_shader,
-    std::unique_ptr<VulkanImageProcessorBackend::VulkanShader> frag_shader,
+    std::unique_ptr<VulkanImageProcessor::VulkanShader> vert_shader,
+    std::unique_ptr<VulkanImageProcessor::VulkanShader> frag_shader,
     VkDevice logical_device)
     : pipeline_(pipeline),
       descriptor_set_layout_(descriptor_set_layout),
@@ -306,36 +303,34 @@ VulkanImageProcessorBackend::VulkanPipeline::VulkanPipeline(
       frag_shader_(std::move(frag_shader)),
       logical_device_(logical_device) {}
 
-VulkanImageProcessorBackend::VulkanPipeline::~VulkanPipeline() {
+VulkanImageProcessor::VulkanPipeline::~VulkanPipeline() {
   vkDestroyPipeline(logical_device_, pipeline_, nullptr);
   vkDestroyPipelineLayout(logical_device_, pipeline_layout_, nullptr);
   vkDestroyDescriptorSetLayout(logical_device_, descriptor_set_layout_,
                                nullptr);
 }
 
-VkPipeline VulkanImageProcessorBackend::VulkanPipeline::Get() {
+VkPipeline VulkanImageProcessor::VulkanPipeline::Get() {
   return pipeline_;
 }
 
 VkDescriptorSetLayout
-VulkanImageProcessorBackend::VulkanPipeline::GetDescriptorSetLayout() {
+VulkanImageProcessor::VulkanPipeline::GetDescriptorSetLayout() {
   return descriptor_set_layout_;
 }
 
-VkPipelineLayout
-VulkanImageProcessorBackend::VulkanPipeline::GetPipelineLayout() {
+VkPipelineLayout VulkanImageProcessor::VulkanPipeline::GetPipelineLayout() {
   return pipeline_layout_;
 }
 
-std::unique_ptr<VulkanImageProcessorBackend::VulkanPipeline>
-VulkanImageProcessorBackend::VulkanPipeline::Create(
+std::unique_ptr<VulkanImageProcessor::VulkanPipeline>
+VulkanImageProcessor::VulkanPipeline::Create(
     const std::vector<VkVertexInputBindingDescription>& binding_descriptions,
     const std::vector<VkVertexInputAttributeDescription>&
         attribute_descriptions,
     const std::vector<VkDescriptorSetLayoutBinding>& ubo_bindings,
-    std::unique_ptr<VulkanImageProcessorBackend::VulkanShader> vert_shader,
-    std::unique_ptr<VulkanImageProcessorBackend::VulkanShader> frag_shader,
-    const gfx::Size& output_size,
+    std::unique_ptr<VulkanImageProcessor::VulkanShader> vert_shader,
+    std::unique_ptr<VulkanImageProcessor::VulkanShader> frag_shader,
     size_t push_constants_size,
     VkRenderPass render_pass,
     VkDevice logical_device) {
@@ -407,15 +402,14 @@ VulkanImageProcessorBackend::VulkanPipeline::Create(
   VkViewport viewport{};
   viewport.x = 0.0f;
   viewport.y = 0.0f;
-  viewport.width = (float)output_size.width();
-  viewport.height = (float)output_size.height();
+  viewport.width = 1.0;
+  viewport.height = 1.0;
   viewport.minDepth = 0.0f;
   viewport.maxDepth = 1.0f;
 
   VkRect2D scissor{};
   scissor.offset = {0, 0};
-  scissor.extent = {static_cast<uint32_t>(output_size.width()),
-                    static_cast<uint32_t>(output_size.height())};
+  scissor.extent = {1, 1};
 
   VkPipelineViewportStateCreateInfo viewport_state{};
   viewport_state.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -491,7 +485,7 @@ VulkanImageProcessorBackend::VulkanPipeline::Create(
       std::move(frag_shader), logical_device));
 }
 
-VulkanImageProcessorBackend::VulkanDescriptorPool::VulkanDescriptorPool(
+VulkanImageProcessor::VulkanDescriptorPool::VulkanDescriptorPool(
     std::vector<VkDescriptorSet> descriptor_sets,
     VkDescriptorPool descriptor_pool,
     VkDevice logical_device)
@@ -499,17 +493,17 @@ VulkanImageProcessorBackend::VulkanDescriptorPool::VulkanDescriptorPool(
       descriptor_pool_(descriptor_pool),
       logical_device_(logical_device) {}
 
-VulkanImageProcessorBackend::VulkanDescriptorPool::~VulkanDescriptorPool() {
+VulkanImageProcessor::VulkanDescriptorPool::~VulkanDescriptorPool() {
   vkDestroyDescriptorPool(logical_device_, descriptor_pool_, nullptr);
 }
 
 const std::vector<VkDescriptorSet>&
-VulkanImageProcessorBackend::VulkanDescriptorPool::Get() {
+VulkanImageProcessor::VulkanDescriptorPool::Get() {
   return descriptor_sets_;
 }
 
-std::unique_ptr<VulkanImageProcessorBackend::VulkanDescriptorPool>
-VulkanImageProcessorBackend::VulkanDescriptorPool::Create(
+std::unique_ptr<VulkanImageProcessor::VulkanDescriptorPool>
+VulkanImageProcessor::VulkanDescriptorPool::Create(
     size_t num_descriptor_sets,
     std::vector<VkDescriptorType> descriptor_types,
     VkDescriptorSetLayout descriptor_set_layout,
@@ -554,7 +548,7 @@ VulkanImageProcessorBackend::VulkanDescriptorPool::Create(
       descriptor_sets, descriptor_pool, logical_device));
 }
 
-VulkanImageProcessorBackend::VulkanTextureImage::VulkanTextureImage(
+VulkanImageProcessor::VulkanTextureImage::VulkanTextureImage(
     std::unique_ptr<gpu::VulkanImage> image,
     const std::vector<VkImageView>& image_views,
     const std::vector<VkFramebuffer>& framebuffers,
@@ -566,7 +560,7 @@ VulkanImageProcessorBackend::VulkanTextureImage::VulkanTextureImage(
       current_layout_(initial_layout),
       logical_device_(logical_device) {}
 
-VulkanImageProcessorBackend::VulkanTextureImage::~VulkanTextureImage() {
+VulkanImageProcessor::VulkanTextureImage::~VulkanTextureImage() {
   for (VkFramebuffer framebuffer : framebuffers_) {
     vkDestroyFramebuffer(logical_device_, framebuffer, nullptr);
   }
@@ -578,21 +572,21 @@ VulkanImageProcessorBackend::VulkanTextureImage::~VulkanTextureImage() {
   image_->Destroy();
 }
 
-VkImage VulkanImageProcessorBackend::VulkanTextureImage::GetImage() {
+VkImage VulkanImageProcessor::VulkanTextureImage::GetImage() {
   return image_->image();
 }
 
 const std::vector<VkImageView>&
-VulkanImageProcessorBackend::VulkanTextureImage::GetImageViews() {
+VulkanImageProcessor::VulkanTextureImage::GetImageViews() {
   return image_views_;
 }
 
 const std::vector<VkFramebuffer>&
-VulkanImageProcessorBackend::VulkanTextureImage::GetFramebuffers() {
+VulkanImageProcessor::VulkanTextureImage::GetFramebuffers() {
   return framebuffers_;
 }
 
-void VulkanImageProcessorBackend::VulkanTextureImage::TransitionImageLayout(
+void VulkanImageProcessor::VulkanTextureImage::TransitionImageLayout(
     gpu::VulkanCommandBuffer* command_buf,
     VkImageLayout new_layout,
     uint32_t src_queue_family_index,
@@ -608,8 +602,8 @@ void VulkanImageProcessorBackend::VulkanTextureImage::TransitionImageLayout(
   current_layout_ = new_layout;
 }
 
-std::unique_ptr<VulkanImageProcessorBackend::VulkanTextureImage>
-VulkanImageProcessorBackend::VulkanTextureImage::Create(
+std::unique_ptr<VulkanImageProcessor::VulkanTextureImage>
+VulkanImageProcessor::VulkanTextureImage::Create(
     std::unique_ptr<gpu::VulkanImage> image,
     const std::vector<VkFormat>& formats,
     const std::vector<gfx::Size>& sizes,
@@ -672,47 +666,43 @@ VulkanImageProcessorBackend::VulkanTextureImage::Create(
       logical_device));
 }
 
-VulkanImageProcessorBackend::VulkanDeviceQueueWrapper::VulkanDeviceQueueWrapper(
+VulkanImageProcessor::VulkanDeviceQueueWrapper::VulkanDeviceQueueWrapper(
     std::unique_ptr<gpu::VulkanDeviceQueue> vulkan_device_queue)
     : vulkan_device_queue_(std::move(vulkan_device_queue)) {}
 
-VulkanImageProcessorBackend::VulkanDeviceQueueWrapper::
-    ~VulkanDeviceQueueWrapper() {
+VulkanImageProcessor::VulkanDeviceQueueWrapper::~VulkanDeviceQueueWrapper() {
   vulkan_device_queue_->Destroy();
 }
 
 gpu::VulkanDeviceQueue*
-VulkanImageProcessorBackend::VulkanDeviceQueueWrapper::GetVulkanDeviceQueue() {
+VulkanImageProcessor::VulkanDeviceQueueWrapper::GetVulkanDeviceQueue() {
   return vulkan_device_queue_.get();
 }
 
-VkPhysicalDevice VulkanImageProcessorBackend::VulkanDeviceQueueWrapper::
-    GetVulkanPhysicalDevice() {
+VkPhysicalDevice
+VulkanImageProcessor::VulkanDeviceQueueWrapper::GetVulkanPhysicalDevice() {
   return vulkan_device_queue_->GetVulkanPhysicalDevice();
 }
 
-VkPhysicalDeviceProperties VulkanImageProcessorBackend::
-    VulkanDeviceQueueWrapper::GetVulkanPhysicalDeviceProperties() {
+VkPhysicalDeviceProperties VulkanImageProcessor::VulkanDeviceQueueWrapper::
+    GetVulkanPhysicalDeviceProperties() {
   return vulkan_device_queue_->vk_physical_device_properties();
 }
 
-VkDevice
-VulkanImageProcessorBackend::VulkanDeviceQueueWrapper::GetVulkanDevice() {
+VkDevice VulkanImageProcessor::VulkanDeviceQueueWrapper::GetVulkanDevice() {
   return vulkan_device_queue_->GetVulkanDevice();
 }
 
-VkQueue
-VulkanImageProcessorBackend::VulkanDeviceQueueWrapper::GetVulkanQueue() {
+VkQueue VulkanImageProcessor::VulkanDeviceQueueWrapper::GetVulkanQueue() {
   return vulkan_device_queue_->GetVulkanQueue();
 }
 
-uint32_t
-VulkanImageProcessorBackend::VulkanDeviceQueueWrapper::GetVulkanQueueIndex() {
+uint32_t VulkanImageProcessor::VulkanDeviceQueueWrapper::GetVulkanQueueIndex() {
   return vulkan_device_queue_->GetVulkanQueueIndex();
 }
 
-std::unique_ptr<VulkanImageProcessorBackend::VulkanDeviceQueueWrapper>
-VulkanImageProcessorBackend::VulkanDeviceQueueWrapper::Create(
+std::unique_ptr<VulkanImageProcessor::VulkanDeviceQueueWrapper>
+VulkanImageProcessor::VulkanDeviceQueueWrapper::Create(
     gpu::VulkanImplementation* implementation) {
   auto vulkan_device_queue = CreateVulkanDeviceQueue(
       implementation,
@@ -722,61 +712,43 @@ VulkanImageProcessorBackend::VulkanDeviceQueueWrapper::Create(
       new VulkanDeviceQueueWrapper(std::move(vulkan_device_queue)));
 }
 
-VulkanImageProcessorBackend::VulkanCommandPoolWrapper::VulkanCommandPoolWrapper(
-    std::unique_ptr<gpu::VulkanCommandPool> command_pool,
-    std::unique_ptr<gpu::VulkanCommandBuffer> primary_command_buf)
-    : command_pool_(std::move(command_pool)),
-      primary_command_buf_(std::move(primary_command_buf)) {}
+VulkanImageProcessor::VulkanCommandPoolWrapper::VulkanCommandPoolWrapper(
+    std::unique_ptr<gpu::VulkanCommandPool> command_pool)
+    : command_pool_(std::move(command_pool)) {}
 
-VulkanImageProcessorBackend::VulkanCommandPoolWrapper::
-    ~VulkanCommandPoolWrapper() {
-  primary_command_buf_->Destroy();
-  primary_command_buf_ = nullptr;
+VulkanImageProcessor::VulkanCommandPoolWrapper::~VulkanCommandPoolWrapper() {
   command_pool_->Destroy();
 }
 
-gpu::VulkanCommandBuffer* VulkanImageProcessorBackend::
-    VulkanCommandPoolWrapper::GetPrimaryCommandBuffer() {
-  return primary_command_buf_.get();
+std::unique_ptr<gpu::VulkanCommandBuffer>
+VulkanImageProcessor::VulkanCommandPoolWrapper::CreatePrimaryCommandBuffer() {
+  return command_pool_->CreatePrimaryCommandBuffer();
 }
 
-std::unique_ptr<VulkanImageProcessorBackend::VulkanCommandPoolWrapper>
-VulkanImageProcessorBackend::VulkanCommandPoolWrapper::Create(
+std::unique_ptr<VulkanImageProcessor::VulkanCommandPoolWrapper>
+VulkanImageProcessor::VulkanCommandPoolWrapper::Create(
     gpu::VulkanDeviceQueue* device_queue) {
   std::unique_ptr<gpu::VulkanCommandPool> command_pool =
       base::WrapUnique(new gpu::VulkanCommandPool(device_queue));
   command_pool->Initialize();
-  std::unique_ptr<gpu::VulkanCommandBuffer> primary_command_buf =
-      command_pool->CreatePrimaryCommandBuffer();
 
-  return base::WrapUnique(new VulkanCommandPoolWrapper(
-      std::move(command_pool), std::move(primary_command_buf)));
+  return base::WrapUnique(
+      new VulkanCommandPoolWrapper(std::move(command_pool)));
 }
 
-VulkanImageProcessorBackend::VulkanImageProcessorBackend(
-    gfx::Size input_size,
-    gfx::Size output_size,
+VulkanImageProcessor::VulkanImageProcessor(
+    BackingCB input_backing_cb,
+    BackingCB output_backing_cb,
     std::unique_ptr<gpu::VulkanImplementation> vulkan_implementation,
-    std::unique_ptr<VulkanImageProcessorBackend::VulkanDeviceQueueWrapper>
+    std::unique_ptr<VulkanImageProcessor::VulkanDeviceQueueWrapper>
         vulkan_device_queue,
-    std::unique_ptr<VulkanImageProcessorBackend::VulkanCommandPoolWrapper>
+    std::unique_ptr<VulkanImageProcessor::VulkanCommandPoolWrapper>
         command_pool,
-    std::unique_ptr<VulkanImageProcessorBackend::VulkanRenderPass> render_pass,
-    std::unique_ptr<VulkanImageProcessorBackend::VulkanPipeline> pipeline,
-    std::unique_ptr<VulkanImageProcessorBackend::VulkanDescriptorPool>
-        descriptor_pool,
-    const PortConfig& input_config,
-    const PortConfig& output_config,
-    OutputMode output_mode,
-    ErrorCB error_cb)
-    : ImageProcessorBackend(input_config,
-                            output_config,
-                            output_mode,
-                            std::move(error_cb),
-                            base::ThreadPool::CreateSingleThreadTaskRunner(
-                                {base::TaskPriority::USER_VISIBLE})),
-      input_size_(input_size),
-      output_size_(output_size),
+    std::unique_ptr<VulkanImageProcessor::VulkanRenderPass> render_pass,
+    std::unique_ptr<VulkanImageProcessor::VulkanPipeline> pipeline,
+    std::unique_ptr<VulkanImageProcessor::VulkanDescriptorPool> descriptor_pool)
+    : input_backing_cb_(input_backing_cb),
+      output_backing_cb_(output_backing_cb),
       vulkan_implementation_(std::move(vulkan_implementation)),
       vulkan_device_queue_(std::move(vulkan_device_queue)),
       command_pool_(std::move(command_pool)),
@@ -784,57 +756,17 @@ VulkanImageProcessorBackend::VulkanImageProcessorBackend(
       pipeline_(std::move(pipeline)),
       descriptor_pool_(std::move(descriptor_pool)) {}
 
-VulkanImageProcessorBackend::~VulkanImageProcessorBackend() = default;
-
-std::string VulkanImageProcessorBackend::type() const {
-  return "VukanImageProcessor";
+VulkanImageProcessor::~VulkanImageProcessor() {
+  // Make sure there aren't any pending cleanup jobs before we start destroying
+  // stuff.
+  vulkan_device_queue_->GetVulkanDeviceQueue()
+      ->GetFenceHelper()
+      ->PerformImmediateCleanup();
 }
 
-bool VulkanImageProcessorBackend::IsSupported(const PortConfig& input_config,
-                                              const PortConfig& output_config,
-                                              OutputMode output_mode) {
-  if (output_mode != OutputMode::IMPORT) {
-    return false;
-  }
-
-  if (!input_config.visible_rect.origin().IsOrigin() ||
-      !output_config.visible_rect.origin().IsOrigin()) {
-    VLOGF(2)
-        << "The VulkanImageProcessorBackend does not support transposition.";
-    return false;
-  }
-
-  if (input_config.fourcc != Fourcc(Fourcc::MM21) ||
-      output_config.fourcc != Fourcc(Fourcc::AR24)) {
-    VLOGF(2) << "The VulkanImageProcessorBackend only supports MM21->AR24 "
-                "conversion.";
-    return false;
-  }
-
-  // TODO(b/251458823): We want to support arbitrary scaling long term, this is
-  // just a short term hack because we need to revamp our bilinear filtering
-  // algorithm.
-  if (output_config.visible_rect.width() <=
-          input_config.visible_rect.width() / 2 ||
-      output_config.visible_rect.height() <=
-          input_config.visible_rect.height() / 2) {
-    VLOGF(2) << "The VulkanImageProcessorBackend cannot downsample by more "
-                "than 2 in each dimension.";
-    return false;
-  }
-
-  return true;
-}
-
-std::unique_ptr<VulkanImageProcessorBackend>
-VulkanImageProcessorBackend::Create(const PortConfig& input_config,
-                                    const PortConfig& output_config,
-                                    OutputMode output_mode,
-                                    ErrorCB error_cb) {
-  if (!IsSupported(input_config, output_config, output_mode)) {
-    return nullptr;
-  }
-
+std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create(
+    BackingCB input_backing_cb,
+    BackingCB output_backing_cb) {
   auto vulkan_implementation = gpu::CreateVulkanImplementation(
       /*use_swiftshader=*/false, /*allow_protected_memory=*/false);
   vulkan_implementation->InitializeVulkanInstance(/*using_surface=*/false);
@@ -886,8 +818,8 @@ VulkanImageProcessorBackend::Create(const PortConfig& input_config,
   auto pipeline = VulkanPipeline::Create(
       binding_descriptions, attribute_descriptions, descriptor_bindings,
       std::move(vert_shader), std::move(frag_shader),
-      output_config.visible_rect.size(), 2 * 2 * sizeof(int),
-      render_pass->Get(), vulkan_device_queue->GetVulkanDevice());
+      2 * 2 * sizeof(int), render_pass->Get(),
+      vulkan_device_queue->GetVulkanDevice());
   if (!pipeline) {
     return nullptr;
   }
@@ -900,44 +832,46 @@ VulkanImageProcessorBackend::Create(const PortConfig& input_config,
     return nullptr;
   }
 
-  return base::WrapUnique(new VulkanImageProcessorBackend(
-      input_config.size, output_config.visible_rect.size(),
-      std::move(vulkan_implementation), std::move(vulkan_device_queue),
-      std::move(command_pool), std::move(render_pass), std::move(pipeline),
-      std::move(descriptor_pool), input_config, output_config, output_mode,
-      std::move(error_cb)));
+  return base::WrapUnique(new VulkanImageProcessor(
+      input_backing_cb, output_backing_cb, std::move(vulkan_implementation),
+      std::move(vulkan_device_queue), std::move(command_pool),
+      std::move(render_pass), std::move(pipeline), std::move(descriptor_pool)));
 }
 
-void VulkanImageProcessorBackend::Process(
-    scoped_refptr<VideoFrame> input_frame,
-    scoped_refptr<VideoFrame> output_frame,
-    FrameReadyCB cb) {
+gpu::SemaphoreHandle VulkanImageProcessor::Process(
+    gpu::Mailbox in_mailbox,
+    const gfx::Size& input_coded_size,
+    const gfx::Size& input_visible_size,
+    ReleaseCB input_release_cb,
+    gpu::Mailbox out_mailbox,
+    const gfx::Size& output_coded_size,
+    const gfx::Size& output_visible_size,
+    absl::optional<gpu::SemaphoreHandle> in_semaphore_handle) {
+  auto in_gmb = input_backing_cb_.Run(in_mailbox);
+  auto out_gmb = output_backing_cb_.Run(out_mailbox);
+
   // Import output_frame into vulkan.
-  gfx::GpuMemoryBufferHandle out_gmb =
-      CreateGpuMemoryBufferHandle(output_frame.get());
   auto out_image = vulkan_implementation_->CreateImageFromGpuMemoryHandle(
       vulkan_device_queue_->GetVulkanDeviceQueue(), std::move(out_gmb),
-      output_size_, VK_FORMAT_B8G8R8A8_UNORM,
+      output_coded_size, VK_FORMAT_B8G8R8A8_UNORM,
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
                       gfx::ColorSpace::TransferID::BT709));
   auto out_texture = VulkanTextureImage::Create(
-      std::move(out_image), {VK_FORMAT_B8G8R8A8_UNORM}, {output_size_},
+      std::move(out_image), {VK_FORMAT_B8G8R8A8_UNORM}, {output_coded_size},
       {VK_IMAGE_ASPECT_COLOR_BIT},
       /*is_framebuffer=*/true, render_pass_->Get(),
       vulkan_device_queue_->GetVulkanDevice());
 
-  gfx::GpuMemoryBufferHandle in_gmb =
-      CreateGpuMemoryBufferHandle(input_frame.get());
   auto in_image = vulkan_implementation_->CreateImageFromGpuMemoryHandle(
       vulkan_device_queue_->GetVulkanDeviceQueue(), std::move(in_gmb),
-      input_size_, VK_FORMAT_G8_B8R8_2PLANE_420_UNORM,
+      input_coded_size, VK_FORMAT_G8_B8R8_2PLANE_420_UNORM,
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
                       gfx::ColorSpace::TransferID::BT709));
-  gfx::Size uv_plane_size =
-      gfx::Size((input_size_.width() + 1) / 2, (input_size_.height() + 1) / 2);
+  gfx::Size uv_plane_size = gfx::Size((input_coded_size.width() + 1) / 2,
+                                      (input_coded_size.height() + 1) / 2);
   auto in_texture = VulkanTextureImage::Create(
       std::move(in_image), {VK_FORMAT_R8_UNORM, VK_FORMAT_R8G8_UNORM},
-      {input_size_, uv_plane_size},
+      {input_coded_size, uv_plane_size},
       {VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT},
       /*is_framebuffer=*/false, render_pass_->Get(),
       vulkan_device_queue_->GetVulkanDevice());
@@ -968,26 +902,26 @@ void VulkanImageProcessorBackend::Process(
                          descriptor_write.size(), descriptor_write.data(), 0,
                          nullptr);
 
+  auto command_buf = command_pool_->CreatePrimaryCommandBuffer();
   {
-    gpu::ScopedSingleUseCommandBufferRecorder record(
-        *command_pool_->GetPrimaryCommandBuffer());
+    gpu::ScopedSingleUseCommandBufferRecorder record(*command_buf);
 
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = static_cast<float>(output_size_.width());
-    viewport.height = static_cast<float>(output_size_.height());
+    viewport.width = static_cast<float>(output_visible_size.width());
+    viewport.height = static_cast<float>(output_visible_size.height());
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
     vkCmdSetViewport(record.handle(), 0, 1, &viewport);
 
     VkRect2D scissor{};
     scissor.offset = {0, 0};
-    scissor.extent.width = static_cast<float>(output_size_.width());
-    scissor.extent.height = static_cast<float>(output_size_.height());
+    scissor.extent.width = static_cast<float>(output_visible_size.width());
+    scissor.extent.height = static_cast<float>(output_visible_size.height());
     vkCmdSetScissor(record.handle(), 0, 1, &scissor);
 
-    in_texture->TransitionImageLayout(command_pool_->GetPrimaryCommandBuffer(),
+    in_texture->TransitionImageLayout(command_buf.get(),
                                       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     VkRenderPassBeginInfo render_pass_info{};
@@ -996,8 +930,8 @@ void VulkanImageProcessorBackend::Process(
     render_pass_info.framebuffer = out_texture->GetFramebuffers()[0];
     render_pass_info.renderArea.offset = {0, 0};
     render_pass_info.renderArea.extent = {
-        static_cast<uint32_t>(output_size_.width()),
-        static_cast<uint32_t>(output_size_.height())};
+        static_cast<uint32_t>(output_visible_size.width()),
+        static_cast<uint32_t>(output_visible_size.height())};
     VkClearValue clear_color = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
     render_pass_info.clearValueCount = 1;
     render_pass_info.pClearValues = &clear_color;
@@ -1012,10 +946,9 @@ void VulkanImageProcessorBackend::Process(
                             pipeline_->GetPipelineLayout(), 0, 1,
                             descriptor_pool_->Get().data(), 0, nullptr);
 
-    int push_constants[4] = {input_config_.size.width(),
-                             input_config_.size.height(),
-                             input_config_.visible_rect.width(),
-                             input_config_.visible_rect.height()};
+    int push_constants[4] = {
+        input_coded_size.width(), input_coded_size.height(),
+        input_visible_size.width(), input_visible_size.height()};
     vkCmdPushConstants(record.handle(), pipeline_->GetPipelineLayout(),
                        VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(push_constants),
                        push_constants);
@@ -1025,14 +958,42 @@ void VulkanImageProcessorBackend::Process(
     vkCmdEndRenderPass(record.handle());
 
     out_texture->TransitionImageLayout(
-        command_pool_->GetPrimaryCommandBuffer(), VK_IMAGE_LAYOUT_UNDEFINED,
-        VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_FOREIGN_EXT);
+        command_buf.get(), VK_IMAGE_LAYOUT_UNDEFINED, VK_QUEUE_FAMILY_IGNORED,
+        VK_QUEUE_FAMILY_FOREIGN_EXT);
   }
-  command_pool_->GetPrimaryCommandBuffer()->Submit(0, nullptr, 0, nullptr);
-  // TODO(b/251458823): We may not need to block here, see if we can use
-  // a semaphore or a fence.
-  command_pool_->GetPrimaryCommandBuffer()->Wait(UINT64_MAX);
-  std::move(cb).Run(std::move(output_frame));
+
+  auto* fence_helper =
+      vulkan_device_queue_->GetVulkanDeviceQueue()->GetFenceHelper();
+  VkSemaphore out_semaphore = vulkan_implementation_->CreateExternalSemaphore(
+      vulkan_device_queue_->GetVulkanDevice());
+  if (in_semaphore_handle) {
+    VkSemaphore in_semaphore = vulkan_implementation_->ImportSemaphoreHandle(
+        vulkan_device_queue_->GetVulkanDevice(),
+        std::move(*in_semaphore_handle));
+
+    command_buf->Submit(1, &in_semaphore, 1, &out_semaphore);
+
+    fence_helper->EnqueueSemaphoresCleanupForSubmittedWork(
+        {out_semaphore, in_semaphore});
+  } else {
+    command_buf->Submit(0, nullptr, 1, &out_semaphore);
+
+    fence_helper->EnqueueSemaphoresCleanupForSubmittedWork({out_semaphore});
+  }
+
+  fence_helper->EnqueueVulkanObjectCleanupForSubmittedWork(
+      std::move(command_buf));
+  fence_helper->EnqueueCleanupTaskForSubmittedWork(base::BindOnce(
+      [](std::unique_ptr<VulkanTextureImage> in_texture,
+         std::unique_ptr<VulkanTextureImage> out_texture,
+         gpu::Mailbox in_mailbox, ReleaseCB input_release_cb,
+         gpu::VulkanDeviceQueue* device_queue,
+         bool device_lost) { std::move(input_release_cb).Run(in_mailbox); },
+      std::move(in_texture), std::move(out_texture), in_mailbox,
+      std::move(input_release_cb)));
+
+  return vulkan_implementation_->GetSemaphoreHandle(
+      vulkan_device_queue_->GetVulkanDevice(), out_semaphore);
 }
 
 }  // namespace media
