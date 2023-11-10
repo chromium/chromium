@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/installability_checker.h"
@@ -46,6 +47,11 @@ class IsolatedWebAppInstallerViewController
   void SetViewForTesting(IsolatedWebAppInstallerView* view);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
+                           InstallButtonLaunchesConfirmationDialog);
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
+                           ConfirmationDialogMovesToInstallScreen);
+
   // Handles returning a default value if the controller has been deleted.
   static bool OnAcceptWrapper(
       base::WeakPtr<IsolatedWebAppInstallerViewController> controller);
@@ -53,6 +59,8 @@ class IsolatedWebAppInstallerViewController
   bool OnAccept();
   void OnComplete();
   void Close();
+
+  void OnConfirmInstallLearnMoreClicked();
 
   // `InstallabilityChecker::Delegate`:
   void OnProfileShutdown() override;

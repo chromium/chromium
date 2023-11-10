@@ -71,6 +71,8 @@ class IsolatedWebAppUrlInfo {
       const std::string& partition_name,
       bool in_memory) const;
 
+  bool operator==(const IsolatedWebAppUrlInfo& other) const;
+
  private:
   explicit IsolatedWebAppUrlInfo(
       const web_package::SignedWebBundleId& web_bundle_id);

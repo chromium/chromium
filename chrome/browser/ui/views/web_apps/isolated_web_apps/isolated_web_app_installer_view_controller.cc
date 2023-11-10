@@ -106,6 +106,55 @@ void IsolatedWebAppInstallerViewController::SetViewForTesting(
   view_ = view;
 }
 
+// static
+bool IsolatedWebAppInstallerViewController::OnAcceptWrapper(
+    base::WeakPtr<IsolatedWebAppInstallerViewController> controller) {
+  if (controller) {
+    return controller->OnAccept();
+  }
+  return true;
+}
+
+// Returns true if the dialog should be closed.
+bool IsolatedWebAppInstallerViewController::OnAccept() {
+  // TODO(crbug.com/1479140): Implement
+  switch (model_->step()) {
+    case IsolatedWebAppInstallerModel::Step::kConfirmInstall: {
+      IsolatedWebAppInstallerModel::LinkInfo learn_more_link = {
+          IDS_IWA_INSTALLER_CONFIRM_LEARN_MORE,
+          base::BindRepeating(&IsolatedWebAppInstallerViewController::
+                                  OnConfirmInstallLearnMoreClicked,
+                              base::Unretained(this))};
+      model_->SetDialogContent(IsolatedWebAppInstallerModel::DialogContent(
+          /*is_error=*/false, IDS_IWA_INSTALLER_CONFIRM_TITLE,
+          IDS_IWA_INSTALLER_CONFIRM_SUBTITLE, learn_more_link,
+          IDS_IWA_INSTALLER_CONFIRM_CONTINUE));
+      OnModelChanged();
+      return false;
+    }
+
+    default:
+      NOTREACHED();
+  }
+  return true;
+}
+
+void IsolatedWebAppInstallerViewController::OnComplete() {
+  view_ = nullptr;
+  dialog_delegate_ = nullptr;
+  std::move(callback_).Run();
+}
+
+void IsolatedWebAppInstallerViewController::Close() {
+  if (dialog_delegate_) {
+    dialog_delegate_->CancelDialog();
+  }
+}
+
+void IsolatedWebAppInstallerViewController::OnConfirmInstallLearnMoreClicked() {
+  // TODO(crbug.com/1479140): Implement
+}
+
 void IsolatedWebAppInstallerViewController::OnProfileShutdown() {
   Close();
 }
@@ -159,6 +208,10 @@ void IsolatedWebAppInstallerViewController::OnSettingsLinkClicked() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
+void IsolatedWebAppInstallerViewController::OnManageProfilesLinkClicked() {
+  // TODO(crbug.com/1479140): Implement
+}
+
 void IsolatedWebAppInstallerViewController::OnChildDialogCanceled() {
   // Currently all child dialogs should close the installer when closed.
   Close();
@@ -166,45 +219,15 @@ void IsolatedWebAppInstallerViewController::OnChildDialogCanceled() {
 
 void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
   // TODO(crbug.com/1479140): Implement
-}
-
-void IsolatedWebAppInstallerViewController::OnManageProfilesLinkClicked() {
-  // TODO(crbug.com/1479140): Implement
-}
-
-// static
-bool IsolatedWebAppInstallerViewController::OnAcceptWrapper(
-    base::WeakPtr<IsolatedWebAppInstallerViewController> controller) {
-  if (controller) {
-    return controller->OnAccept();
-  }
-  return true;
-}
-
-// Returns true if the dialog should be closed.
-bool IsolatedWebAppInstallerViewController::OnAccept() {
-  // TODO(crbug.com/1479140): Implement
   switch (model_->step()) {
     case IsolatedWebAppInstallerModel::Step::kConfirmInstall:
       model_->SetStep(IsolatedWebAppInstallerModel::Step::kInstall);
+      model_->SetDialogContent(absl::nullopt);
       OnModelChanged();
-      return false;
+      break;
 
     default:
       NOTREACHED();
-  }
-  return true;
-}
-
-void IsolatedWebAppInstallerViewController::OnComplete() {
-  view_ = nullptr;
-  dialog_delegate_ = nullptr;
-  std::move(callback_).Run();
-}
-
-void IsolatedWebAppInstallerViewController::Close() {
-  if (dialog_delegate_) {
-    dialog_delegate_->CancelDialog();
   }
 }
 

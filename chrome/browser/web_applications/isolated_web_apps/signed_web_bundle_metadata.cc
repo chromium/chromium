@@ -240,4 +240,10 @@ SignedWebBundleMetadata::SignedWebBundleMetadata(
 SignedWebBundleMetadata& SignedWebBundleMetadata::operator=(
     const SignedWebBundleMetadata&) = default;
 
+bool SignedWebBundleMetadata::operator==(
+    const SignedWebBundleMetadata& other) const {
+  return url_info_ == other.url_info_ && app_name_ == other.app_name_ &&
+         version_ == other.version_ && icons_ == other.icons_;
+}
+
 }  // namespace web_app

@@ -56,6 +56,8 @@ class SignedWebBundleMetadata {
 
   const IconBitmaps& icons() const { return icons_; }
 
+  bool operator==(const SignedWebBundleMetadata& other) const;
+
  private:
   SignedWebBundleMetadata(const IsolatedWebAppUrlInfo& url_info,
                           const std::u16string& app_name,

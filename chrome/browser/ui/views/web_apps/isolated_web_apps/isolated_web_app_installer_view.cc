@@ -332,7 +332,7 @@ void IsolatedWebAppInstallerView::ShowDialog(
       dialog_content.details_link));
 
   SetDialogButtons(bubble_delegate.get(), IDS_APP_CLOSE,
-                   /*accept_button_label_id=*/absl::nullopt);
+                   dialog_content.accept_message);
 
   bubble_delegate->SetCancelCallback(base::BindOnce(
       &Delegate::OnChildDialogCanceled, base::Unretained(delegate_)));

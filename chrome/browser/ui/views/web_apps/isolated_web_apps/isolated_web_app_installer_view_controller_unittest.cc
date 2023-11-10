@@ -80,6 +80,19 @@ IsolatedWebAppUrlInfo CreateAndWriteTestBundle(
   return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle.id);
 }
 
+SignedWebBundleMetadata CreateMetadata(const std::u16string& app_name,
+                                       const std::string& version) {
+  auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+      web_package::SignedWebBundleId::CreateRandomForDevelopment());
+  return SignedWebBundleMetadata::CreateForTesting(
+      url_info, app_name, base::Version(version), IconBitmaps());
+}
+
+IsolatedWebAppInstallerModel::DialogContent CreateDummyDialog() {
+  return IsolatedWebAppInstallerModel::DialogContent(
+      /*is_error=*/false, /*message=*/0, /*details=*/0);
+}
+
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& iwa_url,
                                                 const base::Version version) {
   auto manifest = blink::mojom::Manifest::New();
@@ -100,10 +113,10 @@ blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& iwa_url,
   return manifest;
 }
 
-class MockView : public IsolatedWebAppInstallerView,
-                 public IsolatedWebAppInstallerView::Delegate {
+class MockView : public IsolatedWebAppInstallerView {
  public:
-  MockView() : IsolatedWebAppInstallerView(this) {}
+  explicit MockView(IsolatedWebAppInstallerView::Delegate* delegate)
+      : IsolatedWebAppInstallerView(delegate) {}
 
   MOCK_METHOD(void, ShowDisabledScreen, (), (override));
   MOCK_METHOD(void, ShowGetMetadataScreen, (), (override));
@@ -132,13 +145,9 @@ class MockView : public IsolatedWebAppInstallerView,
       ShowDialog,
       (const IsolatedWebAppInstallerModel::DialogContent& dialog_content),
       (override));
-
-  // `IsolatedWebAppInstallerView::Delegate`:
-  MOCK_METHOD(void, OnSettingsLinkClicked, (), (override));
-  MOCK_METHOD(void, OnManageProfilesLinkClicked, (), (override));
-  MOCK_METHOD(void, OnChildDialogCanceled, (), (override));
-  MOCK_METHOD(void, OnChildDialogAccepted, (), (override));
 };
+
+}  // namespace
 
 class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
  public:
@@ -206,7 +215,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   IsolatedWebAppInstallerModel model(bundle_path);
   IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
                                                    &model);
-  testing::StrictMock<MockView> view;
+  testing::StrictMock<MockView> view(&controller);
   controller.SetViewForTesting(&view);
 
   base::test::TestFuture<void> callback;
@@ -219,6 +228,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   controller.Start();
 
   EXPECT_TRUE(callback.Wait());
+  EXPECT_EQ(model.step(), IsolatedWebAppInstallerModel::Step::kConfirmInstall);
 }
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest,
@@ -235,7 +245,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   IsolatedWebAppInstallerModel model(bundle_path);
   IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
                                                    &model);
-  testing::StrictMock<MockView> view;
+  testing::StrictMock<MockView> view(&controller);
   controller.SetViewForTesting(&view);
 
   base::test::TestFuture<void> callback;
@@ -249,7 +259,53 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   controller.Start();
 
   EXPECT_TRUE(callback.Wait());
+  EXPECT_EQ(model.step(), IsolatedWebAppInstallerModel::Step::kGetMetadata);
 }
 
-}  // namespace
+TEST_F(IsolatedWebAppInstallerViewControllerTest,
+       InstallButtonLaunchesConfirmationDialog) {
+  IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
+  IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
+                                                   &model);
+  testing::StrictMock<MockView> view(&controller);
+  controller.SetViewForTesting(&view);
+
+  SignedWebBundleMetadata metadata = CreateMetadata(u"Test App", "0.0.1");
+  model.SetSignedWebBundleMetadata(metadata);
+  model.SetStep(IsolatedWebAppInstallerModel::Step::kConfirmInstall);
+
+  base::test::TestFuture<void> callback;
+  EXPECT_CALL(view, ShowMetadataScreen(metadata));
+  EXPECT_CALL(view, ShowDialog(WithContents(
+                        /*is_error=*/false, IDS_IWA_INSTALLER_CONFIRM_TITLE,
+                        IDS_IWA_INSTALLER_CONFIRM_SUBTITLE)))
+      .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
+
+  controller.OnAccept();
+
+  EXPECT_TRUE(callback.Wait());
+}
+
+TEST_F(IsolatedWebAppInstallerViewControllerTest,
+       ConfirmationDialogMovesToInstallScreen) {
+  IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
+  IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
+                                                   &model);
+  testing::StrictMock<MockView> view(&controller);
+  controller.SetViewForTesting(&view);
+
+  SignedWebBundleMetadata metadata = CreateMetadata(u"Test App", "0.0.1");
+  model.SetSignedWebBundleMetadata(metadata);
+  model.SetStep(IsolatedWebAppInstallerModel::Step::kConfirmInstall);
+  model.SetDialogContent(CreateDummyDialog());
+
+  base::test::TestFuture<void> callback;
+  EXPECT_CALL(view, ShowInstallScreen(metadata))
+      .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
+
+  controller.OnChildDialogAccepted();
+
+  EXPECT_TRUE(callback.Wait());
+}
+
 }  // namespace web_app
