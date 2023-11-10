@@ -242,10 +242,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;
   void OnDestruct() override;
 
-  const scoped_refptr<FieldDataManager> GetFieldDataManager() {
-    return field_data_manager_;
-  }
-
   bool IsPrerendering() const;
 
   // Check if the given element is a username input field.
@@ -473,6 +469,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void NotifyPasswordManagerAboutClearedForm(
       const blink::WebFormElement& cleared_form);
 
+  FieldDataManager& field_data_manager() const {
+    return autofill_agent_->field_data_manager();
+  }
+
   // The logins we have filled so far with their associated info.
   WebInputToPasswordInfoMap web_input_to_password_info_;
   // A (sort-of) reverse map to |web_input_to_password_info_|.
@@ -481,14 +481,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   WebInputToPasswordInfoMap::iterator last_supplied_password_info_iter_;
 
   bool should_show_popup_without_passwords_ = false;
-
-  // Map WebFormControlElement to the pair of:
-  // 1) The most recent text that user typed or PasswordManager autofilled in
-  // input elements. Used for storing username/password before JavaScript
-  // changes them.
-  // 2) Field properties mask, i.e. whether the field was autofilled, modified
-  // by user, etc. (see FieldPropertiesMask).
-  const scoped_refptr<FieldDataManager> field_data_manager_;
 
   PasswordValueGatekeeper gatekeeper_;
 
@@ -511,7 +503,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // Records the username typed before suggestions preview.
   std::u16string username_query_prefix_;
 
-  raw_ptr<AutofillAgent> autofill_agent_;
+  raw_ptr<AutofillAgent> autofill_agent_ = nullptr;
 
   raw_ptr<PasswordGenerationAgent, ExperimentalRenderer>
       password_generation_agent_;  // Weak reference.

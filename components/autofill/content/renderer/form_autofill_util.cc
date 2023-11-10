@@ -1381,7 +1381,7 @@ bool OwnedOrUnownedFormToFormData(
     const blink::WebFormControlElement* form_control_element,
     const WebVector<WebFormControlElement>& control_elements,
     const std::vector<blink::WebElement>& iframe_elements,
-    const FieldDataManager* field_data_manager,
+    const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
     FormData* form,
     FormFieldData* optional_field) {
@@ -1419,7 +1419,7 @@ bool OwnedOrUnownedFormToFormData(
     form->fields.emplace_back();
     shadow_fields.emplace_back();
     WebFormControlElementToFormField(
-        form_element, control_element, field_data_manager, extract_options,
+        form_element, control_element, &field_data_manager, extract_options,
         &form->fields.back(), &shadow_fields.back());
     fields_extracted[i] = true;
 
@@ -1534,7 +1534,7 @@ bool OwnedOrUnownedFormToFormData(
 bool ScriptModifiedUsernameAcceptable(
     const std::u16string& value,
     const std::u16string& typed_value,
-    const FieldDataManager* field_data_manager) {
+    const FieldDataManager& field_data_manager) {
   // The minimal size of a field value that will be substring-matched.
   constexpr size_t kMinMatchSize = 3u;
   const auto lowercase = base::i18n::ToLower(value);
@@ -1552,7 +1552,7 @@ bool ScriptModifiedUsernameAcceptable(
 
   // If the page-generated value comes from user typed or autofilled values in
   // other fields, that's also likely OK.
-  return field_data_manager->FindMatchedValue(value);
+  return field_data_manager.FindMatchedValue(value);
 }
 
 // Build a map from entries in |form_control_renderer_ids| to their indices,
@@ -1715,7 +1715,7 @@ bool ExtractFormData(const WebFormElement& form_element,
                      const FieldDataManager& field_data_manager,
                      FormData* data) {
   return WebFormElementToFormData(
-      form_element, WebFormControlElement(), &field_data_manager,
+      form_element, WebFormControlElement(), field_data_manager,
       {ExtractOption::kValue, ExtractOption::kOptionText,
        ExtractOption::kOptions},
       data,
@@ -2143,7 +2143,7 @@ void WebFormControlElementToFormField(
     // potential usernames, as long as the |value| is not deemed acceptable.
     if (field->form_control_type == FormControlType::kInputPassword ||
         !ScriptModifiedUsernameAcceptable(field->value, user_input,
-                                          field_data_manager)) {
+                                          *field_data_manager)) {
       field->user_input = user_input;
     }
   }
@@ -2152,7 +2152,7 @@ void WebFormControlElementToFormField(
 bool WebFormElementToFormData(
     const blink::WebFormElement& form_element,
     const blink::WebFormControlElement& form_control_element,
-    const FieldDataManager* field_data_manager,
+    const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
     FormData* form,
     FormFieldData* field) {
@@ -2245,7 +2245,7 @@ bool UnownedFormElementsToFormData(
     const std::vector<blink::WebElement>& iframe_elements,
     const blink::WebFormControlElement* element,
     const blink::WebDocument& document,
-    const FieldDataManager* field_data_manager,
+    const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
     FormData* form,
     FormFieldData* field) {
@@ -2265,7 +2265,7 @@ bool UnownedFormElementsToFormData(
 
 bool FindFormAndFieldForFormControlElement(
     const WebFormControlElement& element,
-    const FieldDataManager* field_data_manager,
+    const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
     FormData* form,
     FormFieldData* field) {

@@ -315,7 +315,7 @@ AutofillAgent::AutofillAgent(
       is_user_gesture_required_(true),
       is_secure_context_required_(false),
       form_tracker_(render_frame),
-      field_data_manager_(password_autofill_agent_->GetFieldDataManager()),
+      field_data_manager_(base::MakeRefCounted<FieldDataManager>()),
       focus_state_notifier_(this) {
   render_frame->GetWebFrame()->SetAutofillClient(this);
   password_autofill_agent_->Init(this);
@@ -390,7 +390,7 @@ void AutofillAgent::DidChangeScrollOffsetImpl(
   FormData form;
   FormFieldData field;
   if (FindFormAndFieldForFormControlElement(
-          element, field_data_manager_.get(),
+          element, field_data_manager(),
           MaybeExtractDatalist({ExtractOption::kBounds}), &form, &field)) {
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->TextFieldDidScroll(form, field, field.bounds);
@@ -462,7 +462,7 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
   FormFieldData field;
   if (!form_control_element.IsReadOnly() &&
       FindFormAndFieldForFormControlElement(
-          last_queried_element_, field_data_manager_.get(),
+          last_queried_element_, field_data_manager(),
           MaybeExtractDatalist({ExtractOption::kBounds}), &form, &field)) {
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->FocusOnFormField(form, field, field.bounds);
@@ -489,8 +489,9 @@ void AutofillAgent::FireHostSubmitEvents(const WebFormElement& form,
                                          SubmissionSource source) {
   DCHECK(MaybeWasOwnedByFrame(form, unsafe_render_frame()));
   FormData form_data;
-  if (!form_util::ExtractFormData(form, *field_data_manager_.get(), &form_data))
+  if (!form_util::ExtractFormData(form, field_data_manager(), &form_data)) {
     return;
+  }
   FireHostSubmitEvents(form_data, known_success, source);
 }
 
@@ -546,6 +547,10 @@ void AutofillAgent::OnTextFieldDidChange(const WebFormControlElement& element) {
   ClearPreviewedForm();
 
   const auto input_element = element.DynamicTo<WebInputElement>();
+  if (!input_element.IsNull()) {
+    password_autofill_agent_->UpdateStateForTextChange(input_element);
+  }
+
   if (password_generation_agent_ && !input_element.IsNull() &&
       password_generation_agent_->TextDidChangeInTextField(input_element)) {
     is_popup_possibly_visible_ = true;
@@ -567,7 +572,7 @@ void AutofillAgent::OnTextFieldDidChange(const WebFormControlElement& element) {
   FormData form;
   FormFieldData field;
   if (FindFormAndFieldForFormControlElement(
-          element, field_data_manager_.get(),
+          element, field_data_manager(),
           MaybeExtractDatalist({ExtractOption::kBounds}), &form, &field)) {
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->TextFieldDidChange(form, field, field.bounds,
@@ -641,7 +646,7 @@ void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
   if (updated_form_element.IsNull()) {
     CollectFormlessElements(&updated_form_data);
   } else {
-    form_util::ExtractFormData(updated_form_element, *field_data_manager_.get(),
+    form_util::ExtractFormData(updated_form_element, field_data_manager(),
                                &updated_form_data);
   }
   // Deep-compare forms, but don't take into account the fields' values.
@@ -940,7 +945,7 @@ bool AutofillAgent::CollectFormlessElements(
 
   return form_util::UnownedFormElementsToFormData(
       control_elements, iframe_elements, nullptr, document,
-      field_data_manager_.get(), extract_options, output,
+      field_data_manager(), extract_options, output,
       /*field=*/nullptr);
 }
 
@@ -1062,7 +1067,7 @@ void AutofillAgent::QueryAutofillSuggestions(
   FormData form;
   FormFieldData field;
   if (!FindFormAndFieldForFormControlElement(
-          element, field_data_manager_.get(),
+          element, field_data_manager(),
           MaybeExtractDatalist({ExtractOption::kBounds}), &form, &field)) {
     // If we didn't find the cached form, at least let autocomplete have a shot
     // at providing suggestions.
@@ -1142,8 +1147,8 @@ void AutofillAgent::ExtractForm(
   if (WebFormElement fe = FindFormByRendererId(doc, form_id); !fe.IsNull()) {
     FormData form;
     if (WebFormElementToFormData(fe, WebFormControlElement(),
-                                 field_data_manager_.get(), extract_options,
-                                 &form, nullptr)) {
+                                 field_data_manager(), extract_options, &form,
+                                 nullptr)) {
       std::move(callback).Run(std::move(form));
       return;
     }
@@ -1185,7 +1190,7 @@ void AutofillAgent::ExtractFormsUnthrottled(
     return;
   }
   FormCache::UpdateFormCacheResult cache =
-      form_cache_->UpdateFormCache(field_data_manager_.get());
+      form_cache_->UpdateFormCache(field_data_manager());
   content::RenderFrame* render_frame = unsafe_render_frame();
   if (render_frame) {
     form_issues::MaybeEmitFormIssuesToDevtools(*render_frame->GetWebFrame(),
@@ -1304,7 +1309,7 @@ void AutofillAgent::BatchSelectOrSelectListOptionChange(
   // found, notify the driver that the form was modified dynamically.
   FormData form;
   FormFieldData field;
-  if (FindFormAndFieldForFormControlElement(element, field_data_manager_.get(),
+  if (FindFormAndFieldForFormControlElement(element, field_data_manager(),
                                             /*extract_options=*/{}, &form,
                                             &field) &&
       !field.options.empty()) {
@@ -1438,7 +1443,7 @@ void AutofillAgent::JavaScriptChangedAutofilledValue(
   }
   FormData form;
   FormFieldData field;
-  if (FindFormAndFieldForFormControlElement(element, field_data_manager_.get(),
+  if (FindFormAndFieldForFormControlElement(element, field_data_manager(),
                                             /*extract_options=*/{}, &form,
                                             &field)) {
     if (auto* autofill_driver = unsafe_autofill_driver()) {
@@ -1499,7 +1504,7 @@ void AutofillAgent::OnProvisionallySaveForm(
       FormData form_data;
       FormFieldData field;
       if (FindFormAndFieldForFormControlElement(
-              element, field_data_manager_.get(),
+              element, field_data_manager(),
               MaybeExtractDatalist({ExtractOption::kBounds}), &form_data,
               &field)) {
         if (auto* autofill_driver = unsafe_autofill_driver()) {
@@ -1590,8 +1595,8 @@ void AutofillAgent::TrackAutofilledElement(
 absl::optional<FormData> AutofillAgent::GetSubmittedForm() const {
   if (!last_interacted_form_.IsNull()) {
     FormData form;
-    if (form_util::ExtractFormData(last_interacted_form_,
-                                   *field_data_manager_.get(), &form)) {
+    if (form_util::ExtractFormData(last_interacted_form_, field_data_manager(),
+                                   &form)) {
       return absl::make_optional(form);
     } else if (provisionally_saved_form_.has_value()) {
       return absl::make_optional(provisionally_saved_form_.value());
@@ -1636,8 +1641,7 @@ void AutofillAgent::UpdateLastInteractedForm(
 
   last_interacted_form_ = form;
   provisionally_saved_form_ = absl::make_optional<FormData>();
-  if (!form_util::ExtractFormData(last_interacted_form_,
-                                  *field_data_manager_.get(),
+  if (!form_util::ExtractFormData(last_interacted_form_, field_data_manager(),
                                   &provisionally_saved_form_.value())) {
     provisionally_saved_form_.reset();
   }

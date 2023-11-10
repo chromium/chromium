@@ -467,7 +467,8 @@ TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
   EXPECT_EQ(1U, forms.size());
   FormData form;
   EXPECT_TRUE(form_util::WebFormElementToFormData(
-      forms[0], blink::WebFormControlElement(), nullptr,
+      forms[0], blink::WebFormControlElement(),
+      *base::MakeRefCounted<FieldDataManager>(),
       {form_util::ExtractOption::kValue}, &form, nullptr));
 
   ASSERT_TRUE(autofill_agent_->focused_element().IsNull());

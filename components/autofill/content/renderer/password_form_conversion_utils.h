@@ -40,7 +40,7 @@ bool IsGaiaWithSkipSavePasswordForm(const blink::WebFormElement& form);
 
 std::unique_ptr<FormData> CreateFormDataFromWebForm(
     const blink::WebFormElement& web_form,
-    const FieldDataManager* field_data_manager,
+    const FieldDataManager& field_data_manager,
     UsernameDetectorCache* username_detector_cache,
     form_util::ButtonTitlesCache* button_titles_cache);
 
@@ -48,7 +48,7 @@ std::unique_ptr<FormData> CreateFormDataFromWebForm(
 // not enclosed in <form> element.
 std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
     const blink::WebLocalFrame& frame,
-    const FieldDataManager* field_data_manager,
+    const FieldDataManager& field_data_manager,
     UsernameDetectorCache* username_detector_cache,
     form_util::ButtonTitlesCache* button_titles_cache);
 

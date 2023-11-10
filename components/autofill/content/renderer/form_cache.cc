@@ -120,7 +120,7 @@ FormCache::FormCache(WebLocalFrame* frame) : frame_(frame) {}
 FormCache::~FormCache() = default;
 
 FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
-    const FieldDataManager* field_data_manager) {
+    const FieldDataManager& field_data_manager) {
   initial_checked_state_.clear();
   initial_select_values_.clear();
   initial_selectlist_values_.clear();

@@ -85,7 +85,7 @@ class FormCache {
   // Updates |extracted_forms_| to contain the forms that are currently in the
   // DOM.
   UpdateFormCacheResult UpdateFormCache(
-      const FieldDataManager* field_data_manager);
+      const FieldDataManager& field_data_manager);
 
   // Clears the values of all input elements in the section of the form that
   // contains |element|.  Returns false if the form is not found.

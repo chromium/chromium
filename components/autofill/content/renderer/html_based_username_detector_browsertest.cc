@@ -5,6 +5,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/html_based_username_detector.h"
+#include "components/autofill/core/common/field_data_manager.h"
 #include "content/public/test/render_view_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -65,7 +66,8 @@ class HtmlBasedUsernameDetectorTest : public content::RenderViewTest {
   FormData GetFormDataFromForm(const WebFormElement& form) {
     FormData form_data;
     EXPECT_TRUE(form_util::WebFormElementToFormData(
-        form, WebFormControlElement(), nullptr, /*extract_options=*/{},
+        form, WebFormControlElement(),
+        *base::MakeRefCounted<FieldDataManager>(), /*extract_options=*/{},
         &form_data,
         /*field=*/nullptr));
 

@@ -179,6 +179,10 @@ class AutofillAgent : public content::RenderFrameObserver,
     return last_queried_element_;
   }
 
+  FieldDataManager& field_data_manager() const {
+    return *field_data_manager_.get();
+  }
+
  protected:
   // blink::WebAutofillClient:
   void DidAddOrRemoveFormRelatedElementsDynamically() override;
@@ -462,7 +466,12 @@ class AutofillAgent : public content::RenderFrameObserver,
   // titles for unowned forms).
   bool is_heavy_form_data_scraping_enabled_ = false;
 
-  const scoped_refptr<FieldDataManager> field_data_manager_;
+  // Map WebFormControlElement to the pair of:
+  // 1) The most recent text that user typed or autofilled in input elements.
+  // Used for storing username/password before JavaScript changes them.
+  // 2) Field properties mask, i.e. whether the field was autofilled, modified
+  // by user, etc. (see FieldPropertiesMask).
+  scoped_refptr<FieldDataManager> field_data_manager_;
 
   // This notifier is used to avoid sending redundant messages to the password
   // manager driver mojo interface.
