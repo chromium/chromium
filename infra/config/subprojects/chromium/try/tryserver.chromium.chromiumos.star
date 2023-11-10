@@ -87,7 +87,7 @@ try_.orchestrator_builder(
         "ci/chromeos-amd64-generic-rel",
         "ci/chromeos-amd64-generic-rel-gtest",
     ],
-    compilator = "chromeos-amd64-generic-rel-compilator",
+    compilator = "chromeos-amd64-generic-rel-gtest-compilator",
     contact_team_email = "chromeos-sw-engprod@google.com",
     main_list_view = "try",
     tryjob = try_.job(
@@ -117,7 +117,7 @@ try_.orchestrator_builder(
         "ci/chromeos-amd64-generic-rel-gtest",
         "ci/chromeos-amd64-generic-rel-tast",
     ],
-    compilator = "chromeos-amd64-generic-rel-compilator",
+    compilator = "chromeos-amd64-generic-rel-gtest-and-tast-compilator",
     contact_team_email = "chromeos-sw-engprod@google.com",
     main_list_view = "try",
     tryjob = try_.job(
@@ -140,17 +140,51 @@ try_.orchestrator_builder(
     tryjob = try_.job(),
 )
 
+CHROMEOS_SHARED_CACHE = "shared_chromeos_amd64_generic_rel_cache"
+
 try_.compilator_builder(
     name = "chromeos-amd64-generic-rel-compilator",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     cores = "8|16",
     caches = [
         swarming.cache(
-            name = "shared_chromeos_amd64_generic_rel_cache",
+            name = CHROMEOS_SHARED_CACHE,
             path = "builder",
             wait_for_warm_cache = 4 * time.minute,
         ),
     ],
+    main_list_view = "try",
+)
+
+try_.compilator_builder(
+    name = "chromeos-amd64-generic-rel-gtest-compilator",
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = ".",
+    cores = "16",
+    caches = [
+        swarming.cache(
+            name = CHROMEOS_SHARED_CACHE,
+            path = "builder",
+            wait_for_warm_cache = 4 * time.minute,
+        ),
+    ],
+    contact_team_email = "chromeos-sw-engprod@google.com",
+    main_list_view = "try",
+)
+
+try_.compilator_builder(
+    name = "chromeos-amd64-generic-rel-gtest-and-tast-compilator",
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = ".",
+    cores = "16",
+    caches = [
+        swarming.cache(
+            name = CHROMEOS_SHARED_CACHE,
+            path = "builder",
+            wait_for_warm_cache = 4 * time.minute,
+        ),
+    ],
+    contact_team_email = "chromeos-sw-engprod@google.com",
     main_list_view = "try",
 )
 

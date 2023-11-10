@@ -1,4 +1,8 @@
 {
+  "$build/chromium_orchestrator": {
+    "compilator": "chromeos-amd64-generic-rel-gtest-and-tast-compilator",
+    "compilator_watcher_git_revision": "e6d08be3fd589d4f222dae5d18dbc972e6117b23"
+  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "builder_db": {
