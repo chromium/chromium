@@ -4,7 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
 if (is_android) {
@@ -645,7 +644,6 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/features:utils",
     "//components/password_manager/core/browser/form_parsing:form_parsing",
     "//components/password_manager/core/browser/form_parsing:unit_tests",
-    "//components/password_manager/core/browser/form_parsing/fuzzer:unit_tests",
     "//components/password_manager/core/browser/generation",
     "//components/password_manager/core/browser/import:csv",
     "//components/password_manager/core/browser/import:csv_unit_tests",

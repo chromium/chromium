@@ -6,16 +6,17 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FORM_PARSING_FUZZER_FORM_DATA_PRODUCER_H_
 
 #include "components/autofill/core/common/form_data.h"
-#include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
+
+class FuzzedDataProvider;
 
 namespace password_manager {
 
-class DataAccessor;
+struct FormPredictions;
 
-// Generates a |FormData| and |predictions| object based on values obtained via
-// |accessor|. See https://goo.gl/29t6VH for a detailed design.
-autofill::FormData GenerateWithDataAccessor(DataAccessor* accessor,
-                                            FormPredictions* predictions);
+// Generates a |FormData| and (optionally) |predictions| object based on values
+// obtained via |provider|. See https://goo.gl/29t6VH for a detailed design.
+autofill::FormData GenerateFormData(FuzzedDataProvider& provider,
+                                    FormPredictions* predictions);
 
 }  // namespace password_manager
 
