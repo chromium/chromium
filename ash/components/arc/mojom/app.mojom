@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 62
+// Next MinVersion: 63
 
 module arc.mojom;
 
@@ -16,6 +16,8 @@ import "ui/accessibility/mojom/ax_assistant_structure.mojom";
 struct InstallationResult {
   string package_name;
   bool success;  // true if app was installed successfully.
+  [MinVersion=62] bool is_launchable_app; // true if the package installed
+                                          // successfully and is launchable.
 };
 
 // Describes application storage.

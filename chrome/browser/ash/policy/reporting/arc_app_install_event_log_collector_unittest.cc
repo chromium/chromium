@@ -432,7 +432,8 @@ TEST_F(ArcAppInstallEventLogCollectorTest,
   std::unique_ptr<ArcAppInstallEventLogCollector> collector =
       std::make_unique<ArcAppInstallEventLogCollector>(delegate(), profile(),
                                                        packages_);
-  collector->OnInstallationFinished(kPackageName, /* success */ true);
+  collector->OnInstallationFinished(kPackageName, /*success=*/true,
+                                    /*is_launchable_app=*/true);
 
   int second_to_last_request_index = delegate()->requests().size() - 2;
   EXPECT_EQ(1, delegate()->update_policy_success_rate_count());
@@ -447,7 +448,8 @@ TEST_F(ArcAppInstallEventLogCollectorTest,
   std::unique_ptr<ArcAppInstallEventLogCollector> collector =
       std::make_unique<ArcAppInstallEventLogCollector>(delegate(), profile(),
                                                        packages_);
-  collector->OnInstallationFinished(kPackageName, /* success */ false);
+  collector->OnInstallationFinished(kPackageName, /*success=*/false,
+                                    /*is_launchable_app=*/false);
 
   int second_to_last_request_index = delegate()->requests().size() - 2;
   EXPECT_EQ(1, delegate()->update_policy_success_rate_count());

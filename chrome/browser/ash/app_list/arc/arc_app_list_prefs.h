@@ -284,7 +284,8 @@ class ArcAppListPrefs : public KeyedService,
     // Notifies that installation of package finished. |succeed| is set to true
     // in case of success.
     virtual void OnInstallationFinished(const std::string& package_name,
-                                        bool success) {}
+                                        bool success,
+                                        bool is_launchable_app) {}
 
     // Notifies that ArcAppListPrefs is destroyed.
     virtual void OnArcAppListPrefsDestroyed() {}

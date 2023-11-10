@@ -734,6 +734,25 @@ TEST_F(ArcAppsPublisherPromiseAppTest, CancelledInstallationRemovesPromiseApp) {
 }
 
 TEST_F(ArcAppsPublisherPromiseAppTest,
+       SuccessfulInstallationOfNonLaunchablePackageRemovesPromiseApp) {
+  // Add a promise app to the cache.
+  std::unique_ptr<apps::PromiseApp> promise_app =
+      std::make_unique<apps::PromiseApp>(kTestPackageId);
+  promise_app->status = apps::PromiseStatus::kPending;
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Check that the promise app exists.
+  EXPECT_TRUE(cache()->HasPromiseApp(kTestPackageId));
+
+  // Confirm that the promise app gets removed after successful installation of
+  // a non-launchable package.
+  arc_test()->app_instance()->SendInstallationFinished(
+      kTestPackageName, /*success=*/true,
+      /*is_launchable_app=*/false);
+  EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
+}
+
+TEST_F(ArcAppsPublisherPromiseAppTest,
        SuccessfulInstallationRemovesPromiseApp) {
   // Add a promise app to the cache.
   std::unique_ptr<apps::PromiseApp> promise_app =

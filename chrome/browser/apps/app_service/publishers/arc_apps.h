@@ -160,7 +160,8 @@ class ArcApps : public KeyedService,
   void OnInstallationActiveChanged(const std::string& package_name,
                                    bool active) override;
   void OnInstallationFinished(const std::string& package_name,
-                              bool success) override;
+                              bool success,
+                              bool is_launchable_app) override;
 
   // arc::ArcIntentHelperObserver overrides.
   void OnIntentFiltersUpdated(

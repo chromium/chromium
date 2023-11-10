@@ -194,7 +194,9 @@ class FakeAppInstance : public mojom::AppInstance {
   void SendPackageUninstalled(const std::string& pacakge_name);
 
   void SendInstallationStarted(const std::string& package_name);
-  void SendInstallationFinished(const std::string& package_name, bool success);
+  void SendInstallationFinished(const std::string& package_name,
+                                bool success,
+                                bool is_launchable_app = true);
   void SendInstallationProgressChanged(const std::string& package_name,
                                        float progress);
   void SendInstallationActiveChanged(const std::string& package_name,

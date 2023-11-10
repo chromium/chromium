@@ -2512,7 +2512,8 @@ void ArcAppListPrefs::OnInstallationFinished(
       HandlePackageRemoved(result->package_name);
     }
     for (auto& observer : observer_list_)
-      observer.OnInstallationFinished(result->package_name, result->success);
+      observer.OnInstallationFinished(result->package_name, result->success,
+                                      result->is_launchable_app);
     if (result->success) {
       InstallationCounterReasonEnum reason =
           InstallationCounterReasonEnum::USER;

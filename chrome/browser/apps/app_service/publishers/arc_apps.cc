@@ -1559,13 +1559,15 @@ void ArcApps::OnInstallationActiveChanged(const std::string& package_name,
 }
 
 void ArcApps::OnInstallationFinished(const std::string& package_name,
-                                     bool success) {
+                                     bool success,
+                                     bool is_launchable_app) {
   if (ash::features::ArePromiseIconsEnabled() &&
       ArcVersionEligibleForPromiseIcons()) {
-    // Remove the promise app of any failed installation.
-    if (success) {
+    if (success && is_launchable_app) {
       return;
     }
+    // Remove the promise app of any failed installation or non-launchable
+    // package.
     PackageId package_id(AppType::kArc, package_name);
     if (!proxy()->PromiseAppRegistryCache()->HasPromiseApp(package_id)) {
       return;
