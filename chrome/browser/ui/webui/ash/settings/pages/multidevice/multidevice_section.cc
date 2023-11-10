@@ -749,9 +749,8 @@ void MultiDeviceSection::RegisterHierarchy(
 
   // Nearby Share, registered regardless of the flag.
   generator->RegisterTopLevelSubpage(
-      ::features::IsNameEnabled() ? IDS_SETTINGS_NEARBY_SHARE_TITLE_PH
-                                  : IDS_SETTINGS_NEARBY_SHARE_TITLE,
-      mojom::Subpage::kNearbyShare, mojom::SearchResultIcon::kNearbyShare,
+      IDS_SETTINGS_NEARBY_SHARE_TITLE, mojom::Subpage::kNearbyShare,
+      mojom::SearchResultIcon::kNearbyShare,
       mojom::SearchResultDefaultRank::kMedium, mojom::kNearbyShareSubpagePath);
   static constexpr mojom::Setting kNearbyShareSettings[] = {
       mojom::Setting::kNearbyShareOnOff,

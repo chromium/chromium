@@ -5,7 +5,6 @@
 #include "chrome/browser/nearby_sharing/nearby_notification_manager.h"
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -32,7 +31,6 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/mock_nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
@@ -500,39 +498,7 @@ TEST_P(NearbyNotificationManagerTest, ShowProgress_ShowsNotification) {
   EXPECT_EQ(&kNearbyShareIcon, &notification.vector_small_image());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
             notification.display_source());
-  const std::vector<message_center::ButtonInfo>& buttons =
-      notification.buttons();
-  ASSERT_EQ(1u, buttons.size());
 
-  const message_center::ButtonInfo& cancel_button = buttons[0];
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_CANCEL), cancel_button.title);
-}
-
-TEST_P(NearbyNotificationManagerTest,
-       ShowProgress_ShowsNotification_NameEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kIsNameEnabled}, {});
-  ShareTarget share_target;
-  TransferMetadata transfer_metadata = TransferMetadataBuilder().build();
-
-  manager()->ShowProgress(share_target, transfer_metadata);
-
-  std::vector<message_center::Notification> notifications =
-      GetDisplayedNotifications();
-  ASSERT_EQ(1u, notifications.size());
-
-  const message_center::Notification& notification = notifications[0];
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_PROGRESS, notification.type());
-  EXPECT_EQ(std::u16string(), notification.message());
-  EXPECT_TRUE(notification.icon().IsEmpty());
-  EXPECT_EQ(GURL(), notification.origin_url());
-  EXPECT_TRUE(notification.never_timeout());
-  EXPECT_TRUE(notification.pinned());
-  EXPECT_FALSE(notification.renotify());
-  EXPECT_EQ(&kNearbyShareIcon, &notification.vector_small_image());
-  EXPECT_EQ(NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
-                IDS_NEARBY_NOTIFICATION_SOURCE_PH),
-            notification.display_source());
   const std::vector<message_center::ButtonInfo>& buttons =
       notification.buttons();
   ASSERT_EQ(1u, buttons.size());
@@ -808,7 +774,7 @@ TEST_P(NearbyNotificationManagerConnectionRequestTest,
 
   const message_center::Notification& notification = notifications[0];
 
-  const std::u16string expected_title = l10n_util::GetStringUTF16(
+  std::u16string expected_title = l10n_util::GetStringUTF16(
       IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_TITLE);
   std::u16string plural_message = l10n_util::GetPluralStringFUTF16(
       IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_MESSAGE, 1);
@@ -836,84 +802,6 @@ TEST_P(NearbyNotificationManagerConnectionRequestTest,
   EXPECT_FALSE(notification.renotify());
   EXPECT_EQ(&kNearbyShareIcon, &notification.vector_small_image());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
-            notification.display_source());
-
-  std::vector<std::u16string> expected_button_titles;
-  expected_button_titles.push_back(
-      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACCEPT_ACTION));
-  expected_button_titles.push_back(
-      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_DECLINE_ACTION));
-
-  const std::vector<message_center::ButtonInfo>& buttons =
-      notification.buttons();
-  ASSERT_EQ(expected_button_titles.size(), buttons.size());
-
-  for (size_t i = 0; i < expected_button_titles.size(); ++i) {
-    EXPECT_EQ(expected_button_titles[i], buttons[i].title);
-  }
-}
-
-TEST_P(NearbyNotificationManagerConnectionRequestTest,
-       ShowConnectionRequest_ShowsNotification_NameEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kIsNameEnabled}, {});
-  bool with_token = std::get<0>(GetParam());
-
-  std::string device_name = "device";
-  std::string token = "3141";
-
-  ShareTarget share_target;
-  share_target.device_name = device_name;
-  share_target.file_attachments.push_back(
-      CreateFileAttachment(FileAttachment::Type::kImage));
-
-  TransferMetadataBuilder transfer_metadata_builder;
-  transfer_metadata_builder.set_status(
-      TransferMetadata::Status::kAwaitingLocalConfirmation);
-  if (with_token) {
-    transfer_metadata_builder.set_token(token);
-  }
-  TransferMetadata transfer_metadata = transfer_metadata_builder.build();
-
-  manager()->ShowConnectionRequest(share_target, transfer_metadata);
-
-  std::vector<message_center::Notification> notifications =
-      GetDisplayedNotifications();
-  ASSERT_EQ(1u, notifications.size());
-
-  const message_center::Notification& notification = notifications[0];
-
-  const std::u16string expected_title =
-      NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
-          IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_TITLE_PH);
-  std::u16string plural_message = l10n_util::GetPluralStringFUTF16(
-      IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_MESSAGE, 1);
-
-  std::u16string expected_message = base::ReplaceStringPlaceholders(
-      plural_message,
-      {base::ASCIIToUTF16(device_name),
-       l10n_util::GetPluralStringFUTF16(
-           IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_IMAGES, 1)},
-      /*offsets=*/nullptr);
-
-  if (with_token) {
-    expected_message = base::StrCat(
-        {expected_message, u"\n",
-         l10n_util::GetStringFUTF16(IDS_NEARBY_SECURE_CONNECTION_ID,
-                                    base::UTF8ToUTF16(token))});
-  }
-
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
-  EXPECT_EQ(expected_title, notification.title());
-  EXPECT_EQ(expected_message, notification.message());
-  // TODO(crbug.com/1102348): verify notification.icon()
-  EXPECT_EQ(GURL(), notification.origin_url());
-  EXPECT_TRUE(notification.never_timeout());
-  EXPECT_FALSE(notification.renotify());
-  // TODO(b/309841194): verify notification icon in when kNameEnabled is
-  // enabled.
-  EXPECT_EQ(NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
-                IDS_NEARBY_NOTIFICATION_SOURCE_PH),
             notification.display_source());
 
   std::vector<std::u16string> expected_button_titles;
@@ -987,48 +875,6 @@ TEST_P(NearbyNotificationManagerTest,
     EXPECT_EQ(expected_button_titles[i], buttons[i].title);
 }
 
-TEST_P(NearbyNotificationManagerTest,
-       ShowNearbyDeviceTryingToShare_ShowsNotification_NameEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kIsNameEnabled}, {});
-  manager()->ShowNearbyDeviceTryingToShare();
-
-  std::vector<message_center::Notification> notifications =
-      GetDisplayedNotifications();
-  ASSERT_EQ(1u, notifications.size());
-
-  const message_center::Notification& notification = notifications[0];
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ONBOARDING_TITLE),
-            notification.title());
-  EXPECT_EQ(NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
-                IDS_NEARBY_NOTIFICATION_ONBOARDING_MESSAGE_PH),
-            notification.message());
-  EXPECT_TRUE(notification.icon().IsEmpty());
-  EXPECT_EQ(GURL(), notification.origin_url());
-  EXPECT_FALSE(notification.never_timeout());
-  EXPECT_FALSE(notification.renotify());
-  EXPECT_EQ(&kNearbyShareIcon, &notification.vector_small_image());
-  EXPECT_EQ(NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
-                IDS_NEARBY_NOTIFICATION_SOURCE_PH),
-            notification.display_source());
-  EXPECT_EQ(2u, notification.buttons().size());
-
-  std::vector<std::u16string> expected_button_titles;
-  expected_button_titles.push_back(
-      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SET_UP_ACTION));
-  expected_button_titles.push_back(
-      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_DISMISS_ACTION));
-
-  const std::vector<message_center::ButtonInfo>& buttons =
-      notification.buttons();
-  ASSERT_EQ(expected_button_titles.size(), buttons.size());
-
-  for (size_t i = 0; i < expected_button_titles.size(); ++i) {
-    EXPECT_EQ(expected_button_titles[i], buttons[i].title);
-  }
-}
-
 TEST_P(
     NearbyNotificationManagerTest,
     ShowNearbyDeviceTryingToShare_AlreadyOnboarded_ShowsGoVisibleNotification) {
@@ -1055,50 +901,7 @@ TEST_P(
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
             notification.display_source());
   EXPECT_EQ(2u, notification.buttons().size());
-  std::vector<std::u16string> expected_button_titles;
-  expected_button_titles.push_back(
-      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_GO_VISIBLE_ACTION));
-  expected_button_titles.push_back(
-      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_DISMISS_ACTION));
 
-  const std::vector<message_center::ButtonInfo>& buttons =
-      notification.buttons();
-  ASSERT_EQ(expected_button_titles.size(), buttons.size());
-
-  for (size_t i = 0; i < expected_button_titles.size(); ++i) {
-    EXPECT_EQ(expected_button_titles[i], buttons[i].title);
-  }
-}
-
-TEST_P(
-    NearbyNotificationManagerTest,
-    ShowNearbyDeviceTryingToShare_AlreadyOnboarded_ShowsGoVisibleNotification_NameEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kIsNameEnabled}, {});
-  pref_service_.SetBoolean(prefs::kNearbySharingOnboardingCompletePrefName,
-                           true);
-  manager()->ShowNearbyDeviceTryingToShare();
-
-  std::vector<message_center::Notification> notifications =
-      GetDisplayedNotifications();
-  ASSERT_EQ(1u, notifications.size());
-
-  const message_center::Notification& notification = notifications[0];
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ONBOARDING_TITLE),
-            notification.title());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_GO_VISIBLE_MESSAGE),
-      notification.message());
-  EXPECT_TRUE(notification.icon().IsEmpty());
-  EXPECT_EQ(GURL(), notification.origin_url());
-  EXPECT_FALSE(notification.never_timeout());
-  EXPECT_FALSE(notification.renotify());
-  EXPECT_EQ(&kNearbyShareIcon, &notification.vector_small_image());
-  EXPECT_EQ(NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
-                IDS_NEARBY_NOTIFICATION_SOURCE_PH),
-            notification.display_source());
-  EXPECT_EQ(2u, notification.buttons().size());
   std::vector<std::u16string> expected_button_titles;
   expected_button_titles.push_back(
       l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_GO_VISIBLE_ACTION));
@@ -1129,26 +932,6 @@ TEST_P(NearbyNotificationManagerTest,
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ONBOARDING_MESSAGE),
       notification.message());
-}
-
-TEST_P(NearbyNotificationManagerTest,
-       FastInitiationDeviceFound_ShowsNearbyDeviceTryingToShare_NameEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kIsNameEnabled}, {});
-  manager()->OnFastInitiationDevicesDetected();
-
-  std::vector<message_center::Notification> notifications =
-      GetDisplayedNotifications();
-  ASSERT_EQ(1u, notifications.size());
-
-  // Minimum to confirm it's actually the onboarding notification.
-  const message_center::Notification& notification = notifications[0];
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ONBOARDING_TITLE),
-            notification.title());
-  EXPECT_EQ(NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
-                IDS_NEARBY_NOTIFICATION_ONBOARDING_MESSAGE_PH),
-            notification.message());
 }
 
 TEST_P(NearbyNotificationManagerTest,
@@ -1186,31 +969,6 @@ TEST_P(NearbyNotificationManagerTest, ShowSuccess_ShowsNotification) {
   EXPECT_FALSE(notification.renotify());
   EXPECT_EQ(&kNearbyShareIcon, &notification.vector_small_image());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
-            notification.display_source());
-  EXPECT_EQ(0u, notification.buttons().size());
-}
-
-TEST_P(NearbyNotificationManagerTest,
-       ShowSuccess_ShowsNotification_NameEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kIsNameEnabled}, {});
-  manager()->ShowSuccess(ShareTarget());
-
-  std::vector<message_center::Notification> notifications =
-      GetDisplayedNotifications();
-  ASSERT_EQ(1u, notifications.size());
-
-  const message_center::Notification& notification = notifications[0];
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
-
-  EXPECT_EQ(std::u16string(), notification.message());
-  EXPECT_TRUE(notification.icon().IsEmpty());
-  EXPECT_EQ(GURL(), notification.origin_url());
-  EXPECT_FALSE(notification.never_timeout());
-  EXPECT_FALSE(notification.renotify());
-  EXPECT_EQ(&kNearbyShareIcon, &notification.vector_small_image());
-  EXPECT_EQ(NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
-                IDS_NEARBY_NOTIFICATION_SOURCE_PH),
             notification.display_source());
   EXPECT_EQ(0u, notification.buttons().size());
 }
@@ -1263,31 +1021,6 @@ TEST_P(NearbyNotificationManagerTest, ShowFailure_ShowsNotification) {
   EXPECT_FALSE(notification.renotify());
   EXPECT_EQ(&kNearbyShareIcon, &notification.vector_small_image());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
-            notification.display_source());
-  EXPECT_EQ(0u, notification.buttons().size());
-}
-
-TEST_P(NearbyNotificationManagerTest,
-       ShowFailure_ShowsNotification_NameEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kIsNameEnabled}, {});
-  manager()->ShowFailure(ShareTarget(), TransferMetadataBuilder().build());
-
-  std::vector<message_center::Notification> notifications =
-      GetDisplayedNotifications();
-  ASSERT_EQ(1u, notifications.size());
-
-  const message_center::Notification& notification = notifications[0];
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
-
-  EXPECT_EQ(std::u16string(), notification.message());
-  EXPECT_TRUE(notification.icon().IsEmpty());
-  EXPECT_EQ(GURL(), notification.origin_url());
-  EXPECT_FALSE(notification.never_timeout());
-  EXPECT_FALSE(notification.renotify());
-  EXPECT_EQ(&kNearbyShareIcon, &notification.vector_small_image());
-  EXPECT_EQ(NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
-                IDS_NEARBY_NOTIFICATION_SOURCE_PH),
             notification.display_source());
   EXPECT_EQ(0u, notification.buttons().size());
 }
@@ -2089,53 +1822,8 @@ TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Contacts_Mode) {
         notification.buttons();
     ASSERT_EQ(expected_button_titles.size(), buttons.size());
 
-    for (size_t i = 0; i < expected_button_titles.size(); ++i) {
+    for (size_t i = 0; i < expected_button_titles.size(); ++i)
       EXPECT_EQ(expected_button_titles[i], buttons[i].title);
-    }
-}
-
-TEST_P(NearbyNotificationManagerTest,
-       ShowVisibilityReminder_Contacts_Mode_NameEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kIsNameEnabled}, {});
-  pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
-                           static_cast<int>(Visibility::kAllContacts));
-
-  manager()->ShowVisibilityReminder();
-  std::vector<message_center::Notification> notifications =
-      GetDisplayedNotifications();
-  ASSERT_EQ(1u, notifications.size());
-  const message_center::Notification& notification = notifications[0];
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_NEARBY_NOTIFICATION_VISIBILITY_REMINDER_TITLE),
-            notification.title());
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_NEARBY_NOTIFICATION_VISIBILITY_REMINDER_MESSAGE),
-            notification.message());
-  EXPECT_TRUE(notification.icon().IsEmpty());
-  EXPECT_EQ(GURL(), notification.origin_url());
-  EXPECT_FALSE(notification.never_timeout());
-  EXPECT_FALSE(notification.renotify());
-  EXPECT_EQ(&kNearbyShareIcon, &notification.vector_small_image());
-  EXPECT_EQ(NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
-                IDS_NEARBY_NOTIFICATION_SOURCE_PH),
-            notification.display_source());
-  EXPECT_EQ(2u, notification.buttons().size());
-
-  std::vector<std::u16string> expected_button_titles;
-  expected_button_titles.push_back(
-      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_GO_TO_SETTINGS_ACTION));
-  expected_button_titles.push_back(
-      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_DISMISS_ACTION));
-
-  const std::vector<message_center::ButtonInfo>& buttons =
-      notification.buttons();
-  ASSERT_EQ(expected_button_titles.size(), buttons.size());
-
-  for (size_t i = 0; i < expected_button_titles.size(); ++i) {
-    EXPECT_EQ(expected_button_titles[i], buttons[i].title);
-  }
 }
 
 TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Hidden_Mode) {
