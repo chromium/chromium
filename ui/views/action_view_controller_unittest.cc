@@ -123,24 +123,21 @@ TEST_F(ActionViewControllerTest, TestActionViewDestroyed) {
   action_item->SetEnabled(true);
 }
 
-// Test that action triggered callbacks get called.
-// TODO(crbug.com/1500125): Re-enable this test
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_TriggerAction DISABLED_TriggerAction
-#else
-#define MAYBE_TriggerAction TriggerAction
-#endif
-TEST_F(ActionViewControllerTest, MAYBE_TriggerAction) {
+TEST_F(ActionViewControllerTest, TriggerAction) {
+  std::unique_ptr<Widget> test_widget = CreateTestWidget();
+  View* parent_view = test_widget->SetContentsView(std::make_unique<View>());
+  MdTextButton* action_view =
+      parent_view->AddChildView(std::make_unique<MdTextButton>());
+  test_widget->Show();
   std::unique_ptr<actions::ActionItem> action_item = CreateEnabledActionItem();
-  auto action_view = std::make_unique<MdTextButton>();
   auto action_view_controller =
       std::make_unique<ActionViewController<MdTextButton>>(
-          action_view.get(), action_item->GetAsWeakPtr());
+          action_view, action_item->GetAsWeakPtr());
   action_view_controller->SetActionItem(action_item->GetAsWeakPtr());
   EXPECT_EQ(0, action_item->GetInvokeCount());
   ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
-  views::test::ButtonTestApi test_api(action_view.get());
+  views::test::ButtonTestApi test_api(action_view);
   test_api.NotifyClick(e);
   EXPECT_EQ(1, action_item->GetInvokeCount());
 }
