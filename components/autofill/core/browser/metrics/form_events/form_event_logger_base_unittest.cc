@@ -39,8 +39,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::Values(0, 1, 2, 3, 4));
 
 TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
-  // Create a profile.
-  RecreateProfile(/*is_server=*/false);
+  RecreateProfile();
 
   FormData form = CreateForm(
       {CreateTestFormField("State", "state", "", FormControlType::kInputText),
@@ -182,8 +181,7 @@ TEST_F(FormEventLoggerBaseFunnelTest, AblationState) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kAutofillEnableAblationStudy, feature_parameters);
 
-  // Create a profile.
-  RecreateProfile(/*is_server=*/false);
+  RecreateProfile();
 
   FormData form = CreateForm(
       {CreateTestFormField("State", "state", "", FormControlType::kInputText),
@@ -240,8 +238,7 @@ class FormEventLoggerBaseKeyMetricsTest : public AutofillMetricsBaseTest,
 void FormEventLoggerBaseKeyMetricsTest::SetUp() {
   SetUpHelper();
 
-  // Create a profile.
-  RecreateProfile(/*is_server=*/false);
+  RecreateProfile();
 
   // Load a fillable form.
   form_ = CreateEmptyForm();
@@ -485,8 +482,7 @@ class FormEventLoggerBaseEmailHeuristicOnlyMetricsTest
 void FormEventLoggerBaseEmailHeuristicOnlyMetricsTest::SetUp() {
   SetUpHelper();
 
-  // Create a profile.
-  RecreateProfile(/*is_server=*/false);
+  RecreateProfile();
 
   // Load a fillable form.
   form_ = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});

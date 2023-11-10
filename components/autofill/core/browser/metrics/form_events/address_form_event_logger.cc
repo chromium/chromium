@@ -38,25 +38,15 @@ void AddressFormEventLogger::OnDidFillSuggestion(
     const AutofillField& field,
     AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     const AutofillTriggerSource trigger_source) {
-  AutofillProfile::RecordType record_type = profile.record_type();
   signin_state_for_metrics_ = signin_state_for_metrics;
 
-  form_interactions_ukm_logger_->LogDidFillSuggestion(record_type, form, field);
+  form_interactions_ukm_logger_->LogDidFillSuggestion(form, field);
 
-  if (record_type == AutofillProfile::SERVER_PROFILE) {
-    Log(FORM_EVENT_SERVER_SUGGESTION_FILLED, form);
-  } else {
-    Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED, form);
-  }
+  Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED, form);
 
   if (!has_logged_suggestion_filled_) {
     has_logged_suggestion_filled_ = true;
-    logged_suggestion_filled_was_server_data_ =
-        record_type == AutofillProfile::SERVER_PROFILE;
-    Log(record_type == AutofillProfile::SERVER_PROFILE
-            ? FORM_EVENT_SERVER_SUGGESTION_FILLED_ONCE
-            : FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE,
-        form);
+    Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, form);
   }
 
   base::RecordAction(

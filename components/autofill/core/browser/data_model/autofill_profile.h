@@ -33,23 +33,12 @@ namespace autofill {
 
 class AutofillProfileComparator;
 
-struct AutofillMetadata;
-
 // A collection of FormGroups stored in a profile.  AutofillProfile also
 // implements the FormGroup interface so that owners of this object can request
 // form information from the profile, and the profile will delegate the request
 // to the requested form group type.
 class AutofillProfile : public AutofillDataModel {
  public:
-  // `RecordType` is deprecated and `SERVER_PROFILE` essentially unused.
-  // TODO(crbug.com/1177366): Remove
-  enum RecordType {
-    // A profile stored and editable locally.
-    LOCAL_PROFILE,
-    // A profile synced down from the server. These are read-only locally.
-    SERVER_PROFILE,
-  };
-
   // Describes where the profile is stored and how it is synced.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
   enum class Source {
@@ -78,14 +67,6 @@ class AutofillProfile : public AutofillDataModel {
       Source source,
       AddressCountryCode country_code =
           i18n_model_definition::kLegacyHierarchyCountryCode);
-
-  // Server profile constructor. The type must be SERVER_PROFILE (this serves
-  // to differentiate this constructor). |server_id| can be empty. If empty,
-  // callers should invoke GenerateServerProfileIdentifier after setting data.
-  AutofillProfile(RecordType type,
-                  const std::string& server_id,
-                  AddressCountryCode country_code =
-                      i18n_model_definition::kLegacyHierarchyCountryCode);
 
   AutofillProfile(const AutofillProfile& profile);
   ~AutofillProfile() override;
@@ -116,9 +97,7 @@ class AutofillProfile : public AutofillDataModel {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // AutofillDataModel:
-  AutofillMetadata GetMetadata() const override;
   double GetRankingScore(base::Time current_time) const override;
-  bool SetMetadata(const AutofillMetadata& metadata) override;
 
   // FormGroup:
   void GetMatchingTypes(const std::u16string& text,
@@ -139,10 +118,6 @@ class AutofillProfile : public AutofillDataModel {
       VerificationStatus status) override;
 
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
-
-  // How this card is stored.
-  RecordType record_type() const { return record_type_; }
-  void set_record_type(RecordType type) { record_type_ = type; }
 
   // Returns true if there are no values (field types) set.
   bool IsEmpty(const std::string& app_locale) const;
@@ -253,15 +228,6 @@ class AutofillProfile : public AutofillDataModel {
     language_code_ = language_code;
   }
 
-  // Nonempty only when type() == SERVER_PROFILE. base::kSHA1Length bytes long.
-  // Not necessarily valid UTF-8.
-  const std::string& server_id() const { return server_id_; }
-
-  // Creates an identifier and saves it as |server_id_|. Only used for
-  // server credit cards. The server doesn't attach an identifier so Chrome
-  // creates its own. The ID is a hash of the data contained in the profile.
-  void GenerateServerProfileIdentifier();
-
   // Logs the number of days since the profile was last used and records its
   // use.
   // Also initiates the logging of the structured token verification statuses.
@@ -270,10 +236,6 @@ class AutofillProfile : public AutofillDataModel {
   // Logs the verification status of non-empty structured name and address
   // tokens. Should be called when a profile is used to fill a form.
   void LogVerificationStatuses();
-
-  // Valid only when |record_type()| == |SERVER_PROFILE|.
-  bool has_converted() const { return has_converted_; }
-  void set_has_converted(bool has_converted) { has_converted_ = has_converted; }
 
   // Calls |FinalizeAfterImport()| on all |FormGroup| members that are
   // implemented using the hybrid-structure |AddressComponent|.
@@ -386,10 +348,6 @@ class AutofillProfile : public AutofillDataModel {
   // A globally unique ID for this object. It identifies the profile across
   // browser restarts and is used as the primary key in the database.
   // The `guid_` is unique across profile sources.
-  // TODO(crbug.com/1177366): SERVER_PROFILEs still exist in the data model.
-  // This is a deprecated and essentially unused type of profile, which is
-  // identified by `server_id_` instead of `guid_`. For all practical purposes,
-  // this can be ignored and all relevant profiles are identified by `guid_`.
   std::string guid_;
 
   // Personal information for this profile.
@@ -408,17 +366,6 @@ class AutofillProfile : public AutofillDataModel {
 
   // The BCP 47 language code that can be used to format |address_| for display.
   std::string language_code_;
-
-  // ID used for identifying this profile. Only set for SERVER_PROFILEs. This is
-  // a hash of the contents.
-  // TODO(crbug.com/1457187): Remove.
-  std::string server_id_;
-
-  RecordType record_type_;
-
-  // Only useful for SERVER_PROFILEs. Whether this server profile has been
-  // converted to a local profile.
-  bool has_converted_;
 
   Source source_;
 

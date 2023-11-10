@@ -1730,9 +1730,6 @@ bool BrowserAutofillManager::GetDeletionConfirmationText(
   }
 
   if (profile) {
-    if (profile->record_type() != AutofillProfile::LOCAL_PROFILE)
-      return false;
-
     if (title) {
       std::u16string street_address = profile->GetRawInfo(ADDRESS_HOME_CITY);
       if (!street_address.empty())
@@ -1758,13 +1755,9 @@ bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(
     return credit_card_access_manager_->DeleteCard(credit_card);
   }
 
-  const AutofillProfile* profile = GetProfile(backend_id);
-  if (profile) {
-    bool is_local = profile->record_type() == AutofillProfile::LOCAL_PROFILE;
-    if (is_local)
-      client().GetPersonalDataManager()->RemoveByGUID(profile->guid());
-
-    return is_local;
+  if (const AutofillProfile* profile = GetProfile(backend_id)) {
+    client().GetPersonalDataManager()->RemoveByGUID(profile->guid());
+    return true;
   }
 
   return false;  // The ID was valid. The entry may have been deleted in a race.
@@ -2266,20 +2259,9 @@ bool BrowserAutofillManager::RefreshDataModels() {
   credit_card_access_manager_->UpdateCreditCardFormEventLogger();
 
   // Updating the FormEventLogger for addresses.
-  {
-    size_t server_record_type_count = 0;
-    size_t local_record_type_count = 0;
-    for (AutofillProfile* profile : profiles) {
-      if (profile->record_type() == AutofillProfile::LOCAL_PROFILE)
-        local_record_type_count++;
-      else if (profile->record_type() == AutofillProfile::SERVER_PROFILE)
-        server_record_type_count++;
-    }
-    address_form_event_logger_->set_server_record_type_count(
-        server_record_type_count);
-    address_form_event_logger_->set_local_record_type_count(
-        local_record_type_count);
-  }
+  address_form_event_logger_->set_local_record_type_count(profiles.size());
+  // TODO(crbug.com/1457187): Server addresses don't exist anymore. Remove.
+  address_form_event_logger_->set_server_record_type_count(0);
 
   return !profiles.empty() ||
          !client().GetPersonalDataManager()->GetCreditCards().empty();

@@ -532,7 +532,7 @@ TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kAutofillUseParameterizedSectioning);
-  RecreateProfile(/*is_server=*/false);
+  RecreateProfile();
 
   FormData form = CreateForm({
       CreateTestFormField("Name", "name", "",
@@ -1993,8 +1993,7 @@ TEST_F(AutofillMetricsTest, UpiVpaUkmTest) {
 
 // Test that the profile checkout flow user actions are correctly logged.
 TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
-  // Create a profile.
-  RecreateProfile(/*is_server=*/false);
+  RecreateProfile();
 
   FormData form = CreateForm(
       {CreateTestFormField("State", "state", "", FormControlType::kInputText),
@@ -2089,18 +2088,14 @@ TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
   // call to |external_delegate().DidAcceptSuggestion|. Second, from call to
   // |autofill_manager().FillOrPreviewProfileForm|.
   VerifyUkm(&test_ukm_recorder(), form, UkmSuggestionFilledType::kEntryName,
-            {{{UkmSuggestionFilledType::kRecordTypeName,
-               AutofillProfile::LOCAL_PROFILE},
-              {UkmSuggestionFilledType::kIsForCreditCardName, false},
+            {{{UkmSuggestionFilledType::kIsForCreditCardName, false},
               {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
               {UkmSuggestionFilledType::kFieldSignatureName,
                Collapse(CalculateFieldSignatureForField(form.fields.front()))
                    .value()},
               {UkmSuggestionFilledType::kFormSignatureName,
                Collapse(CalculateFormSignature(form)).value()}},
-             {{UkmSuggestionFilledType::kRecordTypeName,
-               AutofillProfile::LOCAL_PROFILE},
-              {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
+             {{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
               {UkmSuggestionFilledType::kIsForCreditCardName, false},
               {UkmSuggestionsShownType::kFieldSignatureName,
                Collapse(CalculateFieldSignatureForField(form.fields.front()))
@@ -2230,7 +2225,7 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
 // Tests that the Autofill_PolledProfileSuggestions user action is only logged
 // once if the field is queried repeatedly.
 TEST_F(AutofillMetricsTest, PolledProfileSuggestions_DebounceLogs) {
-  RecreateProfile(/*is_server=*/false);
+  RecreateProfile();
 
   FormData form = CreateForm(
       {CreateTestFormField("State", "state", "", FormControlType::kInputText),
@@ -3435,8 +3430,7 @@ TEST_P(AutofillMetricsIFrameTest,
 }
 
 TEST_F(AutofillMetricsTest, ShouldNotLogFormEventNoCardForAddressForm) {
-  // Create a profile.
-  RecreateProfile(/*is_server=*/false);
+  RecreateProfile();
   FormData form = CreateForm(
       {CreateTestFormField("State", "state", "", FormControlType::kInputText),
        CreateTestFormField("City", "city", "", FormControlType::kInputText),
@@ -4658,8 +4652,7 @@ TEST_F(AutofillMetricsTest, AddressInteractedFormEvents) {
 
 // Test that we log suggestion shown form events for address.
 TEST_F(AutofillMetricsTest, AddressShownFormEvents) {
-  // Create a profile.
-  RecreateProfile(/*is_server=*/false);
+  RecreateProfile();
   FormData form = CreateForm(
       {CreateTestFormField("State", "state", "", FormControlType::kInputText),
        CreateTestFormField("City", "city", "", FormControlType::kInputText),
@@ -4754,8 +4747,7 @@ TEST_F(AutofillMetricsTest, AddressShownFormEvents) {
 
 // Test that we log filled form events for address.
 TEST_F(AutofillMetricsTest, AddressFilledFormEvents) {
-  // Create a profile.
-  RecreateProfile(/*is_server=*/false);
+  RecreateProfile();
   FormData form = CreateForm(
       {CreateTestFormField("State", "state", "", FormControlType::kInputText),
        CreateTestFormField("City", "city", "", FormControlType::kInputText),
@@ -4808,41 +4800,11 @@ TEST_F(AutofillMetricsTest, AddressFilledFormEvents) {
         BucketsInclude(Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 2),
                        Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, 1)));
   }
-
-  // Create a server profile and reset the autofill manager state.
-  RecreateProfile(/*is_server=*/true);
-  autofill_manager().Reset();
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulate selecting/filling a server profile suggestion.
-    base::HistogramTester histogram_tester;
-    FillTestProfile(form);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
-        BucketsInclude(Bucket(FORM_EVENT_SERVER_SUGGESTION_FILLED, 1),
-                       Bucket(FORM_EVENT_SERVER_SUGGESTION_FILLED_ONCE, 1)));
-  }
-
-  autofill_manager().Reset();
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulate selecting/filling a server profile suggestion more than once.
-    base::HistogramTester histogram_tester;
-    FillTestProfile(form);
-    FillTestProfile(form);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
-        BucketsInclude(Bucket(FORM_EVENT_SERVER_SUGGESTION_FILLED, 2),
-                       Bucket(FORM_EVENT_SERVER_SUGGESTION_FILLED_ONCE, 1)));
-  }
 }
 
 // Test that we log submitted form events for address.
 TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
-  // Create a profile.
-  RecreateProfile(/*is_server=*/false);
+  RecreateProfile();
   FormData form = CreateForm(
       {CreateTestFormField("State", "state", "", FormControlType::kInputText),
        CreateTestFormField("City", "city", "", FormControlType::kInputText),
@@ -4989,8 +4951,7 @@ TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
 
 // Test that we log "will submit" and "submitted" form events for address.
 TEST_F(AutofillMetricsTest, AddressWillSubmitFormEvents) {
-  // Create a profile.
-  RecreateProfile(/*is_server=*/false);
+  RecreateProfile();
   FormData form = CreateForm(
       {CreateTestFormField("State", "state", "", FormControlType::kInputText),
        CreateTestFormField("City", "city", "", FormControlType::kInputText),
@@ -5253,7 +5214,7 @@ TEST_F(AutofillMetricsTest, AddressFormEventsAreSegmented) {
   // Reset the autofill manager state.
   autofill_manager().Reset();
   autofill_manager().AddSeenForm(form, field_types);
-  RecreateProfile(/*is_server=*/false);
+  RecreateProfile();
 
   {
     // Simulate activating the autofill popup for the street field.
@@ -6124,17 +6085,13 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
          Collapse(CalculateFormSignature(form)).value()}}});
   VerifyUkm(
       &test_ukm_recorder(), form, UkmSuggestionFilledType::kEntryName,
-      {{{UkmSuggestionFilledType::kRecordTypeName,
-         AutofillProfile::LOCAL_PROFILE},
-        {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
+      {{{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
         {UkmSuggestionFilledType::kIsForCreditCardName, false},
         {UkmSuggestionFilledType::kFieldSignatureName,
          Collapse(CalculateFieldSignatureForField(form.fields[0])).value()},
         {UkmSuggestionFilledType::kFormSignatureName,
          Collapse(CalculateFormSignature(form)).value()}},
-       {{UkmSuggestionFilledType::kRecordTypeName,
-         AutofillProfile::LOCAL_PROFILE},
-        {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
+       {{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
         {UkmSuggestionFilledType::kFieldSignatureName,
          Collapse(CalculateFieldSignatureForField(form.fields[2])).value()},
         {UkmSuggestionFilledType::kFormSignatureName,
@@ -7768,7 +7725,7 @@ TEST_F(AutofillMetricsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(
       features::kAutofillPreventOverridingPrefilledValues);
-  RecreateProfile(false);
+  RecreateProfile();
 
   FormData form = test::GetFormData(
       {.description_for_logging =
@@ -8258,8 +8215,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
   TestAutofillTickClock test_clock;
   test_clock.SetNowTicks(now);
 
-  // Create a profile.
-  RecreateProfile(/*is_server=*/false);
+  RecreateProfile();
   FormData form;
   form.url = GURL("http://www.foo.com/");
 
@@ -8347,8 +8303,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
   TestAutofillTickClock test_clock;
   test_clock.SetNowTicks(now);
 
-  // Create a profile.
-  RecreateProfile(/*is_server=*/false);
+  RecreateProfile();
   FormData form;
   form.url = GURL("http://www.foo.com/");
 

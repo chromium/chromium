@@ -35,10 +35,6 @@ struct AutofillMetadata {
   // The last time the model was used.
   base::Time use_date;
 
-  // Only useful for SERVER_PROFILEs. Whether the server profile has been
-  // converted to a local profile.
-  bool has_converted = false;
-
   // Only useful for SERVER_CARDs. The identifier of the billing address for the
   // card.
   std::string billing_address_id;

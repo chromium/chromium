@@ -168,7 +168,7 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
       form_interactions_ukm_logger_->CreateCreditCardFillBuilder();
   builder.SetFormSignature(HashFormSignature(form.form_signature()));
 
-  form_interactions_ukm_logger_->LogDidFillSuggestion(record_type, form, field);
+  form_interactions_ukm_logger_->LogDidFillSuggestion(form, field, record_type);
 
   AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
       {.event_logger = raw_ref(*this),

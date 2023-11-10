@@ -115,19 +115,11 @@ void AutofillMetricsBaseTest::CreateAmbiguousProfiles() {
   personal_data().Refresh();
 }
 
-void AutofillMetricsBaseTest::RecreateProfile(bool is_server) {
+void AutofillMetricsBaseTest::RecreateProfile() {
   personal_data().ClearProfiles();
-
-  if (is_server) {
-    AutofillProfile profile(AutofillProfile::SERVER_PROFILE, "server_id");
-    SetProfileTestData(&profile);
-    personal_data().AddProfile(profile);
-  } else {
-    AutofillProfile profile;
-    SetProfileTestData(&profile);
-    personal_data().AddProfile(profile);
-  }
-
+  AutofillProfile profile;
+  SetProfileTestData(&profile);
+  personal_data().AddProfile(profile);
   personal_data().Refresh();
 }
 

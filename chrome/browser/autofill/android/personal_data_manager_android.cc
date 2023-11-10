@@ -260,8 +260,7 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfileToLocal(
   AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
       jprofile, target_profile, g_browser_process->GetApplicationLocale());
 
-  if (target_profile != nullptr &&
-      target_profile->record_type() == AutofillProfile::LOCAL_PROFILE) {
+  if (target_profile != nullptr) {
     personal_data_manager_->UpdateProfile(profile);
   } else {
     personal_data_manager_->AddProfile(profile);

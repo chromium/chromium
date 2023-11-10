@@ -2210,22 +2210,17 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogSuggestionsShown(
 }
 
 void AutofillMetrics::FormInteractionsUkmLogger::LogDidFillSuggestion(
-    absl::variant<AutofillProfile::RecordType, CreditCard::RecordType>
-        record_type,
     const FormStructure& form,
-    const AutofillField& field) {
+    const AutofillField& field,
+    std::optional<CreditCard::RecordType> record_type) {
   if (!CanLog())
     return;
 
-  bool is_for_credit_card =
-      absl::holds_alternative<CreditCard::RecordType>(record_type);
-
-  ukm::builders::Autofill_SuggestionFilled(GetSourceId())
-      .SetRecordType(is_for_credit_card
-                         ? base::to_underlying(
-                               absl::get<CreditCard::RecordType>(record_type))
-                         : absl::get<AutofillProfile::RecordType>(record_type))
-      .SetIsForCreditCard(is_for_credit_card)
+  auto metric = ukm::builders::Autofill_SuggestionFilled(GetSourceId());
+  if (record_type) {
+    metric.SetRecordType(base::to_underlying(*record_type));
+  }
+  metric.SetIsForCreditCard(record_type.has_value())
       .SetMillisecondsSinceFormParsed(
           MillisecondsSinceFormParsed(form.form_parsed_timestamp()))
       .SetFormSignature(HashFormSignature(form.form_signature()))

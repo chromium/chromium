@@ -126,12 +126,6 @@ AutofillProfile GetIncompleteProfile1();
 // Returns an incomplete profile of dummy info, different to the above.
 AutofillProfile GetIncompleteProfile2();
 
-// Returns a server profile full of dummy info.
-AutofillProfile GetServerProfile();
-
-// Returns a server profile full of dummy info, different to the above.
-AutofillProfile GetServerProfile2();
-
 // Sets the `profile`s source and initial creator to match `category`.
 void SetProfileCategory(
     AutofillProfile& profile,

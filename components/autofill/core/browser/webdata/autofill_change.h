@@ -67,12 +67,12 @@ class AutofillDataModelChange {
       CHECK(data_model_.guid() == key_ || data_model_.instrument_id() == key_);
     } else if constexpr (std::is_same_v<DataType, ServerCvc>) {
       CHECK(base::NumberToString(data_model_.instrument_id) == key_);
-    } else {
+    } else if constexpr (std::is_same_v<DataType, CreditCard>) {
       // TODO(crbug.com/1475085): Use `instrument_id()` for credit cards and
       // merge the `Iban` and `CreditCard` cases.
-      // TODO(crbug.com/1457187): Once server addresses are removed,
-      // `server_id()` becomes irrelevant for `AutofillProfile`.
       CHECK(data_model_.guid() == key_ || data_model_.server_id() == key_);
+    } else {
+      CHECK(data_model_.guid() == key_);
     }
   }
 

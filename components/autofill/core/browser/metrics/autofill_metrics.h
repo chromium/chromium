@@ -730,10 +730,11 @@ class AutofillMetrics {
                              const AutofillField& field,
                              const base::TimeTicks& form_parsed_timestamp,
                              bool off_the_record);
-    void LogDidFillSuggestion(absl::variant<AutofillProfile::RecordType,
-                                            CreditCard::RecordType> record_type,
-                              const FormStructure& form,
-                              const AutofillField& field);
+    // For address suggestions, the `record_type` is irrelevant.
+    void LogDidFillSuggestion(
+        const FormStructure& form,
+        const AutofillField& field,
+        std::optional<CreditCard::RecordType> record_type = std::nullopt);
     void LogTextFieldDidChange(const FormStructure& form,
                                const AutofillField& field);
     void LogEditedAutofilledFieldAtSubmission(const FormStructure& form,

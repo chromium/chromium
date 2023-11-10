@@ -232,8 +232,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (TableViewItem*)itemForProfile:
     (const autofill::AutofillProfile&)autofillProfile {
-  assert(autofillProfile.record_type() ==
-         autofill::AutofillProfile::LOCAL_PROFILE);
   std::string guid(autofillProfile.guid());
   NSString* title = base::SysUTF16ToNSString(
       autofillProfile.GetInfo(autofill::AutofillType(autofill::NAME_FULL),

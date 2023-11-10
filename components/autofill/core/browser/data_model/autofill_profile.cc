@@ -29,7 +29,6 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/address.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
@@ -233,8 +232,6 @@ AutofillProfile::AutofillProfile(const std::string& guid,
     : guid_(guid),
       phone_number_(this),
       address_(country_code),
-      record_type_(LOCAL_PROFILE),
-      has_converted_(false),
       source_(source),
       initial_creator_id_(kInitialCreatorOrModifierChrome),
       last_modifier_id_(kInitialCreatorOrModifierChrome),
@@ -244,21 +241,6 @@ AutofillProfile::AutofillProfile(Source source, AddressCountryCode country_code)
     : AutofillProfile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                       source,
                       country_code) {}
-
-// TODO(crbug.com/1177366): Remove this constructor.
-AutofillProfile::AutofillProfile(RecordType type,
-                                 const std::string& server_id,
-                                 AddressCountryCode country_code)
-    : guid_(""),  // Server profiles are identified by a `server_id_`.
-      phone_number_(this),
-      address_(country_code),
-      server_id_(server_id),
-      record_type_(type),
-      has_converted_(false),
-      source_(Source::kLocalOrSyncable),
-      token_quality_(this) {
-  DCHECK(type == SERVER_PROFILE);
-}
 
 AutofillProfile::AutofillProfile(const AutofillProfile& profile)
     : phone_number_(this),
@@ -281,8 +263,6 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
 
   set_profile_label(profile.profile_label());
 
-  record_type_ = profile.record_type_;
-
   name_ = profile.name_;
   email_ = profile.email_;
   company_ = profile.company_;
@@ -292,9 +272,6 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
 
   address_ = profile.address_;
   set_language_code(profile.language_code());
-
-  server_id_ = profile.server_id();
-  has_converted_ = profile.has_converted();
 
   source_ = profile.source_;
   initial_creator_id_ = profile.initial_creator_id_;
@@ -395,13 +372,6 @@ AutofillProfile AutofillProfile::CreateFromJavaObject(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-AutofillMetadata AutofillProfile::GetMetadata() const {
-  AutofillMetadata metadata = AutofillDataModel::GetMetadata();
-  metadata.id = (record_type_ == LOCAL_PROFILE ? guid() : server_id_);
-  metadata.has_converted = has_converted_;
-  return metadata;
-}
-
 double AutofillProfile::GetRankingScore(base::Time current_time) const {
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableRankingFormulaAddressProfiles)) {
@@ -414,18 +384,6 @@ double AutofillProfile::GetRankingScore(base::Time current_time) const {
   }
   // Default to legacy frecency scoring.
   return AutofillDataModel::GetRankingScore(current_time);
-}
-
-bool AutofillProfile::SetMetadata(const AutofillMetadata& metadata) {
-  // Make sure the ids matches.
-  if (metadata.id != (record_type_ == LOCAL_PROFILE ? guid() : server_id_))
-    return false;
-
-  if (!AutofillDataModel::SetMetadata(metadata))
-    return false;
-
-  has_converted_ = metadata.has_converted;
-  return true;
 }
 
 void AutofillProfile::GetMatchingTypes(
@@ -1010,26 +968,6 @@ std::u16string AutofillProfile::ConstructInferredLabel(
   return label;
 }
 
-void AutofillProfile::GenerateServerProfileIdentifier() {
-  DCHECK_EQ(SERVER_PROFILE, record_type());
-  std::u16string contents = GetRawInfo(NAME_FIRST);
-  contents.append(GetRawInfo(NAME_MIDDLE));
-  contents.append(GetRawInfo(NAME_LAST));
-  contents.append(GetRawInfo(EMAIL_ADDRESS));
-  contents.append(GetRawInfo(COMPANY_NAME));
-  contents.append(GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
-  contents.append(GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY));
-  contents.append(GetRawInfo(ADDRESS_HOME_CITY));
-  contents.append(GetRawInfo(ADDRESS_HOME_STATE));
-  contents.append(GetRawInfo(ADDRESS_HOME_ZIP));
-  contents.append(GetRawInfo(ADDRESS_HOME_SORTING_CODE));
-  contents.append(GetRawInfo(ADDRESS_HOME_COUNTRY));
-  contents.append(GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
-  std::string contents_utf8 = UTF16ToUTF8(contents);
-  contents_utf8.append(language_code());
-  server_id_ = base::SHA1HashString(contents_utf8);
-}
-
 void AutofillProfile::RecordAndLogUse() {
   const base::Time now = AutofillClock::Now();
   const base::TimeDelta time_since_last_used = now - use_date();
@@ -1209,12 +1147,8 @@ bool AutofillProfile::EqualsSansGuid(const AutofillProfile& profile) const {
 }
 
 std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
-  os << (profile.record_type() == AutofillProfile::LOCAL_PROFILE
-             ? profile.guid()
-             : base::HexEncode(profile.server_id().data(),
-                               profile.server_id().size()))
-     << " label: " << profile.profile_label() << " " << profile.has_converted()
-     << " " << profile.use_count() << " " << profile.use_date() << " "
+  os << profile.guid() << " label: " << profile.profile_label() << " "
+     << profile.use_count() << " " << profile.use_date() << " "
      << profile.language_code() << std::endl;
 
   // Lambda to print the value and verification status for |type|.

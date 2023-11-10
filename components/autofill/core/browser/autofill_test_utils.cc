@@ -253,46 +253,6 @@ AutofillProfile GetIncompleteProfile2() {
   return profile;
 }
 
-AutofillProfile GetServerProfile() {
-  AutofillProfile profile(AutofillProfile::SERVER_PROFILE, "id1");
-  // Note: server profiles don't have email addresses and only have full names.
-  SetProfileInfo(&profile, "", "", "", "", "Google, Inc.", "123 Fake St.",
-                 "Apt. 42", "Mountain View", "California", "94043", "US",
-                 "1.800.555.1234");
-
-  profile.SetInfo(NAME_FULL, u"John K. Doe", "en");
-  profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"CEDEX");
-  profile.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Santa Clara");
-
-  profile.set_language_code("en");
-  profile.set_use_count(7);
-  profile.set_use_date(base::Time::FromTimeT(54321));
-
-  profile.GenerateServerProfileIdentifier();
-
-  return profile;
-}
-
-AutofillProfile GetServerProfile2() {
-  AutofillProfile profile(AutofillProfile::SERVER_PROFILE, "id2");
-  // Note: server profiles don't have email addresses.
-  SetProfileInfo(&profile, "", "", "", "", "Main, Inc.", "4323 Wrong St.",
-                 "Apt. 1032", "Sunnyvale", "California", "10011", "US",
-                 "+1 514-123-1234");
-
-  profile.SetInfo(NAME_FULL, u"Jim S. Bristow", "en");
-  profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"XEDEC");
-  profile.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Santa Monica");
-
-  profile.set_language_code("en");
-  profile.set_use_count(14);
-  profile.set_use_date(base::Time::FromTimeT(98765));
-
-  profile.GenerateServerProfileIdentifier();
-
-  return profile;
-}
-
 void SetProfileCategory(
     AutofillProfile& profile,
     autofill_metrics::AutofillProfileSourceCategory category) {

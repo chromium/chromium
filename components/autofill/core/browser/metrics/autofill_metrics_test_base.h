@@ -58,8 +58,7 @@ class AutofillMetricsBaseTest {
   void CreateAmbiguousProfiles();
 
   // Removes all existing profiles and creates one profile.
-  // |is_server| allows creation of |SERVER_PROFILE|.
-  void RecreateProfile(bool is_server);
+  void RecreateProfile();
 
   // Removes all existing credit cards and then invokes CreateCreditCards to
   // create the cards.
