@@ -9,8 +9,7 @@
         display: none;
       }
     </style>
-    <template is="dom-if" if="[[showBasicPage_(
-        currentRoute_, inSearchMode, hasExpandedSection_)]]">
+    <template is="dom-if" if="[[showBasicPage_(currentRoute_, inSearchMode)]]">
       <div id="basicPage">
         <template is="dom-if" if="[[showResetProfileBanner_]]" restamp>
           <settings-reset-profile-banner on-close="onResetProfileBannerClosed_">

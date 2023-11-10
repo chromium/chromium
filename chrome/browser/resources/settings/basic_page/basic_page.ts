@@ -306,9 +306,10 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
    * @return A signal indicating that searching finished.
    */
   searchContents(query: string): Promise<SearchResult> {
+    const basicPage = this.shadowRoot!.querySelector<HTMLElement>('#basicPage');
+    assert(basicPage);
     const whenSearchDone = [
-      getSearchManager().search(
-          query, this.shadowRoot!.querySelector<HTMLElement>('#basicPage')!),
+      getSearchManager().search(query, basicPage),
     ];
 
     if (this.pageVisibility.advancedSettings !== false) {
@@ -372,13 +373,16 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
   /**
-   * @return Whether to show the basic page, taking into account both routing
-   *     and search state.
+   * @return Whether to show #basicPage. This is an optimization to lazy render
+   *     #basicPage only when a section/subpage within it is being shown, or
+   *     when in search mode.
    */
-  private showBasicPage_(
-      currentRoute: Route, _inSearchMode: boolean,
-      hasExpandedSection: boolean): boolean {
-    return !hasExpandedSection || routes.BASIC.contains(currentRoute);
+  private showBasicPage_(): boolean {
+    if (this.currentRoute_ === undefined) {
+      return false;
+    }
+
+    return this.inSearchMode || routes.BASIC.contains(this.currentRoute_);
   }
 
   /**
