@@ -89,6 +89,9 @@ BubbleDialogModelHost::FieldType GetFieldTypeForField(
       return BubbleDialogModelHost::FieldType::kControl;
     case ui::DialogModelField::kMenuItem:
       return BubbleDialogModelHost::FieldType::kMenuItem;
+    case ui::DialogModelField::kSection:
+      // TODO(pbos): Handle nested/multiple sections.
+      NOTREACHED_NORETURN();
     case ui::DialogModelField::kSeparator:
       return BubbleDialogModelHost::FieldType::kMenuItem;
     case ui::DialogModelField::kCustom:
@@ -601,6 +604,9 @@ void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
     case ui::DialogModelField::kMenuItem:
       AddOrUpdateMenuItem(field->AsMenuItem(GetPassKey()));
       break;
+    case ui::DialogModelField::kSection:
+      // TODO(pbos): Handle nested/multiple sections.
+      NOTREACHED_NORETURN();
     case ui::DialogModelField::kSeparator:
       AddOrUpdateSeparator(field);
       break;

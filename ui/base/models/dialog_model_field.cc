@@ -349,6 +349,21 @@ void DialogModelMenuItem::OnActivated(base::PassKey<DialogModelHost> pass_key,
   callback_.Run(event_flags);
 }
 
+DialogModelSection::DialogModelSection(base::PassKey<DialogModelBase> pass_key)
+    : DialogModelField(pass_key,
+                       kSection,
+                       ElementIdentifier(),
+                       {},
+                       DialogModelField::Params()) {}
+
+DialogModelSection::~DialogModelSection() = default;
+
+void DialogModelSection::AddField(base::PassKey<DialogModelBase>,
+                                  std::unique_ptr<DialogModelField> field) {
+  CHECK(field);
+  fields_.push_back(std::move(field));
+}
+
 DialogModelSeparator::DialogModelSeparator(
     base::PassKey<DialogModelBase> pass_key)
     : DialogModelField(pass_key,

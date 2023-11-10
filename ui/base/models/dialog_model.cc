@@ -124,7 +124,7 @@ DialogModel::Builder& DialogModel::Builder::SetInitiallyFocusedField(
 
 DialogModel::DialogModel(base::PassKey<Builder>,
                          std::unique_ptr<DialogModelDelegate> delegate)
-    : delegate_(std::move(delegate)) {
+    : delegate_(std::move(delegate)), contents_(GetPassKey()) {
   if (delegate_)
     delegate_->set_dialog_model(this);
 }
@@ -182,8 +182,14 @@ void DialogModel::AddCustomField(
 }
 
 bool DialogModel::HasField(ElementIdentifier id) const {
-  return base::ranges::any_of(fields_,
-                              [id](auto& field) { return field->id_ == id; }) ||
+  return base::ranges::any_of(contents_.fields(GetPassKey()),
+                              [id](auto& field) {
+                                // TODO(pbos): This does not
+                                // work recursively yet.
+                                CHECK_NE(field->type_,
+                                         DialogModelField::kSection);
+                                return field->id_ == id;
+                              }) ||
          (ok_button_ && ok_button_->id_ == id) ||
          (cancel_button_ && cancel_button_->id_ == id) ||
          (extra_button_ && extra_button_->id_ == id);
@@ -192,11 +198,17 @@ bool DialogModel::HasField(ElementIdentifier id) const {
 DialogModelField* DialogModel::GetFieldByUniqueId(ElementIdentifier id) {
   // Assert that there are not duplicate fields corresponding to `id`. There
   // could be no matches in `fields_` if `id` corresponds to a button.
-  DCHECK_LE(static_cast<int>(base::ranges::count_if(
-                fields_, [id](auto& field) { return field->id_ == id; })),
-            1);
+  CHECK_LE(static_cast<int>(base::ranges::count_if(
+               contents_.fields(GetPassKey()),
+               [id](auto& field) {
+                 // TODO(pbos): This does not
+                 // work recursively yet.
+                 CHECK_NE(field->type_, DialogModelField::kSection);
+                 return field->id_ == id;
+               })),
+           1);
 
-  for (auto& field : fields_) {
+  for (auto& field : contents_.fields(GetPassKey())) {
     if (field->id_ == id)
       return field.get();
   }
@@ -286,9 +298,16 @@ void DialogModel::SetButtonLabel(DialogModelButton* button,
 }
 
 void DialogModel::AddField(std::unique_ptr<DialogModelField> field) {
-  fields_.push_back(std::move(field));
+  // TODO(pbos): This doesn't work for recursive fields. Here be dragons once we
+  // start nesting items. Right now we only support the top-level kSection.
+  //
+  // Once we start nesting sections then the DialogModelSection::AddField call
+  // should probably also be able to communicate the update.
+  CHECK_NE(field->type_, DialogModelField::kSection);
+  DialogModelField* const field_ptr = field.get();
+  contents_.AddField(GetPassKey(), std::move(field));
   if (host_)
-    host_->OnFieldAdded(fields_.back().get());
+    host_->OnFieldAdded(field_ptr);
 }
 
 }  // namespace ui

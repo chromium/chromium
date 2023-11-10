@@ -29,6 +29,7 @@ class DialogModelCombobox;
 class DialogModelCustomField;
 class DialogModelHost;
 class DialogModelMenuItem;
+class DialogModelSection;
 class DialogModelTextfield;
 class Event;
 
@@ -169,7 +170,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
     kCombobox,
     kCustom,
     kMenuItem,
-    kSeparator,
+    kSeparator,  // TODO(pbos): Remove kSeparator once it can be implied by
+                 // having multiple subsequent kSections (3 sections imply 2
+                 // separators).
+    kSection,
     kTextfield
   };
 
@@ -213,6 +217,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   DialogModelMenuItem* AsMenuItem(base::PassKey<DialogModelHost>);
   const DialogModelMenuItem* AsMenuItem(base::PassKey<DialogModelHost>) const;
   DialogModelTextfield* AsTextfield(base::PassKey<DialogModelHost>);
+  DialogModelSection* AsSection(base::PassKey<DialogModelHost>);
   DialogModelCustomField* AsCustomField(base::PassKey<DialogModelHost>);
 
  protected:
@@ -279,8 +284,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
     base::flat_set<Accelerator> accelerators_;
   };
 
-  // Note that this is constructed through a DialogModel which adds it to model
-  // fields.
   DialogModelButton(base::PassKey<DialogModelBase> pass_key,
                     base::RepeatingCallback<void(const Event&)> callback,
                     const Params& params);
@@ -315,8 +318,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
 // Field class representing a paragraph.
 class COMPONENT_EXPORT(UI_BASE) DialogModelParagraph : public DialogModelField {
  public:
-  // Note that this is constructed through a DialogModel which adds it to model
-  // fields.
   DialogModelParagraph(base::PassKey<DialogModelBase> pass_key,
                        const DialogModelLabel& label,
                        std::u16string header,
@@ -364,8 +365,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCheckbox : public DialogModelField {
     bool is_checked_ = false;
   };
 
-  // Note that this is constructed through a DialogModel which adds it to model
-  // fields.
   DialogModelCheckbox(base::PassKey<DialogModelBase> pass_key,
                       ElementIdentifier id,
                       const DialogModelLabel& label,
@@ -428,8 +427,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
     base::flat_set<Accelerator> accelerators_;
   };
 
-  // Note that this is constructed through a DialogModel which adds it to model
-  // fields.
   DialogModelCombobox(base::PassKey<DialogModelBase> pass_key,
                       ElementIdentifier id,
                       std::u16string label,
@@ -492,8 +489,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelMenuItem : public DialogModelField {
     ElementIdentifier id_;
   };
 
-  // Note that this is constructed through a DialogModel which adds it to model
-  // fields.
   DialogModelMenuItem(base::PassKey<DialogModelBase> pass_key,
                       ImageModel icon,
                       std::u16string label,
@@ -519,11 +514,35 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelMenuItem : public DialogModelField {
   base::RepeatingCallback<void(int)> callback_;
 };
 
+// Field class representing a section. A section is a list of fields which may
+// include subsections too (tree structure).
+class COMPONENT_EXPORT(UI_BASE) DialogModelSection final
+    : public DialogModelField {
+ public:
+  // TODO(pbos): Params may make sense here? An optional title should be here?
+
+  explicit DialogModelSection(base::PassKey<DialogModelBase> pass_key);
+  DialogModelSection(const DialogModelSection&) = delete;
+  DialogModelSection& operator=(const DialogModelSection&) = delete;
+  ~DialogModelSection() override;
+
+  const std::vector<std::unique_ptr<DialogModelField>>& fields(
+      base::PassKey<DialogModelBase> pass_key) const {
+    return fields_;
+  }
+
+  void AddField(base::PassKey<DialogModelBase>,
+                std::unique_ptr<DialogModelField> field);
+
+ private:
+  friend class DialogModel;
+
+  std::vector<std::unique_ptr<DialogModelField>> fields_;
+};
+
 // Field class representing a separator.
 class COMPONENT_EXPORT(UI_BASE) DialogModelSeparator : public DialogModelField {
  public:
-  // Note that this is constructed through a DialogModel which adds it to model
-  // fields.
   explicit DialogModelSeparator(base::PassKey<DialogModelBase> pass_key);
   DialogModelSeparator(const DialogModelSeparator&) = delete;
   DialogModelSeparator& operator=(const DialogModelSeparator&) = delete;
@@ -564,8 +583,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
     base::flat_set<Accelerator> accelerators_;
   };
 
-  // Note that this is constructed through a DialogModel which adds it to model
-  // fields.
   DialogModelTextfield(base::PassKey<DialogModelBase> pass_key,
                        ElementIdentifier id,
                        std::u16string label,
@@ -607,8 +624,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCustomField
     virtual ~Field();
   };
 
-  // Note that this is constructed through a DialogModel which adds it to model
-  // fields.
   DialogModelCustomField(base::PassKey<DialogModelBase> pass_key,
                          ElementIdentifier id,
                          std::unique_ptr<DialogModelCustomField::Field> field);
