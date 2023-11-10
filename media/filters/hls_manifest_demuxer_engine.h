@@ -22,7 +22,7 @@
 #include "media/filters/manifest_demuxer.h"
 #include "media/formats/hls/media_playlist.h"
 #include "media/formats/hls/parse_status.h"
-#include "media/formats/hls/rendition_selector.h"
+#include "media/formats/hls/rendition_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
@@ -39,7 +39,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
                            MediaLog* media_log);
   ~HlsManifestDemuxerEngine() override;
 
-  // HlsRenditionHost implementation
+  // ManifestDemuxer::Engine implementation
   std::string GetName() const override;
   void Initialize(ManifestDemuxerEngineHost* host,
                   PipelineStatusCallback status_cb) override;
@@ -52,6 +52,8 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   bool IsSeekable() const override;
   int64_t GetMemoryUsage() const override;
   void Stop() override;
+
+  // HlsRenditionHost implementation.
   void ReadFromUrl(GURL uri,
                    bool read_chunked,
                    absl::optional<hls::types::ByteRange> range,
@@ -143,6 +145,8 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   void OnMultivariantPlaylist(
       PipelineStatusCallback parse_complete_cb,
       scoped_refptr<hls::MultivariantPlaylist> playlist);
+  void OnRenditionsSelected(const hls::VariantStream* variant,
+                            const hls::AudioRendition* rendition);
   void SetStreams(std::vector<PlaylistParseInfo> playlists,
                   PipelineStatusCallback cb,
                   PipelineStatus exit_on_error);
@@ -193,7 +197,9 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   // dependant media playlists.
   scoped_refptr<hls::MultivariantPlaylist> multivariant_root_
       GUARDED_BY_CONTEXT(media_sequence_checker_);
-  std::unique_ptr<hls::RenditionSelector> rendition_selector_
+  PipelineStatusCallback multivariant_parse_complete_cb_
+      GUARDED_BY_CONTEXT(media_sequence_checker_);
+  std::unique_ptr<hls::RenditionManager> rendition_manager_
       GUARDED_BY_CONTEXT(media_sequence_checker_);
 
   // Multiple renditions are allowed, and have to be synchronized.
@@ -203,15 +209,6 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   // When renditions are added, this ensures that they are all of the same
   // liveness, and allows access to the liveness check later.
   absl::optional<bool> is_seekable_ = absl::nullopt;
-
-  // Preferences for selecting optimal renditions. Storing them allows them
-  // to be changed later due to network constraints or user changes.
-  hls::RenditionSelector::VideoPlaybackPreferences video_preferences_
-      GUARDED_BY_CONTEXT(media_sequence_checker_) = {absl::nullopt,
-                                                     absl::nullopt};
-  hls::RenditionSelector::AudioPlaybackPreferences audio_preferences_
-      GUARDED_BY_CONTEXT(media_sequence_checker_) = {absl::nullopt,
-                                                     absl::nullopt};
 
   // Ensure that safe member fields are only accessed on the media sequence.
   SEQUENCE_CHECKER(media_sequence_checker_);

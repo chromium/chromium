@@ -64,7 +64,7 @@ bool AreAllVideoCodecsSupported(std::vector<VideoType> video_types) {
   return true;
 }
 
-hls::RenditionSelector::CodecSupportType GetSupportedTypes(
+hls::RenditionManager::CodecSupportType GetSupportedTypes(
     base::StringPiece container,
     base::span<const std::string> codecs) {
   std::vector<VideoType> video_formats;
@@ -93,15 +93,15 @@ hls::RenditionSelector::CodecSupportType GetSupportedTypes(
   bool video_support = AreAllVideoCodecsSupported(std::move(video_formats));
 
   if (audio_support && video_support) {
-    return hls::RenditionSelector::CodecSupportType::kSupportedAudioVideo;
+    return hls::RenditionManager::CodecSupportType::kSupportedAudioVideo;
   }
   if (audio_support) {
-    return hls::RenditionSelector::CodecSupportType::kSupportedAudioOnly;
+    return hls::RenditionManager::CodecSupportType::kSupportedAudioOnly;
   }
   if (video_support) {
-    return hls::RenditionSelector::CodecSupportType::kSupportedVideoOnly;
+    return hls::RenditionManager::CodecSupportType::kSupportedVideoOnly;
   }
-  return hls::RenditionSelector::CodecSupportType::kUnsupported;
+  return hls::RenditionManager::CodecSupportType::kUnsupported;
 }
 
 }  // namespace
@@ -308,7 +308,7 @@ void HlsManifestDemuxerEngine::Stop() {
   weak_factory_.InvalidateWeakPtrs();
 
   multivariant_root_.reset();
-  rendition_selector_.reset();
+  rendition_manager_.reset();
   renditions_.clear();
   host_ = nullptr;
 }
@@ -465,65 +465,58 @@ void HlsManifestDemuxerEngine::OnMultivariantPlaylist(
     PipelineStatusCallback parse_complete_cb,
     scoped_refptr<hls::MultivariantPlaylist> playlist) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  CHECK(!rendition_selector_);
+  CHECK(!rendition_manager_);
   multivariant_root_ = std::move(playlist);
-  rendition_selector_ = std::make_unique<hls::RenditionSelector>(
-      multivariant_root_, base::BindRepeating(&GetSupportedTypes));
+  rendition_manager_ = std::make_unique<hls::RenditionManager>(
+      multivariant_root_,
+      base::BindRepeating(&HlsManifestDemuxerEngine::OnRenditionsSelected,
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&GetSupportedTypes));
 
-  hls::RenditionSelector::PreferredVariants streams =
-      rendition_selector_->GetPreferredVariants(video_preferences_,
-                                                audio_preferences_);
-
-  // Possible outcomes of the rendition selector:
-  // | AOVariant | SelVariant | AORend  | primary=? | secondary=? |
-  // |-----------|------------|---------|-----------|-------------|
-  // | null      | null       | null    | X         | X           |
-  // |-----------|------------|---------|-----------|-------------|
-  // | null      | present    | null    | SV        | X           |
-  // |-----------|------------|---------|-----------|-------------|
-  // | present   | null       | present | AOV       | X           |
-  // |-----------|------------|---------|-----------|-------------|
-  // | present   | present    | null    | SV        | X           |
-  // |-----------|------------|---------|-----------|-------------|
-  // | present   | present    | present | SV        | AOV         |
-  // |-----------|------------|---------|-----------|-------------|
-  absl::optional<GURL> audio_override_uri;
-  const GURL& primary_uri = streams.selected_variant->GetPrimaryRenditionUri();
-  if (streams.audio_override_rendition) {
-    CHECK_NE(streams.audio_override_variant, nullptr);
-    audio_override_uri = streams.audio_override_rendition->GetUri().value_or(
-        streams.audio_override_variant->GetPrimaryRenditionUri());
-  }
-
-  std::vector<PlaylistParseInfo> renditions_to_parse;
-  std::vector<std::string> no_codecs;
-
-  if (streams.selected_variant) {
-    renditions_to_parse.emplace_back(
-        streams.selected_variant->GetPrimaryRenditionUri(),
-        streams.selected_variant->GetCodecs().value_or(no_codecs), kPrimary);
-
-    if (streams.audio_override_rendition &&
-        primary_uri != audio_override_uri.value_or(primary_uri)) {
-      CHECK_NE(streams.audio_override_variant, nullptr);
-      renditions_to_parse.emplace_back(
-          *audio_override_uri,
-          streams.audio_override_variant->GetCodecs().value_or(no_codecs),
-          kAudioOverride);
-    }
-  } else if (streams.audio_override_rendition &&
-             primary_uri != audio_override_uri.value_or(primary_uri)) {
-    renditions_to_parse.emplace_back(
-        *audio_override_uri,
-        streams.audio_override_variant->GetCodecs().value_or(no_codecs),
-        kPrimary);
-  } else {
+  if (!rendition_manager_->HasAnyVariants()) {
+    // This will abort the pending init, and `parse_complete_cb` will not need
+    // to be called.
     Abort(HlsDemuxerStatus::Codes::kNoRenditions);
     return;
   }
 
-  SetStreams(std::move(renditions_to_parse), std::move(parse_complete_cb),
-             PIPELINE_OK);
+  multivariant_parse_complete_cb_ = std::move(parse_complete_cb);
+  rendition_manager_->Reselect(
+      base::BindOnce(&HlsManifestDemuxerEngine::OnRenditionsSelected,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void HlsManifestDemuxerEngine::OnRenditionsSelected(
+    const hls::VariantStream* variant,
+    const hls::AudioRendition* audio_override_rendition) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  CHECK(variant);
+
+  // When `multivariant_parse_complete_cb_` is set, it means that we need to
+  // finish responding to the init cb after setting up our renditions. Otherwise
+  // it means that a midstream adjustment is taking place and the renditions
+  // need to be updated.
+  if (multivariant_parse_complete_cb_) {
+    std::vector<PlaylistParseInfo> renditions_to_parse;
+    std::vector<std::string> no_codecs;
+    renditions_to_parse.emplace_back(variant->GetPrimaryRenditionUri(),
+                                     variant->GetCodecs().value_or(no_codecs),
+                                     kPrimary);
+
+    // There need not be an audio override rendition, either due to not having
+    // any, or there being no change to the override rendition when the variant
+    // changes.
+    if (audio_override_rendition) {
+      CHECK(audio_override_rendition->GetUri().has_value());
+      renditions_to_parse.emplace_back(*audio_override_rendition->GetUri(),
+                                       variant->GetCodecs().value_or(no_codecs),
+                                       kAudioOverride);
+    }
+    SetStreams(std::move(renditions_to_parse),
+               std::move(multivariant_parse_complete_cb_), PIPELINE_OK);
+    return;
+  }
+  // TODO(crbug/1266991): handle a mid-playback adjustment.
 }
 
 void HlsManifestDemuxerEngine::SetStreams(
