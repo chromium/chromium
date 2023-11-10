@@ -367,9 +367,8 @@ class SessionManagerClientImpl : public SessionManagerClient {
   }
 
   void StartDeviceWipe(chromeos::VoidDBusMethodCallback callback) override {
-    dbus::MethodCall method_call(
-        login_manager::kSessionManagerInterface,
-        login_manager::kSessionManagerClearForcedReEnrollmentVpd);
+    dbus::MethodCall method_call(login_manager::kSessionManagerInterface,
+                                 login_manager::kSessionManagerStartDeviceWipe);
     session_manager_proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&SessionManagerClientImpl::OnVoidMethod,
