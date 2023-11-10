@@ -634,7 +634,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
     return scrollbar_controller_.get();
   }
 
-  absl::optional<gfx::PointF> ConstrainFling(gfx::PointF original);
+  std::optional<gfx::PointF> ConstrainFling(gfx::PointF original);
 
   // The input handler is owned by the delegate so their lifetimes are tied
   // together.
@@ -659,12 +659,12 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
 
   // The source device type that started the scroll gesture. Only set between a
   // ScrollBegin and ScrollEnd.
-  absl::optional<ui::ScrollInputType> latched_scroll_type_;
+  std::optional<ui::ScrollInputType> latched_scroll_type_;
 
   // Tracks the last scroll update/begin state received. Used to infer the most
   // recent scroll type and direction.
-  absl::optional<ScrollState> last_scroll_begin_state_;
-  absl::optional<ScrollState> last_scroll_update_state_;
+  std::optional<ScrollState> last_scroll_begin_state_;
+  std::optional<ScrollState> last_scroll_update_state_;
 
   // If a scroll snap is being animated, then the value of this will be the
   // element id(s) of the target(s). Otherwise, the ids will be invalid.
@@ -679,8 +679,8 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
     kSnapFling
   };
   SnapFlingState snap_fling_state_ = kNoFling;
-  absl::optional<gfx::RangeF> fling_snap_constrain_x_;
-  absl::optional<gfx::RangeF> fling_snap_constrain_y_;
+  std::optional<gfx::RangeF> fling_snap_constrain_x_;
+  std::optional<gfx::RangeF> fling_snap_constrain_y_;
 
   // A set of elements that scroll-snapped to a new target since the last
   // begin main frame. The snap target ids of these elements will be sent to

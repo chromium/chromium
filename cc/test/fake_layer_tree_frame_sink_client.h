@@ -24,7 +24,7 @@ class FakeLayerTreeFrameSinkClient : public LayerTreeFrameSinkClient {
   ~FakeLayerTreeFrameSinkClient() override;
 
   void SetBeginFrameSource(viz::BeginFrameSource* source) override;
-  absl::optional<viz::HitTestRegionList> BuildHitTestData() override;
+  std::optional<viz::HitTestRegionList> BuildHitTestData() override;
   void DidReceiveCompositorFrameAck() override;
   void DidPresentCompositorFrame(
       uint32_t frame_token,
@@ -55,7 +55,7 @@ class FakeLayerTreeFrameSinkClient : public LayerTreeFrameSinkClient {
   }
 
   void set_hit_test_region_list(
-      const absl::optional<viz::HitTestRegionList>& hit_test_region_list) {
+      const std::optional<viz::HitTestRegionList>& hit_test_region_list) {
     hit_test_region_list_ = hit_test_region_list;
   }
 
@@ -64,7 +64,7 @@ class FakeLayerTreeFrameSinkClient : public LayerTreeFrameSinkClient {
   bool did_lose_layer_tree_frame_sink_called_ = false;
   ManagedMemoryPolicy memory_policy_{0};
   raw_ptr<viz::BeginFrameSource> begin_frame_source_;
-  absl::optional<viz::HitTestRegionList> hit_test_region_list_;
+  std::optional<viz::HitTestRegionList> hit_test_region_list_;
 };
 
 }  // namespace cc

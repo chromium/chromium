@@ -173,7 +173,7 @@ bool PictureLayer::Update() {
     picture_layer_inputs_.directly_composited_image_default_raster_scale =
         gfx::Vector2dF();
     picture_layer_inputs_.nearest_neighbor = false;
-    absl::optional<DisplayItemList::DirectlyCompositedImageResult> result =
+    std::optional<DisplayItemList::DirectlyCompositedImageResult> result =
         picture_layer_inputs_.display_list->GetDirectlyCompositedImageResult();
     if (result) {
       // Directly composited images are not guaranteed to fully cover every

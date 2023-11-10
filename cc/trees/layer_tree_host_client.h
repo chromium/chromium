@@ -135,7 +135,7 @@ class LayerTreeHostClient {
   virtual void OnDeferCommitsChanged(
       bool defer_status,
       PaintHoldingReason reason,
-      absl::optional<PaintHoldingCommitTrigger> trigger) = 0;
+      std::optional<PaintHoldingCommitTrigger> trigger) = 0;
 
   // Notification that a compositing update has been requested.
   virtual void OnCommitRequested() = 0;

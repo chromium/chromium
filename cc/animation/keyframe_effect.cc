@@ -141,7 +141,7 @@ void KeyframeEffect::RemoveFromTicking() {
   is_ticking_ = false;
   // Resetting last_tick_time_ here ensures that calling ::UpdateState
   // before ::Animate doesn't start a keyframe model.
-  last_tick_time_ = absl::nullopt;
+  last_tick_time_ = std::nullopt;
   animation_->RemoveFromTicking();
 }
 
@@ -151,7 +151,7 @@ void KeyframeEffect::UpdateState(bool start_ready_keyframe_models,
 
   // Animate hasn't been called, this happens if an element has been added
   // between the Commit and Draw phases.
-  if (last_tick_time_ == absl::nullopt || awaiting_deletion_) {
+  if (last_tick_time_ == std::nullopt || awaiting_deletion_) {
     start_ready_keyframe_models = false;
   }
 
@@ -655,7 +655,7 @@ void KeyframeEffect::PushNewKeyframeModelsToImplThread(
         !ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
              keyframe_model->curve())
              ->HasSetInitialValue()) {
-      absl::optional<gfx::PointF> current_scroll_offset;
+      std::optional<gfx::PointF> current_scroll_offset;
       // If the scroller was already composited, prefer using its current scroll
       // offset.
       current_scroll_offset = keyframe_effect_impl->ScrollOffsetForAnimation();
@@ -719,7 +719,7 @@ void KeyframeEffect::RemoveKeyframeModelsCompletedOnMainThread(
 
 void KeyframeEffect::PushPropertiesTo(
     KeyframeEffect* keyframe_effect_impl,
-    absl::optional<base::TimeTicks> replaced_start_time) {
+    std::optional<base::TimeTicks> replaced_start_time) {
   if (!needs_push_properties_)
     return;
   needs_push_properties_ = false;
@@ -1088,7 +1088,7 @@ void KeyframeEffect::MarkFinishedKeyframeModels(
     element_animations_->UpdateClientAnimationState();
 }
 
-absl::optional<gfx::PointF> KeyframeEffect::ScrollOffsetForAnimation() const {
+std::optional<gfx::PointF> KeyframeEffect::ScrollOffsetForAnimation() const {
   return element_animations_->ScrollOffsetForAnimation();
 }
 

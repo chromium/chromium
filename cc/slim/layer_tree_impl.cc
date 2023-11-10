@@ -516,7 +516,7 @@ void LayerTreeImpl::GenerateCompositorFrame(
           background_opaque && unoccluded_region.GetRegionComplexity() <= 1;
       quad_state->SetAll(gfx::Transform(), gutter_bounding_rect,
                          gutter_bounding_rect, gfx::MaskFilterInfo(),
-                         /*clip=*/absl::nullopt, contents_opaque,
+                         /*clip=*/std::nullopt, contents_opaque,
                          /*opacity_f=*/1.0f, SkBlendMode::kSrcOver,
                          /*sorting_context=*/0, /*layer_id=*/0u,
                          /*fast_rounded_corner=*/false);
@@ -573,7 +573,7 @@ void LayerTreeImpl::Draw(Layer& layer,
     return;
   }
 
-  absl::optional<gfx::Transform> transform_from_parent =
+  std::optional<gfx::Transform> transform_from_parent =
       layer.ComputeTransformFromParent();
   // If a 2d transform isn't invertible, then it must map the whole 2d space to
   // a single line or pointer, neither is visible.
@@ -747,7 +747,7 @@ void LayerTreeImpl::Draw(Layer& layer,
   // Any clip introduced by this layer is already applied by the bounds of the
   // new pass, so only need to apply any clips in parents target that came
   // from parent.
-  absl::optional<gfx::Rect> clip_opt;
+  std::optional<gfx::Rect> clip_opt;
   if (parent_clip_in_target) {
     clip_opt = gfx::ToEnclosingRect(*parent_clip_in_target);
   }
@@ -799,7 +799,7 @@ void LayerTreeImpl::DrawChildrenAndAppendQuads(
   const bool subtree_property_changed =
       layer.GetAndResetSubtreePropertyChanged() ||
       data.subtree_property_changed_from_parent;
-  absl::optional<base::AutoReset<gfx::MaskFilterInfo>>
+  std::optional<base::AutoReset<gfx::MaskFilterInfo>>
       auto_reset_mask_filter_info;
   if (layer.HasNonTrivialMaskFilterInfo()) {
     gfx::MaskFilterInfo info(gfx::RRectF(gfx::RectF(gfx::Rect(layer.bounds())),

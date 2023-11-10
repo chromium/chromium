@@ -191,7 +191,7 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
 
   uint32_t throughput_value_ = 0.0f;
   // Obtained from the current BeginFrameArgs.
-  absl::optional<base::TimeDelta> frame_interval_;
+  std::optional<base::TimeDelta> frame_interval_;
   MemoryHistory::Entry memory_entry_;
   int paint_rects_fade_step_ = 0;
   int layout_shift_rects_fade_step_ = 0;

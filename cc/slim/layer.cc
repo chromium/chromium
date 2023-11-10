@@ -466,12 +466,12 @@ gfx::Transform Layer::ComputeTransformToParent() const {
   return transform;
 }
 
-absl::optional<gfx::Transform> Layer::ComputeTransformFromParent() const {
+std::optional<gfx::Transform> Layer::ComputeTransformFromParent() const {
   // TODO(crbug.com/1408128): Consider caching this result since GetInverse
   // may be expensive.
   gfx::Transform inverse_transform;
   if (!transform_.GetInverse(&inverse_transform)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // TransformFromParent is:
   // transform_origin x inverse_transform x -transform_origin x -position
@@ -528,7 +528,7 @@ viz::SharedQuadState* Layer::CreateAndAppendSharedQuadState(
       render_pass.CreateAndAppendSharedQuadState();
   const gfx::Rect layer_rect{bounds()};
   DCHECK(layer_rect.Contains(visible_rect));
-  absl::optional<gfx::Rect> clip_opt;
+  std::optional<gfx::Rect> clip_opt;
   if (clip_in_target) {
     clip_opt = *clip_in_target;
   }

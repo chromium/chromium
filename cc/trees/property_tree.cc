@@ -1712,7 +1712,7 @@ void ScrollTree::CollectScrollDeltas(
 
     ElementId id = map_entry.first;
 
-    absl::optional<TargetSnapAreaElementIds> snap_target_ids;
+    std::optional<TargetSnapAreaElementIds> snap_target_ids;
     if (snapped_elements.contains(id))
       snap_target_ids = snapped_elements.at(id);
 
@@ -1956,7 +1956,7 @@ void ScrollTree::SetScrollCallbacks(base::WeakPtr<ScrollCallbacks> callbacks) {
 void ScrollTree::NotifyDidCompositorScroll(
     ElementId scroll_element_id,
     const gfx::PointF& scroll_offset,
-    const absl::optional<TargetSnapAreaElementIds>& snap_target_ids) {
+    const std::optional<TargetSnapAreaElementIds>& snap_target_ids) {
   DCHECK(property_trees()->is_main_thread());
   if (callbacks_) {
     callbacks_->DidCompositorScroll(scroll_element_id, scroll_offset,

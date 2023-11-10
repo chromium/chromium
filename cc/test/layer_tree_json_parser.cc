@@ -38,16 +38,16 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
   if (bounds_list->size() < 2)
     return nullptr;
 
-  absl::optional<int> width = (*bounds_list)[0].GetIfInt();
-  absl::optional<int> height = (*bounds_list)[1].GetIfInt();
+  std::optional<int> width = (*bounds_list)[0].GetIfInt();
+  std::optional<int> height = (*bounds_list)[1].GetIfInt();
   if (!width.has_value() || !height.has_value())
     return nullptr;
 
-  absl::optional<bool> draws_content = dict.FindBool("DrawsContent");
+  std::optional<bool> draws_content = dict.FindBool("DrawsContent");
   if (!draws_content.has_value())
     return nullptr;
 
-  absl::optional<bool> hit_testable = dict.FindBool("HitTestable");
+  std::optional<bool> hit_testable = dict.FindBool("HitTestable");
   // If we cannot load hit_testable, we may try loading the old version, since
   // we do not record |hit_testable_without_draws_content| in the past, we use
   // |draws_content| as the value of |hit_testable|.
@@ -65,10 +65,10 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
     if (aperture_list->size() < 4)
       return nullptr;
 
-    absl::optional<int> aperture_x = (*aperture_list)[0].GetIfInt();
-    absl::optional<int> aperture_y = (*aperture_list)[1].GetIfInt();
-    absl::optional<int> aperture_width = (*aperture_list)[2].GetIfInt();
-    absl::optional<int> aperture_height = (*aperture_list)[3].GetIfInt();
+    std::optional<int> aperture_x = (*aperture_list)[0].GetIfInt();
+    std::optional<int> aperture_y = (*aperture_list)[1].GetIfInt();
+    std::optional<int> aperture_width = (*aperture_list)[2].GetIfInt();
+    std::optional<int> aperture_height = (*aperture_list)[3].GetIfInt();
     if (!(aperture_x.has_value() && aperture_y.has_value() &&
           aperture_width.has_value() && aperture_height.has_value()))
       return nullptr;
@@ -79,8 +79,8 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
     if (image_bounds_list->size() < 2)
       return nullptr;
 
-    absl::optional<double> image_width = (*image_bounds_list)[0].GetIfDouble();
-    absl::optional<double> image_height = (*image_bounds_list)[1].GetIfDouble();
+    std::optional<double> image_width = (*image_bounds_list)[0].GetIfDouble();
+    std::optional<double> image_height = (*image_bounds_list)[1].GetIfDouble();
     if (!(image_width.has_value() && image_height.has_value()))
       return nullptr;
 
@@ -90,16 +90,16 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
     if (border_list->size() < 4)
       return nullptr;
 
-    absl::optional<int> border_x = (*border_list)[0].GetIfInt();
-    absl::optional<int> border_y = (*border_list)[1].GetIfInt();
-    absl::optional<int> border_width = (*border_list)[2].GetIfInt();
-    absl::optional<int> border_height = (*border_list)[3].GetIfInt();
+    std::optional<int> border_x = (*border_list)[0].GetIfInt();
+    std::optional<int> border_y = (*border_list)[1].GetIfInt();
+    std::optional<int> border_width = (*border_list)[2].GetIfInt();
+    std::optional<int> border_height = (*border_list)[3].GetIfInt();
 
     if (!(border_x.has_value() && border_y.has_value() &&
           border_width.has_value() && border_height.has_value()))
       return nullptr;
 
-    absl::optional<bool> fill_center = dict.FindBool("FillCenter");
+    std::optional<bool> fill_center = dict.FindBool("FillCenter");
     if (!fill_center.has_value())
       return nullptr;
 
@@ -127,11 +127,11 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
   new_layer->SetIsDrawable(*draws_content);
   new_layer->SetHitTestable(*hit_testable);
 
-  absl::optional<double> opacity = dict.FindDouble("Opacity");
+  std::optional<double> opacity = dict.FindDouble("Opacity");
   if (opacity.has_value())
     new_layer->SetOpacity(*opacity);
 
-  absl::optional<bool> contents_opaque = dict.FindBool("ContentsOpaque");
+  std::optional<bool> contents_opaque = dict.FindBool("ContentsOpaque");
   if (contents_opaque.has_value())
     new_layer->SetContentsOpaque(*contents_opaque);
 
@@ -140,10 +140,10 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
   if (touch_region_list) {
     TouchActionRegion touch_action_region;
     for (size_t i = 0; i + 3 < touch_region_list->size(); i += 4) {
-      absl::optional<int> rect_x = (*touch_region_list)[i + 0].GetIfInt();
-      absl::optional<int> rect_y = (*touch_region_list)[i + 1].GetIfInt();
-      absl::optional<int> rect_width = (*touch_region_list)[i + 2].GetIfInt();
-      absl::optional<int> rect_height = (*touch_region_list)[i + 3].GetIfInt();
+      std::optional<int> rect_x = (*touch_region_list)[i + 0].GetIfInt();
+      std::optional<int> rect_y = (*touch_region_list)[i + 1].GetIfInt();
+      std::optional<int> rect_width = (*touch_region_list)[i + 2].GetIfInt();
+      std::optional<int> rect_height = (*touch_region_list)[i + 3].GetIfInt();
 
       if (!(rect_x.has_value() && rect_y.has_value() &&
             rect_width.has_value() && rect_height.has_value()))

@@ -15,7 +15,7 @@ namespace cc {
 
 SkottieResourceMetadataMap::ImageAssetMetadata::ImageAssetMetadata(
     base::FilePath resource_path_in,
-    absl::optional<gfx::Size> size_in)
+    std::optional<gfx::Size> size_in)
     : resource_path(std::move(resource_path_in)), size(std::move(size_in)) {}
 
 SkottieResourceMetadataMap::SkottieResourceMetadataMap() = default;
@@ -31,7 +31,7 @@ SkottieResourceMetadataMap::~SkottieResourceMetadataMap() = default;
 bool SkottieResourceMetadataMap::RegisterAsset(base::StringPiece resource_path,
                                                base::StringPiece resource_name,
                                                base::StringPiece resource_id,
-                                               absl::optional<gfx::Size> size) {
+                                               std::optional<gfx::Size> size) {
   DCHECK(!size || !size->IsEmpty());
   if (resource_id.empty()) {
     LOG(ERROR) << "Skottie animation has asset with empty resource_id";

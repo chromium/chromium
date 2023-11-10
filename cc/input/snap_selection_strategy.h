@@ -78,9 +78,9 @@ class CC_EXPORT SnapSelectionStrategy {
   // -closest: snap search result representing closest match.
   // -covering: snap search result representing the original target if it makes
   //            a snaparea covering the snapport.
-  virtual const absl::optional<SnapSearchResult>& PickBestResult(
-      const absl::optional<SnapSearchResult>& closest,
-      const absl::optional<SnapSearchResult>& covering) const = 0;
+  virtual const std::optional<SnapSearchResult>& PickBestResult(
+      const std::optional<SnapSearchResult>& closest,
+      const std::optional<SnapSearchResult>& covering) const = 0;
 
   // Returns true when the current scroll offset is provided in fractional
   // pixels.
@@ -125,9 +125,9 @@ class EndPositionStrategy : public SnapSelectionStrategy {
   bool HasIntendedDirection() const override;
   bool ShouldPrioritizeSnapTargets() const override;
 
-  const absl::optional<SnapSearchResult>& PickBestResult(
-      const absl::optional<SnapSearchResult>& closest,
-      const absl::optional<SnapSearchResult>& covering) const override;
+  const std::optional<SnapSearchResult>& PickBestResult(
+      const std::optional<SnapSearchResult>& closest,
+      const std::optional<SnapSearchResult>& covering) const override;
 
  private:
   // Whether the x axis and y axis have been scrolled in this scroll gesture.
@@ -168,9 +168,9 @@ class DirectionStrategy : public SnapSelectionStrategy {
   bool IsValidSnapArea(SearchAxis axis,
                        const SnapAreaData& area) const override;
 
-  const absl::optional<SnapSearchResult>& PickBestResult(
-      const absl::optional<SnapSearchResult>& closest,
-      const absl::optional<SnapSearchResult>& covering) const override;
+  const std::optional<SnapSearchResult>& PickBestResult(
+      const std::optional<SnapSearchResult>& closest,
+      const std::optional<SnapSearchResult>& covering) const override;
 
   bool UsingFractionalOffsets() const override;
 
@@ -211,9 +211,9 @@ class EndAndDirectionStrategy : public SnapSelectionStrategy {
 
   bool ShouldRespectSnapStop() const override;
 
-  const absl::optional<SnapSearchResult>& PickBestResult(
-      const absl::optional<SnapSearchResult>& closest,
-      const absl::optional<SnapSearchResult>& covering) const override;
+  const std::optional<SnapSearchResult>& PickBestResult(
+      const std::optional<SnapSearchResult>& closest,
+      const std::optional<SnapSearchResult>& covering) const override;
 
   bool UsingFractionalOffsets() const override;
 

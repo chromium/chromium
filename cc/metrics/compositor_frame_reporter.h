@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/time/default_tick_clock.h"
@@ -28,7 +29,6 @@
 #include "cc/scheduler/scheduler.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_timing_details.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 struct FrameTimingDetails;
@@ -254,7 +254,7 @@ class CC_EXPORT CompositorFrameReporter {
     base::TimeTicks swap_start() const { return swap_start_; }
 
    private:
-    absl::optional<std::pair<base::TimeTicks, base::TimeTicks>>
+    std::optional<std::pair<base::TimeTicks, base::TimeTicks>>
         list_[static_cast<int>(VizBreakdown::kBreakdownCount)];
 
     bool buffer_ready_available_ = false;
@@ -293,8 +293,8 @@ class CC_EXPORT CompositorFrameReporter {
   // name of the appropriate breakdown.
   static const char* GetStageName(
       StageType stage_type,
-      absl::optional<VizBreakdown> viz_breakdown = absl::nullopt,
-      absl::optional<BlinkBreakdown> blink_breakdown = absl::nullopt,
+      std::optional<VizBreakdown> viz_breakdown = std::nullopt,
+      std::optional<BlinkBreakdown> blink_breakdown = std::nullopt,
       bool impl_only = false);
 
   // Name for the viz breakdowns which are shown in traces as substages under
@@ -456,8 +456,8 @@ class CC_EXPORT CompositorFrameReporter {
   void ReportCompositorLatencyHistogram(
       FrameSequenceTrackerType intraction_type,
       StageType stage_type,
-      absl::optional<VizBreakdown> viz_breakdown,
-      absl::optional<BlinkBreakdown> blink_breakdown,
+      std::optional<VizBreakdown> viz_breakdown,
+      std::optional<BlinkBreakdown> blink_breakdown,
       base::TimeDelta time_delta) const;
 
   void ReportEventLatencyMetrics() const;
@@ -534,9 +534,9 @@ class CC_EXPORT CompositorFrameReporter {
 
   // The timestamp of when the frame was marked as not having produced a frame
   // (through a call to DidNotProduceFrame()).
-  absl::optional<base::TimeTicks> did_not_produce_frame_time_;
-  absl::optional<FrameSkippedReason> frame_skip_reason_;
-  absl::optional<base::TimeTicks> main_frame_abort_time_;
+  std::optional<base::TimeTicks> did_not_produce_frame_time_;
+  std::optional<FrameSkippedReason> frame_skip_reason_;
+  std::optional<base::TimeTicks> main_frame_abort_time_;
 
   raw_ptr<const base::TickClock> tick_clock_ =
       base::DefaultTickClock::GetInstance();

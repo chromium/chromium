@@ -257,7 +257,7 @@ sk_sp<SkImage> ReadImage(
     GrDirectContext* gr_context,
     skgpu::graphite::Recorder* graphite_recorder,
     bool mip_mapped_for_upload,
-    absl::optional<SkYUVAInfo>* out_yuva_info = nullptr,
+    std::optional<SkYUVAInfo>* out_yuva_info = nullptr,
     std::vector<sk_sp<SkImage>>* out_yuva_plane_images = nullptr) {
   int max_size;
   if (gr_context) {
@@ -349,7 +349,7 @@ sk_sp<SkImage> ReadImage(
     }
 
     if (out_yuva_info) {
-      *out_yuva_info = absl::nullopt;
+      *out_yuva_info = std::nullopt;
     }
     if (out_yuva_plane_images) {
       out_yuva_plane_images->clear();
@@ -476,7 +476,7 @@ ClientImageTransferCacheEntry::Image::Image(const SkPixmap yuva_pixmaps[],
 ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
     const Image& image,
     bool needs_mips,
-    const absl::optional<gfx::HDRMetadata>& hdr_metadata,
+    const std::optional<gfx::HDRMetadata>& hdr_metadata,
     sk_sp<SkColorSpace> target_color_space)
     : needs_mips_(needs_mips),
       target_color_space_(target_color_space),
@@ -767,7 +767,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
     }
 
     // Color conversion converts to RGBA. Remove all YUV state.
-    yuva_info_ = absl::nullopt;
+    yuva_info_ = std::nullopt;
     plane_images_.clear();
     plane_sizes_.clear();
 

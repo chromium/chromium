@@ -146,7 +146,7 @@ const FilterOperations& RenderSurfaceImpl::BackdropFilters() const {
   return OwningEffectNode()->backdrop_filters;
 }
 
-absl::optional<gfx::RRectF> RenderSurfaceImpl::BackdropFilterBounds() const {
+std::optional<gfx::RRectF> RenderSurfaceImpl::BackdropFilterBounds() const {
   return OwningEffectNode()->backdrop_filter_bounds;
 }
 
@@ -454,7 +454,7 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
   bool contents_opaque = false;
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
-  absl::optional<gfx::Rect> clip_rect;
+  std::optional<gfx::Rect> clip_rect;
   if (draw_properties_.is_clipped) {
     clip_rect = draw_properties_.clip_rect;
   }

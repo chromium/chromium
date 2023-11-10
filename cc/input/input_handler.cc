@@ -821,7 +821,7 @@ bool InputHandler::ScrollLayerTo(ElementId element_id,
   return true;
 }
 
-absl::optional<gfx::PointF> InputHandler::ConstrainFling(gfx::PointF original) {
+std::optional<gfx::PointF> InputHandler::ConstrainFling(gfx::PointF original) {
   gfx::PointF fling = original;
   if (fling_snap_constrain_x_) {
     fling.set_x(std::clamp(fling.x(), fling_snap_constrain_x_->GetMin(),
@@ -831,7 +831,7 @@ absl::optional<gfx::PointF> InputHandler::ConstrainFling(gfx::PointF original) {
     fling.set_y(std::clamp(fling.y(), fling_snap_constrain_y_->GetMin(),
                            fling_snap_constrain_y_->GetMax()));
   }
-  return original == fling ? absl::nullopt : absl::make_optional(fling);
+  return original == fling ? std::nullopt : std::make_optional(fling);
 }
 
 bool InputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
@@ -856,7 +856,7 @@ bool InputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
   gfx::PointF new_offset = current_offset + current_delta_in_content;
 
   if (snap_fling_state_ == kConstrainedNativeFling) {
-    if (absl::optional<gfx::PointF> constrained = ConstrainFling(new_offset)) {
+    if (std::optional<gfx::PointF> constrained = ConstrainFling(new_offset)) {
       snap_displacement = *constrained - current_offset;
     } else {
       return false;

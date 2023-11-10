@@ -7,12 +7,12 @@
 
 #include <string>
 
+#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/types/id_type.h"
 #include "cc/paint/paint_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace cc {
@@ -24,12 +24,12 @@ class CC_PAINT_EXPORT SkottieResourceMetadataMap {
   // Metadata for a single image asset.
   struct ImageAssetMetadata {
     ImageAssetMetadata(base::FilePath resource_path_in,
-                       absl::optional<gfx::Size> size_in);
+                       std::optional<gfx::Size> size_in);
 
     base::FilePath resource_path;
     // May be null if asset's dimensions are not specified in the animation
     // file.
-    absl::optional<gfx::Size> size;
+    std::optional<gfx::Size> size;
   };
 
   using Storage =
@@ -46,7 +46,7 @@ class CC_PAINT_EXPORT SkottieResourceMetadataMap {
   bool RegisterAsset(base::StringPiece resource_path,
                      base::StringPiece resource_name,
                      base::StringPiece resource_id,
-                     absl::optional<gfx::Size> size);
+                     std::optional<gfx::Size> size);
 
   const Storage& asset_storage() const { return asset_storage_; }
 

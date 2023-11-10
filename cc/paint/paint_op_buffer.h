@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/functional/callback.h"
@@ -17,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "cc/paint/paint_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -75,7 +75,7 @@ struct CC_PAINT_EXPORT PlaybackParams {
   CustomDataRasterCallback custom_callback;
   DidDrawOpCallback did_draw_op_callback;
   ConvertOpCallback convert_op_callback;
-  absl::optional<bool> save_layer_alpha_should_preserve_lcd_text;
+  std::optional<bool> save_layer_alpha_should_preserve_lcd_text;
   bool is_analyzing = false;
 };
 

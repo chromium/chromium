@@ -448,7 +448,7 @@ void ProxyMain::BeginMainFrame(
   {
     TRACE_EVENT0("cc,raf_investigation", "ProxyMain::BeginMainFrame::commit");
 
-    absl::optional<DebugScopedSetMainThreadBlocked> main_thread_blocked;
+    std::optional<DebugScopedSetMainThreadBlocked> main_thread_blocked;
     if (blocking)
       main_thread_blocked.emplace(task_runner_provider_);
 
@@ -677,7 +677,7 @@ bool ProxyMain::StartDeferringCommits(base::TimeDelta timeout,
   commits_restart_time_ = base::TimeTicks::Now() + timeout;
 
   // Notify dependent systems that the deferral status has changed.
-  layer_tree_host_->OnDeferCommitsChanged(true, reason, absl::nullopt);
+  layer_tree_host_->OnDeferCommitsChanged(true, reason, std::nullopt);
   return true;
 }
 

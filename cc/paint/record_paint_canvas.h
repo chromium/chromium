@@ -5,6 +5,7 @@
 #ifndef CC_PAINT_RECORD_PAINT_CANVAS_H_
 #define CC_PAINT_RECORD_PAINT_CANVAS_H_
 
+#include <optional>
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -13,7 +14,6 @@
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/skottie_color_map.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 
 namespace cc {

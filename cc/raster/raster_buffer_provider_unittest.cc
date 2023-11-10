@@ -321,7 +321,7 @@ class RasterBufferProviderTest
       return;
     }
 
-    absl::optional<viz::RasterContextProvider::ScopedRasterContextLock> lock;
+    std::optional<viz::RasterContextProvider::ScopedRasterContextLock> lock;
     if (use_lock) {
       lock.emplace(context_provider);
     }

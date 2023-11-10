@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -124,7 +125,6 @@
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
@@ -849,7 +849,7 @@ PaintWorkletJobMap LayerTreeHostImpl::GatherDirtyPaintWorklets(
     for (const auto& entry : layer->GetPaintWorkletRecordMap()) {
       const scoped_refptr<const PaintWorkletInput>& input = entry.first;
       const PaintImage::Id& paint_image_id = entry.second.first;
-      const absl::optional<PaintRecord>& record = entry.second.second;
+      const std::optional<PaintRecord>& record = entry.second.second;
       // If we already have a record we can reuse it and so the
       // PaintWorkletInput isn't dirty.
       if (record)
@@ -1166,7 +1166,7 @@ static void AppendQuadsToFillScreen(
       target_render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(
       gfx::Transform(), root_target_rect, root_target_rect,
-      gfx::MaskFilterInfo(), absl::nullopt, screen_background_color.isOpaque(),
+      gfx::MaskFilterInfo(), std::nullopt, screen_background_color.isOpaque(),
       /*opacity_f=*/1.f, SkBlendMode::kSrcOver, /*sorting_context=*/0,
       /*layer_id=*/0u, /*fast_rounded_corner=*/false);
 
@@ -2484,7 +2484,7 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
   return metadata;
 }
 
-absl::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
+std::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
     FrameData* frame) {
   DCHECK(CanDraw());
   DCHECK_EQ(frame->has_no_damage, frame->render_passes.empty());
@@ -2509,7 +2509,7 @@ absl::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
       std::ignore = events_metrics_manager_.TakeSavedEventsMetrics();
     }
 
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   layer_tree_frame_sink_->set_source_frame_number(
@@ -3132,10 +3132,10 @@ static void PopulateHitTestRegion(viz::HitTestRegion* hit_test_region,
   hit_test_region->transform = surface_to_root_transform.InverseOrIdentity();
 }
 
-absl::optional<viz::HitTestRegionList> LayerTreeHostImpl::BuildHitTestData() {
+std::optional<viz::HitTestRegionList> LayerTreeHostImpl::BuildHitTestData() {
   TRACE_EVENT0("cc", "LayerTreeHostImpl::BuildHitTestData");
 
-  absl::optional<viz::HitTestRegionList> hit_test_region_list(absl::in_place);
+  std::optional<viz::HitTestRegionList> hit_test_region_list(std::in_place);
   hit_test_region_list->flags = viz::HitTestRegionFlags::kHitTestMine |
                                 viz::HitTestRegionFlags::kHitTestMouse |
                                 viz::HitTestRegionFlags::kHitTestTouch;

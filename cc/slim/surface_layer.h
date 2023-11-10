@@ -5,12 +5,12 @@
 #ifndef CC_SLIM_SURFACE_LAYER_H_
 #define CC_SLIM_SURFACE_LAYER_H_
 
+#include <optional>
 #include "base/component_export.h"
 #include "cc/layers/deadline_policy.h"
 #include "cc/slim/layer.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 class SurfaceLayer;
@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(CC_SLIM) SurfaceLayer : public Layer {
   // surface being embedded isn't ready to be drawn yet (before first frame is
   // submitted).
   void SetOldestAcceptableFallback(const viz::SurfaceId& surface_id);
-  const absl::optional<viz::SurfaceId>& oldest_acceptable_fallback() const;
+  const std::optional<viz::SurfaceId>& oldest_acceptable_fallback() const;
 
   void SetLayerTree(LayerTree* layer_tree) override;
 
@@ -64,7 +64,7 @@ class COMPONENT_EXPORT(CC_SLIM) SurfaceLayer : public Layer {
 
   bool stretch_content_to_fill_bounds_ = false;
   viz::SurfaceRange surface_range_;
-  absl::optional<uint32_t> deadline_in_frames_;
+  std::optional<uint32_t> deadline_in_frames_;
 };
 
 }  // namespace cc::slim

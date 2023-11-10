@@ -60,7 +60,7 @@ class FakeLayerTreeHostImpl : public LayerTreeHostImpl {
     notify_tile_state_changed_called_ = called;
   }
   void set_target_color_params(
-      absl::optional<TargetColorParams> target_color_params) {
+      std::optional<TargetColorParams> target_color_params) {
     target_color_params_ = target_color_params;
   }
 
@@ -72,7 +72,7 @@ class FakeLayerTreeHostImpl : public LayerTreeHostImpl {
   FakeLayerTreeHostImplClient client_;
   FakeRenderingStatsInstrumentation stats_instrumentation_;
   bool notify_tile_state_changed_called_;
-  absl::optional<TargetColorParams> target_color_params_;
+  std::optional<TargetColorParams> target_color_params_;
 };
 
 }  // namespace cc

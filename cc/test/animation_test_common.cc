@@ -291,7 +291,7 @@ int AddOpacityTransitionToAnimation(Animation* animation,
                                     float start_opacity,
                                     float end_opacity,
                                     bool use_timing_function,
-                                    absl::optional<int> id) {
+                                    std::optional<int> id) {
   return AddOpacityTransition(
       animation, duration, start_opacity, end_opacity, use_timing_function,
       id ? *id : AnimationIdProvider::NextKeyframeModelId());

@@ -174,7 +174,7 @@ class OopPixelTest : public testing::Test,
 
   SkBitmap Raster(scoped_refptr<DisplayItemList> display_item_list,
                   const RasterOptions& options) {
-    absl::optional<PlaybackImageProvider::Settings> settings;
+    std::optional<PlaybackImageProvider::Settings> settings;
     settings.emplace(PlaybackImageProvider::Settings());
     settings->raster_mode = options.image_provider_raster_mode;
     PlaybackImageProvider image_provider(oop_image_cache_.get(),
@@ -267,7 +267,7 @@ class OopPixelTest : public testing::Test,
       gpu::SharedImageInterface* sii,
       const RasterOptions& options,
       viz::SharedImageFormat image_format,
-      absl::optional<gfx::ColorSpace> color_space = absl::nullopt) {
+      std::optional<gfx::ColorSpace> color_space = std::nullopt) {
     uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER |
                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     gpu::Mailbox mailbox =

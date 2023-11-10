@@ -5,6 +5,7 @@
 #ifndef CC_PAINT_PAINT_OP_READER_H_
 #define CC_PAINT_PAINT_OP_READER_H_
 
+#include <optional>
 #include "base/bits.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -12,7 +13,6 @@
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/transfer_cache_deserialize_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct SkGainmapInfo;
 struct SkHighContrastConfig;
@@ -245,73 +245,73 @@ class CC_PAINT_EXPORT PaintOpReader {
   // the following functions depending on read type.
   void ReadColorFilterPaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadBlurPaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadDropShadowPaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadMagnifierPaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadComposePaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadAlphaThresholdPaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadXfermodePaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadArithmeticPaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadMatrixConvolutionPaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadDisplacementMapEffectPaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadImagePaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadRecordPaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadMergePaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadMorphologyPaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadOffsetPaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadTilePaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadTurbulencePaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadShaderPaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadMatrixPaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadLightingDistantPaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadLightingPointPaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
   void ReadLightingSpotPaintFilter(
       sk_sp<PaintFilter>* filter,
-      const absl::optional<PaintFilter::CropRect>& crop_rect);
+      const std::optional<PaintFilter::CropRect>& crop_rect);
 
   // Returns the size of the read record, 0 if error.
-  size_t Read(absl::optional<PaintRecord>* record);
+  size_t Read(std::optional<PaintRecord>* record);
 
   void Read(SkRegion* region);
   uint8_t* CopyScratchSpace(size_t bytes);

@@ -392,7 +392,7 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
   } else {
     // Attempt to find a cached decode to generate a scaled/subrected decode
     // from.
-    absl::optional<CacheKey> candidate_key = FindCachedCandidate(key);
+    std::optional<CacheKey> candidate_key = FindCachedCandidate(key);
 
     SkISize desired_size = gfx::SizeToSkISize(key.target_size());
     const bool should_decode_to_scale =
@@ -500,7 +500,7 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
   return TaskProcessingResult::kFullDecode;
 }
 
-absl::optional<SoftwareImageDecodeCache::CacheKey>
+std::optional<SoftwareImageDecodeCache::CacheKey>
 SoftwareImageDecodeCache::FindCachedCandidate(const CacheKey& key) {
   auto image_keys_it = frame_key_to_image_keys_.find(key.frame_key());
   // We know that we must have at least our own |entry| in this list, so it
@@ -534,7 +534,7 @@ SoftwareImageDecodeCache::FindCachedCandidate(const CacheKey& key) {
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool SoftwareImageDecodeCache::UseCacheForDrawImage(

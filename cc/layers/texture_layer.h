@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -21,7 +22,6 @@
 #include "cc/resources/shared_bitmap_id_registrar.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/hdr_metadata.h"
 
 namespace gpu {

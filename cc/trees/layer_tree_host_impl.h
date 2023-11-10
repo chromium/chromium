@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
@@ -68,7 +69,6 @@
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
@@ -215,7 +215,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     bool has_missing_content = false;
 
     std::vector<viz::SurfaceId> activation_dependencies;
-    absl::optional<uint32_t> deadline_in_frames;
+    std::optional<uint32_t> deadline_in_frames;
     bool use_default_lower_bound_deadline = false;
     viz::CompositorRenderPassList render_passes;
     raw_ptr<const RenderSurfaceList> render_surface_list = nullptr;
@@ -471,14 +471,14 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // regardless of whether `DrawLayers()` is called between the two.
   virtual DrawResult PrepareToDraw(FrameData* frame);
 
-  // If there is no damage, returns `absl::nullopt`; otherwise, returns
+  // If there is no damage, returns `std::nullopt`; otherwise, returns
   // information about the submitted frame including submit time and a set of
   // `EventMetrics` for the frame.
   struct SubmitInfo {
     base::TimeTicks time;
     EventMetricsSet events_metrics;
   };
-  virtual absl::optional<SubmitInfo> DrawLayers(FrameData* frame);
+  virtual std::optional<SubmitInfo> DrawLayers(FrameData* frame);
 
   // Must be called if and only if PrepareToDraw was called.
   void DidDrawAllLayers(const FrameData& frame);
@@ -560,7 +560,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void SetExternalTilePriorityConstraints(
       const gfx::Rect& viewport_rect,
       const gfx::Transform& transform) override;
-  absl::optional<viz::HitTestRegionList> BuildHitTestData() override;
+  std::optional<viz::HitTestRegionList> BuildHitTestData() override;
   void DidLoseLayerTreeFrameSink() override;
   void DidReceiveCompositorFrameAck() override;
   void DidPresentCompositorFrame(
@@ -1238,7 +1238,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   viz::LocalSurfaceId last_draw_local_surface_id_;
   base::flat_set<viz::SurfaceRange> last_draw_referenced_surfaces_;
-  absl::optional<RenderFrameMetadata> last_draw_render_frame_metadata_;
+  std::optional<RenderFrameMetadata> last_draw_render_frame_metadata_;
   // The viz::LocalSurfaceId to unthrottle drawing for.
   viz::LocalSurfaceId target_local_surface_id_;
   viz::LocalSurfaceId evicted_local_surface_id_;

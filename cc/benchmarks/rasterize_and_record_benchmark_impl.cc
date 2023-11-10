@@ -63,7 +63,7 @@ void RunBenchmark(RasterSource* raster_source,
 
       // Pass an empty settings to make sure that the decode cache is used to
       // replace all images.
-      absl::optional<PlaybackImageProvider::Settings> image_settings;
+      std::optional<PlaybackImageProvider::Settings> image_settings;
       image_settings.emplace();
       image_settings->images_to_skip = {};
       image_settings->image_to_current_frame_index = {};

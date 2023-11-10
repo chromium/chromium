@@ -2126,9 +2126,9 @@ void PictureLayerImpl::SetPaintWorkletInputs(
     // Attempt to re-use an existing PaintRecord if possible.
     new_records[input] = std::make_pair(
         paint_image_id, std::move(paint_worklet_records_[input].second));
-    // The move constructor of absl::optional does not clear the source to
+    // The move constructor of std::optional does not clear the source to
     // nullopt.
-    paint_worklet_records_[input].second = absl::nullopt;
+    paint_worklet_records_[input].second = std::nullopt;
   }
   paint_worklet_records_.swap(new_records);
 
@@ -2158,7 +2158,7 @@ void PictureLayerImpl::InvalidatePaintWorklets(
     // the animation system, then invalidate its associated PaintRecord so that
     // we can repaint the PaintWorklet during impl side invalidation.
     if (base::Contains(prop_ids, key))
-      entry.second.second = absl::nullopt;
+      entry.second.second = std::nullopt;
   }
 }
 

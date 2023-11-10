@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
@@ -28,7 +29,6 @@
 #include "cc/cc_export.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/tiles/image_decode_cache.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
@@ -478,7 +478,7 @@ class CC_EXPORT GpuImageDecodeCache
     }
 
     // If in transfer cache mode.
-    absl::optional<uint32_t> transfer_cache_id() const {
+    std::optional<uint32_t> transfer_cache_id() const {
       DCHECK(mode_ == Mode::kTransferCache || mode_ == Mode::kNone);
       return transfer_cache_id_;
     }
@@ -559,21 +559,21 @@ class CC_EXPORT GpuImageDecodeCache
     // Used if |mode_| == kSkImage.
     // May be null if image not yet uploaded / prepared.
     sk_sp<SkImage> image_;
-    absl::optional<YUVSkImages> image_yuv_planes_;
+    std::optional<YUVSkImages> image_yuv_planes_;
     // TODO(crbug/910276): Change after alpha support.
     bool is_alpha_ = false;
     GrGLuint gl_id_ = 0;
-    absl::optional<std::array<GrGLuint, kNumYUVPlanes>> gl_plane_ids_;
+    std::optional<std::array<GrGLuint, kNumYUVPlanes>> gl_plane_ids_;
 
     // Used if |mode_| == kTransferCache.
-    absl::optional<uint32_t> transfer_cache_id_;
+    std::optional<uint32_t> transfer_cache_id_;
 
     // The original un-mipped image, for RGBX, or the representative image
     // backed by three planes for YUV. It is retained until it can be safely
     // deleted.
     sk_sp<SkImage> unmipped_image_;
     // Used for YUV decoding and null otherwise.
-    absl::optional<YUVSkImages> unmipped_yuv_images_;
+    std::optional<YUVSkImages> unmipped_yuv_images_;
   };
 
   // A structure to represent either an RGBA or a YUVA image info.
@@ -587,8 +587,8 @@ class CC_EXPORT GpuImageDecodeCache
     ~ImageInfo();
 
     // At most one of `rgba` or `yuva` may be valid.
-    absl::optional<SkImageInfo> rgba;
-    absl::optional<SkYUVAPixmapInfo> yuva;
+    std::optional<SkImageInfo> rgba;
+    std::optional<SkYUVAPixmapInfo> yuva;
 
     // The number of bytes used by this image.
     size_t size = 0;
@@ -825,7 +825,7 @@ class CC_EXPORT GpuImageDecodeCache
       const DrawImage& draw_image,
       ImageData* image_data,
       sk_sp<SkColorSpace> decoded_target_colorspace,
-      const absl::optional<gfx::HDRMetadata>& hdr_metadata,
+      const std::optional<gfx::HDRMetadata>& hdr_metadata,
       sk_sp<SkColorSpace> target_color_space) EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void UploadImageIfNecessary_GpuCpu_YUVA(
       const DrawImage& draw_image,

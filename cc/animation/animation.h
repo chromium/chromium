@@ -150,7 +150,7 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation>,
 
   void set_use_start_time_from_impl() { use_start_time_from_impl_ = true; }
 
-  absl::optional<base::TimeTicks> GetStartTime() const;
+  std::optional<base::TimeTicks> GetStartTime() const;
 
   virtual bool IsWorkletAnimation() const;
 

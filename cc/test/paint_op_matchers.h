@@ -10,12 +10,12 @@
 #include <string>
 #include <utility>
 
+#include <optional>
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/test/paint_op_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
@@ -34,7 +34,7 @@ class PaintOpEq {
   template <typename... Args>
   explicit PaintOpEq(Args&&... args)
       : expected_op_(base::MakeRefCounted<base::RefCountedData<OpT>>(
-            absl::in_place,
+            std::in_place,
             std::forward<Args>(args)...)) {}
 
   bool MatchAndExplain(const PaintOp& op,

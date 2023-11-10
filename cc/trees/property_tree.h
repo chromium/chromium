@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
@@ -32,7 +33,6 @@
 #include "cc/trees/sticky_position_constraint.h"
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -467,7 +467,7 @@ class ScrollCallbacks {
   virtual void DidCompositorScroll(
       ElementId scroll_element_id,
       const gfx::PointF&,
-      const absl::optional<TargetSnapAreaElementIds>&) = 0;
+      const std::optional<TargetSnapAreaElementIds>&) = 0;
   // Called after the hidden status of composited scrollbars changed. Note that
   // |scroll_element_id| is the element id of the scroll not of the scrollbars.
   virtual void DidChangeScrollbarsHidden(ElementId scroll_element_id,
@@ -588,7 +588,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   void NotifyDidCompositorScroll(
       ElementId scroll_element_id,
       const gfx::PointF& scroll_offset,
-      const absl::optional<TargetSnapAreaElementIds>& snap_target_ids);
+      const std::optional<TargetSnapAreaElementIds>& snap_target_ids);
   void NotifyDidChangeScrollbarsHidden(ElementId scroll_element_id,
                                        bool hidden) const;
 

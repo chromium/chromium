@@ -79,7 +79,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
       base::TimeTicks animation_start_time,
       std::unique_ptr<gfx::AnimationCurve> curve) override {}
   void NotifyLocalTimeUpdated(
-      absl::optional<base::TimeDelta> local_time) override {}
+      std::optional<base::TimeDelta> local_time) override {}
 
   bool IsAnimating() const;
   bool IsAutoScrolling() const;

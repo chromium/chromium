@@ -5,10 +5,10 @@
 #ifndef CC_METRICS_SCROLL_JANK_DROPPED_FRAME_TRACKER_H_
 #define CC_METRICS_SCROLL_JANK_DROPPED_FRAME_TRACKER_H_
 
+#include <optional>
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
@@ -77,8 +77,8 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
   // TODO(b/306611560): Cleanup experimental per vsync metric or promote to
   // default.
   JankData experimental_vsync_fixed_window_;
-  absl::optional<JankData> per_scroll_;
-  absl::optional<JankData> experimental_per_scroll_vsync_;
+  std::optional<JankData> per_scroll_;
+  std::optional<JankData> experimental_per_scroll_vsync_;
 };
 
 }  // namespace cc

@@ -38,7 +38,7 @@ class PaintOpHelper {
   }
 
   template <typename T>
-  static std::string ToString(const absl::optional<T>& opt) {
+  static std::string ToString(const std::optional<T>& opt) {
     return opt.has_value() ? ToString(*opt) : "(nil)";
   }
 

@@ -83,7 +83,7 @@ const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
   DCHECK(images_animated_on_sync_tree_.empty());
 
   scheduler_.WillAnimate();
-  absl::optional<base::TimeTicks> next_invalidation_time;
+  std::optional<base::TimeTicks> next_invalidation_time;
 
   for (auto id : registered_animations_) {
     auto it = animation_state_map_.find(id);
@@ -136,7 +136,7 @@ const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
 void ImageAnimationController::UpdateStateFromDrivers() {
   TRACE_EVENT0("cc", "UpdateStateFromAnimationDrivers");
 
-  absl::optional<base::TimeTicks> next_invalidation_time;
+  std::optional<base::TimeTicks> next_invalidation_time;
   for (auto image_id : registered_animations_) {
     auto it = animation_state_map_.find(image_id);
     DCHECK(it != animation_state_map_.end());

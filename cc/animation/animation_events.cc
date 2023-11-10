@@ -21,7 +21,7 @@ AnimationEvent::AnimationEvent(AnimationEvent::Type type,
 
 AnimationEvent::AnimationEvent(int timeline_id,
                                int animation_id,
-                               absl::optional<base::TimeDelta> local_time)
+                               std::optional<base::TimeDelta> local_time)
     : type(Type::kTimeUpdated),
       // Initializing model_id with an invalid value (0).
       // Also initializing keyframe_id with 0 which in its case is a valid

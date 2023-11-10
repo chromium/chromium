@@ -122,7 +122,7 @@ void WorkletAnimation::UpdateInputState(MutatorInputState* input_state,
   // TODO(https://crbug.com/1011138): Initialize current_time to null if the
   // timeline is inactive. It might be inactive here when state is
   // State::REMOVED.
-  absl::optional<base::TimeDelta> current_time =
+  std::optional<base::TimeDelta> current_time =
       CurrentTime(monotonic_time, scroll_tree, is_active_tree);
 
   // When the timeline is inactive (only the case with scroll timelines), the
@@ -199,18 +199,18 @@ void WorkletAnimation::ReleasePendingTreeLock() {
   has_pending_tree_lock_.Write(*this) = false;
 }
 
-absl::optional<base::TimeDelta> WorkletAnimation::CurrentTime(
+std::optional<base::TimeDelta> WorkletAnimation::CurrentTime(
     base::TimeTicks monotonic_time,
     const ScrollTree& scroll_tree,
     bool is_active_tree) {
   DCHECK(IsTimelineActive(scroll_tree, is_active_tree));
   base::TimeTicks timeline_time;
   if (animation_timeline()->IsScrollTimeline()) {
-    absl::optional<base::TimeTicks> scroll_monotonic_time =
+    std::optional<base::TimeTicks> scroll_monotonic_time =
         ToScrollTimeline(animation_timeline())
             ->CurrentTime(scroll_tree, is_active_tree);
     if (!scroll_monotonic_time)
-      return absl::nullopt;
+      return std::nullopt;
     timeline_time = scroll_monotonic_time.value();
   } else {
     timeline_time = monotonic_time;
@@ -230,7 +230,7 @@ bool WorkletAnimation::NeedsUpdate(base::TimeTicks monotonic_time,
   if (!IsTimelineActive(scroll_tree, is_active_tree))
     return false;
 
-  absl::optional<base::TimeDelta> current_time =
+  std::optional<base::TimeDelta> current_time =
       CurrentTime(monotonic_time, scroll_tree, is_active_tree);
   bool needs_update = last_current_time_.Read(*this) != current_time;
   return needs_update;

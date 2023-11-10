@@ -687,7 +687,7 @@ bool LayerTreeHost::IsRenderingPaused() const {
 void LayerTreeHost::OnDeferCommitsChanged(
     bool defer_status,
     PaintHoldingReason reason,
-    absl::optional<PaintHoldingCommitTrigger> trigger) {
+    std::optional<PaintHoldingCommitTrigger> trigger) {
   DCHECK(IsMainThread());
   client_->OnDeferCommitsChanged(defer_status, reason, trigger);
 }
@@ -1048,7 +1048,7 @@ void LayerTreeHost::ApplyViewportChanges(
 void LayerTreeHost::UpdateScrollOffsetFromImpl(
     const ElementId& id,
     const gfx::Vector2dF& delta,
-    const absl::optional<TargetSnapAreaElementIds>& snap_target_ids) {
+    const std::optional<TargetSnapAreaElementIds>& snap_target_ids) {
   if (IsUsingLayerLists()) {
     auto& scroll_tree = property_trees()->scroll_tree_mutable();
     auto new_offset = scroll_tree.current_scroll_offset(id) + delta;

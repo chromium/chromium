@@ -82,7 +82,7 @@ base::TimeTicks CalculateCurrentTime(double current_scroll_offset,
 // Helper method to convert base::TimeTicks to double.
 // Returns double milliseconds if the input value is resolved or
 // std::numeric_limits<double>::quiet_NaN() otherwise.
-double ToDouble(absl::optional<base::TimeTicks> time_ticks) {
+double ToDouble(std::optional<base::TimeTicks> time_ticks) {
   if (time_ticks)
     return (time_ticks.value() - base::TimeTicks()).InMillisecondsF();
   return std::numeric_limits<double>::quiet_NaN();
@@ -393,7 +393,7 @@ TEST_F(ScrollTimelineTest, Activeness) {
   double scroll_size = content_size().height() - container_size().height();
   ScrollTimeline::ScrollOffsets scroll_offsets(0, scroll_size);
   scoped_refptr<ScrollTimeline> inactive_timeline1 = ScrollTimeline::Create(
-      absl::nullopt, ScrollTimeline::ScrollDown, scroll_offsets);
+      std::nullopt, ScrollTimeline::ScrollDown, scroll_offsets);
   EXPECT_FALSE(
       inactive_timeline1->IsActive(scroll_tree(), false /*is_active_tree*/));
   EXPECT_FALSE(
@@ -413,7 +413,7 @@ TEST_F(ScrollTimelineTest, Activeness) {
   // ScrollTimeline with empty scroll offsets is inactive.
   scoped_refptr<ScrollTimeline> inactive_timeline3 =
       ScrollTimeline::Create(scroller_id(), ScrollTimeline::ScrollDown,
-                             /* scroll_offsets */ absl::nullopt);
+                             /* scroll_offsets */ std::nullopt);
   EXPECT_FALSE(
       inactive_timeline3->IsActive(scroll_tree(), false /*is_active_tree*/));
   EXPECT_FALSE(

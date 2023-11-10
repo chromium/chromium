@@ -10,11 +10,11 @@
 
 #include <vector>
 
+#include <optional>
 #include "base/atomic_sequence_num.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/paint/transfer_cache_entry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
@@ -82,7 +82,7 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
   ClientImageTransferCacheEntry(
       const Image& image,
       bool needs_mips,
-      const absl::optional<gfx::HDRMetadata>& hdr_metadata = absl::nullopt,
+      const std::optional<gfx::HDRMetadata>& hdr_metadata = std::nullopt,
       sk_sp<SkColorSpace> target_color_space = nullptr);
   ClientImageTransferCacheEntry(const Image& image,
                                 const Image& gainmap_image,
@@ -115,11 +115,11 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
 
   // The gainmap image and parameters. Either both or neither of these must
   // be specified.
-  absl::optional<Image> gainmap_image_;
-  absl::optional<SkGainmapInfo> gainmap_info_;
+  std::optional<Image> gainmap_image_;
+  std::optional<SkGainmapInfo> gainmap_info_;
 
   // The HDR metadata for non-gainmap HDR metadata.
-  absl::optional<gfx::HDRMetadata> hdr_metadata_;
+  std::optional<gfx::HDRMetadata> hdr_metadata_;
 };
 
 class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
@@ -197,7 +197,7 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
 
   // HDR tonemapping may be done with a tone curve (for global tone mapping).
   bool use_tone_curve_ = false;
-  absl::optional<gfx::HDRMetadata> tone_curve_hdr_metadata_;
+  std::optional<gfx::HDRMetadata> tone_curve_hdr_metadata_;
 
   // The value of `size_` is computed during deserialization and never updated
   // (even if the size of the image changes due to mipmaps being requested).
@@ -206,7 +206,7 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   // The individual planes that are used by `image_` when `image_` is a YUVA
   // image. The planes are kept around for use in EnsureMips(), memory dumps,
   // and unit tests.
-  absl::optional<SkYUVAInfo> yuva_info_;
+  std::optional<SkYUVAInfo> yuva_info_;
   std::vector<sk_sp<SkImage>> plane_images_;
   std::vector<size_t> plane_sizes_;
 };

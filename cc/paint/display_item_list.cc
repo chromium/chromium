@@ -348,7 +348,7 @@ bool DisplayItemList::GetColorIfSolidInRect(const gfx::Rect& rect,
     offsets_to_use = &offsets;
   }
 
-  absl::optional<SkColor4f> solid_color =
+  std::optional<SkColor4f> solid_color =
       SolidColorAnalyzer::DetermineIfSolidColor(
           paint_op_buffer_, rect, max_ops_to_analyze, offsets_to_use);
   if (solid_color) {
@@ -360,7 +360,7 @@ bool DisplayItemList::GetColorIfSolidInRect(const gfx::Rect& rect,
 
 namespace {
 
-absl::optional<DisplayItemList::DirectlyCompositedImageResult>
+std::optional<DisplayItemList::DirectlyCompositedImageResult>
 DirectlyCompositedImageResultForPaintOpBuffer(const PaintOpBuffer& op_buffer) {
   // A PaintOpBuffer for an image may have 1 (a kDrawimagerect or a kDrawrecord
   // that recursively contains a PaintOpBuffer for an image) or 4 paint
@@ -375,10 +375,10 @@ DirectlyCompositedImageResultForPaintOpBuffer(const PaintOpBuffer& op_buffer) {
   // PaintOpBuffer (i.e. 5 operations).
   constexpr size_t kMaxDrawImageOps = 5;
   if (op_buffer.size() > kMaxDrawImageOps)
-    return absl::nullopt;
+    return std::nullopt;
 
   bool transpose_image_size = false;
-  absl::optional<DisplayItemList::DirectlyCompositedImageResult> result;
+  std::optional<DisplayItemList::DirectlyCompositedImageResult> result;
   for (const PaintOp& op : op_buffer) {
     switch (op.GetType()) {
       case PaintOpType::kSave:
@@ -389,14 +389,14 @@ DirectlyCompositedImageResultForPaintOpBuffer(const PaintOpBuffer& op_buffer) {
         // We only expect a single transformation. If we see another one, then
         // this image won't be eligible for directly compositing.
         if (transpose_image_size)
-          return absl::nullopt;
+          return std::nullopt;
         // The transformation must be before the kDrawimagerect operation.
         if (result)
-          return absl::nullopt;
+          return std::nullopt;
 
         const ConcatOp& concat_op = static_cast<const ConcatOp&>(op);
         if (!MathUtil::SkM44Preserves2DAxisAlignment(concat_op.matrix))
-          return absl::nullopt;
+          return std::nullopt;
 
         // If the image has been rotated +/-90 degrees we'll need to transpose
         // the width and height dimensions to account for the same transform
@@ -408,13 +408,13 @@ DirectlyCompositedImageResultForPaintOpBuffer(const PaintOpBuffer& op_buffer) {
       }
       case PaintOpType::kDrawimagerect: {
         if (result)
-          return absl::nullopt;
+          return std::nullopt;
         const auto& draw_image_rect_op =
             static_cast<const DrawImageRectOp&>(op);
         const SkRect& src = draw_image_rect_op.src;
         const SkRect& dst = draw_image_rect_op.dst;
         if (src.isEmpty() || dst.isEmpty())
-          return absl::nullopt;
+          return std::nullopt;
         result.emplace();
         result->default_raster_scale = gfx::Vector2dF(
             src.width() / dst.width(), src.height() / dst.height());
@@ -427,16 +427,16 @@ DirectlyCompositedImageResultForPaintOpBuffer(const PaintOpBuffer& op_buffer) {
       }
       case PaintOpType::kDrawrecord:
         if (result)
-          return absl::nullopt;
+          return std::nullopt;
         result = DirectlyCompositedImageResultForPaintOpBuffer(
             static_cast<const DrawRecordOp&>(op).record.buffer());
         if (!result)
-          return absl::nullopt;
+          return std::nullopt;
         break;
       default:
         // Disqualify the layer as a directly composited image if any other
         // paint op is detected.
-        return absl::nullopt;
+        return std::nullopt;
     }
   }
 
@@ -447,7 +447,7 @@ DirectlyCompositedImageResultForPaintOpBuffer(const PaintOpBuffer& op_buffer) {
 
 }  // anonymous namespace
 
-absl::optional<DisplayItemList::DirectlyCompositedImageResult>
+std::optional<DisplayItemList::DirectlyCompositedImageResult>
 DisplayItemList::GetDirectlyCompositedImageResult() const {
   return DirectlyCompositedImageResultForPaintOpBuffer(paint_op_buffer_);
 }

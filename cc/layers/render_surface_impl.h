@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/layers/draw_mode.h"
@@ -22,7 +23,6 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -213,7 +213,7 @@ class CC_EXPORT RenderSurfaceImpl {
 
   const FilterOperations& Filters() const;
   const FilterOperations& BackdropFilters() const;
-  absl::optional<gfx::RRectF> BackdropFilterBounds() const;
+  std::optional<gfx::RRectF> BackdropFilterBounds() const;
   LayerImpl* BackdropMaskLayer() const;
   gfx::Transform SurfaceScale() const;
 

@@ -214,7 +214,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   bool inside_draw_;
   bool defer_main_frame_update_;
   bool pause_rendering_;
-  absl::optional<PaintHoldingReason> paint_holding_reason_;
+  std::optional<PaintHoldingReason> paint_holding_reason_;
   bool did_apply_compositor_deltas_ = false;
   bool animate_requested_;
   bool update_layers_requested_;

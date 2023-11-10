@@ -503,7 +503,7 @@ class HeapDiscardableMemory : public base::DiscardableMemory {
   size_t size_;
 };
 
-absl::optional<SkYUVAPixmapInfo> GetYUVADecodeInfo(
+std::optional<SkYUVAPixmapInfo> GetYUVADecodeInfo(
     const DrawImage& draw_image,
     AuxImage aux_image,
     const SkISize target_size,
@@ -511,7 +511,7 @@ absl::optional<SkYUVAPixmapInfo> GetYUVADecodeInfo(
   SkYUVAPixmapInfo original_yuva_pixmap_info;
   if (!draw_image.paint_image().IsYuv(yuva_supported_data_types, aux_image,
                                       &original_yuva_pixmap_info)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   DCHECK(original_yuva_pixmap_info.isValid());
 
@@ -1227,7 +1227,7 @@ GpuImageDecodeCache::GpuImageDecodeCache(
 
   {
     // TODO(crbug.com/1110007): We shouldn't need to lock to get capabilities.
-    absl::optional<viz::RasterContextProvider::ScopedRasterContextLock>
+    std::optional<viz::RasterContextProvider::ScopedRasterContextLock>
         context_lock;
     if (context_->GetLock())
       context_lock.emplace(context_);
@@ -1584,7 +1584,7 @@ void GpuImageDecodeCache::SetShouldAggressivelyFreeResources(
                "GpuImageDecodeCache::SetShouldAggressivelyFreeResources",
                "agressive_free_resources", aggressively_free_resources);
   if (aggressively_free_resources) {
-    absl::optional<viz::RasterContextProvider::ScopedRasterContextLock>
+    std::optional<viz::RasterContextProvider::ScopedRasterContextLock>
         context_lock;
     if (auto* lock = context_->GetLock()) {
       // There are callers that might have already acquired the lock. Thus,
@@ -1954,12 +1954,12 @@ void GpuImageDecodeCache::DecodeImageInTask(const DrawImage& draw_image,
 void GpuImageDecodeCache::UploadImageInTask(const DrawImage& draw_image) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::UploadImage");
-  absl::optional<viz::RasterContextProvider::ScopedRasterContextLock>
+  std::optional<viz::RasterContextProvider::ScopedRasterContextLock>
       context_lock;
   if (context_->GetLock())
     context_lock.emplace(context_);
 
-  absl::optional<ScopedGrContextAccess> gr_context_access;
+  std::optional<ScopedGrContextAccess> gr_context_access;
   if (!use_transfer_cache_)
     gr_context_access.emplace(context_);
   base::AutoLock lock(lock_);
@@ -2602,7 +2602,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
                            draw_image.paint_image().HasGainmap())) {
         target_color_space = nullptr;
       }
-      const absl::optional<gfx::HDRMetadata> hdr_metadata =
+      const std::optional<gfx::HDRMetadata> hdr_metadata =
           draw_image.paint_image().GetHDRMetadata();
 
       UploadImageIfNecessary_TransferCache_SoftwareDecode(
@@ -2676,7 +2676,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
     const DrawImage& draw_image,
     ImageData* image_data,
     sk_sp<SkColorSpace> decoded_color_space,
-    const absl::optional<gfx::HDRMetadata>& hdr_metadata,
+    const std::optional<gfx::HDRMetadata>& hdr_metadata,
     sk_sp<SkColorSpace> target_color_space) {
   DCHECK_EQ(image_data->mode, DecodedDataMode::kTransferCache);
   DCHECK(use_transfer_cache_);

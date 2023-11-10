@@ -881,7 +881,7 @@ namespace {
 template <typename T>
 bool DeserializeSkottieMap(
     base::flat_map<SkottieResourceIdHash, T>& map,
-    absl::optional<size_t> max_map_size,
+    std::optional<size_t> max_map_size,
     PaintOpReader& reader,
     base::FunctionRef<T(PaintOpReader& reader)> value_deserializer) {
   size_t map_size = 0;
@@ -954,7 +954,7 @@ PaintOp* DrawSkottieOp::Deserialize(PaintOpReader& reader, void* output) {
           op->images, /*max_map_size=*/num_assets_in_animation, reader,
           DeserializeSkottieFrameData) &&
       DeserializeSkottieMap<SkColor>(op->color_map,
-                                     /*max_map_size=*/absl::nullopt, reader,
+                                     /*max_map_size=*/std::nullopt, reader,
                                      DeserializeSkottieColor) &&
       DeserializeSkottieMap<SkottieTextPropertyValue>(
           op->text_map, /*max_map_size=*/num_text_nodes_in_animation, reader,
@@ -1454,7 +1454,7 @@ void SaveLayerAlphaOp::Raster(const SaveLayerAlphaOp* op,
                               const PlaybackParams& params) {
   // See PaintOp::kUnsetRect
   bool unset = op->bounds.left() == SK_ScalarInfinity;
-  absl::optional<SkPaint> paint;
+  std::optional<SkPaint> paint;
   if (op->alpha != 1.0f) {
     paint.emplace();
     paint->setAlphaf(op->alpha);

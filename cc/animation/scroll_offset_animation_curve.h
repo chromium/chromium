@@ -7,11 +7,11 @@
 
 #include <memory>
 
+#include <optional>
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -125,17 +125,17 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
   ScrollOffsetAnimationCurve(
       const gfx::PointF& target_value,
       AnimationType animation_type,
-      absl::optional<DurationBehavior> duration_behavior = absl::nullopt);
+      std::optional<DurationBehavior> duration_behavior = std::nullopt);
   ScrollOffsetAnimationCurve(
       const gfx::PointF& target_value,
       std::unique_ptr<gfx::TimingFunction> timing_function,
       AnimationType animation_type,
-      absl::optional<DurationBehavior> duration_behavior);
+      std::optional<DurationBehavior> duration_behavior);
 
   base::TimeDelta SegmentDuration(
       const gfx::Vector2dF& delta,
       base::TimeDelta delayed_by,
-      absl::optional<double> velocity = absl::nullopt);
+      std::optional<double> velocity = std::nullopt);
 
   base::TimeDelta EaseInOutBoundedSegmentDuration(
       const gfx::Vector2dF& new_delta,
@@ -156,11 +156,11 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
   AnimationType animation_type_;
 
   // Only valid when |animation_type_| is EASE_IN_OUT.
-  absl::optional<DurationBehavior> duration_behavior_;
+  std::optional<DurationBehavior> duration_behavior_;
 
   bool has_set_initial_value_;
 
-  static absl::optional<double> animation_duration_for_testing_;
+  static std::optional<double> animation_duration_for_testing_;
 
   raw_ptr<Target, DanglingUntriaged> target_ = nullptr;
 };

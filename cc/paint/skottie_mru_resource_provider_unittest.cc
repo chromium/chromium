@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -17,7 +18,6 @@
 #include "cc/test/skia_common.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/modules/skresources/include/SkResources.h"
 #include "ui/gfx/geometry/size.h"
@@ -189,7 +189,7 @@ TEST_F(SkottieMRUResourceProviderTest, HandlesMissingAssetDimensions) {
           FieldsAre(base::FilePath(FILE_PATH_LITERAL(
                                        "test-resource-path/test-resource-name"))
                         .NormalizePathSeparators(),
-                    Eq(absl::nullopt)))));
+                    Eq(std::nullopt)))));
 }
 
 TEST_F(SkottieMRUResourceProviderTest, HandlesIncompleteDimensions) {
@@ -210,7 +210,7 @@ TEST_F(SkottieMRUResourceProviderTest, HandlesIncompleteDimensions) {
           FieldsAre(base::FilePath(FILE_PATH_LITERAL(
                                        "test-resource-path/test-resource-name"))
                         .NormalizePathSeparators(),
-                    Eq(absl::nullopt)))));
+                    Eq(std::nullopt)))));
 
   Init(R"({
       "assets": [
@@ -229,7 +229,7 @@ TEST_F(SkottieMRUResourceProviderTest, HandlesIncompleteDimensions) {
           FieldsAre(base::FilePath(FILE_PATH_LITERAL(
                                        "test-resource-path/test-resource-name"))
                         .NormalizePathSeparators(),
-                    Eq(absl::nullopt)))));
+                    Eq(std::nullopt)))));
 }
 
 TEST_F(SkottieMRUResourceProviderTest, HandlesInvalidDimensions) {
@@ -250,7 +250,7 @@ TEST_F(SkottieMRUResourceProviderTest, HandlesInvalidDimensions) {
           FieldsAre(base::FilePath(FILE_PATH_LITERAL(
                                        "test-resource-path/test-resource-name"))
                         .NormalizePathSeparators(),
-                    Eq(absl::nullopt)))));
+                    Eq(std::nullopt)))));
 
   Init(R"({
       "assets": [
@@ -269,7 +269,7 @@ TEST_F(SkottieMRUResourceProviderTest, HandlesInvalidDimensions) {
           FieldsAre(base::FilePath(FILE_PATH_LITERAL(
                                        "test-resource-path/test-resource-name"))
                         .NormalizePathSeparators(),
-                    Eq(absl::nullopt)))));
+                    Eq(std::nullopt)))));
 }
 
 TEST_F(SkottieMRUResourceProviderTest, GracefullyHandlesInvalidJson) {

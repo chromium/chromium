@@ -327,7 +327,7 @@ bool FrameSinkImpl::DoBeginFrame(const viz::BeginFrameArgs& begin_frame_args) {
         });
     frame_sink_->SubmitCompositorFrame(
         local_surface_id_, std::move(frame),
-        send_new_hit_test_region_list ? hit_test_region_list_ : absl::nullopt,
+        send_new_hit_test_region_list ? hit_test_region_list_ : std::nullopt,
         0);
   }
   num_unacked_frames_++;

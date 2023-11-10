@@ -104,12 +104,12 @@ void SurfaceLayer::SetOldestAcceptableFallback(
   }
 
   SetSurfaceRange(viz::SurfaceRange(
-      surface_id.is_valid() ? absl::optional<viz::SurfaceId>(surface_id)
-                            : absl::nullopt,
+      surface_id.is_valid() ? std::optional<viz::SurfaceId>(surface_id)
+                            : std::nullopt,
       surface_range_.end()));
 }
 
-const absl::optional<viz::SurfaceId>& SurfaceLayer::oldest_acceptable_fallback()
+const std::optional<viz::SurfaceId>& SurfaceLayer::oldest_acceptable_fallback()
     const {
   return cc_layer() ? cc_layer()->oldest_acceptable_fallback()
                     : surface_range_.start();

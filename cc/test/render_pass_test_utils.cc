@@ -128,7 +128,7 @@ viz::SolidColorDrawQuad* AddTransformedQuad(viz::AggregatedRenderPass* pass,
                                             const gfx::Transform& transform) {
   viz::SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(transform, rect, rect, gfx::MaskFilterInfo(),
-                       /*clip=*/absl::nullopt, /*contents_opaque=*/false,
+                       /*clip=*/std::nullopt, /*contents_opaque=*/false,
                        /*opacity_f=*/1, SkBlendMode::kSrcOver,
                        /*sorting_context=*/0, /*layer_id=*/0u,
                        /*fast_rounded_corner=*/false);
@@ -144,7 +144,7 @@ QuadType* AddRenderPassQuadInternal(RenderPassType* to_pass,
   viz::SharedQuadState* shared_state =
       to_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), output_rect, output_rect,
-                       gfx::MaskFilterInfo(), /*clip=*/absl::nullopt,
+                       gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
                        /*contents_opaque=*/false, /*opacity_f=*/1,
                        SkBlendMode::kSrcOver, /*sorting_context=*/0,
                        /*layer_id=*/0u, /*fast_rounded_corner=*/false);
@@ -179,7 +179,7 @@ void AddRenderPassQuad(viz::AggregatedRenderPass* to_pass,
       to_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(
       transform, output_rect, output_rect, gfx::MaskFilterInfo(),
-      /*clip=*/absl::nullopt, /*contents_opaque=*/false, 1, blend_mode,
+      /*clip=*/std::nullopt, /*contents_opaque=*/false, 1, blend_mode,
       /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   auto* quad =
       to_pass->CreateAndAppendDrawQuad<viz::AggregatedRenderPassDrawQuad>();
@@ -227,7 +227,7 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
   viz::SharedQuadState* shared_state =
       to_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
-                       /*clip=*/absl::nullopt, /*contents_opaque=*/false,
+                       /*clip=*/std::nullopt, /*contents_opaque=*/false,
                        /*opacity_f=*/1, SkBlendMode::kSrcOver,
                        /*sorting_context=*/0, /*layer_id=*/0u,
                        /*fast_rounded_corner=*/false);
@@ -297,7 +297,7 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
   viz::SharedQuadState* shared_state2 =
       to_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
-                       /*clip=*/absl::nullopt, /*contents_opaque=*/false,
+                       /*clip=*/std::nullopt, /*contents_opaque=*/false,
                        /*opacity_f=*/1, SkBlendMode::kSrcOver,
                        /*sorting_context=*/0, /*layer_id=*/0u,
                        /*fast_rounded_corner=*/false);
@@ -313,7 +313,7 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
                    gfx::Size(2, 2), plane_resources[0], plane_resources[1],
                    plane_resources[2], plane_resources[3],
                    gfx::ColorSpace::CreateREC601(), 0.0, 1.0, 8,
-                   gfx::ProtectedVideoType::kClear, absl::nullopt);
+                   gfx::ProtectedVideoType::kClear, std::nullopt);
 
   return {resource1,          resource2,          resource3,
           resource4,          resource5,          resource6,
@@ -416,7 +416,7 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
   viz::SharedQuadState* shared_state =
       to_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
-                       /*clip=*/absl::nullopt, /*contents_opaque=*/false,
+                       /*clip=*/std::nullopt, /*contents_opaque=*/false,
                        /*opacity_f=*/1, SkBlendMode::kSrcOver,
                        /*sorting_context=*/0, /*layer_id=*/0u,
                        /*fast_rounded_corner=*/false);
@@ -484,7 +484,7 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
   viz::SharedQuadState* shared_state2 =
       to_pass->CreateAndAppendSharedQuadState();
   shared_state2->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
-                        /*clip=*/absl::nullopt, /*contents_opaque=*/false,
+                        /*clip=*/std::nullopt, /*contents_opaque=*/false,
                         /*opacity_f=*/1, SkBlendMode::kSrcOver,
                         /*sorting_context=*/0, /*layer_id=*/0u,
                         /*fast_rounded_corner=*/false);
@@ -502,7 +502,7 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
                    gfx::Size(2, 1), mapped_plane_resources[0],
                    mapped_plane_resources[1], mapped_plane_resources[2],
                    mapped_plane_resources[3], gfx::ColorSpace::CreateREC601(),
-                   0.0, 1.0, 8, gfx::ProtectedVideoType::kClear, absl::nullopt);
+                   0.0, 1.0, 8, gfx::ProtectedVideoType::kClear, std::nullopt);
 }
 
 }  // namespace cc

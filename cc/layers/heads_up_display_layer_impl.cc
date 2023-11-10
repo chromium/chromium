@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -53,7 +54,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "skia/ext/legacy_display_globals.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -252,7 +252,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
   UpdateHudContents();
 
   viz::RasterContextProvider* raster_context_provider = nullptr;
-  absl::optional<viz::RasterContextProvider::ScopedRasterContextLock> lock;
+  std::optional<viz::RasterContextProvider::ScopedRasterContextLock> lock;
   if (draw_mode == DRAW_MODE_HARDWARE) {
     // TODO(penghuang): It would be better to use context_provider() instead of
     // worker_context_provider() if/when it's switched to RasterContextProvider.

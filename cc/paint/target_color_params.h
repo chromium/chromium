@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include <optional>
 #include "cc/paint/paint_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/hdr_metadata.h"
 

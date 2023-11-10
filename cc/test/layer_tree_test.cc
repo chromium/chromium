@@ -264,7 +264,7 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
     return test_hooks_->PrepareToDrawOnThread(this, frame, draw_result);
   }
 
-  absl::optional<SubmitInfo> DrawLayers(FrameData* frame) override {
+  std::optional<SubmitInfo> DrawLayers(FrameData* frame) override {
     auto r = LayerTreeHostImpl::DrawLayers(frame);
     test_hooks_->DrawLayersOnThread(this);
     return r;
@@ -439,7 +439,7 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
   void OnDeferCommitsChanged(
       bool,
       PaintHoldingReason,
-      absl::optional<PaintHoldingCommitTrigger>) override {}
+      std::optional<PaintHoldingCommitTrigger>) override {}
   void OnCommitRequested() override {}
 
   void RecordStartOfFrameMetrics() override {}

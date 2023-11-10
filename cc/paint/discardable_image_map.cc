@@ -115,7 +115,7 @@ class DiscardableImageGenerator {
         continue;
 
       gfx::Rect op_rect;
-      absl::optional<gfx::Rect> local_op_rect;
+      std::optional<gfx::Rect> local_op_rect;
 
       if (top_level_op_rect) {
         op_rect = *top_level_op_rect;

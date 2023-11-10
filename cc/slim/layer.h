@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -14,7 +15,6 @@
 #include "cc/paint/filter_operations.h"
 #include "cc/slim/filter.h"
 #include "cc/slim/frame_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/point3_f.h"
@@ -224,7 +224,7 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
 
   // Called by LayerTree.
   gfx::Transform ComputeTransformToParent() const;
-  absl::optional<gfx::Transform> ComputeTransformFromParent() const;
+  std::optional<gfx::Transform> ComputeTransformFromParent() const;
   bool HasFilters() const;
   cc::FilterOperations GetFilters() const;
   bool HasNonTrivialMaskFilterInfo() const;

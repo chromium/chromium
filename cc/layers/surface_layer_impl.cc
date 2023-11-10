@@ -66,7 +66,7 @@ std::unique_ptr<LayerImpl> SurfaceLayerImpl::CreateLayerImpl(
 }
 
 void SurfaceLayerImpl::SetRange(const viz::SurfaceRange& surface_range,
-                                absl::optional<uint32_t> deadline_in_frames) {
+                                std::optional<uint32_t> deadline_in_frames) {
   if (surface_range_ == surface_range &&
       deadline_in_frames_ == deadline_in_frames) {
     return;

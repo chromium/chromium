@@ -30,7 +30,7 @@ class StubLayerTreeHostClient : public LayerTreeHostClient {
   void OnDeferCommitsChanged(
       bool,
       PaintHoldingReason,
-      absl::optional<PaintHoldingCommitTrigger>) override {}
+      std::optional<PaintHoldingCommitTrigger>) override {}
   void OnCommitRequested() override {}
   void RecordStartOfFrameMetrics() override {}
   void RecordEndOfFrameMetrics(base::TimeTicks,

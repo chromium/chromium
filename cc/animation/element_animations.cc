@@ -540,11 +540,10 @@ void ElementAnimations::OnScrollOffsetAnimated(
       target_element_id, list_type, scroll_offset);
 }
 
-absl::optional<gfx::PointF> ElementAnimations::ScrollOffsetForAnimation()
-    const {
+std::optional<gfx::PointF> ElementAnimations::ScrollOffsetForAnimation() const {
   if (animation_host_)
     return animation_host_->GetScrollOffsetForAnimation(element_id());
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 PropertyToElementIdMap ElementAnimations::GetPropertyToElementIdMap() const {

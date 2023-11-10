@@ -162,7 +162,7 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
 
 #if BUILDFLAG(IS_ANDROID)
   {
-    absl::optional<viz::RasterContextProvider::ScopedRasterContextLock> lock;
+    std::optional<viz::RasterContextProvider::ScopedRasterContextLock> lock;
     lock.emplace(worker_context_provider);
     auto is_using_vulkan =
         worker_context_provider->ContextCapabilities().using_vulkan_context;
@@ -349,7 +349,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::PlaybackOnWorkerThreadInternal(
   }
 
   {
-    absl::optional<base::ElapsedTimer> timer;
+    std::optional<base::ElapsedTimer> timer;
     if (measure_raster_metric)
       timer.emplace();
     RasterizeSource(raster_source, raster_full_rect, playback_rect, transform,
