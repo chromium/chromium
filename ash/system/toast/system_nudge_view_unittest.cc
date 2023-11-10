@@ -7,11 +7,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/system/toast/nudge_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
@@ -136,7 +136,8 @@ TEST_F(SystemNudgeViewTest, TitleAndLeadingImage) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
   const std::u16string title_text = u"Title text";
   const ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
-      vector_icons::kDogfoodIcon, kColorAshIconColorPrimary, /*icon_size=*/60);
+      vector_icons::kDogfoodIcon, cros_tokens::kCrosSysOnSurface,
+      /*icon_size=*/60);
 
   // Set up base nudge data and add a title and an image model.
   auto nudge_data = CreateBaseNudgeData();
