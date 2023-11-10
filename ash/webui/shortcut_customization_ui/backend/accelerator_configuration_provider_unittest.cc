@@ -3353,7 +3353,7 @@ TEST_F(AcceleratorConfigurationProviderTest,
             << "ash/webui/shortcut_customization_ui/backend/"
             << "accelerator_layout_table.h along with the corresponding icon. "
             << "See examples at "
-            << "ash/webui/shortcut_customization_ui/resources/js/input_key.ts.";
+            << "ash/common/shortcut_input_ui/shortcut_input_key.ts.";
       }
     }
   }

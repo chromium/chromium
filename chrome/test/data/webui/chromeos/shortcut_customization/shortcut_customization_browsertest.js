@@ -47,7 +47,6 @@ const tests = [
   ['BottomNavContentTest', 'bottom_nav_content_test.js'],
   ['FakeShortcutProviderTest', 'fake_shortcut_provider_test.js'],
   ['FakeShortcutSearchHandlerTest', 'fake_shortcut_search_handler_test.js'],
-  ['InputKeyTest', 'input_key_test.js'],
   ['RouterTest', 'router_test.js'],
   ['SearchBoxTest', 'search_box_test.js'],
   ['SearchResultRowTest', 'search_result_row_test.js'],

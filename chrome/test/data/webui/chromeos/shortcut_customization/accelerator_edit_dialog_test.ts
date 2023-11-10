@@ -87,7 +87,8 @@ suite('acceleratorEditDialogTest', function() {
     // [ctrl+shift+g]
     const accelView1 =
         acceleratorElements[0]!.shadowRoot!.querySelector('accelerator-view');
-    const keys1 = accelView1!.shadowRoot!.querySelectorAll('input-key');
+    const keys1 =
+        accelView1!.shadowRoot!.querySelectorAll('shortcut-input-key');
     // [c]
     assertEquals(1, keys1.length);
     assertEquals(
@@ -95,7 +96,8 @@ suite('acceleratorEditDialogTest', function() {
 
     const accelView2 =
         acceleratorElements[1]!.shadowRoot!.querySelector('accelerator-view');
-    const keys2 = accelView2!.shadowRoot!.querySelectorAll('input-key');
+    const keys2 =
+        accelView2!.shadowRoot!.querySelectorAll('shortcut-input-key');
     // [ctrl + c]
     assertEquals(2, keys2.length);
     assertEquals(
@@ -106,7 +108,8 @@ suite('acceleratorEditDialogTest', function() {
 
     const accelView3 =
         acceleratorElements[2]!.shadowRoot!.querySelector('accelerator-view');
-    const keys3 = accelView3!.shadowRoot!.querySelectorAll('input-key');
+    const keys3 =
+        accelView3!.shadowRoot!.querySelectorAll('shortcut-input-key');
     // [ctrl + shift + g]
     assertEquals(3, keys3.length);
     assertEquals(

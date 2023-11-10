@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './input_key.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -41,9 +41,9 @@ export enum ViewState {
   EDIT,
 }
 
-// This delay should match the animation timing in `input_key.html`. Matching
-// the delay allows the user to see the full animation before requesting a
-// change to the backend.
+// This delay should match the animation timing in `shortcut_input_key.html`.
+// Matching the delay allows the user to see the full animation before
+// requesting a change to the backend.
 const kAnimationTimeoutMs: number = 300;
 
 const kEscapeKey: number = 27;  // Keycode for VKEY_ESCAPE
@@ -143,6 +143,9 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         computed: 'computeIsDisabled(acceleratorInfo.*)',
         reflectToAttribute: true,
       },
+
+      /** Whether to show a launcher icon or search icon for meta key. */
+      hasLauncherButton: Boolean,
     };
   }
 
@@ -158,6 +161,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   categoryIsLocked: boolean;
   isFirstAccelerator: boolean;
   isDisabled: boolean;
+  hasLauncherButton: boolean;
   protected pendingAcceleratorInfo: StandardAcceleratorInfo;
   protected isCapturing: boolean;
   protected lastAccelerator: Accelerator;
@@ -174,6 +178,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
 
     this.categoryIsLocked = this.lookupManager.isCategoryLocked(
         this.lookupManager.getAcceleratorCategory(this.source, this.action));
+    this.hasLauncherButton = this.lookupManager.getHasLauncherButton();
   }
 
   override disconnectedCallback(): void {

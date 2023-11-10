@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../text_accelerator.js';
+import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
@@ -14,6 +15,7 @@ import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AcceleratorLookupManager} from '../accelerator_lookup_manager.js';
 import {Router} from '../router.js';
 import {LayoutStyle, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from '../shortcut_types.js';
 import {getAriaLabelForStandardAccelerators, getAriaLabelForTextAccelerators, getModifiersForAcceleratorInfo, getTextAcceleratorParts, getURLForSearchResult, isStandardAcceleratorInfo, isTextAcceleratorInfo} from '../shortcut_utils.js';
@@ -60,6 +62,9 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
 
       /** Number of rows in the list this row is part of. */
       listLength: Number,
+
+      /** Whether to show a launcher icon or search icon for meta key. */
+      hasLauncherButton: Boolean,
     };
   }
 
@@ -68,9 +73,18 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
   searchResult: MojoSearchResult;
   searchQuery: string;
   selected: boolean;
+  hasLauncherButton: boolean;
+  private lookupManager: AcceleratorLookupManager =
+      AcceleratorLookupManager.getInstance();
 
   static get template(): HTMLTemplateElement {
     return getTemplate();
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+
+    this.hasLauncherButton = this.lookupManager.getHasLauncherButton();
   }
 
   private isNoShortcutAssigned(): boolean {

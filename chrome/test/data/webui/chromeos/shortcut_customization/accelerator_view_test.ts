@@ -6,6 +6,8 @@ import 'chrome://shortcut-customization/js/accelerator_view.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
+import {KeyInputState} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -13,7 +15,6 @@ import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accel
 import {AcceleratorViewElement, ViewState} from 'chrome://shortcut-customization/js/accelerator_view.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
-import {InputKeyElement, KeyInputState} from 'chrome://shortcut-customization/js/input_key.js';
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {AcceleratorConfigResult, AcceleratorSource, LayoutStyle, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
@@ -62,10 +63,10 @@ suite('acceleratorViewTest', function() {
     viewElement = null;
   });
 
-  function getInputKey(selector: string): InputKeyElement {
+  function getInputKey(selector: string): ShortcutInputKeyElement {
     const element = viewElement!.shadowRoot!.querySelector(selector);
     assertTrue(!!element);
-    return element as InputKeyElement;
+    return element as ShortcutInputKeyElement;
   }
 
   function getLockIcon(): HTMLDivElement {
@@ -82,7 +83,7 @@ suite('acceleratorViewTest', function() {
     viewElement = initAcceleratorViewElement();
     await flushTasks();
 
-    const keys = viewElement.shadowRoot!.querySelectorAll('input-key');
+    const keys = viewElement.shadowRoot!.querySelectorAll('shortcut-input-key');
     // Three keys: shift, control, g
     assertEquals(3, keys.length);
 
@@ -455,7 +456,7 @@ suite('acceleratorViewTest', function() {
     assertEquals('LaunchApplication1', pendingKey.key);
     const keyIconElement =
         pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
-    assertEquals('shortcut-customization-keys:overview', keyIconElement.icon);
+    assertEquals('shortcut-input-keys:overview', keyIconElement.icon);
 
     // Simulate SHIFT + BRIGHTNESS_UP, expect the key display to be
     // 'BrightnessUp' and the icon to be 'display-brightness-up'.
@@ -471,8 +472,7 @@ suite('acceleratorViewTest', function() {
     const keyIconElement2 =
         pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
     assertEquals(
-        'shortcut-customization-keys:display-brightness-up',
-        keyIconElement2.icon);
+        'shortcut-input-keys:display-brightness-up', keyIconElement2.icon);
 
     // Simulate SHIFT + MUTE_MICROPHONE.
     viewElement.dispatchEvent(new KeyboardEvent('keydown', {
@@ -486,8 +486,7 @@ suite('acceleratorViewTest', function() {
     assertEquals('MicrophoneMuteToggle', pendingKey.key);
     const keyIconElement3 =
         pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
-    assertEquals(
-        'shortcut-customization-keys:microphone-mute', keyIconElement3.icon);
+    assertEquals('shortcut-input-keys:microphone-mute', keyIconElement3.icon);
 
     // Simulate CONTROL + BACKQUOTE.
     viewElement.dispatchEvent(new KeyboardEvent('keydown', {
