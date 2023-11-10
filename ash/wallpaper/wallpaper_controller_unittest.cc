@@ -879,29 +879,20 @@ class WallpaperControllerTestBase : public AshTestBase {
 };
 
 // All possible feature combinations that can occur in the real world.
-enum class JellyFeatureCombination {
-  kDisabled,
-  kEnabled,
-  kEnabledWithTimeOfDay
-};
+enum class TimeOfDayFeatureCombination { kDisabled, kTimeOfDay };
 
 class WallpaperControllerTest
     : public WallpaperControllerTestBase,
-      public testing::WithParamInterface<JellyFeatureCombination> {
+      public testing::WithParamInterface<TimeOfDayFeatureCombination> {
  public:
   WallpaperControllerTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     switch (GetParam()) {
-      case JellyFeatureCombination::kDisabled:
+      case TimeOfDayFeatureCombination::kDisabled:
         disabled_features = personalization_app::GetTimeOfDayDisabledFeatures();
-        disabled_features.push_back(chromeos::features::kJelly);
         break;
-      case JellyFeatureCombination::kEnabled:
-        disabled_features = personalization_app::GetTimeOfDayDisabledFeatures();
-        enabled_features.push_back(chromeos::features::kJelly);
-        break;
-      case JellyFeatureCombination::kEnabledWithTimeOfDay:
+      case TimeOfDayFeatureCombination::kTimeOfDay:
         enabled_features = personalization_app::GetTimeOfDayEnabledFeatures();
         break;
     }
@@ -913,22 +904,11 @@ class WallpaperControllerTest
 
   ~WallpaperControllerTest() override = default;
 
-  bool IsJellyEnabled() const {
-    switch (GetParam()) {
-      case JellyFeatureCombination::kDisabled:
-        return false;
-      case JellyFeatureCombination::kEnabled:
-      case JellyFeatureCombination::kEnabledWithTimeOfDay:
-        return true;
-    }
-  }
-
   bool IsTimeOfDayEnabled() const {
     switch (GetParam()) {
-      case JellyFeatureCombination::kDisabled:
-      case JellyFeatureCombination::kEnabled:
+      case TimeOfDayFeatureCombination::kDisabled:
         return false;
-      case JellyFeatureCombination::kEnabledWithTimeOfDay:
+      case TimeOfDayFeatureCombination::kTimeOfDay:
         return true;
     }
   }
@@ -938,12 +918,10 @@ class WallpaperControllerTest
     std::string operator()(
         const testing::TestParamInfo<ParamType>& info) const {
       switch (info.param) {
-        case JellyFeatureCombination::kDisabled:
-          return "JellyOff";
-        case JellyFeatureCombination::kEnabled:
-          return "JellyOn";
-        case JellyFeatureCombination::kEnabledWithTimeOfDay:
-          return "JellyOnWithTimeOfDay";
+        case TimeOfDayFeatureCombination::kDisabled:
+          return "TimeOfDayOff";
+        case TimeOfDayFeatureCombination::kTimeOfDay:
+          return "TimeOfDayOn";
       }
     }
   };
@@ -1036,18 +1014,16 @@ INSTANTIATE_TEST_SUITE_P(
     // Empty to simplify gtest output
     ,
     WallpaperControllerTest,
-    ::testing::Values(JellyFeatureCombination::kDisabled,
-                      JellyFeatureCombination::kEnabled,
-                      JellyFeatureCombination::kEnabledWithTimeOfDay),
+    ::testing::Values(TimeOfDayFeatureCombination::kDisabled,
+                      TimeOfDayFeatureCombination::kTimeOfDay),
     WallpaperControllerTest::PrintToStringParamName());
 
 INSTANTIATE_TEST_SUITE_P(
     // Empty to simplify gtest output
     ,
     WallpaperControllerAutoScheduleTest,
-    ::testing::Values(JellyFeatureCombination::kDisabled,
-                      JellyFeatureCombination::kEnabled,
-                      JellyFeatureCombination::kEnabledWithTimeOfDay),
+    ::testing::Values(TimeOfDayFeatureCombination::kDisabled,
+                      TimeOfDayFeatureCombination::kTimeOfDay),
     WallpaperControllerTest::PrintToStringParamName());
 
 TEST_P(WallpaperControllerTest, Client) {
@@ -1397,32 +1373,7 @@ TEST_P(WallpaperControllerTest, ColorsCalculatedForMostRecentWallpaper) {
   load_preview_image_loop.Run();
 }
 
-TEST_P(WallpaperControllerTest, CelebiNotSavedWhenJellyIsDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(chromeos::features::kJelly);
-  TestWallpaperControllerObserver observer(controller_);
-
-  const char location[] = "test_wallpaper_here";
-
-  // Set the wallpaper with a valid location.
-  WallpaperInfo wallpaper_info = CreateWallpaperInfo(WALLPAPER_LAYOUT_STRETCH);
-  wallpaper_info.location = location;
-  const gfx::ImageSkia kImage = CreateImage(10, 10, kWallpaperColor);
-  controller_->ShowWallpaperImage(kImage, wallpaper_info,
-                                  /*preview_mode=*/false,
-                                  /*is_override=*/false);
-  SetSessionState(SessionState::ACTIVE);
-
-  // Wait for color computation to complete.
-  base::RunLoop colors_loop;
-  observer.SetOnColorsCalculatedCallback(colors_loop.QuitClosure());
-  colors_loop.Run();
-
-  EXPECT_FALSE(pref_manager_->GetCelebiColor(location));
-}
-
-TEST_P(WallpaperControllerTest, SaveCelebiColorWhenJellyActive) {
-  base::test::ScopedFeatureList features(chromeos::features::kJelly);
+TEST_P(WallpaperControllerTest, SaveCelebiColor) {
   TestWallpaperControllerObserver observer(controller_);
 
   const char location[] = "test_wallpaper_here";
@@ -1459,24 +1410,13 @@ TEST_P(WallpaperControllerTest,
   // Reset to login screen.
   GetSessionControllerClient()->RequestSignOut();
 
-  if (IsJellyEnabled()) {
-    // User's wallpaper colors are accessible from login screen.
-    EXPECT_EQ(kWallpaperColor, controller_->GetCachedWallpaperColorForUser(
-                                   kAccountId1, /* use_k_means= */ false));
-  } else {
-    // User's celebi color is only retrieved when Jelly is enabled.
-    EXPECT_FALSE(controller_
-                     ->GetCachedWallpaperColorForUser(kAccountId1,
-                                                      /* use_k_means= */ false)
-                     .has_value());
-  }
+  // User's wallpaper colors are accessible from login screen.
+  EXPECT_EQ(kWallpaperColor, controller_->GetCachedWallpaperColorForUser(
+                                 kAccountId1, /* use_k_means= */ false));
 }
 
 TEST_P(WallpaperControllerTest,
        GetCachedWallpaperColorForUser_WithKMeansColor) {
-  if (!IsJellyEnabled()) {
-    return;
-  }
   // Cache some wallpapers and store that in the local prefs. Otherwise, we
   // can't cache colors.
   base::FilePath relative_path = PrecacheWallpapers(kAccountId1);
@@ -1503,106 +1443,6 @@ TEST_P(WallpaperControllerTest, EnableShelfColoringNotifiesObservers) {
   // session state to ACTIVE, which will trigger wallpaper colors calculation.
   EnableShelfColoring();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, observer.colors_changed_count());
-}
-
-TEST_P(WallpaperControllerTest, ProminentColor_CachedColorsAvailableAtLogin) {
-  if (IsJellyEnabled()) {
-    // Prominent colors only apply when jelly is disabled.
-    return;
-  }
-  // Cache some wallpapers and store that in the local prefs. Otherwise, we
-  // can't cache colors.
-  base::FilePath relative_path = PrecacheWallpapers(kAccountId1);
-  WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
-  info.location = relative_path.value();
-  ASSERT_TRUE(pref_manager_->SetLocalWallpaperInfo(kAccountId1, info));
-
-  // Store colors in local prefs simulating cache behavior.
-  const std::vector<SkColor> prominent_colors = {SK_ColorGREEN, SK_ColorRED,
-                                                 SK_ColorBLUE,  SK_ColorWHITE,
-                                                 SK_ColorWHITE, SK_ColorWHITE};
-  pref_manager_->CacheProminentColors(relative_path.value(), prominent_colors);
-  const SkColor k_means_color = SK_ColorLTGRAY;
-  pref_manager_->CacheKMeanColor(relative_path.value(), k_means_color);
-
-  // Reset to login screen.
-  GetSessionControllerClient()->RequestSignOut();
-
-  TestWallpaperControllerObserver observer(controller_);
-  ASSERT_EQ(0, observer.colors_changed_count());
-
-  // Show user wallpaper in login screen. We are *not* logged in yet.
-  controller_->ShowUserWallpaper(kAccountId1,
-                                 user_manager::UserType::USER_TYPE_REGULAR);
-  task_environment()->RunUntilIdle();
-
-  // Showing a user wallpaper should cause the cached colors to be fetched and
-  // reported.
-  EXPECT_EQ(1, observer.colors_changed_count());
-
-  // DARK_VIBRANT happens to be prominent color 0.
-  EXPECT_EQ(SK_ColorGREEN, controller_->GetProminentColor(
-                               {color_utils::LumaRange::DARK,
-                                color_utils::SaturationRange::VIBRANT}));
-  EXPECT_EQ(k_means_color, controller_->GetKMeanColor());
-}
-
-TEST_P(WallpaperControllerTest, ProminentColor_ClearedBetweenUsers) {
-  if (IsJellyEnabled()) {
-    // Prominent colors only apply when jelly is disabled.
-    return;
-  }
-  // Setup prominent colors for account 1.
-  base::FilePath relative_path = PrecacheWallpapers(kAccountId1);
-  WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
-  info.location = relative_path.value();
-  ASSERT_TRUE(pref_manager_->SetLocalWallpaperInfo(kAccountId1, info));
-
-  const std::vector<SkColor> prominent_colors = {SK_ColorGREEN, SK_ColorRED,
-                                                 SK_ColorBLUE,  SK_ColorWHITE,
-                                                 SK_ColorWHITE, SK_ColorWHITE};
-  pref_manager_->CacheProminentColors(relative_path.value(), prominent_colors);
-  const SkColor k_means_color = SK_ColorLTGRAY;
-  pref_manager_->CacheKMeanColor(relative_path.value(), k_means_color);
-
-  // Set a wallpaper for account 2.
-  WallpaperInfo info2 = InfoWithType(WallpaperType::kDefault);
-  ASSERT_TRUE(pref_manager_->SetLocalWallpaperInfo(kAccountId2, info2));
-
-  // Reset to login screen.
-  GetSessionControllerClient()->RequestSignOut();
-
-  TestWallpaperControllerObserver observer(controller_);
-
-  // No notifications should have occurred yet.
-  EXPECT_EQ(0, observer.colors_changed_count());
-
-  // Show wallpaper for account 1.
-  controller_->ShowUserWallpaper(kAccountId1,
-                                 user_manager::UserType::USER_TYPE_REGULAR);
-  task_environment()->RunUntilIdle();
-
-  // Should have received a notification for the cached colors.
-  EXPECT_EQ(1, observer.colors_changed_count());
-
-  // Verify that we can retrieve the prominent color.
-  EXPECT_EQ(SK_ColorGREEN, controller_->GetProminentColor(
-                               {color_utils::LumaRange::DARK,
-                                color_utils::SaturationRange::VIBRANT}));
-
-  // Show wallpaper for account 2.
-  controller_->ShowUserWallpaper(kAccountId2,
-                                 user_manager::UserType::USER_TYPE_REGULAR);
-  task_environment()->RunUntilIdle();
-  // Since account 2 has not cached colors and wallpaper decoding is disabled,
-  // the prominent color should be invalid.
-  EXPECT_EQ(
-      kInvalidWallpaperColor,
-      controller_->GetProminentColor({color_utils::LumaRange::DARK,
-                                      color_utils::SaturationRange::VIBRANT}));
-  // We got one notification for the first user but nothing after because the
-  // wallpaper color hasn't been computed yet.
   EXPECT_EQ(1, observer.colors_changed_count());
 }
 
@@ -3989,7 +3829,6 @@ class WallpaperControllerOobeWallpaperTest
     const bool oobe_jelly_modal = std::get<2>(GetParam());
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kFeatureManagementOobeSimon, boot_animation},
-         {chromeos::features::kJelly, oobe_jelly},
          {features::kOobeJelly, oobe_jelly},
          {features::kOobeJellyModal, oobe_jelly_modal}});
   }
@@ -5910,9 +5749,8 @@ INSTANTIATE_TEST_SUITE_P(
     // Empty to simplify gtest output
     ,
     WallpaperControllerDailyRefreshSchedulerTest,
-    ::testing::Values(JellyFeatureCombination::kDisabled,
-                      JellyFeatureCombination::kEnabled,
-                      JellyFeatureCombination::kEnabledWithTimeOfDay),
+    ::testing::Values(TimeOfDayFeatureCombination::kDisabled,
+                      TimeOfDayFeatureCombination::kTimeOfDay),
     WallpaperControllerTest::PrintToStringParamName());
 
 TEST_P(WallpaperControllerDailyRefreshSchedulerTest,

@@ -32,8 +32,6 @@ using ::testing::IsEmpty;
 namespace ash {
 namespace {
 
-const SkColor kDefaultColor = SK_ColorTRANSPARENT;
-
 const SkColor kGray = SkColorSetRGB(10, 10, 10);
 
 const SkColor kVibrantGreen = SkColorSetRGB(25, 200, 25);
@@ -145,28 +143,7 @@ TEST_F(WallPaperColorCalculatorAsyncTest,
   EXPECT_TRUE(notified);
 }
 
-TEST_F(WallPaperColorCalculatorAsyncTest, ColorUpdatedOnSuccessfulCalculation) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(chromeos::features::kJelly);
-
-  std::vector<SkColor> colors = {kDefaultColor};
-  SkColor k_mean_color = kDefaultColor;
-  calculator_->set_calculated_colors_for_test(
-      WallpaperCalculatedColors(colors, k_mean_color, kDefaultColor));
-
-  base::RunLoop run_loop;
-  EXPECT_TRUE(calculator_->StartCalculation(Wrap(run_loop.QuitClosure())));
-
-  run_loop.Run();
-  ASSERT_TRUE(calculator_->get_calculated_colors());
-  EXPECT_NE(kDefaultColor,
-            calculator_->get_calculated_colors()->prominent_colors[0]);
-  EXPECT_EQ(kGray, calculator_->get_calculated_colors()->k_mean_color);
-}
-
-TEST_F(WallPaperColorCalculatorAsyncTest, CelebiCalculatedWhenJellyEnabled) {
-  base::test::ScopedFeatureList features(chromeos::features::kJelly);
-
+TEST_F(WallPaperColorCalculatorAsyncTest, CelebiCalculated) {
   base::RunLoop run_loop;
   EXPECT_TRUE(calculator_->StartCalculation(Wrap(run_loop.QuitClosure())));
 

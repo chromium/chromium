@@ -17,9 +17,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"
@@ -217,12 +215,7 @@ class WallpaperPrefManagerTestBase : public testing::Test {
 
 class WallpaperPrefManagerTest : public WallpaperPrefManagerTestBase {
  public:
-  WallpaperPrefManagerTest() {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  WallpaperPrefManagerTest() = default;
 };
 
 TEST_F(WallpaperPrefManagerTest, GetWallpaperInfo_Normal) {
@@ -545,59 +538,6 @@ TEST_F(WallpaperPrefManagerTest, ShouldSyncIn) {
                                                   /*is_oobe=*/false));
   EXPECT_TRUE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info,
                                                  /*is_oobe=*/true));
-}
-
-class WallpaperPrefManagerJellyDisabledTest
-    : public WallpaperPrefManagerTestBase {
- public:
-  WallpaperPrefManagerJellyDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(chromeos::features::kJelly);
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(WallpaperPrefManagerJellyDisabledTest, SetCalculatedColors) {
-  const char location[] = "location";
-
-  // Cache a prominent and KMean color entry
-  const std::vector<SkColor> prominent_colors = {
-      SK_ColorGREEN, SK_ColorGREEN, SK_ColorGREEN,
-      SkColorSetRGB(0xAB, 0xBC, 0xEF)};
-  pref_manager_->CacheProminentColors(location, prominent_colors);
-
-  const SkColor k_mean_color = SkColorSetRGB(0xAB, 0xBC, 0xEF);
-  pref_manager_->CacheKMeanColor(location, k_mean_color);
-
-  absl::optional<WallpaperCalculatedColors> actual_colors =
-      pref_manager_->GetCachedWallpaperColors(location);
-  ASSERT_TRUE(actual_colors);
-  EXPECT_THAT(actual_colors->prominent_colors,
-              testing::ContainerEq(prominent_colors));
-  EXPECT_EQ(actual_colors->k_mean_color, k_mean_color);
-}
-
-TEST_F(WallpaperPrefManagerJellyDisabledTest,
-       CalculatedColorsEmptyIfKMeanMissing) {
-  const char location[] = "location";
-
-  const std::vector<SkColor> prominent_colors = {
-      SK_ColorGREEN, SK_ColorGREEN, SK_ColorGREEN,
-      SkColorSetRGB(0xAB, 0xBC, 0xEF)};
-  pref_manager_->CacheProminentColors(location, prominent_colors);
-
-  EXPECT_FALSE(pref_manager_->GetCachedWallpaperColors(location));
-}
-
-TEST_F(WallpaperPrefManagerJellyDisabledTest,
-       CalculatedColorsEmptyIfProminentColorsMissing) {
-  const char location[] = "location";
-
-  const SkColor k_mean_color = SkColorSetRGB(0xAB, 0xBC, 0xEF);
-  pref_manager_->CacheKMeanColor(location, k_mean_color);
-
-  EXPECT_FALSE(pref_manager_->GetCachedWallpaperColors(location));
 }
 
 }  // namespace

@@ -99,9 +99,7 @@ WallpaperCalculatedColors CalculateWallpaperColor(
       /*find_closest=*/true);
 
   // Compute result with with the improved clustering algorithm.
-  SkColor celebi_color = chromeos::features::IsJellyEnabled()
-                             ? ComputeWallpaperSeedColor(resized_image)
-                             : SK_ColorTRANSPARENT;
+  SkColor celebi_color = ComputeWallpaperSeedColor(resized_image);
 
   DVLOG(2) << __func__ << " image_size=" << image.size().ToString()
            << " time=" << base::TimeTicks::Now() - start_time;

@@ -387,9 +387,6 @@ SkColor WallpaperControllerImpl::GetKMeanColor() const {
 absl::optional<SkColor> WallpaperControllerImpl::GetCachedWallpaperColorForUser(
     const AccountId& account_id,
     bool should_use_k_means) const {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return {};
-  }
   WallpaperInfo info;
   if (!pref_manager_->GetLocalWallpaperInfo(account_id, &info)) {
     return {};
@@ -540,7 +537,7 @@ void WallpaperControllerImpl::RestoreWallpaperBlurForLockState(float blur) {
 bool WallpaperControllerImpl::ShouldApplyShield() const {
   bool needs_shield = false;
   if (Shell::Get()->overview_controller()->InOverviewSession()) {
-    needs_shield = !chromeos::features::IsJellyrollEnabled();
+    needs_shield = false;
   } else if (Shell::Get()->session_controller()->IsUserSessionBlocked()) {
     needs_shield = true;
   } else if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
@@ -1511,10 +1508,8 @@ void WallpaperControllerImpl::OnColorCalculationComplete(
       info.location, wallpaper_calculated_colors.prominent_colors);
   pref_manager_->CacheKMeanColor(info.location,
                                  wallpaper_calculated_colors.k_mean_color);
-  if (chromeos::features::IsJellyEnabled()) {
-    pref_manager_->CacheCelebiColor(info.location,
-                                    wallpaper_calculated_colors.celebi_color);
-  }
+  pref_manager_->CacheCelebiColor(info.location,
+                                  wallpaper_calculated_colors.celebi_color);
   SetCalculatedColors(wallpaper_calculated_colors);
 
   // Release the color calculator after it has returned a result by calling this
@@ -1632,19 +1627,17 @@ void WallpaperControllerImpl::OnOverviewModeWillStart() {
 void WallpaperControllerImpl::OnOverviewModeStarting() {
   // Only in tablet mode, we need to call `RepaintWallpaper` to update the
   // wallpaper shield on overview mode changes, since in clamshell mode, we
-  // don't apply the wallpaper shield no matter it's in overview mode or not if
-  // the feature `kJellyroll` is enabled. However, in tablet mode, we need to
-  // apply the wallpaper shield when it's not in the overview mode.
-  if (chromeos::features::IsJellyrollEnabled() &&
-      Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  // don't apply the wallpaper shield no matter it's in overview mode or not.
+  // However, in tablet mode, we need to apply the wallpaper shield when it's
+  // not in the overview mode.
+  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     RepaintWallpaper();
   }
 }
 
 void WallpaperControllerImpl::OnOverviewModeEnded() {
   // Refer to the comment in `OnOverviewModeStarting`.
-  if (chromeos::features::IsJellyrollEnabled() &&
-      Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     RepaintWallpaper();
   }
 }
