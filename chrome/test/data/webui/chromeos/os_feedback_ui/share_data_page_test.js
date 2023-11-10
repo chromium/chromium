@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {fakeEmptyFeedbackContext, fakeFeedbackContext, fakeInternalUserFeedbackContext, fakeLoginFlowFeedbackContext} from 'chrome://os-feedback/fake_data.js';
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
@@ -25,7 +24,7 @@ const fakeImageUrl = 'chrome://os_feedback/app_icon_48.png';
 /**
  * @suppress {missingProperties} for test.skip is not defined in mocha-2.5.js
  */
-export function shareDataPageTestSuite() {
+suite('shareDataPageTestSuite', () => {
   /** @type {?ShareDataPageElement} */
   let page = null;
 
@@ -1279,4 +1278,4 @@ export function shareDataPageTestSuite() {
     assertFalse(requestWithoutBluetoothFlag.sendBluetoothLogs);
     assertFalse(!!requestWithoutBluetoothFlag.feedbackContext.categoryTag);
   });
-}
+});

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://webui-test/mojo_webui_test_support.js';
+
 import {fakeFeedbackContext, fakeFeedbackContextWithoutLinkedCrossDevicePhone, fakeInternalUserFeedbackContext, fakePngData, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
@@ -18,7 +20,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {eventToPromise, isVisible} from '../test_util.js';
 
-export function FeedbackFlowTestSuite() {
+suite('FeedbackFlowTestSuite', () => {
   /** @type {?FeedbackFlowElement} */
   let page = null;
 
@@ -1368,4 +1370,4 @@ export function FeedbackFlowTestSuite() {
         // Verify that the getFeedbackContext is not called.
         assertEquals(0, feedbackServiceProvider.getFeedbackContextCallCount());
       });
-}
+});

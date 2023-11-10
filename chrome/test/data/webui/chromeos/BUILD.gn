@@ -202,7 +202,6 @@ ts_library("build_ts") {
     "os_feedback_ui/file_attachment_test.js",
     "os_feedback_ui/help_content_test.js",
     "os_feedback_ui/mojo_interface_provider_test.js",
-    "os_feedback_ui/os_feedback_unified_test.js",
     "os_feedback_ui/search_page_test.js",
     "os_feedback_ui/share_data_page_test.js",
     "shimless_rma/all_inputs_disabled_test.js",

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://webui-test/mojo_webui_test_support.js';
+
 import {fakeEmptySearchResponse, fakeFeedbackContext, fakeInternalUserFeedbackContext, fakeLoginFlowFeedbackContext, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
 import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
@@ -16,7 +18,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {eventToPromise, isVisible} from '../test_util.js';
 
-export function searchPageTestSuite() {
+suite('searchPageTestSuite', () => {
   /** @type {?SearchPageElement} */
   let page = null;
 
@@ -804,7 +806,7 @@ export function searchPageTestSuite() {
     });
   });
 
-    test('typingAudioWithExternalAccountWillNotShowsQuestionnaire', async () => {
+  test('typingAudioWithExternalAccountWillNotShowsQuestionnaire', async () => {
     let textAreaElement = null;
     await initializePage();
     // The questionnaire will be only shown if the account belongs to an
@@ -824,4 +826,4 @@ export function searchPageTestSuite() {
       assertFalse(textAreaElement.value.indexOf(question) >= 0);
     });
   });
-}
+});

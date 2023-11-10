@@ -25,7 +25,6 @@ js_type_check("closure_compile") {
     ":file_attachment_test",
     ":help_content_test",
     ":mojo_interface_provider_test",
-    ":os_feedback_unified_test",
     ":search_page_test",
     ":share_data_page_test",
   ]
@@ -59,6 +58,7 @@ js_library("feedback_flow_test") {
     "//ash/webui/os_feedback_ui/resources:search_page",
     "//ash/webui/os_feedback_ui/resources:share_data_page",
   ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("file_attachment_test") {
@@ -87,11 +87,6 @@ js_library("mojo_interface_provider_test") {
     "//ash/webui/os_feedback_ui/resources:feedback_types",
     "//ash/webui/os_feedback_ui/resources:mojo_interface_provider",
   ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("os_feedback_unified_test") {
-  deps = []
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
