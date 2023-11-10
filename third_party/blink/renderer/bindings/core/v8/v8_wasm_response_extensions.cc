@@ -94,17 +94,6 @@ class WasmCodeCachingCallback {
     TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                          "v8.wasm.compiledModule", TRACE_EVENT_SCOPE_THREAD,
                          "url", response_url_.Utf8());
-    v8::MemorySpan<const uint8_t> wire_bytes =
-        compiled_module.GetWireBytesRef();
-    // Our heuristic for whether it's worthwhile to cache is that the module
-    // was fully compiled and the size is such that loading from the cache will
-    // improve startup time. Use wire bytes size since it should be correlated
-    // with module size.
-    // TODO(bbudge) This is set very low to compare performance of caching with
-    // baseline compilation. Adjust this test once we know which sizes benefit.
-    const size_t kWireBytesSizeThresholdBytes = 1UL << 10;  // 1 KB.
-    if (wire_bytes.size() < kWireBytesSizeThresholdBytes)
-      return;
     v8::OwnedBuffer serialized_module;
     {
       // Use a standard milliseconds based timer (up to 10 seconds, 50 buckets),
@@ -120,6 +109,8 @@ class WasmCodeCachingCallback {
                          "v8.wasm.cachedModule", TRACE_EVENT_SCOPE_THREAD,
                          "producedCacheSize", serialized_module.size);
 
+    v8::MemorySpan<const uint8_t> wire_bytes =
+        compiled_module.GetWireBytesRef();
     DigestValue wire_bytes_digest;
     {
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
