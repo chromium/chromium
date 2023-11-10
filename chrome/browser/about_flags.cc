@@ -7208,6 +7208,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
 #if BUILDFLAG(IS_WIN)
+    {"enable-windows-gaming-input-data-fetcher",
+     flag_descriptions::kEnableWindowsGamingInputDataFetcherName,
+     flag_descriptions::kEnableWindowsGamingInputDataFetcherDescription, kOsWin,
+     FEATURE_VALUE_TYPE(features::kEnableWindowsGamingInputDataFetcher)},
+
     {"windows11-mica-titlebar", flag_descriptions::kWindows11MicaTitlebarName,
      flag_descriptions::kWindows11MicaTitlebarDescription, kOsWin,
      FEATURE_VALUE_TYPE(kWindows11MicaTitlebar)},
