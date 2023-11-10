@@ -211,7 +211,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
                         mContext.getResources()
                                 .getDimensionPixelSize(
                                         R.dimen.omnibox_suggestion_list_toolbar_overlap);
-                int sideSpacing = OmniboxResourceProvider.getSideSpacing(mContext);
+                int sideSpacing = OmniboxResourceProvider.getDropdownSideSpacing(mContext);
                 width = mHorizontalAlignmentView.getMeasuredWidth() + 2 * sideSpacing;
 
                 if (mAnchorView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {

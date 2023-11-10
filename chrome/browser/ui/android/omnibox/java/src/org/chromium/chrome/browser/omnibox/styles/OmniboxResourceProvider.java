@@ -423,6 +423,13 @@ public class OmniboxResourceProvider {
         return themeRes.resourceId;
     }
 
+    /** Gets the margin, in pixels, on either side of an omnibox suggestion list. */
+    public static @Px int getDropdownSideSpacing(@NonNull Context context) {
+        return getSideSpacing(context)
+                + context.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_dropdown_side_spacing);
+    }
+
     /** Gets the margin, in pixels, on either side of an omnibox suggestion. */
     public static @Px int getSideSpacing(@NonNull Context context) {
         return context.getResources()
