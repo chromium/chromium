@@ -11118,56 +11118,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebFont.DownloadTime.0.Under10KB" units="ms"
-    expires_after="2022-11-13">
-  <owner>kenjibaheux@chromium.org</owner>
-  <owner>ksakamoto@chromium.org</owner>
-  <summary>
-    The time it takes for a webfont download to finish, for webfonts of under
-    10KB.
-  </summary>
-</histogram>
-
-<histogram name="WebFont.DownloadTime.1.10KBTo50KB" units="ms"
-    expires_after="2022-01-15">
-  <owner>kenjibaheux@chromium.org</owner>
-  <owner>ksakamoto@chromium.org</owner>
-  <summary>
-    The time it takes for a webfont download to finish, for webfonts of
-    10KB-50KB.
-  </summary>
-</histogram>
-
-<histogram name="WebFont.DownloadTime.2.50KBTo100KB" units="ms"
-    expires_after="2022-01-15">
-  <owner>kenjibaheux@chromium.org</owner>
-  <owner>ksakamoto@chromium.org</owner>
-  <summary>
-    The time it takes for a webfont download to finish, for webfonts of
-    50KB-100KB.
-  </summary>
-</histogram>
-
-<histogram name="WebFont.DownloadTime.3.100KBTo1MB" units="ms"
-    expires_after="2022-01-15">
-  <owner>kenjibaheux@chromium.org</owner>
-  <owner>ksakamoto@chromium.org</owner>
-  <summary>
-    The time it takes for a webfont download to finish, for webfonts of
-    100KB-1MB.
-  </summary>
-</histogram>
-
-<histogram name="WebFont.DownloadTime.4.Over1MB" units="ms"
-    expires_after="2022-01-15">
-  <owner>kenjibaheux@chromium.org</owner>
-  <owner>ksakamoto@chromium.org</owner>
-  <summary>
-    The time it takes for a webfont download to finish, for webfonts of over
-    1MB.
-  </summary>
-</histogram>
-
 <histogram name="WebFont.DownloadTime.LoadError" units="ms"
     expires_after="2024-04-28">
   <owner>kenjibaheux@chromium.org</owner>
