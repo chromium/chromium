@@ -43,6 +43,7 @@ void EnableFieldTestingFactoryAndSaveBridges(
 }
 
 FormFieldData CreateTestField(std::u16string name = u"SomeName") {
+  static uint64_t renderer_id = 1;
   FormFieldData f;
   f.name = std::move(name);
   f.name_attribute = f.name;
@@ -51,6 +52,7 @@ FormFieldData CreateTestField(std::u16string name = u"SomeName") {
   f.check_status = FormFieldData::CheckStatus::kChecked;
   f.role = FormFieldData::RoleAttribute::kOther;
   f.is_focusable = true;
+  f.unique_renderer_id = FieldRendererId(renderer_id++);
   return f;
 }
 
@@ -228,6 +230,31 @@ TEST(FormDataAndroidTest, UpdateFieldTypes) {
   EXPECT_CALL(*bridges[0], UpdateFieldTypes);
   EXPECT_CALL(*bridges[1], UpdateFieldTypes);
   form_android.UpdateFieldTypes(FormStructure(form));
+}
+
+// Tests that the calls to update field types are propagated to the fields.
+TEST(FormDataAndroidTest, UpdateFieldTypes_ChangedForm) {
+  std::vector<MockFormFieldDataAndroidBridge*> bridges;
+  EnableFieldTestingFactoryAndSaveBridges(&bridges);
+
+  FormData form = CreateTestForm();
+  form.fields = {CreateTestField(), CreateTestField()};
+  FormStructure form_structure(form);
+  ASSERT_EQ(form_structure.field_count(), 2u);
+
+  form.fields.push_back(CreateTestField());
+  std::swap(form.fields.front(), form.fields.back());
+  FormDataAndroid form_android(form);
+
+  ASSERT_THAT(bridges, SizeIs(3));
+  ASSERT_TRUE(bridges[0]);
+  ASSERT_TRUE(bridges[1]);
+  ASSERT_TRUE(bridges[2]);
+
+  EXPECT_CALL(*bridges[0], UpdateFieldTypes).Times(0);
+  EXPECT_CALL(*bridges[1], UpdateFieldTypes);
+  EXPECT_CALL(*bridges[2], UpdateFieldTypes);
+  form_android.UpdateFieldTypes(form_structure);
 }
 
 // Tests that calling `UpdateFieldVisibilities` propagates the visibility to the

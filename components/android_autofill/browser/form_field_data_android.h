@@ -13,10 +13,11 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
-struct FormFieldData;
 class FormFieldDataAndroidBridge;
 
 // This class is the native peer of FormFieldData.java. Its intention is
@@ -60,6 +61,8 @@ class FormFieldDataAndroid {
 
   bool SimilarFieldAs(const FormFieldData& field) const;
   void UpdateAutofillTypes(FieldTypes field_types);
+
+  FieldGlobalId global_id() { return field_.get().global_id(); }
 
  private:
   // The C++ <-> Java bridge.
