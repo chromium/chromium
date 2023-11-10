@@ -18,8 +18,6 @@
 #include "chrome/browser/apps/app_deduplication_service/duplicate_group.h"
 #include "chrome/browser/apps/app_deduplication_service/entry_types.h"
 #include "chrome/browser/apps/app_deduplication_service/proto/deduplication_data.pb.h"
-#include "chrome/browser/apps/app_provisioning_service/app_provisioning_data_manager.h"
-#include "chrome/browser/apps/app_provisioning_service/proto/app_data.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
@@ -32,7 +30,6 @@ class PrefRegistrySyncable;
 namespace apps::deduplication {
 
 class AppDeduplicationService : public KeyedService,
-                                public AppProvisioningDataManager::Observer,
                                 public apps::AppRegistryCache::Observer {
  public:
   explicit AppDeduplicationService(Profile* profile);
@@ -118,9 +115,6 @@ class AppDeduplicationService : public KeyedService,
   std::map<Entry, uint32_t> entry_to_group_map_;
   raw_ptr<Profile, ExperimentalAsh> profile_;
 
-  base::ScopedObservation<AppProvisioningDataManager,
-                          AppProvisioningDataManager::Observer>
-      app_provisioning_data_observeration_{this};
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observation_{this};

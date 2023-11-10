@@ -13,8 +13,6 @@
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_server_connector.h"
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_service_factory.h"
 #include "chrome/browser/apps/app_deduplication_service/proto/deduplication_data.pb.h"
-#include "chrome/browser/apps/app_provisioning_service/app_provisioning_data_manager.h"
-#include "chrome/browser/apps/app_provisioning_service/proto/app_data.pb.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/common/chrome_features.h"

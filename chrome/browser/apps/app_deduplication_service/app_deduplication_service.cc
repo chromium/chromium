@@ -65,8 +65,6 @@ AppDeduplicationService::AppDeduplicationService(Profile* profile)
     : profile_(profile),
       server_connector_(std::make_unique<AppDeduplicationServerConnector>()),
       device_info_manager_(std::make_unique<DeviceInfoManager>(profile)) {
-  app_provisioning_data_observeration_.Observe(
-      AppProvisioningDataManager::Get());
   app_registry_cache_observation_.Observe(
       &apps::AppServiceProxyFactory::GetForProfile(profile)
            ->AppRegistryCache());
