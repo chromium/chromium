@@ -173,6 +173,9 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void ShowFullScreen();
   void HideDialog();
 
+  // Common part for ShowGaiaDialog/StartUserRecovery.
+  void ShowGaiaDialogImpl(const AccountId& prefilled_account);
+
   // Adds this as a `OobeUI::Observer` if it has not already been added as one.
   void ObserveOobeUI();
 

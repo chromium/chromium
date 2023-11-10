@@ -561,6 +561,28 @@ void LoginDisplayHostMojo::OnBrowserCreated() {
 }
 
 void LoginDisplayHostMojo::ShowGaiaDialog(const AccountId& prefilled_account) {
+  GetWizardContext()->knowledge_factor_setup =
+      WizardContext::KnowledgeFactorSetup();
+
+  GetWizardContext()->knowledge_factor_setup.auth_setup_flow =
+      WizardContext::AuthChangeFlow::kInitialSetup;
+
+  ShowGaiaDialogImpl(prefilled_account);
+}
+
+void LoginDisplayHostMojo::StartUserRecovery(
+    const AccountId& account_to_recover) {
+  GetWizardContext()->knowledge_factor_setup =
+      WizardContext::KnowledgeFactorSetup();
+
+  GetWizardContext()->knowledge_factor_setup.auth_setup_flow =
+      WizardContext::AuthChangeFlow::kRecovery;
+
+  ShowGaiaDialogImpl(account_to_recover);
+}
+
+void LoginDisplayHostMojo::ShowGaiaDialogImpl(
+    const AccountId& prefilled_account) {
   EnsureOobeDialogLoaded();
   DCHECK(GetOobeUI());
 
@@ -575,11 +597,6 @@ void LoginDisplayHostMojo::ShowGaiaDialog(const AccountId& prefilled_account) {
   // Refresh wallpaper once OobeDialogState is propagated after showing the
   // dialog.
   UpdateWallpaper(prefilled_account);
-}
-
-void LoginDisplayHostMojo::StartUserRecovery(
-    const AccountId& account_to_recover) {
-  ShowGaiaDialog(account_to_recover);
 }
 
 void LoginDisplayHostMojo::ShowOsInstallScreen() {
