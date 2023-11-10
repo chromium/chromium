@@ -1421,7 +1421,7 @@ std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
                 if (const auto& nvs_expected =
                         prefetch_container->GetNoVarySearchHint()) {
                   if (nvs_expected->AreEquivalent(
-                          key.second, prefetch_container->GetURL())) {
+                          key.prefetch_url(), prefetch_container->GetURL())) {
                     hint_matches->push_back(prefetch_container.get());
                   }
                 }
@@ -1483,7 +1483,7 @@ PrefetchService::HandlePrefetchContainerToServe(
     const PrefetchContainer::Key& key,
     PrefetchContainer& prefetch_container,
     PrefetchMatchResolver& prefetch_match_resolver) {
-  const GURL& url = key.second;
+  const GURL& url = key.prefetch_url();
   DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe("
            << prefetch_container << "): Start";
 
@@ -1541,9 +1541,8 @@ PrefetchService::HandlePrefetchContainerToServe(
       return HandlePrefetchContainerResult::kWaitForHead;
     }
     case PrefetchContainer::ServableState::kNotServable: {
-      DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe("
-               << key.second << "): " << prefetch_container
-               << " is not servable";
+      DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe(" << key
+               << "): " << prefetch_container << " is not servable";
       prefetch_container.OnReturnPrefetchToServe(/*served=*/false);
       return HandlePrefetchContainerResult::kNotUsable;
     }
@@ -1558,7 +1557,7 @@ void PrefetchService::GetPrefetchToServe(
   DumpPrefetchesForDebug();
   auto potential_matching_prefetches = FindPrefetchContainerToServe(
       key, std::move(serving_page_metrics_container));
-  DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << key.second
+  DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << key
            << "): Potential matched with "
            << potential_matching_prefetches.size() << " prefetch containers.";
   bool waiting_on_prefetch_head = false;
@@ -1583,7 +1582,7 @@ void PrefetchService::GetPrefetchToServe(
   }
   // If not waiting on any prefetches it means there is no match. Let the
   // browser know to request url from the web server.
-  DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << key.second
+  DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << key
            << "): No PrefetchContainer is servable";
   ReturnPrefetchToServe({}, {}, prefetch_match_resolver);
 }
@@ -1610,8 +1609,7 @@ void PrefetchService::WaitOnPrefetchToServeHead(
   // Make sure we are not waiting on this prefetch_url anymore.
   CHECK(!prefetch_match_resolver->IsWaitingForPrefetch(prefetch_url));
 
-  const GURL& nav_url = key.second;
-  DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead(" << nav_url
+  DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead(" << key
            << "): PrefetchContainer head received for " << prefetch_url << "!";
   // This method is registered with the prefetch_container as the
   // ReceivedHeadCallback. We only call this method immediately after
@@ -1623,7 +1621,7 @@ void PrefetchService::WaitOnPrefetchToServeHead(
   switch (prefetch_container->GetServableState(PrefetchCacheableDuration())) {
     case PrefetchContainer::ServableState::kNotServable:
     case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived: {
-      DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead(" << nav_url
+      DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead(" << key
                << "): " << *prefetch_container << " not servable!";
       prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
       ReturnPrefetchToServe(prefetch_url, {}, *prefetch_match_resolver);
@@ -1633,7 +1631,7 @@ void PrefetchService::WaitOnPrefetchToServeHead(
       break;
   }
 
-  if (nav_url == prefetch_container->GetURL()) {
+  if (key.prefetch_url() == prefetch_container->GetURL()) {
     HandlePrefetchContainerToServe(key, *prefetch_container,
                                    *prefetch_match_resolver);
     return;
@@ -1656,16 +1654,15 @@ void PrefetchService::WaitOnPrefetchToServeHead(
         no_vary_search::ParseHttpNoVarySearchDataFromMojom(
             head->parsed_headers->no_vary_search_with_parse_error
                 ->get_no_vary_search());
-    if (!no_vary_search_data.AreEquivalent(nav_url,
+    if (!no_vary_search_data.AreEquivalent(key.prefetch_url(),
                                            prefetch_container->GetURL())) {
       prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
       prefetch_container->UpdateServingPageMetrics();
       ReturnPrefetchToServe(prefetch_url, {}, *prefetch_match_resolver);
       return;
     }
-    DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead::"
-             << "url = " << nav_url << "::"
-             << "matches by NVS header the prefetch "
+    DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead::" << key
+             << "::" << "matches by NVS header the prefetch "
              << prefetch_container->GetURL();
     if (auto attempt = prefetch_container->preloading_attempt()) {
       // Before No-Vary-Search hint, the decision to use a prefetched response
@@ -1677,7 +1674,7 @@ void PrefetchService::WaitOnPrefetchToServeHead(
       // have already decided we are going to use the prefetch, so we can
       // safely call `SetIsAccurateTriggering`.
       static_cast<PreloadingAttemptImpl*>(attempt.get())
-          ->SetIsAccurateTriggering(nav_url);
+          ->SetIsAccurateTriggering(key.prefetch_url());
     }
     HandlePrefetchContainerToServe(key, *prefetch_container,
                                    *prefetch_match_resolver);

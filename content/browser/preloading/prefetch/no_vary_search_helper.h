@@ -49,18 +49,20 @@ class PrefetchKeyTraits<GURL> {
   }
 };
 
-template <typename T>
-class PrefetchKeyTraits<std::pair<T, GURL>> {
+template <>
+class PrefetchKeyTraits<PrefetchContainer::Key> {
  public:
-  using PrefetchKey = std::pair<T, GURL>;
-  static const GURL& GetURL(const PrefetchKey& key) { return key.second; }
-  static PrefetchKey KeyWithNewURL(const PrefetchKey& old_key,
-                                   const GURL& new_url) {
-    return PrefetchKey(old_key.first, new_url);
+  static const GURL& GetURL(const PrefetchContainer::Key& key) {
+    return key.prefetch_url();
   }
-  static bool NonUrlPartIsSame(const PrefetchKey& key1,
-                               const PrefetchKey& key2) {
-    return key1.first == key2.first;
+  static PrefetchContainer::Key KeyWithNewURL(
+      const PrefetchContainer::Key& old_key,
+      const GURL& new_url) {
+    return PrefetchContainer::Key(old_key.referring_document_token(), new_url);
+  }
+  static bool NonUrlPartIsSame(const PrefetchContainer::Key& key1,
+                               const PrefetchContainer::Key& key2) {
+    return key1.referring_document_token() == key2.referring_document_token();
   }
 };
 

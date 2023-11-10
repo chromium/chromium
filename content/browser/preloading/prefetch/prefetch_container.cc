@@ -1238,8 +1238,8 @@ std::ostream& operator<<(std::ostream& ostream,
 
 std::ostream& operator<<(std::ostream& ostream,
                          const PrefetchContainer::Key& prefetch_key) {
-  return ostream << "(" << prefetch_key.first << ", " << prefetch_key.second
-                 << ")";
+  return ostream << "(" << prefetch_key.referring_document_token() << ", "
+                 << prefetch_key.prefetch_url() << ")";
 }
 
 CONTENT_EXPORT std::ostream& operator<<(

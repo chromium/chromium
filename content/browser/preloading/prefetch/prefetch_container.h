@@ -109,9 +109,36 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchContainer& operator=(const PrefetchContainer&) = delete;
 
   // Defines the key to uniquely identify a prefetch.
-  using Key = std::pair<blink::DocumentToken, GURL>;
+  class Key {
+   public:
+    Key() = delete;
+    Key(blink::DocumentToken referring_document_token, GURL prefetch_url)
+        : referring_document_token_(std::move(referring_document_token)),
+          prefetch_url_(std::move(prefetch_url)) {}
+
+    bool operator==(const Key& rhs) const = default;
+    bool operator<(const Key& rhs) const {
+      if (referring_document_token_ != rhs.referring_document_token()) {
+        return referring_document_token_ < rhs.referring_document_token_;
+      }
+      return prefetch_url_ < rhs.prefetch_url_;
+    }
+
+    const blink::DocumentToken& referring_document_token() const {
+      return referring_document_token_;
+    }
+    const GURL& prefetch_url() const { return prefetch_url_; }
+
+   private:
+    friend CONTENT_EXPORT std::ostream& operator<<(std::ostream& ostream,
+                                                   const Key& prefetch_key);
+
+    const blink::DocumentToken referring_document_token_;
+    const GURL prefetch_url_;
+  };
+
   Key GetPrefetchContainerKey() const {
-    return std::make_pair(referring_document_token_, prefetch_url_);
+    return Key(referring_document_token_, prefetch_url_);
   }
 
   // The ID of the RenderFrameHost that triggered the prefetch.

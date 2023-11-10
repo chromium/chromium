@@ -162,7 +162,7 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
       prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
   EXPECT_EQ(prefetch_container.GetPrefetchContainerKey(),
-            std::make_pair(document_token, GURL("https://test.com")));
+            PrefetchContainer::Key(document_token, GURL("https://test.com")));
   EXPECT_FALSE(prefetch_container.GetHead());
 }
 
