@@ -17,7 +17,7 @@ This is a testharness.js-based test.
 [FAIL] .inline-block
   assert_equals: .inline-block display expected "inline-block" but got "block"
 [FAIL] .ruby
-  assert_equals: .ruby display expected "inline" but got "block"
+  assert_equals: .ruby display expected "inline" but got "block ruby"
 [FAIL] .rt
   assert_equals: .rt width expected "29.3281px" but got "800px"
 Harness: the test ran to completion.

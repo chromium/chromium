@@ -2461,7 +2461,7 @@ class ComputedStyle final : public ComputedStyleBase {
 
   static bool IsDisplayInlineType(EDisplay display) {
     return display == EDisplay::kInline ||
-           display == EDisplay::kInlineListItem ||
+           display == EDisplay::kInlineListItem || display == EDisplay::kRuby ||
            IsDisplayReplacedType(display);
   }
 

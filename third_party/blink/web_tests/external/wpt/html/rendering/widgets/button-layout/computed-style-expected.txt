@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 135 tests; 50 PASS, 85 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 135 tests; 60 PASS, 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] computed display of <input type=reset> with display: inline
   assert_equals: expected "inline" but got "inline-block"
 [FAIL] computed display of <input type=button> with display: inline
@@ -160,16 +160,11 @@ Found 135 tests; 50 PASS, 85 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] computed display of <input type=submit> with display: grid
 [PASS] computed display of <input type=color> with display: grid
 [PASS] computed display of <button type=submit> with display: grid
-[FAIL] computed display of <input type=reset> with display: ruby
-  assert_not_equals: display: ruby is not supported got disallowed value ""
-[FAIL] computed display of <input type=button> with display: ruby
-  assert_not_equals: display: ruby is not supported got disallowed value ""
-[FAIL] computed display of <input type=submit> with display: ruby
-  assert_not_equals: display: ruby is not supported got disallowed value ""
-[FAIL] computed display of <input type=color> with display: ruby
-  assert_not_equals: display: ruby is not supported got disallowed value ""
-[FAIL] computed display of <button type=submit> with display: ruby
-  assert_not_equals: display: ruby is not supported got disallowed value ""
+[PASS] computed display of <input type=reset> with display: ruby
+[PASS] computed display of <input type=button> with display: ruby
+[PASS] computed display of <input type=submit> with display: ruby
+[PASS] computed display of <input type=color> with display: ruby
+[PASS] computed display of <button type=submit> with display: ruby
 [FAIL] computed display of <input type=reset> with display: ruby-base
   assert_not_equals: display: ruby-base is not supported got disallowed value ""
 [FAIL] computed display of <input type=button> with display: ruby-base
@@ -180,16 +175,11 @@ Found 135 tests; 50 PASS, 85 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_not_equals: display: ruby-base is not supported got disallowed value ""
 [FAIL] computed display of <button type=submit> with display: ruby-base
   assert_not_equals: display: ruby-base is not supported got disallowed value ""
-[FAIL] computed display of <input type=reset> with display: ruby-text
-  assert_not_equals: display: ruby-text is not supported got disallowed value ""
-[FAIL] computed display of <input type=button> with display: ruby-text
-  assert_not_equals: display: ruby-text is not supported got disallowed value ""
-[FAIL] computed display of <input type=submit> with display: ruby-text
-  assert_not_equals: display: ruby-text is not supported got disallowed value ""
-[FAIL] computed display of <input type=color> with display: ruby-text
-  assert_not_equals: display: ruby-text is not supported got disallowed value ""
-[FAIL] computed display of <button type=submit> with display: ruby-text
-  assert_not_equals: display: ruby-text is not supported got disallowed value ""
+[PASS] computed display of <input type=reset> with display: ruby-text
+[PASS] computed display of <input type=button> with display: ruby-text
+[PASS] computed display of <input type=submit> with display: ruby-text
+[PASS] computed display of <input type=color> with display: ruby-text
+[PASS] computed display of <button type=submit> with display: ruby-text
 [FAIL] computed display of <input type=reset> with display: ruby-base-container
   assert_not_equals: display: ruby-base-container is not supported got disallowed value ""
 [FAIL] computed display of <input type=button> with display: ruby-base-container
