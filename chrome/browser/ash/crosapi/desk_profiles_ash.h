@@ -51,6 +51,9 @@ class DeskProfilesAsh : public mojom::DeskProfileObserver,
   // Cached list of profiles received from Lacros.
   std::vector<ash::LacrosProfileSummary> profiles_;
 
+  // The profile ID of the primary user.
+  uint64_t primary_user_profile_id_ = 0;
+
   base::ObserverList<Observer> observers_;
 
   mojo::ReceiverSet<mojom::DeskProfileObserver> receivers_;

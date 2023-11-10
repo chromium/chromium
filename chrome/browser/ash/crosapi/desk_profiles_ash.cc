@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
 
@@ -35,8 +37,24 @@ void DeskProfilesAsh::BindReceiver(
 
 void DeskProfilesAsh::OnProfileUpsert(
     std::vector<mojom::LacrosProfileSummaryPtr> profiles) {
+  // Get the email of the primary user. This is done to figure out which summary
+  // that we receive from lacros represents the primary user. We only need to do
+  // this once.
+  std::string primary_user_email;
+  if (primary_user_profile_id_ == 0 && ash::Shell::HasInstance()) {
+    if (const auto* session =
+            ash::Shell::Get()->session_controller()->GetPrimaryUserSession()) {
+      primary_user_email = session->user_info.account_id.GetUserEmail();
+    }
+  }
+
   for (auto& prof : profiles) {
-    auto& entry = UpsertProfile(ConvertProfileSummary(std::move(prof)));
+    ash::LacrosProfileSummary summary = ConvertProfileSummary(std::move(prof));
+    if (!primary_user_email.empty() && primary_user_email == summary.email) {
+      primary_user_profile_id_ = summary.profile_id;
+    }
+
+    auto& entry = UpsertProfile(std::move(summary));
     for (auto& observer : observers_) {
       observer.OnProfileUpsert(entry);
     }
