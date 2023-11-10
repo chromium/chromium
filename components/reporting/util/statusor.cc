@@ -10,9 +10,9 @@
 
 namespace reporting::internal {
 ErrorStatus::ErrorStatus(const ErrorStatus&) = default;
-ErrorStatus& ErrorStatus::operator=(const ErrorStatus& x) = default;
+ErrorStatus& ErrorStatus::operator=(const ErrorStatus&) = default;
 ErrorStatus::ErrorStatus(ErrorStatus&&) = default;
-ErrorStatus& ErrorStatus::operator=(ErrorStatus&& x) = default;
+ErrorStatus& ErrorStatus::operator=(ErrorStatus&&) = default;
 ErrorStatus::~ErrorStatus() = default;
 
 ErrorStatus::ErrorStatus(const Status& status) : Status(status) {
@@ -22,5 +22,4 @@ ErrorStatus::ErrorStatus(const Status& status) : Status(status) {
 ErrorStatus::ErrorStatus(Status&& status) : Status(std::move(status)) {
   CHECK(!ok()) << "The status must not be OK";
 }
-
 }  // namespace reporting::internal
