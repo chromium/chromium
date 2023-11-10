@@ -999,7 +999,9 @@ BUILD_ELEMENTWISE_UNARY_OP(neg,
 BUILD_ELEMENTWISE_UNARY_OP(sin, kSin, webnn::DataTypeConstraint::kFloat)
 BUILD_ELEMENTWISE_UNARY_OP(tan, kTan, webnn::DataTypeConstraint::kFloat)
 BUILD_ELEMENTWISE_UNARY_OP(erf, kErf, webnn::DataTypeConstraint::kFloat)
-BUILD_ELEMENTWISE_UNARY_OP(identity, kIdentity, webnn::DataTypeConstraint::kAll)
+BUILD_ELEMENTWISE_UNARY_OP(identity,
+                           kIdentity,
+                           webnn::DataTypeConstraintSet::All())
 BUILD_ELEMENTWISE_UNARY_OP(logicalNot,
                            kLogicalNot,
                            {webnn::Operand::DataType::kUint8})

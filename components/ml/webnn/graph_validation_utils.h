@@ -23,12 +23,14 @@ namespace webnn {
 struct Operand {
   // Represents the `MLOperandType` in the WebIDL definition.
   enum DataType {
-    kFloat32,
+    kMinValue = 0,
+    kFloat32 = 0,
     kFloat16,
     kInt32,
     kUint32,
     kInt8,
     kUint8,
+    kMaxValue = kUint8,
   };
 
   Operand(DataType data_type, std::vector<uint32_t> dimensions);
@@ -52,8 +54,8 @@ struct Operand {
 };
 
 using DataTypeConstraintSet = base::EnumSet<Operand::DataType,
-                                            Operand::DataType::kFloat32,
-                                            Operand::DataType::kUint8>;
+                                            Operand::DataType::kMinValue,
+                                            Operand::DataType::kMaxValue>;
 
 namespace DataTypeConstraint {
 
@@ -62,11 +64,6 @@ static constexpr DataTypeConstraintSet kFloat = {Operand::DataType::kFloat32,
 
 static constexpr DataTypeConstraintSet kSignedInteger = {
     Operand::DataType::kInt32, Operand::DataType::kInt8};
-
-static constexpr DataTypeConstraintSet kAll = {
-    Operand::DataType::kFloat32, Operand::DataType::kFloat16,
-    Operand::DataType::kInt32,   Operand::DataType::kUint32,
-    Operand::DataType::kInt8,    Operand::DataType::kUint8};
 
 }  // namespace DataTypeConstraint
 
