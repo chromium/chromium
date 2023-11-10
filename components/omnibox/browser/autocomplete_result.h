@@ -292,6 +292,13 @@ class AutocompleteResult {
   void MergeSuggestionGroupsMap(
       const omnibox::GroupConfigMap& suggeston_groups_map);
 
+  // Erase matches where `predicate` returns true. In other words, this
+  // preserves only those matches for which `predicate` returns false.
+  template <typename UnaryPredicate>
+  size_t EraseMatchesWhere(UnaryPredicate predicate) {
+    return std::erase_if(matches_, predicate);
+  }
+
   // This method implements a stateful stable partition. Matches which are
   // search types, and their submatches regardless of type, are shifted
   // earlier in the range, while non-search types and their submatches

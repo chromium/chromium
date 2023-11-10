@@ -1961,6 +1961,22 @@ void AutocompleteController::MaybeCleanSuggestionsForKeywordMode(
     AutocompleteResult* result) {
   if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
       input.starts_with(u'@')) {
+    // When the input is '@' exactly, some special filtering rules are applied.
+    // Note: the rule preserving other matches with `associated_keyword` is
+    // not currently necessary, but is intended to make it easy to coexist
+    // with enterprise configured scopes when that feature is implemented.
+    if (input == u"@") {
+      result->EraseMatchesWhere([](const AutocompleteMatch& match) {
+        return !(match.type == AutocompleteMatchType::STARTER_PACK ||
+                 match.contents == u"@" || match.associated_keyword);
+      });
+      // Simple sort is needed to restore verbatim '@' search as top/default
+      // match because a different default, e.g. "@hill", might have previously
+      // occupied the top spot while '@' was demoted below others.
+      std::sort(result->begin(), result->end(),
+                AutocompleteMatch::MoreRelevant);
+    }
+
     // Intentionally avoid actions and remove button on first suggestion
     // which may interfere with keyword mode refresh.
     if (result->size() > 1 &&
