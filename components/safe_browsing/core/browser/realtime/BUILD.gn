@@ -107,4 +107,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/googletest:gmock",
   ]
+  if (is_ios) {
+    deps += [ "//components/test:safe_browsing_test_bundle_data" ]
+  }
 }

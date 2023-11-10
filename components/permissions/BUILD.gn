@@ -139,7 +139,7 @@ source_set("permissions") {
       "contexts/geolocation_permission_context_system.h",
     ]
   }
-  if (!is_android && !is_ios) {
+  if (!is_android) {
     deps += [ "//components/guest_view/browser" ]
   }
   if (is_android) {

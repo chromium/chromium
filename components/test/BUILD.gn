@@ -99,6 +99,10 @@ if (is_ios) {
     testonly = true
     filelist_name = "data/performance_manager/unit_tests_bundle_data.filelist"
   }
+  bundle_data_from_filelist("safe_browsing_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/safe_browsing/unit_tests_bundle_data.filelist"
+  }
   bundle_data_from_filelist("service_worker_test_bundle_data") {
     testonly = true
     filelist_name = "data/service_worker/unit_tests_bundle_data.filelist"

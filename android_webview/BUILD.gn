@@ -1119,6 +1119,7 @@ grit("generate_components_resources") {
     "enable_printing=$enable_printing",
     "safe_browsing_mode=$safe_browsing_mode",
     "enable_supervised_users=$enable_supervised_users",
+    "use_blink=$use_blink",
   ]
 
   # See :generate_webui_resources for an explanation of the allowlist
