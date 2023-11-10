@@ -73,6 +73,17 @@ bool ShouldShowPlaceholder(PrefService* prefs) {
     return true;
   }
 
+  // If the model is empty and the holding space wallpaper nudge is enabled,
+  // then we need to show the placeholder so that there is something when the
+  // user clicks the force-shown tray.
+  // TODO(http://b/307787722): Replace this with the desired final behavior for
+  // holding space wallpaper nudge.
+  if (features::IsHoldingSpaceWallpaperNudgeEnabled() &&
+      HoldingSpaceController::Get()->model() &&
+      !HoldingSpaceController::Get()->model()->items().empty()) {
+    return true;
+  }
+
   // The placeholder should only be shown if:
   // * a holding space item has been added at some point in time,
   // * a holding space item has *never* been pinned, and
