@@ -1675,6 +1675,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Omnibox.SteadyStatePositionAtStartup.Selected"
+    enum="OmniboxPositionType" expires_after="2024-01-28">
+  <owner>christianxu@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logs the selected steady state (unfocused) omnibox position when starting
+    the app. This only logged when the position is user selected.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Omnibox.SuggestionsListScrolled.{PageClass}"
     enum="Boolean" expires_after="2024-01-31">
   <owner>christianxu@chromium.org</owner>
