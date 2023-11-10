@@ -17,8 +17,6 @@ PrefetchType::PrefetchType(bool use_prefetch_proxy,
 
 PrefetchType::~PrefetchType() = default;
 PrefetchType::PrefetchType(const PrefetchType& prefetch_type) = default;
-PrefetchType& PrefetchType::operator=(const PrefetchType& prefetch_type) =
-    default;
 
 void PrefetchType::SetProxyBypassedForTest() {
   DCHECK(use_prefetch_proxy_);

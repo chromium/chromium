@@ -19,7 +19,7 @@ class CONTENT_EXPORT PrefetchType {
   ~PrefetchType();
 
   PrefetchType(const PrefetchType& prefetch_type);
-  PrefetchType& operator=(const PrefetchType& prefetch_type);
+  PrefetchType& operator=(const PrefetchType& prefetch_type) = delete;
 
   // Whether this prefetch should bypass the proxy even though it would need to
   // be proxied for anonymity. For use in test automation only.
