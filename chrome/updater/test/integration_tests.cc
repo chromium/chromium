@@ -2521,6 +2521,30 @@ INSTANTIATE_TEST_SUITE_P(
             base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
                           "\",\"status\":\"error-unknownApplication\"}"}),
         },
+
+        // Interactive install via the command line,
+        // `update_client::ProtocolError::OS_NOT_SUPPORTED` error.
+        {
+            true,
+            "INSTALLER_RESULT=0",
+            static_cast<int>(update_client::ProtocolError::OS_NOT_SUPPORTED),
+            base::WideToUTF8(GetLocalizedString(IDS_OS_NOT_SUPPORTED_BASE)),
+            {},
+            base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
+                          "\",\"status\":\"error-osnotsupported\"}"}),
+        },
+
+        // Interactive install via the command line,
+        // `update_client::ProtocolError::HW_NOT_SUPPORTED` error.
+        {
+            true,
+            "INSTALLER_RESULT=0",
+            static_cast<int>(update_client::ProtocolError::HW_NOT_SUPPORTED),
+            base::WideToUTF8(GetLocalizedString(IDS_HW_NOT_SUPPORTED_BASE)),
+            {},
+            base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
+                          "\",\"status\":\"error-hwnotsupported\"}"}),
+        },
     }));
 
 TEST_P(IntegrationInstallerResultsTest, TestCases) {

@@ -289,6 +289,14 @@ void UpdateEngine::UpdateCheckResultsAvailable(
         if (status == "error-invalidAppId")
           return std::make_pair(ErrorCategory::kUpdateCheck,
                                 ProtocolError::INVALID_APPID);
+        if (status == "error-osnotsupported") {
+          return std::make_pair(ErrorCategory::kUpdateCheck,
+                                ProtocolError::OS_NOT_SUPPORTED);
+        }
+        if (status == "error-hwnotsupported") {
+          return std::make_pair(ErrorCategory::kUpdateCheck,
+                                ProtocolError::HW_NOT_SUPPORTED);
+        }
         // If the parser has return a valid result and the status is not one of
         // the literals above, then this must be a success an not a parse error.
         return std::make_pair(ErrorCategory::kNone, ProtocolError::NONE);

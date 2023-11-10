@@ -278,8 +278,11 @@ bool ParseApp(const base::Value& app_node_val,
     result->status = *status;
     if (result->status == "restricted" ||
         result->status == "error-unknownApplication" ||
-        result->status == "error-invalidAppId")
+        result->status == "error-invalidAppId" ||
+        result->status == "error-osnotsupported" ||
+        result->status == "error-hwnotsupported") {
       return true;
+    }
 
     // If the status was not handled above and the status is not "ok", then
     // this must be a status literal that that the parser does not know about.

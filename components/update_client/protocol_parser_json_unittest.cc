@@ -324,7 +324,7 @@ const char* kJSONUpdateCheckStatusErrorWithRunAction = R"()]}'
    ]
   }})";
 
-// Includes four app objects with status different than 'ok'.
+// Includes six app objects with status different than 'ok'.
 const char* kJSONAppsStatusError = R"()]}'
   {"response":{
    "protocol":"3.1",
@@ -342,6 +342,14 @@ const char* kJSONAppsStatusError = R"()]}'
      "updatecheck":{"status":"error-internal"}
     },
     {"appid":"dddddddd",
+     "status":"error-osnotsupported",
+     "updatecheck":{"status":"error-internal"}
+    },
+    {"appid":"eeeeeeee",
+     "status":"error-hwnotsupported",
+     "updatecheck":{"status":"error-internal"}
+    },
+    {"appid":"ffffffff",
      "status":"foobar",
      "updatecheck":{"status":"error-internal"}
     }
@@ -563,7 +571,7 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
   {
     EXPECT_TRUE(parser->Parse(kJSONAppsStatusError));
     EXPECT_STREQ("Unknown app status", parser->errors().c_str());
-    EXPECT_EQ(3u, parser->results().list.size());
+    EXPECT_EQ(5u, parser->results().list.size());
     const auto* first_result = &parser->results().list[0];
     EXPECT_EQ(first_result->extension_id, "aaaaaaaa");
     EXPECT_STREQ("error-unknownApplication", first_result->status.c_str());
@@ -576,6 +584,14 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
     EXPECT_EQ(third_result->extension_id, "cccccccc");
     EXPECT_STREQ("error-invalidAppId", third_result->status.c_str());
     EXPECT_TRUE(third_result->manifest.version.empty());
+    const auto* fourth_result = &parser->results().list[3];
+    EXPECT_EQ(fourth_result->extension_id, "dddddddd");
+    EXPECT_STREQ("error-osnotsupported", fourth_result->status.c_str());
+    EXPECT_TRUE(fourth_result->manifest.version.empty());
+    const auto* fifth_result = &parser->results().list[4];
+    EXPECT_EQ(fifth_result->extension_id, "eeeeeeee");
+    EXPECT_STREQ("error-hwnotsupported", fifth_result->status.c_str());
+    EXPECT_TRUE(fifth_result->manifest.version.empty());
   }
   {
     EXPECT_TRUE(parser->Parse(kJSONManifestRun));

@@ -356,6 +356,12 @@ std::wstring GetTextForUpdateCheckError(int error) {
     case static_cast<int>(update_client::ProtocolError::RESTRICTED_APPLICATION):
       return GetLocalizedString(IDS_RESTRICTED_RESPONSE_FROM_SERVER_BASE);
 
+    case static_cast<int>(update_client::ProtocolError::OS_NOT_SUPPORTED):
+      return GetLocalizedString(IDS_OS_NOT_SUPPORTED_BASE);
+
+    case static_cast<int>(update_client::ProtocolError::HW_NOT_SUPPORTED):
+      return GetLocalizedString(IDS_HW_NOT_SUPPORTED_BASE);
+
     // Http Status Code `401` Unauthorized.
     case 401:
       return GetLocalizedString(IDS_ERROR_HTTPSTATUS_UNAUTHORIZED_BASE);

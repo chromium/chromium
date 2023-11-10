@@ -130,6 +130,8 @@ enum class ProtocolError : int {
   UNKNOWN_APPLICATION = -10006,
   RESTRICTED_APPLICATION = -10007,
   INVALID_APPID = -10008,
+  OS_NOT_SUPPORTED = -10009,
+  HW_NOT_SUPPORTED = -10010,
 };
 
 }  // namespace update_client

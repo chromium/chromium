@@ -1897,6 +1897,14 @@ Permissions you've already given to websites and apps may apply to this account.
                  desc="Error message displayed in the main dialog when the user is in a export-restricted country.">
           Installation failed because access is restricted in this country.
         </message>
+        <message name="IDS_OS_NOT_SUPPORTED"
+                 desc="Error message displayed in the main dialog when the OS does not meet the application's requirements.">
+          Installation failed because this version of the operating system is not supported.
+        </message>
+        <message name="IDS_HW_NOT_SUPPORTED"
+                 desc="Error message displayed in the main dialog when the computer does not meet the application's minimum hardware requirements.">
+          Installation failed because your computer does not meet the minimum hardware requirements.
+        </message>
         <message name="IDS_GENERIC_UPDATE_CHECK_ERROR"
                  desc="Error message displayed in the main dialog when the update client returns an error in the update check.">
           Update check error: <ph name="UPDATE_CHECK_ERROR">$1<ex>error-internal</ex></ph>.
