@@ -770,7 +770,11 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8MinorMS"),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_INJECT_PLATFORM_JS_APIS,
-                "Inject platform-specific Javascript APIs."),
+                "Inject platform-specific JavaScript APIs."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API,
+                "Enable the WebView Media Integrity API. Requires injection of platform-specific"
+                        + " JavaScript APIs to be enabled."),
         Flag.baseFeature(
                 "PMProcessPriorityPolicy",
                 "Controls whether the priority of renderers is controlled by the performance "

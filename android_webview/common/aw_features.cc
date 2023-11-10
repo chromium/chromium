@@ -77,6 +77,12 @@ BASE_FEATURE(kWebViewEmptyComponentLoaderPolicy,
              "WebViewEmptyComponentLoaderPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable the WebView Media Integrity API.
+// This feature requires `kWebViewInjectPlatformJsApis` to be enabled as well.
+BASE_FEATURE(kWebViewMediaIntegrityApi,
+             "WebViewMediaIntegrityApi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, passive mixed content (Audio/Video/Image subresources loaded
 // over HTTP on HTTPS sites) will be autoupgraded to HTTPS, and the load will be
 // blocked if the resource fails to load over HTTPS. This only affects apps that

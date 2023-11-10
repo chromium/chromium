@@ -1974,6 +1974,35 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="RemoteException"/>
 </enum>
 
+<enum name="AndroidWebViewMediaIntegrityInvalidInteraction">
+  <int value="0" label="INVALID_PROVIDER_REQUEST"/>
+  <int value="1" label="INVALID_TOKEN_REQUEST"/>
+  <int value="2" label="CLOSED_PROVIDER_RESPONSE_PORT"/>
+  <int value="3" label="CLOUD_PROJECT_NUMBER_PARSE_ERROR"/>
+  <int value="4" label="TOKEN_REQUEST_MISSING_RESPONSE_PORT"/>
+</enum>
+
+<enum name="AndroidWebViewMediaIntegrityStatus">
+  <int value="0" label="NO_ERROR"/>
+  <int value="1" label="UNKNOWN_ERROR"/>
+  <int value="2" label="API_NOT_AVAILABLE"/>
+  <int value="3" label="PLAY_STORE_NOT_FOUND"/>
+  <int value="4" label="NETWORK_ERROR"/>
+  <int value="5" label="APP_NOT_INSTALLED"/>
+  <int value="6" label="PLAY_SERVICES_NOT_FOUND"/>
+  <int value="7" label="APP_UID_MISMATCH"/>
+  <int value="8" label="TOO_MANY_REQUESTS"/>
+  <int value="9" label="CANNOT_BIND_TO_SERVICE"/>
+  <int value="10" label="GOOGLE_SERVER_UNAVAILABLE"/>
+  <int value="11" label="PLAY_STORE_VERSION_OUTDATED"/>
+  <int value="12" label="PLAY_SERVICES_VERSION_OUTDATED"/>
+  <int value="13" label="CLOUD_PROJECT_NUMBER_IS_INVALID"/>
+  <int value="14" label="REQUEST_HASH_TOO_LONG"/>
+  <int value="15" label="CLIENT_TRANSIENT_ERROR"/>
+  <int value="16" label="INTEGRITY_TOKEN_PROVIDER_INVALID"/>
+  <int value="17" label="INTERNAL_ERROR"/>
+</enum>
+
 <enum name="AndroidWebViewNonEmbeddedMetricsParsingLogResult">
   <int value="0" label="Success"/>
   <int value="1" label="Malformed protobuf"/>
