@@ -1613,6 +1613,52 @@ TEST_F(SnapGroupTest, RefreshVisualsOnWindowDestructionInOverview) {
   }
 }
 
+// Tests that when one of the window in snap group gets destroyed in overview,
+// the other window will restore its bounds properly when been activated to exit
+// overview.
+TEST_F(SnapGroupTest, RemainingWindowBoundsRestoreAfterDestructionInOverview) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  ASSERT_TRUE(split_view_divider());
+  const gfx::Size w1_size_before_overview = w1->GetBoundsInScreen().size();
+
+  OverviewController* overview_controller = OverviewController::Get();
+  overview_controller->StartOverview(OverviewStartAction::kTests);
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(w1->transform().IsIdentity());
+  EXPECT_FALSE(w2->transform().IsIdentity());
+
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  ASSERT_EQ(overview_grid->window_list().size(), 2u);
+
+  // On one window in snap group destroying, the group item will host the other
+  // window.
+  w2.reset();
+  ASSERT_TRUE(overview_grid);
+  EXPECT_EQ(overview_grid->window_list().size(), 2u);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::ToRoundedPoint(
+      GetOverviewItemForWindow(w1.get())->target_bounds().CenterPoint()));
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  const gfx::Size w1_size_after_overview = w1->GetBoundsInScreen().size();
+
+  // Verify that the size of `w1` on overview exit is equal to that of before
+  // entering overview plus `kSplitviewDividerShortSideLength / 2`.
+  EXPECT_EQ(
+      w1_size_before_overview.width() + kSplitviewDividerShortSideLength / 2,
+      w1_size_after_overview.width());
+  EXPECT_EQ(w1_size_before_overview.height(), w1_size_after_overview.height());
+
+  // Verify that the transform is identity.
+  EXPECT_TRUE(w1->transform().IsIdentity());
+}
+
 // Tests that the individual items within the same group will be hosted by the
 // same overview group item.
 TEST_F(SnapGroupTest, OverviewItemTest) {

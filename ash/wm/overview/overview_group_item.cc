@@ -148,7 +148,11 @@ OverviewItem* OverviewGroupItem::GetLeafItemForWindow(aura::Window* window) {
   return nullptr;
 }
 
-void OverviewGroupItem::RestoreWindow(bool reset_transform, bool animate) {}
+void OverviewGroupItem::RestoreWindow(bool reset_transform, bool animate) {
+  for (const auto& item : overview_items_) {
+    item->RestoreWindow(reset_transform, animate);
+  }
+}
 
 void OverviewGroupItem::SetBounds(const gfx::RectF& target_bounds,
                                   OverviewAnimationType animation_type) {
