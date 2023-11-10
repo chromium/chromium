@@ -1793,9 +1793,12 @@ bool SwapChainPresenter::VideoProcessorBlt(
       video_processor_wrapper->video_processor;
 
   if (video_processor_recreated) {
-    driver_supports_vp_auto_hdr_ = GpuDriverSupportsVpAutoHDR(
+    bool supports_vp_auto_hdr = GpuDriverSupportsVpAutoHDR(
         gpu_vendor_id_, video_context.Get(), video_processor.Get());
+    video_processor_wrapper->SetDriverSupportsVpAutoHdr(supports_vp_auto_hdr);
   }
+  bool driver_supports_vp_auto_hdr =
+      video_processor_wrapper->GetDriverSupportsVpAutoHdr();
 
   Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3;
   Microsoft::WRL::ComPtr<ID3D11VideoContext1> context1;
@@ -1905,7 +1908,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
     }
 
     if (enable_vp_auto_hdr_) {
-      hr = ToggleVpAutoHDR(gpu_vendor_id_, driver_supports_vp_auto_hdr_,
+      hr = ToggleVpAutoHDR(gpu_vendor_id_, driver_supports_vp_auto_hdr,
                            video_context.Get(), video_processor.Get(),
                            use_vp_auto_hdr);
       if (FAILED(hr)) {
@@ -1978,7 +1981,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
                      "after it failed with error 0x"
                   << std::hex << hr;
 
-      ToggleVpAutoHDR(gpu_vendor_id_, driver_supports_vp_auto_hdr_,
+      ToggleVpAutoHDR(gpu_vendor_id_, driver_supports_vp_auto_hdr,
                       video_context.Get(), video_processor.Get(), false);
 
       if (!RevertSwapChainToSDR(video_device, video_processor,

@@ -48,6 +48,11 @@ struct VideoProcessorWrapper {
   gfx::Size video_input_size;
   gfx::Size video_output_size;
 
+  bool GetDriverSupportsVpAutoHdr() { return driver_supports_vp_auto_hdr; }
+  void SetDriverSupportsVpAutoHdr(bool value) {
+    driver_supports_vp_auto_hdr = value;
+  }
+
   // The video processor is cached so SwapChains don't have to recreate it
   // whenever they're created.
   Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
@@ -55,6 +60,10 @@ struct VideoProcessorWrapper {
   Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor;
   Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
       video_processor_enumerator;
+
+ private:
+  // Whether the GPU driver supports video processor auto HDR.
+  bool driver_supports_vp_auto_hdr = false;
 };
 
 class SolidColorSurface;
@@ -527,6 +536,7 @@ class GL_EXPORT DCLayerTree {
   // Store the largest video processor to avoid problems in
   // (http://crbug.com/1121061) and (http://crbug.com/1472975).
   VideoProcessorWrapper video_processor_wrapper_;
+
   // To reduce resource usage, we keep track of the largest input/output
   // dimensions for several last VideoProcessor usages. All 4 dimensions must be
   // tracked separately.
