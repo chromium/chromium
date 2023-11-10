@@ -26,11 +26,20 @@ namespace blink {
 class WebElementTest : public PageTestBase {
  protected:
   void InsertHTML(String html);
+  void AddScript(String script);
   WebElement TestElement();
 };
 
 void WebElementTest::InsertHTML(String html) {
   GetDocument().documentElement()->setInnerHTML(html);
+}
+
+void WebElementTest::AddScript(String js) {
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setInnerHTML(js);
+  GetDocument().body()->AppendChild(script);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 }
 
 WebElement WebElementTest::TestElement() {
@@ -106,7 +115,7 @@ TEST_F(WebElementTest, PasteTextIntoContentEditable) {
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Selection().SelectSubString(*element->firstElementChild(), 0, 9);
   ASSERT_EQ(Selection().SelectedText(), String("rich text"));
-  // Paste and append.
+  // Paste and replace selection.
   TestElement().PasteText("fancy text", /*replace_all=*/false);
   EXPECT_EQ(element->innerHTML(), "Some <b>fancy text</b>&nbsp;here.");
   // Paste and replace all.
@@ -132,7 +141,7 @@ TEST_F(WebElementTest, PasteTextIntoTextArea) {
                 element->selectionStart(),
                 element->selectionEnd() - element->selectionStart()),
             String("plain text"));
-  // Paste and append.
+  // Paste and replace selection.
   TestElement().PasteText("boring text", /*replace_all=*/false);
   EXPECT_EQ(element->Value(), "Some boring text here.");
   // Paste and replace all.
@@ -142,6 +151,45 @@ TEST_F(WebElementTest, PasteTextIntoTextArea) {
   element->previousElementSibling()->Focus();
   TestElement().PasteText("world", /*replace_all=*/false);
   EXPECT_EQ(element->Value(), "Hello world");
+}
+
+// Tests that PasteText() aborts when the JavaScript handler of the 'paste'
+// event prevents the default handling.
+TEST_F(WebElementTest, PasteTextIsNoOpWhenPasteIsCancelled) {
+  InsertHTML(
+      "<div id=testElement contenteditable>Some <b>rich text</b> here.</div>");
+  AddScript(R"(
+      document.getElementById('testElement').addEventListener('paste', e => {
+        e.target.textContent = 'UPPERCASE TEXT';
+        e.preventDefault();
+      }))");
+  auto* element = GetDocument().getElementById(AtomicString("testElement"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  Selection().SelectSubString(*element->firstElementChild(), 0, 9);
+  ASSERT_EQ(Selection().SelectedText(), String("rich text"));
+  // Paste and replace selection.
+  TestElement().PasteText("fancy text", /*replace_all=*/false);
+  EXPECT_EQ(element->innerHTML(), "Some <b>UPPERCASE TEXT</b> here.");
+}
+
+// Tests that PasteText() aborts when the JavaScript handler of the
+// 'beforeinput' event prevents the default handling.
+TEST_F(WebElementTest, PasteTextIsNoOpWhenBeforeInputIsCancelled) {
+  InsertHTML(
+      "<div id=testElement contenteditable>Some <b>rich text</b> here.</div>");
+  AddScript(R"(
+      document.getElementById('testElement').addEventListener('beforeinput',
+                                                              e => {
+        e.target.textContent = 'UPPERCASE TEXT';
+        e.preventDefault();
+      }))");
+  auto* element = GetDocument().getElementById(AtomicString("testElement"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  Selection().SelectSubString(*element->firstElementChild(), 0, 9);
+  ASSERT_EQ(Selection().SelectedText(), String("rich text"));
+  // Paste and replace selection.
+  TestElement().PasteText("fancy text", /*replace_all=*/false);
+  EXPECT_EQ(element->innerHTML(), "Some <b>UPPERCASE TEXT</b> here.");
 }
 
 TEST_F(WebElementTest, ShadowRoot) {

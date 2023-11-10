@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/events/clipboard_event.h"
@@ -195,29 +196,31 @@ void WebElement::PasteText(const WebString& text, bool replace_all) {
   // of ClipboardCommands::Paste() that's limited to pasting plain text.
   Element* target = FindEventTargetFrom(
       *frame, frame->Selection().ComputeVisibleSelectionInDOMTree());
-  auto create_data_transfer = [&text]() {
+  auto create_data_transfer = [](const WebString& text) {
     return DataTransfer::Create(DataTransfer::kCopyAndPaste,
                                 DataTransferAccessPolicy::kReadable,
                                 DataObject::CreateFromString(text));
   };
   // Fires "paste" event.
-  target->DispatchEvent(*ClipboardEvent::Create(event_type_names::kPaste,
-                                                create_data_transfer()));
+  if (target->DispatchEvent(*ClipboardEvent::Create(
+          event_type_names::kPaste, create_data_transfer(text))) !=
+      DispatchEventResult::kNotCanceled) {
+    return;
+  }
   // Fires "beforeinput" event.
   if (DispatchBeforeInputDataTransfer(
           target, InputEvent::InputType::kInsertFromPaste,
-          create_data_transfer()) == DispatchEventResult::kNotCanceled) {
-    // Fires "textInput" and "input" events.
-    target->DispatchEvent(
-        *TextEvent::CreateForPlainTextPaste(frame->DomWindow(), text,
-                                            /*should_smart_replace=*/true));
-  }
-
-  if (is_destroyed(*frame)) {
+          create_data_transfer(text)) != DispatchEventResult::kNotCanceled) {
     return;
   }
-  // Revealing the selection currently doesn't work on contenteditables.
-  frame->Selection().RevealSelection();
+  // No DOM mutation if EditContext is active.
+  if (frame->GetInputMethodController().GetActiveEditContext()) {
+    return;
+  }
+  // Fires "textInput" and "input".
+  target->DispatchEvent(
+      *TextEvent::CreateForPlainTextPaste(frame->DomWindow(), text,
+                                          /*should_smart_replace=*/true));
 }
 
 WebVector<WebLabelElement> WebElement::Labels() const {
