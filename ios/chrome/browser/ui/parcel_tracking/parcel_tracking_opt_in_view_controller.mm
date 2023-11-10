@@ -24,8 +24,6 @@ namespace {
 NSString* const kOptInIcon = @"parcel_tracking_icon_new";
 // Radius size of the table view.
 CGFloat const kTableViewCornerRadius = 10;
-// Estimated row height for each cell in the table view.
-CGFloat const kTableViewEstimatedRowHeight = 48;
 // Margin for the options view.
 CGFloat const kOptionsViewMargin = 17;
 // Spacing before the image.
@@ -43,6 +41,7 @@ CGFloat const kRadioButtonSize = 20;
 @implementation ParcelTrackingOptInViewController {
   UITableView* _tableView;
   IOSParcelTrackingOptInStatus _selection;
+  NSLayoutConstraint* _optionsViewHeightConstraint;
 }
 
 - (void)viewDidLoad {
@@ -62,12 +61,6 @@ CGFloat const kRadioButtonSize = 20;
   self.image = [UIImage imageNamed:kOptInIcon];
   self.imageHasFixedSize = true;
   self.topAlignedLayout = YES;
-  if (@available(iOS 16, *)) {
-    self.sheetPresentationController.detents = @[
-      UISheetPresentationControllerDetent.largeDetent,
-      self.preferredHeightDetent
-    ];
-  }
   self.customSpacingAfterImage = 0;
   self.customSpacingBeforeImageIfNoNavigationBar = kSpacingBeforeImage;
   [super viewDidLoad];
@@ -81,6 +74,11 @@ CGFloat const kRadioButtonSize = 20;
                                                constant:-kOptionsViewMargin],
   ]];
   [self updateButtonForState:UIControlStateDisabled];
+}
+
+- (void)viewWillLayoutSubviews {
+  [super viewWillLayoutSubviews];
+  [self updateOptionsViewHeightConstraint];
 }
 
 #pragma mark - ConfirmationAlertViewController
@@ -142,6 +140,10 @@ CGFloat const kRadioButtonSize = 20;
   return 2;
 }
 
+- (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
+  return 1;
+}
+
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewTextCell* cell =
@@ -156,11 +158,18 @@ CGFloat const kRadioButtonSize = 20;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   cell.userInteractionEnabled = YES;
   cell.textLabel.text = title;
+  cell.textLabel.isAccessibilityElement = YES;
 
   cell.accessoryView =
       [[UIImageView alloc] initWithImage:DefaultSymbolTemplateWithPointSize(
                                              kCircleSymbol, kRadioButtonSize)];
   cell.accessoryView.tintColor = [UIColor colorNamed:kGrey500Color];
+
+  // Make separator invisible on second cell.
+  if (indexPath.row > 0) {
+    cell.separatorInset =
+        UIEdgeInsetsMake(0.f, tableView.frame.size.width, 0.f, 0.f);
+  }
 
   return cell;
 }
@@ -201,7 +210,7 @@ CGFloat const kRadioButtonSize = 20;
   _tableView = [[UITableView alloc] initWithFrame:CGRectZero
                                             style:UITableViewStylePlain];
   _tableView.layer.cornerRadius = kTableViewCornerRadius;
-  _tableView.estimatedRowHeight = kTableViewEstimatedRowHeight;
+  _tableView.estimatedRowHeight = UITableViewAutomaticDimension;
   _tableView.scrollEnabled = NO;
   _tableView.showsVerticalScrollIndicator = NO;
   _tableView.delegate = self;
@@ -211,11 +220,9 @@ CGFloat const kRadioButtonSize = 20;
   _tableView.separatorInset = UIEdgeInsetsZero;
   [_tableView registerClass:TableViewTextCell.class
       forCellReuseIdentifier:@"cell"];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [_tableView.heightAnchor
-        constraintEqualToConstant:kTableViewEstimatedRowHeight * 2],
-  ]];
+  _optionsViewHeightConstraint =
+      [_tableView.heightAnchor constraintEqualToConstant:0];
+  _optionsViewHeightConstraint.active = YES;
 
   return _tableView;
 }
@@ -236,6 +243,15 @@ CGFloat const kRadioButtonSize = 20;
     [button setTitleColor:[UIColor colorNamed:kBackgroundColor]
                  forState:UIControlStateNormal];
   }
+}
+
+// Updates the optionsView's height constraint.
+- (void)updateOptionsViewHeightConstraint {
+  CGFloat totalCellHeight = 0;
+  for (UITableViewCell* cell in _tableView.visibleCells) {
+    totalCellHeight += cell.frame.size.height;
+  }
+  _optionsViewHeightConstraint.constant = totalCellHeight;
 }
 
 @end
