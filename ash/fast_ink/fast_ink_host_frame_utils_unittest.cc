@@ -65,9 +65,10 @@ class FastInkHostCreateFrameUtilTest : public AshTestBase {
     // `host_window` is owned by the root_window and it will be deleted as
     // window hierarchy is deleted during Shell deletion.
     host_window_ = host_window.release();
+    buffer_size_ = BufferSizeForHostWindow(host_window_.get());
     gpu_memory_buffer_ = CreateGpuBufferForHostWindow(host_window_.get());
     mailbox_ = fast_ink_internal::CreateMappableSharedImage(
-        BufferSizeForHostWindow(host_window_.get()),
+        buffer_size_,
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
             gpu::SHARED_IMAGE_USAGE_SCANOUT,
@@ -99,13 +100,11 @@ class FastInkHostCreateFrameUtilTest : public AshTestBase {
   // `FastInkHost::InitializeFastInkBuffer()` for more details.
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuBufferForHostWindow(
       aura::Window* host_window) {
-    const gfx::Size buffer_size = BufferSizeForHostWindow(host_window);
-
     return fast_ink_internal::CreateGpuBuffer(
-        buffer_size, gfx::BufferUsageAndFormat(
-                         gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-                         viz::SinglePlaneSharedImageFormatToBufferFormat(
-                             fast_ink_internal::kFastInkSharedImageFormat)));
+        buffer_size_, gfx::BufferUsageAndFormat(
+                          gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
+                          viz::SinglePlaneSharedImageFormatToBufferFormat(
+                              fast_ink_internal::kFastInkSharedImageFormat)));
   }
 
   gpu::SharedImageInterface* shared_image_interface() {
@@ -116,14 +115,15 @@ class FastInkHostCreateFrameUtilTest : public AshTestBase {
   raw_ptr<aura::Window, DanglingUntriaged> host_window_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
   gpu::Mailbox mailbox_;
+  gfx::Size buffer_size_;
 };
 
 TEST_F(FastInkHostCreateFrameUtilTest, HasValidSourceId) {
   auto frame = fast_ink_internal::CreateCompositorFrame(
       viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
       kTestTotalDamageRectInDIP, /*auto_update=*/true, *host_window_,
-      gpu_memory_buffer_->GetSize(), gpu_memory_buffer_.get(),
-      &resource_manager_, gpu::Mailbox(), gpu::SyncToken());
+      buffer_size_, gpu_memory_buffer_.get(), &resource_manager_,
+      gpu::Mailbox(), gpu::SyncToken());
 
   ASSERT_EQ(frame->resource_list.size(), 1u);
   viz::ResourceId resource_id = frame->resource_list.back().id;
@@ -136,8 +136,8 @@ TEST_F(FastInkHostCreateFrameUtilTest, ResourceUsesMailboxIfNonZero) {
   auto frame = fast_ink_internal::CreateCompositorFrame(
       viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
       kTestTotalDamageRectInDIP, /*auto_update=*/true, *host_window_,
-      gpu_memory_buffer_->GetSize(), /*gpu_memory_buffer=*/nullptr,
-      &resource_manager_, mailbox_, gpu::SyncToken());
+      buffer_size_, /*gpu_memory_buffer=*/nullptr, &resource_manager_, mailbox_,
+      gpu::SyncToken());
 
   ASSERT_EQ(frame->resource_list.size(), 1u);
   viz::ResourceId resource_id = frame->resource_list.back().id;
@@ -151,8 +151,8 @@ TEST_F(FastInkHostCreateFrameUtilTest, CompositorFrameHasCorrectStructure) {
   auto frame = fast_ink_internal::CreateCompositorFrame(
       viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
       kTestTotalDamageRectInDIP, /*auto_update=*/true, *host_window_,
-      gpu_memory_buffer_->GetSize(), gpu_memory_buffer_.get(),
-      &resource_manager_, gpu::Mailbox(), gpu::SyncToken());
+      buffer_size_, gpu_memory_buffer_.get(), &resource_manager_,
+      gpu::Mailbox(), gpu::SyncToken());
 
   auto primary_display = display::Screen::GetScreen()->GetPrimaryDisplay();
 
@@ -179,8 +179,8 @@ TEST_F(FastInkHostCreateFrameUtilTest, FrameDamage_AutoModeOff) {
   auto frame = fast_ink_internal::CreateCompositorFrame(
       viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
       kTestTotalDamageRectInDIP, /*auto_update=*/false, *host_window_,
-      gpu_memory_buffer_->GetSize(), gpu_memory_buffer_.get(),
-      &resource_manager_, gpu::Mailbox(), gpu::SyncToken());
+      buffer_size_, gpu_memory_buffer_.get(), &resource_manager_,
+      gpu::Mailbox(), gpu::SyncToken());
 
   EXPECT_EQ(frame->render_pass_list.front()->damage_rect,
             gfx::Rect(0, 0, 100, 50));
@@ -190,8 +190,8 @@ TEST_F(FastInkHostCreateFrameUtilTest, FrameDamage_AutoModeOff) {
   frame = fast_ink_internal::CreateCompositorFrame(
       viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
       gfx::Rect(0, 0, 501, 100), /*auto_update=*/false, *host_window_,
-      gpu_memory_buffer_->GetSize(), gpu_memory_buffer_.get(),
-      &resource_manager_, gpu::Mailbox(), gpu::SyncToken());
+      buffer_size_, gpu_memory_buffer_.get(), &resource_manager_,
+      gpu::Mailbox(), gpu::SyncToken());
 
   EXPECT_EQ(frame->render_pass_list.front()->damage_rect,
             gfx::Rect(0, 0, 1000, 200));
@@ -201,8 +201,8 @@ TEST_F(FastInkHostCreateFrameUtilTest, FrameDamage_AutoModeOn) {
   auto frame = fast_ink_internal::CreateCompositorFrame(
       viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
       kTestTotalDamageRectInDIP, /*auto_update=*/true, *host_window_,
-      gpu_memory_buffer_->GetSize(), gpu_memory_buffer_.get(),
-      &resource_manager_, gpu::Mailbox(), gpu::SyncToken());
+      buffer_size_, gpu_memory_buffer_.get(), &resource_manager_,
+      gpu::Mailbox(), gpu::SyncToken());
 
   // In auto update mode, we damage the full output rect, regardless of the
   // specified total_damage_rect.
@@ -226,8 +226,8 @@ TEST_F(FastInkHostCreateFrameUtilTest, OnlyCreateNewResourcesWhenNecessary) {
   auto frame = fast_ink_internal::CreateCompositorFrame(
       viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
       kTestTotalDamageRectInDIP, /*auto_update=*/true, *host_window_,
-      gpu_memory_buffer_->GetSize(), gpu_memory_buffer_.get(),
-      &resource_manager_, gpu::Mailbox(), gpu::SyncToken());
+      buffer_size_, gpu_memory_buffer_.get(), &resource_manager_,
+      gpu::Mailbox(), gpu::SyncToken());
 
   // We reuse one of the matching available resources.
   EXPECT_EQ(resource_manager_.available_resources_count(), 3u);
@@ -236,8 +236,8 @@ TEST_F(FastInkHostCreateFrameUtilTest, OnlyCreateNewResourcesWhenNecessary) {
   frame = fast_ink_internal::CreateCompositorFrame(
       viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
       kTestTotalDamageRectInDIP, /*auto_update=*/true, *host_window_,
-      gpu_memory_buffer_->GetSize(), gpu_memory_buffer_.get(),
-      &resource_manager_, gpu::Mailbox(), gpu::SyncToken());
+      buffer_size_, gpu_memory_buffer_.get(), &resource_manager_,
+      gpu::Mailbox(), gpu::SyncToken());
 
   // We again reuse one of the matching available resources.
   EXPECT_EQ(resource_manager_.available_resources_count(), 2u);
@@ -246,8 +246,8 @@ TEST_F(FastInkHostCreateFrameUtilTest, OnlyCreateNewResourcesWhenNecessary) {
   frame = fast_ink_internal::CreateCompositorFrame(
       viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
       kTestTotalDamageRectInDIP, /*auto_update=*/true, *host_window_,
-      gpu_memory_buffer_->GetSize(), gpu_memory_buffer_.get(),
-      &resource_manager_, gpu::Mailbox(), gpu::SyncToken());
+      buffer_size_, gpu_memory_buffer_.get(), &resource_manager_,
+      gpu::Mailbox(), gpu::SyncToken());
 
   // Now the factory create a new resource since any available resource does not
   // match our requirements. The total number of resources in the manager has
