@@ -31,6 +31,7 @@ enum BadMessageReason {
   PVM_SCRIPTED_PRINT_FENCED_FRAME = 7,
   PVMB_SCRIPTED_PRINT_FENCED_FRAME = 8,
   SSI_CREATE_FENCED_FRAME = 9,
+  CCU_SUPERFLUOUS_BIND = 10,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

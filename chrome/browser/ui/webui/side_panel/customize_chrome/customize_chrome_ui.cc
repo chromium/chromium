@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/rand_util.h"
+#include "chrome/browser/bad_message.h"
 #include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
@@ -33,6 +34,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -261,9 +263,16 @@ void CustomizeChromeUI::BindInterface(
 }
 
 void CustomizeChromeUI::BindInterface(
+    content::RenderFrameHost* host,
     mojo::PendingReceiver<
         side_panel::customize_chrome::mojom::WallpaperSearchHandler>
         pending_receiver) {
+  if (wallpaper_search_handler_) {
+    // Only allowed to create one Mojo pipe per WebUI.
+    bad_message::ReceivedBadMessage(host->GetProcess(),
+                                    bad_message::CCU_SUPERFLUOUS_BIND);
+    return;
+  }
   wallpaper_search_handler_ = std::make_unique<WallpaperSearchHandler>(
       std::move(pending_receiver), profile_, image_decoder_.get(),
       wallpaper_search_background_manager_.get(), id_);

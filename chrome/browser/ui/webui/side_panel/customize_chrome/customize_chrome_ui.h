@@ -26,6 +26,7 @@
 #include "ui/webui/resources/cr_components/theme_color_picker/theme_color_picker.mojom.h"
 
 namespace content {
+class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
@@ -98,6 +99,7 @@ class CustomizeChromeUI
                          pending_receiver);
 
   void BindInterface(
+      content::RenderFrameHost* host,
       mojo::PendingReceiver<
           side_panel::customize_chrome::mojom::WallpaperSearchHandler>
           pending_receiver);
