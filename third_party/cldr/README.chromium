@@ -13,5 +13,7 @@ Currently, this is used to provide emoji keywords and names to facilitate
 search in the Chrome OS emoji picker.
 
 Local Modifications:
-Only the files relevant to English emoji keywords are currently checked out.
+Only the files relevant to the following areas are currently checked out:
+  - English emoji keywords
+  - Rules for pluralization
 See ./update.sh for details and how to update.

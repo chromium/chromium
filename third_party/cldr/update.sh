@@ -27,5 +27,6 @@ curl "$CLDR_URL" -o cldr.zip
 rm -rf src
 
 # Unzip relevant files into src directory and clean zip.
-unzip -d src -o cldr.zip common/annotations{Derived,}/{en,en_001}.xml
+unzip -d src -o cldr.zip common/annotations{Derived,}/{en,en_001}.xml \
+                         common/supplemental/plurals.xml
 rm -v cldr.zip
