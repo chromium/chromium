@@ -122,7 +122,7 @@
       'fuchsia-angle-builder': 'angle_deqp_release_bot_dcheck_always_on_fuchsia_reclient',
       'ios-angle-builder': 'angle_deqp_release_bot_dcheck_always_on_ios_reclient',
       'linux-angle-chromium-builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
-      'mac-angle-chromium-builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
+      'mac-angle-chromium-builder': 'gpu_tests_release_trybot_minimal_symbols_x64_reclient',
       'win-angle-chromium-x64-builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
       'win-angle-chromium-x86-builder': 'gpu_tests_release_bot_dcheck_always_on_x86_reclient',
     },
@@ -905,7 +905,7 @@
       'fuchsia-angle-try': 'angle_deqp_release_trybot_fuchsia_reclient',
       'ios-angle-try-intel': 'angle_deqp_release_trybot_ios_reclient',
       'linux-angle-chromium-try': 'gpu_tests_release_trybot_reclient',
-      'mac-angle-chromium-try': 'gpu_tests_release_trybot_reclient',
+      'mac-angle-chromium-try': 'gpu_tests_release_trybot_x64_reclient',
       'win-angle-chromium-x64-try': 'gpu_tests_release_trybot_reclient',
       'win-angle-chromium-x86-try': 'gpu_tests_release_trybot_x86_reclient',
     },
@@ -2331,6 +2331,10 @@
       'gpu_tests', 'release_trybot_minimal_symbols_reclient',
     ],
 
+    'gpu_tests_release_trybot_minimal_symbols_x64_reclient': [
+      'gpu_tests', 'release_trybot_minimal_symbols_reclient', 'x64',
+    ],
+
     'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_symbols',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
@@ -2396,6 +2400,10 @@
 
     'gpu_tests_release_trybot_resource_allowlisting_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'resource_allowlisting',
+    ],
+
+    'gpu_tests_release_trybot_x64_reclient': [
+      'gpu_tests', 'release_trybot_reclient', 'x64',
     ],
 
     'gpu_tests_release_trybot_x86_reclient': [
