@@ -182,6 +182,8 @@ std::string AudioDevice::ToString() const {
   base::StringAppendF(&result, "display_name = %s ", display_name.c_str());
   base::StringAppendF(&result, "device_name = %s ", device_name.c_str());
   base::StringAppendF(&result, "type = %s ", GetTypeString(type).c_str());
+  base::StringAppendF(&result, "priority = %d ", priority);
+  base::StringAppendF(&result, "user_priority = %d ", user_priority);
   base::StringAppendF(&result, "active = %s ", active ? "true" : "false");
   base::StringAppendF(&result, "plugged_time = %s ",
                       base::NumberToString(plugged_time).c_str());
