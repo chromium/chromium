@@ -12,7 +12,6 @@ import("//build/linux/strip_binary.gni")
 import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
 import("//chrome/version.gni")
-import("//components/nacl/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//third_party/angle/gni/angle.gni")
 import("//third_party/widevine/cdm/widevine.gni")
@@ -32,7 +31,7 @@ declare_args() {
   enable_snap_package = false
 }
 
-assert(is_linux || is_chromeos)
+assert(is_linux)
 
 packaging_files_executables = [
   "$root_out_dir/chrome",
@@ -41,28 +40,6 @@ packaging_files_executables = [
   "$root_out_dir/chrome_sandbox",
 ]
 packaging_files_shlibs = []
-
-# Don't attempt to package NaCl when building the ARM32-NaCl-on-ARM64
-# configuration.  That could be made to work, but it would be somewhat
-# difficult, and not worthwhile given that NaCl is deprecated.
-package_nacl = enable_nacl && target_cpu != "arm64"
-
-if (package_nacl) {
-  packaging_files_executables += [
-    "$root_out_dir/nacl_helper",
-    "$root_out_dir/nacl_helper_bootstrap",
-  ]
-
-  if (current_cpu == "x86") {
-    packaging_files_executables += [ "$root_out_dir/nacl_irt_x86_32.nexe" ]
-  } else if (current_cpu == "x64") {
-    packaging_files_executables += [ "$root_out_dir/nacl_irt_x86_64.nexe" ]
-  } else if (current_cpu == "arm") {
-    packaging_files_executables += [ "$root_out_dir/nacl_irt_arm.nexe" ]
-  } else if (current_cpu == "mipsel") {
-    packaging_files_executables += [ "$root_out_dir/nacl_irt_mips32.nexe" ]
-  }
-}
 
 if (bundle_widevine_cdm) {
   packaging_files_shlibs +=
@@ -223,18 +200,6 @@ strip_binary("strip_libvulkan_shlib") {
 strip_binary("strip_libvk_swiftshader.shlib") {
   binary_input = "$root_out_dir/libvk_swiftshader.so"
   deps = [ "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan" ]
-}
-
-if (package_nacl) {
-  strip_binary("strip_nacl_helper") {
-    binary_input = "$root_out_dir/nacl_helper"
-    deps = [ "//components/nacl/loader:nacl_helper" ]
-  }
-
-  strip_binary("strip_nacl_helper_bootstrap") {
-    binary_input = "$root_out_dir/nacl_helper_bootstrap"
-    deps = [ "//native_client/src/trusted/service_runtime/linux:bootstrap" ]
-  }
 }
 
 if (build_with_internal_optimization_guide) {
@@ -405,18 +370,6 @@ group("installer_deps") {
     "//components/crash/core/app:chrome_crashpad_handler",
     "//sandbox/linux:chrome_sandbox",
   ]
-  if (package_nacl) {
-    public_deps += [
-      ":strip_nacl_helper",
-      ":strip_nacl_helper_bootstrap",
-      "//components/nacl/loader:nacl_helper",
-
-      # These are data_deps of nacl_helper, but that is not enough,
-      # as explained above.
-      "//native_client/src/trusted/service_runtime/linux:bootstrap",
-      "//ppapi/native_client:irt",
-    ]
-  }
   if (bundle_widevine_cdm) {
     public_deps += [ "//third_party/widevine/cdm" ]
   }

@@ -81,6 +81,12 @@ FALLBACK_EXPECTED_IOS_SI_COUNT = 2
 # For coverage builds, also allow 'IntrProfilingRuntime.cpp'
 COVERAGE_BUILD_FALLBACK_EXPECTED_MAC_SI_COUNT = 4
 
+# Returns true if args contains properties which look like a chromeos-esque
+# builder.
+def check_if_chromeos(args):
+  return 'buildername' in args.properties and \
+      'chromeos' in args.properties['buildername']
+
 def get_mod_init_count(executable, hermetic_xcode_path):
   # Find the __DATA,__mod_init_func section.
   if os.path.exists(hermetic_xcode_path):
@@ -256,8 +262,7 @@ def main_run(args):
         allow_coverage_initializer = '--allow-coverage-initializer' in \
           args.args)
   elif sys.platform.startswith('linux'):
-    is_chromeos = 'buildername' in args.properties and \
-        'chromeos' in args.properties['buildername']
+    is_chromeos = check_if_chromeos(args)
     rc = main_linux(src_dir, is_chromeos)
   else:
     sys.stderr.write('Unsupported platform %s.\n' % repr(sys.platform))
@@ -270,10 +275,14 @@ def main_run(args):
 
 
 def main_compile_targets(args):
+  is_chromeos = check_if_chromeos(args)
   if sys.platform.startswith('darwin'):
     compile_targets = ['chrome']
   elif sys.platform.startswith('linux'):
-    compile_targets = ['chrome', 'nacl_helper', 'nacl_helper_bootstrap']
+    if is_chromeos:
+      compile_targets = ['chrome', 'nacl_helper', 'nacl_helper_bootstrap']
+    else:
+      compile_targets = ['chrome']
   else:
     compile_targets = []
 
