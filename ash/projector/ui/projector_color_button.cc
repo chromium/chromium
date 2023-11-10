@@ -5,6 +5,7 @@
 #include "ash/projector/ui/projector_color_button.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
@@ -28,5 +29,8 @@ void ProjectorColorButton::PaintButtonContents(gfx::Canvas* canvas) {
   canvas->DrawCircle(bounds.CenterPoint(), (kProjectorButtonSize - size_) / 2,
                      flags);
 }
+
+BEGIN_METADATA(ProjectorColorButton)
+END_METADATA
 
 }  // namespace ash

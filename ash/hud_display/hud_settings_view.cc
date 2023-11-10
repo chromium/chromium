@@ -360,6 +360,8 @@ void AnimationSpeedControl::Layout() {
 }
 
 class HUDActionButton : public views::LabelButton {
+  METADATA_HEADER(HUDActionButton, views::LabelButton)
+
  public:
   HUDActionButton(views::Button::PressedCallback::Callback callback,
                   const std::u16string& text)
@@ -425,6 +427,9 @@ class HUDActionButton : public views::LabelButton {
   base::Time spinner_created_;
   base::RepeatingTimer spinner_refresh_timer_;
 };
+
+BEGIN_METADATA(HUDActionButton)
+END_METADATA
 
 }  // anonymous namespace
 

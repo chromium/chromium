@@ -22,7 +22,6 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -213,6 +212,9 @@ void ResizeToggleMenu::MenuButtonView::UpdateColors() {
                    : color_provider->GetColor(ui::kColorMenuBorder);
   GetBorder()->set_color(border_color);
 }
+
+BEGIN_METADATA(ResizeToggleMenu, MenuButtonView, views::Button)
+END_METADATA
 
 ResizeToggleMenu::ResizeToggleMenu(
     base::OnceClosure on_bubble_widget_closing_callback,

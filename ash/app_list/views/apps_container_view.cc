@@ -36,6 +36,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -138,6 +139,8 @@ const ui::DropTargetEvent GetTranslatedDropTargetEvent(
 // The view is intended to be a wrapper around suggested content views that
 // makes applying identical transforms to suggested content views easier.
 class AppsContainerView::ContinueContainer : public views::View {
+  METADATA_HEADER(ContinueContainer, views::View)
+
  public:
   ContinueContainer(AppListKeyboardController* keyboard_controller,
                     AppListViewDelegate* view_delegate,
@@ -229,6 +232,9 @@ class AppsContainerView::ContinueContainer : public views::View {
   raw_ptr<views::Separator, DanglingUntriaged | ExperimentalAsh> separator_ =
       nullptr;
 };
+
+BEGIN_METADATA(AppsContainerView, ContinueContainer, views::View)
+END_METADATA
 
 const int AppsContainerView::kHorizontalMargin = 24;
 

@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/events/types/event_type.h"
@@ -44,6 +45,8 @@ class PaginationController;
 class ASH_EXPORT PagedAppsGridView : public AppsGridView,
                                      public PaginationModelObserver,
                                      public views::ViewTargeterDelegate {
+  METADATA_HEADER(PagedAppsGridView, AppsGridView)
+
  public:
   class ContainerDelegate {
    public:

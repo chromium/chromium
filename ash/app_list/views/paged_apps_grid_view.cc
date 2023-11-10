@@ -32,6 +32,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
@@ -1237,5 +1238,8 @@ void PagedAppsGridView::StackCardsAtBottom() {
     items_container()->layer()->StackAtBottom(background_cards_[i]->layer());
   }
 }
+
+BEGIN_METADATA(PagedAppsGridView)
+END_METADATA
 
 }  // namespace ash

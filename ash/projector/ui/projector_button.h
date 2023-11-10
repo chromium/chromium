@@ -16,6 +16,8 @@ namespace ash {
 // size, etc) and ink drop. The button is also toggleable. This is used by
 // |ProjectorColorButton|, |ProjectorImageButton|, etc.
 class ASH_EXPORT ProjectorButton : public views::ToggleImageButton {
+  METADATA_HEADER(ProjectorButton, views::ToggleImageButton)
+
  public:
   const int kProjectorButtonSize = 32;
   const int kProjectorButtonBorderSize = 1;

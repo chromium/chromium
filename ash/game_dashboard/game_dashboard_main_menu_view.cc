@@ -115,6 +115,8 @@ std::unique_ptr<FeaturePodIconButton> CreateIconButton(
 // TODO(b/308762948): Update name and params now that only Game Controls uses
 // this logic.
 class GameDashboardMainMenuView::FeatureDetailsRow : public views::Button {
+  METADATA_HEADER(FeatureDetailsRow, views::Button)
+
  public:
   FeatureDetailsRow(base::RepeatingCallback<void()> callback,
                     RoundedContainer::Behavior corner_behavior,
@@ -231,6 +233,9 @@ class GameDashboardMainMenuView::FeatureDetailsRow : public views::Button {
   raw_ptr<views::Label> sub_title_ = nullptr;
   raw_ptr<views::View> tail_container_ = nullptr;
 };
+
+BEGIN_METADATA(GameDashboardMainMenuView, FeatureDetailsRow, views::Button)
+END_METADATA
 
 // -----------------------------------------------------------------------------
 // GameDashboardMainMenuView:

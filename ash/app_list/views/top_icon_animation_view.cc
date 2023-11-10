@@ -14,6 +14,7 @@
 #include "ash/style/typography.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -126,10 +127,6 @@ void TopIconAnimationView::TransformView(base::TimeDelta duration) {
   }
 }
 
-const char* TopIconAnimationView::GetClassName() const {
-  return "TopIconAnimationView";
-}
-
 gfx::Size TopIconAnimationView::CalculatePreferredSize() const {
   return gfx::Size(grid_->app_list_config()->grid_tile_width(),
                    grid_->app_list_config()->grid_tile_height());
@@ -161,5 +158,8 @@ void TopIconAnimationView::OnImplicitAnimationsCompleted() {
 bool TopIconAnimationView::RequiresNotificationWhenAnimatorDestroyed() const {
   return true;
 }
+
+BEGIN_METADATA(TopIconAnimationView)
+END_METADATA
 
 }  // namespace ash

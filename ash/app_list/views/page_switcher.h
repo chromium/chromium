@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/view.h"
 
@@ -22,6 +23,8 @@ class PaginationModel;
 // when the button is clicked, the corresponding page becomes selected.
 class PageSwitcher : public views::View,
                      public PaginationModelObserver {
+  METADATA_HEADER(PageSwitcher, views::View)
+
  public:
   static constexpr int kMaxButtonRadius = 16;
 
