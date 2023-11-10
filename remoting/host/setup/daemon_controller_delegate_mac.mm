@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <utility>
 
+#include <optional>
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
@@ -32,7 +33,6 @@
 #include "remoting/host/mac/permission_checker.h"
 #include "remoting/host/mac/permission_wizard.h"
 #include "remoting/host/resources.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -236,11 +236,11 @@ DaemonController::State DaemonControllerDelegateMac::GetState() {
   }
 }
 
-absl::optional<base::Value::Dict> DaemonControllerDelegateMac::GetConfig() {
+std::optional<base::Value::Dict> DaemonControllerDelegateMac::GetConfig() {
   base::FilePath config_path(kHostConfigFilePath);
   auto host_config = HostConfigFromJsonFile(config_path);
   if (!host_config.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::Value::Dict config;
@@ -282,7 +282,7 @@ void DaemonControllerDelegateMac::UpdateConfig(
     base::Value::Dict config,
     DaemonController::CompletionCallback done) {
   base::FilePath config_file_path(kHostConfigFilePath);
-  absl::optional<base::Value::Dict> host_config(
+  std::optional<base::Value::Dict> host_config(
       HostConfigFromJsonFile(config_file_path));
   if (!host_config.has_value()) {
     std::move(done).Run(DaemonController::RESULT_FAILED);
@@ -307,10 +307,10 @@ DaemonControllerDelegateMac::GetUsageStatsConsent() {
   consent.set_by_policy = false;
 
   base::FilePath config_file_path(kHostConfigFilePath);
-  absl::optional<base::Value::Dict> host_config(
+  std::optional<base::Value::Dict> host_config(
       HostConfigFromJsonFile(config_file_path));
   if (host_config.has_value()) {
-    absl::optional<bool> host_config_value =
+    std::optional<bool> host_config_value =
         host_config->FindBool(kUsageStatsConsentConfigPath);
     if (host_config_value.has_value()) {
       consent.allowed = host_config_value.value();

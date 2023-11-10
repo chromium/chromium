@@ -51,7 +51,7 @@ const char kTestClientUsername[] = "some_user@gmail.com";
 const char kTestStunServer[] = "test_relay_server.com";
 
 void VerifyId(const base::Value::Dict& response, int expected_value) {
-  absl::optional<int> value = response.FindInt(kMessageId);
+  std::optional<int> value = response.FindInt(kMessageId);
   ASSERT_TRUE(value);
   EXPECT_EQ(expected_value, *value);
 }
@@ -72,7 +72,7 @@ void VerifyCommonProperties(const base::Value::Dict& response,
   ASSERT_TRUE(string_value);
   EXPECT_EQ(type, *string_value);
 
-  absl::optional<int> int_value = response.FindInt(kMessageId);
+  std::optional<int> int_value = response.FindInt(kMessageId);
   ASSERT_TRUE(int_value);
   EXPECT_EQ(id, *int_value);
 }
@@ -231,7 +231,7 @@ class It2MeNativeMessagingHostTest : public testing::Test {
 
  protected:
   void SetPolicies(base::Value::Dict dict);
-  absl::optional<base::Value::Dict> ReadMessageFromOutputPipe();
+  std::optional<base::Value::Dict> ReadMessageFromOutputPipe();
   void WriteMessageToInputPipe(const base::Value::Dict& message);
 
   void VerifyHelloResponse(int request_id);
@@ -248,7 +248,7 @@ class It2MeNativeMessagingHostTest : public testing::Test {
                       bool expect_error_response);
   void TestConnect();
 
-  const absl::optional<ChromeOsEnterpriseParams>
+  const std::optional<ChromeOsEnterpriseParams>
   get_chrome_os_enterprise_params() {
     return factory_raw_ptr_->host->chrome_os_enterprise_params_;
   }
@@ -330,7 +330,7 @@ void It2MeNativeMessagingHostTest::TearDown() {
   test_run_loop_->Run();
 
   // Verify there are no more message in the output pipe.
-  absl::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
+  std::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
   EXPECT_FALSE(response);
 
   // The It2MeNativeMessagingHost dtor closes the handles that are passed to it.
@@ -358,7 +358,7 @@ void It2MeNativeMessagingHostTest::SetPolicies(base::Value::Dict dict) {
   policy_run_loop_.reset(nullptr);
 }
 
-absl::optional<base::Value::Dict>
+std::optional<base::Value::Dict>
 It2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
   while (true) {
     uint32_t length;
@@ -366,7 +366,7 @@ It2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
         reinterpret_cast<char*>(&length), sizeof(length));
     if (read_result != sizeof(length)) {
       // The output pipe has been closed, return an empty message.
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     std::string message_json(length, '\0');
@@ -375,13 +375,13 @@ It2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
     if (read_result != static_cast<int>(length)) {
       LOG(ERROR) << "Message size (" << read_result
                  << ") doesn't match the header (" << length << ").";
-      return absl::nullopt;
+      return std::nullopt;
     }
 
-    absl::optional<base::Value> message = base::JSONReader::Read(message_json);
+    std::optional<base::Value> message = base::JSONReader::Read(message_json);
     if (!message || !message->is_dict()) {
       LOG(ERROR) << "Malformed message:" << message_json;
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     base::Value::Dict result = std::move(*message).TakeDict();
@@ -405,13 +405,13 @@ void It2MeNativeMessagingHostTest::WriteMessageToInputPipe(
 }
 
 void It2MeNativeMessagingHostTest::VerifyHelloResponse(int request_id) {
-  absl::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
+  std::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
   ASSERT_TRUE(response);
   VerifyCommonProperties(*response, kHelloResponse, request_id);
 }
 
 void It2MeNativeMessagingHostTest::VerifyErrorResponse() {
-  absl::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
+  std::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
   ASSERT_TRUE(response);
   VerifyStringProperty(*response, kMessageType, kErrorMessage);
 }
@@ -428,7 +428,7 @@ void It2MeNativeMessagingHostTest::VerifyConnectResponses(int request_id) {
   // We expect a total of 7 messages: 1 connectResponse, 1 natPolicyChanged,
   // and 5 hostStateChanged.
   for (int i = 0; i < 7; ++i) {
-    absl::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
+    std::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
     ASSERT_TRUE(response);
 
     const std::string* type = response->FindString(kMessageType);
@@ -461,7 +461,7 @@ void It2MeNativeMessagingHostTest::VerifyConnectResponses(int request_id) {
         ASSERT_TRUE(value);
         EXPECT_EQ(kTestAccessCode, *value);
 
-        absl::optional<int> access_code_lifetime =
+        std::optional<int> access_code_lifetime =
             response->FindInt(kAccessCodeLifetime);
         ASSERT_TRUE(access_code_lifetime);
         EXPECT_EQ(kTestAccessCodeLifetime.InSeconds(), *access_code_lifetime);
@@ -491,7 +491,7 @@ void It2MeNativeMessagingHostTest::VerifyDisconnectResponses(int request_id) {
 
   // We expect a total of 2 messages: disconnectResponse and hostStateChanged.
   for (int i = 0; i < 2; i++) {
-    absl::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
+    std::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
     ASSERT_TRUE(response);
 
     const std::string* type = response->FindString(kMessageType);
@@ -520,7 +520,7 @@ void It2MeNativeMessagingHostTest::VerifyDisconnectResponses(int request_id) {
 }
 
 void It2MeNativeMessagingHostTest::VerifyPolicyErrorResponse() {
-  absl::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
+  std::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
   ASSERT_TRUE(response);
   const std::string* type = response->FindString(kMessageType);
   ASSERT_TRUE(type);
@@ -544,7 +544,7 @@ void It2MeNativeMessagingHostTest::TestBadRequest(
     VerifyErrorResponse();
   }
 
-  absl::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
+  std::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
   EXPECT_FALSE(response);
 }
 
@@ -639,7 +639,7 @@ TEST_F(It2MeNativeMessagingHostTest, Id) {
   message.Set(kMessageId, "42");
   WriteMessageToInputPipe(message);
 
-  absl::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
+  std::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
   ASSERT_TRUE(response);
   const std::string* value = response->FindString(kMessageId);
   EXPECT_FALSE(value);

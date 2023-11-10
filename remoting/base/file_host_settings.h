@@ -42,7 +42,7 @@ class FileHostSettings final : public HostSettings {
 
   // TODO(yuweih): This needs to be guarded with a lock if we detect changes of
   // the settings file.
-  absl::optional<base::Value::Dict> settings_;
+  std::optional<base::Value::Dict> settings_;
 };
 
 }  // namespace remoting

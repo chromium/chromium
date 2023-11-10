@@ -82,7 +82,7 @@ class OverlayD3DImageRepresentation : public OverlayImageRepresentation {
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override;
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override;
 
-  absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() override;
+  std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() override;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
 };

@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -38,7 +39,6 @@
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/swap_result.h"
@@ -209,7 +209,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
    private:
     const raw_ref<CommandBufferStub> stub_;
     bool have_context_ = false;
-    absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use_;
+    std::optional<gles2::ProgramCache::ScopedCacheUse> cache_use_;
   };
 
   mojom::CommandBufferClient& client() { return *client_.get(); }
@@ -290,7 +290,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   void Destroy();
 
   void CreateCacheUse(
-      absl::optional<gles2::ProgramCache::ScopedCacheUse>& cache_use);
+      std::optional<gles2::ProgramCache::ScopedCacheUse>& cache_use);
 
   // Message handlers:
   void OnAsyncFlush(int32_t put_offset,

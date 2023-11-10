@@ -53,7 +53,7 @@ constexpr char kFallbackMimeType[] = "application/octet-stream";
 //            will assume the charset to be "text/plain" by default.
 scoped_refptr<net::HttpResponseHeaders> CreateHeaders(
     base::StringPiece mime_type,
-    const absl::optional<std::string>& charset) {
+    const std::optional<std::string>& charset) {
   constexpr char kXFrameOptions[] = "X-Frame-Options";
   constexpr char kXFrameOptionsValue[] = "DENY";
   constexpr char kCacheControl[] = "Cache-Control";
@@ -174,11 +174,11 @@ class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
     auto response = network::mojom::URLResponseHead::New();
 
     // Read the charset and MIME type from the optional _metadata file.
-    absl::optional<std::string> charset;
-    absl::optional<std::string> mime_type;
+    std::optional<std::string> charset;
+    std::optional<std::string> mime_type;
     base::MemoryMappedFile metadata_mmap;
     if (MapFile(std::move(metadata_channel), &metadata_mmap)) {
-      absl::optional<base::Value> metadata_parsed = base::JSONReader::Read(
+      std::optional<base::Value> metadata_parsed = base::JSONReader::Read(
           base::StringPiece(reinterpret_cast<char*>(metadata_mmap.data()),
                             metadata_mmap.length()));
 
@@ -236,7 +236,7 @@ class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
     }
 
     client_->OnReceiveResponse(std::move(response), std::move(consumer_handle),
-                               absl::nullopt);
+                               std::nullopt);
 
     // Start reading the contents of |mmap_| into the response DataPipe.
     body_writer_ =
@@ -257,7 +257,7 @@ class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_request_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_request_headers,
-      const absl::optional<GURL>& new_url) override {}
+      const std::optional<GURL>& new_url) override {}
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
   void PauseReadingBodyFromNet() override {}

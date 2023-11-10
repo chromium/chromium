@@ -1054,13 +1054,13 @@ std::unique_ptr<OverlayImageRepresentation> D3DImageBacking::ProduceOverlay(
                                                          texture_d3d11_device_);
 }
 
-absl::optional<gl::DCLayerOverlayImage>
+std::optional<gl::DCLayerOverlayImage>
 D3DImageBacking::GetDCLayerOverlayImage() {
   if (swap_chain_) {
-    return absl::make_optional<gl::DCLayerOverlayImage>(size(), swap_chain_);
+    return std::make_optional<gl::DCLayerOverlayImage>(size(), swap_chain_);
   }
-  return absl::make_optional<gl::DCLayerOverlayImage>(size(), d3d11_texture_,
-                                                      array_slice_);
+  return std::make_optional<gl::DCLayerOverlayImage>(size(), d3d11_texture_,
+                                                     array_slice_);
 }
 
 }  // namespace gpu

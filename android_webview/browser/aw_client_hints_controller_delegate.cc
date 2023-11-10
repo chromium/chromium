@@ -58,14 +58,14 @@ AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand(
   // Regenerate the brand version lists with Android WebView product name.
   metadata.brand_version_list = embedder_support::GenerateBrandVersionList(
       major_version_number, kAndroidWebViewProductName, major_version,
-      absl::nullopt, absl::nullopt, enable_updated_grease_by_policy,
+      std::nullopt, std::nullopt, enable_updated_grease_by_policy,
       blink::UserAgentBrandVersionType::kMajorVersion);
 
   if (!only_low_entropy_ch) {
     metadata.brand_full_version_list =
         embedder_support::GenerateBrandVersionList(
             major_version_number, kAndroidWebViewProductName,
-            metadata.full_version, absl::nullopt, absl::nullopt,
+            metadata.full_version, std::nullopt, std::nullopt,
             enable_updated_grease_by_policy,
             blink::UserAgentBrandVersionType::kFullVersion);
   }

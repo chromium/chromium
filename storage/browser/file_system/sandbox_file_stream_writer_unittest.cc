@@ -65,7 +65,7 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
 
     file_system_context_->OpenFileSystem(
         blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
-        /*bucket=*/absl::nullopt, kFileSystemTypeTemporary,
+        /*bucket=*/std::nullopt, kFileSystemTypeTemporary,
         OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
         base::BindOnce([](const FileSystemURL& root_url,
                           const std::string& name, base::File::Error result) {

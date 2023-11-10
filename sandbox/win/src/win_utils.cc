@@ -205,7 +205,7 @@ bool IsPipe(const std::wstring& path) {
   return EqualPath(path, start, kPipe, std::size(kPipe) - 1);
 }
 
-absl::optional<std::wstring> ResolveRegistryName(std::wstring name) {
+std::optional<std::wstring> ResolveRegistryName(std::wstring name) {
   for (size_t i = 0; i < std::size(kKnownKey); ++i) {
     if (name.find(kKnownKey[i].name) == 0) {
       HKEY key;
@@ -213,20 +213,20 @@ absl::optional<std::wstring> ResolveRegistryName(std::wstring name) {
       if (ERROR_SUCCESS != ::RegCreateKeyEx(kKnownKey[i].key, L"", 0, nullptr,
                                             0, MAXIMUM_ALLOWED, nullptr, &key,
                                             &disposition)) {
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       auto result = GetPathFromHandle(key);
       ::RegCloseKey(key);
 
       if (!result)
-        return absl::nullopt;
+        return std::nullopt;
 
       result->append(name.substr(wcslen(kKnownKey[i].name)));
       return result;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // |full_path| can have any of the following forms:
@@ -442,19 +442,19 @@ bool ConvertToLongPath(std::wstring* native_path,
   return false;
 }
 
-absl::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path) {
+std::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path) {
   base::win::ScopedHandle file(::CreateFileW(
       path.c_str(), 0, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
       nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr));
   if (!file.IsValid())
-    return absl::nullopt;
+    return std::nullopt;
   return GetPathFromHandle(file.Get());
 }
 
-absl::optional<std::wstring> GetPathFromHandle(HANDLE handle) {
+std::optional<std::wstring> GetPathFromHandle(HANDLE handle) {
   auto buffer = QueryObjectInformation(handle, ObjectNameInformation, 512);
   if (!buffer)
-    return absl::nullopt;
+    return std::nullopt;
   OBJECT_NAME_INFORMATION* name =
       reinterpret_cast<OBJECT_NAME_INFORMATION*>(buffer->data());
   return std::wstring(
@@ -462,12 +462,12 @@ absl::optional<std::wstring> GetPathFromHandle(HANDLE handle) {
       name->ObjectName.Length / sizeof(name->ObjectName.Buffer[0]));
 }
 
-absl::optional<std::wstring> GetTypeNameFromHandle(HANDLE handle) {
+std::optional<std::wstring> GetTypeNameFromHandle(HANDLE handle) {
   // No typename is currently longer than 32 characters on Windows 11, so use a
   // hint of 128 bytes.
   auto buffer = QueryObjectInformation(handle, ObjectTypeInformation, 128);
   if (!buffer)
-    return absl::nullopt;
+    return std::nullopt;
   OBJECT_TYPE_INFORMATION* name =
       reinterpret_cast<OBJECT_TYPE_INFORMATION*>(buffer->data());
   return std::wstring(name->Name.Buffer,
@@ -539,10 +539,10 @@ void* GetProcessBaseAddress(HANDLE process) {
   return base_address;
 }
 
-absl::optional<ProcessHandleMap> GetCurrentProcessHandles() {
+std::optional<ProcessHandleMap> GetCurrentProcessHandles() {
   DWORD handle_count;
   if (!::GetProcessHandleCount(::GetCurrentProcess(), &handle_count))
-    return absl::nullopt;
+    return std::nullopt;
 
   // The system call will return only handles up to the buffer size so add a
   // margin of error of an additional 1000 handles.
@@ -554,7 +554,7 @@ absl::optional<ProcessHandleMap> GetCurrentProcessHandles() {
 
   if (!NT_SUCCESS(status)) {
     ::SetLastError(GetLastErrorFromNtStatus(status));
-    return absl::nullopt;
+    return std::nullopt;
   }
   DCHECK(buffer.size() >= return_length);
   DCHECK((buffer.size() % sizeof(uint32_t)) == 0);

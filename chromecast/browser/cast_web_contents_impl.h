@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/platform_shared_memory_region.h"
@@ -36,7 +37,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 
 namespace content {
@@ -175,13 +175,13 @@ class CastWebContentsImpl : public CastWebContents,
 
   content::WebContents* web_contents_;
   mojom::CastWebViewParamsPtr params_;
-  absl::optional<url_rewrite::UrlRequestRewriteRulesManager>
+  std::optional<url_rewrite::UrlRequestRewriteRulesManager>
       url_rewrite_rules_manager_;
   PageState page_state_;
   PageState last_state_;
   shell::RemoteDebuggingServer* const remote_debugging_server_;
   std::unique_ptr<CastMediaBlocker> media_blocker_;
-  absl::optional<std::vector<std::string>> activity_url_filter_;
+  std::optional<std::vector<std::string>> activity_url_filter_;
 
   // Retained so that this observer can be removed before being destroyed:
   content::RenderProcessHost* main_process_host_;

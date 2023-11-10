@@ -9,6 +9,7 @@
 
 #include <utility>
 
+#include <optional>
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -33,7 +34,6 @@
 #include "fuchsia_web/runners/cast/cast_runner.h"
 #include "fuchsia_web/runners/cast/cast_runner_switches.h"
 #include "fuchsia_web/webinstance_host/web_instance_host.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -49,7 +49,7 @@ constexpr char kDisableCodeGenConfigKey[] = "disable-codegen";
 
 // Returns the value of |config_key| or false if it is not set.
 bool GetConfigBool(base::StringPiece config_key) {
-  const absl::optional<base::Value::Dict>& config =
+  const std::optional<base::Value::Dict>& config =
       fuchsia_component_support::LoadPackageConfig();
   if (config)
     return config->FindBool(config_key).value_or(false);

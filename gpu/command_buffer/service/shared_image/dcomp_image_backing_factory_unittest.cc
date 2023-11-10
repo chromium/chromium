@@ -672,7 +672,7 @@ class DCompImageBackingFactoryVisualTreeTest
   };
 
   gfx::Size window_size_;
-  absl::optional<SkColor4f> background_fill_override_;
+  std::optional<SkColor4f> background_fill_override_;
 
   TestPlatformDelegate platform_delegate_;
   ui::WinWindow window_;

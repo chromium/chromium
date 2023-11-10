@@ -77,7 +77,7 @@ bool PushBufferPendingHandler::HasBufferedData() const {
   return delegated_handler_->HasBufferedData();
 }
 
-absl::optional<AudioChannelPushBufferHandler::PushBufferRequest>
+std::optional<AudioChannelPushBufferHandler::PushBufferRequest>
 PushBufferPendingHandler::GetBufferedData() {
   // The pending data is only considered by the producer sequence, so this
   // consumer sequence call does not consider it.

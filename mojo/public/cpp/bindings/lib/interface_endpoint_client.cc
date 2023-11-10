@@ -8,6 +8,7 @@
 
 #include <tuple>
 
+#include <optional>
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
@@ -34,7 +35,6 @@
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "mojo/public/cpp/bindings/sync_event_watcher.h"
 #include "mojo/public/cpp/bindings/thread_safe_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_mojo_event_info.pbzero.h"
 
 namespace mojo {
@@ -708,7 +708,7 @@ bool InterfaceEndpointClient::HandleIncomingMessage(Message* message) {
 }
 
 void InterfaceEndpointClient::NotifyError(
-    const absl::optional<DisconnectReason>& reason) {
+    const std::optional<DisconnectReason>& reason) {
   TRACE_EVENT("toplevel", "Closed mojo endpoint",
               [&](perfetto::EventContext& ctx) {
                 auto* info = ctx.event()->set_chrome_mojo_event_info();
@@ -851,7 +851,7 @@ void InterfaceEndpointClient::ResetFromAnotherSequenceUnsafe() {
 }
 
 void InterfaceEndpointClient::ForgetAsyncRequest(uint64_t request_id) {
-  absl::optional<PendingAsyncResponse> response;
+  std::optional<PendingAsyncResponse> response;
   {
     base::AutoLock lock(async_responders_lock_);
     auto it = async_responders_.find(request_id);
@@ -914,7 +914,7 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
                   info->set_ipc_hash((*method_info)());
                   const auto method_address =
                       reinterpret_cast<uintptr_t>(method_info);
-                  const absl::optional<size_t> location_iid =
+                  const std::optional<size_t> location_iid =
                       base::trace_event::InternedUnsymbolizedSourceLocation::
                           Get(&ctx, method_address);
                   if (location_iid) {
@@ -993,7 +993,7 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
       sync_responses_.erase(it);
     }
 
-    absl::optional<PendingAsyncResponse> pending_response;
+    std::optional<PendingAsyncResponse> pending_response;
     {
       base::AutoLock lock(async_responders_lock_);
       auto it = async_responders_.find(request_id);

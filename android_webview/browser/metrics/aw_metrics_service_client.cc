@@ -170,8 +170,8 @@ bool AwMetricsServiceClient::ShouldRecordPackageName() {
 }
 
 void AwMetricsServiceClient::SetAppPackageNameLoggingRule(
-    absl::optional<AppPackageNameLoggingRule> record) {
-  absl::optional<AppPackageNameLoggingRule> cached_record =
+    std::optional<AppPackageNameLoggingRule> record) {
+  std::optional<AppPackageNameLoggingRule> cached_record =
       GetCachedAppPackageNameLoggingRule();
   if (!record.has_value()) {
     package_name_record_status_ =
@@ -201,7 +201,7 @@ void AwMetricsServiceClient::SetAppPackageNameLoggingRule(
       base::Time::Now() - time_created_);
 }
 
-absl::optional<AppPackageNameLoggingRule>
+std::optional<AppPackageNameLoggingRule>
 AwMetricsServiceClient::GetCachedAppPackageNameLoggingRule() {
   if (cached_package_name_record_.has_value()) {
     return cached_package_name_record_;

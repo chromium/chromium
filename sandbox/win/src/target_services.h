@@ -5,10 +5,10 @@
 #ifndef SANDBOX_WIN_SRC_TARGET_SERVICES_H_
 #define SANDBOX_WIN_SRC_TARGET_SERVICES_H_
 
+#include <optional>
 #include "base/containers/span.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/win_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -50,7 +50,7 @@ class TargetServicesBase : public TargetServices {
 
   // Public interface of TargetServices. See comments in sandbox.h.
   ResultCode Init() override;
-  absl::optional<base::span<const uint8_t>> GetDelegateData() override;
+  std::optional<base::span<const uint8_t>> GetDelegateData() override;
   void LowerToken() override;
   ProcessState* GetState() override;
 

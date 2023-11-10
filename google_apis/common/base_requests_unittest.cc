@@ -160,7 +160,7 @@ TEST_F(BaseRequestsTest, ParseValidJson) {
   base::Value::Dict* root_dict = json->GetIfDict();
   ASSERT_TRUE(root_dict);
 
-  absl::optional<int> int_value = root_dict->FindInt("test");
+  std::optional<int> int_value = root_dict->FindInt("test");
   ASSERT_TRUE(int_value.has_value());
   EXPECT_EQ(123, *int_value);
 }

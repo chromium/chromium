@@ -111,7 +111,7 @@ WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
       encoder_ = WebrtcVideoEncoderVpx::CreateForVP8();
       break;
     case webrtc::kVideoCodecVP9: {
-      absl::optional<webrtc::VP9Profile> profile =
+      std::optional<webrtc::VP9Profile> profile =
           webrtc::ParseSdpForVP9Profile(format.parameters);
       bool lossless_color = profile.has_value() &&
                             profile.value() == webrtc::VP9Profile::kProfile1;
@@ -119,7 +119,7 @@ WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
               << (lossless_color ? "true" : "false");
       encoder_ = WebrtcVideoEncoderVpx::CreateForVP9();
       encoder_->SetLosslessColor(lossless_color);
-      absl::optional<int> encoder_speed =
+      std::optional<int> encoder_speed =
           session_options.GetInt("Vp9-Encoder-Speed");
       if (encoder_speed) {
         VLOG(0) << "Setting VP9 encoder speed to " << encoder_speed.value();
@@ -128,7 +128,7 @@ WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
       break;
     }
     case webrtc::kVideoCodecAV1: {
-      absl::optional<webrtc::AV1Profile> profile =
+      std::optional<webrtc::AV1Profile> profile =
           webrtc::ParseSdpForAV1Profile(format.parameters);
       bool lossless_color = profile.has_value() &&
                             profile.value() == webrtc::AV1Profile::kProfile1;
@@ -136,7 +136,7 @@ WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
               << (lossless_color ? "true" : "false");
       encoder_ = std::make_unique<WebrtcVideoEncoderAV1>();
       encoder_->SetLosslessColor(lossless_color);
-      absl::optional<int> encoder_speed =
+      std::optional<int> encoder_speed =
           session_options.GetInt("Av1-Encoder-Speed");
       if (encoder_speed) {
         VLOG(0) << "Setting AV1 encoder speed to " << encoder_speed.value();

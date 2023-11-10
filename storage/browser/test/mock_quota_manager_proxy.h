@@ -95,7 +95,7 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   void NotifyBucketModified(
       QuotaClientType client_id,
       const BucketLocator& bucket,
-      absl::optional<int64_t> delta,
+      std::optional<int64_t> delta,
       base::Time modification_time,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceClosure callback) override;
@@ -117,7 +117,7 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   int notify_bucket_accessed_count() const { return bucket_accessed_count_; }
   int notify_bucket_modified_count() const { return bucket_modified_count_; }
   BucketId last_notified_bucket_id() const { return last_notified_bucket_id_; }
-  absl::optional<int64_t> last_notified_bucket_delta() const {
+  std::optional<int64_t> last_notified_bucket_delta() const {
     return last_notified_bucket_delta_;
   }
 
@@ -135,7 +135,7 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   int bucket_accessed_count_ = 0;
   int bucket_modified_count_ = 0;
   BucketId last_notified_bucket_id_ = BucketId::FromUnsafeValue(-1);
-  absl::optional<int64_t> last_notified_bucket_delta_;
+  std::optional<int64_t> last_notified_bucket_delta_;
 };
 
 }  // namespace storage

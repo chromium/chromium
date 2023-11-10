@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/android/scoped_java_ref.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class HttpRequestHeaders;
@@ -62,7 +62,7 @@ struct AwWebResourceRequest final {
   bool has_user_gesture;
   std::vector<std::string> header_names;
   std::vector<std::string> header_values;
-  absl::optional<bool> is_renderer_initiated;
+  std::optional<bool> is_renderer_initiated;
 };
 
 }  // namespace android_webview

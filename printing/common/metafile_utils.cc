@@ -184,13 +184,13 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
   }
 
   if (ui::IsCellOrTableHeader(ax_node->GetRole())) {
-    absl::optional<int> row_span = ax_node->GetTableCellRowSpan();
+    std::optional<int> row_span = ax_node->GetTableCellRowSpan();
     if (row_span.has_value()) {
       tag->fAttributes.appendInt(kPDFTableAttributeOwner,
                                  kPDFTableCellRowSpanAttribute,
                                  row_span.value());
     }
-    absl::optional<int> col_span = ax_node->GetTableCellColSpan();
+    std::optional<int> col_span = ax_node->GetTableCellColSpan();
     if (col_span.has_value()) {
       tag->fAttributes.appendInt(kPDFTableAttributeOwner,
                                  kPDFTableCellColSpanAttribute,

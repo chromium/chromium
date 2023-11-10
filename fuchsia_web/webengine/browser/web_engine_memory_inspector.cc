@@ -17,7 +17,7 @@
 namespace {
 
 std::vector<std::string> GetAllocatorDumpNamesFromConfig() {
-  const absl::optional<base::Value::Dict>& config =
+  const std::optional<base::Value::Dict>& config =
       fuchsia_component_support::LoadPackageConfig();
   if (!config)
     return {};

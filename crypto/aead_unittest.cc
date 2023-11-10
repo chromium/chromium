@@ -51,7 +51,7 @@ TEST_P(AeadTest, SealOpenSpan) {
       aead.Seal(kPlaintext, nonce, kAdditionalData);
   EXPECT_LT(sizeof(kPlaintext), ciphertext.size());
 
-  absl::optional<std::vector<uint8_t>> decrypted =
+  std::optional<std::vector<uint8_t>> decrypted =
       aead.Open(ciphertext, nonce, kAdditionalData);
   ASSERT_TRUE(decrypted);
   ASSERT_EQ(decrypted->size(), sizeof(kPlaintext));

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
@@ -19,7 +20,6 @@
 #include "base/sequence_checker.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeTicks;
@@ -75,12 +75,12 @@ class AwComponentUpdateService {
                         update_client::Error error);
   update_client::CrxComponent ToCrxComponent(
       const component_updater::ComponentRegistration& component) const;
-  absl::optional<component_updater::ComponentRegistration> GetComponent(
+  std::optional<component_updater::ComponentRegistration> GetComponent(
       const std::string& id) const;
   void GetCrxComponents(
       const std::vector<std::string>& ids,
       base::OnceCallback<
-          void(const std::vector<absl::optional<update_client::CrxComponent>>&)>
+          void(const std::vector<std::optional<update_client::CrxComponent>>&)>
           callback);
   void ScheduleUpdatesOfRegisteredComponents(UpdateCallback on_finished_updates,
                                              bool on_demand_update);

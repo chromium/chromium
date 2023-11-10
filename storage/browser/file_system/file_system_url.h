@@ -8,12 +8,12 @@
 #include <set>
 #include <string>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "storage/common/file_system/file_system_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -241,7 +241,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemURL {
   // Returns the `BucketLocator` for this URL's partitioned file location. In
   // the majority of cases, this will not be populated and the default storage
   // bucket will be used.
-  const absl::optional<BucketLocator>& bucket() const { return bucket_; }
+  const std::optional<BucketLocator>& bucket() const { return bucket_; }
   void SetBucket(const BucketLocator& bucket) { bucket_ = bucket; }
 
   // Returns either `bucket_` or a `BucketLocator` corresponding to the default
@@ -308,7 +308,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemURL {
   FileSystemMountOption mount_option_;
 
   // Fields that must be explicitly set separately.
-  absl::optional<BucketLocator> bucket_;
+  std::optional<BucketLocator> bucket_;
 };
 
 using FileSystemURLSet = std::set<FileSystemURL, FileSystemURL::Comparator>;

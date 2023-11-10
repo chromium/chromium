@@ -5,9 +5,9 @@
 #ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_GRPC_RESOURCE_DATA_SOURCE_H_
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_GRPC_RESOURCE_DATA_SOURCE_H_
 
+#include <optional>
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/url_data_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cast_core/public/src/proto/v2/core_application_service.castcore.pb.h"
 
 namespace chromecast {
@@ -67,7 +67,7 @@ class GrpcResourceDataSource : public content::URLDataSource {
   const bool for_webui_;
   cast::v2::CoreApplicationServiceStub* const core_app_service_stub_;
 
-  absl::optional<std::string> frame_src_;
+  std::optional<std::string> frame_src_;
   bool deny_xframe_options_ = true;
 
   base::WeakPtrFactory<GrpcResourceDataSource> weak_factory_{this};

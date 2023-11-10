@@ -428,7 +428,7 @@ bool GLES2ExternalFramebuffer::AttachSharedImage(const Mailbox& mailbox,
   if (clear_flags) {
     gl::ScopedCapability scoped_scissor(GL_SCISSOR_TEST, GL_FALSE);
 
-    absl::optional<ScopedRestoreWindowRectangles> window_rectangles_restore;
+    std::optional<ScopedRestoreWindowRectangles> window_rectangles_restore;
     if (supports_window_rectangles_) {
       window_rectangles_restore.emplace(api);
       api->glWindowRectanglesEXTFn(GL_EXCLUSIVE_EXT, 0, nullptr);
@@ -513,7 +513,7 @@ void GLES2ExternalFramebuffer::ResolveAndDetach() {
       ScopedRestoreWriteMasks write_mask_restore(api);
       api->glColorMaskFn(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
-      absl::optional<ScopedRestoreWindowRectangles> window_rectangles_restore;
+      std::optional<ScopedRestoreWindowRectangles> window_rectangles_restore;
       if (supports_window_rectangles_) {
         window_rectangles_restore.emplace(api);
         api->glWindowRectanglesEXTFn(GL_EXCLUSIVE_EXT, 0, nullptr);

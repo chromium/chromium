@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include <optional>
 #include "base/base_paths.h"
 #include "base/base_switches.h"
 #include "base/check.h"
@@ -32,7 +33,6 @@
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -103,7 +103,7 @@ class MAYBE_InvitationCppTest
         base::GetMultiProcessTestChildBaseCommandLine());
 
     base::LaunchOptions launch_options;
-    absl::optional<PlatformChannel> channel;
+    std::optional<PlatformChannel> channel;
     PlatformChannelEndpoint channel_endpoint;
     PlatformChannelServerEndpoint server_endpoint;
     switch (transport_type) {

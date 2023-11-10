@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 // This file defines proto and function stubs for internal-only implementations.
@@ -48,7 +48,7 @@ extern std::unique_ptr<RemoteAccessHostV1Proto> GetMachineProvisioningRequest(
     const std::string& owner_email,
     const std::string& fqdn,
     const std::string& public_key,
-    absl::optional<std::string> existing_host_id);
+    std::optional<std::string> existing_host_id);
 
 extern std::string GetReportProvisioningErrorRequestPath();
 extern std::unique_ptr<ReportProvisioningErrorRequest>

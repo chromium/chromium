@@ -93,7 +93,7 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicyTest
   }
 
   void LookupConfirmationCallback(
-      absl::optional<AppPackageNameLoggingRule> record) {
+      std::optional<AppPackageNameLoggingRule> record) {
     EXPECT_TRUE(checker_.CalledOnValidSequence());
     allowlist_lookup_result_ = record;
     lookup_run_loop_.Quit();
@@ -106,7 +106,7 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicyTest
   base::RunLoop lookup_run_loop_;
   base::HistogramTester histogram_tester_;
 
-  absl::optional<AppPackageNameLoggingRule> allowlist_lookup_result_;
+  std::optional<AppPackageNameLoggingRule> allowlist_lookup_result_;
 
  private:
   base::FilePath allowlist_path_;
@@ -179,7 +179,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 
   auto policy =
       std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(
-          "non.existent.app", absl::optional<AppPackageNameLoggingRule>(),
+          "non.existent.app", std::optional<AppPackageNameLoggingRule>(),
           base::BindOnce(&AwAppsPackageNamesAllowlistComponentLoaderPolicyTest::
                              LookupConfirmationCallback,
                          base::Unretained(this)));
@@ -203,7 +203,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 
   auto policy =
       std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(
-          kTestAllowlist[1], absl::optional<AppPackageNameLoggingRule>(),
+          kTestAllowlist[1], std::optional<AppPackageNameLoggingRule>(),
           base::BindOnce(&AwAppsPackageNamesAllowlistComponentLoaderPolicyTest::
                              LookupConfirmationCallback,
                          base::Unretained(this)));
@@ -228,7 +228,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 
   auto policy =
       std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(
-          kTestAllowlist[1], absl::optional<AppPackageNameLoggingRule>(),
+          kTestAllowlist[1], std::optional<AppPackageNameLoggingRule>(),
           base::BindOnce(&AwAppsPackageNamesAllowlistComponentLoaderPolicyTest::
                              LookupConfirmationCallback,
                          base::Unretained(this)));
@@ -252,7 +252,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 
   auto policy =
       std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(
-          kTestAllowlist[1], absl::optional<AppPackageNameLoggingRule>(),
+          kTestAllowlist[1], std::optional<AppPackageNameLoggingRule>(),
           base::BindOnce(&AwAppsPackageNamesAllowlistComponentLoaderPolicyTest::
                              LookupConfirmationCallback,
                          base::Unretained(this)));
@@ -277,7 +277,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 
   auto policy =
       std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(
-          kTestAllowlist[1], absl::optional<AppPackageNameLoggingRule>(),
+          kTestAllowlist[1], std::optional<AppPackageNameLoggingRule>(),
           base::BindOnce(&AwAppsPackageNamesAllowlistComponentLoaderPolicyTest::
                              LookupConfirmationCallback,
                          base::Unretained(this)));
@@ -306,7 +306,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 
   auto policy =
       std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(
-          kTestAllowlist[1], absl::optional<AppPackageNameLoggingRule>(),
+          kTestAllowlist[1], std::optional<AppPackageNameLoggingRule>(),
           base::BindOnce(&AwAppsPackageNamesAllowlistComponentLoaderPolicyTest::
                              LookupConfirmationCallback,
                          base::Unretained(this)));
@@ -346,7 +346,7 @@ void TestThrottling(base::Time time,
   EXPECT_EQ(policies.size(), expect_throttling ? 0 : 1u);
 }
 
-void TestThrottlingAllowlist(absl::optional<AppPackageNameLoggingRule> rule,
+void TestThrottlingAllowlist(std::optional<AppPackageNameLoggingRule> rule,
                              bool expect_throttling) {
   TestingPrefServiceSimple prefs;
   AwMetricsServiceClient::RegisterMetricsPrefs(prefs.registry());
@@ -390,7 +390,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
       android_webview::features::kWebViewAppsPackageNamesServerSideAllowlist);
   base::SetRecordActionTaskRunner(env_.GetMainThreadTaskRunner());
 
-  TestThrottlingAllowlist(absl::optional<AppPackageNameLoggingRule>(),
+  TestThrottlingAllowlist(std::optional<AppPackageNameLoggingRule>(),
                           /*expect_throttling=*/false);
 }
 

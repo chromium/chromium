@@ -6,9 +6,9 @@
 #define GPU_CONFIG_DEVICE_PERF_INFO_H_
 
 #include <cstdint>
+#include <optional>
 #include "build/build_config.h"
 #include "gpu/gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <d3dcommon.h>
@@ -61,7 +61,7 @@ struct GPU_EXPORT DevicePerfInfo {
 };
 
 // Thread-safe getter and setter of global instance of DevicePerfInfo.
-GPU_EXPORT absl::optional<DevicePerfInfo> GetDevicePerfInfo();
+GPU_EXPORT std::optional<DevicePerfInfo> GetDevicePerfInfo();
 GPU_EXPORT void SetDevicePerfInfo(const DevicePerfInfo& device_perf_info);
 
 }  // namespace gpu

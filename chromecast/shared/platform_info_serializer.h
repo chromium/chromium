@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/strings/string_piece.h"
 #include "chromecast/public/media/decoder_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cast_core/public/src/proto/bindings/media_capabilities.pb.h"
 
 namespace chromecast {
@@ -42,7 +42,7 @@ class PlatformInfoSerializer {
   cast::bindings::MediaCapabilitiesMessage* platform_info();
 
   std::string Serialize() const;
-  static absl::optional<PlatformInfoSerializer> Deserialize(
+  static std::optional<PlatformInfoSerializer> Deserialize(
       base::StringPiece base64);
 
   // Setters for known valid properties.
@@ -69,34 +69,34 @@ class PlatformInfoSerializer {
   void SetSupportedAudioCodecs(std::vector<AudioCodecInfo> codec_infos);
   void SetSupportedVideoCodecs(std::vector<VideoCodecInfo> codec_infos);
 
-  // Getters for the same properties. Returns absl::nullopt if no such value is
+  // Getters for the same properties. Returns std::nullopt if no such value is
   // set, and the set value in all other cases.
-  absl::optional<int> MaxWidth() const;
-  absl::optional<int> MaxHeight() const;
-  absl::optional<int> MaxFrameRate() const;
-  absl::optional<std::string> SupportedCryptoBlockFormat() const;
-  absl::optional<int> MaxChannels() const;
-  absl::optional<bool> PcmSurroundSoundSupported() const;
-  absl::optional<bool> IsPlatformDolbyVisionEnabled() const;
-  absl::optional<bool> IsDolbyVisionSupported() const;
-  absl::optional<bool> IsDolbyVision4kP60Supported() const;
-  absl::optional<bool> IsDolbyVisionSupportedByCurrentHdmiMode() const;
-  absl::optional<bool> IsHdmiVideoModeSwitchEnabled() const;
-  absl::optional<bool> IsPlatformHevcEnabled() const;
-  absl::optional<bool> IsHdmiModeHdrCheckEnforced() const;
-  absl::optional<bool> IsHdrSupportedByCurrentHdmiMode() const;
-  absl::optional<bool> IsSmpteSt2084Supported() const;
-  absl::optional<bool> IsHlgSupported() const;
-  absl::optional<bool> IsHdrFeatureEnabled() const;
-  absl::optional<int> HdcpVersion() const;
-  absl::optional<int> SpatialRenderingSupportMask() const;
-  absl::optional<int> MaxFillRate() const;
-  absl::optional<std::vector<AudioCodecInfo>> SupportedAudioCodecs() const;
-  absl::optional<std::vector<VideoCodecInfo>> SupportedVideoCodecs() const;
+  std::optional<int> MaxWidth() const;
+  std::optional<int> MaxHeight() const;
+  std::optional<int> MaxFrameRate() const;
+  std::optional<std::string> SupportedCryptoBlockFormat() const;
+  std::optional<int> MaxChannels() const;
+  std::optional<bool> PcmSurroundSoundSupported() const;
+  std::optional<bool> IsPlatformDolbyVisionEnabled() const;
+  std::optional<bool> IsDolbyVisionSupported() const;
+  std::optional<bool> IsDolbyVision4kP60Supported() const;
+  std::optional<bool> IsDolbyVisionSupportedByCurrentHdmiMode() const;
+  std::optional<bool> IsHdmiVideoModeSwitchEnabled() const;
+  std::optional<bool> IsPlatformHevcEnabled() const;
+  std::optional<bool> IsHdmiModeHdrCheckEnforced() const;
+  std::optional<bool> IsHdrSupportedByCurrentHdmiMode() const;
+  std::optional<bool> IsSmpteSt2084Supported() const;
+  std::optional<bool> IsHlgSupported() const;
+  std::optional<bool> IsHdrFeatureEnabled() const;
+  std::optional<int> HdcpVersion() const;
+  std::optional<int> SpatialRenderingSupportMask() const;
+  std::optional<int> MaxFillRate() const;
+  std::optional<std::vector<AudioCodecInfo>> SupportedAudioCodecs() const;
+  std::optional<std::vector<VideoCodecInfo>> SupportedVideoCodecs() const;
 
   // Deprecated fields.
   void SetSupportedLegacyVp9Levels(std::vector<int> levels);
-  absl::optional<std::vector<int>> SupportedLegacyVp9Levels() const;
+  std::optional<std::vector<int>> SupportedLegacyVp9Levels() const;
 
  private:
   // All currently produced values.

@@ -7,11 +7,11 @@
 
 #include <string>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace mojo {
@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingReceiver {
 
   void reset();
 
-  const absl::optional<std::string>& interface_name() const {
+  const std::optional<std::string>& interface_name() const {
     return interface_name_;
   }
 
@@ -69,7 +69,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingReceiver {
  private:
   mojo::ScopedMessagePipeHandle PassPipeIfNameIs(const char* interface_name);
 
-  absl::optional<std::string> interface_name_;
+  std::optional<std::string> interface_name_;
   mojo::ScopedMessagePipeHandle pipe_;
 };
 

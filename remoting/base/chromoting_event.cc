@@ -178,7 +178,7 @@ void ChromotingEvent::SetDouble(const std::string& key, double value) {
 }
 
 bool ChromotingEvent::IsDataValid() {
-  absl::optional<int> auth_method = values_map_->FindInt(kAuthMethodKey);
+  std::optional<int> auth_method = values_map_->FindInt(kAuthMethodKey);
   if (auth_method &&
       auth_method.value() == static_cast<int>(AuthMethod::NOT_SET)) {
     return false;
@@ -228,21 +228,21 @@ std::unique_ptr<base::Value::Dict> ChromotingEvent::CopyDictionaryValue()
 apis::v1::ChromotingEvent ChromotingEvent::CreateProto() const {
   apis::v1::ChromotingEvent event_proto;
 
-  if (absl::optional<int> auth_method = values_map_->FindInt(kAuthMethodKey)) {
+  if (std::optional<int> auth_method = values_map_->FindInt(kAuthMethodKey)) {
     event_proto.set_auth_method(
         static_cast<apis::v1::ChromotingEvent_AuthMethod>(auth_method.value()));
   }
-  if (absl::optional<double> capture_latency =
+  if (std::optional<double> capture_latency =
           values_map_->FindDouble(kCaptureLatencyKey)) {
     event_proto.set_capture_latency(capture_latency.value());
   }
-  if (absl::optional<int> connection_error =
+  if (std::optional<int> connection_error =
           values_map_->FindInt(kConnectionErrorKey)) {
     event_proto.set_connection_error(
         static_cast<apis::v1::ChromotingEvent_ConnectionError>(
             connection_error.value()));
   }
-  if (absl::optional<int> connection_type =
+  if (std::optional<int> connection_type =
           values_map_->FindInt(kConnectionTypeKey)) {
     event_proto.set_connection_type(
         static_cast<apis::v1::ChromotingEvent_ConnectionType>(
@@ -251,15 +251,15 @@ apis::v1::ChromotingEvent ChromotingEvent::CreateProto() const {
   if (const std::string* cpu = values_map_->FindString(kCpuKey)) {
     event_proto.set_cpu(*cpu);
   }
-  if (absl::optional<double> decode_latency =
+  if (std::optional<double> decode_latency =
           values_map_->FindDouble(kDecodeLatencyKey)) {
     event_proto.set_decode_latency(decode_latency.value());
   }
-  if (absl::optional<double> encode_latency =
+  if (std::optional<double> encode_latency =
           values_map_->FindDouble(kEncodeLatencyKey)) {
     event_proto.set_encode_latency(encode_latency.value());
   }
-  if (absl::optional<int> host_os = values_map_->FindInt(kHostOsKey)) {
+  if (std::optional<int> host_os = values_map_->FindInt(kHostOsKey)) {
     event_proto.set_host_os(
         static_cast<apis::v1::ChromotingEvent_Os>(host_os.value()));
   }
@@ -271,59 +271,59 @@ apis::v1::ChromotingEvent ChromotingEvent::CreateProto() const {
           values_map_->FindString(kHostVersionKey)) {
     event_proto.set_host_version(*host_version);
   }
-  if (absl::optional<double> max_capture_latency =
+  if (std::optional<double> max_capture_latency =
           values_map_->FindDouble(kMaxCaptureLatencyKey)) {
     event_proto.set_max_capture_latency(max_capture_latency.value());
   }
-  if (absl::optional<double> max_decode_latency =
+  if (std::optional<double> max_decode_latency =
           values_map_->FindDouble(kMaxDecodeLatencyKey)) {
     event_proto.set_max_decode_latency(max_decode_latency.value());
   }
-  if (absl::optional<double> max_encode_latency =
+  if (std::optional<double> max_encode_latency =
           values_map_->FindDouble(kMaxEncodeLatencyKey)) {
     event_proto.set_max_encode_latency(max_encode_latency.value());
   }
-  if (absl::optional<double> max_render_latency =
+  if (std::optional<double> max_render_latency =
           values_map_->FindDouble(kMaxRenderLatencyKey)) {
     event_proto.set_max_render_latency(max_render_latency.value());
   }
-  if (absl::optional<double> max_roundtrip_latency =
+  if (std::optional<double> max_roundtrip_latency =
           values_map_->FindDouble(kMaxRoundtripLatencyKey)) {
     event_proto.set_max_roundtrip_latency(max_roundtrip_latency.value());
   }
-  if (absl::optional<int> mode = values_map_->FindInt(kModeKey)) {
+  if (std::optional<int> mode = values_map_->FindInt(kModeKey)) {
     event_proto.set_mode(
         static_cast<apis::v1::ChromotingEvent_Mode>(mode.value()));
   }
-  if (absl::optional<int> os = values_map_->FindInt(kOsKey)) {
+  if (std::optional<int> os = values_map_->FindInt(kOsKey)) {
     event_proto.set_os(static_cast<apis::v1::ChromotingEvent_Os>(os.value()));
   }
   if (const std::string* os_version = values_map_->FindString(kOsVersionKey)) {
     event_proto.set_os_version(*os_version);
   }
-  if (absl::optional<int> previous_session_state =
+  if (std::optional<int> previous_session_state =
           values_map_->FindInt(kPreviousSessionStateKey)) {
     event_proto.set_previous_session_state(
         static_cast<apis::v1::ChromotingEvent_SessionState>(
             previous_session_state.value()));
   }
-  if (absl::optional<double> render_latency =
+  if (std::optional<double> render_latency =
           values_map_->FindDouble(kRenderLatencyKey)) {
     event_proto.set_render_latency(render_latency.value());
   }
-  if (absl::optional<int> role = values_map_->FindInt(kRoleKey)) {
+  if (std::optional<int> role = values_map_->FindInt(kRoleKey)) {
     event_proto.set_role(
         static_cast<apis::v1::ChromotingEvent_Role>(role.value()));
   }
-  if (absl::optional<double> roundtrip_latency =
+  if (std::optional<double> roundtrip_latency =
           values_map_->FindDouble(kRoundtripLatencyKey)) {
     event_proto.set_roundtrip_latency(roundtrip_latency.value());
   }
-  if (absl::optional<double> session_duration =
+  if (std::optional<double> session_duration =
           values_map_->FindDouble(kSessionDurationKey)) {
     event_proto.set_session_duration(session_duration.value());
   }
-  if (absl::optional<int> session_entry_point =
+  if (std::optional<int> session_entry_point =
           values_map_->FindInt(kSessionEntryPointKey)) {
     event_proto.set_session_entry_point(
         static_cast<apis::v1::ChromotingEvent_SessionEntryPoint>(
@@ -332,23 +332,23 @@ apis::v1::ChromotingEvent ChromotingEvent::CreateProto() const {
   if (const std::string* session_id = values_map_->FindString(kSessionIdKey)) {
     event_proto.set_session_id(*session_id);
   }
-  if (absl::optional<int> session_state =
+  if (std::optional<int> session_state =
           values_map_->FindInt(kSessionStateKey)) {
     event_proto.set_session_state(
         static_cast<apis::v1::ChromotingEvent_SessionState>(
             session_state.value()));
   }
-  if (absl::optional<int> signal_strategy_type =
+  if (std::optional<int> signal_strategy_type =
           values_map_->FindInt(kSignalStrategyTypeKey)) {
     event_proto.set_signal_strategy_type(
         static_cast<apis::v1::ChromotingEvent_SignalStrategyType>(
             signal_strategy_type.value()));
   }
-  if (absl::optional<int> type = values_map_->FindInt(kTypeKey)) {
+  if (std::optional<int> type = values_map_->FindInt(kTypeKey)) {
     event_proto.set_type(
         static_cast<apis::v1::ChromotingEvent_Type>(type.value()));
   }
-  if (absl::optional<double> video_bandwidth =
+  if (std::optional<double> video_bandwidth =
           values_map_->FindDouble(kVideoBandwidthKey)) {
     event_proto.set_video_bandwidth(video_bandwidth.value());
   }

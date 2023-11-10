@@ -323,7 +323,7 @@ class FileTransportStrategy : public BlobTransportStrategy {
  private:
   void OnReply(BlobDataBuilder::FutureFile future_file,
                scoped_refptr<ShareableFileReference> file_reference,
-               absl::optional<base::Time> time_file_modified) {
+               std::optional<base::Time> time_file_modified) {
     if (!time_file_modified) {
       // Writing to the file failed in the renderer.
       std::move(result_callback_).Run(BlobStatus::ERR_FILE_WRITE_FAILED);

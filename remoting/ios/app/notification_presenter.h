@@ -7,13 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+#include <optional>
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "remoting/client/notification/notification_client.h"
 #include "remoting/client/notification/notification_message.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -42,7 +42,7 @@ class NotificationPresenter final {
   ~NotificationPresenter() = delete;
 
   void FetchNotification();
-  void OnNotificationFetched(absl::optional<NotificationMessage> notification);
+  void OnNotificationFetched(std::optional<NotificationMessage> notification);
 
   NotificationClient notification_client_;
 

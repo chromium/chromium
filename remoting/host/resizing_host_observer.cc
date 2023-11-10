@@ -144,7 +144,7 @@ void ResizingHostObserver::RegisterForDisplayChanges(
 
 void ResizingHostObserver::SetScreenResolution(
     const ScreenResolution& resolution,
-    absl::optional<webrtc::ScreenId> opt_screen_id) {
+    std::optional<webrtc::ScreenId> opt_screen_id) {
   // Get the current time. This function is called exactly once for each call
   // to SetScreenResolution to simplify the implementation of unit-tests.
   base::TimeTicks now = clock_->NowTicks();
@@ -302,7 +302,7 @@ void ResizingHostObserver::OnDisplayInfoChanged(
   // If there was a pending resolution request for an unspecifed monitor, apply
   // it now.
   if (!pending_resolution_request_.IsEmpty()) {
-    SetScreenResolution(pending_resolution_request_, absl::nullopt);
+    SetScreenResolution(pending_resolution_request_, std::nullopt);
     pending_resolution_request_ = {};
   }
 }

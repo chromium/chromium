@@ -102,7 +102,7 @@ bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
 // Whether the PDF is Tagged (see 10.7 "Tagged PDF" in PDF Reference 1.7).
 // Returns true if it's a tagged (accessible) PDF, false if it's a valid
 // PDF but untagged, and nullopt if the PDF can't be parsed.
-absl::optional<bool> IsPDFDocTagged(base::span<const uint8_t> pdf_buffer);
+std::optional<bool> IsPDFDocTagged(base::span<const uint8_t> pdf_buffer);
 
 // Given a tagged PDF (see IsPDFDocTagged, above), return the portion of
 // the structure tree for a given page as a hierarchical tree of base::Values.
@@ -115,7 +115,7 @@ base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
 // `page_index` is the page number that the function will get the dimensions of.
 // Returns the size of the page in points, or nullopt if the document or the
 // page number are not valid.
-absl::optional<gfx::SizeF> GetPDFPageSizeByIndex(
+std::optional<gfx::SizeF> GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
     int page_index);
 

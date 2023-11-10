@@ -11,12 +11,12 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "printing/mojom/print.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -133,7 +133,7 @@ using PageOutputQualityAttributes = std::vector<PageOutputQualityAttribute>;
 struct COMPONENT_EXPORT(PRINT_BACKEND) PageOutputQuality {
   PageOutputQuality();
   PageOutputQuality(PageOutputQualityAttributes qualities,
-                    absl::optional<std::string> default_quality);
+                    std::optional<std::string> default_quality);
   PageOutputQuality(const PageOutputQuality& other);
   ~PageOutputQuality();
 
@@ -142,7 +142,7 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PageOutputQuality {
 
   // Default option of page output quality.
   // TODO(crbug.com/1291257): Need populate this option in the next CLs.
-  absl::optional<std::string> default_quality;
+  std::optional<std::string> default_quality;
 };
 
 #if defined(UNIT_TEST)
@@ -161,7 +161,7 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) XpsCapabilities {
   XpsCapabilities& operator=(XpsCapabilities&& other) noexcept;
   ~XpsCapabilities();
 
-  absl::optional<PageOutputQuality> page_output_quality;
+  std::optional<PageOutputQuality> page_output_quality;
 };
 
 #endif  // BUILDFLAG(IS_WIN)
@@ -289,7 +289,7 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-  absl::optional<PageOutputQuality> page_output_quality;
+  std::optional<PageOutputQuality> page_output_quality;
 #endif  // BUILDFLAG(IS_WIN)
 };
 
@@ -365,7 +365,7 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
   // there is any error in retrieving this data.
   // TODO(crbug.com/1424368):  Remove this if the printable areas can be made
   // fully available from `GetPrinterSemanticCapsAndDefaults()`.
-  virtual absl::optional<gfx::Rect> GetPaperPrintableArea(
+  virtual std::optional<gfx::Rect> GetPaperPrintableArea(
       const std::string& printer_name,
       const std::string& paper_vendor_id,
       const gfx::Size& paper_size_um) = 0;

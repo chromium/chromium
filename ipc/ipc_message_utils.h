@@ -17,6 +17,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <optional>
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
@@ -34,7 +35,6 @@
 #include "ipc/ipc_buildflags.h"
 #include "ipc/ipc_param_traits.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
@@ -973,8 +973,8 @@ struct ParamTraits<std::unique_ptr<P>> {
 // absl types ParamTraits
 
 template <class P>
-struct ParamTraits<absl::optional<P>> {
-  typedef absl::optional<P> param_type;
+struct ParamTraits<std::optional<P>> {
+  typedef std::optional<P> param_type;
   static void Write(base::Pickle* m, const param_type& p) {
     const bool is_set = static_cast<bool>(p);
     WriteParam(m, is_set);

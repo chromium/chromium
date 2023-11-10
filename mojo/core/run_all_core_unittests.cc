@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -15,7 +16,6 @@
 #include "mojo/core/mojo_core_unittest.h"
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/cpp/system/dynamic_library_support.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 base::FilePath GetMojoCoreLibraryPath() {
 #if BUILDFLAG(IS_FUCHSIA)
@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
   if (!command_line.HasSwitch(switches::kTestChildProcess))
     flags |= MOJO_INITIALIZE_FLAG_AS_BROKER;
 
-  absl::optional<base::FilePath> library_path;
+  std::optional<base::FilePath> library_path;
   if (command_line.HasSwitch(switches::kMojoUseExplicitLibraryPath))
     library_path = GetMojoCoreLibraryPath();
 

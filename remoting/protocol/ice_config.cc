@@ -212,7 +212,7 @@ IceConfig IceConfig::Parse(const base::Value::Dict& dictionary) {
 
 // static
 IceConfig IceConfig::Parse(const std::string& config_json) {
-  absl::optional<base::Value> json = base::JSONReader::Read(config_json);
+  std::optional<base::Value> json = base::JSONReader::Read(config_json);
   if (!json) {
     return IceConfig();
   }

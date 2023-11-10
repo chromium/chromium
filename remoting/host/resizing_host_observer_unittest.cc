@@ -157,7 +157,7 @@ class ResizingHostObserverTest : public testing::Test {
   }
 
   void SetScreenResolution(const ScreenResolution& client_size) {
-    resizing_host_observer_->SetScreenResolution(client_size, absl::nullopt);
+    resizing_host_observer_->SetScreenResolution(client_size, std::nullopt);
     if (auto_advance_clock_) {
       clock_.Advance(base::Seconds(1));
     }

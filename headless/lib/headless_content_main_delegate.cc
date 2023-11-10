@@ -188,7 +188,7 @@ HeadlessContentMainDelegate::~HeadlessContentMainDelegate() {
   g_current_headless_content_main_delegate = nullptr;
 }
 
-absl::optional<int> HeadlessContentMainDelegate::BasicStartupComplete() {
+std::optional<int> HeadlessContentMainDelegate::BasicStartupComplete() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   // The DevTools remote debugging pipe file descriptors need to be checked
@@ -240,7 +240,7 @@ absl::optional<int> HeadlessContentMainDelegate::BasicStartupComplete() {
 #endif
 
   content::Profiling::ProcessStarted();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void HeadlessContentMainDelegate::InitLogging(
@@ -462,7 +462,7 @@ HeadlessContentMainDelegate* HeadlessContentMainDelegate::GetInstance() {
   return g_current_headless_content_main_delegate;
 }
 
-absl::optional<int> HeadlessContentMainDelegate::PreBrowserMain() {
+std::optional<int> HeadlessContentMainDelegate::PreBrowserMain() {
   HeadlessBrowser::Options::Builder builder;
 
   if (!HandleCommandLineSwitches(*base::CommandLine::ForCurrentProcess(),
@@ -479,7 +479,7 @@ absl::optional<int> HeadlessContentMainDelegate::PreBrowserMain() {
 #if BUILDFLAG(IS_MAC)
   PlatformPreBrowserMain();
 #endif
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -514,10 +514,10 @@ HeadlessContentMainDelegate::CreateContentUtilityClient() {
   return utility_client_.get();
 }
 
-absl::optional<int> HeadlessContentMainDelegate::PostEarlyInitialization(
+std::optional<int> HeadlessContentMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
   if (absl::holds_alternative<InvokedInChildProcess>(invoked_in))
-    return absl::nullopt;
+    return std::nullopt;
 
   if (base::FeatureList::IsEnabled(features::kVirtualTime)) {
     // Only pass viz flags into the virtual time mode.
@@ -543,7 +543,7 @@ absl::optional<int> HeadlessContentMainDelegate::PostEarlyInitialization(
       base::CommandLine::ForCurrentProcess()->AppendSwitch(flag);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace headless

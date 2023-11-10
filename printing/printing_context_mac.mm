@@ -293,7 +293,7 @@ void ApplySystemDestination(const std::u16string& device_name,
                             const base::Value::Dict& system_print_dialog_data,
                             PMPrintSession& print_session,
                             PMPrintSettings& print_settings) {
-  absl::optional<int> destination_type = system_print_dialog_data.FindInt(
+  std::optional<int> destination_type = system_print_dialog_data.FindInt(
       kMacSystemPrintDialogDataDestinationType);
 
   CHECK(destination_type.has_value());

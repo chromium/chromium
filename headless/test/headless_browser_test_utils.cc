@@ -4,6 +4,7 @@
 
 #include "headless/test/headless_browser_test_utils.h"
 
+#include <optional>
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -15,7 +16,6 @@
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/public/headless_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using simple_devtools_protocol_client::SimpleDevToolsProtocolClient;
 
@@ -100,14 +100,14 @@ std::string DictString(const base::Value::Dict& dict, base::StringPiece path) {
 }
 
 int DictInt(const base::Value::Dict& dict, base::StringPiece path) {
-  absl::optional<int> result = dict.FindIntByDottedPath(path);
+  std::optional<int> result = dict.FindIntByDottedPath(path);
   CHECK(result) << "Missing value for '" << path << "' in:\n"
                 << dict.DebugString();
   return *result;
 }
 
 bool DictBool(const base::Value::Dict& dict, base::StringPiece path) {
-  absl::optional<bool> result = dict.FindBoolByDottedPath(path);
+  std::optional<bool> result = dict.FindBoolByDottedPath(path);
   CHECK(result) << "Missing value for '" << path << "' in:\n"
                 << dict.DebugString();
   return *result;

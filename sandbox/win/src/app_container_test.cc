@@ -51,7 +51,7 @@ const char* TokenTypeToName(bool impersonation) {
   return impersonation ? "Impersonation Token" : "Primary Token";
 }
 
-void CheckToken(const absl::optional<base::win::AccessToken>& token,
+void CheckToken(const std::optional<base::win::AccessToken>& token,
                 bool impersonation,
                 PSECURITY_CAPABILITIES security_capabilities,
                 bool restricted) {
@@ -65,7 +65,7 @@ void CheckToken(const absl::optional<base::win::AccessToken>& token,
     EXPECT_FALSE(token->IsIdentification()) << TokenTypeToName(impersonation);
   }
 
-  absl::optional<base::win::Sid> package_sid = token->AppContainerSid();
+  std::optional<base::win::Sid> package_sid = token->AppContainerSid();
   ASSERT_TRUE(package_sid) << TokenTypeToName(impersonation);
   EXPECT_TRUE(package_sid->Equal(security_capabilities->AppContainerSid))
       << TokenTypeToName(impersonation);

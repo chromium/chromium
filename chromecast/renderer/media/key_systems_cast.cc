@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include <optional>
 #include "base/check.h"
 #include "base/command_line.h"
 #include "build/build_config.h"
@@ -15,7 +16,6 @@
 #include "media/base/eme_constants.h"
 #include "media/base/key_system_info.h"
 #include "media/media_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
 #if BUILDFLAG(ENABLE_WIDEVINE)

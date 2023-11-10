@@ -177,12 +177,12 @@ blink::UserAgentMetadata HeadlessBrowser::GetUserAgentMetadata() {
 
   // Rengenerate the brand version lists with kHeadlessProductName.
   metadata.brand_version_list = embedder_support::GenerateBrandVersionList(
-      seed, kHeadlessProductName, significant_version, absl::nullopt,
-      absl::nullopt, kEnableUpdatedGreaseByPolicy,
+      seed, kHeadlessProductName, significant_version, std::nullopt,
+      std::nullopt, kEnableUpdatedGreaseByPolicy,
       blink::UserAgentBrandVersionType::kMajorVersion);
   metadata.brand_full_version_list = embedder_support::GenerateBrandVersionList(
-      seed, kHeadlessProductName, metadata.full_version, absl::nullopt,
-      absl::nullopt, kEnableUpdatedGreaseByPolicy,
+      seed, kHeadlessProductName, metadata.full_version, std::nullopt,
+      std::nullopt, kEnableUpdatedGreaseByPolicy,
       blink::UserAgentBrandVersionType::kFullVersion);
   return metadata;
 }

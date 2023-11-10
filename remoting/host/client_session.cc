@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_map.h"
@@ -54,7 +55,6 @@
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/session_config.h"
 #include "remoting/protocol/video_frame_pump.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 #if defined(WEBRTC_USE_GIO)
@@ -165,7 +165,7 @@ void ClientSession::NotifyClientResolution(
 
   // Try to match the client's resolution.
   ScreenResolution screen_resolution(client_size, dpi_vector);
-  absl::optional<webrtc::ScreenId> screen_id;
+  std::optional<webrtc::ScreenId> screen_id;
   if (resolution.has_screen_id()) {
     screen_id = resolution.screen_id();
   }
@@ -462,8 +462,8 @@ void ClientSession::ControlPeerConnection(
   if (!connection_->peer_connection_controls()) {
     return;
   }
-  absl::optional<int> min_bitrate_bps;
-  absl::optional<int> max_bitrate_bps;
+  std::optional<int> min_bitrate_bps;
+  std::optional<int> max_bitrate_bps;
   bool set_preferred_bitrates = false;
   if (parameters.has_preferred_min_bitrate_bps()) {
     min_bitrate_bps = parameters.preferred_min_bitrate_bps();

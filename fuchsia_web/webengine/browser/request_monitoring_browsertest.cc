@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(RequestMonitoringTest, UrlRequestRewriteRemoveHeader) {
 
   std::vector<fuchsia::web::UrlRequestRewrite> rewrites;
   rewrites.push_back(CreateRewriteAddHeaders("Test", "Value"));
-  rewrites.push_back(CreateRewriteRemoveHeader(absl::nullopt, "Test"));
+  rewrites.push_back(CreateRewriteRemoveHeader(std::nullopt, "Test"));
   fuchsia::web::UrlRequestRewriteRule rule;
   rule.set_rewrites(std::move(rewrites));
   std::vector<fuchsia::web::UrlRequestRewriteRule> rules;
@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(RequestMonitoringTest,
   std::vector<fuchsia::web::UrlRequestRewrite> rewrites;
   rewrites.push_back(CreateRewriteAddHeaders("Test", "Value"));
   rewrites.push_back(
-      CreateRewriteRemoveHeader(absl::make_optional("[pattern]"), "Test"));
+      CreateRewriteRemoveHeader(std::make_optional("[pattern]"), "Test"));
   fuchsia::web::UrlRequestRewriteRule rule;
   rule.set_rewrites(std::move(rewrites));
   std::vector<fuchsia::web::UrlRequestRewriteRule> rules;

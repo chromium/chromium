@@ -108,12 +108,12 @@ class GPU_GLES2_EXPORT ServiceTransferCache
 
  private:
   struct CacheEntryInternal {
-    CacheEntryInternal(absl::optional<ServiceDiscardableHandle> handle,
+    CacheEntryInternal(std::optional<ServiceDiscardableHandle> handle,
                        std::unique_ptr<cc::ServiceTransferCacheEntry> entry);
     CacheEntryInternal(CacheEntryInternal&& other);
     CacheEntryInternal& operator=(CacheEntryInternal&& other);
     ~CacheEntryInternal();
-    absl::optional<ServiceDiscardableHandle> handle;
+    std::optional<ServiceDiscardableHandle> handle;
     std::unique_ptr<cc::ServiceTransferCacheEntry> entry;
 
     // For metrics.

@@ -27,7 +27,7 @@ DCompSurfaceOverlayImageRepresentation::DCompSurfaceOverlayImageRepresentation(
 DCompSurfaceOverlayImageRepresentation::
     ~DCompSurfaceOverlayImageRepresentation() = default;
 
-absl::optional<gl::DCLayerOverlayImage>
+std::optional<gl::DCLayerOverlayImage>
 DCompSurfaceOverlayImageRepresentation::GetDCLayerOverlayImage() {
   return static_cast<DCompSurfaceImageBacking*>(backing())
       ->GetDCLayerOverlayImage();

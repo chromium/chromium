@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include <optional>
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/process/launch.h"
@@ -19,7 +20,6 @@
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/security_level.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -125,7 +125,7 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
  private:
   FRIEND_TEST_ALL_PREFIXES(SandboxWinTest, GetJobMemoryLimit);
 
-  static absl::optional<size_t> GetJobMemoryLimit(
+  static std::optional<size_t> GetJobMemoryLimit(
       sandbox::mojom::Sandbox sandbox_type);
 };
 

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
@@ -28,7 +29,6 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_utils.h"
 #include "printing/units.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/functional/callback.h"
@@ -192,7 +192,7 @@ void ExtractCopies(const CupsOptionProvider& printer,
 }
 
 // Reads resolution from `attr` and puts into `size` in dots per inch.
-absl::optional<gfx::Size> GetResolution(ipp_attribute_t* attr, int i) {
+std::optional<gfx::Size> GetResolution(ipp_attribute_t* attr, int i) {
   ipp_res_t units;
   int yres;
   int xres = ippGetResolution(attr, i, &yres, &units);
@@ -229,12 +229,12 @@ void ExtractResolutions(const CupsOptionProvider& printer,
 
   int num_options = ippGetCount(attr);
   for (int i = 0; i < num_options; i++) {
-    absl::optional<gfx::Size> size = GetResolution(attr, i);
+    std::optional<gfx::Size> size = GetResolution(attr, i);
     if (size)
       printer_info->dpis.push_back(size.value());
   }
   ipp_attribute_t* def_attr = printer.GetDefaultOptionValue(kIppResolution);
-  absl::optional<gfx::Size> size = GetResolution(def_attr, 0);
+  std::optional<gfx::Size> size = GetResolution(def_attr, 0);
   if (size) {
     printer_info->default_dpi = size.value();
   } else if (!printer_info->dpis.empty()) {
@@ -248,20 +248,20 @@ void ExtractResolutions(const CupsOptionProvider& printer,
   }
 }
 
-absl::optional<PrinterSemanticCapsAndDefaults::Paper>
+std::optional<PrinterSemanticCapsAndDefaults::Paper>
 PaperFromMediaColDatabaseEntry(ipp_t* db_entry) {
   DCHECK(db_entry);
 
-  absl::optional<MediaColData> size = ExtractMediaColData(db_entry);
+  std::optional<MediaColData> size = ExtractMediaColData(db_entry);
   if (!size) {
     LOG(WARNING) << "Unable to create Paper from media-col-database";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (size->HasVariableWidth()) {
     LOG(WARNING) << "Invalid media-col-database entry:"
                  << " variable widths are not supported.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Some PPDs (only ones with a custom height range) have a min height of 0,
@@ -290,7 +290,7 @@ PaperFromMediaColDatabaseEntry(ipp_t* db_entry) {
                  << " media-left-margin=" << size->left_margin
                  << " media-right-margin=" << size->right_margin
                  << " media-top-margin=" << size->top_margin;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   gfx::Size size_um(size->min_width * kMicronsPerPwgUnit,
@@ -330,7 +330,7 @@ PrinterSemanticCapsAndDefaults::Papers SupportedPapers(
   int count = ippGetCount(attr);
 
   for (int i = 0; i < count; i++) {
-    absl::optional<PrinterSemanticCapsAndDefaults::Paper> paper_opt =
+    std::optional<PrinterSemanticCapsAndDefaults::Paper> paper_opt =
         PaperFromMediaColDatabaseEntry(ippGetCollection(attr, i));
     if (!paper_opt.has_value()) {
       continue;
@@ -552,7 +552,7 @@ gfx::Rect GetPrintableAreaForSize(const CupsPrinter& printer,
   for (int i = 0; i < count; i++) {
     ipp_t* db_entry = ippGetCollection(attr, i);
 
-    absl::optional<PrinterSemanticCapsAndDefaults::Paper> paper_opt =
+    std::optional<PrinterSemanticCapsAndDefaults::Paper> paper_opt =
         PaperFromMediaColDatabaseEntry(db_entry);
     if (!paper_opt.has_value()) {
       continue;
@@ -582,16 +582,16 @@ void IppDeleter::operator()(ipp_t* ipp) const {
   ippDelete(ipp);
 }
 
-absl::optional<MediaColData> ExtractMediaColData(ipp_t* db_entry) {
+std::optional<MediaColData> ExtractMediaColData(ipp_t* db_entry) {
   if (!db_entry) {
     LOG(WARNING) << "Invalid media-col-database entry: empty entry.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   ipp_t* media_size = ippGetCollection(
       ippFindAttribute(db_entry, kIppMediaSize, IPP_TAG_BEGIN_COLLECTION), 0);
   if (!media_size) {
     LOG(WARNING) << "Invalid media-col-database entry: empty media_size.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ipp_attribute_t* bottom_attr =
@@ -605,7 +605,7 @@ absl::optional<MediaColData> ExtractMediaColData(ipp_t* db_entry) {
   if (!bottom_attr || !left_attr || !right_attr || !top_attr) {
     LOG(WARNING) << "Invalid media-col-database entry:"
                  << " margins are not present.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   int bottom_margin = ippGetInteger(bottom_attr, 0);
   int left_margin = ippGetInteger(left_attr, 0);
@@ -626,7 +626,7 @@ absl::optional<MediaColData> ExtractMediaColData(ipp_t* db_entry) {
       (!height_attr && !height_range_attr)) {
     LOG(WARNING) << "Invalid media-col-database entry:"
                  << " media-size needs x and y (or x and y range).";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int min_width = 0;
@@ -650,13 +650,13 @@ absl::optional<MediaColData> ExtractMediaColData(ipp_t* db_entry) {
     LOG(WARNING) << "Invalid media-col-database entry:"
                  << " min_width (" << min_width << ") > max_width ("
                  << max_width << ").";
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (min_height > max_height) {
     LOG(WARNING) << "Invalid media-col-database entry:"
                  << " min_height (" << min_height << ") > max_height ("
                  << max_height << ").";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
 #if BUILDFLAG(IS_MAC)
@@ -752,7 +752,7 @@ void FilterMediaColSizes(ScopedIppPtr& attributes) {
   // they can be added later (once all the fixed widths have been discovered).
   for (int i = 0; i < ippGetCount(media_col_db); i++) {
     ipp_t* db_entry = ippGetCollection(media_col_db, i);
-    absl::optional<MediaColData> size = ExtractMediaColData(db_entry);
+    std::optional<MediaColData> size = ExtractMediaColData(db_entry);
     if (!size.has_value()) {
       return;
     }

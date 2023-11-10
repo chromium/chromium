@@ -8,8 +8,8 @@
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
+#include <optional>
 #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace headless {
@@ -17,8 +17,8 @@ namespace protocol {
 
 #if BUILDFLAG(ENABLE_PRINTING)
 template <typename T>
-absl::optional<T> OptionalFromMaybe(const Maybe<T>& maybe) {
-  return maybe.has_value() ? absl::optional<T>(maybe.value()) : absl::nullopt;
+std::optional<T> OptionalFromMaybe(const Maybe<T>& maybe) {
+  return maybe.has_value() ? std::optional<T>(maybe.value()) : std::nullopt;
 }
 #endif
 

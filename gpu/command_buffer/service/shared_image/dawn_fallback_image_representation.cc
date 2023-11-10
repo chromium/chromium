@@ -39,9 +39,8 @@ bool DawnFallbackImageRepresentation::ComputeStagingBufferParams(
 
   const viz::SharedImageFormat format = this->format();
 
-  absl::optional<size_t> min_bytes_per_row(
-      format.MaybeEstimatedPlaneSizeInBytes(plane_index,
-                                            gfx::Size(size().width(), 1)));
+  std::optional<size_t> min_bytes_per_row(format.MaybeEstimatedPlaneSizeInBytes(
+      plane_index, gfx::Size(size().width(), 1)));
 
   if (!min_bytes_per_row.has_value()) {
     return false;

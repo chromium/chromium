@@ -5,10 +5,10 @@
 #ifndef ANDROID_WEBVIEW_COMMON_METRICS_APP_PACKAGE_NAME_LOGGING_RULE_H_
 #define ANDROID_WEBVIEW_COMMON_METRICS_APP_PACKAGE_NAME_LOGGING_RULE_H_
 
+#include <optional>
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace android_webview {
 
@@ -41,7 +41,7 @@ class AppPackageNameLoggingRule {
 
   // Creates a valid AppPackageNameLoggingRule from a dictionary, or null if
   // the dictionary have invalid values.
-  static absl::optional<AppPackageNameLoggingRule> FromDictionary(
+  static std::optional<AppPackageNameLoggingRule> FromDictionary(
       const base::Value::Dict& dict);
 
  private:

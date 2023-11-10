@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/containers/span.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/ranges/algorithm.h"
@@ -17,7 +18,6 @@
 #include "mojo/core/ipcz_driver/shared_buffer.h"
 #include "mojo/core/ipcz_driver/shared_buffer_mapping.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo::core::ipcz_driver {
 namespace {
@@ -53,10 +53,10 @@ class TestRingBuffer {
     return std::string(AsString(bytes.first(size)));
   }
 
-  absl::optional<std::string> ReadAll(size_t n) {
+  std::optional<std::string> ReadAll(size_t n) {
     std::vector<uint8_t> data(n);
     if (!buffer_.ReadAll(base::make_span(data))) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return std::string(data.begin(), data.end());
   }
@@ -68,10 +68,10 @@ class TestRingBuffer {
     return std::string(AsString(bytes.first(size)));
   }
 
-  absl::optional<std::string> PeekAll(size_t n) {
+  std::optional<std::string> PeekAll(size_t n) {
     std::vector<uint8_t> data(n);
     if (!buffer_.PeekAll(base::make_span(data))) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return std::string(data.begin(), data.end());
   }

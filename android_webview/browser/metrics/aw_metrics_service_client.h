@@ -195,12 +195,11 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   // `record` If it has a null value, then it will be ignored and the cached
   //          record will be used if any.
   void SetAppPackageNameLoggingRule(
-      absl::optional<AppPackageNameLoggingRule> record);
+      std::optional<AppPackageNameLoggingRule> record);
 
   // Get the cached record of the app package names allowlist set by
   // `SetAppPackageNameLoggingRule` if any.
-  absl::optional<AppPackageNameLoggingRule>
-  GetCachedAppPackageNameLoggingRule();
+  std::optional<AppPackageNameLoggingRule> GetCachedAppPackageNameLoggingRule();
 
   // The last time the apps package name allowlist was queried from the
   // component update service, regardless if it was successful or not.
@@ -225,7 +224,7 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   base::Time time_created_;
   std::unique_ptr<Delegate> delegate_;
 
-  absl::optional<AppPackageNameLoggingRule> cached_package_name_record_;
+  std::optional<AppPackageNameLoggingRule> cached_package_name_record_;
   AppPackageNameLoggingRuleStatus package_name_record_status_ =
       AppPackageNameLoggingRuleStatus::kNotLoadedNoCache;
 };

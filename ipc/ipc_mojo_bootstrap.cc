@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/check_op.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/contains.h"
@@ -50,7 +51,6 @@
 #include "mojo/public/cpp/bindings/sequence_local_sync_event_watcher.h"
 #include "mojo/public/cpp/bindings/tracing_helpers.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace IPC {
 
@@ -363,7 +363,7 @@ class ChannelAssociatedGroupController
 
   void CloseEndpointHandle(
       mojo::InterfaceId id,
-      const absl::optional<mojo::DisconnectReason>& reason) override {
+      const std::optional<mojo::DisconnectReason>& reason) override {
     if (!mojo::IsValidInterfaceId(id))
       return;
     {
@@ -539,12 +539,12 @@ class ChannelAssociatedGroupController
       handle_created_ = true;
     }
 
-    const absl::optional<mojo::DisconnectReason>& disconnect_reason() const {
+    const std::optional<mojo::DisconnectReason>& disconnect_reason() const {
       return disconnect_reason_;
     }
 
     void set_disconnect_reason(
-        const absl::optional<mojo::DisconnectReason>& disconnect_reason) {
+        const std::optional<mojo::DisconnectReason>& disconnect_reason) {
       disconnect_reason_ = disconnect_reason;
     }
 
@@ -583,11 +583,11 @@ class ChannelAssociatedGroupController
       sync_watcher_.reset();
     }
 
-    absl::optional<uint32_t> EnqueueSyncMessage(MessageWrapper message) {
+    std::optional<uint32_t> EnqueueSyncMessage(MessageWrapper message) {
       controller_->lock_.AssertAcquired();
       if (exclusive_wait_ && exclusive_wait_->TryFulfillingWith(message)) {
         exclusive_wait_ = nullptr;
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       uint32_t id = GenerateSyncMessageId();
@@ -645,7 +645,7 @@ class ChannelAssociatedGroupController
     }
 
     MessageWrapper WaitForIncomingSyncReply(uint64_t request_id) {
-      absl::optional<ExclusiveSyncWait> wait;
+      std::optional<ExclusiveSyncWait> wait;
       {
         base::AutoLock lock(controller_->lock_);
         for (auto& [id, message] : sync_messages_) {
@@ -785,7 +785,7 @@ class ChannelAssociatedGroupController
     bool peer_closed_ = false;
     bool handle_created_ = false;
     bool was_bound_off_sequence_ = false;
-    absl::optional<mojo::DisconnectReason> disconnect_reason_;
+    std::optional<mojo::DisconnectReason> disconnect_reason_;
     raw_ptr<mojo::InterfaceEndpointClient> client_ = nullptr;
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
     std::unique_ptr<mojo::SequenceLocalSyncEventWatcher> sync_watcher_;
@@ -909,7 +909,7 @@ class ChannelAssociatedGroupController
     DCHECK(endpoint->task_runner() && endpoint->client());
     if (endpoint->task_runner()->RunsTasksInCurrentSequence() && !force_async) {
       mojo::InterfaceEndpointClient* client = endpoint->client();
-      absl::optional<mojo::DisconnectReason> reason(
+      std::optional<mojo::DisconnectReason> reason(
           endpoint->disconnect_reason());
 
       base::AutoUnlock unlocker(lock_);
@@ -1051,7 +1051,7 @@ class ChannelAssociatedGroupController
         // sync message queue. If the endpoint was blocking, it will dequeue the
         // message and dispatch it. Otherwise the posted |AcceptSyncMessage()|
         // call will dequeue the message and dispatch it.
-        absl::optional<uint32_t> message_id =
+        std::optional<uint32_t> message_id =
             endpoint->EnqueueSyncMessage(std::move(message_wrapper));
         if (message_id) {
           task_runner->PostTask(
@@ -1189,7 +1189,7 @@ class ChannelAssociatedGroupController
   // mojo::PipeControlMessageHandlerDelegate:
   bool OnPeerAssociatedEndpointClosed(
       mojo::InterfaceId id,
-      const absl::optional<mojo::DisconnectReason>& reason) override {
+      const std::optional<mojo::DisconnectReason>& reason) override {
     DCHECK(thread_checker_.CalledOnValidThread());
 
     scoped_refptr<ChannelAssociatedGroupController> keepalive(this);

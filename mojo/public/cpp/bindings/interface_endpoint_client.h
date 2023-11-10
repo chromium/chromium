@@ -11,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
@@ -36,7 +37,6 @@
 #include "mojo/public/cpp/bindings/message_metadata_helpers.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/bindings/thread_safe_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -153,7 +153,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
 
   // NOTE: |message| must have passed message header validation.
   bool HandleIncomingMessage(Message* message);
-  void NotifyError(const absl::optional<DisconnectReason>& reason);
+  void NotifyError(const std::optional<DisconnectReason>& reason);
 
   // The following methods send interface control messages.
   // They must only be called when the handle is not in pending association
@@ -300,11 +300,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
 
   // The timeout to wait for continuous idling before notiftying our peer that
   // we're idle.
-  absl::optional<base::TimeDelta> idle_timeout_;
+  std::optional<base::TimeDelta> idle_timeout_;
 
   // The current idle timer, valid only while we're idle. If this fires, we send
   // a NotifyIdle to our peer.
-  absl::optional<base::OneShotTimer> notify_idle_timer_;
+  std::optional<base::OneShotTimer> notify_idle_timer_;
 
   // A ref to a ConnectionGroup used to track the idle state of this endpoint,
   // if any. Only non-null if an EnableIdleTracking message has been received.

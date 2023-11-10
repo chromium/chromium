@@ -29,7 +29,7 @@ DXGISwapChainOverlayImageRepresentation::
 DXGISwapChainOverlayImageRepresentation::
     ~DXGISwapChainOverlayImageRepresentation() = default;
 
-absl::optional<gl::DCLayerOverlayImage>
+std::optional<gl::DCLayerOverlayImage>
 DXGISwapChainOverlayImageRepresentation::GetDCLayerOverlayImage() {
   return static_cast<DXGISwapChainImageBacking*>(backing())
       ->GetDCLayerOverlayImage();

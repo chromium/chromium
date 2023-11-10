@@ -58,7 +58,7 @@ TextureOwner::TextureOwner(bool binds_texture_on_update,
 
 TextureOwner::~TextureOwner() {
   bool have_context = true;
-  absl::optional<ui::ScopedMakeCurrent> scoped_make_current;
+  std::optional<ui::ScopedMakeCurrent> scoped_make_current;
   if (!context_state_) {
     have_context = false;
   } else {

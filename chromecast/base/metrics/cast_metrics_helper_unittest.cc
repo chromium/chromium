@@ -37,7 +37,7 @@ constexpr int kValue = 123;
 constexpr base::TimeDelta kAppLoadTimeout = base::Minutes(5);
 
 MATCHER_P2(HasDouble, key, value, "") {
-  const absl::optional<base::Value> v = base::JSONReader::Read(arg);
+  const std::optional<base::Value> v = base::JSONReader::Read(arg);
   if (!v || !v->is_dict()) {
     return false;
   }
@@ -47,7 +47,7 @@ MATCHER_P2(HasDouble, key, value, "") {
 }
 
 MATCHER_P2(HasInt, key, value, "") {
-  const absl::optional<base::Value> v = base::JSONReader::Read(arg);
+  const std::optional<base::Value> v = base::JSONReader::Read(arg);
   if (!v || !v->is_dict()) {
     return false;
   }
@@ -57,7 +57,7 @@ MATCHER_P2(HasInt, key, value, "") {
 }
 
 MATCHER_P2(HasString, key, value, "") {
-  const absl::optional<base::Value> v = base::JSONReader::Read(arg);
+  const std::optional<base::Value> v = base::JSONReader::Read(arg);
   if (!v || !v->is_dict()) {
     return false;
   }

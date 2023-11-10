@@ -813,7 +813,7 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
       return representation()->GetNativePixmap();
     }
 #elif BUILDFLAG(IS_WIN)
-    absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() {
+    std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() {
       return representation()->GetDCLayerOverlayImage();
     }
 #elif BUILDFLAG(IS_APPLE)
@@ -864,7 +864,7 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
 #elif BUILDFLAG(IS_OZONE)
   scoped_refptr<gfx::NativePixmap> GetNativePixmap();
 #elif BUILDFLAG(IS_WIN)
-  virtual absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage();
+  virtual std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage();
 #elif BUILDFLAG(IS_APPLE)
   virtual gfx::ScopedIOSurface GetIOSurface() const;
   // Return true if the macOS WindowServer is currently using the underlying
@@ -1008,19 +1008,17 @@ class GPU_GLES2_EXPORT RasterImageRepresentation
     ScopedReadAccess(base::PassKey<RasterImageRepresentation> pass_key,
                      RasterImageRepresentation* representation,
                      const cc::PaintOpBuffer* paint_op_buffer,
-                     const absl::optional<SkColor4f>& clear_color);
+                     const std::optional<SkColor4f>& clear_color);
     ~ScopedReadAccess();
 
     const cc::PaintOpBuffer* paint_op_buffer() const {
       return paint_op_buffer_;
     }
-    const absl::optional<SkColor4f>& clear_color() const {
-      return clear_color_;
-    }
+    const std::optional<SkColor4f>& clear_color() const { return clear_color_; }
 
    private:
     const raw_ptr<const cc::PaintOpBuffer> paint_op_buffer_;
-    absl::optional<SkColor4f> clear_color_;
+    std::optional<SkColor4f> clear_color_;
   };
 
   class GPU_GLES2_EXPORT ScopedWriteAccess
@@ -1056,18 +1054,18 @@ class GPU_GLES2_EXPORT RasterImageRepresentation
       scoped_refptr<SharedContextState> context_state,
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
-      const absl::optional<SkColor4f>& clear_color,
+      const std::optional<SkColor4f>& clear_color,
       bool visible);
 
  protected:
   virtual cc::PaintOpBuffer* BeginReadAccess(
-      absl::optional<SkColor4f>& clear_color) = 0;
+      std::optional<SkColor4f>& clear_color) = 0;
   virtual void EndReadAccess() = 0;
   virtual cc::PaintOpBuffer* BeginWriteAccess(
       scoped_refptr<SharedContextState> context_state,
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
-      const absl::optional<SkColor4f>& clear_color,
+      const std::optional<SkColor4f>& clear_color,
       bool visible) = 0;
   virtual void EndWriteAccess(base::OnceClosure callback) = 0;
 };

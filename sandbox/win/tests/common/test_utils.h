@@ -5,9 +5,9 @@
 #ifndef SANDBOX_WIN_TESTS_COMMON_TEST_UTILS_H_
 #define SANDBOX_WIN_TESTS_COMMON_TEST_UTILS_H_
 
+#include <optional>
 #include "base/win/access_control_list.h"
 #include "base/win/windows_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -27,7 +27,7 @@ bool DeleteReparsePoint(HANDLE source);
 // Returns true if the SID and access mask is present.
 bool IsSidInDacl(const base::win::AccessControlList& dacl,
                  bool allowed,
-                 absl::optional<ACCESS_MASK> mask,
+                 std::optional<ACCESS_MASK> mask,
                  const base::win::Sid& sid);
 
 }  // namespace sandbox

@@ -7,11 +7,11 @@
 
 #include <string>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingAssociatedReceiver {
 
   void reset();
 
-  const absl::optional<std::string>& interface_name() const {
+  const std::optional<std::string>& interface_name() const {
     return interface_name_;
   }
 
@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingAssociatedReceiver {
   mojo::ScopedInterfaceEndpointHandle PassHandleIfNameIs(
       const char* interface_name);
 
-  absl::optional<std::string> interface_name_;
+  std::optional<std::string> interface_name_;
   mojo::ScopedInterfaceEndpointHandle handle_;
 };
 

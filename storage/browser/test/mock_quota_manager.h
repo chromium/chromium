@@ -228,7 +228,7 @@ class MockQuotaManager : public QuotaManager {
       blink::mojom::StorageType type);
 
   // This must be called via MockQuotaManagerProxy.
-  void UpdateUsage(const BucketLocator& bucket, absl::optional<int64_t> delta);
+  void UpdateUsage(const BucketLocator& bucket, std::optional<int64_t> delta);
 
   void DidGetBucket(base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
                     QuotaErrorOr<BucketInfo> result);

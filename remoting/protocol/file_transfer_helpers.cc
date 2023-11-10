@@ -9,7 +9,7 @@ namespace remoting::protocol {
 FileTransfer_Error MakeFileTransferError(
     base::Location location,
     FileTransfer_Error_Type type,
-    absl::optional<int32_t> api_error_code) {
+    std::optional<int32_t> api_error_code) {
   FileTransfer_Error error;
   error.set_type(type);
   if (api_error_code) {

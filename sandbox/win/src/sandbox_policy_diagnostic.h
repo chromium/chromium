@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/win/sid.h"
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/handle_closer.h"
@@ -18,7 +19,6 @@
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/security_level.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -46,7 +46,7 @@ class PolicyDiagnostic final : public PolicyInfo {
   JobLevel job_level_ = JobLevel::kUnprotected;
   IntegrityLevel desired_integrity_level_ = INTEGRITY_LEVEL_LAST;
   MitigationFlags desired_mitigations_ = 0;
-  absl::optional<base::win::Sid> app_container_sid_;
+  std::optional<base::win::Sid> app_container_sid_;
   // Only populated if |app_container_sid_| is present.
   std::vector<base::win::Sid> capabilities_;
   // Only populated if |app_container_sid_| is present.

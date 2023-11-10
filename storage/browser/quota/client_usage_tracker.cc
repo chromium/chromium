@@ -97,7 +97,7 @@ void ClientUsageTracker::GetBucketsUsage(const std::set<BucketLocator>& buckets,
 }
 
 void ClientUsageTracker::UpdateBucketUsageCache(const BucketLocator& bucket,
-                                                absl::optional<int64_t> delta) {
+                                                std::optional<int64_t> delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsUsageCacheEnabledForStorageKey(bucket.storage_key)) {
     return;

@@ -99,7 +99,7 @@ void FindHandle(const ProcessHandleMap& handle_map,
   EXPECT_TRUE(base::Contains(entry->second, handle.Get()));
 }
 
-void TestCurrentProcessHandles(absl::optional<ProcessHandleMap> (*func)()) {
+void TestCurrentProcessHandles(std::optional<ProcessHandleMap> (*func)()) {
   std::wstring random_name = GetRandomName();
   ASSERT_FALSE(random_name.empty());
   base::win::ScopedHandle event_handle(
@@ -111,7 +111,7 @@ void TestCurrentProcessHandles(absl::optional<ProcessHandleMap> (*func)()) {
       PIPE_UNLIMITED_INSTANCES, 0, 0, NMPWAIT_USE_DEFAULT_WAIT, nullptr));
   ASSERT_TRUE(pipe_handle.IsValid());
 
-  absl::optional<ProcessHandleMap> handle_map = func();
+  std::optional<ProcessHandleMap> handle_map = func();
   ASSERT_TRUE(handle_map);
   EXPECT_LE(2U, handle_map->size());
   FindHandle(*handle_map, L"Event", event_handle);

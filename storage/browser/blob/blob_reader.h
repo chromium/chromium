@@ -12,6 +12,7 @@
 #include <memory>
 #include <vector>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -25,7 +26,6 @@
 #include "net/base/completion_once_callback.h"
 #include "services/network/public/cpp/data_pipe_to_source_stream.h"
 #include "storage/browser/blob/blob_storage_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -110,7 +110,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
   void ReadSideData(StatusCallback done);
 
   // Passes the side data (if any) from ReadSideData() to the caller.
-  absl::optional<mojo_base::BigBuffer> TakeSideData();
+  std::optional<mojo_base::BigBuffer> TakeSideData();
 
   // Used to set the read position.
   // * This should be called after CalculateSize and before Read.
@@ -256,7 +256,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
   std::unique_ptr<BlobDataSnapshot> blob_data_;
   std::unique_ptr<FileStreamReaderProvider> file_stream_provider_for_testing_;
   scoped_refptr<base::TaskRunner> file_task_runner_;
-  absl::optional<mojo_base::BigBuffer> side_data_;
+  std::optional<mojo_base::BigBuffer> side_data_;
 
   int net_error_;
   bool item_list_populated_ = false;

@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -29,7 +30,6 @@
 #include "mojo/core/ports/node_delegate.h"
 #include "mojo/core/system_impl_export.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace core {
@@ -199,7 +199,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
 
   void AcceptBrokerClientInvitationOnIOThread(
       ConnectionParams connection_params,
-      absl::optional<PlatformHandle> broker_host_handle);
+      std::optional<PlatformHandle> broker_host_handle);
 
   void ConnectIsolatedOnIOThread(ConnectionParams connection_params,
                                  ports::PortRef port,

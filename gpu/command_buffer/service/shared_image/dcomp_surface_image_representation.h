@@ -19,7 +19,7 @@ class DCompSurfaceOverlayImageRepresentation
   ~DCompSurfaceOverlayImageRepresentation() override;
 
  protected:
-  absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() override;
+  std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() override;
 
  private:
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override;

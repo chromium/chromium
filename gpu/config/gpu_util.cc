@@ -19,6 +19,7 @@
 #include <thread>
 #include <vector>
 
+#include <optional>
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -44,7 +45,6 @@
 #include "gpu/config/gpu_switches.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/extension_set.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_display.h"
@@ -534,7 +534,7 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
   bool use_swift_shader = false;
 
   bool fallback_to_software_gl = false;
-  absl::optional<gl::GLImplementationParts> requested_impl =
+  std::optional<gl::GLImplementationParts> requested_impl =
       gl::GetRequestedGLImplementationFromCommandLine(command_line,
                                                       &fallback_to_software_gl);
   if (requested_impl) {
@@ -1020,7 +1020,7 @@ void CollectDevicePerfInfo(DevicePerfInfo* device_perf_info,
 }
 
 void RecordDevicePerfInfoHistograms() {
-  absl::optional<DevicePerfInfo> device_perf_info = GetDevicePerfInfo();
+  std::optional<DevicePerfInfo> device_perf_info = GetDevicePerfInfo();
   if (!device_perf_info.has_value())
     return;
   UMA_HISTOGRAM_COUNTS_1000("Hardware.TotalDiskSpace",

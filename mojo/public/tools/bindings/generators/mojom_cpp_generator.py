@@ -666,7 +666,7 @@ class Generator(generator.Generator):
 
   def _GetCppWrapperType(self, kind, add_same_module_namespaces=False):
     def _AddOptional(type_name):
-      return "absl::optional<%s>" % type_name
+      return "std::optional<%s>" % type_name
 
     if self._IsTypemappedKind(kind):
       type_name = self._GetNativeTypeName(kind)
@@ -1063,7 +1063,7 @@ class Generator(generator.Generator):
 
     if mojom.IsEnumKind(kind):
       if kind.is_nullable:
-        return f"absl::optional<{_GetName(kind.MakeUnnullableKind())}>"
+        return f"std::optional<{_GetName(kind.MakeUnnullableKind())}>"
       return _GetName(kind)
     if mojom.IsStructKind(kind) or mojom.IsUnionKind(kind):
       return "%sDataView" % _GetName(kind)
@@ -1106,7 +1106,7 @@ class Generator(generator.Generator):
       return "mojo::PlatformHandle"
     assert isinstance(kind, mojom.ValueKind)
     if kind.is_nullable:
-      return f"absl::optional<{_kind_to_cpp_type[kind.MakeUnnullableKind()]}>"
+      return f"std::optional<{_kind_to_cpp_type[kind.MakeUnnullableKind()]}>"
     return _kind_to_cpp_type[kind]
 
   def _UnderToCamel(self, value, digits_split=False):

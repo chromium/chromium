@@ -274,8 +274,7 @@ void It2MeCliHost::OnStateReceivedAccessCode(const base::Value::Dict& message) {
   }
 
   const std::string* code = message.FindString(kAccessCode);
-  const absl::optional<int> code_lifetime =
-      message.FindInt(kAccessCodeLifetime);
+  const std::optional<int> code_lifetime = message.FindInt(kAccessCodeLifetime);
   if (!code || !code_lifetime) {
     OnProtocolBroken("Can not obtain access code");
     return;

@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "build/chromecast_buildflags.h"
@@ -24,7 +25,6 @@
 #include "media/base/video_codecs.h"
 #include "services/network/public/cpp/features.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_view.h"

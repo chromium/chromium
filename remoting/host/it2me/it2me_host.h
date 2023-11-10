@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -25,7 +26,6 @@
 #include "remoting/protocol/port_range.h"
 #include "remoting/protocol/validating_authenticator.h"
 #include "remoting/signaling/signal_strategy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -251,7 +251,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
 
   // Set when the session was initiated for a managed Chrome OS device by an
   // admin using the admin console.
-  absl::optional<ChromeOsEnterpriseParams> chrome_os_enterprise_params_;
+  std::optional<ChromeOsEnterpriseParams> chrome_os_enterprise_params_;
 
   // Only the username stored in |authorized_helper_| will be allowed to connect
   // to this host instance, if set. Note: setting this value does not override
@@ -266,7 +266,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   PortRange udp_port_range_;
 
   // Stores the clipboard size policy value.
-  absl::optional<size_t> max_clipboard_size_;
+  std::optional<size_t> max_clipboard_size_;
 
   // Stores the remote support connections allowed policy value.
   bool remote_support_connections_allowed_ = true;

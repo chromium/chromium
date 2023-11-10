@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/check.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/json/json_reader.h"
@@ -15,7 +16,6 @@
 #include "base/test/test_future.h"
 #include "fuchsia_web/common/test/fit_adapter.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 bool LoadUrlAndExpectResponse(
     fuchsia::web::NavigationController* navigation_controller,
@@ -37,8 +37,8 @@ bool LoadUrlAndExpectResponse(
   return LoadUrlAndExpectResponse(controller.get(), std::move(params), url);
 }
 
-absl::optional<base::Value> ExecuteJavaScript(fuchsia::web::Frame* frame,
-                                              base::StringPiece script) {
+std::optional<base::Value> ExecuteJavaScript(fuchsia::web::Frame* frame,
+                                             base::StringPiece script) {
   base::test::TestFuture<fuchsia::web::Frame_ExecuteJavaScript_Result> result;
   frame->ExecuteJavaScript({"*"}, base::MemBufferFromString(script, "test"),
                            CallbackToFitFunction(result.GetCallback()));
@@ -46,7 +46,7 @@ absl::optional<base::Value> ExecuteJavaScript(fuchsia::web::Frame* frame,
   if (!result.Wait() || !result.Get().is_response())
     return {};
 
-  absl::optional<std::string> result_json =
+  std::optional<std::string> result_json =
       base::StringFromMemBuffer(result.Get().response().result);
   if (!result_json) {
     return {};

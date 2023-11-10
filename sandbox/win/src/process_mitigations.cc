@@ -127,7 +127,7 @@ bool ApplyProcessMitigationsToCurrentProcess(MitigationFlags starting_flags,
   }
 
   if (flags & MITIGATION_HARDEN_TOKEN_IL_POLICY) {
-    absl::optional<base::win::AccessToken> token =
+    std::optional<base::win::AccessToken> token =
         base::win::AccessToken::FromCurrentProcess(/*impersonation=*/false,
                                                    READ_CONTROL | WRITE_OWNER);
     if (!token) {

@@ -9,10 +9,10 @@
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 
+#include <optional>
 #include "base/fuchsia/process_context.h"
 #include "content/public/browser/web_contents.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 class WEB_ENGINE_EXPORT ThemeManager {
@@ -48,8 +48,8 @@ class WEB_ENGINE_EXPORT ThemeManager {
 
   bool observed_display_service_error_ = false;
   bool did_receive_first_watch_result_ = false;
-  absl::optional<fuchsia::settings::ThemeType> requested_theme_;
-  absl::optional<fuchsia::settings::ThemeType> system_theme_;
+  std::optional<fuchsia::settings::ThemeType> requested_theme_;
+  std::optional<fuchsia::settings::ThemeType> system_theme_;
   content::WebContents* web_contents_;
   fuchsia::settings::DisplayPtr display_service_;
   base::OnceClosure on_display_error_;

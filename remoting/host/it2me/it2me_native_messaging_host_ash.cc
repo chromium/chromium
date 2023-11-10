@@ -27,7 +27,7 @@ namespace {
 
 bool ShouldSuppressNotifications(
     const mojom::SupportSessionParams& params,
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
     return enterprise_params->suppress_notifications;
   }
@@ -42,7 +42,7 @@ bool ShouldSuppressNotifications(
 
 bool ShouldSuppressUserDialog(
     const mojom::SupportSessionParams& params,
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
     return enterprise_params->suppress_user_dialogs;
   }
@@ -57,7 +57,7 @@ bool ShouldSuppressUserDialog(
 
 bool ShouldTerminateUponInput(
     const mojom::SupportSessionParams& params,
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
     return enterprise_params->terminate_upon_input;
   }
@@ -72,7 +72,7 @@ bool ShouldTerminateUponInput(
 
 bool ShouldCurtainLocalUserSession(
     const mojom::SupportSessionParams& params,
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (!base::FeatureList::IsEnabled(features::kEnableCrdAdminRemoteAccess)) {
     return false;
   }
@@ -90,7 +90,7 @@ bool ShouldCurtainLocalUserSession(
 }
 
 bool ShouldShowTroubleshootingTools(
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
     return enterprise_params->show_troubleshooting_tools;
   }
@@ -98,7 +98,7 @@ bool ShouldShowTroubleshootingTools(
 }
 
 bool ShouldAllowTroubleshootingTools(
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
     return enterprise_params->allow_troubleshooting_tools;
   }
@@ -106,7 +106,7 @@ bool ShouldAllowTroubleshootingTools(
 }
 
 bool ShouldAllowReconnections(
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
     return enterprise_params->allow_reconnections;
   }
@@ -114,7 +114,7 @@ bool ShouldAllowReconnections(
 }
 
 bool ShouldAllowFileTransfer(
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
     return enterprise_params->allow_file_transfer;
   }
@@ -153,8 +153,8 @@ It2MeNativeMessageHostAsh::Start(
 
 void It2MeNativeMessageHostAsh::Connect(
     const mojom::SupportSessionParams& params,
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
-    const absl::optional<ReconnectParams>& reconnect_params,
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params,
+    const std::optional<ReconnectParams>& reconnect_params,
     base::OnceClosure connected_callback,
     HostStateConnectedCallback host_state_connected_callback,
     base::OnceClosure host_state_disconnected_callback,
@@ -314,7 +314,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
           ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
       return;
     }
-    absl::optional<int> access_code_lifetime =
+    std::optional<int> access_code_lifetime =
         message.FindInt(kAccessCodeLifetime);
     if (!access_code_lifetime) {
       LOG(ERROR) << "Missing |" << kAccessCodeLifetime << "| value in message.";
@@ -336,7 +336,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
     }
     remote_->OnHostStateConnected(*remote_username);
 
-    absl::optional<ReconnectParams> reconnect_params;
+    std::optional<ReconnectParams> reconnect_params;
     const auto* reconnect_params_ptr = message.FindDict(kReconnectParamsDict);
     if (reconnect_params_ptr) {
       reconnect_params.emplace(
@@ -375,7 +375,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
 void It2MeNativeMessageHostAsh::HandleNatPolicyChangedMessage(
     base::Value::Dict message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  absl::optional<bool> nat_enabled =
+  std::optional<bool> nat_enabled =
       message.FindBool(kNatPolicyChangedMessageNatEnabled);
   if (!nat_enabled.has_value()) {
     LOG(ERROR) << "Missing |" << kNatPolicyChangedMessageNatEnabled
@@ -384,7 +384,7 @@ void It2MeNativeMessageHostAsh::HandleNatPolicyChangedMessage(
     return;
   }
 
-  absl::optional<bool> relay_enabled =
+  std::optional<bool> relay_enabled =
       message.FindBool(kNatPolicyChangedMessageRelayEnabled);
   if (!nat_enabled.has_value()) {
     LOG(ERROR) << "Missing |" << kNatPolicyChangedMessageRelayEnabled

@@ -98,7 +98,7 @@ void It2MeConfirmationDialogWin::Show(const std::string& remote_user_email,
   task_dialog.set_message_text(message_text);
   task_dialog.set_default_button(IDNO);
   task_dialog.set_dialog_timeout(kDialogTimeout);
-  absl::optional<int> button_result = task_dialog.Show();
+  std::optional<int> button_result = task_dialog.Show();
 
   if (!button_result.has_value()) {
     std::move(callback).Run(result);

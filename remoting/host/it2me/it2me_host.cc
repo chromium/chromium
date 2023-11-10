@@ -467,13 +467,13 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
            << enterprise_file_transfer_allowed_;
 #endif
 
-  absl::optional<bool> nat_policy_value =
+  std::optional<bool> nat_policy_value =
       policies.FindBool(policy::key::kRemoteAccessHostFirewallTraversal);
   if (!nat_policy_value.has_value()) {
     HOST_LOG << "Failed to read kRemoteAccessHostFirewallTraversal policy";
     nat_policy_value = nat_traversal_enabled_;
   }
-  absl::optional<bool> relay_policy_value =
+  std::optional<bool> relay_policy_value =
       policies.FindBool(policy::key::kRemoteAccessHostAllowRelayedConnection);
   if (!relay_policy_value.has_value()) {
     HOST_LOG << "Failed to read kRemoteAccessHostAllowRelayedConnection policy";
@@ -507,7 +507,7 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
     UpdateHostUdpPortRangePolicy(*port_range_string);
   }
 
-  absl::optional<int> max_clipboard_size =
+  std::optional<int> max_clipboard_size =
       policies.FindInt(policy::key::kRemoteAccessHostClipboardSizeBytes);
   if (max_clipboard_size.has_value()) {
     if (max_clipboard_size.value() >= 0) {

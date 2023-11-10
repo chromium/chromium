@@ -4,11 +4,11 @@
 
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
 
+#include <optional>
 #include "base/json/values_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace android_webview {
 
@@ -47,23 +47,22 @@ bool AppPackageNameLoggingRule::IsSameAs(
 }
 
 // static
-absl::optional<AppPackageNameLoggingRule>
+std::optional<AppPackageNameLoggingRule>
 AppPackageNameLoggingRule::FromDictionary(const base::Value::Dict& dict) {
   const std::string* version_string = dict.FindString(kVersionKey);
   if (!version_string) {
-    return absl::optional<AppPackageNameLoggingRule>();
+    return std::optional<AppPackageNameLoggingRule>();
   }
   base::Version version(*version_string);
   if (!version.IsValid()) {
-    return absl::optional<AppPackageNameLoggingRule>();
+    return std::optional<AppPackageNameLoggingRule>();
   }
 
   const base::Value* expiry_date_value = dict.Find(kExpiryDateKey);
   if (!expiry_date_value) {
     return AppPackageNameLoggingRule(version, base::Time::Min());
   }
-  absl::optional<base::Time> expiry_date =
-      base::ValueToTime(*expiry_date_value);
+  std::optional<base::Time> expiry_date = base::ValueToTime(*expiry_date_value);
   if (!expiry_date.has_value()) {
     return AppPackageNameLoggingRule(version, base::Time::Min());
   }

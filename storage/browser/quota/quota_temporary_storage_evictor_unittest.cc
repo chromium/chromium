@@ -177,9 +177,9 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
   }
 
   void TaskForRepeatedEvictionTest(
-      const std::pair<absl::optional<BucketLocator>, int64_t>&
+      const std::pair<std::optional<BucketLocator>, int64_t>&
           bucket_to_be_added,
-      const absl::optional<BucketLocator> bucket_to_be_accessed,
+      const std::optional<BucketLocator> bucket_to_be_accessed,
       int expected_usage_after_first,
       int expected_usage_after_second) {
     EXPECT_GE(4, num_get_usage_and_quota_for_eviction_);
@@ -370,7 +370,7 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionTest) {
           weak_factory_.GetWeakPtr(),
           std::make_pair(CreateBucket("http://www.e.com", /*is_default=*/false),
                          e_size),
-          absl::nullopt,
+          std::nullopt,
           // First round evicts d.
           initial_total_size - d_size,
           // Second round evicts c and b.
@@ -409,8 +409,8 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionSkippedTest) {
   quota_eviction_handler()->set_task_for_get_usage_and_quota(
       base::BindRepeating(
           &QuotaTemporaryStorageEvictorTest::TaskForRepeatedEvictionTest,
-          weak_factory_.GetWeakPtr(), std::make_pair(absl::nullopt, 0),
-          absl::nullopt, initial_total_size - d_size,
+          weak_factory_.GetWeakPtr(), std::make_pair(std::nullopt, 0),
+          std::nullopt, initial_total_size - d_size,
           initial_total_size - d_size));
   EXPECT_EQ(initial_total_size, quota_eviction_handler()->GetUsage());
   temporary_storage_evictor()->Start();
@@ -453,7 +453,7 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionTest_Rollback) {
           weak_factory_.GetWeakPtr(),
           std::make_pair(CreateBucket("http://www.e.com", /*is_default=*/false),
                          e_size),
-          absl::nullopt, initial_total_size - d_size,
+          std::nullopt, initial_total_size - d_size,
           initial_total_size - d_size + e_size - c_size));
   EXPECT_EQ(initial_total_size, quota_eviction_handler()->GetUsage());
   temporary_storage_evictor()->Start();
@@ -494,8 +494,8 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionSkippedTest_Rollback) {
   quota_eviction_handler()->set_task_for_get_usage_and_quota(
       base::BindRepeating(
           &QuotaTemporaryStorageEvictorTest::TaskForRepeatedEvictionTest,
-          weak_factory_.GetWeakPtr(), std::make_pair(absl::nullopt, 0),
-          absl::nullopt, initial_total_size - d_size,
+          weak_factory_.GetWeakPtr(), std::make_pair(std::nullopt, 0),
+          std::nullopt, initial_total_size - d_size,
           initial_total_size - d_size));
   EXPECT_EQ(initial_total_size, quota_eviction_handler()->GetUsage());
   // disable_timer_for_testing();

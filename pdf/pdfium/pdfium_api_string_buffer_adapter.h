@@ -9,10 +9,10 @@
 
 #include <string>
 
+#include <optional>
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome_pdf {
 
@@ -104,12 +104,12 @@ template <class AdapterType,
           class StringType,
           typename BufferType,
           typename ReturnType>
-absl::optional<StringType> CallPDFiumStringBufferApiAndReturnOptional(
+std::optional<StringType> CallPDFiumStringBufferApiAndReturnOptional(
     base::RepeatingCallback<ReturnType(BufferType*, ReturnType)> api,
     bool check_expected_size) {
   ReturnType expected_size = api.Run(nullptr, 0);
   if (expected_size == 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   StringType str;
   AdapterType api_string_adapter(&str, expected_size, check_expected_size);
@@ -125,7 +125,7 @@ template <class AdapterType,
 StringType CallPDFiumStringBufferApi(
     base::RepeatingCallback<ReturnType(BufferType*, ReturnType)> api,
     bool check_expected_size) {
-  absl::optional<StringType> result =
+  std::optional<StringType> result =
       CallPDFiumStringBufferApiAndReturnOptional<AdapterType, StringType>(
           api, check_expected_size);
   return result.value_or(StringType());
@@ -147,7 +147,7 @@ std::u16string CallPDFiumWideStringBufferApi(
 // Variant of CallPDFiumWideStringBufferApi() that distinguishes between API
 // call failures and empty string return values.
 template <typename BufferType>
-absl::optional<std::u16string> CallPDFiumWideStringBufferApiAndReturnOptional(
+std::optional<std::u16string> CallPDFiumWideStringBufferApiAndReturnOptional(
     base::RepeatingCallback<unsigned long(BufferType*, unsigned long)> api,
     bool check_expected_size) {
   using adapter_type = internal::PDFiumAPIStringBufferSizeInBytesAdapter;

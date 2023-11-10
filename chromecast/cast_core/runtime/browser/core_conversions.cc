@@ -76,7 +76,7 @@ cast_receiver::ApplicationConfig ToReceiverConfig(
   if (core_config.has_cast_web_app_config()) {
     config.url = GURL(core_config.cast_web_app_config().url());
     if (!config.url->is_valid()) {
-      config.url = absl::nullopt;
+      config.url = std::nullopt;
     }
   }
 

@@ -9,10 +9,10 @@
 
 #include <vector>
 
+#include <optional>
 #include "build/build_config.h"
 #include "printing/backend/mojom/print_backend.mojom-forward.h"
 #include "printing/backend/print_backend.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace printing {
@@ -34,7 +34,7 @@ struct OptionalSampleCapabilities {
   AdvancedCapabilities advanced_capabilities;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_WIN)
-  absl::optional<PageOutputQuality> page_output_quality;
+  std::optional<PageOutputQuality> page_output_quality;
 #endif  // BUILDFLAG(IS_WIN)
 };
 
@@ -116,7 +116,7 @@ inline const PageOutputQualityAttributes kPageOutputQualityAttributes{
     kPageOutputQualityAttribute3};
 inline const PageOutputQuality kPageOutputQuality(
     kPageOutputQualityAttributes,
-    /*default_quality=*/absl::nullopt);
+    /*default_quality=*/std::nullopt);
 inline constexpr char kDefaultQuality[] = "ns000:Draft";
 #endif  // BUILDFLAG(IS_WIN)
 

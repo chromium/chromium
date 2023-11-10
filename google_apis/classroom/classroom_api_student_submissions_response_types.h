@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 template <class StructType>
@@ -45,8 +45,8 @@ class StudentSubmission {
 
   const std::string& course_work_id() const { return course_work_id_; }
   const std::string& id() const { return id_; }
-  absl::optional<double> assigned_grade() const { return assigned_grade_; }
-  const absl::optional<base::Time>& last_update() const { return last_update_; }
+  std::optional<double> assigned_grade() const { return assigned_grade_; }
+  const std::optional<base::Time>& last_update() const { return last_update_; }
   State state() const { return state_; }
 
  private:
@@ -58,11 +58,11 @@ class StudentSubmission {
 
   // Optional grade. If unset, no grade was set. This value is a
   // non-negative decimal rounded to two decimal places.
-  absl::optional<double> assigned_grade_ = absl::nullopt;
+  std::optional<double> assigned_grade_ = std::nullopt;
 
   // The last update time of this submission. May be unset if student has not
   // accessed this item.
-  absl::optional<base::Time> last_update_ = absl::nullopt;
+  std::optional<base::Time> last_update_ = std::nullopt;
 
   // State of the student submission.
   State state_ = State::kOther;

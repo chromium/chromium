@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <string>
 
+#include <optional>
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/access_token.h"
@@ -16,7 +17,6 @@
 #include "sandbox/win/src/target_services.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -156,7 +156,7 @@ SBOX_TESTS_COMMAND int RestrictedTokenTest_currentprocess_dup(int argc,
 // Opens a the process token and checks if it's restricted.
 SBOX_TESTS_COMMAND int RestrictedTokenTest_IsRestricted(int argc,
                                                         wchar_t** argv) {
-  absl::optional<base::win::AccessToken> token =
+  std::optional<base::win::AccessToken> token =
       base::win::AccessToken::FromCurrentProcess();
   if (!token)
     return SBOX_TEST_FIRST_ERROR;

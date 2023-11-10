@@ -118,7 +118,7 @@ class VirtualKeyboardTest : public WebEngineBrowserTest {
     // Distance to click from the top/left extents of an input field.
     constexpr int kInputFieldClickInset = 8;
 
-    absl::optional<base::Value> result = ExecuteJavaScript(
+    std::optional<base::Value> result = ExecuteJavaScript(
         frame_for_test_.ptr().get(),
         base::StringPrintf("getPointInsideText('%.*s')",
                            base::saturated_cast<int>(id.length()), id.data()));
@@ -140,12 +140,12 @@ class VirtualKeyboardTest : public WebEngineBrowserTest {
   ScenicTestHelper scenic_test_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  absl::optional<EnsureConnectedChecker<fuchsia_ui_input3::Keyboard>>
+  std::optional<EnsureConnectedChecker<fuchsia_ui_input3::Keyboard>>
       keyboard_input_checker_;
 
   // Fake virtual keyboard services for the InputMethod to use.
-  absl::optional<base::TestComponentContextForProcess> component_context_;
-  absl::optional<MockVirtualKeyboardControllerCreator> controller_creator_;
+  std::optional<base::TestComponentContextForProcess> component_context_;
+  std::optional<MockVirtualKeyboardControllerCreator> controller_creator_;
   std::unique_ptr<MockVirtualKeyboardController> controller_;
 
   content::WebContents* web_contents_ = nullptr;

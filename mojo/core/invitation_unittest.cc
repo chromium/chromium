@@ -6,6 +6,7 @@
 #include <cstring>
 #include <string>
 
+#include <optional>
 #include "base/base_paths.h"
 #include "base/base_switches.h"
 #include "base/check_op.h"
@@ -42,7 +43,6 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/platform_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #include "base/mac/mach_port_rendezvous.h"

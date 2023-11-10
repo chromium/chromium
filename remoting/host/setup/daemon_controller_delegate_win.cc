@@ -83,7 +83,7 @@ bool ReadConfig(const base::FilePath& filename, base::Value::Dict& config_out) {
     return false;
   }
 
-  absl::optional<base::Value::Dict> config = HostConfigFromJson(file_content);
+  std::optional<base::Value::Dict> config = HostConfigFromJson(file_content);
   if (!config.has_value()) {
     LOG(ERROR) << "Config file: '" << filename.value() << "' is empty.";
     return false;
@@ -351,13 +351,13 @@ DaemonController::State DaemonControllerDelegateWin::GetState() {
   return ConvertToDaemonState(status.dwCurrentState);
 }
 
-absl::optional<base::Value::Dict> DaemonControllerDelegateWin::GetConfig() {
+std::optional<base::Value::Dict> DaemonControllerDelegateWin::GetConfig() {
   base::FilePath config_dir = remoting::GetConfigDir();
 
   // Read the unprivileged part of host configuration.
   base::Value::Dict config;
   if (!ReadConfig(config_dir.Append(kUnprivilegedConfigFileName), config)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return config;

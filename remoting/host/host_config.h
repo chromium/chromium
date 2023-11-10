@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
+#include <optional>
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -59,12 +59,12 @@ extern const char kDeprecatedHostOwnerEmailConfigPath[];
 extern const char kDeprecatedXmppLoginConfigPath[];
 
 // Helpers for serializing/deserializing Host configuration dictionaries.
-absl::optional<base::Value::Dict> HostConfigFromJson(
+std::optional<base::Value::Dict> HostConfigFromJson(
     const std::string& serialized);
 std::string HostConfigToJson(const base::Value::Dict& host_config);
 
 // Helpers for loading/saving host configurations from/to files.
-absl::optional<base::Value::Dict> HostConfigFromJsonFile(
+std::optional<base::Value::Dict> HostConfigFromJsonFile(
     const base::FilePath& config_file);
 bool HostConfigToJsonFile(const base::Value::Dict& host_config,
                           const base::FilePath& config_file);

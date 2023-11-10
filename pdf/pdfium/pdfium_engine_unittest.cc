@@ -523,7 +523,7 @@ TEST_P(PDFiumEngineTest, GetNamedDestination) {
   ASSERT_EQ(2, engine->GetNumberOfPages());
 
   // A destination with a valid page object
-  absl::optional<PDFEngine::NamedDestination> valid_page_obj =
+  std::optional<PDFEngine::NamedDestination> valid_page_obj =
       engine->GetNamedDestination("ValidPageObj");
   ASSERT_TRUE(valid_page_obj.has_value());
   EXPECT_EQ(0u, valid_page_obj->page);
@@ -532,18 +532,18 @@ TEST_P(PDFiumEngineTest, GetNamedDestination) {
   EXPECT_EQ(1.2f, valid_page_obj->params[2]);
 
   // A destination with an invalid page object
-  absl::optional<PDFEngine::NamedDestination> invalid_page_obj =
+  std::optional<PDFEngine::NamedDestination> invalid_page_obj =
       engine->GetNamedDestination("InvalidPageObj");
   ASSERT_FALSE(invalid_page_obj.has_value());
 
   // A destination with a valid page number
-  absl::optional<PDFEngine::NamedDestination> valid_page_number =
+  std::optional<PDFEngine::NamedDestination> valid_page_number =
       engine->GetNamedDestination("ValidPageNumber");
   ASSERT_TRUE(valid_page_number.has_value());
   EXPECT_EQ(1u, valid_page_number->page);
 
   // A destination with an out-of-range page number
-  absl::optional<PDFEngine::NamedDestination> invalid_page_number =
+  std::optional<PDFEngine::NamedDestination> invalid_page_number =
       engine->GetNamedDestination("OutOfRangePageNumber");
   EXPECT_FALSE(invalid_page_number.has_value());
 }

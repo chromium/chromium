@@ -197,7 +197,7 @@ bool DXGISwapChainImageBacking::DidBeginWriteAccess(
 
   gfx::Rect pending_swap_rect = swap_rect;
 
-  absl::optional<SkColor4f> initialize_color;
+  std::optional<SkColor4f> initialize_color;
 
   // SharedImage allows an incomplete first draw so long as we only read from
   // the part that we've previously drawn to. However, IDXGISwapChain requires a

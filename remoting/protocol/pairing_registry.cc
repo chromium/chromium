@@ -58,7 +58,7 @@ PairingRegistry::Pairing PairingRegistry::Pairing::Create(
 
 PairingRegistry::Pairing PairingRegistry::Pairing::CreateFromValue(
     const base::Value::Dict& pairing) {
-  absl::optional<double> created_time_value =
+  std::optional<double> created_time_value =
       pairing.FindDouble(kCreatedTimeKey);
   const std::string* client_name = pairing.FindString(kClientNameKey);
   const std::string* client_id = pairing.FindString(kClientIdKey);

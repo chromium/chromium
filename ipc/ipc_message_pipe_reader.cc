@@ -109,7 +109,7 @@ bool MessagePipeReader::Send(std::unique_ptr<Message> message) {
   CHECK(message->IsValid());
   TRACE_EVENT_WITH_FLOW0("toplevel.flow", "MessagePipeReader::Send",
                          message->flags(), TRACE_EVENT_FLAG_FLOW_OUT);
-  absl::optional<std::vector<mojo::native::SerializedHandlePtr>> handles;
+  std::optional<std::vector<mojo::native::SerializedHandlePtr>> handles;
   MojoResult result = MOJO_RESULT_OK;
   result = ChannelMojo::ReadFromMessageAttachmentSet(message.get(), &handles);
   if (result != MOJO_RESULT_OK)

@@ -49,7 +49,7 @@ void AppendSurfaceDrawQuad(viz::CompositorRenderPass& render_pass,
       render_pass.CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
   surface_quad->SetNew(quad_state, gfx::Rect(quad_state->quad_layer_rect),
                        gfx::Rect(quad_state->quad_layer_rect),
-                       viz::SurfaceRange(absl::nullopt, child_id),
+                       viz::SurfaceRange(std::nullopt, child_id),
                        SkColors::kWhite,
                        /*stretch_content_to_fill_bounds=*/false);
 }
@@ -233,7 +233,7 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
     frame.metadata.frame_token = frames_submitted_;
     support_->SubmitCompositorFrame(
         local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
-        std::move(frame), absl::nullopt);
+        std::move(frame), std::nullopt);
   }
 
   void DidNotProduceFrame(const viz::BeginFrameAck& ack) {

@@ -127,7 +127,7 @@ void DumpMemoryForYUVImageTransferCacheEntry(
 }  // namespace
 
 ServiceTransferCache::CacheEntryInternal::CacheEntryInternal(
-    absl::optional<ServiceDiscardableHandle> handle,
+    std::optional<ServiceDiscardableHandle> handle,
     std::unique_ptr<cc::ServiceTransferCacheEntry> entry)
     : handle(handle), entry(std::move(entry)) {}
 
@@ -212,7 +212,7 @@ void ServiceTransferCache::CreateLocalEntry(
     total_image_size_ += entry->CachedSize();
   }
 
-  entries_.Put(key, CacheEntryInternal(absl::nullopt, std::move(entry)));
+  entries_.Put(key, CacheEntryInternal(std::nullopt, std::move(entry)));
   EnforceLimits();
 }
 

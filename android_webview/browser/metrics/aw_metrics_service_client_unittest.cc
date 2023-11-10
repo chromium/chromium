@@ -141,7 +141,7 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_WithCache) {
   prefs->SetDict(prefs::kMetricsAppPackageNameLoggingRule,
                  expected_record.ToDictionary());
 
-  absl::optional<AppPackageNameLoggingRule> cached_record =
+  std::optional<AppPackageNameLoggingRule> cached_record =
       client->GetCachedAppPackageNameLoggingRule();
   EXPECT_TRUE(client->ShouldRecordPackageName());
   ASSERT_TRUE(cached_record.has_value());
@@ -173,7 +173,7 @@ TEST_F(AwMetricsServiceClientTest,
   AppPackageNameLoggingRule expected_record(
       base::Version(kTestAllowlistVersion), base::Time::Min());
   client->SetAppPackageNameLoggingRule(expected_record);
-  absl::optional<AppPackageNameLoggingRule> cached_record =
+  std::optional<AppPackageNameLoggingRule> cached_record =
       client->GetCachedAppPackageNameLoggingRule();
 
   EXPECT_FALSE(client->ShouldRecordPackageName());
@@ -204,7 +204,7 @@ TEST_F(AwMetricsServiceClientTest,
   AppPackageNameLoggingRule expected_record(
       base::Version(kTestAllowlistVersion), base::Time::Now() + expiry_time);
   client->SetAppPackageNameLoggingRule(expected_record);
-  absl::optional<AppPackageNameLoggingRule> cached_record =
+  std::optional<AppPackageNameLoggingRule> cached_record =
       client->GetCachedAppPackageNameLoggingRule();
 
   EXPECT_TRUE(client->ShouldRecordPackageName());
@@ -247,8 +247,8 @@ TEST_F(AwMetricsServiceClientTest,
       base::Version(kTestAllowlistVersion), base::Time::Now() + expiry_time);
   client->SetAppPackageNameLoggingRule(expected_record);
   client->SetAppPackageNameLoggingRule(
-      absl::optional<AppPackageNameLoggingRule>());
-  absl::optional<AppPackageNameLoggingRule> cached_record =
+      std::optional<AppPackageNameLoggingRule>());
+  std::optional<AppPackageNameLoggingRule> cached_record =
       client->GetCachedAppPackageNameLoggingRule();
 
   EXPECT_TRUE(client->ShouldRecordPackageName());
@@ -277,7 +277,7 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_FailedResult) {
 
   AwMetricsServiceClient* client = GetClient();
   client->SetAppPackageNameLoggingRule(
-      absl::optional<AppPackageNameLoggingRule>());
+      std::optional<AppPackageNameLoggingRule>());
 
   EXPECT_FALSE(client->ShouldRecordPackageName());
 

@@ -95,7 +95,7 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   bool CanAcceptUntrustedExchangesIfNeeded() override;
   device::GeolocationManager* GetGeolocationManager() override;
 #if BUILDFLAG(IS_WIN)
-  void SessionEnding(absl::optional<DWORD> control_type) override;
+  void SessionEnding(std::optional<DWORD> control_type) override;
 #endif
 
 #if defined(HEADLESS_USE_POLICY)

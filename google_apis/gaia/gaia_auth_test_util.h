@@ -5,17 +5,17 @@
 #ifndef GOOGLE_APIS_GAIA_GAIA_AUTH_TEST_UTIL_H_
 #define GOOGLE_APIS_GAIA_GAIA_AUTH_TEST_UTIL_H_
 
+#include <optional>
 #include "base/base64url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <string>
 
 namespace gaia {
 
 std::string GenerateOAuth2MintTokenConsentResult(
-    absl::optional<bool> approved,
-    const absl::optional<std::string>& encrypted_approval_data,
-    const absl::optional<std::string>& obfuscated_id,
+    std::optional<bool> approved,
+    const std::optional<std::string>& encrypted_approval_data,
+    const std::optional<std::string>& obfuscated_id,
     base::Base64UrlEncodePolicy encode_policy =
         base::Base64UrlEncodePolicy::OMIT_PADDING);
 

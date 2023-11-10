@@ -364,7 +364,7 @@ GPU_GLES2_EXPORT GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
     VkImageTiling tiling,
     VkFormat format,
     const gfx::ColorSpace& color_space,
-    const absl::optional<VulkanYCbCrInfo>& ycbcr_info) {
+    const std::optional<VulkanYCbCrInfo>& ycbcr_info) {
   auto valid_ycbcr_info = ycbcr_info;
   if (!valid_ycbcr_info) {
     if (!VkFormatNeedsYcbcrSampler(format)) {
@@ -440,7 +440,7 @@ bool ShouldVulkanSyncCpuForSkiaSubmit(
     viz::VulkanContextProvider* context_provider) {
 #if BUILDFLAG(ENABLE_VULKAN)
   if (context_provider) {
-    const absl::optional<uint32_t>& sync_cpu_memory_limit =
+    const std::optional<uint32_t>& sync_cpu_memory_limit =
         context_provider->GetSyncCpuMemoryLimit();
     if (sync_cpu_memory_limit.has_value()) {
       uint64_t total_allocated_bytes =

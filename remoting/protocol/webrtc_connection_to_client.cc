@@ -208,7 +208,7 @@ void WebrtcConnectionToClient::OnWebrtcTransportConnected() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto sctp_transport = transport_->peer_connection()->GetSctpTransport();
   if (sctp_transport) {
-    absl::optional<double> max_message_size =
+    std::optional<double> max_message_size =
         sctp_transport->Information().MaxMessageSize();
     if (max_message_size && *max_message_size > 0) {
       control_dispatcher_->set_max_message_size(*max_message_size);

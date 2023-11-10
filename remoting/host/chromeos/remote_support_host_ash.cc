@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <utility>
 
+#include <optional>
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -24,7 +25,6 @@
 #include "remoting/host/it2me/it2me_native_messaging_host_ash.h"
 #include "remoting/host/it2me/reconnect_params.h"
 #include "remoting/host/policy_watcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -123,15 +123,15 @@ RemoteSupportHostAsh::~RemoteSupportHostAsh() = default;
 
 void RemoteSupportHostAsh::StartSession(
     const mojom::SupportSessionParams& params,
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params,
     StartSessionCallback callback) {
-  StartSession(params, enterprise_params, absl::nullopt, std::move(callback));
+  StartSession(params, enterprise_params, std::nullopt, std::move(callback));
 }
 
 void RemoteSupportHostAsh::StartSession(
     const mojom::SupportSessionParams& params,
-    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
-    const absl::optional<ReconnectParams>& reconnect_params,
+    const std::optional<ChromeOsEnterpriseParams>& enterprise_params,
+    const std::optional<ReconnectParams>& reconnect_params,
     StartSessionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -230,8 +230,8 @@ mojom::SupportHostDetailsPtr RemoteSupportHostAsh::GetHostDetails() {
 
 void RemoteSupportHostAsh::OnHostStateConnected(
     mojom::SupportSessionParams session_params,
-    absl::optional<ChromeOsEnterpriseParams> enterprise_params,
-    absl::optional<ReconnectParams> reconnect_params) {
+    std::optional<ChromeOsEnterpriseParams> enterprise_params,
+    std::optional<ReconnectParams> reconnect_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {

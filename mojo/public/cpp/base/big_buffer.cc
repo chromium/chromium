@@ -42,7 +42,7 @@ namespace {
 void TryCreateSharedMemory(
     size_t size,
     BigBuffer::StorageType* storage_type,
-    absl::optional<internal::BigBufferSharedMemoryRegion>* shared_memory) {
+    std::optional<internal::BigBufferSharedMemoryRegion>* shared_memory) {
   if (size > BigBuffer::kMaxInlineBytes) {
     auto buffer = mojo::SharedBufferHandle::Create(size);
     if (buffer.is_valid()) {

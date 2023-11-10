@@ -132,7 +132,7 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
 #endif
 
   base::OnceCallback<void(HeadlessBrowser*)> on_start_callback_;
-  absl::optional<HeadlessBrowser::Options> options_;
+  std::optional<HeadlessBrowser::Options> options_;
 
   int exit_code_ = 0;
 

@@ -5,10 +5,10 @@
 #ifndef MOJO_PUBLIC_CPP_SYSTEM_DYNAMIC_LIBRARY_SUPPORT_H_
 #define MOJO_PUBLIC_CPP_SYSTEM_DYNAMIC_LIBRARY_SUPPORT_H_
 
+#include <optional>
 #include "base/files/file_path.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/system_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -23,7 +23,7 @@ namespace mojo {
 // cases where the client application must perform some work (e.g. sandbox
 // configuration, forking, etc) between the loading and initialization steps.
 MOJO_CPP_SYSTEM_EXPORT MojoResult
-LoadCoreLibrary(absl::optional<base::FilePath> path);
+LoadCoreLibrary(std::optional<base::FilePath> path);
 
 // Initializes the dynamic Mojo Core library previously loaded by
 // |LoadCoreLibrary()| above.
@@ -37,7 +37,7 @@ InitializeCoreLibrary(MojoInitializeFlags flags);
 // where they don't need to be performed at different times by the client
 // application.
 MOJO_CPP_SYSTEM_EXPORT MojoResult
-LoadAndInitializeCoreLibrary(absl::optional<base::FilePath> path,
+LoadAndInitializeCoreLibrary(std::optional<base::FilePath> path,
                              MojoInitializeFlags flags);
 
 }  // namespace mojo

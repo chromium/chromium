@@ -216,7 +216,7 @@ TEST(FileSystemURLTest, CreateSiblingPreservesBuckets) {
       no_bucket.CreateSibling(*base::SafeBaseName::Create(FPL("without")));
 
   EXPECT_EQ(with.bucket(), bucket);
-  EXPECT_EQ(without.bucket(), absl::nullopt);
+  EXPECT_EQ(without.bucket(), std::nullopt);
 }
 
 TEST(FileSystemURLTest, EnsureFilePathIsRelative) {

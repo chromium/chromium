@@ -93,7 +93,7 @@ FakeFileOperations::OutputFile::~OutputFile() = default;
 FakeFileOperations::InputFile::InputFile(
     base::FilePath filename,
     std::vector<std::uint8_t> data,
-    absl::optional<protocol::FileTransfer_Error> io_error)
+    std::optional<protocol::FileTransfer_Error> io_error)
     : filename(std::move(filename)),
       data(std::move(data)),
       io_error(std::move(io_error)) {}

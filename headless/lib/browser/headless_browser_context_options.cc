@@ -12,7 +12,7 @@ namespace headless {
 namespace {
 
 template <class T>
-const T& ReturnOverriddenValue(const absl::optional<T>& value,
+const T& ReturnOverriddenValue(const std::optional<T>& value,
                                const T& default_value) {
   return value ? *value : default_value;
 }

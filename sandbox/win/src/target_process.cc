@@ -79,7 +79,7 @@ void CopyPolicyToTarget(base::span<const uint8_t> source, void* dest) {
 // Checks that the impersonation token was applied successfully and hasn't been
 // reverted to an identification level token.
 bool CheckImpersonationToken(HANDLE thread) {
-  absl::optional<base::win::AccessToken> token =
+  std::optional<base::win::AccessToken> token =
       base::win::AccessToken::FromThread(thread);
   if (!token.has_value()) {
     return false;
@@ -252,8 +252,8 @@ ResultCode TargetProcess::TransferVariable(const char* name,
 // an IPC it will eventually call the dispatcher.
 ResultCode TargetProcess::Init(
     Dispatcher* ipc_dispatcher,
-    absl::optional<base::span<const uint8_t>> policy,
-    absl::optional<base::span<const uint8_t>> delegate_data,
+    std::optional<base::span<const uint8_t>> policy,
+    std::optional<base::span<const uint8_t>> delegate_data,
     uint32_t shared_IPC_size,
     DWORD* win_error) {
   ResultCode ret = VerifySentinels();

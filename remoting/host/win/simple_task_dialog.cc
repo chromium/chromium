@@ -70,7 +70,7 @@ bool SimpleTaskDialog::AppendButtonWithStringId(int button_id,
   return true;
 }
 
-absl::optional<int> SimpleTaskDialog::Show() {
+std::optional<int> SimpleTaskDialog::Show() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<TASKDIALOG_BUTTON> taskdialog_buttons;
@@ -104,7 +104,7 @@ absl::optional<int> SimpleTaskDialog::Show() {
       LOG(ERROR) << "TaskDialogIndirect() Failed: 0x" << std::hex << hr;
     }
 
-    return absl::nullopt;
+    return std::nullopt;
   }
   return button_result;
 }

@@ -9,13 +9,13 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/component_updater/android/component_loader_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Time;
@@ -45,7 +45,7 @@ extern const base::TimeDelta kWebViewAppsMaxAllowlistThrottleTimeDelta;
 // A callback for the result of loading and looking up the allowlist. If the
 // allowlist loading fails, it will be called with a null record.
 using AllowListLookupCallback =
-    base::OnceCallback<void(absl::optional<AppPackageNameLoggingRule>)>;
+    base::OnceCallback<void(std::optional<AppPackageNameLoggingRule>)>;
 
 // Defines a loader responsible for receiving the allowlist for apps package
 // names that can be included in UMA records and lookup the embedding app's name
@@ -73,7 +73,7 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicy
   //                    `app_package_name` in the packages names allowlist.
   AwAppsPackageNamesAllowlistComponentLoaderPolicy(
       std::string app_package_name,
-      absl::optional<AppPackageNameLoggingRule> cached_record,
+      std::optional<AppPackageNameLoggingRule> cached_record,
       AllowListLookupCallback lookup_callback);
   ~AwAppsPackageNamesAllowlistComponentLoaderPolicy() override;
 
@@ -93,7 +93,7 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicy
 
  private:
   std::string app_package_name_;
-  absl::optional<AppPackageNameLoggingRule> cached_record_;
+  std::optional<AppPackageNameLoggingRule> cached_record_;
 
   AllowListLookupCallback lookup_callback_;
 };

@@ -7,6 +7,7 @@
 
 #include <type_traits>
 
+#include <optional>
 #include "mojo/public/cpp/bindings/array_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
@@ -18,7 +19,6 @@
 #include "mojo/public/cpp/bindings/string_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // This file is included by serialization implementation files to avoid circular
 // includes.
@@ -32,7 +32,7 @@ template <typename MojomType, typename MaybeConstUserType>
 struct Serializer;
 
 template <typename T>
-using IsAbslOptional = IsSpecializationOf<absl::optional, std::decay_t<T>>;
+using IsAbslOptional = IsSpecializationOf<std::optional, std::decay_t<T>>;
 
 template <typename T>
 using IsOptionalAsPointer =
@@ -61,7 +61,7 @@ template <typename MojomType,
 bool Deserialize(DataType&& input, InputUserType* output, Args&&... args) {
   if constexpr (IsAbslOptional<InputUserType>::value) {
     if (!input) {
-      *output = absl::nullopt;
+      *output = std::nullopt;
       return true;
     }
     if (!*output) {

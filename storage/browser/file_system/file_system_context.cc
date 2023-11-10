@@ -424,7 +424,7 @@ std::vector<FileSystemType> FileSystemContext::GetFileSystemTypes() const {
 
 void FileSystemContext::OpenFileSystem(
     const blink::StorageKey& storage_key,
-    const absl::optional<storage::BucketLocator>& bucket,
+    const std::optional<storage::BucketLocator>& bucket,
     FileSystemType type,
     OpenFileSystemMode mode,
     OpenFileSystemCallback callback) {
@@ -485,7 +485,7 @@ void FileSystemContext::OnGetOrCreateBucket(
 
 void FileSystemContext::ResolveURLOnOpenFileSystem(
     const blink::StorageKey& storage_key,
-    const absl::optional<storage::BucketLocator>& bucket,
+    const std::optional<storage::BucketLocator>& bucket,
     FileSystemType type,
     OpenFileSystemMode mode,
     OpenFileSystemCallback callback) {

@@ -71,7 +71,7 @@ bool PipeControlMessageHandler::RunOrClosePipe(Message* message) {
     const auto& event =
         params_ptr->input->get_peer_associated_endpoint_closed_event();
 
-    absl::optional<DisconnectReason> reason;
+    std::optional<DisconnectReason> reason;
     if (event->disconnect_reason) {
       reason.emplace(event->disconnect_reason->custom_reason,
                      event->disconnect_reason->description);

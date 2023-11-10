@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -37,7 +38,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -52,14 +52,14 @@ constexpr char kJsonContentType[] = "application/json;charset=UTF-8";
 
 std::unique_ptr<const GaiaAuthConsumer::ClientOAuthResult>
 ExtractOAuth2TokenPairResponse(const std::string& data) {
-  absl::optional<base::Value> value = base::JSONReader::Read(data);
+  std::optional<base::Value> value = base::JSONReader::Read(data);
   if (!value || !value->is_dict())
     return nullptr;
   base::Value::Dict& dict = value->GetDict();
 
   std::string* refresh_token = dict.FindString("refresh_token");
   std::string* access_token = dict.FindString("access_token");
-  absl::optional<int> expires_in_secs = dict.FindInt("expires_in");
+  std::optional<int> expires_in_secs = dict.FindInt("expires_in");
   if (!refresh_token || !access_token || !expires_in_secs.has_value())
     return nullptr;
 
@@ -95,7 +95,7 @@ GetTokenRevocationStatusFromResponseData(const std::string& data,
   if (response_code == net::HTTP_INTERNAL_SERVER_ERROR)
     return GaiaAuthConsumer::TokenRevocationStatus::kServerError;
 
-  absl::optional<base::Value> value = base::JSONReader::Read(data);
+  std::optional<base::Value> value = base::JSONReader::Read(data);
   if (!value || !value->is_dict())
     return GaiaAuthConsumer::TokenRevocationStatus::kUnknownError;
   base::Value::Dict& dict = value->GetDict();
@@ -114,7 +114,7 @@ GetTokenRevocationStatusFromResponseData(const std::string& data,
 
 base::Value::Dict ParseJSONDict(const std::string& data) {
   base::Value::Dict response_dict;
-  absl::optional<base::Value> message_value = base::JSONReader::Read(data);
+  std::optional<base::Value> message_value = base::JSONReader::Read(data);
   if (message_value && message_value->is_dict()) {
     response_dict.Merge(std::move(message_value->GetDict()));
   }

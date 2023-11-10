@@ -367,7 +367,7 @@ TEST_F(PrintingContextTest, SettingsToIPPOptionsClientInfoEmpty) {
   EXPECT_FALSE(HasAttribute(kIppClientInfo));
 
   mojom::IppClientInfo invalid_client_info(
-      mojom::IppClientInfo::ClientType::kOther, "$", " ", "{}", absl::nullopt);
+      mojom::IppClientInfo::ClientType::kOther, "$", " ", "{}", std::nullopt);
 
   settings_.set_client_infos({invalid_client_info});
   EXPECT_FALSE(HasAttribute(kIppClientInfo));

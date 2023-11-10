@@ -203,7 +203,7 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
 
     for (auto type : {AudioContentType::kMedia, AudioContentType::kAlarm,
                       AudioContentType::kCommunication}) {
-      absl::optional<double> dbfs =
+      std::optional<double> dbfs =
           stored_values_.FindDouble(ContentTypeToDbFSPath(type));
       CHECK(dbfs);
       volumes_[type] = VolumeControl::DbFSToVolume(*dbfs);

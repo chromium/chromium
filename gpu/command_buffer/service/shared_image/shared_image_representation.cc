@@ -724,10 +724,10 @@ scoped_refptr<gfx::NativePixmap> OverlayImageRepresentation::GetNativePixmap() {
   return backing()->GetNativePixmap();
 }
 #elif BUILDFLAG(IS_WIN)
-absl::optional<gl::DCLayerOverlayImage>
+std::optional<gl::DCLayerOverlayImage>
 OverlayImageRepresentation::GetDCLayerOverlayImage() {
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 #elif BUILDFLAG(IS_APPLE)
 gfx::ScopedIOSurface OverlayImageRepresentation::GetIOSurface() const {
@@ -916,7 +916,7 @@ RasterImageRepresentation::ScopedReadAccess::ScopedReadAccess(
     base::PassKey<RasterImageRepresentation> pass_key,
     RasterImageRepresentation* representation,
     const cc::PaintOpBuffer* paint_op_buffer,
-    const absl::optional<SkColor4f>& clear_color)
+    const std::optional<SkColor4f>& clear_color)
     : ScopedAccessBase(representation, AccessMode::kRead),
       paint_op_buffer_(paint_op_buffer),
       clear_color_(clear_color) {}
@@ -938,7 +938,7 @@ RasterImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
 
 std::unique_ptr<RasterImageRepresentation::ScopedReadAccess>
 RasterImageRepresentation::BeginScopedReadAccess() {
-  absl::optional<SkColor4f> clear_color;
+  std::optional<SkColor4f> clear_color;
   auto* paint_op_buffer = BeginReadAccess(clear_color);
   if (!paint_op_buffer) {
     return nullptr;
@@ -953,7 +953,7 @@ RasterImageRepresentation::BeginScopedWriteAccess(
     scoped_refptr<SharedContextState> context_state,
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
-    const absl::optional<SkColor4f>& clear_color,
+    const std::optional<SkColor4f>& clear_color,
     bool visible) {
   return std::make_unique<ScopedWriteAccess>(
       base::PassKey<RasterImageRepresentation>(), this,

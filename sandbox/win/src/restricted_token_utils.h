@@ -5,12 +5,12 @@
 #ifndef SANDBOX_WIN_SRC_RESTRICTED_TOKEN_UTILS_H_
 #define SANDBOX_WIN_SRC_RESTRICTED_TOKEN_UTILS_H_
 
+#include <optional>
 #include "base/win/access_token.h"
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
 #include "sandbox/win/src/restricted_token.h"
 #include "sandbox/win/src/security_level.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Contains the utility functions to be able to create restricted tokens based
 // on a security profiles.
@@ -34,12 +34,12 @@ enum class TokenType { kImpersonation, kPrimary };
 // other sandboxed processes at the same security level.
 // If the function succeeds, the return value is the restricted token. If it
 // fails then the return value is empty.
-absl::optional<base::win::AccessToken> CreateRestrictedToken(
+std::optional<base::win::AccessToken> CreateRestrictedToken(
     TokenLevel security_level,
     IntegrityLevel integrity_level,
     TokenType token_type,
     bool lockdown_default_dacl,
-    const absl::optional<base::win::Sid>& unique_restricted_sid);
+    const std::optional<base::win::Sid>& unique_restricted_sid);
 
 // Hardens the integrity level policy on a token. Specifically it sets the
 // policy to block read and execute so that a lower privileged process cannot

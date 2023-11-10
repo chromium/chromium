@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
@@ -17,7 +18,6 @@
 #include "mojo/public/c/system/trap.h"
 #include "mojo/public/c/system/types.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo::core::ipcz_driver {
@@ -89,7 +89,7 @@ class MojoTrap : public Object<MojoTrap> {
 
   // A ref identifying the thread which is currently dispatching an event for
   // this trap, if any.
-  absl::optional<base::PlatformThreadRef> dispatching_thread_ GUARDED_BY(lock_);
+  std::optional<base::PlatformThreadRef> dispatching_thread_ GUARDED_BY(lock_);
 
   using TriggerMap = base::flat_map<uintptr_t, scoped_refptr<Trigger>>;
   TriggerMap triggers_ GUARDED_BY(lock_);

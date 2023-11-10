@@ -5,8 +5,8 @@
 #ifndef CHROMECAST_BINDINGS_SHARED_PROTO_SERIALIZER_H_
 #define CHROMECAST_BINDINGS_SHARED_PROTO_SERIALIZER_H_
 
+#include <optional>
 #include "base/base64.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 namespace bindings {
@@ -32,15 +32,15 @@ class ProtoSerializer {
   // Deserializes |base64| to its proto representation, parsed into |result|.
   // Returns a value if parsing is successful; otherwise, returns false. Used
   // by bindings frontends and backends for consistent serialization logic.
-  static absl::optional<T> Deserialize(base::StringPiece base64_proto) {
+  static std::optional<T> Deserialize(base::StringPiece base64_proto) {
     std::string decoded;
     if (!base::Base64Decode(base64_proto, &decoded)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     T result;
-    return result.ParseFromString(decoded) ? absl::make_optional<T>(result)
-                                           : absl::nullopt;
+    return result.ParseFromString(decoded) ? std::make_optional<T>(result)
+                                           : std::nullopt;
   }
 };
 

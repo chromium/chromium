@@ -42,7 +42,7 @@ class LeScanManagerImpl : public LeScanManager,
   void RequestScan(RequestScanCallback cb) override;
   void GetScanResults(
       GetScanResultsCallback cb,
-      absl::optional<ScanFilter> service_uuid = absl::nullopt) override;
+      std::optional<ScanFilter> service_uuid = std::nullopt) override;
   void ClearScanResults() override;
   void PauseScan() override;
   void ResumeScan() override;
@@ -60,7 +60,7 @@ class LeScanManagerImpl : public LeScanManager,
   // Returns a list of all BLE scan results. The results are sorted by RSSI.
   // Must be called on |io_task_runner|.
   std::vector<LeScanResult> GetScanResultsInternal(
-      absl::optional<ScanFilter> service_uuid);
+      std::optional<ScanFilter> service_uuid);
 
   void NotifyScanHandleDestroyed(int32_t id);
 

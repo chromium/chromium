@@ -175,7 +175,7 @@ std::unique_ptr<::media::VideoDecoder> CastGpuFactoryImpl::CreateVideoDecoder(
       request_overlay_info_cb, gfx::ColorSpace::CreateSRGB());
 }
 
-absl::optional<::media::VideoEncodeAccelerator::SupportedProfiles>
+std::optional<::media::VideoEncodeAccelerator::SupportedProfiles>
 CastGpuFactoryImpl::GetVideoEncodeAcceleratorSupportedProfiles() {
   return ::media::VideoEncodeAccelerator::SupportedProfiles();
 }

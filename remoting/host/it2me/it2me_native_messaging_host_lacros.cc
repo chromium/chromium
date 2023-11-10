@@ -41,7 +41,7 @@ namespace {
 constexpr int kInvalidMessageId = -1;
 
 int GetMessageId(const base::Value::Dict& message) {
-  absl::optional<int> message_id = message.FindInt(kMessageId);
+  std::optional<int> message_id = message.FindInt(kMessageId);
   return message_id.value_or(kInvalidMessageId);
 }
 
@@ -89,7 +89,7 @@ class It2MeNativeMessagingHostLacros : public extensions::NativeMessageHost,
   void OnHostStateConnecting() override;
   void OnHostStateConnected(const std::string& remote_username) override;
   void OnHostStateDisconnected(
-      const absl::optional<std::string>& disconnect_reason) override;
+      const std::optional<std::string>& disconnect_reason) override;
   void OnNatPolicyChanged(mojom::NatPolicyStatePtr policy_state) override;
   void OnHostStateError(int64_t error_code) override;
   void OnPolicyError() override;
@@ -219,7 +219,7 @@ void It2MeNativeMessagingHostLacros::OnHostStateConnected(
 }
 
 void It2MeNativeMessagingHostLacros::OnHostStateDisconnected(
-    const absl::optional<std::string>& disconnect_reason) {
+    const std::optional<std::string>& disconnect_reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Value::Dict message;
   if (disconnect_reason.has_value()) {

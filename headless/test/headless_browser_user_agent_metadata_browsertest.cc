@@ -289,7 +289,7 @@ class HeadlessBrowserUAHeaderTest : public HeadlessBrowserTest {
 
   bool IsRequestHeaderSet(
       const std::string header,
-      const absl::optional<std::string> value = absl::nullopt) {
+      const std::optional<std::string> value = std::nullopt) {
     if (!got_headers_.contains(header)) {
       return false;
     }

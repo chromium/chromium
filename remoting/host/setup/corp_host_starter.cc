@@ -73,7 +73,7 @@ class CorpHostStarter : public HostStarter,
  private:
   void StartHostProcess();
 
-  void OnExistingConfigLoaded(absl::optional<base::Value::Dict> config);
+  void OnExistingConfigLoaded(std::optional<base::Value::Dict> config);
 
   void OnProvisionCorpMachineResponse(
       const ProtobufHttpStatus& status,
@@ -136,8 +136,8 @@ void CorpHostStarter::StartHost(Params params, CompletionCallback on_done) {
 }
 
 void CorpHostStarter::OnExistingConfigLoaded(
-    absl::optional<base::Value::Dict> config) {
-  absl::optional<std::string> existing_host_id;
+    std::optional<base::Value::Dict> config) {
+  std::optional<std::string> existing_host_id;
   if (config.has_value()) {
     std::string* host_id = config->FindString("host_id");
     if (host_id) {

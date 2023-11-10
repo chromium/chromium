@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include <optional>
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/functional/callback.h"
@@ -23,7 +24,6 @@
 #include "mojo/public/cpp/system/handle_signal_tracker.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Lock;
@@ -311,7 +311,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<SimpleWatcher> handle_watcher_;
-  absl::optional<HandleSignalTracker> peer_remoteness_tracker_;
+  std::optional<HandleSignalTracker> peer_remoteness_tracker_;
 
   std::atomic<bool> error_;
   bool drop_writes_ = false;
@@ -327,7 +327,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
 
   // If sending messages is allowed from multiple sequences, |lock_| is used to
   // protect modifications to |message_pipe_| and |drop_writes_|.
-  absl::optional<base::Lock> lock_;
+  std::optional<base::Lock> lock_;
 
   std::unique_ptr<SyncHandleWatcher> sync_watcher_;
 

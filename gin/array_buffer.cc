@@ -151,7 +151,7 @@ namespace {
 
 class ArrayBufferSharedMemoryMapper : public base::SharedMemoryMapper {
  public:
-  absl::optional<base::span<uint8_t>> Map(
+  std::optional<base::span<uint8_t>> Map(
       base::subtle::PlatformSharedMemoryHandle handle,
       bool write_allowed,
       uint64_t offset,
@@ -186,7 +186,7 @@ class ArrayBufferSharedMemoryMapper : public base::SharedMemoryMapper {
     uintptr_t mapping = v8::V8::GetSandboxAddressSpace()->AllocateSharedPages(
         0, mapping_size, permissions, v8_handle, offset);
     if (!mapping)
-      return absl::nullopt;
+      return std::nullopt;
 
     return base::make_span(reinterpret_cast<uint8_t*>(mapping), size);
   }

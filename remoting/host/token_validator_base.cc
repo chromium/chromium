@@ -246,7 +246,7 @@ protocol::TokenValidator::ValidationResult TokenValidatorBase::ProcessResponse(
           ? data_.substr(sizeof(kJsonSafetyPrefix) - 1)
           : data_;
 
-  absl::optional<base::Value> value = base::JSONReader::Read(responseData);
+  std::optional<base::Value> value = base::JSONReader::Read(responseData);
   if (!value || !value->is_dict()) {
     LOG(ERROR) << "Invalid token validation response: '" << data_ << "'";
     return RejectionReason::INVALID_CREDENTIALS;

@@ -293,7 +293,7 @@ TEST(XpsUtilTest, MergeXpsCapabilitiesPageOutputQuality) {
             kPageOutputQuality);
 
   // Expect that non-XPS capabilities remain unmodified.
-  printer_capabilities.page_output_quality = absl::nullopt;
+  printer_capabilities.page_output_quality = std::nullopt;
   EXPECT_EQ(printer_capabilities,
             GenerateSamplePrinterSemanticCapsAndDefaults({}));
 }

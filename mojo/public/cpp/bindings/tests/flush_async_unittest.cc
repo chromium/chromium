@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/barrier_closure.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
@@ -25,7 +26,6 @@
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
 #include "mojo/public/cpp/bindings/tests/flush_async_unittest.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace test {
@@ -262,7 +262,7 @@ TEST_P(FlushAsyncTest, DroppedFlusherCompletesPendingFlush) {
   // corresponding AsyncFlusher. The call should eventually execute.
   base::RunLoop loop;
   base::flat_map<std::string, std::string> snapshot;
-  absl::optional<AsyncFlusher> flusher(absl::in_place);
+  std::optional<AsyncFlusher> flusher(std::in_place);
   key_value_store().PauseReceiverUntilFlushCompletes(
       PendingFlush(&flusher.value()));
   key_value_store()->GetSnapshot(base::BindLambdaForTesting(
@@ -300,7 +300,7 @@ TEST_P(FlushAsyncTest, PausedInterfaceDoesNotAutoResumeOnFlush) {
   Remote<mojom::Pinger> pinger;
   PingerImpl impl(pinger.BindNewPipeAndPassReceiver());
 
-  absl::optional<AsyncFlusher> flusher(absl::in_place);
+  std::optional<AsyncFlusher> flusher(std::in_place);
   PendingFlush flush(&flusher.value());
   pinger.PauseReceiverUntilFlushCompletes(std::move(flush));
 
@@ -344,7 +344,7 @@ TEST_P(FlushAsyncTest, ResumeDoesNotInterruptWaitingOnFlush) {
   Remote<mojom::Pinger> pinger;
   PingerImpl impl(pinger.BindNewPipeAndPassReceiver());
 
-  absl::optional<AsyncFlusher> flusher(absl::in_place);
+  std::optional<AsyncFlusher> flusher(std::in_place);
   PendingFlush flush(&flusher.value());
   pinger.PauseReceiverUntilFlushCompletes(std::move(flush));
 

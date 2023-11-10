@@ -11,6 +11,7 @@
 #include <set>
 #include <utility>
 
+#include <optional>
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
@@ -32,7 +33,6 @@
 #include "remoting/host/linux/unicode_to_keysym.h"
 #include "remoting/host/linux/wayland_manager.h"
 #include "remoting/proto/internal.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/linux/wayland/scoped_glib.h"
 #include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_desktop_portal_utils.h"
@@ -240,7 +240,7 @@ void InputInjectorWayland::Core::InjectClipboardEvent(
     return;
   }
   if (!clipboard_initialized_) {
-    pending_clipboard_event_ = absl::make_optional(event);
+    pending_clipboard_event_ = std::make_optional(event);
     return;
   }
   clipboard_->InjectClipboardEvent(event);

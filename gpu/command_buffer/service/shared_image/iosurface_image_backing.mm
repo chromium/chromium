@@ -721,7 +721,7 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
     bool framebuffer_attachment_angle,
     bool is_cleared,
     bool retain_gl_texture,
-    absl::optional<gfx::BufferUsage> buffer_usage)
+    std::optional<gfx::BufferUsage> buffer_usage)
     : SharedImageBacking(mailbox,
                          format,
                          size,

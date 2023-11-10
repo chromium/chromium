@@ -163,11 +163,11 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   // use.
   std::unique_ptr<MessagePortServiceGrpc> message_port_service_;
 
-  absl::optional<cast::utils::GrpcServer> grpc_server_;
-  absl::optional<cast::v2::CoreApplicationServiceStub> core_app_stub_;
-  absl::optional<cast::v2::CoreMessagePortApplicationServiceStub>
+  std::optional<cast::utils::GrpcServer> grpc_server_;
+  std::optional<cast::v2::CoreApplicationServiceStub> core_app_stub_;
+  std::optional<cast::v2::CoreMessagePortApplicationServiceStub>
       core_message_port_app_stub_;
-  absl::optional<std::string> cast_media_service_grpc_endpoint_;
+  std::optional<std::string> cast_media_service_grpc_endpoint_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

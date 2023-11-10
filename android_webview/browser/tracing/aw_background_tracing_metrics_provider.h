@@ -7,8 +7,8 @@
 
 #include "components/tracing/common/background_tracing_metrics_provider.h"
 
+#include <optional>
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tracing {
 

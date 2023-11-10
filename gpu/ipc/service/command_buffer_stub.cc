@@ -189,7 +189,7 @@ void CommandBufferStub::PerformWork() {
                                                                         : "0");
   if (decoder_context_.get() && !MakeCurrent())
     return;
-  absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
+  std::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
   CreateCacheUse(cache_use);
 
   if (decoder_context_) {
@@ -283,7 +283,7 @@ bool CommandBufferStub::MakeCurrent() {
 }
 
 void CommandBufferStub::CreateCacheUse(
-    absl::optional<gles2::ProgramCache::ScopedCacheUse>& cache_use) {
+    std::optional<gles2::ProgramCache::ScopedCacheUse>& cache_use) {
   cache_use.emplace(
       channel_->gpu_channel_manager()->program_cache(),
       base::BindRepeating(&DecoderClient::CacheBlob, base::Unretained(this),
@@ -330,7 +330,7 @@ void CommandBufferStub::Destroy() {
         decoder_context_->GetGLContext()->MakeCurrent(surface_.get());
   }
 
-  absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
+  std::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
   if (have_context)
     CreateCacheUse(cache_use);
 
@@ -346,7 +346,7 @@ void CommandBufferStub::Destroy() {
 
   if (decoder_context_) {
     auto* gr_shader_cache = channel_->gpu_channel_manager()->gr_shader_cache();
-    absl::optional<raster::GrShaderCache::ScopedCacheUse> gr_cache_use;
+    std::optional<raster::GrShaderCache::ScopedCacheUse> gr_cache_use;
     if (gr_shader_cache)
       gr_cache_use.emplace(gr_shader_cache, channel_->client_id());
 
@@ -501,7 +501,7 @@ void CommandBufferStub::OnAsyncFlush(
 
   {
     auto* gr_shader_cache = channel_->gpu_channel_manager()->gr_shader_cache();
-    absl::optional<raster::GrShaderCache::ScopedCacheUse> cache_use;
+    std::optional<raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (gr_shader_cache)
       cache_use.emplace(gr_shader_cache, channel_->client_id());
     command_buffer_->Flush(put_offset, decoder_context_.get());

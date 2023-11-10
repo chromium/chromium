@@ -6,12 +6,12 @@
 
 #include <memory>
 
+#include <optional>
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/protocol/file_transfer_helpers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -158,7 +158,7 @@ base::WeakPtr<MojoFileWriter> MojoFileWriter::GetWeakPtr() {
 // methods which expect a Writer::Callback.
 template <class T>
 void FileWriterCallbackWrapper(T callback, remoting::Writer::Result result) {
-  absl::optional<protocol::FileTransfer_Error> error;
+  std::optional<protocol::FileTransfer_Error> error;
   if (result.is_error()) {
     error = std::move(result.error());
   }

@@ -32,8 +32,8 @@ bool WebrtcVideoTrackSource::is_screencast() const {
   return true;
 }
 
-absl::optional<bool> WebrtcVideoTrackSource::needs_denoising() const {
-  return absl::nullopt;
+std::optional<bool> WebrtcVideoTrackSource::needs_denoising() const {
+  return std::nullopt;
 }
 
 bool WebrtcVideoTrackSource::GetStats(

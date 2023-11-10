@@ -4,12 +4,12 @@
 
 #include "remoting/host/chromeos/file_session_storage.h"
 
+#include <optional>
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -44,8 +44,8 @@ class FileSessionStorageTest : public testing::Test {
     ASSERT_TRUE(done_signal.Wait());
   }
 
-  absl::optional<base::Value::Dict> RetrieveSession() {
-    TestFuture<absl::optional<base::Value::Dict>> done_signal;
+  std::optional<base::Value::Dict> RetrieveSession() {
+    TestFuture<std::optional<base::Value::Dict>> done_signal;
     storage().RetrieveSession(done_signal.GetCallback());
     return done_signal.Take();
   }
@@ -80,7 +80,7 @@ TEST_F(FileSessionStorageTest, HasSessionShouldBeFalseAfterDeletingSession) {
 
 TEST_F(FileSessionStorageTest,
        RetrieveSessionShouldReturnNullIfNoSessionIsStored) {
-  EXPECT_EQ(RetrieveSession(), absl::nullopt);
+  EXPECT_EQ(RetrieveSession(), std::nullopt);
 }
 
 TEST_F(FileSessionStorageTest,
@@ -90,7 +90,7 @@ TEST_F(FileSessionStorageTest,
 
   StoreSession(session_information);
 
-  absl::optional<base::Value::Dict> result = RetrieveSession();
+  std::optional<base::Value::Dict> result = RetrieveSession();
   ASSERT_TRUE(result.has_value());
   EXPECT_THAT(result.value(), base::test::IsJson(session_information));
 }

@@ -439,7 +439,7 @@ bool DawnContextProvider::SupportsFeature(wgpu::FeatureName feature) {
   return device_.HasFeature(feature);
 }
 
-absl::optional<error::ContextLostReason> DawnContextProvider::GetResetStatus()
+std::optional<error::ContextLostReason> DawnContextProvider::GetResetStatus()
     const {
   base::AutoLock auto_lock(context_lost_lock_);
   return context_lost_reason_;

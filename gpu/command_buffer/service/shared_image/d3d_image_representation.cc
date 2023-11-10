@@ -126,7 +126,7 @@ void OverlayD3DImageRepresentation::EndReadAccess(
   static_cast<D3DImageBacking*>(backing())->EndAccessD3D11(d3d11_device_);
 }
 
-absl::optional<gl::DCLayerOverlayImage>
+std::optional<gl::DCLayerOverlayImage>
 OverlayD3DImageRepresentation::GetDCLayerOverlayImage() {
   return static_cast<D3DImageBacking*>(backing())->GetDCLayerOverlayImage();
 }

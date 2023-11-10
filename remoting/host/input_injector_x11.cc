@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include <optional>
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -25,7 +26,6 @@
 #include "remoting/host/linux/x11_keyboard_impl.h"
 #include "remoting/host/linux/x11_util.h"
 #include "remoting/proto/internal.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -172,8 +172,8 @@ void InputInjectorX11::Core::InjectKeyEvent(const KeyEvent& event) {
     }
 
     if (!IsLockKey(static_cast<x11::KeyCode>(keycode))) {
-      absl::optional<bool> caps_lock;
-      absl::optional<bool> num_lock;
+      std::optional<bool> caps_lock;
+      std::optional<bool> num_lock;
 
       // For caps lock, check both the new caps_lock field and the old
       // lock_states field.
@@ -280,8 +280,8 @@ bool InputInjectorX11::Core::IsLockKey(x11::KeyCode keycode) {
   }
 }
 
-void InputInjectorX11::Core::SetLockStates(absl::optional<bool> caps_lock,
-                                           absl::optional<bool> num_lock) {
+void InputInjectorX11::Core::SetLockStates(std::optional<bool> caps_lock,
+                                           std::optional<bool> num_lock) {
   // The lock bits associated with each lock key.
   auto caps_lock_mask = static_cast<unsigned int>(x11::ModMask::Lock);
   auto num_lock_mask = static_cast<unsigned int>(x11::ModMask::c_2);

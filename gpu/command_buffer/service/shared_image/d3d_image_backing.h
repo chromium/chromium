@@ -117,7 +117,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   void EndAccessDawn(const wgpu::Device& device, wgpu::Texture texture);
 #endif
 
-  absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage();
+  std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage();
 
   bool has_keyed_mutex() const {
     return dxgi_shared_handle_state_ &&

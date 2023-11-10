@@ -304,7 +304,7 @@ class PrintBackendWin : public PrintBackend {
   mojom::ResultCode GetPrinterCapsAndDefaults(
       const std::string& printer_name,
       PrinterCapsAndDefaults* printer_info) override;
-  absl::optional<gfx::Rect> GetPaperPrintableArea(
+  std::optional<gfx::Rect> GetPaperPrintableArea(
       const std::string& printer_name,
       const std::string& paper_vendor_id,
       const gfx::Size& paper_size_um) override;
@@ -555,19 +555,19 @@ mojom::ResultCode PrintBackendWin::GetPrinterCapsAndDefaults(
   return mojom::ResultCode::kSuccess;
 }
 
-absl::optional<gfx::Rect> PrintBackendWin::GetPaperPrintableArea(
+std::optional<gfx::Rect> PrintBackendWin::GetPaperPrintableArea(
     const std::string& printer_name,
     const std::string& paper_vendor_id,
     const gfx::Size& paper_size_um) {
   ScopedPrinterHandle printer_handle = GetPrinterHandle(printer_name);
   if (!printer_handle.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::unique_ptr<DEVMODE, base::FreeDeleter> devmode =
       CreateDevMode(printer_handle.Get(), nullptr);
   if (!devmode) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   unsigned id = 0;

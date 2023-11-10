@@ -16,7 +16,7 @@
 #include "printing/printing_context.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 #endif
 
 namespace printing {
@@ -130,7 +130,7 @@ class TestPrintingContext : public PrintingContext {
   base::flat_map<std::string, std::unique_ptr<PrintSettings>> device_settings_;
 
   // Settings to apply to mimic a user's choices in `AskUserForSettings()`.
-  absl::optional<PrintSettings> user_settings_;
+  std::optional<PrintSettings> user_settings_;
 
   // Platform implementations of `PrintingContext` apply PrintSettings to the
   // respective device contexts.  Once the upper printing layers call
@@ -155,7 +155,7 @@ class TestPrintingContext : public PrintingContext {
   bool new_document_blocked_by_permissions_ = false;
 #if BUILDFLAG(IS_WIN)
   bool render_page_blocked_by_permissions_ = false;
-  absl::optional<uint32_t> render_page_fail_for_page_number_;
+  std::optional<uint32_t> render_page_fail_for_page_number_;
 #endif
   bool render_document_blocked_by_permissions_ = false;
   bool document_done_blocked_by_permissions_ = false;

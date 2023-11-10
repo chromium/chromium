@@ -109,7 +109,7 @@ class SandboxFileSystemTestHelper {
   void SetUpFileSystem();
 
   scoped_refptr<FileSystemContext> file_system_context_;
-  absl::optional<BucketLocator> bucket_locator_;
+  std::optional<BucketLocator> bucket_locator_;
 
   blink::StorageKey storage_key_;
   const FileSystemType type_;

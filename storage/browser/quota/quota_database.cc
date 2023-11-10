@@ -135,7 +135,7 @@ QuotaErrorOr<BucketInfo> BucketInfoFromSqlStatement(sql::Statement& statement) {
                                                   : QuotaError::kDatabaseError);
   }
 
-  absl::optional<StorageKey> storage_key =
+  std::optional<StorageKey> storage_key =
       StorageKey::Deserialize(statement.ColumnString(1));
   if (!storage_key.has_value()) {
     return base::unexpected(QuotaError::kStorageKeyError);
@@ -582,7 +582,7 @@ QuotaErrorOr<mojom::BucketTableEntryPtr> QuotaDatabase::GetBucketInfoForTest(
                                                   : QuotaError::kDatabaseError);
   }
 
-  absl::optional<StorageKey> storage_key =
+  std::optional<StorageKey> storage_key =
       StorageKey::Deserialize(statement.ColumnString(1));
   if (!storage_key.has_value()) {
     return base::unexpected(QuotaError::kStorageKeyError);
@@ -668,7 +668,7 @@ QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsForEviction(
   int64_t total_usage = 0;
 
   while (statement.Step()) {
-    absl::optional<StorageKey> read_storage_key =
+    std::optional<StorageKey> read_storage_key =
         StorageKey::Deserialize(statement.ColumnString(1));
     if (!read_storage_key.has_value()) {
       // TODO(estade): this row needs to be deleted.
@@ -721,7 +721,7 @@ QuotaErrorOr<std::set<StorageKey>> QuotaDatabase::GetStorageKeysForType(
 
   std::set<StorageKey> storage_keys;
   while (statement.Step()) {
-    absl::optional<StorageKey> read_storage_key =
+    std::optional<StorageKey> read_storage_key =
         StorageKey::Deserialize(statement.ColumnString(0));
     if (!read_storage_key.has_value()) {
       continue;
@@ -757,7 +757,7 @@ QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsModifiedBetween(
 
   std::set<BucketLocator> buckets;
   while (statement.Step()) {
-    absl::optional<StorageKey> read_storage_key =
+    std::optional<StorageKey> read_storage_key =
         StorageKey::Deserialize(statement.ColumnString(1));
     if (!read_storage_key.has_value()) {
       continue;
@@ -1190,7 +1190,7 @@ QuotaError QuotaDatabase::DumpBucketTable(const BucketTableCallback& callback) {
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
 
   while (statement.Step()) {
-    absl::optional<StorageKey> storage_key =
+    std::optional<StorageKey> storage_key =
         StorageKey::Deserialize(statement.ColumnString(1));
     if (!storage_key.has_value()) {
       continue;

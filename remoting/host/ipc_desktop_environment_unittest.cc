@@ -798,7 +798,7 @@ TEST_F(IpcDesktopEnvironmentTest, SetScreenResolution) {
   screen_controls_->SetScreenResolution(
       ScreenResolution(webrtc::DesktopSize(100, 100),
                        webrtc::DesktopVector(96, 96)),
-      absl::nullopt);
+      std::nullopt);
 }
 
 TEST_F(IpcDesktopEnvironmentTest, CheckUrlForwarderState) {

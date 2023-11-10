@@ -85,10 +85,10 @@ class ApplicationControllerImplTest
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
   MockFrame frame_;
-  absl::optional<fidl::ServerBinding<chromium_cast::ApplicationContext>>
+  std::optional<fidl::ServerBinding<chromium_cast::ApplicationContext>>
       application_context_binding_;
   fidl::Client<chromium_cast::ApplicationContext> application_context_;
-  absl::optional<ApplicationControllerImpl> application_;
+  std::optional<ApplicationControllerImpl> application_;
 
   fidl::Client<chromium_cast::ApplicationController> application_client_;
   base::OnceClosure wait_for_controller_callback_;

@@ -52,7 +52,7 @@ class CastMediaBlocker : public media_control::MediaBlocker,
   void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr session_info) override;
   void MediaSessionMetadataChanged(
-      const absl::optional<media_session::MediaMetadata>& metadata) override {}
+      const std::optional<media_session::MediaMetadata>& metadata) override {}
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& action)
       override {}
@@ -61,7 +61,7 @@ class CastMediaBlocker : public media_control::MediaBlocker,
                            std::vector<media_session::MediaImage>>& images)
       override {}
   void MediaSessionPositionChanged(
-      const absl::optional<media_session::MediaPosition>& position) override {}
+      const std::optional<media_session::MediaPosition>& position) override {}
 
  private:
   friend shell::CastMediaBlockerTest;

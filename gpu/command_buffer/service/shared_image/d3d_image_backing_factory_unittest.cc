@@ -1902,7 +1902,7 @@ void D3DImageBackingFactoryTest::RunOverlayTest(bool use_shared_handle,
   auto scoped_read_access = overlay_representation->BeginScopedReadAccess();
   ASSERT_TRUE(scoped_read_access);
 
-  absl::optional<gl::DCLayerOverlayImage> overlay_image =
+  std::optional<gl::DCLayerOverlayImage> overlay_image =
       scoped_read_access->GetDCLayerOverlayImage();
   ASSERT_TRUE(overlay_image);
   EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kNV12Texture);
@@ -2122,7 +2122,7 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
     auto scoped_read_access = overlay_representation->BeginScopedReadAccess();
     ASSERT_TRUE(scoped_read_access);
 
-    absl::optional<gl::DCLayerOverlayImage> overlay_image =
+    std::optional<gl::DCLayerOverlayImage> overlay_image =
         scoped_read_access->GetDCLayerOverlayImage();
     ASSERT_TRUE(overlay_image);
     EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kNV12Pixmap);

@@ -1217,7 +1217,7 @@ void GpuChannel::RegisterSysmemBufferCollection(
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
-absl::optional<gpu::GpuDiskCacheHandle> GpuChannel::GetCacheHandleForType(
+std::optional<gpu::GpuDiskCacheHandle> GpuChannel::GetCacheHandleForType(
     gpu::GpuDiskCacheType type) {
   auto it = caches_.find(type);
   if (it == caches_.end()) {

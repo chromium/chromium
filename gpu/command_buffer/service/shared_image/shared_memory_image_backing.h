@@ -32,7 +32,7 @@ class GPU_GLES2_EXPORT SharedMemoryImageBacking : public SharedImageBacking {
       uint32_t usage,
       SharedMemoryRegionWrapper wrapper,
       gfx::GpuMemoryBufferHandle handle = gfx::GpuMemoryBufferHandle(),
-      absl::optional<gfx::BufferUsage> buffer_usage = absl::nullopt);
+      std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
 
   ~SharedMemoryImageBacking() override;
 

@@ -29,7 +29,7 @@ void ReadFileRunCallback(CastAudioJsonProvider::TuningChangedCallback callback,
 
   std::string contents;
   base::ReadFileToString(path, &contents);
-  absl::optional<base::Value> value = base::JSONReader::Read(contents);
+  std::optional<base::Value> value = base::JSONReader::Read(contents);
   if (value && value->is_dict()) {
     callback.Run(std::move(*value).TakeDict());
     return;
@@ -76,13 +76,13 @@ CastAudioJsonProviderImpl::CastAudioJsonProviderImpl() {
 
 CastAudioJsonProviderImpl::~CastAudioJsonProviderImpl() = default;
 
-absl::optional<base::Value::Dict>
+std::optional<base::Value::Dict>
 CastAudioJsonProviderImpl::GetCastAudioConfig() {
   std::string contents;
   base::ReadFileToString(CastAudioJson::GetFilePath(), &contents);
-  absl::optional<base::Value> value = base::JSONReader::Read(contents);
+  std::optional<base::Value> value = base::JSONReader::Read(contents);
   if (!value || value->is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return std::move(*value).TakeDict();

@@ -23,13 +23,13 @@ namespace sandbox {
 RestrictedToken::RestrictedToken() = default;
 RestrictedToken::~RestrictedToken() = default;
 
-absl::optional<base::win::AccessToken> RestrictedToken::GetRestrictedToken()
+std::optional<base::win::AccessToken> RestrictedToken::GetRestrictedToken()
     const {
-  absl::optional<base::win::AccessToken> token =
+  std::optional<base::win::AccessToken> token =
       base::win::AccessToken::FromCurrentProcess(/*impersonation=*/false,
                                                  TOKEN_ALL_ACCESS);
   if (!token) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return CreateRestricted(*token);
 }
@@ -100,7 +100,7 @@ void RestrictedToken::AddDefaultDaclSid(
   sids_for_default_dacl_.emplace_back(known_sid, access_mode, access, 0);
 }
 
-absl::optional<base::win::AccessToken>
+std::optional<base::win::AccessToken>
 RestrictedToken::GetRestrictedTokenForTesting(base::win::AccessToken& token) {
   return CreateRestricted(token);
 }
@@ -143,7 +143,7 @@ std::vector<base::win::Sid> RestrictedToken::BuildRestrictedSids(
     }
   }
   if (add_restricting_sid_logon_session_) {
-    absl::optional<base::win::Sid> logon_sid = token.LogonId();
+    std::optional<base::win::Sid> logon_sid = token.LogonId();
     if (logon_sid.has_value()) {
       sids.push_back(std::move(*logon_sid));
     }
@@ -151,9 +151,9 @@ std::vector<base::win::Sid> RestrictedToken::BuildRestrictedSids(
   return sids;
 }
 
-absl::optional<base::win::AccessToken> RestrictedToken::CreateRestricted(
+std::optional<base::win::AccessToken> RestrictedToken::CreateRestricted(
     const base::win::AccessToken& token) const {
-  absl::optional<base::win::AccessToken> new_token;
+  std::optional<base::win::AccessToken> new_token;
 
   std::vector<base::win::Sid> deny_sids = BuildDenyOnlySids(token);
   std::vector<base::win::Sid> restrict_sids = BuildRestrictedSids(token);
@@ -169,31 +169,31 @@ absl::optional<base::win::AccessToken> RestrictedToken::CreateRestricted(
   }
 
   if (!new_token) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (delete_all_privileges_ && remove_traversal_privilege_ &&
       !new_token->RemovePrivilege(SE_CHANGE_NOTIFY_NAME)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<base::win::ExplicitAccessEntry> dacl_entries;
 
-  absl::optional<base::win::AccessControlList> dacl = new_token->DefaultDacl();
+  std::optional<base::win::AccessControlList> dacl = new_token->DefaultDacl();
   if (!dacl) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (lockdown_default_dacl_) {
     // Don't add Restricted sid and also remove logon sid access.
-    absl::optional<base::win::Sid> logon_sid = new_token->LogonId();
+    std::optional<base::win::Sid> logon_sid = new_token->LogonId();
     if (logon_sid.has_value()) {
       dacl_entries.emplace_back(*logon_sid,
                                 base::win::SecurityAccessMode::kRevoke, 0, 0);
     } else {
       DWORD last_error = ::GetLastError();
       if (last_error != ERROR_NOT_FOUND) {
-        return absl::nullopt;
+        return std::nullopt;
       }
     }
   } else {
@@ -210,16 +210,16 @@ absl::optional<base::win::AccessToken> RestrictedToken::CreateRestricted(
       new_token->User(), base::win::SecurityAccessMode::kGrant, GENERIC_ALL, 0);
 
   if (!dacl->SetEntries(dacl_entries)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!new_token->SetDefaultDacl(*dacl)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (integrity_rid_.has_value()) {
     if (!new_token->SetIntegrityLevel(*integrity_rid_)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 

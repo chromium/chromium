@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include <optional>
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,7 +26,6 @@
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
 #include "printing/units.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -87,13 +87,13 @@ void SetRectToJobSettings(const std::string& json_path,
 void SetPrintableAreaIfValid(PrintSettings& settings,
                              const gfx::Size& size_microns,
                              const base::Value::Dict& media_size) {
-  absl::optional<int> left_microns =
+  std::optional<int> left_microns =
       media_size.FindInt(kSettingsImageableAreaLeftMicrons);
-  absl::optional<int> bottom_microns =
+  std::optional<int> bottom_microns =
       media_size.FindInt(kSettingsImageableAreaBottomMicrons);
-  absl::optional<int> right_microns =
+  std::optional<int> right_microns =
       media_size.FindInt(kSettingsImageableAreaRightMicrons);
-  absl::optional<int> top_microns =
+  std::optional<int> top_microns =
       media_size.FindInt(kSettingsImageableAreaTopMicrons);
   if (!bottom_microns.has_value() || !left_microns.has_value() ||
       !right_microns.has_value() || !top_microns.has_value()) {
@@ -140,8 +140,8 @@ PageRanges GetPageRangesFromJobSettings(const base::Value::Dict& job_settings) {
     }
 
     const auto& dict = page_range.GetDict();
-    absl::optional<int> from = dict.FindInt(kSettingPageRangeFrom);
-    absl::optional<int> to = dict.FindInt(kSettingPageRangeTo);
+    std::optional<int> from = dict.FindInt(kSettingPageRangeFrom);
+    std::optional<int> to = dict.FindInt(kSettingPageRangeTo);
     if (!from.has_value() || !to.has_value()) {
       continue;
     }
@@ -157,7 +157,7 @@ PageRanges GetPageRangesFromJobSettings(const base::Value::Dict& job_settings) {
 std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
     const base::Value::Dict& job_settings) {
   auto settings = std::make_unique<PrintSettings>();
-  absl::optional<bool> display_header_footer =
+  std::optional<bool> display_header_footer =
       job_settings.FindBool(kSettingHeaderFooterEnabled);
   if (!display_header_footer.has_value()) {
     return nullptr;
@@ -176,9 +176,9 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
     settings->set_url(base::UTF8ToUTF16(*url));
   }
 
-  absl::optional<bool> backgrounds =
+  std::optional<bool> backgrounds =
       job_settings.FindBool(kSettingShouldPrintBackgrounds);
-  absl::optional<bool> selection_only =
+  std::optional<bool> selection_only =
       job_settings.FindBool(kSettingShouldPrintSelectionOnly);
   if (!backgrounds.has_value() || !selection_only.has_value()) {
     return nullptr;
@@ -187,16 +187,16 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   settings->set_should_print_backgrounds(backgrounds.value());
   settings->set_selection_only(selection_only.value());
 
-  absl::optional<bool> collate = job_settings.FindBool(kSettingCollate);
-  absl::optional<int> copies = job_settings.FindInt(kSettingCopies);
-  absl::optional<int> color = job_settings.FindInt(kSettingColor);
-  absl::optional<int> duplex_mode = job_settings.FindInt(kSettingDuplexMode);
-  absl::optional<bool> landscape = job_settings.FindBool(kSettingLandscape);
+  std::optional<bool> collate = job_settings.FindBool(kSettingCollate);
+  std::optional<int> copies = job_settings.FindInt(kSettingCopies);
+  std::optional<int> color = job_settings.FindInt(kSettingColor);
+  std::optional<int> duplex_mode = job_settings.FindInt(kSettingDuplexMode);
+  std::optional<bool> landscape = job_settings.FindBool(kSettingLandscape);
   const std::string* device_name = job_settings.FindString(kSettingDeviceName);
-  absl::optional<int> scale_factor = job_settings.FindInt(kSettingScaleFactor);
-  absl::optional<bool> rasterize_pdf =
+  std::optional<int> scale_factor = job_settings.FindInt(kSettingScaleFactor);
+  std::optional<bool> rasterize_pdf =
       job_settings.FindBool(kSettingRasterizePdf);
-  absl::optional<int> pages_per_sheet =
+  std::optional<int> pages_per_sheet =
       job_settings.FindInt(kSettingPagesPerSheet);
   if (!collate.has_value() || !copies.has_value() || !color.has_value() ||
       !duplex_mode.has_value() || !landscape.has_value() || !device_name ||
@@ -215,16 +215,16 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   settings->set_rasterize_pdf(rasterize_pdf.value());
   settings->set_pages_per_sheet(pages_per_sheet.value());
 
-  absl::optional<int> dpi_horizontal =
+  std::optional<int> dpi_horizontal =
       job_settings.FindInt(kSettingDpiHorizontal);
-  absl::optional<int> dpi_vertical = job_settings.FindInt(kSettingDpiVertical);
+  std::optional<int> dpi_vertical = job_settings.FindInt(kSettingDpiVertical);
   if (!dpi_horizontal.has_value() || !dpi_vertical.has_value()) {
     return nullptr;
   }
 
   settings->set_dpi_xy(dpi_horizontal.value(), dpi_vertical.value());
 
-  absl::optional<int> rasterize_pdf_dpi =
+  std::optional<int> rasterize_pdf_dpi =
       job_settings.FindInt(kSettingRasterizePdfDpi);
   if (rasterize_pdf_dpi.has_value()) {
     settings->set_rasterize_pdf_dpi(rasterize_pdf_dpi.value());
@@ -250,9 +250,9 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   const base::Value::Dict* media_size_value =
       job_settings.FindDict(kSettingMediaSize);
   if (media_size_value) {
-    absl::optional<int> width_microns =
+    std::optional<int> width_microns =
         media_size_value->FindInt(kSettingMediaSizeWidthMicrons);
-    absl::optional<int> height_microns =
+    std::optional<int> height_microns =
         media_size_value->FindInt(kSettingMediaSizeHeightMicrons);
     if (width_microns.has_value() && height_microns.has_value()) {
       requested_media.size_microns =
@@ -269,7 +269,7 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   }
   settings->set_requested_media(requested_media);
 
-  absl::optional<bool> borderless = job_settings.FindBool(kSettingBorderless);
+  std::optional<bool> borderless = job_settings.FindBool(kSettingBorderless);
   if (borderless.has_value()) {
     settings->set_borderless(borderless.value());
   }
@@ -281,7 +281,7 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
 
   settings->set_ranges(GetPageRangesFromJobSettings(job_settings));
 
-  absl::optional<bool> is_modifiable =
+  std::optional<bool> is_modifiable =
       job_settings.FindBool(kSettingPreviewModifiable);
   if (is_modifiable.has_value()) {
     settings->set_is_modifiable(is_modifiable.value());
@@ -335,8 +335,7 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   settings->set_printer_manually_selected(
       job_settings.FindBool(kSettingPrinterManuallySelected).value_or(false));
 
-  absl::optional<int> reason =
-      job_settings.FindInt(kSettingPrinterStatusReason);
+  std::optional<int> reason = job_settings.FindInt(kSettingPrinterStatusReason);
   if (reason.has_value()) {
     settings->set_printer_status_reason(
         static_cast<crosapi::mojom::StatusReason::Reason>(reason.value()));

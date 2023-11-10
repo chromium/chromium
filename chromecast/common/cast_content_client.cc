@@ -31,9 +31,9 @@
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include <optional>
 #include "chromecast/common/media/cast_media_drm_bridge_client.h"
 #include "components/cdm/common/android_cdm_registration.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -226,11 +226,11 @@ void CastContentClient::AddContentDecryptionModules(
     cdms->push_back(
         content::CdmInfo(kChromecastPlayreadyKeySystem,
                          content::CdmInfo::Robustness::kSoftwareSecure,
-                         absl::nullopt, kPlayReadyCdmType));
+                         std::nullopt, kPlayReadyCdmType));
     cdms->push_back(
         content::CdmInfo(kChromecastPlayreadyKeySystem,
                          content::CdmInfo::Robustness::kHardwareSecure,
-                         absl::nullopt, kPlayReadyCdmType));
+                         std::nullopt, kPlayReadyCdmType));
 #endif  // BUILDFLAG(ENABLE_PLAYREADY)
 #endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM) && BUILDFLAG(IS_LINUX)
   }

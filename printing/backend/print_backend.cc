@@ -120,9 +120,8 @@ bool PageOutputQualityAttribute::operator<(
 
 PageOutputQuality::PageOutputQuality() = default;
 
-PageOutputQuality::PageOutputQuality(
-    PageOutputQualityAttributes qualities,
-    absl::optional<std::string> default_quality)
+PageOutputQuality::PageOutputQuality(PageOutputQualityAttributes qualities,
+                                     std::optional<std::string> default_quality)
     : qualities(std::move(qualities)),
       default_quality(std::move(default_quality)) {}
 

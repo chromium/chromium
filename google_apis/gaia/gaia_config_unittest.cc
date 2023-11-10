@@ -4,12 +4,12 @@
 
 #include "google_apis/gaia/gaia_config.h"
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -30,8 +30,7 @@ const char kTestConfigContents[] = R"(
 })";
 
 TEST(GaiaConfigTest, ShouldGetURLIfExists) {
-  absl::optional<base::Value> dict =
-      base::JSONReader::Read(kTestConfigContents);
+  std::optional<base::Value> dict = base::JSONReader::Read(kTestConfigContents);
   ASSERT_TRUE(dict.has_value());
 
   GaiaConfig config(std::move(dict->GetDict()));
@@ -41,8 +40,7 @@ TEST(GaiaConfigTest, ShouldGetURLIfExists) {
 }
 
 TEST(GaiaConfigTest, ShouldReturnNullIfURLDoesNotExists) {
-  absl::optional<base::Value> dict =
-      base::JSONReader::Read(kTestConfigContents);
+  std::optional<base::Value> dict = base::JSONReader::Read(kTestConfigContents);
   ASSERT_TRUE(dict.has_value());
 
   GaiaConfig config(std::move(dict->GetDict()));
@@ -51,8 +49,7 @@ TEST(GaiaConfigTest, ShouldReturnNullIfURLDoesNotExists) {
 }
 
 TEST(GaiaConfigTest, ShouldGetAPIKeyIfExists) {
-  absl::optional<base::Value> dict =
-      base::JSONReader::Read(kTestConfigContents);
+  std::optional<base::Value> dict = base::JSONReader::Read(kTestConfigContents);
   ASSERT_TRUE(dict.has_value());
 
   GaiaConfig config(std::move(dict->GetDict()));
@@ -62,8 +59,7 @@ TEST(GaiaConfigTest, ShouldGetAPIKeyIfExists) {
 }
 
 TEST(GaiaConfigTest, ShouldReturnNullIfAPIKeyDoesNotExists) {
-  absl::optional<base::Value> dict =
-      base::JSONReader::Read(kTestConfigContents);
+  std::optional<base::Value> dict = base::JSONReader::Read(kTestConfigContents);
   ASSERT_TRUE(dict.has_value());
 
   GaiaConfig config(std::move(dict->GetDict()));
@@ -72,8 +68,7 @@ TEST(GaiaConfigTest, ShouldReturnNullIfAPIKeyDoesNotExists) {
 }
 
 TEST(GaiaConfigTest, ShouldSerializeContentsToCommandLineSwitch) {
-  absl::optional<base::Value> dict =
-      base::JSONReader::Read(kTestConfigContents);
+  std::optional<base::Value> dict = base::JSONReader::Read(kTestConfigContents);
   ASSERT_TRUE(dict.has_value());
 
   GaiaConfig config(std::move(dict->GetDict()));

@@ -1735,7 +1735,7 @@ TEST_P(ObfuscatedFileUtilTest, TestStorageKeyEnumerator) {
   // populates the enumerator being tested. So in a test environment, this
   // enumerator should not have any additional StorageKeys to access via Next().
   if (is_third_party_context() || is_non_default_bucket()) {
-    EXPECT_EQ(absl::nullopt, enumerator->Next());
+    EXPECT_EQ(std::nullopt, enumerator->Next());
     return;
   }
   EXPECT_EQ(storage_key(), enumerator->Next());
@@ -1785,7 +1785,7 @@ TEST_P(ObfuscatedFileUtilTest, TestStorageKeyEnumerator) {
   enumerator = ofu()->CreateStorageKeyEnumerator();
   EXPECT_TRUE(enumerator.get());
   std::set<blink::StorageKey> storage_keys_found;
-  absl::optional<blink::StorageKey> enumerator_storage_key;
+  std::optional<blink::StorageKey> enumerator_storage_key;
   while ((enumerator_storage_key = enumerator->Next()).has_value()) {
     storage_keys_found.insert(enumerator_storage_key.value());
     SCOPED_TRACE(testing::Message()
@@ -2667,7 +2667,7 @@ TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForBucketAndType_DeleteAll) {
                   .has_value());
 
   // Delete all directories for default_bucket_.
-  ofu()->DeleteDirectoryForBucketAndType(default_bucket_, absl::nullopt);
+  ofu()->DeleteDirectoryForBucketAndType(default_bucket_, std::nullopt);
 
   // The directories for default_bucket_ should be removed.
   ASSERT_THAT(ofu()->GetDirectoryForBucketAndType(default_bucket_,

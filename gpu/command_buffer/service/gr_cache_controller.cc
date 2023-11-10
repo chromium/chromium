@@ -106,7 +106,7 @@ void GrCacheController::PurgeGrCache(uint64_t idle_id) {
   // Force Skia to check fences to determine what can be freed.
   context_state_->gr_context()->checkAsyncWorkCompletion();
   {
-    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+    std::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
     // ScopedCacheUse is to avoid the empty/invalid client id DCHECKS caused
     // while accessing GrShaderCache. Note that since the actual client_id here
     // does not matter, we are using gpu::kDisplayCompositorClientId.

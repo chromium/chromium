@@ -536,7 +536,7 @@ void SandboxLinux::StartBrokerProcess(
   // other LSMs like AppArmor and Landlock. Some userspace code, such as
   // glibc's |dlopen|, expect to see EACCES rather than EPERM. See
   // crbug.com/1233028 for an example.
-  auto policy = absl::make_optional<syscall_broker::BrokerSandboxConfig>(
+  auto policy = std::make_optional<syscall_broker::BrokerSandboxConfig>(
       allowed_command_set, std::move(permissions), EACCES);
   // Leaked at shutdown, so use bare |new|.
   broker_process_ = new syscall_broker::BrokerProcess(

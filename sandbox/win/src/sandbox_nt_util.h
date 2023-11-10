@@ -10,11 +10,11 @@
 #include <stdint.h>
 #include <memory>
 
+#include <optional>
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_nt_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Placement new and delete to be used from ntdll interception code.
 void* __cdecl operator new(size_t size,
@@ -105,7 +105,7 @@ void* GetGlobalIPCMemory();
 void* GetGlobalPolicyMemoryForTesting();
 
 // Returns a view of the shared delegate data, or nullopt if none was provided.
-absl::optional<base::span<const uint8_t>> GetGlobalDelegateData();
+std::optional<base::span<const uint8_t>> GetGlobalDelegateData();
 
 // Returns a reference to imported NT functions.
 const NtExports* GetNtExports();

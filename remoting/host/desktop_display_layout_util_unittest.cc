@@ -6,10 +6,10 @@
 
 #include <vector>
 
+#include <optional>
 #include "build/build_config.h"
 #include "remoting/proto/control.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
@@ -49,7 +49,7 @@ protocol::VideoTrackLayout MakeLayout(
     int height,
     int x_dpi,
     int y_dpi,
-    absl::optional<webrtc::ScreenId> screen_id) {
+    std::optional<webrtc::ScreenId> screen_id) {
   protocol::VideoTrackLayout layout;
   if (screen_id) {
     layout.set_screen_id(*screen_id);

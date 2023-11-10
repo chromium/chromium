@@ -8,10 +8,10 @@
 #include <cstdint>
 #include <ostream>
 
+#include <optional>
 #include "base/location.h"
 #include "remoting/base/result.h"
 #include "remoting/proto/file_transfer.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting::protocol {
 
@@ -21,7 +21,7 @@ using FileTransferResult = Result<SuccessType, FileTransfer_Error>;
 FileTransfer_Error MakeFileTransferError(
     base::Location location,
     FileTransfer_Error_Type type,
-    absl::optional<std::int32_t> api_error_code = absl::nullopt);
+    std::optional<std::int32_t> api_error_code = std::nullopt);
 
 std::ostream& operator<<(std::ostream& stream, const FileTransfer_Error& error);
 

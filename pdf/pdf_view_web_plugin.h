@@ -801,7 +801,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   std::vector<int> pages_to_print_;
 
   // Assigned a value only between `PrintBegin()` and `PrintEnd()` calls.
-  absl::optional<blink::WebPrintParams> print_params_;
+  std::optional<blink::WebPrintParams> print_params_;
 
   // For identifying actual print operations to avoid double logging of UMA.
   bool print_pages_called_;

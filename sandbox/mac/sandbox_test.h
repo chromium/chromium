@@ -7,11 +7,11 @@
 
 #include <string>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/process/process.h"
 #include "base/test/multiprocess_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -20,7 +20,7 @@ namespace sandbox {
 class SandboxTest : public base::MultiProcessTest {
  public:
   using CommandLineModifier =
-      absl::optional<base::RepeatingCallback<void(base::CommandLine&)>>;
+      std::optional<base::RepeatingCallback<void(base::CommandLine&)>>;
 
   SandboxTest();
   ~SandboxTest() override;
@@ -32,12 +32,12 @@ class SandboxTest : public base::MultiProcessTest {
   base::Process SpawnChildWithOptions(
       const std::string& procname,
       const base::LaunchOptions& options,
-      CommandLineModifier command_line_modifier = absl::nullopt);
+      CommandLineModifier command_line_modifier = std::nullopt);
 
   // Same as SpawnChildWithOptions, but uses a default LaunchOptions value.
   base::Process SpawnChild(
       const std::string& procname,
-      CommandLineModifier command_line_modifier = absl::nullopt);
+      CommandLineModifier command_line_modifier = std::nullopt);
 };
 
 }  // namespace sandbox

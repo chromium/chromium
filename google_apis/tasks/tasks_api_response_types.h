@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/time/time.h"
 #include "google_apis/tasks/tasks_api_task_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 template <class StructType>
@@ -123,7 +123,7 @@ class Task {
   TaskStatus status() const { return status_; }
   const std::string& parent_id() const { return parent_id_; }
   const std::string& position() const { return position_; }
-  const absl::optional<base::Time>& due() const { return due_; }
+  const std::optional<base::Time>& due() const { return due_; }
   const std::vector<std::unique_ptr<TaskLink>>& links() const { return links_; }
   const std::string& notes() const { return notes_; }
 
@@ -146,7 +146,7 @@ class Task {
   // Due date of the task (comes as a RFC 3339 timestamp and converted to
   // `base::Time`). The due date only records date information. Not all tasks
   // have a due date.
-  absl::optional<base::Time> due_ = absl::nullopt;
+  std::optional<base::Time> due_ = std::nullopt;
 
   // Collection of links related to this task.
   std::vector<std::unique_ptr<TaskLink>> links_;

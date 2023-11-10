@@ -88,9 +88,9 @@ class GPU_GLES2_EXPORT DCompSurfaceImageBacking
 
   // For DCompSurfaceOverlayImageRepresentation implementation.
   friend class DCompSurfaceOverlayImageRepresentation;
-  absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() {
-    return absl::make_optional<gl::DCLayerOverlayImage>(size(), dcomp_surface_,
-                                                        dcomp_surface_serial_);
+  std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() {
+    return std::make_optional<gl::DCLayerOverlayImage>(size(), dcomp_surface_,
+                                                       dcomp_surface_serial_);
   }
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> BeginDraw(
@@ -114,7 +114,7 @@ class GPU_GLES2_EXPORT DCompSurfaceImageBacking
   void EndDrawDawn(const wgpu::Device& device, wgpu::Texture texture);
 
   // Used to restore the surface that was current before BeginDraw at EndDraw.
-  absl::optional<ui::ScopedMakeCurrent> scoped_make_current_;
+  std::optional<ui::ScopedMakeCurrent> scoped_make_current_;
 
   // GLSurface that binds |dcomp_surface_|'s draw texture to GL FB0 between
   // |BeginDrawGanesh| and |EndDrawGanesh|.

@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_SYSTEM_NOTIFICATION_BUILDER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/constants/notifier_catalogs.h"
@@ -262,7 +263,7 @@ class ASH_PUBLIC_EXPORT SystemNotificationBuilder {
   std::unique_ptr<message_center::Notification> BuildPtr(bool keep_timestamp);
 
   // Get a NotifierId by combining `catalog_name_` and `id_` if `notifier_id_`
-  // is `absl::nullopt`, otherwise returns the value of `notifier_id_`.
+  // is `std::nullopt`, otherwise returns the value of `notifier_id_`.
   // The `notifier_id_` should never be read directly but only through this
   // method.
   message_center::NotifierId GetNotifierId() const;
@@ -275,7 +276,7 @@ class ASH_PUBLIC_EXPORT SystemNotificationBuilder {
   std::u16string message_;
   std::u16string display_source_;
   GURL origin_url_;
-  absl::optional<message_center::NotifierId> notifier_id_;
+  std::optional<message_center::NotifierId> notifier_id_;
   NotificationCatalogName catalog_name_ = NotificationCatalogName::kNone;
   scoped_refptr<message_center::NotificationDelegate> delegate_ = nullptr;
   raw_ptr<const gfx::VectorIcon, ExperimentalAsh> small_image_ =

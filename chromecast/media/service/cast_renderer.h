@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include <optional>
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/unguessable_token.h"
@@ -22,7 +23,6 @@
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/overlay_transform.h"
 
@@ -69,7 +69,7 @@ class CastRenderer final : public ::media::Renderer,
                   ::media::PipelineStatusCallback init_cb) override;
   void SetCdm(::media::CdmContext* cdm_context,
               CdmAttachedCB cdm_attached_cb) override;
-  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
+  void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) override;
   void Flush(base::OnceClosure flush_cb) override;
   void StartPlayingFrom(base::TimeDelta time) override;
   void SetPlaybackRate(double playback_rate) override;
@@ -150,7 +150,7 @@ class CastRenderer final : public ::media::Renderer,
     return *g_overlay_composited_callback;
   }
 
-  absl::optional<float> pending_volume_;
+  std::optional<float> pending_volume_;
 
   const bool is_buffering_enabled_;
 

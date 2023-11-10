@@ -188,12 +188,12 @@ class InMemorySessionStorage : public SessionStorage {
     std::move(on_done).Run();
   }
   void RetrieveSession(
-      base::OnceCallback<void(absl::optional<base::Value::Dict>)> on_done)
+      base::OnceCallback<void(std::optional<base::Value::Dict>)> on_done)
       override {
     if (session_.has_value()) {
       std::move(on_done).Run(session_.value().Clone());
     } else {
-      std::move(on_done).Run(absl::nullopt);
+      std::move(on_done).Run(std::nullopt);
     }
   }
   void HasSession(base::OnceCallback<void(bool)> on_done) const override {
@@ -201,7 +201,7 @@ class InMemorySessionStorage : public SessionStorage {
   }
 
  private:
-  absl::optional<base::Value::Dict> session_;
+  std::optional<base::Value::Dict> session_;
 };
 
 bool HasSession(SessionStorage& storage) {
@@ -231,13 +231,13 @@ class RemoteSupportHostAshTest : public testing::TestWithParam<bool> {
   }
 
   mojom::StartSupportSessionResponsePtr StartSession(
-      absl::optional<ChromeOsEnterpriseParams> enterprise_params) {
+      std::optional<ChromeOsEnterpriseParams> enterprise_params) {
     return StartSession(GetSupportSessionParams(), enterprise_params);
   }
 
   mojom::StartSupportSessionResponsePtr StartSession(
       const mojom::SupportSessionParams& params,
-      absl::optional<ChromeOsEnterpriseParams> enterprise_params) {
+      std::optional<ChromeOsEnterpriseParams> enterprise_params) {
     TestFuture<mojom::StartSupportSessionResponsePtr> connect_result;
     support_host().StartSession(params, enterprise_params,
                                 connect_result.GetCallback());
@@ -468,7 +468,7 @@ TEST_F(RemoteSupportHostAshTest,
        ShouldNotStoreSessionInfoIfEnterpriseParamsAreUnset) {
   EnableFeature(kEnableCrdAdminRemoteAccessV2);
 
-  StartSession(absl::nullopt);
+  StartSession(std::nullopt);
   SignalHostStateConnected();
 
   ASSERT_FALSE(HasSession(session_storage()));
@@ -681,7 +681,7 @@ TEST_F(RemoteSupportHostAshTest,
   it2me_host().WaitForConnectCall();
   ASSERT_TRUE(HasSession(session_storage()));
 
-  StartSession(/*enterprise_params=*/absl::nullopt);
+  StartSession(/*enterprise_params=*/std::nullopt);
 
   EXPECT_FALSE(HasSession(session_storage()));
 }

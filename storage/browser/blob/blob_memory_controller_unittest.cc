@@ -4,6 +4,7 @@
 
 #include "storage/browser/blob/blob_memory_controller.h"
 
+#include <optional>
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -17,7 +18,6 @@
 #include "storage/browser/blob/blob_data_item.h"
 #include "storage/browser/blob/shareable_blob_data_item.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
 
@@ -163,7 +163,7 @@ class BlobMemoryControllerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  absl::optional<base::ScopedDisallowBlocking> disallow_blocking_;
+  std::optional<base::ScopedDisallowBlocking> disallow_blocking_;
 };
 
 TEST_F(BlobMemoryControllerTest, Strategy) {

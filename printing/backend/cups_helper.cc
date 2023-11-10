@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -27,7 +28,6 @@
 #include "printing/print_job_constants_cups.h"
 #include "printing/printing_utils.h"
 #include "printing/units.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -115,11 +115,11 @@ std::pair<std::vector<mojom::DuplexMode>, mojom::DuplexMode> GetDuplexSettings(
   return std::make_pair(std::move(duplex_modes), duplex_default);
 }
 
-absl::optional<gfx::Size> ParseResolutionString(const char* input) {
+std::optional<gfx::Size> ParseResolutionString(const char* input) {
   int len = strlen(input);
   if (len == 0) {
     VLOG(1) << "Bad PPD resolution choice: null string";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int n = 0;  // number of chars successfully parsed by sscanf()
@@ -132,12 +132,12 @@ absl::optional<gfx::Size> ParseResolutionString(const char* input) {
     sscanf(input, "%dx%ddpi%n", &dpi_x, &dpi_y, &n);
     if (n != len) {
       VLOG(1) << "Bad PPD resolution choice: " << input;
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
   if (dpi_x <= 0 || dpi_y <= 0) {
     VLOG(1) << "Invalid PPD resolution dimensions: " << dpi_x << " " << dpi_y;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return gfx::Size(dpi_x, dpi_y);
@@ -170,7 +170,7 @@ std::pair<std::vector<gfx::Size>, gfx::Size> GetResolutionSettings(
     for (int i = 0; i < res->num_choices; i++) {
       char* choice = res->choices[i].choice;
       CHECK(choice);
-      absl::optional<gfx::Size> parsed_size = ParseResolutionString(choice);
+      std::optional<gfx::Size> parsed_size = ParseResolutionString(choice);
       if (!parsed_size.has_value()) {
         continue;
       }
@@ -186,8 +186,7 @@ std::pair<std::vector<gfx::Size>, gfx::Size> GetResolutionSettings(
     ppd_attr_t* attr = ppdFindAttr(ppd, "DefaultResolution", nullptr);
     if (attr) {
       CHECK(attr->value);
-      absl::optional<gfx::Size> parsed_size =
-          ParseResolutionString(attr->value);
+      std::optional<gfx::Size> parsed_size = ParseResolutionString(attr->value);
       if (parsed_size.has_value()) {
         dpis.push_back(parsed_size.value());
         default_dpi = parsed_size.value();

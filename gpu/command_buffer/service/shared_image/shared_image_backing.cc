@@ -79,7 +79,7 @@ SharedImageBacking::SharedImageBacking(
     uint32_t usage,
     size_t estimated_size,
     bool is_thread_safe,
-    absl::optional<gfx::BufferUsage> buffer_usage)
+    std::optional<gfx::BufferUsage> buffer_usage)
     : mailbox_(mailbox),
       format_(format),
       size_(size),
@@ -395,7 +395,7 @@ ClearTrackingSharedImageBacking::ClearTrackingSharedImageBacking(
     uint32_t usage,
     size_t estimated_size,
     bool is_thread_safe,
-    absl::optional<gfx::BufferUsage> buffer_usage)
+    std::optional<gfx::BufferUsage> buffer_usage)
     : SharedImageBacking(mailbox,
                          format,
                          size,

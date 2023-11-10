@@ -136,7 +136,7 @@ scoped_refptr<SharedBuffer> SharedBuffer::CreateForMojoWrapper(
       return nullptr;
   }
 
-  absl::optional<base::UnguessableToken> guid =
+  std::optional<base::UnguessableToken> guid =
       base::UnguessableToken::Deserialize(mojo_guid.high, mojo_guid.low);
   if (!guid.has_value()) {
     return nullptr;
@@ -261,7 +261,7 @@ scoped_refptr<SharedBuffer> SharedBuffer::Deserialize(
       return nullptr;
   }
 
-  absl::optional<base::UnguessableToken> guid =
+  std::optional<base::UnguessableToken> guid =
       base::UnguessableToken::Deserialize(header.guid_high, header.guid_low);
   if (!guid.has_value()) {
     return nullptr;

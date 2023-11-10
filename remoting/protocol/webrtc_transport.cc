@@ -113,7 +113,7 @@ std::string GetTransportProtocol(const cricket::CandidatePair& candidate_pair) {
 }
 
 // Returns true if the selected candidate-pair indicates a relay connection.
-absl::optional<bool> IsConnectionRelayed(
+std::optional<bool> IsConnectionRelayed(
     const cricket::CandidatePair& selected_candidate_pair) {
   const cricket::Candidate& local_candidate =
       selected_candidate_pair.local_candidate();
@@ -620,9 +620,8 @@ const SessionOptions& WebrtcTransport::session_options() const {
   return session_options_;
 }
 
-void WebrtcTransport::SetPreferredBitrates(
-    absl::optional<int> min_bitrate_bps,
-    absl::optional<int> max_bitrate_bps) {
+void WebrtcTransport::SetPreferredBitrates(std::optional<int> min_bitrate_bps,
+                                           std::optional<int> max_bitrate_bps) {
   preferred_min_bitrate_bps_ = min_bitrate_bps;
   preferred_max_bitrate_bps_ = max_bitrate_bps;
   if (connected_) {
@@ -741,7 +740,7 @@ void WebrtcTransport::Close(ErrorCode error) {
 void WebrtcTransport::ApplySessionOptions(const SessionOptions& options) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   session_options_ = options;
-  absl::optional<std::string> video_codec = options.Get("Video-Codec");
+  std::optional<std::string> video_codec = options.Get("Video-Codec");
   if (video_codec) {
     preferred_video_codec_ = *video_codec;
   }
@@ -983,7 +982,7 @@ void WebrtcTransport::OnIceSelectedCandidatePairChanged(
 
   // Unknown -> direct/relayed is treated as a
   // change, so the correct initial bitrate caps are set.
-  absl::optional<bool> connection_relayed =
+  std::optional<bool> connection_relayed =
       IsConnectionRelayed(event.selected_candidate_pair);
   if (connection_relayed != connection_relayed_) {
     connection_relayed_ = connection_relayed;

@@ -24,9 +24,9 @@ class AwUserAgentMetadataTest : public testing::Test {
 
   void verifyUaMetadata(blink::UserAgentMetadata expect,
                         blink::UserAgentMetadata actual) {
-    absl::optional<std::string> expect_str =
+    std::optional<std::string> expect_str =
         blink::UserAgentMetadata::Marshal(expect);
-    absl::optional<std::string> actual_str =
+    std::optional<std::string> actual_str =
         blink::UserAgentMetadata::Marshal(actual);
     EXPECT_TRUE(expect_str.has_value() == actual_str.has_value());
     if (expect_str.has_value()) {

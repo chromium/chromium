@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include <optional>
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/nonembedded/component_updater/aw_component_updater_configurator.h"
 #include "base/android/path_utils.h"
@@ -32,7 +33,6 @@
 #include "components/update_client/network.h"
 #include "components/update_client/update_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace android_webview {
@@ -313,7 +313,7 @@ class MockInstallerPolicy : public component_updater::ComponentInstallerPolicy {
   base::Version GetVersion() const { return version_; }
 
  private:
-  absl::optional<base::Value::Dict> manifest_;
+  std::optional<base::Value::Dict> manifest_;
   base::FilePath install_dir_;
   base::Version version_;
 };

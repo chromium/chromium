@@ -7,12 +7,12 @@
 #include <atomic>
 #include <sstream>
 
+#include <optional>
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/threading/thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cast_core/public/src/proto/runtime/cast_audio_channel_service.grpc.pb.h"
 
 namespace chromecast {
@@ -49,7 +49,7 @@ class PushBufferQueueTests : public testing::Test {
   void ReadData(const std::string& name,
                 const PushBufferQueue::PushBufferRequest& target_buffer) {
     ASSERT_TRUE(queue_.HasBufferedData()) << name;
-    absl::optional<PushBufferRequest> get = queue_.GetBufferedData();
+    std::optional<PushBufferRequest> get = queue_.GetBufferedData();
     ASSERT_TRUE(get.has_value()) << name;
     CheckEqual("first", get.value(), target_buffer);
   }
@@ -137,7 +137,7 @@ class PushBufferQueueTests : public testing::Test {
     return queue_.PushBufferImpl(request);
   }
 
-  absl::optional<PushBufferQueue::PushBufferRequest> StartGetBufferedData() {
+  std::optional<PushBufferQueue::PushBufferRequest> StartGetBufferedData() {
     return queue_.GetBufferedDataImpl();
   }
 
@@ -270,7 +270,7 @@ TEST_F(PushBufferQueueTests, TestReadingFromPartialWrite) {
   UpdateBufferWriteStreamPositions();
 
   ASSERT_TRUE(queue_.HasBufferedData());
-  absl::optional<PushBufferRequest> pulled_buffer = queue_.GetBufferedData();
+  std::optional<PushBufferRequest> pulled_buffer = queue_.GetBufferedData();
   EXPECT_FALSE(pulled_buffer.has_value());
   EXPECT_TRUE(queue_.HasBufferedData());
 

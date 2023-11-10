@@ -329,7 +329,7 @@ class WrappedOverlayCompoundImageRepresentation
     return wrapped_->EndReadAccess(std::move(release_fence));
   }
 #if BUILDFLAG(IS_WIN)
-  absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() final {
+  std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() final {
     return wrapped_->GetDCLayerOverlayImage();
   }
 #endif
@@ -495,7 +495,7 @@ CompoundImageBacking::CompoundImageBacking(
     bool allow_shm_overlays,
     std::unique_ptr<SharedMemoryImageBacking> shm_backing,
     base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory,
-    absl::optional<gfx::BufferUsage> buffer_usage)
+    std::optional<gfx::BufferUsage> buffer_usage)
     : SharedImageBacking(mailbox,
                          format,
                          size,

@@ -4,10 +4,10 @@
 
 #include "google_apis/calendar/calendar_api_url_generator.h"
 
+#include <optional>
 #include "base/strings/string_number_conversions.h"
 #include "google_apis/common/time_util.h"
 #include "net/base/url_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace google_apis {
 
@@ -40,8 +40,8 @@ GURL CalendarApiUrlGenerator::GetCalendarEventListUrl(
     const base::Time& start_time,
     const base::Time& end_time,
     bool single_events,
-    absl::optional<int> max_attendees,
-    absl::optional<int> max_results) const {
+    std::optional<int> max_attendees,
+    std::optional<int> max_results) const {
   GURL url = base_url_.Resolve(kCalendarV3EventsUrl);
   std::string start_time_string = util::FormatTimeAsString(start_time);
   std::string end_time_string = util::FormatTimeAsString(end_time);

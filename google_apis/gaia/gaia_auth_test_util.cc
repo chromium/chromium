@@ -9,9 +9,9 @@
 namespace gaia {
 
 std::string GenerateOAuth2MintTokenConsentResult(
-    absl::optional<bool> approved,
-    const absl::optional<std::string>& encrypted_approval_data,
-    const absl::optional<std::string>& obfuscated_id,
+    std::optional<bool> approved,
+    const std::optional<std::string>& encrypted_approval_data,
+    const std::optional<std::string>& obfuscated_id,
     base::Base64UrlEncodePolicy encode_policy) {
   OAuth2MintTokenConsentResult consent_result;
   if (approved.has_value())

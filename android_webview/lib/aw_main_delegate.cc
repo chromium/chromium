@@ -88,7 +88,7 @@ AwMainDelegate::AwMainDelegate() = default;
 
 AwMainDelegate::~AwMainDelegate() = default;
 
-absl::optional<int> AwMainDelegate::BasicStartupComplete() {
+std::optional<int> AwMainDelegate::BasicStartupComplete() {
   TRACE_EVENT0("startup", "AwMainDelegate::BasicStartupComplete");
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
 
@@ -313,7 +313,7 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
   // renderer processes. See also: switches::kInProcessGPU above.
   content::ForceInProcessNetworkService();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AwMainDelegate::PreSandboxStartup() {
@@ -394,7 +394,7 @@ AwMainDelegate::CreateVariationsIdsProvider() {
       variations::VariationsIdsProvider::Mode::kDontSendSignedInVariations);
 }
 
-absl::optional<int> AwMainDelegate::PostEarlyInitialization(
+std::optional<int> AwMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
   const bool is_browser_process =
       absl::holds_alternative<InvokedInBrowserProcess>(invoked_in);
@@ -406,7 +406,7 @@ absl::optional<int> AwMainDelegate::PostEarlyInitialization(
 
   InitializeMemorySystem(is_browser_process);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 content::ContentClient* AwMainDelegate::CreateContentClient() {

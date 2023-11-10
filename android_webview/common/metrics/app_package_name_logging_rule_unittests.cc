@@ -4,10 +4,10 @@
 
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
 
+#include <optional>
 #include "base/time/time.h"
 #include "base/version.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace android_webview {
 
@@ -32,7 +32,7 @@ TEST_F(AppPackageNameLoggingRuleTest, TestFromDictionary) {
   base::Time one_day_from_now = base::Time::Now() + base::Days(1);
   {
     AppPackageNameLoggingRule expected_record(version, one_day_from_now);
-    absl::optional<AppPackageNameLoggingRule> record =
+    std::optional<AppPackageNameLoggingRule> record =
         AppPackageNameLoggingRule::FromDictionary(
             expected_record.ToDictionary());
     ASSERT_TRUE(record.has_value());
@@ -41,7 +41,7 @@ TEST_F(AppPackageNameLoggingRuleTest, TestFromDictionary) {
 
   {
     AppPackageNameLoggingRule expected_record(version, base::Time::Min());
-    absl::optional<AppPackageNameLoggingRule> record =
+    std::optional<AppPackageNameLoggingRule> record =
         AppPackageNameLoggingRule::FromDictionary(
             expected_record.ToDictionary());
     ASSERT_TRUE(record.has_value());
@@ -49,7 +49,7 @@ TEST_F(AppPackageNameLoggingRuleTest, TestFromDictionary) {
   }
 
   {
-    absl::optional<AppPackageNameLoggingRule> record =
+    std::optional<AppPackageNameLoggingRule> record =
         AppPackageNameLoggingRule::FromDictionary(base::Value::Dict());
     EXPECT_FALSE(record.has_value());
   }

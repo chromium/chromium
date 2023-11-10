@@ -127,7 +127,7 @@ class GaiaOAuthClient::Core
       std::string post_body /* may be empty if not needed*/,
       std::string authorization_header /* empty if not needed */,
       std::string http_method_override_header /* empty if not needed */,
-      absl::optional<net::RequestPriority> priority,
+      std::optional<net::RequestPriority> priority,
       int max_retries,
       GaiaOAuthClient::Delegate* delegate,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
@@ -147,7 +147,7 @@ class GaiaOAuthClient::Core
   net::BackoffEntry backoff_entry_;
 
   int num_retries_;
-  absl::optional<net::RequestPriority> priority_;
+  std::optional<net::RequestPriority> priority_;
   int max_retries_;
   GURL url_;
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
@@ -210,7 +210,7 @@ void GaiaOAuthClient::Core::GetTokensFromAuthCode(
               GURL(GaiaUrls::GetInstance()->oauth2_token_url()), post_body,
               /* authorization_header = */ std::string(),
               /* http_method_override_header = */ std::string(),
-              /* priority = */ absl::nullopt, max_retries, delegate,
+              /* priority = */ std::nullopt, max_retries, delegate,
               traffic_annotation);
 }
 
@@ -265,7 +265,7 @@ void GaiaOAuthClient::Core::RefreshToken(
               post_body,
               /* authorization_header = */ std::string(),
               /* http_method_override_header = */ std::string(),
-              /* priority = */ absl::nullopt, max_retries, delegate,
+              /* priority = */ std::nullopt, max_retries, delegate,
               traffic_annotation);
 }
 
@@ -323,7 +323,7 @@ void GaiaOAuthClient::Core::GetUserInfoImpl(
   MakeRequest(type, GaiaUrls::GetInstance()->oauth_user_info_url(),
               /* post_body = */ std::string(), auth,
               /* http_method_override_header = */ std::string(),
-              /* priority = */ absl::nullopt, max_retries, delegate,
+              /* priority = */ std::nullopt, max_retries, delegate,
               traffic_annotation);
 }
 
@@ -370,7 +370,7 @@ void GaiaOAuthClient::Core::GetTokenInfo(const std::string& qualifier,
               GURL(GaiaUrls::GetInstance()->oauth2_token_info_url()), post_body,
               /* authorization_header = */ std::string(),
               /* http_method_override_header = */ std::string(),
-              /* priority = */ absl::nullopt, max_retries, delegate,
+              /* priority = */ std::nullopt, max_retries, delegate,
               traffic_annotation);
 }
 
@@ -436,7 +436,7 @@ void GaiaOAuthClient::Core::MakeRequest(
     std::string post_body,
     std::string authorization_header,
     std::string http_method_override_header,
-    absl::optional<net::RequestPriority> priority,
+    std::optional<net::RequestPriority> priority,
     int max_retries,
     GaiaOAuthClient::Delegate* delegate,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
@@ -541,7 +541,7 @@ void GaiaOAuthClient::Core::HandleResponse(std::unique_ptr<std::string> body,
     return;
   }
 
-  absl::optional<base::Value> message_value;
+  std::optional<base::Value> message_value;
   if (response_code == net::HTTP_OK && body) {
     std::string data = std::move(*body);
     message_value = base::JSONReader::Read(data);
@@ -605,7 +605,7 @@ void GaiaOAuthClient::Core::HandleResponse(std::unique_ptr<std::string> body,
         refresh_token = *dict_value;
       }
       int expires_in_seconds = 0;
-      if (const absl::optional<int> dict_value =
+      if (const std::optional<int> dict_value =
               response_dict.FindInt(kExpiresInValue)) {
         expires_in_seconds = *dict_value;
       }

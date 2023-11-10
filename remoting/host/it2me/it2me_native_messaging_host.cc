@@ -206,7 +206,7 @@ void It2MeNativeMessagingHost::OnMessage(const std::string& message) {
     return;
   }
 
-  absl::optional<base::Value::Dict> response =
+  std::optional<base::Value::Dict> response =
       CreateNativeMessageResponse(request);
   if (!response.has_value()) {
     SendErrorAndExit(base::Value::Dict(), ErrorCode::INCOMPATIBLE_PROTOCOL);
@@ -609,7 +609,7 @@ void It2MeNativeMessagingHost::OnPolicyUpdate(base::Value::Dict policies) {
   }
 }
 
-absl::optional<bool>
+std::optional<bool>
 It2MeNativeMessagingHost::GetAllowElevatedHostPolicyValue() {
   DCHECK(policy_received_);
 #if BUILDFLAG(IS_WIN)
@@ -624,7 +624,7 @@ It2MeNativeMessagingHost::GetAllowElevatedHostPolicyValue() {
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void It2MeNativeMessagingHost::OnPolicyError() {

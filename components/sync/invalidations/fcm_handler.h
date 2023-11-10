@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_INVALIDATIONS_FCM_HANDLER_H_
 #define COMPONENTS_SYNC_INVALIDATIONS_FCM_HANDLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/circular_deque.h"
@@ -78,7 +79,7 @@ class FCMHandler : public gcm::GCMAppHandler {
   void RemoveTokenObserver(FCMRegistrationTokenObserver* observer);
 
   // Used to get an obtained FCM token. Returns null if it doesn't have a token.
-  const absl::optional<std::string>& GetFCMRegistrationToken() const;
+  const std::optional<std::string>& GetFCMRegistrationToken() const;
 
   // GCMAppHandler overrides.
   void ShutdownHandler() override;
@@ -111,7 +112,7 @@ class FCMHandler : public gcm::GCMAppHandler {
 
   // Contains an FCM registration token. Token is null if the experiment is off
   // or we don't have a valid token yet and contains valid token otherwise.
-  absl::optional<std::string> fcm_registration_token_;
+  std::optional<std::string> fcm_registration_token_;
 
   base::OneShotTimer token_validation_timer_;
 

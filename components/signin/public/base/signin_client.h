@@ -6,6 +6,7 @@
 #define COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_CLIENT_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
@@ -23,7 +24,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/account_manager_core/account.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 class PrefService;
@@ -126,12 +126,12 @@ class SigninClient : public KeyedService {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Returns an account used to sign into Chrome OS session if available.
-  virtual absl::optional<account_manager::Account>
+  virtual std::optional<account_manager::Account>
   GetInitialPrimaryAccount() = 0;
 
   // Returns whether account used to sign into Chrome OS is a child account.
   // Returns nullopt for secondary / non-main profiles in LaCrOS.
-  virtual absl::optional<bool> IsInitialPrimaryAccountChild() const = 0;
+  virtual std::optional<bool> IsInitialPrimaryAccountChild() const = 0;
 
   // Remove account.
   virtual void RemoveAccount(
@@ -153,7 +153,7 @@ class SigninClient : public KeyedService {
           event_source) = 0;
 
  protected:
-  absl::optional<SignoutDecision> is_clear_primary_account_allowed_for_testing_;
+  std::optional<SignoutDecision> is_clear_primary_account_allowed_for_testing_;
 };
 
 namespace base {

@@ -345,7 +345,7 @@ HeadlessContentBrowserClient::GetGeolocationManager() {
 
 #if BUILDFLAG(IS_WIN)
 void HeadlessContentBrowserClient::SessionEnding(
-    absl::optional<DWORD> control_type) {
+    std::optional<DWORD> control_type) {
   DCHECK_LT(control_type.value_or(0), 0x7fu);
   browser_->ShutdownWithExitCode(control_type.value_or(0) + 0x80u);
 }

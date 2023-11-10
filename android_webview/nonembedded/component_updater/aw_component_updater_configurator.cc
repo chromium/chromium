@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "android_webview/nonembedded/net/network_impl.h"
 #include "base/android/path_utils.h"
 #include "base/files/file_path.h"
@@ -29,7 +30,6 @@
 #include "components/version_info/android/channel_getter.h"
 #include "components/version_info/version_info.h"
 #include "components/version_info/version_info_values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace android_webview {
 
@@ -184,9 +184,9 @@ AwComponentUpdaterConfigurator::GetProtocolHandlerFactory() const {
   return configurator_impl_.GetProtocolHandlerFactory();
 }
 
-absl::optional<bool>
-AwComponentUpdaterConfigurator::IsMachineExternallyManaged() const {
-  return absl::nullopt;
+std::optional<bool> AwComponentUpdaterConfigurator::IsMachineExternallyManaged()
+    const {
+  return std::nullopt;
 }
 
 update_client::UpdaterStateProvider
@@ -201,13 +201,13 @@ scoped_refptr<update_client::Configurator> MakeAwComponentUpdaterConfigurator(
                                                               pref_service);
 }
 
-absl::optional<base::FilePath> AwComponentUpdaterConfigurator::GetCrxCachePath()
+std::optional<base::FilePath> AwComponentUpdaterConfigurator::GetCrxCachePath()
     const {
   base::FilePath path;
   return base::android::GetCacheDirectory(&path)
-             ? absl::optional<base::FilePath>(
+             ? std::optional<base::FilePath>(
                    path.AppendASCII(("webview_crx_cache")))
-             : absl::nullopt;
+             : std::nullopt;
 }
 
 }  // namespace android_webview

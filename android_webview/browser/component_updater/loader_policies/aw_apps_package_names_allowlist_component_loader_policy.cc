@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
@@ -34,7 +35,6 @@
 #include "base/version.h"
 #include "components/component_updater/android/component_loader_policy.h"
 #include "components/optimization_guide/core/bloom_filter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace android_webview {
 
@@ -54,7 +54,7 @@ using AllowlistPraseStatus =
 
 struct AllowListLookupResult {
   AllowlistPraseStatus parse_status;
-  absl::optional<AppPackageNameLoggingRule> record_rule;
+  std::optional<AppPackageNameLoggingRule> record_rule;
 };
 
 void RecordAndReportResult(AllowListLookupCallback lookup_callback,
@@ -118,7 +118,7 @@ AllowListLookupResult GetAppPackageNameLoggingRule(
 }
 
 void SetAppPackageNameLoggingRule(
-    absl::optional<AppPackageNameLoggingRule> record) {
+    std::optional<AppPackageNameLoggingRule> record) {
   auto* metrics_service_client = AwMetricsServiceClient::GetInstance();
   DCHECK(metrics_service_client);
   metrics_service_client->SetAppPackageNameLoggingRule(record);
@@ -142,7 +142,7 @@ void SetAppPackageNameLoggingRule(
 
 bool ShouldThrottleAppPackageNamesAllowlistComponent(
     base::Time last_update,
-    absl::optional<AppPackageNameLoggingRule> cached_record) {
+    std::optional<AppPackageNameLoggingRule> cached_record) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebViewDisablePackageAllowlistThrottling) ||
       last_update.is_null()) {
@@ -166,7 +166,7 @@ bool ShouldThrottleAppPackageNamesAllowlistComponent(
 AwAppsPackageNamesAllowlistComponentLoaderPolicy::
     AwAppsPackageNamesAllowlistComponentLoaderPolicy(
         std::string app_package_name,
-        absl::optional<AppPackageNameLoggingRule> cached_record,
+        std::optional<AppPackageNameLoggingRule> cached_record,
         AllowListLookupCallback lookup_callback)
     : app_package_name_(std::move(app_package_name)),
       cached_record_(cached_record),
@@ -204,11 +204,11 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
 
   // Have to use double because base::DictionaryValue doesn't support int64
   // values.
-  absl::optional<double> expiry_date_ms =
+  std::optional<double> expiry_date_ms =
       manifest.FindDoubleByDottedPath(kExpiryDateKey);
-  absl::optional<int> num_hash =
+  std::optional<int> num_hash =
       manifest.FindIntByDottedPath(kBloomFilterNumHashKey);
-  absl::optional<int> num_bits =
+  std::optional<int> num_bits =
       manifest.FindIntByDottedPath(kBloomFilterNumBitsKey);
   // Being conservative and consider the allowlist expired when a valid expiry
   // date is absent.
@@ -255,7 +255,7 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoadFailed(
   DCHECK(lookup_callback_);
   // TODO(crbug.com/1216200): Record the error in a histogram in the
   // ComponentLoader for each component.
-  std::move(lookup_callback_).Run(absl::optional<AppPackageNameLoggingRule>());
+  std::move(lookup_callback_).Run(std::optional<AppPackageNameLoggingRule>());
 }
 
 void AwAppsPackageNamesAllowlistComponentLoaderPolicy::GetHash(
@@ -279,7 +279,7 @@ void LoadPackageNamesAllowlistComponent(
               kWebViewAppsPackageNamesServerSideAllowlist)) {
     return;
   }
-  absl::optional<AppPackageNameLoggingRule> cached_record =
+  std::optional<AppPackageNameLoggingRule> cached_record =
       metrics_service_client->GetCachedAppPackageNameLoggingRule();
   base::Time last_update =
       metrics_service_client->GetAppPackageNameLoggingRuleLastUpdateTime();

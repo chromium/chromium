@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_STREAMING_URL_LOADER_COMMON_TYPES_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_STREAMING_URL_LOADER_COMMON_TYPES_H_
 
+#include <optional>
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
@@ -76,7 +77,7 @@ using PrefetchRequestHandler = base::OnceCallback<void(
 
 // This callback is used by the owner to determine if the prefetch is valid
 // based on |head|. If the prefetch should be servable based on |head|, then
-// the callback should return `absl::nullopt`. Otherwise it should return a
+// the callback should return `std::nullopt`. Otherwise it should return a
 // failure reason.
 enum class PrefetchErrorOnResponseReceived {
   kPrefetchWasDecoy,
@@ -86,7 +87,7 @@ enum class PrefetchErrorOnResponseReceived {
   kFailedMIMENotSupported
 };
 using OnPrefetchResponseStartedCallback =
-    base::OnceCallback<absl::optional<PrefetchErrorOnResponseReceived>(
+    base::OnceCallback<std::optional<PrefetchErrorOnResponseReceived>(
         network::mojom::URLResponseHead* head)>;
 
 using OnPrefetchResponseCompletedCallback = base::OnceCallback<void(

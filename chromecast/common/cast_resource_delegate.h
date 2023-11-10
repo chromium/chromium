@@ -48,7 +48,7 @@ class CastResourceDelegate : public ui::ResourceBundle::Delegate {
   base::RefCountedStaticMemory* LoadDataResourceBytes(
       int resource_id,
       ui::ResourceScaleFactor scale_factor) override;
-  absl::optional<std::string> LoadDataResourceString(int resource_id) override;
+  std::optional<std::string> LoadDataResourceString(int resource_id) override;
   bool GetRawDataResource(int resource_id,
                           ui::ResourceScaleFactor scale_factor,
                           base::StringPiece* value) const override;

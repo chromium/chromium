@@ -158,7 +158,7 @@ void RemotingRegisterSupportHostRequest::StartRequest(
     SignalStrategy* signal_strategy,
     scoped_refptr<RsaKeyPair> key_pair,
     const std::string& authorized_helper,
-    absl::optional<ChromeOsEnterpriseParams> params,
+    std::optional<ChromeOsEnterpriseParams> params,
     RegisterCallback callback) {
   DCHECK_EQ(State::NOT_STARTED, state_);
   DCHECK(signal_strategy);

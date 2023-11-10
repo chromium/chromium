@@ -144,7 +144,7 @@ class FuchsiaFrameAccessibilityTest : public WebEngineBrowserTest {
 
  protected:
   // TODO(crbug.com/1038786): Maybe move to WebEngineBrowserTest.
-  absl::optional<base::TestComponentContextForProcess> test_context_;
+  std::optional<base::TestComponentContextForProcess> test_context_;
 
   FrameForTest frame_;
   FrameImpl* frame_impl_;
@@ -152,7 +152,7 @@ class FuchsiaFrameAccessibilityTest : public WebEngineBrowserTest {
 
   // Binding to the fake semantics manager.
   // Optional so that it can be instantiated outside the constructor.
-  absl::optional<base::ScopedServiceBinding<
+  std::optional<base::ScopedServiceBinding<
       fuchsia::accessibility::semantics::SemanticsManager>>
       semantics_manager_binding_;
 };

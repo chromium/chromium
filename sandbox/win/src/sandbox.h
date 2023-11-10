@@ -23,12 +23,12 @@
 #include <memory>
 #include <vector>
 
+#include <optional>
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "base/win/windows_types.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/sandbox_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // sandbox: Google User-Land Application Sandbox
 namespace sandbox {
@@ -194,7 +194,7 @@ class [[clang::lto_visibility_public]] TargetServices {
   // If no data was provided the span will have a size of zero. This method can
   // be called at any time after Init(), but it is intended to be used sparingly
   // prior to calling LowerToken().
-  virtual absl::optional<base::span<const uint8_t>> GetDelegateData() = 0;
+  virtual std::optional<base::span<const uint8_t>> GetDelegateData() = 0;
 
   // Discards the impersonation token and uses the lower token, call before
   // processing any untrusted data or running third-party code. If this call

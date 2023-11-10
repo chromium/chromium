@@ -7,8 +7,8 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
+#include <optional>
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Utility functions to create a fuchsia.web.UrlRequestRewrite in one line.
 
@@ -17,7 +17,7 @@ fuchsia::web::UrlRequestRewrite CreateRewriteAddHeaders(
     base::StringPiece header_value);
 
 fuchsia::web::UrlRequestRewrite CreateRewriteRemoveHeader(
-    absl::optional<base::StringPiece> query_pattern,
+    std::optional<base::StringPiece> query_pattern,
     base::StringPiece header_name);
 
 fuchsia::web::UrlRequestRewrite CreateRewriteSubstituteQueryPattern(

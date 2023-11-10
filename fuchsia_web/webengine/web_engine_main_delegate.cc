@@ -73,7 +73,7 @@ WebEngineMainDelegate::WebEngineMainDelegate() {
 
 WebEngineMainDelegate::~WebEngineMainDelegate() = default;
 
-absl::optional<int> WebEngineMainDelegate::BasicStartupComplete() {
+std::optional<int> WebEngineMainDelegate::BasicStartupComplete() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   if (!InitLoggingFromCommandLine(*command_line)) {
@@ -94,7 +94,7 @@ absl::optional<int> WebEngineMainDelegate::BasicStartupComplete() {
           switches::kCorsExemptHeaders),
       ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void WebEngineMainDelegate::PreSandboxStartup() {

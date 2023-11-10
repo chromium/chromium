@@ -40,15 +40,15 @@ MockPostProcessor::MockPostProcessor(MockPostProcessorFactory* factory,
       const base::Value::Dict* processor_config_dict =
           elem.GetDict().FindDict("config");
       CHECK(processor_config_dict);
-      absl::optional<int> delay = processor_config_dict->FindInt("delay");
+      std::optional<int> delay = processor_config_dict->FindInt("delay");
       CHECK(delay.has_value());
       rendering_delay_frames_ += *delay;
-      absl::optional<bool> ringing = processor_config_dict->FindBool("ringing");
+      std::optional<bool> ringing = processor_config_dict->FindBool("ringing");
       if (ringing.has_value()) {
         ringing_ = *ringing;
       }
 
-      absl::optional<int> output_ch =
+      std::optional<int> output_ch =
           processor_config_dict->FindInt("output_channels");
       if (output_ch.has_value()) {
         num_output_channels_ = *output_ch;

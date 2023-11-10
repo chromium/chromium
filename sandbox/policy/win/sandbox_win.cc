@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -62,7 +63,6 @@
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/sandbox.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 namespace policy {
@@ -369,7 +369,7 @@ void CheckDuplicateHandle(HANDLE handle) {
   std::wstring_view type_name(type_info->TypeName.Buffer,
                               type_info->TypeName.Length / sizeof(wchar_t));
 
-  absl::optional<ACCESS_MASK> granted_access =
+  std::optional<ACCESS_MASK> granted_access =
       base::win::GetGrantedAccess(handle);
   CHECK(granted_access.has_value());
 
@@ -785,7 +785,7 @@ ResultCode SandboxWin::SetJobLevel(Sandbox sandbox_type,
   if (ret != SBOX_ALL_OK)
     return ret;
 
-  absl::optional<size_t> memory_limit = GetJobMemoryLimit(sandbox_type);
+  std::optional<size_t> memory_limit = GetJobMemoryLimit(sandbox_type);
   if (memory_limit) {
     config->SetJobMemoryLimit(*memory_limit);
   }
@@ -1136,7 +1136,7 @@ std::string SandboxWin::GetSandboxTagForDelegate(
 }
 
 // static
-absl::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
+std::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
   // Trigger feature list initialization here to ensure no population bias in
   // the experimental and control groups.
   [[maybe_unused]] const bool high_renderer_limits =
@@ -1171,7 +1171,7 @@ absl::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
   }
   return memory_limit;
 #else
-  return absl::nullopt;
+  return std::nullopt;
 #endif
 }
 

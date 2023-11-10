@@ -349,7 +349,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     uint32_t visibility_callback_call_count;
 
 #if BUILDFLAG(ENABLE_VULKAN)
-    absl::optional<VulkanInfo> vulkan_info;
+    std::optional<VulkanInfo> vulkan_info;
 #endif
   };
 
