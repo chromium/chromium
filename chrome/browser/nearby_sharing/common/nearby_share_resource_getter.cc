@@ -23,6 +23,13 @@ NearbyShareResourceGetter* NearbyShareResourceGetter::GetInstance() {
   return instance.get();
 }
 
+std::u16string NearbyShareResourceGetter::GetFeatureName() {
+  // Caller ensures feature flag is enabled.
+  CHECK(features::IsNameEnabled());
+
+  return GetNearbyShareFeatureName();
+}
+
 std::u16string NearbyShareResourceGetter::GetStringWithFeatureName(
     int message_id) {
   // Caller ensures feature flag is enabled.

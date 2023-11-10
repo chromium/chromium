@@ -7,6 +7,9 @@
 #include <memory>
 
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "base/i18n/message_formatter.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -42,10 +45,22 @@ LowDiskSpaceDialogView::LowDiskSpaceDialogView(views::View* anchor_view,
       },
       base::Unretained(this)));
 
-  AddDialogMessage(base::ReplaceStringPlaceholders(
-      l10n_util::GetPluralStringFUTF16(
-          IDS_ASH_ARC_NEARBY_SHARE_LOW_DISK_SPACE_DIALOG_MESSAGE, file_count),
-      ui::FormatBytes(required_disk_space), /*offset=*/nullptr));
+  std::u16string low_disk_space_dialog_message;
+  if (features::IsNameEnabled()) {
+    low_disk_space_dialog_message =
+        base::i18n::MessageFormatter::FormatWithNumberedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_ASH_ARC_NEARBY_SHARE_LOW_DISK_SPACE_DIALOG_MESSAGE_PH),
+            file_count,
+            NearbyShareResourceGetter::GetInstance()->GetFeatureName(),
+            ui::FormatBytes(required_disk_space));
+  } else {
+    low_disk_space_dialog_message = base::ReplaceStringPlaceholders(
+        l10n_util::GetPluralStringFUTF16(
+            IDS_ASH_ARC_NEARBY_SHARE_LOW_DISK_SPACE_DIALOG_MESSAGE, file_count),
+        ui::FormatBytes(required_disk_space), /*offset=*/nullptr);
+  }
+  AddDialogMessage(low_disk_space_dialog_message);
 }
 
 LowDiskSpaceDialogView::~LowDiskSpaceDialogView() = default;

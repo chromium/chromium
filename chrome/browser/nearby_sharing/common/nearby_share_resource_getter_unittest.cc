@@ -40,3 +40,20 @@ TEST_F(NearbyShareResourceGetterTest,
             u"Nearby Share");
 }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(NearbyShareResourceGetterTest, GetFeatureNameOfficialBuild) {
+  base::test::ScopedFeatureList feature_list{features::kIsNameEnabled};
+
+  // Just enforce non empty string for official branded builds..
+  EXPECT_NE(NearbyShareResourceGetter::GetInstance()->GetFeatureName(), u"");
+}
+#else   // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(NearbyShareResourceGetterTest, GetFeatureNameWorksUnofficialBuild) {
+  base::test::ScopedFeatureList feature_list{features::kIsNameEnabled};
+
+  // Expect the feature name to be inserted into the string.
+  EXPECT_EQ(NearbyShareResourceGetter::GetInstance()->GetFeatureName(),
+            u"Nearby Share");
+}
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
