@@ -6,6 +6,7 @@
 chrome_stdlib_sql_files = [
   "chrome_scrolls.sql",
   "cpu_powerups.sql",
+  "event_latency_description.sql",
   "histograms.sql",
   "interactions.sql",
   "metadata.sql",
@@ -13,6 +14,8 @@ chrome_stdlib_sql_files = [
   "speedometer.sql",
   "tasks.sql",
   "vsync_intervals.sql",
+  "scroll_jank/scroll_jank_cause_map.sql",
+  "scroll_jank/scroll_jank_cause_utils.sql",
   "scroll_jank/scroll_jank_intervals.sql",
   "scroll_jank/scroll_jank_v3_cause.sql",
   "scroll_jank/scroll_jank_v3.sql",

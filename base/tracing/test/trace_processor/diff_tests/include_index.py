@@ -12,7 +12,7 @@ from chrome.tests_chrome_interactions import ChromeInteractions
 
 def fetch_all_diff_tests(index_path: str) -> List['testing.TestCase']:
   return [
-      *ChromeScrollJankStdlib(index_path, 'chrome', 'ChromeScrollJank').fetch(),
+      *ChromeScrollJankStdlib(index_path, 'chrome', 'ChromeScrollJankStdlib').fetch(),
       *ChromeStdlib(index_path, 'chrome', 'Chrome').fetch(),
       *ChromeInteractions(index_path, 'chrome', 'ChromeInteractions').fetch(),
       ]
