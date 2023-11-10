@@ -157,7 +157,7 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
 
   // Creates a worker, adds it to the thread group, schedules its start and
   // returns it. Cannot be called before Start().
-  scoped_refptr<WorkerThread> CreateAndRegisterWorkerLockRequired(
+  scoped_refptr<WorkerThreadWaitableEvent> CreateAndRegisterWorkerLockRequired(
       ScopedCommandsExecutor* executor) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Returns the number of workers that are awake (i.e. not on the idle set).
@@ -204,7 +204,7 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   // or when a new task is added to |priority_queue_|.
   void UpdateMinAllowedPriorityLockRequired() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  bool IsOnIdleSetLockRequired(WorkerThread* worker) const
+  bool IsOnIdleSetLockRequired(WorkerThreadWaitableEvent* worker) const
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Increments/decrements the number of tasks of |priority| that are currently
@@ -275,7 +275,8 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   const ThreadType thread_type_hint_;
 
   // All workers owned by this thread group.
-  std::vector<scoped_refptr<WorkerThread>> workers_ GUARDED_BY(lock_);
+  std::vector<scoped_refptr<WorkerThreadWaitableEvent>> workers_
+      GUARDED_BY(lock_);
   size_t worker_sequence_num_ GUARDED_BY(lock_) = 0;
 
   bool shutdown_started_ GUARDED_BY(lock_) = false;

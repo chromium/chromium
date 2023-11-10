@@ -5,8 +5,6 @@
 #ifndef BASE_TASK_THREAD_POOL_WORKER_THREAD_H_
 #define BASE_TASK_THREAD_POOL_WORKER_THREAD_H_
 
-#include <memory>
-
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
@@ -15,6 +13,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/thread_pool/task_source.h"
+#include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/tracked_ref.h"
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
@@ -44,7 +43,7 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
  public:
   // Labels this WorkerThread's association. This doesn't affect any logic
   // but will add a stack frame labeling this thread for ease of stack trace
-  // identification.
+  // identification
   enum class ThreadLabel {
     POOLED,
     SHARED,
@@ -71,21 +70,29 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
     // Called by |worker|'s thread to get a TaskSource from which to run a Task.
     virtual RegisteredTaskSource GetWork(WorkerThread* worker) = 0;
 
-    // Called by the WorkerThread after it ran a Task. If the Task's
-    // TaskSource should be reenqueued, it is passed to |task_source|.
-    // Otherwise, |task_source| is nullptr.
-    virtual void DidProcessTask(RegisteredTaskSource task_source) = 0;
+    // // Called by the WorkerThread after it ran a Task. Must only be passed a
+    // // task when ShouldExit() returns true, meaning that this worker should
+    // quit
+    // // immediately and relinquish any task sources it owns. If a task source
+    // // just run by this WorkerThread contains more work after
+    // // RunAndPopNextTask() and the worker is running as usual,
+    // // SwapProcessedTask() should be used instead.
+    // virtual void DidProcessTask(RegisteredTaskSource task_source) = 0;
+
+    // Called by the worker thread to swap the task source that has just run for
+    // another one, if available. |task_source| must not be null. The worker can
+    // then run the task returned as if it was acquired via GetWork().
+    virtual RegisteredTaskSource SwapProcessedTask(
+        RegisteredTaskSource task_source,
+        WorkerThread* worker) = 0;
 
     // Called to determine how long to sleep before the next call to GetWork().
     // GetWork() may be called before this timeout expires if the worker's
     // WakeUp() method is called.
     virtual TimeDelta GetSleepTimeout() = 0;
 
-    // Called by the WorkerThread's thread to wait for work. Override this
-    // method if the thread in question needs special handling to go to sleep.
-    // |wake_up_event| is a manually resettable event and is signaled on
-    // WorkerThread::WakeUp()
-    virtual void WaitForWork(WaitableEvent* wake_up_event);
+    // Called by the WorkerThread's thread to wait for work.
+    virtual void WaitForWork();
 
     // Called by |worker|'s thread right before the main function exits. The
     // Delegate is free to release any associated resources in this call. It is
@@ -98,20 +105,35 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
     virtual void RecordUnnecessaryWakeup() {}
 
     static constexpr TimeDelta kPurgeThreadCacheIdleDelay = Seconds(1);
+
+   protected:
+    friend WorkerThread;
+    static bool IsDelayFirstWorkerSleepEnabled();
+
+    // Called in WaitForWork() to hide the worker's synchronization
+    // mechanism. Returns |true| if signaled, and |false| if the call timed out.
+    virtual bool TimedWait(TimeDelta timeout) = 0;
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    PA_CONFIG(THREAD_CACHE_SUPPORTED)
+    // Returns the desired sleep time before the worker has to wake up to purge
+    // the cache thread or reclaim itself. |min_sleep_time| contains the minimal
+    // acceptable amount of time to sleep.
+    static TimeDelta GetSleepTimeBeforePurge(TimeDelta min_sleep_time);
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // PA_CONFIG(THREAD_CACHE_SUPPORTED)
   };
 
   // Creates a WorkerThread that runs Tasks from TaskSources returned by
-  // |delegate|. No actual thread will be created for this WorkerThread
-  // before Start() is called. |thread_type_hint| is the preferred thread type;
-  // the actual thread type depends on shutdown state and platform
-  // capabilities. |task_tracker| is used to handle shutdown behavior of Tasks.
-  // |sequence_num| is an index that helps identifying this WorkerThread.
-  // |predecessor_lock| is a lock that is allowed to be held when calling
-  // methods on this WorkerThread. |backward_compatibility| indicates
-  // whether backward compatibility is enabled. Either JoinForTesting() or
-  // Cleanup() must be called before releasing the last external reference.
+  // |delegate()|. No actual thread will be created for this WorkerThread before
+  // Start() is called. |thread_type_hint| is the preferred thread type; the
+  // actual thread type depends on shutdown state and platform
+  // capabilities. |task_tracker| is used to handle shutdown behavior of
+  // Tasks. |sequence_num| is an index that helps identifying this
+  // WorkerThread. |predecessor_lock| is a lock that is allowed to be held when
+  // calling methods on this WorkerThread.  Either JoinForTesting() or Cleanup()
+  // must be called before releasing the last external reference.
   WorkerThread(ThreadType thread_type_hint,
-               std::unique_ptr<Delegate> delegate,
                TrackedRef<TaskTracker> task_tracker,
                size_t sequence_num,
                const CheckedLock* predecessor_lock = nullptr);
@@ -130,14 +152,7 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   bool Start(scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner_,
              WorkerThreadObserver* worker_thread_observer = nullptr);
 
-  // Wakes up this WorkerThread if it wasn't already awake. After this is
-  // called, this WorkerThread will run Tasks from TaskSources returned by
-  // the GetWork() method of its delegate until it returns nullptr. No-op if
-  // Start() wasn't called. DCHECKs if called after Start() has failed or after
-  // Cleanup() has been called.
-  void WakeUp();
 
-  WorkerThread::Delegate* delegate() { return delegate_.get(); }
 
   // Joins this WorkerThread. If a Task is already running, it will be
   // allowed to complete its execution. This can only be called once.
@@ -145,7 +160,7 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   // Note: A thread that detaches before JoinForTesting() is called may still be
   // running after JoinForTesting() returns. However, it can't run tasks after
   // JoinForTesting() returns.
-  void JoinForTesting();
+  virtual void JoinForTesting() = 0;
 
   // Returns true if the worker is alive.
   bool ThreadAliveForTesting() const;
@@ -159,7 +174,9 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   //   scoped_refptr<WorkerThread> worker_ = /* Existing Worker */
   //   worker_->Cleanup();
   //   worker_ = nullptr;
-  void Cleanup();
+  virtual void Cleanup() = 0;
+
+  virtual Delegate* delegate() = 0;
 
   // Possibly updates the thread type to the appropriate type based on the
   // thread type hint, current shutdown state, and platform capabilities.
@@ -176,7 +193,7 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
   size_t sequence_num() const { return sequence_num_; }
 
- private:
+ protected:
   friend class RefCountedThreadSafe<WorkerThread>;
   class Thread;
 
@@ -231,14 +248,9 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   // stand as a required idle thread).
   TimeTicks last_used_time_ GUARDED_BY(thread_lock_);
 
-  // Event to wake up the thread managed by |this|.
-  WaitableEvent wake_up_event_{WaitableEvent::ResetPolicy::AUTOMATIC,
-                               WaitableEvent::InitialState::NOT_SIGNALED};
-
   // Whether the thread should exit. Set by Cleanup().
   AtomicFlag should_exit_;
 
-  const std::unique_ptr<Delegate> delegate_;
   const TrackedRef<TaskTracker> task_tracker_;
 
   // Optional observer notified when a worker enters and exits its main

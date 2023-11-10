@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/task/thread_pool/worker_thread.h"
+#include "base/task/thread_pool/worker_thread_waitable_event.h"
 
 #include <stddef.h>
 
@@ -58,14 +58,14 @@ namespace {
 
 const size_t kNumSequencesPerTest = 150;
 
-class WorkerThreadDefaultDelegate : public WorkerThread::Delegate {
+class WorkerThreadDefaultDelegate : public WorkerThreadWaitableEvent::Delegate {
  public:
   WorkerThreadDefaultDelegate() = default;
   WorkerThreadDefaultDelegate(const WorkerThreadDefaultDelegate&) = delete;
   WorkerThreadDefaultDelegate& operator=(const WorkerThreadDefaultDelegate&) =
       delete;
 
-  // WorkerThread::Delegate:
+  // WorkerThreadWaitableEvent::Delegate:
   WorkerThread::ThreadLabel GetThreadLabel() const override {
     return WorkerThread::ThreadLabel::DEDICATED;
   }
@@ -73,8 +73,10 @@ class WorkerThreadDefaultDelegate : public WorkerThread::Delegate {
   RegisteredTaskSource GetWork(WorkerThread* worker) override {
     return nullptr;
   }
-  void DidProcessTask(RegisteredTaskSource task_source) override {
-    ADD_FAILURE() << "Unexpected call to DidRunTask()";
+  RegisteredTaskSource SwapProcessedTask(RegisteredTaskSource task_source,
+                                         WorkerThread* worker) override {
+    ADD_FAILURE() << "Unexpected call to SwapProcessedTask()";
+    return nullptr;
   }
   TimeDelta GetSleepTimeout() override { return TimeDelta::Max(); }
 };
@@ -93,8 +95,8 @@ class ThreadPoolWorkerTest : public testing::TestWithParam<int> {
   }
 
   void SetUp() override {
-    worker_ = MakeRefCounted<WorkerThread>(
-        ThreadType::kDefault, std::make_unique<TestWorkerThreadDelegate>(this),
+    worker_ = MakeRefCounted<WorkerThreadWaitableEvent>(
+        ThreadType::kDefault, std::make_unique<TestWorkerThreadWaitableEventDelegate>(this),
         task_tracker_.GetTrackedRef(), 0);
     ASSERT_TRUE(worker_);
     worker_->Start(service_thread_.task_runner());
@@ -144,19 +146,19 @@ class ThreadPoolWorkerTest : public testing::TestWithParam<int> {
     return did_run_task_sources_;
   }
 
-  scoped_refptr<WorkerThread> worker_;
+  scoped_refptr<WorkerThreadWaitableEvent> worker_;
   Thread service_thread_ = Thread("ServiceThread");
 
  private:
-  class TestWorkerThreadDelegate : public WorkerThreadDefaultDelegate {
+  class TestWorkerThreadWaitableEventDelegate : public WorkerThreadDefaultDelegate {
    public:
-    explicit TestWorkerThreadDelegate(ThreadPoolWorkerTest* outer)
+    explicit TestWorkerThreadWaitableEventDelegate(ThreadPoolWorkerTest* outer)
         : outer_(outer) {}
-    TestWorkerThreadDelegate(const TestWorkerThreadDelegate&) = delete;
-    TestWorkerThreadDelegate& operator=(const TestWorkerThreadDelegate&) =
+    TestWorkerThreadWaitableEventDelegate(const TestWorkerThreadWaitableEventDelegate&) = delete;
+    TestWorkerThreadWaitableEventDelegate& operator=(const TestWorkerThreadWaitableEventDelegate&) =
         delete;
 
-    ~TestWorkerThreadDelegate() override {
+    ~TestWorkerThreadWaitableEventDelegate() override {
       EXPECT_FALSE(IsCallToDidProcessTaskExpected());
     }
 
@@ -223,11 +225,9 @@ class ThreadPoolWorkerTest : public testing::TestWithParam<int> {
       return registered_task_source;
     }
 
-    // This override verifies that |task_source| has the expected number of
-    // Tasks and adds it to |did_run_task_sources_|. Unlike a normal
-    // DidProcessTask() implementation, it doesn't add |task_source| to a queue
-    // for further execution.
-    void DidProcessTask(RegisteredTaskSource registered_task_source) override {
+    RegisteredTaskSource SwapProcessedTask(
+        RegisteredTaskSource registered_task_source,
+        WorkerThread* worker) override {
       {
         CheckedAutoLock auto_lock(expect_did_run_task_lock_);
         EXPECT_TRUE(expect_did_run_task_);
@@ -264,6 +264,7 @@ class ThreadPoolWorkerTest : public testing::TestWithParam<int> {
                     outer_->created_sequences_.size());
         }
       }
+      return GetWork(worker);
     }
 
    private:
@@ -501,7 +502,9 @@ class ControllableCleanupDelegate : public WorkerThreadDefaultDelegate {
     return registered_task_source;
   }
 
-  void DidProcessTask(RegisteredTaskSource) override {}
+  RegisteredTaskSource SwapProcessedTask(RegisteredTaskSource task_source, WorkerThread* worker) override {
+    return GetWork(worker);
+  }
 
   void OnMainExit(WorkerThread* worker) override {
     controls_->exited_.Signal();
@@ -561,7 +564,7 @@ TEST(ThreadPoolWorkerTest, WorkerCleanupFromGetWork) {
   controls->set_can_cleanup(true);
   EXPECT_CALL(*delegate, OnMainEntry(_));
   auto worker =
-      MakeRefCounted<WorkerThread>(ThreadType::kDefault, WrapUnique(delegate),
+      MakeRefCounted<WorkerThreadWaitableEvent>(ThreadType::kDefault, WrapUnique(delegate),
                                    task_tracker.GetTrackedRef(), 0);
   worker->Start(service_thread.task_runner());
   worker->WakeUp();
@@ -589,7 +592,7 @@ TEST(ThreadPoolWorkerTest, WorkerCleanupDuringWork) {
   controls->HaveWorkBlock();
 
   auto worker =
-      MakeRefCounted<WorkerThread>(ThreadType::kDefault, std::move(delegate),
+      MakeRefCounted<WorkerThreadWaitableEvent>(ThreadType::kDefault, std::move(delegate),
                                    task_tracker.GetTrackedRef(), 0);
   worker->Start(service_thread.task_runner());
   worker->WakeUp();
@@ -616,7 +619,7 @@ TEST(ThreadPoolWorkerTest, WorkerCleanupDuringWait) {
       delegate->controls();
 
   auto worker =
-      MakeRefCounted<WorkerThread>(ThreadType::kDefault, std::move(delegate),
+      MakeRefCounted<WorkerThreadWaitableEvent>(ThreadType::kDefault, std::move(delegate),
                                    task_tracker.GetTrackedRef(), 0);
   worker->Start(service_thread.task_runner());
   worker->WakeUp();
@@ -644,7 +647,7 @@ TEST(ThreadPoolWorkerTest, WorkerCleanupDuringShutdown) {
   controls->HaveWorkBlock();
 
   auto worker =
-      MakeRefCounted<WorkerThread>(ThreadType::kDefault, std::move(delegate),
+      MakeRefCounted<WorkerThreadWaitableEvent>(ThreadType::kDefault, std::move(delegate),
                                    task_tracker.GetTrackedRef(), 0);
   worker->Start(service_thread.task_runner());
   worker->WakeUp();
@@ -674,7 +677,7 @@ TEST(ThreadPoolWorkerTest, CleanupBeforeStart) {
   controls->set_expect_get_work(false);
 
   auto worker =
-      MakeRefCounted<WorkerThread>(ThreadType::kDefault, std::move(delegate),
+      MakeRefCounted<WorkerThreadWaitableEvent>(ThreadType::kDefault, std::move(delegate),
                                    task_tracker.GetTrackedRef(), 0);
 
   worker->Cleanup();
@@ -687,7 +690,7 @@ namespace {
 
 class CallJoinFromDifferentThread : public SimpleThread {
  public:
-  explicit CallJoinFromDifferentThread(WorkerThread* worker_to_join)
+  explicit CallJoinFromDifferentThread(WorkerThreadWaitableEvent* worker_to_join)
       : SimpleThread("WorkerThreadJoinThread"),
         worker_to_join_(worker_to_join) {}
 
@@ -704,7 +707,7 @@ class CallJoinFromDifferentThread : public SimpleThread {
   void WaitForRunToStart() { run_started_event_.Wait(); }
 
  private:
-  raw_ptr<WorkerThread> worker_to_join_;
+  raw_ptr<WorkerThreadWaitableEvent> worker_to_join_;
   TestWaitableEvent run_started_event_;
 };
 
@@ -728,7 +731,7 @@ TEST(ThreadPoolWorkerTest, WorkerCleanupDuringJoin) {
   controls->HaveWorkBlock();
 
   auto worker =
-      MakeRefCounted<WorkerThread>(ThreadType::kDefault, std::move(delegate),
+      MakeRefCounted<WorkerThreadWaitableEvent>(ThreadType::kDefault, std::move(delegate),
                                    task_tracker.GetTrackedRef(), 0);
   worker->Start(service_thread.task_runner());
   worker->WakeUp();
@@ -816,7 +819,7 @@ TEST(ThreadPoolWorkerTest, BumpThreadTypeOfAliveThreadDuringShutdown) {
   ExpectThreadTypeDelegate* delegate_raw = delegate.get();
   delegate_raw->SetExpectedThreadType(ThreadType::kBackground);
   auto worker =
-      MakeRefCounted<WorkerThread>(ThreadType::kBackground, std::move(delegate),
+      MakeRefCounted<WorkerThreadWaitableEvent>(ThreadType::kBackground, std::move(delegate),
                                    task_tracker.GetTrackedRef(), 0);
   worker->Start(service_thread.task_runner());
 
@@ -871,7 +874,7 @@ TEST(ThreadPoolWorkerTest, WorkerThreadObserver) {
   service_thread.StartWithOptions(std::move(service_thread_options));
   auto delegate = std::make_unique<VerifyCallsToObserverDelegate>(&observer);
   auto worker =
-      MakeRefCounted<WorkerThread>(ThreadType::kDefault, std::move(delegate),
+      MakeRefCounted<WorkerThreadWaitableEvent>(ThreadType::kDefault, std::move(delegate),
                                    task_tracker.GetTrackedRef(), 0);
   EXPECT_CALL(observer, OnWorkerThreadMainEntry());
   worker->Start(service_thread.task_runner(), &observer);
@@ -891,7 +894,7 @@ NOINLINE void FreeForTest(void* data) {
 
 class WorkerThreadThreadCacheDelegate : public WorkerThreadDefaultDelegate {
  public:
-  void WaitForWork(WaitableEvent* wake_up_event) override {
+  void WaitForWork() override {
     // Fill several buckets before going to sleep.
     for (size_t size = 8;
          size < partition_alloc::ThreadCache::kDefaultSizeThreshold; size++) {
@@ -905,7 +908,7 @@ class WorkerThreadThreadCacheDelegate : public WorkerThreadDefaultDelegate {
 
     size_t cached_memory_before =
         partition_alloc::ThreadCache::Get()->CachedMemory();
-    WorkerThreadDefaultDelegate::WaitForWork(wake_up_event);
+    WorkerThreadDefaultDelegate::WaitForWork();
     size_t cached_memory_after =
         partition_alloc::ThreadCache::Get()->CachedMemory();
 
@@ -944,7 +947,7 @@ TEST(ThreadPoolWorkerThreadCachePurgeTest, MAYBE_Purge) {
   auto delegate = std::make_unique<WorkerThreadThreadCacheDelegate>();
   auto* delegate_raw = delegate.get();
   auto worker =
-      MakeRefCounted<WorkerThread>(ThreadType::kDefault, std::move(delegate),
+      MakeRefCounted<WorkerThreadWaitableEvent>(ThreadType::kDefault, std::move(delegate),
                                    task_tracker.GetTrackedRef(), 0);
   // Wake up before the thread is started to make sure the first sleep is short.
   worker->WakeUp();

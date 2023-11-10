@@ -27,7 +27,7 @@
 #include "base/task/thread_pool/task.h"
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/task_tracker.h"
-#include "base/task/thread_pool/worker_thread.h"
+#include "base/task/thread_pool/worker_thread_waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -101,7 +101,7 @@ class AtomicThreadRefChecker {
   PlatformThreadRef thread_ref_;
 };
 
-class WorkerThreadDelegate : public WorkerThread::Delegate {
+class WorkerThreadDelegate : public WorkerThreadWaitableEvent::Delegate {
  public:
   WorkerThreadDelegate(const std::string& thread_name,
                        WorkerThread::ThreadLabel thread_label,
@@ -112,7 +112,7 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
   WorkerThreadDelegate(const WorkerThreadDelegate&) = delete;
   WorkerThreadDelegate& operator=(const WorkerThreadDelegate&) = delete;
 
-  void set_worker(WorkerThread* worker) {
+  void set_worker(WorkerThreadWaitableEvent* worker) {
     DCHECK(!worker_);
     worker_ = worker;
   }
@@ -141,15 +141,38 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
     return task_source;
   }
 
-  void DidProcessTask(RegisteredTaskSource task_source) override {
+  RegisteredTaskSource SwapProcessedTask(RegisteredTaskSource task_source,
+                                         WorkerThread* worker) override {
+    std::optional<RegisteredTaskSourceAndTransaction>
+        task_source_with_transaction;
     if (task_source) {
-      auto task_source_with_transaction =
+      task_source_with_transaction.emplace(
           RegisteredTaskSourceAndTransaction::FromTaskSource(
-              std::move(task_source));
-      task_source_with_transaction.task_source.WillReEnqueue(
-          TimeTicks::Now(), &task_source_with_transaction.transaction);
-      EnqueueTaskSource(std::move(task_source_with_transaction));
+              std::move(task_source)));
+      task_source_with_transaction->task_source.WillReEnqueue(
+          TimeTicks::Now(), &task_source_with_transaction->transaction);
     }
+    CheckedAutoLock auto_lock(lock_);
+    if (task_source_with_transaction.has_value()) {
+      EnqueueTaskSourceLockRequired(std::move(*task_source_with_transaction));
+    }
+
+    // Calling WakeUp() guarantees that this WorkerThread will run Tasks from
+    // TaskSources returned by the GetWork() method of |delegate_| until it
+    // returns nullptr. Resetting |wake_up_event_| here doesn't break this
+    // invariant and avoids a useless loop iteration before going to sleep if
+    // WakeUp() is called while this WorkerThread is awake.
+    wake_up_event_.Reset();
+
+    auto new_task_source = GetWorkLockRequired(worker);
+    if (!new_task_source) {
+      // The worker will sleep after this returns nullptr.
+      worker_awake_ = false;
+      return nullptr;
+    }
+    auto run_status = new_task_source.WillRunTask();
+    DCHECK_NE(run_status, TaskSource::RunStatus::kDisallowed);
+    return new_task_source;
   }
 
   TimeDelta GetSleepTimeout() override { return TimeDelta::Max(); }
@@ -171,10 +194,15 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
       return false;
     transaction.PushImmediateTask(std::move(task));
     if (task_source) {
-      bool should_wakeup =
-          EnqueueTaskSource({std::move(task_source), std::move(transaction)});
-      if (should_wakeup)
+      bool should_wakeup;
+      {
+        CheckedAutoLock auto_lock(lock_);
+        should_wakeup = EnqueueTaskSourceLockRequired(
+            {std::move(task_source), std::move(transaction)});
+      }
+      if (should_wakeup) {
         worker_->WakeUp();
+      }
     }
     return true;
   }
@@ -225,9 +253,9 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
   // Enqueues a task source in this single-threaded worker's priority queue.
   // Returns true iff the worker must wakeup, i.e. task source is allowed to run
   // and the worker was not awake.
-  bool EnqueueTaskSource(
-      RegisteredTaskSourceAndTransaction transaction_with_task_source) {
-    CheckedAutoLock auto_lock(lock_);
+  bool EnqueueTaskSourceLockRequired(
+      RegisteredTaskSourceAndTransaction transaction_with_task_source)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_) {
     auto sort_key = transaction_with_task_source.task_source->GetSortKey();
     // When moving |task_source| into |priority_queue_|, it may be destroyed
     // on another thread as soon as |lock_| is released, since we're no longer
@@ -255,7 +283,7 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
   // The WorkerThread that has |this| as a delegate. Must be set before
   // starting or posting a task to the WorkerThread, because it's used in
   // OnMainEntry() and PostTaskNow().
-  raw_ptr<WorkerThread> worker_ = nullptr;
+  raw_ptr<WorkerThreadWaitableEvent> worker_ = nullptr;
 
   PriorityQueue priority_queue_ GUARDED_BY(lock_);
 
@@ -277,7 +305,7 @@ class WorkerThreadCOMDelegate : public WorkerThreadDelegate {
   WorkerThreadCOMDelegate& operator=(const WorkerThreadCOMDelegate&) = delete;
   ~WorkerThreadCOMDelegate() override { DCHECK(!scoped_com_initializer_); }
 
-  // WorkerThread::Delegate:
+  // WorkerThreadWaitableEvent::Delegate:
   void OnMainEntry(WorkerThread* worker) override {
     WorkerThreadDelegate::OnMainEntry(worker);
 
@@ -353,12 +381,11 @@ class WorkerThreadCOMDelegate : public WorkerThreadDelegate {
     scoped_com_initializer_.reset();
   }
 
-  void WaitForWork(WaitableEvent* wake_up_event) override {
-    DCHECK(wake_up_event);
+  void WaitForWork() override {
     const TimeDelta sleep_time = GetSleepTimeout();
     const DWORD milliseconds_wait = checked_cast<DWORD>(
         sleep_time.is_max() ? INFINITE : sleep_time.InMilliseconds());
-    const HANDLE wake_up_event_handle = wake_up_event->handle();
+    const HANDLE wake_up_event_handle = wake_up_event_.handle();
     MsgWaitForMultipleObjectsEx(1, &wake_up_event_handle, milliseconds_wait,
                                 QS_ALLINPUT, 0);
   }
@@ -419,7 +446,7 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
   // lifetime of a dedicated |worker| for |traits|.
   PooledSingleThreadTaskRunner(PooledSingleThreadTaskRunnerManager* const outer,
                                const TaskTraits& traits,
-                               WorkerThread* worker,
+                               WorkerThreadWaitableEvent* worker,
                                SingleThreadTaskRunnerThreadMode thread_mode)
       : outer_(outer),
         worker_(worker),
@@ -532,7 +559,8 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
                 DisableDanglingPtrDetection>
       outer_;
 
-  const raw_ptr<WorkerThread, AcrossTasksDanglingUntriaged> worker_;
+  const raw_ptr<WorkerThreadWaitableEvent, AcrossTasksDanglingUntriaged>
+      worker_;
   const SingleThreadTaskRunnerThreadMode thread_mode_;
   const scoped_refptr<Sequence> sequence_;
 };
@@ -592,7 +620,7 @@ void PooledSingleThreadTaskRunnerManager::Start(
   // PooledSingleThreadTaskRunner::PostTaskNow(). As a result, it's
   // unnecessary to call WakeUp() for each worker (in fact, an extraneous
   // WakeUp() would be racy and wrong - see https://crbug.com/862582).
-  for (scoped_refptr<WorkerThread> worker : workers_to_start) {
+  for (scoped_refptr<WorkerThreadWaitableEvent> worker : workers_to_start) {
     worker->Start(io_thread_task_runner_, worker_thread_observer_);
   }
 }
@@ -656,8 +684,8 @@ PooledSingleThreadTaskRunnerManager::CreateTaskRunnerImpl(
   // SingleThreadTaskRunnerThreadMode. In DEDICATED, the scoped_refptr is backed
   // by a local variable and in SHARED, the scoped_refptr is backed by a member
   // variable.
-  WorkerThread* dedicated_worker = nullptr;
-  WorkerThread*& worker =
+  WorkerThreadWaitableEvent* dedicated_worker = nullptr;
+  WorkerThreadWaitableEvent*& worker =
       thread_mode == SingleThreadTaskRunnerThreadMode::DEDICATED
           ? dedicated_worker
           : GetSharedWorkerThreadForTraits<DelegateType>(traits);
@@ -743,7 +771,7 @@ PooledSingleThreadTaskRunnerManager::CreateWorkerThreadDelegate<
 #endif  // BUILDFLAG(IS_WIN)
 
 template <typename DelegateType>
-WorkerThread*
+WorkerThreadWaitableEvent*
 PooledSingleThreadTaskRunnerManager::CreateAndRegisterWorkerThread(
     const std::string& name,
     SingleThreadTaskRunnerThreadMode thread_mode,
@@ -752,15 +780,17 @@ PooledSingleThreadTaskRunnerManager::CreateAndRegisterWorkerThread(
   std::unique_ptr<WorkerThreadDelegate> delegate =
       CreateWorkerThreadDelegate<DelegateType>(name, id, thread_mode);
   WorkerThreadDelegate* delegate_raw = delegate.get();
-  scoped_refptr<WorkerThread> worker = MakeRefCounted<WorkerThread>(
-      thread_type_hint, std::move(delegate), task_tracker_, workers_.size());
+  scoped_refptr<WorkerThreadWaitableEvent> worker =
+      MakeRefCounted<WorkerThreadWaitableEvent>(thread_type_hint,
+                                                std::move(delegate),
+                                                task_tracker_, workers_.size());
   delegate_raw->set_worker(worker.get());
   workers_.emplace_back(std::move(worker));
   return workers_.back().get();
 }
 
 template <>
-WorkerThread*&
+WorkerThreadWaitableEvent*&
 PooledSingleThreadTaskRunnerManager::GetSharedWorkerThreadForTraits<
     WorkerThreadDelegate>(const TaskTraits& traits) {
   return shared_worker_threads_[GetEnvironmentIndexForTraits(traits)]
@@ -769,7 +799,7 @@ PooledSingleThreadTaskRunnerManager::GetSharedWorkerThreadForTraits<
 
 #if BUILDFLAG(IS_WIN)
 template <>
-WorkerThread*&
+WorkerThreadWaitableEvent*&
 PooledSingleThreadTaskRunnerManager::GetSharedWorkerThreadForTraits<
     WorkerThreadCOMDelegate>(const TaskTraits& traits) {
   return shared_com_worker_threads_[GetEnvironmentIndexForTraits(traits)]
@@ -778,9 +808,9 @@ PooledSingleThreadTaskRunnerManager::GetSharedWorkerThreadForTraits<
 #endif  // BUILDFLAG(IS_WIN)
 
 void PooledSingleThreadTaskRunnerManager::UnregisterWorkerThread(
-    WorkerThread* worker) {
+    WorkerThreadWaitableEvent* worker) {
   // Cleanup uses a CheckedLock, so call Cleanup() after releasing |lock_|.
-  scoped_refptr<WorkerThread> worker_to_destroy;
+  scoped_refptr<WorkerThreadWaitableEvent> worker_to_destroy;
   {
     CheckedAutoLock auto_lock(lock_);
 
