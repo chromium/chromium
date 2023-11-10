@@ -588,8 +588,7 @@
   // Choice Promo handler
   if (ios::provider::IsChoiceEnabled()) {
     _displayHandlerPromos[promos_manager::Promo::Choice] =
-        ios::provider::CreateChoiceDisplayHandler(
-            self.browser->GetBrowserState());
+        ios::provider::CreateChoiceDisplayHandler();
   }
 }
 
