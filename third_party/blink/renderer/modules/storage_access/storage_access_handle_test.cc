@@ -17,18 +17,21 @@
 
 namespace blink {
 
-class StorageAccessHandleTest
-    : public testing::TestWithParam<testing::tuple<bool,
-                                                   bool,
-                                                   bool,
-                                                   bool,
-                                                   bool,
-                                                   bool,
-                                                   bool,
-                                                   bool,
-                                                   bool,
-                                                   bool,
-                                                   bool>> {
+namespace {
+
+using TestParams = std::
+    tuple<bool, bool, bool, bool, bool, bool, bool, bool, bool, bool, bool>;
+
+template <size_t N>
+TestParams MakeParamsWithSetBit() {
+  TestParams params;
+  std::get<N>(params) = true;
+  return params;
+}
+
+}  // namespace
+
+class StorageAccessHandleTest : public testing::TestWithParam<TestParams> {
  public:
   bool all() { return std::get<0>(GetParam()); }
   bool sessionStorage() { return std::get<1>(GetParam()); }
@@ -337,53 +340,31 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
 INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     StorageAccessHandleTest,
-    testing::ValuesIn(std::vector<std::tuple<bool,
-                                             bool,
-                                             bool,
-                                             bool,
-                                             bool,
-                                             bool,
-                                             bool,
-                                             bool,
-                                             bool,
-                                             bool,
-                                             bool>>{
+    testing::ValuesIn(std::vector<TestParams>{
         // Nothing:
-        {false, false, false, false, false, false, false, false, false, false,
-         false},
+        TestParams(),
         // All:
-        {true, false, false, false, false, false, false, false, false, false,
-         false},
+        MakeParamsWithSetBit<0>(),
         // Session Storage:
-        {false, true, false, false, false, false, false, false, false, false,
-         false},
+        MakeParamsWithSetBit<1>(),
         // Local Storage:
-        {false, false, true, false, false, false, false, false, false, false,
-         false},
+        MakeParamsWithSetBit<2>(),
         // IndexedDB:
-        {false, false, false, true, false, false, false, false, false, false,
-         false},
+        MakeParamsWithSetBit<3>(),
         // Web Locks:
-        {false, false, false, false, true, false, false, false, false, false,
-         false},
+        MakeParamsWithSetBit<4>(),
         // Cache Storage:
-        {false, false, false, false, false, true, false, false, false, false,
-         false},
+        MakeParamsWithSetBit<5>(),
         // Origin Private File System:
-        {false, false, false, false, false, false, true, false, false, false,
-         false},
+        MakeParamsWithSetBit<6>(),
         // Quota:
-        {false, false, false, false, false, false, false, true, false, false,
-         false},
+        MakeParamsWithSetBit<7>(),
         // createObjectURL:
-        {false, false, false, false, false, false, false, false, true, false,
-         false},
+        MakeParamsWithSetBit<8>(),
         // revokeObjectURL:
-        {false, false, false, false, false, false, false, false, false, true,
-         false},
+        MakeParamsWithSetBit<9>(),
         // BroadcastChannel:
-        {false, false, false, false, false, false, false, false, false, false,
-         true},
+        MakeParamsWithSetBit<10>(),
     }));
 
 }  // namespace blink
