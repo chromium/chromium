@@ -7560,17 +7560,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="4" label="No dialog: auto_cancel was true"/>
 </enum>
 
-<enum name="BiquadFilterType">
-  <int value="0" label="lowpass"/>
-  <int value="1" label="highpass"/>
-  <int value="2" label="bandpass"/>
-  <int value="3" label="lowshelf"/>
-  <int value="4" label="highshelf"/>
-  <int value="5" label="peaking"/>
-  <int value="6" label="notch"/>
-  <int value="7" label="allpass"/>
-</enum>
-
 <enum name="BitsPerPixelExponential">
   <summary>
     The ratio of image size in bits to displayed size in pixels. Ranges are
@@ -54627,11 +54616,6 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="[Error] Empty primary accountid, with sync consent"/>
 </enum>
 
-<enum name="PanningModelType">
-  <int value="0" label="equalpower"/>
-  <int value="1" label="HRTF"/>
-</enum>
-
 <enum name="ParcelRequestStatus">
   <summary>Request status from parcel tracking server</summary>
   <int value="0" label="Request succeeded"/>
@@ -67542,26 +67526,6 @@ others/histograms.xml -->
   <int value="1" label="Control"/>
   <int value="2" label="Window"/>
   <int value="3" label="Tab"/>
-</enum>
-
-<enum name="WebAudioAutoplayStatus">
-  <int value="0" label="The AudioContext failed to autoplay"/>
-  <int value="1"
-      label="(Deprecated) Failed to autoplay but start() called on user
-             gesture"/>
-  <int value="2" label="The AudioContext successfully autoplayed"/>
-</enum>
-
-<enum name="WebAudioAutoplayUnlockType">
-  <int value="0" label="AudioContext construction"/>
-  <int value="1" label="AudioContext resume()"/>
-  <int value="2" label="Source Node start()"/>
-</enum>
-
-<enum name="WebAudioContextOperation">
-  <int value="0" label="AudioContext created"/>
-  <int value="1" label="AudioContext closed via the close() method"/>
-  <int value="2" label="AudioContext deleted"/>
 </enum>
 
 <enum name="WebauthnOptInPromoNotOfferedReason">
