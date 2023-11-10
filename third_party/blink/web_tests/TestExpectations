@@ -7531,3 +7531,6 @@ crbug.com/1497825 [ Linux ] virtual/private-aggregation-developer-mode/wpt_inter
 
 # Gardener 2023-11-10
 crbug.com/1486131 [ Debug Linux ] external/wpt/html/browsers/history/the-history-interface/001.html [ Failure Pass ]
+
+# Gardener 2023-11-10
+crbug.com/1501324 [ Mac ] virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_rate_obfuscation_mitigation_triggered.tentative.https.window.html [ Failure Pass ]
