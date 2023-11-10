@@ -119,3 +119,15 @@
 ++[landmark] xml-roles:main
 ++++[landmark] xml-roles:complementary
 ++++++[static] name='This should have complementary role.'
+++[article]
+++++[landmark] xml-roles:complementary
+++++++[static] name='This should have complementary role.'
+++[landmark] xml-roles:complementary
+++++[landmark] xml-roles:complementary
+++++++[static] name='This should have complementary role.'
+++[landmark] xml-roles:navigation
+++++[landmark] xml-roles:complementary
+++++++[static] name='This should have complementary role.'
+++[section]
+++++[landmark] xml-roles:complementary
+++++++[static] name='This should have complementary role.'

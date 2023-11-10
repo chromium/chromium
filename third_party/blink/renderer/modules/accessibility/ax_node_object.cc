@@ -877,6 +877,10 @@ bool AXNodeObject::IsDescendantOfLandmarkDisallowedElement() const {
   if (!GetNode())
     return false;
 
+  if (AriaRoleAttribute() == ax::mojom::blink::Role::kComplementary) {
+    return false;
+  }
+
   auto role_names = GetLandmarkIsNotAllowedAncestorRoles(RoleValue());
 
   for (AXObject* parent = ParentObjectUnignored(); parent;

@@ -119,3 +119,15 @@ Document
 ++Group
 ++++Group
 ++++++Text Name='This should have complementary role.'
+++Group
+++++Group
+++++++Text Name='This should have complementary role.'
+++Group
+++++Group
+++++++Text Name='This should have complementary role.'
+++Group
+++++Group
+++++++Text Name='This should have complementary role.'
+++Group
+++++Group
+++++++Text Name='This should have complementary role.'
