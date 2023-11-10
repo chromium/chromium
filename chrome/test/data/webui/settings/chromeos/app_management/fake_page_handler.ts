@@ -100,6 +100,7 @@ export class FakePageHandler implements PageHandlerInterface {
       publisherId: '',
       formattedOrigin: '',
       scopeExtensions: [],
+      supportedLocales: [],
     };
 
     if (optConfig) {

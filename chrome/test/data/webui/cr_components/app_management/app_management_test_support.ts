@@ -60,6 +60,7 @@ export function createTestApp(id: string, optConfig?: AppConfig): App {
     publisherId: '',
     formattedOrigin: '',
     scopeExtensions: [],
+    supportedLocales: [],
   };
 
   if (optConfig) {

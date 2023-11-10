@@ -52,6 +52,7 @@ suite('AppSettingsAppTest', () => {
       publisherId: '',
       formattedOrigin: '',
       scopeExtensions: [],
+      supportedLocales: [],
     };
 
     if (optConfig) {
