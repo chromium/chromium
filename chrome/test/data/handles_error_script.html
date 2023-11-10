@@ -1,0 +1,11 @@
+<html>
+    <p id="foo"></p>
+    <script>
+        try {
+          throw new Error("A new Error");
+        }
+        catch(err) {
+          document.getElementById("foo").innerHTML = err.message;
+        }
+    </script>
+</html>

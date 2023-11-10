@@ -4,7 +4,10 @@
 
 source_set("browser_tests") {
   testonly = true
-  sources = [ "http_error_tab_helper_browsertest.cc" ]
+  sources = [
+    "http_error_tab_helper_browsertest.cc",
+    "js_error_ukm_browsertest.cc",
+  ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
