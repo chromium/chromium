@@ -5,7 +5,6 @@
 #include "media/gpu/android/ndk_video_encode_accelerator.h"
 
 #include "base/bits.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -166,10 +165,6 @@ MediaFormatPtr CreateVideoFormat(const std::string& mime,
   return result;
 }
 
-BASE_FEATURE(kAndroidNdkVideoEncoder,
-             "AndroidNdkVideoEncoder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 absl::optional<std::string> FindMediaCodecFor(
     const VideoEncodeAccelerator::Config& config) {
   absl::optional<std::string> encoder_name;
@@ -240,8 +235,7 @@ NdkVideoEncodeAccelerator::~NdkVideoEncodeAccelerator() {
 }
 
 bool NdkVideoEncodeAccelerator::IsSupported() {
-  return base::FeatureList::IsEnabled(kAndroidNdkVideoEncoder) &&
-         NdkMediaCodecWrapper::IsSupported();
+  return NdkMediaCodecWrapper::IsSupported();
 }
 
 VideoEncodeAccelerator::SupportedProfiles

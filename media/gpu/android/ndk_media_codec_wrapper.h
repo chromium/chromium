@@ -25,7 +25,7 @@ struct AMediaCodecDeleter {
   }
 };
 
-// Small wrapper class which manages async callbacks from an AMediaCodec, as
+// A wrapper class which manages async callbacks from an AMediaCodec, as
 // well as queues of available input/output buffers.
 class MEDIA_GPU_EXPORT NdkMediaCodecWrapper {
  public:
