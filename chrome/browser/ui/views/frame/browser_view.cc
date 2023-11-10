@@ -2584,17 +2584,26 @@ void BrowserView::OnCanResizeFromWebAPIChanged() {
   GetWidget()->OnSizeConstraintsChanged();
 }
 
-void BrowserView::OnWidgetSizeConstraintsChanged(views::Widget* widget) {
+void BrowserView::SynchronizeRenderWidgetHostVisualPropertiesForMainFrame() {
   content::WebContents* web_contents = GetActiveWebContents();
   if (!web_contents || !web_contents->GetPrimaryMainFrame()) {
     return;
   }
-  // This will update `resizable` @media feature value in renderer whenever the
-  // widget's resizability has changed.
+
   if (content::RenderWidgetHost* render_widget_host =
           web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost()) {
     render_widget_host->SynchronizeVisualProperties();
   }
+}
+
+void BrowserView::OnWidgetSizeConstraintsChanged(views::Widget* widget) {
+  // `resizable` @media feature value in renderer needs to be updated.
+  SynchronizeRenderWidgetHostVisualPropertiesForMainFrame();
+}
+
+void BrowserView::OnWidgetShowStateChanged(views::Widget* widget) {
+  // `display-state` @media feature value in renderer needs to be updated.
+  SynchronizeRenderWidgetHostVisualPropertiesForMainFrame();
 }
 
 void BrowserView::PrimaryPageChanged(content::Page& page) {

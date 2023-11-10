@@ -719,6 +719,7 @@ class BrowserView : public BrowserWindow,
                              const gfx::Rect& new_bounds) override;
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
   void OnWidgetSizeConstraintsChanged(views::Widget* widget) override;
+  void OnWidgetShowStateChanged(views::Widget* widget) override;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
@@ -914,6 +915,8 @@ class BrowserView : public BrowserWindow,
                          const GURL& url,
                          ExclusiveAccessBubbleType bubble_type,
                          int64_t display_id);
+
+  void SynchronizeRenderWidgetHostVisualPropertiesForMainFrame();
 
   // Returns whether immmersive fullscreen should replace fullscreen. This
   // should only occur for "browser-fullscreen" for tabbed-typed windows (not

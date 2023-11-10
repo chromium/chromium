@@ -1674,6 +1674,10 @@ void Widget::OnNativeWidgetWorkspaceChanged() {}
 
 void Widget::OnNativeWidgetWindowShowStateChanged() {
   SaveWindowPlacementIfInitialized();
+
+  for (WidgetObserver& observer : observers_) {
+    observer.OnWidgetShowStateChanged(this);
+  }
 }
 
 void Widget::OnNativeWidgetBeginUserBoundsChange() {

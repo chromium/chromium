@@ -902,6 +902,7 @@ void DesktopWindowTreeHostPlatform::OnWindowStateChanged(
   // window. (The windows code doesn't need this because their window change is
   // synchronous.)
   ScheduleRelayout();
+  GetWidget()->OnNativeWidgetWindowShowStateChanged();
 }
 
 void DesktopWindowTreeHostPlatform::OnCloseRequest() {
