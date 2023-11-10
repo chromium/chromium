@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
+import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -57,6 +58,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -77,6 +79,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppBannerManagerJni;
@@ -146,6 +149,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private ShoppingService mShoppingService;
     @Mock private AppBannerManager.Natives mAppBannerManagerJniMock;
     @Mock private ReadAloudController mReadAloudController;
+    @Mock private PrefService mPrefService;
 
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
@@ -195,6 +199,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityService);
         FeatureList.setTestCanUseDefaultsForTesting();
         PageZoomCoordinator.setShouldShowMenuItemForTesting(false);
+        FeedFeatures.setFakePrefsForTest(mPrefService);
         jniMocker.mock(AppBannerManagerJni.TEST_HOOKS, mAppBannerManagerJniMock);
         Mockito.when(mAppBannerManagerJniMock.getInstallableWebAppManifestId(any()))
                 .thenReturn(null);
@@ -414,6 +419,45 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         assertEquals(
                 "Footer Resource ID should be web_feed_main_menu_item.",
+                R.layout.web_feed_main_menu_item,
+                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID)
+    public void getFooterResourceId_dseOff_doesNotReturnWebFeedMenuItem() {
+        setUpMocksForWebFeedFooter();
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(false);
+
+        assertNotEquals(
+                "Footer Resource ID should not be web_feed_main_menu_item.",
+                R.layout.web_feed_main_menu_item,
+                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID)
+    public void getFooterResourceId_dseOn_returnsWebFeedMenuItem() {
+        setUpMocksForWebFeedFooter();
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+
+        assertEquals(
+                "Footer Resource ID should be web_feed_main_menu_item.",
+                R.layout.web_feed_main_menu_item,
+                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID)
+    public void getFooterResourceId_signedOutUser_dseOn_doesNotReturnWebFeedMenuItem() {
+        setUpMocksForWebFeedFooter();
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+
+        assertNotEquals(
+                "Footer Resource ID should not be web_feed_main_menu_item.",
                 R.layout.web_feed_main_menu_item,
                 mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
     }
