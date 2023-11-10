@@ -2250,12 +2250,12 @@ bool BrowserAutofillManager::RefreshDataModels() {
 CreditCard* BrowserAutofillManager::GetCreditCard(
     Suggestion::BackendId unique_id) {
   return client().GetPersonalDataManager()->GetCreditCardByGUID(
-      unique_id.value());
+      absl::get<Suggestion::Guid>(unique_id).value());
 }
 
 AutofillProfile* BrowserAutofillManager::GetProfile(
     Suggestion::BackendId unique_id) {
-  std::string guid = unique_id.value();
+  std::string guid = absl::get<Suggestion::Guid>(unique_id).value();
   if (base::Uuid::ParseCaseInsensitive(guid).is_valid()) {
     return client().GetPersonalDataManager()->GetProfileByGUID(guid);
   }

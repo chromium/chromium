@@ -227,7 +227,7 @@ void AddNameChildSuggestions(FieldTypeGroup trigger_field_type_group,
     // Note that this suggestion can only be added if name infos exist in the
     // profile.
     suggestion.children.push_back(
-        GetFillFullNameSuggestion(Suggestion::BackendId(profile.guid())));
+        GetFillFullNameSuggestion(Suggestion::Guid(profile.guid())));
   }
   if (AddFieldByFieldSuggestions({NAME_FIRST, NAME_MIDDLE, NAME_LAST}, profile,
                                  app_locale, suggestion.children)) {
@@ -295,7 +295,7 @@ void AddAddressChildSuggestions(FieldTypeGroup trigger_field_type_group,
     // Note that this suggestion can only be added if address infos exist in the
     // profile.
     suggestion.children.push_back(
-        GetFillFullAddressSuggestion(Suggestion::BackendId(profile.guid())));
+        GetFillFullAddressSuggestion(Suggestion::Guid(profile.guid())));
   }
 
   bool added_any_address_line =
@@ -337,7 +337,7 @@ void AddContactChildSuggestions(FieldTypeGroup trigger_field_type_group,
     } else {
       // `PopupItemId::kFieldByFieldFilling` suggestions do not use profile,
       // therefore only set the backend id in the group filling case.
-      phone_number_suggestion.payload = Suggestion::BackendId(profile.guid());
+      phone_number_suggestion.payload = Suggestion::Guid(profile.guid());
     }
     suggestion.children.push_back(std::move(phone_number_suggestion));
     phone_number_suggestion_added = true;
@@ -359,7 +359,7 @@ void AddContactChildSuggestions(FieldTypeGroup trigger_field_type_group,
     } else {
       // `PopupItemId::kFieldByFieldFilling` suggestions do not use profile,
       // therefore only set the backend id in the group filling case.
-      email_address_suggestion.payload = Suggestion::BackendId(profile.guid());
+      email_address_suggestion.payload = Suggestion::Guid(profile.guid());
     }
     suggestion.children.push_back(std::move(email_address_suggestion));
     email_address_suggestion_added = true;
@@ -382,12 +382,12 @@ void AddFooterChildSuggestions(
   // filling experience.
   if (!last_targeted_fields || *last_targeted_fields != kAllServerFieldTypes) {
     suggestion.children.push_back(GetFillEverythingFromAddressProfileSuggestion(
-        Suggestion::BackendId(profile.guid())));
+        Suggestion::Guid(profile.guid())));
   }
   suggestion.children.push_back(
-      GetEditAddressProfileSuggestion(Suggestion::BackendId(profile.guid())));
+      GetEditAddressProfileSuggestion(Suggestion::Guid(profile.guid())));
   suggestion.children.push_back(
-      GetDeleteAddressProfileSuggestion(Suggestion::BackendId(profile.guid())));
+      GetDeleteAddressProfileSuggestion(Suggestion::Guid(profile.guid())));
 }
 
 // Sets the `popup_item_id` for `suggestion` depending on
@@ -695,8 +695,7 @@ absl::optional<Suggestion> GetSuggestionForTestAddresses(
         test_address.GetInfo(ADDRESS_HOME_COUNTRY, locale);
     suggestion.children.emplace_back(test_address_country,
                                      PopupItemId::kDevtoolsTestAddressEntry);
-    suggestion.children.back().payload =
-        Suggestion::BackendId(test_address.guid());
+    suggestion.children.back().payload = Suggestion::Guid(test_address.guid());
     suggestion.children.back().acceptance_a11y_announcement =
         l10n_util::GetStringFUTF16(IDS_AUTOFILL_TEST_ADDRESS_SELECTED_A11Y_HINT,
                                    test_address_country);
@@ -806,7 +805,7 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     }
 
     suggestions.emplace_back(main_text);
-    suggestions.back().payload = Suggestion::BackendId(profile->guid());
+    suggestions.back().payload = Suggestion::Guid(profile->guid());
     suggestions.back().acceptance_a11y_announcement =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
     suggestions.back().popup_item_id = GetProfileSuggestionPopupItemId(
@@ -1108,7 +1107,7 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
     Suggestion suggestion;
     suggestion.icon = credit_card.CardIconForAutofillSuggestion();
     suggestion.popup_item_id = PopupItemId::kVirtualCreditCardEntry;
-    suggestion.payload = Suggestion::BackendId(credit_card.guid());
+    suggestion.payload = Suggestion::Guid(credit_card.guid());
     suggestion.feature_for_iph =
         feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature.name;
     SetCardArtURL(suggestion, credit_card, /*virtual_card_option=*/true);
@@ -1156,7 +1155,8 @@ bool AutofillSuggestionGenerator::WasProfileSuggestionPreviouslyHidden(
 
   return base::ranges::find_if(
              profiles_to_suggest, [backend_id](const AutofillProfile* profile) {
-               return Suggestion::BackendId(profile->guid()) == backend_id;
+               return Suggestion::BackendId(
+                          Suggestion::Guid(profile->guid())) == backend_id;
              }) == profiles_to_suggest.end();
 }
 
@@ -1234,7 +1234,10 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForIbans(
       suggestion.payload = Suggestion::ValueToFill(iban->GetStrippedValue());
     } else {
       CHECK(iban->record_type() == Iban::kServerIban);
-      suggestion.payload = Suggestion::BackendId(iban->instrument_id());
+      int64_t instrument_id = 0;
+      CHECK(base::StringToInt64(iban->instrument_id(), &instrument_id));
+      suggestion.payload =
+          Suggestion::BackendId(Suggestion::InstrumentId(instrument_id));
     }
     if (!iban->nickname().empty())
       suggestion.labels = {{Suggestion::Text(iban->nickname())}};
@@ -1265,7 +1268,7 @@ AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
           promo_code_offer->GetDisplayStrings().value_prop_text))}};
     }
     suggestion.payload = Suggestion::BackendId(
-        base::NumberToString(promo_code_offer->GetOfferId()));
+        Suggestion::Guid(base::NumberToString(promo_code_offer->GetOfferId())));
     suggestion.popup_item_id = PopupItemId::kMerchantPromoCodeEntry;
 
     // Every offer for a given merchant leads to the same GURL, so we grab the
@@ -1378,7 +1381,7 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   suggestion.icon = credit_card.CardIconForAutofillSuggestion();
   CHECK(suggestion.popup_item_id == PopupItemId::kAutocompleteEntry);
   suggestion.popup_item_id = PopupItemId::kCreditCardEntry;
-  suggestion.payload = Suggestion::BackendId(credit_card.guid());
+  suggestion.payload = Suggestion::Guid(credit_card.guid());
 #if BUILDFLAG(IS_ANDROID)
   // The card art icon should always be shown at the start of the suggestion.
   suggestion.is_icon_at_start = true;
@@ -1543,7 +1546,7 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
     const CreditCard* server_duplicate_card =
         personal_data_->GetServerCardForLocalCard(&credit_card);
     DCHECK(server_duplicate_card);
-    suggestion.payload = Suggestion::BackendId(server_duplicate_card->guid());
+    suggestion.payload = Suggestion::Guid(server_duplicate_card->guid());
   }
 
   suggestion.popup_item_id = PopupItemId::kVirtualCreditCardEntry;

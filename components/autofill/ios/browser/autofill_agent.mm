@@ -474,8 +474,9 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       if (!suggestion.backendIdentifier.length) {
         autofill_suggestion.payload = autofill::Suggestion::BackendId();
       } else {
-        autofill_suggestion.payload = autofill::Suggestion::BackendId(
-            SysNSStringToUTF8(suggestion.backendIdentifier));
+        autofill_suggestion.payload =
+            autofill::Suggestion::BackendId(autofill::Suggestion::Guid(
+                SysNSStringToUTF8(suggestion.backendIdentifier)));
       }
 
       // On iOS, only a single trigger source exists. See crbug.com/1448447.
@@ -751,11 +752,11 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                 displayDescription:displayDescription
                               icon:icon
                        popupItemId:popup_suggestion.popup_item_id
-                 backendIdentifier:
-                     SysUTF8ToNSString(
-                         popup_suggestion
-                             .GetPayload<autofill::Suggestion::BackendId>()
-                             .value())
+                 backendIdentifier:SysUTF8ToNSString(
+                                       popup_suggestion
+                                           .GetBackendId<
+                                               autofill::Suggestion::Guid>()
+                                           .value())
                     requiresReauth:NO
         acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
 

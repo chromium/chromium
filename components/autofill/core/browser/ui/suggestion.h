@@ -25,7 +25,9 @@ namespace autofill {
 
 struct Suggestion {
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
-  using BackendId = base::StrongAlias<struct BackendIdTag, std::string>;
+  using Guid = base::StrongAlias<class GuidTag, std::string>;
+  using InstrumentId = base::StrongAlias<class InstrumentIdTag, uint64_t>;
+  using BackendId = absl::variant<Guid, InstrumentId>;
   using ValueToFill = base::StrongAlias<struct ValueToFill, std::u16string>;
   using Payload = absl::variant<BackendId, GURL, ValueToFill>;
 
@@ -124,6 +126,12 @@ struct Suggestion {
     DCHECK(Invariant());
 #endif
     return absl::holds_alternative<T>(payload) ? absl::get<T>(payload) : T{};
+  }
+
+  template <typename T>
+  T GetBackendId() const {
+    CHECK(absl::holds_alternative<BackendId>(payload));
+    return absl::get<T>(absl::get<BackendId>(payload));
   }
 
 #if DCHECK_IS_ON()

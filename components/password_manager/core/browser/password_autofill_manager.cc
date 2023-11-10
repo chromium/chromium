@@ -477,8 +477,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           ->SelectPasskey(
               absl::holds_alternative<autofill::Suggestion::BackendId>(
                   suggestion.payload)
-                  ? absl::get<autofill::Suggestion::BackendId>(
-                        suggestion.payload)
+                  ? suggestion.GetBackendId<autofill::Suggestion::Guid>()
                         .value()
                   : std::string());
       break;
@@ -736,7 +735,7 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
           suggestion.icon = autofill::Suggestion::Icon::kGlobe;
           suggestion.popup_item_id = autofill::PopupItemId::kWebauthnCredential;
           suggestion.custom_icon = page_favicon_;
-          suggestion.payload = autofill::Suggestion::BackendId(
+          suggestion.payload = autofill::Suggestion::Guid(
               base::Base64Encode(passkey.credential_id()));
           suggestion.labels = {
               {autofill::Suggestion::Text(passkey.GetAuthenticatorLabel())}};

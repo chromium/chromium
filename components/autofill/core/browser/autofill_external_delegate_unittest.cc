@@ -368,7 +368,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ShowEditorForNonexistingProfile) {
   EXPECT_CALL(autofill_client_, ShowEditAddressProfileDialog).Times(0);
 
   auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
-  suggestion.payload = Suggestion::BackendId(guid);
+  suggestion.payload = Suggestion::Guid(guid);
   external_delegate_->DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 0},
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
@@ -384,7 +384,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ShowEditorForExistingProfile) {
   EXPECT_CALL(autofill_client_, ShowEditAddressProfileDialog(profile, _));
 
   auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
-  suggestion.payload = Suggestion::BackendId(profile.guid());
+  suggestion.payload = Suggestion::Guid(profile.guid());
   external_delegate_->DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 0},
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
@@ -416,7 +416,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing) {
           AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed));
 
   auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
-  suggestion.payload = Suggestion::BackendId(profile.guid());
+  suggestion.payload = Suggestion::Guid(profile.guid());
   external_delegate_->DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 0},
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
@@ -449,7 +449,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserSavesEdits) {
           AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed));
 
   auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
-  suggestion.payload = Suggestion::BackendId(profile.guid());
+  suggestion.payload = Suggestion::Guid(profile.guid());
   external_delegate_->DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 0},
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
@@ -480,7 +480,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(personal_data(), UpdateProfile(profile)).Times(2);
 
   auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
-  suggestion.payload = Suggestion::BackendId(profile.guid());
+  suggestion.payload = Suggestion::Guid(profile.guid());
 
   external_delegate_->DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 0},
@@ -510,7 +510,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(personal_data(), UpdateProfile(profile));
 
   auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
-  suggestion.payload = Suggestion::BackendId(profile.guid());
+  suggestion.payload = Suggestion::Guid(profile.guid());
   external_delegate_->DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 0},
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
@@ -528,7 +528,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   const std::string guid = base::Uuid().AsLowercaseString();
   EXPECT_CALL(autofill_client_, ShowDeleteAddressProfileDialog).Times(0);
   auto suggestion = Suggestion(PopupItemId::kDeleteAddressProfile);
-  suggestion.payload = Suggestion::BackendId(guid);
+  suggestion.payload = Suggestion::Guid(guid);
 
   external_delegate_->DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 0},
@@ -544,7 +544,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ShowDeleteDialog) {
   personal_data().AddProfile(profile);
   EXPECT_CALL(autofill_client_, ShowDeleteAddressProfileDialog(profile, _));
   auto suggestion = Suggestion(PopupItemId::kDeleteAddressProfile);
-  suggestion.payload = Suggestion::BackendId(profile.guid());
+  suggestion.payload = Suggestion::Guid(profile.guid());
 
   external_delegate_->DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 0},
@@ -573,7 +573,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsDeletion) {
           queried_form_triggering_field_id_,
           AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed));
   auto suggestion = Suggestion(PopupItemId::kDeleteAddressProfile);
-  suggestion.payload = Suggestion::BackendId(profile.guid());
+  suggestion.payload = Suggestion::Guid(profile.guid());
 
   external_delegate_->DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 0},
@@ -603,7 +603,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserAcceptsDeletion) {
           queried_form_triggering_field_id_,
           AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed));
   auto suggestion = Suggestion(PopupItemId::kDeleteAddressProfile);
-  suggestion.payload = Suggestion::BackendId(profile.guid());
+  suggestion.payload = Suggestion::Guid(profile.guid());
 
   external_delegate_->DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 0},
@@ -631,7 +631,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   // Autofill profile can be deleted both times.
   EXPECT_CALL(personal_data(), RemoveByGUID(profile.guid())).Times(2);
   auto suggestion = Suggestion(PopupItemId::kDeleteAddressProfile);
-  suggestion.payload = Suggestion::BackendId(profile.guid());
+  suggestion.payload = Suggestion::Guid(profile.guid());
 
   external_delegate_->DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 0},
@@ -659,7 +659,7 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
   personal_data().AddProfile(profile);
   std::vector<Suggestion> autofill_item = {
       Suggestion(PopupItemId::kAddressEntry)};
-  autofill_item[0].payload = Suggestion::BackendId(profile.guid());
+  autofill_item[0].payload = Suggestion::Guid(profile.guid());
   external_delegate_->OnSuggestionsReturned(
       queried_form_triggering_field_id_, autofill_item, kDefaultTriggerSource);
 
@@ -1018,7 +1018,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   personal_data().AddProfile(profile);
   external_delegate_->DidSelectSuggestion(
       test::CreateAutofillSuggestion(PopupItemId::kAddressEntry, u"baz foo",
-                                     Suggestion::BackendId(profile.guid())),
+                                     Suggestion::Guid(profile.guid())),
       kDefaultTriggerSource);
 
   // Ensure selecting an autocomplete entry will cause any previews to
@@ -1043,7 +1043,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
               FillOrPreviewCreditCardForm(mojom::ActionPersistence::kPreview, _,
                                           _, _, _));
   Suggestion suggestion(PopupItemId::kVirtualCreditCardEntry);
-  suggestion.payload = Suggestion::BackendId(card.guid());
+  suggestion.payload = Suggestion::Guid(card.guid());
   external_delegate_->DidSelectSuggestion(suggestion, kDefaultTriggerSource);
 }
 
@@ -1120,7 +1120,7 @@ TEST_P(FillingMethodMetricsUnitTest, recordedsFillingMethodForPopupType) {
   const AutofillProfile profile = test::GetFullProfile();
   personal_data().AddProfile(profile);
   const Suggestion suggestion = test::CreateAutofillSuggestion(
-      params.popup_item_id, u"baz foo", Suggestion::BackendId(profile.guid()));
+      params.popup_item_id, u"baz foo", Suggestion::Guid(profile.guid()));
   // Wait until form is parsed. We only perform field by field filling if the
   // AutofillField exists.
   browser_autofill_manager_->OnFormsSeen({queried_form_}, {});
@@ -1174,7 +1174,7 @@ TEST_P(GroupFillingUnitTest, GroupFillingTests_FillAndPreview) {
   const AutofillProfile profile = test::GetFullProfile();
   personal_data().AddProfile(profile);
   const Suggestion suggestion = test::CreateAutofillSuggestion(
-      params.popup_item_id, u"baz foo", Suggestion::BackendId(profile.guid()));
+      params.popup_item_id, u"baz foo", Suggestion::Guid(profile.guid()));
   auto expected_source =
 #if BUILDFLAG(IS_ANDROID)
       AutofillTriggerSource::kKeyboardAccessory;
@@ -1221,7 +1221,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion) {
   personal_data().AddProfile(profile);
   external_delegate_->DidAcceptSuggestion(
       test::CreateAutofillSuggestion(PopupItemId::kAddressEntry, u"John Legend",
-                                     Suggestion::BackendId(profile.guid())),
+                                     Suggestion::Guid(profile.guid())),
       SuggestionPosition{.row = 2}, kDefaultTriggerSource);
 }
 
@@ -1234,7 +1234,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   external_delegate_->DidAcceptSuggestion(
       test::CreateAutofillSuggestion(PopupItemId::kAddressEntry, u"John Legend",
-                                     Suggestion::BackendId(profile.guid())),
+                                     Suggestion::Guid(profile.guid())),
       AutofillPopupDelegate::SuggestionPosition{.row = suggestion_accepted_row},
       kDefaultTriggerSource);
 
@@ -1256,7 +1256,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   external_delegate_->DidAcceptSuggestion(
       test::CreateAutofillSuggestion(PopupItemId::kAddressEntry, u"John Legend",
-                                     Suggestion::BackendId(profile.guid())),
+                                     Suggestion::Guid(profile.guid())),
       AutofillPopupDelegate::SuggestionPosition{.row = suggestion_accepted_row,
                                                 .sub_popup_level = 1},
       kDefaultTriggerSource);
@@ -1271,7 +1271,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   personal_data().AddProfile(profile);
   const Suggestion suggestion = test::CreateAutofillSuggestion(
       PopupItemId::kFillEverythingFromAddressProfile, u"John Legend",
-      Suggestion::BackendId(profile.guid()));
+      Suggestion::Guid(profile.guid()));
 
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
@@ -1298,7 +1298,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
   personal_data().AddProfile(profile);
   Suggestion suggestion = test::CreateAutofillSuggestion(
       PopupItemId::kAddressEntry, /*main_text_value=*/u"",
-      Suggestion::BackendId(profile.guid()));
+      Suggestion::Guid(profile.guid()));
 
   // Expect that `kFormControlElementClicked` translates to source `kPopup` or
   // `kKeyboardAccessory`, depending on the platform.
@@ -1926,7 +1926,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptVirtualCardOptionItem) {
       *browser_autofill_manager_,
       FillOrPreviewCreditCardForm(mojom::ActionPersistence::kFill, _, _, _, _));
   Suggestion suggestion(PopupItemId::kVirtualCreditCardEntry);
-  suggestion.payload = Suggestion::BackendId(card.guid());
+  suggestion.payload = Suggestion::Guid(card.guid());
   external_delegate_->DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 0}, kDefaultTriggerSource);
 }
@@ -1938,7 +1938,7 @@ TEST_F(AutofillExternalDelegateUnitTest, SelectVirtualCardOptionItem) {
               FillOrPreviewCreditCardForm(mojom::ActionPersistence::kPreview, _,
                                           _, _, _));
   Suggestion suggestion(PopupItemId::kVirtualCreditCardEntry);
-  suggestion.payload = Suggestion::BackendId(card.guid());
+  suggestion.payload = Suggestion::Guid(card.guid());
   external_delegate_->DidSelectSuggestion(suggestion, kDefaultTriggerSource);
 }
 

@@ -1828,7 +1828,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
 
     external_delegate().DidAcceptSuggestion(
         test::CreateAutofillSuggestion(PopupItemId::kCreditCardEntry, u"Test",
-                                       Suggestion::BackendId(kTestLocalCardId)),
+                                       Suggestion::Guid(kTestLocalCardId)),
         AutofillPopupDelegate::SuggestionPosition{.row = 0},
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
@@ -1890,7 +1890,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
 
     external_delegate().DidAcceptSuggestion(
         test::CreateAutofillSuggestion(PopupItemId::kCreditCardEntry, u"Test",
-                                       Suggestion::BackendId(kTestLocalCardId)),
+                                       Suggestion::Guid(kTestLocalCardId)),
         AutofillPopupDelegate::SuggestionPosition{.row = 0},
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
@@ -2043,7 +2043,7 @@ TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
 
     external_delegate().DidAcceptSuggestion(
         test::CreateAutofillSuggestion(PopupItemId::kCreditCardEntry, u"Test",
-                                       Suggestion::BackendId(kTestProfileId)),
+                                       Suggestion::Guid(kTestProfileId)),
         AutofillPopupDelegate::SuggestionPosition{.row = 0},
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
 

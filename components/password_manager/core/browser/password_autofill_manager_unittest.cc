@@ -2045,8 +2045,8 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
                   autofill::PopupItemId::kSeparator,
 #endif  // !BUILDFLAG(IS_ANDROID)
                   autofill::PopupItemId::kAllSavedPasswordsEntry));
-  EXPECT_EQ(open_args.suggestions[0].GetPayload<Suggestion::BackendId>(),
-            Suggestion::BackendId(kIdBase64));
+  EXPECT_EQ(open_args.suggestions[0].GetBackendId<Suggestion::Guid>().value(),
+            kIdBase64);
   EXPECT_EQ(open_args.suggestions[0].popup_item_id,
             autofill::PopupItemId::kWebauthnCredential);
   EXPECT_EQ(open_args.suggestions[0].main_text.value, kName);
@@ -2063,7 +2063,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
               PreviewSuggestion(kName, /*password=*/std::u16string(u"")));
   const Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       autofill::PopupItemId::kWebauthnCredential, kName,
-      autofill::Suggestion::BackendId(kIdBase64));
+      autofill::Suggestion::Guid(kIdBase64));
   password_autofill_manager_->DidSelectSuggestion(suggestion);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 

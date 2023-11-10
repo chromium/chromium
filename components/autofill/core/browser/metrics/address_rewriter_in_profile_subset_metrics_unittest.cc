@@ -102,7 +102,7 @@ TEST_F(AddressRewriterInProfileSubsetMetricsTest,
   external_delegate().OnQuery(form, form.fields.front(), gfx::RectF());
   external_delegate().DidAcceptSuggestion(
       test::CreateAutofillSuggestion(PopupItemId::kAddressEntry, u"first last",
-                                     Suggestion::BackendId(profile_b.guid())),
+                                     Suggestion::Guid(profile_b.guid())),
       AutofillPopupDelegate::SuggestionPosition{.row = 0},
       AutofillSuggestionTriggerSource::kUnspecified);
 
@@ -111,7 +111,7 @@ TEST_F(AddressRewriterInProfileSubsetMetricsTest,
 
   external_delegate().DidAcceptSuggestion(
       test::CreateAutofillSuggestion(PopupItemId::kAddressEntry, u"first last",
-                                     Suggestion::BackendId(profile_a.guid())),
+                                     Suggestion::Guid(profile_a.guid())),
       AutofillPopupDelegate::SuggestionPosition{.row = 0},
       AutofillSuggestionTriggerSource::kUnspecified);
 

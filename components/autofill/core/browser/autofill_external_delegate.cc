@@ -424,12 +424,12 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case PopupItemId::kEditAddressProfile: {
       ShowEditAddressProfileDialog(
-          suggestion.GetPayload<Suggestion::BackendId>().value());
+          suggestion.GetBackendId<Suggestion::Guid>().value());
       break;
     }
     case PopupItemId::kDeleteAddressProfile:
       ShowDeleteAddressProfileDialog(
-          suggestion.GetPayload<Suggestion::BackendId>().value());
+          suggestion.GetBackendId<Suggestion::Guid>().value());
       break;
     case PopupItemId::kClearForm:
       // This serves as a clear form or undo autofill suggestion, depending on
@@ -838,7 +838,8 @@ void AutofillExternalDelegate::FillAutofillFormData(
                  : mojom::ActionPersistence::kFill;
 
   PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
-  if (CreditCard* credit_card = pdm->GetCreditCardByGUID(backend_id.value())) {
+  if (CreditCard* credit_card = pdm->GetCreditCardByGUID(
+          absl::get<Suggestion::Guid>(backend_id).value())) {
     if (popup_item_id == PopupItemId::kVirtualCreditCardEntry) {
       // Virtual credit cards are not persisted in Chrome, modify record type
       // locally.
@@ -851,8 +852,8 @@ void AutofillExternalDelegate::FillAutofillFormData(
                                             query_field_, credit_card,
                                             trigger_details);
     }
-  } else if (const AutofillProfile* profile =
-                 pdm->GetProfileByGUID(backend_id.value())) {
+  } else if (const AutofillProfile* profile = pdm->GetProfileByGUID(
+                 absl::get<Suggestion::Guid>(backend_id).value())) {
     manager_->FillOrPreviewProfileForm(action_persistence, query_form_,
                                        query_field_, *profile, trigger_details);
   }

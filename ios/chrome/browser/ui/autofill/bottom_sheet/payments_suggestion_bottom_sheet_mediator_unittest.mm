@@ -25,9 +25,7 @@ namespace {
 
 const char kTestNumber[] = "4234567890123456";  // Visa
 
-const autofill::Suggestion::Suggestion::BackendId kTestGuid =
-    autofill::Suggestion::Suggestion::BackendId(
-        "00000000-0000-0000-0000-000000000001");
+const char kTestGuid[] = "00000000-0000-0000-0000-000000000001";
 
 }  // namespace
 
@@ -106,7 +104,7 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
   // 1 card.
   void CreateMediatorWithSuggestions() {
     CreateMediator();
-    CreateCreditCard(kTestGuid.value());
+    CreateCreditCard(kTestGuid);
     personal_data_manager_->SetSyncingForTest(true);
   }
 
@@ -114,7 +112,7 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
   // 1 local card.
   void CreateMediatorWithLocalCardOnlySuggestions() {
     CreateMediator();
-    CreateCreditCard(kTestGuid.value(), kTestNumber, 0,
+    CreateCreditCard(kTestGuid, kTestNumber, 0,
                      autofill::CreditCard::RecordType::kLocalCard);
     personal_data_manager_->SetSyncingForTest(true);
   }

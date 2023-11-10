@@ -7964,7 +7964,7 @@ TEST_F(BrowserAutofillManagerTest, RemoveProfile) {
   personal_data().AddProfile(profile);
 
   browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(
-      Suggestion::BackendId(MakeGuid(102)));
+      Suggestion::Guid(MakeGuid(102)));
 
   EXPECT_FALSE(personal_data().GetProfileByGUID(MakeGuid(102)));
 }
@@ -7976,7 +7976,7 @@ TEST_F(BrowserAutofillManagerTest, RemoveCreditCard) {
   personal_data().AddCreditCard(credit_card);
 
   browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(
-      Suggestion::BackendId(MakeGuid(100007)));
+      Suggestion::Guid(MakeGuid(100007)));
 
   EXPECT_FALSE(personal_data().GetCreditCardByGUID(MakeGuid(100007)));
 }
