@@ -413,6 +413,7 @@ test("components_unittests") {
       "//components/cast_receiver:unit_tests",
       "//components/cast_streaming:unit_tests",
       "//components/certificate_transparency:unit_tests",
+      "//components/commerce/content/browser:unit_tests",
       "//components/content_capture/browser:unit_tests",
       "//components/content_relationship_verification:unit_tests",
       "//components/contextual_search/core/browser:unit_tests",
@@ -526,7 +527,6 @@ test("components_unittests") {
     deps += [
       "//components/background_sync:unit_tests",
       "//components/blocked_content:unit_tests",
-      "//components/commerce/content/browser:unit_tests",
       "//components/content_settings/browser:unit_tests",
       "//components/content_settings/browser/ui:unit_tests",
       "//components/feed/core/v2:core_unit_tests",
