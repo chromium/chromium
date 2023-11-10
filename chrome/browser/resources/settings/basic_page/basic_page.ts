@@ -117,22 +117,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         reflectToAttribute: true,
       },
 
-      advancedToggleExpanded: {
-        type: Boolean,
-        value: false,
-        notify: true,
-        observer: 'advancedToggleExpandedChanged_',
-      },
-
-      /**
-       * True if a section is fully expanded to hide other sections beneath it.
-       * False otherwise (even while animating a section open/closed).
-       */
-      hasExpandedSection_: {
-        type: Boolean,
-        value: false,
-      },
-
       /**
        * True if the basic page should currently display the reset profile
        * banner.
@@ -203,8 +187,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   // </if>
   pageVisibility: PageVisibility;
   inSearchMode: boolean;
-  advancedToggleExpanded: boolean;
-  private hasExpandedSection_: boolean;
   private showResetProfileBanner_: boolean;
 
   private currentRoute_: Route;
@@ -223,7 +205,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     super.ready();
 
     this.setAttribute('role', 'main');
-    this.addEventListener('subpage-expand', this.onSubpageExpanded_);
   }
 
 
@@ -243,17 +224,12 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     this.currentRoute_ = newRoute;
 
     if (routes.ADVANCED && routes.ADVANCED.contains(newRoute)) {
-      this.advancedToggleExpanded = true;
-    }
-
-    if (oldRoute && oldRoute.isSubpage()) {
-      // If the new route isn't the same expanded section, reset
-      // hasExpandedSection_ for the next transition.
-      if (!newRoute.isSubpage() || newRoute.section !== oldRoute.section) {
-        this.hasExpandedSection_ = false;
-      }
-    } else {
-      assert(!this.hasExpandedSection_);
+      // Render the advanced page now (don't wait for idle).
+      // In Polymer3, async() does not wait long enough for layout to complete.
+      // beforeNextRender() must be used instead.
+      beforeNextRender(this, () => {
+        this.getIdleLoad_();
+      });
     }
 
     super.currentRouteChanged(newRoute, oldRoute);
@@ -345,28 +321,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     this.showResetProfileBanner_ = false;
   }
 
-  /**
-   * Hides everything but the newly expanded subpage.
-   */
-  private onSubpageExpanded_() {
-    this.hasExpandedSection_ = true;
-  }
-
-  /**
-   * Render the advanced page now (don't wait for idle).
-   */
-  private advancedToggleExpandedChanged_() {
-    if (!this.advancedToggleExpanded) {
-      return;
-    }
-
-    // In Polymer2, async() does not wait long enough for layout to complete.
-    // beforeNextRender() must be used instead.
-    beforeNextRender(this, () => {
-      this.getIdleLoad_();
-    });
-  }
-
   private fire_(eventName: string, detail: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
@@ -383,18 +337,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     }
 
     return this.inSearchMode || routes.BASIC.contains(this.currentRoute_);
-  }
-
-  /**
-   * @return Whether to show the advanced page, taking into account both routing
-   *     and search state.
-   */
-  private showAdvancedPage_(
-      currentRoute: Route, inSearchMode: boolean, hasExpandedSection: boolean,
-      advancedToggleExpanded: boolean): boolean {
-    return hasExpandedSection ?
-        (routes.ADVANCED && routes.ADVANCED.contains(currentRoute)) :
-        advancedToggleExpanded || inSearchMode;
   }
 
   private showAdvancedSettings_(visibility?: boolean): boolean {

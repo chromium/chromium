@@ -61,11 +61,6 @@ export class SettingsMainElement extends SettingsMainElementBase {
         notify: true,
       },
 
-      advancedToggleExpanded: {
-        type: Boolean,
-        notify: true,
-      },
-
       /**
        * Controls which main pages are displayed via dom-ifs, based on the
        * current route.
@@ -107,7 +102,6 @@ export class SettingsMainElement extends SettingsMainElementBase {
   }
 
   prefs: {[key: string]: any};
-  advancedToggleExpanded: boolean;
   private showPages_: MainPageVisibility;
   private inSearchMode_: boolean;
   private showNoResultsFound_: boolean;

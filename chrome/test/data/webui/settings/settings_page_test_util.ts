@@ -14,13 +14,14 @@ import {assertTrue} from 'chrome://webui-test/chai_assert.js';
  * @param type The settings page type, e.g. 'about' or 'basic'.
  * @return The PolymerElement for the page.
  */
-export function getPage(type: string): Promise<HTMLElement> {
+export function getPage(type: 'basic'|'about'): Promise<HTMLElement> {
   const settingsUi = document.querySelector('settings-ui');
   assertTrue(!!settingsUi);
   const settingsMain = settingsUi!.shadowRoot!.querySelector('settings-main');
   assertTrue(!!settingsMain);
-  const page = settingsMain!.shadowRoot!.querySelector(
-                   `settings-${type}-page`) as HTMLElement;
+  const page = settingsMain!.shadowRoot!.querySelector<HTMLElement>(
+      `settings-${type}-page`);
+  assertTrue(!!page);
 
   const idleRender =
       page && page.shadowRoot!.querySelector('settings-idle-load');

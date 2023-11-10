@@ -158,9 +158,7 @@
         if="[[showAdvancedSettings_(pageVisibility.advancedSettings)]]">
       <settings-idle-load id="advancedPageTemplate">
         <template>
-          <div id="advancedPage" hidden$="[[!showAdvancedPage_(
-              currentRoute_, inSearchMode, hasExpandedSection_,
-              advancedToggleExpanded)]]">
+          <div id="advancedPage">
             <template is="dom-if" if="[[showPage_(pageVisibility.languages)]]"
                 restamp>
 <if expr="not chromeos_ash">
