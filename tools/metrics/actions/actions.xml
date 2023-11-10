@@ -10331,6 +10331,59 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="GetDisplayMedia.Cancel">
+  <owner>eladalon@chromium.org</owner>
+  <owner>tovep@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <description>User cancelled the getDisplayMedia dialog.</description>
+</action>
+
+<action name="GetDisplayMedia.SelectCurrentTab">
+  <owner>eladalon@chromium.org</owner>
+  <owner>tovep@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <description>
+    User selected to share the current tab in the getDisplayMedia dialog.
+  </description>
+</action>
+
+<action name="GetDisplayMedia.SelectScreen">
+  <owner>eladalon@chromium.org</owner>
+  <owner>tovep@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <description>
+    User selected to share a screen in the getDisplayMedia dialog.
+  </description>
+</action>
+
+<action name="GetDisplayMedia.SelectWebContents">
+  <owner>eladalon@chromium.org</owner>
+  <owner>tovep@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <description>
+    User selected to share web contents in the getDisplayMedia dialog.
+  </description>
+</action>
+
+<action name="GetDisplayMedia.SelectWindow">
+  <owner>eladalon@chromium.org</owner>
+  <owner>tovep@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <description>
+    User selected to share a window in the getDisplayMedia dialog.
+  </description>
+</action>
+
+<action name="GetDisplayMedia.ShowDialog">
+  <owner>eladalon@chromium.org</owner>
+  <owner>tovep@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <description>
+    The getDisplayMedia dialog was shown to the user. In the majority of cases
+    this is triggered by the user in the web application.
+  </description>
+</action>
+
 <action name="Glanceables_Classroom_AssignmentPressed">
   <owner>mmourgos@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>

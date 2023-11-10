@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -129,6 +130,7 @@ void RecordUma(GDMResult result, base::TimeTicks dialog_open_time) {
 
 void RecordUmaCancellation(DialogType dialog_type,
                            base::TimeTicks dialog_open_time) {
+  RecordAction(base::UserMetricsAction("GetDisplayMedia.Cancel"));
   if (dialog_type == DialogType::kPreferCurrentTab) {
     RecordUma(GDMPreferCurrentTabResult::kUserCancelled, dialog_open_time);
   } else {
@@ -151,6 +153,7 @@ void RecordUmaSelection(DialogType dialog_type,
       NOTREACHED_NORETURN();
 
     case DesktopMediaList::Type::kScreen:
+      RecordAction(base::UserMetricsAction("GetDisplayMedia.SelectScreen"));
       if (dialog_type == DialogType::kPreferCurrentTab) {
         RecordUma(GDMPreferCurrentTabResult::kUserSelectedScreen,
                   dialog_open_time);
@@ -160,6 +163,7 @@ void RecordUmaSelection(DialogType dialog_type,
       break;
 
     case DesktopMediaList::Type::kWindow:
+      RecordAction(base::UserMetricsAction("GetDisplayMedia.SelectWindow"));
       if (dialog_type == DialogType::kPreferCurrentTab) {
         RecordUma(GDMPreferCurrentTabResult::kUserSelectedWindow,
                   dialog_open_time);
@@ -169,6 +173,8 @@ void RecordUmaSelection(DialogType dialog_type,
       break;
 
     case DesktopMediaList::Type::kWebContents: {
+      RecordAction(
+          base::UserMetricsAction("GetDisplayMedia.SelectWebContents"));
       // Whether the current tab was selected. Note that this can happen
       // through a non-explicit selection of the current tab through the
       // list of all available tabs.
@@ -193,6 +199,7 @@ void RecordUmaSelection(DialogType dialog_type,
     }
 
     case DesktopMediaList::Type::kCurrentTab:
+      RecordAction(base::UserMetricsAction("GetDisplayMedia.SelectCurrentTab"));
       RecordUma(GDMPreferCurrentTabResult::kUserSelectedThisTab,
                 dialog_open_time);
       break;
@@ -390,7 +397,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
       dialog_open_time_(base::TimeTicks::Now()) {
   DCHECK(!params.force_audio_checkboxes_to_default_checked ||
          !params.exclude_system_audio);
-
+  RecordAction(base::UserMetricsAction("GetDisplayMedia.ShowDialog"));
   SetProperty(views::kElementIdentifierKey,
               kDesktopMediaPickerDialogViewIdentifier);
   SetModalType(params.modality);
