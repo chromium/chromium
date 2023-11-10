@@ -49,8 +49,8 @@ int __cdecl main(int argc, char** argv) {
                                SWDeviceCapabilitiesDriverRequired;
 
   // Set configuration properties to send to the driver.
-  display::test::DriverProperties p({display::test::MonitorMode::k1024x768,
-                                     display::test::MonitorMode::k1920x1080});
+  display::test::DriverProperties p({display::test::MonitorConfig::k1024x768,
+                                     display::test::MonitorConfig::k1920x1080});
 
   DEVPROPERTY properties[1];
   DEVPROPERTY& property = properties[0];

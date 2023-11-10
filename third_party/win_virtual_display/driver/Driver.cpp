@@ -166,16 +166,17 @@ EvtWdfDriverDeviceAdd(WDFDRIVER Driver, PWDFDEVICE_INIT pDeviceInit) {
                 "WdfDeviceQueryPropertyEx failed: %!STATUS!", Status);
     return Status;
   }
-  const std::vector<display::test::MonitorMode>& requested_modes =
-      driver_properties.requested_modes();
+  const std::vector<display::test::MonitorConfig>& requested_configs =
+      driver_properties.requested_configs();
   TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "num_displays: %llu",
-              requested_modes.size());
+              requested_configs.size());
 
-  for (const auto& mode : requested_modes) {
+  for (const auto& config : requested_configs) {
     display::test::IndirectMonitor indirect_monitor;
     display::test::Edid edid(indirect_monitor.pEdidBlock.data());
-    bool success = edid.GetTimingEntry(0)->SetMode(mode.width(), mode.height(),
-                                                   mode.v_sync());
+    bool success = edid.GetTimingEntry(0)->SetMode(
+        config.width(), config.height(), config.v_sync());
+    edid.SetProductCode(config.product_code());
     if (!success) {
       TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "SetMode() unsuccessful");
     }
@@ -184,8 +185,8 @@ EvtWdfDriverDeviceAdd(WDFDRIVER Driver, PWDFDEVICE_INIT pDeviceInit) {
     TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER,
                 "Width (Modified EDID,Chosen Mode) (Inside "
                 "EvtWdfDriverDeviceAdd): %ld, %hu",
-                edid.GetTimingEntry(0)->GetWidth(), mode.width());
-    indirect_monitor.pModeList.push_back(mode);
+                edid.GetTimingEntry(0)->GetWidth(), config.width());
+    indirect_monitor.pConfigList.push_back(config);
     pContext->pContext->monitors.push_back(indirect_monitor);
   }
 
@@ -349,8 +350,8 @@ void IndirectDeviceContext::FinishInit(UINT ConnectorIndex) {
         new IndirectMonitorContext(MonitorCreateOut.MonitorObject);
 
     if (ConnectorIndex < monitors.size()) {
-      pMonitorContextWrapper->pContext->default_mode_list =
-          monitors[ConnectorIndex].pModeList;
+      pMonitorContextWrapper->pContext->default_config_list =
+          monitors[ConnectorIndex].pConfigList;
     }
 
     // Tell the OS that the monitor has been plugged in
@@ -495,24 +496,23 @@ _Use_decl_annotations_ NTSTATUS EvtIddCxMonitorGetDefaultModes(
 
   if (pInArgs->DefaultMonitorModeBufferInputCount == 0) {
     pOutArgs->DefaultMonitorModeBufferOutputCount = static_cast<UINT>(
-        pMonitorContextWrapper->pContext->default_mode_list.size());
+        pMonitorContextWrapper->pContext->default_config_list.size());
   } else {
-    for (DWORD ModeIndex = 0;
-         ModeIndex < pMonitorContextWrapper->pContext->default_mode_list.size();
-         ModeIndex++) {
-      const display::test::MonitorMode mode =
-          pMonitorContextWrapper->pContext->default_mode_list[ModeIndex];
+    for (DWORD i = 0;
+         i < pMonitorContextWrapper->pContext->default_config_list.size();
+         i++) {
+      const display::test::MonitorConfig config =
+          pMonitorContextWrapper->pContext->default_config_list[i];
       TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER,
-                  "Making the default modes: %hu, %hu, %hu", mode.width(),
-                  mode.height(), mode.v_sync());
-      pInArgs->pDefaultMonitorModes[ModeIndex] =
-          display::test::CreateIddCxMonitorMode(
-              mode.width(), mode.height(), mode.v_sync(),
-              IDDCX_MONITOR_MODE_ORIGIN_DRIVER);
+                  "Making the default modes: %hu, %hu, %hu", config.width(),
+                  config.height(), config.v_sync());
+      pInArgs->pDefaultMonitorModes[i] = display::test::CreateIddCxMonitorMode(
+          config.width(), config.height(), config.v_sync(),
+          IDDCX_MONITOR_MODE_ORIGIN_DRIVER);
     }
 
     pOutArgs->DefaultMonitorModeBufferOutputCount = static_cast<UINT>(
-        pMonitorContextWrapper->pContext->default_mode_list.size());
+        pMonitorContextWrapper->pContext->default_config_list.size());
     pOutArgs->PreferredMonitorModeIdx = 0;
   }
 

@@ -44,9 +44,9 @@ class IndirectMonitorContext {
                        HANDLE NewFrameEvent);
   void UnassignSwapChain();
 
-  // Default modes reported for edid-less monitors. The first mode is set as
+  // Default modes reported for edid-less monitors. The first config is set as
   // preferred
-  std::vector<MonitorMode> default_mode_list;
+  std::vector<MonitorConfig> default_config_list;
 
  private:
   IDDCX_MONITOR m_Monitor;
