@@ -1124,7 +1124,6 @@ mojom("web_ui_ts_test_mojo_bindings") {
   ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/content/test/data"
-  use_typescript_sources = true
 }
 
 preprocess_if_expr("preprocess_mojo_webui_test") {

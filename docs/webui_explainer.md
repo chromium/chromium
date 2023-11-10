@@ -508,7 +508,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "donuts.mojom" ]
   webui_module_path = "/"
-  use_typescript_sources = true
 }
 ```
 
