@@ -1036,23 +1036,27 @@ void CrasAudioHandler::SetInputMuteLockedBySecurityCurtain(bool mute_on) {
   SetInputMute(mute_on, InputMuteChangeMethod::kOther);
 }
 
+void CrasAudioHandler::RecordUserSwitchAudioDevice(bool is_input) const {
+  if (is_input) {
+    base::RecordAction(base::UserMetricsAction(kUserActionSwitchInput));
+    if (!input_device_selected_by_user_) {
+      base::RecordAction(
+          base::UserMetricsAction(kUserActionSwitchInputOverridden));
+    }
+  } else {
+    base::RecordAction(base::UserMetricsAction(kUserActionSwitchOutput));
+    if (!output_device_selected_by_user_) {
+      base::RecordAction(
+          base::UserMetricsAction(kUserActionSwitchOutputOverridden));
+    }
+  }
+}
+
 void CrasAudioHandler::SetActiveDevice(const AudioDevice& active_device,
                                        bool notify,
                                        DeviceActivateType activate_by) {
   if (activate_by == ACTIVATE_BY_USER) {
-    if (active_device.is_input) {
-      base::RecordAction(base::UserMetricsAction(kUserActionSwitchInput));
-      if (!input_device_selected_by_user_) {
-        base::RecordAction(
-            base::UserMetricsAction(kUserActionSwitchInputOverridden));
-      }
-    } else {
-      base::RecordAction(base::UserMetricsAction(kUserActionSwitchOutput));
-      if (!output_device_selected_by_user_) {
-        base::RecordAction(
-            base::UserMetricsAction(kUserActionSwitchOutputOverridden));
-      }
-    }
+    RecordUserSwitchAudioDevice(active_device.is_input);
   }
 
   // Update *_selected_by_user_.

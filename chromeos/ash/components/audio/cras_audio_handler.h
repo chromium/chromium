@@ -940,6 +940,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void HandleGetNumStreamIgnoreUiGains(
       absl::optional<int32_t> num_stream_ignore_ui_gains);
 
+  // Record metrics when user switches audio device.
+  void RecordUserSwitchAudioDevice(bool is_input) const;
+
   // Static helper function to abstract the |AudioSurvey| from input
   // |survey_specific_data|.
   static std::unique_ptr<CrasAudioHandler::AudioSurvey> AbstractAudioSurvey(
