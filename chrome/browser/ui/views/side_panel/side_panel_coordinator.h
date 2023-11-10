@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_COORDINATOR_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_COORDINATOR_H_
 
+#include <memory>
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -80,6 +81,9 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   bool IsSidePanelEntryShowing(
       const SidePanelEntry::Key& entry_key) const override;
 
+  // Returns the web contents in a side panel if one exists.
+  content::WebContents* GetWebContentsForTest(SidePanelEntryId id) override;
+
   // TODO(crbug.com/1341399): Move this method to `SidePanelUI` after decoupling
   // `SidePanelEntry` from views.
   bool IsSidePanelEntryShowing(const SidePanelEntry* entry) const;
@@ -141,10 +145,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // Returns the corresponding entry for `entry_key` or a nullptr if this key is
   // not registered in the currently observed registries. This looks through the
   // active contextual registry first, then the global registry.
-  SidePanelEntry* GetEntryForKey(const SidePanelEntry::Key& entry_key);
+  SidePanelEntry* GetEntryForKey(const SidePanelEntry::Key& entry_key) const;
 
   SidePanelEntry* GetActiveContextualEntryForKey(
-      const SidePanelEntry::Key& entry_key);
+      const SidePanelEntry::Key& entry_key) const;
 
   // Returns the current loading entry or nullptr if none exists.
   SidePanelEntry* GetLoadingEntry() const;

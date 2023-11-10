@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_header.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
@@ -61,6 +62,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/vector_icons.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -523,6 +525,20 @@ bool SidePanelCoordinator::IsSidePanelEntryShowing(
          current_entry_->key() == entry_key;
 }
 
+content::WebContents* SidePanelCoordinator::GetWebContentsForTest(
+    SidePanelEntryId id) {
+  if (auto* entry = GetEntryForKey(SidePanelEntryKey(id))) {
+    entry->CacheView(entry->GetContent());
+    if (entry->CachedView()) {
+      if (auto* view = entry->CachedView()->GetViewByID(
+              SidePanelWebUIView::kSidePanelWebViewId)) {
+        return (static_cast<views::WebView*>(view))->web_contents();
+      }
+    }
+  }
+  return nullptr;
+}
+
 SidePanelEntry::Id SidePanelCoordinator::GetComboboxDisplayedEntryIdForTesting()
     const {
   CHECK(combobox_model_);
@@ -614,7 +630,7 @@ views::View* SidePanelCoordinator::GetContentContainerView() const {
 }
 
 SidePanelEntry* SidePanelCoordinator::GetEntryForKey(
-    const SidePanelEntry::Key& entry_key) {
+    const SidePanelEntry::Key& entry_key) const {
   if (auto* contextual_entry = GetActiveContextualEntryForKey(entry_key)) {
     return contextual_entry;
   }
@@ -623,7 +639,7 @@ SidePanelEntry* SidePanelCoordinator::GetEntryForKey(
 }
 
 SidePanelEntry* SidePanelCoordinator::GetActiveContextualEntryForKey(
-    const SidePanelEntry::Key& entry_key) {
+    const SidePanelEntry::Key& entry_key) const {
   return GetActiveContextualRegistry()
              ? GetActiveContextualRegistry()->GetEntryForKey(entry_key)
              : nullptr;

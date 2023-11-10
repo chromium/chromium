@@ -12,6 +12,10 @@
 
 class Browser;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 // An abstract class of the side panel API.
 // The class is created in BrowserView for desktop Chrome. Get the instance of
 // this class by calling SidePanelUI::GetSidePanelUIForBrowser(browser);
@@ -73,6 +77,10 @@ class SidePanelUI : public base::SupportsUserData::Data {
   // shown.
   virtual bool IsSidePanelEntryShowing(
       const SidePanelEntryKey& entry_key) const = 0;
+
+  // Returns the content view for the given entry. Returns nullptr if the entry
+  // does not exist.
+  virtual content::WebContents* GetWebContentsForTest(SidePanelEntryId id) = 0;
 
  private:
   static const int kUserDataKey = 0;
