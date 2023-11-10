@@ -745,7 +745,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
             // The segmentation results should only be cached when Start is enabled, for example,
             // not on tablet.
-            if (ChromeFeatureList.sStartSurfaceReturnTime.isEnabled()) {
+            if (StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL.getValue()) {
                 ReturnToChromeUtil.cacheReturnTimeFromSegmentation();
             }
         }

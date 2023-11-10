@@ -315,7 +315,7 @@ public final class ReturnToChromeUtil {
      * @param returnTime The return time parameter based on form factor, either phones or tablets.
      */
     private static long getReturnTime(IntCachedFieldTrialParameter returnTime) {
-        if (ChromeFeatureList.sStartSurfaceReturnTime.isEnabled() && returnTime.getValue() != 0
+        if (returnTime.getValue() != 0
                 && StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL.getValue()) {
             return getReturnTimeFromSegmentation(returnTime);
         }

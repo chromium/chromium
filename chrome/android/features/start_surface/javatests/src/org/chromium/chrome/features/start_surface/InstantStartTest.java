@@ -99,7 +99,6 @@ import java.util.concurrent.CountDownLatch;
     "force-fieldtrials=Study/Group"
 })
 @EnableFeatures({
-    ChromeFeatureList.START_SURFACE_ANDROID,
     ChromeFeatureList.INSTANT_START,
     ChromeFeatureList.EMPTY_STATES
 })

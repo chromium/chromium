@@ -1137,7 +1137,7 @@ BASE_FEATURE(kStartSurfaceSpareTab,
 
 BASE_FEATURE(kStartSurfaceReturnTime,
              "StartSurfaceReturnTime",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAccountReauthenticationRecentTimeWindow,
              "AccountReauthenticationRecentTimeWindow",

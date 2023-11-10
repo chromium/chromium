@@ -471,7 +471,6 @@ public class ToolbarPhoneTest {
     @Test
     @MediumTest
     @EnableFeatures({
-        ChromeFeatureList.START_SURFACE_ANDROID,
         ChromeFeatureList.TAB_TO_GTS_ANIMATION
     })
     public void testEnterTabSwitcher_toolbarVisibleUntilTransitionEnds_startSurfaceEnabled() {
@@ -511,7 +510,6 @@ public class ToolbarPhoneTest {
     @Test
     @MediumTest
     @EnableFeatures({
-        ChromeFeatureList.START_SURFACE_ANDROID,
         ChromeFeatureList.TAB_TO_GTS_ANIMATION
     })
     @DisableAnimationsTestRule.EnsureAnimationsOn
@@ -605,7 +603,6 @@ public class ToolbarPhoneTest {
     @Test
     @MediumTest
     @EnableFeatures({
-        ChromeFeatureList.START_SURFACE_ANDROID,
         ChromeFeatureList.TAB_TO_GTS_ANIMATION
     })
     @DisableAnimationsTestRule.EnsureAnimationsOn
@@ -676,7 +673,6 @@ public class ToolbarPhoneTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_ANDROID)
     @DisableAnimationsTestRule.EnsureAnimationsOn
     public void
             testToolbarTabSwitcherButtonNotClickableDuringTransition_startSurfaceEnabled_noAnimation() {

@@ -49,7 +49,6 @@ import org.chromium.url.GURL;
 /** Tests for {@link StartSurfaceCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.START_SURFACE_ANDROID)
 @DisableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.SHOPPING_LIST})
 public class StartSurfaceCoordinatorUnitTest {
     private static final String START_SURFACE_TIME_SPENT = "StartSurface.TimeSpent";

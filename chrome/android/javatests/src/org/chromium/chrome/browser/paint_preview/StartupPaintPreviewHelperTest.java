@@ -37,18 +37,8 @@ import java.util.concurrent.ExecutionException;
 @RunWith(StartupPaintPreviewHelperTestRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @ParameterizedCommandLineFlags({
-    @Switches(
-            "disable-features="
-                    + ChromeFeatureList.START_SURFACE_ANDROID
-                    + ","
-                    + ChromeFeatureList.INSTANT_START),
-    @Switches("enable-features=" + ChromeFeatureList.START_SURFACE_ANDROID),
+    @Switches("disable-features=" + ChromeFeatureList.INSTANT_START),
     @Switches("enable-features=" + ChromeFeatureList.INSTANT_START),
-    @Switches(
-            "enable-features="
-                    + ChromeFeatureList.START_SURFACE_ANDROID
-                    + ","
-                    + ChromeFeatureList.INSTANT_START),
 })
 public class StartupPaintPreviewHelperTest {
     @Rule

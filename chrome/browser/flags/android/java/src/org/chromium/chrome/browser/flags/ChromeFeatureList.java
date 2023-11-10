@@ -623,7 +623,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sStartSurfaceRefactor =
             new CachedFlag(START_SURFACE_REFACTOR, true);
     public static final CachedFlag sStartSurfaceReturnTime =
-            new CachedFlag(START_SURFACE_RETURN_TIME, false);
+            new CachedFlag(START_SURFACE_RETURN_TIME, true);
     public static final CachedFlag sAccountReauthenticationRecentTimeWindow =
             new CachedFlag(ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW, true);
     public static final CachedFlag sStartSurfaceWithAccessibility =
