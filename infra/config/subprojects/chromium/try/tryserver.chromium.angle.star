@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.chromium.angle builder group."""
 
-load("//lib/builders.star", "os", "reclient")
+load("//lib/builders.star", "cpu", "os", "reclient")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
@@ -75,6 +75,7 @@ try_.builder(
     ),
     cores = None,
     os = os.MAC_ANY,
+    cpu = cpu.ARM64,
 )
 
 try_.builder(
