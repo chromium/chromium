@@ -8,6 +8,8 @@
 #include "components/media_effects/test/fake_video_source_provider.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
+#include <string>
+
 namespace media_effects {
 
 class FakeVideoCaptureService
@@ -25,9 +27,14 @@ class FakeVideoCaptureService
 
   void RemoveFakeCamera(const std::string& device_id);
 
-  // `callback` will be triggered after this source provider replies back to its
+  // `callback` will be triggered after the source provider replies back to its
   // client in GetSourceInfos(). Useful as a stopping point for a base::RunLoop.
   void SetOnRepliedWithSourceInfosCallback(base::OnceClosure callback);
+
+  // `callback` will be triggered when the source provider receives a
+  // GetVideoSource call.
+  void SetOnGetVideoSourceCallback(
+      FakeVideoSourceProvider::GetVideoSourceCallback callback);
 
   // video_capture::mojom::VideoCaptureService implementation
   void ConnectToVideoSourceProvider(

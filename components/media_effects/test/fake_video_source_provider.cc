@@ -33,6 +33,13 @@ void FakeVideoSourceProvider::SetOnRepliedWithSourceInfosCallback(
   on_replied_with_source_infos_ = std::move(callback);
 }
 
+// `callback` will be triggered when the source provider receives a
+// GetVideoSource call.
+void FakeVideoSourceProvider::SetOnGetVideoSourceCallback(
+    GetVideoSourceCallback callback) {
+  on_get_video_source_ = std::move(callback);
+}
+
 void FakeVideoSourceProvider::GetSourceInfos(GetSourceInfosCallback callback) {
   std::vector<media::VideoCaptureDeviceInfo> devices;
   for (const auto& [_, device_info] : device_infos_) {
@@ -54,7 +61,7 @@ void FakeVideoSourceProvider::GetSourceInfos(GetSourceInfosCallback callback) {
 void FakeVideoSourceProvider::GetVideoSource(
     const std::string& source_id,
     mojo::PendingReceiver<video_capture::mojom::VideoSource> stream) {
-  NOTIMPLEMENTED() << source_id;
+  on_get_video_source_.Run(source_id, std::move(stream));
 }
 
 void FakeVideoSourceProvider::Close(CloseCallback callback) {}

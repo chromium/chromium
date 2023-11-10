@@ -35,6 +35,14 @@ class FakeVideoSourceProvider
   // client in GetSourceInfos(). Useful as a stopping point for a base::RunLoop.
   void SetOnRepliedWithSourceInfosCallback(base::OnceClosure callback);
 
+  using GetVideoSourceCallback = base::RepeatingCallback<void(
+      const std::string& source_id,
+      mojo::PendingReceiver<video_capture::mojom::VideoSource> stream)>;
+
+  // `callback` will be triggered when this source provider receives a
+  // GetVideoSource call.
+  void SetOnGetVideoSourceCallback(GetVideoSourceCallback callback);
+
   // video_capture::mojom::VideoSourceProvider:
   void GetSourceInfos(GetSourceInfosCallback callback) override;
   void GetVideoSource(
@@ -67,6 +75,7 @@ class FakeVideoSourceProvider
       device_infos_;
 
   base::OnceClosure on_replied_with_source_infos_;
+  GetVideoSourceCallback on_get_video_source_;
 };
 
 }  // namespace media_effects

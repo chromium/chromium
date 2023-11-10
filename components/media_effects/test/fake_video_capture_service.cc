@@ -20,6 +20,13 @@ void FakeVideoCaptureService::SetOnRepliedWithSourceInfosCallback(
   fake_provider_.SetOnRepliedWithSourceInfosCallback(std::move(callback));
 }
 
+// `callback` will be triggered when the source provider receives a
+// GetVideoSource call.
+void FakeVideoCaptureService::SetOnGetVideoSourceCallback(
+    FakeVideoSourceProvider::GetVideoSourceCallback callback) {
+  fake_provider_.SetOnGetVideoSourceCallback(std::move(callback));
+}
+
 void FakeVideoCaptureService::ConnectToVideoSourceProvider(
     mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver) {
   fake_provider_.Bind(std::move(receiver));
