@@ -22,7 +22,6 @@ struct MEDIA_GPU_EXPORT DeviceInfo {
   virtual bool IsDecoderKnownUnaccelerated(VideoCodec codec);
   virtual bool IsSetOutputSurfaceSupported();
   virtual bool SupportsOverlaySurfaces();
-  virtual bool IsAsyncApiSupported();
   virtual void AddSupportedCodecProfileLevels(
       std::vector<CodecProfileLevel>* result);
 };

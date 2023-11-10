@@ -21,7 +21,6 @@ MockDeviceInfo::MockDeviceInfo() {
   ON_CALL(*this, IsSetOutputSurfaceSupported()).WillByDefault(Return(true));
   ON_CALL(*this, SupportsOverlaySurfaces()).WillByDefault(Return(true));
   ON_CALL(*this, CodecNeedsFlushWorkaround(_)).WillByDefault(Return(false));
-  ON_CALL(*this, IsAsyncApiSupported()).WillByDefault(Return(false));
 }
 
 MockDeviceInfo::~MockDeviceInfo() = default;
