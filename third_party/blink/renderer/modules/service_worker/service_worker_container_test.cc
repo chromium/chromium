@@ -146,9 +146,10 @@ class ExpectTypeError : public ScriptValueTest {
             .ToLocalChecked();
 
     EXPECT_EQ("TypeError",
-              ToCoreString(name->ToString(context).ToLocalChecked()));
-    EXPECT_EQ(expected_message_,
-              ToCoreString(message->ToString(context).ToLocalChecked()));
+              ToCoreString(isolate, name->ToString(context).ToLocalChecked()));
+    EXPECT_EQ(
+        expected_message_,
+        ToCoreString(isolate, message->ToString(context).ToLocalChecked()));
   }
 
  private:

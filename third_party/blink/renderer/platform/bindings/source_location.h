@@ -115,6 +115,7 @@ PLATFORM_EXPORT std::unique_ptr<SourceLocation> CaptureSourceLocation();
 
 // Captures current stack trace from function.
 PLATFORM_EXPORT std::unique_ptr<SourceLocation> CaptureSourceLocation(
+    v8::Isolate* isolate,
     v8::Local<v8::Function>);
 
 }  // namespace blink

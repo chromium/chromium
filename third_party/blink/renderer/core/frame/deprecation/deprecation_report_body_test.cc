@@ -21,6 +21,7 @@ TEST(DeprecationReportBodyJSONTest, noAnticipatedRemoval) {
   EXPECT_TRUE(json_object.IsObject());
 
   String json_string = ToBlinkString<String>(
+      scope.GetIsolate(),
       v8::JSON::Stringify(scope.GetContext(),
                           json_object.V8Value().As<v8::Object>())
           .ToLocalChecked(),
@@ -44,6 +45,7 @@ TEST(DeprecationReportBodyJSONTest, actualAnticipatedRemoval) {
   EXPECT_TRUE(json_object.IsObject());
 
   String json_string = ToBlinkString<String>(
+      scope.GetIsolate(),
       v8::JSON::Stringify(scope.GetContext(),
                           json_object.V8Value().As<v8::Object>())
           .ToLocalChecked(),

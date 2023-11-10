@@ -85,15 +85,17 @@ class CaptureErrorFunction final : public ScriptFunction::Callable {
 
     v8::Local<v8::Value> name =
         error_object->Get(context, V8String(isolate, "name")).ToLocalChecked();
-    name_ = ToCoreString(name->ToString(context).ToLocalChecked());
+    name_ = ToCoreString(isolate, name->ToString(context).ToLocalChecked());
     v8::Local<v8::Value> message =
         error_object->Get(context, V8String(isolate, "message"))
             .ToLocalChecked();
-    message_ = ToCoreString(message->ToString(context).ToLocalChecked());
+    message_ =
+        ToCoreString(isolate, message->ToString(context).ToLocalChecked());
     v8::Local<v8::Value> constraint =
         error_object->Get(context, V8String(isolate, "constraint"))
             .ToLocalChecked();
-    constraint_ = ToCoreString(constraint->ToString(context).ToLocalChecked());
+    constraint_ =
+        ToCoreString(isolate, constraint->ToString(context).ToLocalChecked());
 
     return ScriptValue();
   }

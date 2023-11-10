@@ -58,7 +58,7 @@ String GetCurrentScriptUrl(v8::Isolate* isolate) {
 
   v8::Local<v8::String> script_name =
       v8::StackTrace::CurrentScriptNameOrSourceURL(isolate);
-  return ToCoreStringWithNullCheck(script_name);
+  return ToCoreStringWithNullCheck(isolate, script_name);
 }
 
 Vector<String> GetScriptUrlsFromCurrentStack(v8::Isolate* isolate,
@@ -83,7 +83,7 @@ Vector<String> GetScriptUrlsFromCurrentStack(v8::Isolate* isolate,
     v8::Local<v8::String> script_name = frame->GetScriptName();
     if (script_name.IsEmpty() || !script_name->Length())
       continue;
-    String url = ToCoreString(script_name);
+    String url = ToCoreString(isolate, script_name);
     if (!unique_urls.Contains(url)) {
       unique_urls.push_back(std::move(url));
     }

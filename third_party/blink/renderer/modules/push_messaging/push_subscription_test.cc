@@ -43,6 +43,7 @@ TEST(PushSubscriptionTest, SerializesToBase64URLWithoutPadding) {
   EXPECT_TRUE(json_object.IsObject());
 
   String json_string = ToBlinkString<String>(
+      v8_testing_scope.GetIsolate(),
       v8::JSON::Stringify(v8_testing_scope.GetContext(),
                           json_object.V8Value().As<v8::Object>())
           .ToLocalChecked(),

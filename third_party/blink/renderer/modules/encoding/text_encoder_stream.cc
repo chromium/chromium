@@ -41,9 +41,10 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
   ScriptPromise Transform(v8::Local<v8::Value> chunk,
                           TransformStreamDefaultController* controller,
                           ExceptionState& exception_state) override {
-    V8StringResource<> input_resource{chunk};
-    if (!input_resource.Prepare(script_state_->GetIsolate(), exception_state))
+    V8StringResource<> input_resource{script_state_->GetIsolate(), chunk};
+    if (!input_resource.Prepare(exception_state)) {
       return ScriptPromise();
+    }
     const String input = input_resource;
     if (input.empty())
       return ScriptPromise::CastUndefined(script_state_.Get());

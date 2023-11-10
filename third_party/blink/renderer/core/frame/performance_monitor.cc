@@ -238,8 +238,9 @@ void PerformanceMonitor::Did(const probe::CallFunction& probe) {
                                     : String(user_callback->atomic_name);
   String text = String::Format("'%s' handler took %" PRId64 "ms",
                                name.Utf8().c_str(), duration.InMilliseconds());
-  InnerReportGenericViolation(probe.context, handler_type, text, duration,
-                              CaptureSourceLocation(probe.function));
+  InnerReportGenericViolation(
+      probe.context, handler_type, text, duration,
+      CaptureSourceLocation(probe.context->GetIsolate(), probe.function));
 }
 
 void PerformanceMonitor::Will(const probe::V8Compile& probe) {

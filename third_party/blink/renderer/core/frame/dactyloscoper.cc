@@ -89,7 +89,7 @@ String V8ValueToString(v8::Local<v8::Context> current_context,
     return String("");
   }
 
-  return ToBlinkString<String>(v8_string, kDoNotExternalize);
+  return ToBlinkString<String>(isolate, v8_string, kDoNotExternalize);
 }
 
 FontLookupType ToTypeProto(Dactyloscoper::FontLookupType lookup_type) {

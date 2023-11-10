@@ -188,7 +188,7 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
     return IDBKey::CreateNumber(value.As<v8::Number>()->Value());
 
   if (value->IsString())
-    return IDBKey::CreateString(ToCoreString(value.As<v8::String>()));
+    return IDBKey::CreateString(ToCoreString(isolate, value.As<v8::String>()));
 
   if (value->IsDate() && !std::isnan(value.As<v8::Date>()->ValueOf()))
     return IDBKey::CreateDate(value.As<v8::Date>()->ValueOf());
@@ -799,9 +799,10 @@ SQLValue NativeValueTraits<SQLValue>::NativeValue(
     return SQLValue();
   if (value->IsNumber())
     return SQLValue(value.As<v8::Number>()->Value());
-  V8StringResource<> string_value(value);
-  if (!string_value.Prepare(isolate, exception_state))
+  V8StringResource<> string_value(isolate, value);
+  if (!string_value.Prepare(exception_state)) {
     return SQLValue();
+  }
   return SQLValue(string_value);
 }
 

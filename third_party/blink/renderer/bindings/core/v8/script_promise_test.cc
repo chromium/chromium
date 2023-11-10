@@ -113,7 +113,8 @@ class CapturingCallable final : public ScriptFunction::Callable {
 };
 
 String ToString(v8::Local<v8::Context> context, const ScriptValue& value) {
-  return ToCoreString(value.V8Value()->ToString(context).ToLocalChecked());
+  return ToCoreString(context->GetIsolate(),
+                      value.V8Value()->ToString(context).ToLocalChecked());
 }
 
 Vector<String> ToStringArray(v8::Isolate* isolate, const ScriptValue& value) {

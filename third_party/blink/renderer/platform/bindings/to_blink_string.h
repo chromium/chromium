@@ -15,7 +15,9 @@ namespace blink {
 enum ExternalMode { kExternalize, kDoNotExternalize };
 
 template <typename StringType>
-PLATFORM_EXPORT StringType ToBlinkString(v8::Local<v8::String>, ExternalMode);
+PLATFORM_EXPORT StringType ToBlinkString(v8::Isolate* isolate,
+                                         v8::Local<v8::String>,
+                                         ExternalMode);
 
 PLATFORM_EXPORT String ToBlinkString(int value);
 
@@ -28,7 +30,8 @@ PLATFORM_EXPORT String ToBlinkString(int value);
 // The returned StringView is guaranteed to be valid as long as `backing_store`
 // and `v8_string` are alive.
 PLATFORM_EXPORT StringView
-ToBlinkStringView(v8::Local<v8::String> v8_string,
+ToBlinkStringView(v8::Isolate* isolate,
+                  v8::Local<v8::String> v8_string,
                   StringView::StackBackingStore& backing_store,
                   ExternalMode external);
 

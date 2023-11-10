@@ -85,7 +85,8 @@ class PaymentRequestForInvalidOriginOrSslTest : public testing::Test {
   std::string GetRejectString(ScriptState* script_state,
                               ScriptPromise& promise) {
     ScriptValue on_reject = GetRejectValue(script_state, promise);
-    return ToCoreString(on_reject.V8Value()
+    return ToCoreString(script_state->GetIsolate(),
+                        on_reject.V8Value()
                             ->ToString(script_state->GetContext())
                             .ToLocalChecked())
         .Ascii()

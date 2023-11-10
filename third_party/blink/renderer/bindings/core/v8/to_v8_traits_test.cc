@@ -37,7 +37,8 @@ void TestToV8Traits(const V8TestingScope& scope,
     return;
   }
   String actual_string =
-      ToCoreString(actual->ToString(scope.GetContext()).ToLocalChecked());
+      ToCoreString(scope.GetIsolate(),
+                   actual->ToString(scope.GetContext()).ToLocalChecked());
   if (expected != actual_string) {
     ADD_FAILURE_AT(path, line_number)
         << "ToV8 returns an incorrect value.\n  Actual: "
@@ -493,13 +494,15 @@ TEST(ToV8TraitsTest, PairHeapVector) {
           .ToLocalChecked();
   EXPECT_TRUE(one->IsObject());
   EXPECT_EQ(String("foo"),
-            ToCoreString(one->ToString(scope.GetContext()).ToLocalChecked()));
+            ToCoreString(scope.GetIsolate(),
+                         one->ToString(scope.GetContext()).ToLocalChecked()));
   v8::Local<v8::Value> two =
       result->Get(scope.GetContext(), V8String(scope.GetIsolate(), "two"))
           .ToLocalChecked();
   EXPECT_TRUE(two->IsObject());
   EXPECT_EQ(String("bar"),
-            ToCoreString(two->ToString(scope.GetContext()).ToLocalChecked()));
+            ToCoreString(scope.GetIsolate(),
+                         two->ToString(scope.GetContext()).ToLocalChecked()));
 }
 
 TEST(ToV8TraitsTest, NullStringInputForNoneNullableType) {
@@ -636,7 +639,8 @@ TEST(ToV8TraitsTest, NullableDate) {
           scope.GetScriptState(), absl::optional<base::Time>(expected_date))
           .ToLocal(&result));
   String actual_string =
-      ToCoreString(result->ToString(scope.GetContext()).ToLocalChecked());
+      ToCoreString(scope.GetIsolate(),
+                   result->ToString(scope.GetContext()).ToLocalChecked());
   base::Time actual_date;
   EXPECT_TRUE(
       base::Time::FromString(actual_string.Ascii().c_str(), &actual_date));

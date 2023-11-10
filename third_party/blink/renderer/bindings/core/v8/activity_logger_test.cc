@@ -34,8 +34,9 @@ class TestActivityLogger : public V8DOMActivityLogger {
 
   void LogSetter(const String& api_name,
                  const v8::Local<v8::Value>& new_value) override {
-    logged_activities_.push_back(
-        api_name + " | " + ToCoreStringWithUndefinedOrNullCheck(new_value));
+    logged_activities_.push_back(api_name + " | " +
+                                 ToCoreStringWithUndefinedOrNullCheck(
+                                     v8::Isolate::GetCurrent(), new_value));
   }
 
   void LogMethod(const String& api_name,
@@ -44,7 +45,8 @@ class TestActivityLogger : public V8DOMActivityLogger {
     String activity_string = api_name;
     for (int i = 0; i < argc; i++) {
       activity_string = activity_string + " | " +
-                        ToCoreStringWithUndefinedOrNullCheck(argv[i]);
+                        ToCoreStringWithUndefinedOrNullCheck(
+                            v8::Isolate::GetCurrent(), argv[i]);
     }
     logged_activities_.push_back(activity_string);
   }
