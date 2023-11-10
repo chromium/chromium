@@ -20,6 +20,7 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/contains.h"
@@ -1380,6 +1381,36 @@ TEST_F(WindowRestoreControllerTest, WindowsSavedInOverview) {
   app_restore::WindowInfo* arc_window_info = GetWindowInfo(arc_window.get());
   ASSERT_TRUE(arc_window_info);
   EXPECT_EQ(window_bounds, arc_window_info->arc_extra_info->bounds_in_root);
+}
+
+// Tests that a window whose bounds are offscreen (were on a disconnected
+// display), are restored such that at least 30% of the window is visible.
+TEST_F(WindowRestoreControllerTest, WindowsMinimumVisibleArea) {
+  UpdateDisplay("800x600");
+
+  // Create a Window Restore'd browser that is was previously on a monitor at
+  // the bottom right of the current display.
+  const int window_length = 200;
+  AddEntryToFakeFile(
+      /*restore_id=*/1, gfx::Rect(900, 700, window_length, window_length),
+      chromeos::WindowStateType::kNormal);
+  auto* restored_window = CreateTestWindowRestoredWidgetFromRestoreId(
+                              /*restore_id=*/1, AppType::BROWSER,
+                              /*is_taskless_arc_app=*/false)
+                              ->GetNativeWindow();
+  const gfx::Rect& bounds_in_screen = restored_window->GetBoundsInScreen();
+
+  // Check the intersection of the display bounds and the window bounds in
+  // screen. The intersection should be non-empty (window is partially on the
+  // display) and width and height should at least 60 (30% of the window is
+  // visible).
+  const gfx::Rect intersection =
+      gfx::IntersectRects(gfx::Rect(0, 0, 800, 600), bounds_in_screen);
+  const int minimum_length =
+      std::round(kMinimumPercentOnScreenArea * window_length);
+  EXPECT_FALSE(intersection.IsEmpty());
+  EXPECT_GE(intersection.size().width(), minimum_length);
+  EXPECT_GE(intersection.size().height(), minimum_length);
 }
 
 }  // namespace ash

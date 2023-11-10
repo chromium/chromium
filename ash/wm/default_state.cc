@@ -41,10 +41,6 @@ namespace {
 
 using ::chromeos::WindowStateType;
 
-// This specifies how much percent (30%) of a window rect
-// must be visible when the window is added to the workspace.
-const float kMinimumPercentOnScreenArea = 0.3f;
-
 // When a window that has restore bounds at least as large as a work area is
 // unmaximized, inset the bounds slightly so that they are not exactly the same.
 // This makes it easier to resize the window.

@@ -104,7 +104,15 @@ void MaybeRestoreOutOfBoundsWindows(aura::Window* window) {
   if (display_area.Contains(current_bounds))
     return;
 
-  AdjustBoundsToEnsureMinimumWindowVisibility(display_area, &current_bounds);
+  // Adjust the bounds so that at least 30% of the window bounds is visible.
+  auto get_minimum_length = [](int length) -> int {
+    return std::max(
+        kMinimumOnScreenArea,
+        static_cast<int>(std::round(length * kMinimumPercentOnScreenArea)));
+  };
+  AdjustBoundsToEnsureWindowVisibility(
+      display_area, get_minimum_length(current_bounds.width()),
+      get_minimum_length(current_bounds.height()), &current_bounds);
 
   auto* window_state = WindowState::Get(window);
   if (window_state->HasRestoreBounds()) {
@@ -337,9 +345,6 @@ void WindowRestoreController::OnWidgetInitialized(views::Widget* widget) {
   // If the restored bounds are out of the screen, move the window to the bounds
   // manually as most widget types force windows to be within the work area on
   // creation.
-  // TODO(sammiequon): The Files app uses async Mojo calls to activate
-  // and set its bounds, making this approach not work. In the future, we'll
-  // need to address the Files app.
   MaybeRestoreOutOfBoundsWindows(window);
 }
 
