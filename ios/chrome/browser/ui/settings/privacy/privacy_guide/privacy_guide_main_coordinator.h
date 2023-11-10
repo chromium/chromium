@@ -25,4 +25,5 @@
 @property(nonatomic, weak) id<PrivacyGuideMainCoordinatorDelegate> delegate;
 
 @end
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PRIVACY_PRIVACY_GUIDE_PRIVACY_GUIDE_MAIN_COORDINATOR_H_
