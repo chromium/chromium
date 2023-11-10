@@ -22,6 +22,13 @@
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #endif
 
+void InitializeOzoneKeyboardEngineManager() {
+  static std::unique_ptr<ui::StubKeyboardLayoutEngine> keyboard_layout_engine_ =
+      std::make_unique<ui::StubKeyboardLayoutEngine>();
+  ui::KeyboardLayoutEngineManager::SetKeyboardLayoutEngine(
+      keyboard_layout_engine_.get());
+}
+
 #if BUILDFLAG(OZONE_PLATFORM_X11)
 bool ConvertKeyCodeToTextOzone
 #else
@@ -33,11 +40,8 @@ bool ConvertKeyCodeToText
      std::string* error_msg) {
   ui::KeyboardLayoutEngine* keyboard_layout_engine =
       ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
-
-  std::unique_ptr<ui::StubKeyboardLayoutEngine> stub_layout_engine;
   if (!keyboard_layout_engine) {
-    stub_layout_engine = std::make_unique<ui::StubKeyboardLayoutEngine>();
-    keyboard_layout_engine = stub_layout_engine.get();
+    return false;
   }
   ui::DomCode dom_code = ui::UsLayoutKeyboardCodeToDomCode(key_code);
   int event_flags = ui::EF_NONE;

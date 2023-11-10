@@ -41,6 +41,7 @@ bool SwitchToUSKeyboardLayout();
 #endif
 
 #if BUILDFLAG(IS_OZONE)
+void InitializeOzoneKeyboardEngineManager();
 #if BUILDFLAG(OZONE_PLATFORM_X11)
 // Uses X11 implementation if there is an X display.
 // TODO(crbug.com/987939): Support XKB.
