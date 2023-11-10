@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -396,6 +397,92 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
   EXPECT_EQ(result->input_string,
             "hello this is a test: this is my input title");
   EXPECT_FALSE(result->should_ignore_input_context);
+}
+
+TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
+       ConstructOutputMetadataNoConfiguration) {
+  auto maybe_metadata = interpreter()->ConstructOutputMetadata(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, "output");
+
+  EXPECT_FALSE(maybe_metadata.has_value());
+}
+
+TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
+       ConstructOutputMetadataNoOnDeviceConfigForFeature) {
+  proto::OnDeviceModelExecutionConfig config;
+  config.add_feature_configs()->set_feature(
+      proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION);
+  UpdateInterpreterWithConfig(config);
+
+  auto maybe_metadata = interpreter()->ConstructOutputMetadata(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, "output");
+
+  EXPECT_FALSE(maybe_metadata.has_value());
+}
+
+TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
+       ConstructOutputMetadataOnDeviceConfigHasNoOutputConfig) {
+  proto::OnDeviceModelExecutionConfig config;
+  auto* fc = config.add_feature_configs();
+  fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+
+  UpdateInterpreterWithConfig(config);
+
+  auto maybe_metadata = interpreter()->ConstructOutputMetadata(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, "output");
+
+  EXPECT_FALSE(maybe_metadata.has_value());
+}
+
+TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
+       ConstructOutputMetadataBadProto) {
+  proto::OnDeviceModelExecutionConfig config;
+  auto* fc = config.add_feature_configs();
+  fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  auto* oc = fc->mutable_output_config();
+  oc->set_proto_type("garbage type");
+  oc->mutable_proto_field()->add_proto_descriptors()->set_tag_number(1);
+  UpdateInterpreterWithConfig(config);
+
+  auto maybe_metadata = interpreter()->ConstructOutputMetadata(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, "output");
+
+  EXPECT_FALSE(maybe_metadata.has_value());
+}
+
+TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
+       ConstructOutputMetadataDescriptorSpecifiedNotStringValue) {
+  proto::OnDeviceModelExecutionConfig config;
+  auto* fc = config.add_feature_configs();
+  fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  auto* oc = fc->mutable_output_config();
+  oc->set_proto_type("optimization_guide.proto.ComposeRequest");
+  oc->mutable_proto_field()->add_proto_descriptors()->set_tag_number(4);
+  UpdateInterpreterWithConfig(config);
+
+  auto maybe_metadata = interpreter()->ConstructOutputMetadata(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, "output");
+
+  EXPECT_FALSE(maybe_metadata.has_value());
+}
+
+TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
+       ConstructOutputMetadataDescriptorValid) {
+  proto::OnDeviceModelExecutionConfig config;
+  auto* fc = config.add_feature_configs();
+  fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  auto* oc = fc->mutable_output_config();
+  oc->set_proto_type("optimization_guide.proto.ComposeResponse");
+  oc->mutable_proto_field()->add_proto_descriptors()->set_tag_number(1);
+  UpdateInterpreterWithConfig(config);
+
+  auto maybe_metadata = interpreter()->ConstructOutputMetadata(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, "output");
+
+  ASSERT_TRUE(maybe_metadata.has_value());
+  EXPECT_EQ(
+      "output",
+      ParsedAnyMetadata<proto::ComposeResponse>(*maybe_metadata)->output());
 }
 
 }  // namespace

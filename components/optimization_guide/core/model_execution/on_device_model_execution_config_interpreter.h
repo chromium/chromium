@@ -47,6 +47,13 @@ class OnDeviceModelExecutionConfigInterpreter {
       const google::protobuf::MessageLite& request,
       bool want_input_context) const;
 
+  // Constructs the output metadata for `feature` and `output`. Will return
+  // std::nullopt if there is not a valid config for the feature or could not be
+  // fulfilled for any reason.
+  std::optional<proto::Any> ConstructOutputMetadata(
+      proto::ModelExecutionFeature feature,
+      const std::string& output) const;
+
  private:
   // Populates `feature_configs_` based on `config`.
   void PopulateFeatureConfigs(

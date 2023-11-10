@@ -52,6 +52,9 @@ message OnDeviceModelExecutionFeatureConfig {
 
   // The config used to construct the input for on-device model execution.
   optional OnDeviceModelExecutionInputConfig input_config = 2;
+
+  // The config used to construct the output for on-device model execution.
+  optional OnDeviceModelExecutionOutputConfig output_config = 3;
 }
 
 message OnDeviceModelExecutionInputConfig {
@@ -163,4 +166,12 @@ message Condition {
   optional ProtoField proto_field = 1;
   optional OperatorType operator_type = 2;
   optional Value value = 3;
+}
+
+message OnDeviceModelExecutionOutputConfig {
+  // The proto type to use for the response metadata.
+  optional string proto_type = 1;
+
+  // The proto field to populate the output string with.
+  optional ProtoField proto_field = 2;
 }

@@ -218,4 +218,24 @@ OnDeviceModelExecutionConfigInterpreter::ConstructInputString(
       .should_ignore_input_context = should_ignore_input_context};
 }
 
+std::optional<proto::Any>
+OnDeviceModelExecutionConfigInterpreter::ConstructOutputMetadata(
+    proto::ModelExecutionFeature feature,
+    const std::string& output) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!HasConfigForFeature(feature)) {
+    return std::nullopt;
+  }
+
+  auto feature_config = feature_configs_.at(feature);
+  if (!feature_config.has_output_config()) {
+    return std::nullopt;
+  }
+  auto output_config = feature_config.output_config();
+
+  return SetProtoValue(output_config.proto_type(), output_config.proto_field(),
+                       output);
+}
+
 }  // namespace optimization_guide

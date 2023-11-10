@@ -81,10 +81,51 @@ def GenerateProtoDescriptors(out, includes, message_data):
     out.write('}\n\n') # End if statement
   out.write('return std::nullopt;\n')
   out.write('}\n\n') # End function
+
+  out.write("""
+    std::optional<proto::Any> SetProtoValue(const std::string& proto_name,
+                                            const proto::ProtoField& proto_field,
+                                            const std::string& value,
+                                            int32_t index) {
+      if (index >= proto_field.proto_descriptors_size()) {
+        return std::nullopt;
+      }
+  """)
+  for type_name, data in message_data.items():
+    out.write('if (proto_name == "%s") {\n' % type_name)
+    out.write('switch(proto_field.proto_descriptors(index).tag_number()) {\n')
+    for f in data['fields']:
+      if f['type'] == 9:
+        out.write('case %d: {\n' % f['tag_number'])
+        out.write('proto::Any any;\n')
+        out.write('any.set_type_url("type.googleapis.com/%s");\n' % type_name)
+        out.write('%s response_value;\n' % data['cpp_class_name'])
+        out.write('response_value.set_%s(value);' % f['name'])
+        out.write('response_value.SerializeToString(any.mutable_value());')
+        out.write('return any;')
+        out.write('}\n')
+    out.write("""
+    default:
+      return std::nullopt;\n
+    """)
+    out.write('}')
+    out.write('}\n') # End if statement
+
+  out.write("""
+      return std::nullopt;
+    }
+  """)
+
   out.write('}  // namespace\n\n')
   out.write("""
     std::optional<proto::Value> GetProtoValue(const google::protobuf::MessageLite& msg, const proto::ProtoField& proto_field) {
       return GetProtoValue(msg, proto_field, /*index=*/0);
+    }
+
+    std::optional<proto::Any> SetProtoValue(const std::string& proto_name,
+                                            const proto::ProtoField& proto_field,
+                                            const std::string& value) {
+      return SetProtoValue(proto_name, proto_field, value, /*index=*/0);
     }
   """)
   out.write('}  // namespace optimization_guide\n')
