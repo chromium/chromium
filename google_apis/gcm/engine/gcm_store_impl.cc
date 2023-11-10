@@ -1027,8 +1027,6 @@ bool GCMStoreImpl::Backend::LoadIncomingMessages(
   if (!expired_incoming_messages.empty()) {
     DVLOG(1) << "Removing " << expired_incoming_messages.size()
              << " expired incoming messages.";
-    UMA_HISTOGRAM_COUNTS_1M("GCM.ExpiredIncomingMessages",
-                            expired_incoming_messages.size());
     RemoveIncomingMessages(expired_incoming_messages, base::DoNothing());
   }
   return true;

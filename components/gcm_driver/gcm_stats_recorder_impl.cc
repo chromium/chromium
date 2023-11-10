@@ -350,9 +350,8 @@ void GCMStatsRecorderImpl::RecordRegistrationRetryDelayed(
                          retries_left));
 }
 
-void GCMStatsRecorderImpl::RecordUnregistrationSent(
-    const std::string& app_id, const std::string& source) {
-  UMA_HISTOGRAM_COUNTS_1M("GCM.UnregistrationRequest", 1);
+void GCMStatsRecorderImpl::RecordUnregistrationSent(const std::string& app_id,
+                                                    const std::string& source) {
   if (!is_recording_)
     return;
   RecordRegistration(app_id, source, "Unregistration request sent",
