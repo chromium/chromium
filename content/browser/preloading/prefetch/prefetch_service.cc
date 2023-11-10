@@ -408,8 +408,7 @@ void PrefetchService::PrefetchUrl(
     }
 
     const auto& prefetch_type = prefetch_container->GetPrefetchType();
-    if (prefetch_type.IsProxyRequiredWhenCrossOrigin() &&
-        !prefetch_type.IsProxyBypassedForTesting()) {
+    if (prefetch_type.IsProxyRequiredWhenCrossOrigin()) {
       bool allow_all_domains =
           PrefetchAllowAllDomains() ||
           (PrefetchAllowAllDomainsForExtendedPreloading() &&
