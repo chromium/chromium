@@ -18,6 +18,7 @@ struct VectorIcon;
 }  // namespace gfx
 
 namespace views {
+class FlexLayoutView;
 class ImageButton;
 class ImageView;
 class InkDropContainerView;
@@ -185,6 +186,7 @@ class ASH_EXPORT FeatureTile : public views::Button {
   raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> sub_label_ = nullptr;
   raw_ptr<views::ImageView, ExperimentalAsh> drill_in_arrow_ = nullptr;
+  raw_ptr<views::FlexLayoutView> title_container_ = nullptr;
 
   // The radius of the tile's curved edges.
   int corner_radius_;

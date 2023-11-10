@@ -11,6 +11,7 @@
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -55,7 +56,19 @@ class NetworkFeatureTilePixelTest : public AshTestBase {
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
 
-    feature_tile_ = widget_->SetContentsView(std::move(feature_tile));
+    auto* contents =
+        widget_->SetContentsView(std::make_unique<views::BoxLayoutView>());
+    contents->SetMainAxisAlignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+    contents->SetCrossAxisAlignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+    // The tile colors have transparency, so set a background color so they
+    // render like in production.
+    contents->SetBackground(views::CreateThemedSolidBackground(
+        cros_tokens::kCrosSysSystemBaseElevated));
+
+    feature_tile_ =
+        widget_->GetContentsView()->AddChildView(std::move(feature_tile));
 
     // Add the non-default cellular and ethernet devices to Shill.
     network_state_helper()->manager_test()->AddTechnology(shill::kTypeCellular,
@@ -141,7 +154,7 @@ TEST_F(NetworkFeatureTilePixelTest, NoNetworks) {
   ASSERT_TRUE(tile_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_tile_view",
-      /*revision_number=*/2, tile_view));
+      /*revision_number=*/3, tile_view));
 }
 
 TEST_F(NetworkFeatureTilePixelTest, Ethernet) {
@@ -153,7 +166,7 @@ TEST_F(NetworkFeatureTilePixelTest, Ethernet) {
   ASSERT_TRUE(tile_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_tile_view",
-      /*revision_number=*/1, tile_view));
+      /*revision_number=*/2, tile_view));
 }
 
 TEST_F(NetworkFeatureTilePixelTest, Wifi) {
@@ -165,7 +178,7 @@ TEST_F(NetworkFeatureTilePixelTest, Wifi) {
   ASSERT_TRUE(tile_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_tile_view",
-      /*revision_number=*/1, tile_view));
+      /*revision_number=*/2, tile_view));
 }
 
 TEST_F(NetworkFeatureTilePixelTest, WifiSecurity) {
@@ -177,7 +190,7 @@ TEST_F(NetworkFeatureTilePixelTest, WifiSecurity) {
   ASSERT_TRUE(tile_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_tile_view",
-      /*revision_number=*/0, tile_view));
+      /*revision_number=*/1, tile_view));
 }
 
 TEST_F(NetworkFeatureTilePixelTest, Cellular) {
@@ -189,7 +202,7 @@ TEST_F(NetworkFeatureTilePixelTest, Cellular) {
   ASSERT_TRUE(tile_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_tile_view",
-      /*revision_number=*/1, tile_view));
+      /*revision_number=*/2, tile_view));
 }
 
 }  // namespace ash
