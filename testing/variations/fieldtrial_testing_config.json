@@ -13329,6 +13329,26 @@
             ]
         }
     ],
+    "PrivacySandboxEnrollment": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "PrivacySandboxAttestationsHigherComponentRegistrationPriority",
+                    "enable_features": [
+                        "PrivacySandboxAttestationsHigherComponentRegistrationPriority"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacySandboxHatsForDesktopM1": [
         {
             "platforms": [
