@@ -1874,6 +1874,16 @@ suite('<settings-internet-detail-subpage>', () => {
           await flushTasks();
           assertTrue(!!getApn());
           assertEquals(name, getApn()!.textContent!.trim());
+          assertFalse(getCrLink()!.hasAttribute('warning'));
+
+          // Adding a restricted connectivity state should cause the sublabel to
+          // be a warning.
+          cellularNetwork.portalState = PortalState.kNoInternet;
+          cellularNetwork.connectionState = ConnectionStateType.kPortal;
+          mojoApi.setManagedPropertiesForTest(cellularNetwork);
+          internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+          await flushTasks();
+          assertTrue(getCrLink()!.hasAttribute('warning'));
         } else {
           assertNull(getApn());
         }

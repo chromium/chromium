@@ -8,7 +8,7 @@ import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {DeviceStateType, NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -226,5 +226,20 @@ suite('ApnSubpageTest', function() {
 
     assertEquals(0, counter);
     Router.getInstance().navigateToPreviousRoute = navigateToPreviousRoute;
+  });
+
+  test('Portal state is propagated to <apn-list>', async function() {
+    let props = OncMojo.getDefaultManagedProperties(
+        NetworkType.kCellular, 'cellular_guid', 'cellular');
+    mojoApi_.setManagedPropertiesForTest(props);
+    await flushTasks();
+    const getApnList = () => apnSubpage.shadowRoot.querySelector('apn-list');
+    assertFalse(!!getApnList().portalState);
+
+    props = Object.assign({}, props);
+    props.portalState = PortalState.kNoInternet;
+    mojoApi_.setManagedPropertiesForTest(props);
+    await flushTasks();
+    assertEquals(PortalState.kNoInternet, getApnList().portalState);
   });
 });

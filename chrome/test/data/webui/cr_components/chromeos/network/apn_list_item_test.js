@@ -10,7 +10,7 @@ import {ApnDetailDialogMode, ApnEventData} from 'chrome://resources/ash/common/n
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {ApnState, CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -87,8 +87,16 @@ suite('ApnListItemTest', function() {
     await flushTasks();
 
     assertFalse(subLabel.hasAttribute('hidden'));
+    assertFalse(subLabel.hasAttribute('warning'));
     assertEquals(
         apnListItem.i18n('NetworkHealthStateConnected'), subLabel.innerText);
+
+    apnListItem.portalState = PortalState.kNoInternet;
+    assertFalse(subLabel.hasAttribute('hidden'));
+    assertTrue(subLabel.hasAttribute('warning'));
+    assertEquals(
+        apnListItem.i18n('networkListItemConnectedNoConnectivity'),
+        subLabel.innerText);
   });
 
   test('Check if APN three dot menu shows', async function() {

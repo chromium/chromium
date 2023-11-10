@@ -15,6 +15,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {ApnDetailDialogMode, ApnEventData, getApnDisplayName} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {ApnProperties, ApnState, CrosNetworkConfigInterface} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {getTemplate} from './apn_list_item.html.js';
 
@@ -67,6 +68,11 @@ class ApnListItem extends ApnListItemBase {
        */
       listSize: Number,
 
+      /** @type {?PortalState} */
+      portalState: {
+        type: Object,
+      },
+
       /** @private */
       isDisabled_: {
         reflectToAttribute: true,
@@ -89,6 +95,25 @@ class ApnListItem extends ApnListItemBase {
    */
   getApnDisplayName_(apn) {
     return getApnDisplayName(this.i18n.bind(this), apn);
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getSublabel_() {
+    if (this.isPortalStateNoInternet_()) {
+      return this.i18n('networkListItemConnectedNoConnectivity');
+    }
+    return this.i18n('OncConnected');
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isPortalStateNoInternet_() {
+    return !!this.portalState && this.portalState === PortalState.kNoInternet;
   }
 
   /**
