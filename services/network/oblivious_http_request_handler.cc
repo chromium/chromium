@@ -482,7 +482,7 @@ void ObliviousHttpRequestHandler::OnRequestComplete(
         *headers,
         base::BindOnce(
             &ObliviousHttpRequestHandler::OnDoneFinalizingTrustTokenOperation,
-            base::Unretained(this), id, inner_status_code, std::move(headers),
+            base::Unretained(this), id, inner_status_code, headers,
             std::string(bhttp_response->body())));
     return;
   }
