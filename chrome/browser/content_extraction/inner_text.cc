@@ -75,9 +75,10 @@ void GetInnerText(content::RenderFrameHost& host,
   auto* agent_ptr = agent.get();
   agent_ptr->GetInnerText(
       std::move(params),
-      base::BindOnce(&OnGotInnerText, start_time, std::move(agent),
-                     mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                         std::move(callback), nullptr)));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&OnGotInnerText, start_time, std::move(agent),
+                         std::move(callback)),
+          nullptr));
 }
 
 namespace internal {
