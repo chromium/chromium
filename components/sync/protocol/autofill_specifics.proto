@@ -124,7 +124,16 @@ message AutofillProfileSpecifics {
   optional string address_home_thoroughfare_number = 39;
   optional string address_home_street_location = 73;
   optional string address_home_subpremise_name = 42;
+  // All the information related to the apartment. Normally a combination of the
+  // apartment type (address_home_apt_type) and number (address_home_apt_num).
+  // E.g. "Apt 5".
+  optional string address_home_apt = 85;
+  // The raw number (or identifier) of an apartment (e.g. "5") but without a
+  // prefix. The value "apt 5" would correspond to the address_home_apt.
   optional string address_home_apt_num = 56;
+  // Information describing the type of apartment (e.g. Apt, Apartamento, Sala,
+  // Departamento).
+  optional string address_home_apt_type = 87;
   optional string address_home_floor = 57;
   optional string address_home_landmark = 67;
   // The type indicates that the address is at the intersection between two
@@ -170,7 +179,9 @@ message AutofillProfileSpecifics {
   optional VerificationStatus address_home_thoroughfare_number_status = 52;
   optional VerificationStatus address_home_street_location_status = 74;
   optional VerificationStatus address_home_subpremise_name_status = 55;
+  optional VerificationStatus address_home_apt_status = 86;
   optional VerificationStatus address_home_apt_num_status = 58;
+  optional VerificationStatus address_home_apt_type_status = 88;
   optional VerificationStatus address_home_floor_status = 59;
 
   // Phone.

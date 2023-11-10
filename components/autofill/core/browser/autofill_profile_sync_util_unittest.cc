@@ -163,11 +163,13 @@ AutofillProfile ConstructCompleteProfileBR() {
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
                                            u"apto. 1501, Top Hill Tower",
                                            VerificationStatus::kFormatted);
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_SUBPREMISE, u"1501",
-                                           VerificationStatus::kFormatted);
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_APT, u"1501",
-                                           VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_SUBPREMISE, u"apto. 1501", VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_APT, u"apto. 1501",
+                                           VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_APT_NUM, u"1501",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_APT_TYPE, u"apto.",
                                            VerificationStatus::kParsed);
 
   // Reset unused tokens from the default profile.
@@ -409,6 +411,16 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
       sync_pb::
           AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
 
+  specifics.set_address_home_apt("");
+  specifics.set_address_home_apt_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
+  specifics.set_address_home_apt_type("");
+  specifics.set_address_home_apt_type_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
   return specifics;
 }
 
@@ -465,12 +477,20 @@ AutofillProfileSpecifics ConstructCompleteSpecificsBR() {
   specifics.set_address_home_overflow_and_landmark_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
 
-  specifics.set_address_home_subpremise_name("1501");
+  specifics.set_address_home_subpremise_name("apto. 1501");
   specifics.set_address_home_subpremise_name_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
 
+  specifics.set_address_home_apt("apto. 1501");
+  specifics.set_address_home_apt_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
   specifics.set_address_home_apt_num("1501");
   specifics.set_address_home_apt_num_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_apt_type("apto.");
+  specifics.set_address_home_apt_type_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
 
   // Reset unused tokens from the default info.
@@ -564,6 +584,10 @@ AutofillProfileSpecifics ConstructCompleteSpecificsMX() {
 
   specifics.set_address_home_subpremise_name("Piso 4 - 34");
   specifics.set_address_home_subpremise_name_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
+
+  specifics.set_address_home_apt("34");
+  specifics.set_address_home_apt_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
 
   specifics.set_address_home_apt_num("34");

@@ -165,8 +165,15 @@ message ContactInfoSpecifics {
   reserved "address_premise_name";
   // Contains the floor, staircase or apartment number within a building.
   optional StringToken address_subpremise_name = 30;
+  // All the information related to the apartment. Normally a combination of the
+  // apartment type (address_apt_type) and number (address_apt_num).
+  // E.g. "Apt 5".
+  optional StringToken address_apt = 50;
   // The apartment number within a building.
   optional StringToken address_apt_num = 31;
+  // Information describing the type of apartment (e.g. Apt, Apartamento, Sala,
+  // Departamento).
+  optional StringToken address_apt_type = 51;
   // The floor number within a building.
   optional StringToken address_floor = 32;
   // Contains both the street and house number.

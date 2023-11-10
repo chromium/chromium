@@ -153,11 +153,13 @@ AutofillProfile ConstructCompleteProfileBR() {
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
                                            u"apto. 1501, Top Hill Tower",
                                            VerificationStatus::kFormatted);
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_SUBPREMISE, u"1501",
-                                           VerificationStatus::kFormatted);
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_APT, u"1501",
-                                           VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_SUBPREMISE, u"apto. 1501", VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_APT, u"apto. 1501",
+                                           VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_APT_NUM, u"1501",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_APT_TYPE, u"apto",
                                            VerificationStatus::kParsed);
 
   // Reset unused tokens from the default profile.
@@ -322,6 +324,10 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   SetToken(specifics.mutable_address_overflow_and_landmark(), "",
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
+  SetToken(specifics.mutable_address_apt(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
+  SetToken(specifics.mutable_address_apt_type(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
 
   // All of the following types don't store verification statuses in
   // AutofillProfile. This corresponds to `VERIFICATION_STATUS_UNSPECIFIED`.
@@ -385,9 +391,13 @@ ContactInfoSpecifics ConstructCompleteSpecificsBR() {
            ContactInfoSpecifics::FORMATTED);
   SetToken(specifics.mutable_address_overflow_and_landmark(),
            "apto. 1501, Top Hill Tower", ContactInfoSpecifics::FORMATTED);
-  SetToken(specifics.mutable_address_subpremise_name(), "1501",
+  SetToken(specifics.mutable_address_subpremise_name(), "apto. 1501",
            ContactInfoSpecifics::FORMATTED);
+  SetToken(specifics.mutable_address_apt(), "apto. 1501",
+           ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_address_apt_num(), "1501",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_address_apt_type(), "apto",
            ContactInfoSpecifics::PARSED);
 
   // Reset unused tokens from the default info.
@@ -442,6 +452,8 @@ ContactInfoSpecifics ConstructCompleteSpecificsMX() {
   SetToken(specifics.mutable_address_between_streets_2(), "Avenida Juarez",
            ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_address_subpremise_name(), "Piso 4 - 34",
+           ContactInfoSpecifics::FORMATTED);
+  SetToken(specifics.mutable_address_apt(), "34",
            ContactInfoSpecifics::FORMATTED);
   SetToken(specifics.mutable_address_apt_num(), "34",
            ContactInfoSpecifics::PARSED);

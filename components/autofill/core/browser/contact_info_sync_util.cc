@@ -254,7 +254,12 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_address_street_location(),
         ADDRESS_HOME_STREET_LOCATION);
   s.Set(specifics.mutable_address_subpremise_name(), ADDRESS_HOME_SUBPREMISE);
-  s.Set(specifics.mutable_address_apt_num(), ADDRESS_HOME_APT_NUM);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForApartmentNumbers)) {
+    s.Set(specifics.mutable_address_apt(), ADDRESS_HOME_APT);
+    s.Set(specifics.mutable_address_apt_num(), ADDRESS_HOME_APT_NUM);
+    s.Set(specifics.mutable_address_apt_type(), ADDRESS_HOME_APT_TYPE);
+  }
   s.Set(specifics.mutable_address_floor(), ADDRESS_HOME_FLOOR);
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAddressOverflow)) {
@@ -386,7 +391,12 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   s.Set(specifics.address_thoroughfare_number(), ADDRESS_HOME_HOUSE_NUMBER);
   s.Set(specifics.address_street_location(), ADDRESS_HOME_STREET_LOCATION);
   s.Set(specifics.address_subpremise_name(), ADDRESS_HOME_SUBPREMISE);
-  s.Set(specifics.address_apt_num(), ADDRESS_HOME_APT_NUM);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForApartmentNumbers)) {
+    s.Set(specifics.address_apt(), ADDRESS_HOME_APT);
+    s.Set(specifics.address_apt_num(), ADDRESS_HOME_APT_NUM);
+    s.Set(specifics.address_apt_type(), ADDRESS_HOME_APT_TYPE);
+  }
   s.Set(specifics.address_floor(), ADDRESS_HOME_FLOOR);
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAddressOverflow)) {
@@ -515,8 +525,14 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   if (d.Delete(trimmed_specifics.mutable_address_subpremise_name())) {
     trimmed_specifics.clear_address_subpremise_name();
   }
+  if (d.Delete(trimmed_specifics.mutable_address_apt())) {
+    trimmed_specifics.clear_address_apt();
+  }
   if (d.Delete(trimmed_specifics.mutable_address_apt_num())) {
     trimmed_specifics.clear_address_apt_num();
+  }
+  if (d.Delete(trimmed_specifics.mutable_address_apt_type())) {
+    trimmed_specifics.clear_address_apt_type();
   }
   if (d.Delete(trimmed_specifics.mutable_address_floor())) {
     trimmed_specifics.clear_address_floor();
