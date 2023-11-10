@@ -1146,6 +1146,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUIDiagnosticsAppURL),
     GURL(chrome::kChromeUIDriveInternalsUrl),
     GURL(chrome::kChromeUIEmojiPickerURL),
+    GURL(chrome::kChromeUIEnterpriseReportingURL),
     GURL(chrome::kChromeUIFirmwareUpdaterAppURL),
     GURL(chrome::kChromeUIHealthdInternalsURL),
     GURL(chrome::kChromeUIHumanPresenceInternalsURL),
