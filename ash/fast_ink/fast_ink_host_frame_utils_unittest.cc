@@ -15,10 +15,13 @@
 #include "ash/test/ash_test_helper.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/base/math_util.h"
+#include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -63,28 +66,40 @@ class FastInkHostCreateFrameUtilTest : public AshTestBase {
     // window hierarchy is deleted during Shell deletion.
     host_window_ = host_window.release();
     gpu_memory_buffer_ = CreateGpuBufferForHostWindow(host_window_.get());
+    mailbox_ = fast_ink_internal::CreateMappableSharedImage(
+        BufferSizeForHostWindow(host_window_.get()),
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+            gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
+            gpu::SHARED_IMAGE_USAGE_SCANOUT,
+        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+    ASSERT_FALSE(mailbox_.IsZero());
   }
 
   // AshTestBase:
   void TearDown() override {
+    shared_image_interface()->DestroySharedImage(gpu::SyncToken(), mailbox_);
     resource_manager_.ClearAvailableResources();
     resource_manager_.LostExportedResources();
     AshTestBase::TearDown();
   }
 
  protected:
+  const gfx::Size BufferSizeForHostWindow(aura::Window* host_window) {
+    const gfx::Transform& window_to_buffer_transform =
+        host_window->GetHost()->GetRootTransform();
+    gfx::Rect bounds(host_window->GetBoundsInScreen().size());
+
+    return cc::MathUtil::MapEnclosingClippedRect(window_to_buffer_transform,
+                                                 bounds)
+        .size();
+  }
+
   // Creates a GPU buffer that is the same size as the `host_window`. The root
   // transform is applied as the buffer size is calculated. Please see
   // `FastInkHost::InitializeFastInkBuffer()` for more details.
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuBufferForHostWindow(
       aura::Window* host_window) {
-    const gfx::Transform& window_to_buffer_transform =
-        host_window->GetHost()->GetRootTransform();
-    gfx::Rect bounds(host_window->GetBoundsInScreen().size());
-
-    const gfx::Size buffer_size = cc::MathUtil::MapEnclosingClippedRect(
-                                      window_to_buffer_transform, bounds)
-                                      .size();
+    const gfx::Size buffer_size = BufferSizeForHostWindow(host_window);
 
     return fast_ink_internal::CreateGpuBuffer(
         buffer_size, gfx::BufferUsageAndFormat(
@@ -93,9 +108,14 @@ class FastInkHostCreateFrameUtilTest : public AshTestBase {
                              fast_ink_internal::kFastInkSharedImageFormat)));
   }
 
+  gpu::SharedImageInterface* shared_image_interface() {
+    return fast_ink_internal::GetContextProvider()->SharedImageInterface();
+  }
+
   UiResourceManager resource_manager_;
   raw_ptr<aura::Window, DanglingUntriaged> host_window_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
+  gpu::Mailbox mailbox_;
 };
 
 TEST_F(FastInkHostCreateFrameUtilTest, HasValidSourceId) {
@@ -110,6 +130,21 @@ TEST_F(FastInkHostCreateFrameUtilTest, HasValidSourceId) {
 
   EXPECT_NE(resource_manager_.PeekExportedResource(resource_id)->ui_source_id,
             kInvalidUiSourceId);
+}
+
+TEST_F(FastInkHostCreateFrameUtilTest, ResourceUsesMailboxIfNonZero) {
+  auto frame = fast_ink_internal::CreateCompositorFrame(
+      viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
+      kTestTotalDamageRectInDIP, /*auto_update=*/true, *host_window_,
+      gpu_memory_buffer_->GetSize(), /*gpu_memory_buffer=*/nullptr,
+      &resource_manager_, mailbox_, gpu::SyncToken());
+
+  ASSERT_EQ(frame->resource_list.size(), 1u);
+  viz::ResourceId resource_id = frame->resource_list.back().id;
+
+  auto* resource = resource_manager_.PeekExportedResource(resource_id);
+  EXPECT_NE(resource->ui_source_id, kInvalidUiSourceId);
+  EXPECT_EQ(resource->mailbox(), mailbox_);
 }
 
 TEST_F(FastInkHostCreateFrameUtilTest, CompositorFrameHasCorrectStructure) {
