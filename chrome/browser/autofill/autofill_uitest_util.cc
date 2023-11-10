@@ -23,50 +23,33 @@
 
 namespace autofill {
 
-// This class is used to wait for asynchronous updates to PersonalDataManager
-// to complete.
-class PdmChangeWaiter : public PersonalDataManagerObserver {
- public:
-  explicit PdmChangeWaiter(Profile* base_profile)
-      : alerted_(false),
-        has_run_message_loop_(false),
-        base_profile_(base_profile) {
-    PersonalDataManagerFactory::GetForProfile(base_profile_)->AddObserver(this);
-  }
-
-  PdmChangeWaiter(const PdmChangeWaiter&) = delete;
-  PdmChangeWaiter& operator=(const PdmChangeWaiter&) = delete;
-
-  ~PdmChangeWaiter() override {}
-
-  // PersonalDataManagerObserver:
-  void OnPersonalDataChanged() override {
-    if (has_run_message_loop_) {
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
-      has_run_message_loop_ = false;
-    }
-    alerted_ = true;
-  }
-
-  void OnInsufficientFormData() override { OnPersonalDataChanged(); }
-
-  void Wait() {
-    if (!alerted_) {
-      has_run_message_loop_ = true;
-      content::RunMessageLoop();
-    }
-    PersonalDataManagerFactory::GetForProfile(base_profile_)
-        ->RemoveObserver(this);
-  }
-
- private:
-  bool alerted_;
-  bool has_run_message_loop_;
-  raw_ptr<Profile> base_profile_;
-};
-
 static PersonalDataManager* GetPersonalDataManager(Profile* profile) {
   return PersonalDataManagerFactory::GetForProfile(profile);
+}
+
+PdmChangeWaiter::PdmChangeWaiter(Profile* base_profile)
+    : base_profile_(base_profile) {
+  obs_.Observe(GetPersonalDataManager(base_profile_));
+}
+
+PdmChangeWaiter::~PdmChangeWaiter() = default;
+
+void PdmChangeWaiter::OnPersonalDataChanged() {
+  if (run_loop_.running()) {
+    run_loop_.Quit();
+  }
+  alerted_ = true;
+}
+
+void PdmChangeWaiter::OnInsufficientFormData() {
+  OnPersonalDataChanged();
+}
+
+void PdmChangeWaiter::Wait() {
+  if (!alerted_) {
+    run_loop_.Run();
+  }
+  obs_.Reset();
 }
 
 void AddTestProfile(Profile* base_profile, const AutofillProfile& profile) {

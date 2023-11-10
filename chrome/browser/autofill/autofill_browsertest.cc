@@ -77,44 +77,6 @@ const char kDocumentClickHandlerSubmitJS[] =
     "  document.getElementById('testform').submit();"
     "};";
 
-// TODO(bondd): PdmChangeWaiter in autofill_uitest_util.cc is a replacement for
-// this class. Remove this class and use helper functions in that file instead.
-class WindowedPersonalDataManagerObserver : public PersonalDataManagerObserver {
- public:
-  explicit WindowedPersonalDataManagerObserver(Browser* browser)
-      : alerted_(false), has_run_message_loop_(false), browser_(browser) {
-    PersonalDataManagerFactory::GetForProfile(browser_->profile())->
-        AddObserver(this);
-  }
-
-  ~WindowedPersonalDataManagerObserver() override {}
-
-  void Wait() {
-    if (!alerted_) {
-      has_run_message_loop_ = true;
-      content::RunMessageLoop();
-    }
-    PersonalDataManagerFactory::GetForProfile(browser_->profile())->
-        RemoveObserver(this);
-  }
-
-  // PersonalDataManagerObserver:
-  void OnPersonalDataChanged() override {
-    if (has_run_message_loop_) {
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
-      has_run_message_loop_ = false;
-    }
-    alerted_ = true;
-  }
-
-  void OnInsufficientFormData() override { OnPersonalDataChanged(); }
-
- private:
-  bool alerted_;
-  bool has_run_message_loop_;
-  raw_ptr<Browser> browser_;
-};
-
 class AutofillTest : public InProcessBrowserTest {
  protected:
   class TestAutofillManager : public BrowserAutofillManager {
@@ -204,7 +166,7 @@ class AutofillTest : public InProcessBrowserTest {
         autofill_manager_injector_[web_contents()]->WaitForFormsSeen(1));
     // Shortcut explicit save prompts and automatically accept.
     personal_data_manager()->set_auto_accept_address_imports_for_testing(true);
-    WindowedPersonalDataManagerObserver observer(browser());
+    PdmChangeWaiter observer(browser()->profile());
     ASSERT_TRUE(
         content::ExecJs(web_contents(), GetJSToFillForm(data) + submit_js));
     if (simulate_click) {
