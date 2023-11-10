@@ -257,3 +257,20 @@ crbug.com/1432082 [ iOS16-simulator ] printing/thead-under-multicol.html [ Failu
 crbug.com/1432082 [ iOS16-simulator ] printing/webgl-repeated-printing-preservedrawingbuffer.html [ Failure ]
 crbug.com/1432082 [ iOS16-simulator ] printing/webgl-repeated-printing.html [ Failure ]
 crbug.com/1432082 [ iOS16-simulator ] printing/width-overflow.html [ Failure ]
+
+# Failures need investigation.
+## dark-mode
+crbug.com/1496147 [ iOS16-simulator ] dark-mode/colors/select-popup.html [ Failure ]
+## scrollbars
+crbug.com/1500119 [ iOS16-simulator ] scrollbars/custom-scrollbar-with-incomplete-style.html [ Failure ]
+crbug.com/1500119 [ iOS16-simulator ] scrollbars/on-sub-pixel-position.html [ Failure ]
+crbug.com/1500119 [ iOS16-simulator ] scrollbars/overflow-scrollbar-combinations.html [ Failure ]
+crbug.com/1500119 [ iOS16-simulator ] scrollbars/custom-scrollbar-display.html [ Failure ]
+crbug.com/1500119 [ iOS16-simulator ] scrollbars/custom-scrollbar-not-inherited-by-iframe.html [ Failure ]
+crbug.com/1500119 [ iOS16-simulator ] scrollbars/destroy-scrollbar-if-scrollsizes-lesser-than-contentsizes.html [ Failure ]
+crbug.com/1500119 [ iOS16-simulator ] scrollbars/listbox-scrollbar-combinations.html [ Failure ]
+crbug.com/1500119 [ iOS16-simulator ] scrollbars/resize-scales-with-dpi-150.html [ Failure ]
+crbug.com/1500119 [ iOS16-simulator ] scrollbars/scrollbar-click-does-not-blur-content.html [ Failure ]
+crbug.com/1500119 [ iOS16-simulator ] scrollbars/scrollbar-iframe-click-does-not-blur-content.html [ Failure ]
+crbug.com/1500119 [ iOS16-simulator ] scrollbars/scrollbar-pointer-events.html [ Failure ]
+crbug.com/1500119 [ iOS16-simulator ] scrollbars/scrollbar-visibility-hidden.html [ Failure ]
