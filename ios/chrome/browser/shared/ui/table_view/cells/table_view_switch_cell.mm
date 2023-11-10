@@ -176,10 +176,21 @@ const CGFloat kSwitchTrailingPadding = 22;
   return self;
 }
 
-+ (UIColor*)defaultTextColorForState:(UIControlState)state {
-  return (state & UIControlStateDisabled)
-             ? [UIColor colorNamed:kTextSecondaryColor]
-             : [UIColor colorNamed:kTextPrimaryColor];
+- (void)configureCellWithTitle:(NSString*)title
+                      subtitle:(NSString*)subtitle
+                 switchEnabled:(BOOL)enabled
+                            on:(BOOL)on {
+  self.textLabel.text = title;
+  self.detailTextLabel.text = subtitle;
+  self.switchView.enabled = enabled;
+  self.switchView.on = on;
+  self.switchView.accessibilityIdentifier =
+      [NSString stringWithFormat:@"%@, switch", title];
+
+  UIColor* textColor = enabled ? [UIColor colorNamed:kTextPrimaryColor]
+                               : [UIColor colorNamed:kTextSecondaryColor];
+  self.textLabel.textColor = textColor;
+  self.selectionStyle = UITableViewCellSelectionStyleNone;
 }
 
 - (void)setIconImage:(UIImage*)image

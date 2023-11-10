@@ -22,13 +22,10 @@
 - (void)configureCell:(TableViewSwitchCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
-  cell.textLabel.text = self.text;
-  cell.detailTextLabel.text = self.detailText;
-  cell.switchView.enabled = self.enabled;
-  cell.switchView.on = self.on;
-  cell.textLabel.textColor =
-      [TableViewSwitchCell defaultTextColorForState:cell.switchView.state];
-  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  [cell configureCellWithTitle:self.text
+                      subtitle:self.detailText
+                 switchEnabled:self.enabled
+                            on:self.on];
 }
 
 @end

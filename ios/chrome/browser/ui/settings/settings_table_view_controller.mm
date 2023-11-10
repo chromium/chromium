@@ -1178,13 +1178,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     return cell;
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
 
-  if ([cell isKindOfClass:[TableViewDetailIconCell class]]) {
-    TableViewDetailIconCell* detailCell =
-        base::apple::ObjCCastStrict<TableViewDetailIconCell>(cell);
-    [detailCell setUserInteractionEnabled:YES];
-    detailCell.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  }
-
   switch (itemType) {
     case SettingsItemTypeMemoryDebugging: {
       TableViewSwitchCell* switchCell =
