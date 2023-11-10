@@ -4000,9 +4000,6 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuth) {
   const GURL auth_url = embedded_test_server()->GetURL("/auth-basic");
   content::NavigationController* guest_controller =
       &GetGuestView()->GetController();
-  LoginPromptBrowserTestObserver login_observer;
-  login_observer.Register(
-      content::Source<content::NavigationController>(guest_controller));
   WindowedAuthNeededObserver auth_needed(guest_controller);
   WindowedAuthSuppliedObserver auth_supplied(guest_controller);
   // There are two navigations occurring here. The first fails due to the need
@@ -4016,7 +4013,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuth) {
                       content::JsReplace("location.href = $1;", auth_url)));
   auth_needed.Wait();
 
-  LoginHandler* login_handler = login_observer.handlers().front();
+  LoginHandler* login_handler =
+      LoginHandler::GetAllLoginHandlersForTest().front();
   login_handler->SetAuth(u"basicuser", u"secret");
   auth_supplied.Wait();
   nav_observer.WaitForNavigationFinished();
@@ -4031,11 +4029,6 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuthIdentical) {
       &GetGuestView()->GetController();
   content::NavigationController* tab_controller =
       &browser()->tab_strip_model()->GetActiveWebContents()->GetController();
-  LoginPromptBrowserTestObserver login_observer;
-  login_observer.Register(
-      content::Source<content::NavigationController>(guest_controller));
-  login_observer.Register(
-      content::Source<content::NavigationController>(tab_controller));
   WindowedAuthNeededObserver guest_auth_needed(guest_controller);
   WindowedAuthNeededObserver tab_auth_needed(tab_controller);
   WindowedAuthSuppliedObserver guest_auth_supplied(guest_controller);
@@ -4061,9 +4054,11 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuthIdentical) {
   // identical challenges if multiple prompts are shown for them. However,
   // credentials can't be shared across StoragePartitions. So providing
   // credentials within the guest should not affect the tab.
-  ASSERT_EQ(2u, login_observer.handlers().size());
-  LoginHandler* guest_login_handler = login_observer.handlers().front();
-  LoginHandler* tab_login_handler = login_observer.handlers().back();
+  ASSERT_EQ(2u, LoginHandler::GetAllLoginHandlersForTest().size());
+  LoginHandler* guest_login_handler =
+      LoginHandler::GetAllLoginHandlersForTest().front();
+  LoginHandler* tab_login_handler =
+      LoginHandler::GetAllLoginHandlersForTest().back();
   EXPECT_EQ(tab_controller,
             &tab_login_handler->web_contents()->GetController());
   EXPECT_TRUE(guest_login_handler->auth_info().MatchesExceptPath(
@@ -4074,8 +4069,9 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuthIdentical) {
   guest_nav_observer.WaitForNavigationFinished();
 
   // The tab should still be prompting for credentials.
-  ASSERT_EQ(1u, login_observer.handlers().size());
-  EXPECT_EQ(tab_login_handler, login_observer.handlers().front());
+  ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
+  EXPECT_EQ(tab_login_handler,
+            LoginHandler::GetAllLoginHandlersForTest().front());
 }
 
 namespace {

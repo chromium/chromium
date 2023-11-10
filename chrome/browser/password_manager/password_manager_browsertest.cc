@@ -1553,11 +1553,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoLastLoadGoodLastLoad) {
       base::BindRepeating(&HandleTestAuthRequest));
   ASSERT_TRUE(http_test_server.Start());
 
-  LoginPromptBrowserTestObserver login_observer;
-  // We need to register to all sources, because the navigation observer we are
-  // interested in is for a new tab to be opened, and thus does not exist yet.
-  login_observer.Register(content::NotificationService::AllSources());
-
   password_manager::TestPasswordStore* password_store =
       static_cast<password_manager::TestPasswordStore*>(
           ProfilePasswordStoreFactory::GetForProfile(
@@ -1576,8 +1571,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoLastLoadGoodLastLoad) {
 
   WindowedAuthSuppliedObserver auth_supplied_observer(nav_controller);
   // Offer valid credentials on the auth challenge.
-  ASSERT_EQ(1u, login_observer.handlers().size());
-  LoginHandler* handler = *login_observer.handlers().begin();
+  ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
+  LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
   ASSERT_TRUE(handler);
   PasswordsNavigationObserver nav_observer(WebContents());
   // Any username/password will work.

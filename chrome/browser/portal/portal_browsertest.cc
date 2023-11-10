@@ -170,16 +170,14 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, HttpBasicAuthenticationInPortal) {
   content::NavigationController& portal_controller =
       portal_contents->GetController();
 
-  LoginPromptBrowserTestObserver login_observer;
-  login_observer.Register(
-      content::Source<content::NavigationController>(&portal_controller));
   WindowedAuthNeededObserver auth_needed(&portal_controller);
   ASSERT_TRUE(content::ExecJs(portal_contents,
                               "location.href = '/auth-basic?realm=Aperture'"));
   auth_needed.Wait();
 
   WindowedAuthSuppliedObserver auth_supplied(&portal_controller);
-  LoginHandler* login_handler = login_observer.handlers().front();
+  LoginHandler* login_handler =
+      LoginHandler::GetAllLoginHandlersForTest().front();
   EXPECT_EQ(login_handler->auth_info().realm, "Aperture");
   login_handler->SetAuth(u"basicuser", u"secret");
   auth_supplied.Wait();

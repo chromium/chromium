@@ -77,6 +77,13 @@ void RecordHttpAuthPromptType(AuthPromptType prompt_type) {
                             AUTH_PROMPT_TYPE_ENUM_COUNT);
 }
 
+// All login handlers should be tracked in this global singleton.
+using LoginHandlerVector = std::vector<base::WeakPtr<LoginHandler>>;
+LoginHandlerVector& GetAllLoginHandlers() {
+  static base::NoDestructor<LoginHandlerVector> instance;
+  return *instance;
+}
+
 }  // namespace
 
 // ----------------------------------------------------------------------------
@@ -90,6 +97,14 @@ LoginHandler::LoginModelData::LoginModelData(
 }
 
 LoginHandler::~LoginHandler() {
+  auto& login_handlers = GetAllLoginHandlers();
+  for (auto it = login_handlers.begin(); it != login_handlers.end(); ++it) {
+    if (it->get() == this) {
+      login_handlers.erase(it);
+      break;
+    }
+  }
+
   password_manager::HttpAuthManager* http_auth_manager =
       GetHttpAuthManagerForLogin();
   if (http_auth_manager)
@@ -101,6 +116,17 @@ LoginHandler::~LoginHandler() {
     // TODO(https://crbug.com/916315): Remove this line.
     NotifyAuthCancelled();
   }
+}
+
+// static
+std::vector<LoginHandler*> LoginHandler::GetAllLoginHandlersForTest() {
+  std::vector<LoginHandler*> output;
+  for (auto& weak_ptr : GetAllLoginHandlers()) {
+    if (weak_ptr) {
+      output.push_back(weak_ptr.get());
+    }
+  }
+  return output;
 }
 
 void LoginHandler::StartMainFrame(
@@ -130,16 +156,6 @@ void LoginHandler::ShowLoginPromptAfterCommit(const GURL& request_url) {
     CancelAuth();
     return;
   }
-
-  // This is OK; we break out of the Observe() if we aren't handling the same
-  // auth_info() or BrowserContext.
-  //
-  // TODO(davidben): Only listen to notifications within a single
-  // BrowserContext.
-  registrar_.Add(this, chrome::NOTIFICATION_AUTH_SUPPLIED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-  registrar_.Add(this, chrome::NOTIFICATION_AUTH_CANCELLED,
-                 content::NotificationService::AllBrowserContextsAndSources());
 
   prompt_started_ = true;
   ShowLoginPrompt(request_url);
@@ -208,65 +224,15 @@ void LoginHandler::CancelAuth() {
   std::move(callback).Run(absl::nullopt);
 }
 
-void LoginHandler::Observe(int type,
-                           const content::NotificationSource& source,
-                           const content::NotificationDetails& details) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(type == chrome::NOTIFICATION_AUTH_SUPPLIED ||
-         type == chrome::NOTIFICATION_AUTH_CANCELLED);
-
-  // Break out early if we aren't interested in the notification.
-  if (!web_contents_ || WasAuthHandled())
-    return;
-
-  LoginNotificationDetails* login_details =
-      content::Details<LoginNotificationDetails>(details).ptr();
-
-  // WasAuthHandled() should always test positive before we publish
-  // AUTH_SUPPLIED or AUTH_CANCELLED notifications.
-  DCHECK(login_details->handler() != this);
-
-  // Only handle notification for the identical auth info. When comparing
-  // AuthChallengeInfos, ignore path because the same credentials can be used
-  // for different paths.
-  if (!auth_info().MatchesExceptPath(login_details->handler()->auth_info()))
-    return;
-
-  // Ignore login notification events from other StoragePartitions.
-  // TODO(crbug.com/1261928): Getting the StoragePartition from the WebContents
-  // is fine for now, but we'll need to plumb frame information to LoginHandler
-  // as part of removing the multi-WebContents architecture.
-  content::StoragePartition* source_partition =
-      login_details->handler()->web_contents() ? login_details->handler()
-                                                     ->web_contents()
-                                                     ->GetPrimaryMainFrame()
-                                                     ->GetStoragePartition()
-                                               : nullptr;
-  content::StoragePartition* partition =
-      web_contents()->GetPrimaryMainFrame()->GetStoragePartition();
-  if (!source_partition || source_partition != partition) {
-    return;
-  }
-
-  // Set or cancel the auth in this handler. Defer an event loop iteration to
-  // avoid potential reentrancy issues.
-  if (type == chrome::NOTIFICATION_AUTH_SUPPLIED) {
-    AuthSuppliedLoginNotificationDetails* supplied_details =
-        content::Details<AuthSuppliedLoginNotificationDetails>(details).ptr();
-    SetAuth(supplied_details->username(), supplied_details->password());
-  } else {
-    DCHECK(type == chrome::NOTIFICATION_AUTH_CANCELLED);
-    CancelAuth();
-  }
-}
-
 LoginHandler::LoginHandler(const net::AuthChallengeInfo& auth_info,
                            content::WebContents* web_contents,
                            LoginAuthRequiredCallback auth_required_callback)
     : web_contents_(web_contents->GetWeakPtr()),
       auth_info_(auth_info),
       auth_required_callback_(std::move(auth_required_callback)),
-      prompt_started_(false) {}
+      prompt_started_(false) {
+  GetAllLoginHandlers().push_back(weak_factory_.GetWeakPtr());
+}
 
 void LoginHandler::StartInternal(
     const content::GlobalRequestID& request_id,
@@ -333,6 +299,15 @@ void LoginHandler::NotifyAuthSupplied(const std::u16string& username,
   NavigationController* controller = &web_contents_->GetController();
   AuthSuppliedLoginNotificationDetails details(this, username, password);
 
+  // Intentionally make a copy to avoid issues with iterator invalidation.
+  LoginHandlerVector vec = GetAllLoginHandlers();
+  for (auto& weak_login_handler : vec) {
+    if (weak_login_handler && weak_login_handler.get() != this) {
+      weak_login_handler->OtherHandlerFinished(/*supplied=*/true, this,
+                                               username, password);
+    }
+  }
+
   service->Notify(
       chrome::NOTIFICATION_AUTH_SUPPLIED,
       content::Source<NavigationController>(controller),
@@ -346,6 +321,16 @@ void LoginHandler::NotifyAuthCancelled() {
   if (!prompt_started_)
     return;
 
+  // Intentionally make a copy to avoid issues with iterator invalidation.
+  LoginHandlerVector vec = GetAllLoginHandlers();
+  for (auto& weak_login_handler : vec) {
+    if (weak_login_handler && weak_login_handler.get() != this) {
+      weak_login_handler->OtherHandlerFinished(/*supplied=*/false, this,
+                                               /*username=*/std::u16string(),
+                                               /*password=*/std::u16string());
+    }
+  }
+
   content::NotificationService* service =
       content::NotificationService::current();
   NavigationController* controller =
@@ -354,6 +339,56 @@ void LoginHandler::NotifyAuthCancelled() {
   service->Notify(chrome::NOTIFICATION_AUTH_CANCELLED,
                   content::Source<NavigationController>(controller),
                   content::Details<LoginNotificationDetails>(&details));
+}
+
+void LoginHandler::OtherHandlerFinished(bool supplied,
+                                        LoginHandler* other_handler,
+                                        const std::u16string& username,
+                                        const std::u16string& password) {
+  // Break out early if we aren't interested in the notification.
+  if (!web_contents_ || WasAuthHandled()) {
+    return;
+  }
+
+  // Only listen to notifications within a single BrowserContext.
+  if (other_handler->web_contents() &&
+      other_handler->web_contents()->GetBrowserContext() !=
+          web_contents_->GetBrowserContext()) {
+    return;
+  }
+
+  // We should never dispatch to self.
+  DCHECK(other_handler != this);
+
+  // Only handle notification for the identical auth info. When comparing
+  // AuthChallengeInfos, ignore path because the same credentials can be used
+  // for different paths.
+  if (!auth_info().MatchesExceptPath(other_handler->auth_info())) {
+    return;
+  }
+
+  // Ignore login notification events from other StoragePartitions.
+  // TODO(crbug.com/1261928): Getting the StoragePartition from the WebContents
+  // is fine for now, but we'll need to plumb frame information to LoginHandler
+  // as part of removing the multi-WebContents architecture.
+  content::StoragePartition* source_partition =
+      other_handler->web_contents() ? other_handler->web_contents()
+                                          ->GetPrimaryMainFrame()
+                                          ->GetStoragePartition()
+                                    : nullptr;
+  content::StoragePartition* partition =
+      web_contents()->GetPrimaryMainFrame()->GetStoragePartition();
+  if (!source_partition || source_partition != partition) {
+    return;
+  }
+
+  // Set or cancel the auth in this handler. Defer an event loop iteration to
+  // avoid potential reentrancy issues.
+  if (supplied) {
+    SetAuth(username, password);
+  } else {
+    CancelAuth();
+  }
 }
 
 password_manager::PasswordManagerClient*
@@ -479,16 +514,6 @@ void LoginHandler::MaybeSetUpLoginPromptBeforeCommit(
     SetAuth(credentials->username(), credentials->password());
     return;
   }
-
-  // This is OK; we break out of the Observe() if we aren't handling the same
-  // auth_info() or BrowserContext.
-  //
-  // TODO(davidben): Only listen to notifications within a single
-  // BrowserContext.
-  registrar_.Add(this, chrome::NOTIFICATION_AUTH_SUPPLIED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-  registrar_.Add(this, chrome::NOTIFICATION_AUTH_CANCELLED,
-                 content::NotificationService::AllBrowserContextsAndSources());
 
   // Always cancel main frame requests that receive auth challenges. An
   // interstitial will be committed as the result of the cancellation, and the

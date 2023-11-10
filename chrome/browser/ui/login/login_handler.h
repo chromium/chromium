@@ -30,8 +30,7 @@ class GURL;
 
 // This is the base implementation for the OS-specific classes that prompt for
 // authentication information.
-class LoginHandler : public content::LoginDelegate,
-                     public content::NotificationObserver {
+class LoginHandler : public content::LoginDelegate {
  public:
   // The purpose of this struct is to enforce that BuildViewImpl receives either
   // both the login model and the observed form, or none. That is a bit spoiled
@@ -58,6 +57,9 @@ class LoginHandler : public content::LoginDelegate,
       const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,
       LoginAuthRequiredCallback auth_required_callback);
+
+  // Exposed for testing.
+  static std::vector<LoginHandler*> GetAllLoginHandlersForTest();
 
   // The main entry point for an auth request for a main-frame request. This
   // method allows extensions to handle the auth request, and otherwise cancels
@@ -91,14 +93,6 @@ class LoginHandler : public content::LoginDelegate,
   // Display the error page without asking for credentials again.
   // This function can be called from either thread.
   void CancelAuth();
-
-  // Implements the content::NotificationObserver interface.
-  // Listens for AUTH_SUPPLIED and AUTH_CANCELLED notifications from other
-  // LoginHandlers so that this LoginHandler has the chance to dismiss itself
-  // if it was waiting for the same authentication.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
 
   // Who/where/what asked for the authentication.
   const net::AuthChallengeInfo& auth_info() const { return auth_info_; }
@@ -138,6 +132,15 @@ class LoginHandler : public content::LoginDelegate,
 
   // Notify observers that authentication is cancelled.
   void NotifyAuthCancelled();
+
+  // When any handler finishes, called on every other handler. |username| and
+  // |password| are only valid if |supplied| is true. If |supplied| is false
+  // then the handler was cancelled. This gives |this| handler the opportunity
+  // to dismiss itself if it was waiting for the same authentication.
+  void OtherHandlerFinished(bool supplied,
+                            LoginHandler* other_handler,
+                            const std::u16string& username,
+                            const std::u16string& password);
 
   // Returns the PasswordManagerClient from the web content.
   password_manager::PasswordManagerClient*
