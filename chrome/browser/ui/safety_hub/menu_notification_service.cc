@@ -222,22 +222,3 @@ void SafetyHubMenuNotificationService::OnSafeBrowsingPrefUpdate() {
       ->notification->ResetAllTimeNotificationCount();
   SaveNotificationsToPrefs();
 }
-
-void SafetyHubMenuNotificationService::DismissActiveNotification() {
-  for (auto const& item : module_info_map_) {
-    if (item.second->notification->IsCurrentlyActive()) {
-      item.second->notification->Dismiss();
-    }
-  }
-}
-
-void SafetyHubMenuNotificationService::DismissPasswordNotification() {
-  // TODO(crbug.com/1443466): Uncomment the following lines in
-  // crrev.com/c/4982626.
-  // SafetyHubMenuNotification* notification =
-  //     module_info_map_.at(safety_hub::SafetyHubModuleType::PASSWORDS)
-  //         ->notification.get();
-  // if (notification->IsCurrentlyActive()) {
-  //   notification->Dismiss();
-  // }
-}

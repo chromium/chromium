@@ -450,21 +450,3 @@ TEST_F(SafetyHubMenuNotificationServiceTest, PasswordTrigger) {
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_FALSE(notification.has_value());
 }
-
-TEST_F(SafetyHubMenuNotificationServiceTest, DismissNotifications) {
-  // Generate a mock notification for unused site permissions.
-  CreateMockUnusedSitePermissionsEntry();
-  absl::optional<MenuNotificationEntry> notification =
-      menu_notification_service()->GetNotificationToShow();
-  EXPECT_TRUE(notification.has_value());
-  ExpectPluralString(
-      IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
-      notification.value().label);
-
-  // When all notifications are dismissed, there should be no more notification.
-  menu_notification_service()->DismissActiveNotification();
-  EXPECT_FALSE(
-      menu_notification_service()->GetNotificationToShow().has_value());
-
-  // TODO(crbug.com/1443466): Add test for DismissPasswordNotification().
-}

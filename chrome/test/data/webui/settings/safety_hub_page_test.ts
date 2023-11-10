@@ -359,9 +359,4 @@ suite('SafetyHubPage', function() {
     // Ensure the Security Settings page is shown.
     assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
   });
-
-  test('Dismiss all menu notifications on page load', async function() {
-    Router.getInstance().navigateTo(routes.SAFETY_HUB);
-    await safetyHubBrowserProxy.whenCalled('dismissActiveMenuNotification');
-  });
 });

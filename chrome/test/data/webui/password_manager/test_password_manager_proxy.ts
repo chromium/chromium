@@ -54,7 +54,6 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'changeCredential',
       'cancelExportPasswords',
       'continueImport',
-      'dismissSafetyHubPasswordMenuNotification',
       'exportPasswords',
       'extendAuthValidity',
       'fetchFamilyMembers',
@@ -371,9 +370,5 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   movePasswordsToAccount(ids: number[]) {
     this.methodCalled('movePasswordsToAccount', ids);
-  }
-
-  dismissSafetyHubPasswordMenuNotification() {
-    this.methodCalled('dismissSafetyHubPasswordMenuNotification');
   }
 }
