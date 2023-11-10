@@ -10,6 +10,7 @@ import './jelly_colors.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util.js';
 
+import {FeedbackBrowserProxy, FeedbackBrowserProxyImpl} from './feedback_browser_proxy.js';
 import {FEEDBACK_LANDING_PAGE, FEEDBACK_LANDING_PAGE_TECHSTOP, FEEDBACK_LEGAL_HELP_URL, FEEDBACK_PRIVACY_POLICY_URL, FEEDBACK_TERM_OF_SERVICE_URL, openUrlInAppWindow} from './feedback_util.js';
 import {domainQuestions, questionnaireBegin, questionnaireNotification} from './questionnaire.js';
 import {takeScreenshot} from './take_screenshot.js';
@@ -19,7 +20,7 @@ const formOpenTime: number = new Date().getTime();
 const dialogArgs: string = chrome.getVariableValue('dialogArguments');
 
 /**
- * The object will be manipulated by feedbackHelper
+ * The object will be manipulated by sendReport().
  */
 let feedbackInfo: chrome.feedbackPrivate.FeedbackInfo = {
   assistantDebugInfoAllowed: false,
@@ -41,76 +42,32 @@ let feedbackInfo: chrome.feedbackPrivate.FeedbackInfo = {
 };
 
 
-class FeedbackHelper {
-  getSystemInformation(): Promise<chrome.feedbackPrivate.LogsMapEntry[]> {
-    return new Promise(
-        resolve => chrome.feedbackPrivate.getSystemInformation(resolve));
-  }
+async function sendFeedbackReport(useSystemInfo: boolean) {
+  const ID = Math.round(Date.now() / 1000);
+  const FLOW = feedbackInfo.flow;
 
-  getUserEmail(): Promise<string> {
-    return new Promise(resolve => chrome.feedbackPrivate.getUserEmail(resolve));
-  }
+  const result = await FeedbackBrowserProxyImpl.getInstance().sendFeedback(
+      feedbackInfo, useSystemInfo, formOpenTime);
 
-  sendFeedbackReport(useSystemInfo: boolean) {
-    const ID = Math.round(Date.now() / 1000);
-    const FLOW = feedbackInfo.flow;
-
-    chrome.feedbackPrivate
-        .sendFeedback(feedbackInfo, useSystemInfo, formOpenTime)
-        .then(result => {
-          if (result.status === chrome.feedbackPrivate.Status.SUCCESS) {
-            if (FLOW !== chrome.feedbackPrivate.FeedbackFlow.LOGIN &&
-                result.landingPageType !==
-                    chrome.feedbackPrivate.LandingPageType.NO_LANDING_PAGE) {
-              const landingPage = result.landingPageType ===
-                      chrome.feedbackPrivate.LandingPageType.NORMAL ?
-                  FEEDBACK_LANDING_PAGE :
-                  FEEDBACK_LANDING_PAGE_TECHSTOP;
-              window.open(landingPage, '_blank');
-            }
-          } else {
-            console.warn(
-                'Feedback: Report for request with ID ' + ID +
-                ' will be sent later.');
-          }
-          scheduleWindowClose();
-        });
+  if (result.status === chrome.feedbackPrivate.Status.SUCCESS) {
+    if (FLOW !== chrome.feedbackPrivate.FeedbackFlow.LOGIN &&
+        result.landingPageType !==
+            chrome.feedbackPrivate.LandingPageType.NO_LANDING_PAGE) {
+      const landingPage = result.landingPageType ===
+              chrome.feedbackPrivate.LandingPageType.NORMAL ?
+          FEEDBACK_LANDING_PAGE :
+          FEEDBACK_LANDING_PAGE_TECHSTOP;
+      window.open(landingPage, '_blank');
+    }
+  } else {
+    console.warn(
+        'Feedback: Report for request with ID ' + ID + ' will be sent later.');
   }
-
-  // Send a message to show the WebDialog
-  showDialog() {
-    chrome.send('showDialog');
-  }
-
-  // Send a message to close the WebDialog
-  closeDialog() {
-    chrome.send('dialogClose');
-  }
-
-  // <if expr="chromeos_ash">
-  showAssistantLogsInfo() {
-    chrome.send('showAssistantLogsInfo');
-  }
-
-  showBluetoothLogsInfo() {
-    chrome.send('showBluetoothLogsInfo');
-  }
-  // </if>
-
-  showSystemInfo() {
-    chrome.send('showSystemInfo');
-  }
-
-  showMetrics() {
-    chrome.send('showMetrics');
-  }
-
-  showAutofillMetadataInfo() {
-    chrome.send('showAutofillMetadataInfo', [feedbackInfo.autofillMetadata]);
-  }
+  scheduleWindowClose();
 }
 
-const feedbackHelper: FeedbackHelper = new FeedbackHelper();
+const browserProxy: FeedbackBrowserProxy =
+    FeedbackBrowserProxyImpl.getInstance();
 
 const MAX_ATTACH_FILE_SIZE: number = 3 * 1024 * 1024;
 
@@ -271,7 +228,7 @@ function onFileSelected(fileSelectedEvent: Event) {
   // <if expr="chromeos_ash">
   // This is needed on CrOS. Otherwise, the feedback window will stay behind
   // the Chrome window.
-  feedbackHelper.showDialog();
+  browserProxy.showDialog();
   // </if>
 
   const file = (fileSelectedEvent.target as HTMLInputElement).files![0];
@@ -556,7 +513,7 @@ function sendReport(): boolean {
   feedbackInfo.productId = productId;
 
   // Request sending the report, show the landing page (if allowed)
-  feedbackHelper.sendFeedbackReport(useSystemInfo);
+  sendFeedbackReport(useSystemInfo);
 
   return true;
 }
@@ -603,7 +560,7 @@ function resizeAppWindow() {
  */
 function scheduleWindowClose() {
   setTimeout(function() {
-    feedbackHelper.closeDialog();
+    browserProxy.closeDialog();
   }, 100);
 }
 
@@ -669,7 +626,7 @@ function initialize() {
         resizeAppWindow();
       });
 
-      feedbackHelper.showDialog();
+      browserProxy.showDialog();
 
       // Allow feedback to be sent even if the screenshot failed.
       if (!screenshotCanvas) {
@@ -692,7 +649,7 @@ function initialize() {
       });
     });
 
-    feedbackHelper.getUserEmail().then(function(email) {
+    browserProxy.getUserEmail().then(function(email) {
       // Never add an empty option.
       if (!email) {
         return;
@@ -745,7 +702,7 @@ function initialize() {
       autofillMetadataUrlElement.onclick = function(e) {
         e.preventDefault();
 
-        feedbackHelper.showAutofillMetadataInfo();
+        browserProxy.showAutofillMetadataInfo(feedbackInfo.autofillMetadata!);
       };
 
       autofillMetadataUrlElement.onauxclick = function(e) {
@@ -760,7 +717,7 @@ function initialize() {
       sysInfoUrlElement.onclick = function(e) {
         e.preventDefault();
 
-        feedbackHelper.showSystemInfo();
+        browserProxy.showSystemInfo();
       };
 
       sysInfoUrlElement.onauxclick = function(e) {
@@ -773,7 +730,7 @@ function initialize() {
       histogramUrlElement.onclick = function(e) {
         e.preventDefault();
 
-        feedbackHelper.showMetrics();
+        browserProxy.showMetrics();
       };
 
       histogramUrlElement.onauxclick = function(e) {
@@ -813,7 +770,7 @@ function initialize() {
         bluetoothLogsInfoLinkElement.onclick = function(e) {
           e.preventDefault();
 
-          feedbackHelper.showBluetoothLogsInfo();
+          browserProxy.showBluetoothLogsInfo();
 
           bluetoothLogsInfoLinkElement.onauxclick = function(e) {
             e.preventDefault();
@@ -826,7 +783,7 @@ function initialize() {
         assistantLogsInfoLinkElement.onclick = function(e) {
           e.preventDefault();
 
-          feedbackHelper.showAssistantLogsInfo();
+          browserProxy.showAssistantLogsInfo();
 
           assistantLogsInfoLinkElement.onauxclick = function(e) {
             e.preventDefault();
@@ -845,8 +802,6 @@ function initialize() {
       feedbackInfo = JSON.parse(dialogArgs);
     }
     applyData(feedbackInfo);
-
-    Object.assign(window, {feedbackInfo, feedbackHelper});
 
     // Setup our event handlers.
     getRequiredElement('attach-file').addEventListener(
