@@ -100,8 +100,11 @@ bool ContactInfoEditorViewController::ValidateModelAndSave() {
     std::move(on_edited_).Run();
     on_added_.Reset();
   } else {
+    // There are no address fields in this form, therefore we create the profile
+    // with an empty country.
     std::unique_ptr<autofill::AutofillProfile> profile =
-        std::make_unique<autofill::AutofillProfile>();
+        std::make_unique<autofill::AutofillProfile>(
+            autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
     PopulateProfile(profile.get());
     if (!is_incognito())
       state()->GetPersonalDataManager()->AddProfile(*profile);

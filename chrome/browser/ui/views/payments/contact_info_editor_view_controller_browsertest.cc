@@ -236,7 +236,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
   personal_data_manager->AddObserver(&personal_data_observer_);
 
-  autofill::AutofillProfile incomplete_profile;
+  autofill::AutofillProfile incomplete_profile(
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   incomplete_profile.SetInfo(autofill::NAME_FULL, kNameFull, GetLocale());
   AddAutofillProfile(incomplete_profile);
 
@@ -296,7 +297,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
   personal_data_manager->AddObserver(&personal_data_observer_);
 
-  autofill::AutofillProfile incomplete_profile;
+  autofill::AutofillProfile incomplete_profile(
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   incomplete_profile.SetInfo(autofill::NAME_FULL, kNameFull, GetLocale());
   AddAutofillProfile(incomplete_profile);
 
