@@ -799,21 +799,6 @@
             ]
         }
     ],
-    "ArcVmBlockSize": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledGroupA_20211105",
-                    "enable_features": [
-                        "ArcVmUseDefaultBlockSize"
-                    ]
-                }
-            ]
-        }
-    ],
     "ArcVmBroadcastPreAnrHandling": [
         {
             "platforms": [
