@@ -157,6 +157,11 @@ class PrimaryAccountManager::ScopedPrefCommit {
   bool commit_on_destroy_ = false;
 };
 
+PrimaryAccountManager::PrimaryAccount::PrimaryAccount(
+    const CoreAccountInfo& account_info,
+    bool consented_to_sync)
+    : account_info(account_info), consented_to_sync(consented_to_sync) {}
+
 PrimaryAccountManager::PrimaryAccountManager(
     SigninClient* client,
     ProfileOAuth2TokenService* token_service,
@@ -196,7 +201,7 @@ void PrimaryAccountManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void PrimaryAccountManager::PrepareToLoadPrefs() {
   // Check this method is only called before loading the primary account.
-  CHECK(!IsInitialized());
+  CHECK(!primary_account_.has_value());
 
   PrefService* prefs = client_->GetPrefs();
 
@@ -243,7 +248,7 @@ PrimaryAccountManager::GetOrRestorePrimaryAccountInfoOnInitialize(
     const std::string& pref_account_id,
     bool pref_consented_to_sync) {
   // Check this method is only called before loading the primary account.
-  CHECK(!IsInitialized());
+  CHECK(!primary_account_.has_value());
 
   // This method must only be called when the primary account pref is non-empty.
   CHECK(!pref_account_id.empty());
@@ -307,7 +312,7 @@ PrimaryAccountManager::GetOrRestorePrimaryAccountInfoOnInitialize(
 
 void PrimaryAccountManager::Initialize() {
   // Should never call Initialize() twice.
-  CHECK(!IsInitialized());
+  CHECK(!primary_account_.has_value());
 
   // Prepare prefs before loading them.
   PrepareToLoadPrefs();
@@ -349,7 +354,7 @@ void PrimaryAccountManager::Initialize() {
 
   // PrimaryAccountManager is initialized once the primary account and consent
   // level are loaded.
-  initialized_ = true;
+  CHECK(primary_account_.has_value());
 
   // Instrument metrics to know what fraction of users without a primary
   // account previously did have one, with sync enabled.
@@ -363,15 +368,29 @@ void PrimaryAccountManager::Initialize() {
       HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
-bool PrimaryAccountManager::IsInitialized() const {
-  return initialized_;
+const PrimaryAccountManager::PrimaryAccount&
+PrimaryAccountManager::GetPrimaryAccount() const {
+  CHECK(primary_account_.has_value());
+  return primary_account_.value();
+}
+
+bool PrimaryAccountManager::HasPrimaryAccount(
+    signin::ConsentLevel consent_level) const {
+  const auto& primary_account = GetPrimaryAccount();
+  switch (consent_level) {
+    case signin::ConsentLevel::kSignin:
+      return !primary_account.account_info.account_id.empty();
+    case signin::ConsentLevel::kSync:
+      return !primary_account.account_info.account_id.empty() &&
+             primary_account.consented_to_sync;
+  }
 }
 
 CoreAccountInfo PrimaryAccountManager::GetPrimaryAccountInfo(
     signin::ConsentLevel consent_level) const {
   if (!HasPrimaryAccount(consent_level))
     return CoreAccountInfo();
-  return primary_account_info();
+  return GetPrimaryAccount().account_info;
 }
 
 CoreAccountId PrimaryAccountManager::GetPrimaryAccountId(
@@ -402,7 +421,7 @@ void PrimaryAccountManager::SetPrimaryAccountInfo(
       FirePrimaryAccountChanged(previous_state, access_point);
       return;
     case signin::ConsentLevel::kSignin:
-      bool account_changed = account_info != primary_account_info();
+      bool account_changed = account_info != GetPrimaryAccount().account_info;
       ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
                                           /*commit_on_destroy*/ false);
       SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false,
@@ -452,20 +471,16 @@ void PrimaryAccountManager::SetPrimaryAccountInternal(
     const CoreAccountInfo& account_info,
     bool consented_to_sync,
     ScopedPrefCommit& scoped_pref_commit) {
-  primary_account_info_ = account_info;
+  CHECK(!account_info.account_id.empty() || !consented_to_sync);
 
-  const std::string& account_id = primary_account_info_.account_id.ToString();
-  if (account_id.empty()) {
-    DCHECK(!consented_to_sync);
-    consented_to_sync_ = false;
-    scoped_pref_commit.SetString(prefs::kGoogleServicesAccountId, "");
-    scoped_pref_commit.SetBoolean(prefs::kGoogleServicesConsentedToSync, false);
-  } else {
-    consented_to_sync_ = consented_to_sync;
-    scoped_pref_commit.SetString(prefs::kGoogleServicesAccountId, account_id);
-    scoped_pref_commit.SetBoolean(prefs::kGoogleServicesConsentedToSync,
-                                  consented_to_sync_);
-  }
+  // 'account_info' might be a reference to the contents of `primary_account_`.
+  // Create a PrimaryAccount object before calling emplace to avoid crashes.
+  primary_account_.emplace(PrimaryAccount(account_info, consented_to_sync));
+  scoped_pref_commit.SetString(
+      prefs::kGoogleServicesAccountId,
+      GetPrimaryAccount().account_info.account_id.ToString());
+  scoped_pref_commit.SetBoolean(prefs::kGoogleServicesConsentedToSync,
+                                GetPrimaryAccount().consented_to_sync);
 }
 
 void PrimaryAccountManager::RecordHadPreviousSyncAccount() const {
@@ -491,30 +506,19 @@ void PrimaryAccountManager::RecordHadPreviousSyncAccount() const {
   }
 }
 
-bool PrimaryAccountManager::HasPrimaryAccount(
-    signin::ConsentLevel consent_level) const {
-  // Shound not be called before the consent level is loaded in memory.
-  CHECK(IsInitialized());
-
-  switch (consent_level) {
-    case signin::ConsentLevel::kSignin:
-      return !primary_account_info_.account_id.empty();
-    case signin::ConsentLevel::kSync:
-      return !primary_account_info_.account_id.empty() && consented_to_sync_;
-  }
-}
-
 void PrimaryAccountManager::UpdatePrimaryAccountInfo() {
-  const CoreAccountId primary_account_id = primary_account_info().account_id;
-  DCHECK(!primary_account_id.empty());
+  CoreAccountId primary_account_id =
+      GetPrimaryAccount().account_info.account_id;
+  bool consented_to_sync = GetPrimaryAccount().consented_to_sync;
+  CHECK(!primary_account_id.empty());
 
   const CoreAccountInfo updated_account_info =
       account_tracker_service_->GetAccountInfo(primary_account_id);
-
   CHECK_EQ(primary_account_id, updated_account_info.account_id);
+
   // Calling SetPrimaryAccountInternal() is avoided in this case as the
   // primary account id did not change.
-  primary_account_info_ = updated_account_info;
+  primary_account_.emplace(updated_account_info, consented_to_sync);
 }
 
 void PrimaryAccountManager::AddObserver(Observer* observer) {
@@ -561,8 +565,6 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
     signin_metrics::SignoutDelete signout_delete_metric,
     RemoveAccountsOption remove_option,
     SigninClient::SignoutDecision signout_decision) {
-  DCHECK(IsInitialized());
-
   VLOG(1) << "OnSignoutDecisionReached: "
           << (signout_decision == SigninClient::SignoutDecision::ALLOW);
 
@@ -571,7 +573,7 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
   // there is no need to check |remove_option| as regardless of its value, this
   // function will be no-op.
   bool abort_signout =
-      primary_account_info().IsEmpty() ||
+      GetPrimaryAccount().account_info.IsEmpty() ||
       signout_decision ==
           SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED ||
       (remove_option == RemoveAccountsOption::kRemoveAllAccounts &&
@@ -612,7 +614,7 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
         // OnPrimaryAccountChanged() notifications.
         return;
       }
-      SetPrimaryAccountInternal(primary_account_info(),
+      SetPrimaryAccountInternal(GetPrimaryAccount().account_info,
                                 /*consented_to_sync=*/false,
                                 scoped_pref_commit);
       break;
@@ -624,7 +626,7 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
 
 PrimaryAccountChangeEvent::State PrimaryAccountManager::GetPrimaryAccountState()
     const {
-  PrimaryAccountChangeEvent::State state(primary_account_info(),
+  PrimaryAccountChangeEvent::State state(GetPrimaryAccount().account_info,
                                          signin::ConsentLevel::kSignin);
   if (HasPrimaryAccount(signin::ConsentLevel::kSync))
     state.consent_level = signin::ConsentLevel::kSync;
