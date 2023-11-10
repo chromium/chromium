@@ -1234,10 +1234,8 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForIbans(
       suggestion.payload = Suggestion::ValueToFill(iban->GetStrippedValue());
     } else {
       CHECK(iban->record_type() == Iban::kServerIban);
-      int64_t instrument_id = 0;
-      CHECK(base::StringToInt64(iban->instrument_id(), &instrument_id));
-      suggestion.payload =
-          Suggestion::BackendId(Suggestion::InstrumentId(instrument_id));
+      suggestion.payload = Suggestion::BackendId(
+          Suggestion::InstrumentId(iban->instrument_id()));
     }
     if (!iban->nickname().empty())
       suggestion.labels = {{Suggestion::Text(iban->nickname())}};

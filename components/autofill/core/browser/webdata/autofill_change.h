@@ -64,7 +64,8 @@ class AutofillDataModelChange {
       return;
     }
     if constexpr (std::is_same_v<DataType, Iban>) {
-      CHECK(data_model_.guid() == key_ || data_model_.instrument_id() == key_);
+      CHECK(data_model_.guid() == key_ ||
+            base::NumberToString(data_model_.instrument_id()) == key_);
     } else if constexpr (std::is_same_v<DataType, ServerCvc>) {
       CHECK(base::NumberToString(data_model_.instrument_id) == key_);
     } else if constexpr (std::is_same_v<DataType, CreditCard>) {

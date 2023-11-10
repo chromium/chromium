@@ -180,7 +180,7 @@ TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_LocalIban) {
 
 // Test that an existing server IBAN should not be offered save at all.
 TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_ServerIban) {
-  Iban iban(Iban::InstrumentId("1234567"));
+  Iban iban(Iban::InstrumentId(1234567));
   iban.set_prefix(u"DE91");
   iban.set_suffix(u"6789");
   iban.set_length(22);

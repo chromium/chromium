@@ -202,7 +202,9 @@ Iban& Iban::operator=(const Iban& iban) = default;
 AutofillMetadata Iban::GetMetadata() const {
   CHECK_NE(record_type_, Iban::kUnknown);
   AutofillMetadata metadata = AutofillDataModel::GetMetadata();
-  metadata.id = record_type_ == Iban::kLocalIban ? guid() : instrument_id();
+  metadata.id = record_type_ == Iban::kLocalIban
+                    ? guid()
+                    : base::NumberToString(instrument_id());
   return metadata;
 }
 
@@ -333,7 +335,7 @@ const std::string& Iban::guid() const {
   return absl::get<Guid>(identifier_).value();
 }
 
-const std::string& Iban::instrument_id() const {
+int64_t Iban::instrument_id() const {
   CHECK(absl::holds_alternative<InstrumentId>(identifier_));
   return absl::get<InstrumentId>(identifier_).value();
 }

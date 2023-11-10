@@ -2103,30 +2103,26 @@ TEST_F(AutofillSuggestionGeneratorTest, GetServerIbanSuggestions) {
   // payment methods settings page.
   ASSERT_EQ(iban_suggestions.size(), 5u);
 
-  int64_t instrument_id = 0;
-  CHECK(base::StringToInt64(server_iban1.instrument_id(), &instrument_id));
   EXPECT_THAT(
       iban_suggestions[0],
-      EqualsIbanSuggestion(
-          server_iban1.GetIdentifierStringForAutofillDisplay(),
-          Suggestion::BackendId(Suggestion::InstrumentId(instrument_id)),
-          server_iban1.nickname()));
+      EqualsIbanSuggestion(server_iban1.GetIdentifierStringForAutofillDisplay(),
+                           Suggestion::BackendId(Suggestion::InstrumentId(
+                               server_iban1.instrument_id())),
+                           server_iban1.nickname()));
 
-  CHECK(base::StringToInt64(server_iban2.instrument_id(), &instrument_id));
   EXPECT_THAT(
       iban_suggestions[1],
-      EqualsIbanSuggestion(
-          server_iban2.GetIdentifierStringForAutofillDisplay(),
-          Suggestion::BackendId(Suggestion::InstrumentId(instrument_id)),
-          server_iban2.nickname()));
+      EqualsIbanSuggestion(server_iban2.GetIdentifierStringForAutofillDisplay(),
+                           Suggestion::BackendId(Suggestion::InstrumentId(
+                               server_iban2.instrument_id())),
+                           server_iban2.nickname()));
 
-  CHECK(base::StringToInt64(server_iban3.instrument_id(), &instrument_id));
   EXPECT_THAT(
       iban_suggestions[2],
-      EqualsIbanSuggestion(
-          server_iban3.GetIdentifierStringForAutofillDisplay(),
-          Suggestion::BackendId(Suggestion::InstrumentId(instrument_id)),
-          server_iban3.nickname()));
+      EqualsIbanSuggestion(server_iban3.GetIdentifierStringForAutofillDisplay(),
+                           Suggestion::BackendId(Suggestion::InstrumentId(
+                               server_iban3.instrument_id())),
+                           server_iban3.nickname()));
 
   EXPECT_EQ(iban_suggestions[3].popup_item_id, PopupItemId::kSeparator);
 
@@ -2151,22 +2147,19 @@ TEST_F(AutofillSuggestionGeneratorTest, GetLocalAndServerIbanSuggestions) {
   // payment methods settings page.
   ASSERT_EQ(iban_suggestions.size(), 5u);
 
-  int64_t instrument_id = 0;
-  CHECK(base::StringToInt64(server_iban1.instrument_id(), &instrument_id));
   EXPECT_THAT(
       iban_suggestions[0],
-      EqualsIbanSuggestion(
-          server_iban1.GetIdentifierStringForAutofillDisplay(),
-          Suggestion::BackendId(Suggestion::InstrumentId(instrument_id)),
-          server_iban1.nickname()));
+      EqualsIbanSuggestion(server_iban1.GetIdentifierStringForAutofillDisplay(),
+                           Suggestion::BackendId(Suggestion::InstrumentId(
+                               server_iban1.instrument_id())),
+                           server_iban1.nickname()));
 
-  CHECK(base::StringToInt64(server_iban2.instrument_id(), &instrument_id));
   EXPECT_THAT(
       iban_suggestions[1],
-      EqualsIbanSuggestion(
-          server_iban2.GetIdentifierStringForAutofillDisplay(),
-          Suggestion::BackendId(Suggestion::InstrumentId(instrument_id)),
-          server_iban2.nickname()));
+      EqualsIbanSuggestion(server_iban2.GetIdentifierStringForAutofillDisplay(),
+                           Suggestion::BackendId(Suggestion::InstrumentId(
+                               server_iban2.instrument_id())),
+                           server_iban2.nickname()));
 
   EXPECT_THAT(iban_suggestions[2],
               EqualsIbanSuggestion(

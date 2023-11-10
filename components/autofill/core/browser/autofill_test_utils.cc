@@ -297,7 +297,7 @@ Iban GetLocalIban2() {
 }
 
 Iban GetServerIban() {
-  Iban iban(Iban::InstrumentId("1234567"));
+  Iban iban(Iban::InstrumentId(1234567));
   iban.set_prefix(u"FR76");
   iban.set_suffix(u"0189");
   iban.set_length(27);
@@ -306,7 +306,7 @@ Iban GetServerIban() {
 }
 
 Iban GetServerIban2() {
-  Iban iban(Iban::InstrumentId("1234568"));
+  Iban iban(Iban::InstrumentId(1234568));
   iban.set_prefix(u"BE71");
   iban.set_suffix(u"8676");
   iban.set_length(16);
@@ -315,7 +315,7 @@ Iban GetServerIban2() {
 }
 
 Iban GetServerIban3() {
-  Iban iban(Iban::InstrumentId("1234569"));
+  Iban iban(Iban::InstrumentId(1234569));
   iban.set_prefix(u"DE91");
   iban.set_suffix(u"6789");
   iban.set_length(22);

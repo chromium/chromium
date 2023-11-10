@@ -2405,7 +2405,7 @@ bool AutofillTable::AddOrUpdateServerIbanMetadata(const Iban& iban) {
   CHECK_EQ(Iban::RecordType::kServerIban, iban.record_type());
   // There's no need to verify if removal succeeded, because if it's a new IBAN,
   // the removal call won't do anything.
-  RemoveServerIbanMetadata(iban.instrument_id());
+  RemoveServerIbanMetadata(base::NumberToString(iban.instrument_id()));
 
   sql::Statement s;
   InsertBuilder(db_, s, kMaskedIbansMetadataTable,
@@ -2553,8 +2553,12 @@ std::vector<std::unique_ptr<Iban>> AutofillTable::GetServerIbans() {
   std::vector<std::unique_ptr<Iban>> ibans;
   while (s.Step()) {
     int index = 0;
+    int64_t instrument_id = 0;
+    if (!base::StringToInt64(s.ColumnString(index++), &instrument_id)) {
+      continue;
+    }
     std::unique_ptr<Iban> iban =
-        std::make_unique<Iban>(Iban::InstrumentId(s.ColumnString(index++)));
+        std::make_unique<Iban>(Iban::InstrumentId(instrument_id));
     iban->set_use_count(s.ColumnInt64(index++));
     iban->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
     iban->set_nickname(s.ColumnString16(index++));
@@ -2582,7 +2586,7 @@ bool AutofillTable::SetServerIbans(const std::vector<Iban>& ibans) {
   for (const Iban& iban : ibans) {
     CHECK_EQ(Iban::RecordType::kServerIban, iban.record_type());
     int index = 0;
-    s.BindString(index++, iban.instrument_id());
+    s.BindString(index++, base::NumberToString(iban.instrument_id()));
     s.BindString16(index++, iban.nickname());
     s.BindString16(index++, iban.prefix());
     s.BindString16(index++, iban.suffix());

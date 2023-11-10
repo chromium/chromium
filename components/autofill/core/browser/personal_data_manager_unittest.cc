@@ -1102,7 +1102,7 @@ TEST_F(PersonalDataManagerTest, GetIbansToSuggest) {
   local_iban1.set_value(u"FR76 3000 6000 0112 3456 7890 189");
   Iban local_iban2;
   local_iban2.set_value(u"CH56 0483 5012 3456 7800 9");
-  Iban server_iban1(Iban::InstrumentId("1234567"));
+  Iban server_iban1(Iban::InstrumentId(1234567));
   server_iban1.set_prefix(u"FR76");
   server_iban1.set_suffix(u"0189");
   server_iban1.set_length(27);
