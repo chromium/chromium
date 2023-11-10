@@ -5,6 +5,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/accessibility/pdf_ocr_controller.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
+#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -13,6 +14,7 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "ui/accessibility/accessibility_features.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process.h"
@@ -79,12 +81,6 @@ class PdfOcrControllerBrowserTest : public PDFExtensionTestBase {
       delete;
 
   // PDFExtensionTestBase overrides:
-  void SetUpOnMainThread() override {
-    PDFExtensionTestBase::SetUpOnMainThread();
-    EnableScreenReader(true);
-  }
-
-  // PDFExtensionTestBase overrides:
   void TearDownOnMainThread() override {
     PDFExtensionTestBase::TearDownOnMainThread();
     EnableScreenReader(false);
@@ -105,6 +101,13 @@ class PdfOcrControllerBrowserTest : public PDFExtensionTestBase {
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
+
+ protected:
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
+    auto enabled = PDFExtensionTestBase::GetEnabledFeatures();
+    enabled.push_back(features::kPdfOcr);
+    return enabled;
+  }
 };
 
 // TODO(crbug.com/1443345): Fix flakiness.
@@ -112,6 +115,7 @@ class PdfOcrControllerBrowserTest : public PDFExtensionTestBase {
 // of PDF Viewer Mimehandler.
 IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
                        DISABLED_OpenPDFAfterTurningOnPdfOcr) {
+  EnableScreenReader(true);
   ui::AXMode ax_mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
@@ -143,6 +147,7 @@ IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
 // WebContents of PDF Viewer Mimehandler.
 IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
                        DISABLED_OpenPDFBeforeTurningOnPdfOcr) {
+  EnableScreenReader(true);
   ui::AXMode ax_mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
@@ -180,31 +185,50 @@ IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
 // Enabling PDF OCR should not affect the accessibility mode of WebContents if
 // it's not related to PDF.
 IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
-                       PdfOcrNotAffectingNonPdfTab) {
-  ui::AXMode ax_mode =
-      content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
-  EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
+                       TurningOnPdfOcrNotAffectingNonPdfTab) {
+  // Turn off PDF OCR first.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityPdfOcrAlwaysActive, false);
+  EnableScreenReader(true);
 
   // Open a new tab not associated with PDF.
   chrome::NewTab(browser());
-  content::WebContents* web_contents = GetActiveWebContents();
-  ax_mode = web_contents->GetAccessibilityMode();
+  content::WebContents* non_pdf_contents = GetActiveWebContents();
+  ui::AXMode ax_mode = non_pdf_contents->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
 
+  screen_ai::ScreenAIInstallState::GetInstance()->SetStateForTesting(
+      screen_ai::ScreenAIInstallState::State::kReady);
+  // Turning on PDF OCR should not affect the non-PDF WebContents.
   PrefChangeWaiter pref_waiter(browser()->profile());
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityPdfOcrAlwaysActive, true);
   // Wait until the PDF OCR pref changes accordingly.
   pref_waiter.Wait();
-  // The existing WebContents should not be affected by this pref change.
-  ax_mode = web_contents->GetAccessibilityMode();
-  EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
 
-  // Open a new tab not associated with PDF.
-  chrome::NewTab(browser());
-  web_contents = GetActiveWebContents();
-  // This new WebContents should not be affected by the pref change.
-  ax_mode = web_contents->GetAccessibilityMode();
+  // The non-PDF WebContents should not be affected by this pref change.
+  ax_mode = non_pdf_contents->GetAccessibilityMode();
+  EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
+}
+
+IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
+                       NotEnabledWithoutScreenReader) {
+  EnableScreenReader(false);
+
+  screen_ai::ScreenAIInstallState::GetInstance()->SetStateForTesting(
+      screen_ai::ScreenAIInstallState::State::kReady);
+  PrefChangeWaiter pref_waiter(browser()->profile());
+  // Turn on PDF OCR.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityPdfOcrAlwaysActive, true);
+  // Wait until the PDF OCR pref changes accordingly.
+  pref_waiter.Wait();
+
+  extensions::MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(guest);
+  content::WebContents* pdf_contents = GetActiveWebContents();
+  ui::AXMode ax_mode = pdf_contents->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
 }
 
@@ -214,6 +238,7 @@ IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
 // WebContents in another profile.
 IN_PROC_BROWSER_TEST_F(PdfOcrControllerBrowserTest,
                        TurningOnPdfOcrInOneProfileNotAffectingAnotherProfile) {
+  EnableScreenReader(true);
   ui::AXMode ax_mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));

@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_split.h"
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
@@ -123,9 +124,10 @@ PdfOcrController::PdfOcrController(Profile* profile) : profile_(profile) {
       base::BindRepeating(&PdfOcrController::OnPdfOcrAlwaysActiveChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  // Trigger if the preference is already set.
+  // Trigger if the preference is already set and a screen reader is enabled.
   if (profile_->GetPrefs()->GetBoolean(
-          prefs::kAccessibilityPdfOcrAlwaysActive)) {
+          prefs::kAccessibilityPdfOcrAlwaysActive) &&
+      accessibility_state_utils::IsScreenReaderEnabled()) {
     OnPdfOcrAlwaysActiveChanged();
   }
 }
