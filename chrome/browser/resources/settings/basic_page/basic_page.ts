@@ -41,6 +41,11 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// clang-format off
+// <if expr="chromeos_ash">
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
+// </if>
+// clang-format on
 
 import {SettingsIdleLoadElement} from '../controls/settings_idle_load.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -330,10 +335,8 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   // <if expr="chromeos_ash">
   private onOpenChromeOsLanguagesSettingsClick_() {
-    const chromeOSLanguagesSettingsPath =
-        loadTimeData.getString('chromeOSLanguagesSettingsPath');
-    window.location.href =
-        `chrome://os-settings/${chromeOSLanguagesSettingsPath}`;
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('osSettingsLanguagesPageUrl'));
   }
   // </if>
 
