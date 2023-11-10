@@ -7091,6 +7091,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "set-up-list-content-notification",
+    "owners": ["tinazwang@google.com", "chrome-sherlock@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "settings-app-notification-settings",
     "owners": [ "yulunwu@chromium.org" ],
     "expiry_milestone": 96

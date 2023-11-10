@@ -923,6 +923,12 @@ const char kSendUmaOverAnyNetwork[] =
 const char kSendUmaOverAnyNetworkDescription[] =
     "When enabled, will send UMA data over either WiFi or cellular by default.";
 
+const char kSetUpListContentNotificationName[] =
+    "Set Up List Content Notification Opt-in";
+const char kSetUpListContentNotificationDescription[] =
+    "Displays an content notification opt-in entry point in list of set up "
+    "tasks on Home for a new user.";
+
 const char kSharedHighlightingIOSName[] = "Enable Shared Highlighting features";
 const char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "

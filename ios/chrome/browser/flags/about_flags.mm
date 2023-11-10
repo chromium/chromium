@@ -1627,6 +1627,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"dynamic-background-color", flag_descriptions::kDynamicBackgroundColorName,
      flag_descriptions::kDynamicBackgroundColorDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDynamicBackgroundColor)},
+    {"set-up-list-content-notification",
+     flag_descriptions::kSetUpListContentNotificationName,
+     flag_descriptions::kSetUpListContentNotificationDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kSetUpListContentNotification)},
 
 };
 

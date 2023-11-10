@@ -51,6 +51,9 @@ BASE_DECLARE_FEATURE(kEnableFollowManagementInstantReload);
 // Feature flag to enable signed out user view demotion.
 BASE_DECLARE_FEATURE(kEnableSignedOutViewDemotion);
 
+// Feature flag to enable Set Up List Content Notification.
+BASE_DECLARE_FEATURE(kSetUpListContentNotification);
+
 #pragma mark - Feature parameters
 
 // A parameter to indicate whether Reconstructed Templates is enabled for static
@@ -134,5 +137,8 @@ bool IsFollowManagementInstantReloadEnabled();
 
 // Yes if the signed out user view demotion is enabled.
 bool IsSignedOutViewDemotionEnabled();
+
+// Yes if the Set Up List Content Notification is enabled.
+bool IsSetUpListContentNotificationEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_FEATURE_H_

@@ -809,6 +809,11 @@ extern const char kSegmentationPlatformIosModuleRankerDescription[];
 extern const char kSendUmaOverAnyNetwork[];
 extern const char kSendUmaOverAnyNetworkDescription[];
 
+// Title and description for the flag to display the Set Up List Content
+// Notification Opt-in.
+extern const char kSetUpListContentNotificationName[];
+extern const char kSetUpListContentNotificationDescription[];
+
 // Title and description for the flag to enable Shared Highlighting (Link to
 // Text Edit Menu option).
 extern const char kSharedHighlightingIOSName[];
