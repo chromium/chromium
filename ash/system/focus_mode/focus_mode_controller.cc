@@ -190,6 +190,17 @@ void FocusModeController::SetEnabled(bool enabled) {
   }
 }
 
+bool FocusModeController::HasStartedSessionBefore() const {
+  // Since `kFocusModeDoNotDisturb` is always set whenever a focus session is
+  // started, we can use this as an indicator of if the user has ever started a
+  // focus session before.
+  if (PrefService* active_user_prefs =
+          Shell::Get()->session_controller()->GetActivePrefService()) {
+    return active_user_prefs->HasPrefPath(prefs::kFocusModeDoNotDisturb);
+  }
+  return false;
+}
+
 void FocusModeController::OnTimerTick() {
   if (in_focus_session_ && base::Time::Now() >= end_time_) {
     ToggleFocusMode();
@@ -202,17 +213,17 @@ void FocusModeController::OnTimerTick() {
 }
 
 void FocusModeController::UpdateFromUserPrefs() {
-  PrefService* primary_user_prefs =
+  PrefService* active_user_prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
-  if (!primary_user_prefs) {
+  if (!active_user_prefs) {
     // Can be null in tests.
     return;
   }
 
   session_duration_ =
-      primary_user_prefs->GetTimeDelta(prefs::kFocusModeSessionDuration);
+      active_user_prefs->GetTimeDelta(prefs::kFocusModeSessionDuration);
   turn_on_do_not_disturb_ =
-      primary_user_prefs->GetBoolean(prefs::kFocusModeDoNotDisturb);
+      active_user_prefs->GetBoolean(prefs::kFocusModeDoNotDisturb);
 
   if (session_duration_ <= base::TimeDelta()) {
     session_duration_ = kDefaultSessionDuration;
@@ -220,12 +231,12 @@ void FocusModeController::UpdateFromUserPrefs() {
 }
 
 void FocusModeController::SaveSettingsToUserPrefs() {
-  if (PrefService* primary_user_prefs =
+  if (PrefService* active_user_prefs =
           Shell::Get()->session_controller()->GetActivePrefService()) {
-    primary_user_prefs->SetTimeDelta(prefs::kFocusModeSessionDuration,
-                                     session_duration_);
-    primary_user_prefs->SetBoolean(prefs::kFocusModeDoNotDisturb,
-                                   turn_on_do_not_disturb_);
+    active_user_prefs->SetTimeDelta(prefs::kFocusModeSessionDuration,
+                                    session_duration_);
+    active_user_prefs->SetBoolean(prefs::kFocusModeDoNotDisturb,
+                                  turn_on_do_not_disturb_);
   }
 }
 

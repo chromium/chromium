@@ -35,7 +35,6 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "ui/message_center/message_center.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
@@ -340,6 +339,13 @@ void FocusModeDetailedView::CreateToggleView() {
   toggle_view_->text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
                                         *toggle_view_->text_label());
+
+  // As part of the first time user flow, if the user has never started a
+  // session before, we want to provide description text.
+  if (!focus_mode_controller->HasStartedSessionBefore()) {
+    toggle_view_->SetSubText(l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_FIRST_TIME_SUBLABEL));
+  }
 
   if (in_focus_session) {
     cached_end_time_ = focus_mode_controller->end_time();

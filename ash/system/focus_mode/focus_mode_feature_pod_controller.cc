@@ -11,7 +11,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/check.h"
@@ -65,6 +64,16 @@ QsFeatureCatalogName FocusModeFeaturePodController::GetCatalogName() {
 
 void FocusModeFeaturePodController::OnIconPressed() {
   auto* controller = FocusModeController::Get();
+
+  // As part of the first time user flow, if the user has never started a
+  // session before, we want to direct them to the focus panel so they can get
+  // more context and change focus settings instead of starting a session
+  // immediately.
+  if (!controller->HasStartedSessionBefore()) {
+    OnLabelPressed();
+    return;
+  }
+
   TrackToggleUMA(/*target_toggle_state=*/!controller->in_focus_session());
   controller->ToggleFocusMode();
 }
@@ -95,6 +104,14 @@ void FocusModeFeaturePodController::UpdateUI() {
   tile_->SetLabel(label_text);
   tile_->SetIconButtonTooltipText(label_text);
   tile_->SetTooltipText(label_text);
+
+  // As part of the first time user flow, if the user has never started a
+  // session before, we hide the session duration sublabel since they are not
+  // able to start a focus session immediately anyway.
+  if (!controller->HasStartedSessionBefore()) {
+    tile_->SetSubLabelVisibility(false);
+    return;
+  }
 
   const base::TimeDelta session_duration_remaining =
       in_focus_session ? controller->end_time() - base::Time::Now()

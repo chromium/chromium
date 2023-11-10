@@ -68,6 +68,9 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // during an active focus session.
   void SetSessionDuration(const base::TimeDelta& new_session_duration);
 
+  // Returns whether the user has ever started a focus session previously.
+  bool HasStartedSessionBefore() const;
+
  private:
   void SetEnabled(bool enabled);
 

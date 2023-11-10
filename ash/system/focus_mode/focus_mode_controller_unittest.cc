@@ -151,4 +151,14 @@ TEST_F(FocusModeControllerMultiUserTest, ToggleClosesSystemBubble) {
   EXPECT_TRUE(system_tray->IsBubbleShown());
 }
 
+// Tests that we can determine if a focus session has started before.
+TEST_F(FocusModeControllerMultiUserTest, FirstTimeUserFlow) {
+  SimulateUserLogin(GetUser1AccountId());
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->HasStartedSessionBefore());
+
+  FocusModeController::Get()->ToggleFocusMode();
+  EXPECT_TRUE(controller->HasStartedSessionBefore());
+}
+
 }  // namespace ash

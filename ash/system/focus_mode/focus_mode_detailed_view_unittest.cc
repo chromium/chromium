@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/switch.h"
@@ -18,15 +20,12 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
-#include "ash/system/tray/tri_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/i18n/time_formatting.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/controls/label.h"
@@ -49,6 +48,12 @@ class FocusModeDetailedViewTest : public AshTestBase {
 
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
+
+    // Focus Mode considers it to be a first time user flow if
+    // `kFocusModeDoNotDisturb` has never been set by the user before. For
+    // normal feature testing purposes, we will intentionally set it so that the
+    // pref will not be marked as using the default value.
+    prefs()->SetBoolean(prefs::kFocusModeDoNotDisturb, true);
 
     CreateFakeFocusModeDetailedView();
   }
@@ -80,6 +85,10 @@ class FocusModeDetailedViewTest : public AshTestBase {
 
   views::Label* GetToggleRowSubLabel() {
     return focus_mode_detailed_view_->toggle_view_->sub_text_label();
+  }
+
+  bool IsToggleRowSubLabelVisible() {
+    return GetToggleRowSubLabel() && GetToggleRowSubLabel()->GetVisible();
   }
 
   PillButton* GetToggleRowButton() {
@@ -115,6 +124,10 @@ class FocusModeDetailedViewTest : public AshTestBase {
 
   views::Label* GetEndTimeLabel() {
     return focus_mode_detailed_view_->end_time_label_;
+  }
+
+  PrefService* prefs() {
+    return Shell::Get()->session_controller()->GetActivePrefService();
   }
 
   FakeDetailedViewDelegate detailed_view_delegate_;
@@ -231,8 +244,7 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
     EXPECT_EQ(active, focus_mode_controller->in_focus_session());
     EXPECT_EQ(active ? u"Focusing" : u"Focus", GetToggleRowLabel()->GetText());
 
-    EXPECT_EQ(active,
-              GetToggleRowSubLabel() && GetToggleRowSubLabel()->GetVisible());
+    EXPECT_EQ(active, IsToggleRowSubLabelVisible());
 
     if (active) {
       EXPECT_EQ(focus_mode_util::GetFormattedEndTimeString(
@@ -497,6 +509,31 @@ TEST_F(FocusModeDetailedViewTest, TimerViewVisibility) {
   EXPECT_EQ(focus_mode_util::GetFormattedEndTimeString(base::Time::Now() +
                                                        session_duration),
             GetEndTimeLabel()->GetText());
+}
+
+// Verify that the toggle row sublabel is shown in the first time user flow.
+TEST_F(FocusModeDetailedViewTest, FirstTimeUserFlow) {
+  // Clear `kFocusModeDoNotDisturb` to trigger the first time user flow.
+  prefs()->ClearPref(prefs::kFocusModeDoNotDisturb);
+
+  // Recreate the detailed view so that the UI is updated after we set the user
+  // pref.
+  CreateFakeFocusModeDetailedView();
+
+  // Verify that the first time user flow text is displayed.
+  EXPECT_TRUE(IsToggleRowSubLabelVisible());
+  EXPECT_EQ(GetToggleRowSubLabel()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_FOCUS_MODE_FIRST_TIME_SUBLABEL));
+
+  // Start and stop a focus session. This puts us back into the focus panel
+  // outside of the first time user flow.
+  LeftClickOn(GetToggleRowButton());
+  CreateFakeFocusModeDetailedView();
+  LeftClickOn(GetToggleRowButton());
+
+  // Verify that the first time user flow text no longer is displayed.
+  EXPECT_FALSE(IsToggleRowSubLabelVisible());
 }
 
 }  // namespace ash
