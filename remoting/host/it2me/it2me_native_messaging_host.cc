@@ -39,8 +39,8 @@
 #include "remoting/host/xmpp_register_support_host_request.h"
 #include "remoting/protocol/ice_config.h"
 #include "remoting/signaling/delegating_signal_strategy.h"
-#include "remoting/signaling/ftl_client_uuid_device_id_provider.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
+#include "remoting/signaling/ftl_support_host_device_id_provider.h"
 #include "remoting/signaling/remoting_log_to_server.h"
 #include "remoting/signaling/server_log_entry.h"
 #include "remoting/signaling/xmpp_log_to_server.h"
@@ -147,7 +147,7 @@ CreateNativeSignalingDeferredConnectContext(
   connection_context->signal_strategy = std::make_unique<FtlSignalStrategy>(
       std::make_unique<PassthroughOAuthTokenGetter>(username, access_token),
       host_context->url_loader_factory(),
-      std::make_unique<FtlClientUuidDeviceIdProvider>(device_id));
+      std::make_unique<FtlSupportHostDeviceIdProvider>(device_id));
   connection_context->ftl_device_id = std::move(device_id);
   connection_context->register_request =
       std::make_unique<RemotingRegisterSupportHostRequest>(

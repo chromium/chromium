@@ -9,12 +9,7 @@
 namespace remoting {
 
 FtlClientUuidDeviceIdProvider::FtlClientUuidDeviceIdProvider()
-    : FtlClientUuidDeviceIdProvider(
-          base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
-
-FtlClientUuidDeviceIdProvider::FtlClientUuidDeviceIdProvider(
-    const std::string& device_id)
-    : client_uuid_(device_id) {}
+    : client_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
 
 FtlClientUuidDeviceIdProvider::~FtlClientUuidDeviceIdProvider() = default;
 
