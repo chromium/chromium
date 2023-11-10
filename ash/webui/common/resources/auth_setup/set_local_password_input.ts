@@ -88,6 +88,14 @@ export class SetLocalPasswordInputElement extends
         value: '',
       },
 
+      /**
+       * Aria label to apply to the first input.
+       */
+      firstInputAriaLabel: {
+        type: String,
+        value: null,
+      },
+
       firstInputValidity_: {
         type: String,
         value: null,
