@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_SVG_MASK_REFERENCE_IMAGE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_SVG_MASK_REFERENCE_IMAGE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_MASK_SOURCE_IMAGE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_MASK_SOURCE_IMAGE_H_
 
 #include "third_party/blink/renderer/core/style/style_image.h"
 
@@ -13,19 +13,36 @@
 namespace blink {
 
 class CSSImageValue;
+class StyleFetchedImage;
 class SVGResource;
 class SVGResourceClient;
 
-class StyleSVGMaskReferenceImage : public StyleImage {
+// A pseudo-<image> representing the <mask-source> production described in
+// [1]. It's a url() <image> that can either be a regular image, or an SVG
+// <mask> reference.
+//
+// If the reference is non-local this wraps an StyleFetchedImage, and a
+// corresponding SVGResource that wraps the same ImageResourceContent as the
+// StyleFetchedImage. If the url() has fragment that in turn references an SVG
+// <mask> element this can be used to paint/generate a mask from that source.
+//
+// If the reference is local an SVGResource is wrapped.
+//
+// [1] https://drafts.fxtf.org/css-masking/#the-mask-image
+class StyleMaskSourceImage : public StyleImage {
  public:
-  StyleSVGMaskReferenceImage(SVGResource* resource,
-                             CSSImageValue* resource_css_value);
-  ~StyleSVGMaskReferenceImage() override;
+  StyleMaskSourceImage(StyleFetchedImage*, SVGResource*, CSSImageValue*);
+  StyleMaskSourceImage(SVGResource*, CSSImageValue*);
+  ~StyleMaskSourceImage() override;
 
   CSSValue* CssValue() const override;
   CSSValue* ComputedCSSValue(const ComputedStyle&,
                              bool allow_visited_style) const override;
 
+  bool CanRender() const override;
+  bool IsLoaded() const override;
+  bool IsLoading() const override;
+  bool ErrorOccurred() const override;
   bool IsAccessAllowed(String& failing_url) const override;
 
   IntrinsicSizingInfo GetNaturalSizingInfo(
@@ -45,11 +62,14 @@ class StyleSVGMaskReferenceImage : public StyleImage {
                                 const Document&,
                                 const ComputedStyle&,
                                 const gfx::SizeF& target_size) const override;
+  float ImageScaleFactor() const override;
 
   WrappedImagePtr Data() const override;
 
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override;
+  ImageResourceContent* CachedImage() const override;
 
+  bool HasSVGMask() const;
   SVGResource* GetSVGResource() const;
   SVGResourceClient* GetSVGResourceClient(const ImageResourceObserver&) const;
 
@@ -58,17 +78,25 @@ class StyleSVGMaskReferenceImage : public StyleImage {
  private:
   bool IsEqual(const StyleImage&) const override;
 
+  // url() <image> being wrapped. Will be null if keeping a document-local
+  // resource.
+  Member<StyleFetchedImage> image_;
+
+  // SVG resource. Can be null if keeping a document-local resource for an
+  // empty fragment.
   Member<SVGResource> resource_;
+
+  // Original CSS value.
   Member<CSSImageValue> resource_css_value_;
 };
 
 template <>
-struct DowncastTraits<StyleSVGMaskReferenceImage> {
+struct DowncastTraits<StyleMaskSourceImage> {
   static bool AllowFrom(const StyleImage& style_image) {
-    return style_image.IsSVGMaskReference();
+    return style_image.IsMaskSource();
   }
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_SVG_MASK_REFERENCE_IMAGE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_MASK_SOURCE_IMAGE_H_

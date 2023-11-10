@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
+#include "third_party/blink/renderer/core/style/style_mask_source_image.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -367,8 +368,8 @@ EFillBox FillLayer::EffectiveClip() const {
   // When the layer is for a mask and the image is an SVG <mask> reference, the
   // effective clip value is no-clip.
   if (GetType() == EFillLayerType::kMask) {
-    auto* image = GetImage();
-    if (image && image->IsSVGMaskReference()) {
+    const auto* mask_source = DynamicTo<StyleMaskSourceImage>(GetImage());
+    if (mask_source && mask_source->HasSVGMask()) {
       return EFillBox::kNoClip;
     }
   }

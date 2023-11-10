@@ -675,6 +675,13 @@ void SVGImage::UpdateUseCounters(const Document& document) const {
   }
 }
 
+Element* SVGImage::GetResourceElement(const AtomicString& id) const {
+  if (!page_) {
+    return nullptr;
+  }
+  return GetFrame()->GetDocument()->getElementById(id);
+}
+
 void SVGImage::LoadCompleted() {
   switch (load_state_) {
     case kInDataChanged:

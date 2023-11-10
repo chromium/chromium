@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
-#include "third_party/blink/renderer/core/style/style_svg_mask_reference_image.h"
+#include "third_party/blink/renderer/core/style/style_mask_source_image.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
@@ -57,9 +57,16 @@ LayoutSVGResourceMasker* ResolveElementReference(SVGResource* mask_resource,
   if (DisplayLockUtilities::LockedAncestorPreventingLayout(*masker)) {
     return nullptr;
   }
-  SECURITY_DCHECK(!masker->SelfNeedsFullLayout());
+  SECURITY_CHECK(!masker->SelfNeedsFullLayout());
   masker->ClearInvalidationMask();
   return masker;
+}
+
+LayoutSVGResourceMasker* ResolveElementReference(
+    const StyleMaskSourceImage& mask_source,
+    const ImageResourceObserver& observer) {
+  return ResolveElementReference(mask_source.GetSVGResource(),
+                                 mask_source.GetSVGResourceClient(observer));
 }
 
 class SVGMaskGeometry {
@@ -418,6 +425,15 @@ class ScopedMaskLuminanceLayer {
   GraphicsContext& context_;
 };
 
+const StyleMaskSourceImage* ToMaskSourceIfSVGMask(
+    const StyleImage& style_image) {
+  const auto* mask_source = DynamicTo<StyleMaskSourceImage>(style_image);
+  if (!mask_source || !mask_source->HasSVGMask()) {
+    return nullptr;
+  }
+  return mask_source;
+}
+
 void PaintMaskLayer(const FillLayer& layer,
                     const FillInfo& info,
                     SVGMaskGeometry& geometry,
@@ -445,8 +461,7 @@ void PaintMaskLayer(const FillLayer& layer,
   // If the "image" referenced by the FillLayer is an SVG <mask> reference (and
   // this is a layer for a mask), then repeat, position, clip, origin and size
   // should have no effect.
-  if (const auto* svg_reference =
-          DynamicTo<StyleSVGMaskReferenceImage>(*style_image)) {
+  if (const auto* mask_source = ToMaskSourceIfSVGMask(*style_image)) {
     const ComputedStyle& style = info.object.StyleRef();
     const gfx::RectF reference_box = SVGResources::ReferenceBoxForEffects(
         info.object, GeometryBox::kFillBox,
@@ -456,7 +471,7 @@ void PaintMaskLayer(const FillLayer& layer,
 
     saver.Save();
     SVGMaskPainter::PaintSVGMaskLayer(
-        context, *svg_reference, info.object, reference_box, zoom, composite_op,
+        context, *mask_source, info.object, reference_box, zoom, composite_op,
         layer.MaskMode() == EFillMaskMode::kMatchSource);
     return;
   }
@@ -589,17 +604,15 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
   context.Restore();
 }
 
-void SVGMaskPainter::PaintSVGMaskLayer(
-    GraphicsContext& context,
-    const StyleSVGMaskReferenceImage& svg_reference,
-    const ImageResourceObserver& observer,
-    const gfx::RectF& reference_box,
-    const float zoom,
-    const SkBlendMode composite_op,
-    const bool apply_mask_type) {
+void SVGMaskPainter::PaintSVGMaskLayer(GraphicsContext& context,
+                                       const StyleMaskSourceImage& mask_source,
+                                       const ImageResourceObserver& observer,
+                                       const gfx::RectF& reference_box,
+                                       const float zoom,
+                                       const SkBlendMode composite_op,
+                                       const bool apply_mask_type) {
   LayoutSVGResourceMasker* masker =
-      ResolveElementReference(svg_reference.GetSVGResource(),
-                              svg_reference.GetSVGResourceClient(observer));
+      ResolveElementReference(mask_source, observer);
   if (!masker) {
     return;
   }
@@ -608,9 +621,9 @@ void SVGMaskPainter::PaintSVGMaskLayer(
                apply_mask_type);
 }
 
-bool SVGMaskPainter::MaskIsValid(SVGResource* mask_resource,
-                                 SVGResourceClient* client) {
-  return ResolveElementReference(mask_resource, client);
+bool SVGMaskPainter::MaskIsValid(const StyleMaskSourceImage& mask_source,
+                                 const ImageResourceObserver& observer) {
+  return ResolveElementReference(mask_source, observer);
 }
 
 gfx::RectF SVGMaskPainter::ResourceBoundsForSVGChild(
@@ -624,14 +637,13 @@ gfx::RectF SVGMaskPainter::ResourceBoundsForSVGChild(
   gfx::RectF bounds;
   for (const FillLayer* layer = &style.MaskLayers(); layer;
        layer = layer->Next()) {
-    const auto* svg_mask_reference =
-        DynamicTo<StyleSVGMaskReferenceImage>(layer->GetImage());
-    if (!svg_mask_reference) {
+    const auto* mask_source =
+        DynamicTo<StyleMaskSourceImage>(layer->GetImage());
+    if (!mask_source) {
       continue;
     }
-    LayoutSVGResourceMasker* masker = ResolveElementReference(
-        svg_mask_reference->GetSVGResource(),
-        svg_mask_reference->GetSVGResourceClient(object));
+    LayoutSVGResourceMasker* masker =
+        ResolveElementReference(*mask_source, object);
     if (!masker) {
       continue;
     }

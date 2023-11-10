@@ -28,7 +28,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
-#include "third_party/blink/renderer/core/style/style_svg_mask_reference_image.h"
+#include "third_party/blink/renderer/core/style/style_mask_source_image.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -1090,6 +1090,15 @@ bool NeedsMaskLuminanceLayer(const FillLayer& layer) {
   return layer.MaskMode() == EFillMaskMode::kLuminance;
 }
 
+const StyleMaskSourceImage* ToMaskSourceIfSVGMask(
+    const StyleImage& style_image) {
+  const auto* mask_source = DynamicTo<StyleMaskSourceImage>(style_image);
+  if (!mask_source || !mask_source->HasSVGMask()) {
+    return nullptr;
+  }
+  return mask_source;
+}
+
 class ScopedMaskLuminanceLayer {
   STACK_ALLOCATED();
 
@@ -1168,22 +1177,23 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
     // If the "image" referenced by the FillLayer is an SVG <mask> reference
     // (and this is a layer for a mask), then repeat, position, clip, origin and
     // size should have no effect.
-    if (bg_layer.GetType() == EFillLayerType::kMask &&
-        fill_layer_info.image->IsSVGMaskReference()) {
-      const PhysicalRect positioning_area = geometry.ComputePositioningArea(
-          paint_info, bg_layer, scrolled_paint_rect);
-      const gfx::RectF reference_box(gfx::SizeF(positioning_area.size));
-      const float zoom = image_style.EffectiveZoom();
+    if (bg_layer.GetType() == EFillLayerType::kMask) {
+      if (const auto* mask_source =
+              ToMaskSourceIfSVGMask(*fill_layer_info.image)) {
+        const PhysicalRect positioning_area = geometry.ComputePositioningArea(
+            paint_info, bg_layer, scrolled_paint_rect);
+        const gfx::RectF reference_box(gfx::SizeF(positioning_area.size));
+        const float zoom = image_style.EffectiveZoom();
 
-      clip_with_scrolling_state_saver.SaveIfNeeded();
-      // Move the origin to the upper-left corner of the positioning area.
-      context.Translate(positioning_area.X().ToFloat(),
-                        positioning_area.Y().ToFloat());
-      SVGMaskPainter::PaintSVGMaskLayer(
-          context, To<StyleSVGMaskReferenceImage>(*fill_layer_info.image),
-          geometry.ImageClient(), reference_box, zoom, composite_op,
-          bg_layer.MaskMode() == EFillMaskMode::kMatchSource);
-      return;
+        clip_with_scrolling_state_saver.SaveIfNeeded();
+        // Move the origin to the upper-left corner of the positioning area.
+        context.Translate(positioning_area.X().ToFloat(),
+                          positioning_area.Y().ToFloat());
+        SVGMaskPainter::PaintSVGMaskLayer(
+            context, *mask_source, geometry.ImageClient(), reference_box, zoom,
+            composite_op, bg_layer.MaskMode() == EFillMaskMode::kMatchSource);
+        return;
+      }
     }
     geometry.Calculate(paint_info, bg_layer, scrolled_paint_rect);
 
