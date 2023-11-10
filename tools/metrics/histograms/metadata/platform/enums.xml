@@ -2568,6 +2568,7 @@ Full version information for the fingerprint enum values:
   <int value="2109398286" label="CROS Cr50 0.4.7"/>
   <int value="2127616984" label="CROS Cr50 0.6.1"/>
   <int value="2128561741" label="CROS Cr50 0.5.93"/>
+  <int value="2128775895" label="CROS Ti50 0.24.61"/>
 </enum>
 
 <enum name="WiFiPCIStatus">
