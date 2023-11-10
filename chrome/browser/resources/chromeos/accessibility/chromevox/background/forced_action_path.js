@@ -222,7 +222,10 @@ ForcedActionPath.CLOSE_CHROMEVOX_KEY_SEQUENCE_ = KeySequence.deserialize(
  */
 ForcedActionPath.ActionInfo;
 
-// Represents an expected action.
+/**
+ * Represents an expected action.
+ * @abstract
+ */
 ForcedActionPath.Action = class {
   /**
    * Please see below for more information on arguments:
@@ -239,12 +242,13 @@ ForcedActionPath.Action = class {
    *  beforeActionCallback: (function(): void|undefined),
    *  afterActionCallback: (function(): void|undefined)
    * }} params
+   * @protected
    */
   constructor(params) {
     /** @type {ActionType} */
     this.type = params.type;
     /** @type {string|!KeySequence} */
-    this.value = params.value;
+    this.value = this.typedValue(params.value);
     /** @type {boolean} */
     this.shouldPropagate =
         (params.shouldPropagate !== undefined) ? params.shouldPropagate : true;
@@ -321,13 +325,20 @@ ForcedActionPath.Action = class {
       }
     };
 
-    return new ForcedActionPath.Action({
+    const params = {
       type,
       value,
       shouldPropagate,
       beforeActionCallback,
       afterActionCallback,
-    });
+    };
+
+    switch (type) {
+      case ActionType.KEY_SEQUENCE:
+        return new ForcedActionPath.KeySequenceAction(params);
+      default:
+        return new ForcedActionPath.StringAction(params);
+    }
   }
 
   /**
@@ -335,17 +346,15 @@ ForcedActionPath.Action = class {
    * @return {boolean}
    */
   equals(other) {
-    if (this.type !== other.type) {
-      return false;
-    }
-
-    if (this.type === ActionType.KEY_SEQUENCE) {
-      // For KeySequences, use the built-in equals method.
-      return this.value.equals(/** @type {!KeySequence} */ (other.value));
-    }
-
-    return this.value === other.value;
+    return this.type === other.type;
   }
+
+  /**
+   * @param {string|Object} value
+   * @return {string|!KeySequence}
+   * @abstract
+   */
+  typedValue(value) {}
 
   // Static methods.
 
@@ -365,6 +374,40 @@ ForcedActionPath.Action = class {
    */
   static onCommand_(command) {
     CommandHandlerInterface.instance.onCommand(command);
+  }
+};
+
+ForcedActionPath.KeySequenceAction = class extends ForcedActionPath.Action {
+  /** @override */
+  equals(other) {
+    return super.equals(other) &&
+        this.value.equals(/**@type {!KeySequence} */ (other.value));
+  }
+
+  /** @override */
+  typedValue(value) {
+    if (!(value instanceof KeySequence)) {
+      throw new Error(
+          'ForcedActionPath: Must provide a KeySequence value for ' +
+          'Actions of type ActionType.KEY_SEQUENCE');
+    }
+    return /** @type {!KeySequence} */ (value);
+  }
+};
+
+ForcedActionPath.StringAction = class extends ForcedActionPath.Action {
+  /** @override */
+  equals(other) {
+    return super.equals(other) && this.value === other.value;
+  }
+
+  /** @override */
+  typedValue(value) {
+    if (typeof value !== 'string') {
+      throw new Error(`ForcedActionPath: Must provide string value for ${
+          this.type} actions`);
+    }
+    return String(value);
   }
 };
 
