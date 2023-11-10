@@ -66,10 +66,9 @@ CreateChromeOSCompressedGpuMemoryBufferVideoFrame(VideoPixelFormat format,
 
 }  // namespace
 
-class PlatformVideoFramePoolTest
-    : public ::testing::TestWithParam<VideoPixelFormat> {
+class PlatformVideoFramePoolTestBase : public ::testing::Test {
  public:
-  PlatformVideoFramePoolTest()
+  PlatformVideoFramePoolTestBase()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         pool_(new PlatformVideoFramePool()) {
     SetCreateFrameCB(
@@ -132,10 +131,16 @@ class PlatformVideoFramePoolTest
   gfx::Size natural_size_;
 };
 
+class PlatformVideoFramePoolTest
+    : public PlatformVideoFramePoolTestBase,
+      public testing::WithParamInterface<VideoPixelFormat> {};
+
+constexpr VideoPixelFormat kPixelFormats[] = {
+    PIXEL_FORMAT_YV12, PIXEL_FORMAT_NV12, PIXEL_FORMAT_P016LE};
 INSTANTIATE_TEST_SUITE_P(
     All,
     PlatformVideoFramePoolTest,
-    testing::Values(PIXEL_FORMAT_YV12, PIXEL_FORMAT_NV12, PIXEL_FORMAT_P016LE),
+    testing::ValuesIn(kPixelFormats),
     [](const ::testing::TestParamInfo<VideoPixelFormat>& info) {
       return VideoPixelFormatToString(info.param);
     });
