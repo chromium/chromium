@@ -70,6 +70,12 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
 
   bool IsConnected() override;
 
+  void ReadModelIdAsync(
+      base::OnceCallback<
+          void(absl::optional<device::BluetoothGattService::GattErrorCode>
+                   error_code,
+               const std::vector<uint8_t>& value)> callback) override;
+
   void WriteRequestAsync(uint8_t message_type,
                          uint8_t flags,
                          const std::string& provider_address,
@@ -257,6 +263,9 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   base::TimeTicks notify_keybased_start_time_;
   base::TimeTicks notify_passkey_start_time_;
 
+  raw_ptr<device::BluetoothRemoteGattCharacteristic,
+          DanglingUntriaged | ExperimentalAsh>
+      model_id_characteristic_ = nullptr;
   raw_ptr<device::BluetoothRemoteGattCharacteristic,
           DanglingUntriaged | ExperimentalAsh>
       key_based_characteristic_ = nullptr;

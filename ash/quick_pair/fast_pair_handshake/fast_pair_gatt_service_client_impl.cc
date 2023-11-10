@@ -26,6 +26,9 @@ namespace {
 
 // We have two UUID possibilities for each characteristic because they changed
 // across different Fast Pair versions.
+const device::BluetoothUUID kModelIDCharacteristicUuidV1("1233");
+const device::BluetoothUUID kModelIDCharacteristicUuidV2(
+    "FE2C1233-8366-4814-8EB0-01DE32100BEA");
 const device::BluetoothUUID kKeyBasedCharacteristicUuidV1("1234");
 const device::BluetoothUUID kKeyBasedCharacteristicUuidV2(
     "FE2C1234-8366-4814-8EB0-01DE32100BEA");
@@ -580,6 +583,17 @@ FastPairGattServiceClientImpl::SetGattCharacteristics() {
   // session for it later.
   account_key_characteristic_ = account_key_characteristics[0];
 
+  // The model ID characteristic is required for retroactive pairing for BLE HID
+  // devices
+  auto model_id_characteristics = GetCharacteristicsByUUIDs(
+      kModelIDCharacteristicUuidV1, kModelIDCharacteristicUuidV2);
+  if (model_id_characteristics.empty()) {
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Failed to discover Model ID characteristic.";
+  } else {
+    model_id_characteristic_ = model_id_characteristics[0];
+  }
+
   auto additional_data_characteristics = GetCharacteristicsByUUIDs(
       kAdditionalDataCharacteristicUuidV1, kAdditionalDataCharacteristicUuidV2);
 
@@ -721,6 +735,22 @@ FastPairGattServiceClientImpl::CreatePasskeyBlock(uint8_t message_type,
 
 bool FastPairGattServiceClientImpl::IsConnected() {
   return gatt_connection_ && gatt_connection_->IsConnected();
+}
+
+void FastPairGattServiceClientImpl::ReadModelIdAsync(
+    base::OnceCallback<void(
+        absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+        const std::vector<uint8_t>& value)> callback) {
+  DCHECK(is_initialized_);
+
+  if (!model_id_characteristic_) {
+    std::move(callback).Run(
+        device::BluetoothGattService::GattErrorCode::kNotSupported,
+        std::vector<uint8_t>{});
+    return;
+  }
+
+  model_id_characteristic_->ReadRemoteCharacteristic(std::move(callback));
 }
 
 void FastPairGattServiceClientImpl::WriteRequestAsync(

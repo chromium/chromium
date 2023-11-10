@@ -23,6 +23,15 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
   ~FastPairGattServiceClient() override = default;
   virtual device::BluetoothRemoteGattService* gatt_service() = 0;
 
+  // Gets ModelID from model ID characteristic. Upon successful completion
+  // |error_code| will not have a value and |value| may be used. When
+  // unsuccessful |error_code| will have a value and |value| must be ignored.
+  virtual void ReadModelIdAsync(
+      base::OnceCallback<
+          void(absl::optional<device::BluetoothGattService::GattErrorCode>
+                   error_code,
+               const std::vector<uint8_t>& value)> callback) = 0;
+
   // Constructs a data vector based on the message type, flags, provider
   // address, and seekers address. Starts a notify session for key based
   // Pairing. Once the notify session has been started, the message data will be

@@ -36,6 +36,12 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
   bool IsConnected() override;
   void SetConnected(bool is_connected);
 
+  void ReadModelIdAsync(
+      base::OnceCallback<
+          void(absl::optional<device::BluetoothGattService::GattErrorCode>
+                   error_code,
+               const std::vector<uint8_t>& value)> callback) override;
+
   void WriteRequestAsync(uint8_t message_type,
                          uint8_t flags,
                          const std::string& provider_address,
@@ -68,6 +74,10 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
   void RunOnGattClientInitializedCallback(
       absl::optional<PairFailure> failure = absl::nullopt);
 
+  void RunReadModelIdCallback(
+      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value);
+
   void RunWriteResponseCallback(
       std::vector<uint8_t> data,
       absl::optional<PairFailure> failure = absl::nullopt);
@@ -86,6 +96,10 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
   bool is_connected_ = false;
   base::OnceCallback<void(absl::optional<PairFailure>)>
       on_initialized_callback_;
+  base::OnceCallback<void(
+      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value)>
+      read_model_id_callback_;
   base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)>
       key_based_write_response_callback_;
   base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)>

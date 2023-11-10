@@ -40,6 +40,19 @@ void FakeFastPairGattServiceClient::SetConnected(bool is_connected) {
   is_connected_ = is_connected;
 }
 
+void FakeFastPairGattServiceClient::ReadModelIdAsync(
+    base::OnceCallback<void(
+        absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+        const std::vector<uint8_t>& value)> callback) {
+  read_model_id_callback_ = std::move(callback);
+}
+
+void FakeFastPairGattServiceClient::RunReadModelIdCallback(
+    absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+    const std::vector<uint8_t>& value) {
+  std::move(read_model_id_callback_).Run(error_code, value);
+}
+
 void FakeFastPairGattServiceClient::WriteRequestAsync(
     uint8_t message_type,
     uint8_t flags,

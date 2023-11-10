@@ -94,8 +94,12 @@ const std::string kUUIDString1 = "keybased";
 const std::string kUUIDString2 = "passkey";
 const std::string kUUIDString3 = "accountkey";
 const std::string kUUIDString4 = "additional data";
+const std::string kUUIDString5 = "model id";
 const device::BluetoothUUID kNonFastPairUuid("0xFE2B");
 
+const device::BluetoothUUID kModelIDCharacteristicUuid1("1233");
+const device::BluetoothUUID kModelIDCharacteristicUuid2(
+    "FE2C1233-8366-4814-8EB0-01DE32100BEA");
 const device::BluetoothUUID kKeyBasedCharacteristicUuid1("1234");
 const device::BluetoothUUID kKeyBasedCharacteristicUuid2(
     "FE2C1234-8366-4814-8EB0-01DE32100BEA");
@@ -491,6 +495,15 @@ class FastPairGattServiceClientTest : public testing::Test {
     gatt_service_->AddMockCharacteristic(
         std::move(fake_account_key_characteristic));
 
+    if (!model_id_char_error_) {
+      auto fake_model_id_characteristic =
+          std::make_unique<FakeBluetoothGattCharacteristic>(
+              gatt_service_.get(), kUUIDString5, kModelIDCharacteristicUuid2,
+              kProperties, kPermissions);
+      gatt_service_->AddMockCharacteristic(
+          std::move(fake_model_id_characteristic));
+    }
+
     auto fake_additional_data_characteristic =
         std::make_unique<FakeBluetoothGattCharacteristic>(
             gatt_service_.get(), kUUIDString4,
@@ -540,12 +553,22 @@ class FastPairGattServiceClientTest : public testing::Test {
     keybased_notify_session_error_ = keybased_notify_session_error;
   }
 
+  void SetModelIdCharacteristicError(bool model_id_char_error) {
+    model_id_char_error_ = model_id_char_error;
+  }
+
   void InitializedTestCallback(absl::optional<PairFailure> failure) {
     initalized_failure_ = failure;
   }
 
   absl::optional<PairFailure> GetInitializedCallbackResult() {
     return initalized_failure_;
+  }
+
+  void ReadModelIdCallback(
+      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value) {
+    read_failure_ = error_code;
   }
 
   void WriteTestCallback(std::vector<uint8_t> response,
@@ -567,6 +590,11 @@ class FastPairGattServiceClientTest : public testing::Test {
 
   absl::optional<PairFailure> GetWriteCallbackResult() {
     return write_failure_;
+  }
+
+  absl::optional<device::BluetoothGattService::GattErrorCode>
+  GetReadCallbackResult() {
+    return read_failure_;
   }
 
   void SetPasskeyNotifySessionTimeout(bool timeout) {
@@ -596,6 +624,12 @@ class FastPairGattServiceClientTest : public testing::Test {
 
   void FastForwardTimeByAllGattRetries() {
     task_environment_.FastForwardBy(kAllGattRetriesPeriod);
+  }
+
+  void ReadModelId() {
+    gatt_service_client_->ReadModelIdAsync(base::BindRepeating(
+        &::ash::quick_pair::FastPairGattServiceClientTest::ReadModelIdCallback,
+        weak_ptr_factory_.GetWeakPtr()));
   }
 
   void WriteRequestToKeyBased() {
@@ -695,10 +729,13 @@ class FastPairGattServiceClientTest : public testing::Test {
   bool passkey_write_error_ = false;
   bool passkey_write_timeout_ = false;
   bool write_account_key_timeout_ = false;
+  bool model_id_char_error_ = false;
 
   absl::optional<PairFailure> initalized_failure_;
   absl::optional<PairFailure> write_failure_;
   absl::optional<PairFailure> additional_data_failure_;
+
+  absl::optional<device::BluetoothGattService::GattErrorCode> read_failure_;
 
   std::unique_ptr<FakeBluetoothDevice> unique_fake_bt_device_;
   std::unique_ptr<FakeBluetoothGattCharacteristic>
@@ -1289,6 +1326,30 @@ TEST_F(FastPairGattServiceClientTest, WriteEmptyPersonalizedName) {
   EXPECT_CALL(write_additional_data_callback_, Run(testing::Eq(absl::nullopt)))
       .Times(1);
   WritePersonalizedName(empty);
+}
+
+TEST_F(FastPairGattServiceClientTest, SuccessfulReadModelId) {
+  SuccessfulGattConnectionSetUp();
+  FastForwardTimeByGattDisconnectCoolOff();
+  NotifyGattDiscoveryCompleteForService(
+      ash::quick_pair::kFastPairBluetoothUuid);
+  EXPECT_EQ(GetInitializedCallbackResult(), absl::nullopt);
+  EXPECT_TRUE(ServiceIsSet());
+  ReadModelId();
+  EXPECT_EQ(GetReadCallbackResult(), absl::nullopt);
+}
+
+TEST_F(FastPairGattServiceClientTest, FailedReadModelId) {
+  SetModelIdCharacteristicError(true);
+  SuccessfulGattConnectionSetUp();
+  FastForwardTimeByGattDisconnectCoolOff();
+  NotifyGattDiscoveryCompleteForService(
+      ash::quick_pair::kFastPairBluetoothUuid);
+  EXPECT_EQ(GetInitializedCallbackResult(), absl::nullopt);
+  EXPECT_TRUE(ServiceIsSet());
+  ReadModelId();
+  EXPECT_EQ(GetReadCallbackResult(),
+            device::BluetoothGattService::GattErrorCode::kNotSupported);
 }
 
 // Regression test for b/300596153
