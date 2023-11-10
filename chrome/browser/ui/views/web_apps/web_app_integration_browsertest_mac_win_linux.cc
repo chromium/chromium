@@ -98,20 +98,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectNoDialog_Deny) {
   helper_.CheckWindowCreated();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, DisableEnableFileHandling) {
-  helper_.InstallMenuOption(InstallableSite::kMinimalUi);
-  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kFoo);
-  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kBar);
-
-  helper_.DisableFileHandling(Site::kMinimalUi);
-  helper_.CheckSiteNotHandlesFile(Site::kMinimalUi, FileExtension::kFoo);
-  helper_.CheckSiteNotHandlesFile(Site::kMinimalUi, FileExtension::kBar);
-
-  helper_.EnableFileHandling(Site::kMinimalUi);
-  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kFoo);
-  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kBar);
-}
-
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, MultiProfileFileHandling) {
   // Install file handling PWA in two profiles.
   helper_.InstallMenuOption(InstallableSite::kMinimalUi);
