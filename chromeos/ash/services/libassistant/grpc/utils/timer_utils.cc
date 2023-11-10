@@ -16,36 +16,7 @@ namespace {
 using assistant::AssistantTimer;
 using assistant::AssistantTimerState;
 
-AssistantTimerState GetTimerState(assistant_client::Timer::State state) {
-  switch (state) {
-    case assistant_client::Timer::State::UNKNOWN:
-      return AssistantTimerState::kUnknown;
-    case assistant_client::Timer::State::SCHEDULED:
-      return AssistantTimerState::kScheduled;
-    case assistant_client::Timer::State::PAUSED:
-      return AssistantTimerState::kPaused;
-    case assistant_client::Timer::State::FIRED:
-      return AssistantTimerState::kFired;
-  }
-}
-
 }  // namespace
-
-::assistant::api::OnAlarmTimerEventRequest
-CreateOnAlarmTimerEventRequestProtoForV1(
-    const std::vector<AssistantTimer>& all_curr_timers) {
-  ::assistant::api::OnAlarmTimerEventRequest proto;
-  auto* timer_params = proto.mutable_event()
-                           ->mutable_on_timer_state_changed()
-                           ->mutable_timer_params();
-
-  for (const auto& t : all_curr_timers) {
-    auto* timer = timer_params->add_timer();
-    ConvertAssistantTimerToProtoTimer(t, timer);
-  }
-
-  return proto;
-}
 
 std::vector<AssistantTimer> ConstructAssistantTimersFromProto(
     const ::assistant::api::params::TimerParams& timer_params) {
@@ -103,38 +74,6 @@ void ConvertProtoTimerToAssistantTimer(
   }
 
   output->label = input.label();
-}
-
-std::vector<AssistantTimer> GetAllCurrentTimersFromEvents(
-    const std::vector<assistant_client::AlarmTimerManager::Event>& events) {
-  std::vector<AssistantTimer> result;
-  for (const auto& event : events) {
-    // Note that we currently only handle timers, alarms are unsupported.
-    if (event.type != assistant_client::AlarmTimerEvent::TIMER)
-      continue;
-
-    AssistantTimer timer;
-    timer.id = event.timer_data.timer_id;
-    timer.label = event.timer_data.label;
-    timer.state = GetTimerState(event.timer_data.state);
-    timer.original_duration =
-        base::Milliseconds(event.timer_data.original_duration_ms);
-
-    // LibAssistant provides |fire_time_ms| as an offset from unix epoch.
-    timer.fire_time = base::Time::UnixEpoch() +
-                      base::Milliseconds(event.timer_data.fire_time_ms);
-
-    // If the |timer| is paused, LibAssistant will specify the amount of time
-    // remaining. Otherwise we calculate it based on |fire_time|.
-    timer.remaining_time =
-        timer.state == AssistantTimerState::kPaused
-            ? base::Milliseconds(event.timer_data.remaining_duration_ms)
-            : timer.fire_time - base::Time::Now();
-
-    result.push_back(std::move(timer));
-  }
-
-  return result;
 }
 
 }  // namespace ash::libassistant
