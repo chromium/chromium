@@ -316,6 +316,7 @@
       <part file="payments_strings.grdp" />
       <part file="pdf_strings.grdp" />
       <part file="permissions_strings.grdp" />
+      <part file="plus_addresses_strings.grdp" />
       <part file="policy_strings.grdp" />
       <part file="print_media_strings.grdp" />
       <part file="printing_component_strings.grdp" />
