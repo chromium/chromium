@@ -164,7 +164,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // `kNoCors` with strong rationale and approval from security experts. See
   // https://fetch.spec.whatwg.org/#concept-request-mode.
   mojom::RequestMode mode = mojom::RequestMode::kNoCors;
-  mojom::IPAddressSpace target_address_space = mojom::IPAddressSpace::kUnknown;
+  mojom::IPAddressSpace required_ip_address_space =
+      mojom::IPAddressSpace::kUnknown;
   mojom::CredentialsMode credentials_mode = mojom::CredentialsMode::kInclude;
   mojom::RedirectMode redirect_mode = mojom::RedirectMode::kFollow;
   std::string fetch_integrity;

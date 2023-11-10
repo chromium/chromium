@@ -527,7 +527,7 @@ class PreflightController::PreflightLoader final {
         PrivateNetworkAccessChecker::NeedPermission(
             original_request_.url,
             client_security_state_->is_web_secure_context,
-            original_request_.target_address_space);
+            original_request_.required_ip_address_space);
 
     if (!needs_permission) {
       FinishHandleResponseHeader(net_error, std::move(detected_error_status),
