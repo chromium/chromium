@@ -260,11 +260,12 @@ class DirectWritingServiceBinder {
         }
     }
 
-    void updateEditableBounds(Rect editableBounds, View rootView) {
+    void updateEditableBounds(Rect editableBounds, View rootView, boolean isOnlyRectChanged) {
         if (!isServiceConnected()) return;
         try {
             mRemoteDwService.onBoundedEditTextChanged(
-                    DirectWritingBundleUtil.buildBundle(editableBounds, rootView));
+                    DirectWritingBundleUtil.buildBundle(
+                            editableBounds, rootView, isOnlyRectChanged));
         } catch (DeadObjectException e) {
             Log.e(TAG, "updateEditableBounds failed due to DeadObjectException.", e);
             resetDwServiceConnection();

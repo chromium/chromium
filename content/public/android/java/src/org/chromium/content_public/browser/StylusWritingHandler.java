@@ -29,10 +29,10 @@ public interface StylusWritingHandler {
     /**
      * Requests to start stylus writing for input field in web page.
      *
-     * @return true if writing can be started or if started successfully, false if writing cannot
-     * be started.
+     * @return true if writing can be started or if started successfully, false if writing cannot be
+     *     started.
      */
-    boolean requestStartStylusWriting(StylusWritingImeCallback imeCallback);
+    boolean requestStartStylusWriting();
 
     /**
      * Update current input state parameters to stylus writing system.

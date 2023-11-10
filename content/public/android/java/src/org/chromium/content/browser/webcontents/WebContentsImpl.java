@@ -43,6 +43,7 @@ import org.chromium.content.browser.WindowEventObserverManager;
 import org.chromium.content.browser.accessibility.ViewStructureBuilder;
 import org.chromium.content.browser.framehost.RenderFrameHostDelegate;
 import org.chromium.content.browser.framehost.RenderFrameHostImpl;
+import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
@@ -53,6 +54,7 @@ import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.StylusWritingHandler;
+import org.chromium.content_public.browser.StylusWritingImeCallback;
 import org.chromium.content_public.browser.ViewEventSink.InternalAccessDelegate;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
@@ -838,6 +840,13 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         if (mNativeWebContentsAndroid == 0) return;
         WebContentsImplJni.get().setStylusHandwritingEnabled(
                 mNativeWebContentsAndroid, mStylusWritingHandler != null);
+    }
+
+    @Override
+    public StylusWritingImeCallback getStylusWritingImeCallback() {
+        ImeAdapterImpl imeAdapter = ImeAdapterImpl.fromWebContents(this);
+        if (imeAdapter == null) return null;
+        return imeAdapter.getStylusWritingImeCallback();
     }
 
     public StylusWritingHandler getStylusWritingHandler() {

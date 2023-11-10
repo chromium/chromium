@@ -22,7 +22,6 @@ import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.content_public.browser.StylusWritingHandler;
-import org.chromium.content_public.browser.StylusWritingImeCallback;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
@@ -109,7 +108,7 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
     }
 
     @Override
-    public boolean requestStartStylusWriting(StylusWritingImeCallback imeCallback) {
+    public boolean requestStartStylusWriting() {
         Log.d(TAG, "Requesting Stylus Writing");
         StylusApiOption.recordStylusHandwritingTriggered(Api.ANDROID);
         mInputMethodManager.startStylusHandwriting(mTargetView);
