@@ -39,10 +39,8 @@ jobs:
         with:
           python-version: '3.11'
           cache: pip
-      - name: Set up Rust
-        run: rustup update stable && rustup default stable
       - name: Install cddlconv
-        run: cargo install cddlconv@0.1.1
+        run: cargo install cddlconv@0.1.2
       - name: Set up Node.js
         uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
         with:
