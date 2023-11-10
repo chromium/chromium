@@ -51,7 +51,8 @@ wgpu::Texture DawnGLTextureRepresentation::BeginAccess(
 
   // Add internal TextureBinding usage for copyTextureForBrowser().
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  internalDesc.internalUsage = wgpu::TextureUsage::TextureBinding;
+  internalDesc.internalUsage =
+      wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::RenderAttachment;
 
   texture_descriptor.nextInChain = &internalDesc;
 
