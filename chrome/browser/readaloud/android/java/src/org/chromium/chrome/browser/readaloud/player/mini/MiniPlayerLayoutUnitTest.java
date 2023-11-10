@@ -7,13 +7,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.view.TouchDelegate;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -23,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
@@ -266,5 +272,52 @@ public class MiniPlayerLayoutUnitTest {
 
         mLayout.destroy();
         assertNull(mLayout.getAnimatorForTesting());
+    }
+
+    @Test
+    public void testOnLayoutZeroHeight() {
+        mLayout.onLayout(true, 0, 0, 0, 0);
+        verify(mMediator, never()).onHeightKnown(anyInt());
+    }
+
+    @Test
+    public void testOnLayoutGetsHeight() {
+        // Fake the backdrop height so onLayout() doesn't return early.
+        View spyBackdrop = replaceWithSpy(R.id.backdrop);
+        mLayout.onFinishInflate();
+        doReturn(187).when(spyBackdrop).getHeight();
+        assertEquals(187, mLayout.findViewById(R.id.backdrop).getHeight());
+
+        mLayout.onLayout(true, 0, 0, 0, 0);
+
+        verify(mMediator).onHeightKnown(eq(187));
+    }
+
+    @Test
+    public void testOnLayoutSetsCloseButtonTouchDelegate() {
+        // Fake the backdrop height so onLayout() doesn't return early.
+        View spyBackdrop = replaceWithSpy(R.id.backdrop);
+        mLayout.onFinishInflate();
+        doReturn(187).when(spyBackdrop).getHeight();
+        assertEquals(187, mLayout.findViewById(R.id.backdrop).getHeight());
+
+        mLayout.onLayout(true, 0, 0, 0, 0);
+
+        TouchDelegate delegate =
+                ((View) mLayout.findViewById(R.id.close_button).getParent()).getTouchDelegate();
+        assertNotNull(delegate);
+    }
+
+    private View replaceWithSpy(int childId) {
+        View original = mLayout.findViewById(childId);
+        ViewGroup parent = (ViewGroup) original.getParent();
+
+        int index = parent.indexOfChild(original);
+        parent.removeViewAt(index);
+
+        View spy = Mockito.spy(original);
+        parent.addView(spy, index);
+        assertEquals(spy, parent.findViewById(childId));
+        return spy;
     }
 }
