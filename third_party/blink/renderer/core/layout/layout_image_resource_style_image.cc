@@ -77,14 +77,14 @@ gfx::SizeF LayoutImageResourceStyleImage::ImageSize(float multiplier) const {
                                 ? list_marker->DefaultSize()
                                 : gfx::SizeF(LayoutReplaced::kDefaultWidth,
                                              LayoutReplaced::kDefaultHeight);
-  return ImageSizeWithDefaultSize(multiplier, default_size);
+  return ConcreteObjectSize(multiplier, default_size);
 }
 
-gfx::SizeF LayoutImageResourceStyleImage::ImageSizeWithDefaultSize(
+gfx::SizeF LayoutImageResourceStyleImage::ConcreteObjectSize(
     float multiplier,
-    const gfx::SizeF& default_size) const {
+    const gfx::SizeF& default_object_size) const {
   return style_image_->ImageSize(
-      multiplier, default_size,
+      multiplier, default_object_size,
       LayoutObject::ShouldRespectImageOrientation(layout_object_));
 }
 

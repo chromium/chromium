@@ -172,10 +172,11 @@ gfx::SizeF LayoutImageResource::ImageSize(float multiplier) const {
   return size;
 }
 
-gfx::SizeF LayoutImageResource::ImageSizeWithDefaultSize(
+gfx::SizeF LayoutImageResource::ConcreteObjectSize(
     float multiplier,
-    const gfx::SizeF&) const {
-  return ImageSize(multiplier);
+    const gfx::SizeF& default_object_size) const {
+  IntrinsicSizingInfo sizing_info = GetNaturalDimensions(multiplier);
+  return blink::ConcreteObjectSize(sizing_info, default_object_size);
 }
 
 Image* LayoutImageResource::BrokenImage(double device_pixel_ratio) {
