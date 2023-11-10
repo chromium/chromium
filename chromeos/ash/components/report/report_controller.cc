@@ -447,7 +447,7 @@ void ReportController::StartReport() {
   // Create instances of use cases and parameters.
   use_case_params_ = std::make_unique<device_metrics::UseCaseParameters>(
       active_ts_, chrome_device_params_, url_loader_factory_,
-      high_entropy_seed_, local_state_, std::move(psm_client_manager_));
+      high_entropy_seed_, local_state_, psm_client_manager_.get());
   one_day_impl_ =
       std::make_unique<device_metrics::OneDayImpl>(use_case_params_.get());
   twenty_eight_day_impl_ = std::make_unique<device_metrics::TwentyEightDayImpl>(

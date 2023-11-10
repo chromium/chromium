@@ -234,21 +234,21 @@ class ReportControllerSimpleFlowTest : public ReportControllerTestBase {
     GetPrivateComputingTestInterface()->SetSaveLastPingDatesStatusResponse(
         private_computing::SaveStatusResponse());
 
-    // |psm_client_delegate_| is owned by |use_case_params_|.
+    // |psm_client_delegate| is owned by |psm_client_manager_|.
     // Stub successful request payloads when created by the PSM client.
-    StubPsmClientManagerDelegate* psm_client_delegate =
-        new StubPsmClientManagerDelegate();
-    SimulateOprfRequest(psm_client_delegate,
+    std::unique_ptr<StubPsmClientManagerDelegate> psm_client_delegate =
+        std::make_unique<StubPsmClientManagerDelegate>();
+    SimulateOprfRequest(psm_client_delegate.get(),
                         psm_rlwe::PrivateMembershipRlweOprfRequest());
-    SimulateQueryRequest(psm_client_delegate,
+    SimulateQueryRequest(psm_client_delegate.get(),
                          psm_rlwe::PrivateMembershipRlweQueryRequest());
-    SimulateMembershipResponses(psm_client_delegate, GetMembershipResponses());
+    SimulateMembershipResponses(psm_client_delegate.get(),
+                                GetMembershipResponses());
 
     report_controller_ = std::make_unique<ReportController>(
         kFakeChromeParameters, GetLocalState(), GetUrlLoaderFactory(),
         base::Time(), base::BindRepeating([]() { return base::Minutes(1); }),
-        std::make_unique<PsmClientManager>(
-            base::WrapUnique(psm_client_delegate)));
+        std::make_unique<PsmClientManager>(std::move(psm_client_delegate)));
 
     task_environment_.RunUntilIdle();
   }
@@ -577,21 +577,21 @@ class ReportControllerPreservedFileReadWriteSuccessTest
     GetPrivateComputingTestInterface()->SetSaveLastPingDatesStatusResponse(
         test.save_response());
 
-    // |psm_client_delegate_| is owned by |use_case_params_|.
+    // |psm_client_delegate| is owned by |psm_client_manager_|.
     // Stub successful request payloads when created by the PSM client.
-    StubPsmClientManagerDelegate* psm_client_delegate =
-        new StubPsmClientManagerDelegate();
-    SimulateOprfRequest(psm_client_delegate,
+    std::unique_ptr<StubPsmClientManagerDelegate> psm_client_delegate =
+        std::make_unique<StubPsmClientManagerDelegate>();
+    SimulateOprfRequest(psm_client_delegate.get(),
                         psm_rlwe::PrivateMembershipRlweOprfRequest());
-    SimulateQueryRequest(psm_client_delegate,
+    SimulateQueryRequest(psm_client_delegate.get(),
                          psm_rlwe::PrivateMembershipRlweQueryRequest());
-    SimulateMembershipResponses(psm_client_delegate, GetMembershipResponses());
+    SimulateMembershipResponses(psm_client_delegate.get(),
+                                GetMembershipResponses());
 
     report_controller_ = std::make_unique<ReportController>(
         kFakeChromeParameters, GetLocalState(), GetUrlLoaderFactory(),
         base::Time(), base::BindRepeating([]() { return base::Minutes(1); }),
-        std::make_unique<PsmClientManager>(
-            base::WrapUnique(psm_client_delegate)));
+        std::make_unique<PsmClientManager>(std::move(psm_client_delegate)));
 
     task_environment_.RunUntilIdle();
   }

@@ -18,13 +18,13 @@ UseCaseParameters::UseCaseParameters(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& high_entropy_seed,
     PrefService* local_state,
-    std::unique_ptr<PsmClientManager> psm_client_manager)
+    PsmClientManager* psm_client_manager)
     : active_ts_(active_ts),
       chrome_device_params_(chrome_device_params),
       url_loader_factory_(url_loader_factory),
       high_entropy_seed_(high_entropy_seed),
       local_state_(local_state),
-      psm_client_manager_(std::move(psm_client_manager)) {}
+      psm_client_manager_(psm_client_manager) {}
 
 UseCaseParameters::~UseCaseParameters() = default;
 
@@ -51,7 +51,7 @@ PrefService* UseCaseParameters::GetLocalState() const {
 }
 
 PsmClientManager* UseCaseParameters::GetPsmClientManager() const {
-  return psm_client_manager_.get();
+  return psm_client_manager_;
 }
 
 UseCase::UseCase(UseCaseParameters* params) : params_(params) {}

@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) UseCaseParameters {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& high_entropy_seed,
       PrefService* local_state,
-      std::unique_ptr<PsmClientManager> psm_client_manager);
+      PsmClientManager* psm_client_manager);
   ~UseCaseParameters();
 
   const base::Time GetActiveTs() const;
@@ -93,8 +93,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) UseCaseParameters {
   // Persists fresnel pref key/value pairs over device restarts.
   const raw_ptr<PrefService, ExperimentalAsh> local_state_;
 
-  // Abstract class used to generate the PSM RLWE client.
-  std::unique_ptr<PsmClientManager> psm_client_manager_;
+  // Pointer to the abstract class used to generate the PSM RLWE client.
+  // Lifetime of pointer is maintained by ReportController class.
+  const raw_ptr<PsmClientManager> psm_client_manager_;
 };
 
 // Base class for each use case that is reporting to Fresnel server.

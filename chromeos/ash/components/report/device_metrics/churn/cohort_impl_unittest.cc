@@ -141,27 +141,30 @@ class CohortImplDirectCheckInTest : public CohortImplTestBase {
   void SetUp() override {
     CohortImplTestBase::SetUp();
 
-    // |psm_client_delegate_| is owned by |use_case_params_|.
+    // |psm_client_delegate| is owned by |psm_client_manager_|.
     // Stub successful request payloads when created by the PSM client.
-    StubPsmClientManagerDelegate* psm_client_delegate =
-        new StubPsmClientManagerDelegate();
-    SimulateOprfRequest(psm_client_delegate,
+    std::unique_ptr<StubPsmClientManagerDelegate> psm_client_delegate =
+        std::make_unique<StubPsmClientManagerDelegate>();
+    SimulateOprfRequest(psm_client_delegate.get(),
                         psm_rlwe::PrivateMembershipRlweOprfRequest());
-    SimulateQueryRequest(psm_client_delegate,
+    SimulateQueryRequest(psm_client_delegate.get(),
                          psm_rlwe::PrivateMembershipRlweQueryRequest());
-    SimulateMembershipResponses(psm_client_delegate, GetMembershipResponses());
+    SimulateMembershipResponses(psm_client_delegate.get(),
+                                GetMembershipResponses());
+    psm_client_manager_ =
+        std::make_unique<PsmClientManager>(std::move(psm_client_delegate));
 
     use_case_params_ = std::make_unique<UseCaseParameters>(
         GetFakeTimeNow(), kFakeChromeParameters, GetUrlLoaderFactory(),
         utils::kFakeHighEntropySeed, GetLocalState(),
-        std::make_unique<PsmClientManager>(
-            base::WrapUnique(psm_client_delegate)));
+        psm_client_manager_.get());
     cohort_impl_ = std::make_unique<CohortImpl>(use_case_params_.get());
   }
 
   void TearDown() override {
     cohort_impl_.reset();
     use_case_params_.reset();
+    psm_client_manager_.reset();
   }
 
   CohortImpl* GetCohortImpl() { return cohort_impl_.get(); }
@@ -193,6 +196,7 @@ class CohortImplDirectCheckInTest : public CohortImplTestBase {
   }
 
  private:
+  std::unique_ptr<PsmClientManager> psm_client_manager_;
   std::unique_ptr<UseCaseParameters> use_case_params_;
   std::unique_ptr<CohortImpl> cohort_impl_;
 };
