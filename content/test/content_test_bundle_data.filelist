@@ -3585,6 +3585,8 @@ data/accessibility/html/img-link-empty-alt-expected-fuchsia.txt
 data/accessibility/html/img-link-empty-alt-expected-mac.txt
 data/accessibility/html/img-link-empty-alt-expected-uia-win.txt
 data/accessibility/html/img-link-empty-alt-expected-win.txt
+data/accessibility/html/img-link-empty-alt-set-expected-blink.txt
+data/accessibility/html/img-link-empty-alt-set.html
 data/accessibility/html/img-link-empty-alt.html
 data/accessibility/html/img-mime-type-expected-blink.txt
 data/accessibility/html/img-mime-type.png

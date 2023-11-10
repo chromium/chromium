@@ -3948,7 +3948,7 @@ String AXNodeObject::TextFromDescendants(
     }
     AXObject* child = children[index];
     DCHECK(child);
-    DCHECK(!child->IsDetached());
+    DCHECK(!child->IsDetached()) << child->ToString(true, true);
     constexpr size_t kMaxDescendantsForTextAlternativeComputation = 100;
     if (visited.size() > kMaxDescendantsForTextAlternativeComputation)
       break;
@@ -4611,7 +4611,7 @@ void AXNodeObject::AddChildren() {
          "and add children on: "
       << ToString(true, true);
   SANITIZER_CHECK(!is_adding_children_)
-      << " Reentering method on " << GetNode();
+      << " Reentering method on " << ToString(true, true);
   base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);
 #endif
 
@@ -4634,6 +4634,7 @@ void AXNodeObject::AddNodeChild(Node* node) {
     return;
 
   AXObject* ax_child = AXObjectCache().Get(node);
+  CHECK(!ax_child || !ax_child->IsDetached());
   // Should not have another parent unless owned.
   if (AXObjectCache().IsAriaOwned(ax_child))
     return;  // Do not add owned children to their natural parent.
@@ -4645,9 +4646,12 @@ void AXNodeObject::AddNodeChild(Node* node) {
 #endif
 
   if (!ax_child) {
-    ax_child = AXObjectCache().GetOrCreate(node, this);
-    if (!ax_child)
+    ax_child =
+        AXObjectCache().CreateAndInit(node, node->GetLayoutObject(), this);
+    if (!ax_child) {
       return;
+    }
+    CHECK(!ax_child->IsDetached());
   }
 
   AddChild(ax_child);

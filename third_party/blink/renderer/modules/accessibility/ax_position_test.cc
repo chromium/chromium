@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -1956,7 +1957,7 @@ TEST_F(AccessibilityTest, PositionInInvalidMapLayout) {
 
   // Create an invalid layout by appending a child to the <br>
   br->appendChild(map);
-  GetDocument().UpdateStyleAndLayoutTree();
+  GetAXObjectCache().UpdateAXForAllDocuments();
 
   ax_map = GetAXObjectByElementId("map");
   ASSERT_EQ(nullptr, ax_map);
