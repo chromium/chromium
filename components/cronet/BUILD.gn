@@ -94,15 +94,10 @@ source_set("cronet_common_unittests") {
 
 # For platforms on which the native Cronet library is used, build the library,
 # a cronet_tests binary that exercises it, and a unit-tests binary.
-# Android and iOS have their own platform-specific rules to build Cronet.
 if (is_android) {
   group("cronet_package") {
     testonly = true
     deps = [ "//components/cronet/android:cronet_package_android" ]
-  }
-} else if (is_ios) {
-  group("cronet_package") {
-    deps = [ "//components/cronet/ios:cronet_package_ios" ]
   }
 } else {
   config("shared_library_public_config") {

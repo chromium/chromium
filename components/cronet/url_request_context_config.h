@@ -166,7 +166,6 @@ struct URLRequestContextConfig {
 
   // Optional network thread priority.
   // On Android, corresponds to android.os.Process.setThreadPriority() values.
-  // On iOS, corresponds to NSThread::setThreadPriority values.
   const absl::optional<double> network_thread_priority;
 
   // Whether the connection status of active bidirectional streams should be
@@ -213,8 +212,7 @@ struct URLRequestContextConfig {
       bool bypass_public_key_pinning_for_local_trust_anchors,
       // Optional network thread priority.
       // On Android, corresponds to android.os.Process.setThreadPriority()
-      // values. On iOS, corresponds to NSThread::setThreadPriority values. Do
-      // not specify for other targets.
+      // values. Do not specify for other targets.
       absl::optional<double> network_thread_priority);
 
  private:
@@ -248,8 +246,7 @@ struct URLRequestContextConfig {
       bool bypass_public_key_pinning_for_local_trust_anchors,
       // Optional network thread priority.
       // On Android, corresponds to android.os.Process.setThreadPriority()
-      // values. On iOS, corresponds to NSThread::setThreadPriority values. Do
-      // not specify for other targets.
+      // values. Do not specify for other targets.
       absl::optional<double> network_thread_priority);
 
   // Parses experimental options from their JSON format to the format used
@@ -326,7 +323,6 @@ struct URLRequestContextConfigBuilder {
 
   // Optional network thread priority.
   // On Android, corresponds to android.os.Process.setThreadPriority() values.
-  // On iOS, corresponds to NSThread::setThreadPriority values.
   // Do not specify for other targets.
   absl::optional<double> network_thread_priority;
 };

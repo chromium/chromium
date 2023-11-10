@@ -90,7 +90,6 @@ const char kQuicEnableSocketRecvOptimization[] =
     "enable_socket_recv_optimization";
 const char kQuicVersion[] = "quic_version";
 const char kQuicFlags[] = "set_quic_flags";
-const char kQuicIOSNetworkServiceType[] = "ios_network_service_type";
 const char kRetryWithoutAltSvcOnQuicErrors[] =
     "retry_without_alt_svc_on_quic_errors";
 const char kInitialDelayForBrokenAlternativeServiceSeconds[] =
@@ -185,14 +184,6 @@ const char kUseDnsHttpsSvcbUseAlpn[] = "use_alpn";
 // Telemetry, this must be set to true alongside the manifest file flag
 // specified by CronetManifest's documentation.
 const char kEnableTelemetry[] = "enable_telemetry";
-
-// "goaway_sessions_on_ip_change" is default on for iOS unless overridden via
-// experimental options explicitly.
-#if BUILDFLAG(IS_IOS)
-const bool kDefaultQuicGoAwaySessionsOnIpChange = true;
-#else
-const bool kDefaultQuicGoAwaySessionsOnIpChange = false;
-#endif
 
 // Serializes a base::Value into a string that can be used as the value of
 // JFV-encoded HTTP header [1].  If |value| is a list, we remove the outermost
@@ -500,14 +491,6 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
       quic_params->close_sessions_on_ip_change =
           quic_args.FindBool(kQuicCloseSessionsOnIpChange)
               .value_or(quic_params->close_sessions_on_ip_change);
-      if (quic_params->close_sessions_on_ip_change &&
-          kDefaultQuicGoAwaySessionsOnIpChange) {
-        // "close_sessions_on_ip_change" and "goaway_sessions_on_ip_change"
-        // are mutually exclusive. Turn off the goaway option which is
-        // default on for iOS if "close_sessions_on_ip_change" is set via
-        // experimental options.
-        quic_params->goaway_sessions_on_ip_change = false;
-      }
 
       quic_params->goaway_sessions_on_ip_change =
           quic_args.FindBool(kQuicGoAwaySessionsOnIpChange)
@@ -615,10 +598,6 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
           net::SetQuicFlagByName(tokens[0], tokens[1]);
         }
       }
-
-      quic_params->ios_network_service_type =
-          quic_args.FindInt(kQuicIOSNetworkServiceType)
-              .value_or(quic_params->ios_network_service_type);
     } else if (iter->first == kAsyncDnsFieldTrialName) {
       if (!iter->second.is_dict()) {
         LOG(ERROR) << "\"" << iter->first << "\" config params \""
@@ -854,10 +833,7 @@ void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
   session_params.enable_quic = enable_quic;
   auto quic_context = std::make_unique<net::QuicContext>();
   if (enable_quic) {
-    // Note goaway sessions on ip change will be turned on by default
-    // for iOS unless overrided via experiemental options.
-    quic_context->params()->goaway_sessions_on_ip_change =
-        kDefaultQuicGoAwaySessionsOnIpChange;
+    quic_context->params()->goaway_sessions_on_ip_change = false;
     // Explicitly disable network-change migration on Cronet. This is tracked
     // at crbug.com/1430096.
     quic_context->params()->migrate_sessions_on_network_change_v2 = false;
