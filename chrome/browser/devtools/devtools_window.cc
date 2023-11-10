@@ -1255,7 +1255,7 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
   if (browser_connection)
     url += "&browserConnection=true";
 
-#if BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#if BUILDFLAG(CHROME_FOR_TESTING)
   url += "&isChromeForTesting=true";
 #endif
 
