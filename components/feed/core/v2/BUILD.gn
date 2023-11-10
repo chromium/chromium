@@ -9,7 +9,7 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-if (!is_ios) {
+if (use_blink) {
   source_set("feed_core_v2") {
     public = [
       "public/feed_api.h",
@@ -243,7 +243,6 @@ if (!is_ios) {
     deps = [
       ":feed_core_stubs",
       ":feed_core_v2",
-      ":unit_tests_bundle_data",
       "public:common",
       "//base",
       "//base/test:test_support",
@@ -271,6 +270,12 @@ if (!is_ios) {
       "//testing/gtest",
       "//third_party/zlib/google:compression_utils",
     ]
+
+    if (is_ios) {
+      deps += [ "//components/test:feed_test_bundle_data" ]
+    } else {
+      deps += [ ":unit_tests_bundle_data" ]
+    }
 
     if (enable_supervised_users) {
       sources += [ "api_test/feed_api_supervised_feed_unittest.cc" ]
