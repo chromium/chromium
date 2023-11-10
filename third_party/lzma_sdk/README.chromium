@@ -50,6 +50,9 @@ so it is not be ready to transition to utilizing AVX2 and SSE4, yet. Added
 bti. Shortened segment names in Asm/x86/*.asm files to make the builds
 deterministic. Resolved include paths as well.
 
+The patch in chromium_ubsan.patch fixes some undefined behavior, flagged by
+UBSan, caused by invalid pointer casts in LZMA SDK.
+
 The patch in Util/SfxSetup/chromium.patch was applied so that:
 
 1/ Fix for includes file names, since the original code causes an include

@@ -1,0 +1,25 @@
+diff --git a/third_party/lzma_sdk/C/CpuArch.h b/third_party/lzma_sdk/C/CpuArch.h
+index 4856fbb12a256..8cd55bea48dc6 100644
+--- a/third_party/lzma_sdk/C/CpuArch.h
++++ b/third_party/lzma_sdk/C/CpuArch.h
+@@ -253,6 +253,12 @@ MY_CPU_64BIT means that processor can work with 64-bit registers.
+ 
+ 
+ 
++// Disable MY_CPU_LE_UNALIGN. Although the underlying ISA may be able to load
++// unaligned words, doing so via pointer casts is undefined behavior in C and
++// C++, under both strict aliasing and because it is invalid to construct
++// unaligned pointers. Instead, load the bytes generically and leave optimizing
++// this to the compiler.
++#if 0
+ #ifdef MY_CPU_LE
+   #if defined(MY_CPU_X86_OR_AMD64) \
+       || defined(MY_CPU_ARM64)
+@@ -264,6 +270,7 @@ MY_CPU_64BIT means that processor can work with 64-bit registers.
+     #define MY_CPU_LE_UNALIGN
+   #endif
+ #endif
++#endif
+ 
+ 
+ #ifdef MY_CPU_LE_UNALIGN
