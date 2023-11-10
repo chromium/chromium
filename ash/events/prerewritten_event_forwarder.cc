@@ -18,7 +18,24 @@ ui::EventDispatchDetails PrerewrittenEventForwarder::RewriteEvent(
     const Continuation continuation) {
   DCHECK(::features::IsShortcutCustomizationEnabled() ||
          features::IsPeripheralCustomizationEnabled());
+  if (event.IsKeyEvent()) {
+    const ui::KeyEvent& key_event = *event.AsKeyEvent();
+    if (!key_event.is_repeat()) {
+      for (auto& observer : observers_) {
+        observer.OnPrerewriteKeyInputEvent(key_event);
+      }
+    }
+  }
+
   return SendEvent(continuation, &event);
+}
+
+void PrerewrittenEventForwarder::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PrerewrittenEventForwarder::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace ash
