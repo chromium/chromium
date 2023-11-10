@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, IconVersionUpdated) {
       std::make_unique<Shortcut>(cache()->GetShortcutHostAppId(shortcut_id),
                                  cache()->GetShortcutLocalId(shortcut_id));
   delta->icon_key = IconKey();
-  delta->icon_key->update_version = 100;
+  delta->icon_key->update_version = true;
   cache()->UpdateShortcut(std::move(delta));
 
   EXPECT_EQ(app_list_item->CloneMetadata()->icon_version, 1);

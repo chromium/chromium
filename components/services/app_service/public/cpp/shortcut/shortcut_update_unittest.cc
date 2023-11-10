@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,7 +50,7 @@ TEST_F(ShortcutUpdateTest, DeltaIsNonNull) {
   shortcut.name = "Name";
   shortcut.shortcut_source = ShortcutSource::kDeveloper;
   shortcut.icon_key = IconKey();
-  shortcut.icon_key->update_version = 100;
+  shortcut.icon_key->update_version = false;
   ShortcutUpdate u(nullptr, &shortcut);
 
   EXPECT_EQ(u.HostAppId(), host_app_id_);
@@ -63,7 +64,7 @@ TEST_F(ShortcutUpdateTest, DeltaIsNonNull) {
   EXPECT_TRUE(u.ShortcutSourceChanged());
 
   IconKey icon_key;
-  icon_key.update_version = 100;
+  icon_key.update_version = IconKey::kInitVersion;
   EXPECT_EQ(u.IconKey(), icon_key);
   EXPECT_TRUE(u.IconKeyChanged());
 
@@ -80,8 +81,8 @@ TEST_F(ShortcutUpdateTest, StateAndDeltaAreNonNull) {
   Shortcut shortcut_delta = Shortcut(host_app_id_, local_id_);
   shortcut_delta.name = "New name";
   shortcut_delta.shortcut_source = ShortcutSource::kUser;
-  shortcut_delta.icon_key = IconKey(1, 1);
-  shortcut_delta.icon_key->update_version = 101;
+  shortcut_delta.icon_key = IconKey(/*resource_id=*/1, /*icon_effects=*/1);
+  shortcut_delta.icon_key->update_version = false;
 
   ShortcutUpdate u(&shortcut_state, &shortcut_delta);
 
@@ -95,8 +96,8 @@ TEST_F(ShortcutUpdateTest, StateAndDeltaAreNonNull) {
   EXPECT_EQ(u.ShortcutSource(), ShortcutSource::kUser);
   EXPECT_TRUE(u.ShortcutSourceChanged());
 
-  IconKey icon_key(1, 1);
-  icon_key.update_version = 101;
+  IconKey icon_key(/*resource_id=*/1, /*icon_effects=*/1);
+  icon_key.update_version = IconKey::kInvalidVersion;
   EXPECT_EQ(u.IconKey(), icon_key);
   EXPECT_TRUE(u.IconKeyChanged());
 
@@ -113,8 +114,9 @@ TEST_F(ShortcutUpdateTest, Merge) {
   Shortcut shortcut_delta = Shortcut(host_app_id_, local_id_);
   shortcut_delta.name = "New name";
   shortcut_delta.shortcut_source = ShortcutSource::kUser;
-  shortcut_delta.icon_key = IconKey(1, 1);
-  shortcut_delta.icon_key->update_version = 101;
+  shortcut_delta.icon_key =
+      IconKey(IconKey::kInvalidResourceId, IconEffects::kCrOsStandardIcon);
+  shortcut_delta.icon_key->update_version = true;
 
   ShortcutUpdate::Merge(&shortcut_state, &shortcut_delta);
 
@@ -124,7 +126,7 @@ TEST_F(ShortcutUpdateTest, Merge) {
   EXPECT_EQ(shortcut_state.shortcut_source, ShortcutSource::kUser);
   EXPECT_EQ(shortcut_state.host_app_id, host_app_id_);
   EXPECT_EQ(shortcut_state.local_id, local_id_);
-  IconKey icon_key(1, 1);
+  IconKey icon_key(IconKey::kInvalidResourceId, IconEffects::kCrOsStandardIcon);
   icon_key.update_version = 101;
   EXPECT_EQ(shortcut_state.icon_key, icon_key);
 }

@@ -99,33 +99,10 @@ absl::optional<apps::IconKey> MergeIconKey(const App* state, const App* delta) {
     return icon_key;
   }
 
-  if (!delta || !delta->icon_key.has_value()) {
-    if (state && state->icon_key.has_value()) {
-      return std::move(*state->icon_key->Clone());
-    }
-    return absl::nullopt;
-  }
-
-  IconKey icon_key =
-      IconKey(delta->icon_key->resource_id, delta->icon_key->icon_effects);
-
-  if (delta->icon_key->resource_id != IconKey::kInvalidResourceId) {
-    icon_key.update_version = IconKey::kInvalidVersion;
-    return icon_key;
-  }
-
-  if (!state || !state->icon_key.has_value()) {
-    icon_key.update_version = IconKey::kInitVersion;
-    return icon_key;
-  }
-
-  icon_key.update_version = absl::get<int32_t>(state->icon_key->update_version);
-
-  // The icon is updated by the app, so increase `update_version`.
-  if (delta->icon_key->HasUpdatedVersion()) {
-    icon_key.update_version = absl::get<int32_t>(icon_key.update_version) + 1;
-  }
-  return icon_key;
+  return MergeIconKey(
+      state && state->icon_key.has_value() ? &state->icon_key.value() : nullptr,
+      delta && delta->icon_key.has_value() ? &delta->icon_key.value()
+                                           : nullptr);
 }
 
 bool MergeWithoutIconKey(App* state, const App* delta) {

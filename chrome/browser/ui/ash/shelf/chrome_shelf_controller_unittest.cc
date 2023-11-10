@@ -6692,7 +6692,7 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
       std::make_unique<apps::Shortcut>("app_id", "local_id");
   apps::ShortcutId shortcut_id = shortcut->shortcut_id;
   shortcut->icon_key = apps::IconKey();
-  shortcut->icon_key->update_version = 100;
+  shortcut->icon_key->update_version = false;
 
   apps::StubIconLoader shortcut_stub_icon_loader;
   apps::StubIconLoader app_stub_icon_loader;
@@ -6729,8 +6729,9 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
   // Verify icon update loads icon again.
   apps::ShortcutPtr delta =
       std::make_unique<apps::Shortcut>("app_id", "local_id");
-  delta->icon_key = apps::IconKey(1, 1);
-  delta->icon_key->update_version = 101;
+  delta->icon_key = apps::IconKey(apps::IconKey::kInvalidResourceId,
+                                  apps::IconEffects::kCrOsStandardIcon);
+  delta->icon_key->update_version = true;
   cache()->UpdateShortcut(std::move(delta));
 
   EXPECT_EQ(2, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
@@ -6786,7 +6787,7 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
   apps::ShortcutPtr same_shortcut =
       std::make_unique<apps::Shortcut>("app_id", "local_id");
   same_shortcut->icon_key = apps::IconKey();
-  same_shortcut->icon_key->update_version = 100;
+  same_shortcut->icon_key->update_version = false;
   cache()->UpdateShortcut(std::move(same_shortcut));
   // In this case icon loaded on shortcut creation.
   EXPECT_EQ(4, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
