@@ -38,6 +38,7 @@ extern const char kConnectMessage[];
 // Connect message parameters.
 extern const char kUserName[];
 extern const char kAuthServiceWithToken[];
+extern const char kAccessToken[];
 extern const char kLocalJid[];
 extern const char kDirectoryBotJidValue[];
 extern const char kIsEnterpriseAdminUser[];

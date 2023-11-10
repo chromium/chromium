@@ -207,6 +207,10 @@ void RemoteSupportHostAsh::OnSessionRetrieved(
 
   auto session_params =
       SessionParamsFromDict(*session->EnsureDict(kSessionParamsDict));
+  // DCHECK is added to detect cases where the access_token prefix is still
+  // being used when it shouldn't as this will mess up the store/retrieve cycle.
+  // TODO(b/309958013): Remove this DCHECK after M122.
+  DCHECK(!access_token.starts_with("oauth2:"));
   session_params.oauth_access_token = access_token;
 
   LOG(INFO) << "CRD: Reconnectable session found - starting connection";

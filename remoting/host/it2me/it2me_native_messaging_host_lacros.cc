@@ -382,12 +382,31 @@ void It2MeNativeMessagingHostLacros::ProcessConnect(int message_id,
   }
   session_params->user_name = *user_name;
 
-  const std::string* access_token = message.FindString(kAuthServiceWithToken);
-  if (!access_token) {
+  // The code to extract and forward the access_token needs to handle a couple
+  // of conditions due to Lacros/Ash version skew. The M121 CRD host
+  // implementation can handle `oauth_access_token` values which are raw or
+  // prefixed by 'oauth2:' however Lacros can run on older versions of Ash which
+  // only handle the prefixed variant. This compat code can be removed in M124
+  // based on the current version skew policy.
+  // This code also handles the case where an older webclient does not send the
+  // kAccessToken field however that will resolve in a few weeks and the code
+  // can safely be removed in M122.
+  std::string access_token;
+  const std::string* access_token_ptr = message.FindString(kAccessToken);
+  const std::string* auth_service_with_token_ptr =
+      message.FindString(kAuthServiceWithToken);
+  if (access_token_ptr) {
+    // TODO(b/309958013): Remove the prefix shim.
+    access_token = "oauth2:" + *access_token_ptr;
+  } else if (auth_service_with_token_ptr) {
+    // kAuthServiceWithToken always starts with 'oauth2:'.
+    access_token = *auth_service_with_token_ptr;
+  }
+  if (access_token.empty()) {
     SendErrorAndExit(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL, message_id);
     return;
   }
-  session_params->oauth_access_token = *access_token;
+  session_params->oauth_access_token = std::move(access_token);
 
   const std::string* authorized_helper = message.FindString(kAuthorizedHelper);
   if (authorized_helper) {

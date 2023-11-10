@@ -226,7 +226,7 @@ class RemoteSupportHostAshTest : public testing::TestWithParam<bool> {
   mojom::SupportSessionParams GetSupportSessionParams() {
     mojom::SupportSessionParams params;
     params.user_name = "<the-user>";
-    params.oauth_access_token = "oauth2: VALID_ACCESS_TOKEN";
+    params.oauth_access_token = "VALID_ACCESS_TOKEN";
     params.authorized_helper = kRemoteAdminEmail;
     return params;
   }
@@ -347,13 +347,14 @@ TEST_F(RemoteSupportHostAshTest, ShouldPassUserNameToIt2MeHostWhenStarting) {
   EXPECT_EQ(it2me_host().user_name(), params.user_name);
 }
 
-TEST_F(RemoteSupportHostAshTest, ShouldPassOAuthTokenToIt2MeHostWhenStarting) {
+// TODO(b/309958013): Remove this test when we remove the oauth prefix logic.
+TEST_F(RemoteSupportHostAshTest, ValidLegacyAccessTokenFormatSucceeds) {
   mojom::SupportSessionParams params = GetSupportSessionParams();
-  params.oauth_access_token = "<the-oauth-token>";
+  params.oauth_access_token = "oauth2:<the-oauth-token>";
 
   StartSession(params, ChromeOsEnterpriseParams{});
 
-  EXPECT_EQ(it2me_host().user_name(), params.user_name);
+  EXPECT_TRUE(it2me_host().WaitForConnectCall());
 }
 
 TEST_P(RemoteSupportHostAshTest,

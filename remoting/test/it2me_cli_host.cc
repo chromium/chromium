@@ -178,6 +178,7 @@ void It2MeCliHost::StartCRDHostAndGetCode(OAuthTokenGetter::Status status,
   connect_params_ = base::Value::Dict()
                         .Set(kUserName, user_email)
                         .Set(kAuthServiceWithToken, "oauth2:" + access_token)
+                        .Set(kAccessToken, access_token)
                         .Set(kSuppressUserDialogs, true)
                         .Set(kSuppressNotifications, true);
 

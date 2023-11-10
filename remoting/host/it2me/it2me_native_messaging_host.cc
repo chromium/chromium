@@ -669,25 +669,44 @@ It2MeNativeMessagingHost::CreateDelegatedSignalStrategy(
 
 std::string It2MeNativeMessagingHost::ExtractAccessToken(
     const base::Value::Dict& message) {
+  // TODO(b/309958013): Remove this function, code, and unused constants after
+  // M124 and we no longer need to deal with the kAuthServiceWithToken field.
+  const std::string* access_token = message.FindString(kAccessToken);
+  if (access_token) {
+    if (access_token->empty()) {
+      LOG(ERROR) << "Empty token stored in " << kAccessToken << " field";
+      return {};
+    }
+    return *access_token;
+  }
+
   const std::string* auth_service_with_token =
       message.FindString(kAuthServiceWithToken);
-  if (!auth_service_with_token) {
+  if (!auth_service_with_token || auth_service_with_token->empty()) {
     LOG(ERROR) << "'authServiceWithToken' not found in request.";
     return {};
   }
 
-  // For backward compatibility the webapp still passes OAuth service as part
-  // of the authServiceWithToken field. But auth service part is always
-  // expected to be set to oauth2.
+  // We are migrating away from requiring the oauth2 prefix in the
+  // kAuthServiceWithToken field, however ash-chrome needs to support different
+  // versions of lacros-chrome which may not have been updated. Therefore, we
+  // need to support messages which are prefixed with oauth2: as well as those
+  // which pass a raw access token.
   const char kOAuth2ServicePrefix[] = "oauth2:";
-  if (!base::StartsWith(*auth_service_with_token, kOAuth2ServicePrefix,
-                        base::CompareCase::SENSITIVE)) {
-    LOG(ERROR) << "Invalid 'authServiceWithToken': "
-               << *auth_service_with_token;
-    return {};
+  if (base::StartsWith(*auth_service_with_token, kOAuth2ServicePrefix,
+                       base::CompareCase::SENSITIVE)) {
+    return auth_service_with_token->substr(strlen(kOAuth2ServicePrefix));
   }
 
-  return auth_service_with_token->substr(strlen(kOAuth2ServicePrefix));
+  // Log an error if an access token is provided which does not match the
+  // expected format. Though this prefix is effectively stable, there is are no
+  // guarantees so we shouldn't reject requests based on it.
+  if (!auth_service_with_token->starts_with("ya29.")) {
+    LOG(ERROR) << "Potentially invalid auth_service_with_token value: "
+               << *auth_service_with_token;
+  }
+
+  return *auth_service_with_token;
 }
 
 #if BUILDFLAG(IS_WIN)
