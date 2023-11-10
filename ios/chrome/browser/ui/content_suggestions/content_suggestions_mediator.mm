@@ -308,8 +308,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     _syncService = syncService;
     _shoppingService = shoppingService;
 
-    BOOL isSetupListEnabled = IsIOSSetUpListEnabled() &&
-                              set_up_list_utils::IsSetUpListActive(_localState);
+    BOOL isSetupListEnabled = set_up_list_utils::IsSetUpListActive(_localState);
     if (IsTabResumptionEnabled() || isSetupListEnabled) {
       _syncObserverBridge =
           std::make_unique<SyncObserverBridge>(self, _syncService);
@@ -596,20 +595,18 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
-    case signin::PrimaryAccountChangeEvent::Type::kSet:
-      if (IsIOSSetUpListEnabled()) {
-        // User has signed in, mark SetUpList item complete. Delayed to allow
-        // Signin UI flow to be fully dismissed before starting SetUpList
-        // completion animation.
-        PrefService* localState = _localState;
-        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-            FROM_HERE, base::BindOnce(^{
-              set_up_list_prefs::MarkItemComplete(
-                  localState, SetUpListItemType::kSignInSync);
-            }),
-            base::Seconds(0.5));
-      }
-      break;
+    case signin::PrimaryAccountChangeEvent::Type::kSet: {
+      // User has signed in, mark SetUpList item complete. Delayed to allow
+      // Signin UI flow to be fully dismissed before starting SetUpList
+      // completion animation.
+      PrefService* localState = _localState;
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, base::BindOnce(^{
+            set_up_list_prefs::MarkItemComplete(localState,
+                                                SetUpListItemType::kSignInSync);
+          }),
+          base::Seconds(0.5));
+    } break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared: {
       if (IsTabResumptionEnabled()) {
         // If the user is signed out, remove the tab resumption tile.
@@ -873,7 +870,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (level == SceneActivationLevelForegroundActive) {
-    if (IsIOSSetUpListEnabled() && _setUpList) {
+    if (_setUpList) {
       [self checkIfCPEEnabled];
     }
   }
@@ -1429,9 +1426,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 // Returns YES if the conditions are right to display the Set Up List.
 - (BOOL)shouldShowSetUpList {
-  if (!IsIOSSetUpListEnabled()) {
-    return NO;
-  }
   if (!set_up_list_utils::IsSetUpListActive(_localState)) {
     return NO;
   }
@@ -1742,15 +1736,13 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (IsIOSSetUpListEnabled()) {
-    if (preferenceName == prefs::kIosCredentialProviderPromoLastActionTaken &&
-        CredentialProviderPromoDismissed(_localState)) {
-      set_up_list_prefs::MarkItemComplete(_localState,
-                                          SetUpListItemType::kAutofill);
-    } else if (preferenceName == set_up_list_prefs::kDisabled &&
-               set_up_list_prefs::IsSetUpListDisabled(_localState)) {
-      [self hideSetUpList];
-    }
+  if (preferenceName == prefs::kIosCredentialProviderPromoLastActionTaken &&
+      CredentialProviderPromoDismissed(_localState)) {
+    set_up_list_prefs::MarkItemComplete(_localState,
+                                        SetUpListItemType::kAutofill);
+  } else if (preferenceName == set_up_list_prefs::kDisabled &&
+             set_up_list_prefs::IsSetUpListDisabled(_localState)) {
+    [self hideSetUpList];
   }
   if (IsTabResumptionEnabled()) {
     if (_tabResumptionItem &&

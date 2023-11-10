@@ -573,11 +573,9 @@
                                     self.browser->GetBrowserState())];
 
   // CredentialProvider Promo handler
-  if (IsCredentialProviderExtensionPromoEnabled() || IsIOSSetUpListEnabled()) {
-    _displayHandlerPromos[promos_manager::Promo::CredentialProviderExtension] =
-        [[CredentialProviderPromoDisplayHandler alloc]
-            initWithHandler:_credentialProviderPromoCommandHandler];
-  }
+  _displayHandlerPromos[promos_manager::Promo::CredentialProviderExtension] =
+      [[CredentialProviderPromoDisplayHandler alloc]
+          initWithHandler:_credentialProviderPromoCommandHandler];
 
   // DefaultBrowser Promo handler
   _displayHandlerPromos[promos_manager::Promo::DefaultBrowser] =

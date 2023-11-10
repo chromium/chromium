@@ -588,10 +588,6 @@ const char kIOSSaveToPhotosName[] = "IOS Save to Photos";
 const char kIOSSaveToPhotosDescription[] =
     "Enables the Save to Photos feature on iOS.";
 
-const char kIOSSetUpListName[] = "IOS Set Up List";
-const char kIOSSetUpListDescription[] =
-    "Displays an unobtrusive list of set up tasks on Home for a new user.";
-
 const char kIOSPasswordBottomSheetName[] = "IOS Password Manager Bottom Sheet";
 const char kIOSPasswordBottomSheetDescription[] =
     "Enables the display of the password bottom sheet on IOS.";

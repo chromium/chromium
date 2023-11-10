@@ -51,6 +51,10 @@ using set_up_list_prefs::SetUpListItemState;
   return ntp_home::DiscoverHeaderLabel();
 }
 
++ (void)disableSetUpList {
+  set_up_list_prefs::DisableSetUpList(GetApplicationContext()->GetLocalState());
+}
+
 + (void)resetSetUpListPrefs {
   PrefService* localState = GetApplicationContext()->GetLocalState();
   localState->ClearPref(set_up_list_prefs::kDisabled);

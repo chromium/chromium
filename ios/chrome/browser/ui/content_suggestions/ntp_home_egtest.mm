@@ -163,7 +163,6 @@ id<GREYMatcher> mostlyNotVisible() {
   config.features_disabled.push_back(kEnableFeedAblation);
   // TODO(crbug.com/1403077): Scrolling issues when promo is enabled.
   config.features_disabled.push_back(kEnableDiscoverFeedTopSyncPromo);
-  config.features_disabled.push_back(kIOSSetUpList);
 
   if ([self isRunningTest:@selector(testLargeFakeboxFocus)]) {
     config.features_enabled.push_back(kIOSLargeFakebox);
@@ -181,6 +180,7 @@ id<GREYMatcher> mostlyNotVisible() {
        forUserPref:base::SysUTF8ToNSString(feed::prefs::kArticlesListVisible)];
 
   self.defaultSearchEngine = [SearchEnginesAppInterface defaultSearchEngine];
+  [NewTabPageAppInterface disableSetUpList];
 }
 
 - (void)tearDown {
@@ -200,9 +200,9 @@ id<GREYMatcher> mostlyNotVisible() {
 
 // Tests that the collections shortcut are displayed and working.
 - (void)testCollectionShortcuts {
-  AppLaunchConfiguration config = self.appConfigurationForTestCase;
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  // Close NTP and reopen.
+  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey openNewTab];
 
   // Check the Bookmarks.
   [[EarlGrey

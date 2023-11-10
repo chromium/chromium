@@ -1239,15 +1239,13 @@ enum class ToolbarKind {
   self.tabLifecycleMediator.priceNotificationsIPHPresenter =
       self.priceNotificationsIPHCoordinator;
 
-  if (IsCredentialProviderExtensionPromoEnabled() || IsIOSSetUpListEnabled()) {
-    _credentialProviderPromoCoordinator =
-        [[CredentialProviderPromoCoordinator alloc]
-            initWithBaseViewController:self.viewController
-                               browser:self.browser];
-    _credentialProviderPromoCoordinator.promosUIHandler =
-        _promosManagerCoordinator;
-    [_credentialProviderPromoCoordinator start];
-  }
+  _credentialProviderPromoCoordinator =
+      [[CredentialProviderPromoCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+  _credentialProviderPromoCoordinator.promosUIHandler =
+      _promosManagerCoordinator;
+  [_credentialProviderPromoCoordinator start];
 }
 
 // Stops child coordinators.
@@ -1965,13 +1963,9 @@ enum class ToolbarKind {
 
 - (void)maybeDisplayPromo {
   if (!self.promosManagerCoordinator) {
-    id<CredentialProviderPromoCommands> credentialProviderPromoHandler = nil;
-    if (IsCredentialProviderExtensionPromoEnabled() ||
-        IsIOSSetUpListEnabled()) {
-      credentialProviderPromoHandler =
-          HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                             CredentialProviderPromoCommands);
-    }
+    id<CredentialProviderPromoCommands> credentialProviderPromoHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                           CredentialProviderPromoCommands);
     self.promosManagerCoordinator = [[PromosManagerCoordinator alloc]
             initWithBaseViewController:self.viewController
                                browser:self.browser

@@ -128,9 +128,8 @@
                                    [self.NTPDelegate isStartSurface] ||
                                    !self.isSignInPromoEnabled;
 
-  // Don't show the promo if Set Up Lists is Enabled.
-  BOOL isSetupListEnabled = IsIOSSetUpListEnabled() &&
-                            set_up_list_utils::IsSetUpListActive(localState);
+  // Don't show the promo if Set Up List is active.
+  BOOL isSetupListEnabled = set_up_list_utils::IsSetUpListActive(localState);
 
   // Don't show the promo if the account is not elegible for a SigninPromo.
   BOOL isAccountEligibleForPromo = NO;

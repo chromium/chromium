@@ -495,10 +495,6 @@ extern const char kIOSPasswordCheckupDescription[];
 extern const char kIOSPasswordUISplitName[];
 extern const char kIOSPasswordUISplitDescription[];
 
-// Title and description for the flag to display the Set Up List.
-extern const char kIOSSetUpListName[];
-extern const char kIOSSetUpListDescription[];
-
 // Title and description for the flag to enable password bottom sheet on IOS.
 extern const char kIOSPasswordBottomSheetName[];
 extern const char kIOSPasswordBottomSheetDescription[];

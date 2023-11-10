@@ -32,8 +32,7 @@
   if (self = [super init]) {
     CHECK(prefService);
     _prefService = prefService;
-    if (IsIOSSetUpListEnabled() &&
-        set_up_list_utils::IsSetUpListActive(_prefService, false)) {
+    if (set_up_list_utils::IsSetUpListActive(_prefService, false)) {
       _setUpListDisabled = [[PrefBackedBoolean alloc]
           initWithPrefService:_prefService
                      prefName:set_up_list_prefs::kDisabled];

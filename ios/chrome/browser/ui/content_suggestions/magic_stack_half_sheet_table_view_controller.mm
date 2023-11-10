@@ -118,7 +118,7 @@ enum ItemType : NSInteger {
 
   [self.tableViewModel addSectionWithIdentifier:SectionIdentifierOptions];
 
-  if (IsIOSSetUpListEnabled() && _showSetUpList) {
+  if (_showSetUpList) {
     NSString* listSymbolName = kListBulletRectangleSymbol;
     if (@available(iOS 16.0, *)) {
       listSymbolName = kListBulletClipboardSymbol;

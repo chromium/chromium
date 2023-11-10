@@ -334,8 +334,6 @@ BASE_FEATURE(kEnableFeedExperimentTagging,
              "EnableFeedExperimentTagging",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSSetUpList, "IOSSetUpList", base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFeedDisableHotStartRefresh,
              "FeedDisableHotStartRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -629,10 +627,6 @@ bool IsFeedAblationEnabled() {
 
 bool IsFeedExperimentTaggingEnabled() {
   return base::FeatureList::IsEnabled(kEnableFeedExperimentTagging);
-}
-
-bool IsIOSSetUpListEnabled() {
-  return base::FeatureList::IsEnabled(kIOSSetUpList);
 }
 
 bool IsFeedHotStartRefreshDisabled() {
