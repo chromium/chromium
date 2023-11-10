@@ -109,6 +109,41 @@ PixelTest::PixelTest(GraphicsBackend backend)
 
 PixelTest::~PixelTest() = default;
 
+void PixelTest::RenderReadbackTargetAndAreaToResultBitmap(
+    viz::AggregatedRenderPassList* pass_list,
+    viz::AggregatedRenderPass* target,
+    const gfx::Rect* copy_rect) {
+  base::RunLoop run_loop;
+
+  std::unique_ptr<viz::CopyOutputRequest> request =
+      std::make_unique<viz::CopyOutputRequest>(
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kSystemMemory,
+          base::BindOnce(&PixelTest::ReadbackResult, base::Unretained(this),
+                         run_loop.QuitClosure()));
+  if (copy_rect) {
+    request->set_area(*copy_rect);
+  }
+  target->copy_requests.push_back(std::move(request));
+
+  if (software_renderer_) {
+    software_renderer_->SetDisablePictureQuadImageFiltering(
+        disable_picture_quad_image_filtering_);
+  }
+
+  float device_scale_factor = 1.f;
+  renderer_->DrawFrame(pass_list, device_scale_factor, device_viewport_size_,
+                       display_color_spaces_,
+                       std::move(surface_damage_rect_list_));
+
+  // Call SwapBuffersSkipped(), so the renderer can have a chance to release
+  // resources.
+  renderer_->SwapBuffersSkipped();
+
+  // Wait for the readback to complete.
+  run_loop.Run();
+}
+
 bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
                              const base::FilePath& ref_file,
                              const PixelComparator& comparator) {
@@ -121,8 +156,8 @@ bool PixelTest::RunPixelTestWithReadbackTarget(
     viz::AggregatedRenderPass* target,
     const base::FilePath& ref_file,
     const PixelComparator& comparator) {
-  return RunPixelTestWithReadbackTargetAndArea(
-      pass_list, target, ref_file, comparator, nullptr);
+  return RunPixelTestWithReadbackTargetAndArea(pass_list, target, ref_file,
+                                               comparator, nullptr);
 }
 
 bool PixelTest::RunPixelTestWithReadbackTargetAndArea(
@@ -131,68 +166,32 @@ bool PixelTest::RunPixelTestWithReadbackTargetAndArea(
     const base::FilePath& ref_file,
     const PixelComparator& comparator,
     const gfx::Rect* copy_rect) {
-  base::RunLoop run_loop;
+  RenderReadbackTargetAndAreaToResultBitmap(pass_list, target, copy_rect);
 
-  std::unique_ptr<viz::CopyOutputRequest> request =
-      std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA,
-          viz::CopyOutputRequest::ResultDestination::kSystemMemory,
-          base::BindOnce(&PixelTest::ReadbackResult, base::Unretained(this),
-                         run_loop.QuitClosure()));
-  if (copy_rect)
-    request->set_area(*copy_rect);
-  target->copy_requests.push_back(std::move(request));
-
-  if (software_renderer_) {
-    software_renderer_->SetDisablePictureQuadImageFiltering(
-        disable_picture_quad_image_filtering_);
+  base::FilePath test_data_dir;
+  if (!base::PathService::Get(viz::Paths::DIR_TEST_DATA, &test_data_dir)) {
+    return false;
   }
 
-  float device_scale_factor = 1.f;
-  renderer_->DrawFrame(pass_list, device_scale_factor, device_viewport_size_,
-                       display_color_spaces_,
-                       std::move(surface_damage_rect_list_));
+  // If this is false, we didn't set up a readback on a render pass.
+  if (!result_bitmap_) {
+    return false;
+  }
 
-  // Call SwapBuffersSkipped(), so the renderer can have a chance to release
-  // resources.
-  renderer_->SwapBuffersSkipped();
+  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
+  if (cmd->HasSwitch(switches::kRebaselinePixelTests)) {
+    return WritePNGFile(*result_bitmap_, test_data_dir.Append(ref_file), true);
+  }
 
-  // Wait for the readback to complete.
-  run_loop.Run();
-
-  return PixelsMatchReference(ref_file, comparator);
+  return MatchesPNGFile(*result_bitmap_, test_data_dir.Append(ref_file),
+                        comparator);
 }
 
 bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
                              std::vector<SkColor>* ref_pixels,
                              const PixelComparator& comparator) {
-  base::RunLoop run_loop;
-  auto* target = pass_list->back().get();
-
-  std::unique_ptr<viz::CopyOutputRequest> request =
-      std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA,
-          viz::CopyOutputRequest::ResultDestination::kSystemMemory,
-          base::BindOnce(&PixelTest::ReadbackResult, base::Unretained(this),
-                         run_loop.QuitClosure()));
-  target->copy_requests.push_back(std::move(request));
-
-  if (software_renderer_) {
-    software_renderer_->SetDisablePictureQuadImageFiltering(
-        disable_picture_quad_image_filtering_);
-  }
-
-  float device_scale_factor = 1.f;
-  renderer_->DrawFrame(pass_list, device_scale_factor, device_viewport_size_,
-                       display_color_spaces_,
-                       std::move(surface_damage_rect_list_));
-
-  // Call SwapBuffersSkipped(), so the renderer can have a chance to release
-  // resources.
-  renderer_->SwapBuffersSkipped();
-
-  // Wait for the readback to complete.
-  run_loop.Run();
+  RenderReadbackTargetAndAreaToResultBitmap(pass_list, pass_list->back().get(),
+                                            nullptr);
 
   // Need to wrap |ref_pixels| in a SkBitmap.
   DCHECK_EQ(ref_pixels->size(), static_cast<size_t>(result_bitmap_->width() *
@@ -224,24 +223,6 @@ void PixelTest::ReadbackResult(base::OnceClosure quit_run_loop,
       std::make_unique<SkBitmap>(scoped_sk_bitmap.GetOutScopedBitmap());
   EXPECT_TRUE(result_bitmap_->readyToDraw());
   std::move(quit_run_loop).Run();
-}
-
-bool PixelTest::PixelsMatchReference(const base::FilePath& ref_file,
-                                     const PixelComparator& comparator) {
-  base::FilePath test_data_dir;
-  if (!base::PathService::Get(viz::Paths::DIR_TEST_DATA, &test_data_dir))
-    return false;
-
-  // If this is false, we didn't set up a readback on a render pass.
-  if (!result_bitmap_)
-    return false;
-
-  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-  if (cmd->HasSwitch(switches::kRebaselinePixelTests))
-    return WritePNGFile(*result_bitmap_, test_data_dir.Append(ref_file), true);
-
-  return MatchesPNGFile(
-      *result_bitmap_, test_data_dir.Append(ref_file), comparator);
 }
 
 base::WritableSharedMemoryMapping PixelTest::AllocateSharedBitmapMemory(

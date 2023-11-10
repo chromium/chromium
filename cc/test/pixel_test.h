@@ -137,11 +137,15 @@ class PixelTest : public testing::Test {
   }
 
  private:
+  // Render |pass_list| and readback the |copy_rect| portion of |target| to
+  // |result_bitmap_|.
+  void RenderReadbackTargetAndAreaToResultBitmap(
+      viz::AggregatedRenderPassList* pass_list,
+      viz::AggregatedRenderPass* target,
+      const gfx::Rect* copy_rect);
+
   void ReadbackResult(base::OnceClosure quit_run_loop,
                       std::unique_ptr<viz::CopyOutputResult> result);
-
-  bool PixelsMatchReference(const base::FilePath& ref_file,
-                            const PixelComparator& comparator);
 
   std::unique_ptr<gl::DisableNullDrawGLBindings> enable_pixel_output_;
   GraphicsBackend graphics_backend_ = GraphicsBackend::kDefault;
