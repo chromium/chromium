@@ -771,7 +771,7 @@ const base::FeatureParam<double> kMinimumEntropyForLCP{
 // this feature does not automatically expose this element to the web, it only
 // allows the element to be enabled by the runtime enabled feature, for origin
 // trials.
-BASE_FEATURE(kFencedFrames, "FencedFrames", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFencedFrames, "FencedFrames", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable the new fenced frame-related features in M120. (These are
 // conditionally dependent on other fenced frame-related feature flags being
