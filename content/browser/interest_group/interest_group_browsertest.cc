@@ -5410,14 +5410,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'NavigatorAuction': auctionSignals for AuctionAdConfig with seller "
       "'https://a.test:*' must be a JSON-serializable object.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       auctionSignals: alert,
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5439,9 +5441,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       interestGroupBuyers: []
   })";
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
 }
 
 // Exercise error-handling path in the renderer for promise-delivered auction
@@ -5467,9 +5471,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'NavigatorAuction': auctionSignals for AuctionAdConfig with seller "
       "'https://a.test:*' must be a JSON-serializable object.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5487,14 +5493,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'NavigatorAuction': sellerSignals for AuctionAdConfig with seller "
       "'https://a.test:*' must be a JSON-serializable object.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       sellerSignals: function() {},
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5515,9 +5523,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       interestGroupBuyers: []
   })";
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
 }
 
 // Exercise error-handling path in the renderer for promise-delivered seller
@@ -5543,9 +5553,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
       "'NavigatorAuction': sellerSignals for AuctionAdConfig with seller "
       "'https://a.test:*' must be a JSON-serializable object.");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5566,9 +5578,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       interestGroupBuyers: []
   })";
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
 }
 
 // Exercise error-handling path in the renderer for promise-delivered
@@ -5593,9 +5607,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   console_observer.SetPattern(
       "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
       "'NavigatorAuction': Only objects can be converted to record<K,V> types");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5614,14 +5630,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "AuctionAdConfig with seller 'https://a.test:*' must be a valid https "
       "origin.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       perBuyerSignals: {'https://invalid^&': {a:1}},
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5642,9 +5660,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       interestGroupBuyers: []
   })";
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
 }
 
 // Exercise error-handling path in the renderer for promise-delivered
@@ -5671,9 +5691,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'NavigatorAuction': perBuyerTimeouts buyer 'http://b.com' for "
       "AuctionAdConfig with seller 'https://a.test:*' must be \"*\" (wildcard) "
       "or a valid https origin.");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5692,14 +5714,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "AuctionAdConfig with seller 'https://a.test:*' must be \"*\" (wildcard) "
       "or a valid https origin.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       perBuyerTimeouts: {'https://invalid^&': 100},
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5721,9 +5745,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       interestGroupBuyers: []
   })";
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
 }
 
 // Exercise error-handling path in the renderer for promise-delivered
@@ -5751,9 +5777,11 @@ IN_PROC_BROWSER_TEST_F(
       "'NavigatorAuction': perBuyerCumulativeTimeouts buyer 'http://b.com' for "
       "AuctionAdConfig with seller 'https://a.test:*' must be \"*\" (wildcard) "
       "or a valid https origin.");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5771,14 +5799,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'NavigatorAuction': perBuyerCumulativeTimeouts buyer "
       "'https://invalid^&' for AuctionAdConfig with seller 'https://a.test:*' "
       "must be \"*\" (wildcard) or a valid https origin.");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       perBuyerCumulativeTimeouts: {'https://invalid^&': 100},
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5797,14 +5827,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "AuctionAdConfig with seller 'https://a.test:*' must be \"*\" (wildcard) "
       "or a valid https origin.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       perBuyerCurrencies: {'https://invalid^&': 'USD'},
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5823,14 +5855,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "AuctionAdConfig with seller 'https://a.test:*' must be a 3-letter "
       "uppercase currency code.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       perBuyerCurrencies: {'*': 'usd'},
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -6021,14 +6055,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'NavigatorAuction': perBuyerSignals for AuctionAdConfig with seller "
       "'https://a.test:*' must be a JSON-serializable object.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       perBuyerSignals: {'https://test.com': function() {}},
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -6048,9 +6084,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       interestGroupBuyers: []
   })";
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -6070,9 +6108,11 @@ IN_PROC_BROWSER_TEST_F(
       interestGroupBuyers: []
   })";
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -6213,9 +6253,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'NavigatorAuction': directFromSellerSignals 'http://test.com/signals' "
       "for AuctionAdConfig with seller 'https://a.test:*' must match seller "
       "origin; only https scheme is supported.");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -6240,9 +6282,11 @@ IN_PROC_BROWSER_TEST_F(
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern("Uncaught (in promise) Don't stringify me!");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -6261,14 +6305,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "AuctionAdConfig with seller 'https://a.test:*' cannot be resolved to a "
       "valid URL.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       directFromSellerSignals: 'https://invalid^&',
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -6286,14 +6332,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'NavigatorAuction': directFromSellerSignals 'http://test.com/signals' "
       "for AuctionAdConfig with seller 'https://a.test:*' must match seller "
       "origin; only https scheme is supported.");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       directFromSellerSignals: 'http://test.com/signals',
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -6312,14 +6360,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "for AuctionAdConfig with seller 'https://a.test:*' must match seller "
       "origin; only https scheme is supported.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       directFromSellerSignals: 'https://test2.com/signals',
       interestGroupBuyers: [$1]
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -6339,14 +6389,16 @@ IN_PROC_BROWSER_TEST_F(
       "'https://a.test:*/signals?shouldntBeHere' for AuctionAdConfig with "
       "seller 'https://a.test:*' URL prefix must not have a query string.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       directFromSellerSignals: $1 + '/signals?shouldntBeHere',
       interestGroupBuyers: [$1]
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -6858,8 +6910,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern("Uncaught (in promise) Error!");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       directFromSellerSignalsHeaderAdSlot: Promise.resolve((() => {
@@ -6871,7 +6925,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       })()),
       interestGroupBuyers: [$1]
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 

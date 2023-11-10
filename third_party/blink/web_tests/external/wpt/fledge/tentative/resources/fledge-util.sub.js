@@ -264,9 +264,6 @@ async function leaveInterestGroup(interestGroupOverrides = {}) {
   await navigator.leaveAdInterestGroup(interestGroup);
 }
 
-// A type tag to identify a promise is handled correctly when rejected.
-function runAdAuctionRejected() { }
-
 // Runs a FLEDGE auction and returns the result. By default, the seller is the
 // current frame's origin, and the only buyer is as well. The seller script
 // rejects bids for URLs that don't contain "uuid" (to avoid running into issues

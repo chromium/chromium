@@ -3799,7 +3799,7 @@ void NavigatorAuction::AuctionHandle::AuctionComplete(
     } else {
       // TODO(morlovich): It would probably be better to wire something more
       // precise.
-      resolver->Reject(
+      resolver->RejectWithTypeError(
           "Promise argument rejected or resolved to invalid value.");
     }
   } else if (result_config) {

@@ -11,6 +11,7 @@
 
 "use strict;"
 
+// Subset 1 - 5
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await fetchDirectFromSellerSignals({ 'Buyer-Origin': window.location.origin });
@@ -96,6 +97,7 @@ subsetTest(promise_test, async test => {
   );
 }, 'Test directFromSellerSignals with sellerSignals, auctionSignals and perBuyerSignals.');
 
+// Subset 6 - 10
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await fetchDirectFromSellerSignals({ 'Buyer-Origin': window.location.origin });
@@ -157,8 +159,13 @@ subsetTest(promise_test, async test => {
         decisionLogicURL: createDecisionScriptURL(uuid),
         directFromSellerSignalsHeaderAdSlot: adSlot };
 
-  let result = await navigator.runAdAuction(auctionConfig).catch(() => new runAdAuctionRejected());
-  assert_true(result instanceof runAdAuctionRejected);
+  try {
+    await navigator.runAdAuction(auctionConfig);
+  } catch(e) {
+    assert_true(e instanceof TypeError);
+    return;
+  }
+  throw "Exception unexpectedly not thrown.";
 }, 'Test directFromSellerSignals with rejected promise ad slot.');
 
 subsetTest(promise_test, async test => {
@@ -218,6 +225,7 @@ subsetTest(promise_test, async test => {
   );
 }, 'Test directFromSellerSignals with mismatched perBuyerSignals.');
 
+// Subset 11 - 15
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await fetchDirectFromSellerSignals({ 'Buyer-Origin': '*' });
@@ -297,6 +305,7 @@ subsetTest(promise_test, async test => {
   );
 }, 'Test directFromSellerSignals with HTTP error.');
 
+// Subset 16 - 20
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await fetchDirectFromSellerSignals({ 'Negative-Test-Option': 'No Ad-Auction-Signals Header' });
@@ -389,17 +398,17 @@ subsetTest(promise_test, async test => {
   );
 }, 'Test directFromSellerSignals different interest group owner origin from top frame.');
 
+// Subset 21 - last
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
-  await fetchDirectFromSellerSignals({ 'Buyer-Origin': window.location.origin });
-  let iframe = await createIframe(test, OTHER_ORIGIN1);
+  let iframe = await createIframe(test, OTHER_ORIGIN1, "join-ad-interest-group; run-ad-auction");
+  await fetchDirectFromSellerSignals({ 'Buyer-Origin': OTHER_ORIGIN1 }, OTHER_ORIGIN1);
   await runInFrame(
       test, iframe,
-      `runReportTest(
-          test, "${uuid}",
+      `await runReportTest(
+          test_instance, "${uuid}",
           directFromSellerSignalsValidatorCode(
-              "${uuid}", 'sellerSignals/4',
-              'auctionSignals/4', 'perBuyerSignals/4'),
+              "${uuid}", 'sellerSignals/4', 'auctionSignals/4', 'perBuyerSignals/4'),
           // expectedReportUrls
           [createSellerReportURL("${uuid}"), createBidderReportURL("${uuid}")],
           // renderURLOverride
@@ -410,45 +419,43 @@ subsetTest(promise_test, async test => {
 
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
-  let iframe = await createIframe(test, OTHER_ORIGIN1);
+  let iframe = await createIframe(test, OTHER_ORIGIN1, "join-ad-interest-group; run-ad-auction");
   await runInFrame(
       test, iframe,
       `await fetchDirectFromSellerSignals({ 'Buyer-Origin': window.location.origin });
-      runReportTest(
-          test, "${uuid}",
+       await runReportTest(
+          test_instance, "${uuid}",
           directFromSellerSignalsValidatorCode(
               "${uuid}", 'sellerSignals/4',
               'auctionSignals/4', 'perBuyerSignals/4'),
           // expectedReportUrls
-          [createSellerReportURL("${uuid}"), createBidderReportURL("${uuid}", '1', OTHER_ORIGIN1)],
+          [createSellerReportURL("${uuid}"), createBidderReportURL("${uuid}")],
           // renderURLOverride
           null,
           // auctionConfigOverrides
-          { directFromSellerSignalsHeaderAdSlot: 'adSlot/4',
-            interestGroupBuyers: [OTHER_ORIGIN1] })`);
+          { directFromSellerSignalsHeaderAdSlot: 'adSlot/4' })`);
 }, 'Test directFromSellerSignals with fetching and running auction in the same iframe.');
 
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   let iframe1 = await createIframe(test, OTHER_ORIGIN1);
-  let iframe2 = await createIframe(test, OTHER_ORIGIN2);
+  let iframe2 = await createIframe(test, OTHER_ORIGIN2, "join-ad-interest-group; run-ad-auction");
   await runInFrame(
       test, iframe1,
-      `await fetchDirectFromSellerSignals({ 'Buyer-Origin': window.location.origin });`);
+      `await fetchDirectFromSellerSignals({ 'Buyer-Origin': OTHER_ORIGIN2 }, OTHER_ORIGIN2);`);
   await runInFrame(
       test, iframe2,
-      `runReportTest(
-          test, "${uuid}",
+      `await runReportTest(
+          test_instance, "${uuid}",
           directFromSellerSignalsValidatorCode(
               "${uuid}", 'sellerSignals/4',
               'auctionSignals/4', 'perBuyerSignals/4'),
           // expectedReportUrls
-          [createSellerReportURL("${uuid}"), createBidderReportURL("${uuid}", '1', OTHER_ORIGIN1)],
+          [createSellerReportURL("${uuid}"), createBidderReportURL("${uuid}")],
           // renderURLOverride
           null,
           // auctionConfigOverrides
-          { directFromSellerSignalsHeaderAdSlot: 'adSlot/4',
-            interestGroupBuyers: [OTHER_ORIGIN1] })`);
+          { directFromSellerSignalsHeaderAdSlot: 'adSlot/4' })`);
 }, 'Test directFromSellerSignals with fetching in iframe 1 and running auction in iframe 2.');
 
 subsetTest(promise_test, async test => {
@@ -456,7 +463,8 @@ subsetTest(promise_test, async test => {
   let iframe = await createIframe(test, OTHER_ORIGIN1);
   await runInFrame(
       test, iframe,
-      `await fetchDirectFromSellerSignals({ 'Buyer-Origin': window.location.origin });`);
+      `await fetchDirectFromSellerSignals(
+          { 'Buyer-Origin': "${window.location.origin}" }, "${window.location.origin}");`);
   await runReportTest(
       test, uuid,
       directFromSellerSignalsValidatorCode(
