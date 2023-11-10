@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Clients.matchAll() should not show an old window as controlled after it navigates.
+  assert_unreached: unexpected rejection: assert_equals: client should have expected frame type expected "auxiliary" but got "top-level" Reached unreachable code
+[FAIL] Clients.matchAll() should not show an old window after it navigates.
+  assert_unreached: unexpected rejection: assert_equals: expected number of clients expected 3 but got 4 Reached unreachable code
+Harness: the test ran to completion.

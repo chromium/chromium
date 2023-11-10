@@ -7079,6 +7079,7 @@ crbug.com/1499775 [ Chrome ] external/wpt/background-fetch/fetch-uploads.https.w
 crbug.com/1499775 [ Chrome ] external/wpt/background-fetch/fetch.https.window.html [ Timeout ]
 crbug.com/1499775 [ Chrome ] external/wpt/background-fetch/match.https.window.html [ Timeout ]
 crbug.com/1499775 [ Chrome ] external/wpt/background-fetch/update-ui.https.window.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/client-hints/accept-ch/cache-revalidation.https.html [ Failure ]  # Flaky output
 crbug.com/1499775 [ Chrome ] external/wpt/compat/webkit-box-rtl-flex.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/content-security-policy/inheritance/blob-inherits-from-meta-http-equiv-with-invalid-characters.html [ Failure ]  # Flaky output
 crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-abort.https.html [ Timeout ]
@@ -7266,6 +7267,9 @@ crbug.com/1499775 [ Chrome ] external/wpt/eventsource/eventsource-request-cancel
 crbug.com/1499775 [ Chrome ] external/wpt/eventsource/eventsource-request-cancellation.window.any.worker.html [ Failure ]  # Flaky output
 crbug.com/1499775 [ Chrome ] external/wpt/eventsource/request-credentials.window.any.html [ Failure ]  # Flaky output
 crbug.com/1499775 [ Chrome ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fetch/stale-while-revalidate/fetch.any.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/fetch/stale-while-revalidate/fetch-sw.https.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/fetch/stale-while-revalidate/fetch.any.sharedworker.html [ Failure ]  # Flaky output
 crbug.com/1499775 [ Chrome ] external/wpt/fetch/stale-while-revalidate/fetch.any.serviceworker.html [ Failure ]  # Flaky output
 crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/api/element-request-fullscreen-non-top.html [ Timeout ]
 crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/api/element-request-fullscreen-options.tentative.https.html [ Timeout ]
@@ -7291,6 +7295,8 @@ crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/rendering/fullscreen-pseudo
 crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/rendering/fullscreen-root-block-scroll.html [ Timeout ] # pass on wpt.fyi
 crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/rendering/fullscreen-root-block-size.html [ Timeout ]
 crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/rendering/ua-style-iframe.html [ Timeout ] # pass on wpt.fyi
+crbug.com/1499775 [ Chrome ] external/wpt/html/browsers/history/the-location-interface/assign_before_load.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/html/browsers/history/the-location-interface/assign_after_load.html [ Failure ]  # Flaky output
 crbug.com/1499775 [ Chrome ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/cross-origin-top-navigation-with-user-activation-in-parent.window.html [ Timeout ]
 crbug.com/1499775 [ Chrome ] external/wpt/html/canvas/element/manual/filters/tentative/canvas-filter-object-turbulence.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/html/canvas/element/text/direction-inherit-rtl.html [ Failure ]  # Reftest image failure

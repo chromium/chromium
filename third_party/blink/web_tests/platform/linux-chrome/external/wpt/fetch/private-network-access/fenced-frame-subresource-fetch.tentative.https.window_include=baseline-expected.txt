@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] local to public: PUT preflight failure.
+  promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+[FAIL] local to public: PUT preflight success.
+  promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+Harness: the test ran to completion.

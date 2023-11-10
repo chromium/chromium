@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] PaymentRequest.show() cannot be triggered from a hidden context
+  assert_equals: expected true but got false
+Harness: the test ran to completion.

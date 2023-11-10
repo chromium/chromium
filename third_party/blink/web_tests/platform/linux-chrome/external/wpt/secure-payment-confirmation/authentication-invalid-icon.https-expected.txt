@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] SPC authentication with an invalid icon
+  promise_test: Unhandled rejection with value: "error: Action set_spc_transaction_mode not implemented"
+[FAIL] SPC authentication allowing an invalid icon with iconMustBeShown option.
+  promise_test: Unhandled rejection with value: "error: Action set_spc_transaction_mode not implemented"
+Harness: the test ran to completion.
