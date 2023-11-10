@@ -73,6 +73,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/content/enums.xml",
       "//tools/metrics/histograms/metadata/content/histograms.xml",
       "//tools/metrics/histograms/metadata/content_creation/histograms.xml",
+      "//tools/metrics/histograms/metadata/cookie/enums.xml",
       "//tools/metrics/histograms/metadata/cookie/histograms.xml",
       "//tools/metrics/histograms/metadata/cras/histograms.xml",
       "//tools/metrics/histograms/metadata/cros/histograms.xml",
