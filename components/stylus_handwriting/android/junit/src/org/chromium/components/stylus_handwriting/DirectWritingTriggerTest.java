@@ -120,6 +120,18 @@ public class DirectWritingTriggerTest {
 
     @Test
     @Feature({"Stylus Handwriting"})
+    public void testOnImeAdapterDestroyed() {
+        // Set Ime callback via onWebContentsChanged.
+        doReturn(mStylusWritingImeCallback).when(mWebContents).getStylusWritingImeCallback();
+        mDwTrigger.onWebContentsChanged(mContext, mWebContents);
+        assertNotNull(mDwTrigger.getStylusWritingImeCallbackForTest());
+
+        mDwTrigger.onImeAdapterDestroyed();
+        assertNull(mDwTrigger.getStylusWritingImeCallbackForTest());
+    }
+
+    @Test
+    @Feature({"Stylus Handwriting"})
     public void testServiceCallbackCreation() {
         // Test that callback is created when settings are updated.
         assertNull(mDwTrigger.getServiceCallback());

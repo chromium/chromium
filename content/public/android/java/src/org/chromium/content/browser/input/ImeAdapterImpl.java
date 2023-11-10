@@ -813,6 +813,10 @@ public class ImeAdapterImpl
         if (mCursorAnchorInfoController != null) {
             mCursorAnchorInfoController.focusedNodeChanged(false);
         }
+        mStylusWritingImeCallback = null;
+        if (mWebContents.getStylusWritingHandler() != null) {
+            mWebContents.getStylusWritingHandler().onImeAdapterDestroyed();
+        }
     }
 
     /**

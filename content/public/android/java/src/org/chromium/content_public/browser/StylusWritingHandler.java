@@ -105,4 +105,7 @@ public interface StylusWritingHandler {
             Rect focusedEditBounds, Point cursorPosition, float scaleFactor, int contentOffsetY) {
         return null;
     }
+
+    /** Notify that ImeAdapter is destroyed. */
+    default void onImeAdapterDestroyed() {}
 }

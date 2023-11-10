@@ -73,8 +73,6 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
     public void onWebContentsChanged(Context context, WebContents webContents) {
         updateDWSettings(context);
         webContents.setStylusWritingHandler(this);
-        // TODO(crbug.com/1457860): Drop StylusHandwritingImeCallback reference when webContents is
-        // destroyed.
         mStylusWritingImeCallback = webContents.getStylusWritingImeCallback();
         mCallback.setImeCallback(mStylusWritingImeCallback);
     }
@@ -222,6 +220,11 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
         mBinder.unbindService(context);
     }
 
+    @Override
+    public void onImeAdapterDestroyed() {
+        mStylusWritingImeCallback = null;
+    }
+
     /*
      * This API needs to be called before starting recognition to bind direct writing service.
      */
@@ -251,6 +254,11 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
 
     void setServiceBinderForTest(DirectWritingServiceBinder serviceBinder) {
         mBinder = serviceBinder;
+    }
+
+    @VisibleForTesting
+    StylusWritingImeCallback getStylusWritingImeCallbackForTest() {
+        return mStylusWritingImeCallback;
     }
 
     @VisibleForTesting
