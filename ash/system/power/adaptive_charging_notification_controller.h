@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -27,12 +28,12 @@ class ASH_EXPORT AdaptiveChargingNotificationController
   // Show the adaptive charging notification. There are two possible
   // scenarios:
   // 1. When the battery is kept at 80% indefinitely (i.e. no value of
-  // |hours_to_full| is provided), the notification is a
+  // |time_to_full| is provided), the notification is a
   // normal notification.
-  // 2. When the battery is temporary kept at 80% (i.e. |hours_to_full| has
-  // a value), the notification will have higher priority (SYSTEM_PRIORITY).
+  // 2. When the battery is temporary kept at 80% (i.e. |time_to_full| has
+  // a value), the estimated time to full will be shown.
   void ShowAdaptiveChargingNotification(
-      absl::optional<int> hours_to_full = absl::nullopt);
+      absl::optional<base::TimeDelta> time_to_full = absl::nullopt);
 
   void CloseAdaptiveChargingNotification(bool by_user = false);
 

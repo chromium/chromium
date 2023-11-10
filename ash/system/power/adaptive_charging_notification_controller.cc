@@ -38,20 +38,20 @@ AdaptiveChargingNotificationController::
     ~AdaptiveChargingNotificationController() = default;
 
 void AdaptiveChargingNotificationController::ShowAdaptiveChargingNotification(
-    absl::optional<int> hours_to_full) {
+    absl::optional<base::TimeDelta> time_to_full) {
   if (!ShouldShowNotification())
     return;
 
   std::u16string notification_message;
-  if (hours_to_full.has_value()) {
-    DCHECK_GE(hours_to_full.value(), 0);
+  if (time_to_full.has_value()) {
+    DCHECK(time_to_full.value().is_positive());
     notification_message = l10n_util::GetStringFUTF16(
         IDS_ASH_ADAPTIVE_CHARGING_NOTIFICATION_MESSAGE_TEMPORARY,
         base::TimeFormatTimeOfDayWithHourClockType(
             base::Time::FromDeltaSinceWindowsEpoch(
-                base::Time::Now().ToDeltaSinceWindowsEpoch().RoundToMultiple(
-                    kTimeDeltaRoundingInterval)) +
-                base::Hours(hours_to_full.value()),
+                (base::Time::Now().ToDeltaSinceWindowsEpoch() +
+                 time_to_full.value())
+                    .RoundToMultiple(kTimeDeltaRoundingInterval)),
             base::GetHourClockType(), base::kKeepAmPm));
   } else {
     notification_message = l10n_util::GetStringUTF16(
