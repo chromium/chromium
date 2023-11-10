@@ -4,6 +4,9 @@
 
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <errno.h>
 
 #include <atomic>
@@ -13,7 +16,6 @@
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/memory/page_size.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/notreached.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
 #include "build/build_config.h"
 
@@ -461,3 +463,5 @@ void InitializeAllocatorShim() {
     (defined(_MSC_VER) && defined(_CPPUNWIND))
 #error This code cannot be used when exceptions are turned on.
 #endif
+
+#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)

@@ -14,9 +14,11 @@
 #include <sstream>
 #include <vector>
 
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/memory/page_size.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -789,3 +791,5 @@ TEST_F(AllocatorShimTest, BatchMalloc) {
 
 }  // namespace
 }  // namespace allocator_shim
+
+#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)

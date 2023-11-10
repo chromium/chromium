@@ -4,6 +4,9 @@
 
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <cstdlib>
 #include <cstring>
 
@@ -188,3 +191,4 @@ TEST(PartitionAllocAsMalloc, Alignment) {
 }  // namespace allocator_shim::internal
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
         // BUILDFLAG(USE_PARTITION_ALLOC)
+#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)

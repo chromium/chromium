@@ -6,7 +6,7 @@
 // allocation shim has been removed, and the generic shim has becaome the
 // default.
 
-#include "winheap_stubs_win.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/winheap_stubs_win.h"
 
 #include <limits.h>
 #include <malloc.h>
@@ -15,6 +15,9 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
@@ -219,3 +222,5 @@ void WinHeapAlignedFree(void* ptr) {
 }
 
 }  // namespace allocator_shim
+
+#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)

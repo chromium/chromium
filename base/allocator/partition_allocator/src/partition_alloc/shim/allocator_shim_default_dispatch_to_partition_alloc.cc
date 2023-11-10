@@ -4,6 +4,9 @@
 
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <atomic>
 #include <cstddef>
 #include <map>
@@ -19,7 +22,6 @@
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/no_destructor.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/checked_math.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
@@ -827,3 +829,5 @@ void InitializeDefaultAllocatorPartitionRoot() {
 #endif  // BUILDFLAG(IS_APPLE)
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
