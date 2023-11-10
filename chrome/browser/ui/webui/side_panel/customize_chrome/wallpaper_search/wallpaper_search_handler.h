@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/token.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -66,6 +67,7 @@ class WallpaperSearchHandler
                                data_decoder::DataDecoder::ValueOrError result);
   void OnWallpaperSearchResultsRetrieved(
       GetWallpaperSearchResultsCallback callback,
+      base::ElapsedTimer request_timer,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
   void OnWallpaperSearchResultsDecoded(
@@ -79,7 +81,9 @@ class WallpaperSearchHandler
   const raw_ref<WallpaperSearchBackgroundManager>
       wallpaper_search_background_manager_;
   base::flat_map<base::Token, SkBitmap> wallpaper_search_results_;
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry_;
   const int64_t session_id_;
+  int32_t request_index_ = 0;
 
   mojo::Receiver<side_panel::customize_chrome::mojom::WallpaperSearchHandler>
       receiver_;

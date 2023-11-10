@@ -10,6 +10,7 @@
 #include "base/barrier_callback.h"
 #include "base/base64.h"
 #include "base/containers/contains.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/token.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -82,7 +83,14 @@ WallpaperSearchHandler::WallpaperSearchHandler(
       session_id_(session_id),
       receiver_(this, std::move(pending_handler)) {}
 
-WallpaperSearchHandler::~WallpaperSearchHandler() {}
+WallpaperSearchHandler::~WallpaperSearchHandler() {
+  if (log_entry_) {
+    auto* quality =
+        log_entry_
+            ->quality_data<optimization_guide::WallpaperSearchFeatureTypeMap>();
+    quality->set_final_request_in_session(true);
+  }
+}
 
 void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
   callback =
@@ -183,7 +191,8 @@ void WallpaperSearchHandler::GetWallpaperSearchResults(
           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
       request,
       base::BindOnce(&WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     base::ElapsedTimer()));
 }
 
 void WallpaperSearchHandler::SetBackgroundToWallpaperSearchResult(
@@ -293,11 +302,21 @@ void WallpaperSearchHandler::OnDescriptorsJsonParsed(
 
 void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
     GetWallpaperSearchResultsCallback callback,
+    base::ElapsedTimer request_timer,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  if (log_entry) {
-    log_entry->quality_data<optimization_guide::WallpaperSearchFeatureTypeMap>()
-        ->set_session_id(session_id_);
+  // Logs data of the previous log entry if it exists.
+  log_entry_ = std::move(log_entry);
+  if (log_entry_) {
+    auto* quality =
+        log_entry_
+            ->quality_data<optimization_guide::WallpaperSearchFeatureTypeMap>();
+    quality->set_session_id(session_id_);
+    quality->set_index(request_index_++);
+    // We will set this to true if the log entry still exist when the side panel
+    // closes.
+    quality->set_final_request_in_session(false);
+    quality->set_request_latency_ms(request_timer.Elapsed().InMilliseconds());
   }
 
   if (!result.has_value()) {

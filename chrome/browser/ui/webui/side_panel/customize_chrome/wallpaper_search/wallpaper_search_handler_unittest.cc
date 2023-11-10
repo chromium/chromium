@@ -13,6 +13,8 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/token.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
@@ -51,8 +53,6 @@ using testing::DoAll;
 using testing::Invoke;
 using testing::Return;
 using testing::SaveArg;
-
-constexpr int64_t TEST_SESSION_ID = 123;
 
 class MockWallpaperSearchBackgroundManager
     : public WallpaperSearchBackgroundManager {
@@ -125,14 +125,7 @@ class WallpaperSearchHandlerTest : public testing::Test {
                 OptimizationGuideKeyedServiceFactory::GetForProfile(
                     profile_.get()))),
         mock_wallpaper_search_background_manager_(
-            MockWallpaperSearchBackgroundManager(profile_.get())),
-        handler_(
-            mojo::PendingReceiver<
-                side_panel::customize_chrome::mojom::WallpaperSearchHandler>(),
-            profile_.get(),
-            &mock_image_decoder_,
-            &mock_wallpaper_search_background_manager_,
-            TEST_SESSION_ID) {}
+            MockWallpaperSearchBackgroundManager(profile_.get())) {}
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
@@ -161,10 +154,17 @@ class WallpaperSearchHandlerTest : public testing::Test {
                                          net::HTTP_NOT_FOUND);
   }
 
+  std::unique_ptr<WallpaperSearchHandler> MakeHandler(int64_t session_id) {
+    return std::make_unique<WallpaperSearchHandler>(
+        mojo::PendingReceiver<
+            side_panel::customize_chrome::mojom::WallpaperSearchHandler>(),
+        profile_.get(), &mock_image_decoder_,
+        &mock_wallpaper_search_background_manager_, session_id);
+  }
+
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
   }
-  WallpaperSearchHandler& handler() { return handler_; }
   MockOptimizationGuideKeyedService& mock_optimization_guide_keyed_service() {
     return *mock_optimization_guide_keyed_service_;
   }
@@ -178,7 +178,8 @@ class WallpaperSearchHandlerTest : public testing::Test {
 
  private:
   // NOTE: The initialization order of these members matters.
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<TestingProfile> profile_;
   base::test::ScopedFeatureList feature_list_;
@@ -189,7 +190,6 @@ class WallpaperSearchHandlerTest : public testing::Test {
   MockWallpaperSearchBackgroundManager
       mock_wallpaper_search_background_manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  WallpaperSearchHandler handler_;
 };
 
 TEST_F(WallpaperSearchHandlerTest,
@@ -215,9 +215,10 @@ TEST_F(WallpaperSearchHandlerTest,
           ],
           "descriptor_c":["foo","bar","baz"]
         })");
+  auto handler = MakeHandler(/*session_id=*/123);
 
   ASSERT_FALSE(descriptors);
-  handler().GetDescriptors(callback.Get());
+  handler->GetDescriptors(callback.Get());
   task_environment().RunUntilIdle();
 
   EXPECT_TRUE(descriptors);
@@ -278,9 +279,10 @@ TEST_F(WallpaperSearchHandlerTest,
           ],
           "descriptor_c":["foo"]
         })");
+  auto handler = MakeHandler(/*session_id=*/123);
 
-  handler().GetDescriptors(callback.Get());
-  handler().GetDescriptors(callback_2.Get());
+  handler->GetDescriptors(callback.Get());
+  handler->GetDescriptors(callback_2.Get());
   task_environment().RunUntilIdle();
 
   EXPECT_FALSE(descriptors);
@@ -318,8 +320,9 @@ TEST_F(WallpaperSearchHandlerTest,
           {"category":"foo"}
       ]})");
   ASSERT_FALSE(descriptors);
+  auto handler = MakeHandler(/*session_id=*/123);
 
-  handler().GetDescriptors(callback.Get());
+  handler->GetDescriptors(callback.Get());
   task_environment().RunUntilIdle();
 
   EXPECT_FALSE(descriptors);
@@ -342,8 +345,9 @@ TEST_F(WallpaperSearchHandlerTest, GetDescriptors_Failure_NoValidDescriptors) {
           {"category":"qux","labels":["foobar"]}
       ]})");
   ASSERT_FALSE(descriptors);
+  auto handler = MakeHandler(/*session_id=*/123);
 
-  handler().GetDescriptors(callback.Get());
+  handler->GetDescriptors(callback.Get());
   task_environment().RunUntilIdle();
 
   EXPECT_FALSE(descriptors);
@@ -361,8 +365,9 @@ TEST_F(WallpaperSearchHandlerTest, GetDescriptors_Failure_DataIsUnreachable) {
           }));
   SetUpDescriptorsResponseWithNetworkError();
   ASSERT_FALSE(descriptors);
+  auto handler = MakeHandler(/*session_id=*/123);
 
-  handler().GetDescriptors(callback.Get());
+  handler->GetDescriptors(callback.Get());
   task_environment().RunUntilIdle();
 
   EXPECT_FALSE(descriptors);
@@ -403,8 +408,9 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
           }));
   base::MockCallback<WallpaperSearchHandler::GetWallpaperSearchResultsCallback>
       callback;
+  auto handler = MakeHandler(/*session_id=*/123);
 
-  handler().GetWallpaperSearchResults(
+  handler->GetWallpaperSearchResults(
       "foo", "bar", "baz",
       side_panel::customize_chrome::mojom::DescriptorDValue::NewColor(
           SK_ColorWHITE),
@@ -449,6 +455,8 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
   EXPECT_CALL(callback, Run(_, _))
       .WillOnce(DoAll(SaveArg<0>(&status), MoveArg<1>(&images)));
 
+  // Advance clock to test request latency.
+  task_environment().AdvanceClock(base::Milliseconds(321));
   optimization_guide::proto::WallpaperSearchQuality quality;
 
   std::move(done_callback).Run(base::ok(result), SaveQuality(&quality));
@@ -477,7 +485,132 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
   gfx::PNGCodec::EncodeBGRASkBitmap(
       resized_bitmap2, /*discard_transparency=*/false, &resized_encoded2);
   EXPECT_EQ(images[1]->image, base::Base64Encode(resized_encoded2));
-  EXPECT_EQ(TEST_SESSION_ID, quality.session_id());
+
+  // Quality logs on destruction.
+  handler.reset();
+  EXPECT_EQ(123, quality.session_id());
+  EXPECT_EQ(0, quality.index());
+  EXPECT_TRUE(quality.final_request_in_session());
+  EXPECT_EQ(321, quality.request_latency_ms());
+}
+
+TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
+  // FIRST REQUEST.
+  optimization_guide::proto::WallpaperSearchRequest request1;
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      done_callback1;
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+      .WillOnce(Invoke(
+          [&request1, &done_callback1](
+              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              const google::protobuf::MessageLite& request_arg,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  done_callback_arg) {
+            ASSERT_EQ(request1.GetTypeName(), request_arg.GetTypeName());
+            request1.CheckTypeAndMergeFrom(request_arg);
+            done_callback1 = std::move(done_callback_arg);
+          }));
+  base::MockCallback<WallpaperSearchHandler::GetWallpaperSearchResultsCallback>
+      callback1;
+  auto handler = MakeHandler(/*session_id=*/123);
+
+  handler->GetWallpaperSearchResults(
+      "foo1", "bar1", "baz1",
+      side_panel::customize_chrome::mojom::DescriptorDValue::NewColor(
+          SK_ColorWHITE),
+      callback1.Get());
+  EXPECT_EQ("foo1", request1.descriptors().descriptor_a());
+  EXPECT_EQ("bar1", request1.descriptors().descriptor_b());
+  EXPECT_EQ("baz1", request1.descriptors().descriptor_c());
+  EXPECT_EQ("#FFFFFF", request1.descriptors().descriptor_d());
+
+  // Serialize and set result to later send to done_callback.
+  optimization_guide::proto::WallpaperSearchResponse response1;
+  std::string serialized_metadata1;
+  response1.SerializeToString(&serialized_metadata1);
+  optimization_guide::proto::Any result1;
+  result1.set_value(serialized_metadata1);
+  result1.set_type_url("type.googleapis.com/" + response1.GetTypeName());
+
+  std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
+      images1;
+  side_panel::customize_chrome::mojom::WallpaperSearchStatus status1;
+  EXPECT_CALL(callback1, Run(_, _))
+      .WillOnce(DoAll(SaveArg<0>(&status1), MoveArg<1>(&images1)));
+
+  // Advance clock to test request latency.
+  task_environment().AdvanceClock(base::Milliseconds(321));
+  optimization_guide::proto::WallpaperSearchQuality quality1;
+
+  std::move(done_callback1).Run(base::ok(result1), SaveQuality(&quality1));
+
+  ASSERT_EQ(status1,
+            side_panel::customize_chrome::mojom::WallpaperSearchStatus::kError);
+  ASSERT_EQ(static_cast<int>(images1.size()), response1.images_size());
+
+  // SECOND REQUEST.
+  optimization_guide::proto::WallpaperSearchRequest request2;
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      done_callback2;
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+      .WillOnce(Invoke(
+          [&request2, &done_callback2](
+              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              const google::protobuf::MessageLite& request_arg,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  done_callback_arg) {
+            ASSERT_EQ(request2.GetTypeName(), request_arg.GetTypeName());
+            request2.CheckTypeAndMergeFrom(request_arg);
+            done_callback2 = std::move(done_callback_arg);
+          }));
+  base::MockCallback<WallpaperSearchHandler::GetWallpaperSearchResultsCallback>
+      callback2;
+
+  handler->GetWallpaperSearchResults(
+      "foo2", "bar2", "baz2",
+      side_panel::customize_chrome::mojom::DescriptorDValue::NewColor(
+          SK_ColorRED),
+      callback2.Get());
+  EXPECT_EQ("foo2", request2.descriptors().descriptor_a());
+  EXPECT_EQ("bar2", request2.descriptors().descriptor_b());
+  EXPECT_EQ("baz2", request2.descriptors().descriptor_c());
+  EXPECT_EQ("#FF0000", request2.descriptors().descriptor_d());
+
+  optimization_guide::proto::WallpaperSearchResponse response2;
+  std::string serialized_metadata2;
+  response2.SerializeToString(&serialized_metadata2);
+  optimization_guide::proto::Any result2;
+  result2.set_value(serialized_metadata2);
+  result2.set_type_url("type.googleapis.com/" + response2.GetTypeName());
+
+  std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
+      images2;
+  side_panel::customize_chrome::mojom::WallpaperSearchStatus status2;
+  EXPECT_CALL(callback2, Run(_, _))
+      .WillOnce(DoAll(SaveArg<0>(&status2), MoveArg<1>(&images2)));
+
+  // Advance clock to test request latency.
+  task_environment().AdvanceClock(base::Milliseconds(456));
+  optimization_guide::proto::WallpaperSearchQuality quality2;
+
+  std::move(done_callback2).Run(base::ok(result2), SaveQuality(&quality2));
+
+  ASSERT_EQ(status2,
+            side_panel::customize_chrome::mojom::WallpaperSearchStatus::kError);
+  ASSERT_EQ(static_cast<int>(images2.size()), response2.images_size());
+
+  // Quality logs on destruction and when a second request is made.
+  handler.reset();
+  // First request.
+  EXPECT_EQ(123, quality1.session_id());
+  EXPECT_EQ(0, quality1.index());
+  EXPECT_FALSE(quality1.final_request_in_session());
+  EXPECT_EQ(321, quality1.request_latency_ms());
+  // Second request.
+  EXPECT_EQ(123, quality2.session_id());
+  EXPECT_EQ(1, quality2.index());
+  EXPECT_TRUE(quality2.final_request_in_session());
+  EXPECT_EQ(456, quality2.request_latency_ms());
 }
 
 TEST_F(WallpaperSearchHandlerTest,
@@ -498,7 +631,9 @@ TEST_F(WallpaperSearchHandlerTest,
   testing::NiceMock<base::MockCallback<
       WallpaperSearchHandler::GetWallpaperSearchResultsCallback>>
       callback;
-  handler().GetWallpaperSearchResults(
+  auto handler = MakeHandler(/*session_id=*/123);
+
+  handler->GetWallpaperSearchResults(
       "foo", absl::nullopt, absl::nullopt,
       side_panel::customize_chrome::mojom::DescriptorDValue::NewColor(
           SK_ColorRED),
@@ -527,7 +662,9 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_ConvertsHueToHex) {
   testing::NiceMock<base::MockCallback<
       WallpaperSearchHandler::GetWallpaperSearchResultsCallback>>
       callback;
-  handler().GetWallpaperSearchResults(
+  auto handler = MakeHandler(/*session_id=*/123);
+
+  handler->GetWallpaperSearchResults(
       "foo", absl::nullopt, absl::nullopt,
       side_panel::customize_chrome::mojom::DescriptorDValue::NewHue(0),
       callback.Get());
@@ -557,9 +694,10 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoResponse) {
           }));
   base::MockCallback<WallpaperSearchHandler::GetWallpaperSearchResultsCallback>
       callback;
+  auto handler = MakeHandler(/*session_id=*/123);
 
-  handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
-                                      nullptr, callback.Get());
+  handler->GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
+                                     nullptr, callback.Get());
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
   EXPECT_TRUE(request.descriptors().descriptor_b().empty());
   EXPECT_TRUE(request.descriptors().descriptor_c().empty());
@@ -571,6 +709,8 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoResponse) {
   EXPECT_CALL(callback, Run(_, _))
       .WillOnce(DoAll(SaveArg<0>(&status), MoveArg<1>(&images)));
 
+  // Advance clock to test request latency.
+  task_environment().AdvanceClock(base::Milliseconds(321));
   optimization_guide::proto::WallpaperSearchQuality quality;
 
   std::move(done_callback)
@@ -585,7 +725,13 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoResponse) {
   EXPECT_EQ(status,
             side_panel::customize_chrome::mojom::WallpaperSearchStatus::kError);
   EXPECT_EQ(images.size(), 0u);
-  EXPECT_EQ(TEST_SESSION_ID, quality.session_id());
+
+  // Quality logs on destruction.
+  handler.reset();
+  EXPECT_EQ(123, quality.session_id());
+  EXPECT_EQ(0, quality.index());
+  EXPECT_TRUE(quality.final_request_in_session());
+  EXPECT_EQ(321, quality.request_latency_ms());
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
@@ -607,9 +753,10 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
           }));
   base::MockCallback<WallpaperSearchHandler::GetWallpaperSearchResultsCallback>
       callback;
+  auto handler = MakeHandler(/*session_id=*/123);
 
-  handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
-                                      nullptr, callback.Get());
+  handler->GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
+                                     nullptr, callback.Get());
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
   EXPECT_TRUE(request.descriptors().descriptor_b().empty());
   EXPECT_TRUE(request.descriptors().descriptor_c().empty());
@@ -628,6 +775,8 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
   EXPECT_CALL(callback, Run(_, _))
       .WillOnce(DoAll(SaveArg<0>(&status), MoveArg<1>(&images)));
 
+  // Advance clock to test request latency.
+  task_environment().AdvanceClock(base::Milliseconds(321));
   optimization_guide::proto::WallpaperSearchQuality quality;
 
   std::move(done_callback).Run(base::ok(result), SaveQuality(&quality));
@@ -635,7 +784,13 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
   EXPECT_EQ(status,
             side_panel::customize_chrome::mojom::WallpaperSearchStatus::kError);
   EXPECT_EQ(static_cast<int>(images.size()), response.images_size());
-  EXPECT_EQ(TEST_SESSION_ID, quality.session_id());
+
+  // Quality logs on destruction.
+  handler.reset();
+  EXPECT_EQ(123, quality.session_id());
+  EXPECT_EQ(0, quality.index());
+  EXPECT_TRUE(quality.final_request_in_session());
+  EXPECT_EQ(321, quality.request_latency_ms());
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_RequestThrottled) {
@@ -657,9 +812,10 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_RequestThrottled) {
           }));
   base::MockCallback<WallpaperSearchHandler::GetWallpaperSearchResultsCallback>
       callback;
+  auto handler = MakeHandler(/*session_id=*/123);
 
-  handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
-                                      nullptr, callback.Get());
+  handler->GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
+                                     nullptr, callback.Get());
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
   EXPECT_TRUE(request.descriptors().descriptor_b().empty());
   EXPECT_TRUE(request.descriptors().descriptor_c().empty());
@@ -671,6 +827,8 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_RequestThrottled) {
   EXPECT_CALL(callback, Run(_, _))
       .WillOnce(DoAll(SaveArg<0>(&status), MoveArg<1>(&images)));
 
+  // Advance clock to test request latency.
+  task_environment().AdvanceClock(base::Milliseconds(321));
   optimization_guide::proto::WallpaperSearchQuality quality;
 
   std::move(done_callback)
@@ -685,7 +843,13 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_RequestThrottled) {
   EXPECT_EQ(status, side_panel::customize_chrome::mojom::WallpaperSearchStatus::
                         kRequestThrottled);
   EXPECT_EQ(images.size(), 0u);
-  EXPECT_EQ(TEST_SESSION_ID, quality.session_id());
+
+  // Quality logs on destruction.
+  handler.reset();
+  EXPECT_EQ(123, quality.session_id());
+  EXPECT_EQ(0, quality.index());
+  EXPECT_TRUE(quality.final_request_in_session());
+  EXPECT_EQ(321, quality.request_latency_ms());
 }
 
 TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
@@ -724,9 +888,10 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
           }));
   base::MockCallback<WallpaperSearchHandler::GetWallpaperSearchResultsCallback>
       callback;
+  auto handler = MakeHandler(/*session_id=*/123);
 
-  handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
-                                      nullptr, callback.Get());
+  handler->GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
+                                     nullptr, callback.Get());
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
   EXPECT_TRUE(request.descriptors().descriptor_b().empty());
   EXPECT_TRUE(request.descriptors().descriptor_c().empty());
@@ -765,6 +930,8 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
       images;
   EXPECT_CALL(callback, Run(_, _)).WillOnce(MoveArg<1>(&images));
 
+  // Advance clock to test request latency.
+  task_environment().AdvanceClock(base::Milliseconds(321));
   optimization_guide::proto::WallpaperSearchQuality quality;
 
   std::move(done_callback).Run(base::ok(result), SaveQuality(&quality));
@@ -780,11 +947,17 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
                                          An<const SkBitmap&>()))
       .WillOnce(DoAll(SaveArg<0>(&token), SaveArg<1>(&bitmap)));
 
-  handler().SetBackgroundToWallpaperSearchResult(images[1]->id);
+  handler->SetBackgroundToWallpaperSearchResult(images[1]->id);
 
   // Check that the 2nd bitmap was selected by comparing color, since the
   // 2 bitmaps are different colors.
   EXPECT_EQ(bitmap.getColor(0, 0), bitmap2.getColor(0, 0));
   EXPECT_EQ(token, images[1]->id);
-  EXPECT_EQ(TEST_SESSION_ID, quality.session_id());
+
+  // Quality logs on destruction.
+  handler.reset();
+  EXPECT_EQ(123, quality.session_id());
+  EXPECT_EQ(0, quality.index());
+  EXPECT_TRUE(quality.final_request_in_session());
+  EXPECT_EQ(321, quality.request_latency_ms());
 }
