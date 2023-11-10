@@ -159,7 +159,6 @@
         "args": [
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -1154,7 +1153,6 @@
         "args": [
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -2169,7 +2167,6 @@
       {
         "autotest_name": "chromium",
         "bucket": "chromiumos-image-archive",
-        "ci_only": true,
         "cros_board": "volteer",
         "cros_img": "volteer-public/R121-15673.0.0",
         "cros_model": "voxel",
@@ -2282,7 +2279,6 @@
           "--board=amd64-generic",
           "--use-vm"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },

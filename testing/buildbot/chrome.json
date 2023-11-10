@@ -335,7 +335,6 @@
         "args": [
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -1222,7 +1221,6 @@
       },
       {
         "autotest_name": "chromium",
-        "ci_only": true,
         "cros_board": "brya",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests BRYA_RELEASE_LKGM",

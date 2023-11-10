@@ -584,7 +584,6 @@
 
     'chromeos_integration_tests': {
       'chromeos_integration_tests': {
-        'ci_only': True,
       },
     },
 

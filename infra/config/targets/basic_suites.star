@@ -737,9 +737,7 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "chromeos_integration_tests",
     tests = {
-        "chromeos_integration_tests": targets.legacy_test_config(
-            ci_only = True,
-        ),
+        "chromeos_integration_tests": targets.legacy_test_config(),
     },
 )
 

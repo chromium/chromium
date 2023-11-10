@@ -9,7 +9,6 @@
       {
         "autotest_name": "chromium",
         "bucket": "chromiumos-image-archive",
-        "ci_only": true,
         "cros_board": "volteer",
         "cros_img": "volteer-public/R121-15673.0.0",
         "cros_model": "voxel",
