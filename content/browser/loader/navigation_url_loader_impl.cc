@@ -691,10 +691,10 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
     next_interceptor->MaybeCreateLoader(
         *resource_request_, browser_context_,
         base::BindOnce(&NavigationURLLoaderImpl::MaybeStartLoader,
-                       base::Unretained(this), next_interceptor),
+                       weak_factory_.GetWeakPtr(), next_interceptor),
         base::BindOnce(
             &NavigationURLLoaderImpl::FallbackToNonInterceptedRequest,
-            base::Unretained(this)));
+            weak_factory_.GetWeakPtr()));
     return;
   }
 
