@@ -13,15 +13,6 @@
 
 namespace extensions::script_serialization {
 
-namespace {
-
-// TODO(crbug.com/1168627): The can_execute_script_everywhere flag is currently
-// only used by the legacy version Chromevox extension. We can assume it will
-// always be false here, but it may be added back if needed.
-constexpr bool kScriptsCanExecuteEverywhere = false;
-
-}  // namespace
-
 std::vector<api::scripts_internal::ScriptSource> GetSourcesFromFileNames(
     std::vector<std::string> file_names) {
   std::vector<api::scripts_internal::ScriptSource> script_sources;
@@ -198,14 +189,12 @@ std::unique_ptr<UserScript> ParseSerializedUserScript(
           parse_options.index_for_error, user_script.get(), error_out)) {
     return nullptr;
   }
-  const int valid_schemes = parse_options.custom_schemes.value_or(
-      UserScript::ValidUserScriptSchemes(kScriptsCanExecuteEverywhere));
   // `excludeMatches`/`matches`.
   if (!script_parsing::ParseMatchPatterns(
           serialized_script.matches,
           base::OptionalToPtr(serialized_script.exclude_matches),
           extension.creation_flags(),
-          parse_options.can_execute_script_everywhere, valid_schemes,
+          parse_options.can_execute_script_everywhere,
           parse_options.all_urls_includes_chrome_urls,
           parse_options.index_for_error, user_script.get(), error_out,
           wants_file_access_out)) {

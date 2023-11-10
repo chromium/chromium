@@ -43,7 +43,6 @@ std::unique_ptr<UserScript> CreateUserScript(
     content_scripts_api::ContentScript content_script,
     int definition_index,
     bool can_execute_script_everywhere,
-    int valid_schemes,
     bool all_urls_includes_chrome_urls,
     Extension* extension,
     std::u16string* error) {
@@ -133,7 +132,6 @@ std::unique_ptr<UserScript> CreateUserScript(
 
   script_serialization::SerializedUserScriptParseOptions parse_options;
   parse_options.index_for_error = definition_index;
-  parse_options.custom_schemes = valid_schemes;
   parse_options.can_execute_script_everywhere = can_execute_script_everywhere;
   parse_options.all_urls_includes_chrome_urls = all_urls_includes_chrome_urls;
 
@@ -230,14 +228,12 @@ bool ContentScriptsHandler::Parse(Extension* extension, std::u16string* error) {
   const bool can_execute_script_everywhere =
       PermissionsData::CanExecuteScriptEverywhere(extension->id(),
                                                   extension->location());
-  const int valid_schemes =
-      UserScript::ValidUserScriptSchemes(can_execute_script_everywhere);
   const bool all_urls_includes_chrome_urls =
       PermissionsData::AllUrlsIncludesChromeUrls(extension->id());
   for (size_t i = 0; i < manifest_keys.content_scripts.size(); ++i) {
     std::unique_ptr<UserScript> user_script =
         CreateUserScript(std::move(manifest_keys.content_scripts[i]), i,
-                         can_execute_script_everywhere, valid_schemes,
+                         can_execute_script_everywhere,
                          all_urls_includes_chrome_urls, extension, error);
     if (!user_script)
       return false;  // Failed to parse script context definition.

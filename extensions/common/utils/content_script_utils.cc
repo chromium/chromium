@@ -213,7 +213,6 @@ bool ParseMatchPatterns(const std::vector<std::string>& matches,
                         const std::vector<std::string>* exclude_matches,
                         int creation_flags,
                         bool can_execute_script_everywhere,
-                        int valid_schemes,
                         bool all_urls_includes_chrome_urls,
                         absl::optional<int> definition_index,
                         UserScript* result,
@@ -223,6 +222,9 @@ bool ParseMatchPatterns(const std::vector<std::string>& matches,
     *error = GetEmptyMatchesError(result->id(), definition_index);
     return false;
   }
+
+  const int valid_schemes =
+      UserScript::ValidUserScriptSchemes(can_execute_script_everywhere);
 
   for (size_t i = 0; i < matches.size(); ++i) {
     URLPattern pattern(valid_schemes);

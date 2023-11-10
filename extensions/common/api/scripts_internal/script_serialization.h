@@ -29,8 +29,6 @@ api::scripts_internal::SerializedUserScript SerializeUserScript(
 struct SerializedUserScriptParseOptions {
   // If populated, used in the error message.
   absl::optional<int> index_for_error;
-  // If populated, used instead of the default schemes for URLPattern parsing.
-  absl::optional<int> custom_schemes;
   // If true, indicates the extension can execute scripts on every page without
   // additional permission (this should only be true for special extensions like
   // ChromeVox).
