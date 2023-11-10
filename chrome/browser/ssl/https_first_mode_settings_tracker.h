@@ -13,6 +13,7 @@
 #include "base/task/task_traits.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
+#include "chrome/browser/ssl/daily_navigation_counter.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/site_engagement/content/site_engagement_score.h"
@@ -89,6 +90,11 @@ class HttpsFirstModeService
 
   HttpsFirstModeSetting GetCurrentSetting() const;
 
+  // Increment recent navigation count and maybe save the counts to a pref.
+  void IncrementRecentNavigationCount();
+  // Returns the number of navigations counted recently in a rolling window.
+  size_t GetRecentNavigationCount() const;
+
   // Sets the clock for use in tests.
   void SetClockForTesting(base::Clock* clock);
   // Returns the current number of fallback entries recorded.
@@ -121,6 +127,9 @@ class HttpsFirstModeService
   raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<base::Clock> clock_;
+
+  base::Value::Dict navigation_counts_dict_;
+  std::unique_ptr<DailyNavigationCounter> navigation_counter_;
 
   base::ScopedObservation<
       safe_browsing::AdvancedProtectionStatusManager,

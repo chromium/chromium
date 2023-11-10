@@ -274,6 +274,8 @@ class HttpsUpgradesBrowserTest
     browser()->profile()->GetPrefs()->ClearPref(
         prefs::kHttpsOnlyModeAutoEnabled);
     browser()->profile()->GetPrefs()->ClearPref(prefs::kHttpsUpgradeFallbacks);
+    browser()->profile()->GetPrefs()->ClearPref(
+        prefs::kHttpsUpgradeNavigations);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -908,7 +910,8 @@ IN_PROC_BROWSER_TEST_P(
   SetSiteEngagementScore(GURL("https://google.com"), 90);
 
   base::SimpleTestClock clock;
-  base::Time now = base::Time::NowFromSystemTime();
+  base::Time now;
+  EXPECT_TRUE(base::Time::FromUTCString("2023-10-15T06:00:00Z", &now));
   // Start the clock at standard system time.
   clock.SetNow(now);
 
@@ -1004,11 +1007,14 @@ IN_PROC_BROWSER_TEST_P(
   // runs, and we need to move the clock forward for this to work. So call it
   // explicitly again here.
   hfm_service->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
+  size_t initial_navigation_count = hfm_service->GetRecentNavigationCount();
 
   GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
   GURL https_url = https_server()->GetURL("bad-https.com", "/simple.html");
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_EQ(initial_navigation_count + 1u,
+            hfm_service->GetRecentNavigationCount());
 
   bool expect_interstitial =
       IsHttpsFirstModePrefEnabled() || IsTypicallySecureUserFeatureEnabled();
@@ -1049,6 +1055,8 @@ IN_PROC_BROWSER_TEST_P(
   clock.Advance(base::Days(1));
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_EQ(initial_navigation_count + 2u,
+            hfm_service->GetRecentNavigationCount());
 
   if (expect_interstitial) {
     EXPECT_TRUE(
@@ -1077,6 +1085,8 @@ IN_PROC_BROWSER_TEST_P(
   // Disable HFM. Should no longer auto-enable it.
   SetPref(false);
   NavigateAndWaitForFallback(contents, http_url);
+  EXPECT_EQ(initial_navigation_count + 3u,
+            hfm_service->GetRecentNavigationCount());
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
   EXPECT_FALSE(
       chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
@@ -1087,6 +1097,8 @@ IN_PROC_BROWSER_TEST_P(
   SetPref(true);
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_EQ(initial_navigation_count + 4u,
+            hfm_service->GetRecentNavigationCount());
 
   EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
       contents));
@@ -2903,4 +2915,39 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsIncognitoEnabledBrowserTest,
   CreateIncognitoBrowser();
   histograms()->ExpectTotalCount(
       "Security.HttpsFirstMode.SettingEnabledAtStartup2", 1);
+}
+
+using TypicallySecureUserBrowserTest = InProcessBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(TypicallySecureUserBrowserTest,
+                       PRE_RestoreCountsOnStartup_OneNavigation) {
+  HttpsFirstModeService* hfm_service =
+      HttpsFirstModeServiceFactory::GetForProfile(browser()->profile());
+  hfm_service->IncrementRecentNavigationCount();
+}
+
+IN_PROC_BROWSER_TEST_F(TypicallySecureUserBrowserTest,
+                       RestoreCountsOnStartup_OneNavigation) {
+  HttpsFirstModeService* hfm_service =
+      HttpsFirstModeServiceFactory::GetForProfile(browser()->profile());
+  // A single navigation will not be persisted to the pref and won't be restored
+  // on startup.
+  EXPECT_EQ(0u, hfm_service->GetRecentNavigationCount());
+}
+
+IN_PROC_BROWSER_TEST_F(TypicallySecureUserBrowserTest,
+                       PRE_RestoreCountsOnStartup_TenNavigations) {
+  HttpsFirstModeService* hfm_service =
+      HttpsFirstModeServiceFactory::GetForProfile(browser()->profile());
+  // Increment repeatedly to force the counts to be persisted to the pref.
+  for (size_t i = 0; i < 10; i++) {
+    hfm_service->IncrementRecentNavigationCount();
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(TypicallySecureUserBrowserTest,
+                       RestoreCountsOnStartup_TenNavigations) {
+  HttpsFirstModeService* hfm_service =
+      HttpsFirstModeServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_EQ(10u, hfm_service->GetRecentNavigationCount());
 }

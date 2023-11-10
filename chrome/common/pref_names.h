@@ -110,6 +110,9 @@ inline constexpr char kHttpsOnlyModeAutoEnabled[] =
 // Upgrade fallback happens.
 inline constexpr char kHttpsUpgradeFallbacks[] = "https_upgrade_fallbacks";
 
+// A dictionary containing information about HTTPS Upgrade related navigations.
+inline constexpr char kHttpsUpgradeNavigations[] = "https_upgrade_navigations";
+
 // Stores information about the important sites dialog, including the time and
 // frequency it has been ignored.
 inline constexpr char kImportantSitesDialogHistory[] = "important_sites_dialog";

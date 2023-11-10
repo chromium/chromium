@@ -87,6 +87,9 @@ constexpr char kHeuristicStartTimestampKey[] = "heuristic_start_timestamp";
 // kFallbackEntriesRollingWindowSize.
 constexpr char kFallbackEventsPrefTimestampKey[] = "timestamp";
 
+constexpr int kNavigationCounterDefaultRollingWindowSizeInDays = 7;
+constexpr int kNavigationCounterDefaultSaveInterval = 10;
+
 namespace {
 
 using security_interstitials::https_only_mode::SiteEngagementHeuristicState;
@@ -267,6 +270,15 @@ HttpsFirstModeService::HttpsFirstModeService(Profile* profile,
         kHttpsFirstModeSyntheticFieldTrialName,
         GetSyntheticFieldTrialGroupName(setting));
   }
+
+  // Restore navigation counts from the pref to be used in the Typically Secure
+  // heuristic.
+  navigation_counts_dict_ =
+      profile_->GetPrefs()->GetDict(prefs::kHttpsUpgradeNavigations).Clone();
+  navigation_counter_ = std::make_unique<DailyNavigationCounter>(
+      &navigation_counts_dict_, clock_,
+      kNavigationCounterDefaultRollingWindowSizeInDays,
+      kNavigationCounterDefaultSaveInterval);
 
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(FROM_HERE, base::BindOnce(&HttpsFirstModeService::AfterStartup,
@@ -535,6 +547,17 @@ HttpsFirstModeSetting HttpsFirstModeService::GetCurrentSetting() const {
     return HttpsFirstModeSetting::kEnabledIncognito;
   }
   return HttpsFirstModeSetting::kDisabled;
+}
+
+void HttpsFirstModeService::IncrementRecentNavigationCount() {
+  if (navigation_counter_->Increment()) {
+    profile_->GetPrefs()->SetDict(prefs::kHttpsUpgradeNavigations,
+                                  navigation_counts_dict_.Clone());
+  }
+}
+
+size_t HttpsFirstModeService::GetRecentNavigationCount() const {
+  return navigation_counter_->GetTotal();
 }
 
 void HttpsFirstModeService::SetClockForTesting(base::Clock* clock) {

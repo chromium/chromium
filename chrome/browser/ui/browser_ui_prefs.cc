@@ -172,5 +172,6 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kHttpsUpgradesEnabled, true);
 
   registry->RegisterDictionaryPref(prefs::kHttpsUpgradeFallbacks);
+  registry->RegisterDictionaryPref(prefs::kHttpsUpgradeNavigations);
   registry->RegisterBooleanPref(prefs::kHttpsOnlyModeAutoEnabled, false);
 }
