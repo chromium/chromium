@@ -27,7 +27,6 @@
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
-#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -37,10 +36,6 @@ using base::trace_event::MemoryAllocatorDump;
 using base::trace_event::MemoryDumpLevelOfDetail;
 
 namespace cc {
-
-ResourcePool::GpuBacking::GpuBacking() = default;
-ResourcePool::GpuBacking::~GpuBacking() = default;
-
 namespace {
 
 // Process-unique number for each resource pool.
@@ -321,7 +316,7 @@ bool ResourcePool::PrepareForExport(
   viz::TransferableResource transferable;
   if (resource->gpu_backing()) {
     GpuBacking* gpu_backing = resource->gpu_backing();
-    if (!gpu_backing->shared_image) {
+    if (gpu_backing->mailbox.IsZero()) {
       // This can happen if we failed to allocate a GpuMemoryBuffer. Avoid
       // sending an invalid resource to the parent in that case, and avoid
       // caching/reusing the resource.
@@ -330,7 +325,7 @@ bool ResourcePool::PrepareForExport(
       return false;
     }
     transferable = viz::TransferableResource::MakeGpu(
-        gpu_backing->shared_image->mailbox(), gpu_backing->texture_target,
+        gpu_backing->mailbox, gpu_backing->texture_target,
         gpu_backing->mailbox_sync_token, resource->size(), resource->format(),
         gpu_backing->overlay_candidate, resource_source);
     if (gpu_backing->wait_on_fence_required)
