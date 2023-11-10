@@ -351,6 +351,11 @@ std::unique_ptr<WebMediaPlayer> ModulesInitializer::CreateWebMediaPlayer(
     HTMLMediaElement& html_media_element,
     const WebMediaPlayerSource& source,
     WebMediaPlayerClient* media_player_client) const {
+  // TODO(crbug.com/1345473): Various checks to prove or disprove theories about
+  // why media players might not have been destroyed by ContextDestroyed()
+  // notifications.
+  CHECK(!html_media_element.GetDocument().domWindow()->IsContextDestroyed());
+  CHECK(html_media_element.GetDocument().IsActive());
   HTMLMediaElementEncryptedMedia& encrypted_media =
       HTMLMediaElementEncryptedMedia::From(html_media_element);
   WebString sink_id(
