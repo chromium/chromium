@@ -813,7 +813,7 @@ const StyleRule* FindParentIfUsed(const CSSSelector* selector) {
         selector->GetPseudoType() == CSSSelector::kPseudoParent) {
       return selector->ParentRule();
     }
-    if (selector->SelectorList()) {
+    if (selector->SelectorList() && selector->SelectorList()->First()) {
       const StyleRule* parent =
           FindParentIfUsed(selector->SelectorList()->First());
       if (parent != nullptr) {
