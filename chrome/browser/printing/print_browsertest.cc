@@ -1940,7 +1940,9 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, SpecifiedPageSizeCrash) {
   PrintAndWaitUntilPreviewIsReadyAndLoaded();
 }
 
-class PrintPrerenderBrowserTest : public PrintBrowserTest {
+class PrintPrerenderBrowserTest
+    : public PrintBrowserTest,
+      public testing::WithParamInterface<std::string> {
  public:
   PrintPrerenderBrowserTest()
       : prerender_helper_(
@@ -1966,12 +1968,21 @@ class PrintPrerenderBrowserTest : public PrintBrowserTest {
   }
 
  protected:
+  std::string GetTargetHint() { return GetParam(); }
+
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrintPrerenderBrowserTest,
+                         testing::Values("_self", "_blank"),
+                         [](const testing::TestParamInfo<std::string>& info) {
+                           return info.param;
+                         });
+
 // Test that print() is silently ignored.
 // https://wicg.github.io/nav-speculation/prerendering.html#patch-modals
-IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest, QuietBlockWithWindowPrint) {
+IN_PROC_BROWSER_TEST_P(PrintPrerenderBrowserTest, QuietBlockWithWindowPrint) {
   // Navigate to an initial page.
   const GURL kUrl(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
@@ -1980,10 +1991,15 @@ IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest, QuietBlockWithWindowPrint) {
   GURL prerender_url =
       embedded_test_server()->GetURL("/printing/prerendering.html");
 
-  content::WebContentsConsoleObserver console_observer(web_contents());
-  int prerender_id = prerender_helper_.AddPrerender(prerender_url);
+  int prerender_id = prerender_helper_.AddPrerender(
+      prerender_url, /*eagerness=*/std::nullopt, GetTargetHint());
+  auto* prerender_web_contents =
+      content::WebContents::FromFrameTreeNodeId(prerender_id);
   content::RenderFrameHost* prerender_host =
-      prerender_helper_.GetPrerenderedMainFrameHost(prerender_id);
+      content::test::PrerenderTestHelper::GetPrerenderedMainFrameHost(
+          *prerender_web_contents, prerender_id);
+
+  content::WebContentsConsoleObserver console_observer(prerender_web_contents);
   EXPECT_EQ(0u, console_observer.messages().size());
 
   // Try to print by JS during prerendering.
@@ -1998,7 +2014,7 @@ IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest, QuietBlockWithWindowPrint) {
 // execCommand() is not specced, but
 // https://wicg.github.io/nav-speculation/prerendering.html#patch-modals
 // indicates the intent to silently ignore print APIs.
-IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrintPrerenderBrowserTest,
                        QuietBlockWithDocumentExecCommand) {
   // Navigate to an initial page.
   const GURL kUrl(embedded_test_server()->GetURL("/empty.html"));
@@ -2008,10 +2024,15 @@ IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
   GURL prerender_url =
       embedded_test_server()->GetURL("/printing/prerendering.html");
 
-  content::WebContentsConsoleObserver console_observer(web_contents());
-  int prerender_id = prerender_helper_.AddPrerender(prerender_url);
+  int prerender_id = prerender_helper_.AddPrerender(
+      prerender_url, /*eagerness=*/std::nullopt, GetTargetHint());
+  auto* prerender_web_contents =
+      content::WebContents::FromFrameTreeNodeId(prerender_id);
   content::RenderFrameHost* prerender_host =
-      prerender_helper_.GetPrerenderedMainFrameHost(prerender_id);
+      content::test::PrerenderTestHelper::GetPrerenderedMainFrameHost(
+          *prerender_web_contents, prerender_id);
+
+  content::WebContentsConsoleObserver console_observer(prerender_web_contents);
   EXPECT_EQ(0u, console_observer.messages().size());
 
   // Try to print by JS during prerendering.
