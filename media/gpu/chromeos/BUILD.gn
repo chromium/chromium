@@ -189,6 +189,7 @@ source_set(
     "fake_chromeos_intel_compressed_gpu_memory_buffer.h",
   ]
   deps = [
+    ":common",
     "//base",
     "//build/config/linux/libdrm",
     "//ui/gfx",
