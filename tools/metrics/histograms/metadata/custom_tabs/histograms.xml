@@ -414,6 +414,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.PageNavigation.ErrorCode" enum="NetErrorCodes"
+    expires_after="2024-11-12">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Network error code occuring upon page navigation. Recorded each time Custom
+    tabs receives an event TabObserver.onPageLoadFailed.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.ParallelRequestStatusOnStart"
     enum="CustomTabsParallelRequestStatusOnStart" expires_after="M120">
   <owner>lizeb@chromium.org</owner>

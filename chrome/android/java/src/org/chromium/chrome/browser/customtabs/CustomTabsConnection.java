@@ -96,6 +96,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -1271,20 +1272,31 @@ public class CustomTabsConnection {
     }
 
     /**
+     * @see {@link notifyNavigationEvent(CustomTabsSessionToken, int, Optional<int>)}
+     */
+    public boolean notifyNavigationEvent(CustomTabsSessionToken session, int navigationEvent) {
+        return notifyNavigationEvent(session, navigationEvent, Optional.empty());
+    }
+
+    /**
      * Notifies the application of a navigation event.
      *
-     * Delivers the {@link CustomTabsCallback#onNavigationEvent} callback to the application.
+     * <p>Delivers the {@link CustomTabsCallback#onNavigationEvent} callback to the application.
      *
      * @param session The Binder object identifying the session.
      * @param navigationEvent The navigation event code, defined in {@link CustomTabsCallback}
+     * @param errorCode Network error code. Empty if there was no error or the error code is not in
+     *     the list of error codes that should be passed to the embedder.
      * @return true for success.
      */
-    public boolean notifyNavigationEvent(CustomTabsSessionToken session, int navigationEvent) {
+    public boolean notifyNavigationEvent(
+            CustomTabsSessionToken session, int navigationEvent, Optional<Integer> errorCode) {
         CustomTabsCallback callback = mClientManager.getCallbackForSession(session);
         if (callback == null) return false;
         try {
-            callback.onNavigationEvent(
-                    navigationEvent, getExtrasBundleForNavigationEventForSession(session));
+            Bundle extra = getExtrasBundleForNavigationEventForSession(session);
+            if (errorCode.isPresent()) extra.putInt("navigationEventErrorCode", errorCode.get());
+            callback.onNavigationEvent(navigationEvent, extra);
         } catch (Exception e) {
             // Catching all exceptions is really bad, but we need it here,
             // because Android exposes us to client bugs by throwing a variety
