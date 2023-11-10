@@ -1279,10 +1279,11 @@ size_t PaintArtifactCompositor::ApproximateUnsharedMemoryUsage() const {
 
 bool PaintArtifactCompositor::SetScrollbarNeedsDisplay(
     CompositorElementId element_id) {
-  for (auto& pending_layer : pending_layers_) {
-    if (pending_layer.GetCompositingType() == PendingLayer::kScrollbarLayer &&
-        pending_layer.CcLayer().element_id() == element_id) {
-      pending_layer.CcLayer().SetNeedsDisplay();
+  DCHECK(root_layer_);
+  CHECK(ScrollbarDisplayItem::IsScrollbarElementId(element_id));
+  if (cc::LayerTreeHost* host = root_layer_->layer_tree_host()) {
+    if (cc::Layer* layer = host->LayerByElementId(element_id)) {
+      layer->SetNeedsDisplay();
       return true;
     }
   }
@@ -1293,15 +1294,16 @@ bool PaintArtifactCompositor::SetScrollbarNeedsDisplay(
 bool PaintArtifactCompositor::SetScrollbarSolidColor(
     CompositorElementId element_id,
     SkColor4f color) {
-  for (auto& pending_layer : pending_layers_) {
-    if (pending_layer.GetCompositingType() == PendingLayer::kScrollbarLayer &&
-        pending_layer.CcLayer().element_id() == element_id &&
-        static_cast<cc::ScrollbarLayerBase&>(pending_layer.CcLayer())
-                .GetScrollbarLayerType() ==
-            cc::ScrollbarLayerBase::kSolidColor) {
-      static_cast<cc::SolidColorScrollbarLayer&>(pending_layer.CcLayer())
-          .SetColor(color);
-      return true;
+  DCHECK(root_layer_);
+  CHECK(ScrollbarDisplayItem::IsScrollbarElementId(element_id));
+  if (cc::LayerTreeHost* host = root_layer_->layer_tree_host()) {
+    if (cc::Layer* layer = host->LayerByElementId(element_id)) {
+      if (static_cast<cc::ScrollbarLayerBase*>(layer)
+              ->GetScrollbarLayerType() ==
+          cc::ScrollbarLayerBase::kSolidColor) {
+        static_cast<cc::SolidColorScrollbarLayer*>(layer)->SetColor(color);
+        return true;
+      }
     }
   }
   // The scrollbar isn't currently composited.

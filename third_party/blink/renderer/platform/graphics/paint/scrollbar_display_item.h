@@ -73,6 +73,13 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
 
   bool IsOpaque() const;
 
+  static bool IsScrollbarElementId(CompositorElementId element_id) {
+    return NamespaceFromCompositorElementId(element_id) ==
+               CompositorElementIdNamespace::kHorizontalScrollbar ||
+           NamespaceFromCompositorElementId(element_id) ==
+               CompositorElementIdNamespace::kVerticalScrollbar;
+  }
+
  private:
   friend class DisplayItem;
   bool EqualsForUnderInvalidationImpl(const ScrollbarDisplayItem&) const;
