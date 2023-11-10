@@ -8281,11 +8281,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Ordered"/>
 </enum>
 
-<enum name="BooleanOverlap">
-  <int value="0" label="No overlap"/>
-  <int value="1" label="Overlapped"/>
-</enum>
-
 <enum name="BooleanOverlayDamageRect">
   <int value="0" label="Zero damage rect"/>
   <int value="1" label="Non-Zero damage rect"/>
@@ -25506,11 +25501,6 @@ Called by update_extension_permission.py.-->
   <int value="7" label="UNINSTALLED (not in webstore)"/>
 </enum>
 
-<enum name="ExternalLauncherOption">
-  <int value="0" label="Cancel"/>
-  <int value="1" label="Open"/>
-</enum>
-
 <enum name="FactoryPingEmbargoEndDateValidity">
   <summary>
     Defines the validity of the factory ping embargo end date in RW_VPD.
@@ -31677,12 +31667,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="12" label="Guest OS Files"/>
 </enum>
 
-<enum name="FileStorageRequestType">
-  <int value="0" label="Save Request"/>
-  <int value="1" label="Restore Request"/>
-  <int value="2" label="Delete Request"/>
-</enum>
-
 <enum name="FileSystemAccessPermissionRequestOutcome">
   <int value="0" label="Blocked by Content Setting"/>
   <int value="1" label="Blocked from invalid frame"/>
@@ -32085,15 +32069,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="0" label="No format with Native Pixmaps"/>
   <int value="1" label="NV12 format with Native Pixmaps"/>
   <int value="2" label="YV12 format with Native Pixmaps"/>
-</enum>
-
-<enum name="FoundBuyableProductAnnotation">
-  <summary>
-    Whether a buyable product annotation was found in the response from an
-    endpoint which provides page metadata in ShoppingPersistedTabData.
-  </summary>
-  <int value="0" label="NotFound"/>
-  <int value="1" label="Found"/>
 </enum>
 
 <enum name="FramebustInterventionOutcome">
@@ -33873,12 +33848,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="0" label="Disabled"/>
   <int value="1" label="Enabled"/>
   <int value="2" label="Enabled on timer"/>
-</enum>
-
-<enum name="HistoricalSaverCloseType">
-  <int value="0" label="Tab"/>
-  <int value="1" label="Group"/>
-  <int value="2" label="Bulk"/>
 </enum>
 
 <enum name="HistoryClustersFinalState">
@@ -36323,15 +36292,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="9" label="Tab Grid Selection Mode"/>
   <int value="10" label="Share Chrome"/>
   <int value="11" label="Omnibox Most Visited Tile"/>
-</enum>
-
-<enum name="IOSAllOpenTabsAge">
-  <int value="0" label="Less than 1 day"/>
-  <int value="1" label="1-3 days"/>
-  <int value="2" label="3-7 days"/>
-  <int value="3" label="7-14 days"/>
-  <int value="4" label="14-30 days"/>
-  <int value="5" label="More than 30 days"/>
 </enum>
 
 <enum name="IOSAppState">
@@ -51860,14 +51820,6 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="&quot;service-not-allowed&quot; error"/>
 </enum>
 
-<enum name="NewTabType">
-  <int value="0" label="New tab button"/>
-  <int value="1" label="Regular menu option"/>
-  <int value="2" label="Tab strip menu option"/>
-  <int value="3" label="New tab button in toolbar for touch"/>
-  <int value="4" label="New tab button in the WebUI tab strip"/>
-</enum>
-
 <enum name="NewTabURLState">
   <int value="0" label="Valid URL was used"/>
   <int value="1" label="Corrupt state"/>
@@ -59394,16 +59346,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="9" label="Timeout"/>
 </enum>
 
-<enum name="PullDownGestureAction">
-  <summary>The type of action performed on the overscroll UI.</summary>
-  <int value="0" label="NewTab">The user selected the new tab action.</int>
-  <int value="1" label="Refresh">The user selected the refresh action.</int>
-  <int value="2" label="CloseTab">The user selected the close tab action.</int>
-  <int value="3" label="Canceled">
-    The user canceled the action by scrolling back up.
-  </int>
-</enum>
-
 <enum name="PushEventStatus">
   <int value="0" label="Successful"/>
   <int value="1" label="Message was invalid"/>
@@ -60537,12 +60479,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Promo was dismissed via swipe down"/>
 </enum>
 
-<enum name="RestoreTabStateException">
-  <int value="0" label="File not found"/>
-  <int value="1" label="Closed by interrupt exception"/>
-  <int value="2" label="IO exception"/>
-</enum>
-
 <enum name="ResumeBlockedRequestsTrigger">
   <int value="0" label="Cookie fresh notification"/>
   <int value="1"
@@ -60591,12 +60527,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Intact"/>
   <int value="2" label="Corrupt"/>
   <int value="3" label="Invalid File"/>
-</enum>
-
-<enum name="SadTabEvent">
-  <int value="0" label="Displayed"/>
-  <int value="1" label="Button clicked"/>
-  <int value="2" label="Learn more clicked"/>
 </enum>
 
 <enum name="SafetyCheckExtensionsStatus">
@@ -65087,17 +65017,6 @@ would be helpful to identify which type is being sent.
   <int value="37" label="Unified password manager error"/>
 </enum>
 
-<enum name="TabActivationTypes">
-  <int value="0" label="Activate a tab"/>
-  <int value="1" label="Activate the context menu of a tab"/>
-</enum>
-
-<enum name="TabBackgroundLoadStatus">
-  <int value="0" label="Loaded on creation and shown"/>
-  <int value="1" label="Loaded on creation and lost"/>
-  <int value="2" label="Not loaded on creation"/>
-</enum>
-
 <enum name="TabbedPaintPreviewCompositorFailureReason">
   <int value="0" label="OK"/>
   <int value="1" label="URL Mismatch"/>
@@ -65137,103 +65056,16 @@ would be helpful to identify which type is being sent.
   <int value="3" label="Background (app in background)"/>
 </enum>
 
-<enum name="TabManagerTabRankerResult">
-  <int value="0" label="Success">Tab score was calculated successfully.</int>
-  <int value="1" label="Preprocessor initialization failed">
-    The ExamplePreprocessorConfig could not be loaded or parsed.
-  </int>
-  <int value="2" label="Preprocessor other error">
-    The ExamplePreprocessor returned an error other than, or in addition to, the
-    kNoFeatureIndexFound error.
-  </int>
-</enum>
-
-<enum name="TabRestoreMethod">
-  <int value="0" label="TabState"/>
-  <int value="1" label="CriticalPersistedTabData"/>
-  <int value="2" label="Create new Tab"/>
-  <int value="3" label="Failed to restore"/>
-  <int value="4" label="Skipped (NTP)"/>
-  <int value="5" label="Skipped (Empty URL)"/>
-</enum>
-
 <enum name="TabRevisitTracker.TabState">
   <int value="0" label="Active"/>
   <int value="1" label="Background"/>
   <int value="2" label="Closed"/>
 </enum>
 
-<enum name="TabScreenshotAction">
-  <int value="0" label="User took no actions">
-    User made a screenshot, but did not take any actions with it before
-    navigating away or closing the tab.
-  </int>
-  <int value="1" label="Opened sharing">
-    User took a screenshot then tried to share.
-  </int>
-  <int value="2" label="Download IPH provided">
-    User was provided in product help for Downloads after taking a screenshot.
-  </int>
-</enum>
-
-<enum name="TabSearchCloseActions">
-  <int value="0" label="User did not close via Tab Search UI">
-    The UI was dismissed via interactions outside what is offered by the Tab
-    Search UI.
-  </int>
-  <int value="1" label="User switched to an open tab">
-    The Tab Search UI was dismissed as a result of the user opting to switch to
-    a currently open tab.
-  </int>
-</enum>
-
-<enum name="TabSearchOpenActions">
-  <int value="0" label="User opened the Tab Search UI via a mouse click"/>
-  <int value="1" label="User opened the Tab Search UI via keyboard navigation"/>
-  <int value="2" label="User opened the Tab Search UI via keyboard shortcut"/>
-  <int value="3" label="User opened the Tab Search UI via touch gesture"/>
-</enum>
-
-<enum name="TabSearchRecentlyClosedItemOpenAction">
-  <int value="0"
-      label="Opened a recently closed item from an unfiltered item list"/>
-  <int value="1"
-      label="Opened a recently closed item from a filtered item list"/>
-</enum>
-
-<enum name="TabSearchRecentlyClosedToggleActions">
-  <int value="0" label="Expand the recently closed items section"/>
-  <int value="1" label="Collapse the recently closed items section"/>
-</enum>
-
-<enum name="TabSearchTabSwitchAction">
-  <int value="0" label="Switch to tab from unfiltered tab list"/>
-  <int value="1" label="Switch to tab from filtered search tab list"/>
-</enum>
-
 <enum name="TabSelectionEditorShareActionState">
   <int value="0" label="UNKNOWN_SHARE_STATE"/>
   <int value="1" label="SUCCESSFULLY_SHARED_TABS"/>
   <int value="2" label="FAILED_SHARE_ALL_TABS_FILTERED"/>
-</enum>
-
-<enum name="TabStatus">
-  <int value="0" label="Memory resident"/>
-  <int value="1" label="Evicted and reloaded"/>
-  <int value="2" label="Reloaded due to cold start"/>
-  <int value="3" label="Partially evicted"/>
-  <int value="4" label="Reloaded due to backgrounding"/>
-  <int value="5" label="Reloaded due to incognito"/>
-  <int value="6" label="Reloaded due to cold start (fg tab on start)"/>
-  <int value="7" label="Reloaded due to cold start (bg tab on switch)"/>
-  <int value="8" label="Lazy load for 'Open in new tab'"/>
-  <int value="9" label="Stopped due to page loading when backgrounding"/>
-  <int value="10" label="Evicted due to page loading when backgrounding"/>
-  <int value="11" label="Evicted due to OS terminating the renderer."/>
-</enum>
-
-<enum name="TabStripFailureContext">
-  <int value="0" label="New tab failed to open"/>
 </enum>
 
 <enum name="TabSwitchResult2">
