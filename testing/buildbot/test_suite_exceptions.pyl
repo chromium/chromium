@@ -5078,17 +5078,11 @@
         },
       },
       'android-12l-x64-dbg-tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.webview_instrumentation_test_apk.filter',
-        ],
         'swarming': {
           'shards': 9,
         },
       },
       'android-12l-x64-fyi-dbg': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.webview_instrumentation_test_apk.filter',
-        ],
         'swarming': {
           'shards': 9,
         },

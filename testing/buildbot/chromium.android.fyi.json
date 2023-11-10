@@ -7568,8 +7568,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_32_google_atd_x64_foldable.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.webview_instrumentation_test_apk.filter"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_atd_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
