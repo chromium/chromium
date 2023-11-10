@@ -230,7 +230,14 @@ export class NetworkRequest {
   onRequestPaused(
     params: Protocol.Fetch.RequestPausedEvent,
     networkStorage: NetworkStorage
-  ) {
+  ): void {
+    if (this.#isIgnoredEvent()) {
+      void this.continueRequest(params.requestId).catch(() => {
+        // TODO: Add some logging
+      });
+      return;
+    }
+
     // The stage of the request can be determined by presence of
     // responseErrorReason and responseStatusCode -- the request is at
     // the response stage if either of these fields is present and in the
