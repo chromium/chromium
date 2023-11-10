@@ -15,7 +15,7 @@ import {FakeShortcutInputProvider} from './fake_shortcut_input_provider.js';
 import {KeyEvent} from './input_device_settings.mojom-webui.js';
 import {getTemplate} from './shortcut_input.html.js';
 import {ShortcutInputObserverReceiver, ShortcutInputProviderInterface} from './shortcut_input_provider.mojom-webui.js';
-import {AllowedModifierKeyCodes, getSortedModifiers, KeyInputState, KeyToIconNameMap, Modifier, ModifierKeyCodes, Modifiers} from './shortcut_utils.js';
+import {getSortedModifiers, KeyInputState, KeyToIconNameMap, Modifier, ModifierKeyCodes, Modifiers} from './shortcut_utils.js';
 
 export interface ShortcutInputElement {
   $: {
@@ -156,8 +156,14 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
     e.stopPropagation();
   }
 
+
+  private isModifier(keyEvent: KeyEvent): boolean {
+    return ModifierKeyCodes.includes(keyEvent.vkey as number);
+  }
+
   getKey(): string {
-    if (this.pendingKeyEvent && this.pendingKeyEvent.keyDisplay != '') {
+    if (this.pendingKeyEvent && this.pendingKeyEvent.keyDisplay != '' &&
+        !this.isModifier(this.pendingKeyEvent)) {
       const keyDisplay = this.pendingKeyEvent.keyDisplay;
       if (keyDisplay in KeyToIconNameMap) {
         return keyDisplay;
@@ -169,7 +175,8 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
   }
 
   getKeyState(): string {
-    if (this.pendingKeyEvent && this.pendingKeyEvent.keyDisplay != '') {
+    if (this.pendingKeyEvent && this.pendingKeyEvent.keyDisplay != '' &&
+        !this.isModifier(this.pendingKeyEvent)) {
       return KeyInputState.ALPHANUMERIC_SELECTED;
     }
     return KeyInputState.NOT_SELECTED;
@@ -187,9 +194,6 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
    * Returns the specified CSS state of the modifier key element.
    */
   protected getCtrlState(): string {
-    if (this.pendingKeyEvent?.vkey as number === AllowedModifierKeyCodes.CTRL) {
-      return KeyInputState.NOT_SELECTED;
-    }
     return this.getModifierState(Modifier.CONTROL);
   }
 
@@ -197,9 +201,6 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
    * Returns the specified CSS state of the modifier key element.
    */
   protected getAltState(): string {
-    if (this.pendingKeyEvent?.vkey as number === AllowedModifierKeyCodes.ALT) {
-      return KeyInputState.NOT_SELECTED;
-    }
     return this.getModifierState(Modifier.ALT);
   }
 
@@ -207,10 +208,6 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
    * Returns the specified CSS state of the modifier key element.
    */
   protected getShiftState(): string {
-    if (this.pendingKeyEvent?.vkey as number ===
-        AllowedModifierKeyCodes.SHIFT) {
-      return KeyInputState.NOT_SELECTED;
-    }
     return this.getModifierState(Modifier.SHIFT);
   }
 
@@ -218,12 +215,6 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
    * Returns the specified CSS state of the modifier key element.
    */
   protected getSearchState(): string {
-    if (this.pendingKeyEvent?.vkey as number ===
-            AllowedModifierKeyCodes.META_LEFT ||
-        this.pendingKeyEvent?.vkey as number ===
-            AllowedModifierKeyCodes.META_RIGHT) {
-      return KeyInputState.NOT_SELECTED;
-    }
     return this.getModifierState(Modifier.COMMAND);
   }
 
