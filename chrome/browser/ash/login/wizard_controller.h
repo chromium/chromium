@@ -600,7 +600,6 @@ class WizardController : public OobeUI::Observer {
 
   base::CallbackListSubscription accessibility_subscription_;
 
-  std::unique_ptr<SimpleGeolocationProvider> geolocation_provider_;
   std::unique_ptr<TimeZoneProvider> timezone_provider_;
 
   // Controller of the demo mode setup. It has the lifetime of the single demo

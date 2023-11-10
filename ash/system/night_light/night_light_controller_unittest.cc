@@ -219,10 +219,10 @@ class NightLightTest : public NoSessionAshTestBase {
     // Start with ambient color pref disabled.
     SetAmbientColorPrefEnabled(false);
 
-    geolocation_controller()->SetGeolocationProviderForTesting(
-        std::make_unique<SimpleGeolocationProvider>(
-            geolocation_controller(), geolocation_url_loader_factory_,
-            SimpleGeolocationProvider::DefaultGeolocationProviderURL()));
+    // `GeolocationController` uses `SimpleGeolocationProvider` singleton
+    // instance, which is initialized by `AshTestHelper`.
+    SimpleGeolocationProvider::GetInstance()
+        ->SetSharedUrlLoaderFactoryForTesting(geolocation_url_loader_factory_);
   }
 
   void CreateTestUserSessions() {

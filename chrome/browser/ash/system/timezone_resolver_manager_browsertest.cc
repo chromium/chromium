@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
@@ -400,6 +401,7 @@ IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerUnenrolledDeviceTest,
 
   ash::system::TimeZoneResolverManager* tz_resolver_manager =
       g_browser_process->platform_part()->GetTimezoneResolverManager();
+
   TimeZoneResolver* tz_resolver =
       g_browser_process->platform_part()->GetTimezoneResolver();
   ASSERT_NE(tz_resolver_manager, nullptr);
@@ -411,12 +413,13 @@ IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerUnenrolledDeviceTest,
 
   // Log in a user.
   LoginUser(regular_primary_user_id_);
-  base::RunLoop().RunUntilIdle();
+
   PrefService* pref_service =
       g_browser_process->profile_manager()->GetActiveUserProfile()->GetPrefs();
 
   // Check the default configuration: TZResolver should be running.
-  EXPECT_TRUE(tz_resolver_manager->IsSystemGeolocationAllowed());
+  EXPECT_TRUE(
+      SimpleGeolocationProvider::GetInstance()->IsGeolocationUsageAllowed());
   EXPECT_TRUE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
   EXPECT_EQ(
       system::TimeZoneResolverManager::GetEffectiveUserTimeZoneResolveMethod(
@@ -426,22 +429,20 @@ IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerUnenrolledDeviceTest,
 
   UpdateUserGeolocationPermission(pref_service, false);
   // Change of `kUserGeolocationPermission` will trigger the
-  // `OnSystemGeolocationPermissionChanged()`, stopping the scheduler.
-  EXPECT_FALSE(tz_resolver_manager->IsSystemGeolocationAllowed());
+  // `OnGeolocationPermissionChanged()`, stopping the scheduler.
+  EXPECT_FALSE(
+      SimpleGeolocationProvider::GetInstance()->IsGeolocationUsageAllowed());
   EXPECT_FALSE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
   EXPECT_FALSE(tz_resolver->IsRunning());
 
-  // Disabling geolocation permission is silently rolling back timezone setting
-  // to the static timezone.
-  EXPECT_TRUE(IsStaticTimezoneSelected(pref_service));
-
   // Re-enable geolocation permission and select automatic timezone again.
-  // Ccheck that the resolver is working again.
+  // Check that the resolver is working again.
   UpdateUserGeolocationPermission(pref_service, true);
   SetUserTimeZoneResolveMethod(
       pref_service, system::TimeZoneResolverManager::TimeZoneResolveMethod::
                         SEND_ALL_LOCATION_INFO);
-  EXPECT_TRUE(tz_resolver_manager->IsSystemGeolocationAllowed());
+  EXPECT_TRUE(
+      SimpleGeolocationProvider::GetInstance()->IsGeolocationUsageAllowed());
   EXPECT_TRUE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
   EXPECT_TRUE(tz_resolver->IsRunning());
 }

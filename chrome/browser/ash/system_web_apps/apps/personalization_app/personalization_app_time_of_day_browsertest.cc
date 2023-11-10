@@ -165,15 +165,16 @@ class PersonalizationAppTimeOfDayBrowserTest
     auto* geolocation_controller = GeolocationController::Get();
     geolocation_controller->SetClockForTesting(this);
 
+    // Override SharedUrlLoaderFactory to return fixed geoposition.
     scoped_refptr<TestGeolocationUrlLoaderFactory>
         geolocation_url_loader_factory =
             base::MakeRefCounted<TestGeolocationUrlLoaderFactory>();
-    test_geolocation_url_loader_factory_ = geolocation_url_loader_factory.get();
-    test_geolocation_url_loader_factory_->set_position(GetGeoposition());
-    geolocation_controller->SetGeolocationProviderForTesting(
-        std::make_unique<SimpleGeolocationProvider>(
-            geolocation_controller, std::move(geolocation_url_loader_factory),
-            SimpleGeolocationProvider::DefaultGeolocationProviderURL()));
+    geolocation_url_loader_factory->set_position(GetGeoposition());
+    SimpleGeolocationProvider::GetInstance()
+        ->SetSharedUrlLoaderFactoryForTesting(geolocation_url_loader_factory);
+    // Request immediate geoposition to fetch and broadcast the fixed
+    // geoposition set by TestSharedUrlLoaderFactory above.
+    GeolocationController::Get()->RequestImmediateGeopositionForTesting();
 
     WaitForTestSystemAppInstall();
   }
@@ -181,7 +182,6 @@ class PersonalizationAppTimeOfDayBrowserTest
   void TearDownOnMainThread() override {
     SystemWebAppBrowserTestBase::TearDownOnMainThread();
 
-    test_geolocation_url_loader_factory_ = nullptr;
     time_of_day_scheduler_ = nullptr;
   }
 
@@ -249,7 +249,6 @@ class PersonalizationAppTimeOfDayBrowserTest
   const std::vector<base::Time> times_to_test_ = GenerateTimesToTest();
   base::SimpleTestClock clock_;
   base::SimpleTestTickClock tick_clock_;
-  raw_ptr<TestGeolocationUrlLoaderFactory> test_geolocation_url_loader_factory_;
   raw_ptr<WallpaperTimeOfDayScheduler> time_of_day_scheduler_;
   TestChromeWebUIControllerFactory test_chrome_webui_controller_factory_;
   TestPersonalizationAppWebUIProvider test_webui_provider_;

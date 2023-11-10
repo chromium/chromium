@@ -7,10 +7,12 @@
 #include <iterator>
 #include <memory>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_request.h"
 #include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -19,21 +21,60 @@ namespace ash {
 
 namespace {
 
-const char kDefaultGeolocationProviderUrl[] =
-    "https://www.googleapis.com/geolocation/v1/geolocate?";
+SimpleGeolocationProvider* g_geolocation_provider = nullptr;
 
 }  // namespace
 
 SimpleGeolocationProvider::SimpleGeolocationProvider(
-    const Delegate* delegate,
-    scoped_refptr<network::SharedURLLoaderFactory> factory,
-    const GURL& url)
-    : delegate_(delegate),
-      shared_url_loader_factory_(std::move(factory)),
-      url_(url) {}
+    scoped_refptr<network::SharedURLLoaderFactory> factory)
+    : shared_url_loader_factory_(factory) {}
 
 SimpleGeolocationProvider::~SimpleGeolocationProvider() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
+
+// static
+void SimpleGeolocationProvider::Initialize(
+    scoped_refptr<network::SharedURLLoaderFactory> factory) {
+  CHECK_EQ(g_geolocation_provider, nullptr);
+
+  g_geolocation_provider = new SimpleGeolocationProvider(factory);
+}
+
+// static
+SimpleGeolocationProvider* SimpleGeolocationProvider::GetInstance() {
+  CHECK_NE(g_geolocation_provider, nullptr);
+  return g_geolocation_provider;
+}
+
+void SimpleGeolocationProvider::AllowGeolocationUsage() {
+  bool need_to_notify = (geolocation_usage_allowed_ == false);
+  geolocation_usage_allowed_ = true;
+
+  if (need_to_notify) {
+    NotifyObservers();
+  }
+}
+
+void SimpleGeolocationProvider::DisallowGeolocationUsage() {
+  bool need_to_notify = (geolocation_usage_allowed_ == true);
+  geolocation_usage_allowed_ = false;
+
+  if (need_to_notify) {
+    NotifyObservers();
+  }
+}
+
+void SimpleGeolocationProvider::AddObserver(Observer* obs) {
+  CHECK(obs);
+  CHECK(!observer_list_.HasObserver(obs));
+  observer_list_.AddObserver(obs);
+}
+
+void SimpleGeolocationProvider::RemoveObserver(Observer* obs) {
+  CHECK(obs);
+  CHECK(observer_list_.HasObserver(obs));
+  observer_list_.RemoveObserver(obs);
 }
 
 void SimpleGeolocationProvider::RequestGeolocation(
@@ -44,7 +85,7 @@ void SimpleGeolocationProvider::RequestGeolocation(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Drop request if the system geolocation permission is not granted.
-  if (!delegate_->IsSystemGeolocationAllowed()) {
+  if (!IsGeolocationUsageAllowed()) {
     return;
   }
 
@@ -69,8 +110,8 @@ void SimpleGeolocationProvider::RequestGeolocation(
     cell_vector = nullptr;
 
   SimpleGeolocationRequest* request(new SimpleGeolocationRequest(
-      shared_url_loader_factory_, url_, timeout, std::move(wifi_vector),
-      std::move(cell_vector)));
+      shared_url_loader_factory_, GURL(GetGeolocationProviderUrl()), timeout,
+      std::move(wifi_vector), std::move(cell_vector)));
   requests_.push_back(base::WrapUnique(request));
 
   // SimpleGeolocationProvider owns all requests. It is safe to pass unretained
@@ -83,8 +124,23 @@ void SimpleGeolocationProvider::RequestGeolocation(
 }
 
 // static
-GURL SimpleGeolocationProvider::DefaultGeolocationProviderURL() {
-  return GURL(kDefaultGeolocationProviderUrl);
+void SimpleGeolocationProvider::DestroyForTesting() {
+  CHECK_IS_TEST();
+  CHECK_NE(g_geolocation_provider, nullptr);
+  delete g_geolocation_provider;
+  g_geolocation_provider = nullptr;
+}
+
+void SimpleGeolocationProvider::SetSharedUrlLoaderFactoryForTesting(
+    scoped_refptr<network::SharedURLLoaderFactory> factory) {
+  CHECK_IS_TEST();
+  shared_url_loader_factory_ = factory;
+}
+
+void SimpleGeolocationProvider::SetGeolocationProviderUrlForTesting(
+    const char* url) {
+  CHECK_IS_TEST();
+  url_for_testing_ = url;
 }
 
 void SimpleGeolocationProvider::OnGeolocationResponse(
@@ -104,6 +160,21 @@ void SimpleGeolocationProvider::OnGeolocationResponse(
   if (position != requests_.end()) {
     std::swap(*position, *requests_.rbegin());
     requests_.resize(requests_.size() - 1);
+  }
+}
+
+std::string SimpleGeolocationProvider::GetGeolocationProviderUrl() const {
+  // URL provider is overridden in tests.
+  if (!url_for_testing_.empty()) {
+    CHECK_IS_TEST();
+    return url_for_testing_;
+  }
+  return kGeolocationProviderUrl;
+}
+
+void SimpleGeolocationProvider::NotifyObservers() {
+  for (auto& obs : observer_list_) {
+    obs.OnGeolocationPermissionChanged(geolocation_usage_allowed_);
   }
 }
 

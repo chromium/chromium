@@ -215,6 +215,7 @@
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs_launcher_client.h"
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
@@ -999,6 +1000,10 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
                                g_browser_process->local_state())) {
     WizardController::SetZeroDelays();
   }
+
+  // Initialize `SimpleGeolocationProvider` for the system parts.
+  SimpleGeolocationProvider::Initialize(
+      g_browser_process->shared_url_loader_factory());
 
   // On Chrome OS, Chrome does not exit when all browser windows are closed.
   // UnregisterKeepAlive is called from chrome::HandleAppExitingForPlatform.

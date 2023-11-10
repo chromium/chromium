@@ -975,16 +975,16 @@ class WallpaperControllerAutoScheduleTest : public WallpaperControllerTest,
     task_environment_start_time_ = task_environment()->GetMockClock()->Now();
     SetSimulatedStartTime(GetTestDateMidnight());
 
+    // Set fixed geoposition for testing.
     scoped_refptr<TestGeolocationUrlLoaderFactory>
         geolocation_url_loader_factory =
             base::MakeRefCounted<TestGeolocationUrlLoaderFactory>();
     geolocation_url_loader_factory->SetValidPosition(
         kSanJoseGeoposition.latitude, kSanJoseGeoposition.longitude, Now());
-    Shell::Get()->geolocation_controller()->SetGeolocationProviderForTesting(
-        std::make_unique<SimpleGeolocationProvider>(
-            Shell::Get()->geolocation_controller(),
-            std::move(geolocation_url_loader_factory),
-            SimpleGeolocationProvider::DefaultGeolocationProviderURL()));
+    SimpleGeolocationProvider::GetInstance()
+        ->SetSharedUrlLoaderFactoryForTesting(
+            std::move(geolocation_url_loader_factory));
+
     GeopositionResponsesWaiter waiter(Shell::Get()->geolocation_controller());
     waiter.Wait();
   }

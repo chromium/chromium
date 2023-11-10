@@ -620,6 +620,10 @@ class WizardControllerFlowTest : public WizardControllerTest {
     wizard_controller->SetSharedURLLoaderFactoryForTesting(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
+    SimpleGeolocationProvider::GetInstance()
+        ->SetSharedUrlLoaderFactoryForTesting(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_));
 
     // Set up the mocks for all screens.
     mock_welcome_screen_ =
@@ -763,10 +767,6 @@ class WizardControllerFlowTest : public WizardControllerTest {
         NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204);
   }
 
-  SimpleGeolocationProvider* GetGeolocationProvider() {
-    return WizardController::default_controller()->geolocation_provider_.get();
-  }
-
   void WaitUntilTimezoneResolved() {
     base::RunLoop loop;
     if (!WizardController::default_controller()
@@ -817,7 +817,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
     EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
-    EXPECT_TRUE(GetGeolocationProvider());
+    EXPECT_NE(SimpleGeolocationProvider::GetInstance(), nullptr);
 
     // Let update screen smooth time process (time = 0ms).
     content::RunAllPendingInMessageLoop();

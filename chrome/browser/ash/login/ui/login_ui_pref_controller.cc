@@ -5,12 +5,14 @@
 #include "chrome/browser/ash/login/ui/login_ui_pref_controller.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
@@ -32,6 +34,11 @@ LoginUIPrefController::LoginUIPrefController() {
       prefs::kOwnerTapToClickEnabled,
       base::BindRepeating(&LoginUIPrefController::UpdateTapToClickEnabled,
                           weak_factory_.GetWeakPtr()));
+  pref_change_registrar_.Add(
+      ash::prefs::kDeviceGeolocationAllowed,
+      base::BindRepeating(&LoginUIPrefController::UpdateGeolocationUsageAllowed,
+                          weak_factory_.GetWeakPtr()));
+
   if (prefs->GetAllPrefStoresInitializationStatus() ==
       PrefService::INITIALIZATION_STATUS_WAITING) {
     prefs->AddPrefInitObserver(
@@ -63,6 +70,20 @@ void LoginUIPrefController::UpdateTapToClickEnabled() {
           prefs::kOwnerTapToClickEnabled));
 }
 
+void LoginUIPrefController::UpdateGeolocationUsageAllowed() {
+  auto access_level = static_cast<PrivacyHubController::AccessLevel>(
+      g_browser_process->local_state()->GetInteger(
+          ash::prefs::kDeviceGeolocationAllowed));
+  switch (access_level) {
+    case PrivacyHubController::AccessLevel::kAllowed:
+      SimpleGeolocationProvider::GetInstance()->AllowGeolocationUsage();
+      break;
+    case PrivacyHubController::AccessLevel::kDisallowed:
+    default:
+      SimpleGeolocationProvider::GetInstance()->DisallowGeolocationUsage();
+  }
+}
+
 void LoginUIPrefController::InitOwnerPreferences(bool success) {
   if (!success) {
     LOG(ERROR) << "InitOwnerPreferences failed.";
@@ -71,6 +92,7 @@ void LoginUIPrefController::InitOwnerPreferences(bool success) {
   UpdatePrimaryMouseButtonRight();
   UpdatePrimaryPointingStickButtonRight();
   UpdateTapToClickEnabled();
+  UpdateGeolocationUsageAllowed();
 }
 
 }  // namespace ash

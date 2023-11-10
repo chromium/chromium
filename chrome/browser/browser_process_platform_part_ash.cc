@@ -253,7 +253,8 @@ ash::system::TimeZoneResolverManager*
 BrowserProcessPlatformPart::GetTimezoneResolverManager() {
   if (!timezone_resolver_manager_.get()) {
     timezone_resolver_manager_ =
-        std::make_unique<ash::system::TimeZoneResolverManager>();
+        std::make_unique<ash::system::TimeZoneResolverManager>(
+            ash::SimpleGeolocationProvider::GetInstance());
   }
   return timezone_resolver_manager_.get();
 }
@@ -262,8 +263,8 @@ ash::TimeZoneResolver* BrowserProcessPlatformPart::GetTimezoneResolver() {
   if (!timezone_resolver_.get()) {
     timezone_resolver_ = std::make_unique<ash::TimeZoneResolver>(
         GetTimezoneResolverManager(),
+        ash::SimpleGeolocationProvider::GetInstance(),
         g_browser_process->shared_url_loader_factory(),
-        ash::SimpleGeolocationProvider::DefaultGeolocationProviderURL(),
         base::BindRepeating(&ash::system::ApplyTimeZone),
         base::BindRepeating(&ash::DelayNetworkCall),
         g_browser_process->local_state());

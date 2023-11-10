@@ -27,6 +27,7 @@
 #include "ash/shell.h"
 #include "ash/shell_init_params.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
 #include "ash/system/message_center/session_state_notification_blocker.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/screen_layout_observer.h"
@@ -143,12 +144,19 @@ AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
   // Clears the saved state so that test doesn't use on the wrong
   // default state.
   shell::ToplevelWindow::ClearSavedStateForTest();
+
+  // SimpleGeolocationProvider has to be initialized before
+  // GeolocationController, which is constructed during Shell::Init().
+  SimpleGeolocationProvider::Initialize(
+      base::MakeRefCounted<TestGeolocationUrlLoaderFactory>());
 }
 
 AshTestHelper::~AshTestHelper() {
   if (app_list_test_helper_) {
     TearDown();
   }
+
+  SimpleGeolocationProvider::DestroyForTesting();
 
   // Ensure the next test starts with a null display::Screen.  This must be done
   // here instead of in TearDown() since some tests test access to the Screen

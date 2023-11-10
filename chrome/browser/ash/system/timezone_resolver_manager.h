@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -17,7 +18,9 @@ class PrefService;
 namespace ash {
 namespace system {
 
-class TimeZoneResolverManager : public TimeZoneResolver::Delegate {
+class TimeZoneResolverManager
+    : public TimeZoneResolver::Delegate,
+      public ash::SimpleGeolocationProvider::Observer {
  public:
   class Observer {
    public:
@@ -38,7 +41,8 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate {
     METHODS_NUMBER = 4
   };
 
-  TimeZoneResolverManager();
+  explicit TimeZoneResolverManager(
+      SimpleGeolocationProvider* const geolocation_provider);
 
   TimeZoneResolverManager(const TimeZoneResolverManager&) = delete;
   TimeZoneResolverManager& operator=(const TimeZoneResolverManager&) = delete;
@@ -51,7 +55,6 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate {
   // TimeZoneResolver::Delegate:
   bool ShouldSendWiFiGeolocationData() const override;
   bool ShouldSendCellularGeolocationData() const override;
-  bool IsSystemGeolocationAllowed() const override;
 
   // Starts or stops TimezoneResolver according to current settings.
   void UpdateTimezoneResolver();
@@ -59,8 +62,7 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate {
   // This class should respect the system geolocation permission. When the
   // permission is disabled, no requests should be dispatched and no responses
   // processed.
-  // Called from `ash::Preferences::ApplyPreferences()`.
-  void OnSystemGeolocationPermissionChanged(bool enabled);
+  void OnGeolocationPermissionChanged(bool enabled) override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -105,6 +107,10 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate {
   void OnLocalStateInitialized(bool initialized);
 
   base::ObserverList<Observer>::Unchecked observers_;
+
+  // Points to the `SimpleGeolocationProvider::GetInstance()` throughout the
+  // object lifecycle. Overridden in unit tests.
+  raw_ptr<SimpleGeolocationProvider> geolocation_provider_ = nullptr;
 
   // This is non-null only after user logs in.
   raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh>

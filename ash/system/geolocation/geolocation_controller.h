@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -19,7 +20,6 @@
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
@@ -55,10 +55,10 @@ struct SimpleGeoposition {
 // TODO(crbug.com/1272178): `GeolocationController` should observe the sleep
 // and update next request time.
 class ASH_EXPORT GeolocationController
-    : public system::TimezoneSettings::Observer,
+    : public SimpleGeolocationProvider::Observer,
+      public system::TimezoneSettings::Observer,
       public chromeos::PowerManagerClient::Observer,
-      public SessionObserver,
-      public SimpleGeolocationProvider::Delegate {
+      public SessionObserver {
  public:
   // Possible errors for `GetSunsetTime()` and `GetSunriseTime()`.
   enum class SunRiseSetError {
@@ -87,20 +87,13 @@ class ASH_EXPORT GeolocationController
     ~Observer() override = default;
   };
 
-  explicit GeolocationController(
-      scoped_refptr<network::SharedURLLoaderFactory> factory);
+  explicit GeolocationController(SimpleGeolocationProvider* const provider);
   GeolocationController(const GeolocationController&) = delete;
   GeolocationController& operator=(const GeolocationController&) = delete;
   ~GeolocationController() override;
 
   static GeolocationController* Get();
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
-  // This class should respect the system geolocation permission. When the
-  // permission is disabled, no requests should be dispatched and no responses
-  // processed.
-  // Called from `ash::Preferences::ApplyPreferences()`.
-  void OnSystemGeolocationPermissionChanged(bool enabled);
 
   const base::OneShotTimer& timer() const { return *timer_; }
 
@@ -111,14 +104,14 @@ class ASH_EXPORT GeolocationController
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // SimpleGeolocationProvider::Observer:
+  void OnGeolocationPermissionChanged(bool enabled) override;
+
   // system::TimezoneSettings::Observer:
   void TimezoneChanged(const icu::TimeZone& timezone) override;
 
   // chromeos::PowerManagerClient::Observer:
   void SuspendDone(base::TimeDelta sleep_duration) override;
-
-  // SimpleGeolocationProvider::Delegate:
-  bool IsSystemGeolocationAllowed() const override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
@@ -135,8 +128,6 @@ class ASH_EXPORT GeolocationController
 
   static base::TimeDelta GetNextRequestDelayAfterSuccessForTesting();
 
-  network::SharedURLLoaderFactory* GetSharedURLLoaderFactoryForTesting();
-
   base::OneShotTimer* GetTimerForTesting() { return timer_.get(); }
 
   bool HasObserver(const Observer* obs) const {
@@ -148,8 +139,6 @@ class ASH_EXPORT GeolocationController
   void SetClockForTesting(base::Clock* clock);
   void SetLocalTimeConverterForTesting(
       const LocalTimeConverter* local_time_converter);
-  void SetGeolocationProviderForTesting(
-      std::unique_ptr<SimpleGeolocationProvider> geolocation_provider);
   void SetCurrentTimezoneIdForTesting(const std::u16string& timezone_id);
   // Resets the running `timer_` and issues an immediate geoposition request.
   // Any responses on the fly will be processed first, but will be overridden
@@ -194,12 +183,13 @@ class ASH_EXPORT GeolocationController
   // being able to retrieve a valid geoposition.
   void StoreCachedGeoposition() const;
 
+  // Points to the `SimpleGeolocationProvider::GetInstance()` throughout the
+  // object lifecycle. Overridden in unit tests.
+  raw_ptr<SimpleGeolocationProvider> geolocation_provider_ = nullptr;
+
   // May be null if a user has not logged in yet.
   raw_ptr<PrefService> active_user_pref_service_ = nullptr;
   std::unique_ptr<PrefChangeRegistrar> registrar_;
-
-  // The IP-based geolocation provider.
-  std::unique_ptr<SimpleGeolocationProvider> simple_geolocation_provider_;
 
   // Delay after which a new request is retried after a failed one.
   base::TimeDelta backoff_delay_;
@@ -229,6 +219,8 @@ class ASH_EXPORT GeolocationController
   std::unique_ptr<SimpleGeoposition> geoposition_;
 
   ScopedSessionObserver scoped_session_observer_;
+
+  base::WeakPtrFactory<GeolocationController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

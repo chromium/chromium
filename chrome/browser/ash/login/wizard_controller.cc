@@ -2532,11 +2532,7 @@ void WizardController::StartTimezoneResolve() {
     return;
   }
 
-  geolocation_provider_ = std::make_unique<SimpleGeolocationProvider>(
-      g_browser_process->platform_part()->GetTimezoneResolverManager(),
-      shared_url_loader_factory_,
-      SimpleGeolocationProvider::DefaultGeolocationProviderURL());
-  geolocation_provider_->RequestGeolocation(
+  SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
       base::Seconds(kResolveTimeZoneTimeoutSeconds),
       false /* send_wifi_geolocation_data */,
       false /* send_cellular_geolocation_data */,

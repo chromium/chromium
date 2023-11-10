@@ -15,6 +15,7 @@
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/shell.h"
 #include "ash/system/geolocation/geolocation_controller.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -54,6 +55,7 @@
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
@@ -685,7 +687,6 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
   consumer_auto_update_toggle_pref_.Init(::prefs::kConsumerAutoUpdateToggle,
                                          g_browser_process->local_state(),
                                          callback);
-  // TODO(zauri): change to BooleanPrefMember
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(ash::prefs::kUserGeolocationAllowed, callback);
   pref_change_registrar_.Add(::prefs::kUserTimezone, callback);
@@ -1143,30 +1144,27 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   if (reason == REASON_INITIALIZATION ||
       (pref_name == ash::prefs::kUserGeolocationAllowed &&
        reason == REASON_PREF_CHANGED)) {
-    const bool system_geolocation_permission_enabled =
+    const bool user_geolocation_permission_enabled =
         prefs_->GetBoolean(ash::prefs::kUserGeolocationAllowed);
 
-    const bool automatic_timezone_selected = prefs_->GetBoolean(
-        ::prefs::kResolveTimezoneByGeolocationMigratedToMethod);
-
-    // Fall back to static timezone when system geolocation access is disabled.
-    if (!system_geolocation_permission_enabled && automatic_timezone_selected) {
-      prefs_->SetBoolean(::prefs::kResolveTimezoneByGeolocationMigratedToMethod,
-                         false);
-      prefs_->SetInteger(::prefs::kResolveTimezoneByGeolocationMethod,
-                         static_cast<int>(system::TimeZoneResolverManager::
-                                              TimeZoneResolveMethod::DISABLED));
+    if (user_geolocation_permission_enabled) {
+      SimpleGeolocationProvider::GetInstance()->AllowGeolocationUsage();
+    } else {
+      SimpleGeolocationProvider::GetInstance()->DisallowGeolocationUsage();
     }
 
-    ash::system::TimeZoneResolverManager* timezone_resolver_manager =
-        g_browser_process->platform_part()->GetTimezoneResolverManager();
-    GeolocationController* geolocation_controller =
-        ash::Shell::Get()->geolocation_controller();
-
-    timezone_resolver_manager->OnSystemGeolocationPermissionChanged(
-        system_geolocation_permission_enabled);
-    geolocation_controller->OnSystemGeolocationPermissionChanged(
-        system_geolocation_permission_enabled);
+    // Log-in screen follows the owner's geolocation setting.
+    if (user_is_owner) {
+      PrivacyHubController::AccessLevel access_level;
+      if (user_geolocation_permission_enabled) {
+        access_level = PrivacyHubController::AccessLevel::kAllowed;
+      } else {
+        access_level = PrivacyHubController::AccessLevel::kDisallowed;
+      }
+      g_browser_process->local_state()->SetInteger(
+          ash::prefs::kDeviceGeolocationAllowed,
+          static_cast<int>(access_level));
+    }
   }
 
   if (pref_name == ::prefs::kUserTimezone &&
