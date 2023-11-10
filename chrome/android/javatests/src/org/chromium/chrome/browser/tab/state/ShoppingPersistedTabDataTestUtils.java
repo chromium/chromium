@@ -82,15 +82,21 @@ public abstract class ShoppingPersistedTabDataTestUtils {
     static final int TAB_ID = 1;
     static final boolean IS_INCOGNITO = false;
     static final String FAKE_OFFER_ID = "100";
+    static final String FAKE_PRODUCT_TITLE = "Product Title";
+    static final String FAKE_PRODUCT_IMAGE_URL = "https://www.google.com/image";
 
     static final BuyableProduct BUYABLE_PRODUCT_PROTO_INITIAL =
             BuyableProduct.newBuilder()
                     .setCurrentPrice(createProductPrice(PRICE_MICROS, UNITED_STATES_CURRENCY_CODE))
+                    .setTitle(FAKE_PRODUCT_TITLE)
+                    .setImageUrl(FAKE_PRODUCT_IMAGE_URL)
                     .build();
     static final BuyableProduct BUYABLE_PRODUCT_PROTO_PRICE_UPDATED =
             BuyableProduct.newBuilder()
                     .setCurrentPrice(
                             createProductPrice(UPDATED_PRICE_MICROS, UNITED_STATES_CURRENCY_CODE))
+                    .setTitle(FAKE_PRODUCT_TITLE)
+                    .setImageUrl(FAKE_PRODUCT_IMAGE_URL)
                     .build();
     static final ProductPriceUpdate PRODUCT_UPDATE_PROTO =
             ProductPriceUpdate.newBuilder()

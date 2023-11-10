@@ -118,6 +118,10 @@ public class ShoppingPersistedTabDataTest {
                 ShoppingPersistedTabDataTestUtils.GREAT_BRITAIN_CURRENCY_CODE);
         shoppingPersistedTabData.setPriceDropGurl(new GURL("https://www.google.com"));
         shoppingPersistedTabData.setIsCurrentPriceDropSeen(true);
+        shoppingPersistedTabData.setProductTitle(
+                ShoppingPersistedTabDataTestUtils.FAKE_PRODUCT_TITLE);
+        shoppingPersistedTabData.setProductImageUrl(
+                new GURL(ShoppingPersistedTabDataTestUtils.FAKE_PRODUCT_IMAGE_URL));
         ByteBuffer serialized = shoppingPersistedTabData.getSerializer().get();
         ShoppingPersistedTabData deserialized = new ShoppingPersistedTabData(tab);
         deserialized.deserialize(serialized);
@@ -131,6 +135,12 @@ public class ShoppingPersistedTabDataTest {
         Assert.assertTrue(deserialized.getIsCurrentPriceDropSeen());
         Assert.assertEquals(
                 new GURL("https://www.google.com"), deserialized.getPriceDropDataForTesting().gurl);
+        Assert.assertEquals(
+                ShoppingPersistedTabDataTestUtils.FAKE_PRODUCT_TITLE,
+                deserialized.getProductTitle());
+        Assert.assertEquals(
+                new GURL(ShoppingPersistedTabDataTestUtils.FAKE_PRODUCT_IMAGE_URL),
+                deserialized.getProductImageUrl());
         MetricsResult metricsResult =
                 deserialized.getPriceDropMetricsLoggerForTesting().getMetricsResultForTesting();
         Assert.assertFalse(metricsResult.isProductDetailPage);
@@ -668,6 +678,12 @@ public class ShoppingPersistedTabDataTest {
         Assert.assertEquals(287_000_000L, shoppingPersistedTabData.getPriceMicros());
         Assert.assertEquals(
                 123_456_789_012_345L, shoppingPersistedTabData.getPreviousPriceMicros());
+        Assert.assertEquals(
+                ShoppingPersistedTabDataTestUtils.FAKE_PRODUCT_TITLE,
+                shoppingPersistedTabData.getProductTitle());
+        Assert.assertEquals(
+                ShoppingPersistedTabDataTestUtils.FAKE_PRODUCT_IMAGE_URL,
+                shoppingPersistedTabData.getProductImageUrl().getSpec());
     }
 
     @UiThreadTest

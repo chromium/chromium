@@ -34,4 +34,10 @@ message ShoppingPersistedTabDataProto {
 
   // Whether the user has seen the current price drop in the tab switcher grid.
   optional bool is_current_price_drop_seen = 8;
+
+  // The title of the product.
+  optional string product_title = 9;
+
+  // The gurl of the product image.
+  optional string product_image_url = 10;
 }

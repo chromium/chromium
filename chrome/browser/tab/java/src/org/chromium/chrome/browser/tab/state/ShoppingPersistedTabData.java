@@ -183,6 +183,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         public String offerId;
         public GURL gurl;
         public boolean isCurrentPriceDropSeen;
+        public String productTitle;
+        public GURL productImageUrl;
 
         PriceDropData() {
             this.priceMicros = NO_PRICE_KNOWN;
@@ -634,6 +636,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             // Use UnsignedLongs to convert OfferId to avoid overflow.
             setMainOfferId(UnsignedLongs.toString(buyableProduct.getOfferId()));
             setPriceDropGurl(tab.getUrl());
+            setProductTitle(buyableProduct.getTitle());
+            setProductImageUrl(new GURL(buyableProduct.getImageUrl()));
             foundBuyableProduct = FoundBuyableProduct.FOUND_WITH_PRICE_UPDATE;
         }
 
@@ -699,6 +703,28 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     protected void setPriceDropGurl(GURL gurl) {
         mPriceDropData.gurl = gurl;
         save();
+    }
+
+    @VisibleForTesting
+    protected void setProductTitle(String productTitle) {
+        mPriceDropData.productTitle = productTitle;
+        save();
+    }
+
+    @VisibleForTesting
+    protected String getProductTitle() {
+        return mPriceDropData.productTitle;
+    }
+
+    @VisibleForTesting
+    protected void setProductImageUrl(GURL imageUrl) {
+        mPriceDropData.productImageUrl = imageUrl;
+        save();
+    }
+
+    @VisibleForTesting
+    protected GURL getProductImageUrl() {
+        return mPriceDropData.productImageUrl;
     }
 
     @VisibleForTesting
@@ -887,6 +913,14 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             builder.setSerializedGurl(mPriceDropData.gurl.serialize());
         }
 
+        if (mPriceDropData.productTitle != null) {
+            builder.setProductTitle(mPriceDropData.productTitle);
+        }
+
+        if (mPriceDropData.productImageUrl != null) {
+            builder.setProductImageUrl(mPriceDropData.productImageUrl.serialize());
+        }
+
         return () -> {
             return builder.build().toByteString().asReadOnlyByteBuffer();
         };
@@ -913,6 +947,9 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                     GURL.deserialize(shoppingPersistedTabDataProto.getSerializedGurl());
             mPriceDropData.isCurrentPriceDropSeen =
                     shoppingPersistedTabDataProto.getIsCurrentPriceDropSeen();
+            mPriceDropData.productTitle = shoppingPersistedTabDataProto.getProductTitle();
+            mPriceDropData.productImageUrl =
+                    GURL.deserialize(shoppingPersistedTabDataProto.getProductImageUrl());
             return true;
         } catch (InvalidProtocolBufferException e) {
             Log.e(TAG,
