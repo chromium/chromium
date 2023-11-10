@@ -310,14 +310,15 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
   switch (data_type) {
     case DebugDataType::kSourceDestinationLimit:
       SetLimit(data_body,
-               result.max_destinations_per_source_site_reporting_site);
+               result.max_destinations_per_source_site_reporting_site());
       break;
     case DebugDataType::kSourceStorageLimit:
-      SetLimit(data_body, result.max_sources_per_origin);
+      SetLimit(data_body, result.max_sources_per_origin());
       break;
     case DebugDataType::kSourceDestinationRateLimit:
-      SetLimit(data_body,
-               result.max_destinations_per_rate_limit_window_reporting_origin);
+      SetLimit(
+          data_body,
+          result.max_destinations_per_rate_limit_window_reporting_origin());
       break;
     case DebugDataType::kSourceNoised:
     case DebugDataType::kSourceSuccess:
@@ -465,7 +466,7 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
   }
 
   absl::optional<DebugDataType> data_type =
-      GetReportDataType(result.status, is_debug_cookie_set);
+      GetReportDataType(result.status(), is_debug_cookie_set);
   if (!data_type) {
     return absl::nullopt;
   }

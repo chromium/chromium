@@ -638,7 +638,7 @@ TEST_F(AttributionStorageTest, GetAttributionReportsMultipleTimes_SameResult) {
 TEST_F(AttributionStorageTest, ExceedsChannelCapacity) {
   delegate()->set_exceeds_channel_capacity_limit(true);
 
-  EXPECT_EQ(storage()->StoreSource(SourceBuilder().Build()).status,
+  EXPECT_EQ(storage()->StoreSource(SourceBuilder().Build()).status(),
             StorableSource::Result::kExceedsMaxChannelCapacity);
 }
 
@@ -653,7 +653,7 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
                                   .SetPriority(1)
                                   .SetMaxEventLevelReports(1)
                                   .Build())
-                .status,
+                .status(),
             StorableSource::Result::kSuccess);
 
   ASSERT_EQ(storage()
@@ -662,7 +662,7 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
                                   .SetPriority(2)
                                   .SetMaxEventLevelReports(1)
                                   .Build())
-                .status,
+                .status(),
             StorableSource::Result::kSuccess);
 
   // Force the lower-priority source to be deactivated.
@@ -678,7 +678,7 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
                                   .SetSourceEventId(6)
                                   .SetMaxEventLevelReports(1)
                                   .Build())
-                .status,
+                .status(),
             StorableSource::Result::kSuccess);
 
   ASSERT_EQ(storage()
@@ -686,7 +686,7 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
                                   .SetSourceEventId(7)
                                   .SetMaxEventLevelReports(1)
                                   .Build())
-                .status,
+                .status(),
             StorableSource::Result::kInsufficientSourceCapacity);
 
   int64_t file_size = histograms.GetTotalSum(
@@ -732,7 +732,7 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {
                                       "https://foo.a.example"))
                                   .SetSourceEventId(9)
                                   .Build())
-                .status,
+                .status(),
             StorableSource::Result::kInsufficientSourceCapacity);
 
   // This impression should be stored, because its origin hasn't hit the limit
@@ -1209,7 +1209,7 @@ TEST_F(AttributionStorageTest,
   delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{});
   StoreSourceResult result = storage()->StoreSource(
       TestAggregatableSourceProvider().GetBuilder().Build());
-  EXPECT_EQ(result.status, StorableSource::Result::kSuccessNoised);
+  EXPECT_EQ(result.status(), StorableSource::Result::kSuccessNoised);
   delegate()->set_randomized_response(absl::nullopt);
 
   EXPECT_THAT(
@@ -1240,7 +1240,7 @@ TEST_F(AttributionStorageTest,
       {.trigger_data = 7, .window_index = 0}});
   StoreSourceResult result =
       storage()->StoreSource(SourceBuilder().SetSourceEventId(5).Build());
-  EXPECT_EQ(result.status, StorableSource::Result::kSuccessNoised);
+  EXPECT_EQ(result.status(), StorableSource::Result::kSuccessNoised);
   delegate()->set_randomized_response(absl::nullopt);
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2u));
@@ -1259,7 +1259,7 @@ TEST_F(AttributionStorageTest,
   delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{
       {.trigger_data = 7, .window_index = 0}});
   StoreSourceResult result = storage()->StoreSource(SourceBuilder().Build());
-  EXPECT_EQ(result.status, StorableSource::Result::kSuccessNoised);
+  EXPECT_EQ(result.status(), StorableSource::Result::kSuccessNoised);
   delegate()->set_randomized_response(absl::nullopt);
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2u));
@@ -1391,7 +1391,7 @@ TEST_F(AttributionStorageTest,
                     {net::SchemefulSite::Deserialize(destination_origin)})
                 .SetExpiry(base::Days(30))
                 .Build())
-        .status;
+        .status();
   };
 
   store_source("https://s1.test", "https://a.r.test", "https://d1.test");
@@ -1442,7 +1442,7 @@ TEST_F(AttributionStorageTest, DestinationLimit_ApplyLimit) {
                     {net::SchemefulSite::Deserialize(destination_origin)})
                 .SetExpiry(expiry)
                 .Build())
-        .status;
+        .status();
   };
 
   // Allowed by pending, allowed by unexpired.
@@ -1510,9 +1510,9 @@ TEST_F(AttributionStorageTest,
               {net::SchemefulSite::Deserialize("https://b.example")})
           .SetSourceType(SourceType::kEvent)
           .Build());
-  EXPECT_EQ(result.status,
+  EXPECT_EQ(result.status(),
             StorableSource::Result::kInsufficientUniqueDestinationCapacity);
-  EXPECT_EQ(result.max_destinations_per_source_site_reporting_site, 1);
+  EXPECT_EQ(result.max_destinations_per_source_site_reporting_site(), 1);
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 }
@@ -1592,7 +1592,7 @@ TEST_F(AttributionStorageTest,
 
   // Should fail due to limit
   StoreSourceResult result = storage()->StoreSource(SourceBuilder().Build());
-  EXPECT_THAT(result.status,
+  EXPECT_THAT(result.status(),
               StorableSource::Result::kDestinationReportingLimitReached);
 }
 
@@ -1613,7 +1613,7 @@ TEST_F(AttributionStorageTest,
 
   // Should fail due to limit
   StoreSourceResult result = storage()->StoreSource(SourceBuilder().Build());
-  EXPECT_THAT(result.status,
+  EXPECT_THAT(result.status(),
               StorableSource::Result::kDestinationGlobalLimitReached);
 }
 
@@ -1653,7 +1653,7 @@ TEST_F(AttributionStorageTest,
       SourceBuilder()
           .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r1.test"))
           .Build());
-  EXPECT_THAT(result.status,
+  EXPECT_THAT(result.status(),
               StorableSource::Result::kDestinationBothLimitsReached);
 }
 
@@ -1740,7 +1740,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
   delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{
       {.trigger_data = 1, .window_index = 0}});
   StoreSourceResult result = storage()->StoreSource(builder.Build());
-  EXPECT_EQ(result.status, StorableSource::Result::kSuccessNoised);
+  EXPECT_EQ(result.status(), StorableSource::Result::kSuccessNoised);
   delegate()->set_randomized_response(absl::nullopt);
 
   AttributionReport expected_event_level_report =
@@ -1849,10 +1849,10 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsMinFakeReportTime) {
                     base::Days(0),
                     {base::Days(1), base::Days(2), base::Days(3)}))
             .Build());
-    EXPECT_EQ(result.status, test_case.randomized_response
-                                 ? StorableSource::Result::kSuccessNoised
-                                 : StorableSource::Result::kSuccess);
-    EXPECT_EQ(result.min_fake_report_time, test_case.expected);
+    EXPECT_EQ(result.status(), test_case.randomized_response
+                                   ? StorableSource::Result::kSuccessNoised
+                                   : StorableSource::Result::kSuccess);
+    EXPECT_EQ(result.min_fake_report_time(), test_case.expected);
   }
 }
 
@@ -2965,7 +2965,7 @@ TEST_F(AttributionStorageTest, MaxReportingOriginsPerSource) {
           .SetDebugKey(1)
           .Build(),
       /*debug_cookie_set=*/true);
-  ASSERT_EQ(result.status, StorableSource::Result::kSuccess);
+  ASSERT_EQ(result.status(), StorableSource::Result::kSuccess);
 
   result = storage()->StoreSource(
       SourceBuilder()
@@ -2973,7 +2973,7 @@ TEST_F(AttributionStorageTest, MaxReportingOriginsPerSource) {
           .SetDebugKey(2)
           .Build(),
       /*debug_cookie_set=*/true);
-  ASSERT_EQ(result.status, StorableSource::Result::kSuccess);
+  ASSERT_EQ(result.status(), StorableSource::Result::kSuccess);
 
   result = storage()->StoreSource(
       SourceBuilder()
@@ -2981,7 +2981,8 @@ TEST_F(AttributionStorageTest, MaxReportingOriginsPerSource) {
           .SetDebugKey(3)
           .Build(),
       /*debug_cookie_set=*/true);
-  ASSERT_EQ(result.status, StorableSource::Result::kExcessiveReportingOrigins);
+  ASSERT_EQ(result.status(),
+            StorableSource::Result::kExcessiveReportingOrigins);
 
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(SourceDebugKeyIs(1), SourceDebugKeyIs(2)));
@@ -3900,7 +3901,7 @@ TEST_F(AttributionStorageTest, MaxSourceReportingOriginsPerSite) {
                 .SetReportingOrigin(*SuitableOrigin::Deserialize(reporting))
                 .SetExpiry(base::Days(2))
                 .Build())
-        .status;
+        .status();
   };
   store_source("https://a.test", "https://reporter.test");
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));

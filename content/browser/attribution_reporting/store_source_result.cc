@@ -4,7 +4,7 @@
 
 #include "content/browser/attribution_reporting/store_source_result.h"
 
-#include "base/check.h"
+#include "base/check_op.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -17,24 +17,24 @@ StoreSourceResult::StoreSourceResult(
     absl::optional<int> max_destinations_per_source_site_reporting_site,
     absl::optional<int> max_sources_per_origin,
     absl::optional<int> max_destinations_per_rate_limit_window_reporting_origin)
-    : status(status),
-      min_fake_report_time(min_fake_report_time),
-      max_destinations_per_source_site_reporting_site(
+    : status_(status),
+      min_fake_report_time_(min_fake_report_time),
+      max_destinations_per_source_site_reporting_site_(
           max_destinations_per_source_site_reporting_site),
-      max_sources_per_origin(max_sources_per_origin),
-      max_destinations_per_rate_limit_window_reporting_origin(
+      max_sources_per_origin_(max_sources_per_origin),
+      max_destinations_per_rate_limit_window_reporting_origin_(
           max_destinations_per_rate_limit_window_reporting_origin) {
-  DCHECK(!max_destinations_per_source_site_reporting_site.has_value() ||
-         status == attribution_reporting::mojom::StoreSourceResult::
-                       kInsufficientUniqueDestinationCapacity);
-  DCHECK(!max_sources_per_origin.has_value() ||
-         status == attribution_reporting::mojom::StoreSourceResult::
-                       kInsufficientSourceCapacity);
-  DCHECK(!max_destinations_per_rate_limit_window_reporting_origin.has_value() ||
-         status == attribution_reporting::mojom::StoreSourceResult::
-                       kDestinationReportingLimitReached ||
-         status == attribution_reporting::mojom::StoreSourceResult::
-                       kDestinationBothLimitsReached);
+  CHECK_EQ(max_destinations_per_source_site_reporting_site_.has_value(),
+           status_ == attribution_reporting::mojom::StoreSourceResult::
+                          kInsufficientUniqueDestinationCapacity);
+  CHECK_EQ(max_sources_per_origin_.has_value(),
+           status_ == attribution_reporting::mojom::StoreSourceResult::
+                          kInsufficientSourceCapacity);
+  CHECK_EQ(max_destinations_per_rate_limit_window_reporting_origin_.has_value(),
+           status_ == attribution_reporting::mojom::StoreSourceResult::
+                          kDestinationReportingLimitReached ||
+               status_ == attribution_reporting::mojom::StoreSourceResult::
+                              kDestinationBothLimitsReached);
 }
 
 StoreSourceResult::~StoreSourceResult() = default;

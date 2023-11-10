@@ -398,22 +398,6 @@ base::FilePath DatabasePath(const base::FilePath& user_data_directory) {
   return user_data_directory.Append(kDatabasePath);
 }
 
-StorableSource::Result DestinationRateLimitResultToStorableSourceResult(
-    RateLimitTable::DestinationRateLimitResult r) {
-  switch (r) {
-    case RateLimitTable::DestinationRateLimitResult::kAllowed:
-      return StorableSource::Result::kSuccess;
-    case RateLimitTable::DestinationRateLimitResult::kHitGlobalLimit:
-      return StorableSource::Result::kDestinationGlobalLimitReached;
-    case RateLimitTable::DestinationRateLimitResult::kHitReportingLimit:
-      return StorableSource::Result::kDestinationReportingLimitReached;
-    case RateLimitTable::DestinationRateLimitResult::kHitBothLimits:
-      return StorableSource::Result::kDestinationBothLimitsReached;
-    case RateLimitTable::DestinationRateLimitResult::kError:
-      return StorableSource::Result::kInternalError;
-  }
-}
-
 }  // namespace
 
 AttributionStorageSql::AttributionStorageSql(
@@ -476,15 +460,9 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   const base::Time source_time = base::Time::Now();
 
-  if (StorableSource::Result result =
-          CheckDestinationRateLimit(source, source_time);
-      result != StorableSource::Result::kSuccess) {
-    StoreSourceResult store_result(result);
-    if (result != StorableSource::Result::kInternalError) {
-      store_result.max_destinations_per_rate_limit_window_reporting_origin =
-          delegate_->GetDestinationRateLimit().max_per_reporting_site;
-    }
-    return store_result;
+  if (StoreSourceResult result = CheckDestinationRateLimit(source, source_time);
+      result.status() != StorableSource::Result::kSuccess) {
+    return result;
   }
 
   // Only delete expired impressions periodically to avoid excessive DB
@@ -735,7 +713,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       min_fake_report_time);
 }
 
-StorableSource::Result AttributionStorageSql::CheckDestinationRateLimit(
+StoreSourceResult AttributionStorageSql::CheckDestinationRateLimit(
     const StorableSource& source,
     base::Time source_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -745,7 +723,31 @@ StorableSource::Result AttributionStorageSql::CheckDestinationRateLimit(
   base::UmaHistogramEnumeration("Conversions.DestinationRateLimitResult",
                                 rate_limit_result);
 
-  return DestinationRateLimitResultToStorableSourceResult(rate_limit_result);
+  switch (rate_limit_result) {
+    case RateLimitTable::DestinationRateLimitResult::kAllowed:
+      return StoreSourceResult(StorableSource::Result::kSuccess);
+    case RateLimitTable::DestinationRateLimitResult::kHitGlobalLimit:
+      return StoreSourceResult(
+          StorableSource::Result::kDestinationGlobalLimitReached);
+    case RateLimitTable::DestinationRateLimitResult::kHitReportingLimit:
+      return StoreSourceResult(
+          StorableSource::Result::kDestinationReportingLimitReached,
+          /*min_fake_report_time=*/absl::nullopt,
+          /*max_destinations_per_source_site_reporting_site=*/absl::nullopt,
+          /*max_sources_per_origin=*/absl::nullopt,
+          /*max_destinations_per_rate_limit_window_reporting_origin=*/
+          delegate_->GetDestinationRateLimit().max_per_reporting_site);
+    case RateLimitTable::DestinationRateLimitResult::kHitBothLimits:
+      return StoreSourceResult(
+          StorableSource::Result::kDestinationBothLimitsReached,
+          /*min_fake_report_time=*/absl::nullopt,
+          /*max_destinations_per_source_site_reporting_site=*/absl::nullopt,
+          /*max_sources_per_origin=*/absl::nullopt,
+          /*max_destinations_per_rate_limit_window_reporting_origin=*/
+          delegate_->GetDestinationRateLimit().max_per_reporting_site);
+    case RateLimitTable::DestinationRateLimitResult::kError:
+      return StoreSourceResult(StorableSource::Result::kInternalError);
+  }
 }
 
 // Checks whether a new report is allowed to be stored for the given source

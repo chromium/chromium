@@ -56,11 +56,11 @@ class AttributionStorage;
 class AttributionStorageDelegate;
 class CreateReportResult;
 class StoragePartitionImpl;
+class StoreSourceResult;
 
 struct GlobalRenderFrameHostId;
 struct OsRegistration;
 struct SendResult;
-struct StoreSourceResult;
 
 // UI thread class that manages the lifetime of the underlying attribution
 // storage and coordinates sending attribution reports. Owned by the storage

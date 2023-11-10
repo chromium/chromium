@@ -204,7 +204,7 @@ void RecordStoreSourceStatus(StoreSourceResult result) {
                     StorableSource::Result::kExceedsMaxChannelCapacity,
                 "Bump version of Conversions.SourceStoredStatus8 histogram.");
   base::UmaHistogramEnumeration("Conversions.SourceStoredStatus8",
-                                result.status);
+                                result.status());
 }
 
 void RecordCreateReportStatus(CreateReportResult result) {
@@ -638,10 +638,10 @@ void AttributionManagerImpl::OnSourceStored(
 
   base::Time now = base::Time::Now();
   for (auto& observer : observers_) {
-    observer.OnSourceHandled(source, now, cleared_debug_key, result.status);
+    observer.OnSourceHandled(source, now, cleared_debug_key, result.status());
   }
 
-  scheduler_timer_->MaybeSet(result.min_fake_report_time);
+  scheduler_timer_->MaybeSet(result.min_fake_report_time());
 
   NotifySourcesChanged();
 

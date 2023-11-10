@@ -18,9 +18,9 @@ namespace content {
 class AttributionTrigger;
 class CreateReportResult;
 class StorableSource;
+class StoreSourceResult;
 
 struct OsRegistration;
-struct StoreSourceResult;
 
 // Class that contains all the data needed to serialize and send an attribution
 // debug report.
