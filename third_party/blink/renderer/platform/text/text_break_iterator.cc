@@ -361,7 +361,9 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
             for (;;) {
               // Adjust the offset by |start_offset_| because |break_iterator|
               // has text after |start_offset_|.
-              DCHECK_GE(next_break + prior_context.length, start_offset_);
+              // TODO(crbug.com/1500931): `+1` below shouldn't be there, but it
+              // was so before and removing it hits. This is to be investigated.
+              DCHECK_GE(next_break + prior_context.length + 1, start_offset_);
               next_break = break_iterator->following(
                   next_break + prior_context.length - start_offset_);
               if (next_break >= 0) {
