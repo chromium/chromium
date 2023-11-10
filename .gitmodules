@@ -607,6 +607,10 @@
 	path = chrome/browser/nearby_sharing/internal
 	url = https://chrome-internal.googlesource.com/chrome/browser/nearby_sharing/internal.git
 	gclient-condition = checkout_src_internal
+[submodule "chrome/browser/resources/chromeos/quickoffice"]
+	path = chrome/browser/resources/chromeos/quickoffice
+	url = https://chrome-internal.googlesource.com/quickoffice/crx.git
+	gclient-condition = (checkout_chromeos or checkout_linux) and checkout_src_internal
 [submodule "chrome/browser/resources/settings_internal"]
 	path = chrome/browser/resources/settings_internal
 	url = https://chrome-internal.googlesource.com/chrome/browser/resources/settings_internal.git
