@@ -1,0 +1,16 @@
+{
+  "name": "chrome.tabs for prerendering into a new tab",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "end-to-end browser test for chrome.tabs API with prerendering into a new tab",
+  "background": {
+    "scripts": [
+      "test.js"
+    ]
+  },
+  "permissions": [
+    "tabs",
+    "webRequest",
+    "<all_urls>"
+  ]
+}
