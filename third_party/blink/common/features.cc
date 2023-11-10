@@ -1010,7 +1010,7 @@ const base::FeatureParam<int> kInterestGroupStorageMaxOwners{
 const base::FeatureParam<int> kInterestGroupStorageMaxStoragePerOwner{
     &kInterestGroupStorage, "max_storage_per_owner", 10 * 1024 * 1024};
 const base::FeatureParam<int> kInterestGroupStorageMaxGroupsPerOwner{
-    &kInterestGroupStorage, "max_groups_per_owner", 1000};
+    &kInterestGroupStorage, "max_groups_per_owner", 2000};
 const base::FeatureParam<int> kInterestGroupStorageMaxNegativeGroupsPerOwner{
     &kInterestGroupStorage, "max_negative_groups_per_owner", 20000};
 const base::FeatureParam<int> kInterestGroupStorageMaxOpsBeforeMaintenance{
