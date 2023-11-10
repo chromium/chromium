@@ -17,6 +17,7 @@
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -61,7 +62,8 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   gfx::NativeViewAccessible GetNativeObject() const override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
 #if BUILDFLAG(IS_MAC)
-  void AnnounceText(const std::u16string& text) override;
+  void AnnounceTextAs(const std::u16string& text,
+                      ui::AXPlatformNode::AnnouncementType announcement_type);
 #endif
 
   // ui::AXPlatformNodeDelegate.

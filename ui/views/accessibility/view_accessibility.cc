@@ -568,15 +568,28 @@ void ViewAccessibility::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
     accessibility_events_callback_.Run(nullptr, event_type);
 }
 
+void ViewAccessibility::AnnounceAlert(const std::u16string& text) {
+  if (auto* const widget = view_->GetWidget()) {
+    if (auto* const root_view =
+            static_cast<internal::RootView*>(widget->GetRootView())) {
+      root_view->AnnounceTextAs(text,
+                                ui::AXPlatformNode::AnnouncementType::kAlert);
+    }
+  }
+}
+
+void ViewAccessibility::AnnouncePolitely(const std::u16string& text) {
+  if (auto* const widget = view_->GetWidget()) {
+    if (auto* const root_view =
+            static_cast<internal::RootView*>(widget->GetRootView())) {
+      root_view->AnnounceTextAs(text,
+                                ui::AXPlatformNode::AnnouncementType::kPolite);
+    }
+  }
+}
+
 void ViewAccessibility::AnnounceText(const std::u16string& text) {
-  Widget* const widget = view_->GetWidget();
-  if (!widget)
-    return;
-  auto* const root_view =
-      static_cast<internal::RootView*>(widget->GetRootView());
-  if (!root_view)
-    return;
-  root_view->AnnounceText(text);
+  AnnounceAlert(text);
 }
 
 const ui::AXUniqueId& ViewAccessibility::GetUniqueId() const {

@@ -30,6 +30,7 @@
 #include "ui/base/layout.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessibility/view_accessibility_utils.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/view.h"
@@ -274,8 +275,10 @@ void ViewAXPlatformNodeDelegate::NotifyAccessibilityEvent(
 }
 
 #if BUILDFLAG(IS_MAC)
-void ViewAXPlatformNodeDelegate::AnnounceText(const std::u16string& text) {
-  ax_platform_node_->AnnounceText(text);
+void ViewAXPlatformNodeDelegate::AnnounceTextAs(
+    const std::u16string& text,
+    ui::AXPlatformNode::AnnouncementType announcement_type) {
+  ax_platform_node_->AnnounceTextAs(text, announcement_type);
 }
 #endif  // BUILDFLAG(IS_MAC)
 

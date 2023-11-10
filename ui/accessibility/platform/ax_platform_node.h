@@ -29,6 +29,8 @@ class AXPlatformNodeDelegate;
 // own the AXPlatformNode instance (or otherwise manage its lifecycle).
 class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
  public:
+  enum class AnnouncementType { kAlert, kPolite };
+
   using NativeWindowHandlerCallback =
       base::RepeatingCallback<AXPlatformNode*(gfx::NativeWindow)>;
 
@@ -95,8 +97,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   virtual void NotifyAccessibilityEvent(ax::mojom::Event event_type) = 0;
 
 #if BUILDFLAG(IS_APPLE)
-  // Fire a platform-specific notification to announce |text|.
-  virtual void AnnounceText(const std::u16string& text) = 0;
+  // Fire a platform-specific notification to speak the |text| string.
+  // AnnouncementType kPolite will speak the given string.
+  // AnnouncementType kAlert may make a stronger attempt to be noticeable;
+  // the screen reader may say something like "Alert: hello" instead of
+  // just "hello", and may interrupt any existing text being spoken.
+  // However, the screen reader may also just treat the two calls the same.
+  virtual void AnnounceTextAs(const std::u16string& text,
+                              AnnouncementType announcement_type) = 0;
 #endif
 
   // Return this object's delegate.

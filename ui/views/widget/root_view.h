@@ -9,7 +9,9 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/events/event_processor.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/view.h"
@@ -97,8 +99,9 @@ class VIEWS_EXPORT RootView : public View,
 
   // Accessibility -------------------------------------------------------------
 
-  // Make an announcement through the screen reader, if present.
-  void AnnounceText(const std::u16string& text);
+  // See AXPlatformNode::AnnounceTextAs for documentation of this.
+  void AnnounceTextAs(const std::u16string& text,
+                      ui::AXPlatformNode::AnnouncementType announcement_type);
   View* GetAnnounceViewForTesting();
 
   // FocusTraversable:

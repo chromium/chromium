@@ -467,7 +467,8 @@ void AXPlatformNodeBase::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
 }
 
 #if BUILDFLAG(IS_APPLE)
-void AXPlatformNodeBase::AnnounceText(const std::u16string& text) {}
+void AXPlatformNodeBase::AnnounceTextAs(const std::u16string& text,
+                                        AnnouncementType announcement_type) {}
 #endif
 
 AXPlatformNodeDelegate* AXPlatformNodeBase::GetDelegate() const {

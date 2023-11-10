@@ -41,6 +41,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -106,14 +107,17 @@ class FindBarMatchCountLabel : public views::Label {
       return;
 
     last_result_ = result;
+    // TODO(1499078): Get NO_RESULTS to be announced under Orca and ChromeVox.
     SetText(l10n_util::GetStringFUTF16(
         IDS_FIND_IN_PAGE_COUNT,
         base::FormatNumber(last_result_->active_match_ordinal()),
         base::FormatNumber(last_result_->number_of_matches())));
 
     if (last_result_->final_update()) {
-      NotifyAccessibilityEvent(ax::mojom::Event::kLiveRegionChanged,
-                               /* send_native_event = */ true);
+      ui::AXNodeData node_data;
+      GetAccessibleNodeData(&node_data);
+      GetViewAccessibility().AnnouncePolitely(
+          node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
     }
   }
 

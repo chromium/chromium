@@ -232,7 +232,16 @@ class VIEWS_EXPORT ViewAccessibility {
   virtual gfx::NativeViewAccessible GetNativeObject() const;
 
   // Causes the screen reader to announce |text|. If the current user is not
-  // using a screen reader, has no effect.
+  // using a screen reader, has no effect. AnnouncePolitely() will speak
+  // the given string. AnnounceAlert() may make a stronger attempt to be
+  // noticeable; the screen reader may say something like "Alert: hello"
+  // instead of just "hello", and may interrupt any existing text being spoken.
+  // However, the screen reader may also treat the two calls the same.
+  // AnnounceText() is a deprecated alias for AnnounceAlert().
+  // TODO(crbug.com/1499368) - Migrate all callers of AnnounceText() to
+  // one of the other two methods.
+  virtual void AnnounceAlert(const std::u16string& text);
+  virtual void AnnouncePolitely(const std::u16string& text);
   virtual void AnnounceText(const std::u16string& text);
 
   virtual const ui::AXUniqueId& GetUniqueId() const;

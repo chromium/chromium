@@ -889,23 +889,32 @@ TEST_F(RootViewDesktopNativeWidgetTest, SingleLayoutDuringInit) {
 
 #if !BUILDFLAG(IS_MAC)
 
-// Tests that AnnounceText sets up the correct text value on the hidden view,
-// and that the resulting hidden view actually stays hidden.
-TEST_F(RootViewTest, AnnounceTextTest) {
+// Tests that AnnounceAlert sets up the correct text value on the hidden
+// view, and that the resulting hidden view actually stays hidden.
+TEST_F(RootViewTest, AnnounceTextAsTest) {
   RootViewTestState state(this, {.bounds = {100, 100, 100, 100}});
   internal::RootView* root_view = state.GetRootView();
 
   EXPECT_EQ(1U, root_view->children().size());
-  const std::u16string kText = u"Text";
-  root_view->AnnounceText(kText);
+  const std::u16string kAlertText = u"Alert";
+  root_view->AnnounceTextAs(kAlertText,
+                            ui::AXPlatformNode::AnnouncementType::kAlert);
   EXPECT_EQ(2U, root_view->children().size());
   views::test::RunScheduledLayout(root_view);
   EXPECT_FALSE(root_view->children()[0]->size().IsEmpty());
   EXPECT_TRUE(root_view->children()[1]->size().IsEmpty());
-  View* const hidden_view = root_view->children()[1];
+  View* const hidden_alert_view = root_view->children()[1];
   ui::AXNodeData node_data;
-  hidden_view->GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(kText,
+  hidden_alert_view->GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(kAlertText,
+            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
+  const std::u16string kPoliteText = u"Something polite";
+  root_view->AnnounceTextAs(kPoliteText,
+                            ui::AXPlatformNode::AnnouncementType::kPolite);
+  View* const hidden_polite_view = root_view->children()[1];
+  hidden_polite_view->GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(kPoliteText,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
