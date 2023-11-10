@@ -7160,7 +7160,7 @@ def CheckDanglingUntriaged(input_api, output_api):
     # `win-presubmit` are particularly sensitive to reading the files. Adding
     # this check caused the bot to run 2x longer. See https://crbug.com/1486612.
     if input_api.no_diffs:
-      return []
+        return []
 
     def FilterFile(file):
         return input_api.FilterSourceFile(
@@ -7171,8 +7171,8 @@ def CheckDanglingUntriaged(input_api, output_api):
 
     count = 0
     for f in input_api.AffectedSourceFiles(FilterFile):
-        count -= f.OldContents().count("DanglingUntriaged")
-        count += f.NewContents().count("DanglingUntriaged")
+        count -= sum([l.count("DanglingUntriaged") for l in f.OldContents()])
+        count += sum([l.count("DanglingUntriaged") for l in f.NewContents()])
 
     # Most likely, nothing changed:
     if count == 0:
@@ -7180,10 +7180,7 @@ def CheckDanglingUntriaged(input_api, output_api):
 
     # Congrats developers for improving it:
     if count < 0:
-        message = (
-            f"DanglingUntriaged pointers removed: {-count}",
-            f"Thank you!",
-        )
+        message = f"DanglingUntriaged pointers removed: {-count}\nThank you!"
         return [output_api.PresubmitNotifyResult(message)]
 
     # Check for 'DanglingUntriaged-notes' in the description:
@@ -7199,18 +7196,18 @@ def CheckDanglingUntriaged(input_api, output_api):
         return []
 
     message = (
-        "Unexpected new occurrences of `DanglingUntriaged` detected. Please",
-        "avoid adding new ones",
-        "",
-        "See documentation:",
-        "https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr.md",
-        "",
-        "See also the guide to fix dangling pointers:",
-        "https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr_guide.md",
-        "",
-        "To disable this warning, please add in the commit description:",
-        "DanglingUntriaged-notes: <rational for new untriaged dangling "
-        "pointers>",
+        "Unexpected new occurrences of `DanglingUntriaged` detected. Please\n" +
+        "avoid adding new ones\n" +
+        "\n" +
+        "See documentation:\n" +
+        "https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr.md\n" +
+        "\n" +
+        "See also the guide to fix dangling pointers:\n" +
+        "https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr_guide.md\n" +
+        "\n" +
+        "To disable this warning, please add in the commit description:\n" +
+        "DanglingUntriaged-notes: <rational for new untriaged dangling " +
+        "pointers>"
     )
     return [output_api.PresubmitPromptWarning(message)]
 
