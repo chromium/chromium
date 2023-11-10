@@ -594,8 +594,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.AMP.PaintTiming.InputToLargestContentfulPaint.Subframe.FullNavigation"
-    units="ms" expires_after="2023-06-18">
-  <owner>bmcquade@chromium.org</owner>
+    units="ms" expires_after="2024-02-09">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -607,7 +606,7 @@ chromium-metrics-reviews@google.com.
     image paint. See http://bit.ly/fcp_plus_plus for details.
 
     This histogram has incomplete data. It expired after M78 and was re-added in
-    M90, and also after 2022-12-11 until M111.
+    M90, also after 2022-12-11 until M111, and also after 2023-06-18 until M121.
   </summary>
 </histogram>
 
@@ -819,14 +818,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.ParseTiming.NavigationToParseStart"
-    units="ms" expires_after="2023-10-01">
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@google.com</owner>
+    units="ms" expires_after="2024-02-09">
+  <owner>kouhei@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     parser started, for Google Search page loads. Only recorded for Search
     navigations that start in the foreground and stay in the foreground until
     parse start.
+
+    This metric has incomplete data. It was expired between 2023-10-01 and M121.
   </summary>
 </histogram>
 
@@ -1321,7 +1322,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.UseCounter.Experimental.MetricsReplayAtActivationDuration"
-    units="ms" expires_after="2023-09-03">
+    units="ms" expires_after="2024-02-09">
   <owner>kenoss@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <summary>
@@ -1334,8 +1335,8 @@ chromium-metrics-reviews@google.com.
     recorded. This metric records the duration of this flush, in case of this
     cause a performance degradation.
 
-    Warning: this histogram was expired from 2023-03-16 to 2023-03-29; data may
-    be missing.
+    Warning: this histogram was expired from 2023-03-16 to 2023-03-2 9and also
+    between 2023-09-03 and M121; data may be missing.
   </summary>
 </histogram>
 
@@ -1692,34 +1693,40 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.NavigationTiming.NavigationStartToFinalRequestStart"
-    units="ms" expires_after="2023-03-12">
+    units="ms" expires_after="2024-02-09">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     The time relative to navigation start that the final HTTP request is sent
     for the main resource of a main frame navigation.
+
+    This metric has incomplete data. It was expired between 2023-03-12 and M121.
   </summary>
 </histogram>
 
 <histogram
     name="PageLoad.Experimental.NavigationTiming.NavigationStartToFinalResponseStart"
-    units="ms" expires_after="2022-12-18">
+    units="ms" expires_after="2024-02-09">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     The time relative to navigation start that the headers of the final HTTP
     response is received for the main resource of a main frame navigation.
+
+    This metric has incomplete data. It was expired between 2022-12-18 and M121.
   </summary>
 </histogram>
 
 <histogram
     name="PageLoad.Experimental.NavigationTiming.NavigationStartToFirstLoaderCallback"
-    units="ms" expires_after="2023-07-09">
+    units="ms" expires_after="2024-02-09">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     The time relative to navigation start that a callback for the navigation
     loader is first invoked for the main resource of a main frame navigation.
+
+    This metric has incomplete data. It was expired between 2023-07-09 and M121.
   </summary>
 </histogram>
 
@@ -1758,32 +1765,36 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.PageTiming.CachedResourceLoadTime.{RequestDestination}"
-    units="ms" expires_after="2023-08-07">
+    units="ms" expires_after="2024-02-09">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
     Measures the time from load start to when headers have been received for
     resource requests which come from the cache. Logged for every
     {RequestDestination} resource request from the cache.
+
+    This metric has incomplete data. It was expired between 2023-08-07 and M121.
   </summary>
   <token key="RequestDestination" variants="RequestDestination"/>
 </histogram>
 
 <histogram
     name="PageLoad.Experimental.PageTiming.CommitSentToFirstSubresourceLoadStart"
-    units="ms" expires_after="2023-02-12">
+    units="ms" expires_after="2024-02-09">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
     Measures the time from when the navigation commit was sent to the renderer
     to the first subresource load start. Logged for every page load which has
     subresources.
+
+    This metric has incomplete data. It was expired between 2023-02-12 and M121.
   </summary>
 </histogram>
 
 <histogram
     name="PageLoad.Experimental.PageTiming.NavigationToFirstSubresourceLoadStart"
-    units="ms" expires_after="2023-08-07">
+    units="ms" expires_after="2024-02-09">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -1794,7 +1805,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.PageTiming.ResourceLoadTime.{RequestDestination}"
-    units="ms" expires_after="2023-08-07">
+    units="ms" expires_after="2024-02-09">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -1807,7 +1818,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.PageTiming.TotalSubresourceLoadTimeAtFirstContentfulPaint"
-    units="ms" expires_after="2023-08-07">
+    units="ms" expires_after="2024-02-09">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -1844,7 +1855,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.PaintTiming.FirstEligibleToPaintToFirstPaint"
-    units="ms" expires_after="2023-04-16">
+    units="ms" expires_after="2024-02-09">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -2383,7 +2394,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Internal.Prerender2.ForegroundCheckResult.{PageLoadPrerenderForegroundCheckEvent}"
-    enum="PageLoadPrerenderForegroundCheckResult" expires_after="2023-10-03">
+    enum="PageLoadPrerenderForegroundCheckResult" expires_after="2024-02-09">
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
@@ -2930,7 +2941,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2AtFirstOnHidden"
-    units="ms" expires_after="2023-08-08">
+    units="ms" expires_after="2024-02-09">
   <owner>lanwei@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -2988,7 +2999,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.ParseTiming.ParseBlockedOnScriptExecutionFromDocumentWrite"
-    units="ms" expires_after="2023-05-29">
+    units="ms" expires_after="2024-02-09">
   <owner>cduvall@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>
