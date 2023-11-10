@@ -440,11 +440,9 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, FocusRestoreOnTabSwitch) {
   EXPECT_EQ(u"a", GetFindBarSelectedText());
 
   // Open another tab (tab B).
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
-  chrome::AddSelectedTabWithURL(browser(), url, ui::PAGE_TRANSITION_TYPED);
-  observer.Wait();
+  auto* const contents =
+      chrome::AddSelectedTabWithURL(browser(), url, ui::PAGE_TRANSITION_TYPED);
+  content::WaitForLoadStop(contents);
 
   // Make sure Find box is open.
   chrome::Find(browser());
@@ -485,11 +483,9 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, FocusRestoreOnTabSwitchDismiss) {
   chrome::Find(browser());
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
 
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
-  chrome::AddSelectedTabWithURL(browser(), url, ui::PAGE_TRANSITION_TYPED);
-  observer.Wait();
+  auto* contents =
+      chrome::AddSelectedTabWithURL(browser(), url, ui::PAGE_TRANSITION_TYPED);
+  content::WaitForLoadStop(contents);
 
   // Make sure Find box is not open when starting the new tab.
   EXPECT_FALSE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
