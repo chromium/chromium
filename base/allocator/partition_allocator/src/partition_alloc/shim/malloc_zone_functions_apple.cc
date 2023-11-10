@@ -4,9 +4,6 @@
 
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/malloc_zone_functions_apple.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <atomic>
 #include <type_traits>
 
@@ -126,5 +123,3 @@ void ClearAllMallocZonesForTesting() {
 }
 
 }  // namespace allocator_shim
-
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)

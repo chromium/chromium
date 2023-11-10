@@ -12,10 +12,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_OVERRIDE_UCRT_SYMBOLS_WIN_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_OVERRIDE_UCRT_SYMBOLS_WIN_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <malloc.h>
+
 #include <windows.h>
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/checked_math.h"
@@ -181,6 +179,5 @@ __declspec(restrict) void* _aligned_offset_recalloc(void* address,
 }
 
 }  // extern "C"
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_OVERRIDE_UCRT_SYMBOLS_WIN_H_

@@ -3758,6 +3758,8 @@ test("base_unittests") {
 
   if (is_mac) {
     sources += [
+      "allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple_unittest.mm",
+      "allocator/partition_allocator/src/partition_alloc/shim/malloc_zone_functions_apple_unittest.cc",
       "apple/call_with_eh_frame_unittest.mm",
       "apple/scoped_cftyperef_unittest.cc",
       "apple/scoped_mach_vm_unittest.cc",

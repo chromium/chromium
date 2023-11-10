@@ -17,9 +17,6 @@
 
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 #include <errno.h>
@@ -34,6 +31,7 @@
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/apple/mach_logging.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/malloc_zone_functions_apple.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/third_party/apple_apsl/CFBase.h"
@@ -628,5 +626,3 @@ void ReplaceZoneFunctions(ChromeMallocZone* zone,
 }
 
 }  // namespace allocator_shim
-
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)

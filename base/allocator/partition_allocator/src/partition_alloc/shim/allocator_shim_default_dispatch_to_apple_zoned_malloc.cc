@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <utility>
 
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
@@ -131,5 +128,3 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
 };
 
 }  // namespace allocator_shim
-
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)

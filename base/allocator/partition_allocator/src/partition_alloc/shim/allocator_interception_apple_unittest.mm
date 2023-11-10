@@ -4,9 +4,6 @@
 
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <mach/mach.h>
 
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
@@ -66,5 +63,3 @@ TEST_F(AllocatorInterceptionTest, ShimNewMallocZones) {
 #endif
 
 }  // namespace allocator_shim
-
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)

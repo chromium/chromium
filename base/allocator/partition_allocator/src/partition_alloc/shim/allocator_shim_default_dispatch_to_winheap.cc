@@ -6,9 +6,6 @@
 
 #include <ostream>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/winheap_stubs_win.h"
 
@@ -110,5 +107,3 @@ constexpr AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &DefaultWinHeapAlignedFreeImpl,
     nullptr, /* next */
 };
-
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)

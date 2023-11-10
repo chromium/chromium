@@ -24,11 +24,9 @@
 #include "components/services/heap_profiling/public/cpp/heap_profiling_trace_source.h"
 #endif
 
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
-#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif
 
 using base::allocator::dispatcher::AllocationSubsystem;
 
@@ -42,8 +40,7 @@ void ProfilingClient::BindToInterface(
   receivers_.Add(this, std::move(receiver));
 }
 
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 void ShimNewMallocZonesAndReschedule(base::Time end_time,
                                      base::TimeDelta delay) {
   allocator_shim::ShimNewMallocZones();
@@ -58,8 +55,7 @@ void ShimNewMallocZonesAndReschedule(base::Time end_time,
       base::BindOnce(&ShimNewMallocZonesAndReschedule, end_time, next_delay),
       delay);
 }
-#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // BULDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
                                      StartProfilingCallback callback) {
@@ -67,8 +63,7 @@ void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
     return;
   started_profiling_ = true;
 
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // On macOS, this call is necessary to shim malloc zones that were created
   // after startup. This cannot be done during shim initialization because the
   // task scheduler has not yet been initialized.
@@ -78,8 +73,7 @@ void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
   base::Time end_time = base::Time::Now() + base::Minutes(1);
   base::TimeDelta initial_delay = base::Seconds(1);
   ShimNewMallocZonesAndReschedule(end_time, initial_delay);
-#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   StartProfilingInternal(std::move(params), std::move(callback));
 

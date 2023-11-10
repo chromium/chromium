@@ -4,7 +4,6 @@
 
 #include "base/process/memory.h"
 
-#include <stdlib.h>
 #include <new>
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
@@ -59,26 +58,16 @@ bool UncheckedMalloc(size_t size, void** result) {
   // replaced with PartitionAlloc, so the allocator shim functions work best.
   *result = allocator_shim::UncheckedAlloc(size);
   return *result != nullptr;
-#elif BUILDFLAG(USE_ALLOCATOR_SHIM)
+#else   // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return allocator_shim::UncheckedMallocMac(size, result);
-#else   // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // !BUILDFLAG(USE_ALLOCATOR_SHIM)
-  *result = malloc(size);
-  return *result != nullptr;
-#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // !BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 // The standard version is defined in memory.cc in case of
 // USE_PARTITION_ALLOC_AS_MALLOC.
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 bool UncheckedCalloc(size_t num_items, size_t size, void** result) {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
   return allocator_shim::UncheckedCallocMac(num_items, size, result);
-#else
-  *result = calloc(num_items, size);
-  return *result != nullptr;
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 }
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -90,11 +79,11 @@ void EnableTerminationOnOutOfMemory() {
 // have a shim).
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
   allocator_shim::SetCallNewHandlerOnMallocFailure(true);
+#endif
 
   // Step 3: Enable OOM killer on all other malloc zones (or just "all" without
   // "other" if shim is disabled).
   allocator_shim::InterceptAllocationsMac();
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 }
 
 void UncheckedFree(void* ptr) {

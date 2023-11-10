@@ -5,9 +5,6 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_MALLOC_ZONE_FUNCTIONS_APPLE_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_MALLOC_ZONE_FUNCTIONS_APPLE_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <malloc/malloc.h>
 #include <stddef.h>
 
@@ -110,7 +107,5 @@ inline MallocZoneFunctions& GetFunctionsForZone(void* zone) {
 }
 
 }  // namespace allocator_shim
-
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_MALLOC_ZONE_FUNCTIONS_APPLE_H_
