@@ -27,6 +27,7 @@ class StorageAccessHandleTest
                                                    bool,
                                                    bool,
                                                    bool,
+                                                   bool,
                                                    bool>> {
  public:
   bool all() { return std::get<0>(GetParam()); }
@@ -39,6 +40,7 @@ class StorageAccessHandleTest
   bool estimate() { return std::get<7>(GetParam()); }
   bool createObjectURL() { return std::get<8>(GetParam()); }
   bool revokeObjectURL() { return std::get<9>(GetParam()); }
+  bool BroadcastChannel() { return std::get<10>(GetParam()); }
 
   LocalDOMWindow* getLocalDOMWindow() {
     test::ScopedMockedURLLoad scoped_mocked_url_load_root(
@@ -68,6 +70,7 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   storage_access_types->setEstimate(estimate());
   storage_access_types->setCreateObjectURL(createObjectURL());
   storage_access_types->setRevokeObjectURL(revokeObjectURL());
+  storage_access_types->setBroadcastChannel(BroadcastChannel());
   StorageAccessHandle* storage_access_handle =
       MakeGarbageCollected<StorageAccessHandle>(*window, storage_access_types);
   EXPECT_TRUE(window->document()->IsUseCounted(
@@ -120,6 +123,11 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL),
       revokeObjectURL());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel),
+      BroadcastChannel());
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use));
@@ -147,6 +155,9 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use));
   {
     V8TestingScope scope;
     storage_access_handle->sessionStorage(scope.GetExceptionState());
@@ -258,6 +269,18 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
                   ? nullptr
                   : StorageAccessHandle::kRevokeObjectURLNotRequested);
   }
+  {
+    V8TestingScope scope;
+    storage_access_handle->BroadcastChannel(scope.GetExecutionContext(), "",
+                                            scope.GetExceptionState());
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              (all() || BroadcastChannel()) ? DOMExceptionCode::kNoError
+                                            : DOMExceptionCode::kSecurityError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              (all() || BroadcastChannel())
+                  ? nullptr
+                  : StorageAccessHandle::kBroadcastChannelNotRequested);
+  }
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
@@ -303,6 +326,11 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use),
       all() || revokeObjectURL());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use),
+      all() || BroadcastChannel());
 }
 
 // Test all handles.
@@ -318,29 +346,44 @@ INSTANTIATE_TEST_SUITE_P(
                                              bool,
                                              bool,
                                              bool,
+                                             bool,
                                              bool>>{
         // Nothing:
-        {false, false, false, false, false, false, false, false, false, false},
+        {false, false, false, false, false, false, false, false, false, false,
+         false},
         // All:
-        {true, false, false, false, false, false, false, false, false, false},
+        {true, false, false, false, false, false, false, false, false, false,
+         false},
         // Session Storage:
-        {false, true, false, false, false, false, false, false, false, false},
+        {false, true, false, false, false, false, false, false, false, false,
+         false},
         // Local Storage:
-        {false, false, true, false, false, false, false, false, false, false},
+        {false, false, true, false, false, false, false, false, false, false,
+         false},
         // IndexedDB:
-        {false, false, false, true, false, false, false, false, false, false},
+        {false, false, false, true, false, false, false, false, false, false,
+         false},
         // Web Locks:
-        {false, false, false, false, true, false, false, false, false, false},
+        {false, false, false, false, true, false, false, false, false, false,
+         false},
         // Cache Storage:
-        {false, false, false, false, false, true, false, false, false, false},
+        {false, false, false, false, false, true, false, false, false, false,
+         false},
         // Origin Private File System:
-        {false, false, false, false, false, false, true, false, false, false},
+        {false, false, false, false, false, false, true, false, false, false,
+         false},
         // Quota:
-        {false, false, false, false, false, false, false, true, false, false},
+        {false, false, false, false, false, false, false, true, false, false,
+         false},
         // createObjectURL:
-        {false, false, false, false, false, false, false, false, true, false},
+        {false, false, false, false, false, false, false, false, true, false,
+         false},
         // revokeObjectURL:
-        {false, false, false, false, false, false, false, false, false, true},
+        {false, false, false, false, false, false, false, false, false, true,
+         false},
+        // BroadcastChannel:
+        {false, false, false, false, false, false, false, false, false, false,
+         true},
     }));
 
 }  // namespace blink

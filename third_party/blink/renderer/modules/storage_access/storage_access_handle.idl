@@ -13,6 +13,6 @@ interface StorageAccessHandle {
     [CallWith=ScriptState, LogActivity, RaisesException] Promise<StorageEstimate> estimate();
     [LogActivity, RaisesException] DOMString createObjectURL(Blob blob);
     [LogActivity, RaisesException] void revokeObjectURL(DOMString url);
-    // TODO(crbug.com/1484966): Add broadcast channel
+    [CallWith=ExecutionContext, LogActivity, RaisesException] BroadcastChannel BroadcastChannel(DOMString name);
     // TODO(crbug.com/1484966): Add shared worker
 };

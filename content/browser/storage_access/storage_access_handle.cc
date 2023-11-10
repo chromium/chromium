@@ -4,6 +4,8 @@
 
 #include "content/browser/storage_access/storage_access_handle.h"
 
+#include "content/browser/broadcast_channel/broadcast_channel_provider.h"
+#include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -154,6 +156,20 @@ void StorageAccessHandle::BindBlobStorage(
       ->AddReceiver(blink::StorageKey::CreateFirstParty(
                         render_frame_host().GetStorageKey().origin()),
                     std::move(receiver));
+}
+
+void StorageAccessHandle::BindBroadcastChannel(
+    mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelProvider>
+        receiver) {
+  BroadcastChannelService* service =
+      static_cast<RenderFrameHostImpl&>(render_frame_host())
+          .GetStoragePartition()
+          ->GetBroadcastChannelService();
+  service->AddAssociatedReceiver(
+      std::make_unique<BroadcastChannelProvider>(
+          service, blink::StorageKey::CreateFirstParty(
+                       render_frame_host().GetStorageKey().origin())),
+      std::move(receiver));
 }
 
 StorageAccessHandle::StorageAccessHandle(

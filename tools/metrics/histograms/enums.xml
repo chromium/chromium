@@ -30914,6 +30914,10 @@ Called by update_use_counter_feature_enum.py.-->
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL"/>
   <int value="4728"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use"/>
+  <int value="4729"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel"/>
+  <int value="4730"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

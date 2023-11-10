@@ -10,6 +10,7 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom-forward.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-forward.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 #include "third_party/blink/public/mojom/locks/lock_manager.mojom-forward.h"
@@ -43,6 +44,9 @@ class StorageAccessHandle
   void BindBlobStorage(
       mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver)
       override;
+  void BindBroadcastChannel(
+      mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelProvider>
+          receiver) override;
 
  private:
   StorageAccessHandle(

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_ACCESS_STORAGE_ACCESS_HANDLE_H_
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom-blink.h"
 #include "third_party/blink/public/mojom/storage_access/storage_access_handle.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_access_types.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
@@ -23,6 +24,7 @@
 namespace blink {
 
 class Blob;
+class BroadcastChannel;
 class ExceptionState;
 
 class MODULES_EXPORT StorageAccessHandle final
@@ -41,6 +43,7 @@ class MODULES_EXPORT StorageAccessHandle final
   static const char kEstimateNotRequested[];
   static const char kCreateObjectURLNotRequested[];
   static const char kRevokeObjectURLNotRequested[];
+  static const char kBroadcastChannelNotRequested[];
 
   explicit StorageAccessHandle(LocalDOMWindow& window,
                                const StorageAccessTypes* storage_access_types);
@@ -58,6 +61,9 @@ class MODULES_EXPORT StorageAccessHandle final
   String createObjectURL(Blob* blob, ExceptionState& exception_state) const;
   void revokeObjectURL(const String& url,
                        ExceptionState& exception_state) const;
+  BroadcastChannel* BroadcastChannel(ExecutionContext* execution_context,
+                                     const String& name,
+                                     ExceptionState& exception_state) const;
 
  private:
   void InitSessionStorage();
@@ -69,6 +75,7 @@ class MODULES_EXPORT StorageAccessHandle final
   void InitGetDirectory();
   void InitQuota();
   void InitBlobStorage();
+  void InitBroadcastChannel();
 
   void GetDirectoryImpl(ScriptPromiseResolver* resolver) const;
 
@@ -80,6 +87,8 @@ class MODULES_EXPORT StorageAccessHandle final
   Member<LockManager> locks_;
   Member<CacheStorage> caches_;
   Member<PublicURLManager> blob_storage_;
+  HeapMojoAssociatedRemote<mojom::blink::BroadcastChannelProvider>
+      broadcast_channel_;
 };
 
 }  // namespace blink

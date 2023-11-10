@@ -71,6 +71,12 @@
         }
         break;
       }
+      case "BroadcastChannel": {
+        const channel = handle.BroadcastChannel(id);
+        channel.postMessage("Cross-origin handle access");
+        channel.close();
+        break;
+      }
       default: {
         message = "Unexpected type " + type;
         break;

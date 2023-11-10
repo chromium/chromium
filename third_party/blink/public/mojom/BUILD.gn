@@ -1290,6 +1290,9 @@ mojom("mojom_core") {
     "messaging/transferable_message.mojom",
     "messaging/user_activation_snapshot.mojom",
 
+    # Depends on cloneable message.
+    "broadcastchannel/broadcast_channel.mojom",
+
     # Depends on frame_policy.mojom.
     "fenced_frame/fenced_frame.mojom",
     "navigation/navigation_params.mojom",
@@ -1778,37 +1781,6 @@ mojom("web_bluetooth_mojo_bindings") {
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/public/platform/web_common.h"
-}
-
-# The mojom_broadcastchannel_bindings is separated from the rest of mojom files
-# to allow blink/renderer/core to depend on this.
-mojom("mojom_broadcastchannel_bindings") {
-  visibility = [ "//content/*" ]
-  visibility_blink = [ "//third_party/blink/renderer/core/*" ]
-  sources = [ "broadcastchannel/broadcast_channel.mojom" ]
-  public_deps = [
-    ":mojom_core",
-    "//url/mojom:url_mojom_origin",
-  ]
-
-  overridden_deps = [ ":mojom_core" ]
-  component_deps = [ "//third_party/blink/public/common" ]
-  overridden_deps_blink = []
-  component_deps_blink =
-      [ "//third_party/blink/renderer/bindings:generate_bindings_all" ]
-
-  component_output_prefix = "blink_mojom_broadcastchannel_bindings"
-
-  # See comment above.
-  export_class_attribute = "CONTENT_EXPORT"
-  export_define = "CONTENT_IMPLEMENTATION=1"
-  export_header = "content/common/content_export.h"
-
-  # Similarly, the blink variant must be linked with the core component
-  # since it uses types from it in its typemaps.
-  export_class_attribute_blink = "CORE_EXPORT"
-  export_define_blink = "BLINK_CORE_IMPLEMENTATION=1"
-  export_header_blink = "third_party/blink/renderer/core/core_export.h"
 }
 
 mojom("mojom_mhtml_load_result") {

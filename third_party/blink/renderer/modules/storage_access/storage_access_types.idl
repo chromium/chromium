@@ -13,6 +13,6 @@ dictionary StorageAccessTypes {
     boolean estimate = false;
     boolean createObjectURL = false;
     boolean revokeObjectURL = false;
-    // TODO(crbug.com/1484966): Add broadcast channel
+    boolean BroadcastChannel = false;
     // TODO(crbug.com/1484966): Add shared worker
 };

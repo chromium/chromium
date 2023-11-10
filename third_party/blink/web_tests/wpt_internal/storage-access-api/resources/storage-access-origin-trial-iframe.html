@@ -24,6 +24,7 @@
     await handle.estimate();
     const url = handle.createObjectURL(new Blob(["TEST"]));
     handle.revokeObjectURL(url);
+    handle.BroadcastChannel("test").close();
   } catch (_) {
     message = "NoAccess";
   }

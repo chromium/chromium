@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/modules/broadcastchannel/broadcast_channel.h"
 #include "third_party/blink/renderer/modules/file_system_access/storage_manager_file_system_access.h"
 #include "third_party/blink/renderer/modules/storage/storage_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -62,6 +63,11 @@ const char StorageAccessHandle::kRevokeObjectURLNotRequested[] =
     "The revokeObjectURL function for Blob Stoage was not requested when "
     "storage access handle was initialized.";
 
+// static
+const char StorageAccessHandle::kBroadcastChannelNotRequested[] =
+    "Broadcast Channel was not requested when storage access handle was "
+    "initialized.";
+
 namespace {
 
 void EstimateImplAfterRemoteEstimate(ScriptPromiseResolver* resolver,
@@ -95,7 +101,8 @@ StorageAccessHandle::StorageAccessHandle(
     const StorageAccessTypes* storage_access_types)
     : Supplement<LocalDOMWindow>(window),
       storage_access_types_(storage_access_types),
-      remote_(window.GetExecutionContext()) {
+      remote_(window.GetExecutionContext()),
+      broadcast_channel_(window.GetExecutionContext()) {
   window.CountUse(
       WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies);
   if (storage_access_types_->all()) {
@@ -146,6 +153,11 @@ StorageAccessHandle::StorageAccessHandle(
         WebFeature::
             kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL);
   }
+  if (storage_access_types_->broadcastChannel()) {
+    window.CountUse(
+        WebFeature::
+            kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel);
+  }
   if (storage_access_types_->all() || storage_access_types_->sessionStorage()) {
     InitSessionStorage();
   }
@@ -172,6 +184,10 @@ StorageAccessHandle::StorageAccessHandle(
       storage_access_types_->revokeObjectURL()) {
     InitBlobStorage();
   }
+  if (storage_access_types_->all() ||
+      storage_access_types_->broadcastChannel()) {
+    InitBroadcastChannel();
+  }
 }
 
 void StorageAccessHandle::Trace(Visitor* visitor) const {
@@ -183,6 +199,7 @@ void StorageAccessHandle::Trace(Visitor* visitor) const {
   visitor->Trace(locks_);
   visitor->Trace(caches_);
   visitor->Trace(blob_storage_);
+  visitor->Trace(broadcast_channel_);
   ScriptWrappable::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
@@ -359,6 +376,22 @@ void StorageAccessHandle::revokeObjectURL(
   blob_storage_->Revoke(resolved_url);
 }
 
+BroadcastChannel* StorageAccessHandle::BroadcastChannel(
+    ExecutionContext* execution_context,
+    const String& name,
+    ExceptionState& exception_state) const {
+  if (!storage_access_types_->all() &&
+      !storage_access_types_->broadcastChannel()) {
+    exception_state.ThrowSecurityError(kBroadcastChannelNotRequested);
+    return nullptr;
+  }
+  GetSupplementable()->CountUse(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use);
+  return MakeGarbageCollected<blink::BroadcastChannel>(
+      PassKey(), execution_context, name, broadcast_channel_.get());
+}
+
 void StorageAccessHandle::InitSessionStorage() {
   LocalDOMWindow* window = GetSupplementable();
   if (!window->GetSecurityOrigin()->CanAccessSessionStorage()) {
@@ -482,6 +515,19 @@ void StorageAccessHandle::InitBlobStorage() {
   blob_storage_ = MakeGarbageCollected<PublicURLManager>(
       PassKey(), GetSupplementable()->GetExecutionContext(),
       std::move(blob_storage_remote));
+}
+
+void StorageAccessHandle::InitBroadcastChannel() {
+  if (GetSupplementable()->GetSecurityOrigin()->IsOpaque()) {
+    return;
+  }
+  if (!InitRemote()) {
+    return;
+  }
+  remote_->BindBroadcastChannel(
+      broadcast_channel_.BindNewEndpointAndPassReceiver(
+          GetSupplementable()->GetExecutionContext()->GetTaskRunner(
+              TaskType::kInternalDefault)));
 }
 
 }  // namespace blink

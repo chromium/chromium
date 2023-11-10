@@ -4065,6 +4065,8 @@ enum WebFeature {
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL_Use = 4726,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL = 4727,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use = 4728,
+  kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel = 4729,
+  kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use = 4730,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
