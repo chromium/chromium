@@ -61,6 +61,9 @@ namespace {
 BASE_FEATURE(kWebViewUseOutputSurfaceClipRect,
              "WebViewUseOutputSurfaceClipRect",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDrawAndSwapInjectLatency,
+             "DrawAndSwapInjectLatency",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 class ScopedAcquireExternalContext {
  public:
@@ -632,6 +635,10 @@ void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
                IsUsingVulkan());
 
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
+
+  if (base::FeatureList::IsEnabled(kDrawAndSwapInjectLatency)) {
+    usleep(1000);
+  }
 
   // Ensure that the context is synced from external and synced back before
   // returning. This is only necessary when using ANGLE to keep its internals
