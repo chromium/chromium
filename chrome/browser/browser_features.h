@@ -129,9 +129,7 @@ BASE_DECLARE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff);
 
 BASE_DECLARE_FEATURE(kOmniboxTriggerForNoStatePrefetch);
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kPayloadTestComponent);
-#endif
 
 }  // namespace features
 
