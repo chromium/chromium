@@ -51,8 +51,13 @@ TabOrganizationSession::CreateSessionForBrowser(
   std::vector<std::unique_ptr<TabData>> tab_datas;
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   for (int index = 0; index < tab_strip_model->count(); index++) {
-    request->AddTabData(std::make_unique<TabData>(
-        tab_strip_model, tab_strip_model->GetWebContentsAt(index)));
+    std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(
+        tab_strip_model, tab_strip_model->GetWebContentsAt(index));
+    if (!tab_data->IsValidForOrganizing()) {
+      continue;
+    }
+
+    request->AddTabData(std::move(tab_data));
   }
 
   return std::make_unique<TabOrganizationSession>(service, std::move(request));

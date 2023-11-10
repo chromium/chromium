@@ -20,6 +20,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 
+namespace {
+
+constexpr char kValidURL[] = "http://zombo.com";
+constexpr char kInvalidURL[] = "chrome://page";
+
+}  // anonymous namespace
+
 class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
  public:
   TabOrganizationServiceTest() = default;
@@ -41,6 +48,8 @@ class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
     std::unique_ptr<content::WebContents> web_contents =
         content::WebContentsTester::CreateTestWebContents(profile_.get(),
                                                           nullptr);
+    content::WebContentsTester::For(web_contents.get())
+        ->NavigateAndCommit(GURL(kValidURL));
 
     content::WebContents* web_contents_ptr = web_contents.get();
 
@@ -155,6 +164,36 @@ TEST_F(TabOrganizationServiceTest, SessionFromBrowserPopulatesRequest) {
   std::unique_ptr<TabOrganizationSession> session =
       TabOrganizationSession::CreateSessionForBrowser(browser1, service());
   EXPECT_EQ(session->request()->tab_datas().size(), 4u);
+
+  session->StartRequest();
+  EXPECT_NE(session->request()->response(), nullptr);
+  EXPECT_EQ(session->tab_organizations().size(), 1u);
+
+  TabOrganization* organization = session->GetNextTabOrganization();
+  ASSERT_TRUE(organization);
+
+  organization->Accept();
+  EXPECT_EQ(browser1->tab_strip_model()->group_model()->ListTabGroups().size(),
+            1u);
+}
+
+TEST_F(TabOrganizationServiceTest,
+       TabOrganizationSessionCreateSessionForBrowserNoInvalidTabDatas) {
+  const int valid_tab_count = 2;
+  Browser* browser1 = AddBrowser();
+  for (int i = 0; i < valid_tab_count; i++) {
+    AddTabToBrowser(browser1, 0);
+  }
+
+  // Add an invalid tab.
+  content::WebContents* invalid_web_contents = AddTabToBrowser(browser1, 0);
+  content::WebContentsTester::For(invalid_web_contents)
+      ->NavigateAndCommit(GURL(kInvalidURL));
+
+  std::unique_ptr<TabOrganizationSession> session =
+      TabOrganizationSession::CreateSessionForBrowser(browser1, service());
+  EXPECT_EQ(static_cast<int>(session->request()->tab_datas().size()),
+            valid_tab_count);
 
   session->StartRequest();
   EXPECT_NE(session->request()->response(), nullptr);

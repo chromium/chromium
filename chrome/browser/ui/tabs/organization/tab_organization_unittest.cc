@@ -50,16 +50,17 @@ class TabOrganizationTest : public testing::Test {
 
   GURL GetUniqueTestURL() {
     static int offset = 1;
-    GURL url("chrome://page_" + base::NumberToString(offset));
+    GURL url("http://page_" + base::NumberToString(offset));
     offset++;
     return url;
   }
 
-  content::WebContents* AddTab(TabStripModel* tab_strip_model = nullptr) {
+  content::WebContents* AddTab(TabStripModel* tab_strip_model = nullptr,
+                               absl::optional<GURL> url = absl::nullopt) {
     std::unique_ptr<content::WebContents> contents_unique_ptr =
         CreateWebContents();
     content::WebContentsTester::For(contents_unique_ptr.get())
-        ->NavigateAndCommit(GURL(GetUniqueTestURL()));
+        ->NavigateAndCommit(url.has_value() ? url.value() : GetUniqueTestURL());
     content::WebContents* content_ptr = contents_unique_ptr.get();
     if (!tab_strip_model) {
       tab_strip_model = tab_strip_model_.get();
@@ -281,6 +282,33 @@ TEST_F(TabOrganizationTest, TabDataObserverTest) {
       tab_strip_model()->GetIndexOfWebContents(new_contents_ptr),
       TabCloseTypes::CLOSE_NONE);
   EXPECT_EQ(observer.update_call_count, 2);
+}
+
+TEST_F(TabOrganizationTest, TabDataHttpHttpsOnlyURLs) {
+  {
+    content::WebContents* web_contents =
+        AddTab(tab_strip_model(), GURL("http://zombo.com"));
+    TabData tab_data(tab_strip_model(), web_contents);
+    EXPECT_TRUE(tab_data.IsValidForOrganizing());
+  }
+  {
+    content::WebContents* web_contents =
+        AddTab(tab_strip_model(), GURL("https://zombo.com"));
+    TabData tab_data(tab_strip_model(), web_contents);
+    EXPECT_TRUE(tab_data.IsValidForOrganizing());
+  }
+  {
+    content::WebContents* web_contents =
+        AddTab(tab_strip_model(), GURL("chrome://page"));
+    TabData tab_data(tab_strip_model(), web_contents);
+    EXPECT_FALSE(tab_data.IsValidForOrganizing());
+  }
+  {
+    content::WebContents* web_contents =
+        AddTab(tab_strip_model(), GURL("file://dangerous_file.exe"));
+    TabData tab_data(tab_strip_model(), web_contents);
+    EXPECT_FALSE(tab_data.IsValidForOrganizing());
+  }
 }
 
 // TabOrganization tests.

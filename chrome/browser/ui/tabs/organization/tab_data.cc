@@ -56,6 +56,11 @@ bool TabData::IsValidForOrganizing() const {
     return false;
   }
 
+  // All non http(s) schemes are invalid.
+  if (!original_url_.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+
   if (original_tab_strip_model_
           ->GetTabGroupForTab(
               original_tab_strip_model_->GetIndexOfWebContents(web_contents_))
