@@ -560,9 +560,7 @@ TEST_F(TestAppMenuModelSafetyHubTest, SafetyHubMenuNotification) {
   // Let PasswordStatusCheckService to run till it fetches the latest data.
   PasswordStatusCheckService* password_service =
       PasswordStatusCheckServiceFactory::GetForProfile(profile());
-  // TODO(crbug.com/1443466): Replace this with password_service specific
-  // RunUntilIdle.
-  task_environment()->RunUntilIdle();
+  safety_hub_test_util::UpdatePasswordCheckServiceAsync(password_service);
   EXPECT_EQ(password_service->compromised_credential_count(), 0UL);
 
   // Creating and showing a notification for a site that has never been

@@ -55,3 +55,8 @@ PasswordStatusCheckServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<PasswordStatusCheckService>(
       Profile::FromBrowserContext(context));
 }
+
+bool PasswordStatusCheckServiceFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return base::FeatureList::IsEnabled(features::kSafetyHub);
+}

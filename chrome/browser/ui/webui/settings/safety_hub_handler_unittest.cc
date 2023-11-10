@@ -5,6 +5,7 @@
 #include <ctime>
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
@@ -72,14 +73,6 @@ class SafetyHubHandlerTest : public testing::Test {
   }
 
   void SetUp() override {
-    // Fully initialize |profile_| in the constructor since some children
-    // classes need it right away for SetUp().
-    TestingProfile::Builder profile_builder;
-    profile_builder.AddTestingFactory(
-        HistoryServiceFactory::GetInstance(),
-        HistoryServiceFactory::GetDefaultFactory());
-    profile_ = profile_builder.Build();
-
     // Set clock for HostContentSettingsMap.
     base::Time time;
     ASSERT_TRUE(base::Time::FromString("2022-09-07 13:00", &time));
@@ -91,10 +84,6 @@ class SafetyHubHandlerTest : public testing::Test {
     handler()->set_web_ui(web_ui());
     handler()->AllowJavascript();
 
-    // Create password stores for Password module.
-    profile_store_ = CreateAndUseTestPasswordStore(profile_.get());
-    account_store_ = CreateAndUseTestAccountPasswordStore(profile_.get());
-
     // Create a revoked permission.
     AddRevokedPermission();
 
@@ -105,14 +94,16 @@ class SafetyHubHandlerTest : public testing::Test {
     EXPECT_EQ(GURL(kUnusedTestSite),
               GURL(*revoked_permissions[0].GetDict().FindString(
                   site_settings::kOrigin)));
+
+    // Run password check to fetch latest result from disk.
+    safety_hub_test_util::UpdatePasswordCheckServiceAsync(
+        PasswordStatusCheckServiceFactory::GetForProfile(profile()));
   }
 
   void TearDown() override {
-    if (profile_) {
-      auto* partition = profile_->GetDefaultStoragePartition();
-      if (partition) {
-        partition->WaitForDeletionTasksForTesting();
-      }
+    auto* partition = profile()->GetDefaultStoragePartition();
+    if (partition) {
+      partition->WaitForDeletionTasksForTesting();
     }
   }
 
@@ -149,8 +140,8 @@ class SafetyHubHandlerTest : public testing::Test {
     profile_store().AddLogin(
         MakeForm(kUsername, kCompromisedPassword, kUsedTestSite, true));
     PasswordStatusCheckService* password_service =
-        PasswordStatusCheckServiceFactory::GetForProfile(profile_.get());
-    RunUntilIdle();
+        PasswordStatusCheckServiceFactory::GetForProfile(profile());
+    safety_hub_test_util::UpdatePasswordCheckServiceAsync(password_service);
     EXPECT_EQ(password_service->compromised_credential_count(), 1UL);
   }
 
@@ -158,8 +149,8 @@ class SafetyHubHandlerTest : public testing::Test {
     profile_store().UpdateLogin(
         MakeForm(kUsername, u"new_fnlsr4@cm^mls@fkspnsg3d"));
     PasswordStatusCheckService* password_service =
-        PasswordStatusCheckServiceFactory::GetForProfile(profile_.get());
-    RunUntilIdle();
+        PasswordStatusCheckServiceFactory::GetForProfile(profile());
+    safety_hub_test_util::UpdatePasswordCheckServiceAsync(password_service);
     EXPECT_EQ(password_service->compromised_credential_count(), 0UL);
   }
 
@@ -387,7 +378,7 @@ class SafetyHubHandlerTest : public testing::Test {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  TestingProfile* profile() { return profile_.get(); }
+  TestingProfile* profile() { return &profile_; }
   content::TestWebUI* web_ui() { return &web_ui_; }
   SafetyHubHandler* handler() { return handler_.get(); }
   HostContentSettingsMap* hcsm() { return hcsm_.get(); }
@@ -403,12 +394,14 @@ class SafetyHubHandlerTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<SafetyHubHandler> handler_;
-  std::unique_ptr<TestingProfile> profile_;
+  TestingProfile profile_;
   content::TestWebUI web_ui_;
   scoped_refptr<HostContentSettingsMap> hcsm_;
   base::SimpleTestClock clock_;
-  scoped_refptr<password_manager::TestPasswordStore> profile_store_;
-  scoped_refptr<password_manager::TestPasswordStore> account_store_;
+  scoped_refptr<TestPasswordStore> profile_store_ =
+      CreateAndUseTestPasswordStore(&profile_);
+  scoped_refptr<password_manager::TestPasswordStore> account_store_ =
+      CreateAndUseTestAccountPasswordStore(&profile_);
 };
 
 TEST_F(SafetyHubHandlerTest, PopulateUnusedSitePermissionsData) {
