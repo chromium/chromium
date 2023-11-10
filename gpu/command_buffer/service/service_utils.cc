@@ -216,11 +216,7 @@ GrContextType ParseGrContextType(const base::CommandLine* command_line) {
     }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 #if BUILDFLAG(SKIA_USE_METAL)
-    if (
-#if BUILDFLAG(IS_IOS)
-        value.empty() ||
-#endif  // BUILDFLAG(IS_IOS)
-        value == switches::kSkiaGraphiteBackendMetal) {
+    if (value == switches::kSkiaGraphiteBackendMetal) {
       return GrContextType::kGraphiteMetal;
     }
 #endif  // BUILDFLAG(SKIA_USE_METAL)

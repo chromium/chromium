@@ -3852,7 +3852,14 @@
       'boringssl_ssl_tests': {},
       'capture_unittests': {},
       'cast_unittests': {},
-      'cc_unittests': {},
+      'cc_unittests': {
+        'test': 'cc_unittests',
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.cc_unittests.filter',
+          '--use-gpu-in-tests',
+        ],
+      },
       'components_browsertests': {},
       'components_unittests': {},
       'content_browsertests': {
@@ -3887,6 +3894,24 @@
       'libjingle_xmpp_unittests': {},
       'liburlpattern_unittests': {},
       'media_unittests': {},
+      'media_unittests_skia_graphite_dawn': {
+        'test': 'media_unittests',
+        'args': [
+          '--test-launcher-bot-mode',
+          '--enable-features=SkiaGraphite',
+          '--skia-graphite-backend=dawn',
+          '--use-gpu-in-tests',
+        ],
+      },
+      'media_unittests_skia_graphite_metal': {
+        'test': 'media_unittests',
+        'args': [
+          '--test-launcher-bot-mode',
+          '--enable-features=SkiaGraphite',
+          '--skia-graphite-backend=metal',
+          '--use-gpu-in-tests',
+        ],
+      },
       'midi_unittests': {},
       'mojo_unittests': {},
       'net_unittests': {},
@@ -3905,7 +3930,14 @@
       'ui_touch_selection_unittests': {},
       'ui_unittests': {},
       'url_unittests': {},
-      'viz_unittests': {},
+      'viz_unittests': {
+        'test': 'viz_unittests',
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.viz_unittests.filter',
+          '--use-gpu-in-tests',
+        ],
+      },
       'wtf_unittests': {},
       'zlib_unittests': {},
     },

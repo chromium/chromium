@@ -690,7 +690,10 @@ cc_test_static_library("test_support") {
 if (is_ios) {
   bundle_data("unit_tests_bundle_data") {
     testonly = true
-    sources = [ "test/data/lottie/animation_with_2_text_nodes.json" ]
+    sources = [
+      "//testing/buildbot/filters/ios.cc_unittests.filter",
+      "test/data/lottie/animation_with_2_text_nodes.json",
+    ]
     outputs = [ "{{bundle_resources_dir}}/" +
                 "{{source_root_relative_dir}}/{{source_file_part}}" ]
   }

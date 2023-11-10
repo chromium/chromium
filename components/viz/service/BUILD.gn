@@ -462,12 +462,13 @@ viz_component("service") {
     }
   }
 
-  if (skia_use_dawn && is_win) {
-    sources += [
-      "display_embedder/skia_output_device_dawn.cc",
-      "display_embedder/skia_output_device_dawn.h",
-    ]
-
+  if (skia_use_dawn) {
+    if (is_win) {
+      sources += [
+        "display_embedder/skia_output_device_dawn.cc",
+        "display_embedder/skia_output_device_dawn.h",
+      ]
+    }
     public_deps += [ "//third_party/dawn/include/dawn:headers" ]
 
     deps += [

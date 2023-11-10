@@ -29,7 +29,8 @@ const char* LayerTreeHostPixelResourceTest::GetRendererSuffix() const {
       return "skia_gl";
     case viz::RendererType::kSkiaVk:
       return "skia_vk";
-    case viz::RendererType::kSkiaGraphite:
+    case viz::RendererType::kSkiaGraphiteDawn:
+    case viz::RendererType::kSkiaGraphiteMetal:
       return "skia_graphite";
     case viz::RendererType::kSoftware:
       return "sw";

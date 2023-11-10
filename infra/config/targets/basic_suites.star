@@ -4504,7 +4504,14 @@ targets.legacy_basic_suite(
         "boringssl_ssl_tests": None,
         "capture_unittests": None,
         "cast_unittests": None,
-        "cc_unittests": None,
+        "cc_unittests": targets.legacy_test_config(
+            test = "cc_unittests",
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.cc_unittests.filter",
+                "--use-gpu-in-tests",
+            ],
+        ),
         "components_browsertests": None,
         "components_unittests": None,
         "content_browsertests": targets.legacy_test_config(
@@ -4539,6 +4546,24 @@ targets.legacy_basic_suite(
         "libjingle_xmpp_unittests": None,
         "liburlpattern_unittests": None,
         "media_unittests": None,
+        "media_unittests_skia_graphite_dawn": targets.legacy_test_config(
+            test = "media_unittests",
+            args = [
+                "--test-launcher-bot-mode",
+                "--enable-features=SkiaGraphite",
+                "--skia-graphite-backend=dawn",
+                "--use-gpu-in-tests",
+            ],
+        ),
+        "media_unittests_skia_graphite_metal": targets.legacy_test_config(
+            test = "media_unittests",
+            args = [
+                "--test-launcher-bot-mode",
+                "--enable-features=SkiaGraphite",
+                "--skia-graphite-backend=metal",
+                "--use-gpu-in-tests",
+            ],
+        ),
         "midi_unittests": None,
         "mojo_unittests": None,
         "net_unittests": None,
@@ -4557,7 +4582,14 @@ targets.legacy_basic_suite(
         "ui_touch_selection_unittests": None,
         "ui_unittests": None,
         "url_unittests": None,
-        "viz_unittests": None,
+        "viz_unittests": targets.legacy_test_config(
+            test = "viz_unittests",
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.viz_unittests.filter",
+                "--use-gpu-in-tests",
+            ],
+        ),
         "wtf_unittests": None,
         "zlib_unittests": None,
     },

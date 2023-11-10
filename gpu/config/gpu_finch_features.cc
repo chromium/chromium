@@ -358,11 +358,7 @@ const base::FeatureParam<std::string> kDrDcBlockListByAndroidBuildFP{
 // --enable-skia-graphite & --disable-skia-graphite.
 BASE_FEATURE(kSkiaGraphite,
              "SkiaGraphite",
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
              base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 
 // Whether the Dawn "skip_validation" toggle is enabled for Skia Graphite.

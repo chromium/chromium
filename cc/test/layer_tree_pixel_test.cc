@@ -48,7 +48,8 @@ TestRasterType GetDefaultRasterType(viz::RendererType renderer_type) {
     case viz::RendererType::kSoftware:
       return TestRasterType::kBitmap;
     case viz::RendererType::kSkiaVk:
-    case viz::RendererType::kSkiaGraphite:
+    case viz::RendererType::kSkiaGraphiteDawn:
+    case viz::RendererType::kSkiaGraphiteMetal:
       return TestRasterType::kGpu;
     default:
       return TestRasterType::kOneCopy;

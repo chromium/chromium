@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -48,7 +49,8 @@ namespace cc {
 PixelTest::PixelTest(GraphicsBackend backend)
     : device_viewport_size_(gfx::Size(200, 200)),
       disable_picture_quad_image_filtering_(false),
-      output_surface_client_(std::make_unique<FakeOutputSurfaceClient>()) {
+      output_surface_client_(std::make_unique<FakeOutputSurfaceClient>()),
+      graphics_backend_(backend) {
   // Keep texture sizes exactly matching the bounds of the RenderPass to avoid
   // floating point badness in texcoords.
   renderer_settings_.dont_round_texture_sizes_for_pixel_tests = true;
@@ -59,12 +61,29 @@ PixelTest::PixelTest(GraphicsBackend backend)
   if (backend == kSkiaVulkan) {
     scoped_feature_list_.InitAndEnableFeature(features::kVulkan);
     init_vulkan = true;
-  } else if (backend == kSkiaGraphite) {
+  } else if (backend == kSkiaGraphiteDawn) {
     scoped_feature_list_.InitAndEnableFeature(features::kSkiaGraphite);
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    bool use_gpu = command_line->HasSwitch(::switches::kUseGpuInTests);
+    // Force the use of Graphite even if disallowed for other reasons e.g.
+    // ANGLE Metal is not enabled on Mac. Use dawn-swiftshader backend if
+    // kUseGpuInTests is not set.
+    command_line->AppendSwitch(::switches::kEnableSkiaGraphite);
+    command_line->AppendSwitchASCII(
+        ::switches::kSkiaGraphiteBackend,
+        use_gpu ? ::switches::kSkiaGraphiteBackendDawn
+                : ::switches::kSkiaGraphiteBackendDawnSwiftshader);
     init_dawn = true;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     init_vulkan = true;
 #endif
+  } else if (backend == kSkiaGraphiteMetal) {
+    scoped_feature_list_.InitAndEnableFeature(features::kSkiaGraphite);
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    // Force the use of Graphite even if disallowed for other reasons.
+    command_line->AppendSwitch(::switches::kEnableSkiaGraphite);
+    command_line->AppendSwitchASCII(::switches::kSkiaGraphiteBackend,
+                                    ::switches::kSkiaGraphiteBackendMetal);
   } else {
     // Ensure that we don't accidentally have vulkan or graphite enabled.
     scoped_feature_list_.InitWithFeatures(
@@ -84,16 +103,6 @@ PixelTest::PixelTest(GraphicsBackend backend)
   if (init_dawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     dawnProcSetProcs(&dawn::native::GetProcs());
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    bool use_gpu = command_line->HasSwitch(::switches::kUseGpuInTests);
-    // Force the use of Graphite even if disallowed for other reasons e.g.
-    // ANGLE Metal is not enabled on Mac. Use dawn-swiftshader backend if
-    // kUseGpuInTests is not set.
-    command_line->AppendSwitch(::switches::kEnableSkiaGraphite);
-    command_line->AppendSwitchASCII(
-        ::switches::kSkiaGraphiteBackend,
-        use_gpu ? ::switches::kSkiaGraphiteBackendDawn
-                : ::switches::kSkiaGraphiteBackendDawnSwiftshader);
 #endif
   }
 }

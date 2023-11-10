@@ -832,7 +832,7 @@ TEST_F(OopPixelTest, DrawImageWithSourceAndTargetColorSpace) {
 
   auto actual = Raster(display_item_list, options);
 
-#if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_IOS) && BUILDFLAG(SKIA_USE_METAL))
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Android has slight differences in color.
   FuzzyPixelOffByOneComparator comparator;
 #else
@@ -1655,13 +1655,6 @@ class OopTextBlobPixelTest
       public ::testing::WithParamInterface<TextBlobTestConfig> {
  public:
   void RunTest() {
-#if BUILDFLAG(IS_IOS) && BUILDFLAG(SKIA_USE_METAL)
-    if (GetFilterStrategy(GetParam()) != FilterStrategy::kNone) {
-      GTEST_SKIP() << " blur with decal tile mode currently fails on with "
-                      "SkiaGraphite and the metal backend in the simulator";
-    }
-#endif
-
     RasterOptions options;
     options.resource_size = gfx::Size(100, 100);
     options.content_size = options.resource_size;
@@ -2512,7 +2505,7 @@ class OopPathPixelTest : public OopPixelTest,
     display_item_list->Finalize();
 
     auto comparator =
-#if BUILDFLAG(IS_IOS) && BUILDFLAG(SKIA_USE_METAL)
+#if BUILDFLAG(IS_IOS)
         // TODO(crbug.com/1476507): We have larger errors on the platform, but
         // the images here still seem visually indistinguishable.
         FuzzyPixelComparator().SetErrorPixelsPercentageLimit(0.5f);

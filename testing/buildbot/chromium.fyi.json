@@ -5167,6 +5167,9 @@
       },
       {
         "args": [
+          "--test-launcher-bot-mode",
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.cc_unittests.filter",
+          "--use-gpu-in-tests",
           "--platform",
           "iPhone 14",
           "--version",
@@ -6325,6 +6328,110 @@
       },
       {
         "args": [
+          "--test-launcher-bot-mode",
+          "--enable-features=SkiaGraphite",
+          "--skia-graphite-backend=dawn",
+          "--use-gpu-in-tests",
+          "--platform",
+          "iPhone 14",
+          "--version",
+          "17.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "15c5042i",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "media_unittests_skia_graphite_dawn iPhone 14 17.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13"
+          },
+          "named_caches": [
+            {
+              "name": "xcode_ios_15c5042i",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_17_0",
+              "path": "Runtime-ios-17.0"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "media_unittests",
+        "test_id_prefix": "ninja://media:media_unittests/",
+        "variant_id": "iPhone 14 17.0"
+      },
+      {
+        "args": [
+          "--test-launcher-bot-mode",
+          "--enable-features=SkiaGraphite",
+          "--skia-graphite-backend=metal",
+          "--use-gpu-in-tests",
+          "--platform",
+          "iPhone 14",
+          "--version",
+          "17.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "15c5042i",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "media_unittests_skia_graphite_metal iPhone 14 17.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13"
+          },
+          "named_caches": [
+            {
+              "name": "xcode_ios_15c5042i",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_17_0",
+              "path": "Runtime-ios-17.0"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "media_unittests",
+        "test_id_prefix": "ninja://media:media_unittests/",
+        "variant_id": "iPhone 14 17.0"
+      },
+      {
+        "args": [
           "--platform",
           "iPhone 14",
           "--version",
@@ -6998,6 +7105,9 @@
       },
       {
         "args": [
+          "--test-launcher-bot-mode",
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.viz_unittests.filter",
+          "--use-gpu-in-tests",
           "--platform",
           "iPhone 14",
           "--version",
