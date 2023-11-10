@@ -128,6 +128,7 @@ void DumpAccessibilityTreeTest::ChooseFeatures(
       features::kEnableAccessibilityExposeHTMLElement);
   enabled_features->emplace_back(
       features::kEnableAccessibilityAriaVirtualContent);
+  enabled_features->emplace_back(features::kAugmentExistingImageLabels);
   DumpAccessibilityTestBase::ChooseFeatures(enabled_features,
                                             disabled_features);
 }
