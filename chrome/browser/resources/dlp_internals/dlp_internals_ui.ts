@@ -9,20 +9,9 @@ import './strings.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DataTransferEndpoint, DlpEvent, EndpointType, PageHandler, PageHandlerInterface, ReportingObserverReceiver} from './dlp_internals.mojom-webui.js';
+import {DataTransferEndpoint, DlpEvent, DlpEvent_Mode, DlpEvent_Restriction, DlpEvent_UserType, EndpointType, EventDestination, PageHandler, PageHandlerInterface, ReportingObserverReceiver} from './dlp_internals.mojom-webui.js';
 import {getTemplate} from './dlp_internals_ui.html.js';
-
-const EndpointTypeMap = {
-  [EndpointType.kDefault]: 'Default',
-  [EndpointType.kUrl]: 'URL',
-  [EndpointType.kClipboardHistory]: 'Clipboard History',
-  [EndpointType.kUnknownVm]: 'Unknown VM',
-  [EndpointType.kArc]: 'Arc',
-  [EndpointType.kBorealis]: 'Borealis',
-  [EndpointType.kCrostini]: 'Crostini',
-  [EndpointType.kPluginVm]: 'Plugin VM',
-  [EndpointType.kLacros]: 'Lacros',
-};
+import {DestinationComponentMap, EndpointTypeMap, EventModeMap, EventRestrictionMap, EventUserTypeMap} from './dlp_utils.js';
 
 // Polymer element DLP Internals UI.
 class DlpInternalsUi extends PolymerElement {
@@ -43,6 +32,7 @@ class DlpInternalsUi extends PolymerElement {
       tabNames_: Array,
       clipboardSourceType_: String,
       clipboardSourceUrl_: String,
+      reportingEvents_: Array,
     };
   }
 
@@ -76,6 +66,8 @@ class DlpInternalsUi extends PolymerElement {
 
   // Clipboard source url.
   private clipboardSourceUrl_: string;
+
+  private reportingEvents_: DlpEvent[] = [];
 
   private readonly pageHandler_: PageHandlerInterface;
   private readonly reportingObserver_: ReportingObserverReceiver;
@@ -131,8 +123,57 @@ class DlpInternalsUi extends PolymerElement {
 
   /** Implements ReportingObserverInterface */
   onReportEvent(event: DlpEvent): void {
-    // TODO(ayaelattar): Show it in the html page.
-    console.warn(JSON.stringify(event));
+    this.reportingEvents_.push(event);
+    this.notifySplices('reportingEvents_', [{
+                         index: this.reportingEvents_.length - 1,
+                         addedCount: 1,
+                         object: this.reportingEvents_,
+                         type: 'splice',
+                         removed: [],
+                       }]);
+  }
+
+  destinationToString(destination: EventDestination|null|undefined): string {
+    if (destination) {
+      if (destination.urlPattern) {
+        return destination.urlPattern;
+      }
+      if (destination.component) {
+        return DestinationComponentMap[destination.component];
+      }
+    }
+    return 'undefined';
+  }
+
+  restrictionToString(restriction: DlpEvent_Restriction|null|
+                      undefined): string {
+    if (restriction) {
+      return EventRestrictionMap[restriction];
+    }
+    return 'undefined';
+  }
+
+  modeToString(mode: DlpEvent_Mode|null|undefined): string {
+    if (mode) {
+      return EventModeMap[mode];
+    }
+    return 'undefined';
+  }
+
+  userTypeToString(userType: DlpEvent_UserType|null|undefined): string {
+    if (userType) {
+      return EventUserTypeMap[userType];
+    }
+    return 'undefined';
+  }
+
+  timestampToString(timestampMicro: bigint): string {
+    if (timestampMicro) {
+      const timestampMilli: number = Number(timestampMicro) / 1000;
+      const timestamp: Date = new Date(timestampMilli);
+      return timestamp.toLocaleString();
+    }
+    return 'undefined';
   }
 }
 

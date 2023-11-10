@@ -17,6 +17,14 @@
     flex: 1;
     position: relative;
   }
+
+  table,
+  th,
+  td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 3px;
+  }
 </style>
 
 <template is="dom-if" if="[[isOtr_]]">
@@ -39,6 +47,33 @@
 
     <div class="tabpanel" id="oncontent"></div>
 
-    <div class="tabpanel" id="reporting"></div>
+    <div class="tabpanel" id="reporting">
+      <table>
+        <tr>
+          <th>Source Pattern</th>
+          <th>Destination</th>
+          <th>Restriction</th>
+          <th>Mode</th>
+          <th>User Type</th>
+          <th>Content Name</th>
+          <th>Rule Name</th>
+          <th>Rule ID</th>
+          <th>Timestamp (micro)</th>
+        </tr>
+        <template is="dom-repeat" items="[[reportingEvents_]]">
+          <tr>
+            <td>[[item.sourcePattern]]</td>
+            <td>[[destinationToString(item.destination)]]</td>
+            <td>[[restrictionToString(item.restriction)]]</td>
+            <td>[[modeToString(item.mode)]]</td>
+            <td>[[userTypeToString(item.userType)]]</td>
+            <td>[[item.contentName]]</td>
+            <td>[[item.triggeredRuleName]]</td>
+            <td>[[item.triggeredRuleId]]</td>
+            <td>[[timestampToString(item.timestampMicro)]]</td>
+          </tr>
+        </template>
+      </table>
+    </div>
   </iron-pages>
 </template>
