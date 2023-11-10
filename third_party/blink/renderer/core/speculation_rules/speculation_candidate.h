@@ -32,7 +32,7 @@ class CORE_EXPORT SpeculationCandidate
                        mojom::blink::SpeculationTargetHint target_hint,
                        mojom::blink::SpeculationEagerness eagerness,
                        network::mojom::blink::NoVarySearchPtr no_vary_search,
-                       mojom::blink::SpeculationInjectionWorld injection_world,
+                       mojom::blink::SpeculationInjectionType injection_type,
                        SpeculationRuleSet* rule_set,
                        HTMLAnchorElement* anchor);
   virtual ~SpeculationCandidate() = default;
@@ -60,7 +60,7 @@ class CORE_EXPORT SpeculationCandidate
   const mojom::blink::SpeculationTargetHint target_hint_;
   const mojom::blink::SpeculationEagerness eagerness_;
   const network::mojom::blink::NoVarySearchPtr no_vary_search_;
-  const mojom::blink::SpeculationInjectionWorld injection_world_;
+  const mojom::blink::SpeculationInjectionType injection_type_;
   const Member<SpeculationRuleSet> rule_set_;
   const Member<HTMLAnchorElement> anchor_;
 };

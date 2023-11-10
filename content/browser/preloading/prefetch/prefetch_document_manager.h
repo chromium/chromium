@@ -72,7 +72,7 @@ class CONTENT_EXPORT PrefetchDocumentManager
       const PrefetchType& prefetch_type,
       const blink::mojom::Referrer& referrer,
       const network::mojom::NoVarySearchPtr& no_vary_search_expected,
-      blink::mojom::SpeculationInjectionWorld world,
+      blink::mojom::SpeculationInjectionType injection_type,
       base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);
 
   // Checking the canary cache can be a slow and blocking operation (see

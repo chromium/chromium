@@ -14,6 +14,7 @@
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
 #include "content/browser/preloading/prerender/prerender_new_tab_handle.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents.h"
 
 namespace content {
@@ -21,13 +22,13 @@ namespace content {
 namespace {
 
 PreloadingTriggerType GetTriggerType(
-    blink::mojom::SpeculationInjectionWorld world) {
-  switch (world) {
-    case blink::mojom::SpeculationInjectionWorld::kNone:
+    blink::mojom::SpeculationInjectionType type) {
+  switch (type) {
+    case blink::mojom::SpeculationInjectionType::kNone:
       [[fallthrough]];
-    case blink::mojom::SpeculationInjectionWorld::kMain:
+    case blink::mojom::SpeculationInjectionType::kMainWorldScript:
       return PreloadingTriggerType::kSpeculationRule;
-    case blink::mojom::SpeculationInjectionWorld::kIsolated:
+    case blink::mojom::SpeculationInjectionType::kIsolatedWorldScript:
       return PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld;
   }
 }
@@ -35,7 +36,7 @@ PreloadingTriggerType GetTriggerType(
 }  // namespace
 
 struct PrerendererImpl::PrerenderInfo {
-  blink::mojom::SpeculationInjectionWorld injection_world;
+  blink::mojom::SpeculationInjectionType injection_type;
   blink::mojom::SpeculationEagerness eagerness;
   int prerender_host_id;
   GURL url;
@@ -221,7 +222,7 @@ bool PrerendererImpl::MaybePrerender(
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       &rfhi, blink::mojom::WebFeature::kSpeculationRulesPrerender);
   IncrementReceivedPrerendersCountForMetrics(
-      GetTriggerType(candidate->injection_world), candidate->eagerness);
+      GetTriggerType(candidate->injection_type), candidate->eagerness);
 
   // TODO(crbug.com/1176054): Remove it after supporting cross-site
   // prerender.
@@ -239,7 +240,7 @@ bool PrerendererImpl::MaybePrerender(
 
   Referrer referrer(*(candidate->referrer));
   PrerenderAttributes attributes(
-      candidate->url, GetTriggerType(candidate->injection_world),
+      candidate->url, GetTriggerType(candidate->injection_type),
       /*embedder_histogram_suffix=*/"",
       candidate->target_browsing_context_name_hint, referrer,
       candidate->eagerness, rfhi.GetLastCommittedOrigin(),
@@ -263,7 +264,7 @@ bool PrerendererImpl::MaybePrerender(
           // a prerender WebContents to be created later.
           return registry_->CreateAndStartHostForNewTab(
               attributes,
-              GetPredictorForSpeculationRules(candidate->injection_world));
+              GetPredictorForSpeculationRules(candidate->injection_type));
         }
         // Handle the rule as kNoHint if the prerender-in-new-tab is not
         // enabled.
@@ -279,7 +280,7 @@ bool PrerendererImpl::MaybePrerender(
             PreloadingData::GetSameURLMatcher(candidate->url);
         auto* preloading_attempt = static_cast<PreloadingAttemptImpl*>(
             preloading_data->AddPreloadingAttempt(
-                GetPredictorForSpeculationRules(candidate->injection_world),
+                GetPredictorForSpeculationRules(candidate->injection_type),
                 PreloadingType::kPrerender, std::move(same_url_matcher),
                 web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
         preloading_attempt->SetSpeculationEagerness(candidate->eagerness);
@@ -299,12 +300,11 @@ bool PrerendererImpl::MaybePrerender(
                                     std::less<>(), &PrerenderInfo::url);
   }
 
-  started_prerenders_.insert(end,
-                             {.injection_world = candidate->injection_world,
-                              .eagerness = candidate->eagerness,
-                              .prerender_host_id = prerender_host_id,
-                              .url = candidate->url,
-                              .referrer = referrer});
+  started_prerenders_.insert(end, {.injection_type = candidate->injection_type,
+                                   .eagerness = candidate->eagerness,
+                                   .prerender_host_id = prerender_host_id,
+                                   .url = candidate->url,
+                                   .referrer = referrer});
 
   return true;
 }

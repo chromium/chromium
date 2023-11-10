@@ -413,17 +413,17 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     }
   }
 
-  const mojom::blink::SpeculationInjectionWorld world =
+  const mojom::blink::SpeculationInjectionType injection_type =
       context->GetCurrentWorld()
           ? context->GetCurrentWorld()->IsMainWorld()
-                ? mojom::blink::SpeculationInjectionWorld::kMain
-                : mojom::blink::SpeculationInjectionWorld::kIsolated
-          : mojom::blink::SpeculationInjectionWorld::kNone;
+                ? mojom::blink::SpeculationInjectionType::kMainWorldScript
+                : mojom::blink::SpeculationInjectionType::kIsolatedWorldScript
+          : mojom::blink::SpeculationInjectionType::kNone;
 
   return MakeGarbageCollected<SpeculationRule>(
       std::move(urls), document_rule_predicate, requires_anonymous_client_ip,
       target_hint, referrer_policy, eagerness, std::move(no_vary_search),
-      world);
+      injection_type);
 }
 
 }  // namespace

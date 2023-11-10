@@ -342,7 +342,7 @@ void PreloadingDecider::UpdateSpeculationCandidates(
     // TODO(crbug.com/1341019): Pass the action requested by speculation rules
     // to PreloadingPrediction.
     AddPreloadingPrediction(candidate->url, GetPredictorForSpeculationRules(
-                                                candidate->injection_world));
+                                                candidate->injection_type));
 
     return false;
   };

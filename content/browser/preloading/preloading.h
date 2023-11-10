@@ -50,7 +50,7 @@ static constexpr PreloadingPredictor kSpeculationRulesFromIsolatedWorld(
 CONTENT_EXPORT base::StringPiece PreloadingTypeToString(PreloadingType type);
 
 PreloadingPredictor GetPredictorForSpeculationRules(
-    blink::mojom::SpeculationInjectionWorld world);
+    blink::mojom::SpeculationInjectionType);
 
 }  // namespace content
 

@@ -27,13 +27,13 @@ base::StringPiece PreloadingTypeToString(PreloadingType type) {
 }
 
 PreloadingPredictor GetPredictorForSpeculationRules(
-    blink::mojom::SpeculationInjectionWorld world) {
-  switch (world) {
-    case blink::mojom::SpeculationInjectionWorld::kNone:
+    blink::mojom::SpeculationInjectionType type) {
+  switch (type) {
+    case blink::mojom::SpeculationInjectionType::kNone:
       [[fallthrough]];
-    case blink::mojom::SpeculationInjectionWorld::kMain:
+    case blink::mojom::SpeculationInjectionType::kMainWorldScript:
       return content_preloading_predictor::kSpeculationRules;
-    case blink::mojom::SpeculationInjectionWorld::kIsolated:
+    case blink::mojom::SpeculationInjectionType::kIsolatedWorldScript:
       return content_preloading_predictor::kSpeculationRulesFromIsolatedWorld;
   }
   NOTREACHED_NORETURN();
