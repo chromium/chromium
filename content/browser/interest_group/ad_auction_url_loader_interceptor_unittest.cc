@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/base64url.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
+#include "content/browser/interest_group/header_direct_from_seller_signals.h"
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/public/browser/browser_context.h"
@@ -256,14 +258,27 @@ class AdAuctionURLLoaderInterceptorTest : public RenderViewHostTestHarness {
                                                                  response);
   }
 
-  const std::set<std::string>& GetAuctionSignalsForOrigin(
-      const url::Origin& origin) {
+  const scoped_refptr<HeaderDirectFromSellerSignals::Result>
+  ParseAndFindAdAuctionSignals(const url::Origin& origin,
+                               const std::string& ad_slot) {
     Page& page = web_contents()->GetPrimaryPage();
 
     AdAuctionPageData* ad_auction_page_data =
         PageUserData<AdAuctionPageData>::GetOrCreateForPage(page);
 
-    return ad_auction_page_data->GetAuctionSignalsForOrigin(origin);
+    scoped_refptr<HeaderDirectFromSellerSignals::Result> my_result;
+    base::RunLoop run_loop;
+    ad_auction_page_data->ParseAndFindAdAuctionSignals(
+        origin, ad_slot,
+        base::BindLambdaForTesting(
+            [&my_result, &run_loop](
+                scoped_refptr<HeaderDirectFromSellerSignals::Result> result) {
+              my_result = std::move(result);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+
+    return my_result;
   }
 
   std::vector<std::string> TakeAuctionAdditionalBidsForOriginAndNonce(
@@ -643,9 +658,10 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
       url::Origin::Create(GURL("https://foo1.com")),
       base64Decode(kLegitimateAdAuctionResponse)));
 
-  const std::set<std::string>& signals =
-      GetAuctionSignalsForOrigin(url::Origin::Create(GURL("https://foo1.com")));
-  EXPECT_THAT(signals, ::testing::IsEmpty());
+  const scoped_refptr<HeaderDirectFromSellerSignals::Result> signals =
+      ParseAndFindAdAuctionSignals(
+          url::Origin::Create(GURL("https://foo1.com")), "slot1");
+  EXPECT_EQ(signals, nullptr);
 }
 
 TEST_F(AdAuctionURLLoaderInterceptorTest,
@@ -694,9 +710,10 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
       url::Origin::Create(GURL("https://foo1.com")),
       base64Decode(kLegitimateAdAuctionResponse)));
 
-  const std::set<std::string>& signals =
-      GetAuctionSignalsForOrigin(url::Origin::Create(GURL("https://foo1.com")));
-  EXPECT_THAT(signals, ::testing::IsEmpty());
+  const scoped_refptr<HeaderDirectFromSellerSignals::Result> signals =
+      ParseAndFindAdAuctionSignals(
+          url::Origin::Create(GURL("https://foo1.com")), "slot1");
+  EXPECT_EQ(signals, nullptr);
 }
 
 TEST_F(AdAuctionURLLoaderInterceptorTest,
@@ -962,7 +979,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, AdAuctionSignalsResponseHeader) {
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
           /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
-          /*ad_auction_signals_header_value=*/"{}"),
+          /*ad_auction_signals_header_value=*/R"([{"adSlot":"slot1"}])"),
       /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
@@ -973,9 +990,10 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, AdAuctionSignalsResponseHeader) {
   EXPECT_TRUE(test_client.received_ad_auction_result_header());
   EXPECT_FALSE(test_client.received_ad_auction_signals_header());
 
-  const std::set<std::string>& signals =
-      GetAuctionSignalsForOrigin(url::Origin::Create(GURL("https://foo1.com")));
-  EXPECT_THAT(signals, ::testing::UnorderedElementsAre("{}"));
+  const scoped_refptr<HeaderDirectFromSellerSignals::Result> signals =
+      ParseAndFindAdAuctionSignals(
+          url::Origin::Create(GURL("https://foo1.com")), "slot1");
+  EXPECT_NE(signals, nullptr);
 }
 
 // Tests that the Ad-Auction-Signals header will be removed from the final
@@ -1028,9 +1046,10 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   EXPECT_TRUE(test_client.received_ad_auction_result_header());
   EXPECT_FALSE(test_client.received_ad_auction_signals_header());
 
-  const std::set<std::string>& signals =
-      GetAuctionSignalsForOrigin(url::Origin::Create(GURL("https://foo1.com")));
-  EXPECT_THAT(signals, ::testing::IsEmpty());
+  const scoped_refptr<HeaderDirectFromSellerSignals::Result> signals =
+      ParseAndFindAdAuctionSignals(
+          url::Origin::Create(GURL("https://foo1.com")), "slot1");
+  EXPECT_EQ(signals, nullptr);
 }
 
 TEST_F(AdAuctionURLLoaderInterceptorTest,
@@ -1076,9 +1095,10 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
       /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
-  const std::set<std::string>& signals =
-      GetAuctionSignalsForOrigin(url::Origin::Create(GURL("https://foo1.com")));
-  EXPECT_THAT(signals, ::testing::IsEmpty());
+  const scoped_refptr<HeaderDirectFromSellerSignals::Result> signals =
+      ParseAndFindAdAuctionSignals(
+          url::Origin::Create(GURL("https://foo1.com")), "slot1");
+  EXPECT_EQ(signals, nullptr);
 }
 
 TEST_F(AdAuctionURLLoaderInterceptorTest,
@@ -1165,9 +1185,10 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   EXPECT_TRUE(test_client.received_ad_auction_result_header());
   EXPECT_FALSE(test_client.received_ad_auction_signals_header());
 
-  const std::set<std::string>& signals =
-      GetAuctionSignalsForOrigin(url::Origin::Create(GURL("https://foo1.com")));
-  EXPECT_THAT(signals, ::testing::IsEmpty());
+  const scoped_refptr<HeaderDirectFromSellerSignals::Result> signals =
+      ParseAndFindAdAuctionSignals(
+          url::Origin::Create(GURL("https://foo1.com")), "slot1");
+  EXPECT_EQ(signals, nullptr);
 }
 
 TEST_F(AdAuctionURLLoaderInterceptorTest, AdditionalBid) {

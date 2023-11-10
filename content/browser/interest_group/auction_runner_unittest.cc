@@ -8800,16 +8800,12 @@ TEST_F(AuctionRunnerDfssAdSlotTest,
 
   EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
-  EXPECT_THAT(
-      result_.errors,
-      testing::UnorderedElementsAre(
-          testing::Eq(
-              "When looking for directFromSellerSignalsHeaderAdSlot adSlot1, "
-              "encountered response where top-level JSON value isn't an array: "
-              "Ad-Auction-Signals={\n  \"adSlot\": \"adSlot1\",\n  "
-              "\"sellerSignals\": 3\n}"),
-          testing::Eq("When looking for directFromSellerSignalsHeaderAdSlot "
-                      "adSlot1, failed to find a matching response.")));
+  // NOTE: The parsing error itself is reported separately, in the
+  // AdAuctionPageData.
+  EXPECT_THAT(result_.errors,
+              testing::UnorderedElementsAre(testing::Eq(
+                  "When looking for directFromSellerSignalsHeaderAdSlot "
+                  "adSlot1, failed to find a matching response.")));
 }
 
 // Trying to update auctionSignals which wasn't originally passed in as a

@@ -1478,14 +1478,26 @@ function provideAdditionalBids(seller, nonce, bidStringList,
                                                                  response);
   }
 
-  const std::set<std::string>& GetAuctionSignalsForOrigin(
-      const url::Origin& origin) {
+  const scoped_refptr<HeaderDirectFromSellerSignals::Result>
+  ParseAndFindAdAuctionSignals(const url::Origin& origin,
+                               const std::string& ad_slot) {
     Page& page = web_contents()->GetPrimaryPage();
 
     AdAuctionPageData* ad_auction_page_data =
         PageUserData<AdAuctionPageData>::GetOrCreateForPage(page);
 
-    return ad_auction_page_data->GetAuctionSignalsForOrigin(origin);
+    base::RunLoop run_loop;
+    scoped_refptr<HeaderDirectFromSellerSignals::Result> my_result;
+    ad_auction_page_data->ParseAndFindAdAuctionSignals(
+        origin, ad_slot,
+        base::BindLambdaForTesting(
+            [&run_loop, &my_result](
+                scoped_refptr<HeaderDirectFromSellerSignals::Result> result) {
+              my_result = std::move(result);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return my_result;
   }
 
   std::vector<std::string> TakeAuctionAdditionalBidsForOriginAndNonce(
@@ -6092,6 +6104,90 @@ IN_PROC_BROWSER_TEST_F(
       "notFound, failed to find a matching response.");
   EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(kAuctionConfigTemplate,
                                                  test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
+}
+
+// Parse errors for directFromSellerSignalsHeaderAdSlot are logged to devtools.
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    RunAdAuctionInvalidDirectFromSellerSignalsHeaderAdSlotLogged) {
+  constexpr char kBidderHost[] = "a.test";
+  constexpr char kTopFrameHost[] = "c.test";
+  constexpr char kSellerHost[] = "b.test";
+  url::Origin seller_origin =
+      url::Origin::Create(https_server_->GetURL(kSellerHost, "/echo"));
+  const url::Origin top_frame_origin =
+      url::Origin::Create(https_server_->GetURL(kTopFrameHost, "/echo"));
+
+  GURL bidder_url = https_server_->GetURL(kBidderHost, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
+  url::Origin bidder_origin = url::Origin::Create(bidder_url);
+
+  ASSERT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/bidder_origin, /*name=*/"cars", /*priority=*/0.0,
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                https_server_->GetURL(kBidderHost,
+                                      "/interest_group/bidding_logic.js"),
+                /*ads=*/
+                {{{GURL("https://example.com/render"),
+                   /*metadata=*/absl::nullopt}}}));
+
+  GURL top_frame_url = https_server_->GetURL(kTopFrameHost, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), top_frame_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "directFromSellerSignalsHeaderAdSlot: encountered dict without "
+      "\"adSlot\" key: Ad-Auction-Signals=[{ \"no\": \"adSlot\", "
+      "\"sellerSignals\": {\"json\": \"for\", \"the\": [\"seller\"]} }]");
+
+  const char kHeaderSignalsPath[] = "/header_direct_from_seller_signals.json";
+  // The actual body of the request is just an empty JSON dict for the test,
+  // but it could be any arbitrary payload that the server wants to deliver
+  // with the header signals.
+  const char kHeaderSignalsBodyResponse[] = "{}";
+  // The adSlot key is not present, so kHeaderSignalsResponse is invalid. The
+  // signals given to worklet functions should be null, and errors should be
+  // logged to devtools.
+  const char kHeaderSignalsResponse[] = R"([{
+      "no": "adSlot",
+      "sellerSignals": {"json": "for", "the": ["seller"]}
+    }])";
+  network_responder_->RegisterNetworkResponse(
+      kHeaderSignalsPath, kHeaderSignalsBodyResponse, "application/json",
+      /*extra_response_headers=*/
+      {{"Access-Control-Allow-Origin", top_frame_origin.Serialize()},
+       {"Ad-Auction-Signals", kHeaderSignalsResponse}});
+  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     content::JsReplace("fetch($1, {adAuctionHeaders: true})",
+                                        https_server_->GetURL(
+                                            kSellerHost, kHeaderSignalsPath))));
+
+  TestFencedFrameURLMappingResultObserver observer;
+  ConvertFencedFrameURNToURL(
+      GURL(
+          EvalJs(web_contents()->GetPrimaryMainFrame(),
+                 JsReplace(
+                     R"(
+(async function() {
+  return await navigator.runAdAuction({
+      seller: $1,
+      decisionLogicUrl: $2,
+      interestGroupBuyers: [$3],
+      directFromSellerSignalsHeaderAdSlot: "adSlot1"
+  });
+})())",
+                     seller_origin,
+                     https_server_->GetURL(
+                         kSellerHost,
+                         "/interest_group/"
+                         "decision_no_direct_from_seller_signals_validator.js"),
+                     bidder_origin))
+              .ExtractString()),
+      &observer);
+  EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -14994,9 +15090,9 @@ IN_PROC_BROWSER_TEST_F(
       url::Origin::Create(fetch_url),
       base64Decode(kLegitimateAdAuctionResponse)));
 
-  const std::set<std::string>& signals =
-      GetAuctionSignalsForOrigin(url::Origin::Create(fetch_url));
-  EXPECT_THAT(signals, ::testing::IsEmpty());
+  const scoped_refptr<HeaderDirectFromSellerSignals::Result> signals =
+      ParseAndFindAdAuctionSignals(url::Origin::Create(fetch_url), "slot1");
+  EXPECT_EQ(signals, nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -15011,7 +15107,7 @@ IN_PROC_BROWSER_TEST_F(
   replacement.emplace_back(std::make_pair(
       "{{AD_AUCTION_HEADERS}}",
       base::StrCat({"Ad-Auction-Result: ", kLegitimateAdAuctionResponse,
-                    "\nAd-Auction-Signals: ", "{}"})));
+                    "\nAd-Auction-Signals: ", R"([{"adSlot":"slot1"}])"})));
   replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
 
   GURL fetch_url = https_server_->GetURL(
@@ -15048,9 +15144,9 @@ IN_PROC_BROWSER_TEST_F(
       url::Origin::Create(fetch_url),
       base64Decode(kLegitimateAdAuctionResponse)));
 
-  const std::set<std::string>& signals =
-      GetAuctionSignalsForOrigin(url::Origin::Create(fetch_url));
-  EXPECT_THAT(signals, ::testing::UnorderedElementsAre("{}"));
+  const scoped_refptr<HeaderDirectFromSellerSignals::Result> signals =
+      ParseAndFindAdAuctionSignals(url::Origin::Create(fetch_url), "slot1");
+  EXPECT_NE(signals, nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -15065,7 +15161,7 @@ IN_PROC_BROWSER_TEST_F(
   replacement.emplace_back(std::make_pair(
       "{{AD_AUCTION_HEADERS}}",
       base::StrCat({"Ad-Auction-Result: ", kLegitimateAdAuctionResponse,
-                    "\nAd-Auction-Signals: ", "{}"})));
+                    "\nAd-Auction-Signals: ", R"([{"adSlot":"slot1"}])"})));
   replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
 
   GURL fetch_url = https_server_->GetURL(
@@ -15102,9 +15198,9 @@ IN_PROC_BROWSER_TEST_F(
       url::Origin::Create(fetch_url),
       base64Decode(kLegitimateAdAuctionResponse)));
 
-  const std::set<std::string>& signals =
-      GetAuctionSignalsForOrigin(url::Origin::Create(fetch_url));
-  EXPECT_THAT(signals, ::testing::UnorderedElementsAre("{}"));
+  const scoped_refptr<HeaderDirectFromSellerSignals::Result> signals =
+      ParseAndFindAdAuctionSignals(url::Origin::Create(fetch_url), "slot1");
+  EXPECT_NE(signals, nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -15250,9 +15346,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       request_origin, base64Decode(kLegitimateAdAuctionResponse)));
 
-  const std::set<std::string>& signals =
-      GetAuctionSignalsForOrigin(request_origin);
-  EXPECT_THAT(signals, ::testing::IsEmpty());
+  const scoped_refptr<HeaderDirectFromSellerSignals::Result> signals =
+      ParseAndFindAdAuctionSignals(request_origin, "slot1");
+  EXPECT_EQ(signals, nullptr);
 
   EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
                   request_origin, "00000000-0000-0000-0000-000000000000"),
@@ -16614,7 +16710,7 @@ IN_PROC_BROWSER_TEST_F(
   replacement.emplace_back(std::make_pair(
       "{{AD_AUCTION_HEADERS}}",
       base::StrCat({"Ad-Auction-Result: ", kLegitimateAdAuctionResponse,
-                    "\nAd-Auction-Signals: ", "{}"})));
+                    "\nAd-Auction-Signals: ", R"([{"adSlot":"slot1"}])"})));
   replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
 
   GURL fetch_url = https_server_->GetURL(
@@ -16652,9 +16748,9 @@ IN_PROC_BROWSER_TEST_F(
       url::Origin::Create(fetch_url),
       base64Decode(kLegitimateAdAuctionResponse)));
 
-  const std::set<std::string>& signals =
-      GetAuctionSignalsForOrigin(url::Origin::Create(fetch_url));
-  EXPECT_THAT(signals, ::testing::UnorderedElementsAre("{}"));
+  const scoped_refptr<HeaderDirectFromSellerSignals::Result> signals =
+      ParseAndFindAdAuctionSignals(url::Origin::Create(fetch_url), "slot1");
+  EXPECT_NE(signals, nullptr);
 }
 
 class AdsAPIsOriginTrialBrowserTest : public ContentBrowserTest {

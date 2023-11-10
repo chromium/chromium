@@ -113,6 +113,14 @@ constexpr base::TimeDelta kGroupFreshnessMin = base::Minutes(1);
 constexpr base::TimeDelta kGroupFreshnessMax = base::Days(30);
 constexpr int kGroupFreshnessBuckets = 100;
 
+std::string DirectFromSellerSignalsHeaderAdSlotNoMatchError(
+    const std::string& ad_slot) {
+  return base::StringPrintf(
+      "When looking for directFromSellerSignalsHeaderAdSlot %s, failed to "
+      "find a matching response.",
+      ad_slot.c_str());
+}
+
 // All URLs received from worklets must be valid HTTPS URLs. It's up to callers
 // to call ReportBadMessage() on invalid URLs.
 bool IsUrlValid(const GURL& url) {
@@ -2619,14 +2627,17 @@ void InterestGroupAuction::NotifyDirectFromSellerSignalsHeaderAdSlotConfig(
     ++num_scoring_dependencies_;
   }
   direct_from_seller_signals_header_ad_slot_pending_ = true;
-  HeaderDirectFromSellerSignals::ParseAndFind(
-      base::BindRepeating(&InterestGroupAuction::GetDataDecoder,
-                          weak_ptr_factory_.GetWeakPtr()),
-      auction_page_data->GetAuctionSignalsForOrigin(config_->seller),
-      *direct_from_seller_signals_header_ad_slot,
+  if (!auction_page_data) {
+    OnDirectFromSellerSignalHeaderAdSlotResolved(
+        *direct_from_seller_signals_header_ad_slot, nullptr);
+    return;
+  }
+  auction_page_data->ParseAndFindAdAuctionSignals(
+      config_->seller, *direct_from_seller_signals_header_ad_slot,
       base::BindOnce(
           &InterestGroupAuction::OnDirectFromSellerSignalHeaderAdSlotResolved,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(),
+          *direct_from_seller_signals_header_ad_slot));
 }
 
 void InterestGroupAuction::
@@ -3273,7 +3284,7 @@ absl::optional<GURL> InterestGroupAuction::GetDirectFromSellerAuctionSignals(
 
 absl::optional<std::string>
 InterestGroupAuction::GetDirectFromSellerAuctionSignalsHeaderAdSlot(
-    const HeaderDirectFromSellerSignals& signals) {
+    const HeaderDirectFromSellerSignals::Result& signals) {
   return signals.auction_signals();
 }
 
@@ -3293,7 +3304,7 @@ absl::optional<GURL> InterestGroupAuction::GetDirectFromSellerPerBuyerSignals(
 
 absl::optional<std::string>
 InterestGroupAuction::GetDirectFromSellerPerBuyerSignalsHeaderAdSlot(
-    const HeaderDirectFromSellerSignals& signals,
+    const HeaderDirectFromSellerSignals::Result& signals,
     const url::Origin& owner) {
   auto it = signals.per_buyer_signals().find(owner);
   if (it == signals.per_buyer_signals().end()) {
@@ -3312,7 +3323,7 @@ absl::optional<GURL> InterestGroupAuction::GetDirectFromSellerSellerSignals(
 
 absl::optional<std::string>
 InterestGroupAuction::GetDirectFromSellerSellerSignalsHeaderAdSlot(
-    const HeaderDirectFromSellerSignals& signals) {
+    const HeaderDirectFromSellerSignals::Result& signals) {
   return signals.seller_signals();
 }
 
@@ -4495,13 +4506,16 @@ void InterestGroupAuction::OnLoadedWinningGroup(
 }
 
 void InterestGroupAuction::OnDirectFromSellerSignalHeaderAdSlotResolved(
-    std::unique_ptr<HeaderDirectFromSellerSignals> signals,
-    std::vector<std::string> errors) {
+    std::string ad_slot,
+    scoped_refptr<HeaderDirectFromSellerSignals::Result> signals) {
   DCHECK_NE(bidding_and_scoring_phase_state_, PhaseState::kAfter);
   CHECK(direct_from_seller_signals_header_ad_slot_pending_);
   CHECK(direct_from_seller_signals_header_ad_slot_);
-  direct_from_seller_signals_header_ad_slot_ = std::move(signals);
-  errors_.insert(errors_.end(), errors.begin(), errors.end());
+  if (signals) {
+    direct_from_seller_signals_header_ad_slot_ = std::move(signals);
+  } else {
+    errors_.push_back(DirectFromSellerSignalsHeaderAdSlotNoMatchError(ad_slot));
+  }
 
   direct_from_seller_signals_header_ad_slot_pending_ = false;
 

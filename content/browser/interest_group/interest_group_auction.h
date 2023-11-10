@@ -762,7 +762,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // that InterestGroupAuctionReporter can use it.
   static absl::optional<std::string>
   GetDirectFromSellerAuctionSignalsHeaderAdSlot(
-      const HeaderDirectFromSellerSignals& signals);
+      const HeaderDirectFromSellerSignals::Result& signals);
 
   // Gets the buyer DirectFromSellerSignals per-buyer-signals in `config` for
   // buyer. Public so that InterestGroupAuctionReporter can use it.
@@ -774,7 +774,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // for `owner`. Public so that InterestGroupAuctionReporter can use it.
   static absl::optional<std::string>
   GetDirectFromSellerPerBuyerSignalsHeaderAdSlot(
-      const HeaderDirectFromSellerSignals& signals,
+      const HeaderDirectFromSellerSignals::Result& signals,
       const url::Origin& owner);
 
   // Gets DirectFromSellerSignals seller-signals. Public so that
@@ -786,7 +786,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // InterestGroupAuctionReporter can use it.
   static absl::optional<std::string>
   GetDirectFromSellerSellerSignalsHeaderAdSlot(
-      const HeaderDirectFromSellerSignals& signals);
+      const HeaderDirectFromSellerSignals::Result& signals);
 
   // Replaces `${}` placeholders in a debug report URL's query string for post
   // auction signals if exist. Only replaces unescaped placeholder ${}, but
@@ -1110,7 +1110,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // creating it if needed.
   SubresourceUrlBuilder* SubresourceUrlBuilderIfReady();
 
-  const HeaderDirectFromSellerSignals*
+  const HeaderDirectFromSellerSignals::Result*
   direct_from_seller_signals_header_ad_slot() const {
     return direct_from_seller_signals_header_ad_slot_.get();
   }
@@ -1125,13 +1125,13 @@ class CONTENT_EXPORT InterestGroupAuction
   void OnLoadedWinningGroup(BiddingAndAuctionResponse response,
                             absl::optional<StorageInterestGroup> maybe_group);
 
-  // Completion callback for HeaderDirectFromSellerSignals::ParseAndFind(). Sets
-  // `direct_from_seller_signals_header_ad_slot_`, and sets
+  // Completion callback for AdAuctionPageData::ParseAndFindAdAuctionSignals().
+  // Sets `direct_from_seller_signals_header_ad_slot_`, and sets
   // `direct_from_seller_signals_header_ad_slot_pending_` to false, appending
   // `errors` to `errors_`.
   void OnDirectFromSellerSignalHeaderAdSlotResolved(
-      std::unique_ptr<HeaderDirectFromSellerSignals> signals,
-      std::vector<std::string> errors);
+      std::string ad_slot,
+      scoped_refptr<HeaderDirectFromSellerSignals::Result> signals);
 
   static data_decoder::DataDecoder* GetDataDecoder(
       base::WeakPtr<InterestGroupAuction> instance);
@@ -1271,16 +1271,16 @@ class CONTENT_EXPORT InterestGroupAuction
   // transferred to InterestGroupAuctionReporter.
   std::unique_ptr<SubresourceUrlBuilder> subresource_url_builder_;
 
-  // Stores the loaded HeaderDirectFromSellerSignals, if there were any. Should
-  // never be null until moved to the reporter.
+  // Stores the loaded HeaderDirectFromSellerSignals::Result, if there were any.
+  // Should never be null until moved to the reporter.
   //
   // After `direct_from_seller_signals_header_ad_slot_` has been
   // set to true, the default constructed value gets replaced with the found
   // signals, if the auction config provided an ad-slot, and it matched one of
   // the captured responses for the seller's origin.
-  std::unique_ptr<HeaderDirectFromSellerSignals>
+  scoped_refptr<HeaderDirectFromSellerSignals::Result>
       direct_from_seller_signals_header_ad_slot_ =
-          std::make_unique<HeaderDirectFromSellerSignals>();
+          base::MakeRefCounted<HeaderDirectFromSellerSignals::Result>();
 
   // The number of buyers in the AuctionConfig that passed the
   // IsInterestGroupApiAllowedCallback filter and interest groups were found

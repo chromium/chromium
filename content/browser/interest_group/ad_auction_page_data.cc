@@ -6,7 +6,10 @@
 
 #include "base/no_destructor.h"
 #include "base/time/time.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/interest_group/header_direct_from_seller_signals.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace content {
 
@@ -37,18 +40,19 @@ bool AdAuctionPageData::WitnessedAuctionResultForOrigin(
 void AdAuctionPageData::AddAuctionSignalsWitnessForOrigin(
     const url::Origin& origin,
     const std::string& response) {
-  origin_auction_signals_map_[origin].insert(response);
+  header_direct_from_seller_signals_.AddWitnessForOrigin(
+      *GetDecoderFor(origin), origin, response,
+      base::BindOnce(
+          &AdAuctionPageData::OnAddAuctionSignalsWitnessForOriginCompleted,
+          base::Unretained(this)));
 }
 
-const std::set<std::string>& AdAuctionPageData::GetAuctionSignalsForOrigin(
-    const url::Origin& origin) const {
-  auto it = origin_auction_signals_map_.find(origin);
-  if (it == origin_auction_signals_map_.end()) {
-    static base::NoDestructor<std::set<std::string>> kEmptySet;
-    return *kEmptySet;
-  }
-
-  return it->second;
+void AdAuctionPageData::ParseAndFindAdAuctionSignals(
+    const url::Origin& origin,
+    const std::string& ad_slot,
+    HeaderDirectFromSellerSignals::ParseAndFindCompletedCallback callback) {
+  header_direct_from_seller_signals_.ParseAndFind(origin, ad_slot,
+                                                  std::move(callback));
 }
 
 void AdAuctionPageData::AddAuctionAdditionalBidsWitnessForOrigin(
@@ -117,6 +121,15 @@ data_decoder::DataDecoder* AdAuctionPageData::GetDecoderFor(
     decoder = std::make_unique<data_decoder::DataDecoder>();
   }
   return decoder.get();
+}
+
+void AdAuctionPageData::OnAddAuctionSignalsWitnessForOriginCompleted(
+    std::vector<std::string> errors) {
+  for (const std::string& error : errors) {
+    devtools_instrumentation::LogWorkletMessage(
+        *static_cast<RenderFrameHostImpl*>(&page().GetMainDocument()),
+        blink::mojom::ConsoleMessageLevel::kError, error);
+  }
 }
 
 AdAuctionRequestContext::AdAuctionRequestContext(

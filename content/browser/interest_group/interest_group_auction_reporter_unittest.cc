@@ -71,7 +71,7 @@ InterestGroupAuctionReporter::SellerWinningBidInfo CreateSellerWinningBidInfo(
       /*direct_from_seller_signals=*/absl::nullopt);
   // Also must not be null.
   out.direct_from_seller_signals_header_ad_slot =
-      std::make_unique<HeaderDirectFromSellerSignals>();
+      base::MakeRefCounted<HeaderDirectFromSellerSignals::Result>();
 
   // The specific values these are assigned to don't matter for these tests, but
   // they don't have default initializers, so have to set them to placate memory

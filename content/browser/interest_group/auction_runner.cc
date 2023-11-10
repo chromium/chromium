@@ -304,12 +304,9 @@ void AuctionRunner::ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
   }
 
   AdAuctionPageData* page_data = ad_auction_page_data_.get();
-  if (!page_data) {
-    // There's no page data attached so we can't find matching responses.
-    // There's no way the auction can proceed.
-    FailAuction(false);
-    return;
-  }
+  // The `page_data` shouldn't be null (since we create it before starting the
+  // auction), but if it is, the auction will just pass default-constructed
+  // signals to worklets.
 
   if (auction_id->is_main_auction()) {
     auction_.NotifyDirectFromSellerSignalsHeaderAdSlotConfig(
