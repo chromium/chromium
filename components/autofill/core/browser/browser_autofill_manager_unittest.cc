@@ -853,15 +853,15 @@ class BrowserAutofillManagerTest : public testing::Test {
 
   FormData PreviewVirtualCardDataAndGetResults(
       mojom::ActionPersistence action_persistence,
-      const std::string& guid,
       const FormData& input_form,
-      const FormFieldData& input_field) {
+      const FormFieldData& input_field,
+      const CreditCard& virtual_card) {
     FormData response_data;
     EXPECT_CALL(*autofill_driver_, ApplyFormAction)
         .WillOnce((DoAll(SaveArg<2>(&response_data),
                          Return(std::vector<FieldGlobalId>{}))));
-    browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
-        action_persistence, guid, input_form, input_field,
+    browser_autofill_manager_->FillOrPreviewCreditCardForm(
+        action_persistence, input_form, input_field, &virtual_card,
         {.trigger_source = AutofillTriggerSource::kPopup});
     return response_data;
   }
@@ -4560,8 +4560,7 @@ TEST_F(BrowserAutofillManagerTest, PreviewCreditCardForm_VirtualCard) {
   FormsSeen({form});
 
   FormData response_data = PreviewVirtualCardDataAndGetResults(
-      mojom::ActionPersistence::kPreview, virtual_card.guid(), form,
-      form.fields[1]);
+      mojom::ActionPersistence::kPreview, form, form.fields[1], virtual_card);
 
   std::u16string expected_cardholder_name = u"Lorem Ipsum";
   // Virtual card number using obfuscated dots only: Virtual card Mastercard

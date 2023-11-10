@@ -182,16 +182,6 @@ class BrowserAutofillManager : public AutofillManager,
       const CreditCard* credit_card,
       const AutofillTriggerDetails& trigger_details);
 
-  // Fetches the related virtual card information given the related actual card
-  // |guid| and fills the information into the form.
-  // TODO(crbug.com/1330108): Clean up the API.
-  virtual void FillOrPreviewVirtualCardInformation(
-      mojom::ActionPersistence action_persistence,
-      const std::string& guid,
-      const FormData& form,
-      const FormFieldData& field,
-      const AutofillTriggerDetails& trigger_details);
-
   // Returns true if the value/identifier is deletable. Fills out
   // |title| and |body| with relevant user-facing text.
   bool GetDeletionConfirmationText(const std::u16string& value,

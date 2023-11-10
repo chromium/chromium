@@ -376,9 +376,8 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           suggestion.main_text.value, suggestion.popup_item_id);
       break;
     case PopupItemId::kVirtualCreditCardEntry:
-      manager_->FillOrPreviewVirtualCardInformation(
-          mojom::ActionPersistence::kPreview, backend_id.value(), query_form_,
-          query_field_,
+      FillAutofillFormData(
+          suggestion.popup_item_id, backend_id, /*is_preview=*/true,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source)});
       break;
@@ -553,10 +552,12 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       // PopupItemId::kVirtualCreditCardEntry as a `popup_item_id`. In this
       // case, the payload contains the backend id, which is a GUID that
       // identifies the actually chosen credit card.
-      manager_->FillOrPreviewVirtualCardInformation(
-          mojom::ActionPersistence::kFill,
-          suggestion.GetPayload<Suggestion::BackendId>().value(), query_form_,
-          query_field_, {.trigger_source = AutofillTriggerSource::kPopup});
+      FillAutofillFormData(
+          suggestion.popup_item_id,
+          suggestion.GetPayload<Suggestion::BackendId>(),
+          /*is_preview=*/false,
+          {.trigger_source =
+               TriggerSourceFromSuggestionTriggerSource(trigger_source)});
       break;
     case PopupItemId::kSeePromoCodeDetails:
       manager_->OnSeePromoCodeOfferDetailsSelected(
@@ -837,11 +838,19 @@ void AutofillExternalDelegate::FillAutofillFormData(
                  : mojom::ActionPersistence::kFill;
 
   PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
-  if (const CreditCard* credit_card =
-          pdm->GetCreditCardByGUID(backend_id.value())) {
-    manager_->FillOrPreviewCreditCardForm(action_persistence, query_form_,
-                                          query_field_, credit_card,
-                                          trigger_details);
+  if (CreditCard* credit_card = pdm->GetCreditCardByGUID(backend_id.value())) {
+    if (popup_item_id == PopupItemId::kVirtualCreditCardEntry) {
+      // Virtual credit cards are not persisted in Chrome, modify record type
+      // locally.
+      CreditCard copy = CreditCard::CreateVirtualCard(*credit_card);
+      manager_->FillOrPreviewCreditCardForm(action_persistence, query_form_,
+                                            query_field_, &copy,
+                                            trigger_details);
+    } else {
+      manager_->FillOrPreviewCreditCardForm(action_persistence, query_form_,
+                                            query_field_, credit_card,
+                                            trigger_details);
+    }
   } else if (const AutofillProfile* profile =
                  pdm->GetProfileByGUID(backend_id.value())) {
     manager_->FillOrPreviewProfileForm(action_persistence, query_form_,

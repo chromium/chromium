@@ -1373,6 +1373,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
   if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
     return;
 
+  // TODO(crbug.com/1330108): Accept credit card by reference.
   credit_card_ = credit_card ? *credit_card : CreditCard();
   bool is_preview = action_persistence != mojom::ActionPersistence::kFill;
   bool is_virtual_card_standalone_cvc =
@@ -1522,27 +1523,6 @@ void BrowserAutofillManager::FillCreditCardForm(
                              &credit_card, &cvc, form_structure, autofill_field,
                              trigger_details,
                              /*is_refill=*/false);
-}
-
-void BrowserAutofillManager::FillOrPreviewVirtualCardInformation(
-    mojom::ActionPersistence action_persistence,
-    const std::string& guid,
-    const FormData& form,
-    const FormFieldData& field,
-    const AutofillTriggerDetails& trigger_details) {
-  if (!IsValidFormData(form) || !IsValidFormFieldData(field) ||
-      !RefreshDataModels()) {
-    return;
-  }
-
-  const CreditCard* credit_card =
-      client().GetPersonalDataManager()->GetCreditCardByGUID(guid);
-  if (credit_card) {
-    CreditCard copy = *credit_card;
-    copy.set_record_type(CreditCard::RecordType::kVirtualCard);
-    FillOrPreviewCreditCardForm(action_persistence, form, field, &copy,
-                                trigger_details);
-  }
 }
 
 void BrowserAutofillManager::OnFocusNoLongerOnFormImpl(

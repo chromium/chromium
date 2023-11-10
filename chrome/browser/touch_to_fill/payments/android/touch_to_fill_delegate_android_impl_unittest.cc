@@ -100,13 +100,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const CreditCard* credit_card,
                const AutofillTriggerDetails& trigger_details));
   MOCK_METHOD(void,
-              FillOrPreviewVirtualCardInformation,
-              (mojom::ActionPersistence action_persistence,
-               const std::string& guid,
-               const FormData& form,
-               const FormFieldData& field,
-               const AutofillTriggerDetails& trigger_details));
-  MOCK_METHOD(void,
               DidShowSuggestions,
               (bool has_autofill_suggestions,
                const FormData& form,
@@ -704,7 +697,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest, CardSelectionClosesTheSheet) {
   TryToShowTouchToFill(/*expected_success=*/true);
 
   EXPECT_CALL(autofill_client_, HideTouchToFillCreditCard).Times(1);
-  touch_to_fill_delegate_->SuggestionSelected(credit_card.server_id(), false);
+  touch_to_fill_delegate_->SuggestionSelected(credit_card.guid(), false);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest, CardSelectionFillsCardForm) {
@@ -715,7 +708,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest, CardSelectionFillsCardForm) {
   TryToShowTouchToFill(/*expected_success=*/true);
 
   EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewCreditCardForm);
-  touch_to_fill_delegate_->SuggestionSelected(credit_card.server_id(), false);
+  touch_to_fill_delegate_->SuggestionSelected(credit_card.guid(), false);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
@@ -727,8 +720,8 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewVirtualCardInformation);
-  touch_to_fill_delegate_->SuggestionSelected(credit_card.server_id(), true);
+  EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewCreditCardForm);
+  touch_to_fill_delegate_->SuggestionSelected(credit_card.guid(), true);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,

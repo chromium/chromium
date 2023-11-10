@@ -233,11 +233,11 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
               (const FormData& form, const FormFieldData& field),
               (override));
   MOCK_METHOD(void,
-              FillOrPreviewVirtualCardInformation,
+              FillOrPreviewCreditCardForm,
               (mojom::ActionPersistence action_persistence,
-               const std::string& guid,
                const FormData& form,
                const FormFieldData& field,
+               const CreditCard* credit_card,
                const AutofillTriggerDetails& trigger_details),
               (override));
 
@@ -1036,15 +1036,17 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
                                      u"baz foo"),
       kDefaultTriggerSource);
 
+  CreditCard card = test::GetMaskedServerCard();
+  personal_data().AddCreditCard(card);
   // Ensure selecting a virtual card entry will cause any previews to
   // get cleared.
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm());
   EXPECT_CALL(*browser_autofill_manager_,
-              FillOrPreviewVirtualCardInformation(
-                  mojom::ActionPersistence::kPreview, _, _, _, _));
-  external_delegate_->DidSelectSuggestion(
-      test::CreateAutofillSuggestion(PopupItemId::kVirtualCreditCardEntry),
-      kDefaultTriggerSource);
+              FillOrPreviewCreditCardForm(mojom::ActionPersistence::kPreview, _,
+                                          _, _, _));
+  Suggestion suggestion(PopupItemId::kVirtualCreditCardEntry);
+  suggestion.payload = Suggestion::BackendId(card.guid());
+  external_delegate_->DidSelectSuggestion(suggestion, kDefaultTriggerSource);
 }
 
 // Test that the popup is hidden once we are done editing the autofill field.
@@ -1920,20 +1922,26 @@ TEST_F(AutofillExternalDelegateUnitTest, ShouldUseNewSettingName) {
 // virtual card after users accept the suggestion to use a virtual card.
 TEST_F(AutofillExternalDelegateUnitTest, AcceptVirtualCardOptionItem) {
   FormData form;
-  EXPECT_CALL(*browser_autofill_manager_,
-              FillOrPreviewVirtualCardInformation(
-                  mojom::ActionPersistence::kFill, _, _, _, _));
+  CreditCard card = test::GetMaskedServerCard();
+  personal_data().AddCreditCard(card);
+  EXPECT_CALL(
+      *browser_autofill_manager_,
+      FillOrPreviewCreditCardForm(mojom::ActionPersistence::kFill, _, _, _, _));
+  Suggestion suggestion(PopupItemId::kVirtualCreditCardEntry);
+  suggestion.payload = Suggestion::BackendId(card.guid());
   external_delegate_->DidAcceptSuggestion(
-      Suggestion(PopupItemId::kVirtualCreditCardEntry),
-      SuggestionPosition{.row = 0}, kDefaultTriggerSource);
+      suggestion, SuggestionPosition{.row = 0}, kDefaultTriggerSource);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest, SelectVirtualCardOptionItem) {
+  CreditCard card = test::GetMaskedServerCard();
+  personal_data().AddCreditCard(card);
   EXPECT_CALL(*browser_autofill_manager_,
-              FillOrPreviewVirtualCardInformation(
-                  mojom::ActionPersistence::kPreview, _, _, _, _));
-  external_delegate_->DidSelectSuggestion(
-      Suggestion(PopupItemId::kVirtualCreditCardEntry), kDefaultTriggerSource);
+              FillOrPreviewCreditCardForm(mojom::ActionPersistence::kPreview, _,
+                                          _, _, _));
+  Suggestion suggestion(PopupItemId::kVirtualCreditCardEntry);
+  suggestion.payload = Suggestion::BackendId(card.guid());
+  external_delegate_->DidSelectSuggestion(suggestion, kDefaultTriggerSource);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest,

@@ -192,6 +192,12 @@ class AutofillMetricsIFrameTest : public testing::WithParamInterface<bool>,
             std::string("Autofill.FormEvents.CreditCard.") +
             (is_in_any_main_frame_ ? "IsInMainFrame" : "IsInIFrame")) {}
 
+  CreditCard GetVirtualCreditCard(const std::string& guid) {
+    CreditCard copy = *personal_data().GetCreditCardByGUID(guid);
+    copy.set_record_type(CreditCard::RecordType::kVirtualCard);
+    return copy;
+  }
+
  protected:
   const std::string credit_card_form_events_frame_histogram_;
 };
@@ -2605,9 +2611,10 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
     // Simulating selecting a virtual server suggestion by selecting the
     // option based on the enrolled masked card.
     base::HistogramTester histogram_tester;
-    autofill_manager().FillOrPreviewVirtualCardInformation(
-        mojom::ActionPersistence::kFill, kTestMaskedCardId, form,
-        form.fields[2], {.trigger_source = AutofillTriggerSource::kPopup});
+    CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
+    autofill_manager().FillOrPreviewCreditCardForm(
+        mojom::ActionPersistence::kFill, form, form.fields[2], &virtual_card,
+        {.trigger_source = AutofillTriggerSource::kPopup});
     OnCreditCardFetchingSuccessful(u"6011000990139424",
                                    /*is_virtual_card=*/true);
     EXPECT_THAT(
@@ -2630,14 +2637,15 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
   {
     // Simulating selecting a virtual card multiple times.
     base::HistogramTester histogram_tester;
-    autofill_manager().FillOrPreviewVirtualCardInformation(
-        mojom::ActionPersistence::kFill, kTestMaskedCardId, form,
-        form.fields[2], {.trigger_source = AutofillTriggerSource::kPopup});
+    CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
+    autofill_manager().FillOrPreviewCreditCardForm(
+        mojom::ActionPersistence::kFill, form, form.fields[2], &virtual_card,
+        {.trigger_source = AutofillTriggerSource::kPopup});
     OnCreditCardFetchingSuccessful(u"6011000990139424",
                                    /*is_virtual_card=*/true);
-    autofill_manager().FillOrPreviewVirtualCardInformation(
-        mojom::ActionPersistence::kFill, kTestMaskedCardId, form,
-        form.fields[2], {.trigger_source = AutofillTriggerSource::kPopup});
+    autofill_manager().FillOrPreviewCreditCardForm(
+        mojom::ActionPersistence::kFill, form, form.fields[2], &virtual_card,
+        {.trigger_source = AutofillTriggerSource::kPopup});
     OnCreditCardFetchingSuccessful(u"6011000990139424",
                                    /*is_virtual_card=*/true);
     EXPECT_THAT(
@@ -2700,9 +2708,10 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardFilledFormEvents) {
     // Simulating filling a virtual card suggestion by selecting the option
     // based on the enrolled masked card.
     base::HistogramTester histogram_tester;
-    autofill_manager().FillOrPreviewVirtualCardInformation(
-        mojom::ActionPersistence::kFill, kTestMaskedCardId, form,
-        form.fields.front(), {.trigger_source = AutofillTriggerSource::kPopup});
+    CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
+    autofill_manager().FillOrPreviewCreditCardForm(
+        mojom::ActionPersistence::kFill, form, form.fields.front(),
+        &virtual_card, {.trigger_source = AutofillTriggerSource::kPopup});
     OnCreditCardFetchingSuccessful(u"6011000990139424",
                                    /*is_virtual_card=*/true);
     EXPECT_THAT(
@@ -3629,10 +3638,11 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
     // Simulating submission with filled virtual card data by selecting the
     // option based on the enrolled masked card.
     base::HistogramTester histogram_tester;
+    CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
-    autofill_manager().FillOrPreviewVirtualCardInformation(
-        mojom::ActionPersistence::kFill, kTestMaskedCardId, form,
-        form.fields.front(), {.trigger_source = AutofillTriggerSource::kPopup});
+    autofill_manager().FillOrPreviewCreditCardForm(
+        mojom::ActionPersistence::kFill, form, form.fields.front(),
+        &virtual_card, {.trigger_source = AutofillTriggerSource::kPopup});
     OnCreditCardFetchingSuccessful(u"6011000990139424",
                                    /*is_virtual_card=*/true);
     SubmitForm(form);
@@ -3987,10 +3997,11 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
     // Simulating submission with filled virtual card data by selecting the
     // option based on the enrolled masked card.
     base::HistogramTester histogram_tester;
+    CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
     autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
-    autofill_manager().FillOrPreviewVirtualCardInformation(
-        mojom::ActionPersistence::kFill, kTestMaskedCardId, form,
-        form.fields.front(), {.trigger_source = AutofillTriggerSource::kPopup});
+    autofill_manager().FillOrPreviewCreditCardForm(
+        mojom::ActionPersistence::kFill, form, form.fields.front(),
+        &virtual_card, {.trigger_source = AutofillTriggerSource::kPopup});
     OnCreditCardFetchingSuccessful(u"6011000990139424",
                                    /*is_virtual_card=*/true);
     SubmitForm(form);
