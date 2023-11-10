@@ -19,7 +19,8 @@ source_set("screen_ai") {
   deps = [
     "//components/services/screen_ai/proto",
     "//components/services/screen_ai/public/cpp:utilities",
-    "//components/services/screen_ai/public/mojom",
+    "//components/services/screen_ai/public/mojom:factory",
+    "//components/services/screen_ai/public/mojom:mojom",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//sandbox/policy",
