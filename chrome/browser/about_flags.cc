@@ -11235,6 +11235,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncSessionOnVisibilityChangedDescription, kOsAll,
      FEATURE_VALUE_TYPE(syncer::kSyncSessionOnVisibilityChanged)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"dynamic-top-chrome", flag_descriptions::kDynamicTopChromeName,
+     flag_descriptions::kDynamicTopChromeDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDynamicTopChrome)},
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
     {"password-generation-strong-label-experiment",
      flag_descriptions::kPasswordGenerationStrongLabelExperimentName,

@@ -43281,6 +43281,7 @@ from previous Chrome versions.
   <int value="-370229772" label="RefreshFeedOnRestart:enabled"/>
   <int value="-369565225" label="SkipServiceWorkerCheckInstallOnly:disabled"/>
   <int value="-369150124" label="SendTabToSelfV2:enabled"/>
+  <int value="-368811558" label="DynamicTopChrome:enabled"/>
   <int value="-368106169"
       label="CrOSLateBootCrasSplitAlsaUSBInternal:disabled"/>
   <int value="-367474066" label="DialogTouchBar:enabled"/>
@@ -45782,6 +45783,7 @@ from previous Chrome versions.
   <int value="824961931" label="use-simple-cache-backend"/>
   <int value="824968180" label="SimLockPolicy:enabled"/>
   <int value="828092263" label="TemporaryUnexpireFlagsM78:enabled"/>
+  <int value="828678083" label="DynamicTopChrome:disabled"/>
   <int value="830282555" label="DecodeJpeg420ImagesToYUV:enabled"/>
   <int value="830354646" label="SecondaryGoogleAccountUsage:disabled"/>
   <int value="832142463" label="WebAssemblyStreaming:enabled"/>
