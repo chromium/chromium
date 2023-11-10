@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/test_region_data_loader.h"
@@ -542,11 +543,9 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                        SelectingIncompleteAddress) {
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add incomplete address.
-  autofill::AutofillProfile profile;
+  autofill::AutofillProfile profile(
+      AddressCountryCode(base::UTF16ToUTF8(kCountryWithoutStatesCode)));
   profile.SetInfo(autofill::NAME_FULL, kNameFull, kLocale);
-  // Also set non-default country, to make sure proper fields will be used.
-  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, kCountryWithoutStates,
-                  kLocale);
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -649,7 +648,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                        MAYBE_FocusFirstInvalidField_NotName) {
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address with only the name set, so that another view takes focus.
-  autofill::AutofillProfile profile;
+  autofill::AutofillProfile profile(
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetInfo(autofill::NAME_FULL, kNameFull, "fr_CA");
   AddAutofillProfile(profile);
 

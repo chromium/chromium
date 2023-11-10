@@ -87,8 +87,11 @@ std::u16string ShippingAddressEditorViewController::GetInitialValueForType(
 }
 
 bool ShippingAddressEditorViewController::ValidateModelAndSave() {
-  // To validate the profile first, we use a temporary object.
-  autofill::AutofillProfile profile;
+  // To validate the profile first, we use a temporary object. Note that the
+  // address country gets set first during `SaveFieldsToProfile()`, therefore it
+  // is okay to initially build this profile with an empty country.
+  autofill::AutofillProfile profile(
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   if (!SaveFieldsToProfile(&profile, /*ignore_errors=*/false))
     return false;
   if (!profile_to_edit_) {
