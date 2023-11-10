@@ -161,7 +161,10 @@ public class StatusBarColorControllerTest {
     @LargeTest
     @Feature({"StatusBar"})
     @EnableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
-    @DisableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    @DisableFeatures({
+        ChromeFeatureList.SURFACE_POLISH,
+        ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID
+    })
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     public void testBrandColorIgnoredInStartSurface() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
@@ -222,6 +225,7 @@ public class StatusBarColorControllerTest {
     @LargeTest
     @Feature({"StatusBar"})
     @EnableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR, ChromeFeatureList.SURFACE_POLISH})
+    @DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     public void testBrandColorNotIgnoredInStartSurfaceWithSurfacePolishEnabled() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();

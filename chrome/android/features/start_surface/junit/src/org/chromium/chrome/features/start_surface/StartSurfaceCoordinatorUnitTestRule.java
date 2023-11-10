@@ -146,6 +146,7 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
             @Override
             public void evaluate() {
                 ChromeFeatureList.sStartSurfaceAndroid.setForTesting(true);
+                ChromeFeatureList.sShowNtpAtStartupAndroid.setForTesting(false);
 
                 mTabModelSelector = Mockito.mock(TabModelSelector.class);
                 mContainerView = Mockito.mock(ViewGroup.class);

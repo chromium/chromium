@@ -93,6 +93,7 @@ import org.chromium.url.JUnitTestGURLs;
         manifest = Config.NONE,
         shadows = {ShadowHomepageManager.class, ShadowHomepagePolicyManager.class})
 @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
+@DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
 public class ReturnToChromeUtilUnitTest {
     /** Shadow for {@link HomepageManager}. */
     @Implements(HomepageManager.class)

@@ -124,6 +124,7 @@ import java.util.List;
     ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
     ChromeFeatureList.EMPTY_STATES
 })
+@DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "force-fieldtrials=Study/Group",

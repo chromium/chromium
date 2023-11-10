@@ -143,6 +143,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /** Tests for {@link StartSurfaceMediator}. */
+@DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class StartSurfaceMediatorUnitTest {

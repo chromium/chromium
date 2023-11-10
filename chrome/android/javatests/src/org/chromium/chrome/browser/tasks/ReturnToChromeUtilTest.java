@@ -56,6 +56,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -143,6 +144,7 @@ public class ReturnToChromeUtilTest {
     @SmallTest
     @Feature({"ReturnToChrome"})
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1081754.
     public void testTabSwitcherModeTriggeredWithinThreshold_WarmStart_FromIncognito_NON_V2()
             throws Exception {

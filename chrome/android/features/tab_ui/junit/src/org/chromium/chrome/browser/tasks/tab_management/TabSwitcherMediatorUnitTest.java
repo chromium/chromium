@@ -966,7 +966,10 @@ public class TabSwitcherMediatorUnitTest {
     @EnableFeatures(ChromeFeatureList.START_SURFACE_ANDROID)
     // When Start surface refactoring is enabled, the top control properties are no longer handled
     // separately, and it is covered by test updatesPropertiesWithTopControlsChanges().
-    @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
+    @DisableFeatures({
+        ChromeFeatureList.START_SURFACE_REFACTOR,
+        ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID
+    })
     public void updatesPropertiesWithTopControlsChanges_StartSurface() {
         assertEquals(0, mModel.get(TabListContainerProperties.TOP_MARGIN));
         assertEquals(0, mModel.get(TabListContainerProperties.SHADOW_TOP_OFFSET));
