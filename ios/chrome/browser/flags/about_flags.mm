@@ -1631,7 +1631,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSetUpListContentNotificationName,
      flag_descriptions::kSetUpListContentNotificationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kSetUpListContentNotification)},
-
+    {"fullscreen-improvement", flag_descriptions::kFullscreenImprovementName,
+     flag_descriptions::kFullscreenImprovementDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kFullscreenImprovement)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

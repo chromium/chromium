@@ -309,6 +309,9 @@ BASE_DECLARE_FEATURE(kIOSLargeFakebox);
 // Engine choice.
 BASE_DECLARE_FEATURE(kIOSHideFeedWithSearchChoice);
 
+// Feature flag to enable a more stable fullscreen.
+BASE_DECLARE_FEATURE(kFullscreenImprovement);
+
 // Feature param under `kEnableFeedBackgroundRefresh` to also enable background
 // refresh for the Following feed.
 extern const char kEnableFollowingFeedBackgroundRefresh[];

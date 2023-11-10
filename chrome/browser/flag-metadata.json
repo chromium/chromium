@@ -4422,6 +4422,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "fullscreen-improvement",
+    "owners": [ "alionadangla@google.com", "ajuma@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "fullscreen-popup-windows",
     "owners": [ "btriebw@chromium.org", "msw@chromium.org" ],
     "expiry_milestone": 125

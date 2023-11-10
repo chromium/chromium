@@ -411,6 +411,11 @@ extern const char kFeedInvisibleForegroundRefreshDescription[];
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
+// Title and description for the flag to trigger improvement for fullscreen
+// feature.
+extern const char kFullscreenImprovementName[];
+extern const char kFullscreenImprovementDescription[];
+
 // Title and description for the flag to enable default browser full-screen
 // promo on omnibox copy-paste.
 extern const char kFullScreenPromoOnOmniboxCopyPasteName[];

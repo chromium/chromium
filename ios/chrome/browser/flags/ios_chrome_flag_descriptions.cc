@@ -484,6 +484,10 @@ const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "
     "Chrome.";
 
+const char kFullscreenImprovementName[] = "Improve fullscreen";
+const char kFullscreenImprovementDescription[] =
+    "When enabled, fullscreen should have a better stability.";
+
 const char kFullScreenPromoOnOmniboxCopyPasteName[] =
     "Trigger Default Browser full-screen promo on omnibox copy-paste";
 const char kFullScreenPromoOnOmniboxCopyPasteDescription[] =
