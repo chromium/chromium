@@ -158,6 +158,7 @@ tools/metrics/histograms/metadata/simple/histograms.xml
 tools/metrics/histograms/metadata/stability/histograms.xml
 tools/metrics/histograms/metadata/start_surface/histograms.xml
 tools/metrics/histograms/metadata/startup/histograms.xml
+tools/metrics/histograms/metadata/storage/enums.xml
 tools/metrics/histograms/metadata/storage/histograms.xml
 tools/metrics/histograms/metadata/structured_metrics/histograms.xml
 tools/metrics/histograms/metadata/subresource/histograms.xml

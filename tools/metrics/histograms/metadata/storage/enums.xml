@@ -1,0 +1,288 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanInherited">
+  <int value="0" label="Not inherited"/>
+  <int value="1" label="Inherited"/>
+</enum>
+
+<enum name="ClearDataSiteBlacklistCrossedReason">
+  <int value="0" label="Durable"/>
+  <int value="1" label="Notifications"/>
+  <int value="2" label="Engagement"/>
+  <int value="3" label="Notifications and Engagement"/>
+  <int value="4" label="Durable and Engagement"/>
+  <int value="5" label="Notifications and Durable"/>
+  <int value="6" label="Notifications, Durable, and Engagement"/>
+  <int value="7" label="Unknown"/>
+</enum>
+
+<enum name="ClearSiteDataParameters">
+  <int value="0" label="No valid types"/>
+  <int value="1" label="Cookies"/>
+  <int value="2" label="Storage"/>
+  <int value="3" label="Cookies and Storage"/>
+  <int value="4" label="Cache"/>
+  <int value="5" label="Cookies and Cache"/>
+  <int value="6" label="Storage and Cache"/>
+  <int value="7" label="Cookies, Storage, and Cache"/>
+  <int value="8" label="Storage buckets"/>
+  <int value="9" label="Storage buckets and Cookies"/>
+  <int value="10" label="Storage buckets and Storage"/>
+  <int value="11" label="Storage buckets, Cookies, and Storage"/>
+  <int value="12" label="Storage buckets and Cache"/>
+  <int value="13" label="Storage buckets, Cookies, and Cache"/>
+  <int value="14" label="Storage buckets, Storage, and Cache"/>
+  <int value="15" label="Storage buckets, Cookies, Storage, and Cache"/>
+  <int value="16" label="Client Hints"/>
+  <int value="17" label="Client Hints and Cookies"/>
+  <int value="18" label="Client Hints and Storage"/>
+  <int value="19" label="Client Hints, Cookies, and Storage"/>
+  <int value="20" label="Client Hints and Cache"/>
+  <int value="21" label="Client Hints, Cookies, and Cache"/>
+  <int value="22" label="Client Hints, Storage, and Cache"/>
+  <int value="23" label="Client Hints, Cookies, Storage, and Cache"/>
+  <int value="24" label="Client Hints and Storage buckets"/>
+  <int value="25" label="Client Hints, Storage buckets, and Cookies"/>
+  <int value="26" label="Client Hints, Storage buckets, and Storage"/>
+  <int value="27" label="Client Hints, Storage buckets, Cookies, and Storage"/>
+  <int value="28" label="Client Hints, Storage buckets, and Cache"/>
+  <int value="29" label="Client Hints, Storage buckets, Cookies and Cache"/>
+  <int value="30" label="Client Hints, Storage buckets, Storage and Cache"/>
+  <int value="31"
+      label="Client Hints, Storage buckets, Cookies, Storage, and Cache"/>
+</enum>
+
+<enum name="ClipboardFormatRead">
+  <int value="0" label="Text"/>
+  <int value="1" label="Html"/>
+  <int value="2" label="Rtf"/>
+  <int value="3" label="Image"/>
+  <int value="4" label="Bookmark"/>
+  <int value="5" label="Data"/>
+  <int value="6" label="CustomData"/>
+  <int value="7" label="WebSmartPaste"/>
+  <int value="8" label="Svg"/>
+  <int value="9" label="Filenames"/>
+  <int value="10" label="Png"/>
+</enum>
+
+<enum name="ClipboardFormatWrite">
+  <int value="0" label="Text"/>
+  <int value="1" label="Html"/>
+  <int value="2" label="Rtf"/>
+  <int value="3" label="Image"/>
+  <int value="4" label="Bookmark"/>
+  <int value="5" label="Data"/>
+  <int value="6" label="CustomData"/>
+  <int value="7" label="WebSmartPaste"/>
+  <int value="8" label="Svg"/>
+  <int value="9" label="Filenames"/>
+</enum>
+
+<enum name="FileSystemAccessPermissionRequestOutcome">
+  <int value="0" label="Blocked by Content Setting"/>
+  <int value="1" label="Blocked from invalid frame"/>
+  <int value="2" label="Blocked for lack of user activation"/>
+  <int value="3" label="Blocked from third-party context"/>
+  <int value="4" label="Granted"/>
+  <int value="5" label="Denied by user"/>
+  <int value="6" label="Dismissed by user"/>
+  <int value="7" label="Request was aborted"/>
+  <int value="8" label="Granted by Content Setting"/>
+  <int value="9" label="Granted by persisted permission"/>
+</enum>
+
+<enum name="ImportantSitesReason">
+  <int value="0" label="Engagement"/>
+  <int value="1" label="Durable"/>
+  <int value="2" label="Bookmarks"/>
+  <int value="3" label="Home Screen"/>
+  <int value="4" label="Notifications"/>
+</enum>
+
+<enum name="RequestStorageResult">
+  <int value="0" label="Approved due to existing storage access"/>
+  <int value="1" label="Approved with new grant"/>
+  <int value="2" label="Rejected with missing user gesture"/>
+  <int value="3" label="Rejected due to missing origin"/>
+  <int value="4" label="Rejected due to opaque origin"/>
+  <int value="5" label="Rejected due to existing denial"/>
+  <int value="6" label="Rejected due to missing sandbox token"/>
+  <int value="7" label="Rejected due to denied prompt"/>
+  <int value="8"
+      label="Rejected due to a call being made from an invalid context"/>
+  <int value="9" label="Rejected due to insecure context"/>
+  <int value="10" label="Approved due to being called from top-level frame"/>
+  <int value="11" label="Rejected due to credentialless iframe"/>
+  <int value="12" label="Approved with a new or existing grant"/>
+  <int value="13" label="Rejected due to fenced frame"/>
+</enum>
+
+<enum name="SharedStorageWorkletDestroyedStatus">
+  <int value="0" label="DidNotEnterKeepAlive"/>
+  <int value="1" label="KeepAliveEndedDueToOperationsFinished"/>
+  <int value="2" label="KeepAliveEndedDueToTimeout"/>
+  <int value="3" label="Other">
+    Keep alive entered but reason for termination not given.
+  </int>
+</enum>
+
+<enum name="SharedStorageWorkletErrorType">
+  <int value="0" label="AddModuleWebVisible">
+    Errors in `addModule()` visible to the document.
+  </int>
+  <int value="1" label="AddModuleNonWebVisible">
+    Errors in `addModule()` not visible to the document.
+  </int>
+  <int value="2" label="RunWebVisible">
+    Errors in `run()` visible to the document.
+  </int>
+  <int value="3" label="RunNonWebVisible">
+    Errors in `run()` not visible to the document.
+  </int>
+  <int value="4" label="kSelectURLWebVisible">
+    Errors in `selectURL()` visible to the document.
+  </int>
+  <int value="5" label="kSelectURLNonWebVisible">
+    Errors in `selectURL()` not visible to the document.
+  </int>
+</enum>
+
+<enum name="SqlRecoveryResult">
+  <summary>
+    Outcome of attempting to recover a database with sql::BuiltInRecovery. See
+    sql::BuiltInRecovery::Result for descriptions.
+  </summary>
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kSuccess"/>
+  <int value="2" label="kFailedRecoveryInit"/>
+  <int value="3" label="kFailedRecoveryRun"/>
+  <int value="4" label="kFailedToOpenRecoveredDatabase"/>
+  <int value="5" label="kFailedMetaTableDoesNotExist"/>
+  <int value="6" label="kFailedMetaTableInit"/>
+  <int value="7" label="kFailedMetaTableVersionWasInvalid"/>
+  <int value="8" label="kFailedBackupInit"/>
+  <int value="9" label="kFailedBackupRun"/>
+</enum>
+
+<enum name="StorageAccessAPIRequestOutcome">
+  <summary>
+    Possible outcomes of a Storage Access API permission request.
+  </summary>
+  <int value="0" label="Granted by First-Party Set"/>
+  <int value="1" label="Granted by implicit grant allowance"/>
+  <int value="2" label="Granted by user"/>
+  <int value="3" label="Denied by First-Party Set"/>
+  <int value="4" label="Denied by user"/>
+  <int value="5"
+      label="Denied by missing prerequisite (user gesture, feature enabled)"/>
+  <int value="6" label="Dismissed by user"/>
+  <int value="7" label="Reused previous decision (made by user)"/>
+  <int value="8" label="Denied by top-level user interaction heuristic"/>
+  <int value="9" label="Access was allowed through cookie settings"/>
+  <int value="10" label="Reused implicit grant (e.g. from First-Party-Sets)"/>
+  <int value="11" label="Access was denied through cookie settings"/>
+  <int value="12"
+      label="Allowed by requesting origin and embedding origin being
+             same-site"/>
+  <int value="13"
+      label="Denied due to an abort by browser (e.g. RenderFrameHost was
+             deleted)"/>
+</enum>
+
+<enum name="StorageAccessInputState">
+  <int value="0" label="OptInWithMatchingGrant">
+    The frame-level opt-in bool was provided, and there is a matching permission
+    grant.
+  </int>
+  <int value="1" label="OptInWithoutGrant">
+    The frame-level opt-in bool was provided, but there is no matching
+    permission grant.
+  </int>
+  <int value="2" label="MatchingGrantWithoutOptIn">
+    There is a matching permission grant, but no frame-level opt-in bool was
+    provided.
+  </int>
+  <int value="3" label="NoOptInNoGrant">
+    No frame-level opt-in bool was provided, and there is no matching permission
+    grant.
+  </int>
+</enum>
+
+<enum name="StorageAccessResult">
+  <int value="0" label="Storage access blocked"/>
+  <int value="1" label="Storage access allowed"/>
+  <int value="2" label="Access grant used to allow access"/>
+  <int value="3"
+      label="Storage access allowed by force-allowed third-party-cookies
+             (deprecated)"/>
+  <int value="4"
+      label="Storage access allowed by the top-level version of the API"/>
+  <int value="5" label="Storage access allowed by 3PCD setting"/>
+  <int value="6"
+      label="Storage access allowed by 3PCD metadata grants content settings"/>
+  <int value="7" label="Temporary storage access allowed by 3PCD heuristics"/>
+</enum>
+
+<enum name="StorageBucketDurabilityParameter">
+  <int value="0" label="Not provided"/>
+  <int value="1" label="Relaxed"/>
+  <int value="2" label="Strict"/>
+</enum>
+
+<enum name="StorageBucketPersistedParameter">
+  <int value="0" label="Not provided"/>
+  <int value="1" label="Not persisted"/>
+  <int value="2" label="Persisted"/>
+</enum>
+
+<enum name="StoragePressureBubbleUserAction">
+  <int value="0" label="The bubble was shown."/>
+  <int value="1" label="The user ignored the bubble."/>
+  <int value="2" label="The user clicked on the positive button."/>
+</enum>
+
+<enum name="TopLevelStorageAccessRequestOutcome">
+  <summary>
+    Possible outcomes of a Top-Level Storage Access API permission request.
+  </summary>
+  <int value="0" label="Granted by First-Party Set"/>
+  <int value="1" label="(Obsolete) Granted by implicit grant allowance"/>
+  <int value="2" label="(Obsolete) Granted by user"/>
+  <int value="3" label="Denied by First-Party Set"/>
+  <int value="4" label="(Obsolete) Denied by user"/>
+  <int value="5"
+      label="Denied by missing prerequisite (user gesture, feature enabled)"/>
+  <int value="6" label="(Obsolete) Dismissed by user"/>
+  <int value="7" label="(Obsolete) Reused previous decision (made by user)"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
