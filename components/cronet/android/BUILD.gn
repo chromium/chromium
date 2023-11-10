@@ -1605,7 +1605,7 @@ action("generate_licenses") {
     "license_file",
     rebase_path(_license_path, root_build_dir),
     "--gn-target",
-    "//components/cronet/android:cronet",
+    "//components/cronet/android:cronet_non_test_package",
     "--gn-out-dir",
     ".",
   ]
@@ -1869,27 +1869,19 @@ action("dependencies_checks") {
   deps = [ ":cronet" ]
 }
 
-group("cronet_package_android") {
-  # Marked as testonly as it contains test-only targets too.
-  testonly = true
-
+group("cronet_non_test_package") {
+  # Target containing all of cronet's non-test targets.
   # Enforce building with ICU alternatives, crbug.com/611621.
   # Enforce that arm_use_neon==false when building for ARMv7 by
   # not including any deps in cronet_package target otherwise.
   if (use_platform_icu_alternatives &&
       (!(target_cpu == "arm" && arm_version == 7) || !arm_use_neon)) {
     deps = [
-      ":api_static_checks",
       ":cronet_package_copy",
       ":cronet_package_copy_native_headers",
       ":cronet_package_copy_native_lib",
       ":cronet_package_copy_native_lib_unstripped",
       ":cronet_package_copy_resources",
-      ":cronet_sizes",
-      ":cronet_test_package",
-      ":dependencies_checks",
-      ":generate_javadoc",
-      ":generate_licenses",
       ":jar_cronet_api_source",
       ":jar_cronet_impl_common_java_source",
       ":jar_cronet_impl_fake_java_source",
@@ -1908,6 +1900,37 @@ group("cronet_package_android") {
       deps += [ ":enforce_no_neon" ]
     }
   }
+}
+
+group("cronet_test_package") {
+  # Target containing all of cronet's test targets.
+  testonly = true
+
+  # Don't build for MIPS where tests aren't run.
+  if (current_cpu != "mipsel" && current_cpu != "mips64el") {
+    deps = [
+      ":cronet_package_copy_native_test_lib",
+      ":cronet_package_copy_native_test_lib_unstripped",
+      ":cronet_package_copy_test_assets",
+      ":cronet_package_copy_test_files",
+      ":cronet_package_copy_test_support_apks",
+      ":cronet_sizes",
+      ":repackage_test_jars",
+    ]
+  }
+}
+
+group("cronet_package_android") {
+  # Target containing all of cronet's targets both test and non-test ones.
+  # Marked as testonly as it contains test-only targets too.
+  testonly = true
+  deps = [
+    ":cronet_non_test_package",
+    ":cronet_test_package",
+    ":dependencies_checks",
+    ":generate_javadoc",
+    ":generate_licenses",
+  ]
 }
 
 group("cronet_android_mainline") {
@@ -1929,21 +1952,5 @@ group("cronet_android_mainline") {
     if (current_cpu == "arm" && arm_version == 7) {
       deps += [ ":enforce_no_neon" ]
     }
-  }
-}
-
-group("cronet_test_package") {
-  testonly = true
-
-  # Don't build for MIPS where tests aren't run.
-  if (current_cpu != "mipsel" && current_cpu != "mips64el") {
-    deps = [
-      ":cronet_package_copy_native_test_lib",
-      ":cronet_package_copy_native_test_lib_unstripped",
-      ":cronet_package_copy_test_assets",
-      ":cronet_package_copy_test_files",
-      ":cronet_package_copy_test_support_apks",
-      ":repackage_test_jars",
-    ]
   }
 }
