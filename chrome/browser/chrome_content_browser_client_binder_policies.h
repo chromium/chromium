@@ -14,4 +14,11 @@
 void RegisterChromeMojoBinderPoliciesForSameOriginPrerendering(
     content::MojoBinderPolicyMap& policy_map);
 
+// Intended to be called only by
+// ChromeContentBrowserClient::RegisterMojoBinderPoliciesForPreview().
+// It is in its own file so that security review can be required by the OWNERS
+// file.
+void RegisterChromeMojoBinderPoliciesForPreview(
+    content::MojoBinderPolicyMap& policy_map);
+
 #endif  // CHROME_BROWSER_CHROME_CONTENT_BROWSER_CLIENT_BINDER_POLICIES_H_

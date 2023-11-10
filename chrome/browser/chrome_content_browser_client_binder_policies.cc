@@ -58,3 +58,9 @@ void RegisterChromeMojoBinderPoliciesForSameOriginPrerendering(
   RegisterPoliciesForNonAssociatedInterfaces(policy_map);
   RegisterPoliciesForChannelAssociatedInterfaces(policy_map);
 }
+
+void RegisterChromeMojoBinderPoliciesForPreview(
+    content::MojoBinderPolicyMap& policy_map) {
+  RegisterPoliciesForNonAssociatedInterfaces(policy_map);
+  RegisterPoliciesForChannelAssociatedInterfaces(policy_map);
+}
