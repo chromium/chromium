@@ -152,7 +152,7 @@
     Next
   </message>
   <message name="IDS_CELLULAR_SETUP_SKIP_DISCOVERY_LABEL" desc="Label for button that skips the multiple profile selection step and sets up a new profile during eSIM cellular setup">
-    Skip &amp; Set up new profile
+    Skip &amp; set up new profile
   </message>
   <message name="IDS_CELLULAR_SETUP_CONFIRM_LABEL" desc="Label for button that verifies the confirmation code entered during cellular setup">
     Confirm
@@ -227,7 +227,7 @@
     We've found multiple profiles available to download. Select the ones you would like to download before proceeding.
   </message>
   <message name="IDS_CELLULAR_SETUP_PROFILE_LIST_PAGE_MESSAGE_WITH_LINK" desc="Label informing the user that they can choose to setup an eSIM profile manually.">
-    You can also setup an eSIM profile <ph name="BEGIN_LINK">&lt;a href="#" &gt;</ph>manually<ph name="END_LINK">&lt;/a&gt;</ph>.
+    You can also set up an eSIM profile <ph name="BEGIN_LINK">&lt;a href="#" &gt;</ph>manually<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE" desc="Label for informing the user on ways to retrieve an eSim profile">
     Scan a QR Code using your device camera or enter the activation code provided by your carrier.
