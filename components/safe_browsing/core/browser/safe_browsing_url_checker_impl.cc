@@ -318,6 +318,10 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
   }
 
   const bool is_prefetch = (load_flags_ & net::LOAD_PREFETCH);
+  if (request_destination_ == network::mojom::RequestDestination::kDocument) {
+    base::UmaHistogramBoolean("SafeBrowsing.CheckUrl.IsDocumentCheckPrefetch",
+                              is_prefetch);
+  }
 
   // Handle main frame and subresources. We do this to catch resources flagged
   // as phishing even if the top frame isn't flagged.
