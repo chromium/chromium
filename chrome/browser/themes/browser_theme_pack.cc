@@ -12,7 +12,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
@@ -967,36 +967,32 @@ bool BrowserThemePack::GetTint(int id, color_utils::HSL* hsl) const {
 }
 
 bool BrowserThemePack::GetColor(int id, SkColor* color) const {
-  static const base::NoDestructor<
-      base::flat_set<TP::OverwritableByUserThemeProperty>>
-      kOpaqueColors(
-          // Explicitly creating a base::flat_set here is not strictly
-          // necessary according to C++, but we do so to work around
-          // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=84849.
-          base::flat_set<TP::OverwritableByUserThemeProperty>({
-              // Background tabs must be opaque since the tabstrip expects to be
-              // able to render text opaquely atop them.
-              TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE,
-              TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE,
-              TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO,
-              TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE_INCOGNITO,
-              // The frame colors will be used for background tabs when not
-              // otherwise overridden and thus must be opaque as well.
-              TP::COLOR_FRAME_ACTIVE,
-              TP::COLOR_FRAME_INACTIVE,
-              TP::COLOR_FRAME_ACTIVE_INCOGNITO,
-              TP::COLOR_FRAME_INACTIVE_INCOGNITO,
-              // The toolbar is used as the foreground tab color, so it must be
-              // opaque just like background tabs.
-              TP::COLOR_TOOLBAR,
-          }));
+  static constexpr auto kOpaqueColors =
+      base::MakeFixedFlatSet<TP::OverwritableByUserThemeProperty>({
+          // Background tabs must be opaque since the tabstrip expects to be
+          // able to render text opaquely atop them.
+          TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE,
+          TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE,
+          TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO,
+          TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE_INCOGNITO,
+          // The frame colors will be used for background tabs when not
+          // otherwise overridden and thus must be opaque as well.
+          TP::COLOR_FRAME_ACTIVE,
+          TP::COLOR_FRAME_INACTIVE,
+          TP::COLOR_FRAME_ACTIVE_INCOGNITO,
+          TP::COLOR_FRAME_INACTIVE_INCOGNITO,
+          // The toolbar is used as the foreground tab color, so it must be
+          // opaque just like background tabs.
+          TP::COLOR_TOOLBAR,
+      });
 
   if (colors_) {
     for (size_t i = 0; i < kColorsArrayLength; ++i) {
       if (colors_[i].id == id) {
         *color = colors_[i].color;
-        if (base::Contains(*kOpaqueColors, id))
+        if (base::Contains(kOpaqueColors, id)) {
           *color = SkColorSetA(*color, SK_AlphaOPAQUE);
+        }
         return true;
       }
     }
