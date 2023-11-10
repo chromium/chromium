@@ -120,7 +120,8 @@
       }
 
       :host-context([chrome-refresh-2023]) #checkbox:focus-visible {
-        outline: 2px solid var(--cr-focus-outline-color);
+        outline: var(--cr-checkbox-focus-outline,
+            2px solid var(--cr-focus-outline-color));
         outline-offset: 2px;
       }
 

@@ -184,6 +184,19 @@
   --cr-checkbox-unchecked-ripple-opacity: 1;
 }
 
+:host-context([cros][chrome-refresh-2023]) cr-checkbox {
+  --cr-checkbox-focus-outline: none;
+}
+
+:host-context([cros][chrome-refresh-2023]) cr-checkbox[disabled] {
+  opacity: var(--cros-disabled-opacity);
+}
+
+:host-context([cros][chrome-refresh-2023]):host-context(.focus-outline-visible)
+    cr-checkbox:focus {
+  --cr-checkbox-ripple-ring: 2px solid var(--cros-sys-focus_ring);
+}
+
 /* Dialog */
 :host-context(body.jelly-enabled) cr-dialog::part(dialog) {
   --cr-dialog-background-color: var(--cros-sys-base_elevated);
