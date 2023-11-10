@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
@@ -1168,6 +1169,7 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
     params->value = new_info.value;
     params->selection =
         gfx::Range(new_info.selection_start, new_info.selection_end);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
     {
       // It is expected that the selection range is always bounded by
       // the text content, but according to the logs in browser process
@@ -1184,6 +1186,7 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
         base::debug::DumpWithoutCrashing();
       }
     }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
     if (new_info.composition_start != -1) {
       params->composition =
