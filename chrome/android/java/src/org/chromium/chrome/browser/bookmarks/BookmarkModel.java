@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -154,5 +156,24 @@ public class BookmarkModel extends BookmarkBridge {
      */
     public BookmarkId getDefaultFolderViewLocation() {
         return getRootFolderId();
+    }
+
+    /**
+     * @param tab Tab whose current URL is checked against.
+     * @return {@code true} if the current tab URL has a bookmark associated with it. If the
+     *     bookmark backend is not loaded, return {@code false}.
+     */
+    public boolean hasBookmarkIdForTab(@Nullable Tab tab) {
+        if (tab == null) return false;
+        return isBookmarked(tab.getOriginalUrl());
+    }
+
+    /**
+     * @param tab Tab whose current URL is checked against.
+     * @return BookmarkId or {@link null} if bookmark backend is not loaded.
+     */
+    public @Nullable BookmarkId getUserBookmarkIdForTab(@Nullable Tab tab) {
+        if (tab == null) return null;
+        return getMostRecentlyAddedUserBookmarkIdForUrl(tab.getOriginalUrl());
     }
 }

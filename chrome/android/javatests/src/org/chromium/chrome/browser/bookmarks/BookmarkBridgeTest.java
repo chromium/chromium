@@ -343,14 +343,6 @@ public class BookmarkBridgeTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @Feature({"Bookmark"})
-    public void testGetUserBookmarkIdForTab() {
-        Assert.assertNull(mBookmarkBridge.getUserBookmarkIdForTab(null));
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
     @RequiresRestart
     public void testAddToReadingList() {
         Assert.assertNull(

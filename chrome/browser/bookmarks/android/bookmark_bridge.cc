@@ -226,47 +226,32 @@ void BookmarkBridge::GetImageUrlForBookmark(
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-BookmarkBridge::GetBookmarkIdForWebContents(
+BookmarkBridge::GetMostRecentlyAddedUserBookmarkIdForUrl(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
-    jboolean only_editable) {
+    const JavaParamRef<jobject>& j_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
 
-  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
-  if (!web_contents)
-    return nullptr;
-
-  GURL url = dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
-      web_contents->GetLastCommittedURL());
-
-  // TODO(crbug.com/1150559): This is a hack to avoid a historical issue that
-  // this function doesn't wait for any backend loaded.
-  if (reading_list_manager_->IsLoaded()) {
-    const auto* node = reading_list_manager_->Get(url);
-    if (node)
-      return JavaBookmarkIdCreateBookmarkId(env, node->id(),
-                                            GetBookmarkType(node));
+  std::vector<const bookmarks::BookmarkNode*> nodes;
+  const auto* readingListNode = reading_list_manager_->Get(*url);
+  if (readingListNode) {
+    nodes.push_back(readingListNode);
   }
 
-  // Get all the nodes for |url| and sort them by date added.
-  bookmarks::ManagedBookmarkService* managed =
-      ManagedBookmarkServiceFactory::GetForProfile(profile_);
-  bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(profile_);
-
-  std::vector<const bookmarks::BookmarkNode*> nodes = model->GetNodesByURL(url);
+  // Get all the nodes for |url| from BookmarkModel and sort them by date added.
+  std::vector<const bookmarks::BookmarkNode*> bookmarkModelResult =
+      BookmarkModelFactory::GetForBrowserContext(profile_)->GetNodesByURL(*url);
+  nodes.insert(nodes.end(), bookmarkModelResult.begin(),
+               bookmarkModelResult.end());
   std::sort(nodes.begin(), nodes.end(), &bookmarks::MoreRecentlyAdded);
 
-  // Return the first node matching the search criteria.
-  for (const auto* node : nodes) {
-    if (only_editable && managed->IsNodeManaged(node)) {
-      continue;
-    }
-    return JavaBookmarkIdCreateBookmarkId(env, node->id(),
-                                          GetBookmarkType(node));
+  if (nodes.size() == 0) {
+    return nullptr;
   }
 
-  return nullptr;
+  // Return the first node matching the search criteria.
+  return JavaBookmarkIdCreateBookmarkId(env, nodes.front()->id(),
+                                        GetBookmarkType(nodes.front()));
 }
 
 jboolean BookmarkBridge::IsEditBookmarksEnabled(JNIEnv* env) {

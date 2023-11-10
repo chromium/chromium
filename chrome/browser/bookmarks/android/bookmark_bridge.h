@@ -64,11 +64,10 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
       const base::android::JavaParamRef<jobject>& j_url,
       const base::android::JavaParamRef<jobject>& j_callback);
 
-  base::android::ScopedJavaLocalRef<jobject> GetBookmarkIdForWebContents(
+  base::android::ScopedJavaLocalRef<jobject>
+  GetMostRecentlyAddedUserBookmarkIdForUrl(
       JNIEnv* env,
-
-      const base::android::JavaParamRef<jobject>& jweb_contents,
-      jboolean only_editable);
+      const base::android::JavaParamRef<jobject>& j_url);
 
   bool IsDoingExtensiveChanges(JNIEnv* env);
 
