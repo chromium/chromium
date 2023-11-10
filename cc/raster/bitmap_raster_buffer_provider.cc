@@ -57,7 +57,7 @@ class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
   ~BitmapSoftwareBacking() override {
     if (frame_sink->shared_image_interface()) {
       frame_sink->shared_image_interface()->DestroySharedImage(
-          gpu::SyncToken(), std::move(shared_image));
+          gpu::SyncToken(), shared_bitmap_id);
     } else {
       frame_sink->DidDeleteSharedBitmap(shared_bitmap_id);
     }
@@ -73,7 +73,6 @@ class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
   }
 
   raw_ptr<LayerTreeFrameSink> frame_sink;
-  scoped_refptr<gpu::ClientSharedImage> shared_image;
   base::WritableSharedMemoryMapping mapping;
 
   base::UnsafeSharedMemoryRegion unsafe_region;
@@ -168,14 +167,15 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
           size.width(), gfx::BufferFormat::RGBA_8888, 0));
       handle.region = backing->unsafe_region.Duplicate();
 
-      backing->shared_image =
+      auto client_shared_image =
           frame_sink_->shared_image_interface()->CreateSharedImage(
               viz::SinglePlaneFormat::kRGBA_8888, size, color_space,
               kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
               gpu::SHARED_IMAGE_USAGE_CPU_WRITE, kDebugLabel,
               std::move(handle));
-      CHECK(backing->shared_image);
-      backing->shared_bitmap_id = backing->shared_image->mailbox();
+      CHECK(client_shared_image);
+      backing->shared_bitmap_id = client_shared_image->mailbox();
+
     } else {
       backing->shared_bitmap_id = viz::SharedBitmap::GenerateId();
       base::MappedReadOnlyRegion shm =
