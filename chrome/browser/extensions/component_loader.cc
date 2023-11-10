@@ -108,7 +108,7 @@ std::string GenerateId(const base::Value::Dict& manifest,
   return id;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 absl::optional<base::Value::Dict> LoadManifestOnFileThread(
     const base::FilePath& root_directory,
     const base::FilePath::CharType* manifest_filename,
@@ -137,7 +137,9 @@ absl::optional<base::Value::Dict> LoadManifestOnFileThread(
 
   return manifest;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsNormalSession() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
              ash::switches::kGuestSession) &&
@@ -547,9 +549,11 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     if (!base::FeatureList::IsEnabled(
             chromeos::features::kDisableOfficeEditingComponentApp)) {
-      Add(IDR_QUICKOFFICE_MANIFEST,
-          base::FilePath(
-              FILE_PATH_LITERAL("/usr/share/chromeos-assets/quickoffice")));
+      AddComponentFromDirWithManifestFilename(
+          base::FilePath("/usr/share/chromeos-assets/quickoffice"),
+          extension_misc::kQuickOfficeComponentExtensionId,
+          extensions::kManifestFilename, extensions::kManifestFilename,
+          base::DoNothing());
     }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -609,15 +613,7 @@ void ComponentLoader::UnloadComponent(ComponentExtensionInfo* component) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void ComponentLoader::AddComponentFromDir(const base::FilePath& root_directory,
-                                          const char* extension_id,
-                                          base::OnceClosure done_cb) {
-  AddComponentFromDirWithManifestFilename(
-      root_directory, extension_id, extensions::kManifestFilename,
-      extension_misc::kGuestManifestFilename, std::move(done_cb));
-}
-
+#if BUILDFLAG(IS_CHROMEOS)
 void ComponentLoader::AddComponentFromDirWithManifestFilename(
     const base::FilePath& root_directory,
     const char* extension_id,
@@ -625,8 +621,12 @@ void ComponentLoader::AddComponentFromDirWithManifestFilename(
     const base::FilePath::CharType* guest_manifest_file_name,
     base::OnceClosure done_cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const base::FilePath::CharType* manifest_filename =
       IsNormalSession() ? manifest_file_name : guest_manifest_file_name;
+#else
+  const base::FilePath::CharType* manifest_filename = manifest_file_name;
+#endif
   GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&LoadManifestOnFileThread, root_directory,
@@ -634,6 +634,44 @@ void ComponentLoader::AddComponentFromDirWithManifestFilename(
       base::BindOnce(&ComponentLoader::FinishAddComponentFromDir,
                      weak_factory_.GetWeakPtr(), root_directory, extension_id,
                      absl::nullopt, absl::nullopt, std::move(done_cb)));
+}
+
+void ComponentLoader::FinishAddComponentFromDir(
+    const base::FilePath& root_directory,
+    const char* extension_id,
+    const absl::optional<std::string>& name_string,
+    const absl::optional<std::string>& description_string,
+    base::OnceClosure done_cb,
+    absl::optional<base::Value::Dict> manifest) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!manifest) {
+    return;  // Error already logged.
+  }
+
+  if (name_string) {
+    manifest->Set(manifest_keys::kName, name_string.value());
+  }
+
+  if (description_string) {
+    manifest->Set(manifest_keys::kDescription, description_string.value());
+  }
+
+  std::string actual_extension_id =
+      Add(std::move(*manifest), root_directory, false);
+  CHECK_EQ(extension_id, actual_extension_id);
+  if (done_cb) {
+    std::move(done_cb).Run();
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ComponentLoader::AddComponentFromDir(const base::FilePath& root_directory,
+                                          const char* extension_id,
+                                          base::OnceClosure done_cb) {
+  AddComponentFromDirWithManifestFilename(
+      root_directory, extension_id, extensions::kManifestFilename,
+      extension_misc::kGuestManifestFilename, std::move(done_cb));
 }
 
 void ComponentLoader::AddWithNameAndDescriptionFromDir(
@@ -673,34 +711,6 @@ void ComponentLoader::AddChromeOsSpeechSynthesisExtensions() {
   }
 }
 
-void ComponentLoader::FinishAddComponentFromDir(
-    const base::FilePath& root_directory,
-    const char* extension_id,
-    const absl::optional<std::string>& name_string,
-    const absl::optional<std::string>& description_string,
-    base::OnceClosure done_cb,
-    absl::optional<base::Value::Dict> manifest) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!manifest) {
-    return;  // Error already logged.
-  }
-
-  if (name_string) {
-    manifest->Set(manifest_keys::kName, name_string.value());
-  }
-
-  if (description_string) {
-    manifest->Set(manifest_keys::kDescription, description_string.value());
-  }
-
-  std::string actual_extension_id =
-      Add(std::move(*manifest), root_directory, false);
-  CHECK_EQ(extension_id, actual_extension_id);
-  if (done_cb) {
-    std::move(done_cb).Run();
-  }
-}
-
 void ComponentLoader::FinishLoadSpeechSynthesisExtension(
     const char* extension_id) {
   // TODO(https://crbug.com/947305): mitigation for extension not awake after
@@ -708,6 +718,6 @@ void ComponentLoader::FinishLoadSpeechSynthesisExtension(
   extensions::ProcessManager::Get(profile_)->WakeEventPage(extension_id,
                                                            base::DoNothing());
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions
