@@ -101,12 +101,6 @@ void SendResultCodeToUma(CrdSessionType crd_session_type,
       .LogSessionLaunchResult(result_code);
 }
 
-void SendSessionTypeToUma(
-    DeviceCommandStartCrdSessionJob::UmaSessionType session_type) {
-  base::UmaHistogramEnumeration(
-      "Enterprise.DeviceRemoteCommand.Crd.SessionType", session_type);
-}
-
 std::string CreateSuccessPayload(const std::string& access_code) {
   return base::WriteJson(
              base::Value::Dict()
@@ -393,7 +387,6 @@ void DeviceCommandStartCrdSessionJob::FinishWithSuccess(
 
   SendResultCodeToUma(GetCrdSessionType(), GetCurrentUserSessionType(),
                       ExtendedStartCrdSessionResultCode::kSuccess);
-  SendSessionTypeToUma(GetUmaSessionType());
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(result_callback_), ResultType::kSuccess,
@@ -450,28 +443,6 @@ CrdSessionType DeviceCommandStartCrdSessionJob::GetCrdSessionType() const {
     return CrdSessionType::REMOTE_ACCESS_SESSION;
   }
   return CrdSessionType::REMOTE_SUPPORT_SESSION;
-}
-
-DeviceCommandStartCrdSessionJob::UmaSessionType
-DeviceCommandStartCrdSessionJob::GetUmaSessionType() const {
-  switch (GetCurrentUserSessionType()) {
-    case UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION:
-      return UmaSessionType::kAutoLaunchedKiosk;
-    case UserSessionType::AFFILIATED_USER_SESSION:
-      return UmaSessionType::kAffiliatedUser;
-    case UserSessionType::MANAGED_GUEST_SESSION:
-      return UmaSessionType::kManagedGuestSession;
-    case UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION:
-      return UmaSessionType::kManuallyLaunchedKiosk;
-    case UserSessionType::NO_SESSION:
-      // TODO(b/236689277): Introduce UmaSessionType::kNoLocalUser.
-      return UmaSessionType::kMaxValue;
-    case UserSessionType::UNAFFILIATED_USER_SESSION:
-    case UserSessionType::GUEST_SESSION:
-    case UserSessionType::USER_SESSION_TYPE_UNKNOWN:
-      NOTREACHED();
-      return UmaSessionType::kMaxValue;
-  }
 }
 
 bool DeviceCommandStartCrdSessionJob::IsDeviceIdle() const {

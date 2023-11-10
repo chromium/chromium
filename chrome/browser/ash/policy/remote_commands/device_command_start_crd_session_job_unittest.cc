@@ -50,7 +50,6 @@ namespace {
 using base::test::IsJson;
 using base::test::TestFuture;
 using test::TestSessionType;
-using UmaSessionType = DeviceCommandStartCrdSessionJob::UmaSessionType;
 using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
 using remoting::features::kEnableCrdAdminRemoteAccess;
@@ -734,59 +733,6 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
   EXPECT_SUCCESS(result);
   EXPECT_EQ(show_confirmation_dialog,
             delegate().session_parameters().show_confirmation_dialog);
-}
-
-TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
-       ShouldSendSuccessUmaLogsForRemoteSupport) {
-  TestSessionType user_session_type = GetParam();
-  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
-                                  SessionTypeToString(user_session_type)));
-
-  if (!SupportsRemoteSupport(user_session_type)) {
-    return;
-  }
-
-  base::HistogramTester histogram_tester;
-
-  StartSessionOfType(user_session_type);
-  RunJobAndWaitForResult();
-
-  UmaSessionType expected_session_type = [&]() {
-    switch (user_session_type) {
-      case TestSessionType::kManuallyLaunchedArcKioskSession:
-      case TestSessionType::kManuallyLaunchedWebKioskSession:
-      case TestSessionType::kManuallyLaunchedKioskSession:
-        return UmaSessionType::kManuallyLaunchedKiosk;
-      case TestSessionType::kAutoLaunchedArcKioskSession:
-      case TestSessionType::kAutoLaunchedWebKioskSession:
-      case TestSessionType::kAutoLaunchedKioskSession:
-        return UmaSessionType::kAutoLaunchedKiosk;
-
-      case TestSessionType::kManagedGuestSession:
-        return UmaSessionType::kManagedGuestSession;
-
-      case TestSessionType::kAffiliatedUserSession:
-        return UmaSessionType::kAffiliatedUser;
-
-      case TestSessionType::kGuestSession:
-      case TestSessionType::kUnaffiliatedUserSession:
-      case TestSessionType::kNoSession:
-        // Unsupported session types
-        NOTREACHED();
-        return UmaSessionType::kMaxValue;
-    }
-  }();
-
-  histogram_tester.ExpectUniqueSample(
-      "Enterprise.DeviceRemoteCommand.Crd.Result",
-      ExtendedStartCrdSessionResultCode::kSuccess, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Enterprise.DeviceRemoteCommand.Crd.SessionType", expected_session_type,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(kHistogramResultTemplate, "RemoteSupport",
-                         SessionTypeToUmaString(user_session_type)),
-      ExtendedStartCrdSessionResultCode::kSuccess, /*expected_bucket_count=*/1);
 }
 
 TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,

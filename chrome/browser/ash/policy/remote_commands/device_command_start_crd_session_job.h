@@ -42,16 +42,6 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   // fetch an oauth token.
   void SetOAuthTokenForTest(const std::string& token);
 
-  // This enum can't be renumbered because it is logged to UMA.
-  // TODO(b/261425261): Remove this enum when the Uma histogram is removed.
-  enum class UmaSessionType {
-    kAutoLaunchedKiosk = 0,
-    kAffiliatedUser = 1,
-    kManagedGuestSession = 2,
-    kManuallyLaunchedKiosk = 3,
-    kMaxValue = kManuallyLaunchedKiosk
-  };
-
  protected:
   // RemoteCommandJob:
   bool ParseCommandPayload(const std::string& command_payload) override;
@@ -71,7 +61,6 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   void FinishWithNotIdleError();
 
   bool UserTypeSupportsCrd() const;
-  UmaSessionType GetUmaSessionType() const;
   CrdSessionType GetCrdSessionType() const;
   bool IsDeviceIdle() const;
 
