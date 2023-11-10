@@ -263,6 +263,15 @@ class LorgnetteScannerManagerTest : public testing::Test {
                        base::Unretained(this)));
   }
 
+  // Calls LorgnetteScannerManager::GetCurrentConfig() and binds a callback to
+  // process the result.
+  void GetCurrentConfig() {
+    lorgnette_scanner_manager_->GetCurrentConfig(
+        lorgnette::GetCurrentConfigRequest(),
+        base::BindOnce(&LorgnetteScannerManagerTest::GetCurrentConfigCallback,
+                       base::Unretained(this)));
+  }
+
   // Calls LorgnetteScannerManager::StartPreparedScan() and binds a callback to
   // process the result.
   void StartPreparedScan() {
@@ -356,6 +365,11 @@ class LorgnetteScannerManagerTest : public testing::Test {
     return set_options_response_;
   }
 
+  absl::optional<lorgnette::GetCurrentConfigResponse>
+  get_current_config_response() const {
+    return get_current_config_response_;
+  }
+
   absl::optional<lorgnette::StartPreparedScanResponse>
   start_prepared_scan_response() const {
     return start_prepared_scan_response_;
@@ -414,6 +428,12 @@ class LorgnetteScannerManagerTest : public testing::Test {
     run_loop_->Quit();
   }
 
+  void GetCurrentConfigCallback(
+      const absl::optional<lorgnette::GetCurrentConfigResponse>& response) {
+    get_current_config_response_ = response;
+    run_loop_->Quit();
+  }
+
   void StartPreparedScanCallback(
       const absl::optional<lorgnette::StartPreparedScanResponse>& response) {
     start_prepared_scan_response_ = response;
@@ -466,6 +486,8 @@ class LorgnetteScannerManagerTest : public testing::Test {
   absl::optional<lorgnette::OpenScannerResponse> open_scanner_response_;
   absl::optional<lorgnette::CloseScannerResponse> close_scanner_response_;
   absl::optional<lorgnette::SetOptionsResponse> set_options_response_;
+  absl::optional<lorgnette::GetCurrentConfigResponse>
+      get_current_config_response_;
   absl::optional<lorgnette::StartPreparedScanResponse>
       start_prepared_scan_response_;
   absl::optional<lorgnette::ReadScanDataResponse> read_scan_data_response_;
@@ -1027,6 +1049,22 @@ TEST_F(LorgnetteScannerManagerTest, SetOptions) {
   WaitForResult();
   ASSERT_TRUE(set_options_response());
   EXPECT_THAT(response, EqualsProto(set_options_response().value()));
+}
+
+// Test getting the config for a scanner.
+TEST_F(LorgnetteScannerManagerTest, GetCurrentConfig) {
+  constexpr std::string kScannerToken = "scanner-token";
+
+  lorgnette::GetCurrentConfigResponse response;
+  response.mutable_scanner()->set_token(kScannerToken);
+  response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+  response.mutable_config()->mutable_scanner()->set_token(kScannerToken);
+
+  GetLorgnetteManagerClient()->SetGetCurrentConfigResponse(response);
+  GetCurrentConfig();
+  WaitForResult();
+  ASSERT_TRUE(get_current_config_response());
+  EXPECT_THAT(response, EqualsProto(get_current_config_response().value()));
 }
 
 // Test starting a prepared scan.

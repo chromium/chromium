@@ -77,6 +77,13 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
       const lorgnette::SetOptionsRequest& request,
       chromeos::DBusMethodCallback<lorgnette::SetOptionsResponse> callback) = 0;
 
+  // Gets the config for the the scanner described by |request| and returns the
+  // result using the provided |callback|.
+  virtual void GetCurrentConfig(
+      const lorgnette::GetCurrentConfigRequest& request,
+      chromeos::DBusMethodCallback<lorgnette::GetCurrentConfigResponse>
+          callback) = 0;
+
   // Starts a scan using information in |request| and returns the result using
   // the provided |callback|.
   virtual void StartPreparedScan(

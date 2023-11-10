@@ -151,6 +151,25 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void GetCurrentConfig(
+      const lorgnette::GetCurrentConfigRequest& request,
+      chromeos::DBusMethodCallback<lorgnette::GetCurrentConfigResponse>
+          callback) override {
+    dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
+                                 lorgnette::kGetCurrentConfigMethod);
+    dbus::MessageWriter writer(&method_call);
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to encode GetCurrentConfigRequest protobuf";
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+      return;
+    }
+    lorgnette_daemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&LorgnetteManagerClientImpl::OnGetCurrentConfigResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void StartPreparedScan(
       const lorgnette::StartPreparedScanRequest& request,
       chromeos::DBusMethodCallback<lorgnette::StartPreparedScanResponse>
@@ -589,6 +608,28 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to decode SetOptionsResponse proto";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    std::move(callback).Run(response_proto);
+  }
+
+  // Handles the response received after calling GetCurrentConfig().
+  void OnGetCurrentConfigResponse(
+      chromeos::DBusMethodCallback<lorgnette::GetCurrentConfigResponse>
+          callback,
+      dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Failed to obtain GetCurrentConfigResponse";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    lorgnette::GetCurrentConfigResponse response_proto;
+    dbus::MessageReader reader(response);
+    if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
+      LOG(ERROR) << "Failed to decode GetCurrentConfigResponse proto";
       std::move(callback).Run(absl::nullopt);
       return;
     }

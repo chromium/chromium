@@ -186,6 +186,24 @@ lorgnette::SetOptionsResponse CreateSetOptionsResponse() {
   return response;
 }
 
+// Convenience method for creating a lorgnette::GetCurrentConfigRequest.
+lorgnette::GetCurrentConfigRequest CreateGetCurrentConfigRequest() {
+  lorgnette::GetCurrentConfigRequest request;
+  request.mutable_scanner()->set_token(kScannerHandle);
+
+  return request;
+}
+
+// Convenience method for creating a lorgnette::GetCurrentConfigResponse.
+lorgnette::GetCurrentConfigResponse CreateGetCurrentConfigResponse() {
+  lorgnette::GetCurrentConfigResponse response;
+  response.mutable_scanner()->set_token(kScannerHandle);
+  response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+  response.mutable_config()->mutable_scanner()->set_token(kScannerHandle);
+
+  return response;
+}
+
 // Convenience method for creating a lorgnette::StartPreparedScanRequest.
 lorgnette::StartPreparedScanRequest CreateStartPreparedScanRequest() {
   lorgnette::ScannerHandle handle;
@@ -533,6 +551,17 @@ class LorgnetteManagerClientTest : public testing::Test {
         .WillOnce(Invoke(this, &LorgnetteManagerClientTest::OnSetOptions));
   }
 
+  // Adds an expectation to |mock_proxy_| that kGetCurrentConfigMethod will be
+  // called. When called, |mock_proxy_| will respond with |response|.
+  void SetGetCurrentConfigExpectation(dbus::Response* response) {
+    get_current_config_response_ = response;
+    EXPECT_CALL(*mock_proxy_.get(),
+                DoCallMethod(HasMember(lorgnette::kGetCurrentConfigMethod),
+                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+        .WillOnce(
+            Invoke(this, &LorgnetteManagerClientTest::OnGetCurrentConfig));
+  }
+
   // Adds an expectation to |mock_proxy_| that kStartPreparedScanMethod will be
   // called. When called, |mock_proxy_| will respond with |response|.
   void SetStartPreparedScanExpectation(dbus::Response* response) {
@@ -753,6 +782,21 @@ class LorgnetteManagerClientTest : public testing::Test {
         FROM_HERE, base::BindOnce(std::move(*callback), set_options_response_));
   }
 
+  // Responsible for responding to a kGetCurrentConfigMethod call and verifying
+  // that |method_call| is formatted correctly.
+  void OnGetCurrentConfig(dbus::MethodCall* method_call,
+                          int timeout_ms,
+                          dbus::ObjectProxy::ResponseCallback* callback) {
+    // Verify that the get config request was created and sent correctly.
+    lorgnette::GetCurrentConfigRequest request;
+    ASSERT_TRUE(
+        dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
+    EXPECT_THAT(request, EqualsProto(CreateGetCurrentConfigRequest()));
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(*callback), get_current_config_response_));
+  }
+
   // Responsible for responding to a kStartPreparedScanMethod call and verifying
   // that |method_call| is formatted correctly.
   void OnStartPreparedScan(dbus::MethodCall* method_call,
@@ -879,6 +923,9 @@ class LorgnetteManagerClientTest : public testing::Test {
   // Used to respond to kSetOptionsMethod D-Bus calls.
   raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
       set_options_response_ = nullptr;
+  // Used to respond to kGetCurrentConfigMethod D-Bus calls.
+  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
+      get_current_config_response_ = nullptr;
   // Used to respond to kStartPreparedScanMethod D-Bus calls.
   raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
       start_prepared_scan_response_ = nullptr;
@@ -1309,6 +1356,63 @@ TEST_F(LorgnetteManagerClientTest, SetOptionsInvalidResponse) {
       CreateSetOptionsRequest(),
       base::BindLambdaForTesting(
           [&](absl::optional<lorgnette::SetOptionsResponse> result) {
+            EXPECT_EQ(result, absl::nullopt);
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
+// Test that the client can get the config for a scanner.
+TEST_F(LorgnetteManagerClientTest, GetCurrentConfig) {
+  std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
+  const lorgnette::GetCurrentConfigResponse kExpectedResponse =
+      CreateGetCurrentConfigResponse();
+  ASSERT_TRUE(dbus::MessageWriter(response.get())
+                  .AppendProtoAsArrayOfBytes(kExpectedResponse));
+  SetGetCurrentConfigExpectation(response.get());
+
+  base::RunLoop run_loop;
+  GetClient()->GetCurrentConfig(
+      CreateGetCurrentConfigRequest(),
+      base::BindLambdaForTesting(
+          [&](absl::optional<lorgnette::GetCurrentConfigResponse> result) {
+            run_loop.Quit();
+            ASSERT_TRUE(result.has_value());
+            EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
+          }));
+
+  run_loop.Run();
+}
+
+// Test that the client handles a null response to a kGetCurrentConfigMethod
+// D-Bus call.
+TEST_F(LorgnetteManagerClientTest, GetCurrentConfigNullResponse) {
+  SetGetCurrentConfigExpectation(nullptr);
+
+  base::RunLoop run_loop;
+  GetClient()->GetCurrentConfig(
+      CreateGetCurrentConfigRequest(),
+      base::BindLambdaForTesting(
+          [&](absl::optional<lorgnette::GetCurrentConfigResponse> result) {
+            EXPECT_EQ(result, absl::nullopt);
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
+// Test that the client handles the case when it can't parse a response from a
+// kGetCurrentConfigMethod D-Bus call into an appropriate protobuf.
+TEST_F(LorgnetteManagerClientTest, GetCurrentConfigInvalidResponse) {
+  std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
+  SetGetCurrentConfigExpectation(response.get());
+
+  base::RunLoop run_loop;
+  GetClient()->GetCurrentConfig(
+      CreateGetCurrentConfigRequest(),
+      base::BindLambdaForTesting(
+          [&](absl::optional<lorgnette::GetCurrentConfigResponse> result) {
             EXPECT_EQ(result, absl::nullopt);
             run_loop.Quit();
           }));

@@ -36,6 +36,8 @@ class LorgnetteScannerManager : public KeyedService {
       const absl::optional<lorgnette::CloseScannerResponse>& response)>;
   using SetOptionsCallback = base::OnceCallback<void(
       const absl::optional<lorgnette::SetOptionsResponse>& response)>;
+  using GetCurrentConfigCallback = base::OnceCallback<void(
+      const absl::optional<lorgnette::GetCurrentConfigResponse>& response)>;
   using StartPreparedScanCallback = base::OnceCallback<void(
       const absl::optional<lorgnette::StartPreparedScanResponse>& response)>;
   using ReadScanDataCallback = base::OnceCallback<void(
@@ -96,6 +98,12 @@ class LorgnetteScannerManager : public KeyedService {
   // is returned in the callback.
   virtual void SetOptions(const lorgnette::SetOptionsRequest& request,
                           SetOptionsCallback callback) = 0;
+
+  // Gets the config for the scanner described by |request|.  If an error
+  // occurs, absl::nullopt is returned in the callback.
+  virtual void GetCurrentConfig(
+      const lorgnette::GetCurrentConfigRequest& request,
+      GetCurrentConfigCallback callback) = 0;
 
   // Starts a scan using information in |request| and returns the result using
   // the provided |callback|.  If an error occurs, absl::nullopt is returned in
