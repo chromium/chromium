@@ -541,8 +541,12 @@ void OverviewItem::EnsureVisible() {
   transform_window_.EnsureVisible();
 }
 
-OverviewFocusableView* OverviewItem::GetFocusableView() const {
-  return overview_item_view_;
+std::vector<OverviewFocusableView*> OverviewItem::GetFocusableViews() const {
+  // `overview_item_view_` might be set to nullptr in `RestoreWindow()` or
+  // `ShutDown()`.
+  return overview_item_view_
+             ? std::vector<OverviewFocusableView*>{overview_item_view_}
+             : std::vector<OverviewFocusableView*>{};
 }
 
 views::View* OverviewItem::GetBackDropView() const {

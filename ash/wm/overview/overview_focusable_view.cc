@@ -8,6 +8,10 @@
 
 namespace ash {
 
+OverviewItemBase* OverviewFocusableView::GetOverviewItem() {
+  return nullptr;
+}
+
 bool OverviewFocusableView::MaybeActivateFocusedViewOnOverviewExit(
     OverviewSession* overview_session) {
   return false;
