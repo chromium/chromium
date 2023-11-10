@@ -128,7 +128,7 @@ TEST_F(DefaultFrameHeaderTest, FrameColors) {
   EXPECT_EQ(active, frame_header->GetCurrentFrameColor());
   frame_header->mode_ = FrameHeader::MODE_INACTIVE;
   EXPECT_EQ(inactive, frame_header->GetCurrentFrameColor());
-  EXPECT_EQ(active, frame_header->GetActiveFrameColorForPaintForTest());
+  EXPECT_EQ(active, frame_header->active_frame_color_);
 
   // Update to the new value which has no blue, which should animate.
   frame_header->mode_ = FrameHeader::MODE_ACTIVE;

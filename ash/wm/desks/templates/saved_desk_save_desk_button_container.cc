@@ -14,6 +14,7 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "base/check.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -211,5 +212,8 @@ SavedDeskSaveDeskButton* SavedDeskSaveDeskButtonContainer::GetButtonFromType(
       return save_desk_for_later_button_;
   }
 }
+
+BEGIN_METADATA(SavedDeskSaveDeskButtonContainer, views::BoxLayoutView)
+END_METADATA
 
 }  // namespace ash

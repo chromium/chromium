@@ -406,7 +406,7 @@ void SavedDeskLibraryView::AnimateDeskLaunch(const base::Uuid& uuid,
   DeleteEntries({uuid}, /*delete_animation=*/false);
 }
 
-bool SavedDeskLibraryView::IsAnimating() {
+bool SavedDeskLibraryView::IsAnimating() const {
   for (auto* grid_view : grid_views()) {
     if (grid_view->IsAnimating())
       return true;
@@ -415,7 +415,8 @@ bool SavedDeskLibraryView::IsAnimating() {
   return false;
 }
 
-bool SavedDeskLibraryView::IntersectsWithUi(const gfx::Point& screen_location) {
+bool SavedDeskLibraryView::IntersectsWithUi(
+    const gfx::Point& screen_location) const {
   // Check saved desk items.
   for (auto* grid : grid_views()) {
     for (auto* item : grid->grid_items()) {

@@ -1226,10 +1226,8 @@ void OverviewSession::UpdateAccessibilityFocus() {
     if (grid->IsSaveDeskButtonContainerVisible())
       a11y_widgets.push_back(grid->save_desk_button_container_widget());
 
-    auto* no_windows_widget = grid->no_windows_widget();
-    if (no_windows_widget) {
-      a11y_widgets.push_back(
-          static_cast<views::Widget*>(grid->no_windows_widget()));
+    if (auto* no_windows_widget = grid->no_windows_widget()) {
+      a11y_widgets.push_back(no_windows_widget);
     }
   }
 

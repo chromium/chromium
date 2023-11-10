@@ -783,9 +783,6 @@ class CaptureModeSettingsBrowserTest : public extensions::ExtensionBrowserTest {
     CHECK(profile());
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the capture mode folder selection dialog window gets parented

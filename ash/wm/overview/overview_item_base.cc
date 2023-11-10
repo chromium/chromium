@@ -227,8 +227,6 @@ views::Widget::InitParams OverviewItemBase::CreateOverviewItemWidgetParams(
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  // TODO(sammiequon): Investigate if this parameter is necessary.
-  params.visible_on_all_workspaces = true;
   params.name = widget_name;
   params.activatable = views::Widget::InitParams::Activatable::kDefault;
   params.accept_events = accept_events;

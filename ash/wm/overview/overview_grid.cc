@@ -88,6 +88,7 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/animation/animation_builder.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -1995,7 +1996,7 @@ bool OverviewGrid::IsShowingSavedDeskLibrary() const {
 }
 
 bool OverviewGrid::IsSavedDeskNameBeingModified() const {
-  if (auto* library_view = GetSavedDeskLibraryView()) {
+  if (const SavedDeskLibraryView* library_view = GetSavedDeskLibraryView()) {
     for (auto* grid_view : library_view->grid_views()) {
       if (grid_view->IsSavedDeskNameBeingModified()) {
         return true;
@@ -2189,9 +2190,9 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // Enable/disable button and update tooltip.
   const SavedDeskPresenter* saved_desk_presenter =
       overview_session_->saved_desk_presenter();
-  SavedDeskSaveDeskButtonContainer* container =
-      static_cast<SavedDeskSaveDeskButtonContainer*>(
-          save_desk_button_container_widget_->GetContentsView());
+  auto* container = views::AsViewClass<SavedDeskSaveDeskButtonContainer>(
+      save_desk_button_container_widget_->GetContentsView());
+  CHECK(container);
   container->UpdateButtonEnableStateAndTooltip(
       SavedDeskSaveDeskButton::Type::kSaveAsTemplate,
       saved_desk_presenter->GetEntryCount(DeskTemplateType::kTemplate),
@@ -2257,43 +2258,40 @@ bool OverviewGrid::IsSaveDeskButtonContainerVisible() const {
 bool OverviewGrid::IsSaveDeskAsTemplateButtonVisible() const {
   if (!IsSaveDeskButtonContainerVisible())
     return false;
-  SavedDeskSaveDeskButtonContainer* container =
-      static_cast<SavedDeskSaveDeskButtonContainer*>(
-          save_desk_button_container_widget_->GetContentsView());
-  return container->save_desk_as_template_button() &&
+  const auto* container = GetSaveDeskButtonContainer();
+  return container && container->save_desk_as_template_button() &&
          container->save_desk_as_template_button()->GetVisible();
 }
 
 bool OverviewGrid::IsSaveDeskForLaterButtonVisible() const {
   if (!IsSaveDeskButtonContainerVisible())
     return false;
-  SavedDeskSaveDeskButtonContainer* container =
-      static_cast<SavedDeskSaveDeskButtonContainer*>(
-          save_desk_button_container_widget_->GetContentsView());
-  return container->save_desk_for_later_button() &&
+  const auto* container = GetSaveDeskButtonContainer();
+  return container && container->save_desk_for_later_button() &&
          container->save_desk_for_later_button()->GetVisible();
 }
 
-SavedDeskSaveDeskButton* OverviewGrid::GetSaveDeskAsTemplateButton() const {
+SavedDeskSaveDeskButton* OverviewGrid::GetSaveDeskAsTemplateButton() {
+  auto* container = GetSaveDeskButtonContainer();
+  return container ? container->save_desk_as_template_button() : nullptr;
+}
+
+SavedDeskSaveDeskButton* OverviewGrid::GetSaveDeskForLaterButton() {
+  auto* container = GetSaveDeskButtonContainer();
+  return container ? container->save_desk_for_later_button() : nullptr;
+}
+
+SavedDeskSaveDeskButtonContainer* OverviewGrid::GetSaveDeskButtonContainer() {
   return save_desk_button_container_widget_
-             ? static_cast<SavedDeskSaveDeskButtonContainer*>(
+             ? views::AsViewClass<SavedDeskSaveDeskButtonContainer>(
                    save_desk_button_container_widget_->GetContentsView())
-                   ->save_desk_as_template_button()
              : nullptr;
 }
 
-SavedDeskSaveDeskButton* OverviewGrid::GetSaveDeskForLaterButton() const {
+const SavedDeskSaveDeskButtonContainer*
+OverviewGrid::GetSaveDeskButtonContainer() const {
   return save_desk_button_container_widget_
-             ? static_cast<SavedDeskSaveDeskButtonContainer*>(
-                   save_desk_button_container_widget_->GetContentsView())
-                   ->save_desk_for_later_button()
-             : nullptr;
-}
-
-SavedDeskSaveDeskButtonContainer* OverviewGrid::GetSaveDeskButtonContainer()
-    const {
-  return save_desk_button_container_widget_
-             ? static_cast<SavedDeskSaveDeskButtonContainer*>(
+             ? views::AsViewClass<SavedDeskSaveDeskButtonContainer>(
                    save_desk_button_container_widget_->GetContentsView())
              : nullptr;
 }
@@ -2403,9 +2401,16 @@ void OverviewGrid::OnOverviewItemWindowDestroying(OverviewItem* overview_item,
   }
 }
 
-SavedDeskLibraryView* OverviewGrid::GetSavedDeskLibraryView() const {
+SavedDeskLibraryView* OverviewGrid::GetSavedDeskLibraryView() {
   return saved_desk_library_widget_
-             ? static_cast<SavedDeskLibraryView*>(
+             ? views::AsViewClass<SavedDeskLibraryView>(
+                   saved_desk_library_widget_->GetContentsView())
+             : nullptr;
+}
+
+const SavedDeskLibraryView* OverviewGrid::GetSavedDeskLibraryView() const {
+  return saved_desk_library_widget_
+             ? views::AsViewClass<SavedDeskLibraryView>(
                    saved_desk_library_widget_->GetContentsView())
              : nullptr;
 }
@@ -2703,7 +2708,7 @@ size_t OverviewGrid::GetOverviewItemIndex(OverviewItemBase* item) const {
   return iter - window_list_.begin();
 }
 
-size_t OverviewGrid::FindInsertionIndex(const aura::Window* window) {
+size_t OverviewGrid::FindInsertionIndex(const aura::Window* window) const {
   const auto mru_windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
 

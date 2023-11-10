@@ -198,10 +198,6 @@ SkColor DefaultFrameHeader::GetCurrentFrameColor() const {
   return mode() == MODE_ACTIVE ? active_frame_color_ : inactive_frame_color_;
 }
 
-SkColor DefaultFrameHeader::GetActiveFrameColorForPaintForTest() {
-  return active_frame_color_;
-}
-
 void DefaultFrameHeader::InitializeFrameColorMetricsHelper() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   aura::Window* window = GetTargetWindow();

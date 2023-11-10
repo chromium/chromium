@@ -101,10 +101,12 @@ class ASH_EXPORT OverviewItemBase {
   }
 
   aura::Window* root_window() { return root_window_; }
+  const aura::Window* root_window() const { return root_window_; }
 
   OverviewGrid* overview_grid() { return overview_grid_; }
 
   views::Widget* item_widget() { return item_widget_.get(); }
+  const views::Widget* item_widget() const { return item_widget_.get(); }
 
   const gfx::RectF& target_bounds() const { return target_bounds_; }
 

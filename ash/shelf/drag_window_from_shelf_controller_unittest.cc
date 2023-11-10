@@ -648,7 +648,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   EXPECT_TRUE(overview_controller->InOverviewSession());
   OverviewSession* overview_session = overview_controller->overview_session();
   ASSERT_EQ(1u, overview_session->grid_list().size());
-  SplitViewDragIndicators* drag_indicators =
+  const SplitViewDragIndicators* drag_indicators =
       overview_session->grid_list()[0]->split_view_drag_indicators();
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kFromShelf,
             drag_indicators->current_window_dragging_state());

@@ -197,22 +197,22 @@ class SavedDeskTest : public OverviewTestBase,
 
   SavedDeskSaveDeskButton* GetSaveDeskAsTemplateButtonForRoot(
       aura::Window* root_window) {
-    const auto* overview_grid = GetOverviewGridForRoot(root_window);
-    DCHECK(overview_grid);
+    auto* overview_grid = GetOverviewGridForRoot(root_window);
+    CHECK(overview_grid);
     return overview_grid->GetSaveDeskAsTemplateButton();
   }
 
   SavedDeskSaveDeskButton* GetSaveDeskForLaterButtonForRoot(
       aura::Window* root_window) {
-    const auto* overview_grid = GetOverviewGridForRoot(root_window);
-    DCHECK(overview_grid);
+    auto* overview_grid = GetOverviewGridForRoot(root_window);
+    CHECK(overview_grid);
     return overview_grid->GetSaveDeskForLaterButton();
   }
 
   SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainerForRoot(
       aura::Window* root_window) {
-    const auto* overview_grid = GetOverviewGridForRoot(root_window);
-    DCHECK(overview_grid);
+    auto* overview_grid = GetOverviewGridForRoot(root_window);
+    CHECK(overview_grid);
     return overview_grid->GetSaveDeskButtonContainer();
   }
 

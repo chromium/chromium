@@ -178,7 +178,7 @@ class SavedDeskControllerTestApi {
 // Returns all saved desk item views from the desk library on the given
 // `overview_grid`.
 std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
-    const OverviewGrid* overview_grid);
+    OverviewGrid* overview_grid);
 
 // Returns all saved desk item views from the given `saved_desk_library_view`.
 std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(

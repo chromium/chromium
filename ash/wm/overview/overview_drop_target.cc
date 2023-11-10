@@ -18,6 +18,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -70,8 +71,9 @@ OverviewDropTarget::~OverviewDropTarget() = default;
 
 void OverviewDropTarget::UpdateBackgroundVisibility(
     const gfx::Point& location_in_screen) {
-  OverviewDropTargetView* drop_target_view =
-      static_cast<OverviewDropTargetView*>(item_widget_->GetContentsView());
+  auto* drop_target_view = views::AsViewClass<OverviewDropTargetView>(
+      item_widget_->GetContentsView());
+  CHECK(drop_target_view);
   drop_target_view->UpdateBackgroundVisibility(
       item_widget_->GetWindowBoundsInScreen().Contains(location_in_screen));
 }

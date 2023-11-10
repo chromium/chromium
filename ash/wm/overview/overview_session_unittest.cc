@@ -9706,7 +9706,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   auto* item2 = grid_on_root2->GetOverviewItemContaining(window2.get());
   SplitViewController* split_view_controller =
       SplitViewController::Get(root_windows[1]);
-  SplitViewDragIndicators* indicators =
+  const SplitViewDragIndicators* indicators =
       grid_on_root2->split_view_drag_indicators();
 
   Shell::Get()->cursor_manager()->SetDisplay(
@@ -9774,9 +9774,9 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   OverviewGrid* grid_on_root2 =
       GetOverviewSession()->GetGridWithRootWindow(root_windows[1]);
   auto* item1 = grid_on_root1->GetOverviewItemContaining(window1.get());
-  SplitViewDragIndicators* indicators_on_root1 =
+  const SplitViewDragIndicators* indicators_on_root1 =
       grid_on_root1->split_view_drag_indicators();
-  SplitViewDragIndicators* indicators_on_root2 =
+  const SplitViewDragIndicators* indicators_on_root2 =
       grid_on_root2->split_view_drag_indicators();
 
   ASSERT_EQ(display_with_root1.id(), cursor_manager->GetDisplay().id());

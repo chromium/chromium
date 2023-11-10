@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "split_view_drag_indicators.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -65,23 +66,24 @@ class SplitViewDragIndicatorsTest : public AshTestBase {
 
     if (!overview_controller->InOverviewSession()) {
       overview_session_ = nullptr;
-      split_view_drag_indicators_ = nullptr;
       return;
     }
 
     overview_session_ = Shell::Get()->overview_controller()->overview_session();
     ASSERT_TRUE(overview_session_);
-    split_view_drag_indicators_ =
-        overview_session_->grid_list()[0]->split_view_drag_indicators();
   }
 
   SplitViewController* split_view_controller() {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow());
   }
 
-  SplitViewDragIndicators::WindowDraggingState window_dragging_state() {
-    DCHECK(split_view_drag_indicators_);
-    return split_view_drag_indicators_->current_window_dragging_state();
+  const SplitViewDragIndicators* split_view_drag_indicators() const {
+    return overview_session_->grid_list()[0]->split_view_drag_indicators();
+  }
+
+  SplitViewDragIndicators::WindowDraggingState window_dragging_state() const {
+    CHECK(split_view_drag_indicators());
+    return split_view_drag_indicators()->current_window_dragging_state();
   }
 
   bool IsPreviewAreaShowing() {
@@ -103,8 +105,6 @@ class SplitViewDragIndicatorsTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<SplitViewDragIndicators, DanglingUntriaged | ExperimentalAsh>
-      split_view_drag_indicators_ = nullptr;
   raw_ptr<OverviewSession, DanglingUntriaged | ExperimentalAsh>
       overview_session_ = nullptr;
 };

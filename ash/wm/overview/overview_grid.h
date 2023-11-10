@@ -390,13 +390,14 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   bool IsSaveDeskForLaterButtonVisible() const;
 
   // Returns the save desk as template button if available, otherwise null.
-  SavedDeskSaveDeskButton* GetSaveDeskAsTemplateButton() const;
+  SavedDeskSaveDeskButton* GetSaveDeskAsTemplateButton();
 
   // Returns the save desk for later button if available, otherwise null.
-  SavedDeskSaveDeskButton* GetSaveDeskForLaterButton() const;
+  SavedDeskSaveDeskButton* GetSaveDeskForLaterButton();
 
   // Returns the save button container if available, otherwise null.
-  SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer() const;
+  SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer();
+  const SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer() const;
 
   // SplitViewObserver:
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
@@ -417,7 +418,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
                                       bool reposition) override;
 
   // Returns the saved desk library view, or nullptr.
-  SavedDeskLibraryView* GetSavedDeskLibraryView() const;
+  SavedDeskLibraryView* GetSavedDeskLibraryView();
+  const SavedDeskLibraryView* GetSavedDeskLibraryView() const;
 
   // Returns true if the grid has no more windows.
   bool empty() const { return window_list_.empty(); }
@@ -425,7 +427,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Returns how many overview items are in the grid.
   size_t size() const { return window_list_.size(); }
 
-  OverviewDropTarget* drop_target() { return drop_target_; }
+  const OverviewDropTarget* drop_target() const { return drop_target_; }
 
   // Returns the root window in which the grid displays the windows.
   aura::Window* root_window() { return root_window_; }
@@ -438,7 +440,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   RoundedLabelWidget* no_windows_widget() { return no_windows_widget_.get(); }
 
-  SplitViewDragIndicators* split_view_drag_indicators() {
+  const SplitViewDragIndicators* split_view_drag_indicators() const {
     return split_view_drag_indicators_.get();
   }
 
@@ -538,7 +540,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Returns the index where |window| can be inserted into |window_list_| based
   // on MRU order.
-  size_t FindInsertionIndex(const aura::Window* window);
+  size_t FindInsertionIndex(const aura::Window* window) const;
 
   // Adds the |dragged_window| into overview on drag ended. Might need to update
   // the window's bounds if it has been resized.
@@ -610,6 +612,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Widget that contains the DeskBarView contents when the Virtual Desks
   // feature is enabled.
   std::unique_ptr<views::Widget> desks_widget_;
+
   // The contents view of the above |desks_widget_| if created.
   raw_ptr<LegacyDeskBarView, DanglingUntriaged | ExperimentalAsh>
       desks_bar_view_ = nullptr;

@@ -36,8 +36,6 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/widget/widget.h"
 
-using ash::desks_util::BelongsToActiveDesk;
-
 namespace ash {
 
 namespace {
@@ -117,25 +115,23 @@ class OverviewWindowDragControllerTest : public AshTestBase {
 
   ~OverviewWindowDragControllerTest() override = default;
 
-  OverviewController* overview_controller() {
-    return Shell::Get()->overview_controller();
-  }
-
   SplitViewController* split_view_controller() {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow());
   }
 
   OverviewSession* overview_session() {
-    DCHECK(overview_controller()->InOverviewSession());
-    return overview_controller()->overview_session();
+    return OverviewController::Get()->overview_session();
   }
 
   OverviewWindowDragController* drag_controller() {
     return overview_session()->window_drag_controller();
   }
 
-  SplitViewDragIndicators* drag_indicators() {
-    return overview_session()->grid_list()[0]->split_view_drag_indicators();
+  const SplitViewDragIndicators* drag_indicators() const {
+    return OverviewController::Get()
+        ->overview_session()
+        ->grid_list()[0]
+        ->split_view_drag_indicators();
   }
 
   OverviewGrid* overview_grid() {
@@ -152,7 +148,7 @@ class OverviewWindowDragControllerTest : public AshTestBase {
     return overview_session()->GetOverviewItemForWindow(window);
   }
 
-  int GetExpectedDesksBarShiftAmount() {
+  int GetExpectedDesksBarShiftAmount() const {
     return drag_indicators()->GetLeftHighlightViewBounds().bottom() +
            kHighlightScreenEdgePaddingDp;
   }
@@ -161,7 +157,7 @@ class OverviewWindowDragControllerTest : public AshTestBase {
     // Enter overview mode, and start dragging the window. Validate that the
     // desks bar widget is shifted down to make room for the indicators.
     EnterOverview();
-    EXPECT_TRUE(overview_controller()->InOverviewSession());
+    EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
     auto* overview_item = GetOverviewItemForWindow(window);
     ASSERT_TRUE(overview_item);
     StartDraggingItemBy(overview_item, 100, 200, /*by_touch_gestures=*/false,
@@ -196,7 +192,7 @@ TEST_F(OverviewWindowDragControllerTest, NoDragToCloseUsingMouse) {
   // Avoid TabletModeController::OnGetSwitchStates() from disabling tablet mode.
   base::RunLoop().RunUntilIdle();
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   auto* overview_session = overview_controller->overview_session();
@@ -229,7 +225,7 @@ TEST_F(OverviewWindowDragControllerTest, DropTargetBoundsTest) {
 
   std::unique_ptr<aura::Window> window = CreateAppWindow();
 
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   overview_controller->StartOverview(OverviewStartAction::kTests,
                                      OverviewEnterExitType::kImmediateEnter);
   ASSERT_TRUE(overview_controller->InOverviewSession());
@@ -253,7 +249,7 @@ TEST_F(OverviewWindowDragControllerTest, DropTargetBoundsTest) {
         event_generator, by_touch, /*drop=*/false);
     EXPECT_TRUE(overview_controller->InOverviewSession());
 
-    OverviewDropTarget* drop_target = overview_grid->drop_target();
+    const OverviewDropTarget* drop_target = overview_grid->drop_target();
     EXPECT_TRUE(drop_target);
     EXPECT_EQ(gfx::RectF(drop_target->item_widget()->GetWindowBoundsInScreen()),
               target_bounds_before_dragging);
@@ -397,7 +393,7 @@ TEST_F(OverviewWindowDragControllerTest,
 
   const gfx::Point new_desk_button_center =
       new_desk_button->GetBoundsInScreen().CenterPoint();
-  EXPECT_TRUE(overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   event_generator->MoveMouseTo(new_desk_button_center);
   event_generator->ClickLeftButton();
   EXPECT_EQ(GetDesksBarViewExpandedStateHeight(desks_bar_view),
@@ -409,7 +405,7 @@ TEST_F(OverviewWindowDragControllerTest,
   controller->RemoveDesk(controller->desks().back().get(),
                          DesksCreationRemovalSource::kButton,
                          DeskCloseType::kCombineDesks);
-  EXPECT_TRUE(overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   EXPECT_EQ(is_jellyroll_enabled ? DeskBarViewBase::State::kExpanded
                                  : DeskBarViewBase::State::kZero,
             desks_bar_view->state());
@@ -500,7 +496,7 @@ TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest,
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(GetScreenInPixelsPoint(300, 400));
   event_generator->ReleaseLeftButton();
-  EXPECT_TRUE(overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   EXPECT_EQ(0, desks_bar_widget()->GetWindowBoundsInScreen().y());
 }
 
@@ -539,7 +535,7 @@ TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest,
   // Drop it at this location and expect the window to snap. The desks bar
   // remains unshifted.
   event_generator->ReleaseLeftButton();
-  EXPECT_TRUE(overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
   EXPECT_EQ(window.get(), split_view_controller()->primary_window());
@@ -573,7 +569,7 @@ TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest, DragAndDropInDesk) {
   EXPECT_TRUE(desks_util::BelongsToActiveDesk(window.get()));
   event_generator->ReleaseLeftButton();  // Drop.
   EXPECT_FALSE(desks_util::BelongsToActiveDesk(window.get()));
-  EXPECT_TRUE(overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   EXPECT_EQ(overview_grid()->bounds_for_testing().y(),
             desks_bar_widget()->GetWindowBoundsInScreen().y());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
@@ -600,7 +596,7 @@ TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest,
   DesksController::Get()->RemoveDesk(desks_controller->GetDeskAtIndex(1),
                                      DesksCreationRemovalSource::kButton,
                                      DeskCloseType::kCombineDesks);
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Check desks bar still exists after desk2 gets removed.
   const auto* desks_bar_view = overview_grid()->desks_bar_view();

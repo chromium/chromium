@@ -45,7 +45,9 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   static std::unique_ptr<views::Widget> CreateSavedDeskLibraryWidget(
       aura::Window* root);
 
-  const std::vector<SavedDeskGridView*>& grid_views() { return grid_views_; }
+  const std::vector<SavedDeskGridView*>& grid_views() const {
+    return grid_views_;
+  }
 
   // Retrieves the item view for a given saved desk, or nullptr.
   SavedDeskItemView* GetItemForUUID(const base::Uuid& uuid);
@@ -75,11 +77,11 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   friend class SavedDeskLibraryViewTestApi;
   friend class SavedDeskLibraryWindowTargeter;
 
-  bool IsAnimating();
+  bool IsAnimating() const;
 
   // Called from `SavedDeskLibraryWindowTargeter`. Returns true if
   // `screen_location` intersects with an interactive part of the library UI.
-  bool IntersectsWithUi(const gfx::Point& screen_location);
+  bool IntersectsWithUi(const gfx::Point& screen_location) const;
 
   // If this view is attached to a widget, returns its window (or nullptr).
   aura::Window* GetWidgetWindow();

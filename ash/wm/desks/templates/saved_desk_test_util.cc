@@ -177,7 +177,7 @@ void SavedDeskControllerTestApi::ResetAutoLaunch() {
 }
 
 std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
-    const OverviewGrid* overview_grid) {
+    OverviewGrid* overview_grid) {
   SavedDeskLibraryView* saved_desk_library_view =
       overview_grid->GetSavedDeskLibraryView();
   return GetItemViewsFromDeskLibrary(saved_desk_library_view);
@@ -225,14 +225,12 @@ const views::Button* GetLibraryButton() {
 }
 
 const views::Button* GetSaveDeskAsTemplateButton() {
-  const auto* overview_grid = GetPrimaryOverviewGrid();
-  if (!overview_grid)
-    return nullptr;
-  return overview_grid->GetSaveDeskAsTemplateButton();
+  auto* overview_grid = GetPrimaryOverviewGrid();
+  return overview_grid ? overview_grid->GetSaveDeskAsTemplateButton() : nullptr;
 }
 
 const views::Button* GetSaveDeskForLaterButton() {
-  const auto* overview_grid = GetPrimaryOverviewGrid();
+  auto* overview_grid = GetPrimaryOverviewGrid();
   return overview_grid ? overview_grid->GetSaveDeskForLaterButton() : nullptr;
 }
 
