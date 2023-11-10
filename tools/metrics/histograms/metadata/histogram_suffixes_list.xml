@@ -4913,14 +4913,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Mobile.SystemNotification.Dismiss.Age"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SystemTrayTransitionType" separator=".">
-  <suffix name="TransitionToCollapsed"
-      label="Transition to the collapsed system tray"/>
-  <suffix name="TransitionToExpanded"
-      label="Transition to the expanded system tray"/>
-  <affected-histogram name="ChromeOS.SystemTray.AnimationSmoothness"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="TabletOrClamshellMode" separator=".">
   <suffix name="ClamshellMode" label="Clamshell Mode Enabled"/>
   <suffix name="TabletMode" label="Tablet Mode Enabled"/>

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/media/unified_media_controls_controller.h"
 #include "ash/system/time/calendar_metrics.h"
@@ -17,9 +16,6 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-
-class PrefRegistrySimple;
-class PrefService;
 
 namespace views {
 class View;
@@ -39,8 +35,7 @@ class UnifiedSystemTrayModel;
 
 // Controller class of `QuickSettingsView`. Handles events of the view.
 class ASH_EXPORT UnifiedSystemTrayController
-    : public SessionObserver,
-      public UnifiedVolumeSliderController::Delegate,
+    : public UnifiedVolumeSliderController::Delegate,
       public UnifiedMediaControlsController::Delegate {
  public:
   class Observer : public base::CheckedObserver {
@@ -65,9 +60,6 @@ class ASH_EXPORT UnifiedSystemTrayController
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
-
-  // Registers pref to preserve tray expanded state between reboots.
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Create the view in the bubble.
   std::unique_ptr<QuickSettingsView> CreateQuickSettingsView(int max_height);
@@ -95,8 +87,7 @@ class ASH_EXPORT UnifiedSystemTrayController
   void ShowNetworkDetailedView();
   // Show the detailed view of hotspot. Called from the view.
   void ShowHotspotDetailedView();
-  // Show the detailed view of bluetooth. If collapsed, it doesn't show the
-  // detailed view. Called from the view.
+  // Show the detailed view of bluetooth.
   void ShowBluetoothDetailedView();
   // Show the detailed view of cast. Called from the view.
   void ShowCastDetailedView();
@@ -139,9 +130,6 @@ class ASH_EXPORT UnifiedSystemTrayController
 
   // Return whether a detailed view is currently being shown.
   bool IsDetailedViewShown() const;
-
-  // SessionObserver:
-  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // UnifiedVolumeSliderController::Delegate:
   void OnAudioSettingsButtonClicked() override;
@@ -192,9 +180,6 @@ class ASH_EXPORT UnifiedSystemTrayController
   // enum is used to back an UMA histogram and should be treated as append-only.
   enum ManagedType { MANAGED_TYPE_ENTERPRISE = 0, MANAGED_TYPE_COUNT };
 
-  // Loads the `kSystemTrayExpanded` pref to the model.
-  void LoadIsExpandedPref();
-
   // Initialize feature pod controllers and their feature tile views.
   void InitFeatureTiles();
 
@@ -212,9 +197,6 @@ class ASH_EXPORT UnifiedSystemTrayController
 
   // Unowned.
   raw_ptr<UnifiedSystemTrayBubble, ExperimentalAsh> bubble_ = nullptr;
-
-  // The pref service of the currently active user. Can be null in tests.
-  raw_ptr<PrefService, ExperimentalAsh> active_user_prefs_ = nullptr;
 
   // The controller of the current detailed view. If the main view is shown,
   // it's null. Owned.

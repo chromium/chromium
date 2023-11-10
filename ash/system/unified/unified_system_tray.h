@@ -163,9 +163,6 @@ class ASH_EXPORT UnifiedSystemTray
   // view in the foreground.
   void NotifyLeavingCalendarView();
 
-  // Returns true if the user manually expanded the quick settings.
-  bool IsQuickSettingsExplicitlyExpanded() const;
-
   // This enum is for the ChromeOS.SystemTray.FirstInteraction UMA histogram and
   // should be kept in sync.
   enum class FirstInteractionType {

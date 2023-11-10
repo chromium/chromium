@@ -315,10 +315,6 @@ void UnifiedSystemTray::NotifyLeavingCalendarView() {
   }
 }
 
-bool UnifiedSystemTray::IsQuickSettingsExplicitlyExpanded() const {
-  return model_->IsExplicitlyExpanded();
-}
-
 gfx::Rect UnifiedSystemTray::GetBubbleBoundsInScreen() const {
   return bubble_ ? bubble_->GetBoundsInScreen() : gfx::Rect();
 }

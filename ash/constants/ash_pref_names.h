@@ -1140,9 +1140,6 @@ inline constexpr char kUserBluetoothAdapterEnabled[] =
 inline constexpr char kSystemBluetoothAdapterEnabled[] =
     "ash.system.bluetooth.adapter_enabled";
 
-// Boolean pref to persist the expanded state of the system tray across reboots.
-inline constexpr char kSystemTrayExpanded[] = "ash.system_tray.expanded";
-
 // A boolean pref indicating whether the camera is allowed to be used.
 inline constexpr char kUserCameraAllowed[] = "ash.user.camera_allowed";
 

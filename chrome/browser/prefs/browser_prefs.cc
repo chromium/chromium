@@ -963,6 +963,11 @@ const char kPrivacySandboxAntiAbuseInitialized[] =
 constexpr char kWebRTCAllowLegacyTLSProtocols[] =
     "webrtc.allow_legacy_tls_protocols";
 
+// Deprecated 11/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kSystemTrayExpanded[] = "ash.system_tray.expanded";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1360,6 +1365,11 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 11/2023.
   registry->RegisterBooleanPref(kWebRTCAllowLegacyTLSProtocols, false);
+
+// Deprecated 11/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kSystemTrayExpanded, true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2549,6 +2559,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs) {
 
   // Added 11/2023.
   profile_prefs->ClearPref(kWebRTCAllowLegacyTLSProtocols);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 11/2023.
+  profile_prefs->ClearPref(kSystemTrayExpanded);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

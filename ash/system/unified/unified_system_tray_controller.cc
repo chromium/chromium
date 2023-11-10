@@ -9,7 +9,6 @@
 
 #include "ash/capture_mode/capture_mode_feature_pod_controller.h"
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
@@ -73,7 +72,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "components/prefs/pref_service.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -87,30 +85,11 @@ namespace ash {
 // TODO(amehfooz): Add histograms for pagination metrics in system tray.
 void RecordPageSwitcherSourceByEventType(ui::EventType type) {}
 
-void ReportExpandAnimationSmoothness(int smoothness) {
-  UMA_HISTOGRAM_PERCENTAGE(
-      "ChromeOS.SystemTray.AnimationSmoothness."
-      "TransitionToExpanded",
-      smoothness);
-}
-
-void ReportCollapseAnimationSmoothness(int smoothness) {
-  UMA_HISTOGRAM_PERCENTAGE(
-      "ChromeOS.SystemTray.AnimationSmoothness."
-      "TransitionToCollapsed",
-      smoothness);
-}
-
 UnifiedSystemTrayController::UnifiedSystemTrayController(
     scoped_refptr<UnifiedSystemTrayModel> model,
     UnifiedSystemTrayBubble* bubble,
     views::View* owner_view)
-    : model_(model),
-      bubble_(bubble),
-      active_user_prefs_(
-          Shell::Get()->session_controller()->GetLastActiveUserPrefService()) {
-  LoadIsExpandedPref();
-
+    : model_(model), bubble_(bubble) {
   model_->pagination_model()->SetTransitionDurations(base::Milliseconds(250),
                                                      base::Milliseconds(50));
 
@@ -119,12 +98,7 @@ UnifiedSystemTrayController::UnifiedSystemTrayController(
       base::BindRepeating(&RecordPageSwitcherSourceByEventType));
 }
 
-UnifiedSystemTrayController::~UnifiedSystemTrayController() {
-  if (active_user_prefs_) {
-    active_user_prefs_->SetBoolean(prefs::kSystemTrayExpanded,
-                                   model_->IsExpandedOnOpen());
-  }
-}
+UnifiedSystemTrayController::~UnifiedSystemTrayController() = default;
 
 void UnifiedSystemTrayController::AddObserver(Observer* observer) {
   if (observer) {
@@ -136,18 +110,6 @@ void UnifiedSystemTrayController::RemoveObserver(Observer* observer) {
   if (observer) {
     observers_.RemoveObserver(observer);
   }
-}
-
-// static
-void UnifiedSystemTrayController::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kSystemTrayExpanded,
-                                /*default_value=*/true);
-}
-
-void UnifiedSystemTrayController::OnActiveUserPrefServiceChanged(
-    PrefService* prefs) {
-  active_user_prefs_ = prefs;
 }
 
 std::unique_ptr<QuickSettingsView>
@@ -407,16 +369,6 @@ void UnifiedSystemTrayController::OnMediaControlsViewClicked() {
 
 void UnifiedSystemTrayController::SetShowMediaView(bool show_media_view) {
   quick_settings_view_->SetShowMediaView(show_media_view);
-}
-
-void UnifiedSystemTrayController::LoadIsExpandedPref() {
-  if (active_user_prefs_ &&
-      active_user_prefs_->HasPrefPath(prefs::kSystemTrayExpanded)) {
-    model_->set_expanded_on_open(
-        active_user_prefs_->GetBoolean(prefs::kSystemTrayExpanded)
-            ? UnifiedSystemTrayModel::StateOnOpen::EXPANDED
-            : UnifiedSystemTrayModel::StateOnOpen::COLLAPSED);
-  }
 }
 
 void UnifiedSystemTrayController::InitFeatureTiles() {

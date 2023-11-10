@@ -150,7 +150,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   SnoopingProtectionController::RegisterProfilePrefs(registry);
   TabletModeTuckEducation::RegisterProfilePrefs(registry);
   TouchDevicesController::RegisterProfilePrefs(registry, for_test);
-  UnifiedSystemTrayController::RegisterProfilePrefs(registry);
   UserEducationController::RegisterProfilePrefs(registry);
   MediaTray::RegisterProfilePrefs(registry);
   UsbPeripheralNotificationController::RegisterProfilePrefs(registry);
