@@ -10,7 +10,6 @@ import android.media.MediaCodec;
 import android.media.MediaCodec.CryptoInfo;
 import android.media.MediaCrypto;
 import android.media.MediaFormat;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -594,10 +593,6 @@ class MediaCodecBridge {
                 return MediaCodecStatus.ERROR;
             }
             boolean usesCbcs = cipherMode == MediaCodec.CRYPTO_MODE_AES_CBC;
-            if (usesCbcs && !MediaCodecUtil.platformSupportsCbcsEncryption(Build.VERSION.SDK_INT)) {
-                Log.e(TAG, "Encryption scheme 'cbcs' not supported on this platform.");
-                return MediaCodecStatus.ERROR;
-            }
             CryptoInfo cryptoInfo = new CryptoInfo();
             cryptoInfo.set(numSubSamples, numBytesOfClearData, numBytesOfEncryptedData, keyId, iv,
                     cipherMode);

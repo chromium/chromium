@@ -649,17 +649,6 @@ class MediaCodecUtil {
     }
 
     /**
-     * Returns true if and only if a platform with the given SDK API level supports the 'cbcs'
-     * encryption scheme, specifically AES CBC encryption with possibility of pattern encryption.
-     * While 'cbcs' scheme was originally implemented in N, there was a bug (in the
-     * DRM code) which means that it didn't really work properly until N-MR1).
-     */
-    @CalledByNative
-    static boolean platformSupportsCbcsEncryption(int sdk) {
-        return sdk >= Build.VERSION_CODES.N_MR1;
-    }
-
-    /**
      * Sets the encryption pattern value if and only if CryptoInfo.setPattern method is
      * supported.
      * Note that if platformSupportsCbcsEncryption returns true, then this function will set the
