@@ -9,3 +9,7 @@ declare_args() {
   # Controls the output name of the built framework.
   ios_web_view_output_name = "ChromeWebView"
 }
+
+# Overridding ios_web_view_include_cronet is no longer supported,
+# set the value back to the default.
+ios_web_view_include_cronet = false
