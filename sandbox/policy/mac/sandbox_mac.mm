@@ -24,6 +24,7 @@
 #include "sandbox/policy/mac/mirroring.sb.h"
 #include "sandbox/policy/mac/nacl_loader.sb.h"
 #include "sandbox/policy/mac/network.sb.h"
+#include "sandbox/policy/mac/on_device_model_execution.sb.h"
 #include "sandbox/policy/mac/ppapi.sb.h"
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "sandbox/policy/mac/print_backend.sb.h"
@@ -98,8 +99,10 @@ std::string GetSandboxProfile(sandbox::mojom::Sandbox sandbox_type) {
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       profile += kSeatbeltPolicyString_speech_recognition;
       break;
-    // kService and kUtility are the same on OS_MAC, so fallthrough.
     case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
+      profile += kSeatbeltPolicyString_on_device_model_execution;
+      break;
+    // kService and kUtility are the same on OS_MAC, so fallthrough.
     case sandbox::mojom::Sandbox::kService:
     case sandbox::mojom::Sandbox::kServiceWithJit:
     case sandbox::mojom::Sandbox::kUtility:

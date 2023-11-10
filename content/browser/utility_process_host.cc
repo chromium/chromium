@@ -318,6 +318,7 @@ bool UtilityProcessHost::StartProcess() {
       switches::kDisableDevShmUsage,
 #endif
 #if BUILDFLAG(IS_MAC)
+      sandbox::policy::switches::kDisableMetalShaderCache,
       sandbox::policy::switches::kEnableSandboxLogging,
       os_crypt::switches::kUseMockKeychain,
 #endif

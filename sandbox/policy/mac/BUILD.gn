@@ -13,6 +13,7 @@ sb_files = [
   "mirroring.sb",
   "nacl_loader.sb",
   "network.sb",
+  "on_device_model_execution.sb",
   "ppapi.sb",
   "print_compositor.sb",
   "renderer.sb",
