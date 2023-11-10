@@ -615,6 +615,9 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     void destroy() {
         resetAutoTriggerTimer();
         mBottomUiController.removeObserver(mBottomUiObserver);
+        if (mPageInsightsDataLoader != null) {
+            mPageInsightsDataLoader.destroy();
+        }
     }
 
     float getCornerRadiusForTesting() {
