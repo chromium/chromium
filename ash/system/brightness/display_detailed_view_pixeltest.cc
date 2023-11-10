@@ -51,7 +51,7 @@ TEST_F(DisplayDetailedViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "qs_display_detailed_view",
-      /*revision_number=*/7, detailed_view));
+      /*revision_number=*/10, detailed_view));
 }
 
 }  // namespace ash
