@@ -460,8 +460,6 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
                 net::SchemefulSite(GURL(site)),
                 PrivacySandboxAttestationsGatedAPI::kProtectedAudience),
             Status::kAllowed);
-
-  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
