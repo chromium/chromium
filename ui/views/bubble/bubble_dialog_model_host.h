@@ -113,6 +113,24 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
     base::flat_set<View*> children_;
   };
 
+  // This class observes the ContentsView theme to make sure that the window
+  // icon updates with the theme.
+  class ThemeChangedObserver : public ViewObserver {
+   public:
+    ThemeChangedObserver(BubbleDialogModelHost* parent,
+                         ContentsView* contents_view);
+    ThemeChangedObserver(const ThemeChangedObserver&) = delete;
+    ThemeChangedObserver& operator=(const ThemeChangedObserver&) = delete;
+    ~ThemeChangedObserver() override;
+
+    // ViewObserver:
+    void OnViewThemeChanged(View*) override;
+
+   private:
+    const raw_ptr<BubbleDialogModelHost> parent_;
+    base::ScopedObservation<View, ViewObserver> observation_{this};
+  };
+
   struct DialogModelHostField {
     raw_ptr<ui::DialogModelField> dialog_model_field = nullptr;
 
@@ -137,6 +155,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   void AddOrUpdateTextfield(ui::DialogModelTextfield* model_field);
   void UpdateButton(ui::DialogModelButton* model_field);
 
+  void UpdateWindowIcon();
   void UpdateSpacingAndMargins();
   void UpdateFieldVisibility(ui::DialogModelField* field);
 
@@ -172,6 +191,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
 
   std::unique_ptr<ui::DialogModel> model_;
   const raw_ptr<ContentsView> contents_view_;
+  ThemeChangedObserver theme_observer_;
 
   std::vector<DialogModelHostField> fields_;
   std::vector<base::CallbackListSubscription> property_changed_subscriptions_;
