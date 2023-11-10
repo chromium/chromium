@@ -79,6 +79,15 @@ const base::FeatureParam<std::string> kForYouFreStudyGroup{
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Enables the generation of pseudo-stable per-user per-device device
+// identifiers. This identifier can be reset by the user by powerwashing the
+// device.
+BASE_FEATURE(kStableDeviceId,
+             "StableDeviceId",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Enables the client-side processing of the HTTP response header
 // Google-Accounts-RemoveLocalAccount.
 BASE_FEATURE(kProcessGaiaRemoveLocalAccountHeader,
