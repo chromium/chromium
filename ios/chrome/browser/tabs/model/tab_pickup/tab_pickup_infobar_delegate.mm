@@ -49,6 +49,10 @@ TabPickupInfobarDelegate::~TabPickupInfobarDelegate() = default;
 
 void TabPickupInfobarDelegate::FetchFavIconImage(
     ProceduralBlock block_handler) {
+  if (!IsTabPickupFaviconAvaible()) {
+    block_handler();
+    return;
+  }
   favicon_loader_->FaviconForPageUrl(
       tab_url_, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
       /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {

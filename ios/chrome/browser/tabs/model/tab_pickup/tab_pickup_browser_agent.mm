@@ -145,6 +145,9 @@ void TabPickupBrowserAgent::ForeignSessionsChanged() {
   auto const synced_sessions =
       std::make_unique<synced_sessions::SyncedSessions>(session_sync_service_);
 
+  if (!IsTabPickupFaviconAvaible()) {
+    CheckDistantTabsOrder(synced_sessions.get());
+  }
   LastActiveDistantTab last_active_tab =
       GetLastActiveDistantTab(synced_sessions.get(), TabPickupTimeThreshold());
   if (last_active_tab.tab) {

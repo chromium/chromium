@@ -501,6 +501,8 @@ const FeatureEntry::FeatureParam kTabPickupThresholdOneHour[] = {
     {kTabPickupThresholdParameterName, kTabPickupThresholdOneHourParam}};
 const FeatureEntry::FeatureParam kTabPickupThresholdTwoHours[] = {
     {kTabPickupThresholdParameterName, kTabPickupThresholdTwoHoursParam}};
+const FeatureEntry::FeatureParam kTabPickupNoFavicon[] = {
+    {kTabPickupThresholdParameterName, kTabPickupNoFaviconParam}};
 
 const FeatureEntry::FeatureVariation kTabPickupThresholdVariations[] = {
     {"Ten Minutes", kTabPickupThresholdTenMinutes,
@@ -509,6 +511,8 @@ const FeatureEntry::FeatureVariation kTabPickupThresholdVariations[] = {
      std::size(kTabPickupThresholdOneHour), nullptr},
     {"Two Hours", kTabPickupThresholdTwoHours,
      std::size(kTabPickupThresholdTwoHours), nullptr},
+    {"No favicon", kTabPickupNoFavicon, std::size(kTabPickupNoFavicon),
+     nullptr},
 };
 
 const FeatureEntry::FeatureParam kTabResumptionMostRecentTabOnly[] = {
