@@ -218,16 +218,14 @@ class PageLoadMetricsUpdateDispatcher {
                ? layout_shift_normalization_for_bfcache_.normalized_cls_data()
                : layout_shift_normalization_.normalized_cls_data();
   }
-  const NormalizedResponsivenessMetrics& normalized_responsiveness_metrics()
-      const {
-    return responsiveness_metrics_normalization_
-        .GetNormalizedResponsivenessMetrics();
+  const ResponsivenessMetricsNormalization&
+  responsiveness_metrics_normalization() const {
+    return responsiveness_metrics_normalization_;
   }
 
-  const NormalizedResponsivenessMetrics&
-  soft_navigation_interval_normalized_responsiveness_metrics() const {
-    return soft_navigation_interval_responsiveness_metrics_normalization_
-        .GetNormalizedResponsivenessMetrics();
+  const ResponsivenessMetricsNormalization&
+  soft_navigation_interval_responsiveness_metrics_normalization() const {
+    return soft_navigation_interval_responsiveness_metrics_normalization_;
   }
 
   const NormalizedCLSData& soft_navigation_interval_normalized_layout_shift()
@@ -235,7 +233,7 @@ class PageLoadMetricsUpdateDispatcher {
     return soft_nav_interval_layout_shift_normalization_.normalized_cls_data();
   }
 
-  void ResetSoftNavigationIntervalNormalizedResponsivenessMetrics() {
+  void ResetSoftNavigationIntervalResponsivenessMetricsNormalization() {
     soft_navigation_interval_responsiveness_metrics_normalization_
         .ClearAllUserInteractionLatencies();
   }

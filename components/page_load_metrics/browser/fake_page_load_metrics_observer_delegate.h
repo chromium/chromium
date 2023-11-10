@@ -62,10 +62,10 @@ class FakePageLoadMetricsObserverDelegate
       BfcacheStrategy bfcache_strategy) const override;
   const NormalizedCLSData& GetSoftNavigationIntervalNormalizedCLSData()
       const override;
-  const NormalizedResponsivenessMetrics& GetNormalizedResponsivenessMetrics()
-      const override;
-  const NormalizedResponsivenessMetrics&
-  GetSoftNavigationIntervalNormalizedResponsivenessMetrics() const override;
+  const ResponsivenessMetricsNormalization&
+  GetResponsivenessMetricsNormalization() const override;
+  const ResponsivenessMetricsNormalization&
+  GetSoftNavigationIntervalResponsivenessMetricsNormalization() const override;
   const mojom::InputTiming& GetPageInputTiming() const override;
   const absl::optional<blink::SubresourceLoadMetrics>&
   GetSubresourceLoadMetrics() const override;
@@ -103,7 +103,7 @@ class FakePageLoadMetricsObserverDelegate
   mojom::FrameMetadata subframe_metadata_;
   PageRenderData page_render_data_;
   NormalizedCLSData normalized_cls_data_;
-  NormalizedResponsivenessMetrics normalized_responsiveness_metrics_;
+  ResponsivenessMetricsNormalization responsiveness_metrics_normalization_;
   mojom::InputTiming page_input_timing_;
   absl::optional<blink::SubresourceLoadMetrics> subresource_load_metrics_;
   PageRenderData main_frame_render_data_;

@@ -145,15 +145,15 @@ const NormalizedCLSData& FakePageLoadMetricsObserverDelegate::
   return normalized_cls_data_;
 }
 
-const NormalizedResponsivenessMetrics&
-FakePageLoadMetricsObserverDelegate::GetNormalizedResponsivenessMetrics()
+const ResponsivenessMetricsNormalization&
+FakePageLoadMetricsObserverDelegate::GetResponsivenessMetricsNormalization()
     const {
-  return normalized_responsiveness_metrics_;
+  return responsiveness_metrics_normalization_;
 }
 
-const NormalizedResponsivenessMetrics& FakePageLoadMetricsObserverDelegate::
-    GetSoftNavigationIntervalNormalizedResponsivenessMetrics() const {
-  return normalized_responsiveness_metrics_;
+const ResponsivenessMetricsNormalization& FakePageLoadMetricsObserverDelegate::
+    GetSoftNavigationIntervalResponsivenessMetricsNormalization() const {
+  return responsiveness_metrics_normalization_;
 }
 
 const mojom::InputTiming&

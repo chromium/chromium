@@ -287,10 +287,10 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       BfcacheStrategy bfcache_strategy) const override;
   const NormalizedCLSData& GetSoftNavigationIntervalNormalizedCLSData()
       const override;
-  const NormalizedResponsivenessMetrics& GetNormalizedResponsivenessMetrics()
-      const override;
-  const NormalizedResponsivenessMetrics&
-  GetSoftNavigationIntervalNormalizedResponsivenessMetrics() const override;
+  const ResponsivenessMetricsNormalization&
+  GetResponsivenessMetricsNormalization() const override;
+  const ResponsivenessMetricsNormalization&
+  GetSoftNavigationIntervalResponsivenessMetricsNormalization() const override;
   const mojom::InputTiming& GetPageInputTiming() const override;
   const absl::optional<blink::SubresourceLoadMetrics>&
   GetSubresourceLoadMetrics() const override;

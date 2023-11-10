@@ -1134,7 +1134,7 @@ void PageLoadTracker::OnSoftNavigationChanged(
   // when a new soft nav comes in.
   if (new_soft_navigation_metrics.count > soft_navigation_metrics_->count) {
     metrics_update_dispatcher_
-        .ResetSoftNavigationIntervalNormalizedResponsivenessMetrics();
+        .ResetSoftNavigationIntervalResponsivenessMetricsNormalization();
     metrics_update_dispatcher_.ResetSoftNavigationIntervalLayoutShift();
   }
 
@@ -1325,16 +1325,16 @@ PageLoadTracker::GetSoftNavigationIntervalNormalizedCLSData() const {
       .soft_navigation_interval_normalized_layout_shift();
 }
 
-const NormalizedResponsivenessMetrics&
-PageLoadTracker::GetNormalizedResponsivenessMetrics() const {
-  return metrics_update_dispatcher_.normalized_responsiveness_metrics();
+const ResponsivenessMetricsNormalization&
+PageLoadTracker::GetResponsivenessMetricsNormalization() const {
+  return metrics_update_dispatcher_.responsiveness_metrics_normalization();
 }
 
-const NormalizedResponsivenessMetrics&
-PageLoadTracker::GetSoftNavigationIntervalNormalizedResponsivenessMetrics()
+const ResponsivenessMetricsNormalization&
+PageLoadTracker::GetSoftNavigationIntervalResponsivenessMetricsNormalization()
     const {
   return metrics_update_dispatcher_
-      .soft_navigation_interval_normalized_responsiveness_metrics();
+      .soft_navigation_interval_responsiveness_metrics_normalization();
 }
 
 const mojom::InputTiming& PageLoadTracker::GetPageInputTiming() const {
