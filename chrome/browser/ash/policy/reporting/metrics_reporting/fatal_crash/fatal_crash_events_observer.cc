@@ -24,6 +24,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_save_file_paths_provider.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_settings_for_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
@@ -38,11 +39,6 @@ using ::ash::cros_healthd::mojom::CrashEventInfoPtr;
 using ::ash::cros_healthd::mojom::EventInfoPtr;
 
 namespace {
-
-constexpr std::string_view kDefaultReportedLocalIdSaveFilePath =
-    "/var/lib/reporting/crash_events/REPORTED_LOCAL_IDS";
-constexpr std::string_view kDefaultUploadedCrashInfoSaveFilePath =
-    "/var/lib/reporting/crash_events/UPLOADED_CRASH_INFO";
 
 // Get current user session.
 const ash::UserSession* GetCurrentUserSession() {
@@ -89,21 +85,19 @@ absl::optional<std::string> GetUserEmail(const ash::UserSession* user_session) {
 }  // namespace
 
 FatalCrashEventsObserver::FatalCrashEventsObserver()
-    : FatalCrashEventsObserver(
-          base::FilePath(kDefaultReportedLocalIdSaveFilePath),
-          base::FilePath(kDefaultUploadedCrashInfoSaveFilePath),
-          /*reported_local_id_io_task_runner=*/nullptr,
-          /*uploaded_crash_info_io_task_runner=*/nullptr) {}
+    : FatalCrashEventsObserver(DefaultSaveFilePathsProvider::Get(),
+                               /*reported_local_id_io_task_runner=*/nullptr,
+                               /*uploaded_crash_info_io_task_runner=*/nullptr) {
+}
 
 FatalCrashEventsObserver::FatalCrashEventsObserver(
-    base::FilePath reported_local_id_save_file,
-    base::FilePath uploaded_crash_info_save_file,
+    const SaveFilePathsProviderInterface& save_file_paths_provider,
     scoped_refptr<base::SequencedTaskRunner> reported_local_id_io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> uploaded_crash_info_io_task_runner)
     : MojoServiceEventsObserverBase<ash::cros_healthd::mojom::EventObserver>(
           this),
       reported_local_id_manager_{ReportedLocalIdManager::Create(
-          std::move(reported_local_id_save_file),
+          save_file_paths_provider.GetReportedLocalIdSaveFilePath(),
           // Don't BindPostTask here, because it would risk calling
           // `ProcessEventsBeforeSaveFilesLoaded` twice, once from
           // reported_local_id_manager_, once from uploaded_crash_info_manager_.
@@ -115,7 +109,7 @@ FatalCrashEventsObserver::FatalCrashEventsObserver(
               base::Unretained(this)),
           std::move(reported_local_id_io_task_runner))},
       uploaded_crash_info_manager_{UploadedCrashInfoManager::Create(
-          std::move(uploaded_crash_info_save_file),
+          save_file_paths_provider.GetUploadedCrashInfoSaveFilePath(),
           // Don't BindPostTask here, because it would risk calling
           // `ProcessEventsBeforeSaveFilesLoaded` twice, once from
           // reported_local_id_manager_, once from uploaded_crash_info_manager_.

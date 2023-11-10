@@ -33,7 +33,8 @@ class FatalCrashEventsObserver
   // Chromium code style to not name it "TestSettings" because this struct is
   // also compiled in production code.
   struct SettingsForTest;
-  // A RAII class that setups the environment for testing this class.
+
+  // RAII class that set up the environment for testing this class.
   class TestEnvironment;
 
   // An entry corresponds to a crash that is saved in the save file of reported
@@ -65,6 +66,11 @@ class FatalCrashEventsObserver
   // specifies the path for the save file.
   friend class FatalCrashEventsObserver::TestEnvironment;
 
+  // Manages default save file paths. The defaults are changed in browser tests.
+  class SaveFilePathsProviderInterface;
+  // Production implementation of `SaveFilePathsProviderInterface`.
+  class DefaultSaveFilePathsProvider;
+
   // For `OnEvent`. Not let `TestEnvironment` be a proxy of `OnEvent` because it
   // is an exception to allow `SlowFileLoadingFieldsPassedThrough` to call
   // `OnEvent` directly. Using `TestEnvironment` as a proxy would expose
@@ -85,8 +91,7 @@ class FatalCrashEventsObserver
   // input parameters to accommodate the test environment. In production code,
   // they are always the default value specified in the default constructor.
   FatalCrashEventsObserver(
-      base::FilePath reported_local_id_save_file,
-      base::FilePath uploaded_crash_info_save_file,
+      const SaveFilePathsProviderInterface& save_file_paths_provider,
       scoped_refptr<base::SequencedTaskRunner> reported_local_id_io_task_runner,
       scoped_refptr<base::SequencedTaskRunner>
           uploaded_crash_info_io_task_runner);

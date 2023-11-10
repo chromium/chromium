@@ -31,8 +31,8 @@ FatalCrashEventsObserver::TestEnvironment::CreateFatalCrashEventsObserver(
     scoped_refptr<base::SequencedTaskRunner> uploaded_crash_info_io_task_runner)
     const {
   auto observer = base::WrapUnique(new FatalCrashEventsObserver(
-      GetReportedLocalIdSaveFilePath(), GetUploadedCrashInfoSaveFilePath(),
-      reported_local_id_io_task_runner, uploaded_crash_info_io_task_runner));
+      save_file_paths_provider_, reported_local_id_io_task_runner,
+      uploaded_crash_info_io_task_runner));
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(observer->sequence_checker_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -55,16 +55,9 @@ FatalCrashEventsObserver::TestEnvironment::CreateFatalCrashEventsObserver(
   return observer;
 }
 
-const base::FilePath&
-FatalCrashEventsObserver::TestEnvironment::GetReportedLocalIdSaveFilePath()
-    const {
-  return reported_local_id_save_file_path_;
-}
-
-const base::FilePath&
-FatalCrashEventsObserver::TestEnvironment::GetUploadedCrashInfoSaveFilePath()
-    const {
-  return uploaded_crash_info_save_file_path_;
+const FatalCrashEventsObserver::TestEnvironment::SaveFilePathsProvider&
+FatalCrashEventsObserver::TestEnvironment::GetSaveFilePathsProvider() const {
+  return save_file_paths_provider_;
 }
 
 // static
@@ -130,6 +123,21 @@ void FatalCrashEventsObserver::TestEnvironment::
           // below will clear the task posted by the blocker.
           base::Unretained(&sequence_blocker), run_loop.QuitClosure()));
   run_loop.Run();
+}
+
+FatalCrashEventsObserver::TestEnvironment::SaveFilePathsProvider::
+    SaveFilePathsProvider() = default;
+FatalCrashEventsObserver::TestEnvironment::SaveFilePathsProvider::
+    ~SaveFilePathsProvider() = default;
+
+base::FilePath FatalCrashEventsObserver::TestEnvironment::
+    SaveFilePathsProvider::GetReportedLocalIdSaveFilePath() const {
+  return temp_dir_.Append("REPORTED_LOCAL_IDS");
+}
+
+base::FilePath FatalCrashEventsObserver::TestEnvironment::
+    SaveFilePathsProvider::GetUploadedCrashInfoSaveFilePath() const {
+  return temp_dir_.Append("UPLOADED_CRASH_INFO");
 }
 
 FatalCrashEventsObserver::TestEnvironment::SequenceBlocker::SequenceBlocker(
