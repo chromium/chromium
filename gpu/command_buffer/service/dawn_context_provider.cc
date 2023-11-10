@@ -246,6 +246,8 @@ bool DawnContextProvider::Initialize(
   enabled_toggles.push_back("disable_robustness");
 #endif
 
+  enabled_toggles.push_back("disable_lazy_clear_for_mapped_at_creation_buffer");
+
 #if BUILDFLAG(IS_APPLE)
   // We need MultiPlanarFormatExtendedUsages to copy to/from multiplanar
   // texture. And this feature is currently experimental.
