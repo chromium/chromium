@@ -11688,6 +11688,13 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="External non-200 HTTP error"/>
 </enum>
 
+<enum name="ConversionRequestSupportHeader">
+  <int value="0" label="Web"/>
+  <int value="1" label="Web and OS"/>
+  <int value="2" label="OS"/>
+  <int value="3" label="None"/>
+</enum>
+
 <enum name="ConversionSourceRegistrationError">
   <int value="0" label="Invalid JSON"/>
   <int value="1" label="Root JSON value has wrong type"/>

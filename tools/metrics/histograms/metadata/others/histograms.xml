@@ -3033,6 +3033,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.RequestSupportHeader"
+    enum="ConversionRequestSupportHeader" expires_after="2024-05-05">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the Attribution-Reporting-Support header value of outgoing
+    attribution-eligible requests. This is only recorded when the cross app web
+    feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.SchedulerReportDelay" units="ms"
     expires_after="2024-03-10">
   <owner>linnan@chromium.org</owner>

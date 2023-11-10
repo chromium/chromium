@@ -352,6 +352,9 @@ void SetAttributionReportingHeaders(net::URLRequest& url_request,
           AttributionReportingRuntimeFeature::kCrossAppWeb) &&
       base::FeatureList::IsEnabled(
           features::kAttributionReportingCrossAppWeb)) {
+    base::UmaHistogramEnumeration("Conversions.RequestSupportHeader",
+                                  request.attribution_reporting_support);
+
     url_request.SetExtraRequestHeaderByName(
         "Attribution-Reporting-Support",
         GetAttributionSupportHeader(
