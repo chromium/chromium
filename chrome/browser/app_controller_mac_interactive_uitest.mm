@@ -8,6 +8,7 @@
 
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -26,14 +27,17 @@ void SendOpenUrlToAppController(const GURL& url) {
   [NSApp.delegate application:NSApp openURLs:@[ net::NSURLWithGURL(url) ]];
 }
 
+// -------------------AppControllerMainMenuInteractiveUITest-------------------
+
 class AppControllerMainMenuInteractiveUITest : public InProcessBrowserTest {
  protected:
   AppControllerMainMenuInteractiveUITest() = default;
 };
 
-// Note: This test interacts with SharedController which requires the browser's
+// Note: These tests interacts with SharedController which requires the browser's
 // focus. In browser_tests other tests that are running in parallel cause
 // flakiness to test test. See: https://crbug.com/1469960
+
 // Test switching from Regular to OTR profiles updates the history menu.
 IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
                        SwitchToIncognitoRemovesHistoryItems) {
@@ -73,6 +77,41 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
   regular_browser->window()->Show();
   // Verify that history bridge service is available again.
   EXPECT_TRUE([app_controller historyMenuBridge]->service());
+}
+
+// Tests opening a new window from dock menu while incognito browser is opened.
+// Regression test for https://crbug.com/1371923
+IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
+                       WhileIncognitoBrowserIsOpened_NewWindow) {
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+
+  // Close the current browser.
+  Profile* profile = browser()->profile();
+  chrome::CloseAllBrowsers();
+  ui_test_utils::WaitForBrowserToClose();
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+
+  // Create an incognito browser.
+  Browser* incognito_browser = CreateIncognitoBrowser(profile);
+  EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(incognito_browser, chrome::GetLastActiveBrowser());
+
+  // Simulate click on "New Window".
+  ui_test_utils::BrowserChangeObserver browser_added_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  AppController* app_controller = AppController.sharedController;
+  NSMenu* menu = [app_controller applicationDockMenu:NSApp];
+  ASSERT_TRUE(menu);
+  NSMenuItem* item = [menu itemWithTag:IDC_NEW_WINDOW];
+  ASSERT_TRUE(item);
+  [app_controller commandDispatch:item];
+
+  // Check that a new non-incognito browser is opened.
+  Browser* new_browser = browser_added_observer.Wait();
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+  EXPECT_TRUE(new_browser->profile()->IsRegularProfile());
+  EXPECT_EQ(profile, new_browser->profile());
 }
 
 }  // namespace

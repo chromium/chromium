@@ -1179,50 +1179,6 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   EXPECT_EQ(profile, new_browser->profile()->GetOriginalProfile());
 }
 
-// Tests opening a new window from dock menu while incognito browser is opened.
-// Regression test for https://crbug.com/1371923
-IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
-                       WhileIncognitoBrowserIsOpened_NewWindow) {
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-
-  // Close the current browser.
-  Profile* profile = browser()->profile();
-  chrome::CloseAllBrowsers();
-  ui_test_utils::WaitForBrowserToClose();
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
-
-  // Create an incognito browser.
-  Browser* incognito_browser = CreateIncognitoBrowser(profile);
-  EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  EXPECT_EQ(incognito_browser, chrome::GetLastActiveBrowser());
-  // Assure that `windowDidBecomeMain` is called even if this browser process
-  // lost focus because of other browser processes in other shards taking
-  // focus. It prevents flakiness.
-  // See: https://crbug.com/1450491
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:NSWindowDidBecomeMainNotification
-                    object:incognito_browser->window()
-                               ->GetNativeWindow()
-                               .GetNativeNSWindow()];
-
-  // Simulate click on "New Window".
-  ui_test_utils::BrowserChangeObserver browser_added_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  AppController* app_controller = AppController.sharedController;
-  NSMenu* menu = [app_controller applicationDockMenu:NSApp];
-  ASSERT_TRUE(menu);
-  NSMenuItem* item = [menu itemWithTag:IDC_NEW_WINDOW];
-  ASSERT_TRUE(item);
-  [app_controller commandDispatch:item];
-
-  // Check that a new non-incognito browser is opened.
-  Browser* new_browser = browser_added_observer.Wait();
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
-  EXPECT_TRUE(new_browser->profile()->IsRegularProfile());
-  EXPECT_EQ(profile, new_browser->profile());
-}
-
 class AppControllerIncognitoSwitchTest : public InProcessBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
