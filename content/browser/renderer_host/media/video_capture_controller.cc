@@ -271,8 +271,6 @@ void VideoCaptureController::AddClient(
   // client.
   if (state_ != blink::VIDEO_CAPTURE_STATE_ERROR) {
     controller_clients_.push_back(std::move(client));
-    base::UmaHistogramCounts100("Media.VideoCapture.NumberOfClients",
-                                controller_clients_.size());
   }
 }
 

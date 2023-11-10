@@ -5521,16 +5521,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.NumberOfClients" units="units"
-    expires_after="2021-12-12">
-  <owner>fbeaufort@chromium.org</owner>
-  <owner>guidou@chromium.org</owner>
-  <summary>
-    Number of times a video capture device is accessed simultaneously. Recorded
-    when video capturing starts.
-  </summary>
-</histogram>
-
 <histogram name="Media.VideoCapture.ScaleOverride" units="units"
     expires_after="2024-05-05">
   <owner>jophba@chromium.org</owner>
