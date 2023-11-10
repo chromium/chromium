@@ -846,8 +846,10 @@ Document::Document(const DocumentInit& initializer,
               : nullptr),
       data_(MakeGarbageCollected<DocumentData>(GetExecutionContext())) {
   DCHECK(agent_);
-  if (base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution))
+  if (base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution) &&
+      features::kDelayAsyncScriptExecutionDelayByDefaultParam.Get()) {
     script_runner_delayer_->Activate();
+  }
 
   if (GetFrame()) {
     DCHECK(GetFrame()->GetPage());
@@ -7406,6 +7408,14 @@ void Document::MaybeExecuteDelayedAsyncScripts(
         script_runner_delayer_->Activate();
       }
       break;
+    case features::DelayAsyncScriptDelayType::kTillFirstLcpCandidate:
+      // Notify the ScriptRunner if a LCP candidate is reported.
+      if (milestone == MilestoneForDelayedAsyncScript::kLcpCandidate) {
+        // Flush all async scripts that are already prepared but forced to be
+        // delayed.
+        script_runner_delayer_->Deactivate();
+      }
+      break;
   }
 }
 
@@ -8750,6 +8760,14 @@ StylePropertyMapReadOnly* Document::RemoveComputedStyleMapItem(
   return element_computed_style_map_.Take(element);
 }
 
+void Document::DelayAsyncScriptExecution() {
+  script_runner_delayer_->Activate();
+}
+
+void Document::ResumeAsyncScriptExecution() {
+  script_runner_delayer_->Deactivate();
+}
+
 void Document::Trace(Visitor* visitor) const {
   visitor->Trace(doc_type_);
   visitor->Trace(implementation_);
@@ -9270,6 +9288,14 @@ Resource* Document::GetPendingLinkPreloadForTesting(const KURL& url) {
     }
   }
   return nullptr;
+}
+
+void Document::SetLcpElementFoundInHtml(bool found) {
+  data_->lcpp_encountered_lcp_in_html = found;
+}
+
+bool Document::IsLcpElementFoundInHtml() {
+  return data_->lcpp_encountered_lcp_in_html;
 }
 
 // static

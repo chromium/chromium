@@ -592,6 +592,8 @@ const base::FeatureParam<DelayAsyncScriptDelayType>::Option
          "first_paint_or_finished_parsing"},
         {DelayAsyncScriptDelayType::kEachLcpCandidate, "each_lcp_candidate"},
         {DelayAsyncScriptDelayType::kEachPaint, "each_paint"},
+        {DelayAsyncScriptDelayType::kTillFirstLcpCandidate,
+         "till_first_lcp_candidate"},
 };
 
 const base::FeatureParam<DelayAsyncScriptDelayType>
@@ -633,8 +635,15 @@ const base::FeatureParam<base::TimeDelta>
 const base::FeatureParam<std::string> kDelayAsyncScriptAllowList{
     &kDelayAsyncScriptExecution, "delay_async_exec_allow_list", ""};
 
+const base::FeatureParam<bool> kDelayAsyncScriptExecutionDelayByDefaultParam{
+    &kDelayAsyncScriptExecution, "delay_async_exec_delay_by_default", true};
+
 const base::FeatureParam<bool> kDelayAsyncScriptExecutionMainFrameOnlyParam{
     &kDelayAsyncScriptExecution, "delay_async_exec_main_frame_only", false};
+
+const base::FeatureParam<bool> kDelayAsyncScriptExecutionWhenLcpFoundInHtml{
+    &kDelayAsyncScriptExecution, "delay_async_exec_when_lcp_found_in_html",
+    false};
 
 BASE_FEATURE(kDelayLowPriorityRequestsAccordingToNetworkState,
              "DelayLowPriorityRequestsAccordingToNetworkState",

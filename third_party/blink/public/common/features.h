@@ -285,6 +285,7 @@ enum class DelayAsyncScriptDelayType {
   kFirstPaintOrFinishedParsing,
   kEachLcpCandidate,
   kEachPaint,
+  kTillFirstLcpCandidate,
 };
 BLINK_COMMON_EXPORT extern const base::FeatureParam<DelayAsyncScriptDelayType>
     kDelayAsyncScriptExecutionDelayParam;
@@ -307,6 +308,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kDelayAsyncScriptAllowList;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kDelayAsyncScriptExecutionMainFrameOnlyParam;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kDelayAsyncScriptExecutionWhenLcpFoundInHtml;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kDelayAsyncScriptExecutionDelayByDefaultParam;
 
 // If enabled, the ResourceLoadScheculer will take the current network state
 // into consideration, when it plans to delay a low-priority throttleable

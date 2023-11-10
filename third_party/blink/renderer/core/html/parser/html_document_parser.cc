@@ -491,6 +491,16 @@ void HTMLDocumentParser::PrepareToStopParsing() {
     PumpTokenizerIfPossible();
   }
 
+  if (base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution) &&
+      features::kDelayAsyncScriptExecutionWhenLcpFoundInHtml.Get()) {
+    // If kDelayAsyncScriptExecutionWhenLcpFoundInHtml flag is turned on, and an
+    // LCP element wasn't found during Preload scan, there is no need to delay
+    // async scripts further.
+    if (!GetDocument()->IsLcpElementFoundInHtml()) {
+      GetDocument()->ResumeAsyncScriptExecution();
+    }
+  }
+
   if (IsStopped())
     return;
 
@@ -1394,6 +1404,19 @@ void HTMLDocumentParser::ProcessPreloadData(
   for (auto& request : preload_data->requests) {
     queued_preloads_.push_back(std::move(request));
   }
+
+  if (base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution) &&
+      features::kDelayAsyncScriptExecutionWhenLcpFoundInHtml.Get()) {
+    // If kDelayAsyncScriptExecutionWhenLcpFoundInHtml flag is turned on,
+    // check if HTML has LCP element present.
+    //  If found, start/continue delaying async script execution on the document
+    //  until the configured  milestone.
+    if (preload_data->has_located_potential_lcp_element) {
+      GetDocument()->SetLcpElementFoundInHtml(true);
+      GetDocument()->DelayAsyncScriptExecution();
+    }
+  }
+
   FetchQueuedPreloads();
 }
 

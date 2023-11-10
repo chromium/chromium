@@ -1994,9 +1994,19 @@ class CORE_EXPORT Document : public ContainerNode,
   static Document* parseHTMLUnsafe(ExecutionContext* context,
                                    const String& html);
 
+  // Delays execution of pending async scripts until a milestone is reached.
+  // Used in conjunction with kDelayAsyncScriptExecution experiment.
+  void DelayAsyncScriptExecution();
+  void ResumeAsyncScriptExecution();
+
   // This method should only be called when the document is top-level and it is
   // rendering static media like video or images.
   void SetOverrideSiteForCookiesForCSPMedia(bool value);
+
+  // Flags to determine if LCPP ElementLocator matched during
+  // HTML preload scanning.
+  void SetLcpElementFoundInHtml(bool found);
+  bool IsLcpElementFoundInHtml();
 
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }

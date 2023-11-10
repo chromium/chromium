@@ -73,6 +73,10 @@ class DocumentData final : public GarbageCollected<DocumentData> {
   // This count doesn't include this document's frame nor descendant frames.
   int immediate_child_frame_creation_count_ = 0;
 
+  // LCPP's LCP ElementLocator was matched against a tag against html
+  // during preload scanning.
+  bool lcpp_encountered_lcp_in_html = false;
+
   friend class Document;
 };
 
