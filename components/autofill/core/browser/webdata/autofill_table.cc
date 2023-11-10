@@ -1147,9 +1147,8 @@ AutofillTable* AutofillTable::FromWebDatabase(WebDatabase* db) {
 }
 
 // static
-base::span<const ServerFieldType>
-AutofillTable::GetStoredTypesForAutofillProfile() {
-  static constexpr ServerFieldType stored_types[]{
+const ServerFieldTypeSet& AutofillTable::GetStoredTypesForAutofillProfile() {
+  static constexpr ServerFieldTypeSet stored_types{
       COMPANY_NAME,
       NAME_HONORIFIC_PREFIX,
       NAME_FIRST,

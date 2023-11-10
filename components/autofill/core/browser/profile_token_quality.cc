@@ -164,8 +164,7 @@ bool ProfileTokenQuality::operator!=(const ProfileTokenQuality& other) const {
 
 // static
 bool ProfileTokenQuality::IsStoredType(ServerFieldType type) {
-  return base::Contains(AutofillTable::GetStoredTypesForAutofillProfile(),
-                        type);
+  return AutofillTable::GetStoredTypesForAutofillProfile().contains(type);
 }
 
 bool ProfileTokenQuality::AddObservationsForFilledForm(

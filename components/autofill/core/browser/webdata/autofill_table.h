@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -620,7 +619,7 @@ class AutofillTable : public WebDatabaseTable,
   // - Some supported types (like PHONE_HOME_CITY_CODE) are not stored.
   // - Some non-supported types are stored (usually types that don't have
   //   filling support yet).
-  static base::span<const ServerFieldType> GetStoredTypesForAutofillProfile();
+  static const ServerFieldTypeSet& GetStoredTypesForAutofillProfile();
 
   // WebDatabaseTable:
   WebDatabaseTable::TypeKey GetTypeKey() const override;
