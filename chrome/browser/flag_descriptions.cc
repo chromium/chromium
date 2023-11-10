@@ -199,6 +199,7 @@ const char kCustomizeChromeColorExtractionDescription[] =
     "Enables setting theme color based on background image color when "
     "background image is changed in New Tab Page Customize Chrome.";
 
+const char kCustomizeChromeSidePanelId[] = "customize-chrome-side-panel";
 const char kCustomizeChromeSidePanelName[] = "Customize Chrome Side Panel";
 const char KCustomizeChromeSidePanelDescription[] =
     "Enables the ability to use Customize Chrome functionality from the "
@@ -787,7 +788,9 @@ const char kChromeLabsDescription[] =
 
 const char kChromeRefresh2023Id[] = "chrome-refresh-2023";
 const char kChromeRefresh2023Name[] = "Chrome Refresh 2023";
-const char kChromeRefresh2023Description[] = "Enables the new desktop design.";
+const char kChromeRefresh2023Description[] =
+    "Enables the new desktop design. Customize Chrome Side Panel must also be "
+    "enabled.";
 
 const char kChromeWebuiRefresh2023Id[] = "chrome-webui-refresh-2023";
 const char kChromeWebuiRefresh2023Name[] = "Chrome WebUI Refresh 2023";

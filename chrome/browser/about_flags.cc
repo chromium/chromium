@@ -9594,7 +9594,7 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // defined(TOOLKIT_VIEWS)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"customize-chrome-side-panel",
+    {flag_descriptions::kCustomizeChromeSidePanelId,
      flag_descriptions::kCustomizeChromeSidePanelName,
      flag_descriptions::KCustomizeChromeSidePanelDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kCustomizeChromeSidePanel)},

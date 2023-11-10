@@ -10045,6 +10045,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="8" label="User selected the Chrome Refresh lab"/>
   <int value="9" label="User selected the Tab Groups Save lab"/>
   <int value="10" label="User selected the Chrome WebUI Refresh lab"/>
+  <int value="11" label="User selected the Customize Chrome Side Panel lab"/>
 </enum>
 
 <enum name="ChromeOSBiosType">

@@ -147,6 +147,7 @@ extern const char kCrOSLegacyMediaFormatsDescription[];
 extern const char kCustomizeChromeColorExtractionName[];
 extern const char kCustomizeChromeColorExtractionDescription[];
 
+extern const char kCustomizeChromeSidePanelId[];
 extern const char kCustomizeChromeSidePanelName[];
 extern const char KCustomizeChromeSidePanelDescription[];
 
