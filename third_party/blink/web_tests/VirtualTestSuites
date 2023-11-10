@@ -2662,5 +2662,16 @@
     "args": ["--use-gpu-in-tests", "--enable-features=MachineLearningNeuralNetworkService"],
     "expires": "Jun 1, 2024",
     "owners": ["rafael.cintron@microsoft.com", "ningxin.hu@intel.com", "kbr@chromium.org"]
+  },
+  {
+    "prefix": "deprecate-unload",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/permissions-policy/experimental-features/unload-allowed-by-default.tentative.window.js",
+      "external/wpt/permissions-policy/experimental-features/unload-disallowed-subframe.tentative.window.js"
+     ],
+    "args": ["--enable-features=DeprecateUnload"],
+    "expires": "Jun 1, 2024",
+    "owners": ["fergal@chromium.org", "rakina@chromium.org"]
   }
 ]
