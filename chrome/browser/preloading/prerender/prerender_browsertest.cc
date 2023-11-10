@@ -624,14 +624,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Start a prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/prerender/empty.html");
-  content::TestNavigationObserver nav_observer(prerender_url);
-  nav_observer.StartWatchingNewWebContents();
-  prerender_helper().AddPrerendersAsync({prerender_url},
-                                        /*eagerness=*/absl::nullopt, "_blank");
-  nav_observer.WaitForNavigationFinished();
-  EXPECT_EQ(nav_observer.last_navigation_url(), prerender_url);
-  int host_id = prerender_helper().GetHostForUrl(prerender_url);
-  EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  int host_id = prerender_helper().AddPrerender(
+      prerender_url, /*eagerness=*/absl::nullopt, "_blank");
 
   // Navigate a prerendered page to another page.
   GURL navigation_url =
@@ -644,7 +638,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       content::WebContents::FromFrameTreeNodeId(host_id);
   ASSERT_TRUE(prerender_web_contents);
   prerender_web_contents->Close();
-  EXPECT_EQ(prerender_helper().GetHostForUrl(prerender_url),
+  EXPECT_EQ(content::test::PrerenderTestHelper::GetHostForUrl(
+                *prerender_web_contents, prerender_url),
             content::RenderFrameHost::kNoFrameTreeNodeId);
 
   histogram_tester.ExpectUniqueSample(

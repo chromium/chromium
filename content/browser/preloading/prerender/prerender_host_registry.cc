@@ -1183,12 +1183,6 @@ PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
       return iter.second.get();
     }
   }
-  for (auto& iter : prerender_new_tab_handle_by_frame_tree_node_id_) {
-    PrerenderHost* host = iter.second->GetPrerenderHostForTesting();  // IN-TEST
-    if (host && host->IsUrlMatch(prerendering_url)) {
-      return host;
-    }
-  }
   return nullptr;
 }
 

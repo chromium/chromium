@@ -410,7 +410,7 @@ int PrerenderTestHelper::AddPrerender(
   }
 
   WaitForPrerenderLoadCompletion(*prerender_web_contents, prerendering_url);
-  int host_id = GetHostForUrl(prerendering_url);
+  int host_id = GetHostForUrl(*prerender_web_contents, prerendering_url);
   EXPECT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
   return host_id;
 }

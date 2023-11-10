@@ -488,6 +488,12 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     return prerender_helper_->NavigatePrerenderedPage(host_id, url);
   }
 
+  bool HasHostForUrl(WebContents& web_contents, const GURL& url) {
+    int host_id =
+        content::test::PrerenderTestHelper::GetHostForUrl(web_contents, url);
+    return host_id != RenderFrameHost::kNoFrameTreeNodeId;
+  }
+
   bool HasHostForUrl(const GURL& url) {
     int host_id = GetHostForUrl(url);
     return host_id != RenderFrameHost::kNoFrameTreeNodeId;
@@ -1329,7 +1335,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_NE(prerender_web_contents->GetLastCommittedURL(), kPrerenderingUrl);
   EXPECT_FALSE(prerender_observer.was_activated());
   // The host should still be available.
-  EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl));
+  EXPECT_TRUE(HasHostForUrl(*prerender_web_contents, kPrerenderingUrl));
 
   // The navigation occurred in a new WebContents, so the original WebContents
   // should still be showing the initial trigger page.
@@ -4444,8 +4450,8 @@ void PrerenderBrowserTest::TestCancelPrerenderWithTargetBlankWhenTimeout(
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   registry->SetTaskRunnerForTesting(task_runner);
 
-  test::PrerenderHostObserver prerender_observer(*web_contents_impl(),
-                                                 kPrerenderUrl);
+  test::PrerenderHostObserver prerender_observer(*prerender_web_contents,
+                                                 host_id);
 
   // Changing the visibility state to HIDDEN/OCCLUDED will not stop prerendering
   // immediately, but start the timers.
@@ -6137,9 +6143,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   EXPECT_TRUE(prerender_observer.was_activated());
 
   // prerendering_urls[0] was consumed for activation, but others were not.
-  EXPECT_FALSE(HasHostForUrl(prerendering_urls[0]));
-  EXPECT_TRUE(HasHostForUrl(prerendering_urls[1]));
-  EXPECT_TRUE(HasHostForUrl(prerendering_urls[2]));
+  EXPECT_FALSE(
+      HasHostForUrl(*prerender_web_contents_list[0], prerendering_urls[0]));
+  EXPECT_TRUE(
+      HasHostForUrl(*prerender_web_contents_list[1], prerendering_urls[1]));
+  EXPECT_TRUE(
+      HasHostForUrl(*prerender_web_contents_list[2], prerendering_urls[2]));
 
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
 
@@ -8221,6 +8230,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewLimitAndSchedulerBrowserTest,
                        ResetForNonEagerPrerener) {
   const GURL initial_url = GetUrl("/empty.html");
   std::vector<GURL> prerendering_urls;
+  std::vector<base::WeakPtr<WebContents>> prerender_web_contents_list;
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
@@ -8229,8 +8239,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewLimitAndSchedulerBrowserTest,
   // by hovering their links. All prerenders should be started at the time of
   // hovering, and the oldest started prerender should be canceled and removed
   // from the registry for the limit after the last prerender is started.
-  for (int i = 0; i < MaxNumOfRunningSpeculationRulesNonEagerPrerenders() + 1;
-       i++) {
+  int num_of_attempts = MaxNumOfRunningSpeculationRulesNonEagerPrerenders() + 1;
+  for (int i = 0; i < num_of_attempts; i++) {
     PreloadingDeciderObserverForPrerenderTesting preloading_decider_observer(
         current_frame_host());
     const GURL prerendering_url =
@@ -8242,23 +8252,19 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewLimitAndSchedulerBrowserTest,
                        GetParam());
     preloading_decider_observer.WaitUpdateSpeculationCandidates();
 
-    if (GetParam() == "_blank") {
-      TestNavigationObserver nav_observer(prerendering_url);
-      nav_observer.StartWatchingNewWebContents();
-      PointerHoverToAnchor(prerendering_url);
-      nav_observer.WaitForNavigationFinished();
-      EXPECT_EQ(nav_observer.last_navigation_url(), prerendering_url);
-    } else if (GetParam() == "_self") {
-      PointerHoverToAnchor(prerendering_url);
-      WaitForPrerenderLoadCompletion(prerendering_url);
-    }
+    PrerenderHostCreationWaiter host_creation_waiter;
+    PointerHoverToAnchor(prerendering_url);
+    int host_id = host_creation_waiter.Wait();
+    auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
+    prerender_web_contents_list.push_back(prerender_web_contents->GetWeakPtr());
+    test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+        *prerender_web_contents, prerendering_url);
   }
-  for (int i = 0; i < MaxNumOfRunningSpeculationRulesNonEagerPrerenders() + 1;
-       i++) {
+
+  for (int i = 0; i < num_of_attempts; i++) {
     bool host_existing_in_registry =
-        web_contents_impl()
-            ->GetPrerenderHostRegistry()
-            ->FindHostByUrlForTesting(prerendering_urls[i]);
+        prerender_web_contents_list[i] &&
+        HasHostForUrl(*prerender_web_contents_list[i], prerendering_urls[i]);
     if (i == 0) {
       // The first (= oldest) prerender is removed since the (limit + 1)-th
       // prerender was started.
@@ -8270,25 +8276,20 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewLimitAndSchedulerBrowserTest,
 
   // Hover the first link again. This should be retriggered.
   const auto& prerendering_url_first = prerendering_urls[0];
-  if (GetParam() == "_blank") {
-    TestNavigationObserver nav_observer(prerendering_url_first);
-    nav_observer.StartWatchingNewWebContents();
-    PointerHoverToAnchor(prerendering_url_first);
-    nav_observer.WaitForNavigationFinished();
-    EXPECT_EQ(nav_observer.last_navigation_url(), prerendering_url_first);
-  } else if (GetParam() == "_self") {
-    PointerHoverToAnchor(prerendering_url_first);
-    WaitForPrerenderLoadCompletion(prerendering_url_first);
-  }
+  PrerenderHostCreationWaiter host_creation_waiter;
+  PointerHoverToAnchor(prerendering_url_first);
+  int host_id = host_creation_waiter.Wait();
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
+  prerender_web_contents_list[0] = prerender_web_contents->GetWeakPtr();
+  test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *prerender_web_contents, prerendering_url_first);
 
   // The oldest prerender in registry at this point should be removed due to the
   // limit.
-  for (int i = 0; i < MaxNumOfRunningSpeculationRulesNonEagerPrerenders() + 1;
-       i++) {
+  for (int i = 0; i < num_of_attempts; i++) {
     bool host_existing_in_registry =
-        web_contents_impl()
-            ->GetPrerenderHostRegistry()
-            ->FindHostByUrlForTesting(prerendering_urls[i]);
+        prerender_web_contents_list[i] &&
+        HasHostForUrl(*prerender_web_contents_list[i], prerendering_urls[i]);
     if (i == 1) {
       EXPECT_FALSE(host_existing_in_registry);
     } else {
