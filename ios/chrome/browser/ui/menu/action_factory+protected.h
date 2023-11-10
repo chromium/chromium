@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 
+#import "ios/chrome/browser/ui/menu/menu_action_type.h"
+
 @interface ActionFactory (Protected)
 
 // Creates a UIAction instance configured with the given `title` and `image`.

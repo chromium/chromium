@@ -669,7 +669,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   }
 
   ActionFactory* actionFactory = [[ActionFactory alloc]
-      initWithScenario:MenuScenarioHistogram::kTabGridAddTo];
+      initWithScenario:kMenuScenarioHistogramTabGridAddTo];
 
   __weak BaseGridMediator* weakSelf = self;
 

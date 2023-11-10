@@ -85,7 +85,7 @@
           browser->GetBrowserState());
   self.mediator.actionFactory = [[BrowserActionFactory alloc]
       initWithBrowser:browser
-             scenario:MenuScenarioHistogram::kToolbarMenu];
+             scenario:kMenuScenarioHistogramToolbarMenu];
 
   _fullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
       FullscreenController::FromBrowser(browser), self.viewController);

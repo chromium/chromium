@@ -631,7 +631,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
             strongSelf.mostVisitedActionFactory;
 
         // Record that this context menu was shown to the user.
-        RecordMenuShown(MenuScenarioHistogram::kOmniboxMostVisitedEntry);
+        RecordMenuShown(kMenuScenarioHistogramOmniboxMostVisitedEntry);
 
         NSMutableArray<UIMenuElement*>* menuElements =
             [[NSMutableArray alloc] init];
@@ -660,7 +660,8 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
           [menuElements addObject:newWindowAction];
         }
 
-        [menuElements addObject:[actionFactory actionToCopyURL:copyURL]];
+        CrURL* URL = [[CrURL alloc] initWithGURL:copyURL];
+        [menuElements addObject:[actionFactory actionToCopyURL:URL]];
 
         [menuElements addObject:[actionFactory actionToShareWithBlock:^{
                         [weakSelf.sharingDelegate

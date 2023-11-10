@@ -14,6 +14,7 @@ source_set("context_menu") {
     "//components/search_engines",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/photos/model:metrics",
     "//ios/chrome/browser/photos/model:photos_availability",
     "//ios/chrome/browser/policy:policy_util",

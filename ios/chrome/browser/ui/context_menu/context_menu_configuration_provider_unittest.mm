@@ -33,7 +33,8 @@
 namespace {
 
 // Menu scenario to create a BrowserActionFactory.
-MenuScenarioHistogram kTestMenuScenario = MenuScenarioHistogram::kHistoryEntry;
+const MenuScenarioHistogram kTestMenuScenario =
+    kMenuScenarioHistogramHistoryEntry;
 
 // Email for the primary account when signing-in.
 const char kPrimaryAccountEmail[] = "peter.parker@gmail.com";

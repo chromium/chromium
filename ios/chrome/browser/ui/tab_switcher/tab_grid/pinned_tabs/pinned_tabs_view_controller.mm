@@ -475,8 +475,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       [self.collectionView cellForItemAtIndexPath:indexPath]);
   return [self.menuProvider
       contextMenuConfigurationForTabCell:cell
-                            menuScenario:MenuScenarioHistogram::
-                                             kPinnedTabsEntry];
+                            menuScenario:kMenuScenarioHistogramPinnedTabsEntry];
 }
 
 - (void)collectionView:(UICollectionView*)collectionView

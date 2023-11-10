@@ -120,7 +120,7 @@
   self.mediator.sharingDelegate = self;
   BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
       initWithBrowser:self.browser
-             scenario:MenuScenarioHistogram::kOmniboxMostVisitedEntry];
+             scenario:kMenuScenarioHistogramOmniboxMostVisitedEntry];
   self.mediator.mostVisitedActionFactory = actionFactory;
   self.popupViewController.imageRetriever = self.mediator;
   self.popupViewController.faviconRetriever = self.mediator;

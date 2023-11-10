@@ -40,6 +40,7 @@ source_set("reading_list") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/metrics:metrics_internal",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

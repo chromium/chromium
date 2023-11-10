@@ -6,11 +6,13 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
+#import "ios/chrome/browser/ui/menu/menu_action_type.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -48,7 +50,7 @@
                            }];
 }
 
-- (UIAction*)actionToCopyURL:(const GURL)URL {
+- (UIAction*)actionToCopyURL:(CrURL*)URL {
   UIImage* image =
       DefaultSymbolWithPointSize(kLinkActionSymbol, kSymbolActionPointSize);
   return [self
@@ -56,7 +58,7 @@
                 image:image
                  type:MenuActionType::CopyURL
                 block:^{
-                  StoreURLInPasteboard(URL);
+                  StoreURLInPasteboard(URL.gurl);
                 }];
 }
 

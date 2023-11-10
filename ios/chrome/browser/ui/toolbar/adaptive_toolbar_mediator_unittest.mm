@@ -53,7 +53,7 @@
 
 namespace {
 
-MenuScenarioHistogram kTestMenuScenario = MenuScenarioHistogram::kHistoryEntry;
+MenuScenarioHistogram kTestMenuScenario = kMenuScenarioHistogramHistoryEntry;
 
 static const int kNumberOfWebStates = 3;
 static const char kTestUrl[] = "http://www.chromium.org";

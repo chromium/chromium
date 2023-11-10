@@ -141,7 +141,7 @@
   UIMenu* menu = nil;
   if (shouldEnableEditButton) {
     ActionFactory* actionFactory = [[ActionFactory alloc]
-        initWithScenario:MenuScenarioHistogram::kTabGridEdit];
+        initWithScenario:kMenuScenarioHistogramTabGridEdit];
     __weak id<TabGridToolbarsButtonsDelegate> weakButtonDelegate =
         _buttonsDelegate;
     NSMutableArray<UIMenuElement*>* menuElements =

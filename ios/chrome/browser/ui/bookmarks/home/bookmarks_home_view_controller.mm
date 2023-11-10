@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -678,10 +679,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   DCHECK_EQ(bookmarkNode->type(), BookmarkNode::URL);
   GURL nodeURL = bookmarkNode->url();
   // Record that this context menu was shown to the user.
-  RecordMenuShown(MenuScenarioHistogram::kBookmarkEntry);
+  RecordMenuShown(kMenuScenarioHistogramBookmarkEntry);
   BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
       initWithBrowser:_browser.get()
-             scenario:MenuScenarioHistogram::kBookmarkEntry];
+             scenario:kMenuScenarioHistogramBookmarkEntry];
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   __weak __typeof(self) weakSelf = self;
   // Add open URL menu item.
@@ -715,7 +716,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                 actionToOpenInNewWindowWithURL:nodeURL
                                 activityOrigin:WindowActivityBookmarksOrigin]];
   }
-  [menuElements addObject:[actionFactory actionToCopyURL:nodeURL]];
+  [menuElements
+      addObject:[actionFactory
+                    actionToCopyURL:[[CrURL alloc] initWithGURL:nodeURL]]];
   // Add edit menu item.
   UIAction* editAction = [actionFactory actionToEditWithBlock:^{
     __strong __typeof(weakSelf) strongSelf = weakSelf;
@@ -753,9 +756,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   DCHECK_EQ(folderNode, FindNodeByNodeReference(nodeReference));
   DCHECK_EQ(folderNode->type(), BookmarkNode::FOLDER);
   // Record that this context menu was shown to the user.
-  RecordMenuShown(MenuScenarioHistogram::kBookmarkFolder);
+  RecordMenuShown(kMenuScenarioHistogramBookmarkFolder);
   ActionFactory* actionFactory = [[ActionFactory alloc]
-      initWithScenario:MenuScenarioHistogram::kBookmarkFolder];
+      initWithScenario:kMenuScenarioHistogramBookmarkFolder];
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   // Add edit menu item.
   __weak __typeof(self) weakSelf = self;

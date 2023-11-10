@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/favicon/large_icon_cache.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
@@ -481,11 +482,11 @@
         ContentSuggestionsCoordinator* strongSelf = weakSelf;
 
         // Record that this context menu was shown to the user.
-        RecordMenuShown(MenuScenarioHistogram::kMostVisitedEntry);
+        RecordMenuShown(kMenuScenarioHistogramMostVisitedEntry);
 
         BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
             initWithBrowser:strongSelf.browser
-                   scenario:MenuScenarioHistogram::kMostVisitedEntry];
+                   scenario:kMenuScenarioHistogramMostVisitedEntry];
 
         NSMutableArray<UIMenuElement*>* menuElements =
             [[NSMutableArray alloc] init];
@@ -527,7 +528,8 @@
           [menuElements addObject:newWindowAction];
         }
 
-        [menuElements addObject:[actionFactory actionToCopyURL:item.URL]];
+        CrURL* URL = [[CrURL alloc] initWithGURL:item.URL];
+        [menuElements addObject:[actionFactory actionToCopyURL:URL]];
 
         [menuElements addObject:[actionFactory actionToShareWithBlock:^{
                         [weakSelf shareURL:item.URL

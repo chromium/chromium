@@ -77,6 +77,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/intents:intents_donation_helper",
     "//ios/chrome/browser/metrics:metrics_internal",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ntp:set_up_list",
     "//ios/chrome/browser/ntp:set_up_list_item_type",

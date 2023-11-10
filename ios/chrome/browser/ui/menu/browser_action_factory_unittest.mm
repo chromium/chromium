@@ -41,7 +41,8 @@
 #import "url/gurl.h"
 
 namespace {
-MenuScenarioHistogram kTestMenuScenario = MenuScenarioHistogram::kHistoryEntry;
+const MenuScenarioHistogram kTestMenuScenario =
+    kMenuScenarioHistogramHistoryEntry;
 }  // namespace
 
 // Test fixture for the BrowserActionFactory.

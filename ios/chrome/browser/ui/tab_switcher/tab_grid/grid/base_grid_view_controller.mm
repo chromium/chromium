@@ -755,11 +755,11 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
   MenuScenarioHistogram scenario;
   if (_mode == TabGridModeSearch) {
-    scenario = MenuScenarioHistogram::kTabGridSearchResult;
+    scenario = kMenuScenarioHistogramTabGridSearchResult;
   } else if (_mode == TabGridModeInactive) {
-    scenario = MenuScenarioHistogram::kInactiveTabsEntry;
+    scenario = kMenuScenarioHistogramInactiveTabsEntry;
   } else {
-    scenario = MenuScenarioHistogram::kTabGridEntry;
+    scenario = kMenuScenarioHistogramTabGridEntry;
   }
 
   return [self.menuProvider contextMenuConfigurationForTabCell:cell
