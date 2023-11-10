@@ -296,6 +296,32 @@ OverviewController::GetWindowsListInOverviewGridsForTest() {
   return windows;
 }
 
+bool OverviewController::CanEnterOverview() const {
+  if (!DesksController::Get()->CanEnterOverview()) {
+    return false;
+  }
+
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get();
+      snap_group_controller && !snap_group_controller->CanEnterOverview()) {
+    return false;
+  }
+
+  // Prevent entering overview while the divider is dragged or animated.
+  if (IsSplitViewDividerDraggedOrAnimated()) {
+    return false;
+  }
+
+  // Don't allow a window overview if the user session is not active (e.g.
+  // locked or in user-adding screen) or a modal dialog is open or running in
+  // kiosk app session.
+  SessionControllerImpl* session_controller =
+      Shell::Get()->session_controller();
+  return session_controller->GetSessionState() ==
+             session_manager::SessionState::ACTIVE &&
+         !Shell::IsSystemModalWindowOpen() &&
+         !Shell::Get()->screen_pinning_controller()->IsPinned();
+}
+
 void OverviewController::ToggleOverview(OverviewEnterExitType type) {
   // Pause raster scale updates while the overview is being toggled. This is to
   // handle the case where a mirror view is deleted then recreated when
@@ -505,33 +531,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
   }
 }
 
-bool OverviewController::CanEnterOverview() {
-  if (!DesksController::Get()->CanEnterOverview()) {
-    return false;
-  }
-
-  if (SnapGroupController* snap_group_controller = SnapGroupController::Get();
-      snap_group_controller && !snap_group_controller->CanEnterOverview()) {
-    return false;
-  }
-
-  // Prevent entering overview while the divider is dragged or animated.
-  if (IsSplitViewDividerDraggedOrAnimated()) {
-    return false;
-  }
-
-  // Don't allow a window overview if the user session is not active (e.g.
-  // locked or in user-adding screen) or a modal dialog is open or running in
-  // kiosk app session.
-  SessionControllerImpl* session_controller =
-      Shell::Get()->session_controller();
-  return session_controller->GetSessionState() ==
-             session_manager::SessionState::ACTIVE &&
-         !Shell::IsSystemModalWindowOpen() &&
-         !Shell::Get()->screen_pinning_controller()->IsPinned();
-}
-
-bool OverviewController::CanEndOverview(OverviewEnterExitType type) {
+bool OverviewController::CanEndOverview(OverviewEnterExitType type) const {
   // Prevent ending overview while the divider is dragged or animated.
   if (IsSplitViewDividerDraggedOrAnimated())
     return false;

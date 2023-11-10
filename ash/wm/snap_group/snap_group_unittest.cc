@@ -1171,6 +1171,24 @@ TEST_F(SnapGroupTest, DoubleTapDivider) {
   EXPECT_EQ(new_primary_window, split_view_controller()->secondary_window());
 }
 
+TEST_F(SnapGroupTest, DontAutoSnapNewWindowOutsideSplitViewOverview) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  EXPECT_TRUE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_FALSE(
+      RootWindowController::ForWindow(w1.get())->split_view_overview_session());
+  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
+
+  // Open a third window. Test it does *not* snap.
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  EXPECT_FALSE(WindowState::Get(w3.get())->IsSnapped());
+  EXPECT_TRUE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_TRUE(split_view_divider());
+}
+
 // Tests that removing a display during split view overview session doesn't
 // crash.
 TEST_F(SnapGroupTest, RemoveDisplay) {
