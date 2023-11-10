@@ -53,10 +53,6 @@
         {
           "builder": "android_compile_dbg",
           "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android_compile_siso_dbg",
-          "group": "tryserver.chromium.android"
         }
       ]
     }

@@ -45,10 +45,6 @@
           "group": "tryserver.chromium.chromiumos"
         },
         {
-          "builder": "linux-chromeos-compile-siso-dbg",
-          "group": "tryserver.chromium.chromiumos"
-        },
-        {
           "builder": "linux-chromeos-dbg",
           "group": "tryserver.chromium.chromiumos"
         }
