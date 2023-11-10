@@ -5099,13 +5099,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.SpdySession.OnSettings.{StreamState}StreamCount"
+<histogram name="Net.SpdySession.OnSettings.{StreamState}StreamCount2"
     units="count" expires_after="2024-05-05">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-network-stack@google.com</owner>
   <summary>
     Records the number of {StreamState} streams when a SpdySession receives an
-    HTTP/2 SETTINGS frame.
+    HTTP/2 SETTINGS frame for the first time.
   </summary>
   <token key="StreamState">
     <variant name="Active" summary="active"/>
