@@ -4133,7 +4133,11 @@ if (enable_nocompile_tests_new) {
       "containers/contains_nocompile.nc",
       "containers/enum_set_nocompile.nc",
       "containers/span_nocompile.nc",
+      "debug/crash_logging_nocompile.nc",
+      "memory/ref_counted_nocompile.nc",
       "memory/weak_ptr_nocompile.nc",
+      "metrics/field_trial_params_nocompile.nc",
+      "metrics/histogram_nocompile.nc",
       "no_destructor_nocompile.nc",
       "observer_list_nocompile.nc",
       "sequence_checker_nocompile.nc",
@@ -4157,14 +4161,10 @@ if (enable_nocompile_tests) {
       "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations_pa_nocompile.nc",
       "allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_nocompile.nc",
       "allocator/partition_allocator/src/partition_alloc/pointers/raw_ref_nocompile.nc",
-      "debug/crash_logging_nocompile.nc",
       "functional/bind_nocompile.nc",
       "functional/callback_nocompile.nc",
       "functional/function_ref_nocompile.nc",
       "functional/overloaded_nocompile.nc",
-      "memory/ref_counted_nocompile.nc",
-      "metrics/field_trial_params_nocompile.nc",
-      "metrics/histogram_nocompile.nc",
     ]
 
     deps = [

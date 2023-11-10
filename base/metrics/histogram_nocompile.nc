@@ -10,91 +10,45 @@
 
 namespace base {
 
-#if defined(NCTEST_DIFFERENT_ENUM)  // [r"\|sample\| and \|boundary\| shouldn't be of different enums"]
+void NotEnums() {
+  // Sample and boundary values must both be enums.
+  enum EnumA { A };
+  enum EnumB { B };
 
-void WontCompile() {
-  enum TypeA { A };
-  enum TypeB { B };
-  UMA_HISTOGRAM_ENUMERATION("", A, B);
+  UmaHistogramEnumeration("", A, 2);  // expected-error {{no matching function for call to 'UmaHistogramEnumeration'}}
+  UmaHistogramEnumeration("", 1, B);  // expected-error {{no matching function for call to 'UmaHistogramEnumeration'}}
+  UmaHistogramEnumeration("", 1, 2);  // expected-error@*:* {{static assertion failed due to requirement 'std::is_enum_v<int>'}}
 }
 
-#elif defined(NCTEST_DIFFERENT_ENUM_CLASS)  // [r"\|sample\| and \|boundary\| shouldn't be of different enums"]
+void DifferentEnums() {
+  // Sample and boundary values must not come from different enums.
+  enum EnumA { A };
+  enum EnumB { B };
+  enum class EnumC { C };
+  enum class EnumD { D };
 
-void WontCompile() {
-  enum class TypeA { A };
-  enum class TypeB { B };
-  UMA_HISTOGRAM_ENUMERATION("", TypeA::A, TypeB::B);
+  UMA_HISTOGRAM_ENUMERATION("", A, B);                // expected-error {{|sample| and |boundary| shouldn't be of different enums}}
+  UMA_HISTOGRAM_ENUMERATION("", A, EnumD::D);         // expected-error {{|sample| and |boundary| shouldn't be of different enums}}
+  UMA_HISTOGRAM_ENUMERATION("", EnumC::C, B);         // expected-error {{|sample| and |boundary| shouldn't be of different enums}}
+  UMA_HISTOGRAM_ENUMERATION("", EnumC::C, EnumD::D);  // expected-error {{|sample| and |boundary| shouldn't be of different enums}}
+
+  UmaHistogramEnumeration("", A, B);  // expected-error {{no matching function for call to 'UmaHistogramEnumeration'}}
 }
 
-#elif defined(NCTEST_DIFFERENT_ENUM_MIXED)  // [r"\|sample\| and \|boundary\| shouldn't be of different enums"]
-
-void WontCompile() {
-  enum class TypeA { A };
-  enum TypeB { B };
-  UMA_HISTOGRAM_ENUMERATION("", TypeA::A, B);
-}
-
-#elif defined(NCTEST_NEGATIVE_ENUM_MAX)  // [r"fatal error: static_assert failed due to requirement 'static_cast<uintmax_t>\(TypeA::A\) < static_cast<uintmax_t>\(std::numeric_limits<int>::max\(\)\)': |boundary| is out of range of HistogramBase::Sample"]
-
-void WontCompile() {
-  // Buckets for enumeration start from 0, so a boundary < 0 is illegal.
+void MaxOutOfRange() {
+  // Boundaries must be nonnegative and fit in an int.
   enum class TypeA { A = -1 };
-  UMA_HISTOGRAM_ENUMERATION("", TypeA::A, TypeA::A);
+  enum class TypeB : uint32_t { B = 0xffffffff };
+
+  UMA_HISTOGRAM_ENUMERATION("", TypeA::A, TypeA::A);  // expected-error {{|boundary| is out of range of HistogramBase::Sample}}
+  UMA_HISTOGRAM_ENUMERATION("", TypeB::B, TypeB::B);  // expected-error {{|boundary| is out of range of HistogramBase::Sample}}
 }
 
-#elif defined(NCTEST_ENUM_MAX_OUT_OF_RANGE)  // [r"fatal error: static_assert failed due to requirement 'static_cast<uintmax_t>\(TypeA::A\) < static_cast<uintmax_t>\(std::numeric_limits<int>::max\(\)\)': |boundary| is out of range of HistogramBase::Sample"]
+void NoMaxValue() {
+  // When boundary is omitted, sample enum must define `kMaxValue`.
+  enum class NoMax { kVal };
 
-void WontCompile() {
-  // HistogramBase::Sample is an int and can't hold larger values.
-  enum class TypeA : uint32_t { A = 0xffffffff };
-  UMA_HISTOGRAM_ENUMERATION("", TypeA::A, TypeA::A);
+  UmaHistogramEnumeration("", NoMax::kVal);  // expected-error@*:* {{no member named 'kMaxValue' in 'NoMax'}}
 }
-
-#elif defined(NCTEST_SAMPLE_NOT_ENUM)  // [r"fatal error: static_assert failed due to requirement 'static_cast<uintmax_t>\(TypeA::A\) < static_cast<uintmax_t>\(std::numeric_limits<int>::max\(\)\)': |boundary| is out of range of HistogramBase::Sample"]
-
-void WontCompile() {
-  enum TypeA { A };
-  UMA_HISTOGRAM_ENUMERATION("", 0, TypeA::A);
-}
-
-#elif defined(NCTEST_FUNCTION_ENUM_NO_MAXVALUE)  // [r"no member named 'kMaxValue' in 'base::NoMaxValue'"]
-
-enum class NoMaxValue {
-  kMoo,
-};
-
-void WontCompile() {
-  UmaHistogramEnumeration("", NoMaxValue::kMoo);
-}
-
-#elif defined(NCTEST_FUNCTION_INT_AS_ENUM)  // [r"static assertion failed due to requirement 'std::is_enum_v<int>'"]
-
-void WontCompile() {
-  UmaHistogramEnumeration("", 1, 2);
-}
-
-#elif defined(NCTEST_FUNCTION_DIFFERENT_ENUM)  // [r"no matching function for call to 'UmaHistogramEnumeration'"]
-
-void WontCompile() {
-  enum TypeA { A };
-  enum TypeB { B };
-  UmaHistogramEnumeration("", A, B);
-}
-
-#elif defined(NCTEST_FUNCTION_FIRST_NOT_ENUM)  // [r"no matching function for call to 'UmaHistogramEnumeration'"]
-
-void WontCompile() {
-  enum TypeB { B };
-  UmaHistogramEnumeration("", 1, B);
-}
-
-#elif defined(NCTEST_FUNCTION_SECOND_NOT_ENUM)  // [r"no matching function for call to 'UmaHistogramEnumeration'"]
-
-void WontCompile() {
-  enum TypeA { A };
-  UmaHistogramEnumeration("", A, 2);
-}
-
-#endif
 
 }  // namespace base

@@ -7,141 +7,103 @@
 
 namespace base {
 
-class InitialRefCountIsZero : public base::RefCounted<InitialRefCountIsZero> {
- public:
-  InitialRefCountIsZero() {}
+class Base : public RefCounted<Base> {
  private:
-  friend class base::RefCounted<InitialRefCountIsZero>;
-  ~InitialRefCountIsZero() {}
+  friend class RefCounted<Base>;
+
+  ~Base() = default;
 };
 
-#if defined(NCTEST_ADOPT_REF_TO_ZERO_START)  // [r"fatal error: static assertion failed due to requirement 'std::is_same_v<base::subtle::StartRefCountFromOneTag, base::subtle::StartRefCountFromZeroTag>': Use AdoptRef only if the reference count starts from one\."]
+class ThreadSafeBase : public RefCountedThreadSafe<ThreadSafeBase> {
+ private:
+  friend class RefCountedThreadSafe<ThreadSafeBase>;
 
-void WontCompile() {
-  AdoptRef(new InitialRefCountIsZero());
+  ~ThreadSafeBase() = default;
+};
+
+class DeleteOnSequenceBase
+    : public RefCountedDeleteOnSequence<DeleteOnSequenceBase> {
+ private:
+  friend class RefCountedDeleteOnSequence<DeleteOnSequenceBase>;
+  friend class DeleteHelper<DeleteOnSequenceBase>;
+
+  ~DeleteOnSequenceBase() = default;
+};
+
+void AdoptRefToZeroStart() {
+  class InitialRefCountIsZero : public RefCounted<InitialRefCountIsZero> {
+   public:
+    InitialRefCountIsZero() = default;
+
+   private:
+    friend class RefCounted<InitialRefCountIsZero>;
+
+    ~InitialRefCountIsZero() = default;
+  };
+
+  AdoptRef(new InitialRefCountIsZero());  // expected-error@*:* {{Use AdoptRef only if the reference count starts from one.}}
 }
 
-#endif
+void WrongRefcountBaseClass() {
+  class Derived : public RefCounted<Base> {
+   private:
+    friend class RefCounted<Derived>;
 
-#if defined(NCTEST_WRONG_REFCOUNT_BASE_CLASS)  // [r"fatal error: static assertion failed due to requirement 'std::is_base_of_v<base::Foo, base::Bar>': T implements RefCounted<U>, but U is not a base of T\."]
+    ~Derived() = default;
+  };
 
-class Foo : public base::RefCounted<Foo> {
- private:
-  friend class base::RefCounted<Foo>;
-  ~Foo() {}
-};
-
-class Bar : public base::RefCounted<Foo> {
- private:
-  friend class base::RefCounted<Bar>;
-  ~Bar() {}
-};
-
-void WontCompile() {
-  scoped_refptr<Bar> ptr;
+  scoped_refptr<Derived> ptr;  // expected-error@*:* {{T implements RefCounted<U>, but U is not a base of T.}}
 }
 
-#endif
+void WrongRefcountThreadsafeBaseClass() {
+  class Derived : public RefCountedThreadSafe<ThreadSafeBase> {
+   private:
+    friend class RefCountedThreadSafe<Derived>;
 
-#if defined(NCTEST_WRONG_REFCOUNT_THREADSAFE_BASE_CLASS)  // [r"fatal error: static assertion failed due to requirement 'std::is_base_of_v<base::Foo, base::Bar>': T implements RefCountedThreadSafe<U>, but U is not a base of T\."]
+    ~Derived() = default;
+  };
 
-class Foo : public base::RefCountedThreadSafe<Foo> {
- private:
-  friend class base::RefCountedThreadSafe<Foo>;
-  ~Foo() {}
-};
-
-class Bar : public base::RefCountedThreadSafe<Foo> {
- private:
-  friend class base::RefCountedThreadSafe<Bar>;
-  ~Bar() {}
-};
-
-void WontCompile() {
-  scoped_refptr<Bar> ptr;
+  scoped_refptr<Derived> ptr;  // expected-error@*:* {{T implements RefCountedThreadSafe<U>, but U is not a base of T.}}
 }
 
-#endif
+void WrongRefcountDeleteOnSequenceBaseClass() {
+  class DeleteOnSequenceDerived
+      : public RefCountedDeleteOnSequence<DeleteOnSequenceBase> {
+   private:
+    friend class RefCountedDeleteOnSequence<DeleteOnSequenceDerived>;
+    friend class DeleteHelper<DeleteOnSequenceDerived>;
 
-#if defined(NCTEST_WRONG_REFCOUNT_ON_SEQUENCE_BASE_CLASS)  // [r"fatal error: static assertion failed due to requirement 'std::is_base_of_v<base::Foo, base::Bar>': T implements RefCountedDeleteOnSequence<U>, but U is not a base of T\."]
+    ~DeleteOnSequenceDerived() = default;
+  };
 
-class Foo : public base::RefCountedDeleteOnSequence<Foo> {
- private:
-  friend class base::RefCountedDeleteOnSequence<Foo>;
-  friend class base::DeleteHelper<Foo>;
-  ~Foo() {}
-};
-
-class Bar : public base::RefCountedDeleteOnSequence<Foo> {
- private:
-  friend class base::RefCountedDeleteOnSequence<Bar>;
-  friend class base::DeleteHelper<Bar>;
-  ~Bar() {}
-};
-
-void WontCompile() {
-  scoped_refptr<Bar> ptr;
+  scoped_refptr<DeleteOnSequenceDerived> ptr;  // expected-error@*:* {{T implements RefCountedDeleteOnSequence<U>, but U is not a base of T.}}
 }
 
-#endif
+void SubclassOverridesRefcountPreference() {
+  class Derived : public Base {
+   public:
+    REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+  };
 
-#if defined(NCTEST_SUBCLASS_OVERRIDES_REFCOUNT_PREFERENCE)  // [r"fatal error: static assertion failed due to requirement .*: It's unsafe to override the ref count preference\. Please remove REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE from subclasses\."]
-
-class Base : public base::RefCounted<Base> {
- protected:
-  friend class base::RefCounted<Base>;
-  ~Base() {}
-};
-
-class Derived : public Base {
- public:
-  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
-};
-
-void WontCompile() {
-  scoped_refptr<Derived> ptr;
+  scoped_refptr<Derived> ptr;  // expected-error@*:* {{It's unsafe to override the ref count preference. Please remove REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE from subclasses.}}
 }
 
-#endif
+void SubclassOverridesRefcountPreferenceThreadsafe() {
+  class Derived : public ThreadSafeBase {
+   public:
+    REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+  };
 
-#if defined(NCTEST_SUBCLASS_OVERRIDES_REFCOUNT_PREFERENCE_THREADSAFE)  // [r"fatal error: static assertion failed due to requirement .*: It's unsafe to override the ref count preference\. Please remove REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE from subclasses\."]
-
-class Base : public base::RefCountedThreadSafe<Base> {
- protected:
-  friend class base::RefCountedThreadSafe<Base>;
-  ~Base() {}
-};
-
-class Derived : public Base {
- public:
-  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
-};
-
-void WontCompile() {
-  scoped_refptr<Derived> ptr;
+  scoped_refptr<Derived> ptr;  // expected-error@*:* {{It's unsafe to override the ref count preference. Please remove REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE from subclasses.}}
 }
 
-#endif
+void SubclassOverridesRefcountPreferenceDeleteOnSequence() {
+  class Derived : public DeleteOnSequenceBase {
+   public:
+    REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+  };
 
-#if defined(NCTEST_SUBCLASS_OVERRIDES_REFCOUNT_PREFERENCE_SEQUENCE)  // [r"fatal error: static assertion failed due to requirement .*: It's unsafe to override the ref count preference\. Please remove REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE from subclasses\."]
-
-class Base : public base::RefCountedDeleteOnSequence<Base> {
- protected:
-  friend class base::RefCountedDeleteOnSequence<Base>;
-  friend class base::DeleteHelper<Base>;
-  ~Base() {}
-};
-
-class Derived : public Base {
- public:
-  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
-};
-
-void WontCompile() {
-  scoped_refptr<Derived> ptr;
+  scoped_refptr<Derived> ptr;  // expected-error@*:* {{It's unsafe to override the ref count preference. Please remove REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE from subclasses.}}
 }
-
-#endif
-
 
 }  // namespace base

@@ -8,35 +8,21 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-[[maybe_unused]] constexpr base::Feature kFeature{
-  "NoCompileFeature", base::FEATURE_DISABLED_BY_DEFAULT};
+namespace base {
 
-enum Param { FOO, BAR };
+constexpr Feature kFeature{"NoCompileFeature", FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(NCTEST_NO_PARAM_TYPE)  // [r"too few template arguments"]
+// Must supply an enum template argument.
+constexpr FeatureParam<> kParam1{&kFeature, "Param"};            // expected-error {{too few template arguments}}
+constexpr FeatureParam<void> kParam2{&kFeature, "Param"};        // expected-error@*:* {{unsupported FeatureParam<> type}}
+constexpr FeatureParam<size_t> kParam3{&kFeature, "Param", 1u};  // expected-error@*:* {{unsupported FeatureParam<> type}}
 
-constexpr base::FeatureParam<> kParam{
-  &kFeature, "Param"};
+enum Param { kFoo, kBar };
 
-#elif defined(NCTEST_VOID_PARAM_TYPE)  // [r"unsupported FeatureParam<> type"]
+// Options pointer must be non-null.
+constexpr FeatureParam<Param> kParam4{&kFeature, "Param", kFoo, nullptr};  // expected-error {{no matching constructor}}
 
-constexpr base::FeatureParam<void> kParam{
-  &kFeature, "Param"};
+constexpr FeatureParam<Param>::Option kParamOptions[] = {};
+constexpr FeatureParam<Param> kParam5{&kFeature, "Param", kFoo, &kParamOptions};  // expected-error {{no matching constructor}}
 
-#elif defined(NCTEST_INVALID_PARAM_TYPE)  // [r"unsupported FeatureParam<> type"]
-
-constexpr base::FeatureParam<size_t> kParam{
-  &kFeature, "Param", 1u};
-
-#elif defined(NCTEST_ENUM_NULL_OPTIONS)  // [r"candidate template ignored: could not match"]
-
-constexpr base::FeatureParam<Param> kParam{
-  &kFeature, "Param", FOO, nullptr};
-
-#elif defined(NCTEST_ENUM_EMPTY_OPTIONS)  // [r"zero-length arrays are not permitted"]
-
-constexpr base::FeatureParam<Param>::Option kParamOptions[] = {};
-constexpr base::FeatureParam<Param> kParam{
-  &kFeature, "Param", FOO, &kParamOptions};
-
-#endif
+}  // namespace base
