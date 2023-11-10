@@ -610,9 +610,9 @@ void OnDataURLRetrieved(
   StartDownload(std::move(parameters), nullptr);
 }
 
-// Analyzes trusted sources of a frame's trust-token-redemption Permissions
-// Policy feature to see if the feature is definitely disabled or potentially
-// enabled.
+// Analyzes trusted sources of a frame's private-state-token-redemption
+// Permissions Policy feature to see if the feature is definitely disabled or
+// potentially enabled.
 //
 // This information will be bound to a URLLoaderFactory; if the answer is
 // "definitely disabled," the network service will report a bad message if it
@@ -683,8 +683,8 @@ DetermineWhetherToForbidTrustTokenOperation(
 }
 
 // When a frame creates its initial subresource loaders, it needs to know
-// whether the trust-token-redemption Permissions Policy feature will be enabled
-// after the commit finishes, which is a little involved (see
+// whether the private-state-token-redemption Permissions Policy feature will be
+// enabled after the commit finishes, which is a little involved (see
 // DetermineWhetherToForbidTrustTokenOperation). In contrast, if it needs to
 // make this decision once the frame has committted---for instance, to create
 // more loaders after the network service crashes---it can directly consult the
@@ -9142,7 +9142,7 @@ void RenderFrameHostImpl::BeginNavigation(
   // If the request is bearing Private State Tokens parameters:
   // - it must not be a main-frame navigation, and
   // - for redemption and signing operations, the frame's parent needs the
-  //   trust-token-redemption Permissions Policy feature,
+  //   private-state-token-redemption Permissions Policy feature,
   // - for issue operation, the frame's parent needs the
   //   private-state-token-issuance Permission Policy.
   if (begin_params->trust_token_params) {

@@ -557,12 +557,12 @@ HTMLIFrameElement::ConstructTrustTokenParams() const {
 
   if (!GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kTrustTokenRedemption)) {
-    GetExecutionContext()->AddConsoleMessage(
-        MakeGarbageCollected<ConsoleMessage>(
-            mojom::blink::ConsoleMessageSource::kOther,
-            mojom::blink::ConsoleMessageLevel::kError,
-            "Trust Tokens: Attempted redemption or signing without the "
-            "trust-token-redemption Permissions Policy feature present."));
+    GetExecutionContext()->AddConsoleMessage(MakeGarbageCollected<
+                                             ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "Trust Tokens: Attempted redemption or signing without the "
+        "private-state-token-redemption Permissions Policy feature present."));
     return nullptr;
   }
 

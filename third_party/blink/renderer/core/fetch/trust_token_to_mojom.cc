@@ -106,7 +106,7 @@ bool ConvertTrustTokenToMojomAndCheckPermissions(
             DOMExceptionCode::kNotAllowedError,
             "Private State Token Redemption ('token-redemption') and signing "
             "('send-redemption-record') operations require that the "
-            "trust-token-redemption "
+            "private-state-token-redemption "
             "Permissions Policy feature be enabled.");
         return false;
       }
