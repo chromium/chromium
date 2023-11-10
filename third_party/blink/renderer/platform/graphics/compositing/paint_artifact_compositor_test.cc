@@ -157,13 +157,6 @@ class PaintArtifactCompositorTest : public testing::Test,
     layer_tree_->layer_tree_host()->LayoutAndUpdateLayers();
   }
 
-  void ClearPropertyTreeChangedState() {
-    if (!RuntimeEnabledFeatures::SimplifiedClearPropertyTreeChangeEnabled()) {
-      paint_artifact_compositor_->ClearPropertyTreeChangedState();
-    }
-    // Otherwise PaintArtifactCompositor::Update() clears the changed state.
-  }
-
   void WillBeRemovedFromFrame() {
     paint_artifact_compositor_->WillBeRemovedFromFrame();
   }
@@ -4763,7 +4756,6 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
 
   // Change t1 but not t2.
   layer->ClearSubtreePropertyChangedForTesting();
-  ClearPropertyTreeChangedState();
   t1->Update(
       t0(), TransformPaintPropertyNode::State{{MakeTranslationMatrix(20, 30)}});
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
@@ -4790,7 +4782,6 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
 
   // Change t2 but not t1.
   layer->ClearSubtreePropertyChangedForTesting();
-  ClearPropertyTreeChangedState();
   t2->Update(*t1, Transform3dState(MakeRotationMatrix(135)));
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, t1->NodeChanged());
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
@@ -4814,7 +4805,6 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
 
   // Change t2 to be 2d translation which will be decomposited.
   layer->ClearSubtreePropertyChangedForTesting();
-  ClearPropertyTreeChangedState();
   t2->Update(*t1, Transform3dState(MakeTranslationMatrix(20, 30)));
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, t1->NodeChanged());
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues, t2->NodeChanged());
@@ -4836,7 +4826,6 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
 
   // Change no transform nodes, but invalidate client.
   layer->ClearSubtreePropertyChangedForTesting();
-  ClearPropertyTreeChangedState();
   client.Invalidate(PaintInvalidationReason::kBackground);
   Update(TestPaintArtifact()
              .Chunk(1)
@@ -4865,8 +4854,6 @@ TEST_P(PaintArtifactCompositorTest, EffectChange) {
 
   // Change e1 but not e2.
   layer->ClearSubtreePropertyChangedForTesting();
-  ClearPropertyTreeChangedState();
-
   EffectPaintPropertyNode::State e1_state{&t0()};
   e1_state.opacity = 0.8f;
   e1_state.compositor_element_id = e1->GetCompositorElementId();
@@ -4894,7 +4881,6 @@ TEST_P(PaintArtifactCompositorTest, EffectChange) {
 
   // Change e2 but not e1.
   layer->ClearSubtreePropertyChangedForTesting();
-  ClearPropertyTreeChangedState();
   EffectPaintPropertyNode::State e2_state{&t0()};
   e2_state.opacity = 0.9f;
   e2_state.direct_compositing_reasons = CompositingReason::kWillChangeOpacity;
@@ -5018,7 +5004,6 @@ TEST_P(PaintArtifactCompositorTest, RepaintIndirectScrollHitTest) {
   CreateScrollableChunk(test_artifact, scroll_state);
   auto artifact = test_artifact.Build();
   Update(artifact);
-  ClearPropertyTreeChangedState();
 
   GetPaintArtifactCompositor().UpdateRepaintedLayers(artifact);
   // This test passes if no CHECK occurs.
@@ -5042,7 +5027,6 @@ TEST_P(PaintArtifactCompositorTest, ClearChangedStateWithIndirectTransform) {
                       .RectDrawing(gfx::Rect(2, 2, 2, 2), Color::kBlack)
                       .Build();
   Update(artifact);
-  ClearPropertyTreeChangedState();
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, t1->NodeChanged());
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, t2->NodeChanged());
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, c1->NodeChanged());

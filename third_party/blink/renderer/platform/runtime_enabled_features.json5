@@ -3390,10 +3390,6 @@
       base_feature: "none",
     },
     {
-      name: "SimplifiedClearPropertyTreeChange",
-      status: "stable",
-    },
-    {
       name: "SiteInitiatedMirroring",
       status: "experimental",
       base_feature: "none",

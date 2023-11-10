@@ -2688,11 +2688,6 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
     }
   }
 
-  if (!RuntimeEnabledFeatures::SimplifiedClearPropertyTreeChangeEnabled() &&
-      paint_artifact_compositor_) {
-    paint_artifact_compositor_->ClearPropertyTreeChangedState();
-  }
-
   if (GetPage())
     GetPage()->Animator().ReportFrameAnimations(GetCompositorAnimationHost());
 }
