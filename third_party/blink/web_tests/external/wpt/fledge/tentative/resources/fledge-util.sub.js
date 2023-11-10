@@ -34,10 +34,10 @@ const OTHER_ORIGIN7 = 'https://{{hosts[alt][www]}}:{{ports[https][1]}}';
 // `id` will always be the last query parameter.
 function createTrackerURL(origin, uuid, dispatch, id = null) {
   let url = new URL(`${origin}${BASE_PATH}resources/request-tracker.py`);
-  url.searchParams.append('uuid', uuid);
-  url.searchParams.append('dispatch', dispatch);
+  let search = `uuid=${uuid}&dispatch=${dispatch}`;
   if (id)
-    url.searchParams.append('id', id);
+    search += `&id=${id}`;
+  url.search = search;
   return url.toString();
 }
 

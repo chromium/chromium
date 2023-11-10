@@ -45,7 +45,7 @@ function createBiddingScriptURLWithCurrency(uuid, currency) {
     allowComponentAuction: true,
     reportWin: `
         sendReportTo('${createBidderReportURL(uuid, /*id=*/ '')}' +
-                     browserSignals.bid + encodeURIComponent(browserSignals.bidCurrency));`,
+                     browserSignals.bid + browserSignals.bidCurrency);`,
   });
 }
 
@@ -57,12 +57,17 @@ function createBiddingScriptURLForHighestScoringOther(uuid, bid, currency) {
     bid: bid,
     bidCurrency: currency,
     allowComponentAuction: true,
+    generateBid: `
+      forDebuggingOnly.reportAdAuctionWin(
+          '${createBidderReportURL(uuid, /*id=*/ 'dbg_')}' +
+          '\${winningBid}\${winningBidCurrency}_' +
+          '\${highestScoringOtherBid}\${highestScoringOtherBidCurrency}');`,
     reportWin: `
         sendReportTo(
             '${createBidderReportURL(uuid, /*id=*/ '')}' +
-            browserSignals.bid + encodeURIComponent(browserSignals.bidCurrency) +
+            browserSignals.bid + browserSignals.bidCurrency +
             '_' + browserSignals.highestScoringOtherBid +
-            encodeURIComponent(browserSignals.highestScoringOtherBidCurrency));`,
+            browserSignals.highestScoringOtherBidCurrency);`,
   });
 }
 
@@ -73,7 +78,7 @@ function createDecisionURLExpectCurrency(uuid, currencyInScore) {
               throw 'Wrong currency';`,
     reportResult: `
           sendReportTo('${createSellerReportURL(uuid, /*id=*/ '')}' +
-                         browserSignals.bid + encodeURIComponent(browserSignals.bidCurrency)   );`,
+                         browserSignals.bid + browserSignals.bidCurrency);`,
   });
 }
 
@@ -87,6 +92,10 @@ function createDecisionURLForHighestScoringOther(
     uuid, conversion = '', suffix = '') {
   return createDecisionScriptURL(uuid, {
     scoreAd: `
+      forDebuggingOnly.reportAdAuctionWin(
+          '${createSellerReportURL(uuid, /*id=*/ 'dbg_')}' + '${suffix}' +
+          '\${winningBid}\${winningBidCurrency}_' +
+          '\${highestScoringOtherBid}\${highestScoringOtherBidCurrency}');
       let converted = undefined;
       let modified = undefined;
       let modifiedCurrency = undefined;
@@ -100,9 +109,9 @@ function createDecisionURLForHighestScoringOther(
     reportResult: `
         sendReportTo(
             '${createSellerReportURL(uuid, /*id=*/ '')}' + '${suffix}' +
-            browserSignals.bid + encodeURIComponent(browserSignals.bidCurrency) +
+            browserSignals.bid + browserSignals.bidCurrency +
             '_' + browserSignals.highestScoringOtherBid +
-            encodeURIComponent(browserSignals.highestScoringOtherBidCurrency));`,
+            browserSignals.highestScoringOtherBidCurrency);`,
   });
 }
 
@@ -127,7 +136,7 @@ async function runCurrencyComponentAuction(test, uuid, params = {}) {
     decisionLogicURL: createDecisionScriptURL(uuid, {
       reportResult: `
         sendReportTo('${createSellerReportURL(uuid, 'top_')}' +
-                     browserSignals.bid + encodeURIComponent(browserSignals.bidCurrency))`,
+                     browserSignals.bid + browserSignals.bidCurrency)`,
       ...params.topLevelSellerScriptParamsOverride
     }),
     componentAuctions: [{
@@ -135,7 +144,7 @@ async function runCurrencyComponentAuction(test, uuid, params = {}) {
       decisionLogicURL: createDecisionScriptURL(uuid, {
         reportResult: `
           sendReportTo('${createSellerReportURL(uuid, 'component_')}' +
-                       browserSignals.bid + encodeURIComponent(browserSignals.bidCurrency))`,
+                       browserSignals.bid + browserSignals.bidCurrency)`,
         ...params.componentSellerScriptParamsOverride
       }),
       interestGroupBuyers: [ORIGIN],
@@ -688,9 +697,13 @@ subsetTest(promise_test, async test => {
       {decisionLogicURL: createDecisionURLForHighestScoringOther(uuid)});
   await waitForObservedRequests(uuid, [
     createSellerReportURL(uuid, '10???_9???'),
-    createBidderReportURL(uuid, '10???_9???')
+    createBidderReportURL(uuid, '10???_9???'),
+    // w/o sellerCurrency set, forDebuggingOnly reports original values and ???
+    // as tags.
+    createSellerReportURL(uuid, 'dbg_10???_9???'),
+    createBidderReportURL(uuid, 'dbg_10???_9???')
   ]);
-}, 'highestScoringOtherBid with no sellerCurrency set.');
+}, 'Converted currency use with no sellerCurrency set.');
 
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
@@ -701,9 +714,13 @@ subsetTest(promise_test, async test => {
   });
   await waitForObservedRequests(uuid, [
     createSellerReportURL(uuid, '10???_9USD'),
-    createBidderReportURL(uuid, '10???_9USD')
+    createBidderReportURL(uuid, '10???_9USD'),
+    // w/sellerCurrency set, forDebuggingOnly reports converted bids +
+    // sellerCurrency.
+    createSellerReportURL(uuid, 'dbg_10USD_9USD'),
+    createBidderReportURL(uuid, 'dbg_10USD_9USD')
   ]);
-}, 'highestScoringOtherBid with sellerCurrency set matching.');
+}, 'Converted currency use with sellerCurrency set matching.');
 
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
@@ -714,9 +731,12 @@ subsetTest(promise_test, async test => {
   });
   await waitForObservedRequests(uuid, [
     createSellerReportURL(uuid, '10???_0EUR'),
-    createBidderReportURL(uuid, '10???_0EUR')
+    createBidderReportURL(uuid, '10???_0EUR'),
+    // sellerCurrency set, and no bid available in it: get 0s.
+    createSellerReportURL(uuid, 'dbg_0EUR_0EUR'),
+    createBidderReportURL(uuid, 'dbg_0EUR_0EUR')
   ]);
-}, 'highestScoringOtherBid with sellerCurrency different, no conversion.');
+}, 'Converted currency use with sellerCurrency different, no conversion.');
 
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
@@ -728,9 +748,12 @@ subsetTest(promise_test, async test => {
   });
   await waitForObservedRequests(uuid, [
     createSellerReportURL(uuid, '10???_27EUR'),
-    createBidderReportURL(uuid, '10???_27EUR')
+    createBidderReportURL(uuid, '10???_27EUR'),
+    // sellerCurrency set, converted bids.
+    createSellerReportURL(uuid, 'dbg_30EUR_27EUR'),
+    createBidderReportURL(uuid, 'dbg_30EUR_27EUR')
   ]);
-}, 'highestScoringOtherBid with sellerCurrency different, conversion.');
+}, 'Converted currency use with sellerCurrency different, conversion.');
 
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
@@ -747,7 +770,12 @@ subsetTest(promise_test, async test => {
   await waitForObservedRequests(uuid, [
     createSellerReportURL(uuid, 'top_11EUR_0???'),
     createSellerReportURL(uuid, 'component_10???_0EUR'),
-    createBidderReportURL(uuid, '10???_0EUR')
+    createBidderReportURL(uuid, '10???_0EUR'),
+    // forDebuggingOnly info w/sellerCurrency set relies on conversion;
+    // but sellerCurrency is on component auction only.
+    createBidderReportURL(uuid, 'dbg_0EUR_0EUR'),
+    createSellerReportURL(uuid, 'dbg_component_0EUR_0EUR'),
+    createSellerReportURL(uuid, 'dbg_top_11???_0???'),
   ]);
 }, 'Modified bid does not act in place of incomingBidInSellerCurrency.');
 
@@ -767,7 +795,12 @@ subsetTest(promise_test, async test => {
   await waitForObservedRequests(uuid, [
     createSellerReportURL(uuid, 'top_11EUR_0???'),
     createSellerReportURL(uuid, 'component_10???_8EUR'),
-    createBidderReportURL(uuid, '10???_8EUR')
+    createBidderReportURL(uuid, '10???_8EUR'),
+    // Debug at component shows converted; top-level has no sellerCurrency,
+    // so shows modified.
+    createBidderReportURL(uuid, 'dbg_9EUR_8EUR'),
+    createSellerReportURL(uuid, 'dbg_component_9EUR_8EUR'),
+    createSellerReportURL(uuid, 'dbg_top_11???_0???'),
   ]);
 }, 'Both modified bid and incomingBidInSellerCurrency.');
 
@@ -782,15 +815,17 @@ subsetTest(promise_test, async test => {
         topLevelAuctionConfigOverrides: {sellerCurrency: 'EUR'},
         topLevelConversion: `converted = 3 * bid;`,
       });
-  // Note that since highestScoringOtherBid isn't available at top-level, one
-  // can't actually observe the effect of conversion with just sendReportTo(),
-  // but error-checking for it still happens.
   expectSuccess(result);
   createAndNavigateFencedFrame(test, result);
   await waitForObservedRequests(uuid, [
     createSellerReportURL(uuid, 'top_11???_0???'),
     createSellerReportURL(uuid, 'component_10???_9???'),
-    createBidderReportURL(uuid, '10???_9???')
+    createBidderReportURL(uuid, '10???_9???'),
+    // No sellerCurrency at component; debug at top-level shows the result of
+    // conversion.
+    createBidderReportURL(uuid, 'dbg_10???_9???'),
+    createSellerReportURL(uuid, 'dbg_component_10???_9???'),
+    createSellerReportURL(uuid, 'dbg_top_33EUR_0???'),
   ]);
 }, 'incomingBidInSellerCurrency at top-level trying to convert is OK.');
 
@@ -826,7 +861,12 @@ subsetTest(promise_test, async test => {
   await waitForObservedRequests(uuid, [
     createSellerReportURL(uuid, 'top_11???_0???'),
     createSellerReportURL(uuid, 'component_10???_9???'),
-    createBidderReportURL(uuid, '10???_9???')
+    createBidderReportURL(uuid, '10???_9???'),
+    // No sellerCurrency at component; debug at top-level shows the result of
+    // no-op conversion.
+    createBidderReportURL(uuid, 'dbg_10???_9???'),
+    createSellerReportURL(uuid, 'dbg_component_10???_9???'),
+    createSellerReportURL(uuid, 'dbg_top_11EUR_0???'),
   ]);
 }, 'incomingBidInSellerCurrency at top-level doing a no-op conversion OK.');
 
