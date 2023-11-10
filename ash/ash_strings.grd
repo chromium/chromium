@@ -2489,12 +2489,6 @@ Style notes:
       <message name="IDS_ASH_DESKS_TEMPLATES_MANAGEMENT_STATUS_DESCRIPTION" desc="The text of the description under template item if the desks templates is shared by the administrator.">
         Shared by your administrator
       </message>
-      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_LABEL" desc="The label visible above template items in the saved desk library.">
-        Templates
-      </message>
-      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_LABEL" desc="The label visible above the save and recall items in the saved desk library.">
-        Saved for later
-      </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_NO_TEMPLATES_OR_DESKS_LABEL" desc="The text that shows in the saved desk library when there are no saved desks or templates.">
         No saved desks or templates
       </message>

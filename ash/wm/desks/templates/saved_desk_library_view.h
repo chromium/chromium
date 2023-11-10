@@ -6,7 +6,6 @@
 #define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_LIBRARY_VIEW_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -119,10 +118,6 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
 
   // Holds the active ones, for convenience.
   std::vector<SavedDeskGridView*> grid_views_;
-
-  // Owned by views hierarchy. Section headers above grids. Will match size and
-  // order of items in `grid_views_`.
-  std::vector<views::Label*> grid_labels_;
 
   // Label that shows up when the library has no items.
   raw_ptr<views::Label, ExperimentalAsh> no_items_label_ = nullptr;
