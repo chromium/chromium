@@ -442,10 +442,7 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
     return owning_thread_data_;
   }
 
-  // Can be read on any thread but updated only on the owning thread.
-  const gpu::Mailbox& mailbox() const {
-    return owning_thread_data_.client_shared_image->mailbox();
-  }
+  // Can be read on any thread.
   gpu::ClientSharedImage* client_shared_image() const {
     return owning_thread_data_.client_shared_image.get();
   }
@@ -476,6 +473,9 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   const bool supports_display_compositing_;
   const GLenum texture_target_;
   const bool use_oop_rasterization_;
+  // TODO(crbug.com/1494911): Remove this field once GetOrCreateGpuMailbox() is
+  // converted to return ClientSharedImage.
+  const gpu::Mailbox empty_mailbox_;
 
   // Note that SharedImageInterface is supposed to be used via
   // |context_provider_wrapper_| to ensure that only owning thread can access
