@@ -109,7 +109,8 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
         EventType.LIVE_REGION_CHANGED,
         event => this.onLiveRegionChanged_(event));
 
-    this.addListener_(EventType.LOAD_COMPLETE, this.onLoadComplete);
+    this.addListener_(
+        EventType.LOAD_COMPLETE, event => this.onLoadComplete_(event));
     this.addListener_(EventType.FOCUS_AFTER_MENU_CLOSE, this.onMenuEnd);
     this.addListener_(EventType.MENU_START, event => {
       Output.forceModeForNextSpeechUtterance(QueueMode.CATEGORY_FLUSH);
@@ -373,8 +374,9 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
   /**
    * Provides all feedback once a load complete event fires.
    * @param {!ChromeVoxEvent} evt
+   * @private
    */
-  onLoadComplete(evt) {
+  onLoadComplete_(evt) {
     // We are only interested in load completes on valid top level roots.
     const top = AutomationUtil.getTopLevelRoot(evt.target);
     if (!top || top !== evt.target.root || !top.docUrl) {
