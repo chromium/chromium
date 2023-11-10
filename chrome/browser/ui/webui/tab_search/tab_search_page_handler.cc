@@ -157,6 +157,14 @@ tab_search::mojom::TabOrganizationSessionPtr CreateFailedMojoSession() {
   return mojo_session;
 }
 
+tab_search::mojom::TabOrganizationSessionPtr CreateNotStartedMojoSession() {
+  tab_search::mojom::TabOrganizationSessionPtr mojo_session =
+      tab_search::mojom::TabOrganizationSession::New();
+  mojo_session->state = tab_search::mojom::TabOrganizationState::kNotStarted;
+
+  return mojo_session;
+}
+
 }  // namespace
 
 TabSearchPageHandler::TabSearchPageHandler(
@@ -958,7 +966,7 @@ void TabSearchPageHandler::OnTabOrganizationSessionDestroyed(
     }
   }
 
-  page_->TabOrganizationSessionUpdated(CreateFailedMojoSession());
+  page_->TabOrganizationSessionUpdated(CreateNotStartedMojoSession());
 }
 
 bool TabSearchPageHandler::ShouldTrackBrowser(Browser* browser) {
