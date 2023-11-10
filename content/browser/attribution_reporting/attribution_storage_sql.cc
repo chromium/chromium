@@ -1270,16 +1270,6 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
 
   const CommonSourceInfo& common_info = source.common_info();
 
-  switch (source.event_report_windows().FallsWithin(attribution_info.time -
-                                                    source.source_time())) {
-    case EventReportWindows::WindowResult::kFallsWithin:
-      break;
-    case EventReportWindows::WindowResult::kNotStarted:
-      return EventLevelResult::kReportWindowNotStarted;
-    case EventReportWindows::WindowResult::kPassed:
-      return EventLevelResult::kReportWindowPassed;
-  }
-
   const SourceType source_type = common_info.source_type();
 
   auto event_trigger = base::ranges::find_if(
@@ -1302,6 +1292,16 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
       return EventLevelResult::kDeduplicated;
     case ReportAlreadyStoredStatus::kError:
       return EventLevelResult::kInternalError;
+  }
+
+  switch (source.event_report_windows().FallsWithin(attribution_info.time -
+                                                    source.source_time())) {
+    case EventReportWindows::WindowResult::kFallsWithin:
+      break;
+    case EventReportWindows::WindowResult::kNotStarted:
+      return EventLevelResult::kReportWindowNotStarted;
+    case EventReportWindows::WindowResult::kPassed:
+      return EventLevelResult::kReportWindowPassed;
   }
 
   uint64_t trigger_data;

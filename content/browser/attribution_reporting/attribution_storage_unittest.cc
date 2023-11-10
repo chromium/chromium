@@ -3978,4 +3978,25 @@ TEST_F(AttributionStorageTest, TriggerDataMatching) {
   }
 }
 
+TEST_F(AttributionStorageTest, EventLevelDedupBeforeWindowCheck) {
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetEventReportWindows(
+              *attribution_reporting::EventReportWindows::Create(
+                  base::Milliseconds(0), {base::Hours(1)}))
+          .Build());
+
+  ASSERT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder().SetDedupKey(11).Build()));
+
+  task_environment_.FastForwardBy(base::Hours(1) + base::Microseconds(1));
+
+  // Prior to addressing crbug.com/1499913 this returned
+  // `AttributionTrigger::EventLevelResult::kReportWindowPassed`
+  ASSERT_EQ(AttributionTrigger::EventLevelResult::kDeduplicated,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder().SetDedupKey(11).Build()));
+}
+
 }  // namespace content

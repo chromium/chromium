@@ -1,0 +1,105 @@
+{
+  // https://github.com/WICG/attribution-reporting-api/pull/1092
+  "description": "deduplication happens before report window check",
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "event_report_window": 3600
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [
+                  {
+                    "deduplication_key": "1"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "3600001",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [
+                  {
+                    "deduplication_key": "1"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "unparsable_registrations": [],
+    "reports": [
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0001372,
+          "scheduled_report_time": "3600",
+          "source_event_id": "0",
+          "source_type": "navigation",
+          "trigger_data": "0"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "3600000"
+      },
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "0",
+              "source_site": "https://source.test"
+            },
+            "type": "trigger-event-deduplicated"
+          }
+        ],
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose",
+        "report_time": "3600001"
+      }
+    ]
+  }
+}

@@ -5552,6 +5552,7 @@ data/attribution_reporting/interop/basic.json
 data/attribution_reporting/interop/basic_aggregatable.json
 data/attribution_reporting/interop/channel_capacity.json
 data/attribution_reporting/interop/dedup_key.json
+data/attribution_reporting/interop/dedup_key_report_window_ordering.json
 data/attribution_reporting/interop/deduplication_sequence.json
 data/attribution_reporting/interop/default_config.json
 data/attribution_reporting/interop/destination_limit.json
