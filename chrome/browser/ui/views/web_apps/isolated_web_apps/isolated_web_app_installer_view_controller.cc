@@ -117,7 +117,6 @@ bool IsolatedWebAppInstallerViewController::OnAcceptWrapper(
 
 // Returns true if the dialog should be closed.
 bool IsolatedWebAppInstallerViewController::OnAccept() {
-  // TODO(crbug.com/1479140): Implement
   switch (model_->step()) {
     case IsolatedWebAppInstallerModel::Step::kConfirmInstall: {
       IsolatedWebAppInstallerModel::LinkInfo learn_more_link = {
@@ -132,6 +131,10 @@ bool IsolatedWebAppInstallerViewController::OnAccept() {
       OnModelChanged();
       return false;
     }
+
+    case IsolatedWebAppInstallerModel::Step::kInstallSuccess:
+      // TODO(crbug.com/1479140): Launch the app.
+      break;
 
     default:
       NOTREACHED();
@@ -236,7 +239,6 @@ void IsolatedWebAppInstallerViewController::OnModelChanged() {
     return;
   }
 
-  // TODO(crbug.com/1479140): Configure Install/Cancel buttons for all screens
   switch (model_->step()) {
     case IsolatedWebAppInstallerModel::Step::kDisabled:
       IsolatedWebAppInstallerView::SetDialogButtons(
@@ -266,6 +268,9 @@ void IsolatedWebAppInstallerViewController::OnModelChanged() {
       break;
 
     case IsolatedWebAppInstallerModel::Step::kInstallSuccess:
+      IsolatedWebAppInstallerView::SetDialogButtons(
+          dialog_delegate_, IDS_IWA_INSTALLER_SUCCESS_FINISH,
+          IDS_IWA_INSTALLER_SUCCESS_LAUNCH_APPLICATION);
       view_->ShowInstallSuccessScreen(model_->bundle_metadata());
       break;
   }

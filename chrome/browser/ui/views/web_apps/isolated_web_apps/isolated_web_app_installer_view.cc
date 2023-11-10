@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -82,6 +83,22 @@ ui::ImageModel CreateImageModelFromBundleMetadata(
   return ui::ImageModel::FromImageSkia(icon_image);
 }
 
+// Implicitly converts an id or raw string to a string. Used as an argument to
+// functions that need a string, but want to accept either ids or raw strings.
+class ToU16String {
+ public:
+  // NOLINTNEXTLINE(runtime/explicit)
+  ToU16String(int string_id) : string_(l10n_util::GetStringUTF16(string_id)) {}
+
+  // NOLINTNEXTLINE(runtime/explicit)
+  ToU16String(const std::u16string& string) : string_(string) {}
+
+  const std::u16string& get() const { return string_; }
+
+ private:
+  std::u16string string_;
+};
+
 // A View that displays key/value entries in a pane with a different
 // background color and a rounded border.
 class InfoPane : public views::BoxLayoutView {
@@ -123,25 +140,13 @@ class InstallerDialogView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(InstallerDialogView);
 
-  // The message_id of the link's body and a callback to run when it's clicked.
-  using LinkInfo = std::pair<int, base::RepeatingClosure>;
-
-  InstallerDialogView(const ui::ImageModel& icon_model,
-                      int title_id,
-                      int subtitle_id,
-                      absl::optional<LinkInfo> subtitle_link = absl::nullopt,
-                      std::unique_ptr<views::View> contents_view = nullptr)
-      : InstallerDialogView(icon_model,
-                            l10n_util::GetStringUTF16(title_id),
-                            subtitle_id,
-                            subtitle_link,
-                            std::move(contents_view)) {}
-
-  InstallerDialogView(const ui::ImageModel& icon_model,
-                      const std::u16string& title,
-                      int subtitle_id,
-                      absl::optional<LinkInfo> subtitle_link = absl::nullopt,
-                      std::unique_ptr<views::View> contents_view = nullptr) {
+  InstallerDialogView(
+      const ui::ImageModel& icon_model,
+      const ToU16String& title,
+      int subtitle_id,
+      absl::optional<ToU16String> subtitle_param = absl::nullopt,
+      absl::optional<base::RepeatingClosure> subtitle_link_callback =
+          absl::nullopt) {
     ConfigureBoxLayoutView(this);
 
     auto* icon = AddChildView(std::make_unique<NonAccessibleImageView>());
@@ -151,27 +156,30 @@ class InstallerDialogView : public views::BoxLayoutView {
     views::StyledLabel* title_label =
         AddChildView(CreateLabelWithContextAndStyle(
             views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
-    title_label->SetText(title);
+    title_label->SetText(title.get());
 
     views::StyledLabel* subtitle = AddChildView(CreateLabelWithContextAndStyle(
         views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
-    if (subtitle_link.has_value()) {
-      std::u16string link_text =
-          l10n_util::GetStringUTF16(subtitle_link->first);
+    if (subtitle_param.has_value()) {
       size_t offset;
-      subtitle->SetText(
-          l10n_util::GetStringFUTF16(subtitle_id, link_text, &offset));
-      subtitle->AddStyleRange(gfx::Range(offset, offset + link_text.length()),
-                              views::StyledLabel::RangeStyleInfo::CreateForLink(
-                                  subtitle_link->second));
+      subtitle->SetText(l10n_util::GetStringFUTF16(
+          subtitle_id, subtitle_param->get(), &offset));
+      if (subtitle_link_callback.has_value()) {
+        subtitle->AddStyleRange(
+            gfx::Range(offset, offset + subtitle_param->get().length()),
+            views::StyledLabel::RangeStyleInfo::CreateForLink(
+                *subtitle_link_callback));
+      }
     } else {
       subtitle->SetText(l10n_util::GetStringUTF16(subtitle_id));
     }
+  }
 
-    if (contents_view) {
-      views::View* contents = AddChildView(std::move(contents_view));
-      SetFlexForView(contents, 1);
-    }
+  template <typename T>
+  T* SetContentsView(std::unique_ptr<T> contents_view) {
+    T* contents = AddChildView(std::move(contents_view));
+    SetFlexForView(contents, 1);
+    return contents;
   }
 };
 BEGIN_METADATA(InstallerDialogView, views::BoxLayoutView)
@@ -205,20 +213,24 @@ IsolatedWebAppInstallerView::IsolatedWebAppInstallerView(Delegate* delegate)
 IsolatedWebAppInstallerView::~IsolatedWebAppInstallerView() = default;
 
 void IsolatedWebAppInstallerView::ShowDisabledScreen() {
-  InstallerDialogView::LinkInfo link(
-      IDS_IWA_INSTALLER_DISABLED_CHANGE_PREFERENCE,
-      base::BindRepeating(&Delegate::OnSettingsLinkClicked,
-                          base::Unretained(delegate_)));
   ShowScreen(std::make_unique<InstallerDialogView>(
       CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
                                  ui::kColorAlertMediumSeverityIcon),
       IDS_IWA_INSTALLER_DISABLED_TITLE, IDS_IWA_INSTALLER_DISABLED_SUBTITLE,
-      link));
+      IDS_IWA_INSTALLER_DISABLED_CHANGE_PREFERENCE,
+      base::BindRepeating(&Delegate::OnSettingsLinkClicked,
+                          base::Unretained(delegate_))));
 }
 
 void IsolatedWebAppInstallerView::ShowGetMetadataScreen() {
-  auto progress_view = std::make_unique<views::BoxLayoutView>();
-  ConfigureBoxLayoutView(progress_view.get());
+  auto view = std::make_unique<InstallerDialogView>(
+      CreateImageModelFromVector(kFingerprintIcon, ui::kColorAccent),
+      IDS_IWA_INSTALLER_VERIFICATION_TITLE,
+      IDS_IWA_INSTALLER_VERIFICATION_SUBTITLE);
+
+  auto* progress_view =
+      view->SetContentsView(std::make_unique<views::BoxLayoutView>());
+  ConfigureBoxLayoutView(progress_view);
   progress_view->SetInsideBorderInsets(
       gfx::Insets::VH(0, kProgressViewHorizontalPadding));
 
@@ -229,12 +241,7 @@ void IsolatedWebAppInstallerView::ShowGetMetadataScreen() {
       l10n_util::GetPluralStringFUTF16(IDS_IWA_INSTALLER_VERIFICATION_STATUS,
                                        0)));
 
-  ShowScreen(std::make_unique<InstallerDialogView>(
-                 CreateImageModelFromVector(kFingerprintIcon, ui::kColorAccent),
-                 IDS_IWA_INSTALLER_VERIFICATION_TITLE,
-                 IDS_IWA_INSTALLER_VERIFICATION_SUBTITLE,
-                 /*subtitle_link=*/absl::nullopt, std::move(progress_view)),
-             progress_bar);
+  ShowScreen(std::move(view), progress_bar);
 }
 
 void IsolatedWebAppInstallerView::UpdateGetMetadataProgress(
@@ -246,27 +253,33 @@ void IsolatedWebAppInstallerView::UpdateGetMetadataProgress(
 
 void IsolatedWebAppInstallerView::ShowMetadataScreen(
     const SignedWebBundleMetadata& bundle_metadata) {
+  auto view = std::make_unique<InstallerDialogView>(
+      CreateImageModelFromBundleMetadata(bundle_metadata),
+      bundle_metadata.app_name(), IDS_IWA_INSTALLER_SHOW_METADATA_SUBTITLE,
+      IDS_IWA_INSTALLER_SHOW_METADATA_MANAGE_PROFILES,
+      base::BindRepeating(&Delegate::OnManageProfilesLinkClicked,
+                          base::Unretained(delegate_)));
+
   std::vector<std::pair<int, std::u16string>> info = {
       {IDS_IWA_INSTALLER_SHOW_METADATA_APP_NAME_LABEL,
        bundle_metadata.app_name()},
       {IDS_IWA_INSTALLER_SHOW_METADATA_APP_VERSION_LABEL,
        base::UTF8ToUTF16(bundle_metadata.version().GetString())},
   };
-  auto app_info = std::make_unique<InfoPane>(info);
-  InstallerDialogView::LinkInfo link(
-      IDS_IWA_INSTALLER_SHOW_METADATA_MANAGE_PROFILES,
-      base::BindRepeating(&Delegate::OnManageProfilesLinkClicked,
-                          base::Unretained(delegate_)));
-  ShowScreen(std::make_unique<InstallerDialogView>(
-      CreateImageModelFromBundleMetadata(bundle_metadata),
-      bundle_metadata.app_name(), IDS_IWA_INSTALLER_SHOW_METADATA_SUBTITLE,
-      link, std::move(app_info)));
+  view->SetContentsView(std::make_unique<InfoPane>(info));
+
+  ShowScreen(std::move(view));
 }
 
 void IsolatedWebAppInstallerView::ShowInstallScreen(
     const SignedWebBundleMetadata& bundle_metadata) {
-  auto progress_view = std::make_unique<views::BoxLayoutView>();
-  ConfigureBoxLayoutView(progress_view.get());
+  auto view = std::make_unique<InstallerDialogView>(
+      CreateImageModelFromBundleMetadata(bundle_metadata),
+      bundle_metadata.app_name(), IDS_IWA_INSTALLER_INSTALL_SUBTITLE);
+
+  auto* progress_view =
+      view->SetContentsView(std::make_unique<views::BoxLayoutView>());
+  ConfigureBoxLayoutView(progress_view);
   progress_view->SetInsideBorderInsets(
       gfx::Insets::VH(0, kProgressViewHorizontalPadding));
 
@@ -276,11 +289,7 @@ void IsolatedWebAppInstallerView::ShowInstallScreen(
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY,
       l10n_util::GetStringUTF16(IDS_IWA_INSTALLER_INSTALL_PROGRESS)));
 
-  ShowScreen(std::make_unique<InstallerDialogView>(
-                 CreateImageModelFromBundleMetadata(bundle_metadata),
-                 bundle_metadata.app_name(), IDS_IWA_INSTALLER_INSTALL_SUBTITLE,
-                 /*subtitle_link=*/absl::nullopt, std::move(progress_view)),
-             progress_bar);
+  ShowScreen(std::move(view), progress_bar);
 }
 
 void IsolatedWebAppInstallerView::UpdateInstallProgress(double percent,
@@ -291,7 +300,10 @@ void IsolatedWebAppInstallerView::UpdateInstallProgress(double percent,
 
 void IsolatedWebAppInstallerView::ShowInstallSuccessScreen(
     const SignedWebBundleMetadata& bundle_metadata) {
-  // TODO(crbug.com/1479140): Implement
+  ShowScreen(std::make_unique<InstallerDialogView>(
+      CreateImageModelFromBundleMetadata(bundle_metadata),
+      bundle_metadata.app_name(), IDS_IWA_INSTALLER_SUCCESS_SUBTITLE,
+      bundle_metadata.app_name()));
 }
 
 void IsolatedWebAppInstallerView::ShowScreen(
@@ -323,13 +335,20 @@ void IsolatedWebAppInstallerView::ShowDialog(
           views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   bubble_delegate->set_close_on_deactivate(false);
 
-  bubble_delegate->SetContentsView(std::make_unique<InstallerDialogView>(
+  ui::ImageModel image =
       dialog_content.is_error
           ? CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
                                        ui::kColorAlertMediumSeverityIcon)
-          : CreateImageModelFromVector(kSecurityIcon, ui::kColorAccent),
-      dialog_content.message, dialog_content.details,
-      dialog_content.details_link));
+          : CreateImageModelFromVector(kSecurityIcon, ui::kColorAccent);
+  if (dialog_content.details_link.has_value()) {
+    bubble_delegate->SetContentsView(std::make_unique<InstallerDialogView>(
+        image, dialog_content.message, dialog_content.details,
+        dialog_content.details_link->first,
+        dialog_content.details_link->second));
+  } else {
+    bubble_delegate->SetContentsView(std::make_unique<InstallerDialogView>(
+        image, dialog_content.message, dialog_content.details));
+  }
 
   SetDialogButtons(bubble_delegate.get(), IDS_APP_CLOSE,
                    dialog_content.accept_message);
