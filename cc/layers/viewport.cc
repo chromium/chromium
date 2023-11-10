@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "cc/input/browser_controls_offset_manager.h"
+#include "cc/input/snap_selection_strategy.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/scroll_node.h"
@@ -91,6 +92,33 @@ bool Viewport::CanScroll(const ScrollNode& node,
   result |= host_impl_->GetInputHandler().CanConsumeDelta(scroll_state,
                                                           *OuterScrollNode());
   return result;
+}
+
+void Viewport::SnapIfNeeded() {
+  ScrollNode* scroll_node = OuterScrollNode();
+  if (!scroll_node || !scroll_node->snap_container_data.has_value()) {
+    return;
+  }
+
+  if (scroll_node == scroll_tree().CurrentlyScrollingNode()) {
+    // If there is an in-progress scroll gesture, InputHandler will take care of
+    // snapping at the end.
+    return;
+  }
+
+  SnapContainerData& data = scroll_node->snap_container_data.value();
+  gfx::PointF current_position = TotalScrollOffset();
+
+  SnapPositionData snap = data.FindSnapPosition(
+      *SnapSelectionStrategy::CreateForTargetElement(current_position));
+  if (snap.type == SnapPositionData::Type::kNone) {
+    return;
+  }
+
+  gfx::Vector2dF delta = snap.position - current_position;
+  delta.Scale(host_impl_->active_tree()->page_scale_factor_for_scroll());
+
+  ScrollBy(delta, gfx::Point(), false, false, true);
 }
 
 gfx::Vector2dF Viewport::ComputeClampedDelta(

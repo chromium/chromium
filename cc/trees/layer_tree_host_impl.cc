@@ -4293,6 +4293,12 @@ bool LayerTreeHostImpl::AnimateBrowserControls(base::TimeTicks time) {
                       /*is_wheel_scroll=*/false,
                       /*affect_browser_controls=*/false,
                       /*scroll_outer_viewport=*/true);
+
+  // If the viewport has scroll snap styling, we may need to snap after
+  // scrolling it. Browser controls animations may happen after scrollend, so
+  // it is too late for InputHandler to do the snapping.
+  viewport().SnapIfNeeded();
+
   client_->SetNeedsCommitOnImplThread();
   client_->RenewTreePriority();
   return true;

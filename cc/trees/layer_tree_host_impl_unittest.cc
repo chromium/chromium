@@ -3043,6 +3043,10 @@ TEST_F(LayerTreeHostImplTest,
   EXPECT_EQ(TargetSnapAreaElementIds(),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 
+  GetInputHandler().ScrollUpdate(UpdateState(pointer_position,
+                                             gfx::Vector2dF(6, 6),
+                                             ui::ScrollInputType::kWheel)
+                                     .get());
   GetInputHandler().ScrollEndForSnapFling(true /* did_finish */);
   EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
   EXPECT_EQ(TargetSnapAreaElementIds(ElementId(10), ElementId(10)),
@@ -3085,7 +3089,7 @@ TEST_F(LayerTreeHostImplTest, SnapFlingAnimationEndWithoutFinishing) {
 
   // The snap targets should not be set if the snap fling did not finish.
   GetInputHandler().ScrollEndForSnapFling(false /* did_finish */);
-  EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_TRUE(GetInputHandler().animating_for_snap_for_testing());
   EXPECT_EQ(TargetSnapAreaElementIds(),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 }
@@ -7244,6 +7248,69 @@ TEST_F(LayerTreeHostImplBrowserControlsTest,
 
   host_impl_->browser_controls_manager()->ScrollEnd();
   GetInputHandler().ScrollEnd();
+}
+
+TEST_F(LayerTreeHostImplBrowserControlsTest,
+       HidingBrowserControlsAdjustsSnapFling) {
+  gfx::Size view_size(100, 100);
+  gfx::Size content_size(100, 1000);
+  gfx::RectF snap_area_1(0, 0, 100, 700);
+  SetupBrowserControlsAndScrollLayerWithVirtualViewport(view_size, view_size,
+                                                        content_size);
+
+  SnapContainerData container(
+      ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
+      gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 900));
+  ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
+  container.AddSnapAreaData(
+      SnapAreaData(start, snap_area_1, false, ElementId(10)));
+  host_impl_->OuterViewportScrollNode()->snap_container_data.emplace(container);
+
+  DrawFrame();
+  EXPECT_VIEWPORT_GEOMETRIES(1.0f);
+
+  LayerTreeImpl* active_tree = host_impl_->active_tree();
+  PropertyTrees* property_trees = active_tree->property_trees();
+  LayerImpl* outer_scroll_layer = OuterViewportScrollLayer();
+  InputHandler& handler = GetInputHandler();
+  gfx::PointF initial_offset, target_offset;
+  gfx::Point position(50, 50);
+  ui::ScrollInputType type = ui::ScrollInputType::kTouchscreen;
+
+  handler.ScrollBegin(&*BeginState(position, gfx::Vector2dF(0, 15), type),
+                      type);
+  handler.ScrollUpdate(&*UpdateState(position, gfx::Vector2dF(0, 15), type));
+
+  // The browser controls, now partially hidden, are consuming all of the scroll
+  // delta so far.
+  EXPECT_FLOAT_EQ(0.7, active_tree->CurrentTopControlsShownRatio());
+  EXPECT_EQ(gfx::Vector2dF(0, 15),
+            property_trees->outer_viewport_container_bounds_delta());
+  EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(outer_scroll_layer));
+
+  // Enter "constrained native fling" mode inside snap_area_1.
+  EXPECT_FALSE(handler.GetSnapFlingInfoAndSetAnimatingSnapTarget(
+      gfx::Vector2dF(0, 30), gfx::Vector2dF(0, 600), &initial_offset,
+      &target_offset));
+
+  // Finish hiding the browser controls and start scrolling the content.
+  handler.ScrollUpdate(&*UpdateState(position, gfx::Vector2dF(0, 435), type));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 400),
+                   CurrentScrollOffset(outer_scroll_layer));
+
+  // Try to scroll past the bottom of snap_area_1.
+  EXPECT_TRUE(handler.GetSnapFlingInfoAndSetAnimatingSnapTarget(
+      gfx::Vector2dF(0, 300), gfx::Vector2dF(0, 1000), &initial_offset,
+      &target_offset));
+
+  // The fling constraint should take us to 550, which aligns with the bottom of
+  // snap_area_1 using the expanded viewport size of 100x150 from hiding browser
+  // controls, even though SnapContainerData is still based on 100x100 viewport.
+  EXPECT_TRUE(handler.animating_for_snap_for_testing());
+  EXPECT_POINTF_EQ(gfx::PointF(0, 400), initial_offset);
+  EXPECT_POINTF_EQ(gfx::PointF(0, 550), target_offset);
+
+  handler.ScrollEnd();
 }
 
 // Ensure that moving the browser controls (i.e. omnibox/url-bar on mobile) on

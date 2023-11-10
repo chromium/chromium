@@ -280,6 +280,10 @@ class CC_EXPORT SnapContainerData {
     return !(*this == other);
   }
 
+  SnapPositionData FindSnapPositionWithViewportAdjustment(
+      const SnapSelectionStrategy& strategy,
+      double snapport_height_adjustment);
+
   SnapPositionData FindSnapPosition(
       const SnapSelectionStrategy& strategy,
       const ElementId& active_element_id = ElementId()) const;
@@ -378,12 +382,16 @@ class CC_EXPORT SnapContainerData {
   bool IsSnappedToArea(const SnapAreaData& area,
                        const gfx::PointF& scroll_offset) const;
 
+  gfx::RectF snapport() const;
+
   // Specifies whether a scroll container is a scroll snap container, how
   // strictly it snaps, and which axes are considered.
   // See https://www.w3.org/TR/css-scroll-snap-1/#scroll-snap-type for details.
   ScrollSnapType scroll_snap_type_;
 
-  // The rect of the snap_container relative to its boundary.
+  // The rect of the snap_container relative to its boundary.  This is the
+  // snapport supplied by Blink; it is subject to browser controls adjustment
+  // through snapport_height_adjustment_.
   gfx::RectF rect_;
 
   // The maximal scroll position of the SnapContainer, in the same coordinate
@@ -403,6 +411,11 @@ class CC_EXPORT SnapContainerData {
   // ElementId(s) will be invalid (ElementId::kInvalidElementId) if the snap
   // container is not snapped to a position.
   TargetSnapAreaElementIds target_snap_area_element_ids_;
+
+  // Transient adjustment to the height of the snapport (rect_) to account for
+  // showing or hiding browser controls during a scroll gesture.  This is only
+  // set while a call to FindSnapPosition is executing.
+  double snapport_height_adjustment_ = 0;
 
   FRIEND_TEST_ALL_PREFIXES(ScrollSnapDataTest, SnapToFocusedElementHorizontal);
   FRIEND_TEST_ALL_PREFIXES(ScrollSnapDataTest, SnapToFocusedElementVertical);

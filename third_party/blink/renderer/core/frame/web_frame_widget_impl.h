@@ -691,6 +691,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // widget.
   bool WillBeDestroyed() const;
 
+  bool IsScrollGestureActive() const;
+
  protected:
   // WidgetBaseClient overrides:
   void WillBeginMainFrame() override;
@@ -1018,6 +1020,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // passed to any new child RenderWidget.
   float page_scale_factor_in_mainframe_ = 1.f;
   bool is_pinch_gesture_active_in_mainframe_ = false;
+
+  bool is_scroll_gesture_active_ = false;
 
   // If set, the (plugin) element which has mouse capture.
   Member<HTMLPlugInElement> mouse_capture_element_;

@@ -961,6 +961,7 @@ class CORE_EXPORT LocalFrameView final
   void DeliverSynchronousIntersectionObservations();
 
   bool RunScrollSnapshotClientSteps();
+  bool ShouldDeferLayoutSnap() const;
 
   bool NotifyResizeObservers();
   bool RunResizeObserverSteps(DocumentLifecycle::LifecycleState target_state);
@@ -1188,6 +1189,11 @@ class CORE_EXPORT LocalFrameView final
   // A set of objects needing snap-area constraint updates. These updates are
   // registered during style/layout, and deferred until the end of layout.
   Member<HeapHashSet<Member<PaintLayerScrollableArea>>> pending_snap_updates_;
+
+  // These are scrollers that had their SnapContainerData changed but still need
+  // to have SnapAfterLayout called. We defer the SnapAfterLayout until the user
+  // has stopped scrolling.
+  Member<HeapHashSet<Member<PaintLayerScrollableArea>>> pending_perform_snap_;
 
   // These are elements that were disconnected while having a remembered
   // size. We need to clear the remembered at resize observer timing,

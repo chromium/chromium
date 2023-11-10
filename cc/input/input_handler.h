@@ -636,6 +636,11 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
 
   std::optional<gfx::PointF> ConstrainFling(gfx::PointF original);
 
+  // Estimate how to adjust the height of the snapport rect based on the state
+  // of browser controls that are being shown or hidden during a scroll gesture
+  // before the Blink WebView is resized to reflect the new state.
+  double PredictViewportBoundsDelta(gfx::Vector2dF scroll_distance);
+
   // The input handler is owned by the delegate so their lifetimes are tied
   // together.
   const raw_ref<CompositorDelegateForInput> compositor_delegate_;

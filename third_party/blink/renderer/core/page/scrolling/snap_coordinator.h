@@ -41,7 +41,8 @@ class CORE_EXPORT SnapCoordinator final {
       const LayoutBox& snap_area,
       const LayoutBox& snap_container);
 
-  static void UpdateSnapContainerData(LayoutBox&);
+  // Returns true if the SnapContainerData actually changed.
+  static bool UpdateSnapContainerData(LayoutBox&);
 };
 
 }  // namespace blink

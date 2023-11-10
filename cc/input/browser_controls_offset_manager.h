@@ -114,6 +114,12 @@ class CC_EXPORT BrowserControlsOffsetManager {
 
   gfx::Vector2dF Animate(base::TimeTicks monotonic_time);
 
+  // Predict what the outer viewport container bounds delta will be as browser
+  // controls are shown or hidden during a scroll gesture before the Blink
+  // WebView is resized to reflect the new state.
+  double PredictViewportBoundsDelta(double current_bounds_delta,
+                                    gfx::Vector2dF scroll_distance);
+
  protected:
   BrowserControlsOffsetManager(BrowserControlsOffsetManagerClient* client,
                                float controls_show_threshold,

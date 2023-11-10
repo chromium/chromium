@@ -88,6 +88,7 @@
 #include "third_party/blink/renderer/core/frame/root_frame_viewport.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
@@ -343,6 +344,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(pending_opacity_updates_);
   visitor->Trace(pending_sticky_updates_);
   visitor->Trace(pending_snap_updates_);
+  visitor->Trace(pending_perform_snap_);
   visitor->Trace(disconnected_elements_with_remembered_size_);
 }
 
@@ -1215,13 +1217,16 @@ void LocalFrameView::ViewportSizeChanged() {
   auto* layout_view = GetLayoutView();
   if (layout_view) {
     // If this is the outermost main frame, we might have got here by
-    // hiding/showing the top controls. In that case, layout won't be
-    // triggered, so we need to clamp the scroll offset here.
+    // hiding/showing the top controls. In that case, layout might not be
+    // triggered, so some things that normally hook into layout need to be
+    // specially notified.
     // TODO(bokan): IsOutermostMainFrame may need to be reevaluated for
     // portals.
     if (GetFrame().IsOutermostMainFrame()) {
-      if (auto* scrollable_area = layout_view->GetScrollableArea())
+      if (auto* scrollable_area = layout_view->GetScrollableArea()) {
         scrollable_area->ClampScrollOffsetAfterOverflowChange();
+        scrollable_area->EnqueueForSnapUpdateIfNeeded();
+      }
     }
 
     layout_view->Layer()->SetNeedsCompositingInputsUpdate();
@@ -2446,6 +2451,18 @@ void LocalFrameView::ClearResizeObserverLimit() {
     resize_controller->ClearMinDepth();
     resize_controller->SetLoopLimitErrorDispatched(false);
   });
+}
+
+bool LocalFrameView::ShouldDeferLayoutSnap() const {
+  // Scrollers that are snap containers normally need to re-snap after layout
+  // changes, but we defer the snap until the user is done scrolling to avoid
+  // fighting with snap animations on the compositor thread.
+  if (auto* web_frame = WebLocalFrameImpl::FromFrame(frame_)) {
+    if (auto* widget = web_frame->LocalRootFrameWidget()) {
+      return widget->IsScrollGestureActive();
+    }
+  }
+  return false;
 }
 
 bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
@@ -5066,9 +5083,22 @@ void LocalFrameView::ExecutePendingSnapUpdates() {
     for (PaintLayerScrollableArea* scrollable_area : *pending_snap_updates_) {
       auto* snap_container = scrollable_area->GetLayoutBox();
       DCHECK(snap_container->IsScrollContainer());
-      SnapCoordinator::UpdateSnapContainerData(*snap_container);
+      if (SnapCoordinator::UpdateSnapContainerData(*snap_container)) {
+        if (!pending_perform_snap_) {
+          pending_perform_snap_ = MakeGarbageCollected<
+              HeapHashSet<Member<PaintLayerScrollableArea>>>();
+        }
+        pending_perform_snap_->insert(scrollable_area);
+      }
     }
     pending_snap_updates_->clear();
+  }
+
+  if (pending_perform_snap_ && !ShouldDeferLayoutSnap()) {
+    for (PaintLayerScrollableArea* scrollable_area : *pending_perform_snap_) {
+      scrollable_area->SnapAfterLayout();
+    }
+    pending_perform_snap_->clear();
   }
 }
 

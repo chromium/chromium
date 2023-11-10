@@ -720,6 +720,33 @@ void BrowserControlsOffsetManager::SetBottomMinHeightOffsetAnimationRange(
       std::make_pair(std::min(from, to), std::max(from, to));
 }
 
+double BrowserControlsOffsetManager::PredictViewportBoundsDelta(
+    double current_bounds_delta,
+    gfx::Vector2dF scroll_distance) {
+  double adjustment = current_bounds_delta;
+  if (scroll_distance.y() > 0 && adjustment > 0) {
+    // We're scrolling down and started to hide controls. Let's assume they're
+    // going to be fully hidden by the end of the fling.
+    if (TopControlsShownRatio() < 1) {
+      adjustment += ContentTopOffset();
+    }
+    if (BottomControlsShownRatio() < 1) {
+      adjustment += ContentBottomOffset();
+    }
+  }
+  if (scroll_distance.y() < 0 && adjustment < 0) {
+    // We're scrolling up and started to show controls. Let's assume they're
+    // going to be fully shown by the end of the fling.
+    if (TopControlsShownRatio() > 0) {
+      adjustment -= TopControlsHeight() - ContentTopOffset();
+    }
+    if (BottomControlsShownRatio() > 0) {
+      adjustment -= BottomControlsHeight() - ContentBottomOffset();
+    }
+  }
+  return adjustment;
+}
+
 // class Animation
 
 BrowserControlsOffsetManager::Animation::Animation() {}

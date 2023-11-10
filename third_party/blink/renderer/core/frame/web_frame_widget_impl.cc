@@ -1339,8 +1339,9 @@ void WebFrameWidgetImpl::SendEndOfScrollEvents(
 
 void WebFrameWidgetImpl::UpdateCompositorScrollState(
     const cc::CompositorCommitData& commit_data) {
+  is_scroll_gesture_active_ = commit_data.is_scroll_active;
   if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl())
-    devtools->SetPageIsScrolling(commit_data.is_scroll_active);
+    devtools->SetPageIsScrolling(is_scroll_gesture_active_);
 
   RecordManipulationTypeCounts(commit_data.manipulation_info);
 
@@ -1361,6 +1362,10 @@ void WebFrameWidgetImpl::UpdateCompositorScrollState(
         commit_data.scroll_end_data.gesture_affects_outer_viewport_scroll,
         commit_data.scroll_latched_element_id);
   }
+}
+
+bool WebFrameWidgetImpl::IsScrollGestureActive() const {
+  return is_scroll_gesture_active_;
 }
 
 WebInputMethodController*
