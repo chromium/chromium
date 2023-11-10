@@ -5,6 +5,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_EXECUTION_CONFIG_INTERPRETER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -14,7 +15,6 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -30,12 +30,22 @@ class OnDeviceModelExecutionConfigInterpreter {
   // Whether there is an on-device model execution config for `feature`.
   bool HasConfigForFeature(proto::ModelExecutionFeature feature) const;
 
-  // Constructs the input string for `feature` and `request`. Will return
-  // absl::nullopt if there is not a valid config for the feature or the request
-  // could not be fulfilled for any reason.
-  absl::optional<std::string> ConstructInputString(
+  struct InputStringConstructionResult {
+    // The input string for the feature and request. Will return
+    // std::nullopt if there is not a valid config for the feature or the
+    // request could not be fulfilled for any reason.
+    std::string input_string;
+
+    // If this is not a request for input context, this returns whether the
+    // existing input context should be ignored for the execution.
+    bool should_ignore_input_context = false;
+  };
+
+  // Constructs the input string for `feature` and `request`.
+  std::optional<InputStringConstructionResult> ConstructInputString(
       proto::ModelExecutionFeature feature,
-      const google::protobuf::MessageLite& request) const;
+      const google::protobuf::MessageLite& request,
+      bool want_input_context) const;
 
  private:
   // Populates `feature_configs_` based on `config`.

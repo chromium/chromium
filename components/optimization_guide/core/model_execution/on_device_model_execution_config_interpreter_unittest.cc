@@ -129,10 +129,11 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
        ConstructInputStringNoOnDeviceConfig) {
   base::test::TestMessage test;
   test.set_test("some test");
-  auto maybe_string = interpreter()->ConstructInputString(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test);
+  auto result = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test,
+      /*want_input_context=*/false);
 
-  EXPECT_FALSE(maybe_string.has_value());
+  EXPECT_FALSE(result);
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
@@ -144,10 +145,11 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
 
   base::test::TestMessage test;
   test.set_test("some test");
-  auto maybe_string = interpreter()->ConstructInputString(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test);
+  auto result = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test,
+      /*want_input_context=*/false);
 
-  EXPECT_FALSE(maybe_string.has_value());
+  EXPECT_FALSE(result);
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
@@ -159,10 +161,11 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
 
   base::test::TestMessage test;
   test.set_test("some test");
-  auto maybe_string = interpreter()->ConstructInputString(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test);
+  auto result = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test,
+      /*want_input_context=*/false);
 
-  EXPECT_FALSE(maybe_string.has_value());
+  EXPECT_FALSE(result);
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
@@ -176,10 +179,11 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
 
   base::test::TestMessage test;
   test.set_test("some test");
-  auto maybe_string = interpreter()->ConstructInputString(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test);
+  auto result = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test,
+      /*want_input_context=*/false);
 
-  EXPECT_FALSE(maybe_string.has_value());
+  EXPECT_FALSE(result);
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
@@ -198,10 +202,36 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
 
   base::test::TestMessage test;
   test.set_test("some test");
-  auto maybe_string = interpreter()->ConstructInputString(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test);
+  auto result = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test,
+      /*want_input_context=*/false);
 
-  EXPECT_FALSE(maybe_string.has_value());
+  EXPECT_FALSE(result);
+}
+
+TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
+       ConstructInputStringSimpleRawStringInputContext) {
+  proto::OnDeviceModelExecutionConfig config;
+  auto* fc = config.add_feature_configs();
+  fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  auto* input_config = fc->mutable_input_config();
+  input_config->set_request_base_name("base.test.TestMessage");
+  auto* substitution = input_config->add_input_context_substitutions();
+  substitution->set_string_template("hello this is a %s");
+  substitution->set_expected_num_args(1);
+  substitution->add_args()->set_raw_string("test");
+  auto* execute_substitution = input_config->add_execute_substitutions();
+  execute_substitution->set_string_template("this should be ignored");
+  UpdateInterpreterWithConfig(config);
+
+  base::test::TestMessage test;
+  test.set_test("some test");
+  auto result = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test,
+      /*want_input_context=*/true);
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->input_string, "hello this is a test");
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
@@ -219,11 +249,13 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
 
   base::test::TestMessage test;
   test.set_test("some test");
-  auto maybe_string = interpreter()->ConstructInputString(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test);
+  auto result = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test,
+      /*want_input_context=*/false);
 
-  ASSERT_TRUE(maybe_string);
-  EXPECT_EQ(*maybe_string, "hello this is a test");
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->input_string, "hello this is a test");
+  EXPECT_FALSE(result->should_ignore_input_context);
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
@@ -234,9 +266,12 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
   auto* input_config = fc->mutable_input_config();
   input_config->set_request_base_name(
       "optimization_guide.proto.ComposeRequest");
+  auto* input_substitutions = input_config->add_input_context_substitutions();
+  input_substitutions->set_string_template("this is ignored");
   auto* substitution = input_config->add_execute_substitutions();
   substitution->set_string_template("hello this is a test: %s %s %s");
   substitution->set_expected_num_args(3);
+  substitution->set_should_ignore_input_context(true);
   auto* proto_field = substitution->add_args()->mutable_proto_field();
   proto_field->add_proto_descriptors()->set_tag_number(2);
   auto* proto_field2 = substitution->add_args()->mutable_proto_field();
@@ -251,12 +286,14 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
   request.set_user_input("this is my input");
   request.mutable_page_metadata()->set_page_title("nested");
   request.mutable_generate_params()->set_user_input("inner type");
-  auto maybe_string = interpreter()->ConstructInputString(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
+  auto result = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, request,
+      /*want_input_context=*/false);
 
-  ASSERT_TRUE(maybe_string);
-  EXPECT_EQ(*maybe_string,
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->input_string,
             "hello this is a test: this is my input nested inner type");
+  EXPECT_TRUE(result->should_ignore_input_context);
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
@@ -277,10 +314,11 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
   proto::ComposeRequest request;
   request.set_user_input("this is my input");
   request.mutable_page_metadata()->set_page_title("nested");
-  auto maybe_string = interpreter()->ConstructInputString(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
+  auto result = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, request,
+      /*want_input_context=*/false);
 
-  EXPECT_FALSE(maybe_string.has_value());
+  EXPECT_FALSE(result);
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
@@ -350,11 +388,14 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
   request.mutable_page_metadata()->set_page_title("title");
   request.mutable_page_metadata()->set_page_url("url");
   request.set_length(proto::COMPOSE_LONGER);
-  auto maybe_string = interpreter()->ConstructInputString(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
+  auto result = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, request,
+      /*want_input_context=*/false);
 
-  ASSERT_TRUE(maybe_string);
-  EXPECT_EQ(*maybe_string, "hello this is a test: this is my input title");
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->input_string,
+            "hello this is a test: this is my input title");
+  EXPECT_FALSE(result->should_ignore_input_context);
 }
 
 }  // namespace

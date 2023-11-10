@@ -59,7 +59,7 @@ std::string StringPrintfVector(const std::string& string_template,
 // Returns whether `condition` applies based on `message`.
 bool EvaluateCondition(const google::protobuf::MessageLite& message,
                        const proto::Condition& condition) {
-  absl::optional<proto::Value> proto_value =
+  std::optional<proto::Value> proto_value =
       GetProtoValue(message, condition.proto_field());
   if (!proto_value) {
     return false;
@@ -151,30 +151,41 @@ void OnDeviceModelExecutionConfigInterpreter::ClearState() {
   feature_configs_.clear();
 }
 
-absl::optional<std::string>
+std::optional<
+    OnDeviceModelExecutionConfigInterpreter::InputStringConstructionResult>
 OnDeviceModelExecutionConfigInterpreter::ConstructInputString(
     proto::ModelExecutionFeature feature,
-    const google::protobuf::MessageLite& request) const {
+    const google::protobuf::MessageLite& request,
+    bool want_input_context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Get the config to construct the input string.
   if (!HasConfigForFeature(feature)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto feature_config = feature_configs_.at(feature);
   if (!feature_config.has_input_config()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const auto input_config = feature_config.input_config();
   if (input_config.request_base_name() != request.GetTypeName()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Construct string.
   std::vector<std::string> substitutions;
-  for (const auto& substitution : input_config.execute_substitutions()) {
+  bool should_ignore_input_context = false;
+  google::protobuf::RepeatedPtrField<proto::SubstitutedString>
+      config_substitutions =
+          want_input_context ? input_config.input_context_substitutions()
+                             : input_config.execute_substitutions();
+  for (const auto& substitution : config_substitutions) {
     if (!DoConditionsApply(request, substitution.conditions())) {
       continue;
+    }
+
+    if (substitution.should_ignore_input_context()) {
+      should_ignore_input_context = true;
     }
 
     std::vector<std::string> args;
@@ -186,23 +197,25 @@ OnDeviceModelExecutionConfigInterpreter::ConstructInputString(
       if (arg.has_raw_string()) {
         args.push_back(arg.raw_string());
       } else if (arg.has_proto_field()) {
-        absl::optional<proto::Value> value =
+        std::optional<proto::Value> value =
             GetProtoValue(request, arg.proto_field());
         if (!value) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         args.push_back(GetStringFromValue(*value));
       }
     }
     if (static_cast<size_t>(substitution.expected_num_args()) != args.size()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     substitutions.push_back(
         StringPrintfVector(substitution.string_template(), std::move(args)));
   }
 
-  return base::StrCat(substitutions);
+  return InputStringConstructionResult{
+      .input_string = base::StrCat(substitutions),
+      .should_ignore_input_context = should_ignore_input_context};
 }
 
 }  // namespace optimization_guide
