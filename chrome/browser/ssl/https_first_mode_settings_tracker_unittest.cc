@@ -55,6 +55,10 @@ class HttpsFirstModeSettingsTrackerTest : public testing::Test {
         CreateProfileForIdentityTestEnvironment(builder);
   }
 
+  void TearDown() override {
+    HttpsFirstModeServiceFactory::SetClockForTesting(nullptr);
+  }
+
   void SetSiteEngagementScoreForTypicallySecureUserHeuristic() {
     // Typically Secure User heuristic requires a minimum total site engagement
     // score.
