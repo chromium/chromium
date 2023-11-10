@@ -221,7 +221,7 @@ void CorpHostStarter::OnProvisionCorpMachineResponse(
   authorization_code_ = internal::GetAuthorizationCode(*response);
   if (authorization_code_.empty()) {
     LOG(ERROR) << "No authorization code returned by the Directory.";
-    std::move(on_done_).Run(START_ERROR);
+    std::move(on_done_).Run(REGISTRATION_ERROR);
     return;
   }
 
@@ -304,8 +304,7 @@ void CorpHostStarter::OnHostStarted(DaemonController::AsyncResult result) {
     LOG(ERROR) << "Failed to start host: " << result;
     // TODO(joedow): Decide whether to delete the host instance or update its
     // offline reason in the Directory instead.
-    // TODO(joedow): Check to see if we need to run on_done here. If so, also
-    // check to see if the OAuth-based HostStarter needs that change as well.
+    std::move(on_done_).Run(START_ERROR);
     return;
   }
   std::move(on_done_).Run(START_COMPLETE);
@@ -352,9 +351,10 @@ void CorpHostStarter::NotifyError(const ProtobufHttpStatus& status) {
     }
   }
 
-  // TODO(joedow): Add more error codes to HostStarter and use them here.
   switch (error_code) {
     case ProtobufHttpStatus::Code::PERMISSION_DENIED:
+      std::move(on_done_).Run(PERMISSION_DENIED);
+      return;
     case ProtobufHttpStatus::Code::UNAUTHENTICATED:
       std::move(on_done_).Run(OAUTH_ERROR);
       return;

@@ -147,11 +147,15 @@ void OnDone(HostStarter::Result result) {
     case HostStarter::OAUTH_ERROR:
       fprintf(stderr, "Couldn't start host: OAuth error.\n");
       break;
+    case HostStarter::PERMISSION_DENIED:
+      fprintf(stderr, "Couldn't start host: Permission denied.\n");
+      break;
+    case HostStarter::REGISTRATION_ERROR:
+      fprintf(stderr, "Couldn't start host: Registration error.\n");
+      break;
     case HostStarter::START_ERROR:
       fprintf(stderr, "Couldn't start host.\n");
       break;
-    default:
-      NOTREACHED() << "Unexpected HostStarter result: " << result;
   }
 
   g_active_run_loop->Quit();
