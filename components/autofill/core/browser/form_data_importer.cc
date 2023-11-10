@@ -63,10 +63,11 @@ using AddressImportRequirement =
 
 // Return true if the |field_type| and |value| are valid within the context
 // of importing a form.
-bool IsValidFieldTypeAndValue(const ServerFieldTypeSet types_seen,
-                              ServerFieldType field_type,
-                              const std::u16string& value,
-                              LogBuffer* import_log_buffer) {
+bool IsValidFieldTypeAndValue(
+    const base::flat_map<ServerFieldType, std::u16string>& observed_types,
+    ServerFieldType field_type,
+    const std::u16string& value,
+    LogBuffer* import_log_buffer) {
   // Abandon the import if two fields of the same type are encountered.
   // This indicates ambiguous data or miscategorization of types.
   // Make an exception for:
@@ -76,7 +77,7 @@ bool IsValidFieldTypeAndValue(const ServerFieldTypeSet types_seen,
   // numbers.
   // TODO(crbug.com/1156315) Clean up when launched.
   FieldTypeGroup field_type_group = GroupTypeOfServerFieldType(field_type);
-  if (types_seen.count(field_type) && field_type != EMAIL_ADDRESS &&
+  if (observed_types.contains(field_type) && field_type != EMAIL_ADDRESS &&
       (!base::FeatureList::IsEnabled(
            features::kAutofillEnableImportWhenMultiplePhoneNumbers) ||
        field_type_group != FieldTypeGroup::kPhone)) {
@@ -439,7 +440,6 @@ bool FormDataImporter::LogAddressFormImportRequirementMetric(
 
 AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
     const base::flat_map<ServerFieldType, std::u16string>& observed_values,
-    const PhoneNumber::PhoneCombineHelper& combined_phone,
     LogBuffer* import_log_buffer,
     autofill::ProfileImportMetadata& import_metadata) {
   AutofillProfile candidate_profile(
@@ -468,6 +468,10 @@ AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
   import_metadata.did_complement_country =
       ComplementCountry(candidate_profile, predicted_country_code);
 
+  // We only set complete phone, so aggregate phone parts in these vars and set
+  // complete at the end.
+  PhoneNumber::PhoneCombineHelper combined_phone;
+
   // Populate the profile with the collected values. Note that this is after the
   // profile's country has been set to make sure the correct address
   // representation is used.
@@ -475,7 +479,13 @@ AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
     // The profile country has already been stablished by this point. It's
     // ignored here to avoid re-setting up a potentially invalid country that
     // was present in the form.
-    if (type != ADDRESS_HOME_COUNTRY) {
+    if (type == ADDRESS_HOME_COUNTRY) {
+      continue;
+    }
+    // We need to store phone data in the variables, before building the whole
+    // number at the end. If |value| is not from a phone field, phone.SetInfo()
+    // returns false and data is stored directly in `candidate_profile`.
+    if (!combined_phone.SetInfo(AutofillType(type), value)) {
       candidate_profile.SetInfoWithVerificationStatus(
           type, value, app_locale_, VerificationStatus::kObserved);
     }
@@ -499,14 +509,6 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
     std::vector<FormDataImporter::AddressProfileImportCandidate>*
         address_profile_import_candidates,
     LogBuffer* import_log_buffer) {
-  // We only set complete phone, so aggregate phone parts in these vars and set
-  // complete at the end.
-  PhoneNumber::PhoneCombineHelper combined_phone;
-
-  // Used to detect and discard address forms with multiple fields of the same
-  // type.
-  ServerFieldTypeSet types_seen;
-
   // Tracks if the form section contains multiple distinct email addresses.
   bool has_multiple_distinct_email_addresses = false;
 
@@ -527,7 +529,9 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   plus_addresses::PlusAddressService* plus_address_service =
       client_->GetPlusAddressService();
 
-  // Stores the values collected for each related `ServerFieldType`.
+  // Stores the values collected for each related `ServerFieldType`. Used as
+  // well to detect and discard address forms with multiple fields of the same
+  // type.
   base::flat_map<ServerFieldType, std::u16string> observed_field_values;
 
   // Go through each |form| field and attempt to constitute a valid profile.
@@ -566,20 +570,23 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
     // fields) but they must all contain the same value, else the profile is
     // invalid.
     ServerFieldType server_field_type = field_type.GetStorableType();
-    if (server_field_type == EMAIL_ADDRESS &&
-        types_seen.count(server_field_type) &&
-        observed_field_values.at(EMAIL_ADDRESS) != value) {
-      LOG_AF(import_log_buffer)
-          << LogMessage::kImportAddressProfileFromFormFailed
-          << "Multiple different email addresses present." << CTag{};
-      has_multiple_distinct_email_addresses = true;
+    if (server_field_type == EMAIL_ADDRESS) {
+      auto email_it = observed_field_values.find(EMAIL_ADDRESS);
+      if (email_it != observed_field_values.end() &&
+          email_it->second != value) {
+        LOG_AF(import_log_buffer)
+            << LogMessage::kImportAddressProfileFromFormFailed
+            << "Multiple different email addresses present." << CTag{};
+        has_multiple_distinct_email_addresses = true;
+      }
     }
 
     // If the field type and |value| don't pass basic validity checks then
     // abandon the import.
-    if (!IsValidFieldTypeAndValue(types_seen, server_field_type, value,
-                                  import_log_buffer))
+    if (!IsValidFieldTypeAndValue(observed_field_values, server_field_type,
+                                  value, import_log_buffer)) {
       has_invalid_field_types = true;
+    }
 
     // Found phone number component field.
     // TODO(crbug.com/1156315) Remove feature check when launched.
@@ -592,21 +599,13 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
       // type a second time implies that it belongs to a new number. Since
       // Autofill currently supports storing only one phone number per profile,
       // ignore this and all subsequent phone number fields.
-      if (types_seen.count(server_field_type)) {
+      if (observed_field_values.contains(server_field_type)) {
         ignore_phone_number_fields = true;
         continue;
       }
     }
 
-    types_seen.insert(server_field_type);
-
-    // We need to store phone data in the variables, before building the whole
-    // number at the end. If |value| is not from a phone field, home.SetInfo()
-    // returns false and data is stored directly in |candidate_profile|.
-    if (!combined_phone.SetInfo(field_type, value)) {
-      observed_field_values.insert_or_assign(field_type.GetStorableType(),
-                                             value);
-    }
+    observed_field_values.insert_or_assign(field_type.GetStorableType(), value);
 
     if (FieldTypeGroupToFormType(field_type.group()) ==
         FormType::kAddressForm) {
@@ -620,9 +619,8 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   }
 
   // The candidate for profile import.
-  AutofillProfile candidate_profile =
-      ConstructProfileFromObservedValues(observed_field_values, combined_phone,
-                                         import_log_buffer, import_metadata);
+  AutofillProfile candidate_profile = ConstructProfileFromObservedValues(
+      observed_field_values, import_log_buffer, import_metadata);
 
   // This is done prior to checking the validity of the profile, because multi-
   // step import profile merging requires the profile to be finalized. Ideally

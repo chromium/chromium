@@ -252,7 +252,6 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // form. Used during `ExtractAddressProfileFromSection()`.
   AutofillProfile ConstructProfileFromObservedValues(
       const base::flat_map<ServerFieldType, std::u16string>& observed_values,
-      const PhoneNumber::PhoneCombineHelper& combined_phone,
       LogBuffer* import_log_buffer,
       autofill::ProfileImportMetadata& import_metadata);
 
