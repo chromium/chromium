@@ -142,8 +142,6 @@ public class DeviceLockActivity
 
     @Override
     public @DeviceLockActivityLauncher.Source String getSource() {
-        return getIntent()
-                .getBundleExtra(ARGUMENT_FRAGMENT_ARGS)
-                .getString(ARGUMENT_SELECTED_ACCOUNT, null);
+        return getIntent().getBundleExtra(ARGUMENT_FRAGMENT_ARGS).getString(ARGUMENT_SOURCE);
     }
 }
