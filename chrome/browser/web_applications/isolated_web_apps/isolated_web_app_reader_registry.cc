@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -21,7 +20,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/common/url_constants.h"
-#include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -67,6 +65,14 @@ ToReadResponseHeadError(
           IsolatedWebAppReaderRegistry::ReadResponseHeadError::
               kResponseNotFoundError);
   }
+}
+
+void CloseReader(std::unique_ptr<IsolatedWebAppResponseReader> reader,
+                 base::OnceClosure callback) {
+  IsolatedWebAppResponseReader* raw_reader = reader.get();
+  base::OnceClosure delete_callback =
+      base::DoNothingWithBoundArgs(std::move(reader));
+  raw_reader->Close(std::move(callback).Then(std::move(delete_callback)));
 }
 
 }  // namespace
@@ -151,6 +157,27 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
                      base::Unretained(this), web_bundle_path, web_bundle_id));
 }
 
+void IsolatedWebAppReaderRegistry::ClearCacheForPath(
+    const base::FilePath& web_bundle_path,
+    base::OnceClosure callback) {
+  auto cache_entry_it = reader_cache_.Find(web_bundle_path);
+  const bool found = cache_entry_it != reader_cache_.End();
+  if (!found) {
+    std::move(callback).Run();
+    return;
+  }
+
+  switch (cache_entry_it->second.state()) {
+    case Cache::Entry::State::kPending:
+      cache_entry_it->second.SetCloseReaderCallback(std::move(callback));
+      break;
+    case Cache::Entry::State::kReady:
+      CloseReader(cache_entry_it->second.StealReader(), std::move(callback));
+      reader_cache_.Erase(cache_entry_it);
+      break;
+  }
+}
+
 void IsolatedWebAppReaderRegistry::OnResponseReaderCreated(
     const base::FilePath& web_bundle_path,
     const web_package::SignedWebBundleId& web_bundle_id,
@@ -166,10 +193,22 @@ void IsolatedWebAppReaderRegistry::OnResponseReaderCreated(
       pending_requests =
           std::exchange(cache_entry_it->second.pending_requests, {});
 
-  if (!reader.has_value()) {
+  const bool should_close_reader =
+      cache_entry_it->second.IsCloseReaderRequested();
+  const bool can_use_reader = reader.has_value() && !should_close_reader;
+
+  if (!can_use_reader) {
+    const auto error =
+        !reader.has_value()
+            ? ReadResponseError::ForError(reader.error())
+            : ReadResponseError::ForOtherError("The bundle is waiting to close");
+
     for (auto& [resource_request, callback] : pending_requests) {
-      std::move(callback).Run(
-          base::unexpected(ReadResponseError::ForError(reader.error())));
+      std::move(callback).Run(base::unexpected(error));
+    }
+    if (should_close_reader) {
+      CloseReader(std::move(reader.value()),
+                  cache_entry_it->second.GetCloseReaderCallback());
     }
     reader_cache_.Erase(cache_entry_it);
     return;
@@ -338,6 +377,29 @@ void IsolatedWebAppReaderRegistry::Cache::CleanupOldEntries() {
           }),
       cache_.end());
   StopCleanupTimerIfCacheIsEmpty();
+}
+
+void IsolatedWebAppReaderRegistry::Cache::Entry::SetCloseReaderCallback(
+    base::OnceClosure callback) {
+  CHECK(pending_closed_callback_.is_null());
+  pending_closed_callback_ = std::move(callback);
+}
+
+base::OnceClosure
+IsolatedWebAppReaderRegistry::Cache::Entry::GetCloseReaderCallback() {
+  CHECK(!pending_closed_callback_.is_null());
+  return std::move(pending_closed_callback_);
+}
+
+std::unique_ptr<IsolatedWebAppResponseReader>
+IsolatedWebAppReaderRegistry::Cache::Entry::StealReader() {
+  CHECK(reader_);
+  return std::move(reader_);
+}
+
+bool IsolatedWebAppReaderRegistry::Cache::Entry::IsCloseReaderRequested()
+    const {
+  return !pending_closed_callback_.is_null();
 }
 
 IsolatedWebAppReaderRegistry::Cache::Entry::Entry() = default;

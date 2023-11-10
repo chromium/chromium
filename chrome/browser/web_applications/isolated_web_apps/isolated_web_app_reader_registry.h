@@ -60,14 +60,14 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
     static ReadResponseError ForError(
         const IsolatedWebAppResponseReader::Error& error);
 
-    Type type;
-    std::string message;
-
-   private:
     static ReadResponseError ForOtherError(const std::string& message) {
       return ReadResponseError(Type::kOtherError, message);
     }
 
+    Type type;
+    std::string message;
+
+   private:
     static ReadResponseError ForResponseNotFound(const std::string& message) {
       return ReadResponseError(Type::kResponseNotFound, message);
     }
@@ -88,6 +88,11 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
                     const web_package::SignedWebBundleId& web_bundle_id,
                     const network::ResourceRequest& resource_request,
                     ReadResponseCallback callback);
+
+  // Closes the cached readers of the given path.  After callback is invoked
+  // the caller can expect that the corresponding file is closed.
+  void ClearCacheForPath(const base::FilePath& web_bundle_path,
+                         base::OnceClosure callback);
 
   // This enum represents every error type that can occur during response head
   // parsing, after integrity block and metadata have been read successfully.
@@ -184,6 +189,12 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       enum class State { kPending, kReady };
       State state() const { return reader_ ? State::kReady : State::kPending; }
 
+      bool IsCloseReaderRequested() const;
+      void SetCloseReaderCallback(base::OnceClosure callback);
+      base::OnceClosure GetCloseReaderCallback();
+
+      std::unique_ptr<IsolatedWebAppResponseReader> StealReader();
+
       void set_reader(std::unique_ptr<IsolatedWebAppResponseReader> reader) {
         reader_ = std::move(reader);
       }
@@ -196,6 +207,7 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       std::unique_ptr<IsolatedWebAppResponseReader> reader_;
       // The point in time when the `reader` was last accessed.
       base::TimeTicks last_access_;
+      base::OnceClosure pending_closed_callback_;
     };
 
    private:

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/types/expected.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 
