@@ -659,9 +659,9 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
 
     std::set<std::string> result_ids;
     for (const base::Value& item : results) {
-      std::unique_ptr<api::identity::AccountInfo> info =
-          api::identity::AccountInfo::FromValueDeprecated(item);
-      if (info.get()) {
+      absl::optional<api::identity::AccountInfo> info =
+          api::identity::AccountInfo::FromValue(item);
+      if (info) {
         result_ids.insert(info->id);
       } else {
         return GenerateFailureResult(gaia_ids, &results);
@@ -688,12 +688,13 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
       msg << "NULL";
     } else {
       for (const auto& result : *results) {
-        std::unique_ptr<api::identity::AccountInfo> info =
-            api::identity::AccountInfo::FromValueDeprecated(result);
-        if (info.get())
+        absl::optional<api::identity::AccountInfo> info =
+            api::identity::AccountInfo::FromValue(result);
+        if (info) {
           msg << info->id << " ";
-        else
+        } else {
           msg << result << "<-" << result.type() << " ";
+        }
       }
     }
 
@@ -740,24 +741,24 @@ IN_PROC_BROWSER_TEST_F(IdentityGetAccountsFunctionTest, TwoAccountsSignedIn) {
 
 class IdentityGetProfileUserInfoFunctionTest : public IdentityTestWithSignin {
  protected:
-  std::unique_ptr<api::identity::ProfileUserInfo> RunGetProfileUserInfo() {
+  absl::optional<api::identity::ProfileUserInfo> RunGetProfileUserInfo() {
     scoped_refptr<IdentityGetProfileUserInfoFunction> func(
         new IdentityGetProfileUserInfoFunction);
     func->set_extension(
         ExtensionBuilder("Test").SetID(kExtensionId).Build().get());
     absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
         func.get(), "[]", browser()->profile());
-    return api::identity::ProfileUserInfo::FromValueDeprecated(*value);
+    return api::identity::ProfileUserInfo::FromValue(*value);
   }
 
-  std::unique_ptr<api::identity::ProfileUserInfo>
+  absl::optional<api::identity::ProfileUserInfo>
   RunGetProfileUserInfoWithEmail() {
     scoped_refptr<IdentityGetProfileUserInfoFunction> func(
         new IdentityGetProfileUserInfoFunction);
     func->set_extension(CreateExtensionWithEmailPermission());
     absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
         func.get(), "[]", browser()->profile());
-    return api::identity::ProfileUserInfo::FromValueDeprecated(*value);
+    return api::identity::ProfileUserInfo::FromValue(*value);
   }
 
   scoped_refptr<const Extension> CreateExtensionWithEmailPermission() {
@@ -766,7 +767,7 @@ class IdentityGetProfileUserInfoFunctionTest : public IdentityTestWithSignin {
 };
 
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, NotSignedIn) {
-  std::unique_ptr<api::identity::ProfileUserInfo> info =
+  absl::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithEmail();
   EXPECT_TRUE(info->email.empty());
   EXPECT_TRUE(info->id.empty());
@@ -774,7 +775,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, NotSignedIn) {
 
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, SignedIn) {
   SignIn("president@example.com");
-  std::unique_ptr<api::identity::ProfileUserInfo> info =
+  absl::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithEmail();
   EXPECT_EQ("president@example.com", info->email);
   EXPECT_EQ("gaia_id_for_president_example.com", info->id);
@@ -784,7 +785,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
                        SignedInUnconsented) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
-  std::unique_ptr<api::identity::ProfileUserInfo> info =
+  absl::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithEmail();
   EXPECT_TRUE(info->email.empty());
   EXPECT_TRUE(info->id.empty());
@@ -792,8 +793,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
 
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
                        NotSignedInNoEmail) {
-  std::unique_ptr<api::identity::ProfileUserInfo> info =
-      RunGetProfileUserInfo();
+  absl::optional<api::identity::ProfileUserInfo> info = RunGetProfileUserInfo();
   EXPECT_TRUE(info->email.empty());
   EXPECT_TRUE(info->id.empty());
 }
@@ -801,8 +801,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
                        SignedInNoEmail) {
   SignIn("president@example.com");
-  std::unique_ptr<api::identity::ProfileUserInfo> info =
-      RunGetProfileUserInfo();
+  absl::optional<api::identity::ProfileUserInfo> info = RunGetProfileUserInfo();
   EXPECT_TRUE(info->email.empty());
   EXPECT_TRUE(info->id.empty());
 }
@@ -811,7 +810,7 @@ class IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam
     : public IdentityGetProfileUserInfoFunctionTest,
       public ::testing::WithParamInterface<std::string> {
  protected:
-  std::unique_ptr<api::identity::ProfileUserInfo>
+  absl::optional<api::identity::ProfileUserInfo>
   RunGetProfileUserInfoWithAccountStatus() {
     scoped_refptr<IdentityGetProfileUserInfoFunction> func(
         new IdentityGetProfileUserInfoFunction);
@@ -820,7 +819,7 @@ class IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam
                                           account_status().c_str());
     absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
         func.get(), args, browser()->profile());
-    return api::identity::ProfileUserInfo::FromValueDeprecated(*value);
+    return api::identity::ProfileUserInfo::FromValue(*value);
   }
 
   std::string account_status() { return GetParam(); }
@@ -834,7 +833,7 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(
     IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam,
     NotSignedIn) {
-  std::unique_ptr<api::identity::ProfileUserInfo> info =
+  absl::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithAccountStatus();
   EXPECT_TRUE(info->email.empty());
   EXPECT_TRUE(info->id.empty());
@@ -844,7 +843,7 @@ IN_PROC_BROWSER_TEST_P(
     IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam,
     SignedIn) {
   SignIn("test@example.com");
-  std::unique_ptr<api::identity::ProfileUserInfo> info =
+  absl::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithAccountStatus();
   EXPECT_EQ("test@example.com", info->email);
   EXPECT_EQ("gaia_id_for_test_example.com", info->id);
@@ -855,7 +854,7 @@ IN_PROC_BROWSER_TEST_P(
     SignedInUnconsented) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
-  std::unique_ptr<api::identity::ProfileUserInfo> info =
+  absl::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithAccountStatus();
   // The unconsented (Sync off) primary account is returned conditionally,
   // depending on the accountStatus parameter.
@@ -1009,8 +1008,8 @@ class GetAuthTokenFunctionTest
         utils::RunFunctionAndReturnSingleResult(function, args,
                                                 browser->profile());
     ASSERT_TRUE(result_value);
-    std::unique_ptr<api::identity::GetAuthTokenResult> result =
-        api::identity::GetAuthTokenResult::FromValueDeprecated(*result_value);
+    absl::optional<api::identity::GetAuthTokenResult> result =
+        api::identity::GetAuthTokenResult::FromValue(*result_value);
     ASSERT_TRUE(result);
 
     EXPECT_TRUE(result->token);
@@ -1032,8 +1031,8 @@ class GetAuthTokenFunctionTest
     } else {
       function_runner->WaitForOneResult(function, &result_value);
     }
-    std::unique_ptr<api::identity::GetAuthTokenResult> result =
-        api::identity::GetAuthTokenResult::FromValueDeprecated(result_value);
+    absl::optional<api::identity::GetAuthTokenResult> result =
+        api::identity::GetAuthTokenResult::FromValue(result_value);
     ASSERT_TRUE(result);
 
     ASSERT_TRUE(result->token);
