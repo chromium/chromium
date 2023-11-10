@@ -13,6 +13,7 @@
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/pref_names.h"
 #import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_mutator.h"
@@ -117,6 +118,14 @@
 
   // TODO(crbug.com/1462133): Implement the incognito grid or content visible
   // notification.
+}
+
+- (void)dragAndDropSessionStarted {
+  [self.toolbarsMutator setButtonsEnabled:NO];
+}
+
+- (void)dragAndDropSessionEnded {
+  [self.toolbarsMutator setButtonsEnabled:YES];
 }
 
 @end

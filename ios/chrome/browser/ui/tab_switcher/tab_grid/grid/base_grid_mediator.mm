@@ -256,34 +256,6 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
 }
 
-- (void)configureSelectionToolbarsButtons {
-  TabGridToolbarsConfiguration* toolbarsConfiguration =
-      [[TabGridToolbarsConfiguration alloc] init];
-
-  NSUInteger selectedItemsCount =
-      [self.itemProvider selectedItemIDsForEditing].size();
-  NSUInteger selectedShareableItemsCount =
-      [self.itemProvider selectedShareableItemIDsForEditing].size();
-  BOOL allItemsSelected =
-      static_cast<int>(selectedItemsCount) ==
-      (self.webStateList->count() - self.webStateList->pinned_tabs_count());
-
-  toolbarsConfiguration.selectAllButton = !allItemsSelected;
-  toolbarsConfiguration.deselectAllButton = allItemsSelected;
-  toolbarsConfiguration.doneButton = YES;
-  toolbarsConfiguration.closeSelectedTabsButton = selectedItemsCount > 0;
-  toolbarsConfiguration.shareButton = selectedShareableItemsCount > 0;
-  toolbarsConfiguration.addToButton = selectedShareableItemsCount > 0;
-  toolbarsConfiguration.selectedItemsCount = selectedItemsCount;
-
-  toolbarsConfiguration.addToButtonMenu = [UIMenu
-      menuWithChildren:[self addToButtonMenuElementsForItems:
-                                 [self.itemProvider
-                                         selectedShareableItemIDsForEditing]]];
-
-  [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
-}
-
 #pragma mark - WebStateListObserving
 
 - (void)willChangeWebStateList:(WebStateList*)webStateList
@@ -1102,6 +1074,36 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
     // the options changed (ex: "Undo" may be available now).
     [self configureToolbarsButtons];
   }
+}
+
+// Called when user switched on selection mode and toolbars button needs to be
+// updated.
+- (void)configureSelectionToolbarsButtons {
+  TabGridToolbarsConfiguration* toolbarsConfiguration =
+      [[TabGridToolbarsConfiguration alloc] init];
+
+  NSUInteger selectedItemsCount =
+      [self.itemProvider selectedItemIDsForEditing].size();
+  NSUInteger selectedShareableItemsCount =
+      [self.itemProvider selectedShareableItemIDsForEditing].size();
+  BOOL allItemsSelected =
+      static_cast<int>(selectedItemsCount) ==
+      (self.webStateList->count() - self.webStateList->pinned_tabs_count());
+
+  toolbarsConfiguration.selectAllButton = !allItemsSelected;
+  toolbarsConfiguration.deselectAllButton = allItemsSelected;
+  toolbarsConfiguration.doneButton = YES;
+  toolbarsConfiguration.closeSelectedTabsButton = selectedItemsCount > 0;
+  toolbarsConfiguration.shareButton = selectedShareableItemsCount > 0;
+  toolbarsConfiguration.addToButton = selectedShareableItemsCount > 0;
+  toolbarsConfiguration.selectedItemsCount = selectedItemsCount;
+
+  toolbarsConfiguration.addToButtonMenu = [UIMenu
+      menuWithChildren:[self addToButtonMenuElementsForItems:
+                                 [self.itemProvider
+                                         selectedShareableItemIDsForEditing]]];
+
+  [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
 }
 
 #pragma mark - TabGridPageMutator

@@ -14,14 +14,22 @@
 @implementation TabGridToolbarsMediator {
   // Configuration that provides all buttons to display.
   TabGridToolbarsConfiguration* _configuration;
+  TabGridToolbarsConfiguration* _previousConfiguration;
   id<TabGridToolbarsButtonsDelegate> _buttonsDelegate;
 
   TabGridMode _currentMode;
+
+  // YES if buttons are disabled.
+  BOOL _isDisabled;
 }
 
 #pragma mark - GridToolbarsMutator
 
 - (void)setToolbarConfiguration:(TabGridToolbarsConfiguration*)configuration {
+  if (_isDisabled) {
+    return;
+  }
+
   _configuration = configuration;
 
   // TODO(crbug.com/1457146): Add all buttons management.
@@ -38,11 +46,14 @@
   }
 
   [self configureEditOrUndoButton];
+
   [self.bottomToolbarConsumer
       setNewTabButtonEnabled:_configuration.newTabButton];
 
   [self.topToolbarConsumer setDoneButtonEnabled:_configuration.doneButton];
   [self.bottomToolbarConsumer setDoneButtonEnabled:_configuration.doneButton];
+
+  [self.topToolbarConsumer setSearchButtonEnabled:_configuration.searchButton];
 }
 
 - (void)setToolbarsButtonsDelegate:
@@ -56,6 +67,25 @@
   _currentMode = mode;
   self.bottomToolbarConsumer.mode = mode;
   self.topToolbarConsumer.mode = mode;
+}
+
+- (void)setButtonsEnabled:(BOOL)enabled {
+  if (enabled) {
+    // Set the disabled boolean before modifiying the toolbar configuration
+    // because the configuration setup is skipped when disabled.
+    _isDisabled = NO;
+    [self setToolbarConfiguration:_previousConfiguration];
+  } else {
+    if (_isDisabled) {
+      return;
+    }
+    _previousConfiguration = _configuration;
+    [self setToolbarConfiguration:[TabGridToolbarsConfiguration
+                                      disabledConfiguration]];
+    // Set the disabled boolean after modifiying the toolbar configuration
+    // because the configuration setup is skipped when disabled.
+    _isDisabled = YES;
+  }
 }
 
 #pragma mark - Private

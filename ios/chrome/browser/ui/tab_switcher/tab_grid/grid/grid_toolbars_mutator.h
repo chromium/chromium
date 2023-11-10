@@ -25,6 +25,10 @@
 // Sends to the model the current mode.
 - (void)setToolbarsMode:(TabGridMode)mode;
 
+// Sends NO to disable all buttons and save the current configuration or YES to
+// enable the saved configuration.
+- (void)setButtonsEnabled:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_TOOLBARS_MUTATOR_H_

@@ -1245,7 +1245,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   BOOL incognitoTabsNeedsAuth =
       (self.currentPage == TabGridPageIncognitoTabs &&
        self.incognitoTabsViewController.contentNeedsAuthentication);
-  BOOL doneEnabled = tabsPresent && !incognitoTabsNeedsAuth;
+  // Avoid drag and drop because you can switch grid while drag and drop
+  // session.
+  BOOL doneEnabled =
+      tabsPresent && !incognitoTabsNeedsAuth && !self.dragSessionInProgress;
   [self.topToolbar setDoneButtonEnabled:doneEnabled];
   [self.bottomToolbar setDoneButtonEnabled:doneEnabled];
 }
@@ -1871,12 +1874,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)pinnedViewControllerDragSessionDidEnd:
     (PinnedTabsViewController*)pinnedTabsViewController {
   self.dragSessionInProgress = NO;
-
-  [self.topToolbar setSearchButtonEnabled:YES];
-
-  [self configureDoneButtonBasedOnPage:self.currentPage];
-  [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
-  [self configureNewTabButtonBasedOnContentPermissions];
+  [self.mutator dragAndDropSessionEnded];
 }
 
 #pragma mark - BaseGridViewControllerDelegate
@@ -2006,18 +2004,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)gridViewControllerDragSessionWillBegin:
     (BaseGridViewController*)gridViewController {
   self.dragSessionInProgress = YES;
+  [self.mutator dragAndDropSessionStarted];
 
   // Actions on both bars should be disabled during dragging.
-  [self.topToolbar setDoneButtonEnabled:NO];
   self.topToolbar.pageControl.userInteractionEnabled = NO;
-  [self.bottomToolbar setDoneButtonEnabled:NO];
-  [self.topToolbar setSelectAllButtonEnabled:NO];
-  [self.topToolbar setEditButtonEnabled:NO];
-  [self.topToolbar setSearchButtonEnabled:NO];
-  [self.bottomToolbar setEditButtonEnabled:NO];
-  [self.bottomToolbar setAddToButtonEnabled:NO];
-  [self.bottomToolbar setShareTabsButtonEnabled:NO];
-  [self.bottomToolbar setCloseTabsButtonEnabled:NO];
   if (IsPinnedTabsEnabled()) {
     [self.pinnedTabsViewController dragSessionEnabled:YES];
   }
@@ -2026,13 +2016,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)gridViewControllerDragSessionDidEnd:
     (BaseGridViewController*)gridViewController {
   self.dragSessionInProgress = NO;
+  [self.mutator dragAndDropSessionEnded];
+  self.topToolbar.pageControl.userInteractionEnabled = YES;
 
-  [self.topToolbar setSearchButtonEnabled:YES];
-
-  // -configureDoneButtonBasedOnPage will enable the page control.
-  [self configureDoneButtonBasedOnPage:self.currentPage];
-  [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
-  [self configureNewTabButtonBasedOnContentPermissions];
   if (IsPinnedTabsEnabled()) {
     [self.pinnedTabsViewController dragSessionEnabled:NO];
   }

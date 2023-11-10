@@ -875,6 +875,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   _mediator.regularPageMutator = _regularGridCoordinator.regularGridMediator;
   _mediator.incognitoPageMutator = self.incognitoTabsMediator;
   _mediator.remotePageMutator = self.remoteTabsMediator;
+  _mediator.toolbarsMutator = _toolbarsCoordinator.toolbarsMutator;
 
   self.remoteTabsMediator.toolbarsMutator =
       _toolbarsCoordinator.toolbarsMutator;
