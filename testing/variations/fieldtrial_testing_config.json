@@ -12597,6 +12597,24 @@
             ]
         }
     ],
+    "PeripheralCustomization": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PeripheralCustomization",
+                        "SearchCustomizableShortcutsInLauncher",
+                        "ShortcutCustomization"
+                    ]
+                }
+            ]
+        }
+    ],
     "PhoneHubOnboardingNotifiersStudy": [
         {
             "platforms": [
