@@ -222,6 +222,8 @@ class PrivacySandboxSettingsTest : public testing::Test {
         /*eligible=*/true);
     mock_delegate()->SetUpGetCookieDeprecationExperimentCurrentEligibility(
         /*eligibility_reason=*/TpcdExperimentEligibility::Reason::kEligible);
+    mock_delegate()->SetUpIsCookieDeprecationLabelAllowedResponse(
+        /*allowed=*/true);
   }
 
   privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate*
@@ -1252,12 +1254,12 @@ TEST_F(PrivacySandboxSettingsTest,
 }
 
 TEST_F(PrivacySandboxSettingsTest, IsCookieDeprecationLabelAllowed) {
-  EXPECT_CALL(*mock_delegate(), IsCookieDeprecationExperimentEligible())
+  EXPECT_CALL(*mock_delegate(), IsCookieDeprecationLabelAllowed())
       .Times(1)
       .WillOnce(testing::Return(false));
   EXPECT_FALSE(privacy_sandbox_settings()->IsCookieDeprecationLabelAllowed());
 
-  EXPECT_CALL(*mock_delegate(), IsCookieDeprecationExperimentEligible())
+  EXPECT_CALL(*mock_delegate(), IsCookieDeprecationLabelAllowed())
       .Times(1)
       .WillOnce(testing::Return(true));
   EXPECT_TRUE(privacy_sandbox_settings()->IsCookieDeprecationLabelAllowed());

@@ -57,8 +57,12 @@ EligibilityService::EligibilityService(Profile* profile,
       features::kCookieDeprecationFacilitatedTesting));
   CHECK(experiment_manager_);
 
-  if (onboarding_service_ && experiment_manager->DidVersionChange()) {
-    onboarding_service_->MaybeResetOnboardingPrefs();
+  if (onboarding_service_) {
+    onboarding_observation_.Observe(onboarding_service_);
+
+    if (experiment_manager_->DidVersionChange()) {
+      onboarding_service_->MaybeResetOnboardingPrefs();
+    }
   }
 
   profile_eligibility_ = ProfileEligibility();
@@ -106,16 +110,7 @@ void EligibilityService::MarkProfileEligibility(bool is_client_eligible) {
       "ReasonForComputedEligibilityForProfile",
       profile_eligibility_->reason());
 
-  // For each storage partition, update the cookie deprecation label to the
-  // updated value from the CookieDeprecationLabelManager.
-  profile_->ForEachLoadedStoragePartition(
-      base::BindRepeating([](content::StoragePartition* storage_partition) {
-        if (auto* cookie_deprecation_label_manager =
-                storage_partition->GetCookieDeprecationLabelManager()) {
-          storage_partition->GetNetworkContext()->SetCookieDeprecationLabel(
-              cookie_deprecation_label_manager->GetValue());
-        }
-      }));
+  UpdateCookieDeprecationLabel();
 
   // Update the eligibility for the onboarding UX flow. Check that the user is
   // in Mode B (kDisable3PCookies is true).
@@ -136,6 +131,28 @@ EligibilityService::ProfileEligibility() {
 
   return privacy_sandbox_settings
       ->GetCookieDeprecationExperimentCurrentEligibility();
+}
+
+void EligibilityService::UpdateCookieDeprecationLabel() {
+  // For each storage partition, update the cookie deprecation label to the
+  // updated value from the CookieDeprecationLabelManager.
+  profile_->ForEachLoadedStoragePartition(
+      base::BindRepeating([](content::StoragePartition* storage_partition) {
+        if (auto* cookie_deprecation_label_manager =
+                storage_partition->GetCookieDeprecationLabelManager()) {
+          storage_partition->GetNetworkContext()->SetCookieDeprecationLabel(
+              cookie_deprecation_label_manager->GetValue());
+        }
+      }));
+}
+
+void EligibilityService::OnTrackingProtectionOnboardingUpdated(
+    privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus
+        onboarding_status) {
+  if (!kDisable3PCookies.Get()) {
+    return;
+  }
+  UpdateCookieDeprecationLabel();
 }
 
 }  // namespace tpcd::experiment

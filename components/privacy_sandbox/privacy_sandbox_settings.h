@@ -97,6 +97,9 @@ class PrivacySandboxSettings : public KeyedService {
     // eligibility.
     virtual TpcdExperimentEligibility
     GetCookieDeprecationExperimentCurrentEligibility() const = 0;
+
+    // Whether cookie deprecation label is allowed.
+    virtual bool IsCookieDeprecationLabelAllowed() const = 0;
   };
 
   // Returns whether the Topics API is allowed at all. If false, Topics API
