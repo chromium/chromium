@@ -30,7 +30,10 @@
 #include "url/url_constants.h"
 
 const int BuiltinProvider::kRelevance = 860;
-const int BuiltinProvider::kStarterPackRelevance = 1350;
+// Scored higher than history URL provider suggestions since inputs like '@b'
+// would default 'bing.com' instead (history URL provider seems to ignore '@'
+// prefix in the input).
+const int BuiltinProvider::kStarterPackRelevance = 1450;
 
 BuiltinProvider::BuiltinProvider(AutocompleteProviderClient* client)
     : AutocompleteProvider(AutocompleteProvider::TYPE_BUILTIN),
@@ -47,13 +50,12 @@ void BuiltinProvider::Start(const AutocompleteInput& input,
     return;
   }
 
-  DoStarterPackAutocompletion(input);
-
   if (input.type() != metrics::OmniboxInputType::QUERY) {
     DoBuiltinAutocompletion(input.text());
+    UpdateRelevanceScores(input);
   }
 
-  UpdateRelevanceScores(input);
+  DoStarterPackAutocompletion(input);
 }
 
 BuiltinProvider::~BuiltinProvider() = default;
