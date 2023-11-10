@@ -206,30 +206,38 @@ class TRIVIAL_ABI OnceCallback<R(Args...)> {
     return *this;
   }
 
+  template <typename S = R, typename = std::enable_if_t<std::is_void_v<S>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr OnceCallback(internal::DoNothingCallbackTag)
       : OnceCallback(BindOnce([](Args... args) {})) {}
+  template <typename S = R, typename = std::enable_if_t<std::is_void_v<S>>>
   constexpr OnceCallback& operator=(internal::DoNothingCallbackTag) {
     *this = BindOnce([](Args... args) {});
     return *this;
   }
 
+  template <typename S = R, typename = std::enable_if_t<std::is_void_v<S>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr OnceCallback(internal::DoNothingCallbackTag::WithSignature<RunType>)
       : OnceCallback(internal::DoNothingCallbackTag()) {}
+  template <typename S = R, typename = std::enable_if_t<std::is_void_v<S>>>
   constexpr OnceCallback& operator=(
       internal::DoNothingCallbackTag::WithSignature<RunType>) {
     *this = internal::DoNothingCallbackTag();
     return *this;
   }
 
-  template <typename... BoundArgs>
+  template <typename... BoundArgs,
+            typename S = R,
+            typename = std::enable_if_t<std::is_void_v<S>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr OnceCallback(
       internal::DoNothingCallbackTag::WithBoundArguments<BoundArgs...> tag)
       : OnceCallback(
             internal::ToDoNothingCallback<true, R, Args...>(std::move(tag))) {}
-  template <typename... BoundArgs>
+  template <typename... BoundArgs,
+            typename S = R,
+            typename = std::enable_if_t<std::is_void_v<S>>>
   constexpr OnceCallback& operator=(
       internal::DoNothingCallbackTag::WithBoundArguments<BoundArgs...> tag) {
     *this = internal::ToDoNothingCallback<true, R, Args...>(std::move(tag));
@@ -408,31 +416,39 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
     return *this;
   }
 
+  template <typename S = R, typename = std::enable_if_t<std::is_void_v<S>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr RepeatingCallback(internal::DoNothingCallbackTag)
       : RepeatingCallback(BindRepeating([](Args... args) {})) {}
+  template <typename S = R, typename = std::enable_if_t<std::is_void_v<S>>>
   constexpr RepeatingCallback& operator=(internal::DoNothingCallbackTag) {
     *this = BindRepeating([](Args... args) {});
     return *this;
   }
 
+  template <typename S = R, typename = std::enable_if_t<std::is_void_v<S>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr RepeatingCallback(
       internal::DoNothingCallbackTag::WithSignature<RunType>)
       : RepeatingCallback(internal::DoNothingCallbackTag()) {}
+  template <typename S = R, typename = std::enable_if_t<std::is_void_v<S>>>
   constexpr RepeatingCallback& operator=(
       internal::DoNothingCallbackTag::WithSignature<RunType>) {
     *this = internal::DoNothingCallbackTag();
     return *this;
   }
 
-  template <typename... BoundArgs>
+  template <typename... BoundArgs,
+            typename S = R,
+            typename = std::enable_if_t<std::is_void_v<S>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr RepeatingCallback(
       internal::DoNothingCallbackTag::WithBoundArguments<BoundArgs...> tag)
       : RepeatingCallback(
             internal::ToDoNothingCallback<false, R, Args...>(std::move(tag))) {}
-  template <typename... BoundArgs>
+  template <typename... BoundArgs,
+            typename S = R,
+            typename = std::enable_if_t<std::is_void_v<S>>>
   constexpr RepeatingCallback& operator=(
       internal::DoNothingCallbackTag::WithBoundArguments<BoundArgs...> tag) {
     *this = internal::ToDoNothingCallback<false, R, Args...>(std::move(tag));

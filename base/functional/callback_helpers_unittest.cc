@@ -14,6 +14,94 @@
 
 namespace {
 
+struct BadArg {};
+
+template <typename TagType, typename CallbackType>
+struct TestConversionAndAssignmentImpl {
+  static constexpr bool kSupportsConversion =
+      std::is_convertible_v<TagType, CallbackType>;
+  static constexpr bool kSupportsAssignment =
+      std::is_assignable_v<CallbackType, TagType>;
+  static_assert(kSupportsConversion == kSupportsAssignment);
+
+  static constexpr bool kValue = kSupportsConversion;
+};
+
+template <typename T, typename U>
+constexpr bool TestConversionAndAssignment =
+    TestConversionAndAssignmentImpl<T, U>::kValue;
+
+#define VOID_RETURN_CALLBACK_TAG_TEST(CallbackType, Sig, BadSig, BoundArg)   \
+  static_assert(TestConversionAndAssignment<decltype(base::NullCallback()),  \
+                                            CallbackType<Sig>>);             \
+  static_assert(                                                             \
+      TestConversionAndAssignment<decltype(base::NullCallbackAs<Sig>()),     \
+                                  CallbackType<Sig>>);                       \
+  static_assert(TestConversionAndAssignment<decltype(base::DoNothing()),     \
+                                            CallbackType<Sig>>);             \
+  static_assert(                                                             \
+      TestConversionAndAssignment<decltype(base::DoNothingAs<Sig>()),        \
+                                  CallbackType<Sig>>);                       \
+  static_assert(TestConversionAndAssignment<                                 \
+                decltype(base::DoNothingWithBoundArgs(BoundArg)),            \
+                CallbackType<Sig>>);                                         \
+                                                                             \
+  static_assert(                                                             \
+      !TestConversionAndAssignment<decltype(base::NullCallbackAs<BadSig>()), \
+                                   CallbackType<Sig>>);                      \
+  static_assert(                                                             \
+      !TestConversionAndAssignment<decltype(base::DoNothingAs<BadSig>()),    \
+                                   CallbackType<Sig>>);                      \
+  static_assert(TestConversionAndAssignment<                                 \
+                decltype(base::DoNothingWithBoundArgs(BadArg())),            \
+                CallbackType<Sig>>)
+
+#define NON_VOID_RETURN_CALLBACK_TAG_TEST(CallbackType, Sig, BadSig, BoundArg) \
+  static_assert(TestConversionAndAssignment<decltype(base::NullCallback()),    \
+                                            CallbackType<Sig>>);               \
+  static_assert(                                                               \
+      TestConversionAndAssignment<decltype(base::NullCallbackAs<Sig>()),       \
+                                  CallbackType<Sig>>);                         \
+                                                                               \
+  /* Unlike callbacks that return void, callbacks that return non-void      */ \
+  /* should not be implicitly convertible from DoNothingCallbackTag since   */ \
+  /* this would require guessing what the callback should return.           */ \
+  static_assert(!TestConversionAndAssignment<decltype(base::DoNothing()),      \
+                                             CallbackType<Sig>>);              \
+  static_assert(                                                               \
+      !TestConversionAndAssignment<decltype(base::DoNothingAs<Sig>()),         \
+                                   CallbackType<Sig>>);                        \
+  static_assert(!TestConversionAndAssignment<                                  \
+                decltype(base::DoNothingWithBoundArgs(BoundArg)),              \
+                CallbackType<Sig>>);                                           \
+                                                                               \
+  static_assert(                                                               \
+      !TestConversionAndAssignment<decltype(base::NullCallbackAs<BadSig>()),   \
+                                   CallbackType<Sig>>);                        \
+  static_assert(                                                               \
+      !TestConversionAndAssignment<decltype(base::DoNothingAs<BadSig>()),      \
+                                   CallbackType<Sig>>);                        \
+  static_assert(!TestConversionAndAssignment<                                  \
+                decltype(base::DoNothingWithBoundArgs(BadArg())),              \
+                CallbackType<Sig>>)
+
+VOID_RETURN_CALLBACK_TAG_TEST(base::OnceCallback, void(), void(char), );
+VOID_RETURN_CALLBACK_TAG_TEST(base::OnceCallback, void(int), void(char), 8);
+NON_VOID_RETURN_CALLBACK_TAG_TEST(base::OnceCallback, int(int), char(int), 8);
+
+VOID_RETURN_CALLBACK_TAG_TEST(base::RepeatingCallback, void(), void(char), );
+VOID_RETURN_CALLBACK_TAG_TEST(base::RepeatingCallback,
+                              void(int),
+                              void(char),
+                              8);
+NON_VOID_RETURN_CALLBACK_TAG_TEST(base::RepeatingCallback,
+                                  int(int),
+                                  char(int),
+                                  8);
+
+#undef VOID_RETURN_CALLBACK_TAG_TEST
+#undef NON_VOID_RETURN_CALLBACK_TAG_TEST
+
 TEST(CallbackHelpersTest, IsBaseCallback) {
   // Check that base::{Once,Repeating}Closures and references to them are
   // considered base::{Once,Repeating}Callbacks.
