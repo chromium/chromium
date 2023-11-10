@@ -978,6 +978,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.GmsSafeBrowsingApi.ApiExceptionStatusCode"
+    enum="SafeBrowsingApiExceptionStatusCode" expires_after="2024-05-09">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the status code from SafeBrowsing API. Only logged if the API throws
+    an ApiException. The code definition can be found in
+    https://developers.google.com/android/reference/com/google/android/gms/common/api/CommonStatusCodes.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.GmsSafeBrowsingApi.CheckDelta{Protocol}"
     units="microseconds" expires_after="2024-05-05">
   <owner>xinghuilu@chromium.org</owner>
@@ -994,6 +1005,16 @@ chromium-metrics-reviews@google.com.
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>
   <token key="Protocol" variants="GmsSafeBrowsingApiProtocol"/>
+</histogram>
+
+<histogram name="SafeBrowsing.GmsSafeBrowsingApi.HasUnknownExceptionType"
+    enum="BooleanSafeBrowsingApiUnknownException" expires_after="2024-05-09">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the Safe Browsing API throws an unknown exception type. Only
+    logged if the API throws an exception.
+  </summary>
 </histogram>
 
 <histogram name="SafeBrowsing.GmsSafeBrowsingApi.IsAvailable{Protocol}"
