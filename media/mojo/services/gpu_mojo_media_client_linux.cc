@@ -28,7 +28,11 @@ VideoDecoderType GetPreferredLinuxDecoderImplementation() {
     return VideoDecoderType::kOutOfProcess;
   }
 
+#if BUILDFLAG(USE_VAAPI)
   return VideoDecoderType::kVaapi;
+#elif BUILDFLAG(USE_V4L2_CODEC)
+  return VideoDecoderType::kV4L2;
+#endif
 }
 
 std::vector<Fourcc> GetPreferredRenderableFourccs(
@@ -56,6 +60,8 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
       return VideoDecoderType::kUnknown;
     case VideoDecoderType::kOutOfProcess:
       return VideoDecoderType::kOutOfProcess;
+    case VideoDecoderType::kV4L2:
+      return VideoDecoderType::kV4L2;
     case VideoDecoderType::kVaapi: {
       // Allow VaapiVideoDecoder on GL.
       if (gpu_preferences.gr_context_type == gpu::GrContextType::kGL) {
