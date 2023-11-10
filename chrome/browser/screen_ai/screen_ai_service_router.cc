@@ -29,6 +29,8 @@ namespace {
 // the component and are required to initialize the library.
 const base::FilePath::CharType kMainContentExtractionFilesList[] =
     FILE_PATH_LITERAL("files_list_main_content_extraction.txt");
+const base::FilePath::CharType kOcrFilesList[] =
+    FILE_PATH_LITERAL("files_list_ocr.txt");
 
 class ComponentFiles {
  public:
@@ -81,6 +83,11 @@ ComponentFiles::ComponentFiles(
 #endif
     model_files_[relative_file_path] =
         base::File(full_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+    if (!model_files_[relative_file_path].IsValid()) {
+      VLOG(0) << "Could not open " << full_path;
+      model_files_.clear();
+      return;
+    }
   }
 }
 
@@ -174,10 +181,26 @@ void ScreenAIServiceRouter::InitializeOCRIfNeeded() {
     return;
   }
 
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&ComponentFiles::Load, kOcrFilesList),
+      base::BindOnce(&ScreenAIServiceRouter::InitializeOCR,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     ocr_service_.BindNewPipeAndPassReceiver()));
+}
+
+void ScreenAIServiceRouter::InitializeOCR(
+    mojo::PendingReceiver<mojom::OCRService> receiver,
+    std::unique_ptr<ComponentFiles> component_files) {
+  if (component_files->model_files_.empty()) {
+    ScreenAIServiceRouter::SetLibraryLoadState(false);
+    return;
+  }
+
   screen_ai_service_factory_->InitializeOCR(
-      screen_ai::ScreenAIInstallState::GetInstance()
-          ->get_component_binary_path(),
-      ocr_service_.BindNewPipeAndPassReceiver(),
+      component_files->library_binary_path_,
+      std::move(component_files->model_files_), std::move(receiver),
       base::BindOnce(&ScreenAIServiceRouter::SetLibraryLoadState,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -137,9 +137,13 @@ interface ScreenAIServiceFactory {
   // Triggers the service to load and initialize the Screen AI library at
   // |library_path| for OCR. Model files are read from |library_path| folder.
   // This should be called from the browser process.
-  // TODO(crbug.com/1443341): Read all model files from file handles.
+  // |model_files| includes a map from file paths relative to the library base
+  // path, to opened file handles. The list of files is downloaded with the
+  // component. The file handles will be closed once the file is read.
+  // TODO(b/297824387): Replace `string` with `RelativePath`.
   InitializeOCR(
     mojo_base.mojom.FilePath library_path,
+    map<string, mojo_base.mojom.ReadOnlyFile> model_files,
     pending_receiver<OCRService> ocr_service_receiver) =>
       (bool initialized);
 

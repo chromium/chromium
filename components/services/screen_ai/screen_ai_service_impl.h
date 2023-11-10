@@ -89,6 +89,7 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
   // mojom::ScreenAIServiceFactory:
   void InitializeOCR(
       const base::FilePath& library_path,
+      base::flat_map<std::string, base::File> model_files,
       mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
       InitializeOCRCallback callback) override;
 
@@ -108,6 +109,11 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
   void InitializeMainContentExtractionInternal(
       mojo::PendingReceiver<mojom::MainContentExtractionService>
           main_content_extractor_service_receiver,
+      InitializeMainContentExtractionCallback callback,
+      std::unique_ptr<PreloadedModelData> model_data);
+
+  void InitializeOCRInternal(
+      mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
       InitializeMainContentExtractionCallback callback,
       std::unique_ptr<PreloadedModelData> model_data);
 

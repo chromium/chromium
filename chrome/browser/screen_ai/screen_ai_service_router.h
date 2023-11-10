@@ -38,6 +38,8 @@ class ScreenAIServiceRouter : public KeyedService {
   void InitializeMainContentExtractionIfNeeded();
 
  private:
+  void InitializeOCR(mojo::PendingReceiver<mojom::OCRService> receiver,
+                     std::unique_ptr<ComponentFiles> model_files);
   void InitializeMainContentExtraction(
       mojo::PendingReceiver<mojom::MainContentExtractionService> receiver,
       std::unique_ptr<ComponentFiles> model_files);
