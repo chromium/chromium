@@ -178,15 +178,12 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::SetLcpElementLocator(
     const std::string& lcp_element_locator,
-    bool lcp_timing_was_predicted) {
+    absl::optional<uint32_t> predicted_lcp_index) {
   if (!lcpp_data_inputs_) {
     lcpp_data_inputs_.emplace();
   }
   lcpp_data_inputs_->lcp_element_locator = lcp_element_locator;
-  // At most one element can be predicted.
-  // TODO(crbug.com/1493255): Check below condition.
-  // CHECK(!lcp_timing_was_predicted_ || !lcp_timing_was_predicted);
-  lcp_timing_was_predicted_ |= lcp_timing_was_predicted;
+  predicted_lcp_indexes_.push_back(predicted_lcp_index);
 }
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::AppendFetchedFontUrl(
@@ -225,6 +222,26 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
     return;
   }
 
+  if (predicted_lcp_indexes_.empty()) {
+    return;
+  }
+  // Then, We have a prelearn data and at least one LCP locator in current
+  // load. Let's stat it.
+
+  std::set<uint32_t> valid_indexes;
+  bool false_positive = false;
+  // TODO(crbug.com/1493255): Introduce more UMA using these flags.
+  [[maybe_unused]] bool dup_index = false;
+  for (const absl::optional<uint32_t>& maybe_index : predicted_lcp_indexes_) {
+    // There is an yet another LCP after valid index LCP.
+    false_positive |= !valid_indexes.empty();
+
+    if (!maybe_index.has_value()) {
+      continue;
+    }
+    dup_index |= !valid_indexes.insert(*maybe_index).second;
+  }
+
   base::UmaHistogramBoolean(internal::kHistogramLCPPPredictSuccess,
-                            lcp_timing_was_predicted_);
+                            valid_indexes.size() == 1u && !false_positive);
 }

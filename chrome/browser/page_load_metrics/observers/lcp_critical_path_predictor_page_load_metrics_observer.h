@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_LCP_CRITICAL_PATH_PREDICTOR_PAGE_LOAD_METRICS_OBSERVER_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_LCP_CRITICAL_PATH_PREDICTOR_PAGE_LOAD_METRICS_OBSERVER_H_
 
+#include <vector>
+
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/page_user_data.h"
@@ -56,7 +58,7 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
   ~LcpCriticalPathPredictorPageLoadMetricsObserver() override;
 
   void SetLcpElementLocator(const std::string& lcp_element_locator,
-                            bool is_predicted);
+                            absl::optional<uint32_t> predicted_lcp_index);
   void SetLcpInfluencerScriptUrls(
       const std::vector<GURL>& lcp_influencer_scripts);
   // Append fetched font URLs to the list to be passed to LCPP.
@@ -95,9 +97,11 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
 
   absl::optional<predictors::LcppDataInputs> lcpp_data_inputs_;
 
-  // True iff one of `lcp_element_locator` via SetLcpElementLocator was
-  // predicted as true LCP.
-  bool lcp_timing_was_predicted_ = false;
+  // Prediction result. This keeps SetLcpElementLocator's second argument.
+  // `predicted_lcp_index` is predicted index of `lcp_element_locators` in
+  // LCPCriticalPathPredictorNavigationTimeHint.
+  // absl::nullopt value means the LCP didn't hit any of `lcp_element_locators`.
+  std::vector<absl::optional<uint32_t>> predicted_lcp_indexes_;
 
   base::WeakPtrFactory<LcpCriticalPathPredictorPageLoadMetricsObserver>
       weak_factory_{this};

@@ -1683,6 +1683,7 @@ action_foreach("element_locator_test_protobuf") {
 
   source_dir = "lcp_critical_path_predictor/test_proto"
   sources = rebase_path([ "lcp_image_id.asciipb" ], "", source_dir)
+  sources += rebase_path([ "lcp_image_id_b.asciipb" ], "", source_dir)
 
   deps = [
     ":element_locator_proto",

@@ -95,11 +95,12 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
     navigation->GetNavigationHandle()->SetLCPPNavigationHint(hint);
   }
 
-  void SetMockLcpElementLocator(GURL url,
-                                const std::string& mock_element_locator = "foo",
-                                bool is_predicted = false) {
+  void SetMockLcpElementLocator(
+      GURL url,
+      const std::string& mock_element_locator = "foo",
+      absl::optional<uint32_t> mock_predicted_index = absl::nullopt) {
     lcpp_observers_[url]->SetLcpElementLocator(mock_element_locator,
-                                               is_predicted);
+                                               mock_predicted_index);
   }
 
   void ConfirmResult(GURL url,
@@ -177,7 +178,10 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
                   /*learn_lcpp=*/false, /*record_uma=*/activate);
   }
 
-  void TestLCPPrediction(bool is_predicted) {
+  static const uint32_t kNotFound = static_cast<uint32_t>(-1);
+
+  void TestLCPPrediction(std::vector<uint32_t> predicted_lcp_indexes,
+                         bool expect_predicted) {
     const GURL main_frame_url("https://test.example");
     // Let predictor learn pseudo("lcp_previous") LCP locator
     predictors::ResourcePrefetchPredictor* predictor =
@@ -191,14 +195,18 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
 
     // Predict LCP with the learned result.
     NavigationWithLCPPHint(main_frame_url, /*provide_lcpp_hint=*/true);
-    SetMockLcpElementLocator(main_frame_url, "lcp_actual", is_predicted);
+    for (auto index : predicted_lcp_indexes) {
+      SetMockLcpElementLocator(
+          main_frame_url, "lcp_actual",
+          index == kNotFound ? absl::nullopt : absl::optional<uint32_t>(index));
+    }
     tester()->NavigateToUntrackedUrl();
-    // Result only depends `is_predicted` parameter.
     EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                     internal::kHistogramLCPPPredictSuccess),
-                base::BucketsAre(base::Bucket(is_predicted, 1)));
+                base::BucketsAre(base::Bucket(expect_predicted, 1)));
   }
 
+ private:
   page_load_metrics::mojom::PageLoadTiming timing_;
   std::map<GURL, LcpCriticalPathPredictorPageLoadMetricsObserver*>
       lcpp_observers_;
@@ -225,9 +233,26 @@ TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest,
 }
 
 TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest, PredictLCPSuccess) {
-  TestLCPPrediction(/*is_predicted=*/true);
+  TestLCPPrediction({0u}, /*expect_predicted=*/true);
+}
+
+TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest,
+       PredictLCPSuccess2) {
+  TestLCPPrediction({kNotFound, 0u}, /*expect_predicted=*/true);
 }
 
 TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest, PredictLCPFailed) {
-  TestLCPPrediction(/*is_predicted=*/false);
+  TestLCPPrediction({kNotFound}, /*expect_predicted=*/false);
+}
+
+TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest, PredictLCPFailed2) {
+  TestLCPPrediction({0u, kNotFound}, /*expect_predicted=*/false);
+}
+
+TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest, PredictLCPFailed3) {
+  TestLCPPrediction({0u, 0u}, /*expect_predicted=*/false);
+}
+
+TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest, PredictLCPFailed4) {
+  TestLCPPrediction({0u, 1u}, /*expect_predicted=*/false);
 }
