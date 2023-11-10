@@ -137,7 +137,7 @@ absl::optional<ReconnectParams> It2MeHost::CreateReconnectParams() const {
   reconnect_params->support_id = support_id_;
   reconnect_params->host_secret = host_secret_;
   reconnect_params->private_key = host_key_pair_->ToString();
-  reconnect_params->ftl_device_registration_id = ftl_device_registration_id_;
+  reconnect_params->ftl_device_id = ftl_device_id_;
 #endif
 
   return reconnect_params;
@@ -218,6 +218,7 @@ void It2MeHost::ConnectOnNetworkThread(
     ftl_signaling_connector_ = std::make_unique<FtlSignalingConnector>(
         signal_strategy_.get(), base::DoNothing());
     ftl_signaling_connector_->Start();
+    ftl_device_id_ = connection_context->ftl_device_id;
   }
 
   // Check the host domain policy.
@@ -666,13 +667,6 @@ void It2MeHost::OnReceivedSupportID(const std::string& support_id,
   std::string access_code = support_id_ + host_secret_;
   std::string access_code_hash =
       protocol::GetSharedSecretHash(support_id_, access_code);
-
-  if (SessionSupportsReconnections()) {
-    // Retrieve the registration id now that signaling is connected. This id
-    // will be required if the admin needs to reconnect.
-    signal_strategy_->GetLocalAddress().GetFtlInfo(
-        /*username=*/nullptr, &ftl_device_registration_id_);
-  }
 
   std::string local_certificate = host_key_pair_->GenerateCertificate();
   if (local_certificate.empty()) {

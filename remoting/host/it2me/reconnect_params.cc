@@ -22,8 +22,7 @@ base::Value::Dict ReconnectParams::ToDict(const ReconnectParams& params) {
       .Set(kReconnectSupportId, params.support_id)
       .Set(kReconnectHostSecret, params.host_secret)
       .Set(kReconnectPrivateKey, params.private_key)
-      .Set(kReconnectFtlDeviceRegistrationId,
-           params.ftl_device_registration_id);
+      .Set(kReconnectFtlDeviceId, params.ftl_device_id);
 }
 
 ReconnectParams ReconnectParams::FromDict(const base::Value::Dict& dict) {
@@ -40,10 +39,9 @@ ReconnectParams ReconnectParams::FromDict(const base::Value::Dict& dict) {
   if (private_key) {
     params.private_key = *private_key;
   }
-  const std::string* ftl_device_registration_id =
-      dict.FindString(kReconnectFtlDeviceRegistrationId);
-  if (ftl_device_registration_id) {
-    params.ftl_device_registration_id = *ftl_device_registration_id;
+  const std::string* ftl_device_id = dict.FindString(kReconnectFtlDeviceId);
+  if (ftl_device_id) {
+    params.ftl_device_id = *ftl_device_id;
   }
 
   DCHECK(params.IsValid());
@@ -72,13 +70,11 @@ bool ReconnectParams::IsValid() const {
     return false;
   }
 
-  if (ftl_device_registration_id.empty()) {
-    LOG(ERROR) << "Missing field: ftl_device_registration_id";
+  if (ftl_device_id.empty()) {
+    LOG(ERROR) << "Missing field: ftl_device_id";
     return false;
-  } else if (!base::Uuid::ParseLowercase(ftl_device_registration_id)
-                  .is_valid()) {
-    LOG(ERROR) << "Invalid ftl_device_registration_id: "
-               << ftl_device_registration_id;
+  } else if (!base::Uuid::ParseLowercase(ftl_device_id).is_valid()) {
+    LOG(ERROR) << "Invalid ftl_device_id: " << ftl_device_id;
     return false;
   }
 

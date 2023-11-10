@@ -33,8 +33,9 @@ struct ReconnectParams {
   // A Base64 encoded string representing the host's private key.
   std::string private_key;
 
-  // A UUID representing an endpoint in the FTL signaling service.
-  std::string ftl_device_registration_id;
+  // A UUID representing an endpoint in the FTL signaling service. This ID is
+  // used to generate the registration ID which is used for endpoint targeting.
+  std::string ftl_device_id;
 };
 
 }  // namespace remoting

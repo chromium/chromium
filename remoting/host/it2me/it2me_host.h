@@ -66,6 +66,8 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
     // TODO(joedow): Remove this field once delegated signaling has been
     // deprecated and removed.
     bool use_ftl_signaling = false;
+    // Only set when FTL signaling is being used.
+    std::string ftl_device_id;
   };
 
   using CreateDeferredConnectContext =
@@ -224,7 +226,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
 
   std::string support_id_;
   std::string host_secret_;
-  std::string ftl_device_registration_id_;
+  std::string ftl_device_id_;
   scoped_refptr<RsaKeyPair> host_key_pair_;
   std::unique_ptr<RegisterSupportHostRequest> register_request_;
   std::unique_ptr<HostStatusLogger> host_status_logger_;

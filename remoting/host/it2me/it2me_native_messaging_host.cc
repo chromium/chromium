@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -135,19 +136,19 @@ std::unique_ptr<It2MeHost::DeferredConnectContext>
 CreateNativeSignalingDeferredConnectContext(
     const std::string& username,
     const std::string& access_token,
-    const std::string& ftl_device_registration_id,
+    const std::string& ftl_device_id,
     ChromotingHostContext* host_context) {
-  auto device_id_provider =
-      ftl_device_registration_id.empty()
-          ? std::make_unique<FtlClientUuidDeviceIdProvider>()
-          : std::make_unique<FtlClientUuidDeviceIdProvider>(
-                ftl_device_registration_id);
+  std::string device_id =
+      ftl_device_id.empty() ? base::Uuid::GenerateRandomV4().AsLowercaseString()
+                            : ftl_device_id;
   auto connection_context =
       std::make_unique<It2MeHost::DeferredConnectContext>();
   connection_context->use_ftl_signaling = true;
   connection_context->signal_strategy = std::make_unique<FtlSignalStrategy>(
       std::make_unique<PassthroughOAuthTokenGetter>(username, access_token),
-      host_context->url_loader_factory(), std::move(device_id_provider));
+      host_context->url_loader_factory(),
+      std::make_unique<FtlClientUuidDeviceIdProvider>(device_id));
+  connection_context->ftl_device_id = std::move(device_id);
   connection_context->register_request =
       std::make_unique<RemotingRegisterSupportHostRequest>(
           std::make_unique<PassthroughOAuthTokenGetter>(username, access_token),
@@ -357,14 +358,13 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   } else {
     if (!username.empty()) {
       std::string access_token = ExtractAccessToken(message);
-      std::string ftl_device_registration_id;
+      std::string ftl_device_id;
       if (reconnect_params.has_value()) {
-        ftl_device_registration_id =
-            reconnect_params->ftl_device_registration_id;
+        ftl_device_id = reconnect_params->ftl_device_id;
       }
       create_connection_context =
           base::BindOnce(&CreateNativeSignalingDeferredConnectContext, username,
-                         access_token, ftl_device_registration_id);
+                         access_token, ftl_device_id);
     } else {
       LOG(ERROR) << kUserName << " not found in request.";
     }
