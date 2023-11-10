@@ -44,6 +44,12 @@ public abstract class DisplayUtil {
         return sUiScalingFactorForAutomotive;
     }
 
+    static int getUiDensityForAutomotive(int baseDensity) {
+        int rawScaledDensity = (int) (baseDensity * sUiScalingFactorForAutomotive);
+        // Round up to the nearest 20 to align with DisplayMetrics defined densities.
+        return ((int) Math.ceil(rawScaledDensity / 20.0f)) * 20;
+    }
+
     /**
      * @return The smaller of getDisplayWidth(), getDisplayHeight().
      */
@@ -75,11 +81,12 @@ public abstract class DisplayUtil {
      * @return The DisplayMetrics that was scaled up.
      */
     public static DisplayMetrics scaleUpDisplayMetricsForAutomotive(DisplayMetrics displayMetrics) {
-        displayMetrics.density *= getUiScalingFactorForAutomotive();
-        displayMetrics.densityDpi =
-                (int) (displayMetrics.densityDpi * getUiScalingFactorForAutomotive());
-        displayMetrics.xdpi *= getUiScalingFactorForAutomotive();
-        displayMetrics.ydpi *= getUiScalingFactorForAutomotive();
+        int adjustedDensity = getUiDensityForAutomotive(displayMetrics.densityDpi);
+        float scaling = (float) adjustedDensity / (float) displayMetrics.densityDpi;
+        displayMetrics.density *= scaling;
+        displayMetrics.densityDpi = adjustedDensity;
+        displayMetrics.xdpi *= scaling;
+        displayMetrics.ydpi *= scaling;
         return displayMetrics;
     }
 
@@ -96,12 +103,14 @@ public abstract class DisplayUtil {
         assert windowManager != null;
         windowManager.getDefaultDisplay().getRealMetrics(displayMetrics);
 
-        configuration.densityDpi =
-                (int) (displayMetrics.densityDpi * getUiScalingFactorForAutomotive());
-        configuration.screenWidthDp = (int) (displayMetrics.widthPixels
-                / (displayMetrics.density * getUiScalingFactorForAutomotive()));
-        configuration.screenHeightDp = (int) (displayMetrics.heightPixels
-                / (displayMetrics.density * getUiScalingFactorForAutomotive()));
+        int adjustedDensity = getUiDensityForAutomotive(displayMetrics.densityDpi);
+        float scaling = (float) adjustedDensity / (float) displayMetrics.densityDpi;
+
+        configuration.densityDpi = adjustedDensity;
+        configuration.screenWidthDp =
+                (int) (displayMetrics.widthPixels / (displayMetrics.density * scaling));
+        configuration.screenHeightDp =
+                (int) (displayMetrics.heightPixels / (displayMetrics.density * scaling));
         configuration.smallestScreenWidthDp =
                 Math.min(configuration.screenWidthDp, configuration.screenHeightDp);
     }
