@@ -2106,17 +2106,6 @@ chromium-metrics-reviews@google.com.
   <summary>The count of HTTP Response codes encountered.</summary>
 </histogram>
 
-<histogram name="Net.HttpServerProperties.CountOfServers" units="units"
-    expires_after="M85">
-  <owner>mmenke@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    The total number of ServerInfo structs written to the network service's
-    prefs file, recorded each time the HttpServerProperties are serialized to
-    update the copy stored on disk.
-  </summary>
-</histogram>
-
 <histogram name="Net.HttpTimeToFirstByte" units="ms" expires_after="never">
 <!-- expires-never: Core network stack health metric -->
 
