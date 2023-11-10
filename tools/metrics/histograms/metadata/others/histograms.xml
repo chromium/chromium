@@ -11533,12 +11533,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WinJumplist.Action" enum="WinJumplistCategory"
-    expires_after="M77">
-  <owner>noms@chromium.org</owner>
-  <summary>The type of category clicked in the Windows Jumplist</summary>
-</histogram>
-
 <histogram name="WorkerThread.ExitCode" enum="WorkerThreadExitCode"
     expires_after="2021-10-31">
   <owner>nhiroki@chromium.org</owner>

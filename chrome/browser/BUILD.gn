@@ -5975,8 +5975,6 @@ static_library("browser") {
       "metrics/antivirus_metrics_provider_win.h",
       "metrics/google_update_metrics_provider_win.cc",
       "metrics/google_update_metrics_provider_win.h",
-      "metrics/jumplist_metrics_win.cc",
-      "metrics/jumplist_metrics_win.h",
       "net/chrome_mojo_proxy_resolver_win.cc",
       "net/chrome_mojo_proxy_resolver_win.h",
       "net/service_providers_win.cc",

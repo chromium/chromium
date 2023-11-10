@@ -127,7 +127,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/metrics/jumplist_metrics_win.h"
 #include "chrome/browser/notifications/notification_platform_bridge_win.h"
 #include "chrome/browser/notifications/win/notification_launch_id.h"
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win.h"
@@ -1190,8 +1189,6 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     // `switches::kWinJumplistAction` is expected to be set together with a
     // URL to open and with a specific profile dir.
     if (profile_info.mode == StartupProfileMode::kBrowserWindow) {
-      jumplist::LogJumplistActionFromSwitchValue(
-          command_line.GetSwitchValueASCII(switches::kWinJumplistAction));
       // Use a non-NULL pointer to indicate JumpList has been used. We re-use
       // chrome::kJumpListIconDirname as the key to the data.
       privacy_safe_profile->SetUserData(
