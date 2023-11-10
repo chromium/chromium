@@ -161,7 +161,12 @@ void TouchToFillController::OnShowCredManSelected() {
 }
 
 void TouchToFillController::OnCredManUiClosed(bool success) {
-  ActionCompleted();
+  if (!ttf_delegate_) {
+    return;
+  }
+  // Unretained is safe here because TouchToFillController owns the delegate.
+  ttf_delegate_->OnCredManDismissed(base::BindOnce(
+      &TouchToFillController::ActionCompleted, base::Unretained(this)));
 }
 
 void TouchToFillController::OnDismiss() {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller_webauthn_delegate.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -64,6 +65,11 @@ void TouchToFillControllerWebAuthnDelegate::OnDismiss(
     base::OnceClosure action_complete) {
   request_delegate_->OnWebAuthnAccountSelected(std::vector<uint8_t>());
   std::move(action_complete).Run();
+}
+
+void TouchToFillControllerWebAuthnDelegate::OnCredManDismissed(
+    base::OnceClosure action_completed) {
+  std::move(action_completed).Run();
 }
 
 const GURL& TouchToFillControllerWebAuthnDelegate::GetFrameUrl() {

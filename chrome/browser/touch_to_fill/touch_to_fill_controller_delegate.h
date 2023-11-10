@@ -53,6 +53,10 @@ class TouchToFillControllerDelegate {
   // invoked repeatedly.
   virtual void OnDismiss(base::OnceClosure action_completed) = 0;
 
+  // Informs the controller that the user has dismissed the Android Credential
+  // Manager UI.
+  virtual void OnCredManDismissed(base::OnceClosure action_completed) = 0;
+
   // Gets the last committed URL for the frame that triggered this sheet to be
   // created.
   virtual const GURL& GetFrameUrl() = 0;

@@ -205,6 +205,15 @@ void TouchToFillControllerAutofillDelegate::OnDismiss(
   std::move(action_complete).Run();
 }
 
+void TouchToFillControllerAutofillDelegate::OnCredManDismissed(
+    base::OnceClosure action_completed) {
+  if (!filler_) {
+    return;
+  }
+  filler_->Dismiss(ToShowVirtualKeyboard(false));
+  std::move(action_completed).Run();
+}
+
 const GURL& TouchToFillControllerAutofillDelegate::GetFrameUrl() {
   CHECK(filler_);
   return filler_->GetFrameUrl();
