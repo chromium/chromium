@@ -19,6 +19,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -659,7 +660,8 @@ PeripheralCustomizationEventRewriter::RewriteMouseEvent(
 ui::EventDispatchDetails PeripheralCustomizationEventRewriter::RewriteEvent(
     const ui::Event& event,
     const Continuation continuation) {
-  DCHECK(features::IsPeripheralCustomizationEnabled());
+  DCHECK(features::IsPeripheralCustomizationEnabled() ||
+         ::features::IsShortcutCustomizationEnabled());
 
   if (event.IsMouseEvent()) {
     return RewriteMouseEvent(*event.AsMouseEvent(), continuation);

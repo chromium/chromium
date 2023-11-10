@@ -23,6 +23,7 @@ namespace ash {
 
 class AccessibilityEventRewriter;
 class KeyboardDrivenEventRewriter;
+class PrerewrittenEventForwarder;
 
 // Owns ui::EventRewriters and ensures that they are added to each root window
 // EventSource, current and future, in the order that they are added to this.
@@ -74,6 +75,8 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
       accessibility_event_rewriter_ = nullptr;
   raw_ptr<PeripheralCustomizationEventRewriter, ExperimentalAsh>
       peripheral_customization_event_rewriter_ = nullptr;
+  raw_ptr<PrerewrittenEventForwarder, ExperimentalAsh>
+      prerewritten_event_forwarder_ = nullptr;
   raw_ptr<KeyboardDrivenEventRewriter, ExperimentalAsh>
       keyboard_driven_event_rewriter_ = nullptr;
   raw_ptr<ui::EventRewriterAsh, ExperimentalAsh> event_rewriter_ash_ = nullptr;

@@ -14,12 +14,14 @@
 #include "ash/events/accessibility_event_rewriter.h"
 #include "ash/events/keyboard_driven_event_rewriter.h"
 #include "ash/events/peripheral_customization_event_rewriter.h"
+#include "ash/events/prerewritten_event_forwarder.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "base/command_line.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_device_id_event_rewriter.h"
 #include "ui/events/event_sink.h"
 #include "ui/events/event_source.h"
@@ -74,12 +76,21 @@ void EventRewriterControllerImpl::Initialize(
 
   std::unique_ptr<PeripheralCustomizationEventRewriter>
       peripheral_customization_event_rewriter;
-  if (features::IsPeripheralCustomizationEnabled()) {
+  if (features::IsPeripheralCustomizationEnabled() ||
+      ::features::IsShortcutCustomizationEnabled()) {
     peripheral_customization_event_rewriter =
         std::make_unique<PeripheralCustomizationEventRewriter>(
             Shell::Get()->input_device_settings_controller());
     peripheral_customization_event_rewriter_ =
         peripheral_customization_event_rewriter.get();
+  }
+
+  std::unique_ptr<PrerewrittenEventForwarder> prerewritten_event_forwarder;
+  if (features::IsPeripheralCustomizationEnabled() ||
+      ::features::IsShortcutCustomizationEnabled()) {
+    prerewritten_event_forwarder =
+        std::make_unique<PrerewrittenEventForwarder>();
+    prerewritten_event_forwarder_ = prerewritten_event_forwarder.get();
   }
 
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter =
@@ -89,7 +100,12 @@ void EventRewriterControllerImpl::Initialize(
 
   // EventRewriters are notified in the order they are added.
   AddEventRewriter(std::move(accessibility_event_rewriter));
-  if (features::IsPeripheralCustomizationEnabled()) {
+  if (features::IsPeripheralCustomizationEnabled() ||
+      ::features::IsShortcutCustomizationEnabled()) {
+    AddEventRewriter(std::move(prerewritten_event_forwarder));
+  }
+  if (features::IsPeripheralCustomizationEnabled() ||
+      ::features::IsShortcutCustomizationEnabled()) {
     AddEventRewriter(std::move(peripheral_customization_event_rewriter));
   }
   AddEventRewriter(std::move(keyboard_driven_event_rewriter));
