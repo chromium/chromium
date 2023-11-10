@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test.h"
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 
 #include "base/numerics/checked_math.h"
@@ -24,8 +25,8 @@
 
 namespace blink {
 
-const uint32_t kSquareRootOfSizeMax =
-    base::saturated_cast<uint32_t>(std::sqrt(SIZE_MAX));
+const uint32_t kSquareRootOfSizeMax = base::saturated_cast<uint32_t>(
+    std::sqrt(std::numeric_limits<size_t>::max()));
 
 class MLGraphBuilderTest : public testing::Test {
  public:
@@ -1263,6 +1264,20 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 1, 5, 5}));
   }
   {
+    // Test convTranspose2d with padding=1, groups=3.
+    auto* input =
+        BuildInput(builder, "input", {1, 1, 5, 5},
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* filter =
+        BuildConstant(builder, {1, 1, 3, 3}, V8MLOperandType::Enum::kFloat32,
+                      scope.GetExceptionState());
+    auto* options = MLConvTranspose2dOptions::Create();
+    options->setPadding({1, 1, 1, 1});
+    options->setGroups(3);
+    auto* output = BuildConvTranspose2d(scope, builder, input, filter, options);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 5, 5}));
+  }
+  {
     // Test convTranspose2d with autopad="explicit", strides=2.
     auto* input =
         BuildInput(builder, "input", {1, 1, 3, 3},
@@ -1547,7 +1562,8 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
               "All dilations should be greater than 0.");
   }
   {
-    // Test throwing exception when input_channels % groups() != 0.
+    // Test throwing exception when the input channels is not equal to the
+    // filter input channels.
     auto* input =
         BuildInput(builder, "input", {1, 4, 5, 5},
                    V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
@@ -1562,28 +1578,25 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The groups must evenly divide the input "
-              "channels to filter input channels.");
+              "The input channels should equal to filter input channels.");
   }
   {
-    // Test throwing exception when filter_input_channels != input_channels /
-    // groups().
+    // Test throwing exception when output channels is too large.
     auto* input =
         BuildInput(builder, "input", {1, 4, 5, 5},
                    V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
     auto* filter =
-        BuildConstant(builder, {1, 1, 2, 2}, V8MLOperandType::Enum::kFloat32,
+        BuildConstant(builder, {4, 2, 2, 2}, V8MLOperandType::Enum::kFloat32,
                       scope.GetExceptionState());
     auto* options = MLConvTranspose2dOptions::Create();
-    options->setGroups(2);
+    options->setGroups(std::numeric_limits<uint32_t>::max());
     auto* output = builder->convTranspose2d(input, filter, options,
                                             scope.GetExceptionState());
     EXPECT_EQ(output, nullptr);
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The groups must evenly divide the input "
-              "channels to filter input channels.");
+              "The output channels is too large.");
   }
   {
     // Test throwing exception when the groups is smaller than 1.
@@ -1768,7 +1781,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The length of outputPadding should be 2.");
+              "The length of output padding should be 2.");
   }
   {
     // Test throwing exception when the outputPadding is greater than stride
@@ -1810,7 +1823,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The length of outputSizes should be 2.");
+              "The length of output sizes should be 2.");
   }
   {
     // Test throwing exception due to underflow when calculating the output
@@ -1832,7 +1845,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "Failed to calculate the output height: The stride is too large "
-              "or the input size is to small for padding.");
+              "or the input size is too small for padding.");
   }
   {
     // Test throwing exception due to outputSizes values are smaller than the

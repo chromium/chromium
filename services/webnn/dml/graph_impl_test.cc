@@ -265,6 +265,7 @@ struct ClampAttributes {
 
 template <typename T>
 struct Conv2dTester {
+  mojom::Conv2d_Type type;
   OperandInfo<T> input;
   OperandInfo<T> filter;
   struct Conv2dAttributes {
@@ -301,8 +302,9 @@ struct Conv2dTester {
           base::as_bytes(base::make_span(attributes.bias->values)));
     }
 
-    builder.BuildConv2d(input_operand_id, filter_operand_id, output_operand_id,
-                        std::move(attributes), bias_operand_id);
+    builder.BuildConv2d(type, input_operand_id, filter_operand_id,
+                        output_operand_id, std::move(attributes),
+                        bias_operand_id);
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
 
@@ -324,6 +326,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
   // fusing with bias.
   {
     Conv2dTester<float>{
+        .type = mojom::Conv2d_Type::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 1, 5, 5},
                   .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
@@ -348,6 +351,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
   // fusing with bias.
   {
     Conv2dTester<float16>{
+        .type = mojom::Conv2d_Type::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat16,
                   .dimensions = {1, 1, 5, 5},
                   .values = Float16FromFloat32(
@@ -373,6 +377,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
   // without bias.
   {
     Conv2dTester<float>{
+        .type = mojom::Conv2d_Type::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 1, 5, 5},
                   .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
@@ -392,6 +397,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
   // without bias.
   {
     Conv2dTester<float>{
+        .type = mojom::Conv2d_Type::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 5, 5, 1},
                   .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
@@ -413,6 +419,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
   // without bias.
   {
     Conv2dTester<float16>{
+        .type = mojom::Conv2d_Type::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat16,
                   .dimensions = {1, 5, 5, 1},
                   .values = Float16FromFloat32(
@@ -482,6 +489,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
   // activation.
   {
     Conv2dTester<float>{
+        .type = mojom::Conv2d_Type::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 5, 5, 1},
                   .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
@@ -507,6 +515,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
   // activation.
   {
     Conv2dTester<float16>{
+        .type = mojom::Conv2d_Type::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat16,
                   .dimensions = {1, 5, 5, 1},
                   .values = Float16FromFloat32(

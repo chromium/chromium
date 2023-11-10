@@ -83,10 +83,23 @@ struct Padding2d {
 
 // Represents a 2-D convolution given the input and filter tensors.
 //
-// Only `oihw` (output_channels, input_channels/groups, height, width) filter
-// layout is supported, other variants are being discussed in the working group
+// * conv2d (Type == kDirect) only supports `oihw` (output_channels,
+//   input_channels/groups, height, width) filter layout
+// * convTranspose2d (Type == kTransposed) only supports `iohw` (input_channels,
+//   output_channels/groups, height, width) filter layout
+// Support for other layouts are being discussed in the working group
 // https://github.com/webmachinelearning/webnn/issues/324.
 struct Conv2d {
+  enum Type {
+    // Represents a 2-D convolution given 4-D input and filter tensors.
+    kDirect,
+    // Represents a 2-D transposed convolution given 4-D input and filter
+    // tensors.
+    kTransposed,
+  };
+
+  // The type of 2-D convolution.
+  Type type;
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
   uint64 input_operand_id;

@@ -405,6 +405,11 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
     const mojom::Conv2dPtr& conv2d,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
+  if (conv2d->type == mojom::Conv2d_Type::kTransposed) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kNotSupportedError,
+                          "Operator convTranspose2d is not supported."));
+  }
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, conv2d->input_operand_id);
   // The input tensor description may be transposed.

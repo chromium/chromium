@@ -74,28 +74,27 @@ ValidateAndCalculateConv2dOutputSizes(const uint32_t input_height,
                                       const Size2d<uint32_t>& strides,
                                       const Size2d<uint32_t>& dilations,
                                       const AutoPad auto_pad) {
+  if (strides.height == 0 || strides.width == 0) {
+    return base::unexpected("All strides should be greater than 0.");
+  }
+  if (dilations.height == 0 || dilations.width == 0) {
+    return base::unexpected("All dilations should be greater than 0.");
+  }
+  const uint32_t stride_height = strides.height;
+  const uint32_t stride_width = strides.width;
+  const uint32_t dilation_height = dilations.height;
+  const uint32_t dilation_width = dilations.width;
+
   uint32_t padding_beginning_height = padding.beginning.height;
   uint32_t padding_ending_height = padding.ending.height;
   uint32_t padding_beginning_width = padding.beginning.width;
   uint32_t padding_ending_width = padding.ending.width;
 
-  if (strides.height == 0 || strides.width == 0) {
-    return base::unexpected("All strides should be greater than 0.");
-  }
-  const uint32_t stride_height = strides.height;
-  const uint32_t stride_width = strides.width;
-
-  if (dilations.height == 0 || dilations.width == 0) {
-    return base::unexpected("All dilations should be greater than 0.");
-  }
-  const uint32_t dilation_height = dilations.height;
-  const uint32_t dilation_width = dilations.width;
-
   // When the autoPad is other than "explicit", the values in the
   // options.padding array are ignored and the explicit padding values need to
   // be calculated.
   if (auto_pad != AutoPad::kExplicit) {
-    auto padding_sizes_height = CalculateConv2dPadding(
+    const auto padding_sizes_height = CalculateConv2dPadding(
         auto_pad, input_height, filter_height, stride_height, dilation_height);
     if (!padding_sizes_height) {
       return base::unexpected(
@@ -104,7 +103,7 @@ ValidateAndCalculateConv2dOutputSizes(const uint32_t input_height,
     }
     padding_beginning_height = padding_sizes_height->begin;
     padding_ending_height = padding_sizes_height->end;
-    auto padding_sizes_width = CalculateConv2dPadding(
+    const auto padding_sizes_width = CalculateConv2dPadding(
         auto_pad, input_width, filter_width, stride_width, dilation_width);
     if (!padding_sizes_width) {
       return base::unexpected(
@@ -115,7 +114,7 @@ ValidateAndCalculateConv2dOutputSizes(const uint32_t input_height,
     padding_ending_width = padding_sizes_width->end;
   }
 
-  auto float_output_height = CalculateConv2dOutputSize(
+  const auto float_output_height = CalculateConv2dOutputSize(
       input_height, filter_height, padding_beginning_height,
       padding_ending_height, stride_height, dilation_height);
   if (!float_output_height.has_value()) {
@@ -123,7 +122,7 @@ ValidateAndCalculateConv2dOutputSizes(const uint32_t input_height,
                             float_output_height.error());
   }
 
-  auto float_output_width = CalculateConv2dOutputSize(
+  const auto float_output_width = CalculateConv2dOutputSize(
       input_width, filter_width, padding_beginning_width, padding_ending_width,
       stride_width, dilation_width);
   if (!float_output_width.has_value()) {
@@ -133,6 +132,172 @@ ValidateAndCalculateConv2dOutputSizes(const uint32_t input_height,
 
   return Size2d<double>{.height = float_output_height.value(),
                         .width = float_output_width.value()};
+}
+
+// Validate and calculate the output spatial dimensions of convTranspose2d given
+// input sizes, filter sizes, padding, strides, dilations and output padding.
+base::expected<Size2d<uint32_t>, std::string>
+ValidateAndCalculateConvTranspose2dOutputSizes(
+    const uint32_t input_height,
+    const uint32_t input_width,
+    const uint32_t filter_height,
+    const uint32_t filter_width,
+    const Padding2d& padding,
+    const Size2d<uint32_t>& strides,
+    const Size2d<uint32_t>& dilations,
+    const Size2d<uint32_t>& output_padding,
+    const AutoPad auto_pad) {
+  if (strides.height == 0 || strides.width == 0) {
+    return base::unexpected("All strides should be greater than 0.");
+  }
+  if (dilations.height == 0 || dilations.width == 0) {
+    return base::unexpected("All dilations should be greater than 0.");
+  }
+  const uint32_t stride_height = strides.height;
+  const uint32_t stride_width = strides.width;
+  const uint32_t dilation_height = dilations.height;
+  const uint32_t dilation_width = dilations.width;
+
+  const uint32_t output_padding_height = output_padding.height;
+  const uint32_t output_padding_width = output_padding.width;
+  if (output_padding_height >= stride_height ||
+      output_padding_width >= stride_width) {
+    return base::unexpected(
+        "The output padding must be smaller than the stride along the same "
+        "dimension.");
+  }
+
+  uint32_t padding_beginning_height = padding.beginning.height;
+  uint32_t padding_ending_height = padding.ending.height;
+  uint32_t padding_beginning_width = padding.beginning.width;
+  uint32_t padding_ending_width = padding.ending.width;
+
+  // When the autoPad is other than "explicit", the values in the
+  // options.padding array are ignored and the padding values need to be
+  // calculated.
+  if (auto_pad != AutoPad::kExplicit) {
+    const auto padding_sizes_height = CalculateConvTranspose2dPadding(
+        auto_pad, input_height, filter_height, stride_height, dilation_height,
+        output_padding_height);
+    if (!padding_sizes_height) {
+      return base::unexpected(
+          "Overflow occurred when calculating the padding along the height "
+          "dimension.");
+    }
+    padding_beginning_height = padding_sizes_height->begin;
+    padding_ending_height = padding_sizes_height->end;
+    const auto padding_sizes_width = CalculateConvTranspose2dPadding(
+        auto_pad, input_width, filter_width, stride_width, dilation_width,
+        output_padding_width);
+    if (!padding_sizes_width) {
+      return base::unexpected(
+          "Overflow occurred when calculating the padding along the width "
+          "dimension.");
+    }
+    padding_beginning_width = padding_sizes_width->begin;
+    padding_ending_width = padding_sizes_width->end;
+  }
+
+  const auto output_height = CalculateConvTranspose2dOutputSize(
+      input_height, filter_height, padding_beginning_height,
+      padding_ending_height, stride_height, dilation_height,
+      output_padding_height);
+  if (!output_height.has_value()) {
+    return base::unexpected("Failed to calculate the output height: " +
+                            output_height.error());
+  }
+
+  const auto output_width = CalculateConvTranspose2dOutputSize(
+      input_width, filter_width, padding_beginning_width, padding_ending_width,
+      stride_width, dilation_width, output_padding_width);
+  if (!output_width.has_value()) {
+    return base::unexpected("Failed to calculate the output width: " +
+                            output_width.error());
+  }
+
+  return Size2d<uint32_t>{.height = output_height.value(),
+                          .width = output_width.value()};
+}
+
+struct Conv2dInputOutputInfo {
+  uint32_t batches;
+  uint32_t channels;
+  uint32_t height;
+  uint32_t width;
+};
+
+// Validate and get the input info of 2-D direct and transposed convolution
+// operation given input operand and attributes.
+base::expected<Conv2dInputOutputInfo, std::string>
+ValidateAndGetConv2dInputInfo(const Operand& input,
+                              const Conv2dAttributesBase& attributes) {
+  // Validate input operand.
+  const auto& input_shape = input.dimensions;
+  if (input_shape.size() != 4) {
+    return base::unexpected("The input should be a 4-D tensor.");
+  }
+  // The input layout option specifies the layout format of the input tensor.
+  uint32_t batches, channels, height, width;
+  switch (attributes.input_layout) {
+    case InputOperandLayout::kNchw:
+      // "nchw": [batches, input_channels, height, width]
+      batches = input_shape[0];
+      channels = input_shape[1];
+      height = input_shape[2];
+      width = input_shape[3];
+      break;
+    case InputOperandLayout::kNhwc:
+      // "nhwc": [batches, height, width, input_channels]
+      batches = input_shape[0];
+      height = input_shape[1];
+      width = input_shape[2];
+      channels = input_shape[3];
+      break;
+  }
+
+  return Conv2dInputOutputInfo{.batches = batches,
+                               .channels = channels,
+                               .height = height,
+                               .width = width};
+}
+
+// Validate the bias of 2-D direct and transposed convolution operation and
+// create output operand given input operand, attributes and output info.
+base::expected<Operand, std::string> ValidateConv2dBiasAndCreateOutputOperand(
+    const Operand& input,
+    const Conv2dAttributesBase& attributes,
+    const Conv2dInputOutputInfo& output_info) {
+  // Validate bias operand if it is present.
+  if (attributes.bias_operand) {
+    const auto& bias_shape = attributes.bias_operand->dimensions;
+    if (bias_shape.size() != 1) {
+      return base::unexpected("The bias should be a 1-D tensor.");
+    }
+    if (bias_shape[0] != output_info.channels) {
+      return base::unexpected(base::StringPrintf(
+          "The bias shape should be [%u].", output_info.channels));
+    }
+    if (attributes.bias_operand->data_type != input.data_type) {
+      return base::unexpected("The bias type doesn't match input type.");
+    }
+  }
+
+  // The input layout option specifies the layout format of the output tensor.
+  std::vector<uint32_t> output_shape;
+  switch (attributes.input_layout) {
+    case InputOperandLayout::kNchw:
+      // "nchw": [batches, output_channels, height, width]
+      output_shape = {output_info.batches, output_info.channels,
+                      output_info.height, output_info.width};
+      break;
+    case InputOperandLayout::kNhwc:
+      // "nhwc": [batches, height, width, output_channels]
+      output_shape = {output_info.batches, output_info.height,
+                      output_info.width, output_info.channels};
+      break;
+  }
+
+  return Operand(input.data_type, std::move(output_shape));
 }
 
 }  // namespace
@@ -269,6 +434,14 @@ base::expected<std::vector<Operand>, std::string> ValidateSplitAndInferOutput(
   return outputs;
 }
 
+Conv2dAttributesBase::Conv2dAttributesBase() = default;
+Conv2dAttributesBase::~Conv2dAttributesBase() = default;
+
+Conv2dAttributesBase::Conv2dAttributesBase(Conv2dAttributesBase&& other) =
+    default;
+Conv2dAttributesBase& Conv2dAttributesBase::operator=(
+    Conv2dAttributesBase&& other) = default;
+
 Conv2dAttributes::Conv2dAttributes() = default;
 Conv2dAttributes::~Conv2dAttributes() = default;
 
@@ -280,31 +453,12 @@ base::expected<Operand, std::string> ValidateConv2dAndInferOutput(
     const Operand& input,
     const Operand& filter,
     const Conv2dAttributes& attributes) {
-  // Validate input operand and set its sizes.
-  const auto input_shape = input.dimensions;
-  if (input_shape.size() != 4) {
-    return base::unexpected("The input should be a 4-D tensor.");
+  // Validate input operand.
+  const auto input_info = ValidateAndGetConv2dInputInfo(input, attributes);
+  if (!input_info.has_value()) {
+    return base::unexpected(input_info.error());
   }
-  // The input layout option specifies the layout format of the input tensor.
-  uint32_t input_batches, input_channels, input_height, input_width;
-  switch (attributes.input_layout) {
-    case InputOperandLayout::kNchw:
-      // "nchw": [batches, input_channels, height, width]
-      input_batches = input_shape[0];
-      input_channels = input_shape[1];
-      input_height = input_shape[2];
-      input_width = input_shape[3];
-      break;
-    case InputOperandLayout::kNhwc:
-      // "nhwc": [batches, height, width, input_channels]
-      input_batches = input_shape[0];
-      input_height = input_shape[1];
-      input_width = input_shape[2];
-      input_channels = input_shape[3];
-      break;
-  }
-
-  // Validate filter operand and set its sizes.
+  // Validate filter operand.
   if (filter.data_type != input.data_type) {
     return base::unexpected("The filter type doesn't match the input type.");
   }
@@ -312,8 +466,9 @@ base::expected<Operand, std::string> ValidateConv2dAndInferOutput(
   if (filter_shape.size() != 4) {
     return base::unexpected("The filter should be a 4-D tensor.");
   }
-  // The filter layout specifies the filter layout format.
+
   uint32_t filter_height, filter_width, output_channels, filter_input_channels;
+  // The conv2d filter layout specifies the filter layout format.
   switch (attributes.filter_layout) {
     case Conv2dFilterOperandLayout::kHwio:
       // "hwio": [height, width, input_channels/groups, output_channels]
@@ -344,57 +499,165 @@ base::expected<Operand, std::string> ValidateConv2dAndInferOutput(
       filter_width = filter_shape[3];
       break;
   }
-  // Validate bias operand if it is present.
-  if (attributes.bias_operand) {
-    const auto bias_shape = attributes.bias_operand->dimensions;
-    if (bias_shape.size() != 1) {
-      return base::unexpected("The bias should be a 1-D tensor.");
-    }
-    if (bias_shape[0] != output_channels) {
-      return base::unexpected(base::StringPrintf(
-          "The bias shape should be [%u].", output_channels));
-    }
-    if (attributes.bias_operand->data_type != input.data_type) {
-      return base::unexpected("The bias type doesn't match input type.");
-    }
-  }
-  // Validate groups.
+
+  // Validate groups and input channels.
   if (attributes.groups == 0) {
     return base::unexpected("The groups should be greater than 0.");
   }
-  if (input_channels % attributes.groups != 0 ||
-      filter_input_channels != input_channels / attributes.groups) {
+  if (input_info->channels % attributes.groups != 0 ||
+      filter_input_channels != input_info->channels / attributes.groups) {
     return base::unexpected(
         "The groups must evenly divide the input channels to filter input "
         "channels.");
   }
 
+  // Validate and calculate output sizes.
   const auto output_sizes = ValidateAndCalculateConv2dOutputSizes(
-      input_height, input_width, filter_height, filter_width,
+      input_info->height, input_info->width, filter_height, filter_width,
       attributes.padding, attributes.strides, attributes.dilations,
       attributes.auto_pad);
   if (!output_sizes.has_value()) {
     return base::unexpected(output_sizes.error());
   }
-  const uint32_t output_height =
-      base::ClampFloor<uint32_t>(output_sizes->height);
-  const uint32_t output_width = base::ClampFloor<uint32_t>(output_sizes->width);
-  // The input layout option specifies the layout format of the output tensor.
-  std::vector<uint32_t> output_shape;
-  switch (attributes.input_layout) {
-    case InputOperandLayout::kNchw:
-      // "nchw": [batches, output_channels, height, width]
-      output_shape = {input_batches, output_channels, output_height,
-                      output_width};
-      break;
-    case InputOperandLayout::kNhwc:
-      // "nhwc": [batches, height, width, output_channels]
-      output_shape = {input_batches, output_height, output_width,
-                      output_channels};
-      break;
+  uint32_t output_height = base::ClampFloor<uint32_t>(output_sizes->height);
+  uint32_t output_width = base::ClampFloor<uint32_t>(output_sizes->width);
+
+  Conv2dInputOutputInfo output_info{.batches = input_info->batches,
+                                    .channels = output_channels,
+                                    .height = output_height,
+                                    .width = output_width};
+  return ValidateConv2dBiasAndCreateOutputOperand(input, attributes,
+                                                  output_info);
+}
+
+ConvTranspose2dAttributes::ConvTranspose2dAttributes() = default;
+ConvTranspose2dAttributes::~ConvTranspose2dAttributes() = default;
+
+ConvTranspose2dAttributes::ConvTranspose2dAttributes(
+    ConvTranspose2dAttributes&& other) = default;
+ConvTranspose2dAttributes& ConvTranspose2dAttributes::operator=(
+    ConvTranspose2dAttributes&& other) = default;
+
+base::expected<Operand, std::string> ValidateConvTranspose2dAndInferOutput(
+    const Operand& input,
+    const Operand& filter,
+    const ConvTranspose2dAttributes& attributes) {
+  // Validate input operand.
+  const auto input_info = ValidateAndGetConv2dInputInfo(input, attributes);
+  if (!input_info.has_value()) {
+    return base::unexpected(input_info.error());
+  }
+  // Validate filter operand.
+  if (filter.data_type != input.data_type) {
+    return base::unexpected("The filter type doesn't match the input type.");
+  }
+  const auto filter_shape = filter.dimensions;
+  if (filter_shape.size() != 4) {
+    return base::unexpected("The filter should be a 4-D tensor.");
   }
 
-  return Operand(input.data_type, std::move(output_shape));
+  uint32_t input_channels, filter_height, filter_width, filter_output_channels;
+  // The conv2d filter layout specifies the filter layout format.
+  switch (attributes.filter_layout) {
+    case ConvTranspose2dFilterOperandLayout::kIohw:
+      // "iohw": [input_channels, output_channels/groups, height, width]
+      input_channels = filter_shape[0];
+      filter_output_channels = filter_shape[1];
+      filter_height = filter_shape[2];
+      filter_width = filter_shape[3];
+      break;
+    case ConvTranspose2dFilterOperandLayout::kHwoi:
+      // "hwoi": [height, width, output_channels/groups, input_channels]
+      filter_height = filter_shape[0];
+      filter_width = filter_shape[1];
+      filter_output_channels = filter_shape[2];
+      input_channels = filter_shape[3];
+      break;
+    case ConvTranspose2dFilterOperandLayout::kOhwi:
+      // "ohwi": [output_channels/groups, height, width, input_channels]
+      filter_output_channels = filter_shape[0];
+      filter_height = filter_shape[1];
+      filter_width = filter_shape[2];
+      input_channels = filter_shape[3];
+      break;
+  }
+  // Validate groups, input channels and calculate output channels.
+  if (attributes.groups == 0) {
+    return base::unexpected("The groups should be greater than 0.");
+  }
+  if (input_info->channels != input_channels) {
+    return base::unexpected(
+        "The input channels should equal to filter input channels.");
+  }
+  const auto checked_output_channels =
+      base::MakeCheckedNum<uint32_t>(filter_output_channels) *
+      attributes.groups;
+  if (!checked_output_channels.IsValid()) {
+    return base::unexpected("The output channels is too large.");
+  }
+  const uint32_t output_channels = checked_output_channels.ValueOrDie();
+
+  // Validate and calculate output sizes.
+  uint32_t output_height, output_width;
+  if (attributes.output_sizes) {
+    const auto& output_sizes = attributes.output_sizes;
+    output_height = output_sizes->height;
+    output_width = output_sizes->width;
+    if (output_height <= 0 || output_width <= 0) {
+      return base::unexpected("All output sizes should be greater than 0.");
+    }
+    const auto strides = attributes.strides;
+    const auto calculated_output_sizes =
+        ValidateAndCalculateConvTranspose2dOutputSizes(
+            input_info->height, input_info->width, filter_height, filter_width,
+            attributes.padding, strides, attributes.dilations,
+            // According to WebNN spec:
+            // https://webmachinelearning.github.io/webnn/#dom-mlconvtranspose2doptions-outputsizes
+            // When the output sizes are explicitly specified, the output
+            // padding values in outputPadding are ignored.
+            {0, 0}, attributes.auto_pad);
+    if (!calculated_output_sizes.has_value()) {
+      return base::unexpected(calculated_output_sizes.error());
+    }
+    const auto calculated_output_height = calculated_output_sizes->height;
+    const auto max_output_height =
+        base::MakeCheckedNum<uint32_t>(calculated_output_height) +
+        strides.height;
+    if (!max_output_height.IsValid()) {
+      return base::unexpected("The checked maximum output height is too large");
+    }
+    if (output_height < calculated_output_height ||
+        output_height >= max_output_height.ValueOrDie()) {
+      return base::unexpected("The height of output sizes is invalid.");
+    }
+    const auto calculated_output_width = calculated_output_sizes->width;
+    const auto max_output_width =
+        base::MakeCheckedNum<uint32_t>(calculated_output_width) + strides.width;
+    if (!max_output_width.IsValid()) {
+      return base::unexpected("The checked maximum output width is too large");
+    }
+    if (output_width < calculated_output_width ||
+        output_width >= max_output_width.ValueOrDie()) {
+      return base::unexpected("The width of output sizes is invalid.");
+    }
+  } else {
+    const auto output_sizes = ValidateAndCalculateConvTranspose2dOutputSizes(
+        input_info->height, input_info->width, filter_height, filter_width,
+        attributes.padding, attributes.strides, attributes.dilations,
+        attributes.output_padding, attributes.auto_pad);
+    if (!output_sizes.has_value()) {
+      return base::unexpected(output_sizes.error());
+    }
+    output_height = output_sizes->height;
+    output_width = output_sizes->width;
+  }
+
+  Conv2dInputOutputInfo output_info{.batches = input_info->batches,
+                                    .channels = output_channels,
+                                    .height = output_height,
+                                    .width = output_width};
+  return ValidateConv2dBiasAndCreateOutputOperand(input, attributes,
+                                                  output_info);
 }
 
 base::expected<Operand, std::string> ValidatePadAndInferOutput(
@@ -1101,6 +1364,69 @@ absl::optional<PaddingSizes> CalculateConv2dPadding(AutoPad auto_pad,
     return absl::nullopt;
   }
   return PaddingSizes({.begin = padding_begin, .end = padding_end});
+}
+
+absl::optional<PaddingSizes> CalculateConvTranspose2dPadding(
+    AutoPad auto_pad,
+    const uint32_t input_size,
+    const uint32_t filter_size,
+    const uint32_t stride,
+    const uint32_t dilation,
+    const uint32_t output_padding) {
+  auto checked_output_size =
+      base::MakeCheckedNum<uint32_t>(input_size) * stride;
+  auto checked_effective_filter_size =
+      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
+  auto checked_total_padding =
+      stride * (base::MakeCheckedNum<uint32_t>(input_size) - 1) +
+      checked_effective_filter_size + output_padding - checked_output_size;
+  base::CheckedNumeric<uint32_t> checked_padding_begin, checked_padding_end;
+  switch (auto_pad) {
+    case AutoPad::kSameUpper:
+      checked_padding_begin = checked_total_padding / 2;
+      checked_padding_end = (checked_total_padding + 1) / 2;
+      break;
+    case AutoPad::kSameLower:
+      checked_padding_begin = (checked_total_padding + 1) / 2;
+      checked_padding_end = checked_total_padding / 2;
+      break;
+    case AutoPad::kExplicit:
+      // The case has been ruled out before the function be called.
+      NOTREACHED_NORETURN()
+          << "Invalid auto pad value when calculating convTranspose2d padding.";
+  }
+  uint32_t padding_begin, padding_end;
+  if (!checked_padding_begin.AssignIfValid(&padding_begin) ||
+      !checked_padding_end.AssignIfValid(&padding_end)) {
+    return absl::nullopt;
+  }
+  return webnn::PaddingSizes({.begin = padding_begin, .end = padding_end});
+}
+
+base::expected<uint32_t, std::string> CalculateConvTranspose2dOutputSize(
+    const uint32_t input_size,
+    const uint32_t filter_size,
+    const uint32_t beginning_padding,
+    const uint32_t ending_padding,
+    const uint32_t stride,
+    const uint32_t dilation,
+    const uint32_t output_padding) {
+  // Calculate the dilated filter sizes.
+  auto checked_effective_filter_size =
+      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
+  if (!checked_effective_filter_size.IsValid()) {
+    return base::unexpected("The effective filter size is too large.");
+  }
+  auto checked_output_size =
+      (base::MakeCheckedNum<uint32_t>(input_size) - 1) * stride +
+      checked_effective_filter_size - beginning_padding - ending_padding +
+      output_padding;
+  if (!checked_output_size.IsValid()) {
+    return base::unexpected(
+        "The stride is too large or the input size is too small for padding.");
+  }
+
+  return checked_output_size.ValueOrDie();
 }
 
 bool IsFloatingPointType(Operand::DataType data_type) {

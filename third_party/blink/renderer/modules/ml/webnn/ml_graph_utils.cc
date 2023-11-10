@@ -218,4 +218,85 @@ Vector<uint32_t> CreateAllAxes(const wtf_size_t rank) {
   std::iota(default_axes.begin(), default_axes.end(), 0);
   return default_axes;
 }
+
+webnn::Padding2d CalculateConvTransposePadding2D(
+    const blink::MLConvTranspose2dOptions* options,
+    uint32_t input_height,
+    uint32_t input_width,
+    uint32_t filter_height,
+    uint32_t filter_width,
+    uint32_t stride_height,
+    uint32_t stride_width,
+    uint32_t dilation_height,
+    uint32_t dilation_width,
+    uint32_t output_padding_height,
+    uint32_t output_padding_width) {
+  webnn::Padding2d padding;
+  switch (options->autoPad().AsEnum()) {
+    case V8MLAutoPad::Enum::kExplicit: {
+      // Set the padding from WebNN explicit padding that is in
+      // [beginning_height, ending_height, beginning_width, ending_width],
+      // default to 0.
+      auto ml_padding = options->getPaddingOr({0, 0, 0, 0});
+      CHECK_EQ(ml_padding.size(), 4u);
+      padding.beginning.height = ml_padding[0];
+      padding.ending.height = ml_padding[1];
+      padding.beginning.width = ml_padding[2];
+      padding.ending.width = ml_padding[3];
+      break;
+    }
+    case V8MLAutoPad::Enum::kSameUpper:
+    case V8MLAutoPad::Enum::kSameLower: {
+      webnn::AutoPad auto_pad =
+          BlinkAutoPadToComponent(options->autoPad().AsEnum());
+      // Calculate padding based on WebNN auto padding mode and sizes.
+      auto padding_sizes_height = webnn::CalculateConvTranspose2dPadding(
+          auto_pad, input_height, filter_height, stride_height, dilation_height,
+          output_padding_height);
+      CHECK(padding_sizes_height);
+      padding.beginning.height = padding_sizes_height.value().begin;
+      padding.ending.height = padding_sizes_height.value().end;
+      auto padding_sizes_width = webnn::CalculateConvTranspose2dPadding(
+          auto_pad, input_width, filter_width, stride_width, dilation_width,
+          output_padding_width);
+      CHECK(padding_sizes_width);
+      padding.beginning.width = padding_sizes_width.value().begin;
+      padding.ending.width = padding_sizes_width.value().end;
+      break;
+    }
+  }
+  return padding;
+}
+
+webnn::Size2d<uint32_t> CalculateConvTransposeOutputSize2D(
+    const blink::MLConvTranspose2dOptions* options,
+    uint32_t input_height,
+    uint32_t input_width,
+    uint32_t filter_height,
+    uint32_t filter_width,
+    uint32_t stride_height,
+    uint32_t stride_width,
+    uint32_t dilation_height,
+    uint32_t dilation_width,
+    uint32_t output_padding_height,
+    uint32_t output_padding_width) {
+  const auto padding = CalculateConvTransposePadding2D(
+      options, input_height, input_width, filter_height, filter_width,
+      stride_height, stride_width, dilation_height, dilation_width,
+      output_padding_height, output_padding_width);
+  const auto output_height = webnn::CalculateConvTranspose2dOutputSize(
+      input_height, filter_height, padding.beginning.height,
+      padding.ending.height, stride_height, dilation_height,
+      output_padding_height);
+  CHECK(output_height.has_value());
+
+  const auto output_width = webnn::CalculateConvTranspose2dOutputSize(
+      input_width, filter_width, padding.beginning.width, padding.ending.width,
+      stride_width, dilation_width, output_padding_width);
+  CHECK(output_width.has_value());
+
+  return webnn::Size2d<uint32_t>{.height = output_height.value(),
+                                 .width = output_width.value()};
+}
+
 }  // namespace blink
