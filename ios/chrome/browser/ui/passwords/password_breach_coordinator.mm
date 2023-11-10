@@ -123,8 +123,7 @@ using password_manager::CredentialLeakType;
       base::UserMetricsAction("MobilePasswordBreachOpenPasswordManager"));
 
   [handler showSavedPasswordsSettingsFromViewController:self.baseViewController
-                                       showCancelButton:NO
-                                     startPasswordCheck:YES];
+                                       showCancelButton:NO];
 }
 
 @end

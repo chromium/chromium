@@ -130,8 +130,7 @@
   id<ApplicationSettingsCommands> settings_command_handler = HandlerForProtocol(
       delegate_->GetDispatcher(), ApplicationSettingsCommands);
   [settings_command_handler showSavedPasswordsSettingsFromViewController:nil
-                                                        showCancelButton:YES
-                                                      startPasswordCheck:NO];
+                                                        showCancelButton:YES];
 
   UMA_HISTOGRAM_ENUMERATION(
       "PasswordManager.ManagePasswordsReferrer",

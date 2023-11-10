@@ -59,16 +59,12 @@ enum class WarningType;
 - (void)showSyncPassphraseSettingsFromViewController:
     (UIViewController*)baseViewController;
 
-// TODO(crbug.com/1406871): Remove the `startPasswordCheck` parameter when
-// kIOSPasswordCheckup feature is enabled by default.
 // Shows the list of saved passwords in the settings. `showCancelButton`
 // indicates whether a cancel button should be added as the left navigation item
-// of the saved passwords view. `startPasswordCheck` indicates whether a
-// password check should be started when the saved passwords are shown.
+// of the saved passwords view.
 - (void)showSavedPasswordsSettingsFromViewController:
             (UIViewController*)baseViewController
-                                    showCancelButton:(BOOL)showCancelButton
-                                  startPasswordCheck:(BOOL)startPasswordCheck;
+                                    showCancelButton:(BOOL)showCancelButton;
 
 // Shows the password details page for a credential.
 // `showCancelButton` indicates whether a cancel button should be added as the

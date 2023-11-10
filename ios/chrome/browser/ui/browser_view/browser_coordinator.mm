@@ -2067,8 +2067,7 @@ enum class ToolbarKind {
 - (void)openPasswordManager {
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
       showSavedPasswordsSettingsFromViewController:self.viewController
-                                  showCancelButton:YES
-                                startPasswordCheck:NO];
+                                  showCancelButton:YES];
 }
 
 - (void)openPasswordSettings {
@@ -3060,8 +3059,7 @@ enum class ToolbarKind {
       HandlerForProtocol(_dispatcher, ApplicationCommands);
   [applicationCommandsHandler
       showSavedPasswordsSettingsFromViewController:self.viewController
-                                  showCancelButton:YES
-                                startPasswordCheck:NO];
+                                  showCancelButton:YES];
 }
 
 - (void)showPasswordDetailsForCredential:

@@ -149,8 +149,7 @@ TEST_F(PasswordInfobarModalOverlayMediatorTest, PresentPasswordSettings) {
       startDispatchingToTarget:commands_handler
                    forProtocol:@protocol(ApplicationSettingsCommands)];
   [[commands_handler expect] showSavedPasswordsSettingsFromViewController:nil
-                                                         showCancelButton:YES
-                                                       startPasswordCheck:NO];
+                                                         showCancelButton:YES];
 
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
 

@@ -79,8 +79,7 @@
       self.browser->GetCommandDispatcher(), ApplicationCommands);
 
   [handler showSavedPasswordsSettingsFromViewController:self.baseViewController
-                                       showCancelButton:NO
-                                     startPasswordCheck:YES];
+                                       showCancelButton:NO];
 }
 
 @end

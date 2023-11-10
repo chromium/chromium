@@ -73,8 +73,7 @@ void PasswordTabHelper::ShouldAllowRequest(
         HandlerForProtocol(controller_.dispatcher, ApplicationSettingsCommands);
 
     [settings_command_handler showSavedPasswordsSettingsFromViewController:nil
-                                                          showCancelButton:NO
-                                                        startPasswordCheck:NO];
+                                                          showCancelButton:NO];
     std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Cancel());
     UMA_HISTOGRAM_ENUMERATION(

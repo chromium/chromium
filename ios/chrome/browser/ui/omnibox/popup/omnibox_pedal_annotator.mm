@@ -148,8 +148,7 @@ const CGFloat kSymbolSize = 18;
                        [omniboxCommandHandler cancelOmniboxEdit];
                        [pedalsEndpoint
                            showSavedPasswordsSettingsFromViewController:nil
-                                                       showCancelButton:NO
-                                                     startPasswordCheck:NO];
+                                                       showCancelButton:NO];
                      }];
     }
     case OmniboxPedalId::UPDATE_CREDIT_CARD: {
