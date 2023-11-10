@@ -369,7 +369,18 @@ Node* Node::PseudoAwarePreviousSibling() const {
   if (!parent || HasPreviousSibling()) {
     return previousSibling();
   }
+
+  // Note the [[fallthrough]] attributes, the order of the cases matters and
+  // corresponds to the ordering of pseudo elements in a traversal:
+  // ::marker, ::before, non-pseudo Elements, ::after, ::view-transition.
+  // The fallthroughs ensure this ordering by checking for each kind of node
+  // in-turn.
   switch (GetPseudoId()) {
+    case kPseudoIdViewTransition:
+      if (Node* previous = parent->GetPseudoElement(kPseudoIdAfter)) {
+        return previous;
+      }
+      [[fallthrough]];
     case kPseudoIdAfter:
       if (Node* previous = parent->lastChild())
         return previous;
@@ -379,15 +390,42 @@ Node* Node::PseudoAwarePreviousSibling() const {
         return previous;
       [[fallthrough]];
     case kPseudoIdBefore:
-      if (Node* previous = parent->GetPseudoElement(kPseudoIdMarker))
+      if (Node* previous = parent->GetPseudoElement(kPseudoIdMarker)) {
         return previous;
+      }
       [[fallthrough]];
     case kPseudoIdMarker:
-      break;
+      return nullptr;
+    // The pseudos of the view transition subtree have a known structure and
+    // cannot create other pseudos so these are handled separately of the above
+    // fallthrough cases. For details on view-transition pseudo ordering, see
+    // https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/view_transition/README.md#pseudo-element-traversal
+    case kPseudoIdViewTransitionNew:
+      CHECK_EQ(parent->GetPseudoId(), kPseudoIdViewTransitionImagePair);
+      return parent->GetPseudoElement(
+          kPseudoIdViewTransitionOld,
+          To<PseudoElement>(this)->view_transition_name());
+    case kPseudoIdViewTransitionGroup: {
+      const Vector<AtomicString>& names =
+          GetDocument().GetStyleEngine().ViewTransitionTags();
+      wtf_size_t found_index =
+          names.Find(To<PseudoElement>(this)->view_transition_name());
+      CHECK_NE(found_index, kNotFound);
+      if (found_index == 0) {
+        return nullptr;
+      }
+
+      CHECK_EQ(parent->GetPseudoId(), kPseudoIdViewTransition);
+      return parent->GetPseudoElement(kPseudoIdViewTransitionGroup,
+                                      names[found_index - 1]);
+    }
+    case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionOld:
+      return nullptr;
     default:
       NOTREACHED();
+      return nullptr;
   }
-  return nullptr;
 }
 
 Node* Node::PseudoAwareNextSibling() const {
@@ -395,6 +433,8 @@ Node* Node::PseudoAwareNextSibling() const {
   if (!parent || HasNextSibling()) {
     return nextSibling();
   }
+
+  // See comments in PseudoAwarePreviousSibling.
   switch (GetPseudoId()) {
     case kPseudoIdMarker:
       if (Node* next = parent->GetPseudoElement(kPseudoIdBefore))
@@ -409,22 +449,79 @@ Node* Node::PseudoAwareNextSibling() const {
         return next;
       [[fallthrough]];
     case kPseudoIdAfter:
-      break;
+      if (Node* next = parent->GetPseudoElement(kPseudoIdViewTransition)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdViewTransition:
+      return nullptr;
+    case kPseudoIdViewTransitionOld:
+      CHECK_EQ(parent->GetPseudoId(), kPseudoIdViewTransitionImagePair);
+      return parent->GetPseudoElement(
+          kPseudoIdViewTransitionNew,
+          To<PseudoElement>(this)->view_transition_name());
+    case kPseudoIdViewTransitionGroup: {
+      const Vector<AtomicString>& names =
+          GetDocument().GetStyleEngine().ViewTransitionTags();
+      wtf_size_t found_index =
+          names.Find(To<PseudoElement>(this)->view_transition_name());
+      CHECK_NE(found_index, kNotFound);
+      if (found_index == names.size() - 1) {
+        return nullptr;
+      }
+
+      CHECK_EQ(parent->GetPseudoId(), kPseudoIdViewTransition);
+      return parent->GetPseudoElement(kPseudoIdViewTransitionGroup,
+                                      names[found_index + 1]);
+    }
+    case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionNew:
+      return nullptr;
     default:
       NOTREACHED();
+      return nullptr;
   }
-  return nullptr;
 }
 
 Node* Node::PseudoAwareFirstChild() const {
   if (const auto* current_element = DynamicTo<Element>(this)) {
+    // See comments in PseudoAwarePreviousSibling for details on view-transition
+    // pseudo traversal.
+    if (GetPseudoId() == kPseudoIdViewTransition) {
+      const Vector<AtomicString>& names =
+          GetDocument().GetStyleEngine().ViewTransitionTags();
+      if (names.empty()) {
+        return nullptr;
+      }
+      return current_element->GetPseudoElement(kPseudoIdViewTransitionGroup,
+                                               names.front());
+    }
+    if (GetPseudoId() == kPseudoIdViewTransitionGroup) {
+      return current_element->GetPseudoElement(
+          kPseudoIdViewTransitionImagePair,
+          To<PseudoElement>(this)->view_transition_name());
+    }
+    if (GetPseudoId() == kPseudoIdViewTransitionImagePair) {
+      const AtomicString& name =
+          To<PseudoElement>(this)->view_transition_name();
+      if (Node* first = current_element->GetPseudoElement(
+              kPseudoIdViewTransitionOld, name)) {
+        return first;
+      }
+
+      return current_element->GetPseudoElement(kPseudoIdViewTransitionNew,
+                                               name);
+    }
     if (Node* first = current_element->GetPseudoElement(kPseudoIdMarker))
       return first;
     if (Node* first = current_element->GetPseudoElement(kPseudoIdBefore))
       return first;
     if (Node* first = current_element->firstChild())
       return first;
-    return current_element->GetPseudoElement(kPseudoIdAfter);
+    if (Node* first = current_element->GetPseudoElement(kPseudoIdAfter)) {
+      return first;
+    }
+    return current_element->GetPseudoElement(kPseudoIdViewTransition);
   }
 
   return firstChild();
@@ -432,6 +529,37 @@ Node* Node::PseudoAwareFirstChild() const {
 
 Node* Node::PseudoAwareLastChild() const {
   if (const auto* current_element = DynamicTo<Element>(this)) {
+    // See comments in PseudoAwarePreviousSibling for details on view-transition
+    // pseudo traversal.
+    if (GetPseudoId() == kPseudoIdViewTransition) {
+      const Vector<AtomicString>& names =
+          GetDocument().GetStyleEngine().ViewTransitionTags();
+      if (names.empty()) {
+        return nullptr;
+      }
+      return current_element->GetPseudoElement(kPseudoIdViewTransitionGroup,
+                                               names.back());
+    }
+    if (GetPseudoId() == kPseudoIdViewTransitionGroup) {
+      return current_element->GetPseudoElement(
+          kPseudoIdViewTransitionImagePair,
+          To<PseudoElement>(this)->view_transition_name());
+    }
+    if (GetPseudoId() == kPseudoIdViewTransitionImagePair) {
+      const AtomicString& name =
+          To<PseudoElement>(this)->view_transition_name();
+      if (Node* last = current_element->GetPseudoElement(
+              kPseudoIdViewTransitionNew, name)) {
+        return last;
+      }
+
+      return current_element->GetPseudoElement(kPseudoIdViewTransitionOld,
+                                               name);
+    }
+    if (Node* last =
+            current_element->GetPseudoElement(kPseudoIdViewTransition)) {
+      return last;
+    }
     if (Node* last = current_element->GetPseudoElement(kPseudoIdAfter))
       return last;
     if (Node* last = current_element->lastChild())
@@ -1992,15 +2120,17 @@ uint16_t Node::compareDocumentPosition(const Node* other_node,
         return Node::kDocumentPositionPreceding | connection;
       }
 
-      if (!child2->nextSibling())
+      if (!child2->PseudoAwareNextSibling()) {
         return kDocumentPositionFollowing | connection;
-      if (!child1->nextSibling())
+      }
+      if (!child1->PseudoAwareNextSibling()) {
         return kDocumentPositionPreceding | connection;
+      }
 
       // Otherwise we need to see which node occurs first.  Crawl backwards from
       // child2 looking for child1.
-      for (const Node* child = child2->previousSibling(); child;
-           child = child->previousSibling()) {
+      for (const Node* child = child2->PseudoAwarePreviousSibling(); child;
+           child = child->PseudoAwarePreviousSibling()) {
         if (child == child1)
           return kDocumentPositionFollowing | connection;
       }

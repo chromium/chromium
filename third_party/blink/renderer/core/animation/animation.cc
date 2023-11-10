@@ -747,6 +747,8 @@ bool Animation::HasLowerCompositeOrdering(
     // ::before
     // other pseudo-elements (ordered by selector)
     // ::after
+    // TODO(bokan): ::view-transition ordering should probably also be explicit:
+    // https://github.com/w3c/csswg-drafts/issues/9588.
     const PseudoId pseudo1 = owning_element1->GetPseudoId();
     const PseudoId pseudo2 = owning_element2->GetPseudoId();
     PseudoPriority priority1 = ConvertPseudoIdtoPriority(pseudo1);
@@ -755,9 +757,11 @@ bool Animation::HasLowerCompositeOrdering(
     if (priority1 != priority2)
       return priority1 < priority2;
 
-    // The following if statement is not reachable, but the implementation
-    // matches the specification for composite ordering
     if (priority1 == PseudoPriority::kOther && pseudo1 != pseudo2) {
+      // TODO(bokan): This can happen with child pseudos in the
+      // ::view-transition subtree but we may want to sort them based on their
+      // actual composite order.
+      // https://github.com/w3c/csswg-drafts/issues/9588.
       return CodeUnitCompareLessThan(
           PseudoElement::PseudoElementNameForEvents(owning_element1),
           PseudoElement::PseudoElementNameForEvents(owning_element2));
