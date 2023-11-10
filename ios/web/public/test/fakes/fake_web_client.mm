@@ -76,6 +76,10 @@ UIView* FakeWebClient::GetWindowedContainer() {
   return GetAnyKeyWindow().rootViewController.view;
 }
 
+bool FakeWebClient::EnableWebInspector(web::BrowserState* browser_state) const {
+  return true;
+}
+
 UserAgentType FakeWebClient::GetDefaultUserAgent(web::WebState* web_state,
                                                  const GURL& url) const {
   return default_user_agent_;
