@@ -97,7 +97,7 @@
   <span class="prefix">History: [[loggingStateToString(loggingState)]]</span>
   <cr-toggle checked="{{loggingState}}" on-change="onToggleChange"></cr-toggle>
   <span class="prefix"> Filter by: </span>
-  <select class="select-filter" value="{{selectedOption::change}}">
+  <select id="erpTableFilter" class="select-filter" value="[[selectedOption]]" on-change="onFilterChange">
     <template is="dom-repeat" items="[[filterOptions]]">
       <option value="[[item]]">[[item]]</option>
     </template>

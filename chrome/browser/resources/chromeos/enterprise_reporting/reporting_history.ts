@@ -20,6 +20,7 @@ import {getTemplate} from './reporting_history.html.js';
 export interface ReportingHistoryElement {
   $: {
     body: HTMLDivElement,
+    erpTableFilter: HTMLSelectElement,
   };
 }
 
@@ -40,6 +41,7 @@ export class ReportingHistoryElement extends PolymerElement {
     'Upload',
   ];
   private selectedOption: string = ReportingHistoryElement.allEvents;
+  private currentHistory: ErpHistoryData;
 
   static get is() {
     return 'reporting-history-element' as const;
@@ -76,6 +78,14 @@ export class ReportingHistoryElement extends PolymerElement {
 
     // Deliver the value to the handler.
     this.browserProxy.handler.recordDebugState(event.detail);
+  }
+
+  onFilterChange() {
+    const currentSelection: string = this.$.erpTableFilter.value;
+    if (this.selectedOption != currentSelection) {
+      this.selectedOption = currentSelection;
+      this.updateErpTable();
+    }
   }
 
   onDownloadButtonClick(): void {
@@ -121,8 +131,9 @@ export class ReportingHistoryElement extends PolymerElement {
     // Add a listener for the asynchronous 'setErpHistoryData' event
     // to be invoked by page handler and populate the table.
     this.browserProxy.callbackRouter.setErpHistoryData.addListener(
-        (history: ErpHistoryData) => {
-          this.updateErpTable(history);
+        (historyData: ErpHistoryData) => {
+          this.currentHistory = historyData;
+          this.updateErpTable();
         });
   }
 
@@ -138,7 +149,8 @@ export class ReportingHistoryElement extends PolymerElement {
     // Populate history upon page refresh.
     this.browserProxy.handler.getErpHistoryData().then(
         ({historyData}: {historyData: ErpHistoryData}) => {
-          this.updateErpTable(historyData);
+          this.currentHistory = historyData;
+          this.updateErpTable();
         });
   }
 
@@ -155,18 +167,17 @@ export class ReportingHistoryElement extends PolymerElement {
   }
 
   // Fills the passed table element with the given history.
-  private updateErpTable(history: ErpHistoryData) {
+  private updateErpTable() {
     // Reset table.
     this.$.body.replaceChildren();
 
     // If there are no events, present a placeholder.
-    if (history.events.length === 0) {
+    if (this.currentHistory.events.length === 0) {
       this.setEmptyErpTable();
       return;
     }
-
     // If there are events we filter them by the type of event.
-    const filteredEvents = history.events.filter(
+    const filteredEvents = this.currentHistory.events.filter(
         (event: ErpHistoryEvent) => event.call == this.selectedOption ||
             this.selectedOption == ReportingHistoryElement.allEvents ||
             (this.selectedOption == ReportingHistoryElement.allButUploads &&
