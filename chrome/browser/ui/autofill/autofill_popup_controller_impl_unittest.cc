@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
@@ -82,11 +83,22 @@ using ::testing::AtLeast;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Invoke;
+using ::testing::Matcher;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::Return;
 using ::testing::StrictMock;
+
+#if !BUILDFLAG(IS_ANDROID)
+Matcher<const AutofillPopupDelegate::SuggestionPosition&>
+EqualsSuggestionPosition(AutofillPopupDelegate::SuggestionPosition position) {
+  return AllOf(
+      Field(&AutofillPopupDelegate::SuggestionPosition::row, position.row),
+      Field(&AutofillPopupDelegate::SuggestionPosition::sub_popup_level,
+            position.sub_popup_level));
+}
+#endif
 
 class MockAutofillDriver : public ContentAutofillDriver {
  public:
@@ -942,6 +954,26 @@ TEST_F(AutofillPopupControllerImplTest, ButtonActionsAreSentToDelegate) {
   EXPECT_CALL(manager().external_delegate(),
               DidPerformButtonActionForSuggestion);
   client().popup_controller(manager()).PerformButtonActionForSuggestion(0);
+}
+
+// The second popup is also the second "sub_popup_level". This test asserts that
+// the information regarding the popup level is passed on to the delegate.
+TEST_F(AutofillPopupControllerImplTest, PopupForwardsSuggestionPosition) {
+  base::WeakPtr<AutofillPopupController> sub_controller =
+      client().popup_controller(manager()).OpenSubPopup(
+          {0, 0, 10, 10}, {Suggestion(PopupItemId::kAddressEntry)},
+          AutoselectFirstSuggestion(false));
+  ASSERT_TRUE(sub_controller);
+  static_cast<AutofillPopupControllerImpl*>(sub_controller.get())
+      ->SetViewForTesting(client().sub_popup_view().GetWeakPtr());
+
+  EXPECT_CALL(
+      manager().external_delegate(),
+      DidAcceptSuggestion(
+          _, EqualsSuggestionPosition({.row = 0, .sub_popup_level = 1}), _));
+
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
+  sub_controller->AcceptSuggestion(/*index=*/0, base::TimeTicks::Now());
 }
 #endif
 

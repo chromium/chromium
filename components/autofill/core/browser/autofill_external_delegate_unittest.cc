@@ -56,8 +56,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "url/origin.h"
 
-using SuggestionPosition = autofill::AutofillPopupDelegate::SuggestionPosition;
-
 namespace autofill {
 
 namespace {
