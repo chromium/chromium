@@ -140,6 +140,9 @@
 #import "ios/chrome/browser/credential_provider/model/credential_provider_service_factory.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_support.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
+#endif
+
+#if BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #endif
