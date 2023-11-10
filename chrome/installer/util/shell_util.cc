@@ -170,9 +170,7 @@ UserSpecificRegistrySuffix::UserSpecificRegistrySuffix() {
   std::string user_sid_ascii(base::WideToASCII(user_sid));
   base::MD5Sum(user_sid_ascii.c_str(), user_sid_ascii.length(), &md5_digest);
   std::string base32_md5 = base32::Base32Encode(
-      base::StringPiece(reinterpret_cast<char*>(md5_digest.a),
-                        std::size(md5_digest.a)),
-      base32::Base32EncodePolicy::OMIT_PADDING);
+      md5_digest.a, base32::Base32EncodePolicy::OMIT_PADDING);
   // The value returned by the base32 algorithm above must never change.
   DCHECK_EQ(base32_md5.length(), 26U);
   suffix_.reserve(base32_md5.length() + 1);

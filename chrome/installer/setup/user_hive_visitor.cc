@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -54,7 +55,8 @@ ScopedUserHive::ScopedUserHive(const base::FilePath& hive_file) {
   // Generate a random name for the key at which the file will be loaded.
   std::string buffer = base::RandBytesAsString(10);
   subkey_name_ = base::ASCIIToWide(
-      base32::Base32Encode(buffer, base32::Base32EncodePolicy::OMIT_PADDING));
+      base32::Base32Encode(base::as_bytes(base::make_span(buffer)),
+                           base32::Base32EncodePolicy::OMIT_PADDING));
   DCHECK_EQ(16U, subkey_name_.size());
 
   LONG result = ::RegLoadKey(HKEY_LOCAL_MACHINE, subkey_name_.c_str(),

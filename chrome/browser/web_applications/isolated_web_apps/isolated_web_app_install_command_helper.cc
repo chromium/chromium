@@ -61,13 +61,10 @@ constexpr unsigned kRandomDirNameOctetsLength = 10;
 // to the 16 characters long directory name. 80 bits should be long
 // enough not to care about collisions.
 std::string GenerateRandomDirName() {
-  std::array<char, kRandomDirNameOctetsLength> random_array;
-  crypto::RandBytes(random_array.data(), random_array.size());
-  base::StringPiece random_string_piece(random_array.data(),
-                                        random_array.size());
-  std::string dir_name_upper_case = Base32Encode(
-      random_string_piece, base32::Base32EncodePolicy::OMIT_PADDING);
-  return base::ToLowerASCII(dir_name_upper_case);
+  std::array<uint8_t, kRandomDirNameOctetsLength> random_array;
+  crypto::RandBytes(random_array);
+  return base::ToLowerASCII(base32::Base32Encode(
+      random_array, base32::Base32EncodePolicy::OMIT_PADDING));
 }
 
 base::expected<base::FilePath, std::string> CopySwbnToIwaDir(

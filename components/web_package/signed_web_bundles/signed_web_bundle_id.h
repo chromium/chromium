@@ -81,7 +81,7 @@ class SignedWebBundleId {
  private:
   SignedWebBundleId(Type type,
                     base::StringPiece encoded_id,
-                    std::array<uint8_t, kDecodedIdLength> decoded_id);
+                    base::span<const uint8_t, kDecodedIdLength> decoded_id);
 
   Type type_;
   std::string encoded_id_;
