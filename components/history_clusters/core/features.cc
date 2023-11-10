@@ -99,7 +99,7 @@ BASE_FEATURE(kJourneysNamedNewTabGroups,
 
 BASE_FEATURE(kJourneysZeroStateFiltering,
              "JourneysZeroStateFiltering",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace internal
 

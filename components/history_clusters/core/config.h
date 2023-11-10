@@ -328,7 +328,7 @@ struct Config {
 
   // The `kJourneysZeroStateFiltering` feature and child params.
 
-  bool apply_zero_state_filtering = false;
+  bool apply_zero_state_filtering = true;
 
   // The `kNtpChromeCartInHistoryClusterModule` child params.
 
