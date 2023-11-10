@@ -12,10 +12,8 @@ This is a testharness.js-based test.
 [PASS] flexbox display (mrow)
 [PASS] grid display (math)
 [PASS] grid display (mrow)
-[FAIL] ruby display (math)
-  assert_approx_equals: block size expected 58 +/- 1 but got 54
-[FAIL] ruby display (mrow)
-  assert_approx_equals: block size expected 78 +/- 1 but got 74
+[PASS] ruby display (math)
+[PASS] ruby display (mrow)
 [FAIL] block display with column width (math)
   assert_approx_equals: block size expected 78 +/- 1 but got 45
 [FAIL] block display with column width (mrow)

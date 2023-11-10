@@ -84,7 +84,10 @@
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inl.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/layout_ruby.h"
+#include "third_party/blink/renderer/core/layout/layout_ruby_as_block.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
+#include "third_party/blink/renderer/core/layout/layout_ruby_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
@@ -417,11 +420,14 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     case EDisplay::kBlockMath:
       return MakeGarbageCollected<LayoutMathMLBlock>(element);
     case EDisplay::kRuby:
-    case EDisplay::kBlockRuby:
-    case EDisplay::kRubyText:
-      // TODO(crbug.com/880802): Returns a LayoutRuby* instance.
       DCHECK(RuntimeEnabledFeatures::CssDisplayRubyEnabled());
-      return CreateBlockFlowOrListItem(element, style);
+      return MakeGarbageCollected<LayoutRubyAsInline>(element);
+    case EDisplay::kBlockRuby:
+      DCHECK(RuntimeEnabledFeatures::CssDisplayRubyEnabled());
+      return MakeGarbageCollected<LayoutRubyAsBlock>(element);
+    case EDisplay::kRubyText:
+      DCHECK(RuntimeEnabledFeatures::CssDisplayRubyEnabled());
+      return MakeGarbageCollected<LayoutRubyText>(element);
     case EDisplay::kLayoutCustom:
     case EDisplay::kInlineLayoutCustom:
       return MakeGarbageCollected<LayoutCustom>(element);

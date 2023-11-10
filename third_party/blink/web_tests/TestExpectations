@@ -2441,8 +2441,6 @@ crbug.com/27659 external/wpt/css/css-ruby/empty-ruby-base-container.html [ Failu
 crbug.com/27659 external/wpt/css/css-ruby/empty-ruby-text-container-float.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/improperly-contained-annotation-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/rb-display-001.html [ Failure ]
-crbug.com/27659 external/wpt/css/css-ruby/root-block-ruby.xhtml [ Failure ]
-crbug.com/27659 external/wpt/css/css-ruby/root-ruby.xhtml [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/rt-display-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-align-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-align-001a.html [ Failure ]
@@ -2479,12 +2477,6 @@ crbug.com/27659 external/wpt/css/css-ruby/ruby-whitespace-002.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/rbc-rtc-basic-001.html [ Failure ]
 
 crbug.com/1497899 external/wpt/css/css-ruby/block-ruby-004.html [ Crash Failure ]
-
-crbug.com/880802 external/wpt/css/css-contain/contain-layout-005.html [ Failure ]
-crbug.com/880802 external/wpt/css/css-contain/contain-layout-017.html [ Failure ]
-crbug.com/880802 external/wpt/css/css-contain/contain-paint-008.html [ Failure ]
-crbug.com/880802 external/wpt/css/css-contain/contain-paint-021.html [ Failure ]
-crbug.com/880802 external/wpt/css/css-contain/contain-size-005.html [ Failure ]
 
 crbug.com/1223955 external/wpt/css/css-ruby/nested-ruby-pairing-001.html [ Failure ]
 crbug.com/1223955 external/wpt/css/css-ruby/ruby-autohide-001.html [ Failure ]
