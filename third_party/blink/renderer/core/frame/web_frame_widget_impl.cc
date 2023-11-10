@@ -1307,22 +1307,25 @@ void WebFrameWidgetImpl::SendOverscrollEventFromImplSide(
   }
 }
 
-void WebFrameWidgetImpl::SendScrollEndEventFromImplSide(
+void WebFrameWidgetImpl::SendEndOfScrollEvents(
     bool affects_outer_viewport,
     cc::ElementId scroll_latched_element_id) {
-  if (!RuntimeEnabledFeatures::ScrollEndEventsEnabled())
-    return;
-
   Node* target_node = View()->FindNodeFromScrollableCompositorElementId(
       scroll_latched_element_id);
-  bool target_is_root_scroller = false;
-  if (View()->MainFrameImpl()) {
-    Node* document_node = View()->MainFrameImpl()->GetDocument();
-    if (target_node == document_node) {
-      target_is_root_scroller = true;
-    }
+  if (!target_node) {
+    return;
   }
-  if (target_node) {
+  if (ScrollableArea* scrollable_area =
+          ScrollableArea::GetForScrolling(target_node->GetLayoutBox())) {
+    scrollable_area->UpdateSnappedTargetsAndEnqueueSnapChanged();
+  }
+
+  if (RuntimeEnabledFeatures::ScrollEndEventsEnabled()) {
+    bool target_is_root_scroller = false;
+    if (View()->MainFrameImpl()) {
+      Node* document_node = View()->MainFrameImpl()->GetDocument();
+      target_is_root_scroller = target_node == document_node;
+    }
     // Scrolls consumed entirely by the VisualViewport and not the
     // LayoutViewport should not trigger scrollends on the document. The
     // VisualViewport currently handles scroll but not scrollends. If that
@@ -1354,7 +1357,7 @@ void WebFrameWidgetImpl::UpdateCompositorScrollState(
   // dispatch the scroll end to the latter (still-scrolling) element.
   // https://crbug.com/1116780.
   if (commit_data.scroll_end_data.scroll_gesture_did_end) {
-    SendScrollEndEventFromImplSide(
+    SendEndOfScrollEvents(
         commit_data.scroll_end_data.gesture_affects_outer_viewport_scroll,
         commit_data.scroll_latched_element_id);
   }

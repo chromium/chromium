@@ -890,9 +890,8 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   void SendOverscrollEventFromImplSide(const gfx::Vector2dF& overscroll_delta,
                                        cc::ElementId scroll_latched_element_id);
-  void SendScrollEndEventFromImplSide(bool affects_outer_viewport,
-                                      cc::ElementId scroll_latched_element_id);
-
+  void SendEndOfScrollEvents(bool affects_outer_viewport,
+                             cc::ElementId scroll_latched_element_id);
   void RecordManipulationTypeCounts(cc::ManipulationInfo info);
 
   enum DragAction { kDragEnter, kDragOver };
