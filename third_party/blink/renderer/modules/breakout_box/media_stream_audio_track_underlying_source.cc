@@ -142,12 +142,12 @@ bool MediaStreamAudioTrackUnderlyingSource::StartFrameDelivery() {
     return false;
   }
 
-  if (added_to_track_) {
+  if (is_connected_to_track_) {
     return true;
   }
 
   WebMediaStreamAudioSink::AddToAudioTrack(this, WebMediaStreamTrack(track_));
-  added_to_track_ = true;
+  is_connected_to_track_ = this;
   return true;
 }
 
@@ -159,7 +159,7 @@ void MediaStreamAudioTrackUnderlyingSource::DisconnectFromTrack() {
 
   WebMediaStreamAudioSink::RemoveFromAudioTrack(this,
                                                 WebMediaStreamTrack(track_));
-  added_to_track_ = false;
+  is_connected_to_track_.Clear();
   track_.Clear();
 }
 
