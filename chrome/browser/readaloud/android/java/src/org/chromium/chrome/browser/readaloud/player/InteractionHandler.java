@@ -48,6 +48,7 @@ public interface InteractionHandler {
 
     /**
      * Called when the user changes the playback speed.
+     *
      * @param newSpeed New speed.
      */
     void onSpeedChange(float newSpeed);

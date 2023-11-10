@@ -35,6 +35,8 @@ import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Locale;
+
 /** Unit tests for {@link ExpandedPlayerSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -43,6 +45,7 @@ public class ExpandedPlayerSheetContentUnitTest {
     @Mock private InteractionHandler mInteractionHandler;
     @Mock private PropertyModel mModel;
     @Mock private OptionsMenuSheetContent mOptionsMenu;
+    @Mock private SpeedMenuSheetContent mSpeedMenu;
     @Mock private View.OnClickListener mOnClickListener;
 
     private Context mContext;
@@ -76,6 +79,7 @@ public class ExpandedPlayerSheetContentUnitTest {
         mTitleView = (TextView) mContentView.findViewById(R.id.readaloud_expanded_player_title);
         mPublisherView =
                 (TextView) mContentView.findViewById(R.id.readaloud_expanded_player_publisher);
+        mSpeedView = (TextView) mContentView.findViewById(R.id.readaloud_playback_speed);
         mBackButton = (ImageView) mContentView.findViewById(R.id.readaloud_seek_back_button);
         mForwardButton = (ImageView) mContentView.findViewById(R.id.readaloud_seek_forward_button);
         mPlayPauseButton = (ImageView) mContentView.findViewById(R.id.readaloud_play_pause_button);
@@ -83,13 +87,14 @@ public class ExpandedPlayerSheetContentUnitTest {
         mContent =
                 new ExpandedPlayerSheetContent(
                         mContext, mBottomSheetController, mContentView, mModel);
-        mContent.setOptionsMenu(mOptionsMenu);
+        mContent.setOptionsMenuSheetContent(mOptionsMenu);
+        mContent.setSpeedMenuSheetContent(mSpeedMenu);
     }
 
     @Test
     public void verifyInitialA11yStrings() {
-        assertEquals("1.0x", mSpeedView.getText());
-        assertEquals("Playback speed: 1.0. Click to change.", mSpeedView.getContentDescription());
+        assertEquals("1x", mSpeedView.getText());
+        assertEquals("Playback speed: 1. Click to change.", mSpeedView.getContentDescription());
         assertEquals("Back 10 seconds", mBackButton.getContentDescription());
         assertEquals("Forward 30 seconds", mForwardButton.getContentDescription());
     }
@@ -156,12 +161,19 @@ public class ExpandedPlayerSheetContentUnitTest {
     @Test
     public void testSetSpeed() {
         mContent.setSpeed(0.5f);
-        assertEquals("0.5x", mSpeedView.getText());
+        assertEquals("0.5x", mSpeedView.getText().toString());
         assertEquals("Playback speed: 0.5. Click to change.", mSpeedView.getContentDescription());
 
         mContent.setSpeed(2f);
-        assertEquals("2.0x", mSpeedView.getText());
-        assertEquals("Playback speed: 2.0. Click to change.", mSpeedView.getContentDescription());
+        assertEquals("2x", mSpeedView.getText());
+        assertEquals("Playback speed: 2. Click to change.", mSpeedView.getContentDescription());
+    }
+
+    @Test
+    public void testSetSpeed_languages() {
+        Locale.setDefault(new Locale("es", "ES"));
+        mContent.setSpeed(0.5f);
+        assertEquals("0,5x", mSpeedView.getText().toString());
     }
 
     @Test
@@ -203,7 +215,14 @@ public class ExpandedPlayerSheetContentUnitTest {
     public void testShowOptionsMenu() {
         mContent.showOptionsMenu();
         verify(mBottomSheetController).hideContent(mContent, false);
-        verify(mBottomSheetController).requestShowContent(mContent.getOptionsMenu(), true);
+        verify(mBottomSheetController).requestShowContent(mOptionsMenu, true);
+    }
+
+    @Test
+    public void testShowSpeedMenu() {
+        mContent.showSpeedMenu();
+        verify(mBottomSheetController).hideContent(mContent, false);
+        verify(mBottomSheetController).requestShowContent(mSpeedMenu, true);
     }
 
     @Test

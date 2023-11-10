@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
+import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -37,6 +38,8 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private final SeekBar mSeekBar;
     private View mContentView;
     private OptionsMenuSheetContent mOptionsMenu;
+    private SpeedMenuSheetContent mSpeedMenu;
+    private TextView mSpeedButton;
 
     public ExpandedPlayerSheetContent(
             Context context, BottomSheetController bottomSheetController, PropertyModel model) {
@@ -49,9 +52,11 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mOptionsMenu =
                 new OptionsMenuSheetContent(
                         mContext, /* parent= */ this, mBottomSheetController, mModel);
+        mSpeedMenu =
+                new SpeedMenuSheetContent(
+                        mContext, /* parent= */ this, mBottomSheetController, mModel);
     }
 
-    @SuppressWarnings("SetTextI18n")
     @VisibleForTesting
     ExpandedPlayerSheetContent(
             Context context,
@@ -63,6 +68,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mContentView = contentView;
         mModel = model;
         Resources res = mContext.getResources();
+        mSpeedButton = (TextView) mContentView.findViewById(R.id.readaloud_playback_speed);
         mContentView
                 .findViewById(R.id.readaloud_seek_back_button)
                 .setContentDescription(res.getString(R.string.readaloud_replay, BACK_SECONDS));
@@ -114,22 +120,23 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         setOnClickListener(R.id.readaloud_seek_back_button, handler::onSeekBackClick);
         setOnClickListener(R.id.readaloud_seek_forward_button, handler::onSeekForwardClick);
         setOnClickListener(R.id.readaloud_expanded_player_publisher, handler::onPublisherClick);
+        setOnClickListener(R.id.readaloud_playback_speed, this::showSpeedMenu);
         setOnClickListener(R.id.readaloud_more_button, this::showOptionsMenu);
 
         SeekBar seekBar =
                 (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
         seekBar.setOnSeekBarChangeListener(handler.getSeekBarChangeListener());
+        mSpeedMenu.setInteractionHandler(handler);
     }
 
-    @SuppressWarnings({"SetTextI18n", "DefaultLocale"})
     public void setSpeed(float speed) {
-        TextView speedButton = (TextView) mContentView.findViewById(R.id.readaloud_playback_speed);
-        speedButton.setText(String.format("%.1fx", speed));
-        speedButton.setContentDescription(
+        mModel.set(PlayerProperties.SPEED, speed);
+        String speedString = SpeedMenuSheetContent.speedFormatter(speed);
+        mSpeedButton.setText(
+                mContext.getResources().getString(R.string.readaloud_speed, speedString));
+        mSpeedButton.setContentDescription(
                 mContext.getResources()
-                        .getString(
-                                R.string.readaloud_speed_menu_button,
-                                String.format("%.1f", speed)));
+                        .getString(R.string.readaloud_speed_menu_button, speedString));
     }
 
     public void setPlaying(boolean playing) {
@@ -166,6 +173,11 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
 
     public void notifySheetClosed() {
         mOptionsMenu.notifySheetClosed();
+    }
+
+    public void showSpeedMenu() {
+        mBottomSheetController.hideContent(this, /* animate= */ false);
+        mBottomSheetController.requestShowContent(mSpeedMenu, /* animate= */ true);
     }
 
     // BottomSheetContent implementation
@@ -270,7 +282,12 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     }
 
     @VisibleForTesting
-    public void setOptionsMenu(OptionsMenuSheetContent optionsMenu) {
+    public void setOptionsMenuSheetContent(OptionsMenuSheetContent optionsMenu) {
         mOptionsMenu = optionsMenu;
+    }
+
+    @VisibleForTesting
+    public void setSpeedMenuSheetContent(SpeedMenuSheetContent speedMenu) {
+        mSpeedMenu = speedMenu;
     }
 }

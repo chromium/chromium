@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.readaloud.testing;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyDouble;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
@@ -26,8 +27,10 @@ public class MockPrefServiceHelper {
         doAnswer(this::contains).when(mPrefService).hasPrefPath(any());
         doAnswer(invocation -> (String) get(invocation)).when(mPrefService).getString(any());
         doAnswer(invocation -> (Boolean) get(invocation)).when(mPrefService).getBoolean(any());
+        doAnswer(invocation -> (Double) get(invocation)).when(mPrefService).getDouble(any());
         doAnswer(this::set).when(mPrefService).setString(any(), any());
         doAnswer(this::set).when(mPrefService).setBoolean(any(), anyBoolean());
+        doAnswer(this::set).when(mPrefService).setDouble(any(), anyDouble());
         mStorage = new HashMap<>();
     }
 

@@ -16,8 +16,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
@@ -38,10 +36,6 @@ public class ReadAloudPrefsUnitTest {
 
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock ReadAloudPrefs.Natives mNativeMock;
-
-    @Captor private ArgumentCaptor<String> mPrefNameCaptor;
-    @Captor private ArgumentCaptor<String> mPrefStringValueCaptor;
-    @Captor private ArgumentCaptor<Boolean> mPrefBooleanValueCaptor;
 
     @Before
     public void setUp() {
@@ -100,14 +94,14 @@ public class ReadAloudPrefsUnitTest {
 
     @Test
     public void testGetSpeed() {
-        mPrefService.setString("readaloud.speed", "2.0");
+        mPrefService.setDouble("readaloud.speed", 2d);
         assertEquals(2f, ReadAloudPrefs.getSpeed(mPrefService), /* delta= */ 0f);
     }
 
     @Test
     public void testSetSpeed() {
         ReadAloudPrefs.setSpeed(mPrefService, 2f);
-        verify(mPrefService).setString(eq("readaloud.speed"), eq("2.0"));
+        verify(mPrefService).setDouble(eq("readaloud.speed"), eq(2d));
     }
 
     @Test

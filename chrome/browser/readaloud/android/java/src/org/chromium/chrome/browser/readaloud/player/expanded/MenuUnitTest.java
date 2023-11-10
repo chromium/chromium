@@ -176,7 +176,17 @@ public class MenuUnitTest {
     @Test
     public void testOnRadioButtonSelected() {
         mMenu.setRadioTrueHandler(mHandler);
+        for (int i = 0; i < 3; i++) {
+            mMenu.addItem(i, 0, "test item", Action.RADIO);
+        }
+        mMenu.onRadioButtonSelected(0);
         mMenu.onRadioButtonSelected(1);
         verify(mHandler).onResult(1);
+        assertFalse(
+                ((RadioButton) mMenu.getItem(0).findViewById(R.id.readaloud_radio_button))
+                        .isChecked());
+        assertFalse(
+                ((RadioButton) mMenu.getItem(2).findViewById(R.id.readaloud_radio_button))
+                        .isChecked());
     }
 }

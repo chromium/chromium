@@ -110,7 +110,6 @@ class MenuItem extends FrameLayout {
                         });
                 setEndView(layout, radioButton);
                 break;
-
             case Action.NONE:
             default:
                 break;

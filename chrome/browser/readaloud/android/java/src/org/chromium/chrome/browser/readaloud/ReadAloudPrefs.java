@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.readaloud;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Log;
 import org.chromium.components.prefs.PrefService;
 
 import java.util.Collections;
@@ -63,18 +62,8 @@ public class ReadAloudPrefs {
      * @return Playback speed setting.
      */
     public static float getSpeed(PrefService prefs) {
-        float speed = DEFAULT_SPEED;
-        if (prefs.hasPrefPath(SPEED_PATH)) {
-            try {
-                speed = Float.parseFloat(prefs.getString(SPEED_PATH));
-            } catch (NumberFormatException exception) {
-                Log.e(
-                        TAG,
-                        "Failed to parse speed setting, using default. Details: %s",
-                        exception.getMessage());
-            }
-        }
-        return speed;
+        return (float)
+                (prefs.hasPrefPath(SPEED_PATH) ? prefs.getDouble(SPEED_PATH) : DEFAULT_SPEED);
     }
 
     /**
@@ -84,7 +73,7 @@ public class ReadAloudPrefs {
      * @param speed Playback speed to store.
      */
     public static void setSpeed(PrefService prefs, float speed) {
-        prefs.setString(SPEED_PATH, Float.toString(speed));
+        prefs.setDouble(SPEED_PATH, (double) speed);
     }
 
     /**

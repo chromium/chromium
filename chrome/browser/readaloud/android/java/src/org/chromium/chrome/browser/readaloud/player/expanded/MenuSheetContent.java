@@ -22,7 +22,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 class MenuSheetContent implements BottomSheetContent {
     private static final String TAG = "ReadAloudMenu";
     private final BottomSheetController mBottomSheetController;
-    private final BottomSheetContent mParent;
+    protected final BottomSheetContent mParent;
     private boolean mOpeningSubmenu;
     protected final Menu mMenu;
 

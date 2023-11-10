@@ -158,8 +158,8 @@ class PlayerMediator implements InteractionHandler {
 
     @Override
     public void onSpeedChange(float newSpeed) {
-        // TODO change playback speed
         ReadAloudPrefs.setSpeed(mDelegate.getPrefService(), newSpeed);
+        mPlayback.setRate(newSpeed);
     }
 
     @Override

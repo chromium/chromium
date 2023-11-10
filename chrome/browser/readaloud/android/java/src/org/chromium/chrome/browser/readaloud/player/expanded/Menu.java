@@ -107,6 +107,12 @@ public class Menu extends LinearLayout {
     }
 
     void onRadioButtonSelected(int itemId) {
+        for (Map.Entry<Integer, Integer> itemIndex : mItemIdToIndex.entrySet()) {
+            if (itemIndex.getKey() != itemId) {
+                MenuItem item = (MenuItem) mItemsContainer.getChildAt(itemIndex.getValue());
+                item.setValue(false);
+            }
+        }
         if (mRadioTrueHandler != null) {
             mRadioTrueHandler.onResult(itemId);
         }

@@ -201,6 +201,9 @@
       <message name="IDS_READALOUD_PAUSE" desc="Accessibility string for the 'Listen to this page' pause button.">
         Pause
       </message>
+      <message name="IDS_READALOUD_SPEED" desc="Strings for the playback speed options menu so the user can select playback speed.">
+       <ph name="PLAYBACK_SPEED">%1$s<ex>1.5</ex>x</ph>
+      </message>
       <message name="IDS_READALOUD_SPEED_MENU_BUTTON" desc="Accessibility string for the 'Listen to this page' playback speed menu button.">
         Playback speed: <ph name="PLAYBACK_SPEED">%1$s<ex>1.0</ex></ph>. Click to change.
       </message>

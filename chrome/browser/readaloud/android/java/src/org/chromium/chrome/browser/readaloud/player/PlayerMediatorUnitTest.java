@@ -335,6 +335,15 @@ public class PlayerMediatorUnitTest {
     }
 
     @Test
+    public void testOnSpeedChange() {
+        mMediator.setPlayback(mPlayback);
+        mMediator.onSpeedChange(0.5f);
+        verify(mPlayback).setRate(0.5f);
+        mMediator.onSpeedChange(2f);
+        assertEquals(2f, ReadAloudPrefs.getSpeed(mDelegate.getPrefService()), /* delta= */ 0f);
+    }
+
+    @Test
     public void testOnMiniPlayerExpandClick() {
         mMediator.onMiniPlayerExpandClick();
         verify(mPlayerCoordinator).expand();
@@ -368,12 +377,6 @@ public class PlayerMediatorUnitTest {
         // from user, so should seek
         mOnSeekBarChangeListener.onProgressChanged(mSeekbar, 20, true);
         verify(mPlayback).seek(anyLong());
-    }
-
-    @Test
-    public void testOnSpeedChange() {
-        mMediator.onSpeedChange(2f);
-        assertEquals(2f, ReadAloudPrefs.getSpeed(mDelegate.getPrefService()), /* delta= */ 0f);
     }
 
     private void resetPlayback() {

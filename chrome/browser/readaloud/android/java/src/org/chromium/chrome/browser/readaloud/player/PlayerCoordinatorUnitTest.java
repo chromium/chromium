@@ -46,7 +46,6 @@ import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link PlayerCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -74,7 +73,6 @@ public class PlayerCoordinatorUnitTest {
     private MockPrefServiceHelper mMockPrefServiceHelper;
 
     private PlayerCoordinator mPlayerCoordinator;
-    private PropertyModel mModel;
 
     @Mock private Player.Delegate mDelegate;
     @Mock private ExpandedPlayerCoordinator mExpandedPlayer;
@@ -131,7 +129,7 @@ public class PlayerCoordinatorUnitTest {
         // Mini player should be inflated and attached.
         verify(mMiniPlayerViewStub).inflate();
         // User prefs should be read into the model.
-        verify(prefs).getString(eq("readaloud.speed"));
+        verify(prefs).getDouble(eq("readaloud.speed"));
     }
 
     @Test
