@@ -51,8 +51,6 @@ struct Operand {
   std::vector<uint32_t> dimensions;
 };
 
-// TODO(crbug.com/1273291): Use the data type constraint in service side to
-// validate operators.
 using DataTypeConstraintSet = base::EnumSet<Operand::DataType,
                                             Operand::DataType::kFloat32,
                                             Operand::DataType::kUint8>;

@@ -263,13 +263,26 @@ const mojom::Operand* GetMojoOperand(const IdToOperandMap& id_to_operand_map,
   return operand_iterator->second.get();
 }
 
-bool ValidateUnaryOperation(const mojom::Operand* input,
-                            const mojom::Operand* output) {
+template <typename Operation>
+bool ValidateUnaryOperation(
+    const IdToOperandMap& id_to_operand_map,
+    const Operation& operation,
+    const webnn::DataTypeConstraintSet& input_constraint) {
+  const auto* input =
+      GetMojoOperand(id_to_operand_map, operation->input_operand_id);
+  const auto* output =
+      GetMojoOperand(id_to_operand_map, operation->output_operand_id);
   if (!input || !output || output == input) {
     // The unary operator is invalid.
     return false;
   }
-  if (output->data_type != input->data_type) {
+
+  const auto input_data_type = input->data_type;
+  if (!input_constraint.Has(MojoOperandTypeToComponent(input_data_type))) {
+    // The data type is not in the constraint.
+    return false;
+  }
+  if (output->data_type != input_data_type) {
     // The output data type doesn't match input data type.
     return false;
   }
@@ -280,36 +293,10 @@ bool ValidateUnaryOperation(const mojom::Operand* input,
   return true;
 }
 
-template <typename Operation>
-bool ValidateUnaryOperation(const IdToOperandMap& id_to_operand_map,
-                            const Operation& operation) {
-  auto* input = GetMojoOperand(id_to_operand_map, operation->input_operand_id);
-  auto* output =
-      GetMojoOperand(id_to_operand_map, operation->output_operand_id);
-  return ValidateUnaryOperation(input, output);
-}
-
-template <typename Operation>
-bool ValidateFloatingPointUnaryOperation(
-    const IdToOperandMap& id_to_operand_map,
-    const Operation& operation) {
-  auto* input = GetMojoOperand(id_to_operand_map, operation->input_operand_id);
-  auto* output =
-      GetMojoOperand(id_to_operand_map, operation->output_operand_id);
-  if (!ValidateUnaryOperation(input, output)) {
-    return false;
-  }
-
-  if (!IsFloatingPointType(MojoOperandTypeToComponent(input->data_type))) {
-    return false;
-  }
-
-  return true;
-}
-
 bool ValidateClamp(const IdToOperandMap& id_to_operand_map,
                    const mojom::ClampPtr& clamp) {
-  if (!ValidateUnaryOperation(id_to_operand_map, clamp)) {
+  if (!ValidateUnaryOperation(id_to_operand_map, clamp,
+                              DataTypeConstraintSet::All())) {
     return false;
   }
   if (!ValidateClampAttributes(clamp)) {
@@ -410,7 +397,8 @@ bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateElu(const IdToOperandMap& id_to_operand_map,
                  const mojom::EluPtr& elu) {
-  if (!ValidateFloatingPointUnaryOperation(id_to_operand_map, elu)) {
+  if (!ValidateUnaryOperation(id_to_operand_map, elu,
+                              DataTypeConstraint::kFloat)) {
     return false;
   }
   if (!ValidateEluAttributes(elu)) {
@@ -425,18 +413,13 @@ bool ValidateElementWiseUnary(const IdToOperandMap& id_to_operand_map,
   switch (operation->kind) {
     case mojom::ElementWiseUnary::Kind::kLogicalNot: {
       // Only uint8 is supported
-      auto* input =
-          GetMojoOperand(id_to_operand_map, operation->input_operand_id);
-      auto* output =
-          GetMojoOperand(id_to_operand_map, operation->output_operand_id);
-      if (ValidateUnaryOperation(input, output)) {
-        return input->data_type == mojom::Operand::DataType::kUint8;
-      }
-      return false;
+      return ValidateUnaryOperation(id_to_operand_map, operation,
+                                    {Operand::DataType::kUint8});
     }
     case mojom::ElementWiseUnary::Kind::kIdentity: {
       // All data types are supported
-      return ValidateUnaryOperation(id_to_operand_map, operation);
+      return ValidateUnaryOperation(id_to_operand_map, operation,
+                                    DataTypeConstraintSet::All());
     }
     case mojom::ElementWiseUnary::Kind::kSqrt:
       [[fallthrough]];
@@ -444,7 +427,8 @@ bool ValidateElementWiseUnary(const IdToOperandMap& id_to_operand_map,
       [[fallthrough]];
     case mojom::ElementWiseUnary::Kind::kReciprocal: {
       // Only float data type is supported
-      return ValidateFloatingPointUnaryOperation(id_to_operand_map, operation);
+      return ValidateUnaryOperation(id_to_operand_map, operation,
+                                    DataTypeConstraint::kFloat);
     }
   }
   return false;
@@ -479,7 +463,8 @@ bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateLeakyRelu(const IdToOperandMap& id_to_operand_map,
                        const mojom::LeakyReluPtr& leaky_relu) {
-  if (!ValidateFloatingPointUnaryOperation(id_to_operand_map, leaky_relu)) {
+  if (!ValidateUnaryOperation(id_to_operand_map, leaky_relu,
+                              DataTypeConstraint::kFloat)) {
     return false;
   }
   if (!ValidateLeakyReluAttributes(leaky_relu)) {
@@ -835,19 +820,20 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
     case mojom::Operation::Tag::kReshape:
       return ValidateReshape(id_to_operand_map, operation->get_reshape());
     case mojom::Operation::Tag::kRelu:
-      return ValidateUnaryOperation(id_to_operand_map, operation->get_relu());
+      return ValidateUnaryOperation(id_to_operand_map, operation->get_relu(),
+                                    DataTypeConstraintSet::All());
     case mojom::Operation::Tag::kSlice:
       return ValidateSlice(id_to_operand_map, operation->get_slice());
     case mojom::Operation::Tag::kSigmoid:
-      return ValidateFloatingPointUnaryOperation(id_to_operand_map,
-                                                 operation->get_sigmoid());
+      return ValidateUnaryOperation(id_to_operand_map, operation->get_sigmoid(),
+                                    DataTypeConstraint::kFloat);
     case mojom::Operation::Tag::kSoftmax:
       return ValidateSoftmax(id_to_operand_map, operation->get_softmax());
     case mojom::Operation::Tag::kSplit:
       return ValidateSplit(id_to_operand_map, operation->get_split());
     case mojom::Operation::Tag::kTanh:
-      return ValidateFloatingPointUnaryOperation(id_to_operand_map,
-                                                 operation->get_tanh());
+      return ValidateUnaryOperation(id_to_operand_map, operation->get_tanh(),
+                                    DataTypeConstraint::kFloat);
     case mojom::Operation::Tag::kTranspose:
       return ValidateTranspose(id_to_operand_map, operation->get_transpose());
   }
