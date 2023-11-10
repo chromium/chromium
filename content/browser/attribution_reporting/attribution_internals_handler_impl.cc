@@ -254,7 +254,8 @@ void AttributionInternalsHandlerImpl::IsAttributionReportingEnabled(
           contents->GetBrowserContext(),
           ContentBrowserClient::AttributionReportingOperation::kAny,
           /*rfh=*/nullptr, /*source_origin=*/nullptr,
-          /*destination_origin=*/nullptr, /*reporting_origin=*/nullptr);
+          /*destination_origin=*/nullptr, /*reporting_origin=*/nullptr,
+          /*can_bypass=*/nullptr);
 
   // TODO(apaseltiner): This is a layering violation: The internals handler
   // should query the manager for its configuration, not the command line,

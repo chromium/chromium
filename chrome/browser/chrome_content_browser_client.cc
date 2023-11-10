@@ -3413,7 +3413,8 @@ bool ChromeContentBrowserClient::IsAttributionReportingOperationAllowed(
     content::RenderFrameHost* rfh,
     const url::Origin* source_origin,
     const url::Origin* destination_origin,
-    const url::Origin* reporting_origin) {
+    const url::Origin* reporting_origin,
+    bool* can_bypass) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
   auto* privacy_sandbox_settings =
@@ -3472,16 +3473,18 @@ bool ChromeContentBrowserClient::IsAttributionReportingOperationAllowed(
     case AttributionReportingOperation::kOsSourceTransitionalDebugReporting:
       DCHECK(source_origin);
       DCHECK(reporting_origin);
+      DCHECK(can_bypass);
       return privacy_sandbox_settings
           ->IsAttributionReportingTransitionalDebuggingAllowed(
-              *source_origin, *reporting_origin);
+              *source_origin, *reporting_origin, *can_bypass);
     case AttributionReportingOperation::kTriggerTransitionalDebugReporting:
     case AttributionReportingOperation::kOsTriggerTransitionalDebugReporting:
       DCHECK(destination_origin);
       DCHECK(reporting_origin);
+      DCHECK(can_bypass);
       return privacy_sandbox_settings
           ->IsAttributionReportingTransitionalDebuggingAllowed(
-              *destination_origin, *reporting_origin);
+              *destination_origin, *reporting_origin, *can_bypass);
     case AttributionReportingOperation::kAny:
       return privacy_sandbox_settings->IsAttributionReportingEverAllowed();
   }

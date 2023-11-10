@@ -341,7 +341,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::RenderFrameHost* rfh,
       const url::Origin* impression_origin,
       const url::Origin* conversion_origin,
-      const url::Origin* reporting_origin) override;
+      const url::Origin* reporting_origin,
+      bool* can_bypass) override;
   bool IsSharedStorageAllowed(content::BrowserContext* browser_context,
                               content::RenderFrameHost* rfh,
                               const url::Origin& top_frame_origin,

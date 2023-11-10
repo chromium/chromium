@@ -404,10 +404,11 @@ bool IsOperationAllowed(
     content::RenderFrameHost* rfh,
     const url::Origin* source_origin,
     const url::Origin* destination_origin,
-    const url::Origin* reporting_origin) {
+    const url::Origin* reporting_origin,
+    bool* can_bypass = nullptr) {
   return GetContentClient()->browser()->IsAttributionReportingOperationAllowed(
       storage_partition.browser_context(), operation, rfh, source_origin,
-      destination_origin, reporting_origin);
+      destination_origin, reporting_origin, can_bypass);
 }
 
 std::unique_ptr<AttributionOsLevelManager> CreateOsLevelManager() {
@@ -791,10 +792,13 @@ void AttributionManagerImpl::ProcessEvents() {
         RenderFrameHost::FromID(pending_events_.front().rfh_id), source_origin,
         destination_origin, &**reporting_origin);
 
+    // TODO(https://crbug.com/1501357): Clean up `can_bypass` after the cookie
+    // deprecation experiment.
+    bool can_bypass = false;
     if (registration_allowed && cookie_origin &&
         IsOperationAllowed(*storage_partition_, operation,
                            /*rfh=*/nullptr, source_origin, destination_origin,
-                           &**cookie_origin)) {
+                           &**cookie_origin, &can_bypass)) {
       cookie_checker_->IsDebugCookieSet(
           *cookie_origin,
           base::BindOnce(
@@ -810,7 +814,7 @@ void AttributionManagerImpl::ProcessEvents() {
       return;
     }
 
-    ProcessNextEvent(registration_allowed, /*is_debug_cookie_set=*/false);
+    ProcessNextEvent(registration_allowed, /*is_debug_cookie_set=*/can_bypass);
   }
 }
 
@@ -1503,11 +1507,12 @@ void AttributionManagerImpl::ProcessOsEvents() {
         *storage_partition_, registration_operation,
         RenderFrameHost::FromID(event.render_frame_id), source_origin,
         destination_origin, &reporting_origin);
+    bool can_bypass = false;
     if (registration_allowed &&
         IsOperationAllowed(*storage_partition_, operation,
                            RenderFrameHost::FromID(event.render_frame_id),
-                           source_origin, destination_origin,
-                           &reporting_origin)) {
+                           source_origin, destination_origin, &reporting_origin,
+                           &can_bypass)) {
       cookie_checker_->IsDebugCookieSet(
           reporting_origin,
           base::BindOnce(
@@ -1523,7 +1528,8 @@ void AttributionManagerImpl::ProcessOsEvents() {
       return;
     }
 
-    ProcessNextOsEvent(registration_allowed, /*is_debug_key_allowed=*/false);
+    ProcessNextOsEvent(registration_allowed,
+                       /*is_debug_key_allowed=*/can_bypass);
   }
 }
 

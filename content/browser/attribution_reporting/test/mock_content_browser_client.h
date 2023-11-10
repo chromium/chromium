@@ -35,7 +35,8 @@ class MockAttributionReportingContentBrowserClientBase : public SuperClass {
                RenderFrameHost*,
                const url::Origin* source_origin,
                const url::Origin* destination_origin,
-               const url::Origin* reporting_origin),
+               const url::Origin* reporting_origin,
+               bool* can_bypass),
               (override));
 
   MOCK_METHOD(bool,

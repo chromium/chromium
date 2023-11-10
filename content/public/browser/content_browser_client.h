@@ -974,13 +974,23 @@ class CONTENT_EXPORT ContentBrowserClient {
   //   - `kAny` may provide all null origins. It checks whether conversion
   //   measurement is allowed anywhere in `browser_context`, returning false if
   //   Attribution Reporting is not allowed by default on any origin.
+  // `can_bypass` is an out parameter that is used for transitional debug
+  // reporting to indicate whether the result can be bypassed if disallowed.
+  // `can_bypass` is required to be non-null for
+  // `kSourceTransitionalDebugReporting`, `kOsSourceTransitionalDebugReporting`,
+  // `kTriggerTransitionalDebugReporting` and
+  // `kOsTriggerTransitionalDebugReporting`.
+  //
+  // TODO(https://crbug.com/1501357): Clean up `can_bypass` after the cookie
+  // deprecation experiment.
   virtual bool IsAttributionReportingOperationAllowed(
       content::BrowserContext* browser_context,
       AttributionReportingOperation operation,
       content::RenderFrameHost* rfh,
       const url::Origin* source_origin,
       const url::Origin* destination_origin,
-      const url::Origin* reporting_origin);
+      const url::Origin* reporting_origin,
+      bool* can_bypass);
 
   // Allows the embedder to control if an OS source event should register as
   // a Web OS or OS (App) source.

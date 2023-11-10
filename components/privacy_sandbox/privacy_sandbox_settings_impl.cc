@@ -489,12 +489,25 @@ bool PrivacySandboxSettingsImpl::MaySendAttributionReport(
 bool PrivacySandboxSettingsImpl::
     IsAttributionReportingTransitionalDebuggingAllowed(
         const url::Origin& top_frame_origin,
-        const url::Origin& reporting_origin) const {
+        const url::Origin& reporting_origin,
+        bool& can_bypass) const {
+  content_settings::CookieSettingsBase::CookieSettingWithMetadata
+      cookie_setting_with_metadata;
   // Third party cookies must also be available for this context. An empty site
   // for cookies is provided so the context is always treated as a third party.
-  return cookie_settings_->IsFullCookieAccessAllowed(
+  bool allowed = cookie_settings_->IsFullCookieAccessAllowed(
       reporting_origin.GetURL(), net::SiteForCookies(), top_frame_origin,
-      net::CookieSettingOverrides());
+      net::CookieSettingOverrides(), &cookie_setting_with_metadata);
+
+  if (base::FeatureList::IsEnabled(
+          kAttributionDebugReportingCookieDeprecationTesting)) {
+    can_bypass =
+        cookie_setting_with_metadata.BlockedByThirdPartyCookieBlocking() &&
+        delegate_->AreThirdPartyCookiesBlockedByCookieDeprecationExperiment();
+  } else {
+    can_bypass = false;
+  }
+  return allowed;
 }
 
 void PrivacySandboxSettingsImpl::SetFledgeJoiningAllowed(

@@ -100,6 +100,12 @@ class PrivacySandboxSettings : public KeyedService {
 
     // Whether cookie deprecation label is allowed.
     virtual bool IsCookieDeprecationLabelAllowed() const = 0;
+
+    // Whether third-party cookies are blocked due to cookie deprecation
+    // experiment. Also returns false if users explicitly block third-party
+    // cookies.
+    virtual bool AreThirdPartyCookiesBlockedByCookieDeprecationExperiment()
+        const = 0;
   };
 
   // Returns whether the Topics API is allowed at all. If false, Topics API
@@ -174,9 +180,15 @@ class PrivacySandboxSettings : public KeyedService {
   // Determines whether Attribution Reporting API's transitional debug reporting
   // is allowable in a particular context. Note that
   // `IsAttributionReportingAllowed()` should be called prior to this.
+  // |can_bypass| indicates whether the result can be bypassed which is set to
+  // true when it's disallowed due to the cookie deprecation experiment.
+  //
+  // TODO(https://crbug.com/1501357): Clean up `can_bypass` after the cookie
+  // deprecation experiment.
   virtual bool IsAttributionReportingTransitionalDebuggingAllowed(
       const url::Origin& top_frame_origin,
-      const url::Origin& reporting_origin) const = 0;
+      const url::Origin& reporting_origin,
+      bool& can_bypass) const = 0;
 
   // Sets the ability for |top_frame_etld_plus1| to join the profile to interest
   // groups to |allowed|. This information is stored in preferences, and is made
