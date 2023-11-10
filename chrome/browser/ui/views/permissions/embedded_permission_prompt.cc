@@ -265,8 +265,8 @@ void EmbeddedPermissionPrompt::Acknowledge() {
 }
 
 void EmbeddedPermissionPrompt::StopAllowing() {
-  // TODO(crbug.com/1462930): Implement.
-  NOTREACHED();
+  delegate_->Deny();
+  delegate_->FinalizeCurrentRequests();
 }
 
 void EmbeddedPermissionPrompt::ShowSystemSettings() {
