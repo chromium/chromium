@@ -639,7 +639,8 @@ export class NearbyContactVisibilityElement extends
         this.numUnreachable_)
         .then((labelTemplate) => {
           this.numUnreachableMessage_ = loadTimeData.substituteString(
-              labelTemplate, this.numUnreachable_);
+              labelTemplate, this.numUnreachable_,
+              this.i18n('nearbyShareFeatureName'));
         });
   }
 

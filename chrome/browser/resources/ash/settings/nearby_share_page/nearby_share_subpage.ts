@@ -408,7 +408,9 @@ export class SettingsNearbyShareSubpageElement extends
 
   private getAccountRowLabel(profileName: string, profileLabel: string):
       string {
-    return this.i18n('nearbyShareAccountRowLabel', profileName, profileLabel);
+    return this.i18n(
+        'nearbyShareAccountRowLabel', this.i18n('nearbyShareFeatureName'),
+        profileName, profileLabel);
   }
 
   private getEnabledToggleClassName_(): string {

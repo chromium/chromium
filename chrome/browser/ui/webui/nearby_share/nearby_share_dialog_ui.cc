@@ -122,7 +122,7 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
   plural_string_handler->AddLocalizedString(
       "nearbyShareContactVisibilityNumUnreachable",
-      IDS_NEARBY_CONTACT_VISIBILITY_NUM_UNREACHABLE);
+      IDS_NEARBY_CONTACT_VISIBILITY_NUM_UNREACHABLE_PH);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
   // Add the metrics handler to write uma stats.
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());

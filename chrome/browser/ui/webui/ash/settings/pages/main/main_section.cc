@@ -298,7 +298,7 @@ std::unique_ptr<PluralStringHandler> MainSection::CreatePluralStringHandler() {
                                             IDS_OS_SETTINGS_PROFILE_LABEL_V2);
   plural_string_handler->AddLocalizedString(
       "nearbyShareContactVisibilityNumUnreachable",
-      IDS_NEARBY_CONTACT_VISIBILITY_NUM_UNREACHABLE);
+      IDS_NEARBY_CONTACT_VISIBILITY_NUM_UNREACHABLE_PH);
 
   plural_string_handler->AddLocalizedString(
       "lockScreenNumberFingerprints",
