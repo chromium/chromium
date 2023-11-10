@@ -1056,6 +1056,11 @@ IN_PROC_BROWSER_TEST_P(
 
   HttpsFirstModeService* hfm_service =
       HttpsFirstModeServiceFactory::GetForProfile(profile);
+  // Do lots of navigations so that Typically Secure User can kick in.
+  for (size_t i = 0; i < 100; i++) {
+    hfm_service->IncrementRecentNavigationCount();
+  }
+
   hfm_service->SetClockForTesting(&clock);
   // HFM service runs this on startup, but we can't set the test clock before it
   // runs, and we need to move the clock forward for this to work. So call it

@@ -74,6 +74,22 @@ const base::FeatureParam<int> kMinTotalEngagementPointsForTypicallySecureUser{
     &features::kHttpsFirstModeV2ForTypicallySecureUsers,
     "min-total-site-engagement-score", 50};
 
+// Rolling window size in days to count recent navigations. Navigations within
+// this window will be counted to be used for the Typically Secure heuristic.
+// Navigations older than this many days will be discarded from the count.
+const base::FeatureParam<int> kNavigationCounterRollingWindowSizeInDays{
+    &features::kHttpsFirstModeV2ForTypicallySecureUsers,
+    "navigation-counts-rolling-window-size-in-days", 15};
+
+// Minimum number of main frame navigations counted in this profile during a
+// rolling window of kNavigationCounterDefaultRollingWindowSizeInDays for a user
+// to be considered typically secure. If the user doesn't have at least this
+// many navigations counted, they might not have used Chrome sufficiently for us
+// to auto-enable HFM.
+const base::FeatureParam<int> kMinRecentNavigationsForTypicallySecureUser{
+    &features::kHttpsFirstModeV2ForTypicallySecureUsers,
+    "min-recent-navigations", 100};
+
 // The key for the fallback events in the base preference.
 constexpr char kFallbackEventsKey[] = "fallback_events";
 
@@ -87,7 +103,6 @@ constexpr char kHeuristicStartTimestampKey[] = "heuristic_start_timestamp";
 // kFallbackEntriesRollingWindowSize.
 constexpr char kFallbackEventsPrefTimestampKey[] = "timestamp";
 
-constexpr int kNavigationCounterDefaultRollingWindowSizeInDays = 7;
 constexpr int kNavigationCounterDefaultSaveInterval = 10;
 
 namespace {
@@ -277,7 +292,7 @@ HttpsFirstModeService::HttpsFirstModeService(Profile* profile,
       profile_->GetPrefs()->GetDict(prefs::kHttpsUpgradeNavigations).Clone();
   navigation_counter_ = std::make_unique<DailyNavigationCounter>(
       &navigation_counts_dict_, clock_,
-      kNavigationCounterDefaultRollingWindowSizeInDays,
+      kNavigationCounterRollingWindowSizeInDays.Get(),
       kNavigationCounterDefaultSaveInterval);
 
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
@@ -445,7 +460,9 @@ bool HttpsFirstModeService::UpdateFallbackEntries(bool add_new_entry) {
       (recent_warning_count <= kMaxRecentFallbackEntryCount) &&
       (engagement_svc->GetTotalEngagementPoints() >=
        kMinTotalEngagementPointsForTypicallySecureUser.Get()) &&
-      (now - latest_fallback_timestamp > base::Days(1));
+      (now - latest_fallback_timestamp > base::Days(1)) &&
+      (static_cast<int>(GetRecentNavigationCount()) >=
+       kMinRecentNavigationsForTypicallySecureUser.Get());
 
   // Update the pref with the new fallback events.
   base::Value::Dict new_base_pref;
