@@ -1722,7 +1722,7 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "brya",
-        "cros_img": "brya-release/R120-15662.4.0",
+        "cros_img": "brya-release/R120-15662.9.0",
         "dut_pool": "chrome",
         "experiment_percentage": 100,
         "name": "lacros_all_tast_tests BRYA_RELEASE_DEV",
@@ -1796,7 +1796,7 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R120-15656.0.0",
+        "cros_img": "dedede-release/R120-15662.9.0",
         "experiment_percentage": 100,
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_DEV",
         "resultdb": {
@@ -1868,7 +1868,7 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "fizz",
-        "cros_img": "fizz-release/R120-15662.4.0",
+        "cros_img": "fizz-release/R120-15662.9.0",
         "dut_pool": "chrome",
         "experiment_percentage": 100,
         "name": "lacros_all_tast_tests FIZZ_RELEASE_DEV",
@@ -1943,7 +1943,7 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "guybrush",
-        "cros_img": "guybrush-release/R120-15662.4.0",
+        "cros_img": "guybrush-release/R120-15662.9.0",
         "dut_pool": "chrome",
         "experiment_percentage": 100,
         "name": "lacros_all_tast_tests GUYBRUSH_RELEASE_DEV",
@@ -2018,7 +2018,7 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "puff",
-        "cros_img": "puff-release/R120-15662.4.0",
+        "cros_img": "puff-release/R120-15662.9.0",
         "dut_pool": "chrome",
         "experiment_percentage": 100,
         "name": "lacros_all_tast_tests PUFF_RELEASE_DEV",
@@ -2124,7 +2124,7 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R120-15662.4.0",
+        "cros_img": "jacuzzi-release/R120-15662.9.0",
         "experiment_percentage": 100,
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_DEV",
         "resultdb": {
