@@ -361,16 +361,14 @@ NGHighlightPainter::NGHighlightPainter(
     if (text_node) {
       DocumentMarkerController& controller = node_->GetDocument().Markers();
       markers_ = controller.ComputeMarkersToPaint(*text_node);
-      if (RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
-        target_ = controller.MarkersFor(
-            *text_node, DocumentMarker::MarkerTypes::TextFragment());
-        spelling_ = controller.MarkersFor(
-            *text_node, DocumentMarker::MarkerTypes::Spelling());
-        grammar_ = controller.MarkersFor(
-            *text_node, DocumentMarker::MarkerTypes::Grammar());
-        custom_ = controller.MarkersFor(
-            *text_node, DocumentMarker::MarkerTypes::CustomHighlight());
-      }
+      target_ = controller.MarkersFor(
+          *text_node, DocumentMarker::MarkerTypes::TextFragment());
+      spelling_ = controller.MarkersFor(
+          *text_node, DocumentMarker::MarkerTypes::Spelling());
+      grammar_ = controller.MarkersFor(*text_node,
+                                       DocumentMarker::MarkerTypes::Grammar());
+      custom_ = controller.MarkersFor(
+          *text_node, DocumentMarker::MarkerTypes::CustomHighlight());
       // Check if there are any markers too, as required by NGOffsetMappingTest.
       if (selection || !markers_.empty() || !target_.empty() ||
           !spelling_.empty() || !grammar_.empty() || !custom_.empty()) {
@@ -459,10 +457,8 @@ void NGHighlightPainter::Paint(Phase phase) {
     const unsigned paint_start_offset = marker_offsets->start;
     const unsigned paint_end_offset = marker_offsets->end;
 
-    if (RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
-      DCHECK(!DocumentMarker::MarkerTypes::HighlightPseudos().Contains(
-          marker->GetType()));
-    }
+    DCHECK(!DocumentMarker::MarkerTypes::HighlightPseudos().Contains(
+        marker->GetType()));
 
     switch (marker->GetType()) {
       case DocumentMarker::kSpelling:
@@ -590,9 +586,6 @@ NGHighlightPainter::Case NGHighlightPainter::PaintCase() const {
 NGHighlightPainter::Case NGHighlightPainter::ComputePaintCase() const {
   if (selection_ && selection_->ShouldPaintSelectedTextOnly())
     return kSelectionOnly;
-
-  if (!RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled())
-    return selection_ ? kOldSelection : kNoHighlights;
 
   // This can yield false positives (weakening the optimisations below) if all
   // non-spelling/grammar/selection highlights are outside the text fragment.

@@ -142,7 +142,7 @@ class CORE_EXPORT NGHighlightPainter {
   enum Phase { kBackground, kForeground };
 
   // Paints backgrounds or foregrounds for markers that are not exposed as CSS
-  // highlight pseudos, or all markers if HighlightOverlayPainting is off.
+  // highlight pseudos.
   void Paint(Phase phase);
 
   // Indicates the way this painter should be used by the caller, aside from
@@ -153,25 +153,18 @@ class CORE_EXPORT NGHighlightPainter {
   // decorations that are required to paint under decorations from earlier
   // layers (e.g. ::target-text underline with originating overline).
   enum Case {
-    // Caller should not use this painter.
-    // This happens if nothing is highlighted, or HighlightOverlayPainting is
-    // off and nothing is selected.
+    // Caller should not use this painter. This happens if nothing is
+    // highlighted.
     kNoHighlights,
     // Caller should use PaintOriginatingText and PaintHighlightOverlays.
-    // This happens if HighlightOverlayPainting is on and there are highlights
-    // that may involve the text fragment, except in some situations with only
-    // spelling/grammar (kFastSpellingGrammar) or selection (kFastSelection).
+    // This happens if there are highlights that may involve the text
+    // fragment, except in some situations with only spelling/grammar
+    // (kFastSpellingGrammar) or selection (kFastSelection).
     kOverlay,
     // Caller should use PaintSelectedText only.
     // This happens if ShouldPaintSelectedTextOnly is true, such as when
     // painting the ::selection drag image.
     kSelectionOnly,
-    // Caller should use PaintSuppressingTextProperWhereSelected,
-    // PaintSelectionBackground, PaintSelectedText, and NGTextDecorationPainter
-    // (which paints highlight decorations incorrectly).
-    // This happens if HighlightOverlayPainting is off and the text fragment
-    // is selected.
-    kOldSelection,
     // Caller should use PaintSuppressingTextProperWhereSelected,
     // PaintSelectionBackground, and PaintSelectedText.
     // This happens if the only highlight that may involve the text fragment

@@ -559,69 +559,61 @@ LogicalRect NGInkOverflow::ComputeDecorationOverflow(
     }
   }
 
-  bool do_highlights =
-      RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled();
   bool do_spelling_grammar =
       RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled() ||
       RuntimeEnabledFeatures::CSSPaintingForSpellingGrammarErrorsEnabled();
 
-  if (do_highlights || do_spelling_grammar) {
-    // To extract decorations due to markers, we need a fragment item and a
-    // node. Ideally we would use cursor.Current().GetNode() but that's const
-    // and the style functions we need to access pseudo styles take non-const
-    // nodes.
-    const FragmentItem* fragment_item = cursor.CurrentItem();
-    if (!fragment_item->IsText() || fragment_item->IsGeneratedText()) {
-      return accumulated_bound;
-    }
-    const LayoutObject* layout_object = cursor.CurrentMutableLayoutObject();
-    DCHECK(layout_object);
-    Text* text_node = DynamicTo<Text>(layout_object->GetNode());
-    // ::first-letter passes the IsGeneratedText check but has no text node.
-    if (!text_node) {
-      return accumulated_bound;
+  // To extract decorations due to markers, we need a fragment item and a
+  // node. Ideally we would use cursor.Current().GetNode() but that's const
+  // and the style functions we need to access pseudo styles take non-const
+  // nodes.
+  const FragmentItem* fragment_item = cursor.CurrentItem();
+  if (!fragment_item->IsText() || fragment_item->IsGeneratedText()) {
+    return accumulated_bound;
+  }
+  const LayoutObject* layout_object = cursor.CurrentMutableLayoutObject();
+  DCHECK(layout_object);
+  Text* text_node = DynamicTo<Text>(layout_object->GetNode());
+  // ::first-letter passes the IsGeneratedText check but has no text node.
+  if (!text_node) {
+    return accumulated_bound;
+  }
+
+  DocumentMarkerController& controller = text_node->GetDocument().Markers();
+
+  DocumentMarkerVector target_markers = controller.MarkersFor(
+      *text_node, DocumentMarker::MarkerTypes::TextFragment());
+  if (!target_markers.empty()) {
+    LogicalRect target_bound = ComputeMarkerOverflow(
+        target_markers, DocumentMarker::kTextFragment, fragment_item, text_node,
+        style, scaled_font, container_offset, ink_overflow, inline_context);
+    accumulated_bound.Unite(target_bound);
+  }
+  DocumentMarkerVector custom_markers = controller.MarkersFor(
+      *text_node, DocumentMarker::MarkerTypes::CustomHighlight());
+  if (!custom_markers.empty()) {
+    LogicalRect custom_bound = ComputeCustomHighlightOverflow(
+        custom_markers, fragment_item, text_node, style, scaled_font,
+        container_offset, ink_overflow, inline_context);
+    accumulated_bound.Unite(custom_bound);
+  }
+  if (do_spelling_grammar) {
+    DocumentMarkerVector spelling_markers = controller.MarkersFor(
+        *text_node, DocumentMarker::MarkerTypes::Spelling());
+    if (!spelling_markers.empty()) {
+      LogicalRect spelling_bound = ComputeMarkerOverflow(
+          spelling_markers, DocumentMarker::kSpelling, fragment_item, text_node,
+          style, scaled_font, container_offset, ink_overflow, inline_context);
+      accumulated_bound.Unite(spelling_bound);
     }
 
-    DocumentMarkerController& controller = text_node->GetDocument().Markers();
-
-    if (do_highlights) {
-      DocumentMarkerVector target_markers = controller.MarkersFor(
-          *text_node, DocumentMarker::MarkerTypes::TextFragment());
-      if (!target_markers.empty()) {
-        LogicalRect target_bound = ComputeMarkerOverflow(
-            target_markers, DocumentMarker::kTextFragment, fragment_item,
-            text_node, style, scaled_font, container_offset, ink_overflow,
-            inline_context);
-        accumulated_bound.Unite(target_bound);
-      }
-      DocumentMarkerVector custom_markers = controller.MarkersFor(
-          *text_node, DocumentMarker::MarkerTypes::CustomHighlight());
-      if (!custom_markers.empty()) {
-        LogicalRect custom_bound = ComputeCustomHighlightOverflow(
-            custom_markers, fragment_item, text_node, style, scaled_font,
-            container_offset, ink_overflow, inline_context);
-        accumulated_bound.Unite(custom_bound);
-      }
-    }
-    if (do_spelling_grammar) {
-      DocumentMarkerVector spelling_markers = controller.MarkersFor(
-          *text_node, DocumentMarker::MarkerTypes::Spelling());
-      if (!spelling_markers.empty()) {
-        LogicalRect spelling_bound = ComputeMarkerOverflow(
-            spelling_markers, DocumentMarker::kSpelling, fragment_item,
-            text_node, style, scaled_font, container_offset, ink_overflow,
-            inline_context);
-        accumulated_bound.Unite(spelling_bound);
-      }
-
-      DocumentMarkerVector grammar_markers = controller.MarkersFor(
-          *text_node, DocumentMarker::MarkerTypes::Grammar());
-      if (!grammar_markers.empty()) {
-        LogicalRect grammar_bound = ComputeMarkerOverflow(
-            grammar_markers, DocumentMarker::kGrammar, fragment_item, text_node,
-            style, scaled_font, container_offset, ink_overflow, inline_context);
-        accumulated_bound.Unite(grammar_bound);
-      }
+    DocumentMarkerVector grammar_markers = controller.MarkersFor(
+        *text_node, DocumentMarker::MarkerTypes::Grammar());
+    if (!grammar_markers.empty()) {
+      LogicalRect grammar_bound = ComputeMarkerOverflow(
+          grammar_markers, DocumentMarker::kGrammar, fragment_item, text_node,
+          style, scaled_font, container_offset, ink_overflow, inline_context);
+      accumulated_bound.Unite(grammar_bound);
     }
   }
   return accumulated_bound;

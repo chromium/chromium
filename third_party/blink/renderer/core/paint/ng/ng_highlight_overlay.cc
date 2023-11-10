@@ -233,8 +233,6 @@ Vector<HighlightLayer> NGHighlightOverlay::ComputeLayers(
     const DocumentMarkerVector& grammar,
     const DocumentMarkerVector& spelling,
     const DocumentMarkerVector& target) {
-  DCHECK(RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled());
-
   Vector<HighlightLayer> result{};
   result.emplace_back(HighlightLayerType::kOriginating);
 
@@ -272,8 +270,6 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
     const DocumentMarkerVector& grammar,
     const DocumentMarkerVector& spelling,
     const DocumentMarkerVector& target) {
-  DCHECK(RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled());
-
   Vector<HighlightEdge> result{};
 
   if (selection) {
@@ -398,7 +394,6 @@ Vector<HighlightPart> NGHighlightOverlay::ComputeParts(
     const NGTextFragmentPaintInfo& content_offsets,
     const Vector<HighlightLayer>& layers,
     const Vector<HighlightEdge>& edges) {
-  DCHECK(RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled());
   const HighlightLayer originating_layer{HighlightLayerType::kOriginating};
   const HighlightDecoration originating_decoration{
       originating_layer, {content_offsets.from, content_offsets.to}};

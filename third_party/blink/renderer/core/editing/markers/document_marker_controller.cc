@@ -56,9 +56,6 @@
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 #include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
@@ -856,32 +853,9 @@ void DocumentMarkerController::MergeOverlappingMarkers(
 
 DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
     const Text& text) const {
-  HighlightRegistry* highlight_registry =
-      document_->domWindow()->Supplementable<LocalDOMWindow>::
-          RequireSupplement<HighlightRegistry>();
   DocumentMarker::MarkerTypes excluded_highlight_pseudos =
-      RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()
-          ? DocumentMarker::MarkerTypes::HighlightPseudos()
-          : DocumentMarker::MarkerTypes();
+      DocumentMarker::MarkerTypes::HighlightPseudos();
   DocumentMarkerVector markers_to_paint{};
-
-  if (!RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
-    DocumentMarkerVector custom_highlight_markers = MarkersFor(
-        text, DocumentMarker::MarkerTypes(DocumentMarker::kCustomHighlight));
-    std::sort(custom_highlight_markers.begin(), custom_highlight_markers.end(),
-              [highlight_registry](const Member<DocumentMarker>& marker1,
-                                   const Member<DocumentMarker>& marker2) {
-                auto* custom1 = To<CustomHighlightMarker>(marker1.Get());
-                auto* custom2 = To<CustomHighlightMarker>(marker2.Get());
-                return highlight_registry->CompareOverlayStackingPosition(
-                           custom1->GetHighlightName(), custom1->GetHighlight(),
-                           custom2->GetHighlightName(),
-                           custom2->GetHighlight()) ==
-                       HighlightRegistry::OverlayStackingPosition::
-                           kOverlayStackingPositionBelow;
-              });
-    markers_to_paint = custom_highlight_markers;
-  }
 
   // We don't render composition or spelling markers that overlap suggestion
   // markers.

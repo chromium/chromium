@@ -533,15 +533,6 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       highlight_painter.PaintHighlightOverlays(
           text_style, node_id, paint_marker_backgrounds, rotation);
       break;
-    case NGHighlightPainter::kOldSelection:
-      // Slow path: paint suppressing text proper where ::selection active.
-      decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
-      decoration_painter.PaintExceptLineThrough(fragment_paint_info);
-      highlight_painter.Selection()->PaintSuppressingTextProperWhereSelected(
-          text_painter, fragment_paint_info, text_style, node_id,
-          auto_dark_mode);
-      decoration_painter.PaintOnlyLineThrough();
-      break;
     case NGHighlightPainter::kSelectionOnly:
       // Do nothing, and paint the selection later.
       break;
@@ -549,8 +540,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
 
   // Paint ::selection background.
   if (UNLIKELY(highlight_painter.Selection() && paint_marker_backgrounds)) {
-    if (highlight_case == NGHighlightPainter::kFastSelection ||
-        highlight_case == NGHighlightPainter::kOldSelection) {
+    if (highlight_case == NGHighlightPainter::kFastSelection) {
       highlight_painter.Selection()->PaintSelectionBackground(
           context, node, document, style, rotation);
     }
@@ -571,7 +561,6 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
             auto_dark_mode);
         break;
       case NGHighlightPainter::kSelectionOnly:
-      case NGHighlightPainter::kOldSelection:
         decoration_painter.Begin(NGTextDecorationPainter::kSelection);
         decoration_painter.PaintExceptLineThrough(fragment_paint_info);
         highlight_painter.Selection()->PaintSelectedText(

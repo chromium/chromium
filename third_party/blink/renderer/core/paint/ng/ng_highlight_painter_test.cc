@@ -20,13 +20,11 @@
 
 namespace blink {
 
-class NGHighlightPainterTest : public PaintControllerPaintTest,
-                               private ScopedHighlightOverlayPaintingForTest {
+class NGHighlightPainterTest : public PaintControllerPaintTest {
  public:
   explicit NGHighlightPainterTest(
       LocalFrameClient* local_frame_client = nullptr)
-      : PaintControllerPaintTest(local_frame_client),
-        ScopedHighlightOverlayPaintingForTest(true) {}
+      : PaintControllerPaintTest(local_frame_client) {}
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(NGHighlightPainterTest);
