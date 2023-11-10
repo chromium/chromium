@@ -612,6 +612,7 @@ action("cronet_combine_proguard_flags") {
   sources = [
     "//base/android/proguard/chromium_code.flags",
     "//build/android/chromium_annotations.flags",
+    "//third_party/jni_zero/proguard.flags",
 
     # Massage the proguard to avoid incompatibilities when building internally.
     "//components/cronet/android/cronet_impl_native_proguard.cfg",
