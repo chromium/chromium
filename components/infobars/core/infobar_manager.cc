@@ -8,7 +8,13 @@
 
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
+#include "build/branding_buildflags.h"
 #include "components/infobars/core/infobar.h"
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+#include "base/command_line.h"
+#include "components/infobars/core/infobars_switches.h"
+#endif
 
 namespace infobars {
 
@@ -38,6 +44,9 @@ void InfoBarManager::Observer::OnManagerShuttingDown(InfoBarManager* manager) {
 InfoBar* InfoBarManager::AddInfoBar(std::unique_ptr<InfoBar> new_infobar,
                                     bool replace_existing) {
   DCHECK(new_infobar);
+  if (!infobars_enabled_) {
+    return nullptr;
+  }
 
   for (auto* infobar : infobars_) {
     if (infobar->delegate()->EqualsDelegate(new_infobar->delegate())) {
@@ -69,6 +78,10 @@ void InfoBarManager::RemoveAllInfoBars(bool animate) {
 InfoBar* InfoBarManager::ReplaceInfoBar(InfoBar* old_infobar,
                                         std::unique_ptr<InfoBar> new_infobar) {
   DCHECK(old_infobar);
+  if (!infobars_enabled_) {
+    // Deletes the infobar.
+    return AddInfoBar(std::move(new_infobar));
+  }
   DCHECK(new_infobar);
 
   auto i = base::ranges::find(infobars_, old_infobar);
@@ -97,9 +110,15 @@ void InfoBarManager::RemoveObserver(Observer* obs) {
   observer_list_.RemoveObserver(obs);
 }
 
-InfoBarManager::InfoBarManager() = default;
+InfoBarManager::InfoBarManager()
+#if BUILDFLAG(CHROME_FOR_TESTING)
+    : infobars_enabled_(!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableInfoBars)){}
+#else
+    = default;
+#endif
 
-InfoBarManager::~InfoBarManager() = default;
+      InfoBarManager::~InfoBarManager() = default;
 
 void InfoBarManager::ShutDown() {
   // Destroy all remaining InfoBars.  It's important to not animate here so that
@@ -123,6 +142,7 @@ void InfoBarManager::OnNavigation(
 
 void InfoBarManager::RemoveInfoBarInternal(InfoBar* infobar, bool animate) {
   DCHECK(infobar);
+  DCHECK(infobars_enabled_);
 
   auto i = base::ranges::find(infobars_, infobar);
   // TODO(crbug.com/): Temporarily a CHECK instead of a DCHECK CHECK() in order
