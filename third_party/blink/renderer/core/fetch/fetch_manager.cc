@@ -22,13 +22,17 @@
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/request_mode.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/fetch_later.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_response_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -71,14 +75,21 @@
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_request_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/request_conversion.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -103,6 +114,10 @@ namespace {
 
 // 64 kilobytes.
 constexpr uint64_t kMaxScheduledDeferredBytesPerOrigin = 64 * 1024;
+
+constexpr ResourceType kFetchLaterResourceType = ResourceType::kRaw;
+constexpr TextResourceDecoderOptions::ContentType kFetchLaterContentType =
+    TextResourceDecoderOptions::kPlainTextContent;
 
 constexpr net::NetworkTrafficAnnotationTag kFetchLaterTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("blink_fetch_later_manager",
@@ -208,6 +223,18 @@ enum class FetchManagerLoaderCheckPoint {
 
 void SendHistogram(FetchManagerLoaderCheckPoint cp) {
   base::UmaHistogramEnumeration("Net.Fetch.CheckPoint.FetchManagerLoader", cp);
+}
+
+ResourceLoadPriority ComputeFetchLaterLoadPriority(
+    const FetchParameters& params) {
+  // FetchLater's ResourceType is ResourceType::kRaw, which should default to
+  // ResourceLoadPriority::kHigh priority. See also TypeToPriority() in
+  // resource_fetcher.cc
+  return AdjustPriorityWithPriorityHintAndRenderBlocking(
+      ResourceLoadPriority::kHigh, kFetchLaterResourceType,
+      params.GetResourceRequest().GetFetchPriorityHint(),
+      params.GetRenderBlockingBehavior());
+  // TODO(crbug.com/1465781): Apply kLow when IsSubframeDeprioritizationEnabled.
 }
 
 }  // namespace
@@ -1194,8 +1221,11 @@ class FetchLaterManager::DeferredLoader final
         activate_after_(activate_after),
         timer_(ec->GetTaskRunner(FetchLaterManager::kTaskType),
                this,
-               &DeferredLoader::TimerFired) {
+               &DeferredLoader::TimerFired),
+        loader_(ec) {
     base::UmaHistogramBoolean("FetchLater.Renderer.Total", true);
+    // `timer_` is started in `CreateLoader()` so that it won't end before a
+    // request is created.
   }
 
   FetchLaterResult* fetch_later_result() { return fetch_later_result_.Get(); }
@@ -1211,7 +1241,7 @@ class FetchLaterManager::DeferredLoader final
     // discoverying the URL loading connections from here are gone.
   }
 
-  void Process() {
+  void Process(const FetchLaterRendererMetricType& metric_type) {
     // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#process-a-deferred-fetch
     // To process a deferred fetch deferredRecord:
     // 1. If deferredRecord’s invoke state is not "deferred", then return.
@@ -1221,8 +1251,10 @@ class FetchLaterManager::DeferredLoader final
     // 2. Set deferredRecord’s invoke state to "activated".
     SetInvokeState(InvokeState::ACTIVATED);
     // 3. Fetch deferredRecord’s request.
-    // TODO(crbug.com/1465781): Implement via FetchLaterLoaderFactory.
-    LogFetchLaterMetric(FetchLaterRendererMetricType::kActivatedByTimeout);
+    if (loader_) {
+      LogFetchLaterMetric(metric_type);
+      loader_->SendNow();
+    }
   }
 
   // Returns this loader's request body length if the followings are all true:
@@ -1240,6 +1272,7 @@ class FetchLaterManager::DeferredLoader final
     visitor->Trace(fetch_later_manager_);
     visitor->Trace(fetch_later_result_);
     visitor->Trace(timer_);
+    visitor->Trace(loader_);
     FetchLoaderBase::Trace(visitor);
   }
 
@@ -1288,19 +1321,44 @@ class FetchLaterManager::DeferredLoader final
     // 10. Add the following abort steps to requestObject’s signal:
     // 10-1. Set deferredRecord’s invoke state to "aborted".
     SetInvokeState(InvokeState::ABORTED);
-    LogFetchLaterMetric(FetchLaterRendererMetricType::kAbortedByUser);
     // 10-2. Remove deferredRecord from request’s client’s fetch group’s
     // deferred fetch records.
-    // TODO(crbug.com/1465781): Implement abort function.
+    if (loader_) {
+      LogFetchLaterMetric(FetchLaterRendererMetricType::kAbortedByUser);
+      loader_->Cancel();
+    }
     NotifyFinished();
   }
   // Triggered after `Start()`.
   void CreateLoader(
       ResourceRequest request,
       const ResourceLoaderOptions& resource_loader_options) override {
-    // TODO(crbug.com/1465781): Implement via FetchLaterLoaderFactory.
-    std::ignore = net::MutableNetworkTrafficAnnotationTag(
-        kFetchLaterTrafficAnnotationTag);
+    auto* factory = fetch_later_manager_->GetFactory();
+    if (!factory) {
+      Failed(/*message=*/String(), /*dom_exception=*/nullptr);
+      return;
+    }
+    std::unique_ptr<network::ResourceRequest> network_request =
+        fetch_later_manager_->PrepareNetworkRequest(std::move(request),
+                                                    resource_loader_options);
+    if (!network_request) {
+      Failed(/*message=*/String(), /*dom_exception=*/nullptr);
+      return;
+    }
+
+    // Don't do mime sniffing for fetch (crbug.com/2016)
+    uint32_t url_loader_options = network::mojom::blink::kURLLoadOptionNone;
+    // Computes a unique request_id for this renderer process.
+    int request_id = GenerateRequestId();
+    factory->CreateFetchLaterLoader(
+        loader_.BindNewEndpointAndPassReceiver(
+            GetExecutionContext()->GetTaskRunner(FetchLaterManager::kTaskType)),
+        request_id, url_loader_options, *network_request,
+        net::MutableNetworkTrafficAnnotationTag(
+            kFetchLaterTrafficAnnotationTag));
+    CHECK(loader_.is_bound());
+    loader_.set_disconnect_handler(WTF::BindOnce(
+        &DeferredLoader::NotifyFinished, WrapWeakPersistent(this)));
 
     // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#request-a-deferred-fetch
     // Continued with "request a deferred fetch"
@@ -1335,7 +1393,7 @@ class FetchLaterManager::DeferredLoader final
     // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#request-a-deferred-fetch
     // Continued with "request a deferred fetch":
     // 13-3. Process a deferred fetch given deferredRecord.
-    Process();
+    Process(FetchLaterRendererMetricType::kActivatedByTimeout);
     NotifyFinished();
   }
 
@@ -1359,6 +1417,9 @@ class FetchLaterManager::DeferredLoader final
   const absl::optional<base::TimeDelta> activate_after_;
   // A timer to handle `activate_after_`.
   HeapTaskRunnerTimer<DeferredLoader> timer_;
+
+  // Connects to FetchLaterLoader in browser.
+  HeapMojoAssociatedRemote<mojom::blink::FetchLaterLoader> loader_;
 };
 
 FetchManager::FetchManager(ExecutionContext* execution_context)
@@ -1551,10 +1612,9 @@ void FetchLaterManager::ContextDestroyed() {
   // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#process-deferred-fetches
   // To process deferred fetches given a fetch group fetchGroup:
   for (auto& deferred_loader : deferred_loaders_) {
-    LogFetchLaterMetric(FetchLaterRendererMetricType::kContextDestroyed);
     // 3. For each deferred fetch record deferredRecord, process a deferred
     // fetch given deferredRecord.
-    deferred_loader->Process();
+    deferred_loader->Process(FetchLaterRendererMetricType::kContextDestroyed);
     deferred_loader->Dispose();
   }
   // Unlike regular Fetch loaders, FetchLater loaders should be cleared
@@ -1578,6 +1638,45 @@ void FetchLaterManager::RecreateTimerForTesting(
   for (auto& deferred_loader : deferred_loaders_) {
     deferred_loader->RecreateTimerForTesting(task_runner, tick_clock);
   }
+}
+
+// static
+ResourceLoadPriority FetchLaterManager::ComputeLoadPriorityForTesting(
+    const FetchParameters& params) {
+  return ComputeFetchLaterLoadPriority(params);
+}
+
+std::unique_ptr<network::ResourceRequest>
+FetchLaterManager::PrepareNetworkRequest(
+    ResourceRequest request,
+    const ResourceLoaderOptions& options) const {
+  if (!GetExecutionContext()) {
+    // No requests if the context is destroyed.
+    return nullptr;
+  }
+  CHECK(DomWindow());
+  ResourceFetcher* fetcher = DomWindow()->Fetcher();
+  CHECK(fetcher);
+
+  FetchParameters params(std::move(request), options);
+  WebScopedVirtualTimePauser unused_virtual_time_pauser;
+  params.OverrideContentType(kFetchLaterContentType);
+  if (PrepareResourceRequest(
+          kFetchLaterResourceType,
+          fetcher->GetProperties().GetFetchClientSettingsObject(), params,
+          fetcher->Context(), unused_virtual_time_pauser,
+          WTF::BindOnce(&ComputeFetchLaterLoadPriority)) != absl::nullopt) {
+    return nullptr;
+  }
+
+  // From `ResourceFetcher::StartLoad()`:
+  ScriptForbiddenScope script_forbidden_scope;
+  auto network_resource_request = std::make_unique<network::ResourceRequest>();
+  PopulateResourceRequest(
+      params.GetResourceRequest(),
+      std::move(params.MutableResourceRequest().MutableBody()),
+      network_resource_request.get());
+  return network_resource_request;
 }
 
 void FetchLaterManager::Trace(Visitor* visitor) const {

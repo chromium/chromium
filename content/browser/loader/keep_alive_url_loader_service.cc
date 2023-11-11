@@ -323,16 +323,14 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactories final
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     TRACE_EVENT("loading", "KeepAliveURLLoaderFactories::CreateLoaderAndStart",
                 "request_id", request_id);
-    // TODO(crbug.com/4905157): Update to Fetch-only after renderer switches to
-    // FetchLaterLoaderFactory for FetchLater.
-    if (!blink::features::IsKeepAliveURLLoaderServiceEnabled()) {
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kKeepAliveInBrowserMigration)) {
       mojo::ReportBadMessage(
           "Unexpected call to "
           "KeepAliveURLLoaderFactories::CreateLoaderAndStart()");
       return;
     }
-    if (!base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI) &&
-        resource_request.is_fetch_later_api) {
+    if (resource_request.is_fetch_later_api) {
       mojo::ReportBadMessage(
           "Unexpected `resource_request.is_fetch_later_api` in "
           "KeepAliveURLLoaderFactories::CreateLoaderAndStart(): "
@@ -349,13 +347,8 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactories final
     }
 
     // `raw_loader` must only be started after the above setup.
-    // TODO(crbug.com/1465781): Move the following check to FetchLater-specific
-    // factories after renderer switches to FetchLaterLoaderFactory.
     // For non-FetchLater requests, they should be started immediately.
-    if (!resource_request.is_fetch_later_api) {
-      raw_loader->Start();
-    }
-    // For FetchLater requests, see `OnLoaderDisconnected()`.
+    raw_loader->Start();
   }
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {

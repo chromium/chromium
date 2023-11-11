@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loading_log.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_request_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/stale_revalidation_resource_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/subresource_web_bundle.h"
@@ -256,55 +257,6 @@ static ThreadSpecific<PriorityObserverMap>& PriorityObservers() {
   return map;
 }
 
-ResourceLoadPriority AdjustPriorityWithPriorityHintAndRenderBlocking(
-    ResourceLoadPriority priority_so_far,
-    ResourceType type,
-    const ResourceRequestHead& resource_request,
-    FetchParameters::DeferOption defer_option,
-    RenderBlockingBehavior render_blocking_behavior,
-    bool is_link_preload) {
-  mojom::blink::FetchPriorityHint fetch_priority_hint =
-      resource_request.GetFetchPriorityHint();
-
-  ResourceLoadPriority new_priority = priority_so_far;
-
-  switch (fetch_priority_hint) {
-    case mojom::blink::FetchPriorityHint::kAuto:
-      break;
-    case mojom::blink::FetchPriorityHint::kHigh:
-      // Boost priority of any request type that supports priority hints.
-      if (new_priority < ResourceLoadPriority::kHigh) {
-        new_priority = ResourceLoadPriority::kHigh;
-      }
-      DCHECK_LE(priority_so_far, new_priority);
-      break;
-    case mojom::blink::FetchPriorityHint::kLow:
-      // Demote priority of any request type that supports priority hints.
-      // Most content types go to kLow. The one exception is early
-      // render-blocking CSS which defaults to the highest priority but
-      // can be lowered to match the "high" priority of everything else
-      // to allow for ordering if necessary without causing too much of a
-      // foot-gun.
-      if (type == ResourceType::kCSSStyleSheet &&
-          new_priority == ResourceLoadPriority::kVeryHigh) {
-        new_priority = ResourceLoadPriority::kHigh;
-      } else if (new_priority > ResourceLoadPriority::kLow) {
-        new_priority = ResourceLoadPriority::kLow;
-      }
-
-      DCHECK_LE(new_priority, priority_so_far);
-      break;
-  }
-
-  // Render-blocking is a signal that the resource is important, so we bump it
-  // to at least kHigh.
-  if (render_blocking_behavior == RenderBlockingBehavior::kBlocking &&
-      new_priority < ResourceLoadPriority::kHigh) {
-    new_priority = ResourceLoadPriority::kHigh;
-  }
-
-  return new_priority;
-}
 
 std::unique_ptr<TracedValue> CreateTracedValueWithPriority(
     blink::ResourceLoadPriority priority) {
@@ -330,28 +282,6 @@ std::unique_ptr<TracedValue> CreateTracedValueForUnusedEarlyHintsPreload(
   auto value = std::make_unique<TracedValue>();
   value->SetString("url", String(url.ElidedString().Utf8()));
   return value;
-}
-
-// This function corresponds with step 2 substep 7 of
-// https://fetch.spec.whatwg.org/#main-fetch.
-void SetReferrer(
-    ResourceRequest& request,
-    const FetchClientSettingsObject& fetch_client_settings_object) {
-  String referrer_to_use = request.ReferrerString();
-  network::mojom::ReferrerPolicy referrer_policy_to_use =
-      request.GetReferrerPolicy();
-
-  if (referrer_to_use == Referrer::ClientReferrerString())
-    referrer_to_use = fetch_client_settings_object.GetOutgoingReferrer();
-
-  if (referrer_policy_to_use == network::mojom::ReferrerPolicy::kDefault)
-    referrer_policy_to_use = fetch_client_settings_object.GetReferrerPolicy();
-
-  Referrer generated_referrer = SecurityPolicy::GenerateReferrer(
-      referrer_policy_to_use, request.Url(), referrer_to_use);
-
-  request.SetReferrerString(generated_referrer.referrer);
-  request.SetReferrerPolicy(generated_referrer.referrer_policy);
 }
 
 }  // namespace
@@ -566,8 +496,8 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
   }
 
   priority = AdjustPriorityWithPriorityHintAndRenderBlocking(
-      priority, type, resource_request, defer_option, render_blocking_behavior,
-      is_link_preload);
+      priority, type, resource_request.GetFetchPriorityHint(),
+      render_blocking_behavior);
 
   priority = AdjustImagePriority(priority, type, resource_request,
                                  speculative_preload_type, is_link_preload,
@@ -622,6 +552,18 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
   return priority;
 }
 
+ResourceLoadPriority ResourceFetcher::ComputeLoadPriorityHelper(
+    ResourceType resource_type,
+    ResourcePriority::VisibilityStatus visibility,
+    const FetchParameters& params) {
+  return ComputeLoadPriority(
+      resource_type, params.GetResourceRequest(), visibility, params.Defer(),
+      params.GetSpeculativePreloadType(), params.GetRenderBlockingBehavior(),
+      params.GetScriptType(), params.IsLinkPreload(), params.GetResourceWidth(),
+      params.GetResourceHeight(), params.IsPotentiallyLCPElement(),
+      params.IsPotentiallyLCPInfluencer());
+}
+
 // Boost the priority for the first N not-small images from the preload scanner
 ResourceLoadPriority ResourceFetcher::AdjustImagePriority(
     ResourceLoadPriority priority_so_far,
@@ -666,28 +608,6 @@ ResourceLoadPriority ResourceFetcher::AdjustImagePriority(
   }
 
   return new_priority;
-}
-
-// This method simply takes in information about a ResourceRequest, and returns
-// if the resource should be loaded in parallel (incremental) or sequentially
-// for protocols that support multiplexing and HTTP extensible priorities
-// (RFC 9218).
-// Most content types can be operated on with partial data (document parsing,
-// images, media, etc) but a few need to be complete before they can be
-// processed.
-bool ResourceFetcher::ShouldLoadIncremental(ResourceType type) const {
-  switch (type) {
-    case ResourceType::kCSSStyleSheet:
-    case ResourceType::kScript:
-    case ResourceType::kFont:
-    case ResourceType::kXSLStyleSheet:
-    case ResourceType::kManifest:
-      return false;
-    default:
-      return true;
-  }
-  NOTREACHED();
-  return true;
 }
 
 ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
@@ -1067,151 +987,21 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
 
   params.OverrideContentType(factory.ContentType());
 
-  // No CSP reports are sent for:
-  //
-  // Speculative preload
-  // ===================
-  // This avoids sending 2 reports for a single resource (preload + real load).
-  // Moreover the speculative preload are 'speculative', it might not even be
-  // possible to issue a real request.
-  //
-  // Stale revalidations
-  // ===================
-  // Web browser should not send violation reports for stale revalidations. The
-  // initial request was allowed. In theory, the revalidation request should be
-  // allowed as well. However, some <meta> CSP header might have been added in
-  // the meantime. See https://crbug.com/1070117.
-  //
-  // Note: Ideally, stale revalidations should bypass every checks. In practise,
-  // they are run and block the request. Bypassing all security checks could be
-  // risky and probably doesn't really worth it. They are very rarely blocked.
-  ReportingDisposition reporting_disposition =
-      params.IsSpeculativePreload() || params.IsStaleRevalidation()
-          ? ReportingDisposition::kSuppressReporting
-          : ReportingDisposition::kReport;
-
-  // Note that resource_request.GetRedirectInfo() may be non-null here since
-  // e.g. ThreadableLoader may create a new Resource from a ResourceRequest that
-  // originates from the ResourceRequest passed to the redirect handling
-  // callback.
-
-  // Before modifying the request for CSP, evaluate report-only headers. This
-  // allows site owners to learn about requests that are being modified
-  // (e.g. mixed content that is being upgraded by upgrade-insecure-requests).
-  const absl::optional<ResourceRequest::RedirectInfo>& redirect_info =
-      resource_request.GetRedirectInfo();
-  const KURL& url_before_redirects =
-      redirect_info ? redirect_info->original_url : params.Url();
-  const ResourceRequestHead::RedirectStatus redirect_status =
-      redirect_info ? ResourceRequestHead::RedirectStatus::kFollowedRedirect
-                    : ResourceRequestHead::RedirectStatus::kNoRedirect;
-  Context().CheckCSPForRequest(
-      resource_request.GetRequestContext(),
-      resource_request.GetRequestDestination(),
-      MemoryCache::RemoveFragmentIdentifierIfNeeded(
-          bundle_url_for_uuid_resources.IsValid()
-              ? bundle_url_for_uuid_resources
-              : params.Url()),
-      options, reporting_disposition,
-      MemoryCache::RemoveFragmentIdentifierIfNeeded(url_before_redirects),
-      redirect_status);
-
-  // This may modify params.Url() (via the resource_request argument).
-  Context().PopulateResourceRequest(resource_type, params.GetResourceWidth(),
-                                    resource_request, options);
-
-  if (!params.Url().IsValid())
-    return ResourceRequestBlockedReason::kOther;
-
-  ResourceLoadPriority computed_load_priority = resource_request.Priority();
-  // We should only compute the priority for ResourceRequests whose priority has
-  // not already been set.
-  if (!resource_request.PriorityHasBeenSet()) {
-    computed_load_priority = ComputeLoadPriority(
-        resource_type, params.GetResourceRequest(),
-        ResourcePriority::kNotVisible, params.Defer(),
-        params.GetSpeculativePreloadType(), params.GetRenderBlockingBehavior(),
-        params.GetScriptType(), params.IsLinkPreload(),
-        params.GetResourceWidth(), params.GetResourceHeight(),
-        params.IsPotentiallyLCPElement(), params.IsPotentiallyLCPInfluencer());
-  }
-
-  DCHECK_NE(computed_load_priority, ResourceLoadPriority::kUnresolved);
-  resource_request.SetPriority(computed_load_priority);
-  resource_request.SetPriorityIncremental(ShouldLoadIncremental(resource_type));
-  resource_request.SetRenderBlockingBehavior(
-      params.GetRenderBlockingBehavior());
-
-  if (resource_request.GetCacheMode() ==
-      mojom::blink::FetchCacheMode::kDefault) {
-    resource_request.SetCacheMode(Context().ResourceRequestCachePolicy(
-        resource_request, resource_type, params.Defer()));
-  }
-  if (resource_request.GetRequestContext() ==
-      mojom::blink::RequestContextType::UNSPECIFIED) {
-    resource_request.SetRequestContext(
-        DetermineRequestContext(resource_type, kImageNotImageSet));
-    resource_request.SetRequestDestination(
-        DetermineRequestDestination(resource_type));
-  }
-
-  if (resource_type == ResourceType::kLinkPrefetch) {
-    // Add the "Purpose: prefetch" header to requests for prefetch.
-    resource_request.SetPurposeHeader("prefetch");
-  } else if (Context().IsPrerendering()) {
-    // Add the "Sec-Purpose: prefetch;prerender" header to requests issued from
-    // prerendered pages. Add "Purpose: prefetch" as well for compatibility
-    // concerns (See https://github.com/WICG/nav-speculation/issues/133).
-    resource_request.SetHttpHeaderField(http_names::kSecPurpose,
-                                        AtomicString("prefetch;prerender"));
-    resource_request.SetPurposeHeader("prefetch");
-  }
-
-  // Indicate whether the network stack can return a stale resource. If a
-  // stale resource is returned a StaleRevalidation request will be scheduled.
-  // Explicitly disallow stale responses for fetchers that don't have SWR
-  // enabled (via origin trial), and non-GET requests.
-  resource_request.SetAllowStaleResponse(resource_request.HttpMethod() ==
-                                             http_names::kGET &&
-                                         !params.IsStaleRevalidation());
-
-  SetReferrer(resource_request, properties_->GetFetchClientSettingsObject());
-
-  Context().AddAdditionalRequestHeaders(resource_request);
-
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
-      TRACE_DISABLED_BY_DEFAULT("network"), "ResourcePrioritySet",
-      TRACE_ID_WITH_SCOPE("BlinkResourceID",
-                          TRACE_ID_LOCAL(resource_request.InspectorId())),
-      "priority", resource_request.Priority());
-
-  KURL url = MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url());
-  absl::optional<ResourceRequestBlockedReason> blocked_reason =
-      Context().CanRequest(resource_type, resource_request,
-                           MemoryCache::RemoveFragmentIdentifierIfNeeded(
-                               bundle_url_for_uuid_resources.IsValid()
-                                   ? bundle_url_for_uuid_resources
-                                   : params.Url()),
-                           options, reporting_disposition,
-                           resource_request.GetRedirectInfo());
-
-  if (Context().CalculateIfAdSubresource(resource_request,
-                                         absl::nullopt /* alias_url */,
-                                         resource_type, options.initiator_info))
-    resource_request.SetIsAdResource();
-
-  if (blocked_reason)
-    return blocked_reason;
-
-  // For initial requests, call PrepareRequest() here before revalidation
-  // policy is determined.
-  Context().PrepareRequest(resource_request, params.MutableOptions(),
-                           virtual_time_pauser, resource_type);
-
-  if (!params.Url().IsValid())
-    return ResourceRequestBlockedReason::kOther;
-
-  return absl::nullopt;
+  return PrepareResourceRequest(
+      resource_type, properties_->GetFetchClientSettingsObject(), params,
+      Context(), virtual_time_pauser,
+      WTF::BindOnce(
+          &ResourceFetcher::ComputeLoadPriorityHelper,
+          // This callback will be run synchronously, so no cyclic dependency.
+          WrapPersistent(this), resource_type, ResourcePriority::kNotVisible),
+      WTF::BindOnce([](const ResourceRequest& r) {
+        TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
+            TRACE_DISABLED_BY_DEFAULT("network"), "ResourcePrioritySet",
+            TRACE_ID_WITH_SCOPE("BlinkResourceID",
+                                TRACE_ID_LOCAL(r.InspectorId())),
+            "priority", r.Priority());
+      }),
+      bundle_url_for_uuid_resources);
 }
 
 void ResourceFetcher::AttachWebBundleTokenIfNeeded(
@@ -1566,15 +1356,13 @@ std::unique_ptr<URLLoader> ResourceFetcher::CreateURLLoader(
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       unfreezable_task_runner_;
-  const bool request_is_fetch_later = request.IsFetchLaterAPI();
   if (request.GetKeepalive() &&
       (!base::FeatureList::IsEnabled(
            blink::features::kKeepAliveInBrowserMigration) ||
        (request.GetAttributionReportingEligibility() !=
             network::mojom::AttributionReportingEligibility::kUnset &&
         !base::FeatureList::IsEnabled(
-            features::kAttributionReportingInBrowserMigration))) &&
-      !request_is_fetch_later) {
+            features::kAttributionReportingInBrowserMigration)))) {
     base::UmaHistogramBoolean("Blink.Fetch.KeepAlive.Total", true);
     // Set the `task_runner` to the `AgentGroupScheduler`'s task-runner for
     // keepalive fetches because we want it to keep running even after the

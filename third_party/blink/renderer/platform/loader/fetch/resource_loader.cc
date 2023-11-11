@@ -1332,11 +1332,6 @@ bool ResourceLoader::ShouldBeKeptAliveWhenDetached() const {
       return false;
     }
   }
-  if (base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI) &&
-      resource_->GetResourceRequest().IsFetchLaterAPI()) {
-    // FetchLater requests should not be kept alive by renderer.
-    return false;
-  }
 
   return resource_->GetResourceRequest().GetKeepalive() &&
          resource_->GetResponse().IsNull();
