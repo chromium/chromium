@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 
+import {ModifierKeyCodes} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -20,7 +21,6 @@ import {AcceleratorResultData, Subactions, UserAction} from '../mojom-webui/ash/
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_view.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
-import {ModifierKeyCodes} from './shortcut_input.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorSource, AcceleratorState, EditAction, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
 import {areAcceleratorsEqual, canBypassErrorWithRetry, createEmptyAcceleratorInfo, getAccelerator, getKeyDisplay, getModifiersForAcceleratorInfo, isCustomizationAllowed, isFunctionKey, isStandardAcceleratorInfo, keyCodeToModifier, keyToIconNameMap, LWIN_KEY, META_KEY, unidentifiedKeyCodeToKey} from './shortcut_utils.js';
 export interface AcceleratorViewElement {

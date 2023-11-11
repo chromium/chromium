@@ -4,7 +4,6 @@
 
 import './accelerator_subsection.js';
 import '../css/shortcut_customization_shared.css.js';
-import './shortcut_input.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
