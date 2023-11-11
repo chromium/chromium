@@ -396,7 +396,6 @@ source_set("feature_flags") {
   deps = [
     "//components/prefs",
     "//components/variations/service",
-    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",

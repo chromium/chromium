@@ -27,7 +27,6 @@ source_set("cells") {
     "//base",
     "//build:branding_buildflags",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",

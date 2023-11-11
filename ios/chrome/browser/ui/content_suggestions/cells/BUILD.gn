@@ -45,7 +45,6 @@ source_set("cells") {
     "//base",
     "//components/ntp_tiles",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
@@ -81,7 +80,6 @@ source_set("constants") {
 
   deps = [
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ui/base:base",
   ]

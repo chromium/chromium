@@ -76,7 +76,6 @@ source_set("eg2_tests") {
     ":constants",
     "//base/test:test_support",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

@@ -13,7 +13,6 @@ source_set("ntp") {
     "new_tab_page_tab_helper_delegate.h",
   ]
   deps = [
-    ":features",
     "//base:base",
     "//components/prefs",
     "//components/strings",
@@ -47,19 +46,6 @@ source_set("util") {
   ]
 }
 
-source_set("features") {
-  sources = [ "features.h" ]
-  deps = [
-    "//base",
-    "//components/country_codes",
-    "//components/version_info:channel",
-    "//ios/chrome/app:background_mode_buildflags",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/public/features:system_flags",
-    "//ios/chrome/common",
-  ]
-}
-
 source_set("set_up_list") {
   sources = [
     "set_up_list.h",
@@ -69,7 +55,6 @@ source_set("set_up_list") {
     "set_up_list_item.mm",
   ]
   deps = [
-    ":features",
     ":set_up_list_item_type",
     ":set_up_list_metrics",
     ":set_up_list_prefs",
@@ -80,7 +65,6 @@ source_set("set_up_list") {
     "//components/sync/base",
     "//components/sync/service",
     "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
@@ -136,7 +120,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/favicon:favicon",
     "//ios/chrome/browser/ntp",
-    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",
