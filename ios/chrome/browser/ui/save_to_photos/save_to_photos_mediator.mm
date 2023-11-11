@@ -27,6 +27,9 @@
 
 namespace {
 
+// Maximum length of the suggested image name passed to the Photos service.
+constexpr size_t kSuggestedImageNameMaxLength = 100;
+
 NSURL* GetGooglePhotosAppURL() {
   NSURLComponents* photosAppURLComponents = [[NSURLComponents alloc] init];
   photosAppURLComponents.scheme = kGooglePhotosAppURLScheme;
@@ -277,7 +280,9 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
       base::BindRepeating(^(const PhotosService::UploadProgress& progress) {
         [weakSelf photosServiceReportedUploadProgress:progress];
       });
-  _photosService->UploadImage(_imageName, _imageData, _identity,
+  NSString* suggestedImageName =
+      _imageName.length > kSuggestedImageNameMaxLength ? nil : _imageName;
+  _photosService->UploadImage(suggestedImageName, _imageData, _identity,
                               std::move(uploadProgressCallback),
                               std::move(uploadCompletionCallback));
 }

@@ -48,7 +48,7 @@ class PhotosService : public KeyedService {
   virtual bool IsAvailable() const = 0;
 
   // Upload an image to a Photos user's personal library.
-  // - `image_name`: filename of the image.
+  // - `image_name`: suggested filename of the image (can be nil).
   // - `image_data`: data representation of the image.
   // - `identity`: identity whose Photos library should be used as destination.
   // - `progress_callback`: called to report progress of the upload.
