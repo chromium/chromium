@@ -320,6 +320,11 @@ BASE_FEATURE(kOptimizationGuideModelExecution,
              "OptimizationGuideModelExecution",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether to use the on device model service in optimization guide.
+BASE_FEATURE(kOptimizationGuideOnDeviceModel,
+             "OptimizationGuideOnDeviceModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 size_t MaxRelatedSearchesCacheSize() {
   return GetFieldTrialParamByFeatureAsInt(
       kExtractRelatedSearchesFromPrefetchedZPSResponse,
@@ -897,6 +902,14 @@ GetPredictionModelVersionsInKillSwitch() {
 
 std::set<std::string> GetOAuthScopesForModelExecution() {
   return GetOauthScopesForFeature(kOptimizationGuideModelExecution);
+}
+
+base::TimeDelta GetOnDeviceModelIdleTimeout() {
+  static const base::FeatureParam<base::TimeDelta>
+      kOnDeviceModelServiceIdleTimeout{&kOptimizationGuideOnDeviceModel,
+                                       "on_device_model_service_idle_timeout",
+                                       base::Minutes(1)};
+  return kOnDeviceModelServiceIdleTimeout.Get();
 }
 
 }  // namespace features

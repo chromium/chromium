@@ -54,6 +54,11 @@ class OnDeviceModelExecutionConfigInterpreter {
       proto::ModelExecutionFeature feature,
       const std::string& output) const;
 
+  void OverrideFeatureConfigForTesting(
+      const proto::OnDeviceModelExecutionFeatureConfig& config) {
+    feature_configs_[config.feature()] = config;
+  }
+
  private:
   // Populates `feature_configs_` based on `config`.
   void PopulateFeatureConfigs(
