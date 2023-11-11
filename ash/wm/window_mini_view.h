@@ -21,6 +21,10 @@ namespace gfx {
 class Point;
 }  // namespace gfx
 
+namespace views {
+class HighlightPathGenerator;
+}  // namespace views
+
 namespace ash {
 class WindowMiniViewHeaderView;
 class WindowPreviewView;
@@ -74,6 +78,7 @@ class WindowMiniViewBase : public views::View {
 
   // If these optional values are set, the preset rounded corners will be used
   // otherwise the default rounded corners will be used.
+  absl::optional<gfx::RoundedCornersF> exposed_rounded_corners_;
   absl::optional<gfx::RoundedCornersF> header_view_rounded_corners_;
   absl::optional<gfx::RoundedCornersF> preview_view_rounded_corners_;
 };
@@ -120,6 +125,10 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   // Updates the rounded corners on `header_view_`, if it exists.
   void RefreshHeaderViewRoundedCorners();
 
+  // Applies the corresponding rounded corners on the focus ring to match the
+  // visuals of the `header_view_` and `preview_view_`.
+  void RefreshFocusRingVisuals();
+
   // Resets the preset rounded corners values i.e.
   // `header_view_rounded_corners_` and `preview_view_rounded_corners_`.
   void ResetRoundedCorners();
@@ -157,6 +166,11 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
 
  private:
   void InstallFocusRing();
+
+  // Generates the focus ring path for `this`, which has four rounded corners by
+  // default. If this is part of a snap group, the path should match the rounded
+  // corners of the `this`.
+  std::unique_ptr<views::HighlightPathGenerator> GenerateFocusRingPath();
 
   // The window this class is meant to be a header for. This class also may
   // optionally show a mirrored view of this window.

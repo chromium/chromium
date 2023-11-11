@@ -84,6 +84,7 @@ WindowMiniViewBase::~WindowMiniViewBase() = default;
 
 void WindowMiniViewBase::SetRoundedCornersRadius(
     const gfx::RoundedCornersF& exposed_rounded_corners) {
+  exposed_rounded_corners_ = exposed_rounded_corners;
   header_view_rounded_corners_ =
       gfx::RoundedCornersF(exposed_rounded_corners.upper_left(),
                            exposed_rounded_corners.upper_right(),
@@ -169,6 +170,10 @@ void WindowMiniView::RefreshHeaderViewRoundedCorners() {
   }
 
   header_view_->RefreshHeaderViewRoundedCorners();
+}
+
+void WindowMiniView::RefreshFocusRingVisuals() {
+  views::HighlightPathGenerator::Install(this, GenerateFocusRingPath());
 }
 
 void WindowMiniView::ResetRoundedCorners() {
@@ -312,10 +317,7 @@ void WindowMiniView::OnWindowTitleChanged(aura::Window* window) {
 void WindowMiniView::InstallFocusRing() {
   // In order to show the focus ring on the content view, `border_inset`
   // needs to be counted when setting the insets for the focus ring.
-  views::InstallRoundRectHighlightPathGenerator(
-      this, gfx::Insets(kFocusRingHaloInset),
-      chromeos::features::IsJellyrollEnabled() ? kFocusRingCornerRadius
-                                               : kBackdropBorderRoundingDp);
+  RefreshFocusRingVisuals();
   views::FocusRing::Install(this);
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
@@ -326,6 +328,31 @@ void WindowMiniView::InstallFocusRing() {
         CHECK(v);
         return v->is_focused_;
       }));
+}
+
+std::unique_ptr<views::HighlightPathGenerator>
+WindowMiniView::GenerateFocusRingPath() {
+  if (exposed_rounded_corners_) {
+    const float upper_left = exposed_rounded_corners_->upper_left() == 0
+                                 ? 0
+                                 : kFocusRingCornerRadius;
+    const float upper_right = exposed_rounded_corners_->upper_right() == 0
+                                  ? 0
+                                  : kFocusRingCornerRadius;
+    const float lower_right = exposed_rounded_corners_->lower_right() == 0
+                                  ? 0
+                                  : kFocusRingCornerRadius;
+    const float lower_left = exposed_rounded_corners_->lower_left() == 0
+                                 ? 0
+                                 : kFocusRingCornerRadius;
+    return std::make_unique<views::RoundRectHighlightPathGenerator>(
+        gfx::Insets(kFocusRingHaloInset),
+        gfx::RoundedCornersF(upper_left, upper_right, lower_right, lower_left));
+  }
+
+  return std::make_unique<views::RoundRectHighlightPathGenerator>(
+      gfx::Insets(kFocusRingHaloInset),
+      gfx::RoundedCornersF(kFocusRingCornerRadius));
 }
 
 BEGIN_METADATA(WindowMiniView, WindowMiniViewBase)

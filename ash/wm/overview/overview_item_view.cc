@@ -189,6 +189,7 @@ void OverviewItemView::RefreshItemVisuals() {
 
   RefreshHeaderViewRoundedCorners();
   RefreshPreviewRoundedCorners(/*show=*/true);
+  RefreshFocusRingVisuals();
 }
 
 views::View* OverviewItemView::GetView() {
