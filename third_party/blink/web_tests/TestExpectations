@@ -1425,10 +1425,6 @@ crbug.com/1353352 fast/css3-text/css3-text-decoration/text-decoration-line-spell
 crbug.com/1350475 external/wpt/css/css-pseudo/highlight-currentcolor-painting-text-shadow-001.html [ Failure ]
 crbug.com/1350475 external/wpt/css/css-pseudo/highlight-currentcolor-painting-text-shadow-002.html [ Failure ]
 crbug.com/1351020 [ Mac ] external/wpt/compat/webkit-text-fill-color-property-002.html [ Failure ]
-crbug.com/1350469 external/wpt/css/css-pseudo/highlight-currentcolor-painting-properties-001.html [ Failure ]  # Reftest image failure
-crbug.com/1350469 external/wpt/css/css-pseudo/highlight-currentcolor-painting-properties-002.html [ Failure ]  # Reftest image failure
-crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-003.html [ Failure ]  # Reftest image failure
-crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-004.html [ Failure ]  # Reftest image failure
 crbug.com/1432038 external/wpt/css/css-pseudo/svg-text-selection-002.html [ Failure ]
 crbug.com/1500288 external/wpt/css/css-pseudo/spelling-error-001.html [ Failure ]
 crbug.com/1500288 external/wpt/css/css-pseudo/grammar-error-001.html [ Failure ]
