@@ -94,7 +94,7 @@ float GetSingleFloatOutput(sql::Statement& statement) {
 }
 
 void ErrorCallback(int code, sql::Statement* stmt) {
-  VLOG(1) << "SQL run error " << code << " " << stmt->GetSQLStatement();
+  VLOG(1) << "SQL run error " << code;
 }
 
 }  // namespace
