@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/partition_alloc_base/debug/stack_trace.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/stack_trace.h"
 
-#include "partition_alloc/partition_alloc_base/logging.h"
-#include "partition_alloc/partition_alloc_base/process/process_handle.h"
-#include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/process/process_handle.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
 
 #include <windows.h>
 

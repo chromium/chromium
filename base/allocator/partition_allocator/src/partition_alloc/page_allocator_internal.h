@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "partition_alloc/page_allocator.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 
 namespace partition_alloc::internal {
 

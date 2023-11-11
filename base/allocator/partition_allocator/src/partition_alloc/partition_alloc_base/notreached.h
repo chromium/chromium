@@ -5,7 +5,7 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_NOTREACHED_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_NOTREACHED_H_
 
-#include "partition_alloc/partition_alloc_base/check.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/check.h"
 
 // PA_NOTREACHED() annotates paths that are supposed to be unreachable. They
 // crash if they are ever hit.

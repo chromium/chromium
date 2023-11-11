@@ -15,9 +15,9 @@
 
 #include <new>
 
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_internals.h"
 #include "build/build_config.h"
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/shim/allocator_shim_internals.h"
 
 #if !BUILDFLAG(IS_APPLE)
 #define SHIM_CPP_SYMBOLS_EXPORT SHIM_ALWAYS_EXPORT

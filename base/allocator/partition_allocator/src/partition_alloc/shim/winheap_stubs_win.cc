@@ -15,9 +15,9 @@
 #include <algorithm>
 #include <limits>
 
-#include "partition_alloc/partition_alloc_base/bits.h"
-#include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
-#include "partition_alloc/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
 
 namespace allocator_shim {
 

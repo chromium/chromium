@@ -18,7 +18,7 @@
 #include <algorithm>
 #include <cstring>
 
-#include "partition_alloc/shim/allocator_shim_internals.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_internals.h"
 
 extern "C" {
 

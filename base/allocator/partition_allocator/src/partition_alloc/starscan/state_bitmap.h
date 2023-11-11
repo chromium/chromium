@@ -15,9 +15,9 @@
 #include <tuple>
 #include <utility>
 
-#include "partition_alloc/partition_alloc_base/bits.h"
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
 
 namespace partition_alloc::internal {
 

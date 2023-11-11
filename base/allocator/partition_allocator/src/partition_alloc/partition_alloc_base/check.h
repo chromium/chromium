@@ -7,12 +7,12 @@
 
 #include <iosfwd>
 
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "partition_alloc/partition_alloc_base/immediate_crash.h"
-#include "partition_alloc/partition_alloc_base/log_message.h"
-#include "partition_alloc/partition_alloc_base/strings/cstring_builder.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/immediate_crash.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/log_message.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/cstring_builder.h"
 
 #define PA_STRINGIFY_IMPL(s) #s
 #define PA_STRINGIFY(s) PA_STRINGIFY_IMPL(s)

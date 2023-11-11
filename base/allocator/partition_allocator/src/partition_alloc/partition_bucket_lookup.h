@@ -7,11 +7,11 @@
 
 #include <cstdint>
 
-#include "partition_alloc/partition_alloc_base/bits.h"
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
-#include "partition_alloc/partition_alloc_check.h"
-#include "partition_alloc/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
 
 namespace partition_alloc::internal {
 

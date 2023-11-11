@@ -13,25 +13,25 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/allocator/partition_allocator/src/partition_alloc/flags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/cxx20_is_constant_evaluated.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_forward.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_exclusion.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/raw_ptr_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "partition_alloc/flags.h"
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/cxx20_is_constant_evaluated.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
-#include "partition_alloc/partition_alloc_config.h"
-#include "partition_alloc/partition_alloc_forward.h"
-#include "partition_alloc/pointers/raw_ptr_exclusion.h"
-#include "partition_alloc/raw_ptr_buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "partition_alloc/partition_alloc_base/win/win_handle_types.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/win/win_handle_types.h"
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-#include "partition_alloc/partition_alloc_base/check.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/check.h"
 // Live implementation of MiraclePtr being built.
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
     BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
@@ -50,13 +50,13 @@
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-#include "partition_alloc/pointers/raw_ptr_backup_ref_impl.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_backup_ref_impl.h"
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
-#include "partition_alloc/pointers/raw_ptr_asan_unowned_impl.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_asan_unowned_impl.h"
 #elif BUILDFLAG(USE_HOOKABLE_RAW_PTR)
-#include "partition_alloc/pointers/raw_ptr_hookable_impl.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_hookable_impl.h"
 #else
-#include "partition_alloc/pointers/raw_ptr_noop_impl.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_noop_impl.h"
 #endif
 
 namespace cc {
@@ -213,7 +213,7 @@ struct IsSupportedType<T, std::enable_if_t<std::is_convertible_v<T*, id>>> {
   struct IsSupportedType<name##__, void> { \
     static constexpr bool value = false;   \
   };
-#include "partition_alloc/partition_alloc_base/win/win_handle_types_list.inc"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/win/win_handle_types_list.inc"
 #undef PA_WINDOWS_HANDLE_TYPE
 #endif
 
