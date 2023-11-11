@@ -228,8 +228,6 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       dlp_ash_(std::make_unique<DlpAsh>()),
       document_scan_ash_(std::make_unique<DocumentScanAsh>()),
       download_controller_ash_(std::make_unique<DownloadControllerAsh>()),
-      download_status_updater_ash_(
-          std::make_unique<DownloadStatusUpdaterAsh>()),
       drive_integration_service_ash_(
           std::make_unique<DriveIntegrationServiceAsh>()),
       echo_private_ash_(std::make_unique<EchoPrivateAsh>()),
@@ -516,6 +514,15 @@ void CrosapiAsh::BindDownloadController(
 
 void CrosapiAsh::BindDownloadStatusUpdater(
     mojo::PendingReceiver<mojom::DownloadStatusUpdater> receiver) {
+  // Delay creating `download_status_updater_ash_` until binding so that the Ash
+  // profile is ready.
+  if (!download_status_updater_ash_) {
+    Profile* const profile = GetAshProfile();
+    CHECK(profile);
+    download_status_updater_ash_ =
+        std::make_unique<DownloadStatusUpdaterAsh>(profile);
+  }
+
   download_status_updater_ash_->BindReceiver(std::move(receiver));
 }
 

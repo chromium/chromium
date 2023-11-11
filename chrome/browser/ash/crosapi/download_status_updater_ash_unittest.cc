@@ -9,9 +9,10 @@
 
 #include "base/functional/callback.h"
 #include "base/test/gmock_move_support.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -141,12 +142,14 @@ class DownloadStatusUpdaterAshCommandTest : public TestWithParam<Command> {
   }
 
  private:
-  // `RunLoop`s require a single-threaded context. Though not used explicitly,
+  // `RunLoop`s require a task environment. Though not used explicitly,
   // this test suite has a number of `RunLoop` dependencies.
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
 
-  // The download status updater instance under test.
-  DownloadStatusUpdaterAsh download_status_updater_ash_;
+  // The download status updater instance under test with a testing profile,
+  // which requires a browser thread environment.
+  TestingProfile profile_;
+  DownloadStatusUpdaterAsh download_status_updater_ash_{&profile_};
 
   // The collection of clients which are bound to the download status updater
   // under test. Note that clients must be explicitly bound via `BindClient()`.

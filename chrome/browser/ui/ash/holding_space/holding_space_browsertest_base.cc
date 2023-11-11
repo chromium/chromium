@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
@@ -187,16 +188,20 @@ void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {
 void HoldingSpaceUiBrowserTestBase::SetUpOnMainThread() {
   HoldingSpaceBrowserTestBase::SetUpOnMainThread();
 
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  if (!features::IsHoldingSpacePredictabilityEnabled()) {
+    ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
-  // The holding space tray will not show until the user has added a file to
-  // holding space. Holding space UI browser tests don't need to assert that
-  // behavior since it is already asserted in ash_unittests. As a convenience,
-  // add and remove a holding space item so that the holding space tray will
-  // already be showing during test execution.
-  ASSERT_FALSE(test_api().IsShowingInShelf());
-  RemoveItem(AddDownloadFile());
+    // The holding space tray will not show until the user has added a file to
+    // holding space. Holding space UI browser tests don't need to assert that
+    // behavior since it is already asserted in ash_unittests. As a convenience,
+    // add and remove a holding space item so that the holding space tray will
+    // already be showing during test execution.
+    ASSERT_FALSE(test_api().IsShowingInShelf());
+    RemoveItem(AddDownloadFile());
+  }
+
+  // Confirm that the holding space tray is showing in the shelf.
   ASSERT_TRUE(test_api().IsShowingInShelf());
 
   // Confirm that holding space model has been emptied for test execution.
