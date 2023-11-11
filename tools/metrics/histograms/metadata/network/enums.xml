@@ -2128,14 +2128,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Matches last connected attach and default APN"/>
   <int value="3"
       label="Matches last connected attach APN, but not the connected default
-             APN; last connected default APN matches a database APN"/>
+             APN; last connected default APN matches a database APN
+             (deprecated)"/>
   <int value="4"
       label="Matches last connected attach APN, but not the connected default
-             APN; last connected default APN does not match a database APN"/>
+             APN; last connected default APN does not match a database APN
+             (deprecated)"/>
   <int value="5"
       label="No last connected attach APN, but matches last connected default
              APN"/>
   <int value="6" label="Default case where there is no matching connected APN"/>
+  <int value="7" label="Matches last connected attach APN but not default APN"/>
+  <int value="8" label="Matches last connected default APN but not attach APN"/>
 </enum>
 
 <enum name="UserInitiatedCellularConnectResult">
