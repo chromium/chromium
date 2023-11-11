@@ -240,12 +240,6 @@
 <translation id="120937472976628837">팬 정보 보고</translation>
 <translation id="1212233008927724662">Lazy Login WebUI 로딩을 사용 중지합니다.</translation>
 <translation id="1216919699175573511">서명된 HTTP 교환(SXG) 지원 사용 설정</translation>
-<translation id="1218658069098810124">사용 설정하면 WebRTC 동종 연결이 지원 중단된 버전의
-      TLS/DTLS(DTLS 1.0, TLS 1.0, TLS 1.1) 프로토콜로 다운그레이드될 수 있습니다.
-      이 정책이 사용 중지되거나 설정되지 않으면 이러한 TLS/DTLS 버전은
-      사용 중지됩니다.
-
-      이 정책은 지원 중단되었으며 <ph name="PRODUCT_NAME" /> 버전 M121에서 삭제될 예정입니다.</translation>
 <translation id="1219027971768347970">오디오 샌드박스에 기본 구성 사용</translation>
 <translation id="1221359380862872747">데모 로그인 시 지정된 URL 로드</translation>
 <translation id="1221955019309484560">모든 구성요소의 업데이트 사용</translation>
@@ -6343,20 +6337,6 @@ Origin-Agent-Cluster: 헤더가 설정되지 않았을 때 M111의 기본값은 
 <translation id="6404064917675764807">CRD 세션 이벤트 보고하지 않음</translation>
 <translation id="6404360891305375004">네트워크 파일 공유 허용</translation>
 <translation id="6407093060083181305">확장 프로그램 설치 차단 목록 설정</translation>
-<translation id="6407792833351198330">기존 기술을 사용하는 페이지를 URL에 기반하여 보고할지 제어합니다.
-
-정책이 설정되면 접두사가 허용 목록 항목과 일치하는 URL이 보고서를 생성하고 업로드하는 데 사용됩니다. 일치하지 않는 URL은 무시됩니다.
-정책을 설정하지 않거나 빈 목록으로 설정하면 보고서가 생성되지 않습니다.
-
-일치 패턴은 '<ph name="URL_BLOCKLIST_POLICY_NAME" />' 정책(https://support.google.com/chrome/a?p=url_blocklist_filter_format의 설명 참고)과 비슷한 형식을 사용합니다. 몇 가지 예외는 아래와 같습니다.
- * 와일드 카드 '*' 기호는 지원되지 않습니다.
- * 스키마, 포트, 쿼리는 무시됩니다.
- * 하위 도메인이 일치하도록 지정해야 합니다.
- * 최대 100개의 URL을 허용 목록에 추가할 수 있습니다.
-
-<ph name="PRODUCT_NAME" />의 경우 이 정책은 컴퓨터가 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />으로 등록되어 있을 때만 적용됩니다.
-
-기존 기술에 관한 자세한 정보는 https://chromestatus.com/features에서 확인할 수 있습니다.</translation>
 <translation id="640827304541402854">원격 액세스 호스트의 방화벽 통과 사용 중지</translation>
 <translation id="6410847321564585975">웹사이트 활동 보고 허용 목록</translation>
 <translation id="6412352702230183710">시스템 수준의 기본 메시지 호스트만 허용</translation>
@@ -8180,6 +8160,11 @@ Internet Explorer의 <ph name="IEEM_SITELIST_POLICY" /> 정책(https://docs.micr
           여기 명시된 패턴에 해당하지 않는 원본에는 <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> 정책(설정된 경우) 또는 사용자 개인 구성의 전체 기본값이 사용됩니다.
 
           유효한 URL 패턴을 자세히 알아보려면 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns 페이지를 참고하세요.</translation>
+<translation id="7904584382309857420">이 정책은 M121에서 삭제되었습니다. 기기의 원격 증명을 사용 설정하고 사용 중지했으나, 기본적으로 원격 증명이 사용 설정되어 있습니다.
+
+정책을 사용 설정하면 기기의 원격 증명이 허용됩니다. 인증서가 자동으로 생성되고 기기 관리 서버에 업로드됩니다.
+
+정책을 사용 중지하거나 설정하지 않은 상태로 두면 인증서가 생성되지 않고 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 호출이 실패합니다.</translation>
 <translation id="7906983682927840536">종료 시 연결 유지 길이 가져오기</translation>
 <translation id="7908384265697653397"><ph name="PRODUCT_OS_NAME" /> 버전이 지정된 <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />보다 낮은 경우 사용자가 로그아웃될 때까지의 기간(일)입니다.</translation>
 <translation id="7911685775490889216">잠금 화면의 화면 보호기에 표시할 이미지가 여러 개 있는 경우 이미지를 표시하는 간격(초)을 구성합니다.

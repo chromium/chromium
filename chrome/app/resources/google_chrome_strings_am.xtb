@@ -92,6 +92,7 @@
 <translation id="2467438592969358367">Google Chrome የእርስዎን የይለፍ ቃላት ወደ ውጭ መላክ ይፈልጋል። ይህንን ለመፍቀድ የWindows የይለፍ ቃልዎን ይተይቡ።</translation>
 <translation id="2472092250898121027">ይህ ቅጥያ ተንኮል አዘል ዌርን ይዟል እና ደህንነቱ የተጠበቀ አይደለም። የግል መረጃዎን ጨምሮ ከእንግዲህ እርስዎ በሚጎበኟቸው ጣቢያዎች ላይ ያለውን ውሂብዎን ማየት እና መለወጥ እንዳይችል ከChrome ያስወግዱት።</translation>
 <translation id="2485422356828889247">አራግፍ</translation>
+<translation id="2513154137948333830">ዳግም ማስነሳት ያስፈልጋል፦ <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2534365042754120737">ውሂብዎን ለመጠበቅ Chrome እርስዎ በቅርቡ ካልጎበኟቸው ጣቢያዎች ፈቃዶችን እንዲያስወግድ ይፍቀዱ። ማሳወቂያዎችን አያቆምም።</translation>
 <translation id="2534507159460261402">Google Pay (ወደ Chrome ተቀድቷል)</translation>
 <translation id="2556847002339236023">ድርጅትዎ Chrome ለ<ph name="TIMEOUT_DURATION" /> ያህል ሥራ ላይ ሳይውል ይዘጋዋል። የአሰሳ ውሂብ ተሰርዟል። ይህ ታሪክን፣ ራስ-ሙላን እና ውርዶችን ሊያካትት ይችላል።</translation>
@@ -115,6 +116,7 @@
 <translation id="2770231113462710648">ነባሪ አሳሽን ወደዚህ ቀይር፦</translation>
 <translation id="2775140325783767197">Chrome የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም። የበይነመረብ ግንኙነትዎን ለመፈተሽ ይሞክሩ።</translation>
 <translation id="2799223571221894425">ዳግም አስጀምር</translation>
+<translation id="2846251086934905009">የጭነት ስህተት፦ ጫኚው አልተጠናቀቀም። ጭነቱ ተቋርጧል።</translation>
 <translation id="2847461019998147611">Google Chromeን በዚህ ቋንቋ አሳይ</translation>
 <translation id="2853415089995957805">እርስዎ የመጎብኘት ዕድልዎ ከፍተኛ የሆኑባቸው ገፆች ሲጎበኟቸው ይበልጥ በፍጥነት እንዲጫኑ Chrome በቅድሚያ ይጭናቸዋል</translation>
 <translation id="2857540653560290388">Chromeን በማስጀመር ላይ...</translation>
@@ -130,6 +132,7 @@
 <translation id="2926952073016206995">Chrome ለዚህ ጣቢያ የካሜራ ፈቃድ ያስፈልገዋል</translation>
 <translation id="2928420929544864228">ጭነት ተጠናቅቋል።</translation>
 <translation id="2929907241665500097">Chrome አልተዘመነም፣ የሆነ ስክህተት ተከስቷል። <ph name="BEGIN_LINK" />የChrome ዝማኔ ችግሮችን እና ያልተሳኩ ዝማኔዎችን ያስተካክሉ።<ph name="END_LINK" /></translation>
+<translation id="2945997411976714835">የጭነት ስህተት፦ የጫኙ ሂደት መጀመር አልተሳካም።</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - በአውታረ መረብ ወደ መለያ መግባት - Chrome</translation>
 <translation id="3018957014024118866">እንዲሁም ከChrome (<ph name="URL" />) ውሂብ ይሰርዙ</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flexን ለማዘመን እንደገና ያስጀምሩ</translation>
@@ -186,6 +189,7 @@
 <translation id="3865754807470779944">የChrome ስሪት <ph name="PRODUCT_VERSION" /> ተጭኗል</translation>
 <translation id="3873044882194371212">አገናኝ በChrome ማንነት የ&amp;ማያሳውቅ መስኮት ውስጥ ክፈት</translation>
 <translation id="3889417619312448367">Google Chromeን አራግፍ</translation>
+<translation id="3941890832296813527">የጭነት ስህተት፦ የጫኙ የፋይል ስም ልክ ያልሆነ ወይም የማይደገፍ ነው።</translation>
 <translation id="3999683152997576765">ማስታወቂያዎችን ለእርስዎ ለማሳየት የሚጠቀሙባቸውን የዝንባሌ ጣቢያዎች ርዕሶች ማየት እና ማስወገድ ይችላሉ። Chrome በቅርብ ጊዜ የአሰሳ ታሪክዎ ላይ ተመስርቶ የእርስዎን ዝንባሌዎች ይገምታል።</translation>
 <translation id="4035053306113201399">ChromeOS ዝማኔውን ለመተግበር ዳግም መጀመር አለበት።</translation>
 <translation id="4050175100176540509">አስፈላጊ የደህንነት ማሻሻያዎች እና አዲስ ባህሪያት በቅርብ ጊዜው ስሪቱ ላይ ይገኛሉ።</translation>
@@ -265,6 +269,7 @@
 <translation id="5334487786912937552">Chrome ፋይሎችን ለማውረድ የማከማቻ መዳረሻ ፈቃድ ያስፈልገዋል</translation>
 <translation id="5337648990166757586">ከተፈለገ፦ የምርመራ እና የአጠቃቀም ውሂብ ወደ Google በራስ-ሰር በመላክ የChromeOS ባህሪያትን እና አፈጻጸምን እንዲሻሻል ያግዙ።</translation>
 <translation id="5357889879764279201">በChromeOS Flex ላይ እገዛን ያግኙ</translation>
+<translation id="5368118228313795342">ተጨማሪ ኮድ፦ <ph name="EXTRA_CODE" />።</translation>
 <translation id="5386118856456530849">ወደ የChrome ስሪት ቅንብሮች ይሂዱ</translation>
 <translation id="5386244825306882791">እንዲሁም Chromeን ሲጀምሩት ወይም ከኦምኒቦክሱ ሆነው ሲፈልጉ የሚታየውን ገፅ ይቆጣጠራል።</translation>
 <translation id="5394833366792865639">አንድ የChrome ትር ያጋሩ</translation>
@@ -463,6 +468,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8727043961453758442">ከChrome ምርጡን ያግኙ</translation>
 <translation id="873133009373065397">Google Chrome ነባሪ አሳሹን ማወቅ ወይም ማቀናበር አልቻለም</translation>
 <translation id="8765470054473112089">የአድራሻ አሞሌ ወይም የፍለጋ ሳጥን ውስጥ ሲተይቡ የተሻሉ ጥቆማዎችን ለማግኘት Chrome የሚተይቡትን ለእርስዎ ነባሪ የፍለጋ ፕሮግራም ይልካል። ይህ ማንነት የማያሳውቅ ውስጥ ጠፍቷል።</translation>
+<translation id="878572486461146056">የጭነት ስህተት፦ የእርስዎ የአውታረ መረብ አስተዳዳሪ ጭነትን የሚከላከል የቡድን መመሪያ ተግባራዊ አድርጓል፦ <ph name="INSTALL_ERROR" /></translation>
 <translation id="8821043148920470810">የወደፊት የGoogle Chrome ዝማኔዎችን ለማግኘት Windows 10 ወይም ከዚያ በላይ ያስፈልግዎታል። ይህ ኮምፒውተር Windows 7ን እየተጠቀመ ነው።</translation>
 <translation id="8823341990149967727">Chrome ጊዜው አልፎበታል</translation>
 <translation id="8825634023950448068">የእርስዎን ግላዊነት ለመጠበቅ ከ4 ሳምንታት በላይ የቆዩ ዝንባሌዎችዎን በራስ-ሰር እንሰርዛለን። ማሰስዎን በሚቀጥሉበት ጊዜ ዝንባሌ እንደገና በዝርዝሩ ላይ ሊታይ ይችላል። እና Chrome ከተሳሳተ ወይም የተወሰኑ ማስታወቂያዎችን ማየት ካልፈለጉ ዝንባሌን ማስወገድ ይችላሉ።</translation>

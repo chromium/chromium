@@ -1321,7 +1321,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Tous les fichiers, un fichier dans la liste}one{Tous les fichiers, # fichier dans la liste}other{Tous les fichiers, # fichiers dans la liste}}</translation>
 <translation id="7815484226266492798">Capture d'écran étendue</translation>
 <translation id="7822705602465980873">Lorsque vous êtes connecté, ces données sont associées à votre compte Google afin de vous protéger dans tous les services Google, par exemple pour renforcer la protection dans Gmail après un incident de sécurité.</translation>
-<translation id="782705168687182233">Votre activité est enregistrée dans votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">L'ordinateur souhaite enregistrer cet appareil pour se connecter à un site</translation>
 <translation id="7844171778363018843">Aucune donnée à synchroniser</translation>
 <translation id="7846296061357476882">Services Google</translation>

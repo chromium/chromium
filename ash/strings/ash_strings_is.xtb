@@ -130,6 +130,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="146902737843070955">Kerfisstjórinn bað um þessa breytingu</translation>
 <translation id="1469148162491666137">Þetta veitir <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og öllum forritum og vefsvæðum með myndavélar- og hljóðnemaheimildir aðgang. Þú gætir þurft að endurnýja vefsíðuna eða endurræsa forritið.</translation>
 <translation id="147310119694673958">Símarafhlaða <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">Kveikja/slökkva á heitum reit. Kveikt er á heitum reit, 1 tæki er tengt.</translation>
 <translation id="1479909375538722835">Fljótandi aðgengisvalmynd</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Með raddinnslætti geturðu slegið inn texta með röddinni. Ýttu á raddinnsláttartakkann eða veldu hljóðnematáknið neðst á skjánum þegar þú ert í textareit. Raddinnsláttartungumálið þitt er stillt á: <ph name="LANGUAGE" />. Tal verður sent til Google til úrvinnslu. Þú getur breytt tungumáli raddinnsláttar hvenær sem er í „Stillingar &gt; Aðgengi“.</translation>
@@ -870,6 +871,14 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4548482551627849548">Færa virkan glugga á skrifborð til vinstri</translation>
 <translation id="4560576029703263363">Kveikt</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Stöðubakki, tími <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Fela aðgangsorð</translation>
 <translation id="4566144812051858745">Ég hef ekki áhuga á neinum tillögum</translation>
 <translation id="4569753163207712681">Skoða nýlegar myndir, efni og forrit símans</translation>
@@ -879,6 +888,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4577990005084629481">Sýna forskoðun</translation>
 <translation id="4578906031062871102">Stillingavalmynd opnuð</translation>
 <translation id="458210817642223147">Taka upp GIF</translation>
+<translation id="4582666543382004902">Slökkt var á heitum reit til að nota WiFi. Slökktu á WiFi til að nota heitan reit.</translation>
 <translation id="4585337515783392668">Hætta að senda út í óþekkt tæki</translation>
 <translation id="4596144739579517758">Slökkt er á dökku þema</translation>
 <translation id="4611292653554630842">Skrá inn</translation>
@@ -1085,6 +1095,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="5393156353051693207">Haltu inni hvar sem er til að endurraða forritunum þínum</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> ofan á <ph name="IN_PLACE_APP" />, slepptu til að búa til möppu.</translation>
 <translation id="5397578532367286026">Stjórnandinn (<ph name="MANAGER_EMAIL" />) getur farið yfir notkun og feril þessa notanda á chrome.com.</translation>
+<translation id="540713187982329711">Kveikja/slökkva á heitum reit. Kveikt er á heitum reit, engin tæki eru tengd.</translation>
 <translation id="5413656666631274079">Stillingasíða</translation>
 <translation id="5414198321558177633">Endurnýjar prófílalista. Þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="5426063383988017631">Stillingavalmynd lokað</translation>
@@ -1175,9 +1186,11 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="576341972084747908">Hættulegt niðurhal <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Kveikt er á næturljósi.</translation>
 <translation id="5764569119212455782">Skipta yfir í tungumálið sem var valið síðast</translation>
+<translation id="5767730327234918501">Stjórnandinn slökkti á heitum reit.</translation>
 <translation id="5769373120130404283">Persónuverndarskjár</translation>
 <translation id="5773950591113557721">Þetta veitir <ph name="APP_NAME" /> og öllum forritum og vefsvæðum með myndavélar- og hljóðnemaheimildir aðgang</translation>
 <translation id="5774295353725270860">Opna skráaforritið</translation>
+<translation id="5775936059231769503">Kveikja/slökkva á heitum reit. Slökkt er á heitum reit.</translation>
 <translation id="5777841717266010279">Stöðva skjádeilingu?</translation>
 <translation id="5779721926447984944">Festar skrár</translation>
 <translation id="5785221443435874078">Fjarlægja þessa tillögu</translation>
@@ -1495,6 +1508,7 @@ Ný uppsetning</translation>
 <translation id="7068360136237591149">Opna skrár</translation>
 <translation id="7076293881109082629">Skráir inn</translation>
 <translation id="7076878155205969899">Þagga hljóð</translation>
+<translation id="7084678090004350185">Kveikja/slökkva á heitum reit. Kveikt er á heitum reit, <ph name="DEVICECOUNT" /> tæki eru tengd.</translation>
 <translation id="7086931198345821656">Þessi uppfærsla krefst djúphreinsunar á <ph name="DEVICE_TYPE" />. Öllum gögnum verður eytt. Fáðu frekari upplýsingar um nýjustu uppfærslu <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Rofaaðgangur</translation>
 <translation id="709015856939120012">Auka aðdrátt á síðu</translation>

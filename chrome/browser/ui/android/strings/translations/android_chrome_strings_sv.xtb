@@ -1297,6 +1297,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7691043218961417207">Utforska innehåll att följa</translation>
 <translation id="7697383401610880082">Handtag</translation>
 <translation id="7698359219371678927">Skapa ett e-postmeddelande i <ph name="APP_NAME" /></translation>
+<translation id="7702029078562412515">Frågerutor</translation>
 <translation id="7702388902581909985">Du loggas inte ut från Google-kontot när du rensar webbinformationen. Om du vill göra det ska du <ph name="BEGIN_LINK1" />logga ut från Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Mobildata används</translation>
 <translation id="7709918231054955894">Få alla dina flikar</translation>
@@ -1321,7 +1322,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alla filer, 1 fil i listan}other{Alla filer, # filer i listan}}</translation>
 <translation id="7815484226266492798">Lång skärmbild</translation>
 <translation id="7822705602465980873">När du är inloggad kopplas denna data till ditt Google-konto för att skydda dig i Googles tjänster, till exempel genom att öka skyddet i Gmail efter en säkerhetsincident.</translation>
-<translation id="782705168687182233">Aktiviteten sparas i ditt <ph name="BEGIN_LINK" />Google-konto<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Datorn vill registrera den här enheten för att logga in på en webbplats</translation>
 <translation id="7844171778363018843">Du har inte valt någon data att synkronisera</translation>
 <translation id="7846296061357476882">Googles tjänster</translation>

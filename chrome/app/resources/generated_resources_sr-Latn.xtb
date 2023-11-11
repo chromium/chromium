@@ -446,8 +446,10 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1346748346194534595">Udesno</translation>
 <translation id="1347256498747320987">Instalirajte ažuriranja i aplikacije. Ako nastavite, pristajete da ovaj uređaj može automatski da preuzima i instalira ažuriranja i aplikacije od Google-a, mobilnog operatera i proizvođača uređaja, uz mogućnost korišćenja mobilnih podataka. Neke od ovih aplikacija možda nude kupovine u aplikaciji. <ph name="BEGIN_LINK1" />Saznajte više<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux memorijski prostor</translation>
+<translation id="1347625331607114917">Verifikujte kôd na Android telefonu</translation>
 <translation id="1347975661240122359">Ažuriranje će početi kada nivo napunjenosti baterije bude <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Podešavanja pristupačnosti miša</translation>
+<translation id="1352834119074414157">Ovaj paket može da bude neispravan ili ugrožen. Zatvorite ovaj prozor i preuzmite ga ponovo</translation>
 <translation id="1353275871123211385">Da biste koristili roditeljski nadzor, poput odobrenja za aplikacije i ograničenja vremena ispred ekrana, dete mora da ima Google nalog kojim upravlja roditelj. Kasnije može da se doda školski nalog za alatke poput Google učionice.</translation>
 <translation id="135389172849514421">Radi oflajn</translation>
 <translation id="1353980523955420967">Ne možemo da pronađemo PPD. Proverite da li je Chromebook onlajn i probajte ponovo.</translation>
@@ -1480,6 +1482,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2131077480075264">Nije uspelo instaliranje „<ph name="APP_NAME" />“ jer to ne dozvoljava „<ph name="IMPORT_NAME" />“</translation>
 <translation id="2133775869826239001">Odaberite dodatne funkcije za podešavanje</translation>
 <translation id="2133857665503360653">Ponovo otvorite <ph name="FILE_NAME" /></translation>
+<translation id="2133939190018801302">Ova aplikacija će biti instalirana na Chrome profilu koji se trenutno koristi. <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">CA-ovi za sistem</translation>
 <translation id="21354425047973905">Sakrij PIN-ove</translation>
 <translation id="2135456203358955318">Montirana lupa ekrana</translation>
@@ -2774,6 +2777,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3117362587799608430">Bazna stanica nije potpuno kompatibilna</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Slanje stavki (<ph name="ATTACHMENTS" />) na <ph name="DEVICE_NAME" /> nije uspelo}one{Slanje stavki (<ph name="ATTACHMENTS" />) na <ph name="DEVICE_NAME" /> nije uspelo}few{Slanje <ph name="ATTACHMENTS" /> na <ph name="DEVICE_NAME" /> nije uspelo}other{Slanje <ph name="ATTACHMENTS" /> na <ph name="DEVICE_NAME" /> nije uspelo}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> – pomoć</translation>
+<translation id="3118748462829336648">Otvori bočnu tablu</translation>
 <translation id="3119948370277171654">Koji sadržaj/URL ste prebacivali?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Pravljenje direktorijuma sa podacima nije uspelo</translation>
@@ -4008,6 +4012,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4100853287411968461">Novo ograničenje vremena ispred ekrana</translation>
 <translation id="4101352914005291489">Skriveni SSID</translation>
 <translation id="4102906002417106771">Restartujte da biste obavili Powerwash</translation>
+<translation id="4103644672850109428">Čitač ekrana, uvećanje</translation>
 <translation id="4104163789986725820">I&amp;zvezi...</translation>
 <translation id="4104944259562794668">Možete da omogućite ovo kasnije u odeljku Podešavanja &gt; Bezbednost i privatnost &gt; Zaključani ekran i prijavljivanje</translation>
 <translation id="4107048419833779140">identifikuje i izbacuje memorijske uređaje</translation>
@@ -4202,6 +4207,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4274673989874969668">Kada napustite sajt, on obično nastavlja sinhronizaciju da bi završio zadatke poput otpremanja slika ili slanja poruke ćaskanja</translation>
 <translation id="4275291496240508082">Zvuk pri pokretanju</translation>
 <translation id="4275397969489577657">Omogući evidentiranje strima događaja</translation>
+<translation id="4275788652681621337">Zatvori bočnu tablu</translation>
 <translation id="4275830172053184480">Ponovno pokretanje uređaja</translation>
 <translation id="4277434192562187284">Izvor XML konfiguracije</translation>
 <translation id="4278390842282768270">Dozvoljeno</translation>
@@ -5054,6 +5060,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4953808748584563296">Podrazumevani narandžasti avatar</translation>
 <translation id="4955707703665801001">Vidljivost za <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Odaberite PIN</translation>
+<translation id="4958090327979461112">Upravljajte Chrome profilima</translation>
 <translation id="4959262764292427323">Lozinke se čuvaju na Google nalogu da biste mogli da ih koristite na bilo kom uređaju</translation>
 <translation id="4960020053211143927">Neke aplikacije ne podržavaju ovo</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5284,6 +5291,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5145876360421795017">Nemoj da registruješ uređaj</translation>
 <translation id="5146235736676876345">Odaberite svoju lozinku</translation>
 <translation id="5146896637028965135">Sistemski glas</translation>
+<translation id="5147516217412920887">Pratite uputstva na telefonu da biste verifikovali kôd</translation>
 <translation id="5147992672778369947">Koristite preporučenu lozinku</translation>
 <translation id="5148277445782867161">Google usluga lokacije koristi izvore kao što su Wi‑Fi mreže, mobilne mreže i senzori da bi odredila približnu lokaciju uređaja.</translation>
 <translation id="5148285448107770349">Lozinka mora da sadrži najmanje 8 znakova</translation>
@@ -5632,7 +5640,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="5436492226391861498">Čekanje na proksi tunel...</translation>
 <translation id="5436510242972373446">Pretraži sajt <ph name="SITE_NAME" />:</translation>
 <translation id="5436575196282187764">Uspomene iz Google slika</translation>
-<translation id="5439680044267106777">Preskoči i podesi nov profil</translation>
+<translation id="5440425659852470030">Zatvori bočnu tablu</translation>
 <translation id="544083962418256601">Napravi prečice...</translation>
 <translation id="5441133529460183413">Veb-aplikacija je instalirana iz Chrome pregledača</translation>
 <translation id="5441292787273562014">Ponovo učitaj stranicu</translation>
@@ -5712,6 +5720,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="5496587651328244253">Organizovanje</translation>
 <translation id="5496730470963166430">Nije im dozvoljeno da šalju iskačuće prozore ili da koriste preusmeravanja</translation>
 <translation id="5497251278400702716">Ova datoteka</translation>
+<translation id="5497739595514726398">Chrome nije uspeo da verifikuje ovaj paket za instalaciju</translation>
 <translation id="5498967291577176373">Pišite brže pomoću predloga za ime, adresu ili broj telefona u tekstu</translation>
 <translation id="5499211612787418966">Ovaj dijalog trenutno nije fokusiran. Pritisnite Alt-Shift A da biste fokusirali ovaj dijalog.</translation>
 <translation id="5499313591153584299">Ova datoteka može biti štetna po računar.</translation>
@@ -6321,7 +6330,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5992225669837656567">Veza sa svim miševima je prekinuta</translation>
 <translation id="5992652489368666106">Bez ivica</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Pregled je završen za 1 sajt}one{Pregled je završen za {NUM_SITES} sajt}few{Pregled je završen za {NUM_SITES} sajta}other{Pregled je završen za {NUM_SITES} sajtova}}</translation>
-<translation id="5996200702878169822">Možete i <ph name="BEGIN_LINK" />ručno<ph name="END_LINK" /> da podesite eSIM profil.</translation>
 <translation id="5997337190805127100">Saznajte više o pristupu sajtovima</translation>
 <translation id="5998458948782718639">Pomozite nam da poboljšamo automatsko popunjavanje</translation>
 <translation id="5999024481231496910">Omogućili ste testiranje postepenog ukidanja kolačića treće strane. Stranica sa podešavanjima ne može da zameni ovo podešavanje. Ako želite da ponovo omogućite kolačiće treće strane, ponovo pokrenite Chrome kada je ova funkcija onemogućena.</translation>
@@ -6510,6 +6518,10 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6143186082490678276">Zatražite pomoć</translation>
 <translation id="6143366292569327983">Odaberite jezik stranice sa kog se prevodi</translation>
 <translation id="6144938890088808325">Pomozite nam da poboljšamo Chromebook-ove</translation>
+<translation id="6145480071052696715">Lako podesite <ph name="DEVICE_TYPE" /> pomoću telefona. Možete da dodate WiFi i Google nalog bez ručnog unošenja lozinki.
+    <ph name="BR" />
+    <ph name="BR" />
+    Vidljivo kao <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">Sinhronizacija ne radi. Probajte ponovo da se prijavite.</translation>
 <translation id="6147020289383635445">Pregled pre štampanja nije uspeo.</translation>
 <translation id="6148576794665275391">Otvori odmah</translation>
@@ -7578,6 +7590,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6993050154661569036">Pregledač Chrome se ažurira</translation>
 <translation id="6995899638241819463">Upozori me ako su lozinke otkrivene pri upadu u podatke</translation>
 <translation id="6995984090981858039">Čitanje informacija o ChromeOS uređaju i podataka sa uređaja</translation>
+<translation id="6996245928508281884">Uključite Bluetooth i WiFi na telefonu</translation>
 <translation id="6996438701394974959">Povećajte veličinu prikaza i teksta</translation>
 <translation id="6997553674029032185">Idi na sajt</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Evidencija aktivnosti</translation>
@@ -7660,7 +7673,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7056418393177503237">{0,plural, =1{Bez arhiviranja}one{# otvoren prozor bez arhiviranja}few{# otvorena prozora bez arhiviranja}other{# otvorenih prozora bez arhiviranja}}</translation>
 <translation id="7056526158851679338">&amp;Ispitaj uređaje</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Bezbednosna provera je pokrenuta pre 1 minut}one{Bezbednosna provera je pokrenuta pre {NUM_MINS} minut}few{Bezbednosna provera je pokrenuta pre {NUM_MINS} minuta}other{Bezbednosna provera je pokrenuta pre {NUM_MINS} minuta}}</translation>
-<translation id="7057767408836081338">Dobijanje podataka aplikacije nije uspelo. Ipak pokušavamo da pokrenemo aplikaciju...</translation>
 <translation id="7058024590501568315">Skrivena mreža</translation>
 <translation id="7059858479264779982">Podesi na automatsko pokretanje</translation>
 <translation id="7063129466199351735">Obrada prečica...</translation>
@@ -7821,6 +7833,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7201118060536064622">Stavka „<ph name="DELETED_ITEM_NAME" />“ je izbrisana</translation>
 <translation id="7201420661433230412">Prikaži datoteke</translation>
 <translation id="7201535955609308429">Sačekajte da verifikacija bude u toku</translation>
+<translation id="7202337678781136582">Skenirajte QR kôd Android telefonom</translation>
 <translation id="7203150201908454328">Prošireno</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Zatvori stranicu}one{Zatvori stranice}few{Zatvori stranice}other{Zatvori stranice}}</translation>
 <translation id="7207457272187520234">Šaljite podatke o korišćenju i dijagnostičke podatke. Ovaj uređaj trenutno automatski šalje podatke o dijagnostici, uređaju i korišćenju aplikacija Google-u. To doprinosi održavanju stabilnosti sistema i aplikacije i drugim podešavanjima. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera. To podešavanje primenjuje vlasnik. Ako uključite podešavanje dodatne aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu.</translation>
@@ -8044,6 +8057,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7384804382450832142">Povežite sa Microsoft OneDrive-om</translation>
 <translation id="7385490373498027129">Svi fajlovi i lokalni podaci za sve korisnike na ovom uređaju (<ph name="DEVICE_TYPE" />) trajno se brišu.</translation>
 <translation id="7385854874724088939">Došlo je do greške pri pokušaju štampanja. Proverite štampač i pokušajte ponovo.</translation>
+<translation id="7387107590792462040">Sačekajte dok je instalacija u toku</translation>
 <translation id="7387273928653486359">Prihvatljiv</translation>
 <translation id="7387951778417998929">Da ne biste koristili podrazumevani pretraživač nego neki drugi, unesite njegovu prečicu u traku za adresu i svoju željenu tastersku prečicu. Podrazumevani pretraživač možete da promenite i ovde.</translation>
 <translation id="7388209873137778229">Prikazani su samo podržani uređaji.</translation>
@@ -8787,6 +8801,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7943349879009553083">Nije dostupno u Režimu gosta</translation>
 <translation id="7943368935008348579">Preuzimajte PDF-ove</translation>
 <translation id="7943837619101191061">Dodaj lokaciju...</translation>
+<translation id="79446453817422139">Ovaj fajl može da bude opasan</translation>
 <translation id="7944772052836377867">Sinhronizacija mora da potvrdi da ste to vi</translation>
 <translation id="7945703887991230167">Željeni glas</translation>
 <translation id="7946586320617670168">Izvor mora da bude bezbedan</translation>
@@ -9187,6 +9202,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8260864402787962391">Miš</translation>
 <translation id="8261378640211443080"><ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ne navodi ovaj dodatak i on je možda dodat bez vašeg znanja.</translation>
 <translation id="8261506727792406068">Izbriši</translation>
+<translation id="8262971894813353037">Omogućava novi dizajn radne površine za WebUI. Morate da omogućite i Chrome osvežavanje za 2023.</translation>
 <translation id="8263336784344783289">Dajte naziv ovoj grupi</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> je onemogućio kursor.</translation>
 <translation id="8264024885325823677">Ovim podešavanjem upravlja administrator.</translation>
@@ -10256,6 +10272,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="9080175821499742274">Ušteda memorije oslobađa memoriju sa neaktivnih kartica da bi mogle da je koriste aktivne kartice i druge aplikacije.</translation>
 <translation id="9080971985541434310">procenjuje interesovanja – Chrome može da proceni vaša interesovanja</translation>
 <translation id="9081543426177426948">Sajtovi koje posećujete se ne čuvaju u režimu bez arhiviranja</translation>
+<translation id="9082750838489080452">Aplikacija: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Otvori kao prozor</translation>
 <translation id="9085256200913095638">Napravi duplikat izabrane kartice</translation>
 <translation id="9085446486797400519">Pristup kameri</translation>
@@ -10424,6 +10441,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="924818813611903184">Upravljajte jezicima u podešavanjima Chrome OS-a</translation>
 <translation id="925270020047573546">Prebacivanje zvuka sa računara nije podržano na ovom uređaju.</translation>
 <translation id="925575170771547168">Ovim brišete <ph name="TOTAL_USAGE" /> podataka koje čuvaju sajtovi</translation>
+<translation id="930193457234051160">Chrome WebUI osvežavanje 2023.</translation>
 <translation id="930268624053534560">Detaljne vremenske oznake</translation>
 <translation id="930551443325541578">Ponavljaj tastere i dijakritičke znakove</translation>
 <translation id="930893132043726269">Trenutno je u romingu</translation>

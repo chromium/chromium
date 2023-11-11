@@ -304,6 +304,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 
           &lt;p&gt;Pas in het gedeelte &lt;strong&gt;Algemeen&lt;/strong&gt; van de app &lt;strong&gt;Instellingen&lt;/strong&gt; de datum en tijd aan.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Je beheerder start je apparaat opnieuw op om <ph name="TIME" /> op <ph name="DATE" /></translation>
+<translation id="1564634006476980707">HTTPS-schema aanbevolen voor zoek-URL: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Netwerkinformatie zoals adressen, interfaceconfiguratie en verbindingskwaliteit</translation>
 <translation id="1567040042588613346">Dit beleid werkt zoals bedoeld, maar ergens anders is dezelfde waarde ingesteld die wordt vervangen door dit beleid.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> toevoegen</translation>
@@ -532,6 +533,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2025891858974379949">Onveilige content</translation>
 <translation id="2027465737841872819">Plastic</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Controleer de proxy en firewall<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">De snelkoppeling kan niet gelijk zijn aan het zoekwoord van de standaard zoekprovider dat is gedefinieerd door <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Toch opslaan</translation>
 <translation id="2035400064145347639">Reisgidsen en reisverslagen</translation>
 <translation id="2036514476578229158">Je hebt gevraagd of je deze site mag bezoeken. Je ouders kunnen reageren in Family Link.</translation>
@@ -732,6 +734,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2448295565072560657">Randapparaten die zijn aangesloten op dit apparaat als je bent ingelogd</translation>
 <translation id="2450021089947420533">Trajecten</translation>
 <translation id="2456755709261364512">Je batterij moet meer dan <ph name="REQUIRED_BATTERY_PRECENT" />% zijn opgeladen</translation>
+<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> zoeken</translation>
 <translation id="2463739503403862330">Invullen</translation>
 <translation id="2465688316154986572">Nieten</translation>
 <translation id="2465914000209955735">Bestanden beheren die je in Chrome hebt gedownload</translation>
@@ -903,6 +906,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2814184336982254349">Deze pdf is niet toegankelijk. Druk op Zoeken + M om het contextmenu te openen en zet Tekst uit pdf extraheren aan.</translation>
 <translation id="2818338148457093657">Schoonheidsservices en spa's</translation>
 <translation id="2820957248982571256">Scannen…</translation>
+<translation id="2824549017793319782">Selecteer dit om je zoekopdracht rechtstreeks in de adresbalk te typen</translation>
 <translation id="2824775600643448204">Adres- en zoekbalk</translation>
 <translation id="2826760142808435982">De verbinding is gecodeerd en geverifieerd met <ph name="CIPHER" /> en gebruikt <ph name="KX" /> als mechanisme voor sleuteluitwisseling.</translation>
 <translation id="2835170189407361413">Formulier leegmaken</translation>
@@ -1074,6 +1078,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> op <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Kan vragen of deze site mag weten wanneer je dit apparaat actief gebruikt</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om de informatie die je synchroniseert te beheren in de Chrome-instellingen</translation>
+<translation id="3203025201812691413">De URL mag niet leeg zijn</translation>
 <translation id="320323717674993345">Betaling annuleren</translation>
 <translation id="3203366800380907218">Van internet</translation>
 <translation id="3207960819495026254">Toegevoegd aan 'Bookmarks'</translation>
@@ -1686,6 +1691,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4386413576162606861">Roleplaying-games</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4393632246160856858">Nagelverzorgingsproducten</translation>
+<translation id="4397059608630092079">Altijd laten verifiëren bij gebruik van automatisch invullen</translation>
 <translation id="4406883609789734330">Live ondertiteling</translation>
 <translation id="4406896451731180161">zoekresultaten</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> cookies</translation>
@@ -1887,7 +1893,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om snel een nieuwe Google-spreadsheet te maken</translation>
 <translation id="4825507807291741242">Krachtig</translation>
 <translation id="4826588772550366629">camera en microfoon</translation>
-<translation id="4827283332383516812">Kaart verwijderen</translation>
 <translation id="4831993743164297314">Papier voor beeldbelichter</translation>
 <translation id="483241715238664915">Waarschuwingen aanzetten</translation>
 <translation id="4834250788637067901">Betaalmethoden, aanbiedingen en adressen via Google Pay</translation>
@@ -2299,6 +2304,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5651323159439184939">Geperforeerd</translation>
 <translation id="5653432653077411130">Watervoorziening en -zuivering</translation>
 <translation id="5654927323611874862">ID van geüpload crashrapport:</translation>
+<translation id="5654965123204121933">De URL bevat niet de vereiste vervangende tekenreeks <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5660122698869360728">Een nieuwe slimme map waarmee je al je winkelpagina's op één plek kunt opslaan en automatisch prijzen kunt volgen, prijsinzichten kunt krijgen en meer.</translation>
 <translation id="5663955426505430495">De beheerder van dit apparaat heeft extensies voor aanvullende functies geïnstalleerd. Extensies hebben toegang tot sommige van je gegevens.</translation>
@@ -2360,7 +2366,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5785756445106461925">Bovendien bevat deze pagina bronnen die niet beveiligd zijn. Deze bronnen kunnen tijdens verzending door anderen worden bekeken en kunnen door een aanvaller worden gewijzigd om het uiterlijk van de pagina aan te passen.</translation>
 <translation id="5786044859038896871">Wil je de gegevens van je creditcard laten invullen?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Deze betaalmethode wordt verwijderd van dit apparaat</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Geen}=1{inloggegevens voor 1 account}other{inloggegevens voor # accounts}}</translation>
 <translation id="5800727402210090597">Reparatie en service voor mobiele telefoons</translation>
 <translation id="580241730938216256">Update starten</translation>
@@ -3744,6 +3749,7 @@ Aanvullende informatie:
 <translation id="8490137692873530638">Stapeleenheid 10</translation>
 <translation id="8493948351860045254">Ruimte vrijmaken</translation>
 <translation id="8498891568109133222">Het duurt te lang voordat <ph name="HOST_NAME" /> reageert.</translation>
+<translation id="8502972004418241366">Als je je <ph name="PERMISSION" /> op deze site wilt gebruiken, moet je Chrome toegang geven</translation>
 <translation id="8503559462189395349">Chrome-wachtwoorden</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="8504928302600319133">Computerhardware</translation>

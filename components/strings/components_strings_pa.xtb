@@ -532,6 +532,7 @@
 <translation id="2025891858974379949">ਅਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ</translation>
 <translation id="2027465737841872819">ਪਲਾਸਟਿਕ</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ਪ੍ਰੌਕਸੀ ਅਤੇ ਫ਼ਾਇਰਵਾਲ ਦੀ ਜਾਂਚ ਕਰੋ<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">ਸ਼ਾਰਟਕੱਟ ਅਤੇ <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> ਵੱਲੋਂ ਪਰਿਭਾਸ਼ਿਤ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਪ੍ਰਦਾਨਕ ਪ੍ਰਮੁੱਖ-ਸ਼ਬਦ ਇੱਕੋ ਜਿਹੇ ਨਹੀਂ ਹੋ ਸਕਦੇ: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">ਫਿਰ ਵੀ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="2035400064145347639">ਯਾਤਰਾ ਗਾਈਡ ਅਤੇ ਸਫ਼ਰਨਾਮੇ</translation>
 <translation id="2036514476578229158">ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਣ ਲਈ ਕਿਹਾ ਹੈ। ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ Family Link ਵਿੱਚ ਜਵਾਬ ਦੇ ਸਕਦੇ ਹਨ।</translation>
@@ -1075,6 +1076,7 @@
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> 'ਤੇ <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">ਸਾਈਟ ਤੁਹਾਡੇ ਵੱਲੋਂ ਇਸ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਨਾਲ ਕੀਤੀ ਜਾ ਰਹੀ ਵਰਤੋਂ ਬਾਰੇ ਜਾਣਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾਓ, ਫਿਰ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਤੁਸੀਂ ਜਿਹੜੀ ਜਾਣਕਾਰੀ ਦਾ ਸਿੰਕ ਕਰਦੇ ਹੋ, ਇਸਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
+<translation id="3203025201812691413">URL ਨੂੰ ਖਾਲੀ ਨਹੀਂ ਛੱਡਿਆ ਜਾ ਸਕਦਾ</translation>
 <translation id="320323717674993345">ਭੁਗਤਾਨ ਰੱਦ ਕਰੋ</translation>
 <translation id="3203366800380907218">ਵੈੱਬ ਤੋਂ</translation>
 <translation id="3207960819495026254">ਬੁੱਕਮਾਰਕ ਕੀਤੇ</translation>
@@ -1688,6 +1690,7 @@
 <translation id="4386413576162606861">ਭੂਮਿਕਾ ਨਿਭਾਉਣ ਵਾਲੀਆਂ ਗੇਮਾਂ</translation>
 <translation id="4390472908992056574">ਬ੍ਰਿਮ</translation>
 <translation id="4393632246160856858">ਨਹੁੰਆਂ ਦੀ ਦੇਖਭਾਲ ਸੰਬੰਧੀ ਉਤਪਾਦ</translation>
+<translation id="4397059608630092079">ਆਟੋਫਿਲ ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਸਮੇਂ ਹਮੇਸ਼ਾਂ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="4406883609789734330">ਲਾਈਵ ਸੁਰਖੀਆਂ</translation>
 <translation id="4406896451731180161">ਖੋਜ ਨਤੀਜੇ</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> ਕੁਕੀਜ਼</translation>
@@ -1889,7 +1892,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ਤੇਜ਼ੀ ਨਾਲ ਨਵੀਂ Google ਸ਼ੀਟ ਬਣਾਉਣ ਲਈ Tab ਦਬਾ ਕੇ ਫਿਰ Enter ਦਬਾਓ</translation>
 <translation id="4825507807291741242">ਸ਼ਕਤੀਸ਼ਾਲੀ</translation>
 <translation id="4826588772550366629">ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ</translation>
-<translation id="4827283332383516812">ਕਾਰਡ ਮਿਟਾਓ</translation>
 <translation id="4831993743164297314">ਇਮੇਜ ਸੈੱਟਰ ਪੇਪਰ</translation>
 <translation id="483241715238664915">ਚਿਤਾਵਨੀਆਂ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4834250788637067901">Google Pay ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ, ਪੇਸ਼ਕਸ਼ਾਂ ਅਤੇ ਪਤੇ</translation>
@@ -2301,6 +2303,7 @@
 <translation id="5651323159439184939">ਟਰੈਕਟਰ ਫ਼ੀਡ</translation>
 <translation id="5653432653077411130">ਪਾਣੀ ਦੀ ਸਪਲਾਈ ਅਤੇ ਸੁਧਾਰ</translation>
 <translation id="5654927323611874862">ਅੱਪਲੋਡ ਕੀਤੀ ਗਈ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟ ਆਈਡੀ:</translation>
+<translation id="5654965123204121933">URL ਵਿੱਚ ਲੋੜੀਂਦੀ ਬਦਲਣ ਵਾਲੀ ਸਤਰ <ph name="SEARCH_TERMS_REPLACEMENT" /> ਸ਼ਾਮਲ ਨਹੀਂ ਹੈ: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ਈਮੇਲ</translation>
 <translation id="5660122698869360728">ਇੱਕ ਨਵਾਂ ਸਮਾਰਟ ਫੋਲਡਰ, ਜੋ ਤੁਹਾਡੇ ਸਾਰੇ ਖਰੀਦਦਾਰੀ ਪੰਨਿਆਂ ਨੂੰ ਇੱਕੋ ਥਾਂ 'ਤੇ ਰੱਖਿਅਤ ਕਰਨ ਅਤੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕੀਮਤਾਂ ਨੂੰ ਟਰੈਕ ਕਰਨ, ਕੀਮਤਾਂ ਬਾਰੇ ਅੰਦਰੂਨੀ-ਝਾਤਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰਦਾ ਹੈ।</translation>
 <translation id="5663955426505430495">ਇਸ ਡੀਵਾਈਸ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਵਧੀਕ ਫੰਕਸ਼ਨਾਂ ਲਈ ਐਕਸਟੈਂਸ਼ਨਾਂ ਸਥਾਪਤ ਕੀਤੀਆਂ ਹਨ। ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਤੁਹਾਡੇ ਕੁਝ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਹੈ।</translation>
@@ -2362,7 +2365,6 @@
 <translation id="5785756445106461925">ਅੱਗੇ, ਇਸ ਸਫ਼ੇ ਵਿੱਚ ਦੂਜੇ ਸ੍ਰੋਤ ਸ਼ਾਮਲ ਹਨ, ਜੋ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹਨ। ਇਹ ਸ੍ਰੋਤ ਟ੍ਰਾਂਜਿਟ ਵਿੱਚ ਹੋਣ ਵੇਲੇ ਦੂਜਿਆਂ ਵੱਲੋਂ ਦੇਖੇ ਜਾ ਸਕਦੇ ਹਨ ਅਤੇ ਸਫ਼ੇ ਦੇ ਰੂਪ ਨੂੰ ਬਦਲਣ ਲਈ ਇੱਕ ਹਮਲਾਵਰ ਵੱਲੋਂ ਸੰਸ਼ੋਧਿਤ ਕੀਤੇ ਜਾ ਸਕਦੇ ਹਨ।</translation>
 <translation id="5786044859038896871">ਕੀ ਤੁਸੀਂ ਆਪਣੀ ਕਾਰਡ ਜਾਣਕਾਰੀ ਭਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">ਇਸ ਭੁਗਤਾਨ ਵਿਧੀ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਮਿਟਾਇਆ ਜਾਵੇਗਾ</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਖਾਤੇ ਲਈ ਸਾਈਨ-ਇਨ ਡਾਟਾ}other{# ਖਾਤਿਆਂ ਲਈ ਸਾਈਨ-ਇਨ ਡਾਟਾ}}</translation>
 <translation id="5800727402210090597">ਮੋਬਾਈਲ ਫ਼ੋਨ ਮੁਰੰਮਤ ਅਤੇ ਸੇਵਾਵਾਂ</translation>
 <translation id="580241730938216256">ਅੱਪਡੇਟ ਸ਼ੁਰੂ ਕਰੋ</translation>

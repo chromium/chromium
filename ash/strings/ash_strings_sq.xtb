@@ -130,6 +130,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="146902737843070955">Ky ndryshim është kërkuar nga administratori yt</translation>
 <translation id="1469148162491666137">Kjo lejon qasjen për <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dhe të gjitha aplikacionet dhe uebsajtet që kanë lejen për kamerën dhe mikrofonin. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
 <translation id="147310119694673958">Bateria e telefonit <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">Aktivizo/çaktivizo zonën e qasjes për internet. Zona e qasjes për internet është aktive. 1 pajisje e lidhur.</translation>
 <translation id="1479909375538722835">Menyja pluskuese e qasshmërisë</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Me diktimin, mund të shkruash duke përdorur zërin tënd. Shtyp tastin e diktimit ose zgjidh ikonën e mikrofonit në fund të ekranit kur je në një fushë teksti. Gjuha e diktimit është caktuar në <ph name="LANGUAGE" />. Ligjërata dërgohet te Google për përpunim. Mund ta ndryshosh gjuhën e diktimit në çdo kohë te Cilësimet &gt; Qasshmëria.</translation>
@@ -870,6 +871,14 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4548482551627849548">Zhvendos dritaren aktive në tavolinën e punës në të majtë</translation>
 <translation id="4560576029703263363">Aktiv</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Tabakaja e statusit, ora <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Fshih fjalëkalimin</translation>
 <translation id="4566144812051858745">Nuk të intereson asnjë sugjerim</translation>
 <translation id="4569753163207712681">Shiko aplikacionet, median dhe fotografitë më të fundit të telefonit tënd</translation>
@@ -879,6 +888,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4577990005084629481">Shfaq paraafishimet</translation>
 <translation id="4578906031062871102">Menyja e "Cilësimeve" u hap</translation>
 <translation id="458210817642223147">Regjistro imazhin GIF</translation>
+<translation id="4582666543382004902">Zona e qasjes për internet është çaktivizuar për të përdorur WiFi. Për të përdorur zonën e qasjes për internet, çaktivizo WiFi.</translation>
 <translation id="4585337515783392668">Ndalo transmetimin në një marrës të panjohur</translation>
 <translation id="4596144739579517758">"Tema e errët" është joaktive</translation>
 <translation id="4611292653554630842">Identifikohu</translation>
@@ -1085,6 +1095,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="5393156353051693207">Prek dhe mbaj të shtypur kudo për të rirenditur aplikacionet</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> mbi <ph name="IN_PLACE_APP" />, lëshoje për të krijuar dosje.</translation>
 <translation id="5397578532367286026">Përdorimi dhe historiku i këtij përdoruesi mund të rishikohen nga menaxheri (<ph name="MANAGER_EMAIL" />) në chrome.com.</translation>
+<translation id="540713187982329711">Aktivizo/çaktivizo zonën e qasjes për internet. Zona e qasjes për internet është aktive. Asnjë pajisje e lidhur.</translation>
 <translation id="5413656666631274079">Faqja e cilësimeve</translation>
 <translation id="5414198321558177633">Lista e profilit po rifreskohet. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="5426063383988017631">Menyja e "Cilësimeve" është e mbyllur</translation>
@@ -1175,9 +1186,11 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="576341972084747908">Shkarko <ph name="FILENAME" /> me rrezik</translation>
 <translation id="576453121877257266">"Drita e natës" është aktive.</translation>
 <translation id="5764569119212455782">Kalo te gjuha e fundit e zgjedhur</translation>
+<translation id="5767730327234918501">Administratori yt e ka çaktivizuar zonën e qasjes për internet.</translation>
 <translation id="5769373120130404283">Ekrani i privatësisë</translation>
 <translation id="5773950591113557721">Kjo lejon qasjen për <ph name="APP_NAME" /> dhe të gjitha aplikacionet dhe uebsajtet që kanë lejen për kamerën dhe mikrofonin</translation>
 <translation id="5774295353725270860">Hap aplikacionin "Skedarët"</translation>
+<translation id="5775936059231769503">Aktivizo/çaktivizo zonën e qasjes për internet. Zona e qasjes për internet është joaktive.</translation>
 <translation id="5777841717266010279">Dëshiron të ndalosh ndarjen e ekranit?</translation>
 <translation id="5779721926447984944">Skedarët e gozhduar</translation>
 <translation id="5785221443435874078">Hiqe këtë sugjerim</translation>
@@ -1495,6 +1508,7 @@ Instalim i ri</translation>
 <translation id="7068360136237591149">Hap skedarët</translation>
 <translation id="7076293881109082629">Po identifikohesh</translation>
 <translation id="7076878155205969899">Çaktivizo tingullin</translation>
+<translation id="7084678090004350185">Aktivizo/çaktivizo zonën e qasjes për internet. Zona e qasjes për internet është aktive. <ph name="DEVICECOUNT" /> pajisje të lidhura.</translation>
 <translation id="7086931198345821656">Ky përditësim kërkon që të kryesh Powerwash të <ph name="DEVICE_TYPE" />. Të gjitha të dhënat do të fshihen. Mëso më shumë rreth përditësimit të fundit të <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Qasja me çelës</translation>
 <translation id="709015856939120012">Zmadho faqen</translation>

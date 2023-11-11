@@ -130,6 +130,7 @@
 <translation id="146902737843070955">የእርስዎ አስተዳዳሪ ይህን ለውጥ ጠይቀዋል</translation>
 <translation id="1469148162491666137">ይህ ለ<ph name="APP1_NAME" />፣ <ph name="APP2_NAME" /> እና የካሜራ እና የማይክሮፎን ፈቃዶች ላሏቸው ሁሉም መተግበሪያዎች እና ድር ጣቢያዎች መዳረሻ ይፈቅዳል። ድረ-ገጹን ማደስ ወይም መተግበሪያውን እንደገና ማስጀመር ሊኖርብዎት ይችላል።</translation>
 <translation id="147310119694673958">የስልክ ባትሪ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">መገናኛ ነጥብ ይቀያይሩ። መገናኛ ነጥብ በርቷል፣ 1 መሣሪያ ተገናኝቷል።</translation>
 <translation id="1479909375538722835">የተንሳፋፊ ተደራሽነት ምናሌ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">በቃል ማስጻፊያ ድምፅዎን በመጠቀም መተየብ ይችላሉ። በቃል ማስጻፍ ቁልፉን ይጫኑ ወይም በጽሁፍ መስክ ላይ ሳይሆኑ ከማያ ገፁ ታች የማይክሮፎን አዶን ይምረጡ። የእርስዎ በቃል ማስጻፍ ቋንቋ ወደ <ph name="LANGUAGE" /> ተቀናብሯል። ንግግር ለመሰናዳት ወደ Google ተልኳል። በቃል ማስጻፍ ቋንቋን በማንኛውም ጊዜ ቅንብሮች &gt; ተደራሽነት ውስጥ መለወጥ ይችላሉ።</translation>
@@ -870,6 +871,14 @@
 <translation id="4548482551627849548">ገቢር መስኮትን በግራ በኩል ወደ ዴስክ ውሰድ</translation>
 <translation id="4560576029703263363">አብራ</translation>
 <translation id="4561267230861221837">3ጂ</translation>
+<translation id="4564299521485948903">የሁኔታ መግቢያ፣ ጊዜ <ph name="TIME" />፣
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />፣
+        <ph name="NETWORK" />፣
+        <ph name="MANAGED" />፣
+        <ph name="NOTIFICATION" />፣
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">የይለፍ ቃል ደብቅ</translation>
 <translation id="4566144812051858745">በማናቸውም የአስተያየት ጥቆማዎች ላይ ፍላጎት የለኝም</translation>
 <translation id="4569753163207712681">የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ እና ማሳወቂያዎች ይመልከቱ</translation>
@@ -879,6 +888,7 @@
 <translation id="4577990005084629481">ቅድመ-እይታዎችን አሳይ</translation>
 <translation id="4578906031062871102">የቅንብሮች ምናሌ ተከፍቷል</translation>
 <translation id="458210817642223147">GIF ቅረጽ</translation>
+<translation id="4582666543382004902">WiFi ለመጠቀም መገናኛ ነጥብ ጠፍቷል። መገናኛ ነጥብ ለመጠቀም Wi-Fi ያጥፉ።</translation>
 <translation id="4585337515783392668">ወደ ያልታወቀ ተቀባይ cast ማድረግን አስቁም</translation>
 <translation id="4596144739579517758">ጠቆር ያለ ገጽታ ጠፍቷል</translation>
 <translation id="4611292653554630842">ግባ</translation>
@@ -1085,6 +1095,7 @@
 <translation id="5393156353051693207">መተግበሪያዎችዎን እንደገና ለመደርደር የትኛውም ቦታ ላይ ይንኩ እና ይያዙ</translation>
 <translation id="5395308026110844773">በ<ph name="IN_PLACE_APP" /> ላይ <ph name="DRAGGED_APP_NAME" />፣ አቃፊ ለመፍጠር ይልቀቁት።</translation>
 <translation id="5397578532367286026">የዚህ ተጠቃሚ አጠቃቀም እና ታሪክ በchrome.com ላይ በአስተዳዳሪ (<ph name="MANAGER_EMAIL" />) ሊገመገም ይችላል።</translation>
+<translation id="540713187982329711">መገናኛ ነጥብ ይቀያይሩ። መገናኛ ነጥብ በርቷል፣ ምንም መሣሪያ አልተገናኘም።</translation>
 <translation id="5413656666631274079">የቅንብሮች ገፅ</translation>
 <translation id="5414198321558177633">የመገለጫ ዝርዝርን በማደስ ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
 <translation id="5426063383988017631">የቅንብሮች ምናሌ ተዘግቷል</translation>
@@ -1175,9 +1186,11 @@
 <translation id="576341972084747908">አደገኛ <ph name="FILENAME" /> አውርድ</translation>
 <translation id="576453121877257266">የምሽት ብርሃን በርቷል።</translation>
 <translation id="5764569119212455782">ወደተመረጠው የመጨረሻ ቋንቋ ቀይር</translation>
+<translation id="5767730327234918501">አስተዳዳሪዎ መገናኛ ነጥብን አጥፍተዋል።</translation>
 <translation id="5769373120130404283">የግላዊነት ማያ ገፅ</translation>
 <translation id="5773950591113557721">ይህ ለ<ph name="APP_NAME" /> እና የካሜራ እና የማይክሮፎን ፈቃዶች ላሏቸው ለሁሉም መተግበሪያዎች እና ድር ጣቢያዎች መዳረሻ ይፈቅዳል</translation>
 <translation id="5774295353725270860">የፋይሎች መተግበሪያን ክፈት</translation>
+<translation id="5775936059231769503">መገናኛ ነጥብ ይቀያይሩ። መገናኛ ነጥብ ጠፍቷል።</translation>
 <translation id="5777841717266010279">ማያ ገፅ ማጋራት ይቁም?</translation>
 <translation id="5779721926447984944">የተሰኩ ፋይሎች</translation>
 <translation id="5785221443435874078">ይህንን የጥቆማ አስተያየት አስወግድ</translation>
@@ -1495,6 +1508,7 @@
 <translation id="7068360136237591149">ፋይሎችን ይክፈቱ</translation>
 <translation id="7076293881109082629">በመግባት ላይ</translation>
 <translation id="7076878155205969899">ድምጽን ዝጋ</translation>
+<translation id="7084678090004350185">መገናኛ ነጥብ ይቀያይሩ። መገናኛ ነጥብ በርቷል፣ <ph name="DEVICECOUNT" /> መሣሪያዎች ተገናኝተዋል።</translation>
 <translation id="7086931198345821656">ይህ ዝማኔ የእርስዎን <ph name="DEVICE_TYPE" /> powerwashing ይፈልጋል። ሁሉም ውሂብ ይሰረዛል። ስለቅርብ ጊዜው የ<ph name="SYSTEM_APP_NAME" /> ዝማኔ የበለጠ ይወቁ።</translation>
 <translation id="7088960765736518739">የመዳረሻ መቀየሪያ</translation>
 <translation id="709015856939120012">በገጽ ላይ ያጉሉ</translation>

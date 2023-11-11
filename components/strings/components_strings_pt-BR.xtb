@@ -532,6 +532,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2025891858974379949">Conteúdo não seguro</translation>
 <translation id="2027465737841872819">Plástico</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Verificar o proxy e o firewall<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">O atalho não pode ser igual à palavra-chave do provedor de pesquisa padrão definida por <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Salvar mesmo assim</translation>
 <translation id="2035400064145347639">Guias e catálogos de viagem</translation>
 <translation id="2036514476578229158">Você pediu para acessar este site. Os familiares responsáveis podem responder no Family Link.</translation>
@@ -1077,6 +1078,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> em <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Pode pedir para saber quando você está usando o dispositivo ativamente</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e "Enter" para gerenciar quais informações são sincronizadas nas configurações do Chrome</translation>
+<translation id="3203025201812691413">O URL não pode ficar em branco</translation>
 <translation id="320323717674993345">Cancelar pagamento</translation>
 <translation id="3203366800380907218">Da Web</translation>
 <translation id="3207960819495026254">Adicionado aos favoritos</translation>
@@ -1691,6 +1693,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4386413576162606861">Jogos de RPG</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4393632246160856858">Produtos de cuidados com as unhas</translation>
+<translation id="4397059608630092079">Sempre confirmar ao usar o preenchimento automático</translation>
 <translation id="4406883609789734330">Legenda instantânea</translation>
 <translation id="4406896451731180161">resultados da pesquisa</translation>
 <translation id="4408413947728134509">Cookies: <ph name="NUM_COOKIES" /></translation>
@@ -1892,7 +1895,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo do Planilhas Google</translation>
 <translation id="4825507807291741242">Intenso</translation>
 <translation id="4826588772550366629">a câmera e o microfone</translation>
-<translation id="4827283332383516812">Excluir cartão</translation>
 <translation id="4831993743164297314">Papel imagesetter</translation>
 <translation id="483241715238664915">Ativar avisos</translation>
 <translation id="4834250788637067901">Formas de pagamento, ofertas e endereços que usam o Google Pay</translation>
@@ -2304,6 +2306,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5651323159439184939">Alimentação com trator</translation>
 <translation id="5653432653077411130">Fornecimento e tratamento de água</translation>
 <translation id="5654927323611874862">Código do relatório de erros enviado:</translation>
+<translation id="5654965123204121933">O URL não inclui a string de substituição <ph name="SEARCH_TERMS_REPLACEMENT" /> necessária: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5660122698869360728">Uma nova pasta inteligente que ajuda você a salvar todas as páginas de compras em um só lugar e a monitorar preços automaticamente, além de receber informações de preços e muito mais.</translation>
 <translation id="5663955426505430495">O administrador do dispositivo instalou extensões para funções adicionais. As extensões têm acesso a alguns dos seus dados.</translation>
@@ -2365,7 +2368,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5785756445106461925">Além disso, esta página inclui outros recursos que não são seguros. Esses recursos podem ser visualizados por outros usuários enquanto eles navegam e podem ser modificados por um invasor para alterar o comportamento da página.</translation>
 <translation id="5786044859038896871">Quer preencher as informações do cartão?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Essa forma de pagamento vai ser excluída do dispositivo</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Nenhum}=1{dados de login para 1 conta}one{dados de login para # conta}other{dados de login para # contas}}</translation>
 <translation id="5800727402210090597">Serviços e assistência técnica para smartphones</translation>
 <translation id="580241730938216256">Iniciar atualização</translation>

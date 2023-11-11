@@ -240,11 +240,6 @@ Bu politika devre dışı bırakıldığında istemci taraflı kimlik avı korum
 <translation id="120937472976628837">Pervane bilgilerini raporla</translation>
 <translation id="1212233008927724662">Lazy Login WebUI yüklemeyi devre dışı bırak.</translation>
 <translation id="1216919699175573511">İmzalı HTTP Değişimi (SXG) desteğini etkinleştir</translation>
-<translation id="1218658069098810124">Politika etkinleştirilirse WebRTC eş bağlantıları, TLS/DTLS (DTLS 1.0, TLS 1.0, TLS 1.1) protokollerinin eski sürümlerine geçebilir.
-      Bu politika devre dışı bırakılır veya ayarlanmazsa bu TLS/DTLS sürümleri devre dışı bırakılır.
-
-      Bu politikanın desteği sonlandırılmıştır ve <ph name="PRODUCT_NAME" /> M121 sürümünde kaldırılması
-      planlanmaktadır.</translation>
 <translation id="1219027971768347970">Ses korumalı alanı için varsayılan yapılandırmayı kullan</translation>
 <translation id="1221359380862872747">Demo girişinde belirtilen URL'leri yükle</translation>
 <translation id="1221955019309484560">Tüm bileşenler için güncellemeleri etkinleştir</translation>
@@ -1546,6 +1541,25 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa ku
 <translation id="2269319728625047531">Oturum açma sırasında Senkronizasyon İzni'nin görüntülenmesini etkinleştir</translation>
 <translation id="2269837888511509900">Kullanıcı kimlik bilgilerini paylaşmayı etkinleştir</translation>
 <translation id="2270747976331889601">Yerel güven bağlantıları için bir TLS 1.3 güvenlik özelliği etkinleştirir.</translation>
+<translation id="2273993844348404990">Bu politika, kullanıcıların adres çubuğunda kısayolları kullanarak hızlı bir şekilde arama yapabileceği sitelerin listesini sağlar. Kullanıcılar adres çubuğuna kısayol veya @kısayol (ör. @iş) yazıp Boşluk ya da Sekme tuşuna basarak arama başlatabilir.
+
+Her site için şu alanlar zorunludur: <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />.
+
+<ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" /> alanı, adres çubuğunda kullanıcıya gösterilecek site veya arama motoru adına karşılık gelir.
+
+<ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />, düz kelimeler ve karakterler içerebilir, ancak boşluk içeremez veya @ sembolüyle başlayamaz. Ayrıca kısayollar, benzersiz olmalıdır.
+
+<ph name="URL_SITE_SEARCH_SETTINGS_FIELD" /> alanı, her giriş için karşılık gelen anahtar kelimeyle arama sırasında kullanılan arama motorunun URL'sini belirtir. URL, sorguda kullanıcının arama terimi ile değiştirilen <ph name="SEARCH_TERM_MARKER" /> dizesini içermelidir. Geçersiz girişler ve yinelenen kısayollara sahip girişler yoksayılır.
+
+Kullanıcı "@" yazdığında, öne çıkan olarak yapılandırılmış site arama girişleri adres çubuğunda gösterilir. Öne çıkan olarak en fazla üç giriş seçilebilir.
+
+Kullanıcılar, politika tarafından belirlenen site arama girişlerini düzenleyemez veya devre dışı bırakamaz, ancak aynı URL için yeni kısayollar ekleyebilir. Ayrıca, kullanıcılar daha önce politika aracılığıyla oluşturulmuş bir kısayolla yeni site arama girişleri oluşturamaz.
+
+Kullanıcının daha önce oluşturduğu bir kısayolla çakışma olması durumunda kullanıcı ayarına öncelik verilir. Ancak kullanıcılar arama çubuğuna "@" yazarak politika tarafından oluşturulan seçeneği tetikleyebilir. Örneğin, kullanıcı URL1 kısayolu olarak daha önce "iş" kelimesini tanımladıysa ve politika "iş" kelimesini URL2 kısayolu olarak tanımlıyorsa arama çubuğuna "iş" yazıldığında URL1 araması tetiklenir ancak "@iş" yazıldığında URL2 araması tetiklenir.
+
+<ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmış ya da <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.
+
+<ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
 <translation id="22754818344448444">Kullanıcıların yükleyecekleri bir masa şablonu düzeni seçmelerine izin ver</translation>
 <translation id="2277117728011250860">Erişilebilirlik performansı filtrelerinin kullanılmasına izin verme.</translation>
 <translation id="2279381650184876122">SVGUseElement öğesinde Veri URL'si desteğini devre dışı bırak.</translation>
@@ -6401,20 +6415,6 @@ UYARI: Bu ayarı değiştirirken dikkatli olun. Bu ayar, coğrafi konumla ilgili
 <translation id="6404064917675764807">CRD oturum etkinliklerini raporlama</translation>
 <translation id="6404360891305375004">Ağ dosya paylaşımlarına izin ver</translation>
 <translation id="6407093060083181305">Uzantı yükleme engellenenler listesini yapılandır</translation>
-<translation id="6407792833351198330">Eski teknolojilerin kullanıldığı bir sayfanın URL'sine göre raporlanıp raporlanmayacağını kontrol eder.
-
-Politika ayarlandığında rapor oluşturmak ve yüklemek için izin verilenler listesindeki bir girişle eşleşen ön eke sahip URL'ler kullanılır. Eşleşmeyen URL'ler yoksayılır.
-Politika ayarlanmaz veya boş bir listeye ayarlanırsa rapor oluşturulmaz.
-
-Eşleşen kalıplar, https://support.google.com/chrome/a?p=url_blocklist_filter_format adresinde bulabileceğiniz "<ph name="URL_BLOCKLIST_POLICY_NAME" />" politikasıyla benzer bir biçimi kullanır. Aşağıdaki istisnalar geçerlidir:
- * "*" joker karakteri desteklenmez.
- * Şema, bağlantı noktası ve sorgu yok sayılır.
- * Alt alan adının eşleştirilmesi için her zaman belirtilmesi gerekir.
- * İzin verilenler listesine en fazla 100 URL eklenebilir
-
-<ph name="PRODUCT_NAME" /> için bu politika yalnızca makine <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> ile kaydettirildiğinde geçerli olur.
-
-Eski teknolojiler hakkında daha fazla bilgiyi https://chromestatus.com/features adresinde bulabilirsiniz.</translation>
 <translation id="640827304541402854">Uzaktan erişim ana makinesinden güvenlik duvarı geçişini devre dışı bırak</translation>
 <translation id="6410847321564585975">Web sitesi etkinlik raporlaması izin verilenler listesi</translation>
 <translation id="6412352702230183710">Yalnızca sistem düzeyinde yerel mesajlaşma ana makinelerine izin ver</translation>
@@ -6586,6 +6586,9 @@ Ekran koruyucuyu başlatmak için gereken boşta kalma zaman aşımı ve bir res
 <translation id="6513453889192806240">HTTPS Gecikmesi</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> resmi</translation>
 <translation id="6518102411616460786">Hedef kanalın kanal sürümü değişikliğini yakalamasını bekle</translation>
+<translation id="6520053715392444458">Bu politika etkinleştirildiğinde veya ayarlanmadan bırakıldığında <ph name="PRODUCT_NAME" />, Güvenli Tarama'yı etkinleştirmiş kullanıcıların gerçekleştirdiği şüpheli indirme işlemlerini, kötü amaçlı yazılım açısından taraması için Google'a gönderebilir veya şifrelenmiş arşivler için kullanıcıların şifre girmesini isteyebilir.
+Bu politika devre dışı bırakıldığında tarama yapılmaz.
+Bu politika, Chrome Enterprise Connectors tarafından yapılandırılan indirme içeriği analizini etkilemez.</translation>
 <translation id="6520802717075138474">İlk çalıştırmada arama motorlarını varsayılan tarayıcıdan içe aktar</translation>
 <translation id="6521971538031711337">Yönetilen kullanıcının, cihazın ana makine adını yapılandırmasını engelle</translation>
 <translation id="6523079496775454310">Yönetilmeyen cihazlarda, yönetilen kullanıcılar için cihaz sinyali izni verilmesini etkinleştir</translation>
@@ -8247,6 +8250,11 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa ol
           Burada belirtilen kalıpların dışında kalan kaynaklar için <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> politikası ayarlandıysa buradaki değer, aksi takdirde kullanıcının kişisel yapılandırması genel varsayılan değer olarak kullanılır.
 
           Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.</translation>
+<translation id="7904584382309857420">Bu politika M121'de kaldırıldı. Cihazın uzaktan doğrulamayı etkinleştirmesi ve devre dışı bırakması için kullanılıyordu ancak uzaktan doğrulama varsayılan olarak etkinleştirildi.
+
+Politika, Etkin değerine ayarlanırsa cihaz için uzaktan onaya izin verilir. Otomatik olarak bir sertifika oluşturulup Cihaz Yönetim Sunucusu'na yüklenir.
+
+Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa hiçbir sertifika oluşturulmaz ve <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> için yapılan çağrılar başarısız olur.</translation>
 <translation id="7906983682927840536">Kapanışta keepalive süresini getir</translation>
 <translation id="7908384265697653397"><ph name="PRODUCT_OS_NAME" /> sürümü, belirtilen <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> sürümünden düşükse kullanıcı oturumunun kaç gün sonra kapatılacağı</translation>
 <translation id="7911685775490889216">Kilit ekranındaki ekran koruyucunun göstereceği birden fazla resim olduğunda bir resmin gösterileceği zaman aralığını saniye cinsinden yapılandırır.

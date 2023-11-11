@@ -107,6 +107,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your 
 <translation id="5048795749726991615">To get your saved passwords in your other apps easily, use Chromium for auto-fill</translation>
 <translation id="5076601183701536878">Clear browsing data in Chromium</translation>
 <translation id="5131565040785979529">Your organisation, <ph name="DOMAIN" />, manages the account you're signed in to and how Chromium is used.</translation>
+<translation id="5146749061471423558">Add bookmarks to Chromium</translation>
 <translation id="5171868502429358653">Sign In to Chromium</translation>
 <translation id="5213683223491576284">Opens The Password Manager in Chromium.</translation>
 <translation id="5224391634244552924">No saved passwords. Chromium can check your passwords when you save them.</translation>
@@ -114,6 +115,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your 
 
         Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
 <translation id="5308226104666789935">Chromium can't check for updates</translation>
+<translation id="5311557153294205270">Adds the inputted URLs to your bookmarks in Chromium.</translation>
 <translation id="5396916991083608703">Set Chromium as default?</translation>
 <translation id="5453478652154926037">Chromium can't check your passwords.</translation>
 <translation id="5521125884468363740">To see your tabs from wherever you use Chromium, sign in and turn on sync</translation>

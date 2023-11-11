@@ -304,6 +304,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 
       &lt;p&gt;Ajuste a data e a hora na secção &lt;strong&gt;Geral&lt;/strong&gt; da aplicação &lt;strong&gt;Definições&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">O seu administrador vai reiniciar o dispositivo à(s) <ph name="TIME" /> de <ph name="DATE" /></translation>
+<translation id="1564634006476980707">Esquema HTTPS recomendado para o URL de pesquisa <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Informações de rede, tais como endereços, a configuração da interface e a qualidade da ligação</translation>
 <translation id="1567040042588613346">Esta política está a funcionar conforme esperado, mas o mesmo valor está definido noutro local e foi substituído por esta política.</translation>
 <translation id="1567405528131216114">Adicionar <ph name="TOPIC" /></translation>
@@ -532,6 +533,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2025891858974379949">Conteúdo inseguro</translation>
 <translation id="2027465737841872819">Plástico</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Rever o proxy e a firewall<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">O atalho não pode ser igual à palavra-chave do fornecedor de pesquisa predefinido definida por <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Guardar mesmo assim</translation>
 <translation id="2035400064145347639">Guias e documentários de viagens</translation>
 <translation id="2036514476578229158">Pediste para visitar este site. Os teus adultos responsáveis podem responder no Family Link.</translation>
@@ -732,6 +734,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2448295565072560657">Periféricos ligados a este dispositivo quanto tem sessão iniciada</translation>
 <translation id="2450021089947420533">Percursos</translation>
 <translation id="2456755709261364512">A bateria tem de estar carregada acima de <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2462599289530201834">Pesquise <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2463739503403862330">Preencher</translation>
 <translation id="2465688316154986572">Agrafar</translation>
 <translation id="2465914000209955735">Faça a gestão dos ficheiros que transferiu no Chrome</translation>
@@ -903,6 +906,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2814184336982254349">Este PDF está inacessível. Prima a tecla de pesquisa + M para abrir o menu de contexto e ative a opção "Extrair texto do PDF"</translation>
 <translation id="2818338148457093657">Serviços de beleza e spas</translation>
 <translation id="2820957248982571256">A analisar...</translation>
+<translation id="2824549017793319782">Selecione para escrever a pesquisa diretamente na barra de endereço</translation>
 <translation id="2824775600643448204">Barra de pesquisa e endereço</translation>
 <translation id="2826760142808435982">A ligação é encriptada e autenticada com <ph name="CIPHER" /> e utiliza <ph name="KX" /> como mecanismo de troca de chaves.</translation>
 <translation id="2835170189407361413">Limpar formulário</translation>
@@ -1077,6 +1081,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> no servidor <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Pode pedir para saber quando está a utilizar ativamente este dispositivo</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para gerir as informações que sincroniza nas Definições do Chrome.</translation>
+<translation id="3203025201812691413">O URL não pode estar vazio</translation>
 <translation id="320323717674993345">Cancelar pagamento</translation>
 <translation id="3203366800380907218">Da Web</translation>
 <translation id="3207960819495026254">Adicionado aos marcadores</translation>
@@ -1893,7 +1898,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para criar rapidamente uma nova Folha de cálculo do Google Sheets</translation>
 <translation id="4825507807291741242">Potente</translation>
 <translation id="4826588772550366629">câmara e microfone</translation>
-<translation id="4827283332383516812">Elimine o cartão</translation>
 <translation id="4831993743164297314">Papel para imagesetter</translation>
 <translation id="483241715238664915">Ativar avisos</translation>
 <translation id="4834250788637067901">Métodos de pagamento, ofertas e endereços com o Google Pay</translation>
@@ -2305,6 +2309,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5651323159439184939">Alimentador</translation>
 <translation id="5653432653077411130">Abastecimento e tratamento de águas</translation>
 <translation id="5654927323611874862">ID de relatório de falhas carregado:</translation>
+<translation id="5654965123204121933">O URL não inclui a string de substituição necessária <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5660122698869360728">Uma nova pasta inteligente que ajuda a guardar todas as páginas de compras num único lugar, bem como a monitorizar preços automaticamente, extrair estatísticas de preço e muito mais.</translation>
 <translation id="5663955426505430495">O administrador deste dispositivo instalou extensões para funções adicionais. As extensões têm acesso a alguns dos seus dados.</translation>
@@ -2366,7 +2371,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5785756445106461925">Além disso, esta página inclui outros recursos que não são seguros. Estes recursos podem ser vistos por outros utilizadores em trânsito e modificados por um utilizador mal intencionado com o intuito de alterar o aspeto da página.</translation>
 <translation id="5786044859038896871">Quer preencher as informações do cartão?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Este método de pagamento vai ser eliminado deste dispositivo</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Nenhuns}=1{dados de início de sessão para 1 conta}other{dados de início de sessão para # contas}}</translation>
 <translation id="5800727402210090597">Serviços e reparação de telemóveis</translation>
 <translation id="580241730938216256">Iniciar atualização</translation>
@@ -3750,6 +3754,7 @@ Detalhes adicionais:
 <translation id="8490137692873530638">Empilhador 10</translation>
 <translation id="8493948351860045254">Libertar espaço</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> demorou demasiado tempo a responder.</translation>
+<translation id="8502972004418241366">Para usar <ph name="PERMISSION" /> neste site, tem de dar acesso ao Chrome</translation>
 <translation id="8503559462189395349">Palavras-passe do Chrome</translation>
 <translation id="8503813439785031346">Nome de utilizador</translation>
 <translation id="8504928302600319133">Hardware informático</translation>

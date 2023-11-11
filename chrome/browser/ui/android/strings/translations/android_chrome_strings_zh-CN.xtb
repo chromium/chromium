@@ -1320,7 +1320,6 @@
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{所有文件，列表中有 1 个文件}other{所有文件，列表中有 # 个文件}}</translation>
 <translation id="7815484226266492798">长屏幕截图</translation>
 <translation id="7822705602465980873">当您登录后，这些数据将与您的 Google 账号关联，以便在各种 Google 服务中保护您，例如：在安全事件发生后加强 Gmail 的保护力度。</translation>
-<translation id="782705168687182233">您的活动记录会保存在您的 <ph name="BEGIN_LINK" />Google 账号<ph name="END_LINK" />中。</translation>
 <translation id="78270725016672455">您的计算机希望注册此设备以登录网站</translation>
 <translation id="7844171778363018843">未选择任何要同步的数据</translation>
 <translation id="7846296061357476882">Google 服务</translation>

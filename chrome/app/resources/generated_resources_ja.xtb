@@ -5633,7 +5633,6 @@
 <translation id="5436492226391861498">プロキシ トンネルの待機中...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> を検索:</translation>
 <translation id="5436575196282187764">Google フォトの「思い出」</translation>
-<translation id="5439680044267106777">スキップして新しいプロファイルを設定</translation>
 <translation id="5440425659852470030">サイドパネルを閉じる</translation>
 <translation id="544083962418256601">ショートカットを作成...</translation>
 <translation id="5441133529460183413">Chrome ブラウザからインストールしたウェブアプリ</translation>
@@ -6323,7 +6322,6 @@
 <translation id="5992225669837656567">すべてのマウスの接続を解除しました</translation>
 <translation id="5992652489368666106">枠線なし</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 件のサイトの確認が完了しました}other{{NUM_SITES} 件のサイトの確認が完了しました}}</translation>
-<translation id="5996200702878169822">eSIM プロファイルを<ph name="BEGIN_LINK" />手動で<ph name="END_LINK" />設定することもできます。</translation>
 <translation id="5997337190805127100">サイトアクセスの詳細</translation>
 <translation id="5998458948782718639">自動入力の改善にご協力ください</translation>
 <translation id="5999024481231496910">サードパーティ Cookie の段階的廃止のテストを有効にしています。この設定は、設定ページでオーバーライドできません。サードパーティ Cookie を再度有効にする場合は、この機能を無効にして Chrome を再起動してください。</translation>
@@ -6886,7 +6884,7 @@
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" />、他 1 個のタブ}other{<ph name="PAGE_TITLE" />、他 # 個のタブ}}</translation>
 <translation id="6451689256222386810">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />同期をリセット<ph name="END_LINK" />します。</translation>
 <translation id="6452181791372256707">拒否</translation>
-<translation id="6452251728599530347"><ph name="PERCENT" />% 完了</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> 完了</translation>
 <translation id="645286928527869380">レシピ</translation>
 <translation id="6452961788130242735">ネットワークに問題があるか、レルムが正しくありません</translation>
 <translation id="6453191633103419909">タブや画面投影の品質</translation>
@@ -7661,7 +7659,6 @@
 <translation id="7056418393177503237">{0,plural, =1{シークレット}other{開いているシークレット ウィンドウ # 個}}</translation>
 <translation id="7056526158851679338">デバイスを検証(&amp;I)</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{安全チェックを 1 分前に実行しました}other{安全チェックを {NUM_MINS} 分前に実行しました}}</translation>
-<translation id="7057767408836081338">アプリのデータを取得できませんでした。引き続きアプリの実行を試みています...</translation>
 <translation id="7058024590501568315">非公開ネットワーク</translation>
 <translation id="7059858479264779982">自動起動に設定する</translation>
 <translation id="7063129466199351735">ショートカットを処理しています...</translation>

@@ -532,6 +532,7 @@
 <translation id="2025891858974379949">Contenu non sécurisé</translation>
 <translation id="2027465737841872819">Plastique</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />De vérifier la configuration du mandataire et du pare-feu<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">Le raccourci doit être différent du mot clé de fournisseur de recherche par défaut défini par <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> : <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Enregistrer quand même</translation>
 <translation id="2035400064145347639">Guides et carnets de voyages</translation>
 <translation id="2036514476578229158">Tu as demandé à consulter ce site. Tes parents peuvent répondre dans Family Link.</translation>
@@ -559,6 +560,7 @@
 <translation id="2072275792380684364">Mode et tendances</translation>
 <translation id="2075497153347571252">Votre administrateur a bloqué <ph name="PERMISSION" /> sur <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Annuler</translation>
+<translation id="2080021694978766903">Cette politique ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées.</translation>
 <translation id="20817612488360358">Les paramètres de mandataire du système sont configurés pour être utilisés, mais une configuration de mandataire explicite est également spécifiée.</translation>
 <translation id="2082238445998314030">Résultat <ph name="RESULT_NUMBER" /> sur <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Autoriser à chaque visite</translation>
@@ -638,6 +640,7 @@
 <translation id="2225927550500503913">Carte virtuelle activée</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Se connecter<ph name="END_LINK" /> au réseau Wi-Fi</translation>
 <translation id="2228057197024893428">Cette adresse est actuellement enregistrée dans Chrome. Pour l'utiliser dans tous les produits Google, enregistrez-le dans votre compte Google, <ph name="ACCOUNT" />.</translation>
+<translation id="2229456043301340598">Raccourci non unique ignoré : <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2233745931693710080">Disque compact</translation>
 <translation id="2235344399760031203">Les témoins tiers sont bloqués</translation>
 <translation id="2239100178324503013">Envoyer maintenant</translation>
@@ -1075,6 +1078,7 @@
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> sur <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Les sites peuvent demander à savoir quand vous utilisez activement cet appareil</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour gérer quelles données vous synchronisez dans les paramètres de Chrome</translation>
+<translation id="3203025201812691413">L'URL ne peut pas être vide</translation>
 <translation id="320323717674993345">Annuler le paiement</translation>
 <translation id="3203366800380907218">Du Web</translation>
 <translation id="3207960819495026254">Favori</translation>
@@ -1689,6 +1693,7 @@
 <translation id="4386413576162606861">Jeux de rôle</translation>
 <translation id="4390472908992056574">Bord</translation>
 <translation id="4393632246160856858">Produits de soin pour les ongles</translation>
+<translation id="4397059608630092079">Toujours vérifier lors de l'utilisation du Remplissage automatique</translation>
 <translation id="4406883609789734330">Sous-titres instantanés</translation>
 <translation id="4406896451731180161">résultats de recherche</translation>
 <translation id="4408413947728134509">Témoins <ph name="NUM_COOKIES" /></translation>
@@ -1890,7 +1895,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer une feuille Google</translation>
 <translation id="4825507807291741242">Puissant</translation>
 <translation id="4826588772550366629">caméra et microphone</translation>
-<translation id="4827283332383516812">Supprimer la carte</translation>
 <translation id="4831993743164297314">Papier de création d'images</translation>
 <translation id="483241715238664915">Activer les avertissements</translation>
 <translation id="4834250788637067901">Modes de paiement, offres et adresses utilisant Google Pay</translation>
@@ -2302,6 +2306,7 @@
 <translation id="5651323159439184939">Entraîneur d'alimentation</translation>
 <translation id="5653432653077411130">Approvisionnement et traitement de l'eau</translation>
 <translation id="5654927323611874862">Identifiant de rapport de plantage téléversé :</translation>
+<translation id="5654965123204121933">L'URL n'inclut pas la chaîne de remplacement requise (<ph name="SEARCH_TERMS_REPLACEMENT" />) : <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Courriel</translation>
 <translation id="5660122698869360728">Un nouveau dossier intelligent qui vous aide à enregistrer toutes vos pages d'achats au même endroit, à suivre automatiquement les prix, à obtenir des statistiques sur les prix, et plus.</translation>
 <translation id="5663955426505430495">L'administrateur de cet appareil a installé des extensions offrant des fonctions supplémentaires. Les extensions ont accès à certaines de vos données.</translation>
@@ -2332,6 +2337,7 @@
 <translation id="5720705177508910913">Utilisateur actuel</translation>
 <translation id="572328651809341494">Onglets récents</translation>
 <translation id="5723287205918986743">Secteur de la défense</translation>
+<translation id="5725297205162868298">Le raccourci ne peut pas commencer par le caractère @ : « <ph name="SHORTCUT_NAME" /> »</translation>
 <translation id="5730040223043577876">Chrome recommande de réinitialiser votre mot de passe si vous l'avez réutilisé sur d'autres sites.</translation>
 <translation id="5732392974455271431">Tes parents peuvent le débloquer pour toi</translation>
 <translation id="573555826359077410">Bouton Créer un formulaire, activez-le pour créer rapidement un nouveau formulaire dans Google Formulaires</translation>
@@ -2362,7 +2368,6 @@
 <translation id="5785756445106461925">De plus, cette page inclut d'autres ressources qui ne sont pas sécurisées. Ces ressources peuvent être consultées par des tiers pendant leur transfert, et modifiées par un pirate informatique dans le but de changer l’apparence de cette page.</translation>
 <translation id="5786044859038896871">Voulez-vous fournir les renseignements concernant votre carte de crédit?</translation>
 <translation id="5789643057113097023">,</translation>
-<translation id="5793317771769868848">Ce mode de paiement sera supprimé de cet appareil</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Aucun}=1{données de connexion pour 1 compte}one{données de connexion pour # compte}other{données de connexion pour # comptes}}</translation>
 <translation id="5800727402210090597">Réparation et services de téléphones cellulaires</translation>
 <translation id="580241730938216256">Démarrer la mise à jour</translation>
@@ -2850,6 +2855,7 @@
 <translation id="6793213097893210590">Carton</translation>
 <translation id="679355240208270552">Sans effet, car la recherche par défaut n'est pas activée par une politique.</translation>
 <translation id="6794951432696553238">Vérifiez vos cartes plus rapidement en vous servant de Windows Hello à partir de maintenant</translation>
+<translation id="6798066466127540426">La liste ne contient aucun moteur de recherche valide.</translation>
 <translation id="6798460514924505775">Enveloppe Chou nᵒ 3</translation>
 <translation id="6799145206637008376">Entrez le code CVC pour cette carte virtuelle</translation>
 <translation id="6805030849054648206">Enveloppe B6/C4</translation>
@@ -3239,6 +3245,7 @@ Détails supplémentaires :
 <translation id="7521825010239864438">Section « <ph name="SECTION" /> » masquée</translation>
 <translation id="752189128961566325">Vous pouvez l'utiliser dans tous les produits Google</translation>
 <translation id="7523408071729642236">Fabrication</translation>
+<translation id="7525804896095537619">Le champ du nom ne peut pas être vide</translation>
 <translation id="7526934274050461096">Votre connexion à ce site n'est pas privée</translation>
 <translation id="7529884293139707752">Enseignement à domicile</translation>
 <translation id="7534987659046836932">Enveloppe C7</translation>
@@ -3460,6 +3467,7 @@ Détails supplémentaires :
 <translation id="7950027195171824198">Gérez vos préférences relatives aux témoins dans les paramètres de Chrome</translation>
 <translation id="7951415247503192394">(32 bits)</translation>
 <translation id="7952192831285741665">EDP Europe</translation>
+<translation id="7952250633095257243">Le raccourci ne peut pas être vide</translation>
 <translation id="7952327717479677595">Bouton Gérer les moteurs de recherche, activez-le pour gérer votre moteur de recherche par défaut et la recherche de site</translation>
 <translation id="7953236668995583915">Actualisez cette page pour appliquer vos paramètres mis à jour sur ce site</translation>
 <translation id="7953569069500808819">Agrafage par le bord supérieur</translation>
@@ -3671,6 +3679,7 @@ Détails supplémentaires :
 <translation id="8344776605855290140">L'inscription à la carte virtuelle est ouverte à pleine hauteur</translation>
 <translation id="8347658365704983341">Apprentissage à distance</translation>
 <translation id="8349305172487531364">Barre de favoris</translation>
+<translation id="8350416046273606058">Le raccourci ne peut pas contenir d'espaces : « <ph name="SHORTCUT_NAME" /> »</translation>
 <translation id="8351131234907093545">Créer une note</translation>
 <translation id="8352849934814541340">L'administrateur de cet appareil a installé des applications offrant des fonctions supplémentaires. Les applications ont accès à certaines de vos données.</translation>
 <translation id="8355270400102541638">Contexte du plantage local :</translation>

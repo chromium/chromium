@@ -532,6 +532,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2025891858974379949">Cynnwys anniogel</translation>
 <translation id="2027465737841872819">Plastig</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Wrthi'n gwirio'r dirprwy weinydd a'r wal dân<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">Ni all llwybr byr fod yr un fath â'r allweddair darparwr chwilio diofyn a ddiffinnir gan <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Cadw beth bynnag</translation>
 <translation id="2035400064145347639">Arweinlyfrau teithio a theithluniau</translation>
 <translation id="2036514476578229158">Gofynnaist i ymweld â'r wefan hon. Gall dy rieni ateb yn Family Link.</translation>
@@ -1077,6 +1078,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> ar <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Yn gallu gofyn am wybod pan fyddwch wrthi'n defnyddio'ch dyfais</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i reoli pa wybodaeth rydych yn ei chysoni yng ngosodiadau Chrome</translation>
+<translation id="3203025201812691413">Ni all URL fod yn wag</translation>
 <translation id="320323717674993345">Canslo'r Taliad</translation>
 <translation id="3203366800380907218">O'r we</translation>
 <translation id="3207960819495026254">Wedi rhoi nod tudalen ar gyfer</translation>
@@ -1691,6 +1693,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4386413576162606861">Gemau chwarae rôl</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4393632246160856858">Cynhyrchion gofal ewinedd</translation>
+<translation id="4397059608630092079">Dilysu Bob Amser wrth Ddefnyddio Awtolenwi</translation>
 <translation id="4406883609789734330">Capsiynau Byw</translation>
 <translation id="4406896451731180161">canlyniadau chwilio</translation>
 <translation id="4408413947728134509">Cwcis <ph name="NUM_COOKIES" /></translation>
@@ -1892,7 +1895,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i greu Google Sheet newydd yn gyflym</translation>
 <translation id="4825507807291741242">Pwerus</translation>
 <translation id="4826588772550366629">camera a meicroffon</translation>
-<translation id="4827283332383516812">Dileu'r cerdyn</translation>
 <translation id="4831993743164297314">Papur Gosod Llun</translation>
 <translation id="483241715238664915">Troi rhybuddion ymlaen</translation>
 <translation id="4834250788637067901">Dulliau talu, cynigion a chyfeiriadau sy'n defnyddio Google Pay</translation>
@@ -2304,6 +2306,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5651323159439184939">Ffrwd Tractor</translation>
 <translation id="5653432653077411130">Cyflenwi a thrin dŵr</translation>
 <translation id="5654927323611874862">Rhif Adnabod yr Adroddiad am Doriad a Uwchlwythwyd:</translation>
+<translation id="5654965123204121933">Nid yw'r URL yn cynnwys y llinyn amnewid gofynnol <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-bost</translation>
 <translation id="5660122698869360728">Ffolder smart newydd sy'n eich helpu i gadw'ch holl dudalennau siopa mewn un lle, olrhain prisiau yn awtomatig, cael mewnwelediadau pris, a rhagor.</translation>
 <translation id="5663955426505430495">Mae gweinyddwr y ddyfais hon wedi gosod estyniadau ar gyfer swyddogaethau ychwanegol. Mae gan estyniadau fynediad at rywfaint o'ch data.</translation>
@@ -2365,7 +2368,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5785756445106461925">Ymhellach, mae'r dudalen hon yn cynnwys adnoddau eraill nad ydynt yn ddiogel. Gall eraill weld yr adnoddau hyn wrth iddynt gael eu trosglwyddo, a gall ymosodwr eu haddasu i newid golwg y dudalen.</translation>
 <translation id="5786044859038896871">Hoffech chi lenwi gwybodaeth am eich cerdyn?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Bydd y dull talu hwn yn cael ei ddileu o'r ddyfais hon</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Dim}=1{data mewngofnodi ar gyfer 1 cyfrif}two{data mewngofnodi ar gyfer # gyfrif}few{data mewngofnodi ar gyfer # chyfrif}many{data mewngofnodi ar gyfer # chyfrif}other{data mewngofnodi ar gyfer # cyfrif}}</translation>
 <translation id="5800727402210090597">Atgyweirio a Gwasanaethau Ffonau Symudol</translation>
 <translation id="580241730938216256">Dechrau diweddaru</translation>

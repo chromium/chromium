@@ -532,6 +532,7 @@
 <translation id="2025891858974379949">Təhlükəli məzmun</translation>
 <translation id="2027465737841872819">Plastik</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Proksi və güvənlik divarı yoxlanılır<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">Qısayol <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> tərəfindən müəyyən edilmiş axtarış provayderi defolt açar sözü eyni ola bilməz: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">İstənilən halda yadda saxlayın</translation>
 <translation id="2035400064145347639">Səyahət bələdçiləri və kitabları</translation>
 <translation id="2036514476578229158">Bu saytı ziyarət etməyi istəmisiniz. Valideynləriniz Family Link'də cavab verə bilər.</translation>
@@ -1075,6 +1076,7 @@
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> <ph name="SERVER_NAME" /> serverində</translation>
 <translation id="3197136577151645743">Saytlar bu cihazdan nə vaxt aktiv istifadə etdiyinizi öyrənmək üçün icazə istəyə bilər</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında sinxronlaşdırdığınız məlumatları idarə etmək üçün Tab, sonra Enter düyməsinə basın</translation>
+<translation id="3203025201812691413">URL boş ola bilməz</translation>
 <translation id="320323717674993345">Ödənişi ləğv edin</translation>
 <translation id="3203366800380907218">Vebdən</translation>
 <translation id="3207960819495026254">Əlfəcinlənib</translation>
@@ -1889,7 +1891,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq cəld yeni Google Cədvəli yaradın</translation>
 <translation id="4825507807291741242">Güclü</translation>
 <translation id="4826588772550366629">kamera və mikrofon</translation>
-<translation id="4827283332383516812">Kartı silin</translation>
 <translation id="4831993743164297314">Fototipləmə maşını kağızı</translation>
 <translation id="483241715238664915">Xəbərdarlıqları aktiv edin</translation>
 <translation id="4834250788637067901">Google Pay istifadə edən ödəniş metodları, təkliflər və ünvanlar</translation>
@@ -2301,6 +2302,7 @@
 <translation id="5651323159439184939">Kağızın verilməsi mexanizmi</translation>
 <translation id="5653432653077411130">Su təchizatı</translation>
 <translation id="5654927323611874862">Xəta Hesabatı ID'si yükləndi:</translation>
+<translation id="5654965123204121933">URL-də tələb olunan əvəzedici sətir <ph name="SEARCH_TERMS_REPLACEMENT" /> yoxdur: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-poçt</translation>
 <translation id="5660122698869360728">Alış-veriş səhifələrini bir yerdə saxlamağa, qiymətləri avtomatik izləməyə, qiymət məlumatı əldə etməyə və s. kömək edən yeni ağıllı qovluq.</translation>
 <translation id="5663955426505430495">Bu cihazın administratoru əlavə funksiyalar üçün artırmalar quraşdırıb. Artırmalar datanın bir hissəsinə daxil ola bilər.</translation>
@@ -2362,7 +2364,6 @@
 <translation id="5785756445106461925">Bundan əlavə, bu səhifəyə təhlükəsiz olmayan başqa resurslar daxildir. Bu resurslar keçid zamanı başqaları tərəfindən görüntülən bilər və hücumçu tərəfindən səhifə görünüşünün dəyişdirilməsi üçün modifikasiya edilə bilər.</translation>
 <translation id="5786044859038896871">Kart məlumatlarını doldurmaq istəyirsiniz?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Bu ödəniş metodu bu cihazdan silinəcək</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Yoxdur}=1{1 hesab üçün giriş datası}other{# hesab üçün giriş datası}}</translation>
 <translation id="5800727402210090597">Mobil telefon təmir və xidmətləri</translation>
 <translation id="580241730938216256">Güncəllənməni başladın</translation>

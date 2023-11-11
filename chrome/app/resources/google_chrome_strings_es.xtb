@@ -93,6 +93,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2467438592969358367">Google Chrome quiere exportar tus contraseñas. Escribe tu contraseña de Windows para permitirlo.</translation>
 <translation id="2472092250898121027">Esta extensión contiene malware y no es segura. Elimínala de Chrome para que no pueda ver ni cambiar tus datos en los sitios que visites, incluida tu información personal.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
+<translation id="2513154137948333830">Reinicio requerido: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2534365042754120737">Para proteger tus datos, permite que Chrome quite los permisos de los sitios que no hayas visitado recientemente. No dejarás de recibir notificaciones.</translation>
 <translation id="2534507159460261402">Google Pay (copiada en Chrome)</translation>
 <translation id="2556847002339236023">Tu organización cierra Chrome cuando lleva <ph name="TIMEOUT_DURATION" /> sin usarse. Se han eliminado los datos de navegación. Entre estos datos, podrían incluirse el historial, la función Autocompletar y las descargas.</translation>
@@ -116,6 +117,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2770231113462710648">Cambiar navegador predeterminado por:</translation>
 <translation id="2775140325783767197">Chrome no puede comprobar tus contraseñas. Revisa tu conexión a Internet.</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
+<translation id="2846251086934905009">Error de instalación: no se ha completado el proceso de instalación. Se ha cancelado la instalación.</translation>
 <translation id="2847461019998147611">Mostrar Google Chrome en este idioma</translation>
 <translation id="2853415089995957805">Chrome precarga páginas que probablemente visites para que se carguen más rápido cuando accedas a ellas</translation>
 <translation id="2857540653560290388">Iniciando Chrome...</translation>
@@ -131,6 +133,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2926952073016206995">Chrome necesita el permiso de la cámara para este sitio</translation>
 <translation id="2928420929544864228">Instalación completada.</translation>
 <translation id="2929907241665500097">Chrome no se ha actualizado, algo no va bien. <ph name="BEGIN_LINK" />Soluciona los problemas y errores de actualización de Chrome<ph name="END_LINK" />.</translation>
+<translation id="2945997411976714835">Error de instalación: no se ha podido iniciar el proceso de instalación.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" />, inicio de sesión en la red, Chrome</translation>
 <translation id="3018957014024118866">Eliminar también los datos de Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Reiniciar para actualizar &amp;ChromeOS Flex</translation>
@@ -187,6 +190,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3865754807470779944">Está instalada la versión <ph name="PRODUCT_VERSION" /> de Chrome</translation>
 <translation id="3873044882194371212">Abrir enlace en una ventana de incó&amp;gnito de Chrome</translation>
 <translation id="3889417619312448367">Desinstalar Google Chrome</translation>
+<translation id="3941890832296813527">Error de instalación: el nombre de archivo del instalador no es válido o no se admite.</translation>
 <translation id="3999683152997576765">Puedes ver y eliminar los temas de interés que usan los sitios para mostrarte anuncios. Chrome estima tus intereses según tu historial de navegación reciente.</translation>
 <translation id="4035053306113201399">ChromeOS se debe reiniciar para que se aplique la actualización.</translation>
 <translation id="4050175100176540509">En la última versión puedes encontrar mejoras de seguridad importantes y nuevas funciones.</translation>
@@ -266,6 +270,7 @@ Puede que algunas funciones no estén disponibles. Especifica otro directorio de
 <translation id="5334487786912937552">Chrome necesita el permiso de acceso al almacenamiento para descargar archivos</translation>
 <translation id="5337648990166757586">Opcional: Ayuda a mejorar las funciones y el rendimiento de ChromeOS enviando automáticamente datos de diagnóstico y de uso a Google.</translation>
 <translation id="5357889879764279201">Obtener ayuda con ChromeOS Flex</translation>
+<translation id="5368118228313795342">Código adicional: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386118856456530849">Ir a la configuración de la versión de Chrome</translation>
 <translation id="5386244825306882791">También controla qué página se muestra al iniciar Chrome o al hacer búsquedas desde el omnibox.</translation>
 <translation id="5394833366792865639">Compartir una pestaña de Chrome</translation>
@@ -464,6 +469,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8727043961453758442">Sácale el máximo partido a Chrome</translation>
 <translation id="873133009373065397">Google Chrome no puede determinar ni establecer el navegador predeterminado</translation>
 <translation id="8765470054473112089">Al escribir en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a tu buscador predeterminado para que obtengas mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
+<translation id="878572486461146056">Error de instalación: tu administrador de red ha aplicado una política de grupo que impide la instalación: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8821043148920470810">Para recibir futuras actualizaciones de Google Chrome, deberás tener Windows 10 o una versión posterior. Este ordenador tiene Windows 7.</translation>
 <translation id="8823341990149967727">Chrome no está actualizado</translation>
 <translation id="8825634023950448068">Para proteger tu privacidad, eliminamos automáticamente tus intereses que tienen una antigüedad superior a 4 semanas. A medida que sigas navegando, es posible que un interés vuelva a aparecer en la lista. Además, si Chrome se equivoca o no quieres ver ciertos anuncios, puedes eliminar un interés.</translation>

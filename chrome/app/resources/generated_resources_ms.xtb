@@ -844,6 +844,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1641113438599504367">Penyemakan Imbas Selamat</translation>
 <translation id="1641496881756082050">Lagi tindakan untuk <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 kata laluan lain tidak diimport kerana tidak diformatkan dengan betul}other{{NUM_PASSWORDS} kata laluan lain tidak diimport kerana tidak diformatkan dengan betul}}</translation>
+<translation id="1642299742557467312">Fail ini boleh membahayakan peranti anda</translation>
 <translation id="1642492862748815878">Disambungkan kepada <ph name="DEVICE" /> dan <ph name="NUMBER_OF_DEVICES" /> peranti Bluetooth yang lain</translation>
 <translation id="1642494467033190216">Pengalihan keluar perlindungan rootfs dan pemulaan semula diperlukan sebelum mendayakan ciri penyahpepijatan lain.</translation>
 <translation id="1643072738649235303">Tandatangan X9.62 ECDSA dengan SHA-1</translation>
@@ -4087,6 +4088,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4148195018520464922">Anda boleh mengehadkan log masuk kepada pengguna tertentu. Tindakan ini akan mengalih keluar pilihan "Tambahkan orang" pada skrin log masuk. Anda juga boleh mengalih keluar pengguna semasa.</translation>
 <translation id="4148957013307229264">Memasang...</translation>
 <translation id="4150201353443180367">Paparan</translation>
+<translation id="4150417452770391330">Sambungkan kamera</translation>
 <translation id="4150569944729499860">Konteks skrin</translation>
 <translation id="4151449637210235443">Beritahu kami tentang cara main anda baru-baru ini</translation>
 <translation id="4151503145138736576">Tiada storan luar talian untuk dikosongkan</translation>
@@ -4187,6 +4189,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4244238649050961491">Dapatkan lagi apl stilus</translation>
 <translation id="4246980464509998944">Ulasan tambahan:</translation>
 <translation id="424726838611654458">Sentiasa buka dalam Adobe Reader</translation>
+<translation id="4248401726442101648">Tiada kamera disambungkan</translation>
 <translation id="4249248555939881673">Menunggu sambungan rangkaian...</translation>
 <translation id="4249373718504745892">Halaman ini telah disekat daripada mengakses kamera dan mikrofon anda.</translation>
 <translation id="424963718355121712">Apl mesti disampaikan daripada hos yang dipengaruhinya</translation>
@@ -4309,6 +4312,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4345457680916430965">&amp;Buka pada <ph name="APP" /></translation>
 <translation id="4345587454538109430">Konfigurasi...</translation>
 <translation id="4345732373643853732">Nama pengguna tidak diketahui oleh pelayan</translation>
+<translation id="4346159263667201092">Tambahkan butiran pilihan</translation>
 <translation id="4348426576195894795">Mengalih keluar akaun ini juga akan memadamkan mana-mana profil Chrome yang dilog masuk dengan akaun ini</translation>
 <translation id="4348766275249686434">Kumpul ralat</translation>
 <translation id="4349828822184870497">Membantu</translation>
@@ -4393,6 +4397,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4406883609789734330">Sari Kata Langsung</translation>
 <translation id="4407039574263172582">Untuk meneruskan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi nama, alamat e-mel dan gambar profil anda dengan laman ini. Lihat <ph name="BEGIN_LINK" />syarat perkhidmatan<ph name="END_LINK" /> laman ini.</translation>
 <translation id="4408599188496843485">B&amp;antuan</translation>
+<translation id="4408965460206576430">Fail ini mengandungi perisian hasad atau berasal daripada laman yang mencurigakan</translation>
 <translation id="4409271659088619928">Enjin carian anda ialah <ph name="DSE" />. Lihat arahan enjin carian itu untuk memadamkan sejarah carian anda, jika berkenaan.</translation>
 <translation id="4409697491990005945">Margin</translation>
 <translation id="4409779593816003679">Kata Laluan dan &amp;autolengkap</translation>
@@ -5659,7 +5664,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5436492226391861498">Menunggu terowong proksi...</translation>
 <translation id="5436510242972373446">Cari <ph name="SITE_NAME" />:</translation>
 <translation id="5436575196282187764">Kenangan Google Photos</translation>
-<translation id="5439680044267106777">Langkau &amp; Sediakan profil baharu</translation>
 <translation id="5440425659852470030">Tutup Panel Sisi</translation>
 <translation id="544083962418256601">Buat pintasan...</translation>
 <translation id="5441133529460183413">Apl Web dipasang daripada penyemak imbas Chrome</translation>
@@ -6349,7 +6353,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5992225669837656567">Semua tetikus telah diputuskan sambungan</translation>
 <translation id="5992652489368666106">Tiada sempadan</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Semakan lengkap untuk 1 laman}other{Semakan lengkap untuk {NUM_SITES} laman}}</translation>
-<translation id="5996200702878169822">Anda juga dapat menyediakan profil eSIM <ph name="BEGIN_LINK" />secara manual<ph name="END_LINK" />.</translation>
 <translation id="5997337190805127100">Ketahui Lebih Lanjut Tentang Akses Tapak</translation>
 <translation id="5998458948782718639">Bantu kami tingkatkan autolengkap</translation>
 <translation id="5999024481231496910">Anda telah mendayakan pemberhentian kuki pihak ketiga. Perkara ini tidak boleh digantikan dengan halaman tetapan. Jika anda mahu mendayakan semula kuki pihak ketiga, lancarkan semula Chrome dengan ciri ini dilumpuhkan.</translation>
@@ -7689,7 +7692,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7056418393177503237">{0,plural, =1{Inkognito}other{# tetingkap Inkognito terbuka}}</translation>
 <translation id="7056526158851679338">&amp;Periksa Peranti</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Semakan keselamatan dijalankan 1 minit yang lalu}other{Semakan keselamatan dijalankan {NUM_MINS} minit yang lalu}}</translation>
-<translation id="7057767408836081338">Gagal mendapatkan data apl, sedang cuba menjalankan apl juga...</translation>
 <translation id="7058024590501568315">Rangkaian tersembunyi</translation>
 <translation id="7059858479264779982">Tetapkan kepada autolancar</translation>
 <translation id="7063129466199351735">Memproses pintasan...</translation>

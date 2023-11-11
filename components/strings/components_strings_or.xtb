@@ -304,6 +304,7 @@
 
       &lt;p&gt;ଦୟାକରି &lt;strong&gt;ସେଟିଂସ୍&lt;/strong&gt; ଆପ୍‌ର &lt;strong&gt;ସାଧାରଣ&lt;/strong&gt; ବିଭାଗରୁ ତାରିଖ ଏବଂ ସମୟ ଆଡ୍‌ଜଷ୍ଟ କରନ୍ତୁ।&lt;/p&gt;</translation>
 <translation id="1559839503761818503">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପଣଙ୍କର ଡିଭାଇସକୁ <ph name="DATE" />ରେ <ph name="TIME" /> ବେଳେ ରିଷ୍ଟାର୍ଟ କରିବେ</translation>
+<translation id="1564634006476980707">ସର୍ଚ୍ଚ URL ପାଇଁ HTTPS ସ୍କିମ ସୁପାରିଶ କରାଯାଇଛି: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">ଠିକଣା, ଇଣ୍ଟରଫେସ କନଫିଗରେସନ ଏବଂ ସଂଯୋଗର ଗୁଣବତ୍ତା ପରି ନେଟୱାର୍କିଂ ସୂଚନା</translation>
 <translation id="1567040042588613346">ଏହି ନୀତି ଆଶାନୁରୂପ ଭାବେ କାର୍ଯ୍ୟ କରୁଛି କିନ୍ତୁ ସମାନ ମୂଲ୍ୟ ଅନ୍ୟ କୌଣସି ସ୍ଥାନରେ ସେଟ୍ କରାଯାଇଛି ଏବଂ ଏହି ନୀତି ଦ୍ୱାରା ସ୍ଥାନ ଅଧିକାର କରାଯାଇଛି।</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> ଯୋଗ କରନ୍ତୁ</translation>
@@ -733,6 +734,7 @@
 <translation id="2448295565072560657">ଆପଣ ଲଗ ଇନ କରିଥିବା ସମୟରେ ଏହି ଡିଭାଇସରେ ଆଟାଚ ହୋଇଥିବା ପେରିଫେରାଲଗୁଡ଼ିକ</translation>
 <translation id="2450021089947420533">ସନ୍ଧାନଗୁଡ଼ିକ</translation>
 <translation id="2456755709261364512">ଆପଣଙ୍କ ବେଟେରୀ <ph name="REQUIRED_BATTERY_PRECENT" />%ରୁ ଅଧିକ ଚାର୍ଜ ହେବା ଆବଶ୍ୟକ</translation>
+<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="2463739503403862330">ପୂରଣ କରନ୍ତୁ</translation>
 <translation id="2465688316154986572">ଷ୍ଟାପଲ୍</translation>
 <translation id="2465914000209955735">ଆପଣ Chromeରେ ଡାଉନଲୋଡ୍ କରିଥିବା ଫାଇଲଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -904,6 +906,7 @@
 <translation id="2814184336982254349">ଏହି PDF ଆକ୍ସେସ ଯୋଗ୍ୟ ନୁହେଁ। ପ୍ରସଙ୍ଗ ମେନୁ ଖୋଲିବାକୁ ସର୍ଚ୍ଚ ସହିତ m ଦବାନ୍ତୁ ଏବଂ "PDFରୁ ଟେକ୍ସଟ ଏକ୍ସଟ୍ରାକ୍ଟ କରନ୍ତୁ"କୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2818338148457093657">ବିୟୁଟି ସେବା ଏବଂ ସ୍ପା</translation>
 <translation id="2820957248982571256">ସ୍କାନ୍‌ କରୁଛି...</translation>
+<translation id="2824549017793319782">ଆପଣଙ୍କ ସର୍ଚ୍ଚକୁ ସିଧାସଳଖ ଠିକଣା ବାରରେ ଟାଇପ କରିବା ପାଇଁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="2824775600643448204">ଠିକଣା ଏବଂ ସନ୍ଧାନ ବାର୍</translation>
 <translation id="2826760142808435982">ମୁଖ୍ୟ ଅଦଳ ବଦଳ କୌଶଳ <ph name="CIPHER" />ର ବ୍ୟବହାର କରି ଏବଂ <ph name="KX" />ର ବ୍ୟବହାର କରି ସଂଯୋଗକୁ ଏନ୍‌କ୍ରାଇପ୍ଟ କରାଯାଇଛି ଏବଂ ପ୍ରମାଣିକରଣ କରାଯାଇଛି।</translation>
 <translation id="2835170189407361413">ଫର୍ମ ଖାଲି କରନ୍ତୁ</translation>
@@ -1690,6 +1693,7 @@
 <translation id="4386413576162606861">ରୋଲ ପ୍ଲେଇଂ ଗେମଗୁଡ଼ିକ</translation>
 <translation id="4390472908992056574">ବ୍ରିମ୍</translation>
 <translation id="4393632246160856858">ନେଲ କେୟାର ପ୍ରଡକ୍ଟଗୁଡ଼ିକ</translation>
+<translation id="4397059608630092079">ଅଟୋଫିଲ ବ୍ୟବହାର କରିବା ସମୟରେ ସର୍ବଦା ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4406883609789734330">ଲାଇଭ୍ କ୍ୟାପସନ୍</translation>
 <translation id="4406896451731180161">ସନ୍ଧାନ ପରିଣାମ</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" />ଟି କୁକୀ</translation>
@@ -1891,7 +1895,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଶୀଘ୍ର ଏକ ନୂଆ Google Sheet ତିଆରି କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="4825507807291741242">ଶକ୍ତିଶାଳୀ</translation>
 <translation id="4826588772550366629">କେମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ</translation>
-<translation id="4827283332383516812">କାର୍ଡ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="4831993743164297314">ଇମେଜ ସେଟର କାଗଜ</translation>
 <translation id="483241715238664915">ଚେତାବନୀ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="4834250788637067901">Google Pay ବ୍ୟବହାର କରୁଥିବା ପେମେଣ୍ଟ ପଦ୍ଧତି, ଅଫର ଏବଂ ଠିକଣାଗୁଡ଼ିକ</translation>
@@ -2366,7 +2369,6 @@
 <translation id="5785756445106461925">ସେ ଯାହା ହେଉ, ଏହି ପୃଷ୍ଠା ସେହି ଅନ୍ୟ ଉତ୍ସଗୁଡିକ ଅନ୍ତର୍ଭୂକ୍ତ କରେ ଯେଉଁଗୁଡିକ ସୁରକ୍ଷିତ ନୁହେଁ । ପରିବହନରେ ଥିବାବେଳେ ଏହି ଉତ୍ସଗୁଡିକୁ ଅନ୍ୟମାନେ ଦେଖିପାରିବେ, ତଥା ପୃଷ୍ଠାଟିର ରୂପ ବା ଆଚରଣ ପରିବର୍ତ୍ତନ କରିବା ଲାଗି ଏକ ଆକ୍ରମଣକାରୀଙ୍କ ଦ୍ଵାରା ରୂପାନ୍ତରିତ କରାଯାଇପାରିବ।</translation>
 <translation id="5786044859038896871">ଆପଣଙ୍କର କାର୍ଡ ସୂଚନାକୁ ଆପଣ ପୁରଣ କରିବାକୁ ଚାହାନ୍ତି କି?</translation>
 <translation id="5789643057113097023">।</translation>
-<translation id="5793317771769868848">ଏହି ଡିଭାଇସରୁ ଏହି ପେମେଣ୍ଟ ପଦ୍ଧତିକୁ ଡିଲିଟ କରିଦିଆଯିବ</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{କିଛି ନାହିଁ}=1{1ଟି ଆକାଉଣ୍ଟ ପାଇଁ ସାଇନ-ଇନ ଡାଟା}other{#ଟି ଆକାଉଣ୍ଟ ପାଇଁ ସାଇନ-ଇନ ଡାଟା}}</translation>
 <translation id="5800727402210090597">ମୋବାଇଲ ଫୋନ ମରାମତି ଏବଂ ସେବା</translation>
 <translation id="580241730938216256">ଅପଡେଟ ଆରମ୍ଭ କରନ୍ତୁ</translation>
@@ -3750,6 +3752,7 @@
 <translation id="8490137692873530638">ଷ୍ଟାକର୍ 10</translation>
 <translation id="8493948351860045254">ଜାଗା ଖାଲି କରନ୍ତୁ</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ପ୍ରତିକ୍ରିୟା ଦେବାକୁ ବହୁତ ସମୟ ନେଉଛି।</translation>
+<translation id="8502972004418241366">ଏହି ସାଇଟରେ ଆପଣଙ୍କ <ph name="PERMISSION" />କୁ ବ୍ୟବହାର କରିବା ପାଇଁ, ଆପଣ Chromeକୁ ଆକ୍ସେସ ଦେବା ଆବଶ୍ୟକ</translation>
 <translation id="8503559462189395349">Chrome ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="8503813439785031346">ଉପଯୋଗକର୍ତ୍ତାନାମ</translation>
 <translation id="8504928302600319133">କମ୍ପ୍ୟୁଟର ହାର୍ଡୱେର</translation>

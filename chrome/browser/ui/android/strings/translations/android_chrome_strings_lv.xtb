@@ -1296,6 +1296,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7691043218961417207">Izpētiet saturu, kam sekot</translation>
 <translation id="7697383401610880082">Vilkšanas turis</translation>
 <translation id="7698359219371678927">Izveidojiet e-pasta ziņojumu lietotnē <ph name="APP_NAME" />.</translation>
+<translation id="7702029078562412515">Vaicājumu elementi</translation>
 <translation id="7702388902581909985">Dzēšot pārlūkošanas datus, jūs netiekat izrakstīts no Google konta. Lai to izdarītu, <ph name="BEGIN_LINK1" />izrakstieties no pārlūka Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Izmantot mobilos datus</translation>
 <translation id="7709918231054955894">Iegūstiet visas savas cilnes</translation>
@@ -1320,7 +1321,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Visi faili, sarakstā ir 1 fails}zero{Visi faili, sarakstā ir # faili}one{Visi faili, sarakstā ir # fails}other{Visi faili, sarakstā ir # faili}}</translation>
 <translation id="7815484226266492798">Garš ekrānuzņēmums</translation>
 <translation id="7822705602465980873">Kad esat pierakstījies, šie dati tiek saistīti ar jūsu Google kontu, lai aizsargātu jūs dažādos Google pakalpojumos, piemēram, palielinot aizsardzību pakalpojumā Gmail pēc drošības incidenta.</translation>
-<translation id="782705168687182233">Jūsu darbības tiek saglabātas jūsu <ph name="BEGIN_LINK" />Google kontā<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Lai varētu pierakstīties vietnē, datorā tiek pieprasīta atļauja reģistrēt šo ierīci</translation>
 <translation id="7844171778363018843">Sinhronizēšanai nav atlasīti dati.</translation>
 <translation id="7846296061357476882">Google pakalpojumi</translation>

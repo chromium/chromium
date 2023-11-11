@@ -304,6 +304,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 
       &lt;p&gt;Please adjust the date and time from the &lt;strong&gt;General&lt;/strong&gt; section of the &lt;strong&gt;Settings&lt;/strong&gt; app.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Your administrator will restart your device at <ph name="TIME" /> on <ph name="DATE" /></translation>
+<translation id="1564634006476980707">HTTPS scheme recommended for search URL: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Networking information, such as addresses, interface configuration and connection quality</translation>
 <translation id="1567040042588613346">This policy is working as intended but the same value is set elsewhere and is superseded by this policy.</translation>
 <translation id="1567405528131216114">Add <ph name="TOPIC" /></translation>
@@ -733,6 +734,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2448295565072560657">Peripherals attached to this device while you are logged in</translation>
 <translation id="2450021089947420533">Journeys</translation>
 <translation id="2456755709261364512">Your battery must be charged above <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2462599289530201834">Search <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2463739503403862330">Fill in</translation>
 <translation id="2465688316154986572">Staple</translation>
 <translation id="2465914000209955735">Manage files that you have downloaded in Chrome</translation>
@@ -904,6 +906,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2814184336982254349">This PDF is inaccessible. Press search plus m to open context menu and turn on "extract text from PDF"</translation>
 <translation id="2818338148457093657">Beauty Services and Spas</translation>
 <translation id="2820957248982571256">Scanning...</translation>
+<translation id="2824549017793319782">Select to type your search directly in the address bar</translation>
 <translation id="2824775600643448204">Address and search bar</translation>
 <translation id="2826760142808435982">The connection is encrypted and authenticated using <ph name="CIPHER" /> and uses <ph name="KX" /> as the key exchange mechanism.</translation>
 <translation id="2835170189407361413">Clear form</translation>
@@ -1693,6 +1696,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4386413576162606861">Roleplaying games</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4393632246160856858">Nail care products</translation>
+<translation id="4397059608630092079">Always Verify When Using Autofill</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406896451731180161">search results</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
@@ -1894,7 +1898,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new Google Sheet quickly</translation>
 <translation id="4825507807291741242">Powerful</translation>
 <translation id="4826588772550366629">camera and microphone</translation>
-<translation id="4827283332383516812">Delete card</translation>
 <translation id="4831993743164297314">Image setter paper</translation>
 <translation id="483241715238664915">Turn on warnings</translation>
 <translation id="4834250788637067901">Payment methods, offers and addresses using Google Pay</translation>
@@ -2368,7 +2371,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5785756445106461925">Further, this page includes other resources which are not secure. These resources can be viewed by others while in transit, and can be modified by an attacker to change the look of the page.</translation>
 <translation id="5786044859038896871">Do you want to fill in your card info?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">This payment method will be deleted from this device</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{None}=1{sign-in data for 1 account}other{sign-in data for # accounts}}</translation>
 <translation id="5800727402210090597">Mobile Phone Repair and Services</translation>
 <translation id="580241730938216256">Start update</translation>
@@ -3753,6 +3755,7 @@ Additional details:
 <translation id="8490137692873530638">Stacker 10</translation>
 <translation id="8493948351860045254">Free up space</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> took too long to respond.</translation>
+<translation id="8502972004418241366">To use your <ph name="PERMISSION" /> on this site, you need to give Chrome access</translation>
 <translation id="8503559462189395349">Chrome Passwords</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="8504928302600319133">Computer Hardware</translation>

@@ -532,6 +532,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2025891858974379949">Onveilige inhoud</translation>
 <translation id="2027465737841872819">Plastiek</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Die instaanbediener en brandmuur nagaan<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">Kortpad kan nie dieselfde wees as die versteksoekverskaffer-sleutelwoord wat deur <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> gedefinieer is nie: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Stoor in elk geval</translation>
 <translation id="2035400064145347639">Reisgidse en reistydskrifte</translation>
 <translation id="2036514476578229158">Jy het gevra om hierdie werf te besoek. Jou ouers kan in Family Link antwoord.</translation>
@@ -1077,6 +1078,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> op <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Kan vra om te weet wanneer jy hierdie toestel aktief gebruik</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om te bestuur watter inligting jy in Chrome-instellings sinkroniseer</translation>
+<translation id="3203025201812691413">URL kan nie leeg wees nie</translation>
 <translation id="320323717674993345">Kanselleer betaling</translation>
 <translation id="3203366800380907218">Op die web</translation>
 <translation id="3207960819495026254">Geboekmerk</translation>
@@ -1691,6 +1693,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4386413576162606861">Rolspelspeletjies</translation>
 <translation id="4390472908992056574">Rand</translation>
 <translation id="4393632246160856858">Naelsorgprodukte</translation>
+<translation id="4397059608630092079">Verifieer altyd wanneer jy outovul gebruik</translation>
 <translation id="4406883609789734330">Intydse Onderskrifte</translation>
 <translation id="4406896451731180161">soekresultate</translation>
 <translation id="4408413947728134509">Webkoekies <ph name="NUM_COOKIES" /></translation>
@@ -1892,7 +1895,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om vinnig 'n nuwe Google Blad te skep</translation>
 <translation id="4825507807291741242">Kragtig</translation>
 <translation id="4826588772550366629">kamera en mikrofoon</translation>
-<translation id="4827283332383516812">Vee kaart uit</translation>
 <translation id="4831993743164297314">Beeldstellerpapier</translation>
 <translation id="483241715238664915">Skakel waarskuwings aan</translation>
 <translation id="4834250788637067901">Betaalmetodes, aanbiedings en adresse wat Google Pay gebruik</translation>
@@ -2304,6 +2306,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5651323159439184939">Kettingpapiertoevoer</translation>
 <translation id="5653432653077411130">Watervoorsiening en -behandeling</translation>
 <translation id="5654927323611874862">Het omvalverslag-ID opgelaai:</translation>
+<translation id="5654965123204121933">URL sluit nie vereiste vervangingstring <ph name="SEARCH_TERMS_REPLACEMENT" /> in nie: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-pos</translation>
 <translation id="5660122698869360728">’n Nuwe slim vouer wat jou help om al jou inkopiebladsye op een plek te stoor en outomaties pryse dop te hou, prysinsigte te kry, en nog meer.</translation>
 <translation id="5663955426505430495">Die administrateur van hierdie toestel het uitbreidings vir bykomende funksies geïnstalleer. Uitbreidings het toegang tot sommige van jou data.</translation>
@@ -2365,7 +2368,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5785756445106461925">Hierdie bladsy sluit verder ander hulpbronne in wat nie veilig is nie. Hierdie hulpbronne kan deur ander mense bekyk word terwyl hulle op pad is, en kan deur 'n aanvaller aangepas word om die bladsy se voorkoms te verander.</translation>
 <translation id="5786044859038896871">Wil jy jou kaartinligting invul?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Hierdie betaalmetode sal van hierdie toestel af uitgevee word</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Geen}=1{aanmelddata vir 1 rekening}other{aanmelddata vir # rekeninge}}</translation>
 <translation id="5800727402210090597">Selfoonherstelwerk en -dienste</translation>
 <translation id="580241730938216256">Begin opdatering</translation>

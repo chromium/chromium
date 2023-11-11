@@ -1216,6 +1216,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7367530036083223701">Sigurno pristupite lozinkama s početnog ekrana pomoću vidžeta Upravitelja lozinki.</translation>
 <translation id="7380220816562673297">Za sada, možete dijeliti lozinke samo s članovima porodice. <ph name="BEGIN_LINK" />Kreirajte porodičnu grupu<ph name="END_LINK" /> od najviše 6 članova i iskoristite sve prednosti svojih proizvoda i pretplata na svim Googleovim uslugama.</translation>
 <translation id="7383797227493018512">Lista za čitanje</translation>
+<translation id="739101637685146669">Koji URL želite označiti?</translation>
 <translation id="7396331865858820922">Lozinka nije podijeljena</translation>
 <translation id="7398893703713203428">Kreiraj link</translation>
 <translation id="7399802613464275309">Sigurnosna provjera</translation>
@@ -1451,6 +1452,7 @@ Vaši podaci su šifrirani vašim pristupnim izrazom <ph name="TIME" />. Unesite
 <translation id="8591976964826315682">Blokiraj kolačiće trećih strana u anonimnom načinu rada</translation>
 <translation id="8593565399399144771">Ovdje možete otvoriti novu karticu.</translation>
 <translation id="8605219856220328675">Zatvaranje kartice.</translation>
+<translation id="8609743333007776886">Dodaj ${url} u oznake</translation>
 <translation id="8613883225817609844">Sakrij nedavne kartice</translation>
 <translation id="8620640915598389714">Uredi</translation>
 <translation id="8624447588354561276">Broj paketa</translation>

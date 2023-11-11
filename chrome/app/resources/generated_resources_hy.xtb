@@ -2903,6 +2903,7 @@
 <translation id="3237871032310650497">Ջնջե՞լ <ph name="PARTITION_SITE_NAME" /> կայքում առանձնացված <ph name="SITE_NAME" /> կայքի տվյալները</translation>
 <translation id="3238192140106069382">Միացում և ստուգում</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> հավելվածի համար ժամանակի սահմանաչափը հեռացվել է</translation>
+<translation id="3240299564104448052">Դուք կարծես միացած չեք ցանցին։</translation>
 <translation id="3240426699337459095">Հղումը պատճենվեց</translation>
 <translation id="3241638166094654466">Տողում բջիջների քանակը`</translation>
 <translation id="3241680850019875542">Ընտրեք արմատային գրացուցակը՝ փաթեթավորվող ընդլայնման համար: Ընդլայնումը թարմացնելու համար ընտրեք նաև մասնավոր բանալու ֆայլը:</translation>
@@ -3833,6 +3834,7 @@
 <translation id="3963753386716096475">Օգտագործել մեկ այլ հեռախոս, պլանշետ կամ անվտանգության բանալի</translation>
 <translation id="3964480518399667971">Անջատել բջջային ցանցը</translation>
 <translation id="3965965397408324205">Դուրս գալ պրոֆիլից (<ph name="PROFILE_NAME" />)</translation>
+<translation id="3965984916551757611">Ծանուցումներ, Google Play</translation>
 <translation id="3966072572894326936">Ընտրել մեկ այլ պանակ...</translation>
 <translation id="3966094581547899417">Թեժ կետի տվյալներ</translation>
 <translation id="3967822245660637423">Ներբեռնումն ավարտվեց</translation>
@@ -4255,6 +4257,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google հաշիվ}one{<ph name="EXTRA_ACCOUNTS" /> Google հաշիվ}other{<ph name="EXTRA_ACCOUNTS" /> Google հաշիվ}}</translation>
 <translation id="4312866146174492540">Արգելափակել (կանխադրված)</translation>
 <translation id="4314497418046265427">Աշխատեք ավելի արդյունավետ՝ միացնելով հեռախոսը <ph name="DEVICE_TYPE" /> սարքին</translation>
+<translation id="4314561087119792062">Ավելացնել մուտքի կետի նոր անվանում</translation>
 <translation id="4314815835985389558">Համաժամացման կառավարում</translation>
 <translation id="4316850752623536204">Մշակողի վեբկայք</translation>
 <translation id="4317733381297736564">Գնումներ հավելվածից</translation>
@@ -4543,6 +4546,7 @@
 <translation id="4546345569117159016">«Աջ» կոճակ</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" />-ն ուզում է օգտագործել այս ընդլայնումը՝</translation>
 <translation id="4546692474302123343">Google Օգնականի ձայնային ներածում</translation>
+<translation id="4547538408998421970">Ձեր այսօրվա սահմանաչափը լրացել է։</translation>
 <translation id="4547659257713117923">Այլ սարքերից ներդիրներ չկան</translation>
 <translation id="4547672827276975204">Ավտոմատ որոշում</translation>
 <translation id="4548858987594081919">Ավելացրեք ձեր օգտանունն այս կայքի համար, որպեսզի Google գաղտնաբառերի կառավարիչը կարողանա պահել ձեր մուտքային տվյալները</translation>
@@ -4831,6 +4835,7 @@
 <translation id="4779136857077979611">Օնիգիրի</translation>
 <translation id="4779766576531456629">Վերանվանել eSIM-ի բջջային ցանցը</translation>
 <translation id="4780321648949301421">Save Page As...</translation>
+<translation id="4780558987886269159">Աշխատանքի համար</translation>
 <translation id="4781443161433589743">Կիրառվում է Chrome-ի ամենաուժեղ պաշտպանությունը</translation>
 <translation id="4785719467058219317">Դուք օգտագործում եք անվտանգության բանալի, որը գրանցված չէ այս կայքում</translation>
 <translation id="4785914069240823137">Չեղարկել եզրատումը</translation>
@@ -5268,6 +5273,7 @@
 <translation id="5130675701626084557">Չհաջողվեց ներբեռնել պրոֆիլը։ Փորձեք մի փոքր ուշ կամ օգնության համար կապվեք օպերատորի հետ։</translation>
 <translation id="5131591206283983824">Հպումով քաշում հպահարթակին</translation>
 <translation id="5135533361271311778">Չհաջողվեց էջանիշ ստեղծել:</translation>
+<translation id="513555878193063507">Ավելացնել նոր APN</translation>
 <translation id="5136343472380336530">Համոզվեք, որ երկու սարքերն ապակողպված են, միմյանց մոտ են, և սարքերում միացված է Bluetooth-ը։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="5138227688689900538">Ցույց տալ ավելի քիչ</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, որոնում <ph name="DEFAULT_SEARCH_ENGINE_NAME" />-ում</translation>
@@ -5636,7 +5642,6 @@
 <translation id="5436492226391861498">Պրոքսիի ուղու ստեղծման սպասում…</translation>
 <translation id="5436510242972373446">Որոնել <ph name="SITE_NAME" />-ը՝</translation>
 <translation id="5436575196282187764">Հիշողություններ Google Լուսանկարներից</translation>
-<translation id="5439680044267106777">Բաց թողնել և կարգավորել նոր պրոֆիլ</translation>
 <translation id="544083962418256601">Ստեղծել դյուրանցումներ…</translation>
 <translation id="5441133529460183413">Վեբ հավելվածը տեղադրվել է Chrome դիտարկիչից</translation>
 <translation id="5441292787273562014">Նորից բեռնել էջը</translation>
@@ -5684,6 +5689,7 @@
 <translation id="5473099001878321374">Շարունակելով՝ դուք համաձայնում եք, որ այս սարքը նույնպես կարող է ավտոմատ ներբեռնել և տեղադրել Google-ի, ձեր երեխայի օպերատորի և սարքի արտադրողի կողմից տրամադրվող թարմացումները և հավելվածները (նաև բջջային ինտերնետի միջոցով)։ Որոշ հավելվածներում կարող է առաջարկվել վճարովի բովանդակություն։</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN կոդը պետք է կազմված լինի առնվազն 1 նիշից}one{PIN կոդը պետք է կազմված լինի առնվազն # նիշից}other{PIN կոդը պետք է կազմված լինի առնվազն # նիշից}}</translation>
 <translation id="5474859849784484111">Տիրույթի (<ph name="MANAGER" />) կանոնների համաձայն՝ այժմ անհրաժեշտ է միանալ Wi-Fi-ին և ներբեռնել թարմացումը։ Ինչպես նաև կարող եք օգտվել վճարովի կապից (կարող է գումար գանձվել)։</translation>
+<translation id="5477089831058413614"><ph name="DEVICE_TYPE" />-ի թեժ կետի կարգավորում</translation>
 <translation id="5481273127572794904">Չի թույլատրվում ավտոմատ ներբեռնել մի քանի ֆայլ</translation>
 <translation id="5481941284378890518">Ավելացնել մոտակա տպիչներ</translation>
 <translation id="5484181871714116891">Երբ այս գործառույթը միացված է, անցաբառերը ստեղծվում են iCloud Keychain-ում և հասանելի են ձեր բոլոր Apple սարքերում։ Անջատելու դեպքում անցաբառերը ստեղծվում են Chrome-ի պրոֆիլում այս սարքում։</translation>
@@ -6321,7 +6327,6 @@
 <translation id="5992225669837656567">Բոլոր մկնիկներն անջատվել են</translation>
 <translation id="5992652489368666106">Առանց եզրագծերի</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 կայքի ստուգումն ավարտվեց}one{{NUM_SITES} կայքի ստուգումն ավարտվեց}other{{NUM_SITES} կայքերի ստուգումն ավարտվեց}}</translation>
-<translation id="5996200702878169822">Դուք կարող եք eSIM պրոֆիլը կարգավորել նաև <ph name="BEGIN_LINK" />ձեռքով<ph name="END_LINK" />։</translation>
 <translation id="5997337190805127100">Մանրամասն կայքերի հասանելիության մասին</translation>
 <translation id="5998458948782718639">Օգնեք բարելավել ինքնալրացման գործառույթը</translation>
 <translation id="5999024481231496910">Դուք միացրել եք երրորդ կողմի քուքիներն աստիճանաբար անջատելու փորձնական գործառույթը։ Սա հնարավոր չէ փոխարինել կարգավորումների էջում։ Եթե դուք ուզում եք նորից միացնել երրորդ կողմի քուքիները, անջատեք այս գործառույթը և վերագործարկեք Chrome-ը։</translation>
@@ -6722,6 +6727,7 @@
 <translation id="6309510305002439352">Խոսափողի օգտագործման թույլտվությունն անջատված է</translation>
 <translation id="6310141306111263820">Չհաջողվեց տեղադրել eSIM պրոֆիլը։ Օգնության համար դիմեք ձեր օպերատորին։</translation>
 <translation id="6311220991371174222">Չհաջողվեց գործարկել Chrome-ը, քանի որ պրոֆիլը բացելիս սխալ առաջացավ: Վերագործարկեք Chrome-ը:</translation>
+<translation id="6311708879134408222">Վաղը կարող եք նորից փորձել։</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Անվտանգության ստուգումն արվել է 1 օր առաջ}one{Անվտանգության ստուգումն արվել է {NUM_DAYS} օր առաջ}other{Անվտանգության ստուգումն արվել է {NUM_DAYS} օր առաջ}}</translation>
 <translation id="6312638141433622592">Առաջարկել հոդվածների դիտումն ընթերցման ռեժիմում, եթե աջակցվում է</translation>
 <translation id="6313641880021325787">ԴՈՒՐՍ ԳԱԼ VR ՌԵԺԻՄԻՑ</translation>
@@ -6795,6 +6801,7 @@
 <translation id="637642201764944055">Chrome-ի հավելվածների հին տարբերակները 2022 թվականի դեկտեմբերից հետո չեն բացվի Linux սարքերում։ Դիմեք ձեր ադմինիստրատորին՝ նոր տարբերակի անցնելու կամ այս հավելվածը հեռացնելու համար։</translation>
 <translation id="6377268785556383139">«<ph name="SEARCH_TEXT" />»-ի որոնման 1 արդյունք</translation>
 <translation id="6378392501584240055">Բացել Wi-Fi ցանցերում</translation>
+<translation id="6379533146645857098">Ընտրել ժամանակահատվածը</translation>
 <translation id="6380143666419481200">Ընդունել և շարունակել</translation>
 <translation id="6383382161803538830">Ընթերցման ռեժիմն այս էջում հասանելի չէ</translation>
 <translation id="638418309848716977">Աջակցվող հղումներ</translation>
@@ -7247,6 +7254,7 @@
 <translation id="6749473226660745022">Լուսանկարներ</translation>
 <translation id="6750757184909117990">Անջատել բջջային ցանցը</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ինկոգնիտո)</translation>
+<translation id="6756059675436942777">Ստուգեք ինտերնետ կապը և նորից փորձեք։</translation>
 <translation id="6756157672127672536">«Ֆայլեր» հավելվածի օգնությամբ դուք կարող եք արագ բացել ձեր ֆայլերը, որոնք պահել եք Google Drive-ում, արտաքին կրիչի վրա կամ ChromeOS սարքում։</translation>
 <translation id="6756643207511618722">Խոսքի սինթեզատորներ</translation>
 <translation id="6757431299485455321">Օգնել մյուս սարքերին գտնել այս թեժ կետը։</translation>
@@ -7659,7 +7667,6 @@
 <translation id="7056418393177503237">{0,plural, =1{Ինկոգնիտո}one{# բաց ինկոգնիտո պատուհան}other{# բաց ինկոգնիտո պատուհան}}</translation>
 <translation id="7056526158851679338">&amp;Հետազոտել սարքերը</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Անվտանգության ստուգումն արվել է 1 րոպե առաջ}one{Անվտանգության ստուգումն արվել է {NUM_MINS} րոպե առաջ}other{Անվտանգության ստուգումն արվել է {NUM_MINS} րոպե առաջ}}</translation>
-<translation id="7057767408836081338">Չհաջողվեց ստանալ հավելվածի տվյալները։ Դեռ փորձում ենք գործարկել հավելվածը...</translation>
 <translation id="7058024590501568315">Թաքցված ցանց</translation>
 <translation id="7059858479264779982">Միացնել ինքնագործարկումը</translation>
 <translation id="7063129466199351735">Դյուրանցումները մշակվում են…</translation>
@@ -8968,6 +8975,7 @@
 <translation id="8082106343289440791">Զուգակցե՞լ «<ph name="DEVICE_NAME" />» սարքի հետ</translation>
 <translation id="8082390128630131497">Եթե անջատեք ADB վրիպազերծումը, <ph name="DEVICE_TYPE" /> սարքի գործարանային կարգավորումները կվերականգնվեն։ Օգտատիրոջ բոլոր հաշիվները և տեղային տվյալները կհեռացվեն:</translation>
 <translation id="8084114998886531721">Պահված գաղտնաբառ</translation>
+<translation id="8084429490152575036">Բջջային APN-ի կարգավորումներ</translation>
 <translation id="8084510406207562688">Վերականգնել բոլոր ներդիրները</translation>
 <translation id="8084628902026812045">Այս կայքը չի օգտագործում անվտանգ կապ, ուստի ֆայլում, հնարավոր է, չարտոնված գործողություններ են կատարվել</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> տպիչի կարգավորում…</translation>

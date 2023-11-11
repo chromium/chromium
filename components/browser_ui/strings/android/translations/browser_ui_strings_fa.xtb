@@ -365,6 +365,7 @@
 <translation id="7423098979219808738">ابتدا سؤال شود</translation>
 <translation id="7423538860840206698">خواندن محتوای بریده‌دان مسدود شد</translation>
 <translation id="7425915948813553151">زمینه تیره برای سایت‌ها</translation>
+<translation id="7474522811371247902">‏‫Chrome استفاده از کوکی‌های شخص ثالث را برای اکثر سایت‌ها محدود می‌کند. اما کوکی‌های شخص ثالث در این سایت مجاز است چون این سایت برای ارائه خدمات اولیه بر کوکی‌ها متکی است.\n\nبرای <ph name="BEGIN_LINK" />مدیریت «محافظت دربرابر ردیابی»<ph name="END_LINK" /> به تنظیمات بروید.</translation>
 <translation id="7521387064766892559">جاوا اسکریپت</translation>
 <translation id="7554752735887601236">سایتی درحال استفاده از میکروفونتان است</translation>
 <translation id="7561196759112975576">همیشه</translation>
@@ -406,7 +407,7 @@
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> مجاز است</translation>
 <translation id="8200772114523450471">ازسرگیری</translation>
 <translation id="8206354486702514201">این تنظیم توسط سرپرست شما اجباری شده است.</translation>
-<translation id="8211406090763984747">اتصال امن است</translation>
+<translation id="8211406090763984747">اتصال ایمن است</translation>
 <translation id="8249310407154411074">انتقال به بالا</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8284326494547611709">زیرنویس‌ها</translation>

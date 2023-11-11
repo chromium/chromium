@@ -871,6 +871,14 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4548482551627849548">Presun aktívneho okna na plochu vľavo</translation>
 <translation id="4560576029703263363">Zapnuté</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Stavový panel, čas <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Skryť heslo</translation>
 <translation id="4566144812051858745">Nezaujímajú ma žiadne návrhy</translation>
 <translation id="4569753163207712681">Zobrazujte si nedávne fotky, médiá a aplikácie z telefónu</translation>

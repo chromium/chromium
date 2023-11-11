@@ -304,6 +304,7 @@
 
       &lt;p&gt;कृपया तारीख और समय को &lt;strong&gt;सेटिंग&lt;/strong&gt; ऐप्लिकेशन के &lt;strong&gt;सामान्‍य&lt;/strong&gt; सेक्शन से एडजस्‍ट करें.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">एडमिन, <ph name="DATE" /> को <ph name="TIME" /> बजे आपके डिवाइस को रीस्टार्ट करेगा</translation>
+<translation id="1564634006476980707">खोज यूआरएल के लिए एचटीटीपीएस स्कीम इस्तेमाल करने का सुझाव दिया जाता है: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">नेटवर्क से जुड़ी जानकारी जैसे कि पते, इंटरफ़ेस का कॉन्फ़िगरेशन, और कनेक्शन की क्वालिटी</translation>
 <translation id="1567040042588613346">यह नीति उम्मीद के मुताबिक काम कर रही है. हालांकि, किसी दूसरी जगह ऐसा ही मान सेट किया गया है और उसकी जगह इस नीति को लागू कर दिया गया है.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> जोड़ें</translation>
@@ -533,6 +534,7 @@
 <translation id="2025891858974379949">असुरक्षित कॉन्टेंट</translation>
 <translation id="2027465737841872819">प्लास्टिक</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />प्रॉक्सी और फायरवॉल की जाँच करें<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">शॉर्टकट और <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> की ओर से तय किया गया, खोज की सेवा देने वाली डिफ़ॉल्ट कंपनी का कीवर्ड, एक जैसे नहीं हो सकते: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">फिर भी सेव करें</translation>
 <translation id="2035400064145347639">यात्रा गाइड और यात्रा की जानकारी</translation>
 <translation id="2036514476578229158">आपने इस साइट पर जाने की अनुमति मांगी है. आपके माता-पिता, Family Link में जवाब दे सकते हैं.</translation>
@@ -560,6 +562,7 @@
 <translation id="2072275792380684364">फ़ैशन और स्टाइल</translation>
 <translation id="2075497153347571252">आपके एडमिन ने <ph name="ORIGIN" /> पर <ph name="PERMISSION" /> को ब्लॉक कर दिया है</translation>
 <translation id="2079545284768500474">पहले जैसा करें</translation>
+<translation id="2080021694978766903">इस नीति में <ph name="MAX_ITEMS_LIMIT" /> से ज़्यादा, खोज से जुड़ी सेवा देने वाली कंपनी नहीं हो सकतीं.</translation>
 <translation id="20817612488360358">सिस्‍टम प्रॉक्‍सी सेटिंग उपयोग किए जाने के लिए सेट हैं लेकिन कोई स्पष्‍ट प्रॉक्‍सी कॉन्फ़िगरेशन भी मौजूद है.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> में से <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2083256696566019397">हमेशा के लिए अनुमति दें</translation>
@@ -639,6 +642,7 @@
 <translation id="2225927550500503913">वर्चुअल कार्ड चालू कर दिया गया है</translation>
 <translation id="2226636330183131181">वाई-फ़ाई नेटवर्क पर <ph name="BEGIN_LINK" />साइन इन<ph name="END_LINK" /> करके देखें</translation>
 <translation id="2228057197024893428">फ़िलहाल, यह पता Chrome में सेव है. Google के सभी प्रॉडक्ट पर इस्तेमाल करने के लिए, इसे अपने Google खाते, <ph name="ACCOUNT" /> में सेव करें.</translation>
+<translation id="2229456043301340598">अनदेखा किया गया डुप्लीकेट शॉर्टकट: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2233745931693710080">कॉम्पैक्ट डिस्क</translation>
 <translation id="2235344399760031203">तीसरे पक्ष की कुकी ब्लॉक हैं</translation>
 <translation id="2239100178324503013">अभी भेजें</translation>
@@ -731,6 +735,7 @@
 <translation id="2448295565072560657">आपके लॉग इन रहने के दौरान, इस डिवाइस के साथ अटैच सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह)</translation>
 <translation id="2450021089947420533">'Chrome इतिहास' में आपकी गतिविधियां</translation>
 <translation id="2456755709261364512">आपकी बैटरी <ph name="REQUIRED_BATTERY_PRECENT" />% से ज़्यादा चार्ज होनी चाहिए</translation>
+<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> खोजें</translation>
 <translation id="2463739503403862330">भरें</translation>
 <translation id="2465688316154986572">स्टेपल</translation>
 <translation id="2465914000209955735">आपने Chrome में जो फ़ाइलें डाउनलोड की हैं उन्हें मैनेज करें</translation>
@@ -902,6 +907,7 @@
 <translation id="2814184336982254349">इस PDF को ऐक्सेस नहीं किया जा सकता. संदर्भ मेन्यू खोलने के लिए, खोज बटन के साथ m बटन दबाएं और "PDF फ़ाइल से टेक्स्ट निकालें" को चालू करें</translation>
 <translation id="2818338148457093657">सौंदर्य सेवाएं और स्पा</translation>
 <translation id="2820957248982571256">स्कैन हो रहा है...</translation>
+<translation id="2824549017793319782">सीधे पता बार में अपनी खोज का कीवर्ड टाइप करने के लिए चुनें</translation>
 <translation id="2824775600643448204">पता और सर्च बार</translation>
 <translation id="2826760142808435982">कनेक्शन को <ph name="CIPHER" /> का उपयोग करके सुरक्षित किया गया है और उसकी पहचान की गई है और यह मुख्य विनिमय तकनीक के रूप में <ph name="KX" /> का उपयोग करता है.</translation>
 <translation id="2835170189407361413">फ़ॉर्म साफ़ करें</translation>
@@ -1075,6 +1081,7 @@
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> पर <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">साइट, यह जानकारी मांग सकती है कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में, आपने जो जानकारी सिंक की है उसे मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
+<translation id="3203025201812691413">यूआरएल वाला फ़ील्ड खाली नहीं छोड़ा जा सकता</translation>
 <translation id="320323717674993345">भुगतान रद्द करें</translation>
 <translation id="3203366800380907218">वेब से</translation>
 <translation id="3207960819495026254">बुकमार्क किया गया</translation>
@@ -1689,6 +1696,7 @@
 <translation id="4386413576162606861">रोलप्ले वाले गेम</translation>
 <translation id="4390472908992056574">ब्रिम</translation>
 <translation id="4393632246160856858">नाखूनों की देखभाल से जुड़े प्रॉडक्ट</translation>
+<translation id="4397059608630092079">जानकारी ऑटोमैटिक भरने की सुविधा का इस्तेमाल करते समय, हमेशा पुष्टि करें</translation>
 <translation id="4406883609789734330">लाइव कैप्शन</translation>
 <translation id="4406896451731180161">खोज नतीजे</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> कुकी</translation>
@@ -1890,7 +1898,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, जल्दी से नई Google शीट बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="4825507807291741242">दमदार</translation>
 <translation id="4826588772550366629">कैमरा और माइक्रोफ़ोन</translation>
-<translation id="4827283332383516812">कार्ड मिटाएं</translation>
 <translation id="4831993743164297314">इमेज सेटर पेपर</translation>
 <translation id="483241715238664915">सुरक्षा चेतावनियां चालू करें</translation>
 <translation id="4834250788637067901">Google Pay का इस्तेमाल करने वाले पैसे चुकाने के तरीके, ऑफ़र, और पते</translation>
@@ -2302,6 +2309,7 @@
 <translation id="5651323159439184939">ट्रैक्टर फ़ीड</translation>
 <translation id="5653432653077411130">पानी की सप्लाई और ट्रीटमेंट</translation>
 <translation id="5654927323611874862">क्रैश रिपोर्ट का आईडी अपलोड किया गया:</translation>
+<translation id="5654965123204121933">यूआरएल में ज़रूरी रिप्लेसमेंट स्ट्रिंग <ph name="SEARCH_TERMS_REPLACEMENT" /> शामिल नहीं है: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ईमेल</translation>
 <translation id="5660122698869360728">एक नया स्मार्ट फ़ोल्डर, जो खरीदारी वाले सभी पेजों को एक ही जगह पर सेव करने और कीमतों को अपने-आप ट्रैक करने की सुविधा देता है. इसकी मदद से, कीमत की अहम जानकारी पाने के साथ-साथ और भी बहुत कुछ किया जा सकता है.</translation>
 <translation id="5663955426505430495">इस डिवाइस के एडमिन ने और फ़ंक्शन के एक्सटेंशन इंस्टॉल किए हैं. एक्सटेंशन आपका कुछ डेटा ऐक्सेस कर सकते हैं.</translation>
@@ -2332,6 +2340,7 @@
 <translation id="5720705177508910913">मौजूदा उपयोगकर्ता</translation>
 <translation id="572328651809341494">हाल ही के टैब</translation>
 <translation id="5723287205918986743">रक्षा उद्योग</translation>
+<translation id="5725297205162868298">शॉर्टकट, @ वर्ण से शुरू नहीं हो सकता: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5730040223043577876">अगर आपने अपने पासवर्ड का दूसरी साइटों पर दोबारा इस्तेमाल किया है, तो Chrome आपको उसे रीसेट करने का सुझाव देता है.</translation>
 <translation id="5732392974455271431">आपके अभिभावक इसे आपके लिए अनवरोधित कर सकते हैं</translation>
 <translation id="573555826359077410">'फ़ॉर्म बनाएं' बटन, Google Forms में जल्दी से नया फ़ॉर्म बनाने के लिए इसे चालू करें</translation>
@@ -2362,7 +2371,6 @@
 <translation id="5785756445106461925">इसके अतिरिक्त, इस पेज में ऐसे अन्य संसाधन भी शामिल हैं, जो सुरक्षित नहीं हैं. ट्रांज़िट में होने के दौरान ये संसाधन अन्य लोगों द्वारा देखे जा सकते हैं और पेज का स्वरूप बदलने के लिए किसी हमवलावर द्वारा इनमें बदलाव किए जा सकते हैं.</translation>
 <translation id="5786044859038896871">क्या अपनी कार्ड जानकारी भरना चाहते हैं?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">इस डिवाइस से, पेमेंट का यह तरीका मिटा दिया जाएगा</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{एक भी नहीं}=1{1 खाते का साइन इन करने के लिए डेटा}one{# खाते का साइन इन करने के लिए डेटा}other{# खाते का साइन इन करने के लिए डेटा}}</translation>
 <translation id="5800727402210090597">मोबाइल फ़ोन ठीक करने की और इससे जुड़ी सेवाएं</translation>
 <translation id="580241730938216256">अपडेट करना शुरू करें</translation>
@@ -2850,6 +2858,7 @@
 <translation id="6793213097893210590">कार्डबोर्ड</translation>
 <translation id="679355240208270552">अनदेखा किया गया क्योंकि नीति ने डिफ़ॉल्ट सर्च चालू नहीं किया है.</translation>
 <translation id="6794951432696553238">अब Windows Hello का इस्तेमाल करके अपने कार्ड की जल्दी पुष्टि करें</translation>
+<translation id="6798066466127540426">सूची में, खोज से जुड़ी सेवा देने वाली कोई मान्य कंपनी शामिल नहीं है.</translation>
 <translation id="6798460514924505775">चोउ 3 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="6799145206637008376">इस वर्चुअल कार्ड के लिए सीवीसी भरें</translation>
 <translation id="6805030849054648206">B6/C4 साइज़ का लिफ़ाफ़ा</translation>
@@ -3239,6 +3248,7 @@
 <translation id="7521825010239864438">"<ph name="SECTION" />" सेक्शन छिपाया गया</translation>
 <translation id="752189128961566325">इसका इस्तेमाल, Google के सभी प्रॉडक्ट में किया जा सकता है</translation>
 <translation id="7523408071729642236">मैन्युफ़ैक्चरिंग</translation>
+<translation id="7525804896095537619">नाम वाला फ़ील्ड खाली नहीं छोड़ा जा सकता</translation>
 <translation id="7526934274050461096">इस साइट से आपका कनेक्‍शन निजी नहीं है</translation>
 <translation id="7529884293139707752">घर पर शिक्षा</translation>
 <translation id="7534987659046836932">C7 साइज़ का लिफ़ाफ़ा</translation>
@@ -3460,6 +3470,7 @@
 <translation id="7950027195171824198">Chrome की सेटिंग में कुकी की सेटिंग मैनेज करें</translation>
 <translation id="7951415247503192394">(32-बिट)</translation>
 <translation id="7952192831285741665">यूरोपियन ईडीपी</translation>
+<translation id="7952250633095257243">शॉर्टकट वाला फ़ील्ड खाली नहीं छोड़ा जा सकता</translation>
 <translation id="7952327717479677595">'सर्च इंजन मैनेज करें' बटन, अपने डिफ़ॉल्ट सर्च इंजन और साइट सर्च को मैनेज करने के लिए इसे चालू करें</translation>
 <translation id="7953236668995583915">अपनी अपडेट की गई सेटिंग इस साइट पर लागू करने के लिए, इस पेज को फिर से लोड करें</translation>
 <translation id="7953569069500808819">सबसे ऊपर एज़ स्टिच</translation>
@@ -3671,6 +3682,7 @@
 <translation id="8344776605855290140">वर्चुअल कार्ड रजिस्टर करने की सुविधा पूरी स्क्रीन पर खुली है</translation>
 <translation id="8347658365704983341">डिस्टेंस लर्निंग</translation>
 <translation id="8349305172487531364">बुकमार्क बार</translation>
+<translation id="8350416046273606058">शॉर्टकट में स्पेस का इस्तेमाल नहीं किया जा सकता: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">नोट बनाएं</translation>
 <translation id="8352849934814541340">इस डिवाइस के एडमिन ने अन्य फ़ंक्शन के लिए ऐप्लिकेशन इंस्टॉल किए हैं. ऐप्लिकेशन आपका कुछ डेटा ऐक्सेस कर सकते हैं.</translation>
 <translation id="8355270400102541638">स्थानीय खराबी रिपोर्ट से जुड़ी जानकारी:</translation>
@@ -3743,6 +3755,7 @@
 <translation id="8490137692873530638">स्टैकर 10</translation>
 <translation id="8493948351860045254">स्‍थान खाली करें</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> को लोड होने में बहुत ज़्यादा समय लगा.</translation>
+<translation id="8502972004418241366">इस साइट पर अपनी <ph name="PERMISSION" /> का इस्तेमाल करने के लिए, आपको Chrome को ऐक्सेस देना होगा</translation>
 <translation id="8503559462189395349">Chrome पासवर्ड</translation>
 <translation id="8503813439785031346">उपयोगकर्ता नाम</translation>
 <translation id="8504928302600319133">कंप्यूटर हार्डवेयर</translation>

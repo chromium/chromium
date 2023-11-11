@@ -1494,6 +1494,7 @@
 <translation id="2131077480075264">"<ph name="APP_NAME" />"ను అనుమతించనందున దీన్ని ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2133775869826239001">సెటప్ చేయడానికి మరిన్ని ఫీచర్‌లను ఎంచుకోండి</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> ఫైల్‌ను మళ్లీ ట్రై చేయండి</translation>
+<translation id="2133939190018801302">మీరు ప్రస్తుతం ఉపయోగిస్తున్న Chrome ప్రొఫైల్‌లో ఈ అప్లికేషన్ ఇన్‌స్టాల్ చేయబడుతుంది. <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">సిస్టమ్ CAలు</translation>
 <translation id="21354425047973905">పిన్‌లను దాస్తుంది</translation>
 <translation id="2135456203358955318">డాక్ చేయబడిన మాగ్నిఫైయర్</translation>
@@ -2791,6 +2792,7 @@
 <translation id="3117362587799608430">డాక్‌కు పూర్తి అనుకూలత లేదు</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="DEVICE_NAME" />కి <ph name="ATTACHMENTS" />ని పంపడంలో విఫలమైంది}other{<ph name="DEVICE_NAME" />కి <ph name="ATTACHMENTS" />ని పంపడంలో విఫలమైంది}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> సహాయం</translation>
+<translation id="3118748462829336648">సైడ్ ప్యానెల్‌ను తెరవండి</translation>
 <translation id="3119948370277171654">మీరు ఏ కంటెంట్/URLను ప్రసారం చేస్తున్నారు?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">డేటా డైరెక్టరీని సృష్టించడంలో విఫలమైంది</translation>
@@ -4220,6 +4222,7 @@
 <translation id="4274673989874969668">మీరు సైట్‌ను వదిలి వెళ్లిన తర్వాత, ఫోటోలు అప్‌లోడ్ చేయడం లేదా చాట్ మెసేజ్‌ను పంపడం వంటి టాస్క్‌లను ముగించడానికి అది సింక్ చేస్తూనే ఉంటుంది</translation>
 <translation id="4275291496240508082">పరికర ప్రారంభ శబ్దం</translation>
 <translation id="4275397969489577657">ఈవెంట్ ప్రసార లాగింగ్‌ను ప్రారంభించండి</translation>
+<translation id="4275788652681621337">సైడ్ ప్యానెల్‌ను మూసివేయండి</translation>
 <translation id="4275830172053184480">మీ పరికరాన్ని పునఃప్రారంభించండి</translation>
 <translation id="4277434192562187284">XML కాన్ఫిగరేషన్ సోర్స్</translation>
 <translation id="4278390842282768270">అనుమతించబడింది</translation>
@@ -5073,6 +5076,7 @@
 <translation id="4953808748584563296">డిఫాల్ట్ నారింజ రంగు అవతార్</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> విజిబిలిటీ</translation>
 <translation id="4955710816792587366">మీ పిన్ ఎంచుకోండి</translation>
+<translation id="4958090327979461112">మీ Chrome ప్రొఫైల్స్‌ను మేనేజ్ చేయండి</translation>
 <translation id="4959262764292427323">మీ Google ఖాతాలో పాస్‌వర్డ్‌లు సేవ్ చేయబడతాయి కాబట్టి మీరు వాటిని ఏ పరికరంలోనైనా ఉపయోగించవచ్చు</translation>
 <translation id="4960020053211143927">కొన్ని యాప్‌లు సపోర్ట్ చేయవు</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5653,7 +5657,7 @@
 <translation id="5436492226391861498">ప్రాక్సీ టనెల్ కోసం వేచి ఉంది...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> వెతకండి:</translation>
 <translation id="5436575196282187764">Google Photos జ్ఞాపకాలు</translation>
-<translation id="5439680044267106777">స్కిప్ చేసి, కొత్త ప్రొఫైల్‌ను సెటప్ చేయండి</translation>
+<translation id="5440425659852470030">సైడ్ ప్యానెల్‌ను మూసివేయండి</translation>
 <translation id="544083962418256601">షార్ట్‌కట్‌లను క్రియేట్ చేయండి...</translation>
 <translation id="5441133529460183413">Chrome బ్రౌజర్ నుండి వెబ్ యాప్ ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="5441292787273562014">పేజీని మళ్లీ లోడ్ చేయి</translation>
@@ -6342,7 +6346,6 @@
 <translation id="5992225669837656567">అన్ని మౌస్‌లు డిస్‌కనెక్ట్ చేయబడ్డాయి</translation>
 <translation id="5992652489368666106">అంచులు లేవు</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 సైట్‌కు రివ్యూ పూర్తయింది}other{{NUM_SITES} సైట్‌లకు రివ్యూ పూర్తయింది}}</translation>
-<translation id="5996200702878169822">మీరు eSIM ప్రొఫైల్‌ను <ph name="BEGIN_LINK" />మాన్యువల్‌<ph name="END_LINK" />గా కూడా సెటప్ చేయవచ్చు.</translation>
 <translation id="5997337190805127100">సైట్ యాక్సెస్ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="5998458948782718639">ఆటోఫిల్‌ను మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="5999024481231496910">మీరు థర్డ్-పార్టీ కుక్కీ ఫేజ్అవుట్‌ను టెస్ట్ చేసే ఫీచర్‌ను ఎనేబుల్ చేశారు. సెట్టింగ్‌ల పేజీ ద్వారా దీన్ని ఓవర్‌రైడ్ చేయడం సాధ్యం కాదు. మీరు థర్డ్-పార్టీ కుక్కీలను మళ్లీ ఎనేబుల్ చేయాలనుకుంటే, ఈ ఫీచర్‌ను డిజేబుల్ చేసి, Chromeను రీ-లాంచ్ చేయండి.</translation>
@@ -7682,7 +7685,6 @@
 <translation id="7056418393177503237">{0,plural, =1{అజ్ఞాతం}other{# తెరిచి ఉన్న అజ్ఞాత విండోలు}}</translation>
 <translation id="7056526158851679338">&amp;పరికరాలను పర్యవేక్షించు</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{భద్రతా తనిఖీ జరిగి 1 నిమిషం అయింది}other{భద్రతా తనిఖీ జరిగి {NUM_MINS} నిమిషాలు అయింది}}</translation>
-<translation id="7057767408836081338">యాప్ డేటాను పొందడంలో సమస్య ఉంది, యాప్‌ను రన్ చేయడానికి ప్రయత్నిస్తోంది...</translation>
 <translation id="7058024590501568315">దాచబడిన నెట్‌వర్క్</translation>
 <translation id="7059858479264779982">స్వీయ-ప్రారంభానికి సెట్ చేయి</translation>
 <translation id="7063129466199351735">షార్ట్‌కట్‌లను ప్రాసెస్ చేస్తోంది...</translation>
@@ -8067,6 +8069,7 @@
 <translation id="7384804382450832142">Microsoft OneDriveకు కనెక్ట్ చేయండి</translation>
 <translation id="7385490373498027129">ఈ <ph name="DEVICE_TYPE" />లో యూజర్‌లందరికీ సంబంధించిన అన్ని ఫైళ్లు, లోకల్ డేటా శాశ్వతంగా తొలగించబడతాయి.</translation>
 <translation id="7385854874724088939">ముద్రించడానికి ప్రయత్నించే సమయంలో ఏదో తప్పు జరిగింది.  దయచేసి కోడ్‌ను చెక్ చేసి, మళ్ళీ ప్రయత్నించండి.</translation>
+<translation id="7387107590792462040">ఇన్‌స్టాలేషన్ ప్రోగ్రెస్‌లో ఉన్నప్పుడు దయచేసి వేచి ఉండండి</translation>
 <translation id="7387273928653486359">ఆమోదించదగినది</translation>
 <translation id="7387951778417998929">ఆటోమేటిక్ సెర్చ్ ఇంజిన్ కాకుండా వేరొక సెర్చ్ ఇంజిన్‌ను ఉపయోగించాలంటే, అడ్రస్ బార్‌లో దాని షార్ట్‌కట్‌ను టైప్ చేసి, ఆ తర్వాత మీ ప్రాధాన్య కీబోర్డ్ షార్ట్‌కట్‌ను టైప్ చేయండి. మీరు ఇక్కడ మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌ను కూడా మార్చవచ్చు.</translation>
 <translation id="7388209873137778229">కేవలం సపోర్ట్ ఉన్న పరికరాలను మాత్రమే చూపుతుంది.</translation>
@@ -9207,6 +9210,7 @@
 <translation id="8260864402787962391">మౌస్</translation>
 <translation id="8261378640211443080">ఈ ఎక్స్‌టెన్షన్‌ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />లో లిస్ట్‌ చేయబడలేదు మరియు మీకు తెలియకుండానే జోడించబడి ఉండవచ్చు.</translation>
 <translation id="8261506727792406068">తొలగించండి</translation>
+<translation id="8262971894813353037">WebUI కోసం కొత్త డెస్క్‌టాప్ డిజైన్‌ను ఎనేబుల్ చేయండి. Chrome రిఫ్రెష్ 2023ని కూడా తప్పనిసరిగా ఎనేబుల్ చేయాలి.</translation>
 <translation id="8263336784344783289">ఈ గ్రూప్‌నకు పేరు పెట్టండి</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> మీ మౌస్ కర్సర్‌ను నిలిపివేసింది.</translation>
 <translation id="8264024885325823677">ఈ సెట్టింగ్ మీ నిర్వాహకుడి ద్వారా నిర్వహించబడుతుంది.</translation>
@@ -10274,6 +10278,7 @@
 <translation id="9080175821499742274">మెమరీ సేవర్ ఇన్‌యాక్టివ్ ట్యాబ్‌ల నుండి మెమరీని ఖాళీ చేస్తుంది, తద్వారా దీన్ని యాక్టివ్ ట్యాబ్‌లు, ఇతర యాప్‌లు ఉపయోగించగలవు.</translation>
 <translation id="9080971985541434310">మీ ఆసక్తులను అంచనా వేస్తుంది - Chrome మీ ఆసక్తులను అంచనా వేయగలదు</translation>
 <translation id="9081543426177426948">మీరు సందర్శించే సైట్‌లు అజ్ఞాత మోడ్‌లో సేవ్ చేయబడవు</translation>
+<translation id="9082750838489080452">అప్లికేషన్: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">విండో లాగా తెరువు</translation>
 <translation id="9085256200913095638">ఎంపిక చేసిన ట్యాబ్‌కు నకిలీని రూపొందించు</translation>
 <translation id="9085446486797400519">కెమెరా యాక్సెస్</translation>
@@ -10442,6 +10447,7 @@
 <translation id="924818813611903184">ChromeOS సెట్టింగ్‌లలో భాషలను మేనేజ్ చేయండి</translation>
 <translation id="925270020047573546">డెస్క్‌టాప్ ఆడియోను ప్రసారం చేయడానికి ఈ పరికరం సపోర్ట్ చేయదు.</translation>
 <translation id="925575170771547168">దీని వలన సైట్‌లు స్టోర్ చేసిన <ph name="TOTAL_USAGE" /> డేటా తొలగిపోతుంది</translation>
+<translation id="930193457234051160">Chrome WebUI రిఫ్రెష్ 2023</translation>
 <translation id="930268624053534560">వివరణాత్మక సమయముద్రలు</translation>
 <translation id="930551443325541578">కీలను, యాక్సెంట్ మార్క్‌లను రిపీట్ చేయండి</translation>
 <translation id="930893132043726269">ప్రస్తుతం రోమింగ్‌లో ఉంది</translation>

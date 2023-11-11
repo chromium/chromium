@@ -304,6 +304,7 @@
 
           &lt;p&gt;કૃપા કરીને &lt;strong&gt;સેટિંગ&lt;/strong&gt; અ‍ૅપના &lt;strong&gt;સામાન્ય&lt;/strong&gt; વિભાગમાં તારીખ અને સમય ગોઠવો.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">તમારા ઍડમિનિસ્ટ્રેટર <ph name="DATE" />ના રોજ <ph name="TIME" /> વાગ્યે તમારું ડિવાઇસ ફરી શરૂ કરશે</translation>
+<translation id="1564634006476980707">શોધ URL માટે HTTPS સ્કીમનો સુઝાવ આપવામાં આવે છે: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">ઍડ્રેસ, ઇન્ટરફેસ કન્ફિગ્યુરેશન અને કનેક્શન ક્વૉલિટી જેવી નેટવર્કની માહિતી</translation>
 <translation id="1567040042588613346">આ પૉલિસી હેતુ મુજબ કાર્ય કરી રહી છે પરંતુ સમાન મૂલ્ય બીજે ક્યાંક સેટ કરવામાં આવ્યું છે અને આ પૉલિસી તેની જગ્યા લે છે.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> ઉમેરો</translation>
@@ -532,6 +533,7 @@
 <translation id="2025891858974379949">અસુરક્ષિત કન્ટેન્ટ</translation>
 <translation id="2027465737841872819">પ્લાસ્ટિક</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />પ્રૉક્સી અને ફાયરવૉલ ચેક કરવાનો પ્રયાસ કરો<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426"><ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> દ્વારા વ્યાખ્યાયિત ડિફૉલ્ટ શોધ પ્રદાતાના કીવર્ડ અને શૉર્ટકટમાંનું લખાણ, બન્ને એક સરખું ન હોઈ શકે: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">કોઈપણ રીતે સાચવો</translation>
 <translation id="2035400064145347639">મુસાફરીની માર્ગદર્શિકાઓ અને પ્રવાસવર્ણન</translation>
 <translation id="2036514476578229158">તમે આ સાઇટની મુલાકાત લેવા કહ્યું. તમારા માતાપિતા Family Linkમાં જવાબ આપી શકે છે.</translation>
@@ -732,6 +734,7 @@
 <translation id="2448295565072560657">તમે લૉગ ઇન કર્યું હોય તે દરમિયાન આ ડિવાઇસ સાથે જોડાયેલા પેરિફેરલ</translation>
 <translation id="2450021089947420533">પ્રવાસ</translation>
 <translation id="2456755709261364512">તમારી બૅટરી <ph name="REQUIRED_BATTERY_PRECENT" />%થી વધુ ચાર્જ હોવી આવશ્યક છે</translation>
+<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> શોધો</translation>
 <translation id="2463739503403862330">ભરો</translation>
 <translation id="2465688316154986572">સ્ટેપલ લગાવો</translation>
 <translation id="2465914000209955735">Chromeમાં તમે ડાઉનલોડ કરેલી ફાઇલો મેનેજ કરો</translation>
@@ -903,6 +906,7 @@
 <translation id="2814184336982254349">આ PDF ઍક્સેસિબલ નથી. સંદર્ભ મેનૂ ખોલવા માટે શોધ વત્તા m દબાવો અને "PDFમાંથી ટેક્સ્ટ એક્સટ્રેક્ટ કરો" સુવિધા ચાલુ કરો</translation>
 <translation id="2818338148457093657">સૌંદર્ય સેવાઓ અને સ્પા</translation>
 <translation id="2820957248982571256">સ્કૅન કરી રહ્યાં છીએ…</translation>
+<translation id="2824549017793319782">સીધા ઍડ્રેસ બારમાં જ તમારી શોધ ટાઇપ કરવા માટે પસંદ કરો</translation>
 <translation id="2824775600643448204">સરનામું અને શોધ બાર</translation>
 <translation id="2826760142808435982">કનેક્શન <ph name="CIPHER" />નો ઉપયોગ કરીને એન્ક્રિપ્ટ અને પ્રમાણિત કરેલુંં છે અને મુખ્ય એક્સચેન્જ મેકેનિઝ્મ તરીકે <ph name="KX" />નો ઉપયોગ કરે છે.</translation>
 <translation id="2835170189407361413">ફોર્મ સાફ કરો</translation>
@@ -1077,6 +1081,7 @@
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> પર <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">તમે સક્રિયપણે તમારા ડિવાઇસનો ઉપયોગ ક્યારે કરો છો, તે જાણકારી મેળવવા માટે પૂછી શકે છે</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ટૅબ દબાવો અને પછી Chrome સેટિંગમાં તમે જે માહિતી સિંક કરવા ઇચ્છતા હો, તે મેનેજ કરવા માટે Enter કી દબાવો</translation>
+<translation id="3203025201812691413">URL ખાલી ન હોઈ શકે</translation>
 <translation id="320323717674993345">ચુકવણી રદ કરો</translation>
 <translation id="3203366800380907218">વેબ પરથી</translation>
 <translation id="3207960819495026254">બુકમાર્ક કરેલ</translation>
@@ -1691,6 +1696,7 @@
 <translation id="4386413576162606861">રોલ પ્લેઇંગ ગેમ</translation>
 <translation id="4390472908992056574">બ્રિમ</translation>
 <translation id="4393632246160856858">નખની સંભાળ માટેની પ્રોડક્ટ</translation>
+<translation id="4397059608630092079">ઑટોમૅટિક રીતે ભરવાની સુવિધાનો ઉપયોગ કરતી વખતે હંમેશાં ચકાસણી કરો</translation>
 <translation id="4406883609789734330">લાઇવ કૅપ્શન</translation>
 <translation id="4406896451731180161">શોધ પરિણામો</translation>
 <translation id="4408413947728134509">કુકી <ph name="NUM_COOKIES" /></translation>
@@ -1892,7 +1898,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sheetsમાં ઝડપથી કોઈ નવી શીટ બનાવવા માટે, પહેલાં Tab પછી Enter કી દબાવો</translation>
 <translation id="4825507807291741242">શક્તિશાળી</translation>
 <translation id="4826588772550366629">કૅમેરા અને માઇક્રોફોન</translation>
-<translation id="4827283332383516812">કાર્ડ ડિલીટ કરો</translation>
 <translation id="4831993743164297314">ઇમેજ સેટર પેપર</translation>
 <translation id="483241715238664915">ચેતવણીઓ ચાલુ કરો</translation>
 <translation id="4834250788637067901">Google Payનો ઉપયોગ કરતી ચુકવણી પદ્ધતિઓ, ઑફરો અને સરનામાં</translation>
@@ -2304,6 +2309,7 @@
 <translation id="5651323159439184939">ટ્રેક્ટર ફીડ</translation>
 <translation id="5653432653077411130">પાણી પુરવઠો અને શુદ્ધિકરણ</translation>
 <translation id="5654927323611874862">અપલોડ કરેલા ક્રૅશ રિપોર્ટનું ID:</translation>
+<translation id="5654965123204121933">આ URLમાં બદલવાની આવશ્યક <ph name="SEARCH_TERMS_REPLACEMENT" /> સ્ટ્રિંગ શામેલ નથી: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ઇમેઇલ</translation>
 <translation id="5660122698869360728">એક નવું સ્માર્ટ ફોલ્ડર જે તમારા તમામ શૉપિંગ પેજ એક જગ્યાએ સાચવવામાં, ઑટોમેટિક રીતે કિંમતો ટ્રૅક કરવામાં, કિંમતો વિશે જાણકારી મેળવવામાં અને બીજું ઘણું કરવામાં સહાય કરે છે.</translation>
 <translation id="5663955426505430495">આ ડિવાઇસના વ્યવસ્થાપકે વધારાના કાર્યો માટે એક્સ્ટેંશન ઇન્સ્ટૉલ કર્યા છે. એક્સ્ટેંશન પાસે તમારા કેટલાક ડેટાનો ઍક્સેસ છે.</translation>
@@ -2365,7 +2371,6 @@
 <translation id="5785756445106461925">વળી, આ પેજમાં અન્ય એવા સાધનો છે જે સુરક્ષિત નથી. પરિવહનમાં હોવા પર અન્ય લોકો દ્વારા આ સાધનો જોઈ શકાય છે અને પેજનો દેખાવ બદલવા માટે હુમલાખોર દ્વારા ફેરફાર કરવામાં આવી શકે છે.</translation>
 <translation id="5786044859038896871">શું તમે તમારી કાર્ડ માહિતી ભરવા માગો છો?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">આ ડિવાઇસમાંથી આ ચુકવણી પદ્ધતિ ડિલીટ કરવામાં આવશે</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{એકપણ નહીં}=1{1 એકાઉન્ટ માટેનો સાઇન-ઇન ડેટા}one{# એકાઉન્ટ માટેનો સાઇન-ઇન ડેટા}other{# એકાઉન્ટ માટેનો સાઇન-ઇન ડેટા}}</translation>
 <translation id="5800727402210090597">મોબાઇલ ફોન રિપૅર અને સેવાઓ</translation>
 <translation id="580241730938216256">અપડેટ શરૂ કરો</translation>
@@ -3750,6 +3755,7 @@
 <translation id="8490137692873530638">સ્ટૅકર 10</translation>
 <translation id="8493948351860045254">સ્થાન ખાલી કરો</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> એ પ્રતિસાદ આપવા માટે ઘણો સમય લીધો.</translation>
+<translation id="8502972004418241366">આ સાઇટ પર તમારા <ph name="PERMISSION" />નો ઉપયોગ કરવા માટે, તમારે Chromeને ઍક્સેસ આપવાની જરૂર છે</translation>
 <translation id="8503559462189395349">Chrome પાસવર્ડ</translation>
 <translation id="8503813439785031346">વપરાશકર્તાનામ</translation>
 <translation id="8504928302600319133">કમ્પ્યુટર હાર્ડવેર</translation>

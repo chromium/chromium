@@ -532,6 +532,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2025891858974379949">Vsebina, ki ni varna</translation>
 <translation id="2027465737841872819">Plastic</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />preveriti strežnik proxy in požarni zid<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">Bližnjica ne sme biti enaka ključni besedi privzetega ponudnika iskanja, ki jo določa <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Vseeno shrani</translation>
 <translation id="2035400064145347639">Vodniki in potopisi</translation>
 <translation id="2036514476578229158">Prosil(-a) si za dovoljenje za obisk tega spletnega mesta. Starši lahko odgovorijo v storitvi Family Link.</translation>
@@ -1077,6 +1078,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> v strežniku <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Lahko zahteva, da izve, kdaj aktivno uporabljate napravo.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati, kateri podatki se sinhronizirajo v Chromovih nastavitvah.</translation>
+<translation id="3203025201812691413">Polje za URL ne sme biti prazno</translation>
 <translation id="320323717674993345">Prekliči plačilo</translation>
 <translation id="3203366800380907218">Iz spleta</translation>
 <translation id="3207960819495026254">Dodano med zaznamke</translation>
@@ -1691,6 +1693,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4386413576162606861">Igre z igranjem vlog</translation>
 <translation id="4390472908992056574">Polna podlaga</translation>
 <translation id="4393632246160856858">Izdelki za nego nohtov</translation>
+<translation id="4397059608630092079">Vedno preveri ob uporabi samodejnega izpolnjevanja</translation>
 <translation id="4406883609789734330">Samodejni podnapisi</translation>
 <translation id="4406896451731180161">rezultati iskanja</translation>
 <translation id="4408413947728134509">Piškotki <ph name="NUM_COOKIES" /></translation>
@@ -1892,7 +1895,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite hitro ustvariti novo Google Preglednico</translation>
 <translation id="4825507807291741242">Zmogljivo</translation>
 <translation id="4826588772550366629">kamero in mikrofon</translation>
-<translation id="4827283332383516812">Izbrišite kartico</translation>
 <translation id="4831993743164297314">Image Setter Paper</translation>
 <translation id="483241715238664915">Vklopi opozorila</translation>
 <translation id="4834250788637067901">Plačilna sredstva, ponudbe in naslovi z Googlom Pay</translation>
@@ -2304,6 +2306,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5651323159439184939">Tractor Feed</translation>
 <translation id="5653432653077411130">Oskrba in ravnanje z vodo</translation>
 <translation id="5654927323611874862">Naloženi ID poročila o zrušitvah:</translation>
+<translation id="5654965123204121933">URL ne vsebuje obveznega nadomestnega niza <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-pošta</translation>
 <translation id="5660122698869360728">Nova pametna mapa, ki vam pomaga shraniti vse strani za nakupovanje na enem mestu in samodejno spremljati cene, pridobiti vpoglede v cene in drugo.</translation>
 <translation id="5663955426505430495">Skrbnik te naprave je namestil razširitve zaradi dodatnih funkcij. Razširitve imajo dostop do nekaterih vaših podatkov.</translation>
@@ -2365,7 +2368,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5785756445106461925">Poleg tega so na tej strani druga sredstva, ki niso varna. Ta sredstva lahko med prenosom pregledujejo drugi, morebitni napadalec pa jih lahko spremeni, tako da se spremeni videz strani.</translation>
 <translation id="5786044859038896871">Ali želite izpolniti podatke kreditne kartice?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">To plačilno sredstvo bo izbrisano iz te naprave.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Brez}=1{podatki za prijavo za 1 račun}one{podatki za prijavo za # račun}two{podatki za prijavo za # računa}few{podatki za prijavo za # račune}other{podatki za prijavo za # računov}}</translation>
 <translation id="5800727402210090597">Popravila in servis mobilnih telefonov</translation>
 <translation id="580241730938216256">Začetek posodobitve</translation>

@@ -1485,6 +1485,7 @@
 <translation id="2131077480075264">"<ph name="APP_NAME" />" کو انسٹال کرنے سے قاصر کیونکہ "<ph name="IMPORT_NAME" />" کے ذریعہ اس کی اجازت نہیں ہے</translation>
 <translation id="2133775869826239001">سیٹ اپ کرنے کے لیے مزید خصوصیات کا انتخاب کریں</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> کو دوبارہ آزمائیں</translation>
+<translation id="2133939190018801302">‏یہ ایپلیکیشن آپ کی فی الحال استعمال کردہ Chrome پروفائل پر انسٹال ہو جائے گی۔ <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">‏سسٹم CAs</translation>
 <translation id="21354425047973905">‏PINs چھپائیں</translation>
 <translation id="2135456203358955318">ڈاک کردہ مکبّر</translation>
@@ -2780,6 +2781,7 @@
 <translation id="3117362587799608430">ڈاک مکمل طور پر موافق نہیں ہے</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> کو <ph name="ATTACHMENTS" /> بھیجنے میں ناکام}other{<ph name="DEVICE_NAME" /> کو <ph name="ATTACHMENTS" /> بھیجنے میں ناکام}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> مدد</translation>
+<translation id="3118748462829336648">سائیڈ پینل کھولیں</translation>
 <translation id="3119948370277171654">‏آپ کون سا مواد/URL کاسٹ کر رہے تھے؟</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">ڈیٹا ڈائریکٹری بنانے میں ناکام ہوگیا</translation>
@@ -2905,6 +2907,7 @@
 <translation id="3237871032310650497"><ph name="PARTITION_SITE_NAME" /> پر تقسیم کردہ <ph name="SITE_NAME" /> کے لیے سائٹ کا ڈیٹا حذف کریں؟</translation>
 <translation id="3238192140106069382">منسلک ہونے اور تصدیق کرنے کی کوشش کر رہا ہے</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> کے لیے وقت کی حد ہٹا دی گئی</translation>
+<translation id="3240299564104448052">لگتا ہے کہ آپ آف لائن ہیں۔</translation>
 <translation id="3240426699337459095">لنک کاپی ہوگیا</translation>
 <translation id="3241638166094654466">ہر لائن میں سیلز:</translation>
 <translation id="3241680850019875542">پیک کرنے کیلئے ایکسٹینشن کی روٹ ڈائریکٹری منتخب کریں۔ ایک ایکسٹینشن کو اپ ڈیٹ کرنے کیلئے، دوبارہ استعمال کرنے کیلئے نجی کلیدی فائل بھی منتخب کریں۔</translation>
@@ -4208,6 +4211,7 @@
 <translation id="4274673989874969668">آپ کے کسی سائٹ سے باہر جانے بعد تصاویر اپ لوڈ کرنے یا چیٹ پیغام بھیجنے جیسے ٹاسکس مکمل کرنے کے لیے یہ مطابقت پذیری کا عمل جاری رکھتی ہے</translation>
 <translation id="4275291496240508082">اسٹارٹ اپ کی آواز</translation>
 <translation id="4275397969489577657">ایونٹ اسٹریم لاگنگ کو فعال کریں</translation>
+<translation id="4275788652681621337">سائیڈ پینل بند کریں</translation>
 <translation id="4275830172053184480">اپنا آلہ دوبارہ شروع کریں</translation>
 <translation id="4277434192562187284">‏XML کنفیگریشن کا ماخذ</translation>
 <translation id="4278390842282768270">اجازت یافتہ</translation>
@@ -4258,6 +4262,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{‏1 Google اکاؤنٹ}other{‏<ph name="EXTRA_ACCOUNTS" /> Google اکاؤنٹس}}</translation>
 <translation id="4312866146174492540">مسدود کریں (ڈیفالٹ)</translation>
 <translation id="4314497418046265427">اپنے فون کو اپنے <ph name="DEVICE_TYPE" /> سے منسلک کرتے وقت زیادہ تخلیقی بنیں</translation>
+<translation id="4314561087119792062">نیا رسائی کی جگہ کا نام شامل کریں</translation>
 <translation id="4314815835985389558">مطابقت پذیری کا نظم کريں</translation>
 <translation id="4316850752623536204">ڈویلپر کی ویب سائٹ</translation>
 <translation id="4317733381297736564">درون ایپ خریداریاں</translation>
@@ -4546,6 +4551,7 @@
 <translation id="4546345569117159016">دایاں بٹن</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> اس ایکسٹینشن کا استعمال کرنا چاہتا ہے:</translation>
 <translation id="4546692474302123343">‏Google اسسٹنٹ صوتی ان پٹ</translation>
+<translation id="4547538408998421970">آپ آج کے لیے اپنی حد تک پہنچ گئے ہیں۔</translation>
 <translation id="4547659257713117923">دوسرے آلات سے کوئی ٹیبز نہیں ہیں</translation>
 <translation id="4547672827276975204">خودکار طور پر سیٹ کریں</translation>
 <translation id="4548858987594081919">‏Google پاس ورڈ مینیجر کو اپنی سائن ان معلومات محفوظ کرنے میں مدد کرنے کے لئے، اس سائٹ کے لئے اپنا صارف نام شامل کریں</translation>
@@ -5058,6 +5064,7 @@
 <translation id="4953808748584563296">ڈیفالٹ نارنجی اوتار</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> کی مرئیت</translation>
 <translation id="4955710816792587366">‏اپنا PIN منتخب کریں</translation>
+<translation id="4958090327979461112">‏اپنی Chrome پروفائلز کا نظم کریں</translation>
 <translation id="4959262764292427323">‏آپ کے Google اکاؤنٹ میں پاس ورڈز محفوظ ہیں اس لیے آپ انہیں کسی بھی آلہ پر استعمال کر سکتے ہیں</translation>
 <translation id="4960020053211143927">کچھ ایپس کے ذریعے تعاون یافتہ نہیں ہے</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5271,6 +5278,7 @@
 <translation id="5130675701626084557">پروفائل ڈاؤن لوڈ نہیں کی جا سکی۔ براہ کرم بعد میں دوبارہ کوشش کریں یا مدد کے لئے کیرئیر سے رابطہ کریں۔</translation>
 <translation id="5131591206283983824">ٹچ پیڈ تھپتھپا کر گھسیٹنا</translation>
 <translation id="5135533361271311778">بُک مارک آئٹم نہیں بنایا جا سکا۔</translation>
+<translation id="513555878193063507">‏نیا APN شامل کریں</translation>
 <translation id="5136343472380336530">یقینی بنائیں کہ دونوں آلات غیر مقفل ہیں، ایک دوسرے کے قریب ہیں اور بلوٹوتھ آن ہیں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="5138227688689900538">کم دکھائیں</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />، <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> تلاش</translation>
@@ -5636,7 +5644,7 @@
 <translation id="5436492226391861498">پراکسی ٹنل کا انتظار ہے…</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> کو تلاش کریں:</translation>
 <translation id="5436575196282187764">‏Google تصاویر میموریز</translation>
-<translation id="5439680044267106777">نظر انداز کریں اور نئی پروفائل سیٹ اپ کریں</translation>
+<translation id="5440425659852470030">سائیڈ پینل بند کریں</translation>
 <translation id="544083962418256601">شارٹ کٹس بنائیں…</translation>
 <translation id="5441133529460183413">‏Chrome براؤزر سے ویب ایپ انسٹال کی گئی</translation>
 <translation id="5441292787273562014">صفحہ دوبارہ لوڈ کریں</translation>
@@ -6325,7 +6333,6 @@
 <translation id="5992225669837656567">تمام ماؤس غیر منسلک کر دیے گئے ہیں</translation>
 <translation id="5992652489368666106">کوئی بارڈر نہیں ہے</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 سائٹ کا جائزہ مکمل}other{{NUM_SITES} سائٹس کا جائزہ مکمل}}</translation>
-<translation id="5996200702878169822">‏آپ <ph name="BEGIN_LINK" />دستی طور<ph name="END_LINK" /> پر eSIM پروفائل بھی سیٹ اپ کر سکتے ہیں۔</translation>
 <translation id="5997337190805127100">سائٹ تک رسائی کے بارے میں مزید جانیں</translation>
 <translation id="5998458948782718639">آٹو فل کو بہتر بنانے میں مدد کریں</translation>
 <translation id="5999024481231496910">‏آپ نے ٹیسٹنگ کی فریق ثالث کوکی کے فیز آؤٹ کو فعال کر دیا ہے۔ اسے ترتیبات کے صفحے سے اوور رائیڈ نہیں کیا جا سکتا۔ اگر آپ فریق ثالث کوکیز کو دوبارہ فعال کرنا چاہتے ہیں تو اس خصوصیت کو غیر فعال کر کے Chrome کو دوبارہ لانچ کریں۔</translation>
@@ -6726,6 +6733,7 @@
 <translation id="6309510305002439352">مائیکروفون آف ہے</translation>
 <translation id="6310141306111263820">‏eSIM پروفائل انسٹال نہیں کی جا سکی۔ مدد کیلئے، اپنے کیرئیر سے رابطہ کریں۔</translation>
 <translation id="6311220991371174222">‏Chrome کو شروع نہیں کیا جا سکتا ہے کیوںکہ آپ کے پروفائل کو کھولتے وقت کچھ غلط ہوگیا۔ Chrome کو دوبارہ شروع کرنے کی کوشش کریں۔</translation>
+<translation id="6311708879134408222">آپ کل دوبارہ کوشش کر سکتے ہیں۔</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{سیفٹی چیک 1 دن پہلے کیا گیا}other{سیفٹی چیک {NUM_DAYS} دن پہلے کیا گیا}}</translation>
 <translation id="6312638141433622592">تعاون یافتہ ہونے پر، ریڈر وضع میں مضامین دکھانے کی پیشکش کریں</translation>
 <translation id="6313641880021325787">‏VR سے باہر نکلیں</translation>
@@ -7250,6 +7258,7 @@
 <translation id="6749473226660745022">تصاویر</translation>
 <translation id="6750757184909117990">سیلولر کو غیرفعال کریں</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (پوشیدگی)</translation>
+<translation id="6756059675436942777">اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6756157672127672536">‏فائل ایپ ان فائلوں تک فوری رسائی فراہم کرتی ہے جنہیں آپ نے Google Drive، خارجی اسٹوریج یا اپنے ChromeOS آلے پر محفوظ کیا ہے۔</translation>
 <translation id="6756643207511618722">اسپیچ انجنز</translation>
 <translation id="6757431299485455321">اس ہاٹ اسپاٹ کو تلاش کرنے میں دیگر آلات کی مدد کریں۔</translation>
@@ -7662,7 +7671,6 @@
 <translation id="7056418393177503237">{0,plural, =1{پوشیدگی}other{# کھلی ہوئی پوشیدگی ونڈوز}}</translation>
 <translation id="7056526158851679338">آلات کا &amp;معائنہ کریں</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{سیفٹی چیک 1 منٹ پہلے کیا گیا}other{سیفٹی چیک {NUM_MINS} منٹ پہلے کیا گیا}}</translation>
-<translation id="7057767408836081338">ایپ کا ڈیٹا حاصل کرنے میں ناکام، بہر صورت ایپ کو چلانے کی کوشش کی جار رہی ہے...</translation>
 <translation id="7058024590501568315">پوشیدہ نیٹ ورک</translation>
 <translation id="7059858479264779982">خود کار طور پر شروع کریں پر سیٹ کریں</translation>
 <translation id="7063129466199351735">شارٹ کٹس پر کارروائی کی جا رہی ہے…</translation>
@@ -8047,6 +8055,7 @@
 <translation id="7384804382450832142">‏Microsoft OneDrive سے منسلک کریں</translation>
 <translation id="7385490373498027129">اس <ph name="DEVICE_TYPE" /> پر موجود سبھی صارفین کے لیے تمام فائلز اور مقامی ڈیٹا کو مستقل طور پر حذف کر دیا جائے گا۔</translation>
 <translation id="7385854874724088939">پرنٹ کرنے کی کوشش کرتے وقت کچھ غلط ہوگیا۔  براہ کرم اپنا پرنٹر چیک کریں اور دوبارہ کوشش کریں۔</translation>
+<translation id="7387107590792462040">انسٹالیشن کے پیش رفت میں ہونے کے دوران براہ کرم انتظار کریں</translation>
 <translation id="7387273928653486359">قابل قبول</translation>
 <translation id="7387951778417998929">ڈیفالٹ کے علاوہ سرچ انجن کا استعمال کرنے کے لیے، ایڈریس بار میں اس کا شارٹ کٹ ٹائپ کریں اس کے بعد اپنا پسندیدہ کی بورڈ شارٹ کٹ۔ آپ اپنے ڈیفالٹ سرچ انجن کو یہاں تبدیل بھی کر سکتے ہیں۔</translation>
 <translation id="7388209873137778229">صرف تعاون یافتہ آلات دکھائے جاتے ہیں۔</translation>
@@ -8972,6 +8981,7 @@
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" کے ساتھ جوڑیں؟</translation>
 <translation id="8082390128630131497">‏ADB ڈیبگنگ کو غیر فعال کرنے سے یہ <ph name="DEVICE_TYPE" /> فیکٹری کی ترتیبات پر ری سیٹ ہو جائے گا۔ صارف کے سبھی اکاؤنٹس اور مقامی ڈیٹا کو مٹا دیا جائے گا۔</translation>
 <translation id="8084114998886531721">محفوظ کیا گیا پاس ورڈ</translation>
+<translation id="8084429490152575036">‏سیلولر APN کی ترتیبات</translation>
 <translation id="8084510406207562688">تمام ٹیبز کو بحال کریں</translation>
 <translation id="8084628902026812045">یہ سائٹ محفوظ کنکشن استعمال نہیں کر رہی ہے اور ہو سکتا ہے فائل کے ساتھ چھیڑ چھاڑ کی گئی ہو</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> کو کنفیگر کیا جا رہا ہے…</translation>
@@ -9189,6 +9199,7 @@
 <translation id="8260864402787962391">ماؤس</translation>
 <translation id="8261378640211443080">یہ ایکسٹینشن <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> میں مندرج نہیں ہے اور ہو سکتا ہے اس کو آپ کے علم کے بغیر شامل کیا گیا ہو۔</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
+<translation id="8262971894813353037">‏WebUI کے لیے نئے ڈیسک ٹاپ ڈیزائن کو فعال کرتا ہے۔ Chrome Refresh 2023 کو بھی فعال کرنا ضروری ہے۔</translation>
 <translation id="8263336784344783289">اس گروپ کو نام دیں</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> نے آپ کا ماؤس کرسر غیر فعال کر دیا ہے۔</translation>
 <translation id="8264024885325823677">یہ ترتیب آپ کے منتظم کے زیر انتظام ہے۔</translation>
@@ -10256,6 +10267,7 @@
 <translation id="9080175821499742274">میموری سیور غیر فعال ٹیبز سے میموری کو خالی کرتا ہے تاکہ اسے فعال ٹیبز اور دیگر ایپس کے ذریعے استعمال کیا جا سکے۔</translation>
 <translation id="9080971985541434310">‏آپ کی دلچسپیوں کا اندازہ لگاتا ہے - Chrome آپ کی دلچسپیوں کا اندازہ لگا سکتا ہے</translation>
 <translation id="9081543426177426948">جو سائٹس آپ ملاحظہ کرتے ہیں وہ پوشیدگی وضع میں محفوظ نہیں ہوتی ہیں</translation>
+<translation id="9082750838489080452">ایپلیکیشن: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">بطور ونڈو کھولیں</translation>
 <translation id="9085256200913095638">منتخب کردہ ٹیب کا ڈپلیکیٹ بنائیں</translation>
 <translation id="9085446486797400519">کیمرے تک رسائی</translation>
@@ -10424,6 +10436,7 @@
 <translation id="924818813611903184">‏ChromeOS ترتیبات میں زبانوں کا نظم کریں</translation>
 <translation id="925270020047573546">ڈیسک ٹاپ آڈیو کاسٹ کرنا اس آلہ پر تعاون یافتہ نہیں ہے۔</translation>
 <translation id="925575170771547168">اس سے سائٹس کا اسٹور کردہ <ph name="TOTAL_USAGE" /> ڈیٹا حذف ہوگا</translation>
+<translation id="930193457234051160">Chrome WebUI Refresh 2023</translation>
 <translation id="930268624053534560">تفصیلی ٹائم اسٹامپس</translation>
 <translation id="930551443325541578">کلیدیں اور تلفظ کے نشانات کو دہرائیں</translation>
 <translation id="930893132043726269">فی الحال رومنگ میں ہے</translation>

@@ -240,10 +240,6 @@ Als je dit beleid niet toepast, is bescherming tegen phishing aan de clientzijde
 <translation id="120937472976628837">Ventilatorgegevens rapporteren</translation>
 <translation id="1212233008927724662">Lazy loading van WebUI voor inloggen uitzetten.</translation>
 <translation id="1216919699175573511">Signed HTTP Exchange-ondersteuning (SXG) aanzetten</translation>
-<translation id="1218658069098810124">Als je het beleid toepast, kunnen WebRTC-peerverbindingen worden gedowngraded naar verouderde versies van de TLS/DTLS-protocollen (DTLS 1.0, TLS 1.0 en TLS 1.1).
-      Als je dit beleid niet toepast of niet instelt, worden deze TLS/DTLS-versies uitgezet.
-
-      Dit beleid is beëindigd en wordt verwijderd in versie M121 van <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1219027971768347970">De standaardconfiguratie gebruiken voor de audio-sandbox</translation>
 <translation id="1221359380862872747">Gespecificeerde URL's laden in demo-aanmeldvenster</translation>
 <translation id="1221955019309484560">Updates aanzetten voor alle componenten</translation>
@@ -6295,20 +6291,6 @@ Als je dit beleid instelt op <ph name="DISALLOW" />, werken de opties <ph name="
 <translation id="6404064917675764807">CRD-sessiegebeurtenissen niet rapporteren</translation>
 <translation id="6404360891305375004">Bestanden delen via netwerk toestaan</translation>
 <translation id="6407093060083181305">Blokkeringslijst voor installatie van extensies configureren</translation>
-<translation id="6407792833351198330">Bepaalt of een pagina die verouderde technologieën gebruikt, wordt gerapporteerd op basis van de URL.
-
-Als je dit beleid instelt, worden de URL's met een voorvoegsel dat overeenkomt met de toelatingslijst, gebruikt om een rapport te maken en te uploaden. Niet-overeenkomende URL's worden genegeerd.
-Als je het beleid niet instelt of instelt op een lege lijst, wordt er geen rapport gemaakt.
-
-De patronen voor overeenkomende URL's gebruiken een vergelijkbare indeling als die voor het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" /> (deze staan op https://support.google.com/chrome/a?p=url_blocklist_filter_format). Op een paar uitzonderingen na:
-* Geen ondersteuning van jokertekens (*).
- * Schema, poort en query worden genegeerd.
- * Het subdomein moet altijd worden opgegeven en overeenkomen.
- * Er kunnen maximaal 100 URL's op de toelatingslijst worden gezet.
-
-Voor <ph name="PRODUCT_NAME" /> is dit beleid alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
-
-Meer informatie over verouderde technologieën vind je op https://chromestatus.com/features.</translation>
 <translation id="640827304541402854">Firewallpassage vanaf host voor externe toegang uitzetten</translation>
 <translation id="6410847321564585975">Toelatingslijst voor rapportage van website-activiteit</translation>
 <translation id="6412352702230183710">Alleen hosts voor native berichten op systeemniveau toestaan</translation>
@@ -8125,6 +8107,11 @@ Als je het beleid niet toepast of niet instelt, bevat de gemaakte Kerberos-SPN g
           Voor oorsprongen die niet overeenkomen met de hier genoemde patronen, wordt de algemene standaardwaarde gebruikt op basis van het beleid <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> (als dit is ingesteld) of anders op basis van de persoonlijke instellingen van de gebruiker.
 
           Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.</translation>
+<translation id="7904584382309857420">Dit beleid is verwijderd in M121. Dit werd gebruikt om attest op afstand aan en uit te zetten voor het apparaat, maar attest op afstand staat nu standaard aan.
+
+Als je het beleid toepast, wordt attest op afstand voor het apparaat toegestaan. Er wordt automatisch een certificaat gemaakt en naar de Device Management Server geüpload.
+
+Als je het beleid niet toepast of niet instelt, wordt er geen certificaat gemaakt en mislukken aanroepen naar de <ph name="ENTERPRISE_PLATFORM_KEYS_API" />.</translation>
 <translation id="7906983682927840536">Keepalive-duur bij afsluiten ophalen</translation>
 <translation id="7908384265697653397">Tijd in dagen waarna de gebruiker wordt uitgelogd als de <ph name="PRODUCT_OS_NAME" />-versie lager is dan de opgegeven <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /></translation>
 <translation id="7911685775490889216">Hiermee stel je in met welk interval in seconden een afbeelding wordt getoond als de screensaver voor het vergrendelscherm uit meerdere afbeeldingen bestaat.

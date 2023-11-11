@@ -532,6 +532,7 @@
 <translation id="2025891858974379949">பாதுகாப்பற்ற உள்ளடக்கம்</translation>
 <translation id="2027465737841872819">பிளாஸ்டிக்</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ப்ராக்ஸி மற்றும் ஃபயர்வாலைச் சரிபார்த்தல்<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426"><ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> வரையறுத்த இயல்புத் தேடல் வழங்குநர் தேடல் குறிப்பும் ஷார்ட்கட்டும் ஒன்றாக இருக்கக்கூடாது: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">பரவாயில்லை, சேமி</translation>
 <translation id="2035400064145347639">சுற்றுலா வழிகாட்டிகள் &amp; பயணப் பதிவுகள்</translation>
 <translation id="2036514476578229158">இந்தத் தளத்தைப் பார்வையிட வேண்டும் எனக் கேட்டுள்ளீர்கள். Family Link மூலம் உங்கள் பெற்றோர் பதிலளிக்கலாம்.</translation>
@@ -1074,6 +1075,7 @@
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> இல் <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">இந்தச் சாதனத்தில் நான் செயலில் இருப்பதை அறிந்துகொள்ள அனுமதி கேட்க வேண்டும்</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. எந்தெந்தத் தகவல்களை ஒத்திசைக்க வேண்டும் என்பதை Chrome அமைப்புகளில் நிர்வகிக்க, Tab விசையை அழுத்திவிட்டு Enter விசையை அழுத்துங்கள்</translation>
+<translation id="3203025201812691413">URL காலியாக இருக்கக்கூடாது</translation>
 <translation id="320323717674993345">கட்டணம் செலுத்துவதை ரத்துசெய்</translation>
 <translation id="3203366800380907218">இணையத்தில் இருந்து</translation>
 <translation id="3207960819495026254">புக்மார்க் செய்யப்பட்டது</translation>
@@ -1687,6 +1689,7 @@
 <translation id="4386413576162606861">கதாபாத்திரமாக விளையாடும் கேம்கள்</translation>
 <translation id="4390472908992056574">பிரிம்</translation>
 <translation id="4393632246160856858">நகப் பராமரிப்புத் தயாரிப்புகள்</translation>
+<translation id="4397059608630092079">தன்னிரப்பி அம்சத்தைப் பயன்படுத்தும்போதெல்லாம் சரிபார்</translation>
 <translation id="4406883609789734330">உடனடி வசனம்</translation>
 <translation id="4406896451731180161">தேடல் முடிவுகள்</translation>
 <translation id="4408413947728134509">குக்கீகள் (<ph name="NUM_COOKIES" />)</translation>
@@ -1888,7 +1891,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google விரிதாளை விரைவாக உருவாக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="4825507807291741242">பவர்ஃபுல்</translation>
 <translation id="4826588772550366629">கேமராவையும் மைக்ரோஃபோனையும்</translation>
-<translation id="4827283332383516812">கார்டை நீக்குதல்</translation>
 <translation id="4831993743164297314">இமேஜ் செட்டர் காகிதம்</translation>
 <translation id="483241715238664915">எச்சரிக்கைகளை இயக்கு</translation>
 <translation id="4834250788637067901">Google Payயைப் பயன்படுத்தும் பேமெண்ட் முறைகள், ஆஃபர்கள் மற்றும் முகவரிகள்</translation>
@@ -2300,6 +2302,7 @@
 <translation id="5651323159439184939">டிராக்டர் ஃபீடு</translation>
 <translation id="5653432653077411130">நீர் விநியோகம் &amp; சுத்திகரிப்பு</translation>
 <translation id="5654927323611874862">பதிவேற்றப்பட்ட சிதைவு அறிக்கை ஐடி:</translation>
+<translation id="5654965123204121933">தேவைப்படும் மாற்று வார்த்தைகள் (<ph name="SEARCH_TERMS_REPLACEMENT" />) URLலில் இல்லை: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">மின்னஞ்சல்</translation>
 <translation id="5660122698869360728">இது ஒரு புதிய ஸ்மார்ட் ஃபோல்டர். இதன்மூலம் உங்களின் ஷாப்பிங் பக்கங்கள் அனைத்தையும் ஒரே இடத்தில் சேமிக்கலாம், விலைகளைத் தானாகக் கண்காணிக்கலாம், விலை குறித்த புள்ளிவிவரங்களைப் பெறலாம், மேலும் பலவற்றைச் செய்யலாம்.</translation>
 <translation id="5663955426505430495">கூடுதல் செயல்பாடுகளுக்காக இந்தச் சாதனத்தின் நிர்வாகி சில நீட்டிப்புகளை நிறுவியுள்ளார். உங்கள் தரவில் சிலவற்றை இந்த நீட்டிப்புகள் அணுகும்.</translation>
@@ -2361,7 +2364,6 @@
 <translation id="5785756445106461925">மேலும், பாதுகாப்பற்ற பிற ஆதாரங்கள் இந்தப் பக்கத்தில் உள்ளன. இந்த ஆதாரங்களை ட்ரான்ஸிட்டில் இருக்கும்போதும் பிறர் பார்வையிடலாம், மேலும் பக்கத்தின் தோற்றத்தை மாற்ற, தீங்கிழைப்பவர் அதை மாற்றியமைக்கலாம்.</translation>
 <translation id="5786044859038896871">கார்டு தகவலை நிரப்ப விரும்புகிறீர்களா?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">இந்தச் சாதனத்திலிருந்து இந்தப் பேமெண்ட் முறை நீக்கப்படும்</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{எதுவுமில்லை}=1{1 கணக்கின் உள்நுழைவுத் தரவு}other{# கணக்குகளின் உள்நுழைவுத் தரவு}}</translation>
 <translation id="5800727402210090597">மொபைல் பழுதுபார்த்தல் &amp; சேவைகள்</translation>
 <translation id="580241730938216256">புதுப்பிப்பைத் தொடங்கு</translation>

@@ -92,6 +92,7 @@
 <translation id="2467438592969358367">Google Chrome quere exportar os teus contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="2472092250898121027">Esta extensión contén software malicioso, polo que non é segura. Quítaa de Chrome para que deixe de ver e cambiar os teus datos nos sitios que visites, como a túa información persoal.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
+<translation id="2513154137948333830">Reinicio necesario: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2534365042754120737">Para protexer os teus datos, Chrome quita permisos dos sitios que non visitaches recentemente. Aínda así, non deixarás de recibir as notificacións.</translation>
 <translation id="2534507159460261402">Google Pay (copiouse en Chrome)</translation>
 <translation id="2556847002339236023">A túa organización pecha Chrome cando non se usa durante <ph name="TIMEOUT_DURATION" />. Elimináronse os datos de navegación. Entre esa información, poden incluírse o historial, os datos da función de autocompletar e as descargas.</translation>
@@ -115,6 +116,7 @@
 <translation id="2770231113462710648">Cambiar o navegador predeterminado a:</translation>
 <translation id="2775140325783767197">Chrome non puido comprobar os teus contrasinais. Verifica a conexión a Internet.</translation>
 <translation id="2799223571221894425">Iniciar de novo</translation>
+<translation id="2846251086934905009">Erro de instalación: O instalador non completou o proceso. Abortouse a instalación.</translation>
 <translation id="2847461019998147611">Mostrar Google Chrome neste idioma</translation>
 <translation id="2853415089995957805">Chrome precargará as páxinas que é probable que visites para que carguen máis rapidamente cando accedas a elas</translation>
 <translation id="2857540653560290388">Iniciando Chrome…</translation>
@@ -130,6 +132,7 @@
 <translation id="2926952073016206995">Chrome necesita permiso de acceso á cámara para este sitio</translation>
 <translation id="2928420929544864228">Completouse a instalación.</translation>
 <translation id="2929907241665500097">Chrome non se actualizou, xa que se produciu un erro. <ph name="BEGIN_LINK" />Soluciona os problemas de actualización de Chrome e as actualizacións que non se puidesen realizar<ph name="END_LINK" />.</translation>
+<translation id="2945997411976714835">Erro de instalación: Non se puido iniciar o proceso do instalador.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> (inicio de sesión de rede, Chrome)</translation>
 <translation id="3018957014024118866">Eliminar tamén datos de Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Reiniciar para actualizar Chrome OS Flex</translation>
@@ -186,6 +189,7 @@
 <translation id="3865754807470779944">Tes instalada a versión <ph name="PRODUCT_VERSION" /> de Chrome</translation>
 <translation id="3873044882194371212">Abrir ligazón nunha ventá do modo de incó&amp;gnito de Chrome</translation>
 <translation id="3889417619312448367">Desinstalar Google Chrome</translation>
+<translation id="3941890832296813527">Erro de instalación: O nome de ficheiro do instalador non é válido ou non se admite.</translation>
 <translation id="3999683152997576765">Podes ver e eliminar temas de interese que usan os sitios para mostrarche anuncios. Chrome estima os teus intereses en función do teu historial de navegación recente.</translation>
 <translation id="4035053306113201399">É necesario reiniciar Chrome OS para aplicar a actualización.</translation>
 <translation id="4050175100176540509">A última versión conta con melloras de seguranza importantes e novas funcións.</translation>
@@ -265,6 +269,7 @@
 <translation id="5334487786912937552">Chrome necesita permiso de acceso ao almacenamento para descargar ficheiros</translation>
 <translation id="5337648990166757586">Opcional: Axuda a mellorar as funcións e o rendemento de Chrome OS enviando automaticamente datos de uso e diagnóstico a Google.</translation>
 <translation id="5357889879764279201">Obter axuda con Chrome OS Flex</translation>
+<translation id="5368118228313795342">Código adicional: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386118856456530849">Ir á configuración da versión de Chrome</translation>
 <translation id="5386244825306882791">Tamén controla a páxina que se mostra ao iniciar Chrome ou ao realizar unha busca desde Omnibox.</translation>
 <translation id="5394833366792865639">Compartir unha pestana de Chrome</translation>
@@ -463,6 +468,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8727043961453758442">Tira o máximo proveito de Chrome</translation>
 <translation id="873133009373065397">Google Chrome non pode determinar nin establecer o navegador predeterminado</translation>
 <translation id="8765470054473112089">Cando escribes algo na barra de enderezos ou na caixa de busca, Chrome envíallo ao motor de busca predeterminado para obter mellores suxestións. Esta opción está desactivada no modo de incógnito.</translation>
+<translation id="878572486461146056">Erro de instalación: A persoa que administra a rede aplicou unha política de grupo que non permite a instalación (<ph name="INSTALL_ERROR" />)</translation>
 <translation id="8821043148920470810">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar Windows 10 ou unha versión posterior. Este ordenador ten instalado Windows 7.</translation>
 <translation id="8823341990149967727">Chrome está desactualizado</translation>
 <translation id="8825634023950448068">Para protexer a túa privacidade, eliminamos automaticamente os teus intereses cuxa antigüidade sexa superior a 4 semanas. Algúns poderían volver incluírse na lista ao seguires navegando. Se Chrome se trabuca ou non queres ver certos anuncios, podes quitar un interese.</translation>

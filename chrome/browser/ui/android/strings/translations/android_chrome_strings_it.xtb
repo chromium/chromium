@@ -1321,7 +1321,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Tutti i file, 1 file nell'elenco}other{Tutti i file, # file nell'elenco}}</translation>
 <translation id="7815484226266492798">Screenshot lungo</translation>
 <translation id="7822705602465980873">Se hai eseguito l'accesso, questi dati vengono collegati al tuo Account Google per proteggerti nei servizi Google, ad esempio aumentando la protezione in Gmail dopo un incidente di sicurezza.</translation>
-<translation id="782705168687182233">Le tue attività vengono salvate nel tuo <ph name="BEGIN_LINK" />Account Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Il computer chiede di registrare questo dispositivo per accedere a un sito</translation>
 <translation id="7844171778363018843">Nessun dato selezionato da sincronizzare</translation>
 <translation id="7846296061357476882">Servizi Google</translation>

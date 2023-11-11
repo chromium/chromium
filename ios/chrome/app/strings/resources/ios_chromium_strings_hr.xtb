@@ -107,6 +107,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="5048795749726991615">Da biste jednostavno dohvatili spremljene zaporke u drugim aplikacijama, upotrijebite Chromium za Automatsko popunjavanje</translation>
 <translation id="5076601183701536878">Brisanje podataka o pregledavanju u Chromiumu</translation>
 <translation id="5131565040785979529">Vaša organizacija, <ph name="DOMAIN" />, upravlja računom na koji ste prijavljeni i načinom na koji se Chromium upotrebljava.</translation>
+<translation id="5146749061471423558">Dodavanje oznaka u Chromium</translation>
 <translation id="5171868502429358653">Prijava na Chromium</translation>
 <translation id="5213683223491576284">Otvara Upravitelj zaporki u Chromiumu.</translation>
 <translation id="5224391634244552924">Nema nijedne spremljene zaporke. Chromium može provjeriti vaše zaporke kad ih spremite.</translation>
@@ -114,6 +115,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 
         Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi će se podaci izbrisati.</translation>
 <translation id="5308226104666789935">Chromium ne može provjeriti ima li ažuriranja</translation>
+<translation id="5311557153294205270">Dodaje unesene URL-ove vašim oznakama u Chromiumu.</translation>
 <translation id="5396916991083608703">Želite li postaviti Chromium kao zadani preglednik?</translation>
 <translation id="5453478652154926037">Chromium ne može provjeriti vaše zaporke.</translation>
 <translation id="5521125884468363740">Da biste vidjeli svoje kartice bez obzira na to gdje koristite Chromium, prijavite se i uključite sinkronizaciju</translation>

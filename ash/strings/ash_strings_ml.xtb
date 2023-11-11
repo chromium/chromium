@@ -871,6 +871,14 @@
 <translation id="4548482551627849548">സജീവ വിൻഡോ ഇടതുവശത്തെ ഡെസ്‌ക്കിലേക്ക് നീക്കുക</translation>
 <translation id="4560576029703263363">ഓണാണ്</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">സ്റ്റാറ്റസ് ട്രേ, സമയം <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">പാസ്‌വേഡ് മറയ്ക്കുക</translation>
 <translation id="4566144812051858745">ഒരു നിർദ്ദേശങ്ങളിലും താൽപ്പര്യമില്ല</translation>
 <translation id="4569753163207712681">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും ആപ്പുകളും കാണുക</translation>

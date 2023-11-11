@@ -1296,6 +1296,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="7691043218961417207">Takip edilecek içerikleri keşfedin</translation>
 <translation id="7697383401610880082">Sürükleme tutamacı</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> adlı uygulamada e-posta oluşturun</translation>
+<translation id="7702029078562412515">Sorgu kutuları</translation>
 <translation id="7702388902581909985">Tarama verilerinizi temizlediğinizde Google Hesabınızın oturumu kapatılmaz. Bunu yapmak için <ph name="BEGIN_LINK1" />Chrome oturumunu kapatın<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Mobil veri kullanın</translation>
 <translation id="7709918231054955894">Tüm sekmelerinize ulaşın</translation>
@@ -1320,7 +1321,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Tüm dosyalar, listede 1 dosya var}other{Tüm dosyalar, listede # dosya var}}</translation>
 <translation id="7815484226266492798">Uzun Ekran Görüntüsü</translation>
 <translation id="7822705602465980873">Oturum açtığınızda bu veriler, Google hizmetlerinde korunmanızı sağlamak için Google Hesabınıza bağlanır. Örneğin, bir güvenlik olayından sonra Gmail'deki koruma artırılır.</translation>
-<translation id="782705168687182233">Etkinliğiniz <ph name="BEGIN_LINK" />Google Hesabınıza<ph name="END_LINK" /> kaydedilir.</translation>
 <translation id="78270725016672455">Bilgisayarınız bir sitede oturum açmak için bu cihazı kaydettirmek istiyor</translation>
 <translation id="7844171778363018843">Senkronize edilecek veri seçilmedi</translation>
 <translation id="7846296061357476882">Google hizmetleri</translation>

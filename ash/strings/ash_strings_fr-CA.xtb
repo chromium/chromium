@@ -130,6 +130,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="146902737843070955">Votre administrateur a demandé cette modification</translation>
 <translation id="1469148162491666137">Cela autorise l'accès pour <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> et pour toutes les applications et tous les sites Web disposant de l'autorisation d'accès à l'appareil photo et au microphone. Vous devrez peut-être actualiser la page Web ou redémarrer l'application.</translation>
 <translation id="147310119694673958">Pile du téléphone : <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1475340220124222168">Basculez le point d'accès sans fil. Le point d'accès sans fil est activé, 1 appareil connecté.</translation>
 <translation id="1479909375538722835">Menu d'accessibilité flottant</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Grâce à la Dictée, vous pouvez entrer du texte en utilisant votre voix. Appuyez sur la touche de la Dictée ou sélectionnez l'icône du microphone en bas de l'écran lorsque vous êtes sur un champ de texte. Langue de la Dictée présentement définie à : <ph name="LANGUAGE" />. Le texte est envoyé à Google à des fins de traitement. Vous pouvez changer la langue de la Dictée en tout temps dans Paramètres &gt; Accessibilité.</translation>
@@ -869,6 +870,14 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4548482551627849548">Déplacer la fenêtre active vers le bureau à gauche</translation>
 <translation id="4560576029703263363">Activé</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Barre d'état, heure <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4566144812051858745">Aucune suggestion ne m'intéresse</translation>
 <translation id="4569753163207712681">Affichez les applications, les photos et le contenu multimédia récents de votre téléphone</translation>
@@ -878,6 +887,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4577990005084629481">Afficher les aperçus</translation>
 <translation id="4578906031062871102">Menu Paramètres ouvert</translation>
 <translation id="458210817642223147">Enregistrer au format GIF</translation>
+<translation id="4582666543382004902">Le point d'accès sans fil a été désactivé pour utiliser le Wi-Fi. Pour utiliser le point d'accès sans fil, désactivez le Wi-Fi.</translation>
 <translation id="4585337515783392668">Arrêter la diffusion sur un récepteur inconnu</translation>
 <translation id="4596144739579517758">Le thème sombre est désactivé</translation>
 <translation id="4611292653554630842">Connexion</translation>
@@ -1084,6 +1094,7 @@ Certaines fonctionnalités sont limitées pour augmenter l'autonomie de la pile.
 <translation id="5393156353051693207">Maintenez le doigt n'importe où pour réorganiser vos applications</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> par-dessus <ph name="IN_PLACE_APP" />, puis relâchez-la pour créer un dossier.</translation>
 <translation id="5397578532367286026">Le gestionnaire (<ph name="MANAGER_EMAIL" />) peut examiner les actions effectuées par cet utilisateur, ainsi que son historique, sur chrome.com.</translation>
+<translation id="540713187982329711">Basculez le point d'accès sans fil. Le point d'accès sans fil est activé, aucun appareil connecté.</translation>
 <translation id="5413656666631274079">Page des paramètres</translation>
 <translation id="5414198321558177633">Actualisation de la liste de profils en cours… Cette opération peut prendre quelques minutes.</translation>
 <translation id="5426063383988017631">Menu Paramètres fermé</translation>
@@ -1174,9 +1185,11 @@ Certaines fonctionnalités sont limitées pour augmenter l'autonomie de la pile.
 <translation id="576341972084747908">Téléchargement du fichier dangereux <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Le mode Éclairage nocturne est activé.</translation>
 <translation id="5764569119212455782">Passer à la dernière langue sélectionnée</translation>
+<translation id="5767730327234918501">Votre administrateur a désactivé le point d'accès sans fil.</translation>
 <translation id="5769373120130404283">Écran de confidentialité</translation>
 <translation id="5773950591113557721">Cela autorise l'accès à <ph name="APP_NAME" />, à toutes les applications et à tous les sites Web disposant des autorisations de caméra et de microphone</translation>
 <translation id="5774295353725270860">Ouvrir l'application Fichiers</translation>
+<translation id="5775936059231769503">Basculez le point d'accès sans fil. Le point d'accès sans fil est désactivé.</translation>
 <translation id="5777841717266010279">Arrêter le partage d'écran?</translation>
 <translation id="5779721926447984944">Fichiers épinglés</translation>
 <translation id="5785221443435874078">Supprimer cette suggestion</translation>
@@ -1494,6 +1507,7 @@ Nouvelle installation</translation>
 <translation id="7068360136237591149">Ouvrir des fichiers</translation>
 <translation id="7076293881109082629">Connexion en cours</translation>
 <translation id="7076878155205969899">Désactiver le son</translation>
+<translation id="7084678090004350185">Basculez le point d'accès sans fil. Le point d'accès sans fil est activé, <ph name="DEVICECOUNT" /> appareils connectés.</translation>
 <translation id="7086931198345821656">Cette mise à jour requiert l'utilisation de la fonctionnalité Powerwash sur votre <ph name="DEVICE_TYPE" />. Toutes les données qu'il contient seront supprimées. Apprenez-en plus à propos de la dernière mise à jour de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="709015856939120012">Zoomer sur la page</translation>

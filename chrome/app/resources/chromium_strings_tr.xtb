@@ -80,6 +80,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="2478295928299953161">Chromium yakında kapanacak</translation>
 <translation id="2483889755041906834">Chromium'da</translation>
 <translation id="2485422356828889247">Kaldır</translation>
+<translation id="2513154137948333830">Yeniden başlatma gerekiyor: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2554739539410784893">Chromium mevcut şifreleri değiştirmeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="2560420686485554789">Dosya indirmek için Chromium'un depolama alanına erişmesi gerekiyor</translation>
 <translation id="2572494885440352020">Chromium Yardımcısı</translation>
@@ -96,12 +97,14 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="2785438272836277133">Bu uzantı kötü amaçlı yazılım içerdiği için güvenli değil. Kişisel bilgileriniz de dahil olmak üzere ziyaret ettiğiniz sitelerdeki verilerinizi artık görememesi ve değiştirememesi için bu uzantıyı Chromium'dan kaldırın.</translation>
 <translation id="2799223571221894425">Yeniden başlat</translation>
 <translation id="2837693172913560447">Bu işlem, <ph name="USER_EMAIL_ADDRESS" /> için yeni bir Chromium profili oluşturacak</translation>
+<translation id="2846251086934905009">Yükleme hatası: Yükleyici tamamlanmadı. Yükleme işlemi iptal edildi.</translation>
 <translation id="2847479871509788944">Chromium'dan kaldır...</translation>
 <translation id="2850691299438350830">Chromium'da güvende kalmanızı sağlar ve oturum açtığınızda diğer Google uygulamalarında güvenliğinizi artırmak için kullanılabilir.</translation>
 <translation id="2885378588091291677">Görev Yöneticisi</translation>
 <translation id="2910007522516064972">&amp;Chromium hakkında</translation>
 <translation id="2915996080311180594">Daha Sonra Yeniden Başlat</translation>
 <translation id="2928420929544864228">Yükleme tamamlandı.</translation>
+<translation id="2945997411976714835">Yükleme hatası: Yükleyici işlemi başlatılamadı.</translation>
 <translation id="2977470724722393594">Chromium güncel durumda</translation>
 <translation id="2977506796191543575">Chromium, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
 <translation id="3032706164202344641">Chromium, şifrelerinizi kontrol edemiyor. Daha sonra tekrar deneyin.</translation>
@@ -157,6 +160,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="3909353120217047026">Bu uzantı Chrome Web Mağazası politikasını ihlal ettiği için güvenli olmayabilir. Kişisel bilgileriniz de dahil olmak üzere ziyaret ettiğiniz sitelerdeki verilerinizi artık görememesi ve değiştirememesi için bu uzantıyı Chromium'dan kaldırın.</translation>
 <translation id="391789666908693569">Hesabınız <ph name="MANAGER_NAME" /> tarafından yönetiliyor. Yöneticiniz bu Chromium tarayıcı profilinin yanı sıra yer işaretleri, geçmiş ve şifreler gibi verilerini görüntüleyip düzenleyebilir.</translation>
 <translation id="3922825997980843979">Chromium, siz yazarken adres çubuğundaki veya arama kutusundaki içerikleri varsayılan arama motorunuza gönderir</translation>
+<translation id="3941890832296813527">Yükleme hatası: Yükleyici dosya adı geçersiz veya desteklenmiyor.</translation>
 <translation id="3945058413678539331">Chromium şifreleri kopyalamaya çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="3962647064319009959">Chromium'un güvenliğinizi nasıl sağladığını öğrenin</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing hakkında</translation>
@@ -219,6 +223,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5296845517486664001">Denemeler açıksa ve Chromium tarafından etkin bir denemeye rastgele yerleştirildiyseniz tarama geçmişiniz gördüğünüz reklamları ve aşağıdaki şekilde tahmin edilen ilgi alanlarınızı etkiler. Chromium, gizliliğinizi korumak için ilgi alanlarınızı her ay sürekli olarak siler.</translation>
 <translation id="5352264705793813212">Chromium, incelemeniz gereken bazı güvenlik önerileri tespit etti</translation>
 <translation id="5358375970380395591">Yönetilen bir hesapla oturum açıyor ve hesabın yöneticisine Chromium profilinizi denetleme izni veriyorsunuz. Uygulamalarınız, yer işaretleriniz, geçmişiniz, şifreleriniz ve diğer ayarlarınız gibi Chromium verileriniz kalıcı olarak <ph name="USER_NAME" /> ile bağlantılandırılacaktır. Google Hesapları Hesap Özeti'ni kullanarak bu verileri silebilecek, ancak bu verileri başka bir hesapla ilişkilendiremeyeceksiniz. <ph name="LEARN_MORE" /></translation>
+<translation id="5368118228313795342">Ekstra kod: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386450000063123300">Chromium güncelleniyor (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium'da oturum açmaya izin verin</translation>
 <translation id="5398878173008909840">Chromium'un yeni bir sürümü çıktı.</translation>
@@ -421,6 +426,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing varsayılan tarayıcınız olarak ayarlanamaz.</translation>
 <translation id="8697124171261953979">Ayrıca Chromium'u başlattığınızda veya Çok Amaçlı Adres Çubuğu'ndan arama yaptığınızda gösterilecek sayfayı da denetler.</translation>
 <translation id="8704119203788522458">Bu sizin Chromium'unuz</translation>
+<translation id="878572486461146056">Yükleme hatası: Ağ yöneticiniz, yükleme işlemini engelleyen bir grup politikası uygulamış: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium'un bu sitede kameranıza ve mikrofonunuza erişmesi için izin gerekiyor</translation>
 <translation id="8826492472752484139">"Şifre Yöneticisi"ni tıklayın</translation>
 <translation id="8833697763442816810">ChromiumOS Sistemi</translation>

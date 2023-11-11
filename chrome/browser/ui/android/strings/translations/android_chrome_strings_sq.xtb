@@ -1296,6 +1296,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7691043218961417207">Eksploro përmbajtje për t'i ndjekur</translation>
 <translation id="7697383401610880082">Doreza e zvarritjes</translation>
 <translation id="7698359219371678927">Krijo mail në <ph name="APP_NAME" /></translation>
+<translation id="7702029078562412515">Pllakëzat e kërkesave</translation>
 <translation id="7702388902581909985">Pastrimi i të dhënave të shfletimit nuk bën që të dalësh nga "Llogaria jote e Google". Për ta bërë këtë, <ph name="BEGIN_LINK1" />dil nga llogaria në Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Përdor të dhënat celulare</translation>
 <translation id="7709918231054955894">Merr të gjitha skedat e tua</translation>
@@ -1320,7 +1321,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Të gjithë skedarët, 1 skedar në listë}other{Të gjithë skedarët, # skedarë në listë}}</translation>
 <translation id="7815484226266492798">Pamje e gjatë e ekranit</translation>
 <translation id="7822705602465980873">Kur je i identifikuar, këto të dhëna lidhen me "Llogarinë tënde të Google" për të të mbrojtur nëpër shërbimet e Google, p.sh. duke rritur mbrojtjen në Gmail pas një incidenti sigurie.</translation>
-<translation id="782705168687182233">Aktiviteti yt ruhet në <ph name="BEGIN_LINK" />Llogarinë tënde të Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Kompjuteri yt kërkon ta regjistrojë këtë pajisje për t'u identifikuar në një faqe</translation>
 <translation id="7844171778363018843">Nuk janë zgjedhur të dhëna për t'u sinkronizuar</translation>
 <translation id="7846296061357476882">Shërbimet e Google</translation>

@@ -130,6 +130,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="146902737843070955">Msimamizi wako ameomba badiliko hili</translation>
 <translation id="1469148162491666137">Hatua hii huruhusu ufikiaji kwa ajili ya <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> pamoja na programu na tovuti zote zilizo na ruhusa za kamera na maikrofoni. Huenda ukahitaji kuonyesha upya ukurasa wa wavuti au ufunge kisha uwashe programu.</translation>
 <translation id="147310119694673958">Betri ya simu: asilimia <ph name="BATTERY_PERCENTAGE" /></translation>
+<translation id="1475340220124222168">Kipengele cha kuwasha au kuzima mtandao pepe. Mtandao pepe umewashwa, kifaa 1 kimeunganishwa.</translation>
 <translation id="1479909375538722835">Menyu ya ufikivu inayoelea</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Ukitumia kipengele cha kuandika kwa kutamka, unaweza kuandika ukitumia sauti yako. Bonyeza kitufe cha kuandika kwa kutamka au uchague aikoni ya maikrofoni katika sehemu ya chini ya skrini ukiwa katika sehemu ya maandishi. Umechagua <ph name="LANGUAGE" /> kama lugha yako ya kuandika kwa kutamka. Matamshi hutumwa kwenda Google ili yachakatwe. Unaweza kubadilisha lugha ya kuandika kwa kutamka wakati wowote katika Mipangilio &gt; Ufikivu.</translation>
@@ -870,6 +871,14 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4548482551627849548">Sogeza dirisha linalotumika kwenye eneokazi la upande wa kushoto</translation>
 <translation id="4560576029703263363">Imewashwa</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Trei ya hali, saa <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Ficha nenosiri</translation>
 <translation id="4566144812051858745">Sijavutiwa na mapendekezo yoyote</translation>
 <translation id="4569753163207712681">Angalia picha, maudhui na programu za hivi karibuni za simu yako</translation>
@@ -879,6 +888,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4577990005084629481">Fungua maonyesho ya kukagua</translation>
 <translation id="4578906031062871102">Menyu ya mipangilio imefunguliwa</translation>
 <translation id="458210817642223147">Rekodi GIF</translation>
+<translation id="4582666543382004902">Mtandao pepe umezimwa ili utumie Wi-Fi. Ili utumie mtandao pepe, zima Wi-Fi.</translation>
 <translation id="4585337515783392668">Acha kutuma kwenye kifaa au kwa mpokeaji usiyemjua</translation>
 <translation id="4596144739579517758">Mandhari meusi yamezimwa</translation>
 <translation id="4611292653554630842">Ingia katika akaunti</translation>
@@ -1085,6 +1095,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="5393156353051693207">Gusa na ushikilie sehemu yoyote ili upange tena programu zako</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> iko juu ya <ph name="IN_PLACE_APP" />, achilia ili ufungue folda mpya.</translation>
 <translation id="5397578532367286026">Matumizi na historia ya mtumiaji huyu yanaweza kukaguliwa na msimamizi ( <ph name="MANAGER_EMAIL" /> ) kwenye chrome.com.</translation>
+<translation id="540713187982329711">Kipengele cha kuwasha au kuzima mtandao pepe. Mtandao pepe umewashwa, hakuna kifaa kilichounganishwa.</translation>
 <translation id="5413656666631274079">Ukurasa wa mipangilio</translation>
 <translation id="5414198321558177633">Inaonyesha upya orodha ya wasifu. Hatua hii inaweza kuchukua dakika kadhaa.</translation>
 <translation id="5426063383988017631">Menyu ya mipangilio imefungwa</translation>
@@ -1175,9 +1186,11 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="576341972084747908">Pakua <ph name="FILENAME" /> hatari</translation>
 <translation id="576453121877257266">Umewasha Mwanga wa Usiku.</translation>
 <translation id="5764569119212455782">Badilisha utumie lugha ya mwisho uliyochagua</translation>
+<translation id="5767730327234918501">Msimamizi wako amezima mtandao pepe.</translation>
 <translation id="5769373120130404283">Skrini ya faragha</translation>
 <translation id="5773950591113557721">Hatua hii huruhusu ufikiaji wa <ph name="APP_NAME" />, programu pamoja na tovuti zote zilizo na ruhusa za kamera na maikrofoni</translation>
 <translation id="5774295353725270860">Fungua programu ya Faili</translation>
+<translation id="5775936059231769503">Kipengele cha kuwasha au kuzima mtandao pepe. Mtandao pepe umezimwa.</translation>
 <translation id="5777841717266010279">Je,ungependa kuacha kushiriki skrini?</translation>
 <translation id="5779721926447984944">Faili zilizobandikwa</translation>
 <translation id="5785221443435874078">Ondoa pendekezo hili</translation>
@@ -1495,6 +1508,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7068360136237591149">Fungua faili</translation>
 <translation id="7076293881109082629">Unaingia katika akaunti</translation>
 <translation id="7076878155205969899">Zima sauti</translation>
+<translation id="7084678090004350185">Kipengele cha kuwasha au kuzima mtandao pepe. Mtandao pepe umewashwa, vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="7086931198345821656">Sasisho hili linahitaji utumie powerwash kwenye <ph name="DEVICE_TYPE" /> yako. Data yote itafutwa. Pata maelezo zaidi kuhusu sasisho jipya zaidi la <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Kufikia Kupitia Swichi</translation>
 <translation id="709015856939120012">Vuta karibu ukurasa</translation>

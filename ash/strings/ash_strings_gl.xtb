@@ -130,6 +130,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="146902737843070955">O teu administrador solicitou este cambio</translation>
 <translation id="1469148162491666137">Desta forma, <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e todas as aplicacións e sitios web que teñan permisos de cámara e micrófono poderán acceder. É posible que teñas que actualizar a páxina web ou reiniciar a aplicación.</translation>
 <translation id="147310119694673958">Batería do teléfono: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1475340220124222168">Activar ou desactivar a zona wifi. A zona wifi está activada. Hai 1 dispositivo conectado.</translation>
 <translation id="1479909375538722835">Menú flotante de accesibilidade</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">A función de ditado permíteche escribir usando a voz. Cando esteas nun campo de texto, preme a tecla de ditado ou selecciona a icona do micrófono que está na parte inferior da pantalla. O <ph name="LANGUAGE" /> é o idioma que tes definido para o ditado. O ficheiro de voz enviarase a Google para o seu tratamento. Podes cambiar o idioma do ditado cando queiras en Configuración &gt; Accesibilidade.</translation>
@@ -871,6 +872,14 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4548482551627849548">Mover ventá activa ao escritorio da esquerda</translation>
 <translation id="4560576029703263363">Activado</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Bandexa de estado, hora: <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Ocultar contrasinal</translation>
 <translation id="4566144812051858745">Non me interesa recibir suxestións</translation>
 <translation id="4569753163207712681">Consulta o contido multimedia, as aplicacións e as fotos recentes do teu teléfono</translation>
@@ -880,6 +889,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4577990005084629481">Mostrar vistas previas</translation>
 <translation id="4578906031062871102">Abriuse o menú de configuración</translation>
 <translation id="458210817642223147">Gravar GIF</translation>
+<translation id="4582666543382004902">Desactivouse a zona wifi para poder usar a rede wifi. Desactiva esta última se prefires usar a zona wifi.</translation>
 <translation id="4585337515783392668">Deter emisión nun receptor descoñecido</translation>
 <translation id="4596144739579517758">O tema escuro está desactivado</translation>
 <translation id="4611292653554630842">Iniciar sesión</translation>
@@ -1086,6 +1096,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="5393156353051693207">Mantén premida calquera parte da pantalla para reordenar as aplicacións</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> está sobre <ph name="IN_PLACE_APP" />, solta a aplicación para crear un cartafol.</translation>
 <translation id="5397578532367286026">O administrador pode revisar o uso e o historial deste usuario (<ph name="MANAGER_EMAIL" />) en chrome.com.</translation>
+<translation id="540713187982329711">Activar ou desactivar a zona wifi. A zona wifi está activada. Non hai ningún dispositivo conectado.</translation>
 <translation id="5413656666631274079">Páxina de configuración</translation>
 <translation id="5414198321558177633">Actualizando lista de perfís. Esta acción pode tardar uns minutos.</translation>
 <translation id="5426063383988017631">Pechouse o menú de configuración</translation>
@@ -1176,9 +1187,11 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="576341972084747908">Descarga de ficheiro perigoso <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">A función Luz nocturna está activada.</translation>
 <translation id="5764569119212455782">Cambiar ao último idioma seleccionado</translation>
+<translation id="5767730327234918501">A persoa administradora desactivou a zona wifi.</translation>
 <translation id="5769373120130404283">Pantalla de privacidade</translation>
 <translation id="5773950591113557721">Desta forma, terán acceso <ph name="APP_NAME" /> e todas as aplicacións e sitios web con permiso de acceso á cámara e ao micrófono</translation>
 <translation id="5774295353725270860">Abrir a aplicación Ficheiros</translation>
+<translation id="5775936059231769503">Activar ou desactivar a zona wifi. A zona wifi está desactivada.</translation>
 <translation id="5777841717266010279">Queres deter o uso compartido da pantalla?</translation>
 <translation id="5779721926447984944">Ficheiros fixados</translation>
 <translation id="5785221443435874078">Eliminar esta suxestión</translation>
@@ -1496,6 +1509,7 @@ Nova instalación</translation>
 <translation id="7068360136237591149">Abrir ficheiros</translation>
 <translation id="7076293881109082629">Iniciando sesión</translation>
 <translation id="7076878155205969899">Silencia o son</translation>
+<translation id="7084678090004350185">Activar ou desactivar a zona wifi. A zona wifi está activada. Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="7086931198345821656">Esta actualización require executar a función Powerwash do teu dispositivo (<ph name="DEVICE_TYPE" />). Eliminaranse todos os datos. Obtén máis información sobre a última actualización de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Acceso con interruptores</translation>
 <translation id="709015856939120012">Afastar páxina</translation>

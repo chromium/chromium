@@ -1296,6 +1296,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7691043218961417207">Descubre contido para seguir</translation>
 <translation id="7697383401610880082">Controlador de arrastre</translation>
 <translation id="7698359219371678927">Crea un correo electrónico en <ph name="APP_NAME" /></translation>
+<translation id="7702029078562412515">Bloques de consultas</translation>
 <translation id="7702388902581909985">Ao borrar os teus datos de navegación, non se pecha a sesión da túa Conta de Google. Para facelo, <ph name="BEGIN_LINK1" />pecha a sesión en Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Utilizaranse datos móbiles</translation>
 <translation id="7709918231054955894">Accede a todas as túas pestanas</translation>
@@ -1320,7 +1321,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Todos os ficheiros, 1 ficheiro na lista}other{Todos os ficheiros, # ficheiros na lista}}</translation>
 <translation id="7815484226266492798">Captura de pantalla longa</translation>
 <translation id="7822705602465980873">Cando tes a sesión iniciada, estes datos asócianse á túa Conta de Google para protexerte nos servizos de Google (por exemplo, aumentando a protección en Gmail despois dun incidente de seguranza).</translation>
-<translation id="782705168687182233">A túa actividade gárdase na túa <ph name="BEGIN_LINK" />Conta de Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">O ordenador require que se rexistre este dispositivo para iniciar sesión nun sitio</translation>
 <translation id="7844171778363018843">Non se seleccionaron datos para sincronizalos</translation>
 <translation id="7846296061357476882">Servizos de Google</translation>

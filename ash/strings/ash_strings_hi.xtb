@@ -130,6 +130,7 @@
 <translation id="146902737843070955">आपके एडमिन ने इस बदलाव का अनुरोध किया है</translation>
 <translation id="1469148162491666137">इससे <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, और ऐसे सभी ऐप्लिकेशन और वेबसाइटों को ऐक्सेस मिलेगा जिनके पास कैमरा और माइक्रोफ़ोन इस्तेमाल करने की अनुमति है. आपको वेब पेज को रीफ़्रेश या ऐप्लिकेशन को रीस्टार्ट करना पड़ सकता है.</translation>
 <translation id="147310119694673958">फ़ोन में <ph name="BATTERY_PERCENTAGE" />% बैटरी है</translation>
+<translation id="1475340220124222168">हॉटस्पॉट का बटन टॉगल करें. हॉटस्पॉट चालू है, एक डिवाइस कनेक्ट है.</translation>
 <translation id="1479909375538722835">फ़्लोट करने वाले सुलभता मेन्यू</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">लिखवाने की सुविधा की मदद से, बोलकर टाइप किया जा सकता है. जब आप टेक्स्ट फ़ील्ड में हों, तो लिखवाने वाला बटन दबाएं या स्क्रीन पर सबसे नीचे मौजूद माइक्रोफ़ोन आइकॉन को चुनें. लिखवाने की आपकी भाषा <ph name="LANGUAGE" /> पर सेट है. बोली को प्रोसेस करने के लिए, Google के पास भेजा जाता है. आपके पास सेटिंग &gt; सुलभता में जाकर, कभी भी लिखवाने की भाषा बदलने का विकल्प मौजूद है.</translation>
@@ -871,6 +872,14 @@
 <translation id="4548482551627849548">ऐक्टिव विंडो को बाईं ओर मौजूद डेस्क पर ले जाएं</translation>
 <translation id="4560576029703263363">चालू है</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">स्टेटस ट्रे, समय <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">पासवर्ड छिपाएं</translation>
 <translation id="4566144812051858745">किसी भी सुझाव में दिलचस्पी नहीं है</translation>
 <translation id="4569753163207712681">अपने फ़ोन में मौजूद हाल ही की फ़ोटो, कॉन्टेंट, और ऐप्लिकेशन देखें</translation>
@@ -880,6 +889,7 @@
 <translation id="4577990005084629481">झलक दिखाएं</translation>
 <translation id="4578906031062871102">सेटिंग मेन्यू खोला गया</translation>
 <translation id="458210817642223147">GIF रिकॉर्ड करें</translation>
+<translation id="4582666543382004902">हॉटस्पॉट बंद कर दिया गया है, ताकि वाई-फ़ाई का इस्तेमाल किया जा सके. हॉटस्पॉट का इस्तेमाल करने के लिए, वाई-फ़ाई बंद करें.</translation>
 <translation id="4585337515783392668">ऐसे रिसीवर पर कास्ट करना बंद करें जिसकी जानकारी नहीं है</translation>
 <translation id="4596144739579517758">गहरे रंग वाली थीम बंद है</translation>
 <translation id="4611292653554630842">लॉग इन करें</translation>
@@ -1086,6 +1096,7 @@
 <translation id="5393156353051693207">अपने ऐप्लिकेशन का क्रम बदलने के लिए, स्क्रीन के किसी भी हिस्से को दबाकर रखें</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> पर<ph name="DRAGGED_APP_NAME" /> को खींचकर लाया जा रहा है, फ़ोल्डर बनाने के लिए इसे छोड़ें.</translation>
 <translation id="5397578532367286026">chrome.com पर इस उपयोगकर्ता के उपयोग और इतिहास से जुड़ी जानकारी की मैनेजर (<ph name="MANAGER_EMAIL" />) समीक्षा कर सकता है.</translation>
+<translation id="540713187982329711">हॉटस्पॉट का बटन टॉगल करें. हॉटस्पॉट चालू है, लेकिन कोई डिवाइस कनेक्ट नहीं है.</translation>
 <translation id="5413656666631274079">सेटिंग पेज</translation>
 <translation id="5414198321558177633">प्रोफ़ाइल की सूची रीफ़्रेश की जा रही है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="5426063383988017631">सेटिंग मेन्यू को बंद किया गया</translation>
@@ -1176,9 +1187,11 @@
 <translation id="576341972084747908"><ph name="FILENAME" /> डाउनलोड हो रही है जिसमें खतरनाक कॉन्टेंट मौजूद है</translation>
 <translation id="576453121877257266">नाइट लाइट चालू है.</translation>
 <translation id="5764569119212455782">चुनी गई पिछली भाषा पर स्विच करें</translation>
+<translation id="5767730327234918501">आपके एडमिन ने हॉटस्पॉट बंद कर दिया है.</translation>
 <translation id="5769373120130404283">निजता स्क्रीन</translation>
 <translation id="5773950591113557721">इससे <ph name="APP_NAME" /> और बाकी सभी ऐप्लिकेशन और वेबसाइटों को कैमरा और माइक्रोफ़ोन को इस्तेमाल करने का ऐक्सेस मिलता है</translation>
 <translation id="5774295353725270860">फ़ाइल ऐप्लिकेशन खोलें</translation>
+<translation id="5775936059231769503">हॉटस्पॉट का बटन टॉगल करें. हॉटस्पॉट बंद है.</translation>
 <translation id="5777841717266010279">स्‍क्रीन साझाकरण बंद करें?</translation>
 <translation id="5779721926447984944">पिन की गई फ़ाइलें</translation>
 <translation id="5785221443435874078">यह सुझाव हटाएं</translation>
@@ -1496,6 +1509,7 @@
 <translation id="7068360136237591149">फ़ाइल खोलो</translation>
 <translation id="7076293881109082629">साइन इन किया जा रहा है</translation>
 <translation id="7076878155205969899">आवाज़ म्यूट करें</translation>
+<translation id="7084678090004350185">हॉटस्पॉट का बटन टॉगल करें. हॉटस्पॉट चालू है, <ph name="DEVICECOUNT" /> डिवाइस कनेक्ट हैं.</translation>
 <translation id="7086931198345821656">इस अपडेट के लिए, आपके <ph name="DEVICE_TYPE" /> को पावरवॉश करने की ज़रूरत है. ऐसा करने पर, डिवाइस का सारा डेटा मिट जाएगा. <ph name="SYSTEM_APP_NAME" /> के नए अपडेट के बारे में ज़्यादा जानें.</translation>
 <translation id="7088960765736518739">ऐक्सेस का तरीका बदलें</translation>
 <translation id="709015856939120012">पेज पर ज़ूम इन करें</translation>

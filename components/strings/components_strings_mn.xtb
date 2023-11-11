@@ -532,6 +532,7 @@
 <translation id="2025891858974379949">Аюултай контент</translation>
 <translation id="2027465737841872819">Хуванцар</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Прокси болон галт ханыг шалгаж байна<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">Товчлол нь <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />-с тодорхойлсон өгөгдмөл хайлтын үйлчилгээ үзүүлэгчийн түлхүүр үгтэй ижил байх боломжгүй: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Ямартай ч хадгалах</translation>
 <translation id="2035400064145347639">Аяллын хөтөч, аяллын тэмдэглэл</translation>
 <translation id="2036514476578229158">Та энэ сайтад зочлохыг хүссэн. Таны эцэг эх Family Link-д хариу бичих боломжтой.</translation>
@@ -1077,6 +1078,7 @@
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> дээрх <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">Таныг энэ төхөөрөмжийг хэзээ идэвхтэй ашиглаж буйг мэдэхийг хүсэх боломжтой</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome-н тохиргоонд ямар мэдээлэл синк хийхээ удирдахын тулд Tab, дараа нь Enter дээр дарна уу</translation>
+<translation id="3203025201812691413">URL хоосон байх боломжгүй</translation>
 <translation id="320323717674993345">Төлбөрийг цуцлах</translation>
 <translation id="3203366800380907218">Вебээс</translation>
 <translation id="3207960819495026254">Хавчуурга хадгалагдсан</translation>
@@ -1692,6 +1694,7 @@
 <translation id="4386413576162606861">Дүрд тоглох тоглоом</translation>
 <translation id="4390472908992056574">Хүрээ</translation>
 <translation id="4393632246160856858">Хумс арчилгааны бүтээгдэхүүн</translation>
+<translation id="4397059608630092079">Автоматаар бөглөх хэсгийг ашиглаж байх үед үргэлж баталгаажуулах</translation>
 <translation id="4406883609789734330">Шууд тайлбар</translation>
 <translation id="4406896451731180161">Хайлтын үр дүн</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> күүки</translation>
@@ -1893,7 +1896,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Шинэ Google Хүснэгт шуурхай үүсгэхийн тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="4825507807291741242">Хүчирхэг</translation>
 <translation id="4826588772550366629">камер, микрофон</translation>
-<translation id="4827283332383516812">Картыг устгах</translation>
 <translation id="4831993743164297314">Зураг хэвлэх цаас</translation>
 <translation id="483241715238664915">Сануулгыг асаах</translation>
 <translation id="4834250788637067901">Google Pay-г ашиглаж буй төлбөрийн хэрэгсэл, санал болон хаяг</translation>
@@ -2305,6 +2307,7 @@
 <translation id="5651323159439184939">Цоолбортой урт цаас</translation>
 <translation id="5653432653077411130">Усны хангамж, цэвэршүүлэх</translation>
 <translation id="5654927323611874862">Байршуулсан гэмтлийн тайлангийн ID:</translation>
+<translation id="5654965123204121933">URL нь шаардлагатай <ph name="SEARCH_TERMS_REPLACEMENT" /> солих мөрийг оруулаагүй: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">И-мэйл хаяг</translation>
 <translation id="5660122698869360728">Танд авах зүйлийн бүх хуудсаа нэг дор хадгалах, үнийг автоматаар хянах, үнийн статистик авах болон бусад зүйлийг хийхэд тусалдаг шинэ ухаалаг фолдер.</translation>
 <translation id="5663955426505430495">Энэ төхөөрөмжийн админ нэмэлт функцийн өргөтгөлүүдийг суулгасан байна. Өргөтгөлүүд нь таны зарим өгөгдөлд хандах эрхтэй.</translation>
@@ -2366,7 +2369,6 @@
 <translation id="5785756445106461925">Цаашилбал, энэ хуудас нь аюултай бусад үүсвэрүүдийг агуулж байна. Ийм төрлийн үүсвэрүүдийг дамжуулж байх явцад бусад хүмүүс харах, мөн халдагч нар хуусанд нөлөөлөхүйц байдлаар өөрчилж болдог.</translation>
 <translation id="5786044859038896871">Картын мэдээллээ бөглөх үү?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Энэ төлбөрийн хэрэгслийг энэ төхөөрөмжөөс устгана</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Байхгүй}=1{1 бүртгэлийн нэвтрэх өгөгдөл}other{# бүртгэлийн нэвтрэх өгөгдөл}}</translation>
 <translation id="5800727402210090597">Гар утасны засвар, үйлчилгээнүүд</translation>
 <translation id="580241730938216256">Шинэчилж эхлэх</translation>

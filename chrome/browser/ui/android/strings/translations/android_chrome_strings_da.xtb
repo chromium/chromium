@@ -1296,6 +1296,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7691043218961417207">Gennemse indhold, du vil følge</translation>
 <translation id="7697383401610880082">Håndtag</translation>
 <translation id="7698359219371678927">Opret mail i <ph name="APP_NAME" /></translation>
+<translation id="7702029078562412515">Forespørgselsfelter</translation>
 <translation id="7702388902581909985">Du bliver ikke logget ud af din Google-konto, når du rydder dine browserdata. Du skal <ph name="BEGIN_LINK1" />logge ud af Chrome<ph name="END_LINK1" /> for at logge ud af din konto.</translation>
 <translation id="7707922173985738739">Brug mobildata</translation>
 <translation id="7709918231054955894">Se alle dine faner</translation>
@@ -1320,7 +1321,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle filer, 1 fil på listen}one{Alle filer, # fil på listen}other{Alle filer, # filer på listen}}</translation>
 <translation id="7815484226266492798">Langt screenshot</translation>
 <translation id="7822705602465980873">Når du er logget ind, knyttes disse data til din Google-konto for at beskytte dig i Google-tjenester, f.eks. ved at øge beskyttelsen i Gmail efter en sikkerhedshændelse.</translation>
-<translation id="782705168687182233">Din aktivitet gemmes på din <ph name="BEGIN_LINK" />Google-konto<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Din computer anmoder om at registrere denne enhed til login på et website</translation>
 <translation id="7844171778363018843">Der er ikke valgt nogen data til synkronisering</translation>
 <translation id="7846296061357476882">Google-tjenester</translation>

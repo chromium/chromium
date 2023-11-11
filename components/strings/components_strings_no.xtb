@@ -304,6 +304,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 
       &lt;p&gt;Juster datoen og klokkeslettet under &lt;strong&gt;Generelt&lt;/strong&gt; i &lt;strong&gt;Innstillinger&lt;/strong&gt;-appen.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administratoren din starter enheten din på nytt kl. <ph name="TIME" /> <ph name="DATE" /></translation>
+<translation id="1564634006476980707">HTTPS-protokollen anbefales for søkenettadressen: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Nettverksinformasjon som adresser, grensesnittkonfigurasjon og tilkoblingskvalitet</translation>
 <translation id="1567040042588613346">Denne regelen fungerer som den skal, men den samme verdien er angitt et annet sted og overstyres av denne regelen.</translation>
 <translation id="1567405528131216114">Legg til <ph name="TOPIC" /></translation>
@@ -532,6 +533,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2025891858974379949">Usikkert innhold</translation>
 <translation id="2027465737841872819">Plast</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Sjekk proxy-tjeneren og brannmuren<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">Snarveien kan ikke være lik søkeordet for standardsøkeleverandøren som er definert av <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Lagre likevel</translation>
 <translation id="2035400064145347639">Reisebøker og reiseskildringer</translation>
 <translation id="2036514476578229158">Du ba om å få besøke dette nettstedet. Foreldrene dine kan svare i Family Link.</translation>
@@ -732,6 +734,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2448295565072560657">Eksterne enheter som er koblet til denne enheten, mens du er pålogget</translation>
 <translation id="2450021089947420533">Reiser</translation>
 <translation id="2456755709261364512">Batteriet må være ladet til mer enn <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
+<translation id="2462599289530201834">Søk etter <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2463739503403862330">Fyll ut</translation>
 <translation id="2465688316154986572">Stift</translation>
 <translation id="2465914000209955735">Administrer filer du har lastet ned i Chrome</translation>
@@ -903,6 +906,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2814184336982254349">Denne PDF-en er ikke tilgjengelig. Trykk på søketasten + M for å åpne den kontekstuelle menyen, og slå på «Hent ut tekst fra PDF»</translation>
 <translation id="2818338148457093657">Skjønnhet og velvære</translation>
 <translation id="2820957248982571256">Skanner …</translation>
+<translation id="2824549017793319782">Velg for å skrive inn søket direkte i adressefeltet</translation>
 <translation id="2824775600643448204">Adresse- og søkefelt</translation>
 <translation id="2826760142808435982">Tilkoblingen er kryptert ved hjelp av <ph name="CIPHER" />, og bruker <ph name="KX" /> som mekanisme for nøkkelutveksling.</translation>
 <translation id="2835170189407361413">Slett skjemaet</translation>
@@ -1077,6 +1081,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> på <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Kan be om å få vite når du bruker denne enheten aktivt</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere hvilken informasjon du synkroniserer, i Chrome-innstillingene</translation>
+<translation id="3203025201812691413">Nettadressen kan ikke være tom</translation>
 <translation id="320323717674993345">Avbryt betalingen</translation>
 <translation id="3203366800380907218">Fra nettet</translation>
 <translation id="3207960819495026254">Bokmerket</translation>
@@ -1691,6 +1696,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4386413576162606861">Rollespill</translation>
 <translation id="4390472908992056574">Rand</translation>
 <translation id="4393632246160856858">Neglepleieprodukter</translation>
+<translation id="4397059608630092079">Bekreft alltid når autofyll brukes</translation>
 <translation id="4406883609789734330">Direkteteksting</translation>
 <translation id="4406896451731180161">søkeresultater</translation>
 <translation id="4408413947728134509">Informasjonskapsler <ph name="NUM_COOKIES" /></translation>
@@ -1892,7 +1898,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å opprette et nytt Google-regneark raskt</translation>
 <translation id="4825507807291741242">Kraftfull</translation>
 <translation id="4826588772550366629">kamera og mikrofon</translation>
-<translation id="4827283332383516812">Slett kortet</translation>
 <translation id="4831993743164297314">Bildepapir</translation>
 <translation id="483241715238664915">Slå på varsler</translation>
 <translation id="4834250788637067901">Betalingsmåter, tilbud og adresser som bruker Google Pay</translation>
@@ -2304,6 +2309,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5651323159439184939">Traktorinnmating</translation>
 <translation id="5653432653077411130">Vannforsyning og -behandling</translation>
 <translation id="5654927323611874862">ID for opplastet krasjrapport:</translation>
+<translation id="5654965123204121933">Nettadressen inneholder ikke den obligatoriske erstatningsstrengen <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5660122698869360728">En ny smart mappe du kan bruke til å lagre alle handlesidene dine på ett sted, slik at du kan spore priser automatisk, få prisstatistikk med mer.</translation>
 <translation id="5663955426505430495">Enhetsadministratoren har installert utvidelser for tilleggsfunksjoner. Utvidelsene har tilgang til noen av dataene dine.</translation>
@@ -2365,7 +2371,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5785756445106461925">Denne siden inneholder i tillegg andre ressurser som ikke er sikre. Disse ressursene er synlige for andre mens de sendes frem og tilbake, og eventuelle angripere kan modifisere dem for å endre på utseendet til siden.</translation>
 <translation id="5786044859038896871">Vil du fylle ut kortinformasjonen?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Denne betalingsmåten blir slettet fra denne enheten</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Ingen}=1{påloggingsinformasjon for 1 konto}other{påloggingsinformasjon for # kontoer}}</translation>
 <translation id="5800727402210090597">Mobilreparasjon og -tjenester</translation>
 <translation id="580241730938216256">Start oppdateringen</translation>
@@ -3749,6 +3754,7 @@ Mer informasjon:
 <translation id="8490137692873530638">Hylle 10</translation>
 <translation id="8493948351860045254">Frigjør plass</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> brukte for lang tid på å svare.</translation>
+<translation id="8502972004418241366">For å bruke <ph name="PERMISSION" /> på dette nettstedet må du gi Chrome tilgang</translation>
 <translation id="8503559462189395349">Chrome-passord</translation>
 <translation id="8503813439785031346">Brukernavn</translation>
 <translation id="8504928302600319133">Maskinvare</translation>

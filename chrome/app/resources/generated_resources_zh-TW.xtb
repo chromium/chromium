@@ -444,8 +444,10 @@
 <translation id="1346748346194534595">向右</translation>
 <translation id="1347256498747320987">安裝更新和應用程式。如果您選擇繼續，即表示您允許這個裝置自動下載及安裝來自 Google、您的電信業者和裝置製造商的更新內容和應用程式，且下載程序可能會使用行動數據。這類應用程式中，有些可能會提供應用程式內購項目。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux 儲存空間</translation>
+<translation id="1347625331607114917">在 Android 手機上驗證 PIN 碼</translation>
 <translation id="1347975661240122359">電池電量達到 <ph name="BATTERY_LEVEL" />% 後便會開始更新。</translation>
 <translation id="1348966090521113558">滑鼠無障礙設定</translation>
+<translation id="1352834119074414157">這個套件可能已毀損或遭到入侵。請關閉這個視窗並重新下載</translation>
 <translation id="1353275871123211385">如要使用應用程式核准設定、裝置使用時間限制等家長監護功能，就必須讓孩子使用由家長管理的 Google 帳戶。如果孩子需要透過學校帳戶使用 Google Classroom 之類的工具，可以之後再新增帳戶。</translation>
 <translation id="135389172849514421">可離線使用</translation>
 <translation id="1353980523955420967">找不到 PPD。請確認 Chromebook 已連上網路，然後再試一次。</translation>
@@ -2901,6 +2903,7 @@
 <translation id="3237871032310650497">要刪除 <ph name="SITE_NAME" /> 在 <ph name="PARTITION_SITE_NAME" /> 上分割的網站資料嗎？</translation>
 <translation id="3238192140106069382">正在連線及驗證</translation>
 <translation id="3239373508713281971">已解除「<ph name="APP_NAME" />」的時間限制</translation>
+<translation id="3240299564104448052">你似乎處於離線狀態。</translation>
 <translation id="3240426699337459095">連結已複製</translation>
 <translation id="3241638166094654466">各行儲存格數目：</translation>
 <translation id="3241680850019875542">請選取要封裝的擴充功能根目錄。如要更新擴充功能，請一併選取要重複使用的秘密金鑰。</translation>
@@ -4008,6 +4011,7 @@
 <translation id="4100853287411968461">新的裝置使用時間限制</translation>
 <translation id="4101352914005291489">隱藏的 SSID</translation>
 <translation id="4102906002417106771">重新啟動以執行 Powerwash</translation>
+<translation id="4103644672850109428">螢幕閱讀器、放大</translation>
 <translation id="4104163789986725820">匯出(&amp;X)...</translation>
 <translation id="4104944259562794668">你之後可以前往「設定」&gt;「安全性與隱私權」&gt;「螢幕鎖定和登入」加以啟用</translation>
 <translation id="4107048419833779140">識別並退出儲存裝置</translation>
@@ -4252,6 +4256,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 個 Google 帳戶}other{<ph name="EXTRA_ACCOUNTS" /> 個 Google 帳戶}}</translation>
 <translation id="4312866146174492540">封鎖 (預設)</translation>
 <translation id="4314497418046265427">將手機連接 <ph name="DEVICE_TYPE" />，提升工作效率</translation>
+<translation id="4314561087119792062">新增存取點名稱</translation>
 <translation id="4314815835985389558">管理同步資料</translation>
 <translation id="4316850752623536204">開發人員網站</translation>
 <translation id="4317733381297736564">應用程式內購</translation>
@@ -4540,6 +4545,7 @@
 <translation id="4546345569117159016">右鍵</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" />想要使用這個擴充功能：</translation>
 <translation id="4546692474302123343">Google 助理語音輸入</translation>
+<translation id="4547538408998421970">你已達到今天的搜尋上限。</translation>
 <translation id="4547659257713117923">沒有在其他裝置上開啟的分頁</translation>
 <translation id="4547672827276975204">自動設定</translation>
 <translation id="4548858987594081919">請新增你在這個網站的使用者名稱，Google 密碼管理工具才能儲存登入資訊</translation>
@@ -5265,6 +5271,7 @@
 <translation id="5130675701626084557">無法載入設定檔。請稍後再試，或向電信業者尋求協助。</translation>
 <translation id="5131591206283983824">觸控板輕觸拖曳</translation>
 <translation id="5135533361271311778">無法建立書籤項目。</translation>
+<translation id="513555878193063507">新增 APN</translation>
 <translation id="5136343472380336530">請確認兩部裝置都已解鎖且彼此相鄰，並已開啟藍牙功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5138227688689900538">顯示較少</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />，「<ph name="DEFAULT_SEARCH_ENGINE_NAME" />」搜尋</translation>
@@ -5281,6 +5288,7 @@
 <translation id="5145876360421795017">不要註冊裝置</translation>
 <translation id="5146235736676876345">自行選擇</translation>
 <translation id="5146896637028965135">系統語音</translation>
+<translation id="5147516217412920887">按照手機上的操作說明輸入驗證碼</translation>
 <translation id="5147992672778369947">使用建議的密碼</translation>
 <translation id="5148277445782867161">Google 的定位服務會使用 Wi‑Fi、行動網路和感應器等來源，推測出這部裝置的所在位置。</translation>
 <translation id="5148285448107770349">密碼至少要有 8 個半形字元</translation>
@@ -5630,7 +5638,6 @@
 <translation id="5436492226391861498">正在等待 Proxy 通道...</translation>
 <translation id="5436510242972373446">搜尋 <ph name="SITE_NAME" />：</translation>
 <translation id="5436575196282187764">Google 相簿回憶集錦</translation>
-<translation id="5439680044267106777">略過並設定新的設定檔</translation>
 <translation id="544083962418256601">建立捷徑...</translation>
 <translation id="5441133529460183413">從 Chrome 瀏覽器安裝的網頁應用程式</translation>
 <translation id="5441292787273562014">重新載入網頁</translation>
@@ -5710,6 +5717,7 @@
 <translation id="5496587651328244253">整理</translation>
 <translation id="5496730470963166430">不得傳送彈出式視窗或使用重新導向</translation>
 <translation id="5497251278400702716">這個檔案</translation>
+<translation id="5497739595514726398">Chrome 無法驗證這個安裝套件</translation>
 <translation id="5498967291577176373">透過內嵌建議快速輸入你的姓名、地址或電話號碼</translation>
 <translation id="5499211612787418966">這個對話方塊未處於聚焦狀態。按下 Alt + Shift + A 鍵即可聚焦這個對話方塊。</translation>
 <translation id="5499313591153584299">這個檔案可能對你的電腦有害。</translation>
@@ -6315,7 +6323,6 @@
 <translation id="5992225669837656567">所有滑鼠均已中斷連線</translation>
 <translation id="5992652489368666106">無框線</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{已完成 1 個網站的檢查}other{已完成 {NUM_SITES} 個網站的檢查}}</translation>
-<translation id="5996200702878169822">你也可以<ph name="BEGIN_LINK" />手動<ph name="END_LINK" />設定 eSIM 卡設定檔。</translation>
 <translation id="5997337190805127100">進一步瞭解網站存取權</translation>
 <translation id="5998458948782718639">協助改善自動填入功能</translation>
 <translation id="5999024481231496910">你已啟用淘汰測試用第三方 Cookie 的功能，而且無法在「設定」頁面中覆寫這項功能的設定。如要重新啟用第三方 Cookie，請停用這項功能並重新啟動 Chrome。</translation>
@@ -6503,6 +6510,10 @@
 <translation id="6143186082490678276">取得說明</translation>
 <translation id="6143366292569327983">選擇網頁的原文語言</translation>
 <translation id="6144938890088808325">協助我們改善 Chromebook</translation>
+<translation id="6145480071052696715">使用手機輕鬆設定 <ph name="DEVICE_TYPE" />。你可以新增 Wi-Fi 和 Google 帳戶，不必手動輸入密碼。
+    <ph name="BR" />
+    <ph name="BR" />
+    顯示名稱：<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">同步功能無法正常運作。請嘗試重新登入。</translation>
 <translation id="6147020289383635445">列印預覽失敗。</translation>
 <translation id="6148576794665275391">立即開啟</translation>
@@ -6711,6 +6722,7 @@
 <translation id="6309510305002439352">麥克風已關閉</translation>
 <translation id="6310141306111263820">無法安裝 eSIM 卡設定檔。如需協助，請與你的電信業者聯絡。</translation>
 <translation id="6311220991371174222">開啟你的設定檔時發生錯誤，因此無法啟動 Chrome，請嘗試重新啟動。</translation>
+<translation id="6311708879134408222">請等到明天再試一次。</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{1 天前已執行安全檢查}other{{NUM_DAYS} 天前已執行安全檢查}}</translation>
 <translation id="6312638141433622592">詢問是否以閱讀器模式顯示支援這項功能的文章</translation>
 <translation id="6313641880021325787">結束 VR</translation>
@@ -7235,6 +7247,7 @@
 <translation id="6749473226660745022">相片</translation>
 <translation id="6750757184909117990">停用行動數據</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (無痕模式)</translation>
+<translation id="6756059675436942777">請檢查網路連線，然後再試一次。</translation>
 <translation id="6756157672127672536">「檔案」應用程式可讓你快速存取儲存在 Google 雲端硬碟、外部儲存空間或 Chrome OS 裝置中的檔案。</translation>
 <translation id="6756643207511618722">語音引擎</translation>
 <translation id="6757431299485455321">協助其他裝置找到這個無線基地台。</translation>
@@ -7565,6 +7578,7 @@
 <translation id="6993050154661569036">正在更新 Chrome 瀏覽器</translation>
 <translation id="6995899638241819463">當密碼因資料侵害事件遭到外洩時發出警告</translation>
 <translation id="6995984090981858039">讀取 ChromeOS 裝置資訊和資料</translation>
+<translation id="6996245928508281884">請開啟手機的藍牙和 Wi-Fi</translation>
 <translation id="6996438701394974959">放大顯示和文字大小</translation>
 <translation id="6997553674029032185">前往網站</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 活動記錄</translation>
@@ -7647,7 +7661,6 @@
 <translation id="7056418393177503237">{0,plural, =1{無痕式視窗}other{已開啟 # 個無痕式視窗}}</translation>
 <translation id="7056526158851679338">檢查裝置 (&amp;I)</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{1 分鐘前已執行安全檢查}other{{NUM_MINS} 分鐘前已執行安全檢查}}</translation>
-<translation id="7057767408836081338">無法取得應用程式資料，正在嘗試繼續執行應用程式...</translation>
 <translation id="7058024590501568315">隱藏的網路</translation>
 <translation id="7059858479264779982">設為自動啟動</translation>
 <translation id="7063129466199351735">正在處理捷徑...</translation>
@@ -7808,6 +7821,7 @@
 <translation id="7201118060536064622">已刪除「<ph name="DELETED_ITEM_NAME" />」</translation>
 <translation id="7201420661433230412">查看檔案</translation>
 <translation id="7201535955609308429">正在驗證，請稍候</translation>
+<translation id="7202337678781136582">使用 Android 手機掃描 QR code</translation>
 <translation id="7203150201908454328">已展開</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{離開網頁}other{離開網頁}}</translation>
 <translation id="7207457272187520234">傳送使用狀況與診斷資料。這部裝置目前會自動將診斷資料、裝置和應用程式的使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。這項設定是由裝置擁有者強制執行。如果你將「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在你的 Google 帳戶中。</translation>
@@ -8774,6 +8788,7 @@
 <translation id="7943349879009553083">訪客模式不支援這項功能</translation>
 <translation id="7943368935008348579">下載 PDF</translation>
 <translation id="7943837619101191061">新增位置...</translation>
+<translation id="79446453817422139">這個檔案可能含有危險內容</translation>
 <translation id="7944772052836377867">同步功能需要驗證你的身分</translation>
 <translation id="7945703887991230167">偏好語音</translation>
 <translation id="7946586320617670168">來源必須是安全來源</translation>
@@ -8956,6 +8971,7 @@
 <translation id="8082106343289440791">要與「<ph name="DEVICE_NAME" />」配對嗎？</translation>
 <translation id="8082390128630131497">停用 ADB 偵錯會將這部 <ph name="DEVICE_TYPE" /> 恢復原廠設定。所有使用者帳戶和本機資料都將遭到清除。</translation>
 <translation id="8084114998886531721">已儲存的密碼</translation>
+<translation id="8084429490152575036">行動網路 APN 設定</translation>
 <translation id="8084510406207562688">還原所有分頁</translation>
 <translation id="8084628902026812045">這個網站未使用安全連線，且檔案可能已遭竄改</translation>
 <translation id="8086015605808120405">正在設定 <ph name="PRINTER_NAME" />...</translation>

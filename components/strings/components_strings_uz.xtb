@@ -531,6 +531,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2025891858974379949">Zararli kontent</translation>
 <translation id="2027465737841872819">Plastik</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Proksi-server va himoya devori sozlamalarini tekshiring<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">Buyruq <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> belgilagan standart qidiruv provayderi kalit soʻzi bilan bir xil boʻlishi mumkin emas: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Baribir saqlansin</translation>
 <translation id="2035400064145347639">Yoʻlboshchilar va treveloglar</translation>
 <translation id="2036514476578229158">Bu saytga kirish uchun ruxsat soʻradingiz. Ota-onangiz Family Link orqali javob berishlari mumkin.</translation>
@@ -1074,6 +1075,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> – <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Qurilmadan foydalanishga oid axborotlarni soʻrashi mumkin</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali sinxronlanadigan maʼlumotlarni boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
+<translation id="3203025201812691413">URL boʻsh boʻlmaydi</translation>
 <translation id="320323717674993345">To‘lovni bekor qilish</translation>
 <translation id="3203366800380907218">Internetdan</translation>
 <translation id="3207960819495026254">Xatcho‘plarga qo‘shildi</translation>
@@ -1888,7 +1890,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, yangi Google Sheetda yangi jadvalni tez yaratish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="4825507807291741242">Qudratli</translation>
 <translation id="4826588772550366629">kamera va mikrofon</translation>
-<translation id="4827283332383516812">Kartani olib tashlash</translation>
 <translation id="4831993743164297314">Fotonabor mashinasi uchun qogʻoz</translation>
 <translation id="483241715238664915">Ogohlantiruvlarni yoqish</translation>
 <translation id="4834250788637067901">Google Pay xizmatidagi bank kartalari, takliflar va manzillar</translation>
@@ -2300,6 +2301,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5651323159439184939">Avtomatik uzatiladigan qogʻoz</translation>
 <translation id="5653432653077411130">Suv taʼminoti va suvni tozalash</translation>
 <translation id="5654927323611874862">Yuklangan ishdan chiqish hisoboti identifikatori:</translation>
+<translation id="5654965123204121933">URL manzilda <ph name="SEARCH_TERMS_REPLACEMENT" /> almashtiriladigan qator boʻlmaydi: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5660122698869360728">Barcha xarid sahifalaringizni bir joyda saqlashga va narxlarni avtomatik kuzatishga, narxlar haqidagi maʼlumotga ega boʻlishga yordam beruvchi yangi smart jild.</translation>
 <translation id="5663955426505430495">Bu qurilma administratori qoʻshimcha funksiyali kengaytmalar oʻrnatdi. Kengaytmalarda ayrim maʼlumotlaringizga ruxsat bor.</translation>
@@ -2361,7 +2363,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5785756445106461925">Bundan tashqari, ushbu sahifada xavfli kontent ham aniqlandi. Ma’lumotlarni uzatishda uchinchi tomon resurslarni ko‘rishi mumkin. Yovuz niyatli odamlar esa sahifaga kirishi va uning ko‘rinishini o‘zgartirishi mumkin.</translation>
 <translation id="5786044859038896871">Bank karta ma’lumotlari to‘ldirilsinmi?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Bu toʻlov usuli ushbu qurilmadan olib tashlanadi</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Hech qanday}=1{1 ta hisobga kirish maʼlumotlari}other{# ta hisobga kirish maʼlumotlari}}</translation>
 <translation id="5800727402210090597">Mobil telefon tuzatish xizmatlari</translation>
 <translation id="580241730938216256">Yangilashni boshlash</translation>

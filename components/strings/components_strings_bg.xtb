@@ -532,6 +532,7 @@
 <translation id="2025891858974379949">Незащитено съдържание</translation>
 <translation id="2027465737841872819">Пластмаса</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Проверете прокси сървъра и защитната стена<ph name="END_LINK" />.</translation>
+<translation id="2033900728810589426">Прекият път не може да е същият като ключовата дума за доставчика за търсене по подразбиране, дефинирана от <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Запазване въпреки това</translation>
 <translation id="2035400064145347639">Туристически справочници и пътеводители</translation>
 <translation id="2036514476578229158">Поискахте да посетите този сайт. Родителите ви могат да отговорят във Family Link.</translation>
@@ -1077,6 +1078,7 @@
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Може да поиска разрешение да разпознава кога използвате устройството активно</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате данните, които да се синхронизират, от настройките на Chrome</translation>
+<translation id="3203025201812691413">URL адресът трябва да се попълни</translation>
 <translation id="320323717674993345">Анулиране на плащането</translation>
 <translation id="3203366800380907218">От мрежата</translation>
 <translation id="3207960819495026254">С отметка</translation>
@@ -1691,6 +1693,7 @@
 <translation id="4386413576162606861">Ролеви игри</translation>
 <translation id="4390472908992056574">Периферия</translation>
 <translation id="4393632246160856858">Продукти за грижа за ноктите</translation>
+<translation id="4397059608630092079">Потвърждаване при всяко използване на автоматичното попълване</translation>
 <translation id="4406883609789734330">Надписи на живо</translation>
 <translation id="4406896451731180161">резултата от търсенето</translation>
 <translation id="4408413947728134509">„Бисквитки“ <ph name="NUM_COOKIES" /></translation>
@@ -1892,7 +1895,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо таблица в Google Таблици</translation>
 <translation id="4825507807291741242">Впечатляващо</translation>
 <translation id="4826588772550366629">камерата и микрофона ви</translation>
-<translation id="4827283332383516812">Изтриване на картата</translation>
 <translation id="4831993743164297314">Хартия за висококачествени изображения</translation>
 <translation id="483241715238664915">Включване на предупрежденията</translation>
 <translation id="4834250788637067901">Начини на плащане, оферти и адреси посредством Google Pay</translation>
@@ -2304,6 +2306,7 @@
 <translation id="5651323159439184939">Непрекъснат печат</translation>
 <translation id="5653432653077411130">Водоснабдяване и пречистване на отпадни води</translation>
 <translation id="5654927323611874862">Идентификатор на качения сигнал за срив:</translation>
+<translation id="5654965123204121933">URL адресът не включва задължителния низ за замяна <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Имейл</translation>
 <translation id="5660122698869360728">Нова интелигентна папка, която ви помага да запазвате всичките си страници за пазаруване на едно място и автоматично да проследявате цените, да получавате статистика за тях и др.</translation>
 <translation id="5663955426505430495">Администраторът на това устройство е инсталирал разширения за допълнителни функции. Разширенията имат достъп до част от данните ви.</translation>
@@ -2365,7 +2368,6 @@
 <translation id="5785756445106461925">Освен това тази страница включва други ресурси, които не са защитени. Докато се предават, те могат да бъдат видени от други хора и да бъдат модифицирани от извършител на атака, така че да се промени изгледът на страницата.</translation>
 <translation id="5786044859038896871">Искате ли да се попълнят данните за кредитната ви карта?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Този начин на плащане ще бъде изтрит от това устройство</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Няма}=1{данни за вход за 1 профил}other{данни за вход за # профила}}</translation>
 <translation id="5800727402210090597">Ремонт и услуги за мобилни телефони</translation>
 <translation id="580241730938216256">Стартиране на актуализирането</translation>

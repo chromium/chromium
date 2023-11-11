@@ -130,6 +130,7 @@
 <translation id="146902737843070955">האדמין שלך ביקש את השינוי הזה</translation>
 <translation id="1469148162491666137">הפעולה הזו תאפשר לאפליקציות <ph name="APP1_NAME" /> ו-<ph name="APP2_NAME" /> גישה למצלמה ולמיקרופון. בנוסף, תתאפשר גישה למצלמה ולמיקרופון גם לכל האפליקציות והאתרים שיש להם הרשאות לכך. יכול להיות שיהיה צורך לרענן את דף האינטרנט או להפעיל מחדש את האפליקציה.</translation>
 <translation id="147310119694673958">טעינת הסוללה של הטלפון: %<ph name="BATTERY_PERCENTAGE" /></translation>
+<translation id="1475340220124222168">‏החלפת המצב של הנקודה לשיתוף אינטרנט (Hotspot). הנקודה לשיתוף אינטרנט פועלת. יש מכשיר אחד מחובר.</translation>
 <translation id="1479909375538722835">תפריט נגישות צף</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">‏עם הכתבה, אפשר להקליד באמצעות הקול. מקישים על מקש ההכתבה או בוחרים בסמל המיקרופון שבתחתית המסך כשנמצאים בשדה טקסט. שפת ההכתבה שהוגדרה היא <ph name="LANGUAGE" />. הדיבור נשלח אל Google לעיבוד. אפשר לשנות את שפת ההכתבה בכל שלב בהגדרות &gt; נגישות.</translation>
@@ -887,6 +888,7 @@
 <translation id="4577990005084629481">צפייה בתצוגות מקדימות</translation>
 <translation id="4578906031062871102">תפריט ההגדרות נפתח</translation>
 <translation id="458210817642223147">‏צילום בפורמט GIF</translation>
+<translation id="4582666543382004902">‏הנקודה לשיתוף אינטרנט (Hotspot) הושבתה כדי לאפשר שימוש ב-Wi-Fi. כדי להשתמש בנקודה לשיתוף אינטרנט, צריך לכבות את ה-Wi-Fi.</translation>
 <translation id="4585337515783392668">הפסקת העברה במכשיר לא מוכר</translation>
 <translation id="4596144739579517758">עיצוב כהה כבוי.</translation>
 <translation id="4611292653554630842">התחבר</translation>
@@ -1093,6 +1095,7 @@
 <translation id="5393156353051693207">לוחצים לחיצה ארוכה במקום כלשהו כדי למיין מחדש את האפליקציות</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> מעל <ph name="IN_PLACE_APP" />. יש לשחרר כדי ליצור תיקייה.</translation>
 <translation id="5397578532367286026">‏המנהל (<ph name="MANAGER_EMAIL" />) יכול לבדוק את השימוש וההיסטוריה של משתמש זה ב-chrome.com.</translation>
+<translation id="540713187982329711">‏החלפת המצב של הנקודה לשיתוף אינטרנט (Hotspot). הנקודה לשיתוף אינטרנט פועלת. אין מכשיר מחובר.</translation>
 <translation id="5413656666631274079">דף ההגדרות</translation>
 <translation id="5414198321558177633">מתבצע רענון של רשימת הפרופילים. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="5426063383988017631">תפריט ההגדרות נסגר</translation>
@@ -1183,9 +1186,11 @@
 <translation id="576341972084747908">הורדת קובץ (<ph name="FILENAME" />) מסוכן</translation>
 <translation id="576453121877257266">תאורת הלילה פועלת.</translation>
 <translation id="5764569119212455782">מעבר לשפה האחרונה שנבחרה</translation>
+<translation id="5767730327234918501">‏האדמין שלך השבית את הנקודה לשיתוף אינטרנט (Hotspot).</translation>
 <translation id="5769373120130404283">מסך פרטיות</translation>
 <translation id="5773950591113557721">כך ניתן לגשת אל <ph name="APP_NAME" /> ולכל האפליקציות והאתרים שיש להם הרשאות גישה למצלמה ולמיקרופון</translation>
 <translation id="5774295353725270860">‏פתיחת היישום Files</translation>
+<translation id="5775936059231769503">‏החלפת המצב של הנקודה לשיתוף אינטרנט (Hotspot). הנקודה לשיתוף אינטרנט מושבתת.</translation>
 <translation id="5777841717266010279">להפסיק את שיתוף המסך?</translation>
 <translation id="5779721926447984944">קבצים מוצמדים</translation>
 <translation id="5785221443435874078">הסרת ההצעה הזו</translation>
@@ -1503,6 +1508,7 @@
 <translation id="7068360136237591149">פתיחת קבצים</translation>
 <translation id="7076293881109082629">כניסה</translation>
 <translation id="7076878155205969899">השתקת צלילים</translation>
+<translation id="7084678090004350185">‏החלפת המצב של הנקודה לשיתוף אינטרנט (Hotspot). הנקודה לשיתוף אינטרנט פועלת. יש <ph name="DEVICECOUNT" /> מכשירים מחוברים.</translation>
 <translation id="7086931198345821656">‏במסגרת העדכון הזה עליך לבצע Powerwash ב-<ph name="DEVICE_TYPE" />. כל הנתונים יימחקו. מידע נוסף על העדכון האחרון של <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">גישה באמצעות מתג</translation>
 <translation id="709015856939120012">הגדלת התצוגה של הדף</translation>

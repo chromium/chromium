@@ -1296,6 +1296,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7691043218961417207">Explorer le contenu à suivre</translation>
 <translation id="7697383401610880082">Poignée de déplacement</translation>
 <translation id="7698359219371678927">Créer un courriel dans <ph name="APP_NAME" /></translation>
+<translation id="7702029078562412515">Tuiles de requête</translation>
 <translation id="7702388902581909985">La suppression de vos données de navigation ne vous déconnecte pas de votre compte Google. Pour ce faire, <ph name="BEGIN_LINK1" />déconnectez-vous de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Utiliser les données mobiles</translation>
 <translation id="7709918231054955894">Afficher tous vos onglets</translation>
@@ -1320,7 +1321,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Tous les fichiers, 1 fichier dans la liste}one{Tous les fichiers, # fichier dans la liste}other{Tous les fichiers, # fichiers dans la liste}}</translation>
 <translation id="7815484226266492798">Capture d'écran longue</translation>
 <translation id="7822705602465980873">Lorsque vous êtes connecté, ces données sont associées à votre compte Google pour vous protéger dans l'ensemble des services Google. Elles permettent, par exemple, de renforcer la protection dans Gmail à la suite d'un incident de sécurité.</translation>
-<translation id="782705168687182233">Votre activité est enregistrée dans votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Votre ordinateur souhaite enregistrer cet appareil pour se connecter à un site</translation>
 <translation id="7844171778363018843">Aucune donnée à synchroniser n'a été sélectionnée</translation>
 <translation id="7846296061357476882">Services Google</translation>

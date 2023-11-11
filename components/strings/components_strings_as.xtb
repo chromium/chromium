@@ -304,6 +304,7 @@
 
       &lt;p&gt;অনুগ্ৰহ কৰি &lt;strong&gt;ছেটিংছ&lt;/strong&gt; এপৰ &lt;strong&gt;সাধাৰণ&lt;/strong&gt; অংশত তাৰিখ আৰু সময় মিলাওক।&lt;/p&gt;</translation>
 <translation id="1559839503761818503">আপোনাৰ প্ৰশাসকে আপোনাৰ ডিভাইচটো <ph name="DATE" />ৰ <ph name="TIME" />ত ৰিষ্টার্ট কৰিব</translation>
+<translation id="1564634006476980707">সন্ধানৰ URLৰ বাবে চুপাৰিছ কৰা HTTPS স্কীম: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">ঠিকনা, ইণ্টাৰফে’চৰ কনফিগাৰেশ্বন আৰু সংযোগৰ গুণগত মানৰ দৰে নেটৱৰ্কিঙৰ তথ্য</translation>
 <translation id="1567040042588613346">এই নীতিটোৱে বিচৰা ধৰণে কাম কৰি আছে, কিন্তু অন্য কোনো ঠাইত একেটা মান ছেট কৰা হৈছে আৰু সেইটোক এই নীতিটোৱে অপসাৰণ কৰিছে।</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> যোগ দিয়ক</translation>
@@ -733,6 +734,7 @@
 <translation id="2448295565072560657">আপুনি লগ ইন হৈ থকাৰ সময়ত এই ডিভাইচটোত সংলগ্ন কৰি থোৱা পৰিধীয়</translation>
 <translation id="2450021089947420533">যাত্ৰাসমূহ</translation>
 <translation id="2456755709261364512">আপোনাৰ বেটাৰী <ph name="REQUIRED_BATTERY_PRECENT" />%তকৈ বেছি চাৰ্জ হ’বই লাগিব</translation>
+<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> সন্ধান কৰক</translation>
 <translation id="2463739503403862330">পুৰ কৰক</translation>
 <translation id="2465688316154986572">ষ্টে'পল</translation>
 <translation id="2465914000209955735">আপুনি Chromeত ডাউনল’ড কৰা ফাইল পৰিচালনা কৰক</translation>
@@ -904,6 +906,7 @@
 <translation id="2814184336982254349">এই PDFটো এক্সেছ কৰিব নোৱাৰি। প্ৰসংগ মেনুখন খুলিবলৈ ছাৰ্চ কী আৰু m টিপক আৰু "PDFৰ পৰা পাঠ আহৰণ" সুবিধাটো অন কৰক</translation>
 <translation id="2818338148457093657">সৌন্দৰ্য চৰ্চাৰ সেৱা আৰু স্পা</translation>
 <translation id="2820957248982571256">স্কেন কৰি থকা হৈছে...</translation>
+<translation id="2824549017793319782">পোনপটীয়াকৈ ঠিকনাৰ বাৰত আপুনি সন্ধান কৰিবলৈ বিচৰা বিষয় টাইপ কৰিবলৈ বাছনি কৰক</translation>
 <translation id="2824775600643448204">ঠিকনা আৰু সন্ধানৰ বাৰ</translation>
 <translation id="2826760142808435982">এই সংযোগটো এনক্ৰিপ্ট কৰিবলৈ তথা সেইটোৰ বিশ্বাসযোগ্যতাৰ সত্যাপন কৰিবলৈ <ph name="CIPHER" /> ব্যৱহাৰ কৰা হৈছে আৰু সেইটোৱে <ph name="KX" />ক সলনা সলনিৰ মুখ্য উপায় হিচাপে ব্যৱহাৰ কৰে।</translation>
 <translation id="2835170189407361413">ফর্ম মচক</translation>
@@ -1689,6 +1692,7 @@
 <translation id="4386413576162606861">ভূমিকা পালন কৰা গে’ম</translation>
 <translation id="4390472908992056574">ব্ৰিম</translation>
 <translation id="4393632246160856858">নখৰ যত্ন লোৱা প্ৰ’ডাক্ট</translation>
+<translation id="4397059608630092079">স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধা ব্যৱহাৰ কৰি থাকোঁতে সদায় সত্যাপন কৰক</translation>
 <translation id="4406883609789734330">লাইভ কেপশ্বন</translation>
 <translation id="4406896451731180161">সন্ধানৰ ফলাফল</translation>
 <translation id="4408413947728134509">কুকী <ph name="NUM_COOKIES" /></translation>
@@ -1890,7 +1894,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, এখন নতুন Google Sheet ক্ষিপ্ৰভাৱে সৃষ্টি কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="4825507807291741242">শক্তিশালী</translation>
 <translation id="4826588772550366629">কেমেৰা আৰু মাইক্ৰ’ফ’ন</translation>
-<translation id="4827283332383516812">কাৰ্ডখন মচক</translation>
 <translation id="4831993743164297314">প্ৰতিচ্ছবি ছেট কৰা কাগজ</translation>
 <translation id="483241715238664915">সকীয়নি অন কৰক</translation>
 <translation id="4834250788637067901">Google Pay ব্যৱহাৰ কৰা পৰিশোধ পদ্ধতি, অফাৰ আৰু ঠিকনা</translation>
@@ -2364,7 +2367,6 @@
 <translation id="5785756445106461925">তাৰোপৰি, এই পৃষ্ঠাত কিছুমান অসুৰক্ষিত সমল আছে। এই সমল পৰিবহণৰ সময়ত অন্য লোকসকলে চাব পাৰিব আৰু পৃষ্ঠাটোৰ ৰূপ সলনি কৰিবলৈ কোনো আক্ৰমণকাৰীয়ে এই সমল সংশোধন কৰিব পাৰে।</translation>
 <translation id="5786044859038896871">আপুনি আপোনাৰ কাৰ্ডৰ তথ্য ভৰাব খোজে নেকি?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">এই পৰিশোধ পদ্ধতিটো এই ডিভাইচটোৰ পৰা মচি পেলোৱা হ’ব</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{এটাও নাই}=1{১ টা একাউণ্টৰ বাবে ছাইন ইনৰ ডেটা}one{# টা একাউণ্টৰ ছাইন ইনৰ ডেটা}other{# টা একাউণ্টৰ ছাইন ইনৰ ডেটা}}</translation>
 <translation id="5800727402210090597">ম’বাইল ফ’নৰ মেৰামতি আৰু সেৱা</translation>
 <translation id="580241730938216256">আপডে’ট আৰম্ভ কৰক</translation>
@@ -3748,6 +3750,7 @@
 <translation id="8490137692873530638">ষ্টেকাৰ ১০</translation>
 <translation id="8493948351860045254">ঠাই খালী কৰক</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ল’ড হোৱাত বহুত বেছি সময় লাগিল৷</translation>
+<translation id="8502972004418241366">এই ছাইটটোত আপোনাৰ <ph name="PERMISSION" /> ব্যৱহাৰ কৰিবলৈ, আপুনি Chromeক এক্সেছ দিব লাগিব</translation>
 <translation id="8503559462189395349">Chromeৰ পাছৱৰ্ড</translation>
 <translation id="8503813439785031346">ব্যৱহাৰকাৰীৰ নাম</translation>
 <translation id="8504928302600319133">কম্পিউটাৰ হাৰ্ডৱেৰ</translation>

@@ -1321,7 +1321,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Sve datoteke, 1 datoteka na popisu}one{Sve datoteke, # datoteka na popisu}few{Sve datoteke, # datoteke na popisu}other{Sve datoteke, # datoteka na popisu}}</translation>
 <translation id="7815484226266492798">Duga snimka zaslona</translation>
 <translation id="7822705602465980873">Kad ste prijavljeni, ti se podaci povezuju s vašim Google računom kako biste dobili zaštitu na svim Googleovim uslugama, na primjer radi poboljšanja zaštite na Gmailu nakon sigurnosnog incidenta.</translation>
-<translation id="782705168687182233">Vaša aktivnost sprema se na vaš <ph name="BEGIN_LINK" />Google račun<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Vaše računalo želi registrirati ovaj uređaj za prijavu na web-lokaciju</translation>
 <translation id="7844171778363018843">Za sinkronizaciju nije odabrana nijedna vrsta podataka</translation>
 <translation id="7846296061357476882">Googleove usluge</translation>

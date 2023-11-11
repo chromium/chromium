@@ -240,10 +240,6 @@ Si cette règle est désactivée, la protection contre l'hameçonnage côté cli
 <translation id="120937472976628837">Transmettre des infos sur le ventilateur</translation>
 <translation id="1212233008927724662">Désactiver le chargement différé du WebUI de connexion.</translation>
 <translation id="1216919699175573511">Activer la compatibilité avec la fonctionnalité Signed HTTP Exchange (SXG)</translation>
-<translation id="1218658069098810124">Si cette règle est activée, les connexions homologues WebRTC peuvent revenir à des versions antérieures obsolètes des protocoles TLS/DTLS (DTLS 1.0, TLS 1.0 et TLS 1.1).
-      Si cette règle est désactivée ou qu'elle n'est pas configurée, ces versions de TLS/DTLS sont désactivées.
-
-      Cette règle étant obsolète, elle sera supprimée dans la version M121 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1219027971768347970">Utiliser la configuration par défaut pour le bac à sable du processus audio</translation>
 <translation id="1221359380862872747">Charger les URL spécifiées lors de la connexion à la démonstration</translation>
 <translation id="1221955019309484560">Activer les mises à jour pour tous les composants</translation>
@@ -6325,20 +6321,6 @@ AVERTISSEMENT : Faites attention quand vous modifiez ce paramètre, car cela po
 <translation id="6404064917675764807">Ne pas signaler les événements de sessions CRD</translation>
 <translation id="6404360891305375004">Autoriser les partages de fichiers en réseau</translation>
 <translation id="6407093060083181305">Configurer la liste de blocage concernant l'installation des extensions</translation>
-<translation id="6407792833351198330">Permet de définir si une page qui utilise d'anciennes technologies fera l'objet d'un rapport en fonction de son URL.
-
-Lorsque cette règle est configurée, les URL dont le préfixe correspond à une entrée de la liste d'autorisation sont utilisées pour générer un rapport et l'importer. Les URL dont le préfixe ne correspond à aucune entrée de la liste sont ignorées.
-Si cette règle n'est pas configurée ou qu'aucun préfixe ne correspond, aucun rapport n'est généré.
-
-Les formats correspondant dans la liste sont semblables à ceux de la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> décrite sur https://support.google.com/chrome/a?p=url_blocklist_filter_format. À quelques exceptions près :
- * Le caractère générique "*" n'est pas accepté.
- * Les schémas, ports et requêtes sont ignorés.
- * Le sous-domaine doit toujours être spécifié pour être mis en correspondance.
- * La liste d'autorisation est limitée à 100 URL.
-
-Pour <ph name="PRODUCT_NAME" />, cette règle n'est appliquée que si l'ordinateur est enregistré avec <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
-
-Pour en savoir plus sur les anciennes technologies, consultez https://chromestatus.com/features.</translation>
 <translation id="640827304541402854">Désactiver la traversée de pare-feu depuis l'hôte d'accès à distance</translation>
 <translation id="6410847321564585975">Liste d'autorisation de rapports sur l'activité de site Web</translation>
 <translation id="6412352702230183710">Autoriser uniquement les hôtes de messagerie natifs au niveau du système</translation>
@@ -8157,6 +8139,11 @@ Si cette règle est désactivée ou n'est pas configurée, le SPN Kerberos gén�
           Pour les origines autres que celles représentées par les formats spécifiés ici, la valeur globale par défaut est utilisée à partir de la règle <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> si celle-ci est définie ou, à défaut, à partir de la configuration personnelle de l'utilisateur.
 
           Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="7904584382309857420">Cette règle a été supprimée dans M121. Elle permettait d'activer et de désactiver l'attestation à distance pour l'appareil, mais l'attestation à distance a été activée par défaut.
+
+Si vous activez cette règle, l'attestation à distance est activée pour l'appareil. Un certificat est automatiquement généré et importé sur le serveur de gestion des appareils.
+
+Si vous désactivez cette règle, ou si vous ne la configurez pas, aucun certificat n'est généré, et les appels à l'API <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> échouent.</translation>
 <translation id="7906983682927840536">Durée de traitement des demandes keepalive à la fermeture</translation>
 <translation id="7908384265697653397">Durée en jours au terme de laquelle l'utilisateur est déconnecté si la version de <ph name="PRODUCT_OS_NAME" /> est antérieure à la version <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> spécifiée</translation>
 <translation id="7911685775490889216">Configure l'intervalle d'affichage des images, en secondes, lorsque l'économiseur d'écran de l'écran de verrouillage doit afficher plusieurs images.

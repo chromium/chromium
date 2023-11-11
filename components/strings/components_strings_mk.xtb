@@ -1693,6 +1693,7 @@
 <translation id="4386413576162606861">Игри со глумење</translation>
 <translation id="4390472908992056574">Раб</translation>
 <translation id="4393632246160856858">Производи за нега на ноктите</translation>
+<translation id="4397059608630092079">Секогаш потврдувај кога се користи автоматско пополнување</translation>
 <translation id="4406883609789734330">Автоматски титлови</translation>
 <translation id="4406896451731180161">резултати од пребарувањето</translation>
 <translation id="4408413947728134509">Колачиња <ph name="NUM_COOKIES" /></translation>
@@ -1894,7 +1895,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да набрзина создадете нова табела на Google</translation>
 <translation id="4825507807291741242">Моќен</translation>
 <translation id="4826588772550366629">камера и микрофон</translation>
-<translation id="4827283332383516812">Бришење картичка</translation>
 <translation id="4831993743164297314">Хартија за префрлање слики</translation>
 <translation id="483241715238664915">Вклучи опомени</translation>
 <translation id="4834250788637067901">Начини на плаќање, понуди и адреси преку Google Pay</translation>
@@ -2368,7 +2368,6 @@
 <translation id="5785756445106461925">Понатаму, страницава опфаќа други ресурси што не се безбедни. Нив може да ги гледаат други лица при преносот и може да ги менува напаѓач за да го смени изгледот на страницата.</translation>
 <translation id="5786044859038896871">Дали сакате да ги пополните информациите од картичката?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Начинов на плаќање ќе се избрише од уредов</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Нема}=1{податоци за најавување за 1 сметка}one{податоци за најавување за # сметка}other{податоци за најавување за # сметки}}</translation>
 <translation id="5800727402210090597">Поправка и сервисирање на мобилни телефони</translation>
 <translation id="580241730938216256">Започни ажурирање</translation>

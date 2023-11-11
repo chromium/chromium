@@ -130,6 +130,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="146902737843070955">Din administrator har anmodet om denne ændring</translation>
 <translation id="1469148162491666137">Dette giver <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og alle apps og websites, der har kamera- og mikrofontilladelserne, adgang. Du skal muligvis opdatere websiden eller genstarte appen.</translation>
 <translation id="147310119694673958">Telefonens batteri: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1475340220124222168">Slå hotspot til/fra. Hotspot er aktiveret, og 1 enhed er forbundet.</translation>
 <translation id="1479909375538722835">Svævende menu med hjælpefunktioner</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Du kan skrive med din stemme ved hjælp af diktering. Tryk på dikteringstasten, eller vælg mikrofonikonet nederst på skærmen, når du er i et tekstfelt. Dit dikteringssprog er indstillet til <ph name="LANGUAGE" />. Tale sendes til behandling hos Google. Du kan til enhver tid ændre dikteringssproget i Indstillinger &gt; Hjælpefunktioner.</translation>
@@ -870,6 +871,14 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4548482551627849548">Flyt det aktive vindue til skrivebordet til venstre</translation>
 <translation id="4560576029703263363">Til</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Statusbakke, klokkeslæt <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Skjul adgangskode</translation>
 <translation id="4566144812051858745">Jeg er ikke interesseret i nogen forslag</translation>
 <translation id="4569753163207712681">Se din telefons seneste billeder, medier og apps</translation>
@@ -879,6 +888,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4577990005084629481">Se forhåndsvisninger</translation>
 <translation id="4578906031062871102">Indstillingsmenuen er åben</translation>
 <translation id="458210817642223147">Optag gif</translation>
+<translation id="4582666543382004902">Hotspot er blevet deaktiveret, så der kan bruges Wi-Fi. Deaktiver Wi-Fi for at bruge hotspot.</translation>
 <translation id="4585337515783392668">Stop cast på en ukendt modtager</translation>
 <translation id="4596144739579517758">Mørkt tema er deaktiveret</translation>
 <translation id="4611292653554630842">Log ind</translation>
@@ -1085,6 +1095,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5393156353051693207">Hold fingeren nede et vilkårligt sted for at omarrangere dine apps</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> oven på <ph name="IN_PLACE_APP" />, slip for at oprette mappe.</translation>
 <translation id="5397578532367286026">Denne brugers forbrug og historik kan ses af administratoren (<ph name="MANAGER_EMAIL" />) på chrome.com.</translation>
+<translation id="540713187982329711">Slå hotspot til/fra. Hotspot er aktiveret, og der er ingen forbundne enheder.</translation>
 <translation id="5413656666631274079">Siden Indstillinger</translation>
 <translation id="5414198321558177633">Profillisten opdateres. Dette kan tage et par minutter.</translation>
 <translation id="5426063383988017631">Indstillingsmenuen er lukket</translation>
@@ -1175,9 +1186,11 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="576341972084747908">Downloader skadelig <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Nattelys er slået til.</translation>
 <translation id="5764569119212455782">Skift til det senest valgte sprog</translation>
+<translation id="5767730327234918501">Din administrator har deaktiveret hotspot.</translation>
 <translation id="5769373120130404283">Privatlivsskærm</translation>
 <translation id="5773950591113557721">Dette giver <ph name="APP_NAME" /> og alle apps og websites, der har kamera- og mikrofontilladelserne, adgang</translation>
 <translation id="5774295353725270860">Åbn appen Filer</translation>
+<translation id="5775936059231769503">Slå hotspot til/fra. Hotspot er deaktiveret.</translation>
 <translation id="5777841717266010279">Vil du afslutte skærmdeling?</translation>
 <translation id="5779721926447984944">Fastgjorte filer</translation>
 <translation id="5785221443435874078">Fjern dette forslag</translation>
@@ -1495,6 +1508,7 @@ Installeret for nylig</translation>
 <translation id="7068360136237591149">Åbn filer</translation>
 <translation id="7076293881109082629">Login</translation>
 <translation id="7076878155205969899">Slå lyden fra</translation>
+<translation id="7084678090004350185">Slå hotspot til/fra. Hotspot er aktiveret, og <ph name="DEVICECOUNT" /> enheder er forbundet.</translation>
 <translation id="7086931198345821656">Denne opdatering kræver, at du powerwasher din <ph name="DEVICE_TYPE" />. Alle data vil blive slettet. Få flere oplysninger om den nyeste <ph name="SYSTEM_APP_NAME" />-opdatering.</translation>
 <translation id="7088960765736518739">Kontaktadgang</translation>
 <translation id="709015856939120012">Zoom ind på en side</translation>

@@ -868,6 +868,14 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4548482551627849548">Sposta la finestra attiva sulla scrivania a sinistra</translation>
 <translation id="4560576029703263363">On</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Barra di stato, ora <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />,
+        <ph name="NOTIFICATION" />
+        <ph name="IME" />,
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Nascondi password</translation>
 <translation id="4566144812051858745">Non mi interessa alcun suggerimento</translation>
 <translation id="4569753163207712681">Visualizza app, contenuti multimediali e foto recenti dello smartphone</translation>

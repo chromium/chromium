@@ -532,6 +532,7 @@
 <translation id="2025891858974379949">असुरक्षित आशय</translation>
 <translation id="2027465737841872819">प्लॅस्टिक</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />प्रॉक्सी आणि फायरवॉल तपासणे<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">शॉर्टकट हा <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> द्वारे परिभाषित केलेल्या शोध पुरवठादाराच्या डीफॉल्ट कीवर्डसारखा असू शकत नाही: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">तरीही सेव्ह करा</translation>
 <translation id="2035400064145347639">प्रवास मार्गदर्शक आणि प्रवासवर्णन</translation>
 <translation id="2036514476578229158">तुम्हाला या साइटला भेट देण्यास सांगितले आहे. तुमचे पालक Family Link मध्ये उत्तर देऊ शकतात.</translation>
@@ -1077,6 +1078,7 @@
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> वर <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">तुम्ही हे डिव्हाइस सक्रियपणे कधी वापरता त्याबद्दल जाणून घेण्याची विनंती करू शकते</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये तुम्ही कोणती माहिती सिंक करता ते व्यवस्थापित करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
+<translation id="3203025201812691413">URL रिकामी असू शकत नाही</translation>
 <translation id="320323717674993345">पेमेंट रद्द करा</translation>
 <translation id="3203366800380907218">वेबवरील</translation>
 <translation id="3207960819495026254">बुकमार्क केलेली</translation>
@@ -1690,6 +1692,7 @@
 <translation id="4386413576162606861">रोलप्लेइंग गेम</translation>
 <translation id="4390472908992056574">ब्रिम</translation>
 <translation id="4393632246160856858">नखांच्या निगेशी संबंधित उत्पादने</translation>
+<translation id="4397059608630092079">ऑटोफिल वापरत असताना नेहमी पडताळणी करा</translation>
 <translation id="4406883609789734330">लाइव्ह कॅप्शन</translation>
 <translation id="4406896451731180161">शोध परिणाम</translation>
 <translation id="4408413947728134509">कुकीज <ph name="NUM_COOKIES" /></translation>
@@ -1891,7 +1894,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, नवीन Google शीट झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="4825507807291741242">प्रभावी</translation>
 <translation id="4826588772550366629">कॅमेरा आणि मायक्रोफोन</translation>
-<translation id="4827283332383516812">कार्ड हटवा</translation>
 <translation id="4831993743164297314">इमेज सेटर पेपर</translation>
 <translation id="483241715238664915">चेतावण्या सुरू करा</translation>
 <translation id="4834250788637067901">Google Pay वापरून पेमेंट पद्धती, ऑफर आणि अ‍ॅड्रेस</translation>
@@ -2303,6 +2305,7 @@
 <translation id="5651323159439184939">ट्रॅक्टर फीड</translation>
 <translation id="5653432653077411130">पाणी पुरवठा आणि जलसंस्करण</translation>
 <translation id="5654927323611874862">अपलोड केलेल्या क्रॅश अहवालाचा आयडी:</translation>
+<translation id="5654965123204121933">URL मध्ये आवश्यक बदली स्ट्रिंग समाविष्ट नाही <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ई-मेल</translation>
 <translation id="5660122698869360728">नवीन स्मार्ट फोल्डर जे तुम्हाला तुमची सर्व खरेदी पेज एकाच ठिकाणी सेव्ह करण्यात आणि किमतीचा आपोआप माग ठेवण्यात, किंमतीचे इनसाइट मिळवण्यास आणि बरेच काही करण्यात मदत करते.</translation>
 <translation id="5663955426505430495">या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरने अतिरिक्त फंक्शनसाठी एक्स्टेंशन इंस्टॉल केले आहे. एक्स्टेंशनकडे तुमच्या काही डेटाचा अ‍ॅक्सेस आहे.</translation>
@@ -2364,7 +2367,6 @@
 <translation id="5785756445106461925">पुढे, या पृष्ठात सुरक्षित नसलेली इतर संसाधने समाविष्ट आहेत. ही संसाधने संक्रमणात असताना इतरांद्वारे पाहिली जाऊ शकतात आणि पृष्ठाचे स्वरूप बदलण्यासाठी आक्रमणकर्त्याद्वारे सुधारित केली जाऊ शकतात.</translation>
 <translation id="5786044859038896871">तुम्ही तुमची कार्ड माहिती भरू इच्छित आहात?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">या डिव्हाइसवरून ही पेमेंट पद्धत हटवली जाईल</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{None}=1{एका खात्यासाठी साइन इन डेटा}other{# खात्यांसाठी साइन इन डेटा}}</translation>
 <translation id="5800727402210090597">मोबाइल फोन दुरुस्ती आणि सेवा</translation>
 <translation id="580241730938216256">अपडेट सुरू करा</translation>

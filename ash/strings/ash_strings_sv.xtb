@@ -130,6 +130,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="146902737843070955">Administratören har begärt denna ändring</translation>
 <translation id="1469148162491666137">Detta ger åtkomst för <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> och alla appar och webbplatser med kamera- och mikrofonbehörighet. Du kan behöva uppdatera webbsidan eller starta om appen.</translation>
 <translation id="147310119694673958">Telefonbatteri <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1475340220124222168">Aktivera eller inaktivera surfzon. Surfzonen är aktiverad. 1 enhet är ansluten.</translation>
 <translation id="1479909375538722835">Flytande tillgänglighetsmeny</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Med diktering kan du skriva med rösten. Tryck på dikteringstangenten eller välj mikrofonikonen längst ned på skärmen när du är i ett textfält. Dikteringsspråket är inställt på <ph name="LANGUAGE" />. Tal skickas till Google för bearbetning. Du kan när som helst ändra dikteringsspråket i Inställningar &gt; Tillgänglighet.</translation>
@@ -887,6 +888,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4577990005084629481">Visa förhandsgranskningar</translation>
 <translation id="4578906031062871102">Inställningsmenyn har öppnats</translation>
 <translation id="458210817642223147">Spela in gif</translation>
+<translation id="4582666543382004902">Surfzonen har inaktiverats för att använda wifi. Inaktivera wifi för att använda surfzon.</translation>
 <translation id="4585337515783392668">Sluta casta till en okänd mottagare</translation>
 <translation id="4596144739579517758">Mörkt tema är av</translation>
 <translation id="4611292653554630842">Logga in</translation>
@@ -1093,6 +1095,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5393156353051693207">Tryck länge var som helst och ändra ordning på apparna</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> ovanpå <ph name="IN_PLACE_APP" />, om du släpper skapas en mapp.</translation>
 <translation id="5397578532367286026">Användning och historik för den här användaren kan granskas av den ansvarige (<ph name="MANAGER_EMAIL" />) på chrome.com.</translation>
+<translation id="540713187982329711">Aktivera eller inaktivera surfzon. Surfzonen är aktiverad. Ingen enhet är ansluten.</translation>
 <translation id="5413656666631274079">Inställningssida</translation>
 <translation id="5414198321558177633">Uppdaterar listan över profiler. Det kan ta några minuter.</translation>
 <translation id="5426063383988017631">Inställningsmenyn har stängts</translation>
@@ -1183,9 +1186,11 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="576341972084747908">Den skadliga filen <ph name="FILENAME" /> laddas ned</translation>
 <translation id="576453121877257266">Nattljus är aktiverat.</translation>
 <translation id="5764569119212455782">Byt till det senast valda språket</translation>
+<translation id="5767730327234918501">Administratören har inaktiverat surfzonen.</translation>
 <translation id="5769373120130404283">Integritetsskärm</translation>
 <translation id="5773950591113557721">Detta ger åtkomst för <ph name="APP_NAME" /> och alla appar och webbplatser med kamera- och mikrofonbehörighet</translation>
 <translation id="5774295353725270860">Öppna appen Filer</translation>
+<translation id="5775936059231769503">Aktivera eller inaktivera surfzon. Surfzonen är inaktiverad.</translation>
 <translation id="5777841717266010279">Vill du avbryta skärmdelningen?</translation>
 <translation id="5779721926447984944">Filer som har fästs</translation>
 <translation id="5785221443435874078">Ta bort förslaget</translation>
@@ -1503,6 +1508,7 @@ Nyligen installerad</translation>
 <translation id="7068360136237591149">Öppna filer</translation>
 <translation id="7076293881109082629">Logga in</translation>
 <translation id="7076878155205969899">Stäng av ljudet</translation>
+<translation id="7084678090004350185">Aktivera eller inaktivera surfzon. Surfzonen är aktiverad. <ph name="DEVICECOUNT" /> enheter är anslutna.</translation>
 <translation id="7086931198345821656">Denna uppdatering kräver att en powerwash görs av <ph name="DEVICE_TYPE" />. All data raderas. Läs mer om den senaste uppdateringen av <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Brytarstyrning</translation>
 <translation id="709015856939120012">Zooma in på sidan</translation>

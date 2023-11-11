@@ -532,6 +532,7 @@
 <translation id="2025891858974379949">不安全内容</translation>
 <translation id="2027465737841872819">塑料</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />检查代理服务器和防火墙<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">下述快捷字词不能与 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> 所定义的默认搜索服务提供商关键字相同：<ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">仍然保存</translation>
 <translation id="2035400064145347639">旅行指南与游记</translation>
 <translation id="2036514476578229158">你已请求访问此网站。你的家长可在 Family Link 内回复。</translation>
@@ -1073,6 +1074,7 @@
 <translation id="3195213714973468956">“<ph name="SERVER_NAME" />”上的“<ph name="PRINTER_NAME" />”</translation>
 <translation id="3197136577151645743">可以询问您何时在使用此设备</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中管理您要同步的信息</translation>
+<translation id="3203025201812691413">网址不能为空</translation>
 <translation id="320323717674993345">取消付款</translation>
 <translation id="3203366800380907218">来自网络</translation>
 <translation id="3207960819495026254">已加书签</translation>
@@ -1685,6 +1687,7 @@
 <translation id="4386413576162606861">角色扮演游戏</translation>
 <translation id="4390472908992056574">帽檐式</translation>
 <translation id="4393632246160856858">指甲护理产品</translation>
+<translation id="4397059608630092079">使用自动填充时，一律进行验证</translation>
 <translation id="4406883609789734330">实时字幕</translation>
 <translation id="4406896451731180161">搜索结果</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" />Cookie</translation>
@@ -1886,7 +1889,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可快速创建新的 Google 表格</translation>
 <translation id="4825507807291741242">强大</translation>
 <translation id="4826588772550366629">摄像头和麦克风</translation>
-<translation id="4827283332383516812">删除卡片</translation>
 <translation id="4831993743164297314">照排机用纸</translation>
 <translation id="483241715238664915">开启警告</translation>
 <translation id="4834250788637067901">Google Pay 中存储的付款方式、优惠和地址信息</translation>
@@ -2298,6 +2300,7 @@
 <translation id="5651323159439184939">牵引送纸</translation>
 <translation id="5653432653077411130">供水与水处理</translation>
 <translation id="5654927323611874862">已上传的崩溃报告 ID：</translation>
+<translation id="5654965123204121933">下述网址未包含必需的替换字符串“<ph name="SEARCH_TERMS_REPLACEMENT" />”：<ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">电子邮件</translation>
 <translation id="5660122698869360728">一个新的智能文件夹，可帮助您在一个地方集中保存所有购物页面，并自动跟踪价格、获取价格分析洞见，等等。</translation>
 <translation id="5663955426505430495">此设备的管理员已安装了一些扩展程序来提供更多功能。这些扩展程序有权访问您的部分数据。</translation>
@@ -2358,7 +2361,6 @@
 <translation id="5785756445106461925">而且，此页中包含其他不安全的资源。他人能在这些资源传输过程中进行查看，攻击者也可以修改这些资源，从而改变此页的外观。</translation>
 <translation id="5786044859038896871">要填充您的信用卡信息吗？</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">此付款方式将被从该设备中删除</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{无}=1{1 个账号的登录数据}other{# 个账号的登录数据}}</translation>
 <translation id="5800727402210090597">手机维修和服务</translation>
 <translation id="580241730938216256">开始更新</translation>

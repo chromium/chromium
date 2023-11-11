@@ -1216,6 +1216,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7367530036083223701">Sigurno pristupajte svojim zaporkama na početnom zaslonu pomoću widgeta Upravitelj zaporki.</translation>
 <translation id="7380220816562673297">Zasad zaporke možete dijeliti samo s članovima obitelji. <ph name="BEGIN_LINK" />Izradite obiteljsku grupu<ph name="END_LINK" /> s najviše šest članova i još bolje iskoristite proizvode i pretplate kojima se koristite na Googleu.</translation>
 <translation id="7383797227493018512">Popis za čitanje</translation>
+<translation id="739101637685146669">Koji URL želite označiti?</translation>
 <translation id="7396331865858820922">Zaporka nije podijeljena</translation>
 <translation id="7398893703713203428">Izradi vezu</translation>
 <translation id="7399802613464275309">Sigurnosna provjera</translation>
@@ -1451,6 +1452,7 @@ Vaši su podaci šifrirani vašom šifrom <ph name="TIME" /> Unesite je da biste
 <translation id="8591976964826315682">Blokiranje kolačića trećih strana u anonimnom načinu</translation>
 <translation id="8593565399399144771">Ovdje možete otvoriti novu karticu.</translation>
 <translation id="8605219856220328675">Zatvori karticu.</translation>
+<translation id="8609743333007776886">Dodaj ${url} u oznake</translation>
 <translation id="8613883225817609844">Sakrij opciju Nedavne kartice</translation>
 <translation id="8620640915598389714">Uredi</translation>
 <translation id="8624447588354561276">Broj paketa</translation>

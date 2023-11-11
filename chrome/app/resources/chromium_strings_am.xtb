@@ -82,6 +82,7 @@
 <translation id="2478295928299953161">Chromium በቅርቡ ይዘጋል</translation>
 <translation id="2483889755041906834">በChromium ውስጥ</translation>
 <translation id="2485422356828889247">አራግፍ</translation>
+<translation id="2513154137948333830">ዳግም ማስነሳት ያስፈልጋል፦ <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2554739539410784893">Chromium ነባር የይለፍ ቃላትን ለመተካት እየሞከረ ነው። ይህን ለመፍቀድ የWindows የይለፍ ቃልዎን ይተይቡ።</translation>
 <translation id="2560420686485554789">Chromium ፋይሎችን ለማውረድ የማከማቻ መዳረሻ ያስፈልገዋል</translation>
 <translation id="2572494885440352020">Chromium አጋዥ</translation>
@@ -98,12 +99,14 @@
 <translation id="2785438272836277133">ይህ ቅጥያ ተንኮል አዘል ዌርን ይዟል እና ደህንነቱ የተጠበቀ አይደለም። የግል መረጃዎን ጨምሮ ከእንግዲህ እርስዎ በሚጎበኟቸው ጣቢያዎች ላይ ያለዎን ውሂብ ማየት እና መለወጥ እንዳይችል ከChromium ያስወግዱት።</translation>
 <translation id="2799223571221894425">ዳግም አስጀምር</translation>
 <translation id="2837693172913560447">ይህ አዲስ የChromium መገለጫ ለ<ph name="USER_EMAIL_ADDRESS" /> ይፈጥራል</translation>
+<translation id="2846251086934905009">የጭነት ስህተት፦ ጫኚው አልተጠናቀቀም። ጭነቱ ተቋርጧል።</translation>
 <translation id="2847479871509788944">ከChromium አስወግድ...</translation>
 <translation id="2850691299438350830">በChromium ላይ ደህንነትዎን ይጠብቃል እና በመለያ በገቡባቸው ሌሎች የGoogle መተግበሪያዎች ላይ ደህንነትዎን ለማሻሻል ሥራ ላይ ሊውል ይችላል።</translation>
 <translation id="2885378588091291677">ተግባር መሪ</translation>
 <translation id="2910007522516064972">ስለ &amp;Chromium</translation>
 <translation id="2915996080311180594">በኋላ ዳግም አስነሳ</translation>
 <translation id="2928420929544864228">ጭነት ተጠናቅቋል።</translation>
+<translation id="2945997411976714835">የጭነት ስህተት፦ የጫኙ ሂደት መጀመር አልተሳካም።</translation>
 <translation id="2977470724722393594">Chromium የተዘመነ ነው</translation>
 <translation id="2977506796191543575">አንድ ጣቢያ የእርስዎን የይለፍ ቃል ለመስረቅ ከሞከረ ወይም ጎጂ ፋይል ሲያወርዱ Chromium እንዲሁም የገጽ ይዘት ቢትስንም ጨምሮ ዩአርኤሎችን ወደ የጥንቃቄ አሰሳ ሊልክ ይችላል</translation>
 <translation id="3032706164202344641">Chromium የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም። ቆይተው እንደገና ይሞክሩ።</translation>
@@ -161,6 +164,7 @@
 <translation id="3909353120217047026">ይህ ቅጥያ የChrome የድር መደብር መመሪያን ይጥሳል እና ደህንነቱ ያልተጠበቀ ሊሆን ይችላል። የግል መረጃዎን ጨምሮ ከእንግዲህ እርስዎ በሚጎበኟቸው ጣቢያዎች ላይ ያለዎን ውሂብ ማየት እና መለወጥ እንዳይችል ከChromium ያስወግዱት።</translation>
 <translation id="391789666908693569">የእርስዎ መለያ የሚተዳደረው በ<ph name="MANAGER_NAME" /> ነው። የእርስዎ አስተዳዳሪ ይህንን የChrome አሳሽ መገለጫ እና እንደ እልባቶች፣ ታሪክ እና የይለፍ ቃላት ያሉ ውሂቡን መመልከት እና ማርትዕ ይችላሉ።</translation>
 <translation id="3922825997980843979">ሲተይቡ Chromium የአድራሻ አሞሌው ወይም የፍለጋ ሳጥኑን ይዘት ወደ የእርስዎ ነባር የፍለጋ ፕሮግራም ይልካል</translation>
+<translation id="3941890832296813527">የጭነት ስህተት፦ የጫኙ የፋይል ስም ልክ ያልሆነ ወይም የማይደገፍ ነው።</translation>
 <translation id="3945058413678539331">Chromium የይለፍ ቃላትን ለመቅዳት እየሞከረ ነው። ይህንን ለመፍቀድ የWindows የይለፍ ቃልዎን ይተይቡ።</translation>
 <translation id="3962647064319009959">Chromium እንዴት ደህንነትዎን እንደሚጠብቅ ይወቁ</translation>
 <translation id="3975724895399328945">ስለ Google Chrome ለሙከራ</translation>
@@ -223,6 +227,7 @@
 <translation id="5296845517486664001">ሙከራዎች ሲበሩ እና Chromium በዘፈቀደ እርስዎን በገቢር ሙከራ ካስቀመጠ የአሰሳ ታሪክዎ በሚያዩዋቸው ማስታወቂያዎች እና ከታች በተገመተው ዝንባሌዎች ላይ ተጽዕኖ ይኖረዋል። የእርስዎን ግላዊነት ለመጠበቅ Chromium በየወሩ ዝንባሌዎችዎን ይሰርዛል።</translation>
 <translation id="5352264705793813212">Chromium ለግምገማዎ አንዳንድ የደህንነት ምክሮችን አግኝቷል</translation>
 <translation id="5358375970380395591">በሚተዳደር መለያ እየገቡ ነው፣ እና አስተዳዳሪው በእርስዎ Chromium መገለጫ ላይ ቁጥጥር እየሰጡት ነው። እንደ እርስዎ  መተግበሪያዎች፣ ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች ያሉ የእርስዎ Chromium ውሂብ እስከ መጨረሻው ከ<ph name="USER_NAME" /> ጋር የተያያዙ ይሆናሉ። ይህን ውሂብ በGoogle የመለያዎች Dashboard አማካኝነት ሊሰርዙት ይችላሉ፣ ነገር ግን ይህን ውሂብ ከሌላ መለያ ጋር ሊያጎዳኙት አይችሉም። <ph name="LEARN_MORE" /></translation>
+<translation id="5368118228313795342">ተጨማሪ ኮድ፦ <ph name="EXTRA_CODE" />።</translation>
 <translation id="5386450000063123300">Chromiumን በማዘመን ላይ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">የChromium በመለያ መግባትን ይፍቀዱ</translation>
 <translation id="5398878173008909840">አዲስ የChromium ስሪት አለ።</translation>
@@ -425,6 +430,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8648201657708811153">Google Chrome ለሙከራ የእርስዎ ነባሪ አሳሽ እንዲሆን ማድረግ አይቻልም።</translation>
 <translation id="8697124171261953979">እንዲሁም Chromiumን ሲጀምሩት ወይም ከኦምኒቦክሱ ሆነው ሲፈልጉ የሚታየውን ገፅ ይቆጣጠራል።</translation>
 <translation id="8704119203788522458">ይሄ የእርስዎ Chromium ነው</translation>
+<translation id="878572486461146056">የጭነት ስህተት፦ የእርስዎ የአውታረ መረብ አስተዳዳሪ ጭነትን የሚከላከል የቡድን መመሪያ ተግባራዊ አድርጓል፦ <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium ለዚህ ጣቢያ የእርስዎን ካሜራ እና ማይክሮፎን ለመድረስ ፈቃድ ያስፈልገዋል</translation>
 <translation id="8826492472752484139">«የሚስጥር ቁልፍ አስተዳዳሪ» ላይ ጠቅ ያድርጉ</translation>
 <translation id="8833697763442816810">የChromiumOS ስርዓት</translation>

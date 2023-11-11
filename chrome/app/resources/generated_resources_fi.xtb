@@ -2917,6 +2917,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3237871032310650497">Poistetaanko sivustodata (<ph name="SITE_NAME" />), joka on rajoitettu tälle sivustolle: <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="3238192140106069382">Yhdistetään ja tarkistetaan</translation>
 <translation id="3239373508713281971">Aikaraja poistettu: <ph name="APP_NAME" /></translation>
+<translation id="3240299564104448052">Näytät olevan offline-tilassa.</translation>
 <translation id="3240426699337459095">Linkki kopioitu</translation>
 <translation id="3241638166094654466">Kunkin rivin solut:</translation>
 <translation id="3241680850019875542">Voit pakata laajennuksen valitsemalla sen juurihakemiston. Jos haluat päivittää laajennuksen, valitse myös yksityinen avaintiedosto, jotta laajennusta voidaan käyttää uudelleen.</translation>
@@ -4267,6 +4268,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google-tili}other{<ph name="EXTRA_ACCOUNTS" /> Google-tiliä}}</translation>
 <translation id="4312866146174492540">Estä (oletus)</translation>
 <translation id="4314497418046265427">Yhdistä puhelimesi ja <ph name="DEVICE_TYPE" />, niin saat enemmän aikaan</translation>
+<translation id="4314561087119792062">Lisää uusi tukiaseman nimi</translation>
 <translation id="4314815835985389558">Synkronointiasetusten muokkaus</translation>
 <translation id="4316850752623536204">Kehittäjän verkkosivusto</translation>
 <translation id="4317733381297736564">Sovelluksensisäiset ostokset</translation>
@@ -4556,6 +4558,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4546345569117159016">Kakkospainike</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> haluaa käyttää tätä laajennusta:</translation>
 <translation id="4546692474302123343">Google Assistantin äänisyöte</translation>
+<translation id="4547538408998421970">Tämän päivän raja on saavutettu.</translation>
 <translation id="4547659257713117923">Ei välilehtiä muista laitteista</translation>
 <translation id="4547672827276975204">Aseta automaattisesti</translation>
 <translation id="4548858987594081919">Lisää käyttäjätunnuksesi tälle sivustolle, jotta Google Salasanat voi tallentaa kirjautumistietosi</translation>
@@ -5281,6 +5284,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5130675701626084557">Profiilia ei voitu ladata. Yritä uudelleen tai pyydä apua operaattorilta.</translation>
 <translation id="5131591206283983824">Kosketuslevyn napauttamalla vetäminen</translation>
 <translation id="5135533361271311778">Kirjanmerkin luominen epäonnistui.</translation>
+<translation id="513555878193063507">Lisää uusi APN</translation>
 <translation id="5136343472380336530">Varmista, että kumpikaan laite ei ole lukittuna, että ne ovat lähekkäin ja että Bluetooth on päällä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="5138227688689900538">Näytä vähemmän</translation>
 <translation id="5139112070765735680"><ph name="DEFAULT_SEARCH_ENGINE_NAME" />, haku <ph name="QUERY_NAME" /></translation>
@@ -5647,7 +5651,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5436492226391861498">Odotetaan välityspalvelintunnelia...</translation>
 <translation id="5436510242972373446">Haku sivustosta <ph name="SITE_NAME" />:</translation>
 <translation id="5436575196282187764">Google Kuvat ‑muistot</translation>
-<translation id="5439680044267106777">Ohita ja määritä uusi profiili</translation>
 <translation id="544083962418256601">Luo pikakuvakkeita...</translation>
 <translation id="5441133529460183413">Verkkosovellus asennettu Chrome-selaimesta</translation>
 <translation id="5441292787273562014">Päivitä sivu</translation>
@@ -6336,7 +6339,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="5992225669837656567">Kaikkien hiirien yhteys on katkaistu</translation>
 <translation id="5992652489368666106">Ei reunusta</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 sivuston tarkistus valmis}other{{NUM_SITES} sivuston tarkistus valmis}}</translation>
-<translation id="5996200702878169822">Voit ottaa eSIM-profiilin käyttöön myös <ph name="BEGIN_LINK" />manuaalisesti<ph name="END_LINK" />.</translation>
 <translation id="5997337190805127100">Lisätietoja sivustojen käyttöoikeuksista</translation>
 <translation id="5998458948782718639">Auta parantamaan automaattista täyttöä</translation>
 <translation id="5999024481231496910">Olet ottanut käyttöön kolmannen osapuolen evästeiden testauksen. Asetussivulla ei voi ohittaa tätä. Jos haluat ottaa kolmannen osapuolen evästeet uudelleen käyttöön, käynnistä Chrome uudelleen niin, että ominaisuus ei ole käytössä.</translation>
@@ -6737,6 +6739,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6309510305002439352">Mikrofoni poistettu käytöstä</translation>
 <translation id="6310141306111263820">eSIM-profiilia ei voitu asentaa. Pyydä apua operaattorilta.</translation>
 <translation id="6311220991371174222">Chromea ei voi käynnistää, koska profiilia avattaessa tapahtui virhe. Yritä käynnistää Chrome uudelleen.</translation>
+<translation id="6311708879134408222">Voit yrittää uudelleen huomenna.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Turvatarkistus suoritettiin 1 päivä sitten}other{Turvatarkistus suoritettiin {NUM_DAYS} päivää sitten}}</translation>
 <translation id="6312638141433622592">Tarjoa lukijatilaa, jos artikkeli tukee sitä</translation>
 <translation id="6313641880021325787">POISTU VR:STÄ</translation>
@@ -7261,6 +7264,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6749473226660745022">Kuvat</translation>
 <translation id="6750757184909117990">Poista mobiiliyhteys käytöstä</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>
+<translation id="6756059675436942777">Tarkista internetyhteys ja yritä uudelleen.</translation>
 <translation id="6756157672127672536">Tiedostot-sovelluksen kautta voit pikakäyttää Google Driveen, ulkoiseen tallennustilaan tai Chrome-käyttöjärjestelmää käyttävälle laitteelle tallennettuja tiedostoja.</translation>
 <translation id="6756643207511618722">Puhemoottorit</translation>
 <translation id="6757431299485455321">Auta muita laitteita löytämään tämä hotspot.</translation>
@@ -7674,7 +7678,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7056418393177503237">{0,plural, =1{Incognito}other{# avointa incognito-ikkunaa}}</translation>
 <translation id="7056526158851679338">Tark&amp;ista laitteet</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Turvatarkistus tehtiin minuutti sitten}other{Turvatarkistus tehtiin {NUM_MINS} minuuttia sitten}}</translation>
-<translation id="7057767408836081338">Sovellusdataa ei löydetty, sovellus yritetään silti suorittaa…</translation>
 <translation id="7058024590501568315">Piilotettu verkko</translation>
 <translation id="7059858479264779982">Aseta käynnistymään automaattisesti</translation>
 <translation id="7063129466199351735">Pikakuvakkeita käsitellään…</translation>
@@ -8984,6 +8987,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8082106343289440791">Lisätäänkö <ph name="DEVICE_NAME" /> laitepariksi?</translation>
 <translation id="8082390128630131497">Kun ADB-virheenkorjaus poistetaan käytöstä, <ph name="DEVICE_TYPE" /> on palautettava tehdasasetuksiin. Kaikki käyttäjätilit ja paikalliset tiedot poistetaan.</translation>
 <translation id="8084114998886531721">Salasana tallennettu</translation>
+<translation id="8084429490152575036">Matkapuhelimen APN-asetukset</translation>
 <translation id="8084510406207562688">Palauta kaikki välilehdet</translation>
 <translation id="8084628902026812045">Sivusto ei käytä turvallista yhteyttä, ja tiedostoa on saatettu peukaloida</translation>
 <translation id="8086015605808120405">Määritetään tulostinta <ph name="PRINTER_NAME" />…</translation>

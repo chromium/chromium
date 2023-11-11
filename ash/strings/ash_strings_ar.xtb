@@ -130,6 +130,7 @@
 <translation id="146902737843070955">طلب المشرف إجراء هذا التغيير.</translation>
 <translation id="1469148162491666137">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا والميكروفون لكلّ من تطبيقَي "<ph name="APP1_NAME" />" و"<ph name="APP2_NAME" />" ولجميع التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن. قد تحتاج إلى إعادة تحميل صفحة الويب أو إعادة تشغيل التطبيق.</translation>
 <translation id="147310119694673958">بطارية الهاتف: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">نقطة الاتصال مفعَّلة، ومتصل بها جهاز واحد. يمكنك إيقافها.</translation>
 <translation id="1479909375538722835">قائمة "أدوات تسهيل الاستخدام" العائمة
 </translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -872,6 +873,14 @@
 <translation id="4548482551627849548">نقل النافذة النشطة إلى سطح المكتب على يمين الشاشة</translation>
 <translation id="4560576029703263363">مُفعَّل</translation>
 <translation id="4561267230861221837">شبكة الجيل الثالث</translation>
+<translation id="4564299521485948903">شريط الحالة، الوقت <ph name="TIME" />،
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />،
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />،
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">إخفاء كلمة المرور</translation>
 <translation id="4566144812051858745">لست مهتمًا بأي اقتراحات.</translation>
 <translation id="4569753163207712681">عرض الصور والوسائط والتطبيقات الحديثة في هاتفك</translation>
@@ -881,6 +890,7 @@
 <translation id="4577990005084629481">عرض المعاينات</translation>
 <translation id="4578906031062871102">تم فتح قائمة الإعدادات.</translation>
 <translation id="458210817642223147">‏تسجيل ملف GIF</translation>
+<translation id="4582666543382004902">‏تم إيقاف نقطة الاتصال نتيجة تفعيل شبكة Wi-Fi، لذا عليك إيقاف شبكة Wi-Fi أولاً لاستخدام نقطة الاتصال.</translation>
 <translation id="4585337515783392668">إيقاف الإرسال إلى مستلم غير معروف</translation>
 <translation id="4596144739579517758">المظهر الداكن غير مُفعَّل.</translation>
 <translation id="4611292653554630842">تسجيل الدخول</translation>
@@ -1087,6 +1097,7 @@
 <translation id="5393156353051693207">انقر مع الاستمرار على أي مكان على الشاشة لإعادة ترتيب التطبيقات</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> في أعلى <ph name="IN_PLACE_APP" />، يُرجى التحرير لإنشاء مجلد.</translation>
 <translation id="5397578532367286026">‏يُمكن للمدير مراجعة الاستخدام والسجل الخاص بهذا المستخدم (<ph name="MANAGER_EMAIL" />) على chrome.com.</translation>
+<translation id="540713187982329711">نقطة الاتصال مفعَّلة، وما مِن أجهزة متصلة بها. يمكنك إيقافها.</translation>
 <translation id="5413656666631274079">صفحة الإعدادات</translation>
 <translation id="5414198321558177633">جارٍ إعادة تحميل قائمة الملفات الشخصية. قد تستغرق هذه العملية بضع دقائق.</translation>
 <translation id="5426063383988017631">تم إغلاق قائمة الإعدادات.</translation>
@@ -1177,9 +1188,11 @@
 <translation id="576341972084747908">تنزيل الملف <ph name="FILENAME" /> الضار</translation>
 <translation id="576453121877257266">ميزة "الإضاءة الليلية" مفعّلة.</translation>
 <translation id="5764569119212455782">التبديل إلى آخر لغة تم اختيارها</translation>
+<translation id="5767730327234918501">أوقَف المشرف نقطة الاتصال.</translation>
 <translation id="5769373120130404283">شاشة الخصوصية</translation>
 <translation id="5773950591113557721">يتيح هذا الإجراء السماح لكل من "<ph name="APP_NAME" />" وجميع التطبيقات والمواقع الإلكترونية بالوصول إلى الكاميرا والميكروفون.</translation>
 <translation id="5774295353725270860">فتح تطبيق الملفات</translation>
+<translation id="5775936059231769503">نقطة الاتصال غير مفعَّلة. يمكنك تفعيلها.</translation>
 <translation id="5777841717266010279">هل ترغب في إيقاف مشاركة الشاشة؟</translation>
 <translation id="5779721926447984944">الملفات التي تم تثبيتها</translation>
 <translation id="5785221443435874078">إزالة هذا الاقتراح</translation>
@@ -1497,6 +1510,7 @@
 <translation id="7068360136237591149">فتح الملفات</translation>
 <translation id="7076293881109082629">تسجيل الدخول</translation>
 <translation id="7076878155205969899">كتم الصوت</translation>
+<translation id="7084678090004350185">نقطة الاتصال مفعَّلة، ومتصل بها <ph name="DEVICECOUNT" /> جهاز. يمكنك إيقافها.</translation>
 <translation id="7086931198345821656">‏يتطلَّب إتمام التحديث إجراء عملية Powerwash لجهاز <ph name="DEVICE_TYPE" />. سيتم حذف جميع البيانات. تعرّف على المزيد من المعلومات حول آخر تحديث لتطبيق <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">الوصول عبر مفتاح تبديل</translation>
 <translation id="709015856939120012">تكبير الصفحة</translation>

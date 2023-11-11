@@ -82,6 +82,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="2478295928299953161">Chromium lokast bráðlega</translation>
 <translation id="2483889755041906834">í Chromium</translation>
 <translation id="2485422356828889247">Fjarlægja</translation>
+<translation id="2513154137948333830">Endurræsingar er krafist: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2554739539410784893">Chromium er að reyna að skipta núverandi aðgangsorðum út. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
 <translation id="2560420686485554789">Chromium þarf aðgang að geymslu til að geta sótt skrár</translation>
 <translation id="2572494885440352020">Hjálparforrit Chromium</translation>
@@ -98,12 +99,14 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="2785438272836277133">Þessi viðbót inniheldur spilliforrit og er ekki örugg. Fjarlægðu hana úr Chromium svo hún geti ekki lengur séð og breytt gögnum á vefsvæðum sem þú heimsækir, þ.m.t. persónuupplýsingum þínum.</translation>
 <translation id="2799223571221894425">Endurræsa</translation>
 <translation id="2837693172913560447">Þetta mun búa til nýjan Chromium prófíl fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="2846251086934905009">Uppsetningarvilla: Uppsetningarforrit lauk ekki verki sínu. Hætt var við uppsetningu.</translation>
 <translation id="2847479871509788944">Fjarlægja úr Chromium...</translation>
 <translation id="2850691299438350830">Tryggir öryggi þitt í Chromium og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú hefur skráð þig inn.</translation>
 <translation id="2885378588091291677">Verkstjórn</translation>
 <translation id="2910007522516064972">Um &amp;Chromium</translation>
 <translation id="2915996080311180594">Endurræsa seinna</translation>
 <translation id="2928420929544864228">Uppsetningu lokið.</translation>
+<translation id="2945997411976714835">Uppsetningarvilla: Ekki tókst að ræsa ferli uppsetningarforrits.</translation>
 <translation id="2977470724722393594">Chromium er uppfært</translation>
 <translation id="2977506796191543575">Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chromium einnig sent vefslóðir í örugga vefskoðun, þar á meðal hluta af innihaldi síðna</translation>
 <translation id="3032706164202344641">Chromium getur ekki athugað aðgangsorðin þín. Reyndu aftur síðar.</translation>
@@ -161,6 +164,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="3909353120217047026">Þessi viðbót brýtur gegn reglum Vefverslunar Chrome og kann að vera óörugg. Fjarlægðu hana úr Chromium svo hún geti ekki lengur séð og breytt gögnum á vefsvæðum sem þú heimsækir, þ.m.t. persónuupplýsingum þínum.</translation>
 <translation id="391789666908693569">Reikningnum þínum er stjórnað af <ph name="MANAGER_NAME" />. Stjórnandinn þinn getur séð og breytt þessum Chromium vafraprófíl og gögnum hans á borð við bókamerki, feril og aðgangsorð.</translation>
 <translation id="3922825997980843979">Um leið og þú slærð inn sendir Chromium innihald veffangastikunnar eða leitarreitsins á sjálfgefna leitarvél</translation>
+<translation id="3941890832296813527">Uppsetningarvilla: Skráarheiti uppsetningarforrits er ógilt eða ekki stutt.</translation>
 <translation id="3945058413678539331">Chromium er að reyna að afrita aðgangsorð. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
 <translation id="3962647064319009959">Kynntu þér hvernig Chromium gætir að öryggi þínu</translation>
 <translation id="3975724895399328945">Um &amp;Google Chrome for Testing</translation>
@@ -223,6 +227,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5296845517486664001">Þegar kveikt er á prufuútgáfum og Chromium hefur skráð þig af handahófi í virka prufuútgáfu hefur vafraferillinn þinn áhrif á auglýsingarnar sem þú sérð og áhugasviðin sem eru áætluð hér fyrir neðan. Til að gæta persónuverndar þinnar eyðir Chromium áhugamálunum þínum sjálfkrafa mánaðarlega.</translation>
 <translation id="5352264705793813212">Chromium fann öryggistillögur sem þú þarft að fara yfir</translation>
 <translation id="5358375970380395591">Þú ert að skrá þig inn með stýrðum reikningi og veitir stjórnanda hans vald yfir Chromium prófílnum þínum. Chromium gögnin þín, s.s. forrit, bókamerki, ferill, aðgangsorð og aðrar stillingar, verða tengd varanlega við <ph name="USER_NAME" />. Þú getur eytt þessum gögnum á stjórnborði Google reikninga en getur ekki tengt þau öðrum reikningi. <ph name="LEARN_MORE" /></translation>
+<translation id="5368118228313795342">Viðbótarkóði: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386450000063123300">Uppfærir Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Leyfa innskráningu í Chromium</translation>
 <translation id="5398878173008909840">Ný útgáfa af Chromium er í boði.</translation>
@@ -426,6 +431,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8648201657708811153">Ekki er hægt að gera Google Chrome for Testing að sjálfgefna vafranum þínum.</translation>
 <translation id="8697124171261953979">Það stýrir því einnig hvaða síða opnast þegar þú ræsir Chromium eða leitar í veffangastikunni.</translation>
 <translation id="8704119203788522458">Chromium er þitt</translation>
+<translation id="878572486461146056">Uppsetningarvilla: Kerfisstjórinn hefur notað hópreglu sem kemur í veg fyrir uppsetningu: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium þarf leyfi til að nota myndavélina og hljóðnemann á þessu vefsvæði</translation>
 <translation id="8826492472752484139">Smelltu á „Aðgangsorðastjórnun“</translation>
 <translation id="8833697763442816810">ChromiumOS kerfi</translation>

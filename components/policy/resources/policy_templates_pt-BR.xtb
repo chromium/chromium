@@ -238,13 +238,6 @@ Quando esta política é desativada, a proteção contra phishing do lado do cli
 <translation id="120937472976628837">Enviar informações sobre o ventilador</translation>
 <translation id="1212233008927724662">Desativar o carregamento de Lazy Login WebUI.</translation>
 <translation id="1216919699175573511">Ativa a compatibilidade com Signed HTTP Exchange (SXG)</translation>
-<translation id="1218658069098810124">Se ativadas, as conexões de ponto WebRTC podem fazer downgrade para versões
-      obsoletas dos protocolos TLS/DTLS (DTLS 1.0, TLS 1.0 e TLS 1.1).
-      Quando esta política estiver desativada ou não for definida, essas versões TLS/DTLS serão
-      desativadas.
-
-      Esta política foi descontinuada e será removida na versão M121
-      do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1219027971768347970">Usar a configuração padrão para o sandbox de áudio</translation>
 <translation id="1221359380862872747">Carrega os urls especificados no login de demonstração</translation>
 <translation id="1221955019309484560">Ativar atualizações de todos os componentes</translation>
@@ -6527,20 +6520,6 @@ resolução de localização baseada no <ph name="IP" />.</translation>
 <translation id="6404064917675764807">Não informar eventos de sessões de CRD</translation>
 <translation id="6404360891305375004">Permitir o compartilhamento de arquivos pela rede</translation>
 <translation id="6407093060083181305">Configurar lista de bloqueio para instalação de extensões</translation>
-<translation id="6407792833351198330">Controla se uma página que usa tecnologias legadas será informada com base no URL dela.
-
-Quando a política for definida, os URLs com o prefixo correspondente a uma entrada da lista de permissões serão usados no relatório gerado e enviados. Os URLs sem correspondência serão ignorados.
-Quando a política for configurada como uma lista vazia ou deixada sem definição, nenhum relatório será gerado.
-
-Os padrões de correspondência usam um formato semelhante aos da política <ph name="URL_BLOCKLIST_POLICY_NAME" />, que estão documentados em https://support.google.com/chrome/a?p=url_blocklist_filter_format. Estas são algumas das exceções:
- * Sem suporte a caractere curinga "*".
- * O esquema, a porta e a consulta são ignorados.
- * O subdomínio precisa ser sempre especificado para correspondência.
- * É possível adicionar no máximo 100 URLs à lista de permissões.
-
-No caso do <ph name="PRODUCT_NAME" />, esta política só é eficaz quando a máquina está registrada no <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
-
-Mais informações sobre tecnologias legadas podem ser encontradas em https://chromestatus.com/features.</translation>
 <translation id="640827304541402854">Desativar travessia de firewall do host de acesso remoto</translation>
 <translation id="6410847321564585975">Lista de permissões de relatórios de atividade do site</translation>
 <translation id="6412352702230183710">Permitir apenas hosts de mensagens nativas no nível do sistema</translation>
@@ -8402,6 +8381,11 @@ Desativar a política ou deixá-la sem definição faz com que o SPN do Kerberos
           No caso de origens não cobertas pelos padrões especificados aqui, o valor padrão geral usado será o da política <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" />, se ela estiver definida, ou o da configuração pessoal do usuário.
 
           Para acessar informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="7904584382309857420">Esta política foi removida na versão M121. Ela servia para ativar e desativar o atestado remoto para o dispositivo, mas o atestado agora é ativado por padrão.
+
+Se a política for ativada, o atestado remoto do dispositivo será permitido. Um certificado será gerado automaticamente e enviado ao Servidor de gerenciamento de dispositivos.
+
+Se a política for desativada ou deixada sem definição, nenhum certificado será gerado e as chamadas para <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> vão falhar.</translation>
 <translation id="7906983682927840536">Buscar duração do sinal de atividade durante o encerramento</translation>
 <translation id="7908384265697653397">Tempo, em dias, após o qual o usuário será desconectado se a versão do <ph name="PRODUCT_OS_NAME" /> for anterior à especificada por <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />.</translation>
 <translation id="7911685775490889216">Configura de quantos segundos é o intervalo de exibição de uma imagem quando o protetor de tela tem várias delas.

@@ -130,6 +130,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="146902737843070955">Jūsu administrators pieprasīja šīs izmaiņas.</translation>
 <translation id="1469148162491666137">Tādējādi piekļuve tiek atļauta lietotnei <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> un visām lietotnēm un vietnēm, kurām ir kameras un mikrofona atļauja. Iespējams, jums būs jāatsvaidzina tīmekļa lapa vai jārestartē lietotne.</translation>
 <translation id="147310119694673958">Tālruņa akumulators: <ph name="BATTERY_PERCENTAGE" /></translation>
+<translation id="1475340220124222168">Pārslēdziet tīklāju. Tīklājs ir ieslēgts; savienojums ir izveidots ar vienu ierīci.</translation>
 <translation id="1479909375538722835">Peldoša pieejamības izvēlne</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Izmantojot diktēšanas funkciju, rakstīšanai varat lietot balsi. Kad ir atlasīts teksta lauks, nospiediet diktēšanas taustiņu vai atlasiet mikrofona ikonu ekrāna apakšdaļā. Iestatītā diktēšanas valoda: <ph name="LANGUAGE" />. Runa tiek nosūtīta uzņēmumam Google apstrādei. Jebkurā laikā varat mainīt diktēšanas valodu sadaļā Iestatījumi &gt; Pieejamība.</translation>
@@ -870,6 +871,14 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4548482551627849548">Pārvietot aktīvo logu uz darbvietu kreisajā pusē</translation>
 <translation id="4560576029703263363">Ieslēgts</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Statusa josla, plkst. <ph name="TIME" />.
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />
+        <ph name="MANAGED" />.
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Slēpt paroli</translation>
 <translation id="4566144812051858745">Neinteresē nekādi ieteikumi</translation>
 <translation id="4569753163207712681">Skatīt tālruņa jaunākos fotoattēlus, multivides saturu un lietotnes</translation>
@@ -879,6 +888,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4577990005084629481">Rādīt priekšskatījumus</translation>
 <translation id="4578906031062871102">Iestatījumu izvēlne ir atvērta</translation>
 <translation id="458210817642223147">Ierakstīt GIF attēlu</translation>
+<translation id="4582666543382004902">Tīklājs ir izslēgts, lai varētu izmantot Wi-Fi. Lai izmantotu tīklāju, izslēdziet Wi-Fi.</translation>
 <translation id="4585337515783392668">Pārtraukt apraidi nezināmā uztvērējā</translation>
 <translation id="4596144739579517758">Tumšais motīvs ir izslēgts.</translation>
 <translation id="4611292653554630842">Pieteikties</translation>
@@ -1085,6 +1095,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="5393156353051693207">Pieskarieties jebkurā vietā un turiet, lai pārkārtotu lietotnes</translation>
 <translation id="5395308026110844773">Lietotne <ph name="DRAGGED_APP_NAME" /> tiek vilkta <ph name="IN_PLACE_APP" /> lietotnes vietā, atlaidiet, lai izveidotu mapi.</translation>
 <translation id="5397578532367286026">Šī lietotāja datu lietojumu un vēsturi var pārvaldīt pārzinis (<ph name="MANAGER_EMAIL" />) vietnē chrome.com.</translation>
+<translation id="540713187982329711">Pārslēdziet tīklāju. Tīklājs ir ieslēgts; savienojums nav izveidots ne ar vienu ierīci.</translation>
 <translation id="5413656666631274079">Lapa Iestatījumi</translation>
 <translation id="5414198321558177633">Notiek profilu saraksta atsvaidzināšana. Tas var ilgt dažas minūtes.</translation>
 <translation id="5426063383988017631">Iestatījumu izvēlne aizvērta</translation>
@@ -1175,9 +1186,11 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="576341972084747908">Notiek bīstama faila <ph name="FILENAME" /> lejupielāde</translation>
 <translation id="576453121877257266">Nakts režīms ir ieslēgts.</translation>
 <translation id="5764569119212455782">Pārslēgties uz pēdējo atlasīto valodu</translation>
+<translation id="5767730327234918501">Jūsu administrators ir izslēdzis tīklāju.</translation>
 <translation id="5769373120130404283">Konfidencialitātes ekrāns</translation>
 <translation id="5773950591113557721">Tādējādi piekļuve tiek atļauta lietotnei <ph name="APP_NAME" /> un visām lietotnēm un vietnēm, kurām ir kameras un mikrofona atļauja.</translation>
 <translation id="5774295353725270860">Atvērt lietotni Files</translation>
+<translation id="5775936059231769503">Pārslēdziet tīklāju. Tīklājs ir izslēgts.</translation>
 <translation id="5777841717266010279">Vai apturēt ekrāna koplietošanu?</translation>
 <translation id="5779721926447984944">Piespraustie faili</translation>
 <translation id="5785221443435874078">Noņemt šo ieteikumu</translation>
@@ -1495,6 +1508,7 @@ Jauna instalācija</translation>
 <translation id="7068360136237591149">Atvērt failus</translation>
 <translation id="7076293881109082629">Pierakstīšanās</translation>
 <translation id="7076878155205969899">Izslēgt skaņu</translation>
+<translation id="7084678090004350185">Pārslēdziet tīklāju. Tīklājs ir ieslēgts; savienojums ir izveidots ar <ph name="DEVICECOUNT" /> ierīcēm.</translation>
 <translation id="7086931198345821656">Šī atjauninājuma lietošanai ierīcē <ph name="DEVICE_TYPE" /> ir jāizmanto funkcija Powerwash. Visi dati tiks izdzēsti. Uzziniet vairāk par pēdējo <ph name="SYSTEM_APP_NAME" /> atjauninājumu.</translation>
 <translation id="7088960765736518739">Slēdžu piekļuve</translation>
 <translation id="709015856939120012">Tuvināt saturu lapā</translation>

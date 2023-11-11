@@ -107,6 +107,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromiuma
 <translation id="5048795749726991615">Da lako dobijete sačuvane lozinke u drugim aplikacijama, koristite Chromium za automatsko popunjavanje</translation>
 <translation id="5076601183701536878">Obriši podatke o pregledanju u Chromiumu</translation>
 <translation id="5131565040785979529">Vaša organizacija, <ph name="DOMAIN" />, upravlja računom na kojem ste prijavljeni i načinom na koji koristite Chromium.</translation>
+<translation id="5146749061471423558">Dodavanje oznaka u Chromium</translation>
 <translation id="5171868502429358653">Prijavite se u Chromium</translation>
 <translation id="5213683223491576284">Otvara Upravitelj lozinki u Chromiumu.</translation>
 <translation id="5224391634244552924">Nema sačuvanih lozinki. Chromium može provjeravati vaše lozinke kada ih sačuvate.</translation>
@@ -114,6 +115,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromiuma
 
         Pričekajte nekoliko minuta prije odjave. Ako se sada odjavite, ovi podaci će se izbrisati.</translation>
 <translation id="5308226104666789935">Chromium ne može provjeriti ima li ažuriranja</translation>
+<translation id="5311557153294205270">Dodaje unesene URL-ove vašim oznakama u Chromiumu.</translation>
 <translation id="5396916991083608703">Postaviti Chromium kao zadani preglednik?</translation>
 <translation id="5453478652154926037">Chromium ne može provjeriti vaše lozinke.</translation>
 <translation id="5521125884468363740">Da vidite svoje kartice s bilo kojeg uređaja na kojem koristite Chromium, prijavite se i uključite sinhronizaciju</translation>

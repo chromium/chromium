@@ -1321,7 +1321,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Kõik failid, loendis on 1 fail}other{Kõik failid, loendis on # faili}}</translation>
 <translation id="7815484226266492798">Pikk ekraanipilt</translation>
 <translation id="7822705602465980873">Kui olete sisse logitud, lingitakse need andmed teie Google'i kontoga, et teid Google'i teenustest kaitsta. Näiteks suurendades pärast turvaintsidenti Gmailis kaitset.</translation>
-<translation id="782705168687182233">Teie tegevus on salvestatud teie <ph name="BEGIN_LINK" />Google'i kontole<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Teie arvuti soovib selle seadme registreerida, et saidile sisse logida</translation>
 <translation id="7844171778363018843">Sünkroonimiseks pole andmeid valitud</translation>
 <translation id="7846296061357476882">Google'i teenused</translation>

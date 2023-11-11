@@ -532,6 +532,7 @@
 <translation id="2025891858974379949">不安全的內容</translation>
 <translation id="2027465737841872819">塑膠</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />檢查 Proxy 和防火牆<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">快捷字詞不得與 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> 定義的預設搜尋引擎關鍵字相同：<ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">繼續儲存</translation>
 <translation id="2035400064145347639">旅遊指南與遊記</translation>
 <translation id="2036514476578229158">你已要求造訪這個網站，家長可以透過 Family Link 回覆要求。</translation>
@@ -1076,6 +1077,7 @@
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> 上的 <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">可以要求偵測你使用這部裝置的時間</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理要同步處理哪些資訊</translation>
+<translation id="3203025201812691413">網址不得留空</translation>
 <translation id="320323717674993345">取消付款</translation>
 <translation id="3203366800380907218">來自網路</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
@@ -1690,6 +1692,7 @@
 <translation id="4386413576162606861">角色扮演遊戲</translation>
 <translation id="4390472908992056574">邊裙</translation>
 <translation id="4393632246160856858">指甲護理產品</translation>
+<translation id="4397059608630092079">使用自動填入功能時一律驗證</translation>
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4406896451731180161">搜尋結果</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> 個 Cookie</translation>
@@ -1891,7 +1894,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可快速建立新的 Google 試算表</translation>
 <translation id="4825507807291741242">強大</translation>
 <translation id="4826588772550366629">攝影機和麥克風</translation>
-<translation id="4827283332383516812">刪除卡片</translation>
 <translation id="4831993743164297314">影像排版機用紙</translation>
 <translation id="483241715238664915">開啟警告</translation>
 <translation id="4834250788637067901">儲存在 Google Pay 的付款方式、優惠和地址資訊</translation>
@@ -2303,6 +2305,7 @@
 <translation id="5651323159439184939">牽引送紙</translation>
 <translation id="5653432653077411130">供水與處理</translation>
 <translation id="5654927323611874862">已上傳的當機報告 ID：</translation>
+<translation id="5654965123204121933">網址未包含必要的替換字串「<ph name="SEARCH_TERMS_REPLACEMENT" />」：<ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">電子郵件</translation>
 <translation id="5660122698869360728">新的智慧型資料夾可集中儲存所有購物頁面，並自動追蹤價格、取得價格分析資訊等等。</translation>
 <translation id="5663955426505430495">這部裝置的管理員已安裝支援額外功能的擴充功能。這些擴充功能可存取你的部分資料。</translation>
@@ -2364,7 +2367,6 @@
 <translation id="5785756445106461925">此外，這個網頁含有其他不安全的資源。其他人可能會在資源傳輸期間檢視這些資源，攻擊者也可能會修改這些資源，進而變更網頁外觀。</translation>
 <translation id="5786044859038896871">要填入你的信用卡資訊嗎？</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">這個付款方式將從這部裝置上刪除</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{無}=1{1 個帳戶的登入資料}other{# 個帳戶的登入資料}}</translation>
 <translation id="5800727402210090597">手機維修與服務</translation>
 <translation id="580241730938216256">開始更新</translation>

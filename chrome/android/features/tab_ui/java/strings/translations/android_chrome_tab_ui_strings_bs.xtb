@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
 <translation id="1075622780330595106">U zadnje vrijeme niste koristili sljedeći broj kartica: <ph name="NUMBER_OF_TABS" /> Zatvoriti ih?</translation>
-<translation id="1155815720264022949">Želite li zatvoriti stare kartice?</translation>
+<translation id="1155815720264022949">Želite zatvoriti stare kartice?</translation>
 <translation id="1215127405478249895">Pregledajte kartice</translation>
 <translation id="125153950246128346">Dodirnite da vidite drugu karticu</translation>
 <translation id="1499635324672558517">Zatvoriti sve anonimne kartice?</translation>
@@ -47,7 +47,7 @@
 <translation id="5073204694187207510">Sakrij mrežu cijelog ekrana</translation>
 <translation id="5076161749301278626">Želite li pogledati recenzije trgovine?</translation>
 <translation id="5082793167783849073">Kreirajte grupu i brzo uporedite stranice. Da započnete, dodirnite i držite link.</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Imate <ph name="TABS_COUNT_ONE" /> karticu koju niste upotrebljavali u posljednje vrijeme}one{Imate <ph name="TABS_COUNT_MANY" /> karticu koju niste upotrebljavali u posljednje vrijeme}few{Imate <ph name="TABS_COUNT_MANY" /> kartice koje niste upotrebljavali u posljednje vrijeme}other{Imate <ph name="TABS_COUNT_MANY" /> kartica koje niste upotrebljavali u posljednje vrijeme}}</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Imate <ph name="TABS_COUNT_ONE" /> karticu koju niste nedavno koristili}one{Imate <ph name="TABS_COUNT_MANY" /> karticu koju niste nedavno koristili}few{Imate <ph name="TABS_COUNT_MANY" /> kartice koje niste nedavno koristili}other{Imate <ph name="TABS_COUNT_MANY" /> kartica koje niste nedavno koristili}}</translation>
 <translation id="5339733443032484186">Posljednja kartica</translation>
 <translation id="5490235265819901748">Grupa kartica je proširena</translation>
 <translation id="5494920125229734069">Odaberi sve</translation>

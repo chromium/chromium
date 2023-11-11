@@ -299,6 +299,7 @@
 
       &lt;p&gt;&lt;strong&gt;సెట్టింగ్‌లు&lt;/strong&gt; యాప్ యొక్క &lt;strong&gt;సాధారణం&lt;/strong&gt; విభాగంలో తేదీ మరియు సమయాన్ని దయచేసి సర్దుబాటు చేయండి.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">మీ అడ్మినిస్ట్రేటర్ మీ పరికరాన్ని <ph name="DATE" />న <ph name="TIME" />కు రీస్టార్ట్ చేస్తారు</translation>
+<translation id="1564634006476980707">సెర్చ్ URL కోసం HTTPS స్కీమ్ సిఫార్సు చేయబడింది: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">అడ్రస్‌లు, ఇంటర్‌ఫేస్ కాన్ఫిగరేషన్, కనెక్షన్ క్వాలిటీ వంటి నెట్‌వర్కింగ్ సమాచారం</translation>
 <translation id="1567040042588613346">ఈ పాలసీ అనుకున్నట్టుగా పని చేస్తోంది, కానీ అదే విలువ మరో చోట సెట్ చేయబడింది, అలాగే ఈ పాలసీ ద్వారా అధిగమించబడింది.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" />‌ను జోడించండి</translation>
@@ -728,6 +729,7 @@
 <translation id="2448295565072560657">మీరు లాగిన్ చేసినప్పుడు, ఈ పరికరంలో జోడించబడిన పెరిఫెరల్స్</translation>
 <translation id="2450021089947420533">Chrome హిస్టరీలో మీ యాక్టివిటీలు</translation>
 <translation id="2456755709261364512">మీ బ్యాటరీ తప్పనిసరిగా <ph name="REQUIRED_BATTERY_PRECENT" />% కంటే ఎక్కువ ఛార్జ్ అయి ఉండాలి</translation>
+<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" />‌ను సెర్చ్ చేయండి</translation>
 <translation id="2463739503403862330">పూరించు</translation>
 <translation id="2465688316154986572">స్టేపుల్</translation>
 <translation id="2465914000209955735">Chromeలో మీరు డౌన్‌లోడ్ చేసిన ఫైల్‌లను మేనేజ్ చేయండి</translation>
@@ -899,6 +901,7 @@
 <translation id="2814184336982254349">ఈ PDFను యాక్సెస్ చేయడం సాధ్యం కాదు. సంబంధిత మెనూను తెరవడానికి, సెర్చ్ బటన్‌తో పాటు m బటన్‌ను నొక్కి, "PDF నుండి టెక్స్ట్‌ను ఎక్స్‌ట్రాక్ట్ చేయండి"ని ఆన్ చేయండి</translation>
 <translation id="2818338148457093657">బ్యూటీ సర్వీస్‌లు &amp; స్పాలు</translation>
 <translation id="2820957248982571256">స్కాన్ చేస్తోంది...</translation>
+<translation id="2824549017793319782">అడ్రస్ బార్‌లో నేరుగా మీ సెర్చ్‌ను టైప్ చేయడానికి ఎంచుకోండి</translation>
 <translation id="2824775600643448204">అడ్రస్‌ మరియు శోధన బార్</translation>
 <translation id="2826760142808435982"><ph name="CIPHER" />ను ఉపయోగించి కనెక్షన్ ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది, ప్రామాణీకరించబడింది మరియు <ph name="KX" />ను కీలకమైన పరివర్తన విధానంగా ఉపయోగిస్తుంది.</translation>
 <translation id="2835170189407361413">ఫారమ్‌ను క్లియర్ చేయండి</translation>
@@ -1890,7 +1893,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, కొత్త Google షీట్‌ను త్వరగా క్రియేట్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="4825507807291741242">శక్తివంతమైనది</translation>
 <translation id="4826588772550366629">కెమెరా, మైక్రోఫోన్</translation>
-<translation id="4827283332383516812">కార్డ్‌ను తొలగించండి</translation>
 <translation id="4831993743164297314">ఇమేజ్ సెట్టర్ పేపర్</translation>
 <translation id="483241715238664915">హెచ్చరికలను ఆన్ చేయండి</translation>
 <translation id="4834250788637067901">Google Payను ఉపయోగిస్తున్న పేమెంట్ ఆప్షన్‌లు, ఆఫర్‌లు, అడ్రస్‌లు</translation>
@@ -2364,7 +2366,6 @@
 <translation id="5785756445106461925">అలాగే, ఈ పేజీలో సురక్షితం కాని ఇతర వనరులు ఉన్నాయి. ఈ వనరులను బదిలీ చేస్తున్నప్పుడు ఇతరులు చూడగలరు మరియు దాడికి పాల్పడేవారు పేజీ రూపాన్ని మార్చేలా వీటిని ఎడిట్ చేయగలరు.</translation>
 <translation id="5786044859038896871">మీరు మీ కార్డ్ సమాచారం పూరించాలనుకుంటున్నారా?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">ఈ పరికరం నుండి ఈ పేమెంట్ ఆప్షన్ తొలగించబడుతుంది</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{ఏవీ లేవు}=1{1 ఖాతాకు సంబంధించిన సైన్-ఇన్ డేటా}other{# ఖాతాలకు సంబంధించిన సైన్-ఇన్ డేటా}}</translation>
 <translation id="5800727402210090597">మొబైల్ ఫోన్ రిపేర్ &amp; సర్వీస్‌లు</translation>
 <translation id="580241730938216256">అప్‌డేట్‌ను ప్రారంభించండి</translation>
@@ -3749,6 +3750,7 @@
 <translation id="8490137692873530638">స్టాకర్ 10</translation>
 <translation id="8493948351860045254">స్థలాన్ని ఖాళీ చేయి</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ప్రతిస్పందించడానికి చాలా ఎక్కువ సమయం పట్టింది.</translation>
+<translation id="8502972004418241366">ఈ సైట్‌లో మీ <ph name="PERMISSION" />ను ఉపయోగించడానికి, మీరు Chrome యాక్సెస్‌ను ఇవ్వాలి</translation>
 <translation id="8503559462189395349">Chrome పాస్‌వర్డ్‌లు</translation>
 <translation id="8503813439785031346">యూజర్‌పేరు</translation>
 <translation id="8504928302600319133">కంప్యూటర్ హార్డ్‌వేర్</translation>

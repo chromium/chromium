@@ -305,6 +305,7 @@
 
       &lt;p&gt;براہ کرم تاریخ اور وقت کو &lt;strong&gt;ترتیبات&lt;‎/strong&gt; ایپ کے &lt;strong&gt;عمومی&lt;‎/strong&gt; سیکشن سے ایڈجسٹ کریں۔&lt;‎/p&gt;</translation>
 <translation id="1559839503761818503"><ph name="DATE" /> کو <ph name="TIME" /> پر آپ کا منتظم آپ کے آلے کو ری سٹارٹ کرے گا</translation>
+<translation id="1564634006476980707">‏تلاش URL کے لیے HTTPS اسکیم تجویز کی گئی: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">نیٹ ورکنگ معلومات جیسے پتے، انٹرفیس کنفیگریشن اور کنکشن کا معیار</translation>
 <translation id="1567040042588613346">یہ پالیسی توقع کے مطابق کام کر رہی ہے لیکن کسی دوسری جگہ ایک جیسی قدر سیٹ کی گئی ہے اور اس نے اس پالیسی کی جگہ لے لی ہے۔</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> کو شامل کریں</translation>
@@ -734,6 +735,7 @@
 <translation id="2448295565072560657">آپ کے لاگ ان ہونے کے دوران اس آلے سے منسلک کردہ پیریفیرلز</translation>
 <translation id="2450021089947420533">صارف کے تجربے</translation>
 <translation id="2456755709261364512">آپ کی بیٹری <ph name="REQUIRED_BATTERY_PRECENT" />فیصد سے زیادہ چارج ہونی چاہیے</translation>
+<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> تلاش کریں</translation>
 <translation id="2463739503403862330">پُر کریں</translation>
 <translation id="2465688316154986572">سٹیپل</translation>
 <translation id="2465914000209955735">‏Chrome میں ڈاؤن لوڈ کردہ اپنی فائلز کا نظم کریں</translation>
@@ -905,6 +907,7 @@
 <translation id="2814184336982254349">‏یہ PDF ناقابل رسائی ہے۔ سیاق و سباق کا مینو کھولنے کے لیے search پلس m دبائیں اور "PDF سے ٹیکسٹ نکالیں" کو آن کریں۔</translation>
 <translation id="2818338148457093657">بیوٹی سروسز اور اسپاس</translation>
 <translation id="2820957248982571256">اسکین ہو رہا ہے…</translation>
+<translation id="2824549017793319782">اپنی تلاش کو براہ راست ایڈریس بار میں ٹائپ کرنے کے لیے منتخب کریں</translation>
 <translation id="2824775600643448204">پتہ اور تلاش بار</translation>
 <translation id="2826760142808435982">کنکشن کو <ph name="CIPHER" /> کا استعمال کر کے مرموز کیا گیا ہے اور اس کی توثیق کی گئی ہے اور یہ کلید کے تبادلہ کے طریقہ کار کے بطور <ph name="KX" /> کا استعمال کرتا ہے۔</translation>
 <translation id="2835170189407361413">فارم صاف کریں</translation>
@@ -1695,6 +1698,7 @@
 <translation id="4386413576162606861">رول پلے کرنے والی گیمز</translation>
 <translation id="4390472908992056574">کنارہ</translation>
 <translation id="4393632246160856858">ناخن کی نگہداشت کے پروڈکٹس</translation>
+<translation id="4397059608630092079">آٹو فل استعمال کرتے وقت ہمیشہ توثیق کریں</translation>
 <translation id="4406883609789734330">لائیو کیپشن</translation>
 <translation id="4406896451731180161">تلاش کے نتائج</translation>
 <translation id="4408413947728134509">کوکیز <ph name="NUM_COOKIES" /></translation>
@@ -1896,7 +1900,6 @@
 <translation id="4825496307559726072">‏<ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />، تیزی سے ایک نئی Google Sheet تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="4825507807291741242">طاقتور</translation>
 <translation id="4826588772550366629">کیمرا اور مائیکروفون</translation>
-<translation id="4827283332383516812">کارڈ حذف کریں</translation>
 <translation id="4831993743164297314">تصویر کو سیٹ کرنے والا کاغذ</translation>
 <translation id="483241715238664915">وارننگز کو آن کریں</translation>
 <translation id="4834250788637067901">‏Google Pay استعمال کرنے والے ادائیگی کے طریقے، پیشکشیں اور پتے</translation>
@@ -2370,7 +2373,6 @@
 <translation id="5785756445106461925">اس کے علاوہ، اس صفحہ میں دیگر ایسے وسائل شامل ہیں جو محفوظ نہیں ہیں۔ ان وسائل کو ٹرانزٹ کے دوران دیگر لوگ دیکھ سکتے ہیں اور صفحہ کی ہیئت تبدیل کرنے کیلئے حملہ آور اس میں ترمیم کر سکتے ہیں۔</translation>
 <translation id="5786044859038896871">کیا آپ اپنے کارڈ کی معلومات پُر کرنا چاہتے ہیں؟</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">ادائیگی کا یہ طریقہ اس آلے سے حذف کر دیا جائے گا</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{کوئی نہیں}=1{1 اکاؤنٹ کے لیے سائن ان ڈیٹا}other{# اکاؤنٹس کے لیے سائن ان ڈیٹا}}</translation>
 <translation id="5800727402210090597">موبائل فون کی مرمت اور سروسز</translation>
 <translation id="580241730938216256">اپ ڈیٹ شروع کریں</translation>
@@ -3756,6 +3758,7 @@
 <translation id="8490137692873530638">اسٹیکر 10</translation>
 <translation id="8493948351860045254">جگہ خالی کریں</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> کو جواب دینے میں کافی وقت لگا۔</translation>
+<translation id="8502972004418241366">‏اس سائٹ پر اپنی <ph name="PERMISSION" /> استعمال کرنے کے لیے، آپ کو Chrome کو رسائی فراہم کرنے کی ضرورت ہے</translation>
 <translation id="8503559462189395349">‏Chrome کے پاس ورڈز</translation>
 <translation id="8503813439785031346">صارف کا نام</translation>
 <translation id="8504928302600319133">کمپیوٹر ہارڈ ویئر</translation>

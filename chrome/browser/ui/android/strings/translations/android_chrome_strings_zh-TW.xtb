@@ -1321,7 +1321,6 @@
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{所有檔案，清單中有 1 個檔案}other{所有檔案，清單中有 # 個檔案}}</translation>
 <translation id="7815484226266492798">長螢幕截圖</translation>
 <translation id="7822705602465980873">當你登入後，這類資料會連結到 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後強化 Gmail 的防護機制。</translation>
-<translation id="782705168687182233">你的活動記錄會儲存至 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />。</translation>
 <translation id="78270725016672455">你的電腦想要註冊這部裝置以登入網站</translation>
 <translation id="7844171778363018843">沒有選取要同步處理的資料</translation>
 <translation id="7846296061357476882">Google 服務</translation>

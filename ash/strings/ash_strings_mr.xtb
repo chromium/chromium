@@ -871,6 +871,14 @@
 <translation id="4548482551627849548">डावीकडील डेस्‍कवर अ‍ॅक्टिव्ह विंडो हलवा</translation>
 <translation id="4560576029703263363">सुरू</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">स्टेटस ट्रे, वेळ <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />,
+        <ph name="NOTIFICATION" />
+        <ph name="IME" />,
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">पासवर्ड लपवा</translation>
 <translation id="4566144812051858745">कोणत्याही सूचनांमध्ये स्वारस्य नाही</translation>
 <translation id="4569753163207712681">तुमच्या फोनमधील अलीकडील फोटो, मीडिया आणि अ‍ॅप्स पहा</translation>

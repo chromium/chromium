@@ -130,6 +130,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="146902737843070955">Tu administrador solicitó este cambio</translation>
 <translation id="1469148162491666137">Esto permite el acceso para <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> y todas las apps y sitios web con los permisos de cámara y micrófono. Es posible que debas actualizar la página web o reiniciar la app.</translation>
 <translation id="147310119694673958">Batería del teléfono: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">Activar o desactivar el hotspot. El hotspot está activado y hay 1 dispositivo conectado.</translation>
 <translation id="1479909375538722835">Menú de accesibilidad flotante</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Con el dictado, puedes escribir con tu voz. Presiona la tecla de dictado o selecciona el ícono de micrófono en la parte inferior de la pantalla cuando estés en un campo de texto. El idioma de dictado está configurado en <ph name="LANGUAGE" />. La voz se envía a Google para su procesamiento. Puedes cambiar el idioma de dictado en cualquier momento en Configuración &gt; Accesibilidad.</translation>
@@ -871,6 +872,14 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4548482551627849548">Mover la ventana activa al escritorio de la izquierda</translation>
 <translation id="4560576029703263363">Sí</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Bandeja de estado, hora <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Ocultar contraseña</translation>
 <translation id="4566144812051858745">No me interesan las sugerencias</translation>
 <translation id="4569753163207712681">Ver las fotos, el contenido multimedia y las apps recientes de tu teléfono</translation>
@@ -880,6 +889,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4577990005084629481">Mostrar vistas previas</translation>
 <translation id="4578906031062871102">Se abrió el menú de configuración</translation>
 <translation id="458210817642223147">Grabar GIF</translation>
+<translation id="4582666543382004902">Se desactivó el hotspot para usar la conexión Wi-Fi. Para usar el hotspot, desactiva la conexión Wi-Fi.</translation>
 <translation id="4585337515783392668">Dejar de transmitir en un receptor desconocido</translation>
 <translation id="4596144739579517758">El Tema oscuro está desactivado</translation>
 <translation id="4611292653554630842">Acceder</translation>
@@ -1086,6 +1096,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5393156353051693207">Mantén presionado en cualquier lugar para reorganizar las apps</translation>
 <translation id="5395308026110844773">Arrastra la app <ph name="DRAGGED_APP_NAME" /> sobre <ph name="IN_PLACE_APP" /> y suéltala para crear una carpeta.</translation>
 <translation id="5397578532367286026">El administrador (<ph name="MANAGER_EMAIL" />) puede revisar el uso y el historial de este usuario en la página chrome.com.</translation>
+<translation id="540713187982329711">Activar o desactivar el hotspot. El hotspot está activado y no hay ningún dispositivo conectado.</translation>
 <translation id="5413656666631274079">Página de configuración</translation>
 <translation id="5414198321558177633">Se está actualizando la lista de perfiles. Es posible que este proceso demore unos minutos.</translation>
 <translation id="5426063383988017631">Se cerró el menú de configuración</translation>
@@ -1176,9 +1187,11 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="576341972084747908">Descarga peligrosa: <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">La luz nocturna está activada.</translation>
 <translation id="5764569119212455782">Cambiar al último idioma seleccionado</translation>
+<translation id="5767730327234918501">Tu administrador desactivó el hotspot.</translation>
 <translation id="5769373120130404283">Pantalla de privacidad</translation>
 <translation id="5773950591113557721">Esto permite el acceso para <ph name="APP_NAME" /> y todas las apps y sitios web con los permisos de cámara y micrófono</translation>
 <translation id="5774295353725270860">Abrir Archivos</translation>
+<translation id="5775936059231769503">Activar o desactivar el hotspot. El hotspot está desactivado.</translation>
 <translation id="5777841717266010279">¿Dejar de compartir la pantalla?</translation>
 <translation id="5779721926447984944">Archivos fijados</translation>
 <translation id="5785221443435874078">Quitar esta sugerencia</translation>
@@ -1496,6 +1509,7 @@ Nueva instalación</translation>
 <translation id="7068360136237591149">Abrir archivos</translation>
 <translation id="7076293881109082629">Accediendo</translation>
 <translation id="7076878155205969899">Silenciar sonido</translation>
+<translation id="7084678090004350185">Activar o desactivar el hotspot. El hotspot está activado y hay <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="7086931198345821656">Esta actualización requiere que se aplique la función Powerwash en tu <ph name="DEVICE_TYPE" />. Se borrarán todos los datos. Obtén más información sobre la actualización más reciente de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Accesibilidad con interruptores</translation>
 <translation id="709015856939120012">Acercar la página</translation>

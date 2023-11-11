@@ -1321,7 +1321,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Pob ffeil, 1 ffeil yn y rhestr}zero{Pob ffeil, # ffeiliau yn y rhestr}two{Pob ffeil, # ffeil yn y rhestr}few{Pob ffeil, # ffeil yn y rhestr}many{Pob ffeil, # ffeil yn y rhestr}other{Pob ffeil, # ffeil yn y rhestr}}</translation>
 <translation id="7815484226266492798">Sgrinlun hir</translation>
 <translation id="7822705602465980873">Pan fyddwch wedi mewngofnodi, mae'r data hyn wedi'u cysylltu â'ch Cyfrif Google i'ch diogelu ar draws gwasanaethau Google, er enghraifft cynyddu diogelwch yn Gmail ar ôl digwyddiad diogelwch.</translation>
-<translation id="782705168687182233">Mae'ch gweithgarwch wedi'i gadw yn eich <ph name="BEGIN_LINK" />Cyfrif Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Mae eich cyfrifiadur eisiau cofrestru'r ddyfais hon i fewngofnodi i wefan</translation>
 <translation id="7844171778363018843">Ni ddewiswyd unrhyw ddata i'w cysoni</translation>
 <translation id="7846296061357476882">Gwasanaethau Google</translation>

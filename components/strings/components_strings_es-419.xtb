@@ -532,6 +532,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2025891858974379949">Contenido no seguro</translation>
 <translation id="2027465737841872819">Plástico</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Comprobar el proxy y el firewall<ph name="END_LINK" />.</translation>
+<translation id="2033900728810589426">El atajo no puede ser igual a la palabra clave del proveedor de búsqueda predeterminado definida por <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Guardar de todos modos</translation>
 <translation id="2035400064145347639">Guías y documentales de viajes</translation>
 <translation id="2036514476578229158">Solicitaste visitar este sitio. Tus padres pueden responder en Family Link.</translation>
@@ -559,6 +560,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2072275792380684364">Moda y estilo</translation>
 <translation id="2075497153347571252">Tu administrador bloqueó <ph name="PERMISSION" /> en <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Deshacer</translation>
+<translation id="2080021694978766903">Esta política no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas.</translation>
 <translation id="20817612488360358">Se ha establecido la configuración de proxy del sistema, pero también se ha especificado una configuración explícita de proxy.</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Permitir en cada visita</translation>
@@ -638,6 +640,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2225927550500503913">Se activó la tarjeta virtual</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Acceder<ph name="END_LINK" /> a la red Wi-Fi</translation>
 <translation id="2228057197024893428">Actualmente, esta dirección se guarda en Chrome. Para usarla en todos los productos de Google, guárdala en tu Cuenta de Google, <ph name="ACCOUNT" />.</translation>
+<translation id="2229456043301340598">Se ignoró el atajo duplicado: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2233745931693710080">Disco compacto</translation>
 <translation id="2235344399760031203">Se bloquearon las cookies de terceros</translation>
 <translation id="2239100178324503013">Enviar ahora</translation>
@@ -1076,6 +1079,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> en <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Puede solicitar permiso para saber en qué momento estás usando activamente este dispositivo</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para administrar en la configuración de Chrome qué información sincronizar</translation>
+<translation id="3203025201812691413">La URL no puede estar vacía</translation>
 <translation id="320323717674993345">Cancelar pago</translation>
 <translation id="3203366800380907218">Desde la Web</translation>
 <translation id="3207960819495026254">Agregada a favoritos</translation>
@@ -1690,6 +1694,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4386413576162606861">Juegos de rol</translation>
 <translation id="4390472908992056574">Borde</translation>
 <translation id="4393632246160856858">Productos para el cuidado de las uñas</translation>
+<translation id="4397059608630092079">Verificar siempre que se use Autocompletar</translation>
 <translation id="4406883609789734330">Subtitulado instantáneo</translation>
 <translation id="4406896451731180161">resultados de búsqueda</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
@@ -1891,7 +1896,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para crear una nueva hoja de cálculo de Google rápidamente</translation>
 <translation id="4825507807291741242">Powerful</translation>
 <translation id="4826588772550366629">cámara y micrófono</translation>
-<translation id="4827283332383516812">Borrar tarjeta</translation>
 <translation id="4831993743164297314">Papel de copiadora</translation>
 <translation id="483241715238664915">Activar advertencias</translation>
 <translation id="4834250788637067901">Formas de pago, ofertas y direcciones con Google Pay</translation>
@@ -2303,6 +2307,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5651323159439184939">Alimentación por tracción</translation>
 <translation id="5653432653077411130">Tratamiento y suministro de agua</translation>
 <translation id="5654927323611874862">ID del informe de fallas subido:</translation>
+<translation id="5654965123204121933">La URL no incluye la cadena de reemplazo obligatoria <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Correo</translation>
 <translation id="5660122698869360728">Una nueva carpeta inteligente que te ayuda a guardar todas tus páginas de compras en un solo lugar, realizar un seguimiento automático de los precios, obtener información sobre los precios y mucho más.</translation>
 <translation id="5663955426505430495">El administrador de este dispositivo instaló extensiones para funciones adicionales. Las extensiones tienen acceso a algunos de tus datos.</translation>
@@ -2333,6 +2338,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5720705177508910913">Usuario actual</translation>
 <translation id="572328651809341494">Pestañas recientes</translation>
 <translation id="5723287205918986743">Industria de defensa</translation>
+<translation id="5725297205162868298">El atajo no puede comenzar con el carácter @: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5730040223043577876">Chrome te recomienda que restablezcas tu contraseña si la volviste a usar en otros sitios.</translation>
 <translation id="5732392974455271431">Tus padres pueden desbloquearlo por ti</translation>
 <translation id="573555826359077410">Botón Crear formulario: actívalo para crear un formulario nuevo en Formularios de Google rápidamente</translation>
@@ -2363,7 +2369,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5785756445106461925">Además, esta página incluye otros recursos que no son seguros. Otras personas pueden ver estos recursos mientras se encuentran en tránsito, y un atacante puede modificarlos para cambiar la apariencia de la página.</translation>
 <translation id="5786044859038896871">¿Deseas llenar los campos con la información de tu tarjeta?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Se borrará esta forma de pago de este dispositivo.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Ninguna}=1{Datos de acceso para 1 cuenta}other{Datos de acceso para # cuentas}}</translation>
 <translation id="5800727402210090597">Servicios y reparación de teléfonos celulares</translation>
 <translation id="580241730938216256">Iniciar actualización</translation>
@@ -2851,6 +2856,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6793213097893210590">Cartón</translation>
 <translation id="679355240208270552">Se ignora porque la búsqueda predeterminada no está habilitada según la política.</translation>
 <translation id="6794951432696553238">A partir de ahora, usa Windows Hello para confirmar las tarjetas más rápido</translation>
+<translation id="6798066466127540426">La lista no contiene ningún proveedor de búsqueda válido.</translation>
 <translation id="6798460514924505775">Sobre Chou n.º 3</translation>
 <translation id="6799145206637008376">Completa el CVC de esta tarjeta virtual</translation>
 <translation id="6805030849054648206">Sobre B6/C4</translation>
@@ -3240,6 +3246,7 @@ Detalles adicionales:
 <translation id="7521825010239864438">Se ocultó la sección "<ph name="SECTION" />"</translation>
 <translation id="752189128961566325">Puedes usarla en todos los productos de Google.</translation>
 <translation id="7523408071729642236">Fabricación</translation>
+<translation id="7525804896095537619">El campo del nombre no puede estar vacío</translation>
 <translation id="7526934274050461096">Tu conexión con este sitio no es privada</translation>
 <translation id="7529884293139707752">Educación en casa</translation>
 <translation id="7534987659046836932">Sobre C7</translation>
@@ -3461,6 +3468,7 @@ Detalles adicionales:
 <translation id="7950027195171824198">Administra tus preferencias de cookies en la configuración de Chrome</translation>
 <translation id="7951415247503192394">(32 bits)</translation>
 <translation id="7952192831285741665">EDP europeo</translation>
+<translation id="7952250633095257243">El atajo no puede estar vacío</translation>
 <translation id="7952327717479677595">Botón Administrar motores de búsqueda: actívalo para administrar la búsqueda en sitios y el motor de búsqueda predeterminados</translation>
 <translation id="7953236668995583915">Vuelve a cargar esta página para aplicar la configuración actualizada en este sitio</translation>
 <translation id="7953569069500808819">Costura de borde superior</translation>
@@ -3672,6 +3680,7 @@ Detalles adicionales:
 <translation id="8344776605855290140">El diálogo de inscripción de tarjeta virtual está totalmente abierto</translation>
 <translation id="8347658365704983341">Educación a distancia</translation>
 <translation id="8349305172487531364">Barra de favoritos</translation>
+<translation id="8350416046273606058">El atajo no puede contener espacios: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8352849934814541340">El administrador de este dispositivo instaló aplicaciones para funciones adicionales. Las aplicaciones tienen acceso a algunos de tus datos.</translation>
 <translation id="8355270400102541638">Contexto de falla local:</translation>

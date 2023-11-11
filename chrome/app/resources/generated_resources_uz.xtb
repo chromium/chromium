@@ -444,8 +444,10 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1346748346194534595">O‘ngga</translation>
 <translation id="1347256498747320987">Yangilanish va ilovalarni oʻrnatish. Davom etish orqali siz bu qurilma Google, aloqa operatoringiz va qurilma ishlab chiqaruvchisidan dasturiy yangilanish va ilovalarni mobil internet orqali ham avtomatik ravishda yuklab olishi va oʻrnatishiga rozilik bildirgan hisoblanasiz. Baʼzi ilovalar ichki xaridlarni ham taklif etishlari mumkin.<ph name="BEGIN_LINK1" />Batafsil axborot<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux xotirasi</translation>
+<translation id="1347625331607114917">Android telefoningizda kodni tasdiqlang</translation>
 <translation id="1347975661240122359">Yangilanish batayeraning <ph name="BATTERY_LEVEL" />% quvvatida boshlanadi.</translation>
 <translation id="1348966090521113558">Sichqoncha qulayligi sozlamalari</translation>
+<translation id="1352834119074414157">Bu paket buzilgan yoki ishdan chiqqan boʻlishi mumkin. Bu oynani yoping va uni yana yuklab oling</translation>
 <translation id="1353275871123211385">Ilovadan foydalanishga ruxsat va ekran vaqtini cheklash kabi ota-ona nazorati funksiyalari uchun farzand Google hisobi ota-ona boshqaruvida boʻlishi zarur. Google Classroom kabi vositalardan foydalanish uchun maktab hisobini keyinroq kiritish mumkin.</translation>
 <translation id="135389172849514421">Internetsiz ishlaydi</translation>
 <translation id="1353980523955420967">PPD topilmadi. Chromebook internetga ulanganligini tekshiring va qaytadan urining.</translation>
@@ -4012,6 +4014,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4100853287411968461">Yangi ruxsat berilgan foydalanish vaqti</translation>
 <translation id="4101352914005291489">Yashirin SSID</translation>
 <translation id="4102906002417106771">Powerwash amalini bajarish uchun qayta ishga tushirish</translation>
+<translation id="4103644672850109428">Skrin-rider, kattalashtirish</translation>
 <translation id="4104163789986725820">&amp;Eksport qilish...</translation>
 <translation id="4104944259562794668">Uni keyinroq Sozlamalar &gt; Xavfsizlik va maxfiylik &gt; Ekranni qulflash va kirish sahifasidan yoqish mumkin</translation>
 <translation id="4107048419833779140">Xotira qurilmalarini aniqlash va uzib qo‘yish</translation>
@@ -5289,6 +5292,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5145876360421795017">Bu qurilma roʻyxatdan oʻtkazilmasin</translation>
 <translation id="5146235736676876345">Mustaqil tanlang</translation>
 <translation id="5146896637028965135">Tizim ovozi</translation>
+<translation id="5147516217412920887">Kodni tasdiqlash uchun telefonda koʻrsatmalarni bajaring.</translation>
 <translation id="5147992672778369947">Tavsiya etilgan parol ishlating</translation>
 <translation id="5148277445782867161">Google joylashuv xizmati Wi-Fi, mobil tarmoq va sensorlardan qurilmangiz joylashuvini aniqlashda foydalanadi.</translation>
 <translation id="5148285448107770349">Parol (8 ta belgidan kam boʻlmasligi kerak)</translation>
@@ -5638,7 +5642,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5436492226391861498">Proksi-server tuneli yaratilishi kutilmoqda...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> saytidan qidirish:</translation>
 <translation id="5436575196282187764">Google Photos xotiralari</translation>
-<translation id="5439680044267106777">Tashlab ketish va yangi profilni sozlash</translation>
 <translation id="544083962418256601">Yorliqlar yaratish...</translation>
 <translation id="5441133529460183413">Chrome brauzeri orqali veb-ilova oʻrnatildi</translation>
 <translation id="5441292787273562014">Sahifani qayta yuklash</translation>
@@ -5718,6 +5721,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5496587651328244253">Boshqarish</translation>
 <translation id="5496730470963166430">Qalqib chiquvchi oynalarni yuborish yoki yoʻnaltirish taqiqlangan</translation>
 <translation id="5497251278400702716">Bu fayl</translation>
+<translation id="5497739595514726398">Chrome bu oʻrnatish paketini tasdiqlay olmadi</translation>
 <translation id="5498967291577176373">Shaxsiy axborot takliflari orqali ism, manzil yoki telefon raqamini tezroq yozing</translation>
 <translation id="5499211612787418966">Bu suhbat hozir fokuslanmagan. Bu suhbatni fokuslash uchun Alt+Shift+A tugmalarini bosing.</translation>
 <translation id="5499313591153584299">Bu fayl kompyuteringiz uchun zararli bo‘lishi mumkin.</translation>
@@ -6326,7 +6330,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5992225669837656567">Barcha sichqonchalar uzildi</translation>
 <translation id="5992652489368666106">Chegarasiz</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 ta sayt uchun tekshiruv tugadi}other{{NUM_SITES} ta sayt uchun tekshiruv tugadi}}</translation>
-<translation id="5996200702878169822">eSIM profilini <ph name="BEGIN_LINK" />qoʻlda<ph name="END_LINK" /> sozlash ham mumkin.</translation>
 <translation id="5997337190805127100">Saytga ruxsat haqida batafsil axborot</translation>
 <translation id="5998458948782718639">Avtomatik kiritishni yaxshilashga yordam bering</translation>
 <translation id="5999024481231496910">Siz tashqi cookie fayllarni bosqichma-bosqich oʻchirish uchun sinov funksiyasini yoqdingiz. Sozlamalar sahifasida uni almashtirib boʻlmaydi. Tashqi cookie fayllarni qayta yoqmoqchi boʻlsangiz, funksiyani oʻchiring va Chrome brauzerini qayta ishga tushiring.</translation>
@@ -6515,6 +6518,10 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6143186082490678276">Get Help</translation>
 <translation id="6143366292569327983">Sahifaning asl tilini tanlang</translation>
 <translation id="6144938890088808325">Chromebook qurilmalarini takomillashtirishga yordam bering</translation>
+<translation id="6145480071052696715"><ph name="DEVICE_TYPE" /> qurilmangizni telefoningiz bilan osongina sozlang. Parollarni qoʻlda kiritmasdan Wi-Fi va Google hisobingizni qoʻshishingiz mumkin.
+    <ph name="BR" />
+    <ph name="BR" />
+    <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> boʻlib chiqadi...</translation>
 <translation id="6146409560350811147">Sinxronizatsiya ishlamayapti. Qaytadan kirishga urining</translation>
 <translation id="6147020289383635445">Chop etishdan avvalgi ko‘rinishni yuklashda xatolik yuz berdi.</translation>
 <translation id="6148576794665275391">Hozir ochish</translation>
@@ -7579,6 +7586,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6993050154661569036">Chrome brauzerini yangilash</translation>
 <translation id="6995899638241819463">Parolim oshkor etilganda ogohlantirilsin</translation>
 <translation id="6995984090981858039">ChromeOS qurilmasi haqidagi axborot va maʼlumotlarni oʻqish.</translation>
+<translation id="6996245928508281884">Telefoningizning Bluetooth va Wi-Fi qurilmalarini yoqing</translation>
 <translation id="6996438701394974959">Rasm va matn hajmini kattalashtirish</translation>
 <translation id="6997553674029032185">Saytni ochish</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Faollik jurnali</translation>
@@ -7660,7 +7668,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7056418393177503237">{0,plural, =1{Inkognito}other{# ta inkognito oyna ochiq}}</translation>
 <translation id="7056526158851679338">&amp;Qurilmalarni tekshirish</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Xavfsizlik tekshiruvi 1 daqiqa oldin bajarilgan}other{Xavfsizlik tekshiruvi {NUM_MINS} daqiqa oldin bajarilgan}}</translation>
-<translation id="7057767408836081338">Ilova maʼlumotlari yuklanmadi, lekin hali ham urinilmoqda...</translation>
 <translation id="7058024590501568315">Yashirin tarmoq</translation>
 <translation id="7059858479264779982">Avtomatik ishga tushirishni sozlash</translation>
 <translation id="7063129466199351735">Yorliqlarga ishlov berilmoqda...</translation>
@@ -7821,6 +7828,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7201118060536064622">“<ph name="DELETED_ITEM_NAME" />” o‘chirildi</translation>
 <translation id="7201420661433230412">Fayllarni ochish</translation>
 <translation id="7201535955609308429">Tekshiruv tugashini kuting</translation>
+<translation id="7202337678781136582">Android telefoningiz bilan QR kodni skanerlang</translation>
 <translation id="7203150201908454328">Yoyilgan</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Sahifani yopish}other{Sahifalarni yopish}}</translation>
 <translation id="7207457272187520234">Foydalanish statistikasi va diagnostika axborotini yuborish. Bu qurilma hozirda qurilma va ilovalardan foydalanish haqidagi hamda diagnostika axborotini avtomatik tarzda Google kompaniyasiga yubormoqda. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi. Bu parametr qurilma egasi tomonidan oʻrnatilgan. Agar Kengaytirilgan veb-qidiruv va ilovalar tarixi yoqilsa, bu maʼlumotlar Google hisobingizda saqlanadi.</translation>
@@ -8786,6 +8794,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7943349879009553083">Mehmon rejimida mavjud emas</translation>
 <translation id="7943368935008348579">PDF fayllarni yuklab olish</translation>
 <translation id="7943837619101191061">Joylashuv jildini qo‘shish...</translation>
+<translation id="79446453817422139">Bu fayl xavfli boʻlishi mumkin</translation>
 <translation id="7944772052836377867">Sinxronizatsiya uchun shaxsingizni tasdiqlang</translation>
 <translation id="7945703887991230167">Asosiy ovoz</translation>
 <translation id="7946586320617670168">Manba xavfsiz boʻlishi zarur</translation>

@@ -304,6 +304,7 @@
 
       &lt;p&gt;&lt;strong&gt;Параметрлер&lt;/strong&gt; қолданбасының &lt;strong&gt;Жалпы&lt;/strong&gt; бөліміндегі күн мен уақытты реттеңіз.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Әкімші құрылғыңызды өшіріп қосатын уақыт: <ph name="DATE" /> <ph name="TIME" /></translation>
+<translation id="1564634006476980707">Іздеудің URL мекенжайы үшін ұсынылатын HTTPS схемасы: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Мекенжайлар, интерфейс конфигурациясы және байланыс сапасы сияқты желі ақпараты</translation>
 <translation id="1567040042588613346">Бұл саясат ойдағыдай жұмыс істеуде, бірақ басқа жерде осы саясат бойынша ауыстырылатын тап осындай мән орнатылған.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> тақырыбын қосу</translation>
@@ -733,6 +734,7 @@
 <translation id="2448295565072560657">Сіз жүйеге кіргенде, осы құрылғыға қосылып тұрған перифериялық құрылғылар</translation>
 <translation id="2450021089947420533">Journeys</translation>
 <translation id="2456755709261364512">Батареяңыз <ph name="REQUIRED_BATTERY_PRECENT" />%-дан аса зарядталуы қажет</translation>
+<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> іздеу</translation>
 <translation id="2463739503403862330">Толтыру</translation>
 <translation id="2465688316154986572">Қапсыру</translation>
 <translation id="2465914000209955735">Chrome браузерінде жүктеп алған файлдарды басқару</translation>
@@ -904,6 +906,7 @@
 <translation id="2814184336982254349">Бұл PDF қолжетімді емес. Іздеу белгішесі мен m әрпін басып, контекстік мәзірді ашыңыз. Содан кейін "PDF-тен мәтін шығарып алу" мүмкіндігін қосыңыз.</translation>
 <translation id="2818338148457093657">Сұлулық қызметтері және спа</translation>
 <translation id="2820957248982571256">Іздеуде...</translation>
+<translation id="2824549017793319782">Ізделетін сөзді тікелей мекенжай жолағында теру үшін таңдаңыз</translation>
 <translation id="2824775600643448204">Мекенжайы және іздеу жолағы</translation>
 <translation id="2826760142808435982">Байланыс <ph name="CIPHER" /> көмегімен шифрланды және аутентификацияланды, сонымен қатар кілт ауыстыру механизмі ретінде <ph name="KX" /> пайдаланады.</translation>
 <translation id="2835170189407361413">Нысанды тазарту</translation>
@@ -1692,6 +1695,7 @@
 <translation id="4386413576162606861">Рөлдік ойындар</translation>
 <translation id="4390472908992056574">Жиек</translation>
 <translation id="4393632246160856858">Тырнақ күтіміне арналған өнімдер</translation>
+<translation id="4397059608630092079">Автотолтыруды пайдаланған кезде әрқашан растау</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406896451731180161">іздеу нәтижелері</translation>
 <translation id="4408413947728134509">Cookie файлдары: <ph name="NUM_COOKIES" /></translation>
@@ -1893,7 +1897,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, жаңа Google парағын жылдам жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="4825507807291741242">Қуатты</translation>
 <translation id="4826588772550366629">камера және микрофон</translation>
-<translation id="4827283332383516812">Картаны жою</translation>
 <translation id="4831993743164297314">Сурет теру құралының қағазы</translation>
 <translation id="483241715238664915">Хабарландыруларды қосу</translation>
 <translation id="4834250788637067901">Google Pay қызметіндегі төлеу әдістері, ұсыныстар және мекенжайлар</translation>
@@ -2367,7 +2370,6 @@
 <translation id="5785756445106461925">Сонымен қатар бұл бет басқа да қауіпті ресурстарды қамтиды. Бұл ресурстарды өту кезінде басқалар көре алады және беттің көрінісіне өзгеріс енгізу мақсатында оны шабуылшы өзгерте алады.</translation>
 <translation id="5786044859038896871">Карта ақпаратын толтырғыңыз келе ме?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Бұл төлеу әдісі осы құрылғыдан жойылады</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Жоқ}=1{1 аккаунтқа кіру деректері}other{# аккаунтқа кіру деректері}}</translation>
 <translation id="5800727402210090597">Мобильдік телефондарды жөндеу және қызметтері</translation>
 <translation id="580241730938216256">Жаңартуды бастау</translation>
@@ -3752,6 +3754,7 @@
 <translation id="8490137692873530638">10-жинастырушы</translation>
 <translation id="8493948351860045254">Жадтағы орынды босату</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> жауабы тым ұзақ уақыт алды.</translation>
+<translation id="8502972004418241366">Бұл сайтта <ph name="PERMISSION" /> рұқсатын пайдалану үшін Chrome-ға кіру рұқсатын беруіңіз қажет.</translation>
 <translation id="8503559462189395349">Chrome құпия сөздері</translation>
 <translation id="8503813439785031346">Пайдаланушы аты</translation>
 <translation id="8504928302600319133">Компьютер жабдығы</translation>

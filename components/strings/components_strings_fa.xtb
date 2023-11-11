@@ -532,6 +532,7 @@
 <translation id="2025891858974379949">محتوای ناامن</translation>
 <translation id="2027465737841872819">پلاستیک</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />بررسی پروکسی و دیوار آتش<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">میان‌بر نباید با کلیدواژه ارائه‌دهنده جستجوی پیش‌فرض که <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> تعریف کرده است یکسان باشد: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">درهرصورت ذخیره شود</translation>
 <translation id="2035400064145347639">راهنمای سفر و سفرنامه</translation>
 <translation id="2036514476578229158">‏درخواست کرده‌اید از این سایت بازدید کنید. والدینتان می‌توانند در Family Link پاسخ دهند.</translation>
@@ -593,7 +594,7 @@
 <translation id="214556005048008348">لغو پرداخت</translation>
 <translation id="2148613324460538318">افزودن کارت</translation>
 <translation id="2148716181193084225">امروز</translation>
-<translation id="2149968176347646218">اتصال امن نیست</translation>
+<translation id="2149968176347646218">اتصال ایمن نیست</translation>
 <translation id="2152495481414285304">برنامه‌های کاربردی</translation>
 <translation id="2153609454945889823">‏«خدمات Google Play ویژه واقعیت افزوده» نصب شود؟</translation>
 <translation id="2154144347038514978">اجرای خودکار در دستگاه</translation>
@@ -800,7 +801,7 @@
 <translation id="2587841377698384444">‏شناسه Directory API:</translation>
 <translation id="2594318783181750337">نمای وب سریع:</translation>
 <translation id="2595719060046994702">این دستگاه و حساب توسط شرکت یا سازمان دیگری مدیریت نمی‌شود.</translation>
-<translation id="2596415276201385844">‏به منظور برقراری یک اتصال امن، لازم است که ساعت شما به درستی تنظیم شود. زیرا گواهینامه‌هایی که وب‌سایت‌ها برای شناسایی خودشان استفاده می‌کنند تنها برای دوره‌های زمانی خاصی معتبر هستند. از آنجا که ساعت دستگاه نادرست است، Chrome نمی‌تواند این گواهینامه‌ها را تأیید کند.</translation>
+<translation id="2596415276201385844">‏به منظور برقراری یک اتصال ایمن، لازم است که ساعت شما به درستی تنظیم شود. زیرا گواهینامه‌هایی که وب‌سایت‌ها برای شناسایی خودشان استفاده می‌کنند تنها برای دوره‌های زمانی خاصی معتبر هستند. از آنجا که ساعت دستگاه نادرست است، Chrome نمی‌تواند این گواهینامه‌ها را تأیید کند.</translation>
 <translation id="2597378329261239068">این سند توسط گذرواژه محافظت می‌شود.  لطفاً یک گذرواژه وارد کنید.</translation>
 <translation id="259821504105826686">عکاسی و هنرهای دیجیتال</translation>
 <translation id="2601150049980261779">فیلم عاشقانه</translation>
@@ -1077,6 +1078,7 @@
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> در <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">می‌تواند درخواست کند که استفاده فعال شما از دستگاه به او اطلاع داده شود</translation>
 <translation id="3202497928925179914">‏<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />، کلید «جهش» و سپس «ورود» را فشار دهید تا اطلاعاتی را که همگام‌سازی می‌کنید در تنظیمات Chrome مدیریت کنید</translation>
+<translation id="3203025201812691413">نشانی وب نباید خالی باشد</translation>
 <translation id="320323717674993345">لغو پرداخت</translation>
 <translation id="3203366800380907218">برگرفته از وب</translation>
 <translation id="3207960819495026254">نشانک‌گذاری شده</translation>
@@ -1691,6 +1693,7 @@
 <translation id="4386413576162606861">بازی ایفای نقش</translation>
 <translation id="4390472908992056574">لبه</translation>
 <translation id="4393632246160856858">محصولات مراقبت از ناخن</translation>
+<translation id="4397059608630092079">همیشه هنگام استفاده از «تکمیل خودکار» تأیید شود</translation>
 <translation id="4406883609789734330">زیرنویس زنده</translation>
 <translation id="4406896451731180161">نتایج جستجو</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> کوکی</translation>
@@ -1892,7 +1895,6 @@
 <translation id="4825496307559726072">‏<ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع «کاربرگ‌نگار Google» جدید، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="4825507807291741242">نیرومند</translation>
 <translation id="4826588772550366629">دوربین و میکروفون</translation>
-<translation id="4827283332383516812">حذف کارت</translation>
 <translation id="4831993743164297314">کاغذ تصویرنگار</translation>
 <translation id="483241715238664915">روشن کردن هشدارها</translation>
 <translation id="4834250788637067901">‏روش‌های پرداخت، پیشنهادها، و نشانی‌های استفاده‌شده در Google Pay</translation>
@@ -2304,6 +2306,7 @@
 <translation id="5651323159439184939">تغذیه تراکتوری</translation>
 <translation id="5653432653077411130">تأمین و تصفیه آب</translation>
 <translation id="5654927323611874862">شناسه گزارش خرابی بارگذاری‌شده:</translation>
+<translation id="5654965123204121933">نشانی وب حاوی رشته جایگزین الزامی <ph name="SEARCH_TERMS_REPLACEMENT" /> نیست: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ایمیل</translation>
 <translation id="5660122698869360728">پوشه هوشمند جدیدی که به شما کمک می‌کند همه صفحه‌های خریدتان را در یک مکان ذخیره کنید، و به‌طور خودکار قیمت‌ها را پیگیری کنید، اطلاعات آماری قیمت را دریافت کنید، و کارهای دیگری انجام دهید.</translation>
 <translation id="5663955426505430495">سرپرست این دستگاه، افزونه‌هایی را برای عملکردهای اضافی نصب کرده است. افزونه‌ها به برخی از داده‌های شما دسترسی دارند.</translation>
@@ -2365,7 +2368,6 @@
 <translation id="5785756445106461925">علاوه بر این، این صفحه دارای منابع دیگری است که امن نیستند. دیگران می‌توانند در حین انتقال، این منابع را ببینند و این منابع می‌توانند برای تغییر قفل صفحه، توسط یک مهاجم تغییر داده شوند.</translation>
 <translation id="5786044859038896871">می‌خواهید اطلاعات کارتتان را وارد کنید؟</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">این روش پرداخت از این دستگاه حذف خواهد شد</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{خالی}=1{داده‌های ورود به سیستم برای یک حساب}one{داده‌های ورود به سیستم برای # حساب}other{داده‌های ورود به سیستم برای # حساب}}</translation>
 <translation id="5800727402210090597">تعمیرات و خدمات تلفن همراه</translation>
 <translation id="580241730938216256">شروع به‌روزرسانی</translation>
@@ -3249,7 +3251,7 @@
 <translation id="7534987659046836932">پاکت سی۷</translation>
 <translation id="7535087603100972091">مقدار</translation>
 <translation id="7537536606612762813">اجباری</translation>
-<translation id="7542995811387359312">تکمیل خودکار کارت اعتباری غیر فعال است زیرا این فرم از یک اتصال امن استفاده نمی‌کند.</translation>
+<translation id="7542995811387359312">تکمیل خودکار کارت اعتباری غیر فعال است زیرا این فرم از یک اتصال ایمن استفاده نمی‌کند.</translation>
 <translation id="7543525346216957623">از والدینتان بخواهید این کار را انجام دهد</translation>
 <translation id="7546409722674205727">درحال راه‌اندازی <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">رفع خطاهای اتصال</translation>
@@ -3595,7 +3597,7 @@
 <translation id="8208629719488976364">‏محتوای صفحه‌هایی که چاپ می‌کنید و اطلاعاتی درباره چاپگرتان برای تجزیه‌وتحلیل به Google Cloud یا اشخاص ثالث ارسال می‌شوند. مثلاً ممکن است ازنظر وجود داده‌های حساس اسکن شود و ممکن است براساس خط‌مشی‌های شرکت ذخیره شود و برای سرپرست شما قابل‌مشاهده باشد.</translation>
 <translation id="8210490490377416373">انتخاب نام خط‌مشی</translation>
 <translation id="8210604850413485128">میزبانی وب</translation>
-<translation id="8211406090763984747">اتصال امن است</translation>
+<translation id="8211406090763984747">اتصال ایمن است</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">۱۸ × ۱۴ اینچ</translation>
 <translation id="8217240300496046857">سایت‌ها نمی‌توانند از کوکی‌هایی که شما را در وب ردیابی می‌کند استفاده کنند. ویژگی‌های برخی سایت‌ها ممکن است کار نکنند.</translation>
@@ -3863,7 +3865,7 @@
 <translation id="8736059027199600831">۳۰ × ۴۰ اینچ</translation>
 <translation id="8737134861345396036">‏<ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای باز کردن «پنجره ناشناس» جدید و مرور کردن به‌صورت خصوصی، دکمه Tab (جهش) و سپس Enter (ورود) را فشار دهید</translation>
 <translation id="8737685506611670901">باز کردن پیوندهای <ph name="PROTOCOL" /> به‌جای <ph name="REPLACED_HANDLER_TITLE" /></translation>
-<translation id="8738058698779197622">‏به منظور برقراری یک اتصال امن، لازم است که ساعت شما به درستی تنظیم شود. زیرا گواهینامه‌هایی که وب‌سایت‌ها برای شناسایی خودشان استفاده می‌کنند تنها برای دوره‌های زمانی خاصی معتبر هستند. از آنجایی که ساعت دستگاه نادرست است، Chromium نمی‌تواند این گواهینامه‌ها را تأیید کند.</translation>
+<translation id="8738058698779197622">‏به منظور برقراری یک اتصال ایمن، لازم است که ساعت شما به درستی تنظیم شود. زیرا گواهینامه‌هایی که وب‌سایت‌ها برای شناسایی خودشان استفاده می‌کنند تنها برای دوره‌های زمانی خاصی معتبر هستند. از آنجایی که ساعت دستگاه نادرست است، Chromium نمی‌تواند این گواهینامه‌ها را تأیید کند.</translation>
 <translation id="8740359287975076522">‏<ph name="HOST_NAME" />’s &lt;abbr id="dnsDefinition"&gt;آدرس DNS&lt;/abbr&gt; پیدا نشد. درحال بررسی برای تشخیص مشکل.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> کد شما برای <ph name="ORIGIN" /> است</translation>
 <translation id="874918643257405732">نشانک‌گذاری این برگه</translation>

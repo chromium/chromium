@@ -871,6 +871,14 @@
 <translation id="4548482551627849548">চালু থাকা উইন্ডো বাঁদিকের ডেস্কে সরান</translation>
 <translation id="4560576029703263363">চালু করা আছে</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">স্ট্যাটাস ট্রে, সময় <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">পাসওয়ার্ড লুকান</translation>
 <translation id="4566144812051858745">যেকোনও সাজেশনে আগ্রহী নই</translation>
 <translation id="4569753163207712681">আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া এবং অ্যাপ দেখুন</translation>

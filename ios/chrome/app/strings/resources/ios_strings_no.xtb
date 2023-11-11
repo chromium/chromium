@@ -1216,6 +1216,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7367530036083223701">Få sikker tilgang til passordene dine fra startskjermen med Passordlagring-modulen.</translation>
 <translation id="7380220816562673297">Foreløpig kan du bare dele passord med familiemedlemmer. <ph name="BEGIN_LINK" />Opprett en familiegruppe<ph name="END_LINK" /> med opptil seks medlemmer, og få mer ut av Google-produktene og -abonnementene dine.</translation>
 <translation id="7383797227493018512">Leseliste</translation>
+<translation id="739101637685146669">Hvilken nettadresse vil du sette som bokmerke?</translation>
 <translation id="7396331865858820922">Passordet ble ikke delt</translation>
 <translation id="7398893703713203428">Opprett link</translation>
 <translation id="7399802613464275309">Sikkerhetssjekk</translation>
@@ -1451,6 +1452,7 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="8591976964826315682">Blokkér informasjonskapsler fra tredjepart i inkognitomodus</translation>
 <translation id="8593565399399144771">Du kan åpne nye faner her.</translation>
 <translation id="8605219856220328675">Lukk fanen.</translation>
+<translation id="8609743333007776886">Legg til ${url} i bokmerkene</translation>
 <translation id="8613883225817609844">Skjul nylige faner</translation>
 <translation id="8620640915598389714">Endre</translation>
 <translation id="8624447588354561276">Pakkenummer</translation>

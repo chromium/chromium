@@ -532,6 +532,7 @@
 <translation id="2025891858974379949">Conținut nesecurizat</translation>
 <translation id="2027465737841872819">Plastic</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />să verifici proxy-ul și firewallul;<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">Comanda rapidă nu poate fi identică cu cuvântul cheie prestabilit al furnizorului de căutare, definit de <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Salvează oricum</translation>
 <translation id="2035400064145347639">Ghiduri turistice și jurnale de călătorie</translation>
 <translation id="2036514476578229158">Ai solicitat să accesezi acest site. Părinții tăi pot răspunde în Family Link.</translation>
@@ -559,6 +560,7 @@
 <translation id="2072275792380684364">Modă și stil</translation>
 <translation id="2075497153347571252">Administratorul a blocat permisiunea pentru <ph name="PERMISSION" /> pe <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Anulează</translation>
+<translation id="2080021694978766903">Această politică nu poate să conțină mai mult de <ph name="MAX_ITEMS_LIMIT" /> intrări.</translation>
 <translation id="20817612488360358">Setările proxy de sistem sunt setate pentru a fi utilizate, dar o configurație explicită pentru proxy este, de asemenea, specificată.</translation>
 <translation id="2082238445998314030">Rezultatul <ph name="RESULT_NUMBER" /> din <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Permite la fiecare accesare</translation>
@@ -638,6 +640,7 @@
 <translation id="2225927550500503913">Cardul virtual a fost activat</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Conectarea<ph name="END_LINK" /> la rețeaua Wi-Fi</translation>
 <translation id="2228057197024893428">Această adresă se salvează momentan în Chrome. Pentru a o folosi în toate produsele Google, salveaz-o în Contul Google, <ph name="ACCOUNT" />.</translation>
+<translation id="2229456043301340598">O comandă rapidă care nu este unică a fost ignorată: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2233745931693710080">Disc compact</translation>
 <translation id="2235344399760031203">Cookie-urile terță parte sunt blocate</translation>
 <translation id="2239100178324503013">Trimite acum</translation>
@@ -1075,6 +1078,7 @@
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> pe <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Poate solicita permisiunea de a afla când folosești activ dispozitivul</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona informațiile de sincronizat din setările Chrome</translation>
+<translation id="3203025201812691413">Adresa URL trebuie completată</translation>
 <translation id="320323717674993345">Anulează plata</translation>
 <translation id="3203366800380907218">De pe web</translation>
 <translation id="3207960819495026254">Marcată</translation>
@@ -1689,6 +1693,7 @@
 <translation id="4386413576162606861">Jocuri de rol</translation>
 <translation id="4390472908992056574">Bordură</translation>
 <translation id="4393632246160856858">Produse de îngrijire pentru unghii</translation>
+<translation id="4397059608630092079">Confirmă întotdeauna când folosești completarea automată</translation>
 <translation id="4406883609789734330">Subtitrări live</translation>
 <translation id="4406896451731180161">rezultate ale căutării</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> cookie-uri</translation>
@@ -1890,7 +1895,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a crea rapid o Foaie de calcul Google</translation>
 <translation id="4825507807291741242">Puternic</translation>
 <translation id="4826588772550366629">cameră și microfon</translation>
-<translation id="4827283332383516812">Șterge cardul</translation>
 <translation id="4831993743164297314">Hârtie Setter pentru imagini</translation>
 <translation id="483241715238664915">Activează avertizările</translation>
 <translation id="4834250788637067901">Metode de plată, oferte și adrese care folosesc Google Pay</translation>
@@ -2302,6 +2306,7 @@
 <translation id="5651323159439184939">Tractor</translation>
 <translation id="5653432653077411130">Resurse de apă și tratarea apei</translation>
 <translation id="5654927323611874862">ID-ul raportului de blocare încărcat:</translation>
+<translation id="5654965123204121933">Adresa URL nu include șirul obligatoriu de înlocuire <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Adresă de e-mail</translation>
 <translation id="5660122698869360728">Un nou dosar inteligent care te ajută să salvezi toate paginile de cumpărături într-un singur loc și să urmărești automat prețurile, să primești statistici despre prețuri și altele.</translation>
 <translation id="5663955426505430495">Administratorul acestui dispozitiv a instalat extensii pentru funcții suplimentare. Extensiile au acces la unele dintre datele tale.</translation>
@@ -2332,6 +2337,7 @@
 <translation id="5720705177508910913">Utilizator curent</translation>
 <translation id="572328651809341494">File recente</translation>
 <translation id="5723287205918986743">Industria apărării</translation>
+<translation id="5725297205162868298">Comanda rapidă nu poate începe cu caracterul @: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="5730040223043577876">Chrome îți recomandă să resetezi parola dacă ai folosit-o și pe alte site-uri.</translation>
 <translation id="5732392974455271431">Părinții tăi îl pot debloca pentru tine</translation>
 <translation id="573555826359077410">Butonul Creează un formular, activează pentru a crea rapid un formular în Formulare Google</translation>
@@ -2362,7 +2368,6 @@
 <translation id="5785756445106461925">În plus, această pagină include alte resurse care nu sunt securizate. Aceste resurse sunt vizibile pentru alți utilizatori în cursul transferului și pot fi modificate de un atacator pentru a schimba aspectul paginii.</translation>
 <translation id="5786044859038896871">Dorești să completezi datele cardului de credit?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Metoda de plată se va șterge de pe acest dispozitiv</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Fără}=1{date de conectare pentru un cont}few{date de conectare pentru # conturi}other{date de conectare pentru # de conturi}}</translation>
 <translation id="5800727402210090597">Service și reparații pentru telefoane mobile</translation>
 <translation id="580241730938216256">Începe actualizarea</translation>
@@ -2850,6 +2855,7 @@
 <translation id="6793213097893210590">Carton</translation>
 <translation id="679355240208270552">Valoare ignorată, deoarece politica nu a activat căutarea prestabilită.</translation>
 <translation id="6794951432696553238">Confirmă-ți cardurile mai rapid, folosind Windows Hello</translation>
+<translation id="6798066466127540426">Lista nu conține niciun furnizor de căutare valid.</translation>
 <translation id="6798460514924505775">Plic Chou 3</translation>
 <translation id="6799145206637008376">Completează codul CVC pentru acest card virtual</translation>
 <translation id="6805030849054648206">Plic B6/C4</translation>
@@ -3239,6 +3245,7 @@ Detalii suplimentare:
 <translation id="7521825010239864438">Secțiunea „<ph name="SECTION" />” a fost ascunsă</translation>
 <translation id="752189128961566325">O poți folosi în produsele Google</translation>
 <translation id="7523408071729642236">Producție</translation>
+<translation id="7525804896095537619">Numele trebuie completat</translation>
 <translation id="7526934274050461096">Conexiunea la acest site nu este privată</translation>
 <translation id="7529884293139707752">Învățământ la domiciliu</translation>
 <translation id="7534987659046836932">Plic C7</translation>
@@ -3460,6 +3467,7 @@ Detalii suplimentare:
 <translation id="7950027195171824198">Gestionează-ți preferințele privind cookie-urile din setările Chrome</translation>
 <translation id="7951415247503192394">(32 de biți)</translation>
 <translation id="7952192831285741665">European EDP</translation>
+<translation id="7952250633095257243">Comanda rapidă trebuie completată</translation>
 <translation id="7952327717479677595">Butonul Gestionează motoarele de căutare, activează pentru a gestiona motorul de căutare prestabilit și căutarea pe site</translation>
 <translation id="7953236668995583915">Reîncarcă pagina pentru a aplica setările actualizate pe acest site</translation>
 <translation id="7953569069500808819">Broșare pe marginea de sus</translation>
@@ -3671,6 +3679,7 @@ Detalii suplimentare:
 <translation id="8344776605855290140">Înregistrarea cardului virtual s-a deschis la înălțimea completă</translation>
 <translation id="8347658365704983341">Învățământ la distanță</translation>
 <translation id="8349305172487531364">Bara de marcaje</translation>
+<translation id="8350416046273606058">Comanda rapidă nu poate conține spații: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="8351131234907093545">Creează o notă</translation>
 <translation id="8352849934814541340">Administratorul acestui dispozitiv a instalat aplicații pentru funcții suplimentare. Aplicațiile au acces la unele dintre datele tale.</translation>
 <translation id="8355270400102541638">Contextul local al blocării:</translation>

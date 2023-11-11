@@ -1296,6 +1296,7 @@
 <translation id="7691043218961417207">ለመከተል ይዘትን ያስሱ</translation>
 <translation id="7697383401610880082">መያዣ ይጎትቱ</translation>
 <translation id="7698359219371678927">በ<ph name="APP_NAME" /> ውስጥ ኢሜይል ይፍጠሩ</translation>
+<translation id="7702029078562412515">የመጠይቅ ጡቦች</translation>
 <translation id="7702388902581909985">የአሰሳ ውሂብዎን ማጽዳት ከእርስዎ Google መለያ ዘግቶ አያስወጣዎትም። ይህን ለማድረግ <ph name="BEGIN_LINK1" />ከChrome ዘግተው ይውጡ<ph name="END_LINK1" />።</translation>
 <translation id="7707922173985738739">የተንቀሳቃሽ ስልክ ውሂብ</translation>
 <translation id="7709918231054955894">ሁሉንም የእርስዎን ትሮች ያግኙ</translation>
@@ -1320,7 +1321,6 @@
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{ሁሉም ፋይሎች፣ በዝርዝር ውስጥ 1 ፋይል}one{ሁሉም ፋይሎች፣ በዝርዝር ውስጥ # ፋይል}other{ሁሉም ፋይሎች፣ በዝርዝር ውስጥ # ፋይሎች}}</translation>
 <translation id="7815484226266492798">ረጅም ቅጽበታዊ ገፅ ዕይታ</translation>
 <translation id="7822705602465980873">በመለያዎ በሚገቡበት ጊዜ ይህ ውሂብ በሁሉም የGoogle አገልግሎቶች ላይ እርስዎን ለመጠበቅ Google መለያዎ ጋር ይገናኛል፣ ለምሳሌ ከደህንነት ክስተት በኋላ Gmail ውስጥ ጥበቃን መጨመር።</translation>
-<translation id="782705168687182233">እንቅስቃሴዎ በእርስዎ <ph name="BEGIN_LINK" />Google መለያ<ph name="END_LINK" /> ውስጥ ተቀምጧል።</translation>
 <translation id="78270725016672455">ኮምፒተርዎ ወደ አንድ ጣቢያ ለመግባት ይህንን መሣሪያ ለመመዝገብ ይፈልጋል</translation>
 <translation id="7844171778363018843">ለማመሳሰል ምንም ውሂብ አልተመረጠም</translation>
 <translation id="7846296061357476882">የGoogle አገልግሎቶች</translation>

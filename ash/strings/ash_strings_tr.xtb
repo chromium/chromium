@@ -130,6 +130,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="146902737843070955">Yöneticiniz bu değişikliği istedi</translation>
 <translation id="1469148162491666137">Bu işlem, <ph name="APP1_NAME" /> ve <ph name="APP2_NAME" /> uygulamasının yanı sıra kamera ve mikrofon izni olan tüm uygulamaların ve web sitelerinin erişmesine izin verir. Web sayfasını yenilemeniz veya uygulamayı yeniden başlatmanız gerekebilir.</translation>
 <translation id="147310119694673958">Telefon pili %<ph name="BATTERY_PERCENTAGE" /></translation>
+<translation id="1475340220124222168">Hotspot'u aç/kapat. Hotspot açık, 1 cihaz bağlı.</translation>
 <translation id="1479909375538722835">Kayan erişilebilirlik menüsü</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Dikte özelliğinde sesinizi kullanarak yazabilirsiniz. Metin alanındayken dikte tuşuna basın veya ekranın alt kısmındaki mikrofon simgesini seçin. Dikte diliniz <ph name="LANGUAGE" /> olarak ayarlandı. Konuşma, işlenmek üzere Google'a gönderilir Dikte dilini dilediğiniz zaman Ayarlar &gt; Erişilebilirlik bölümünden değiştirebilirsiniz.</translation>
@@ -870,6 +871,14 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4548482551627849548">Etkin pencereyi soldaki masaya taşı</translation>
 <translation id="4560576029703263363">Açık</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Durum tepsisi, saat <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />,
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />,
+        <ph name="NOTIFICATION" />
+        <ph name="IME" />,
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Şifreyi gizle</translation>
 <translation id="4566144812051858745">Hiçbir öneriyle ilgilenmiyorum</translation>
 <translation id="4569753163207712681">Telefonunuzdaki son fotoğrafları, medya içeriklerini ve uygulamaları görün</translation>
@@ -879,6 +888,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4577990005084629481">Önizlemeleri göster</translation>
 <translation id="4578906031062871102">Ayarlar menüsü açıldı</translation>
 <translation id="458210817642223147">GIF kaydet</translation>
+<translation id="4582666543382004902">Kablosuz bağlantının kullanılması için hotspot kapatıldı. Hotspot'u kullanmak için kablosuz bağlantıyı kapatın.</translation>
 <translation id="4585337515783392668">Bilinmeyen bir alıcıya yayını durdur</translation>
 <translation id="4596144739579517758">Koyu tema kapalı</translation>
 <translation id="4611292653554630842">Giriş yap</translation>
@@ -1085,6 +1095,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="5393156353051693207">Uygulamalarınızı yeniden sıralamak için herhangi bir yere dokunup basılı tutun</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> uygulaması <ph name="IN_PLACE_APP" /> uygulamasının üzerinde, klasör oluşturmak için serbest bırakın.</translation>
 <translation id="5397578532367286026">Bu kullanıcıyla ilgili kullanım ve geçmiş bilgileri, yönetici (<ph name="MANAGER_EMAIL" />) tarafından chrome.com adresinden incelenebilir.</translation>
+<translation id="540713187982329711">Hotspot'u aç/kapat. Hotspot açık, bağlı bir cihaz yok.</translation>
 <translation id="5413656666631274079">Ayarlar sayfası</translation>
 <translation id="5414198321558177633">Profil listesi yenileniyor. Bu işlem birkaç dakika sürebilir.</translation>
 <translation id="5426063383988017631">Ayarlar menüsü kapatıldı</translation>
@@ -1175,9 +1186,11 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="576341972084747908">Tehlikeli <ph name="FILENAME" /> dosyasını indir</translation>
 <translation id="576453121877257266">Gece Işığı açık.</translation>
 <translation id="5764569119212455782">Seçilen son dile geçiş yapın</translation>
+<translation id="5767730327234918501">Yöneticiniz hotspot'u kapattı.</translation>
 <translation id="5769373120130404283">Gizlilik ekranı</translation>
 <translation id="5773950591113557721">Bu işlem, <ph name="APP_NAME" /> uygulamasının yanı sıra kamera ve mikrofon izni olan tüm uygulamaların ve web sitelerinin erişmesine izin verir</translation>
 <translation id="5774295353725270860">Dosyalar uygulamasını aç</translation>
+<translation id="5775936059231769503">Hotspot'u aç/kapat. Hotspot kapalı.</translation>
 <translation id="5777841717266010279">Ekran paylaşma durdurulsun mu?</translation>
 <translation id="5779721926447984944">Sabitlenmiş dosyalar</translation>
 <translation id="5785221443435874078">Bu öneriyi kaldır</translation>
@@ -1495,6 +1508,7 @@ Yeni yüklenmiş</translation>
 <translation id="7068360136237591149">Dosya aç</translation>
 <translation id="7076293881109082629">Oturum açılıyor</translation>
 <translation id="7076878155205969899">Sesi kapat</translation>
+<translation id="7084678090004350185">Hotspot'u aç/kapat. Hotspot açık, <ph name="DEVICECOUNT" /> cihaz bağlı.</translation>
 <translation id="7086931198345821656">Bu güncelleme için <ph name="DEVICE_TYPE" /> cihazınızda Powerwash işlemi yapılması gerekiyor. Tüm veriler silinecektir. En yeni <ph name="SYSTEM_APP_NAME" /> güncellemesi ile ilgili daha fazla bilgi edinin.</translation>
 <translation id="7088960765736518739">Anahtar Erişimi</translation>
 <translation id="709015856939120012">Sayfayı yakınlaştır</translation>

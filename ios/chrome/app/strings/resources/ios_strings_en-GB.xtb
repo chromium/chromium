@@ -1216,6 +1216,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7367530036083223701">Securely access your passwords from the home screen with the Password Manager widget.</translation>
 <translation id="7380220816562673297">For now, you can only share passwords with family members. <ph name="BEGIN_LINK" />Create a family group<ph name="END_LINK" /> with up to six members and get more from your products and subscriptions across Google.</translation>
 <translation id="7383797227493018512">Reading list</translation>
+<translation id="739101637685146669">What URL would you like to bookmark?</translation>
 <translation id="7396331865858820922">Password Was Not Shared</translation>
 <translation id="7398893703713203428">Create link</translation>
 <translation id="7399802613464275309">Safety Check</translation>
@@ -1451,6 +1452,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="8591976964826315682">Block third-party cookies in Incognito</translation>
 <translation id="8593565399399144771">You can open a new tab here.</translation>
 <translation id="8605219856220328675">Close tab.</translation>
+<translation id="8609743333007776886">Add ${url} to bookmarks</translation>
 <translation id="8613883225817609844">Hide Recent Tabs</translation>
 <translation id="8620640915598389714">Edit</translation>
 <translation id="8624447588354561276">Package number</translation>

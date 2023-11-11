@@ -871,6 +871,14 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4548482551627849548">Premik aktivnega okna na namizje na levi</translation>
 <translation id="4560576029703263363">Vklopljeno</translation>
 <translation id="4561267230861221837">UMTS</translation>
+<translation id="4564299521485948903">Vrstica stanja, čas <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Skrij geslo</translation>
 <translation id="4566144812051858745">Predlogi me ne zanimajo</translation>
 <translation id="4569753163207712681">Ogled nedavnih fotografij, predstavnosti in aplikacij telefona</translation>

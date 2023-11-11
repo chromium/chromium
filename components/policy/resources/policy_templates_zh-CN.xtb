@@ -239,10 +239,6 @@
 <translation id="120937472976628837">报告风扇信息</translation>
 <translation id="1212233008927724662">停用延迟的登录 WebUI 加载。</translation>
 <translation id="1216919699175573511">启用 Signed HTTP Exchange (SXG) 支持</translation>
-<translation id="1218658069098810124">如果此政策已启用，WebRTC 对等连接可以降级至已过时的 TLS/DTLS（DTLS 1.0、TLS 1.0 和 TLS 1.1）协议版本。
-      如果此政策已停用或未设置，这些 TLS/DTLS 版本会被停用。
-
-      此政策已被弃用，并会按照我们的计划从 <ph name="PRODUCT_NAME" /> M121 版本中移除。</translation>
 <translation id="1219027971768347970">对音频沙盒使用默认配置</translation>
 <translation id="1221359380862872747">在演示登录时加载指定网址</translation>
 <translation id="1221955019309484560">为所有组件启用更新</translation>
@@ -6268,20 +6264,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6404064917675764807">不报告 CRD 会话事件</translation>
 <translation id="6404360891305375004">允许通过网络共享文件</translation>
 <translation id="6407093060083181305">配置扩展程序安装屏蔽名单</translation>
-<translation id="6407792833351198330">控制是否让系统根据网址来报告使用旧版技术的网页。
-
-如果此政策已设置，系统会使用前缀与许可名单条目相匹配的网址生成报告并上传。不匹配的网址会被忽略。
-如果未设置此政策或将其设为空列表，系统将不会生成任何报告。
-
-匹配的网址格式类似于“<ph name="URL_BLOCKLIST_POLICY_NAME" />”政策中设置的网址格式，详见 https://support.google.com/chrome/a?p=url_blocklist_filter_format。下面列出了一些例外情况：
- * 不支持通配符“*”。
- * 架构、端口和查询会被忽略。
- * 必须明确指定子网域才能进行匹配。
- * 许可名单中最多只能添加 100 个网址。
-
-对于 <ph name="PRODUCT_NAME" />，此政策仅在已使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 注册相应设备后有效。
-
-如需详细了解旧版技术，请访问 https://chromestatus.com/features。</translation>
 <translation id="640827304541402854">禁止从远程访问主机穿越防火墙</translation>
 <translation id="6410847321564585975">网站活动报告许可名单</translation>
 <translation id="6412352702230183710">仅允许使用系统级原生消息传递主机</translation>
@@ -8093,6 +8075,11 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
           对于与此处所列格式不匹配的源：倘若 <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> 政策已设置，系统便会采用该政策中的全局默认值；否则，就会采用用户个人配置中的全局默认值。
 
           如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
+<translation id="7904584382309857420">此政策已从 M121 中移除。此政策旨在为用户启用和停用远程证明，但系统默认已启用远程证明。
+
+如果已启用此政策，系统会允许对设备执行远程证明。系统会自动生成一个证书，并将其上传到设备管理服务器。
+
+如果已停用或未设置此政策，系统将不会生成任何证书，并且对 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 的调用会失败。</translation>
 <translation id="7906983682927840536">浏览器关闭时的 Fetch keepalive 时长</translation>
 <translation id="7908384265697653397">如果 <ph name="PRODUCT_OS_NAME" />版本低于指定的 <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />，系统会在多少天后强制用户退出登录</translation>
 <translation id="7911685775490889216">当为锁定屏幕设定的屏保有多张可显示的图片时，此政策可用于指定图片显示的间隔时间（以秒为单位）。

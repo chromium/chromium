@@ -871,6 +871,14 @@
 <translation id="4548482551627849548">將使用中的視窗移至左側桌面</translation>
 <translation id="4560576029703263363">已開啟</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">狀態列，時間 <ph name="TIME" />，
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />，
+        <ph name="MANAGED" />，
+        <ph name="NOTIFICATION" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4566144812051858745">對所有建議都不感興趣</translation>
 <translation id="4569753163207712681">查看手機最近的相片、媒體和通知</translation>

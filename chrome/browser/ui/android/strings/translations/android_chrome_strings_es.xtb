@@ -1296,6 +1296,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7691043218961417207">Descubre contenido que puedes seguir</translation>
 <translation id="7697383401610880082">Controlador de arrastre</translation>
 <translation id="7698359219371678927">Crear correo electrónico en <ph name="APP_NAME" /></translation>
+<translation id="7702029078562412515">Mosaicos de consultas</translation>
 <translation id="7702388902581909985">Cuando borras tus datos de navegación, no se cierra la sesión de tu cuenta de Google. Para ello, <ph name="BEGIN_LINK1" />cierra sesión en Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Se utilizarán datos móviles</translation>
 <translation id="7709918231054955894">Accede a todas tus pestañas</translation>
@@ -1320,7 +1321,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Todos los archivos, 1 archivo en la lista}other{Todos los archivos, # archivos en la lista}}</translation>
 <translation id="7815484226266492798">Captura de página completa</translation>
 <translation id="7822705602465980873">Cuando inicias sesión, estos datos se vinculan a tu cuenta de Google para protegerte en los servicios de Google (por ejemplo, con una mayor protección en Gmail tras un incidente de seguridad).</translation>
-<translation id="782705168687182233">Tu actividad se guarda en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Tu ordenador quiere registrar este dispositivo para iniciar sesión en un sitio.</translation>
 <translation id="7844171778363018843">No hay datos seleccionados para sincronizar</translation>
 <translation id="7846296061357476882">Servicios de Google</translation>

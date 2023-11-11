@@ -130,6 +130,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="146902737843070955">Quản trị viên của bạn đã yêu cầu sự thay đổi này</translation>
 <translation id="1469148162491666137">Nếu bạn bật, <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> và tất cả ứng dụng cũng như trang web có quyền truy cập máy ảnh và micrô sẽ có thể sử dụng máy ảnh và micrô. Bạn có thể cần làm mới trang web hoặc khởi động lại ứng dụng.</translation>
 <translation id="147310119694673958">Pin điện thoại <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">Bật/tắt điểm phát sóng. Điểm phát sóng đang bật, có 1 thiết bị đã kết nối.</translation>
 <translation id="1479909375538722835">Trình đơn hỗ trợ tiếp cận nổi</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Tính năng nhập bằng giọng nói giúp bạn nhập liệu bằng giọng nói. Nhấn phím nhập bằng giọng nói hoặc chọn biểu tượng micrô ở cuối màn hình khi bạn đang ở một trường văn bản. Ngôn ngữ nhập bằng giọng nói đã được đặt thành <ph name="LANGUAGE" />. Dữ liệu giọng nói sẽ được gửi cho Google xử lý. Bạn có thể thay đổi ngôn ngữ nhập bằng giọng nói bất cứ lúc nào trong phần Cài đặt &gt; Hỗ trợ tiếp cận.</translation>
@@ -887,6 +888,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4577990005084629481">Hiển thị bản xem trước</translation>
 <translation id="4578906031062871102">Đã mở trình đơn Cài đặt</translation>
 <translation id="458210817642223147">Ghi GIF</translation>
+<translation id="4582666543382004902">Đã tắt điểm phát sóng để sử dụng Wi-Fi. Để sử dụng điểm phát sóng, hãy tắt Wi-Fi.</translation>
 <translation id="4585337515783392668">Dừng truyền trên bộ thu không xác định</translation>
 <translation id="4596144739579517758">Giao diện tối đang tắt</translation>
 <translation id="4611292653554630842">Đăng nhập</translation>
@@ -1093,6 +1095,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5393156353051693207">Chạm và giữ vị trí bất kỳ để sắp xếp lại ứng dụng</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> nằm trên <ph name="IN_PLACE_APP" />, thả để tạo thư mục.</translation>
 <translation id="5397578532367286026">Người quản lý (<ph name="MANAGER_EMAIL" />) trên chrome.com có thể xem lại mức sử dụng và lịch sử của người dùng này.</translation>
+<translation id="540713187982329711">Bật/tắt điểm phát sóng. Điểm phát sóng đang bật, chưa có thiết bị nào kết nối.</translation>
 <translation id="5413656666631274079">Trang cài đặt</translation>
 <translation id="5414198321558177633">Đang làm mới danh sách hồ sơ. Quá trình này có thể mất vài phút.</translation>
 <translation id="5426063383988017631">Đã đóng trình đơn Cài đặt</translation>
@@ -1183,9 +1186,11 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="576341972084747908">Tải <ph name="FILENAME" /> xuống có thể gây nguy hiểm</translation>
 <translation id="576453121877257266">Chế độ Ánh sáng đêm đang bật.</translation>
 <translation id="5764569119212455782">Chuyển sang ngôn ngữ vừa được chọn</translation>
+<translation id="5767730327234918501">Quản trị viên của bạn đã tắt điểm phát sóng.</translation>
 <translation id="5769373120130404283">Màn hình bảo vệ quyền riêng tư</translation>
 <translation id="5773950591113557721">Điều này cho phép truy cập máy ảnh và micrô đối với <ph name="APP_NAME" /> và tất cả ứng dụng cũng như trang web có quyền truy cập máy ảnh và micrô</translation>
 <translation id="5774295353725270860">Mở ứng dụng tệp</translation>
+<translation id="5775936059231769503">Bật/tắt điểm phát sóng. Điểm phát sóng đang tắt.</translation>
 <translation id="5777841717266010279">Bạn muốn dừng chia sẻ màn hình?</translation>
 <translation id="5779721926447984944">Tệp đã ghim</translation>
 <translation id="5785221443435874078">Xóa đề xuất này</translation>
@@ -1503,6 +1508,7 @@ Mới cài đặt</translation>
 <translation id="7068360136237591149">Mở tệp</translation>
 <translation id="7076293881109082629">Đăng nhập</translation>
 <translation id="7076878155205969899">Tắt tiếng</translation>
+<translation id="7084678090004350185">Bật/tắt điểm phát sóng. Điểm phát sóng đang bật, có <ph name="DEVICECOUNT" /> thiết bị đã kết nối.</translation>
 <translation id="7086931198345821656">Bản cập nhật này yêu cầu bạn phải chạy tính năng powerwash trên thiết bị <ph name="DEVICE_TYPE" /> của mình. Toàn bộ dữ liệu sẽ bị xoá. Tìm hiểu thêm về bản cập nhật <ph name="SYSTEM_APP_NAME" /> mới nhất.</translation>
 <translation id="7088960765736518739">Tiếp cận bằng công tắc</translation>
 <translation id="709015856939120012">Phóng to trang</translation>

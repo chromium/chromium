@@ -240,13 +240,6 @@ Si se inhabilita esta política, la protección contra phishing en el cliente no
 <translation id="120937472976628837">Enviar información sobre ventiladores</translation>
 <translation id="1212233008927724662">Inhabilita la carga en diferido de la WebUI de inicio de sesión.</translation>
 <translation id="1216919699175573511">Habilitar compatibilidad con Signed HTTP Exchange (SXG)</translation>
-<translation id="1218658069098810124">Si se habilita, las conexiones WebRTC entre pares podrán cambiar a versiones inferiores
-      obsoletas de los protocolos TLS/DTLS (DTLS 1.0, TLS 1.0 y TLS 1.1).
-      Si se inhabilita esta política o no se establece, estas versiones de TLS/DTLS se
-      inhabilitarán.
-
-      Esta política está obsoleta y se eliminará en la versión M121
-      de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1219027971768347970">Usar la configuración predeterminada para poner el proceso de audio en un entorno aislado</translation>
 <translation id="1221359380862872747">Cargar URL especificadas en el inicio de sesión de demostración</translation>
 <translation id="1221955019309484560">Habilitar actualizaciones de todos los componentes</translation>
@@ -1541,6 +1534,25 @@ Si se inhabilita esta política o no se establece, los usuarios podrán transfer
 <translation id="2269319728625047531">Habilitar Sync Consent durante el inicio de sesión</translation>
 <translation id="2269837888511509900">Habilitar que se puedan compartir credenciales de usuario</translation>
 <translation id="2270747976331889601">Habilita una función de seguridad de TLS 1.3 para los anclajes de veracidad locales.</translation>
+<translation id="2273993844348404990">Esta política proporciona una lista de sitios en los que los usuarios pueden hacer búsquedas rápidamente mediante los accesos directos de la barra de direcciones. Los usuarios pueden iniciar la búsqueda escribiendo el acceso directo o @acceso directo (por ejemplo, @trabajo), seguido de un espacio o un tabulador, en la barra de direcciones.
+
+Los siguientes campos son obligatorios para cada sitio: <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />.
+
+El campo <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" /> corresponde al nombre del sitio o del buscador que se mostrará al usuario en la barra de direcciones.
+
+<ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" /> puede incluir palabras y caracteres sin formato, pero no puede incluir espacios ni empezar por el símbolo @. Los accesos directos también deben ser únicos.
+
+Para cada entrada, el campo <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" /> especifica la URL del buscador utilizado durante una búsqueda con la palabra clave correspondiente. La URL debe incluir la cadena <ph name="SEARCH_TERM_MARKER" />, que en la consulta se sustituirá por los términos de búsqueda del usuario. Las entradas no válidas y las que tengan accesos directos duplicados se ignoran.
+
+Las entradas de búsquedas en el sitio marcadas como destacadas se muestran en la barra de direcciones cuando el usuario escribe "@". Se pueden seleccionar hasta tres entradas como destacadas.
+
+Los usuarios no pueden editar ni inhabilitar las entradas de búsquedas en el sitio establecidas por una política, pero pueden añadir nuevos accesos directos para la misma URL. Además, los usuarios no podrán crear nuevas entradas de búsquedas en el sitio con un acceso directo creado anteriormente mediante esta política.
+
+En caso de conflicto con un acceso directo creado por el usuario con anterioridad, tendrá prioridad la configuración del usuario. Sin embargo, los usuarios seguirán pudiendo activar la opción creada por la política escribiendo "@" en la barra de búsqueda. Por ejemplo, si el usuario ya ha definido "trabajo" como acceso directo a URL1 y la política define "trabajo" como acceso directo a URL2, al escribir "trabajo" en la barra de búsqueda se iniciará una búsqueda en URL1 y al escribir "@trabajo" se iniciará en URL2.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="22754818344448444">Permitir que los usuarios seleccionen un diseño de plantilla de escritorio para cargarlo</translation>
 <translation id="2277117728011250860">No permitir el uso de filtros de rendimiento de accesibilidad.</translation>
 <translation id="2279381650184876122">Inhabilitar la compatibilidad de URLs de datos en SVGUseElement</translation>
@@ -6341,20 +6353,6 @@ ADVERTENCIA: Ten cuidado al cambiar este ajuste, ya que podría interferir en ot
 <translation id="6404064917675764807">No informar de los eventos de sesiones de CRD</translation>
 <translation id="6404360891305375004">Permitir sistemas de archivos compartidos en red</translation>
 <translation id="6407093060083181305">Configurar lista de bloqueados de instalación de extensiones</translation>
-<translation id="6407792833351198330">Controla si se informará sobre una página que use tecnologías antiguas en función de su URL.
-
-Si se establece esta política, las URLs cuyo prefijo coincida con una entrada de la lista de permitidas se usarán para generar el informe y subirlo. Las URLs sin coincidencias se ignorarán.
-Si no se establece esta política o se le asigna una lista vacía, no se generará ningún informe.
-
-Los patrones que coinciden tienen un formato similar a los de la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, tal y como se indica en la página https://support.google.com/chrome/a?p=url_blocklist_filter_format. Con algunas excepciones:
- * No se admiten los comodines "*".
- * Se ignoran el esquema, el puerto y la consulta.
- * Siempre se debe especificar un subdominio para buscar coincidencias.
- * Se pueden añadir como máximo 100 URLs a la lista de permitidas.
-
-En el caso de <ph name="PRODUCT_NAME" />, esta política solo es efectiva cuando el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
-
-Para obtener más información sobre las tecnologías antiguas, consulta la página https://chromestatus.com/features.</translation>
 <translation id="640827304541402854">Inhabilitar cruce de cortafuegos desde un host de acceso remoto</translation>
 <translation id="6410847321564585975">Lista de permitidos para informes de actividad en sitios web</translation>
 <translation id="6412352702230183710">Permitir solo hosts de mensajería nativa a nivel de sistema</translation>
@@ -6525,6 +6523,9 @@ El tiempo de espera de inactividad para que se inicie el salvapantallas y el int
 <translation id="6513453889192806240">Latencia de HTTPS</translation>
 <translation id="6515357889978918016">Imagen de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Esperar a que la versión actual iguale a la versión inferior objetivo</translation>
+<translation id="6520053715392444458">Si esta política se habilita o no se define, <ph name="PRODUCT_NAME" /> podrá enviar a Google las descargas sospechosas de usuarios con la Navegación segura habilitada para analizarlas en busca de malware o pedir a los usuarios que proporcionen una contraseña para los archivos cifrados.
+Si se inhabilita la política, no se realizará este análisis.
+Esta política no afecta al análisis del contenido de las descargas configurado por Chrome Enterprise Connectors.</translation>
 <translation id="6520802717075138474">Importa los motores de búsqueda desde el navegador predeterminado en la primera ejecución.</translation>
 <translation id="6521971538031711337">Impedir que el usuario administrado configure el nombre de host del dispositivo</translation>
 <translation id="6523079496775454310">Habilitar el consentimiento de señales de dispositivo para usuarios gestionados en dispositivos no gestionados</translation>
@@ -8177,6 +8178,11 @@ Si se inhabilita o no se define, el SPN de Kerberos no incluirá ningún puerto.
           En el caso de los orígenes no incluidos en los patrones indicados, se usará el valor predeterminado global de la política <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> si esta se ha establecido. Si no, se empleará la configuración personal del usuario.
 
           Para consultar información detallada sobre los patrones de URL válidos, visita https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="7904584382309857420">Esta política se quitó en la versión M121. Servía para habilitar e inhabilitar la atestación remota en el dispositivo, pero la atestación remota se ha habilitado de forma predeterminada.
+
+Si se habilita esta política, se permitirá la atestación remota en el dispositivo. Se generará un certificado y se subirá al servidor de administración de dispositivos automáticamente.
+
+Si se inhabilita esta política o no se define, no se generará ningún certificado y se producirán errores en las llamadas a la <ph name="ENTERPRISE_PLATFORM_KEYS_API" />.</translation>
 <translation id="7906983682927840536">Obtener duración de keepalive al cerrar</translation>
 <translation id="7908384265697653397">Número de días tras los que se cerrará la sesión del usuario si la versión de <ph name="PRODUCT_OS_NAME" /> es anterior a la <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada</translation>
 <translation id="7911685775490889216">Configura el intervalo (en segundos) durante el que se mostrará una imagen si el salvapantallas de la pantalla de bloqueo de sesión dispone de varias imágenes para mostrar.

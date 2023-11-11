@@ -80,6 +80,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="2478295928299953161">Chromium drīz tiks aizvērts</translation>
 <translation id="2483889755041906834">Pārlūkā Chromium</translation>
 <translation id="2485422356828889247">Atinstalēt</translation>
+<translation id="2513154137948333830">Nepieciešama atkārtota palaišana: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2554739539410784893">Pārlūkā Chromium tiek mēģināts aizstāt esošās paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="2560420686485554789">Pārlūkam Chromium ir nepieciešama piekļuve krātuvei, lai varētu lejupielādēt failus.</translation>
 <translation id="2572494885440352020">Chromium palīgs</translation>
@@ -96,12 +97,14 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="2785438272836277133">Šis paplašinājums satur ļaunprātīgu programmatūru un nav drošs. Noņemiet to no pārlūka Chromium, lai tas jūsu apmeklētajās vietnēs vairs nevarētu skatīt un mainīt jūsu datus, tostarp jūsu personas informāciju.</translation>
 <translation id="2799223571221894425">Restartēt</translation>
 <translation id="2837693172913560447">Tādējādi tiks izveidots jauns Chromium profils lietotājam <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="2846251086934905009">Instalēšanas kļūda: instalēšanas programma nepabeidza darbu. Instalēšana ir priekšlaikus pārtraukta.</translation>
 <translation id="2847479871509788944">Noņemšana no pārlūka Chromium...</translation>
 <translation id="2850691299438350830">Tiek nodrošināta jūsu aizsardzība pārlūkprogrammā Chromium. Šis režīms var tikt izmantots jūsu drošības uzlabošanai citās Google lietotnēs, kad esat pierakstījies.</translation>
 <translation id="2885378588091291677">Uzdevumu pārvaldnieks</translation>
 <translation id="2910007522516064972">Par &amp;Chromium</translation>
 <translation id="2915996080311180594">Restartēt vēlāk</translation>
 <translation id="2928420929544864228">Instalēšana pabeigta.</translation>
+<translation id="2945997411976714835">Instalēšanas kļūda: neizdevās palaist instalēšanas programmu.</translation>
 <translation id="2977470724722393594">Chromium ir atjaunināts</translation>
 <translation id="2977506796191543575">Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chromium var arī nosūtīt attiecīgos URL, tostarp lapas satura fragmentus, uz funkciju Droša pārlūkošana.</translation>
 <translation id="3032706164202344641">Pārlūkprogrammā Chromium nevar pārbaudīt jūsu paroles. Vēlāk mēģiniet vēlreiz.</translation>
@@ -159,6 +162,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="3909353120217047026">Šis paplašinājums pārkāpj Chrome interneta veikala politiku, un, iespējams, tas nav drošs. Noņemiet to no pārlūka Chromium, lai tas jūsu apmeklētajās vietnēs vairs nevarētu skatīt un mainīt jūsu datus, tostarp jūsu personas informāciju.</translation>
 <translation id="391789666908693569">Jūsu kontu pārvalda <ph name="MANAGER_NAME" />. Administrators var skatīt un rediģēt šo Chromium profilu un tā datus, piemēram, grāmatzīmes, vēsturi un paroles.</translation>
 <translation id="3922825997980843979">Kamēr rakstāt, Chromium sūta adreses joslas vai meklēšanas lodziņa saturu uz jūsu noklusējuma meklētājprogrammu.</translation>
+<translation id="3941890832296813527">Instalēšanas kļūda: instalēšanas programmas faila nosaukums nav derīgs vai netiek atbalstīts.</translation>
 <translation id="3945058413678539331">Chromium mēģina nokopēt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="3962647064319009959">Uzziniet, kā Chromium rūpējas par jūsu drošību</translation>
 <translation id="3975724895399328945">Par Google Chrome for Testing</translation>
@@ -221,6 +225,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5296845517486664001">Ja izmēģināšana ir ieslēgta un jūs esat iesaistīts aktīvā izmēģinājumā pārlūkā Chromium, jūsu pārlūkošanas vēsture ietekmē to, kādas reklāmas jums tiek rādītas, un tālāk redzamās aptuveni noteiktās intereses. Lai aizsargātu jūsu konfidencialitāti, Chromium katru mēnesi pakāpeniski dzēš jūsu intereses.</translation>
 <translation id="5352264705793813212">Pārlūkā Chromium tika atrasti daži drošības ieteikumi par jūsu atsauksmi</translation>
 <translation id="5358375970380395591">Jūs pierakstāties ar pārvaldītu kontu, kura administrators var kontrolēt jūsu profilu. Jūsu Chromium dati, piemēram, lietotnes, grāmatzīmes, vēsture, paroles un citi iestatījumi, tiks neatgriezeniski saistīti ar lietotāju <ph name="USER_NAME" />. Varēsiet dzēst šos datus, izmantojot Google kontu informācijas paneli, taču nevarēsiet šos datus saistīt ar citu kontu. <ph name="LEARN_MORE" /></translation>
+<translation id="5368118228313795342">Papildu kods: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386450000063123300">Notiek Chromium atjaunināšana (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Atļaut pierakstīties pārlūkā Chromium</translation>
 <translation id="5398878173008909840">Pieejama jauna Chromium versija.</translation>
@@ -421,6 +426,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8648201657708811153">Google Chrome for Testing nevar iestatīt kā noklusējuma pārlūku.</translation>
 <translation id="8697124171261953979">Tas nosaka arī to, kāda lapa tiks rādīta, kad atvērsiet pārlūku Chromium vai meklēsiet, izmantojot universālo lodziņu.</translation>
 <translation id="8704119203788522458">Šis ir jūsu Chromium</translation>
+<translation id="878572486461146056">Instalēšanas kļūda: administrators ir piemērojis grupas politiku, kas neļauj veikt instalēšanu: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="8796602469536043152">Pārlūkam Chromium ir nepieciešama atļauja piekļūt jūsu kamerai un mikrofonam šajā vietnē.</translation>
 <translation id="8826492472752484139">Noklikšķiniet uz vienuma Paroļu pārvaldnieks.</translation>
 <translation id="8833697763442816810">Chromium OS sistēma</translation>

@@ -130,6 +130,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="146902737843070955">Administrator poprosił o tę zmianę</translation>
 <translation id="1469148162491666137">Zezwala na dostęp aplikacjom <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery i mikrofonu. Konieczne może być odświeżenie strony lub ponowne uruchomienie aplikacji.</translation>
 <translation id="147310119694673958">Bateria telefonu: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">Przełącz hotspota. Hotspot jest włączony. Jedno urządzenie jest połączone.</translation>
 <translation id="1479909375538722835">Pływające menu ułatwień dostępu</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Dzięki dyktowaniu możesz pisać głosowo. Naciśnij klawisz dyktowania lub wybierz ikonę mikrofonu u dołu ekranu, jeśli jesteś w polu tekstowym. Twój język dyktowania to <ph name="LANGUAGE" />. Mowa jest wysyłana do Google w celu przetworzenia. W każdej chwili możesz zmienić język dyktowania. W tym celu wybierz Ustawienia &gt; Ułatwienia dostępu.</translation>
@@ -887,6 +888,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4577990005084629481">Pokaż podglądy</translation>
 <translation id="4578906031062871102">Otwarto menu ustawień</translation>
 <translation id="458210817642223147">Nagraj GIF-a</translation>
+<translation id="4582666543382004902">Hotspot został wyłączony, żeby można było korzystać z Wi-Fi. Aby korzystać z hotspota, wyłącz Wi-Fi.</translation>
 <translation id="4585337515783392668">Zakończ przesyłanie do nieznanego odbiornika</translation>
 <translation id="4596144739579517758">Ciemny motyw jest wyłączony</translation>
 <translation id="4611292653554630842">Zaloguj się</translation>
@@ -1093,6 +1095,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="5393156353051693207">Naciśnij i przytrzymaj dowolne miejsce, aby zmienić kolejność aplikacji</translation>
 <translation id="5395308026110844773">Aplikacja <ph name="DRAGGED_APP_NAME" /> jest nad aplikacją <ph name="IN_PLACE_APP" /> – puść, by utworzyć folder.</translation>
 <translation id="5397578532367286026">Działania i historia tego użytkownika mogą być sprawdzane przez menedżera (<ph name="MANAGER_EMAIL" />) na chrome.com.</translation>
+<translation id="540713187982329711">Przełącz hotspota. Hotspot jest włączony. Żadne urządzenie nie jest połączone.</translation>
 <translation id="5413656666631274079">Strona ustawień</translation>
 <translation id="5414198321558177633">Odświeżam listę profili. Może to potrwać kilka minut.</translation>
 <translation id="5426063383988017631">Zamknięto menu ustawień</translation>
@@ -1183,9 +1186,11 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="576341972084747908">Pobieranie niebezpiecznego pliku <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Podświetlenie nocne jest włączone.</translation>
 <translation id="5764569119212455782">Przełącz na ostatni wybrany język</translation>
+<translation id="5767730327234918501">Administrator wyłączył hotspota.</translation>
 <translation id="5769373120130404283">Ekran chroniący prywatność</translation>
 <translation id="5773950591113557721">Zezwala na dostęp aplikacji <ph name="APP_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery i mikrofonu</translation>
 <translation id="5774295353725270860">Otwórz aplikację Pliki</translation>
+<translation id="5775936059231769503">Przełącz hotspota. Hotspot jest wyłączony.</translation>
 <translation id="5777841717266010279">Zakończyć udostępnianie ekranu?</translation>
 <translation id="5779721926447984944">Przypięte pliki</translation>
 <translation id="5785221443435874078">Usuń tę propozycję</translation>
@@ -1502,6 +1507,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="7068360136237591149">Otwórz pliki</translation>
 <translation id="7076293881109082629">Loguję</translation>
 <translation id="7076878155205969899">Wycisz dźwięk</translation>
+<translation id="7084678090004350185">Przełącz hotspota. Hotspot jest włączony. Połączono z <ph name="DEVICECOUNT" /> urządzeniami.</translation>
 <translation id="7086931198345821656">Ta aktualizacja wymaga wykonania na urządzeniu <ph name="DEVICE_TYPE" /> procedury Powerwash. Wszystkie dane zostaną usunięte. Więcej informacji o najnowszej aktualizacji <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="709015856939120012">Powiększ na stronie</translation>

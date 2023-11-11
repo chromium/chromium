@@ -92,6 +92,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2467438592969358367">Google Chrome dëshiron të eksportojë fjalëkalimet e tua. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="2472092250898121027">Kjo shtesë përmban softuerë keqdashës dhe nuk është e sigurt. Hiqe atë nga Chrome që të mos arrijë të shikojë dhe të ndryshojë më të dhënat e tua në sajtin që viziton ti, duke përfshirë informacionet e tua personale.</translation>
 <translation id="2485422356828889247">Çinstalo</translation>
+<translation id="2513154137948333830">Nevojitet rindezja: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2534365042754120737">Për të mbrojtur të dhënat e tua, lejo që Chrome të heqë lejet nga sajtet që nuk i ke vizituar së fundi. Kjo nuk i ndalon njoftimet.</translation>
 <translation id="2534507159460261402">Google Pay (kopjuar në Chrome)</translation>
 <translation id="2556847002339236023">Organizata jote e mbyll Chrome kur ai nuk përdoret për <ph name="TIMEOUT_DURATION" />. Të dhënat e shfletimit u fshinë. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.</translation>
@@ -115,6 +116,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2770231113462710648">Ndrysho shfletuesin me parazgjedhje në:</translation>
 <translation id="2775140325783767197">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="2799223571221894425">Nis sërish</translation>
+<translation id="2846251086934905009">Gabim gjatë instalimit: Instaluesi nuk përfundoi. Instalimi është ndërprerë.</translation>
 <translation id="2847461019998147611">Shfaq Google Chrome në këtë gjuhë</translation>
 <translation id="2853415089995957805">Chrome ngarkon paraprakisht faqet që mund t'i vizitosh që ato të ngarkohen më shpejt kur t'i vizitosh</translation>
 <translation id="2857540653560290388">Po hapet Chrome...</translation>
@@ -130,6 +132,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2926952073016206995">Chrome ka nevojë për lejen e kamerës për këtë sajt</translation>
 <translation id="2928420929544864228">Instalimi përfundoi.</translation>
 <translation id="2929907241665500097">Chrome nuk u përditësua. Ndodhi një gabim. <ph name="BEGIN_LINK" />Rregullo problemet e përditësimit të Chrome dhe përditësimet e dështuara.<ph name="END_LINK" /></translation>
+<translation id="2945997411976714835">Gabim gjatë instalimit: Nisja e procesit të instaluesit dështoi.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - identifikimi në rrjet - Chrome</translation>
 <translation id="3018957014024118866">Fshi po ashtu të dhënat nga Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Nis sërish për të përditësuar Chrome OS Flex</translation>
@@ -186,6 +189,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3865754807470779944">Është instaluar versioni i Chrome <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Hape lidhjen në një dritare të fshehtë të Chrome</translation>
 <translation id="3889417619312448367">Çinstalo Google Chrome</translation>
+<translation id="3941890832296813527">Gabim gjatë instalimit: Emri i skedarit të instaluesit është i pavlefshëm ose nuk mbështetet.</translation>
 <translation id="3999683152997576765">Mund të shikosh dhe të heqësh temat e interesit që përdorin sajtet për të të shfaqur reklama. Chrome i përllogarit interesat e tu bazuar në historikun tënd të shfletimit së fundi.</translation>
 <translation id="4035053306113201399">ChromeOS ka nevojë të riniset për të zbatuar përditësimin.</translation>
 <translation id="4050175100176540509">Përmirësime të rëndësishme sigurie dhe funksione të reja ofrohen në versionin e fundit.</translation>
@@ -265,6 +269,7 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër të profil
 <translation id="5334487786912937552">Chrome ka nevojë për leje qasjeje te hapësira ruajtëse për të shkarkuar skedarë</translation>
 <translation id="5337648990166757586">Opsionale: Ndihmo në përmirësimin e veçorive dhe performancës së ChromeOS duke dërguar automatikisht te Google të dhëna diagnostikuese dhe përdorimi.</translation>
 <translation id="5357889879764279201">Merr ndihmë me Chrome OS Flex</translation>
+<translation id="5368118228313795342">Kodi shtesë: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386118856456530849">Shko te cilësimet e versionit të Chrome</translation>
 <translation id="5386244825306882791">Kontrollon po ashtu se cila faqe shfaqet kur nis Chrome ose kur kërkon nga Omnibox.</translation>
 <translation id="5394833366792865639">Ndaj një skedë të Chrome</translation>
@@ -463,6 +468,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8727043961453758442">Përfito sa më shumë nga Chrome</translation>
 <translation id="873133009373065397">Google Chrome nuk mund të përcaktojë ose të vendosë shfletuesin e parazgjedhur</translation>
 <translation id="8765470054473112089">Kur shkruan në shiritin e adresës ose në kutinë e kërkimit, Chrome i dërgon ato që shkruan te motori i parazgjedhur i kërkimit për të marrë sugjerime më të mira. Kjo është joaktive në modalitetin "e fshehtë".</translation>
+<translation id="878572486461146056">Gabim gjatë instalimit: Administratori i rrjetit ka zbatuar një politikë grupi që parandalon instalimin: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8821043148920470810">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 7.</translation>
 <translation id="8823341990149967727">Sistemi operativ Chrome nuk është i përditësuar</translation>
 <translation id="8825634023950448068">Për të mbrojtur privatësinë tënde, ne fshijmë automatikisht interesat e tua që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një interes mund të shfaqet përsëri në listë. Nëse Chrome gabohet ose nëse nuk dëshiron të shikosh reklama të caktuara, mund të heqësh një interes.</translation>

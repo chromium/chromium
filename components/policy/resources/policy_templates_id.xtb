@@ -242,13 +242,6 @@ Jika kebijakan ini disetel ke nonaktif, perlindungan dari phishing sisi klien ti
 <translation id="120937472976628837">Melaporkan info kipas</translation>
 <translation id="1212233008927724662">Nonaktifkan pemuatan WebUI Login Lambat.</translation>
 <translation id="1216919699175573511">Aktifkan dukungan Signed HTTP Exchange (SXG)</translation>
-<translation id="1218658069098810124">Jika diaktifkan, koneksi pembanding WebRTC dapat melakukan downgrade ke versi
-      protokol TLS/DTLS (DTLS 1.0, TLS 1.0, dan TLS 1.1) yang tidak digunakan lagi.
-      Jika kebijakan ini disetel ke nonaktif atau tidak disetel, versi TLS/DTLS ini akan
-      dinonaktifkan.
-
-      Kebijakan ini tidak digunakan lagi dan akan dihapus dari <ph name="PRODUCT_NAME" />
-      versi M121.</translation>
 <translation id="1219027971768347970">Gunakan konfigurasi default untuk sandbox audio</translation>
 <translation id="1221359380862872747">Muat url yang ditentukan di proses masuk demo</translation>
 <translation id="1221955019309484560">Aktifkan update untuk semua komponen</translation>
@@ -6546,20 +6539,6 @@ di layar <ph name="LOG_IN" />.</translation>
 <translation id="6404064917675764807">Jangan laporkan peristiwa sesi CRD</translation>
 <translation id="6404360891305375004">Izinkan berbagi file dalam jaringan</translation>
 <translation id="6407093060083181305">Mengonfigurasi daftar penginstalan ekstensi yang tidak diizinkan</translation>
-<translation id="6407792833351198330">Mengontrol apakah halaman yang menggunakan teknologi lama akan dilaporkan berdasarkan URL-nya.
-
-Jika kebijakan disetel, URL yang awalannya cocok dengan entri daftar yang diizinkan akan digunakan untuk membuat laporan dan diupload. URL yang tidak cocok akan diabaikan.
-Jika kebijakan tidak disetel atau disetel ke daftar kosong, tidak ada laporan yang akan dibuat.
-
-Pola yang cocok akan menggunakan format serupa dengan kebijakan '<ph name="URL_BLOCKLIST_POLICY_NAME" />' yang didokumentasikan di https://support.google.com/chrome/a?p=url_blocklist_filter_format. Dengan beberapa pengecualian di bawah ini:
- * Tidak ada dukungan karakter pengganti '*'.
- * Skema, port, dan kueri diabaikan.
- * subdomain harus selalu ditentukan agar cocok.
- * Maksimal 100 URL dapat ditambahkan ke daftar yang diizinkan,
-
-Untuk <ph name="PRODUCT_NAME" />, kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
-
-Informasi selengkapnya tentang teknologi lama dapat ditemukan di https://chromestatus.com/features.</translation>
 <translation id="640827304541402854">Nonaktifkan firewall traversal dari host akses jarak jauh</translation>
 <translation id="6410847321564585975">Daftar pelaporan aktivitas situs yang diizinkan</translation>
 <translation id="6412352702230183710">Hanya izinkan host pesan native tingkat sistem</translation>
@@ -8423,6 +8402,11 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, SPN Kerberos yang dihasil
           Untuk asal yang tidak tercakup oleh pola yang ditentukan di sini, nilai default global akan digunakan dari kebijakan <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> jika disetel, atau dari konfigurasi pribadi pengguna jika kebijakan tersebut tidak disetel.
 
           Untuk informasi selengkapnya tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="7904584382309857420">Kebijakan ini dihapus di M121. Fungsi kebijakan ini adalah untuk mengaktifkan dan menonaktifkan Pengesahan Jarak Jauh bagi perangkat, tetapi Pengesahan Jarak Jauh telah diaktifkan secara default.
+
+Jika kebijakan disetel ke Aktif, pengesahan jarak jauh untuk perangkat dapat dilakukan. Sertifikat akan otomatis dibuat dan diupload ke Server Pengelolaan Perangkat.
+
+Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak akan ada sertifikat yang dihasilkan dan panggilan ke <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> akan gagal.</translation>
 <translation id="7906983682927840536">Mengambil durasi keepalive saat Penutupan</translation>
 <translation id="7908384265697653397">Waktu dalam satuan hari sebelum pengguna logout jika versi <ph name="PRODUCT_OS_NAME" /> lebih rendah dari <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> yang ditentukan.</translation>
 <translation id="7911685775490889216">Mengonfigurasi internal dalam detik untuk menampilkan gambar saat screensaver layar kunci memiliki beberapa gambar yang akan ditampilkan.

@@ -532,6 +532,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2025891858974379949">Nem biztonságos tartalom</translation>
 <translation id="2027465737841872819">Műanyag</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />A proxy és a tűzfal ellenőrzése<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">A gyorsparancs nem egyezhet meg a(z) <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> által meghatározott alapértelmezett keresési szolgáltató kulcszavával: <ph name="SHORTCUT_NAME" />.</translation>
 <translation id="2034971124472263449">Mentés mindenképp</translation>
 <translation id="2035400064145347639">Útikönyvek és utazási katalógusok</translation>
 <translation id="2036514476578229158">A webhely felkeresését kérelmezted. Szüleid a Family Linkben reagálhatnak rá.</translation>
@@ -1075,6 +1076,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> nyomtató a(z) <ph name="SERVER_NAME" /> nevű szerveren</translation>
 <translation id="3197136577151645743">Engedélyt kérhet annak észlelésére, hogy Ön mikor használja aktívan az eszközt</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt az adatok szinkronizálásának Chrome-beállítások közötti kezeléséhez.</translation>
+<translation id="3203025201812691413">Az URL mezője nem maradhat üresen.</translation>
 <translation id="320323717674993345">Fizetés visszavonása</translation>
 <translation id="3203366800380907218">Az internetről</translation>
 <translation id="3207960819495026254">Könyvjelző rögzítve</translation>
@@ -1689,6 +1691,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4386413576162606861">Szerepjátékok</translation>
 <translation id="4390472908992056574">Perem</translation>
 <translation id="4393632246160856858">Körömápolási termékek</translation>
+<translation id="4397059608630092079">Mindig ellenőrizze az automatikus kitöltés használatakor</translation>
 <translation id="4406883609789734330">Élő feliratozás</translation>
 <translation id="4406896451731180161">keresési találat</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> cookie</translation>
@@ -1890,7 +1893,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt új Google-táblázat gyors létrehozásához</translation>
 <translation id="4825507807291741242">Erőteljes</translation>
 <translation id="4826588772550366629">kamera és mikrofon</translation>
-<translation id="4827283332383516812">Kártya törlése</translation>
 <translation id="4831993743164297314">Képszedőpapír</translation>
 <translation id="483241715238664915">Figyelmeztetések bekapcsolása</translation>
 <translation id="4834250788637067901">A Google Pay szolgáltatásban használt fizetési módok, ajánlatok és címek</translation>
@@ -2302,6 +2304,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5651323159439184939">Papírtovábbító feed</translation>
 <translation id="5653432653077411130">Vízellátás és -kezelés</translation>
 <translation id="5654927323611874862">Feltöltött hibajelentés azonosítója:</translation>
+<translation id="5654965123204121933">Az URL nem tartalmazza a kötelező <ph name="SEARCH_TERMS_REPLACEMENT" /> cserekarakterláncot: <ph name="SEARCH_URL" />.</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5660122698869360728">Új intelligens mappa, amelynek segítségével egy helyen mentheti az összes vásárlási oldalát, automatikusan nyomon követheti az árakat, valamint árváltozásokról és -összehasonlításokról szóló értesítéseket, illetve egyéb információkat tekinthet meg.</translation>
 <translation id="5663955426505430495">Az eszköz rendszergazdája bővítményeket telepített további funkciók használata céljából. A bővítmények hozzáférhetnek az Ön bizonyos adataihoz.</translation>
@@ -2363,7 +2366,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5785756445106461925">Emellett az oldal azonban más forrásokat is tartalmaz, amelyek nem biztonságosak. Ezeket a forrásokat mások is megtekinthetik átvitel közben, és megváltoztatásukkal a támadók módosíthatják az oldal viselkedését.</translation>
 <translation id="5786044859038896871">Ki szeretné tölteni a kártyaadatait?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Ez a fizetési mód törölve lesz erről az eszközről.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Egy sincs}=1{bejelentkezési adat 1 fiókhoz}other{bejelentkezési adat # fiókhoz}}</translation>
 <translation id="5800727402210090597">Mobiltelefon-javítás és kapcsolódó szolgáltatások</translation>
 <translation id="580241730938216256">Frissítés indítása</translation>

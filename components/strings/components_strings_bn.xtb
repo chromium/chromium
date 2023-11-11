@@ -304,6 +304,7 @@
 
 &lt;p&gt;দয়া করে &lt;strong&gt;সেটিংস&lt;/strong&gt; অ্যাপ্লিকেশানের &lt;strong&gt;সাধারণ&lt;/strong&gt; বিভাগ থেকে তারিখ এবং সময় সংশোধন করুন৷&lt;/p&gt;</translation>
 <translation id="1559839503761818503"><ph name="DATE" />-এ <ph name="TIME" />-এ আপনার অ্যাডমিনিস্ট্রেটর আপনার ডিভাইস রিস্টার্ট করবে</translation>
+<translation id="1564634006476980707">সার্চ URL-এর জন্য HTTPS স্কিম সাজেস্ট করা হয়েছে: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">নেটওয়ার্কিং তথ্য যেমন ঠিকানা, ইন্টারফেস কনফিগারেশন এবং কানেকশন কোয়ালিটি</translation>
 <translation id="1567040042588613346">এই নীতি আশানুরূপ কাজ করছে। আসলে অন্য একটি জায়গাতে একই ধরনের মান সেট করা হয়েছে এবং সেই মানের জায়গাতে এই নীতি প্রয়োগ করা হয়।</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> যোগ করুন</translation>
@@ -734,6 +735,7 @@
 <translation id="2448295565072560657">আপনি লগ-ইন করে থাকার সময় এই ডিভাইসের সাথে অ্যাাটাচ করা ডিভাইস</translation>
 <translation id="2450021089947420533">অ্যাক্টিভিটির সিরিজ</translation>
 <translation id="2456755709261364512">আপনার ডিভাইসের ব্যাটারিতে <ph name="REQUIRED_BATTERY_PRECENT" />%-এর বেশি চার্জ থাকতে হবে</translation>
+<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> সার্চ করুন</translation>
 <translation id="2463739503403862330">পূরণ করুন</translation>
 <translation id="2465688316154986572">স্টেপল করুন</translation>
 <translation id="2465914000209955735">Chrome-এ ডাউনলোড করা ফাইল ম্যানেজ করুন</translation>
@@ -905,6 +907,7 @@
 <translation id="2814184336982254349">এই পিডিএফ অ্যাক্সেস করা যাচ্ছে না। সংশ্লিষ্ট মেনু খুলতে সার্চ বোতামের সাথে m বোতাম প্রেস করুন এবং "পিডিএফ থেকে টেক্সট এক্সট্র্যাক্ট করুন"</translation>
 <translation id="2818338148457093657">সৌন্দর্য পরিষেবা ও স্পা</translation>
 <translation id="2820957248982571256">স্ক্যান করা হচ্ছে…</translation>
+<translation id="2824549017793319782">অ্যাড্রেস বারে সরাসরি আপনার সার্চ টাইপ করার জন্য বেছে নিন</translation>
 <translation id="2824775600643448204">ঠিকানা এবং সার্চ দণ্ড</translation>
 <translation id="2826760142808435982"><ph name="CIPHER" /> ব্যবহার করে এই সংযোগটি এনক্রিপ্টেড এবং প্রমাণীকৃত করা হয়েছে এবং কী এক্সচেঞ্জ প্রক্রিয়া হিসাবে <ph name="KX" /> ব্যবহার করে৷</translation>
 <translation id="2835170189407361413">ফর্ম সাফ করুন</translation>
@@ -1694,6 +1697,7 @@
 <translation id="4386413576162606861">রোলপ্লেয়িং গেম</translation>
 <translation id="4390472908992056574">ব্রিম</translation>
 <translation id="4393632246160856858">নখের যত্ন নেওয়ার প্রোডাক্ট</translation>
+<translation id="4397059608630092079">অটোফিল ব্যবহার করাকালীন সব সময় যাচাই করুন</translation>
 <translation id="4406883609789734330">লাইভ ক্যাপশন</translation>
 <translation id="4406896451731180161">সার্চের ফলাফলগুলি</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" />টি কুকিজ</translation>
@@ -1895,7 +1899,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, চটপট নতুন Google Sheet তৈরি করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="4825507807291741242">ক্ষমতাশালী</translation>
 <translation id="4826588772550366629">ক্যামেরা এবং মাইক্রোফোন</translation>
-<translation id="4827283332383516812">কার্ড মুছে দিন</translation>
 <translation id="4831993743164297314">ইমেজ সেটার পেপার</translation>
 <translation id="483241715238664915">সতর্কতা চালু করুন</translation>
 <translation id="4834250788637067901">Google Pay-এর সাথে যুক্ত পেমেন্ট পদ্ধতি, অফার ও ঠিকানা</translation>
@@ -2369,7 +2372,6 @@
 <translation id="5785756445106461925">উপরন্তু, এই পৃষ্ঠাতে অন্যান্য সংস্থান অন্তর্ভুক্ত রয়েছে যা নিরাপদ নয়৷ এই সংস্থানগুলি ট্রানজিটের সময় অন্যরা দেখতে পাবে এবং পৃষ্ঠাটির চেহারাটি পরিবর্তন করতে কোনও আক্রমণকারী এর পরিবর্তন করতে পারেন৷</translation>
 <translation id="5786044859038896871">আপনি কি আপনার কার্ডের তথ্য পূরণ করতে চান?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">এই ডিভাইস থেকে এই পেমেন্ট পদ্ধতি মুছে ফেলা হবে</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{কোনওটিই নয়}=1{১টি অ্যাকাউন্টের জন্য সাইন-ইন ডেটা}one{#টি অ্যাকাউন্টের জন্য সাইন-ইন ডেটা}other{#টি অ্যাকাউন্টের জন্য সাইন-ইন ডেটা}}</translation>
 <translation id="5800727402210090597">মোবাইল ফোন মেরামত ও পরিষেবা</translation>
 <translation id="580241730938216256">আপডেট শুরু করুন</translation>
@@ -3753,6 +3755,7 @@
 <translation id="8490137692873530638">স্ট্যাকার ১০</translation>
 <translation id="8493948351860045254">জায়গা ফাঁকা করুন</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> সাড়া দিতে খুবে বেশি সময় নিয়েছে।</translation>
+<translation id="8502972004418241366">এই সাইটে আপনার <ph name="PERMISSION" /> ব্যবহার করতে, আপনাকে Chrome-কে অ্যাক্সেস দিতে হবে</translation>
 <translation id="8503559462189395349">Chrome পাসওয়ার্ডগুলি</translation>
 <translation id="8503813439785031346">ইউজারনেম</translation>
 <translation id="8504928302600319133">কম্পিউটার হার্ডওয়্যার</translation>

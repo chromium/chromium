@@ -531,6 +531,7 @@
 <translation id="2025891858974379949">ಅಸುರಕ್ಷಿತ ಕಂಟೆಂಟ್‍</translation>
 <translation id="2027465737841872819">ಪ್ಲಾಸ್ಟಿಕ್</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ಪ್ರಾಕ್ಸಿ ಮತ್ತು ಫೈರ್‌ವಾಲ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">ಶಾರ್ಟ್‌ಕಟ್ <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> ದಿಂದ ವ್ಯಾಖ್ಯಾನಿಸಲಾದ ಡೀಫಾಲ್ಟ್ ಹುಡುಕಾಟ ಪೂರೈಕೆದಾರರ ಕೀವರ್ಡ್‌ನಂತೆಯೇ ಇರುವಂತಿಲ್ಲ:<ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">ಹೇಗಾದರೂ ಉಳಿಸಿ</translation>
 <translation id="2035400064145347639">ಪ್ರವಾಸ ಗೈಡ್‌ಗಳು ಮತ್ತು ಪ್ರವಾಸಕಥನಗಳು</translation>
 <translation id="2036514476578229158">ಈ ಸೈಟ್‌ಗೆ ಭೇಟಿ ನೀಡಲು ನೀವು ಅನುಮತಿಯನ್ನು ವಿನಂತಿಸಿದ್ದೀರಿ. ನಿಮ್ಮ ಪೋಷಕರು Family Link ನಲ್ಲಿ ಪ್ರತ್ಯುತ್ತರ ನೀಡಬಹುದು.</translation>
@@ -1075,6 +1076,7 @@
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> ನಲ್ಲಿ <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">ನೀವು ಈ ಸಾಧನವನ್ನು ಸಕ್ರಿಯವಾಗಿ ಬಳಸುತ್ತಿರುವಾಗ ತಿಳಿದುಕೊಳ್ಳಲು ಕೇಳಬಹುದು</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನೀವು ಯಾವ ಮಾಹಿತಿಯನ್ನು ಸಿಂಕ್ ಮಾಡುತ್ತೀರಿ ಎಂಬುದನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
+<translation id="3203025201812691413">URL ಖಾಲಿ ಇರುವಂತಿಲ್ಲ</translation>
 <translation id="320323717674993345">ಪಾವತಿಯನ್ನು ರದ್ದುಮಾಡಿ</translation>
 <translation id="3203366800380907218">ವೆಬ್‌ನಿಂದ</translation>
 <translation id="3207960819495026254">ಬುಕ್‌ಮಾರ್ಕ್‌ ಮಾಡಲಾಗಿದೆ</translation>
@@ -1688,6 +1690,7 @@
 <translation id="4386413576162606861">ರೋಲ್-ಪ್ಲೇಯಿಂಗ್ ಗೇಮ್‌ಗಳು</translation>
 <translation id="4390472908992056574">ಅಂಚು</translation>
 <translation id="4393632246160856858">ಉಗುರಿನ ಆರೈಕೆಯ ಉತ್ಪನ್ನಗಳು</translation>
+<translation id="4397059608630092079">ಆಟೋಫಿಲ್ ಬಳಸುವಾಗ ಯಾವಾಗಲೂ ದೃಢೀಕರಿಸಿ</translation>
 <translation id="4406883609789734330">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್</translation>
 <translation id="4406896451731180161">ಹುಡುಕಾಟದ ಫಲಿತಾಂಶಗಳು</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> ಕುಕೀಗಳು</translation>
@@ -1889,7 +1892,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಹೊಸ Google Sheet ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="4825507807291741242">ಪ್ರಬಲ</translation>
 <translation id="4826588772550366629">ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್</translation>
-<translation id="4827283332383516812">ಕಾರ್ಡ್ ಅನ್ನು ಅಳಿಸಿ</translation>
 <translation id="4831993743164297314">ಚಿತ್ರವನ್ನು ಸೆಟ್‌ ಮಾಡುವ ಕಾಗದ</translation>
 <translation id="483241715238664915">ಎಚ್ಚರಿಕೆಗಳನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="4834250788637067901">Google Pay ಅನ್ನು ಬಳಸುತ್ತಿರುವ ಪಾವತಿ ವಿಧಾನಗಳು, ಆಫರ್‌ಗಳು ಮತ್ತು ವಿಳಾಸಗಳು</translation>
@@ -2301,6 +2303,7 @@
 <translation id="5651323159439184939">ಟ್ರಾಕ್ಟರ್ ಫೀಡ್</translation>
 <translation id="5653432653077411130">ನೀರು ಸರಬರಾಜು ಮತ್ತು ಸಂಸ್ಕರಣೆ</translation>
 <translation id="5654927323611874862">ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾದ ಕ್ರ್ಯಾಶ್ ವರದಿಯ ಐಡಿ:</translation>
+<translation id="5654965123204121933">URL ಅಗತ್ಯವಿರುವ ಬದಲಿ ಸ್ಟ್ರಿಂಗ್ <ph name="SEARCH_TERMS_REPLACEMENT" /> ಅನ್ನು ಒಳಗೊಂಡಿಲ್ಲ: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ಇಮೇಲ್</translation>
 <translation id="5660122698869360728">ನಿಮ್ಮ ಎಲ್ಲಾ ಶಾಪಿಂಗ್ ಪುಟಗಳನ್ನು ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ ಉಳಿಸಲು, ಬೆಲೆಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಟ್ರ್ಯಾಕ್ ಮಾಡಲು, ಬೆಲೆ ಅಂಕಿಅಂಶಗಳನ್ನು ಪಡೆಯಲು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಮಾಡಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡುವ ಹೊಸ ಸ್ಮಾರ್ಟ್ ಫೋಲ್ಡರ್.</translation>
 <translation id="5663955426505430495">ಈ ಸಾಧನದ ನಿರ್ವಾಹಕರು ಹೆಚ್ಚುವರಿ ಕಾರ್ಯವಿಧಾನಗಳಿಗಾಗಿ ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ್ದಾರೆ. ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು ನಿಮ್ಮ ಕೆಲವು ಡೇಟಾಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಹೊಂದಿರುತ್ತವೆ.</translation>
@@ -2362,7 +2365,6 @@
 <translation id="5785756445106461925">ಅಲ್ಲದೇ, ಸುರಕ್ಷಿತವಲ್ಲದ ಸಂಪನ್ಮೂಲಗಳನ್ನು ಈ ಪುಟ ಒಳಗೊಂಡಿದೆ. ಪ್ರಯಾಣದ ಸಂದರ್ಭದಲ್ಲಿ ಈ ಸಂಪನ್ಮೂಲಗಳನ್ನು ಇತರರೂ ವೀಕ್ಷಿಸಬಹುದಾಗಿದೆ ಮತ್ತು ಪುಟದ ನೋಟವೇ ಬದಲಾಗುವಂತೆ ಆಕ್ರಮಣಕಾರರು ಅದನ್ನು ತಿದ್ದಬಹುದಾಗಿದೆ.</translation>
 <translation id="5786044859038896871">ನಿಮ್ಮ ಕಾರ್ಡ್ ಮಾಹಿತಿ ಭರ್ತಿ ಮಾಡಲು ನೀವು ಬಯಸುವಿರಾ?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">ಈ ಪಾವತಿ ವಿಧಾನವನ್ನು ಈ ಸಾಧನದಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{ಯಾವುದೂ ಇಲ್ಲ}=1{1 ಖಾತೆಯ ಸೈನ್‌-ಇನ್ ಡೇಟಾ}one{# ಖಾತೆಗಳ ಸೈನ್‌-ಇನ್ ಡೇಟಾ}other{# ಖಾತೆಗಳ ಸೈನ್‌-ಇನ್ ಡೇಟಾ}}</translation>
 <translation id="5800727402210090597">ಮೊಬೈಲ್ ಫೋನ್ ದುರಸ್ತಿ ಮತ್ತು ಸೇವೆಗಳು</translation>
 <translation id="580241730938216256">ಅಪ್‌ಡೇಟ್‌‌ ಪ್ರಾರಂಭಿಸಿ</translation>

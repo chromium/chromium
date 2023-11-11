@@ -1321,7 +1321,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Všetky súbory, 1 súbor v zozname}few{Všetky súbory, # súbory v zozname}many{All files, # files in list}other{Všetky súbory, # súborov v zozname}}</translation>
 <translation id="7815484226266492798">Dlhá snímka obrazovky</translation>
 <translation id="7822705602465980873">Keď sa prihlásite, tieto údaje sú pripojené k vášmu účtu Google, aby vás chránili v službách Googlu (napríklad zvýšenie ochrany v Gmaile po bezpečnostnom incidente).</translation>
-<translation id="782705168687182233">Vaša aktivita sa ukladá do vášho <ph name="BEGIN_LINK" />účtu Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Počítač vyžaduje registráciu tohto zariadenia, aby ste sa na daný web mohli prihlásiť</translation>
 <translation id="7844171778363018843">Na synchronizáciu neboli vybrané žiadne údaje</translation>
 <translation id="7846296061357476882">Služby Googlu</translation>

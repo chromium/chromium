@@ -560,6 +560,7 @@
 <translation id="2072275792380684364">אופנה וסגנון</translation>
 <translation id="2075497153347571252">ההרשאה '<ph name="PERMISSION" />' חסומה לפי הגדרת האדמין ב-<ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
+<translation id="2080021694978766903">המדיניות הזו יכולה לכלול עד <ph name="MAX_ITEMS_LIMIT" /> רשומות.</translation>
 <translation id="20817612488360358">‏נקבע שימוש בהגדרות שרת Proxy של מערכת אך בנוסף מצוינת גם תצורה מפורשת של שרת Proxy.</translation>
 <translation id="2082238445998314030">תוצאה <ph name="RESULT_NUMBER" /> מתוך <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">לאפשר בכל ביקור</translation>
@@ -639,6 +640,7 @@
 <translation id="2225927550500503913">הכרטיס הווירטואלי מופעל</translation>
 <translation id="2226636330183131181">‏<ph name="BEGIN_LINK" />התחברות<ph name="END_LINK" /> לרשת ה-Wi-Fi</translation>
 <translation id="2228057197024893428">‏הכתובת הזו שמורה ב-Chrome. כדי להשתמש בה בכל מוצרי Google, צריך לשמור אותה בחשבון Google שלך, <ph name="ACCOUNT" />.</translation>
+<translation id="2229456043301340598">קיצור דרך זהה שהמערכת התעלמה ממנו: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2233745931693710080">Compact Disc</translation>
 <translation id="2235344399760031203">‏קובצי cookie של צד שלישי חסומים</translation>
 <translation id="2239100178324503013">שליחה</translation>
@@ -1897,7 +1899,6 @@ Del</translation>
 <translation id="4825496307559726072">‏<ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור במהירות גיליון אלקטרוני חדש ב-Google Sheets</translation>
 <translation id="4825507807291741242">עוצמתי</translation>
 <translation id="4826588772550366629">מצלמה ומיקרופון</translation>
-<translation id="4827283332383516812">מחיקת הכרטיס</translation>
 <translation id="4831993743164297314">Image Setter Paper</translation>
 <translation id="483241715238664915">הפעלת האזהרות</translation>
 <translation id="4834250788637067901">‏אמצעי תשלום, מבצעים וכתובות שנשמרו ב‑Google Pay</translation>
@@ -2341,6 +2342,7 @@ Del</translation>
 <translation id="5720705177508910913">משתמש נוכחי:</translation>
 <translation id="572328651809341494">כרטיסיות אחרונות</translation>
 <translation id="5723287205918986743">תעשיית ההגנה</translation>
+<translation id="5725297205162868298">קיצור הדרך לא יכול להתחיל בתו @: '<ph name="SHORTCUT_NAME" />'</translation>
 <translation id="5730040223043577876">‏אם הזנת את הסיסמה שלך באתרים אחרים, ההמלצה של Chrome היא לאפס אותה.</translation>
 <translation id="5732392974455271431">ההורים שלך יכולים לבטל בשבילך את החסימה</translation>
 <translation id="573555826359077410">‏הלחצן ליצירת טופס, מפעילים אותו כדי ליצור במהירות טופס חדש ב-Google Forms</translation>
@@ -2371,7 +2373,6 @@ Del</translation>
 <translation id="5785756445106461925">כמו כן, דף זה כולל משאבים נוספים שאינם מאובטחים. גורמים אחרים עלולים לראות את המשאבים האלה במהלך העברתם, ותוקף עלול לשנות אותם באופן שישנה את מראה הדף.</translation>
 <translation id="5786044859038896871">האם ברצונך למלא את פרטי הכרטיס שלך?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">אמצעי התשלום הזה יימחק מהמכשיר הזה</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{אין פרטי כניסה}=1{פרטי כניסה לחשבון אחד}one{פרטי כניסה ל-# חשבונות}two{פרטי כניסה ל-# חשבונות}other{פרטי כניסה ל-# חשבונות}}</translation>
 <translation id="5800727402210090597">שירותים ותיקונים לטלפונים ניידים</translation>
 <translation id="580241730938216256">התחלת העדכון</translation>
@@ -2859,6 +2860,7 @@ Del</translation>
 <translation id="6793213097893210590">Cardboard</translation>
 <translation id="679355240208270552">המערכת התעלמה מערך מדיניות זה, משום שלפי המדיניות חיפוש ברירת המחדל מושבת.</translation>
 <translation id="6794951432696553238">‏כדי לאשר את הכרטיסים שלך מהר יותר, ניתן להשתמש ב-Windows Hello מעכשיו והלאה</translation>
+<translation id="6798066466127540426">הרשימה לא מכילה ספק חיפוש חוקי.</translation>
 <translation id="6798460514924505775">‏מעטפה – Chou 3</translation>
 <translation id="6799145206637008376">‏צריך למלא את קוד האימות (CVC) של הכרטיס הווירטואלי הזה</translation>
 <translation id="6805030849054648206">‏מעטפה – B6/C4</translation>
@@ -3248,6 +3250,7 @@ Del</translation>
 <translation id="7521825010239864438">הקטע "<ph name="SECTION" />" הוסתר</translation>
 <translation id="752189128961566325">‏אפשר להשתמש בה בכל מוצרי Google</translation>
 <translation id="7523408071729642236">ייצור</translation>
+<translation id="7525804896095537619">השדה 'שם' לא יכול להיות ריק.</translation>
 <translation id="7526934274050461096">החיבור שלך לאתר זה אינו פרטי</translation>
 <translation id="7529884293139707752">חינוך ביתי</translation>
 <translation id="7534987659046836932">‏מעטפה – C7</translation>
@@ -3469,6 +3472,7 @@ Del</translation>
 <translation id="7950027195171824198">‏ניתן לנהל את ההעדפות לגבי קובצי Cookie בהגדרות Chrome</translation>
 <translation id="7951415247503192394">(32 סיביות)</translation>
 <translation id="7952192831285741665">‏12x14 אינץ' (EDP – אירופה)</translation>
+<translation id="7952250633095257243">קיצור הדרך לא יכול להיות ריק</translation>
 <translation id="7952327717479677595">הלחצן לניהול מנועי חיפוש, מפעילים אותו כדי לנהל את מנוע החיפוש שמוגדר כברירת מחדל ואת החיפוש באתרים</translation>
 <translation id="7953236668995583915">צריך לטעון מחדש את הדף הזה כדי להחיל את ההגדרות המעודכנות על האתר הזה</translation>
 <translation id="7953569069500808819">הידוק קצוות בחלק העליון</translation>
@@ -3680,6 +3684,7 @@ Del</translation>
 <translation id="8344776605855290140">רישום הכרטיס הווירטואלי נפתח בגובה מלא</translation>
 <translation id="8347658365704983341">למידה מרחוק</translation>
 <translation id="8349305172487531364">סרגל סימניות</translation>
+<translation id="8350416046273606058">קיצור הדרך לא יכול להכיל רווחים: '<ph name="SHORTCUT_NAME" />'</translation>
 <translation id="8351131234907093545">יצירת הערה</translation>
 <translation id="8352849934814541340">האדמין של המכשיר הזה התקין אפליקציות שמספקות פונקציות נוספות. לאפליקציות יש גישה לחלק מהנתונים שלך.</translation>
 <translation id="8355270400102541638">ההקשר המקומי של הקריסה:</translation>

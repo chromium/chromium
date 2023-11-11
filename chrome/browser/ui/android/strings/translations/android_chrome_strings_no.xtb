@@ -1321,7 +1321,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle filer, 1 fil på listen}other{Alle filer, # filer på listen}}</translation>
 <translation id="7815484226266492798">Lang skjermdump</translation>
 <translation id="7822705602465980873">Når du er logget på, blir disse dataene knyttet til Google-kontoen din for å beskytte deg på alle Google-tjenester, for eksempel ved at beskyttelsen i Gmail økes etter sikkerhetshendelser.</translation>
-<translation id="782705168687182233">Aktiviteten lagres i <ph name="BEGIN_LINK" />Google-kontoen<ph name="END_LINK" /> din.</translation>
 <translation id="78270725016672455">Datamaskinen din vil registrere denne enheten for pålogging på et nettsted</translation>
 <translation id="7844171778363018843">Ingen data er valgt for synkronisering</translation>
 <translation id="7846296061357476882">Google-tjenester</translation>

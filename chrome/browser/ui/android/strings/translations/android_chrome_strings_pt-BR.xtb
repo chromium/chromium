@@ -1322,7 +1322,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Todos os arquivos: 1 arquivo na lista}one{Todos os arquivos: # arquivo na lista}other{Todos os arquivos: # arquivos na lista}}</translation>
 <translation id="7815484226266492798">Captura de tela longa</translation>
 <translation id="7822705602465980873">Quando sua Conta do Google está conectada, esses dados são vinculados a ela para proteger você nos Serviços do Google, por exemplo, aumentando a proteção no Gmail após um incidente de segurança.</translation>
-<translation id="782705168687182233">As atividades são salvas na sua <ph name="BEGIN_LINK" />Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">O computador quer registrar este dispositivo para fazer login em um site</translation>
 <translation id="7844171778363018843">Nenhum dado selecionado para sincronização</translation>
 <translation id="7846296061357476882">Serviços do Google</translation>

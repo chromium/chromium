@@ -3849,6 +3849,7 @@
 <translation id="3963753386716096475">שימוש בטלפון, בטאבלט או במפתח אבטחה אחר</translation>
 <translation id="3964480518399667971">כיבוי הרשת הסלולרית</translation>
 <translation id="3965965397408324205">יציאה מ-<ph name="PROFILE_NAME" /></translation>
+<translation id="3965984916551757611">‏התראות, Google Play</translation>
 <translation id="3966072572894326936">בחירת תיקייה אחרת...</translation>
 <translation id="3966094581547899417">‏פרטי הנקודה לשיתוף אינטרנט (Hotspot)</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
@@ -4850,6 +4851,7 @@
 <translation id="4779136857077979611">אוניגירי</translation>
 <translation id="4779766576531456629">‏שינוי שם של הרשת הסלולרית של eSIM</translation>
 <translation id="4780321648949301421">שמירת הדף בשם...</translation>
+<translation id="4780558987886269159">לעבודה</translation>
 <translation id="4781443161433589743">‏האבטחה החזקה ביותר של Chrome פועלת אצלך</translation>
 <translation id="4785719467058219317">בחרת להשתמש במפתח אבטחה שלא רשום עבור האתר הזה</translation>
 <translation id="4785914069240823137">ביטול החיתוך</translation>
@@ -5653,7 +5655,6 @@
 <translation id="5436492226391861498">‏בהמתנה ל-Proxy Tunnel...</translation>
 <translation id="5436510242972373446">חיפוש ב-<ph name="SITE_NAME" />:</translation>
 <translation id="5436575196282187764">‏זיכרונות מ-Google Photos</translation>
-<translation id="5439680044267106777">אני רוצה לדלג ולהגדיר פרופיל חדש</translation>
 <translation id="544083962418256601">יצירת קיצורי דרך...</translation>
 <translation id="5441133529460183413">‏אפליקציית האינטרנט הותקנה דרך דפדפן Chrome</translation>
 <translation id="5441292787273562014">טען דף מחדש</translation>
@@ -5701,6 +5702,7 @@
 <translation id="5473099001878321374">‏המשך הפעולה מבטא את הסכמתך לכך שהמכשיר הזה יוכל גם להוריד ולהתקין עדכונים ואפליקציות באופן אוטומטי מ-Google, מהספק של הילד או הילדה שלך ומיצרן המכשיר, גם אם ייעשה לשם כך שימוש בחבילת הגלישה. חלק מהאפליקציות האלו עשויות להציע רכישות מתוך האפליקציה.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{קוד האימות חייב להיות באורך של תו אחד לפחות}one{קוד האימות חייב להיות באורך של # תווים לפחות}two{קוד האימות חייב להיות באורך של # תווים לפחות}other{קוד האימות חייב להיות באורך של # תווים לפחות}}</translation>
 <translation id="5474859849784484111">‏כדי להיכנס אל <ph name="MANAGER" />, מתחברים עכשיו לרשת Wi-Fi ומורידים עדכון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).</translation>
+<translation id="5477089831058413614">‏הגדרת נקודה לשיתוף אינטרנט (Hotspot) ב-<ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">לא מורשים להוריד מספר קבצים באופן אוטומטי</translation>
 <translation id="5481941284378890518">הוספת מדפסות קרובות</translation>
 <translation id="5484181871714116891">‏כשההגדרה מופעלת, מפתחות הגישה נוצרים ב'צרור המפתחות של iCloud' וזמינים בכל מכשירי Apple. כשההגדרה מושבתת, מפתחות הגישה נוצרים בפרופיל Chrome במכשיר הזה.</translation>
@@ -6341,7 +6343,6 @@
 <translation id="5992225669837656567">כל העכברים נותקו</translation>
 <translation id="5992652489368666106">ללא שוליים</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{הושלמה הבדיקה של אתר אחד}one{הושלמה הבדיקה של {NUM_SITES} אתרים}two{הושלמה הבדיקה של {NUM_SITES} אתרים}other{הושלמה הבדיקה של {NUM_SITES} אתרים}}</translation>
-<translation id="5996200702878169822">‏אפשר גם להגדיר פרופיל eSIM <ph name="BEGIN_LINK" />באופן ידני<ph name="END_LINK" />.</translation>
 <translation id="5997337190805127100">מידע נוסף על גישה לאתרים</translation>
 <translation id="5998458948782718639">עזרה בשיפור של המילוי האוטומטי</translation>
 <translation id="5999024481231496910">‏הפעלת את בדיקות הסגירה ההדרגתית של קובצי cookie של צד שלישי. אי אפשר לשנות את זה בדף ההגדרות. אם ברצונך להפעיל מחדש קובצי cookie של צד שלישי, עליך להפעיל מחדש את Chrome כשהתכונה הזו מושבתת.</translation>
@@ -6816,6 +6817,7 @@
 <translation id="637642201764944055">‏גרסאות ישנות של אפליקציות Chrome לא ייפתחו במכשירי Linux אחרי דצמבר 2022. עליך לפנות לאדמין כדי לעדכן לגרסה חדשה או להסיר את האפליקציה הזו.</translation>
 <translation id="6377268785556383139">תוצאה אחת בשביל '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6378392501584240055">‏פתיחה ברשתות ה-Wi-Fi</translation>
+<translation id="6379533146645857098">בחירה של טווח הזמן</translation>
 <translation id="6380143666419481200">בסדר, מקובל עליי</translation>
 <translation id="6383382161803538830">מצב הקריאה לא זמין בדף הזה</translation>
 <translation id="638418309848716977">קישורים נתמכים</translation>
@@ -7684,7 +7686,6 @@
 <translation id="7056418393177503237">{0,plural, =1{אנונימי}one{# חלונות אנונימיים פתוחים}two{# חלונות אנונימיים פתוחים}other{# חלונות אנונימיים פתוחים}}</translation>
 <translation id="7056526158851679338">&amp;בדיקת מכשירים</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{בדיקת הבטיחות פעלה לפני דקה אחת}one{בדיקת הבטיחות פעלה לפני {NUM_MINS} דקות}two{בדיקת הבטיחות פעלה לפני {NUM_MINS} דקות}other{בדיקת הבטיחות פעלה לפני {NUM_MINS} דקות}}</translation>
-<translation id="7057767408836081338">קבלת נתוני האפליקציה נכשלה. המערכת מנסה להפעיל את האפליקציה בכל זאת...</translation>
 <translation id="7058024590501568315">רשת מוסתרת</translation>
 <translation id="7059858479264779982">הגדרה להפעלה אוטומטית</translation>
 <translation id="7063129466199351735">העיבוד של קיצורי דרך מתבצע...</translation>

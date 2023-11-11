@@ -130,7 +130,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="146902737843070955">Vaš administrator je zatražio ovu promjenu</translation>
 <translation id="1469148162491666137">Ovo dozvoljava pristup kameri i mikrofonu za aplikacije <ph name="APP1_NAME" /> i<ph name="APP2_NAME" /> te sve aplikacije i web lokacije s odobrenjima za njih. Možda ćete morati osvježiti web stranicu ili ponovo pokrenuti aplikaciju.</translation>
 <translation id="147310119694673958">Baterija telefona: <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="1475340220124222168">Prebacite žarišnu točku. Žarišna točka je uključena, povezan je jedan uređaj.</translation>
+<translation id="1475340220124222168">Uključite/isključite pristupnu tačku. Pristupna tačka je uključena i povezan je 1 uređaj.</translation>
 <translation id="1479909375538722835">Plutajući meni za pristupačnost</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Uz diktiranje možete pisati putem glasovnih komandi. Pritisnite tipku za diktiranje ili odaberite ikonu mikrofona u donjem dijelu ekrana dok ste u polju za unos teksta. Jezik diktiranja je postavljen na <ph name="LANGUAGE" />. Govor se šalje Googleu na obradu. Jezik diktiranja možete promijeniti bilo kada u Postavkama &gt; Pristupačnost.</translation>
@@ -871,7 +871,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4548482551627849548">Premjesti aktivni prozor na lijevu radnu površinu</translation>
 <translation id="4560576029703263363">Uključeno</translation>
 <translation id="4561267230861221837">3G</translation>
-<translation id="4564299521485948903">Traka statusa, vrijeme <ph name="TIME" />,
+<translation id="4564299521485948903">Statusna traka, vrijeme <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
         <ph name="NETWORK" />,
@@ -888,7 +888,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4577990005084629481">Prikaži preglede</translation>
 <translation id="4578906031062871102">Meni postavki je otvoren</translation>
 <translation id="458210817642223147">Snimi GIF</translation>
-<translation id="4582666543382004902">Žarišna točka isključena je da biste upotrebljavali Wi-Fi. Da biste upotrebljavali žarišnu točku, isključite Wi-Fi.</translation>
+<translation id="4582666543382004902">Pristupna tačka je isključena radi korištenja WiFi-ja. Da koristite pristupnu tačku, isključite WiFi.</translation>
 <translation id="4585337515783392668">Zaustavi emitiranje na nepoznati prijemnik</translation>
 <translation id="4596144739579517758">Tamna tema je isključena</translation>
 <translation id="4611292653554630842">Prijava</translation>
@@ -1095,7 +1095,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="5393156353051693207">Dodirnite i zadržite bilo gdje da promijenite redoslijed aplikacija</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> prekriva aplikaciju <ph name="IN_PLACE_APP" />. Pustite da kreirate folder.</translation>
 <translation id="5397578532367286026">Upravitelj (<ph name="MANAGER_EMAIL" />) može pregledati korištenje i historiju ovog korisnika na chrome.com.</translation>
-<translation id="540713187982329711">Prebacite žarišnu točku. Žarišna točka je uključena, nije povezan nijedan uređaj.</translation>
+<translation id="540713187982329711">Uključite/isključite pristupnu tačku. Pristupna tačka je uključena, a nije povezan nijedan uređaj.</translation>
 <translation id="5413656666631274079">Stranica s postavkama</translation>
 <translation id="5414198321558177633">Osvježavanje liste profila. To može potrajati nekoliko minuta.</translation>
 <translation id="5426063383988017631">Meni postavki je zatvoren</translation>
@@ -1186,11 +1186,11 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="576341972084747908">Preuzimanje opasnog fajla <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Noćno svjetlo je uključeno.</translation>
 <translation id="5764569119212455782">Prebacivanje na posljednji odabrani jezik</translation>
-<translation id="5767730327234918501">Vaš je administrator isključio žarišnu točku.</translation>
+<translation id="5767730327234918501">Administrator je isključio pristupnu tačku.</translation>
 <translation id="5769373120130404283">Ekran za privatnost</translation>
 <translation id="5773950591113557721">Ovo dozvoljava pristup kameri i mikrofonu za aplikaciju <ph name="APP_NAME" /> i sve aplikacije i web lokacije s odobrenjima za njih</translation>
 <translation id="5774295353725270860">Otvori aplikaciju Fajlovi</translation>
-<translation id="5775936059231769503">Prebacite žarišnu točku. Žarišna je točka isključena.</translation>
+<translation id="5775936059231769503">Uključite/isključite pristupnu tačku. Pristupna tačka je isključena.</translation>
 <translation id="5777841717266010279">Zaustaviti dijeljenje ekrana?</translation>
 <translation id="5779721926447984944">Zakačeni fajlovi</translation>
 <translation id="5785221443435874078">Ukloni taj prijedlog</translation>
@@ -1508,7 +1508,7 @@ Nova instalacija</translation>
 <translation id="7068360136237591149">Otvorite fajlove</translation>
 <translation id="7076293881109082629">Prijavljivanje</translation>
 <translation id="7076878155205969899">Isključivanje zvuka</translation>
-<translation id="7084678090004350185">Prebacite žarišnu točku. Žarišna točka je uključena, povezani su uređaji (<ph name="DEVICECOUNT" />).</translation>
+<translation id="7084678090004350185">Uključite/isključite pristupnu tačku. Pristupna tačka je uključena i povezano je nekoliko uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="7086931198345821656">Za ovo ažuriranje je potrebno izvršiti powerwash uređaja <ph name="DEVICE_TYPE" />. Svi podaci će se izbrisati. Saznajte više o najnovijem ažuriranju za aplikaciju <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Pristup pomoću prekidača</translation>
 <translation id="709015856939120012">Uvećavanje stranice</translation>

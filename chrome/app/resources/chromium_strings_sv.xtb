@@ -82,6 +82,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="2478295928299953161">Chromium avslutas snart</translation>
 <translation id="2483889755041906834">I Chromium</translation>
 <translation id="2485422356828889247">Avinstallera</translation>
+<translation id="2513154137948333830">Omstart krävs: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2554739539410784893">Skriv ditt Windows-lösenord om du vill tillåta att de befintliga lösenorden i Chromium ersätts.</translation>
 <translation id="2560420686485554789">Du behöver ge Chromium åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
 <translation id="2572494885440352020">Hjälp för Chromium</translation>
@@ -98,12 +99,14 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="2785438272836277133">Tillägget innehåller skadlig programvara och är osäkert. Ta bort det från Chromium så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
 <translation id="2799223571221894425">Starta om</translation>
 <translation id="2837693172913560447">En ny Chromium-profil skapas för <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="2846251086934905009">Installationsfel: Installationsprogrammet slutfördes inte. Installationen har avbrutits.</translation>
 <translation id="2847479871509788944">Ta bort från Chromium …</translation>
 <translation id="2850691299438350830">Skyddar dig i Chromium och kan användas för förbättrad säkerhet i andra Google-appar där du är inloggad.</translation>
 <translation id="2885378588091291677">Aktivitetshanteraren</translation>
 <translation id="2910007522516064972">Om &amp;Chromium</translation>
 <translation id="2915996080311180594">Starta om senare</translation>
 <translation id="2928420929544864228">Installationen har slutförts.</translation>
+<translation id="2945997411976714835">Installationsfel: Det gick inte att starta installationsprocessen.</translation>
 <translation id="2977470724722393594">Chromium är uppdaterat</translation>
 <translation id="2977506796191543575">Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chromium till Säker webbsökning tillsammans med delar av sidinnehållet</translation>
 <translation id="3032706164202344641">Chromium kan inte kontrollera dina lösenord. Försök igen senare.</translation>
@@ -161,6 +164,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="3909353120217047026">Det här tillägget strider mot policyn för Chrome Web Store och kan vara osäkert. Ta bort det från Chromium så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
 <translation id="391789666908693569">Kontot hanteras av <ph name="MANAGER_NAME" />. Administratören kan se och redigera den här Chromium-profilen och tillhörande data som bokmärken, historik och lösenord.</translation>
 <translation id="3922825997980843979">När du skriver skickar Chromium innehållet i adressfältet eller sökrutan till standardsökmotorn</translation>
+<translation id="3941890832296813527">Installationsfel: Installationens filnamn är ogiltigt eller stöds inte.</translation>
 <translation id="3945058413678539331">Skriv ditt Windows-lösenord om du tillåter att lösenorden i Chromium kopieras.</translation>
 <translation id="3962647064319009959">Läs mer om hur du skyddas i Chromium</translation>
 <translation id="3975724895399328945">Om &amp;Google Chrome for Testing</translation>
@@ -223,6 +227,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5296845517486664001">Om provfunktioner är aktiverade och du slumpmässigt har valts ut för en aktiv provfunktion påverkar webbhistoriken vilka annonser som visas och vilka intressen som du uppskattas ha. Av integritetsskäl raderas dina intressen från Chromium löpande varje månad.</translation>
 <translation id="5352264705793813212">Chromium har hittat säkerhetsrekommendationer som du bör granska</translation>
 <translation id="5358375970380395591">Du loggar in med ett hanterat konto och ger dess administratör kontroll över din Chromium-profil. Dina uppgifter i Chromium, t.ex. dina appar, bokmärken, din historik, ditt lösenord och andra inställningar, kopplas då permanent till <ph name="USER_NAME" />. Du kommer att kunna ta bort dessa uppgifter via instrumentpanelen i Google Konton, men du kommer inte att kunna koppla dem till något annat konto. <ph name="LEARN_MORE" /></translation>
+<translation id="5368118228313795342">Extra kod: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386450000063123300">Chromium uppdateras (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Tillåt inloggning i Chromium</translation>
 <translation id="5398878173008909840">Det finns en ny version av Chromium.</translation>
@@ -426,6 +431,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing kan inte användas som standardwebbläsare.</translation>
 <translation id="8697124171261953979">Det styr också vilken sida som visas när du startar Chromium eller söker i adressfältet.</translation>
 <translation id="8704119203788522458">Det här är Chromium</translation>
+<translation id="878572486461146056">Installationsfel: Nätverksadministratören har tillämpat en grupprincip som förhindrar installation: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Du behöver ge Chromium behörighet att använda kameran och mikrofonen på webbplatsen</translation>
 <translation id="8826492472752484139">Klicka på Lösenordshantering</translation>
 <translation id="8833697763442816810">Chromium OS-system</translation>

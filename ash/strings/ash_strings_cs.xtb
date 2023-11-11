@@ -130,6 +130,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="146902737843070955">Váš administrátor požádal o tuto změnu</translation>
 <translation id="1469148162491666137">Tímto povolíte přístup aplikaci <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> a všem aplikacím a webům, které mají oprávnění používat kameru a mikrofon. Možná budete muset obnovit webovou stránku nebo restartovat aplikaci.</translation>
 <translation id="147310119694673958">Baterie telefonu <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1475340220124222168">Přepnout hotspot. Hotspot je zapnutý, je připojeno 1 zařízení.</translation>
 <translation id="1479909375538722835">Plovoucí nabídka usnadnění přístupu</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Pomocí diktování můžete psát hlasově. Když jste v textovém poli, stiskněte klávesu diktování nebo vyberte ikonu mikrofonu v dolní části obrazovky. Váš jazyk diktování je nastaven na <ph name="LANGUAGE" />. Řeč se odesílá do Googlu ke zpracování. Jazyk diktování můžete kdykoli změnit v Nastavení &gt; Usnadnění.</translation>
@@ -870,6 +871,14 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4548482551627849548">Přesunout aktivní okno na plochu vlevo</translation>
 <translation id="4560576029703263363">Zapnuto</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Stavový panel, čas <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Skrýt heslo</translation>
 <translation id="4566144812051858745">Žádné návrhy mě nezajímají</translation>
 <translation id="4569753163207712681">Zobrazovat nedávné fotky, média a aplikace z telefonu</translation>
@@ -879,6 +888,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4577990005084629481">Zobrazit náhledy</translation>
 <translation id="4578906031062871102">Byla otevřena nabídka nastavení</translation>
 <translation id="458210817642223147">Zaznamenat GIF</translation>
+<translation id="4582666543382004902">Hotspot byl za účelem použití Wi-Fi vypnut. Pokud ho chcete použít, vypněte Wi-Fi.</translation>
 <translation id="4585337515783392668">Ukončit odesílání do neznámého přijímače</translation>
 <translation id="4596144739579517758">Tmavý motiv je vypnutý</translation>
 <translation id="4611292653554630842">Přihlásit se</translation>
@@ -1085,6 +1095,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="5393156353051693207">Pokud chcete změnit pořadí aplikací, podržte kdekoliv prst</translation>
 <translation id="5395308026110844773">Aplikace <ph name="DRAGGED_APP_NAME" /> je nad aplikací <ph name="IN_PLACE_APP" />. Uvolněním vytvoříte složku.</translation>
 <translation id="5397578532367286026">Údaje o využití a historii tohoto uživatele si správce (<ph name="MANAGER_EMAIL" />) může prohlédnout na webu chrome.com.</translation>
+<translation id="540713187982329711">Přepnout hotspot. Hotspot je zapnutý, není připojeno žádné zařízení.</translation>
 <translation id="5413656666631274079">Stránka nastavení</translation>
 <translation id="5414198321558177633">Obnovování seznamu profilů. Může to trvat několik minut.</translation>
 <translation id="5426063383988017631">Nabídka nastavení byla zavřena</translation>
@@ -1175,9 +1186,11 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="576341972084747908">Stažení nebezpečného souboru <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Noční režim je zapnutý.</translation>
 <translation id="5764569119212455782">Přepnout na naposledy vybraný jazyk</translation>
+<translation id="5767730327234918501">Váš administrátor hotspot vypnul.</translation>
 <translation id="5769373120130404283">Obrazovka ochrany soukromí</translation>
 <translation id="5773950591113557721">Tímto povolíte přístup aplikaci <ph name="APP_NAME" /> a všem aplikacím a webům, které mají oprávnění používat kameru a mikrofon.</translation>
 <translation id="5774295353725270860">Do aplikace Soubory</translation>
+<translation id="5775936059231769503">Přepnout hotspot. Hotspot je vypnutý.</translation>
 <translation id="5777841717266010279">Ukončit sdílení obrazovky?</translation>
 <translation id="5779721926447984944">Připnuté soubory</translation>
 <translation id="5785221443435874078">Odebrat tento návrh</translation>
@@ -1495,6 +1508,7 @@ Nová instalace</translation>
 <translation id="7068360136237591149">Otevřít soubory</translation>
 <translation id="7076293881109082629">Přihlášení</translation>
 <translation id="7076878155205969899">Vypnout zvuk</translation>
+<translation id="7084678090004350185">Přepnout hotspot. Hotspot je zapnutý, je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="7086931198345821656">Tato aktualizace vyžaduje vymazání zařízení <ph name="DEVICE_TYPE" /> metodou Powerwash. Všechna data budou smazána. Další informace o nejnovější aktualizaci systému <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Přístup pomocí přepínačů</translation>
 <translation id="709015856939120012">Přiblížit stránku</translation>

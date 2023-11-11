@@ -1216,6 +1216,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7367530036083223701">S pripomočkom Upravitelj gesel varno dostopajte do gesel na začetnem zaslonu.</translation>
 <translation id="7380220816562673297">Za zdaj lahko gesla delite samo z družinskimi člani. <ph name="BEGIN_LINK" />Ustvarite skupino družinskih članov<ph name="END_LINK" />, v kateri je do 6 članov, ter še bolje izkoristite svoje izdelke in naročnine v Googlu.</translation>
 <translation id="7383797227493018512">Seznam za branje</translation>
+<translation id="739101637685146669">Kateri URL želite dodati med zaznamke?</translation>
 <translation id="7396331865858820922">Geslo ni bilo deljeno</translation>
 <translation id="7398893703713203428">Ustvari povezavo</translation>
 <translation id="7399802613464275309">Varnostno preverjanje</translation>
@@ -1451,6 +1452,7 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 <translation id="8591976964826315682">Blokiraj piškotke drugih mest v anonimnem načinu</translation>
 <translation id="8593565399399144771">Tukaj lahko odprete nov zavihek.</translation>
 <translation id="8605219856220328675">Close tab.</translation>
+<translation id="8609743333007776886">Dodaj ${url} med zaznamke</translation>
 <translation id="8613883225817609844">Skrij nedavne zavihke</translation>
 <translation id="8620640915598389714">Uredi</translation>
 <translation id="8624447588354561276">Številka paketa</translation>

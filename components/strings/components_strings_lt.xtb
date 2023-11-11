@@ -532,6 +532,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2025891858974379949">Nesaugus turinys</translation>
 <translation id="2027465737841872819">Plastikas</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Patikrinti tarpinį serverį ir užkardą<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">Spartusis klavišas negali būti toks pat kaip numatytasis paieškos teikėjo raktinis žodis, kurį nustatė „<ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />“: „<ph name="SHORTCUT_NAME" />“</translation>
 <translation id="2034971124472263449">Vis tiek išsaugoti</translation>
 <translation id="2035400064145347639">Kelionių vadovai ir dienoraščiai</translation>
 <translation id="2036514476578229158">Prašėte leidimo apsilankyti šioje svetainėje. Tėvai gali atsakyti programoje „Family Link“.</translation>
@@ -1078,6 +1079,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3195213714973468956">„<ph name="PRINTER_NAME" />“ serveryje „<ph name="SERVER_NAME" />“</translation>
 <translation id="3197136577151645743">Gali būti prašoma leisti sužinoti, kada aktyviai naudojate įrenginį</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada „Enter“, jei norite tvarkyti sinchronizuojamą informaciją „Chrome“ nustatymuose</translation>
+<translation id="3203025201812691413">URL laukas negali būti tuščias</translation>
 <translation id="320323717674993345">Atšaukti mokėjimą</translation>
 <translation id="3203366800380907218">Iš žiniatinklio</translation>
 <translation id="3207960819495026254">Pažymėta</translation>
@@ -1692,6 +1694,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4386413576162606861">Žaidimai vaidmenimis</translation>
 <translation id="4390472908992056574">Kraštas</translation>
 <translation id="4393632246160856858">Nagų priežiūros produktai</translation>
+<translation id="4397059608630092079">Visada patvirtinti, kai naudojamas automatinis pildymas</translation>
 <translation id="4406883609789734330">Subtitrai realiuoju laiku</translation>
 <translation id="4406896451731180161">paieškos rezultatai</translation>
 <translation id="4408413947728134509">Slapukai <ph name="NUM_COOKIES" /></translation>
@@ -1893,7 +1896,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite greitai sukurti naują „Google“ skaičiuoklę</translation>
 <translation id="4825507807291741242">Veiksminga</translation>
 <translation id="4826588772550366629">fotoaparatas ir mikrofonas</translation>
-<translation id="4827283332383516812">Ištrinti kortelę</translation>
 <translation id="4831993743164297314">Vaizdo nustatymo metodo popierius</translation>
 <translation id="483241715238664915">Įjungti įspėjimus</translation>
 <translation id="4834250788637067901">Mokėjimo metodai, pasiūlymai ir adresai naudojant „Google Pay“</translation>
@@ -2305,6 +2307,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5651323159439184939">Tiekimas naudojant trauktuvą</translation>
 <translation id="5653432653077411130">Vandens tiekimas ir apdorojimas</translation>
 <translation id="5654927323611874862">Įkeltos strigčių ataskaitos ID:</translation>
+<translation id="5654965123204121933">URL nėra būtinos pakeitimo eilutės <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">El. paštas</translation>
 <translation id="5660122698869360728">Naujas išmanusis aplankas, kurį naudodami galite išsaugoti visus apsipirkimo puslapius vienoje vietoje ir automatiškai stebėti kainas, gauti kainų įžvalgų ir kt.</translation>
 <translation id="5663955426505430495">Šio įrenginio administratorius įdiegė papildomų funkcijų plėtinių. Naudojant plėtinius galima pasiekti kai kuriuos jūsų duomenis.</translation>
@@ -2366,7 +2369,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5785756445106461925">Be to, šiame puslapyje yra kitų nesaugių išteklių. Perduodant duomenis šiuos išteklius gali peržiūrėti kiti asmenys ir keisti atakuojanti programa, siekianti pakeisti puslapio išvaizdą.</translation>
 <translation id="5786044859038896871">Ar norite, kad būtų įvesta jūsų kredito kortelės informacija?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Šis mokėjimo metodas bus ištrintas iš šio įrenginio</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Nėra}=1{vienos paskyros prisijungimo duomenys}one{# paskyros prisijungimo duomenys}few{# paskyrų prisijungimo duomenys}many{# paskyros prisijungimo duomenys}other{# paskyrų prisijungimo duomenys}}</translation>
 <translation id="5800727402210090597">Mobiliųjų telefonų taisymo ir kitos paslaugos</translation>
 <translation id="580241730938216256">Pradėti atnaujinimą</translation>

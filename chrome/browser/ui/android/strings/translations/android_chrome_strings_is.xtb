@@ -1296,6 +1296,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7691043218961417207">Skoðaðu efni til að fylgja</translation>
 <translation id="7697383401610880082">Dragkló</translation>
 <translation id="7698359219371678927">Skrifa tölvupóst í <ph name="APP_NAME" /></translation>
+<translation id="7702029078562412515">Fyrirspurnarreitir</translation>
 <translation id="7702388902581909985">Hreinsun vefskoðunargagna skráir þig ekki út af Google-reikningnum þínum. Til að gera það skaltu <ph name="BEGIN_LINK1" />skrá þig út úr Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Nota farsímagögn</translation>
 <translation id="7709918231054955894">Skoðaðu alla flipana þína</translation>
@@ -1320,7 +1321,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Allar skrár, 1 skrá á lista}one{Allar skrár, # skrá á lista}other{Allar skrár, # skrár á lista}}</translation>
 <translation id="7815484226266492798">Löng skjámynd</translation>
 <translation id="7822705602465980873">Þegar þú ert innskráð(ur) eru þessi gögn tengd við Google-reikninginn þinn til að vernda þig í Google-þjónustum, t.d. með því að auka vernd í Gmail eftir öryggistilvik.</translation>
-<translation id="782705168687182233">Aðgerðir þínar eru vistaðar á <ph name="BEGIN_LINK" />Google-reikningnum<ph name="END_LINK" /> þínum.</translation>
 <translation id="78270725016672455">Tölvan biður um að skrá þetta tæki við skráningu inn á vefsvæði</translation>
 <translation id="7844171778363018843">Engin gögn valin fyrir samstillingu</translation>
 <translation id="7846296061357476882">Google þjónusta</translation>

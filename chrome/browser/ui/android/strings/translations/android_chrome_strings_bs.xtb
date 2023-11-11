@@ -1296,7 +1296,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7691043218961417207">Istražite sadržaj za praćenje</translation>
 <translation id="7697383401610880082">Ručica za prevlačenje</translation>
 <translation id="7698359219371678927">Kreirajte e-poruku u aplikaciji <ph name="APP_NAME" /></translation>
-<translation id="7702029078562412515">Kartice s upitima</translation>
+<translation id="7702029078562412515">Kartice upita</translation>
 <translation id="7702388902581909985">Brisanjem podataka o pregledanju se ne odjavljujete s Google računa. Da to učinite, <ph name="BEGIN_LINK1" />odjavite se iz Chromea<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Koristi prijenos podataka na mobilnoj mreži</translation>
 <translation id="7709918231054955894">Preuzmite sve svoje kartice</translation>
@@ -1321,7 +1321,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Svi fajlovi, 1 fajl na listi}one{Svi fajlovi, # fajl na listi}few{Svi fajlovi, # fajla na listi}other{Svi fajlovi, # fajlova na listi}}</translation>
 <translation id="7815484226266492798">Dugi snimak ekrana</translation>
 <translation id="7822705602465980873">Kada ste prijavljeni, ovi podaci se povezuju s vašim Google računom radi vaše zaštite na svim Googleovim uslugama, naprimjer, povećavanjem zaštite na Gmailu nakon sigurnosnog incidenta.</translation>
-<translation id="782705168687182233">Vaša aktivnost se pohranjuje na <ph name="BEGIN_LINK" />Google račun<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Vaš računar želi registrirati ovaj uređaj radi prijave na web lokaciju</translation>
 <translation id="7844171778363018843">Nije odabrana nijedna vrsta podataka za sinhroniziranje</translation>
 <translation id="7846296061357476882">Googleove usluge</translation>

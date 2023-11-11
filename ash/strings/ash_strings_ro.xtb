@@ -130,6 +130,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="146902737843070955">Administratorul a solicitat această modificare</translation>
 <translation id="1469148162491666137">Astfel, se permite accesul pentru <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> și pentru toate aplicațiile și site-urile care au permisiuni pentru camera foto și microfon. Poate fi necesar să actualizezi pagina web sau să repornești aplicația.</translation>
 <translation id="147310119694673958">Bateria telefonului: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1475340220124222168">Dezactivează hotspotul. Hotspotul este activat, un dispozitiv conectat.</translation>
 <translation id="1479909375538722835">Meniul de accesibilitate flotant</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Cu ajutorul dictării, poți să introduci text cu vocea. Apasă tasta de dictare sau selectează pictograma microfon din partea de jos a ecranului atunci când ești într-un câmp de text. Limba de dictare este setată la <ph name="LANGUAGE" />. Vorbirea este trimisă la Google spre procesare. Poți schimba limba de dictare oricând în Setări &gt; Accesibilitate.</translation>
@@ -870,6 +871,14 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4548482551627849548">Mută fereastra activă pe desktopul din stânga</translation>
 <translation id="4560576029703263363">Activat</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Bară de stare, ora: <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />,
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />,
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Ascunde parola</translation>
 <translation id="4566144812051858745">Nu mă interesează sugestiile</translation>
 <translation id="4569753163207712681">Afișează fotografiile, elementele media și aplicațiile recente ale telefonului</translation>
@@ -879,6 +888,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4577990005084629481">Afișează previzualizările</translation>
 <translation id="4578906031062871102">Meniul Setări deschis</translation>
 <translation id="458210817642223147">Înregistrează un GIF</translation>
+<translation id="4582666543382004902">Hotspotul a fost dezactivat pentru a folosi conexiunea Wi-Fi. Pentru a folosi hotspotul, dezactivează conexiunea Wi-Fi.</translation>
 <translation id="4585337515783392668">Nu mai proiecta pe un receiver necunoscut</translation>
 <translation id="4596144739579517758">Tema întunecată este dezactivată</translation>
 <translation id="4611292653554630842">Conectează-te</translation>
@@ -1085,6 +1095,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="5393156353051693207">Atinge lung oriunde ca să-ți reordonezi aplicațiile</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> deasupra <ph name="IN_PLACE_APP" />, eliberează pentru a crea un dosar.</translation>
 <translation id="5397578532367286026">Datele privind utilizarea și istoricul ale acestui utilizator pot fi examinate de administrator (<ph name="MANAGER_EMAIL" />) pe chrome.com.</translation>
+<translation id="540713187982329711">Dezactivează hotspotul. Hotspotul este activat. Niciun dispozitiv conectat.</translation>
 <translation id="5413656666631274079">Pagina Setări</translation>
 <translation id="5414198321558177633">Se actualizează lista de profiluri. Poate dura câteva minute.</translation>
 <translation id="5426063383988017631">Meniul Setări închis</translation>
@@ -1175,9 +1186,11 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="576341972084747908">Se descarcă fișierul periculos <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Lumina de noapte este activată.</translation>
 <translation id="5764569119212455782">Comută la ultima limbă selectată</translation>
+<translation id="5767730327234918501">Administratorul a dezactivat hotspotul.</translation>
 <translation id="5769373120130404283">Ecran de confidențialitate</translation>
 <translation id="5773950591113557721">Astfel, se permite accesul la <ph name="APP_NAME" /> și la toate aplicațiile și site-urile care au acces la camera foto și microfon</translation>
 <translation id="5774295353725270860">Deschideți aplicația Fișiere</translation>
+<translation id="5775936059231769503">Activează hotspotul. Hotspotul este dezactivat.</translation>
 <translation id="5777841717266010279">Oprești permiterea accesului la ecran?</translation>
 <translation id="5779721926447984944">Fișiere fixate</translation>
 <translation id="5785221443435874078">Elimină această sugestie</translation>
@@ -1495,6 +1508,7 @@ Instalare nouă</translation>
 <translation id="7068360136237591149">Deschide fișierele</translation>
 <translation id="7076293881109082629">Conectare</translation>
 <translation id="7076878155205969899">Ignoră sunetul</translation>
+<translation id="7084678090004350185">Dezactivează hotspotul. Hotspotul este activat, <ph name="DEVICECOUNT" /> dispozitive conectate.</translation>
 <translation id="7086931198345821656">Actualizarea necesită rularea funcției Powerwash a dispozitivului <ph name="DEVICE_TYPE" />. Toate datele de pe acesta se vor șterge. Află mai multe despre cea mai recentă actualizare pentru <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Acces prin comutare</translation>
 <translation id="709015856939120012">Mărește în pagină</translation>

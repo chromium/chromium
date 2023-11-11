@@ -1296,6 +1296,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7691043218961417207">Explorar contenido para seguir</translation>
 <translation id="7697383401610880082">Controlador de arrastre</translation>
 <translation id="7698359219371678927">Crear correo electrónico en <ph name="APP_NAME" /></translation>
+<translation id="7702029078562412515">Tarjetas de consulta</translation>
 <translation id="7702388902581909985">Si borras los datos de navegación, no saldrás de tu Cuenta de Google. Para ello, debes <ph name="BEGIN_LINK1" />salir de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Usa los datos móviles.</translation>
 <translation id="7709918231054955894">Accede a todas tus pestañas</translation>
@@ -1320,7 +1321,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Todos los archivos, 1 archivo en la lista}other{Todos los archivos, # archivos en la lista}}</translation>
 <translation id="7815484226266492798">Captura de pantalla completa</translation>
 <translation id="7822705602465980873">Cuando accedes, estos datos se vinculan a tu Cuenta de Google para protegerte en todos los servicios de Google, por ejemplo, aumentan la protección en Gmail después de un incidente de seguridad.</translation>
-<translation id="782705168687182233">La actividad se guarda en tu <ph name="BEGIN_LINK" />Cuenta de Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Tu computadora quiere registrar este dispositivo para acceder a un sitio</translation>
 <translation id="7844171778363018843">No se seleccionaron datos para sincronizar</translation>
 <translation id="7846296061357476882">Servicios de Google</translation>

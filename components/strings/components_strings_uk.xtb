@@ -532,6 +532,7 @@
 <translation id="2025891858974379949">Незахищений контент</translation>
 <translation id="2027465737841872819">Пластик</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />перевірити проксі-сервер і брандмауер<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">Швидка команда не може збігатися з ключовим словом пошукової системи за умовчанням, визначеним правилом <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Усе одно зберегти</translation>
 <translation id="2035400064145347639">Путівники та матеріали про подорожі</translation>
 <translation id="2036514476578229158">Запит на дозвіл для перегляду сайту надіслано. Твої батьки можуть відповісти на нього у Family Link.</translation>
@@ -559,6 +560,7 @@
 <translation id="2072275792380684364">Мода та стиль</translation>
 <translation id="2075497153347571252">Ваш адміністратор заблокував дозвіл "<ph name="PERMISSION" />" для сайту <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Відмінити</translation>
+<translation id="2080021694978766903">Максимальна кількість записів у цьому правилі: <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="20817612488360358">Системні параметри проксі-сервера налаштовано для використання, але чітко вказано налаштування проксі-сервера.</translation>
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Дозволити під час кожного відвідування</translation>
@@ -638,6 +640,7 @@
 <translation id="2225927550500503913">Віртуальну картку ввімкнено</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Вхід<ph name="END_LINK" /> у мережу Wi-Fi</translation>
 <translation id="2228057197024893428">Ця адреса зараз зберігається в Chrome. Збережіть її у своєму обліковому записі Google (<ph name="ACCOUNT" />), щоб використовувати в усіх продуктах Google.</translation>
+<translation id="2229456043301340598">Повторювана швидка команда ігнорується: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="2233745931693710080">Компакт-диск</translation>
 <translation id="2235344399760031203">Сторонні файли cookie блокуються</translation>
 <translation id="2239100178324503013">Надіслати</translation>
@@ -1075,6 +1078,7 @@
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на сервері <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Може запитувати, чи ви активно використовуєте цей пристрій</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб вибрати в налаштуваннях Chrome, яку інформацію синхронізувати</translation>
+<translation id="3203025201812691413">Потрібно вказати URL-адресу</translation>
 <translation id="320323717674993345">Скасувати оплату</translation>
 <translation id="3203366800380907218">З Інтернету</translation>
 <translation id="3207960819495026254">Створено закладку</translation>
@@ -1689,6 +1693,7 @@
 <translation id="4386413576162606861">Рольові ігри</translation>
 <translation id="4390472908992056574">До полів</translation>
 <translation id="4393632246160856858">Товари для догляду за нігтями</translation>
+<translation id="4397059608630092079">Завжди перевіряти під час використання автозаповнення</translation>
 <translation id="4406883609789734330">Живі субтитри</translation>
 <translation id="4406896451731180161">результати пошуку</translation>
 <translation id="4408413947728134509">Файли cookie: <ph name="NUM_COOKIES" /></translation>
@@ -1890,7 +1895,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову таблицю Google</translation>
 <translation id="4825507807291741242">Потужний</translation>
 <translation id="4826588772550366629">камеру та мікрофон</translation>
-<translation id="4827283332383516812">Видалити картку</translation>
 <translation id="4831993743164297314">Папір для іміджсетера</translation>
 <translation id="483241715238664915">Увімкнути попередження</translation>
 <translation id="4834250788637067901">Способи оплати, пропозиції й адреси з Google Pay</translation>
@@ -2302,6 +2306,7 @@
 <translation id="5651323159439184939">Подавання паперу за допомогою перфорації</translation>
 <translation id="5653432653077411130">Постачання й очищення води</translation>
 <translation id="5654927323611874862">Ідентифікатор завантаженого звіту про аварійне завершення роботи:</translation>
+<translation id="5654965123204121933">URL-адреса не містить обов’язкового сегмента для заміни <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Ел. пошта</translation>
 <translation id="5660122698869360728">Нова розумна папка, у якій можна зберігати всі сторінки покупок, автоматично відстежувати ціни, отримувати статистику цін тощо.</translation>
 <translation id="5663955426505430495">Адміністратор пристрою встановив розширення для додаткових функцій. Розширення мають доступ до деяких ваших даних.</translation>
@@ -2332,6 +2337,7 @@
 <translation id="5720705177508910913">Поточний користувач</translation>
 <translation id="572328651809341494">Останні вкладки</translation>
 <translation id="5723287205918986743">Оборонна промисловість</translation>
+<translation id="5725297205162868298">Швидка команда не може починатися із символу @: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5730040223043577876">Chrome радить скинути пароль, якщо ви застосовували його на інших сайтах.</translation>
 <translation id="5732392974455271431">Батьки можуть розблокувати його</translation>
 <translation id="573555826359077410">Кнопка "Створити форму"; активуйте, щоб швидко створити нову форму в Google Формах</translation>
@@ -2362,7 +2368,6 @@
 <translation id="5785756445106461925">Окрім цього, сторінка містить незахищені ресурси. Інші особи можуть переглядати їх під час передавання даних, а зловмисники можуть змінювати вигляд сторінки.</translation>
 <translation id="5786044859038896871">Ввести дані кредитної картки?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Цей спосіб оплати буде видалено з поточного пристрою</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Немає}=1{дані для входу в 1 обліковий запис}one{дані для входу в # обліковий запис}few{дані для входу в # облікові записи}many{дані для входу в # облікових записів}other{дані для входу в # облікового запису}}</translation>
 <translation id="5800727402210090597">Ремонт і обслуговування мобільних телефонів</translation>
 <translation id="580241730938216256">Почати оновлення</translation>
@@ -2850,6 +2855,7 @@
 <translation id="6793213097893210590">Картон</translation>
 <translation id="679355240208270552">Ігнорується, оскільки пошукову систему за умовчанням вимкнено правилом.</translation>
 <translation id="6794951432696553238">Відтепер ви можете підтверджувати картки швидше за допомогою Windows Hello</translation>
+<translation id="6798066466127540426">У списку немає дійсних пошукових сервісів.</translation>
 <translation id="6798460514924505775">Конверт Chou 3</translation>
 <translation id="6799145206637008376">Введіть код CVC для цієї віртуальної картки</translation>
 <translation id="6805030849054648206">Конверт B6/C4</translation>
@@ -3239,6 +3245,7 @@
 <translation id="7521825010239864438">Розділ "<ph name="SECTION" />" приховано</translation>
 <translation id="752189128961566325">Ви можете використовувати її в усіх продуктах Google</translation>
 <translation id="7523408071729642236">Обробна промисловість</translation>
+<translation id="7525804896095537619">Потрібно вказати назву</translation>
 <translation id="7526934274050461096">Ваше з’єднання з цим сайтом не конфіденційне</translation>
 <translation id="7529884293139707752">Домашнє навчання</translation>
 <translation id="7534987659046836932">Конверт C7</translation>
@@ -3460,6 +3467,7 @@
 <translation id="7950027195171824198">Керуйте параметрами файлів cookie в налаштуваннях Chrome</translation>
 <translation id="7951415247503192394">(32-розрядна версія)</translation>
 <translation id="7952192831285741665">EDP (Європейський Союз)</translation>
+<translation id="7952250633095257243">Потрібно вказати швидку команду</translation>
 <translation id="7952327717479677595">Кнопка "Керувати пошуковими системами"; активуйте, щоб керувати пошуковою системою за умовчанням і пошуком на сайті</translation>
 <translation id="7953236668995583915">Щоб застосувати оновлені налаштування на цьому сайті, оновіть сторінку</translation>
 <translation id="7953569069500808819">Зшити вздовж верхнього краю</translation>
@@ -3671,6 +3679,7 @@
 <translation id="8344776605855290140">Вікно реєстрації віртуальної картки відкрито на всю висоту</translation>
 <translation id="8347658365704983341">Дистанційне навчання</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
+<translation id="8350416046273606058">Швидка команда не може містити пробіли: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Створити нотатку</translation>
 <translation id="8352849934814541340">Адміністратор пристрою встановив додатки для розширених функцій. Ці додатки мають доступ до деяких ваших даних.</translation>
 <translation id="8355270400102541638">Локальний контекст аварійного завершення роботи:</translation>

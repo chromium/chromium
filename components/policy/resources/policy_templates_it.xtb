@@ -241,10 +241,6 @@ Se questo criterio viene disattivato, la protezione contro il phishing lato clie
 <translation id="120937472976628837">Segnala informazioni sulla ventola</translation>
 <translation id="1212233008927724662">Disattiva il caricamento lento di WebUI di accesso.</translation>
 <translation id="1216919699175573511">Attiva il supporto per Signed HTTP Exchange (SXG)</translation>
-<translation id="1218658069098810124">Se questo criterio viene attivato, è possibile eseguire il downgrade delle connessioni peer WebRTC a versioni obsolete dei protocolli TLS/DTLS (DTLS 1.0, TLS 1.0 e TLS 1.1).
-      Se questo criterio viene disattivato o se non viene configurato, queste versioni TLS/DTLS sono disattivate.
-
-      Questo criterio è deprecato ed è prevista la rimozione nella versione M121 di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1219027971768347970">Utilizza la configurazione predefinita per la sandbox audio</translation>
 <translation id="1221359380862872747">Carica gli URL specificati all'accesso demo</translation>
 <translation id="1221955019309484560">Attiva gli aggiornamenti per tutti i componenti</translation>
@@ -6353,20 +6349,6 @@ verrà usata soltanto la risoluzione della posizione basata sull'<ph name="IP" /
 <translation id="6404064917675764807">Non segnalare eventi di sessioni CRD</translation>
 <translation id="6404360891305375004">Consenti condivisioni file di rete</translation>
 <translation id="6407093060083181305">Configura la lista bloccata di installazione delle estensioni</translation>
-<translation id="6407792833351198330">Consente di controllare se una pagina che utilizza tecnologie precedenti verrà inclusa nel report in base al relativo URL.
-
-Se il criterio viene configurato, gli URL il cui prefisso corrisponde a una voce della lista consentita verranno utilizzati per generare il report e caricarlo. Gli URL senza corrispondenza verranno ignorati.
-Se il criterio non viene configurato o se viene impostato su un elenco vuoto, non verrà generato alcun report.
-
-Per i pattern corrispondenti viene usato un formato simile a quello utilizzato per i pattern del criterio "<ph name="URL_BLOCKLIST_POLICY_NAME" />", documentati all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Con alcune eccezioni riportate di seguito:
- * Nessun supporto del carattere jolly "*".
- * Schema, porta e query vengono ignorati.
- * Per poter trovare una corrispondenza, il sottodominio deve sempre essere specificato.
- * Puoi aggiungere al massimo 100 URL nella lista consentita.
-
-Per <ph name="PRODUCT_NAME" />, questo criterio viene applicato soltanto se la macchina viene registrata con il token <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
-
-Per maggiori informazioni sulle tecnologie precedenti, visita la pagina all'indirizzo https://chromestatus.com/features.</translation>
 <translation id="640827304541402854">Viene disattivato l'attraversamento firewall da host di accesso remoto</translation>
 <translation id="6410847321564585975">Lista consentita dei report sulle attività dei siti web</translation>
 <translation id="6412352702230183710">Consenti solo host di messaggi nativi a livello di sistema</translation>
@@ -8185,6 +8167,11 @@ Se il criterio viene impostato su Disattivato o se non viene configurato, il Ker
           Per le origini non coperte dai pattern specificati qui, il valore predefinito globale viene utilizzato dal criterio <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" />, se configurato, o altrimenti dalla configurazione personale dell'utente.
 
           Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="7904584382309857420">Questo criterio è stato rimosso da M121. Consente di attivare e disattivare l'attestazione remota per il dispositivo, ma questa è attivata per impostazione predefinita.
+
+Se il criterio viene impostato su Attivato, l'attestazione remota è consentita per il dispositivo. Un certificato viene generato e caricato automaticamente sul server di gestione del dispositivo.
+
+Se il criterio viene impostato su Disattivato o se non viene configurato, non viene generato alcun certificato e le chiamate a <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> non vengono eseguite correttamente.</translation>
 <translation id="7906983682927840536">Recupera la durata del keepalive alla chiusura</translation>
 <translation id="7908384265697653397">Il periodo di tempo, in giorni, trascorso il quale l'utente viene disconnesso dall'account se la versione di <ph name="PRODUCT_OS_NAME" /> è precedente a quella specificata nel criterio <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />.</translation>
 <translation id="7911685775490889216">Consente di configurare il tempo di visualizzazione in secondi di un'immagine quando il salvaschermo per la schermata di blocco ha diverse immagini da visualizzare.

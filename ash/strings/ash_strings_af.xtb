@@ -872,6 +872,14 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4548482551627849548">Skuif aktiewe venster na lessenaar aan die linkerkant toe</translation>
 <translation id="4560576029703263363">Aan</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Statuslaai, tyd <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />,
+        <ph name="NOTIFICATION" />
+        <ph name="IME" />,
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Versteek wagwoord</translation>
 <translation id="4566144812051858745">Stel nie in enige voorstelle belang nie</translation>
 <translation id="4569753163207712681">Bekyk jou foon se onlangse foto’s, media en apps.</translation>

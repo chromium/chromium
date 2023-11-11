@@ -532,6 +532,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2025891858974379949">Contenuti non sicuri</translation>
 <translation id="2027465737841872819">Plastica</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Controllare il proxy e firewall<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">La scorciatoia non può essere uguale alla parola chiave del provider di ricerca predefinito definita da <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Salva comunque</translation>
 <translation id="2035400064145347639">Guide turistiche e letteratura di viaggio</translation>
 <translation id="2036514476578229158">Hai chiesto di poter visitare questo sito. I tuoi genitori possono rispondere in Family Link.</translation>
@@ -1074,6 +1075,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> su <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Può chiedere di sapere quando stai utilizzando attivamente questo dispositivo</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per gestire le informazioni da sincronizzare nelle impostazioni di Chrome</translation>
+<translation id="3203025201812691413">L'URL non può essere vuoto</translation>
 <translation id="320323717674993345">Annulla pagamento</translation>
 <translation id="3203366800380907218">Dal Web</translation>
 <translation id="3207960819495026254">Aggiunto ai preferiti</translation>
@@ -1688,6 +1690,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4386413576162606861">Giochi di ruolo</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4393632246160856858">Prodotti per la cura delle unghie</translation>
+<translation id="4397059608630092079">Verifica sempre quando è in uso la compilazione automatica</translation>
 <translation id="4406883609789734330">Sottotitoli in tempo reale</translation>
 <translation id="4406896451731180161">risultati di ricerca</translation>
 <translation id="4408413947728134509">Cookie: <ph name="NUM_COOKIES" /></translation>
@@ -1889,7 +1892,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per creare rapidamente un nuovo foglio Google</translation>
 <translation id="4825507807291741242">Potente</translation>
 <translation id="4826588772550366629">fotocamera e microfono</translation>
-<translation id="4827283332383516812">Elimina tessera</translation>
 <translation id="4831993743164297314">Carta per imagesetter</translation>
 <translation id="483241715238664915">Attiva gli avvisi</translation>
 <translation id="4834250788637067901">Metodi di pagamento, offerte e indirizzi che utilizzano Google Pay</translation>
@@ -2301,6 +2303,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5651323159439184939">Alimentatore a trattore</translation>
 <translation id="5653432653077411130">Forniture idriche e trattamento dell'acqua</translation>
 <translation id="5654927323611874862">ID del report sugli arresti anomali caricato:</translation>
+<translation id="5654965123204121933">L'URL non include la stringa sostitutiva richiesta <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5660122698869360728">Una nuova cartella intelligente che ti consente di salvare tutte le tue pagine di shopping in un unico posto, monitorare automaticamente i prezzi, ottenere approfondimenti sul prezzo e altro ancora.</translation>
 <translation id="5663955426505430495">L'amministratore di questo dispositivo ha installato estensioni relative a funzioni aggiuntive. Le estensioni hanno accesso ad alcuni tuoi dati.</translation>
@@ -2362,7 +2365,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5785756445106461925">Inoltre, questa pagina include altre risorse che non sono sicure. Tali risorse possono essere visualizzate da altri durante il transito dei dati e possono essere modificate da un utente malintenzionato al fine di modificare l'aspetto della pagina.</translation>
 <translation id="5786044859038896871">Vuoi inserire automaticamente i dati della carta?</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5793317771769868848">Questo metodo di pagamento verrà eliminato dal dispositivo</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Nessuno}=1{dati di accesso per 1 account}other{dati di accesso per # account}}</translation>
 <translation id="5800727402210090597">Riparazione e assistenza cellulari</translation>
 <translation id="580241730938216256">Avvia aggiornamento</translation>

@@ -532,6 +532,7 @@
 <translation id="2025891858974379949">Небезопасный контент</translation>
 <translation id="2027465737841872819">Пластик</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Проверьте настройки прокси-сервера и брандмауэра<ph name="END_LINK" />.</translation>
+<translation id="2033900728810589426">Быстрая команда не должна совпадать с ключевым словом поисковой системы по умолчанию, заданным в правиле <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" />.</translation>
 <translation id="2034971124472263449">Все равно сохранить</translation>
 <translation id="2035400064145347639">Туристические ресурсы</translation>
 <translation id="2036514476578229158">Чтобы смотреть этот сайт, нужно получить разрешение родителей через Family Link.</translation>
@@ -559,6 +560,7 @@
 <translation id="2072275792380684364">Мода и стиль</translation>
 <translation id="2075497153347571252">Администратор запретил использовать разрешение "<ph name="PERMISSION" />" на сайте <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Отмена</translation>
+<translation id="2080021694978766903">Максимальное число записей для этого правила: <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="20817612488360358">Включены системные настройки прокси-сервера, но при этом его конфигурация задана явным образом.</translation>
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" />, всего <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Разрешать при каждом посещении</translation>
@@ -638,6 +640,7 @@
 <translation id="2225927550500503913">Виртуальная карта включена</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Вход<ph name="END_LINK" /> в сеть Wi-Fi</translation>
 <translation id="2228057197024893428">Адрес добавлен в Chrome. Сохраните его в аккаунте Google (<ph name="ACCOUNT" />), чтобы использовать в других продуктах Google.</translation>
+<translation id="2229456043301340598">Повторяющаяся быстрая команда "<ph name="SHORTCUT_NAME" />" игнорируется.</translation>
 <translation id="2233745931693710080">Компакт-диск</translation>
 <translation id="2235344399760031203">Сторонние файлы cookie заблокированы.</translation>
 <translation id="2239100178324503013">Отправить</translation>
@@ -1074,6 +1077,7 @@
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Разрешено запрашивать информацию об использовании устройства</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем – Ввод, чтобы открыть настройки Chrome и указать, какая информация должна синхронизироваться.</translation>
+<translation id="3203025201812691413">Нужно указать URL.</translation>
 <translation id="320323717674993345">Отменить оплату</translation>
 <translation id="3203366800380907218">Из интернета</translation>
 <translation id="3207960819495026254">Добавлено в закладки.</translation>
@@ -1257,7 +1261,7 @@
 <translation id="3558573058928565255">До дня</translation>
 <translation id="355995771319966853">Отменить автозаполнение</translation>
 <translation id="3560408312959371419">Параметры Защиты от слежения и управление данными сайтов на устройстве</translation>
-<translation id="3560824484345057728">Открыть список связанных сайтов</translation>
+<translation id="3560824484345057728">Показать связанные сайты</translation>
 <translation id="3566021033012934673">Подключение не защищено</translation>
 <translation id="3566336457819493938">215 x 315 мм</translation>
 <translation id="3566649245868131295">Вакансии в сфере здравоохранения и медицины</translation>
@@ -1688,6 +1692,7 @@
 <translation id="4386413576162606861">Ролевые игры</translation>
 <translation id="4390472908992056574">Поля</translation>
 <translation id="4393632246160856858">Товары для ухода за ногтями</translation>
+<translation id="4397059608630092079">Всегда проверять при автозаполнении</translation>
 <translation id="4406883609789734330">Автоматические субтитры</translation>
 <translation id="4406896451731180161">Результаты поиска</translation>
 <translation id="4408413947728134509">Настройки файлов cookie <ph name="NUM_COOKIES" /></translation>
@@ -1889,7 +1894,6 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать таблицу Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="4825507807291741242">Мощный</translation>
 <translation id="4826588772550366629">"Камера" и "Микрофон"</translation>
-<translation id="4827283332383516812">Удаление карты</translation>
 <translation id="4831993743164297314">Бумага для фотонаборной машины</translation>
 <translation id="483241715238664915">Включить предупреждения</translation>
 <translation id="4834250788637067901">Способы оплаты, адреса и специальные предложения из Google Pay</translation>
@@ -2301,6 +2305,7 @@
 <translation id="5651323159439184939">Автоподатчик</translation>
 <translation id="5653432653077411130">Водоснабжение и водное хозяйство</translation>
 <translation id="5654927323611874862">Идентификатор загруженного отчета о сбое:</translation>
+<translation id="5654965123204121933">URL должен содержать строку <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" />.</translation>
 <translation id="5659593005791499971">Эл. почта</translation>
 <translation id="5660122698869360728">Это новая умная папка, которая позволяет добавлять в закладки страницы с желаемыми покупками, автоматически отслеживать цены, получать полезную информацию и многое другое.</translation>
 <translation id="5663955426505430495">Администратор устройства установил расширения с дополнительными функциями для браузера. У расширений есть доступ к некоторым вашим данным.</translation>
@@ -2331,6 +2336,7 @@
 <translation id="5720705177508910913">Текущий пользователь</translation>
 <translation id="572328651809341494">Недавние вкладки</translation>
 <translation id="5723287205918986743">Военная промышленность</translation>
+<translation id="5725297205162868298">Быстрая команда "<ph name="SHORTCUT_NAME" />" не должна начинаться с символа @.</translation>
 <translation id="5730040223043577876">Chrome рекомендует сбросить пароль, если вы использовали его на других сайтах.</translation>
 <translation id="5732392974455271431">Для разблокировки обратитесь к родителям.</translation>
 <translation id="573555826359077410">Кнопка "Создать форму". Нажмите ее, чтобы быстро создать форму Google.</translation>
@@ -2361,7 +2367,6 @@
 <translation id="5785756445106461925">Обратите внимание, что на странице обнаружен небезопасный контент. Возможно, при передаче ресурсы просматриваются третьими лицами, а злоумышленники могут получить доступ к странице и изменить ее поведение или внешний вид.</translation>
 <translation id="5786044859038896871">Заполнить данные банковской карты?</translation>
 <translation id="5789643057113097023">:</translation>
-<translation id="5793317771769868848">Этот способ оплаты будет удален с устройства.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Нет данных}=1{учетные данные для 1 аккаунта}one{учетные данные для # аккаунта}few{учетные данные для # аккаунтов}many{учетные данные для # аккаунтов}other{учетные данные для # аккаунта}}</translation>
 <translation id="5800727402210090597">Ремонт и обслуживание мобильных телефонов</translation>
 <translation id="580241730938216256">Обновить</translation>
@@ -2849,6 +2854,7 @@
 <translation id="6793213097893210590">Картон</translation>
 <translation id="679355240208270552">Игнорируется, так как в правиле не задан поиск по умолчанию.</translation>
 <translation id="6794951432696553238">Подтверждайте карты быстрее с помощью Windows Hello</translation>
+<translation id="6798066466127540426">В списке нет действительных поисковых систем.</translation>
 <translation id="6798460514924505775">Конверт Chou 3</translation>
 <translation id="6799145206637008376">Укажите CVC-код этой виртуальной карты</translation>
 <translation id="6805030849054648206">Конверт B6/C4</translation>
@@ -3238,6 +3244,7 @@
 <translation id="7521825010239864438">Раздел "<ph name="SECTION" />" скрыт.</translation>
 <translation id="752189128961566325">Вы сможете использовать его в продуктах Google.</translation>
 <translation id="7523408071729642236">Производство</translation>
+<translation id="7525804896095537619">Нужно указать название.</translation>
 <translation id="7526934274050461096">Подключение к сайту не защищено</translation>
 <translation id="7529884293139707752">Обучение на дому</translation>
 <translation id="7534987659046836932">Конверт C7</translation>
@@ -3459,6 +3466,7 @@
 <translation id="7950027195171824198">Задать параметры файлов cookie в настройках Chrome</translation>
 <translation id="7951415247503192394">(32 бит)</translation>
 <translation id="7952192831285741665">European EDP</translation>
+<translation id="7952250633095257243">Нужно указать быструю команду.</translation>
 <translation id="7952327717479677595">Кнопка "Управление поисковыми системами". Нажмите ее, чтобы настроить поисковую систему по умолчанию и поиск по сайту.</translation>
 <translation id="7953236668995583915">Чтобы обновленные настройки вступили в силу для этого сайта, перезагрузите страницу.</translation>
 <translation id="7953569069500808819">Скобы по верхнему краю</translation>
@@ -3670,6 +3678,7 @@
 <translation id="8344776605855290140">Диалоговое окно создания виртуальной карты открыто на весь экран</translation>
 <translation id="8347658365704983341">Дистанционное обучение</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
+<translation id="8350416046273606058">Быстрая команда "<ph name="SHORTCUT_NAME" />" не должна содержать пробелов.</translation>
 <translation id="8351131234907093545">Создать заметку</translation>
 <translation id="8352849934814541340">Чтобы расширить возможности браузера, администратор устройства установил несколько приложений, которым доступны некоторые ваши данные.</translation>
 <translation id="8355270400102541638">Локальный идентификатор сбоя:</translation>

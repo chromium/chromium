@@ -115,6 +115,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1391102559483454063">An</translation>
 <translation id="1407069428457324124">Dunkles Design</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" /> – Mit den Pfeiltasten kannst du zwischen den Datumsangaben wechseln.</translation>
+<translation id="141170878022560212">Mittlere Taste</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, installierte App</translation>
 <translation id="1414919006379339073">Aktuelles Fenster schließen</translation>
 <translation id="1415846719612499304">Netzwerkliste anzeigen. <ph name="STATE_TEXT" />.</translation>
@@ -271,6 +272,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2086334242442703436">Emoji-Auswahl öffnen</translation>
 <translation id="2088116547584365419">Spiele</translation>
 <translation id="209965399369889474">Keine Netzwerkverbindung</translation>
+<translation id="2107581415810719320">Andere Taste <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Dein USB-C-Kabel bietet keine Unterstützung für Thunderbolt. Dies kann die Geräteleistung beeinträchtigen.</translation>
 <translation id="2108303511227308752">Die Tastenkombination Alt + Rücktaste hat sich geändert. Wenn du jetzt die Löschen-Taste benötigst, drücke die <ph name="LAUNCHER_KEY_NAME" />-Taste + Rücktaste.</translation>
 <translation id="2126242104232412123">Neuer Desktop</translation>
@@ -869,6 +871,14 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4548482551627849548">Aktives Fenster in den linken Desktop verschieben</translation>
 <translation id="4560576029703263363">An</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Statusleiste, Uhrzeit <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Passwort ausblenden</translation>
 <translation id="4566144812051858745">Ich bin nicht an Vorschlägen interessiert</translation>
 <translation id="4569753163207712681">Letzte Fotos, Medien und Apps auf deinem Smartphone anzeigen</translation>

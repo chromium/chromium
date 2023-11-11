@@ -1296,6 +1296,7 @@
 <translation id="7691043218961417207">उस कॉन्टेंट को एक्सप्लोर करें जिसे फ़ॉलो करना है</translation>
 <translation id="7697383401610880082">खींचकर छोड़ने वाला हैंडल</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> में ईमेल बनाएं</translation>
+<translation id="7702029078562412515">क्वेरी टाइल</translation>
 <translation id="7702388902581909985">ब्राउज़िंग डेटा मिटाने का मतलब यह नहीं है कि आपको Google खाते से साइन आउट कर दिया जाएगा. ऐसा करने के लिए, <ph name="BEGIN_LINK1" />Chrome से साइन आउट करें<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">मोबाइल डेटा का उपयोग करें</translation>
 <translation id="7709918231054955894">अपने सभी डिवाइसों पर खुले हुए टैब ऐक्सेस करें</translation>
@@ -1320,7 +1321,6 @@
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{सभी फ़ाइलें, सूची में 1 फ़ाइल है}one{सभी फ़ाइलें, सूची में # फ़ाइल है}other{सभी फ़ाइलें, सूची में # फ़ाइलें हैं}}</translation>
 <translation id="7815484226266492798">लंबा स्क्रीनशॉट</translation>
 <translation id="7822705602465980873">Google खाते में साइन इन करने पर, यह डेटा आपके Google खाते से लिंक हो जाता है. ऐसा, Google की सभी सेवाओं पर आपके डेटा की सुरक्षा के लिए किया जाता है. जैसे, डेटा की सुरक्षा से जुड़े किसी मामले के बाद, Gmail में आपके डेटा की सुरक्षा बढ़ाना.</translation>
-<translation id="782705168687182233">आपकी गतिविधि, आपके <ph name="BEGIN_LINK" />Google खाते<ph name="END_LINK" /> में सेव हो जाती है.</translation>
 <translation id="78270725016672455">किसी साइट पर साइन इन करने के लिए, आपका कंप्यूटर इस डिवाइस को रजिस्टर करना चाहता है</translation>
 <translation id="7844171778363018843">सिंक करने के लिए कोई भी डेटा नहीं चुना गया</translation>
 <translation id="7846296061357476882">Google की सेवाएं</translation>
