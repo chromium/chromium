@@ -122,6 +122,10 @@ constexpr float kDragDropAppIconScale = 1.2f;
 constexpr float kPromiseIconScalePending = 24.0f / 36.0f;
 constexpr float kPromiseIconScaleInstalling = 28.0f / 36.0f;
 
+// The duration of the animation to animate an app list item view in as a
+// promise app replacement.
+constexpr base::TimeDelta kSwapPromiseIconDuration = base::Milliseconds(1000);
+
 // The amount of space between the progress ring and the promise app background.
 constexpr gfx::Insets kProgressRingMargin = gfx::Insets(-2);
 
@@ -738,15 +742,32 @@ void AppListItemView::UpdateIconView(bool update_item_icon) {
                      : gfx::ImageSkia()));
     }
   }
+
+  const ui::ImageModel& image_model = ShouldUseFallbackIconImageModel()
+                                          ? fallback_icon_image_model_
+                                          : icon_image_model_;
   gfx::ImageSkia image_icon;
-  if (icon_image_model_.IsImage()) {
-    image_icon = icon_image_model_.GetImage().AsImageSkia();
-  } else if (icon_image_model_.IsVectorIcon()) {
-    image_icon = ui::ThemedVectorIcon(icon_image_model_.GetVectorIcon())
+  if (image_model.IsImage()) {
+    image_icon = image_model.GetImage().AsImageSkia();
+  } else if (image_model.IsVectorIcon()) {
+    image_icon = ui::ThemedVectorIcon(image_model.GetVectorIcon())
                      .GetImageSkia(GetColorProvider());
   }
 
   SetIcon(image_icon);
+}
+
+bool AppListItemView::ShouldUseFallbackIconImageModel() const {
+  if (fallback_icon_image_model_.IsEmpty()) {
+    return false;
+  }
+
+  if (!item_weak_) {
+    return true;
+  }
+
+  return item_weak_->GetMetadata()->is_placeholder_icon ||
+         item_weak_->GetDefaultIcon().isNull();
 }
 
 void AppListItemView::SetIcon(const gfx::ImageSkia& icon) {
@@ -1853,6 +1874,72 @@ void AppListItemView::SetMostRecentGridIndex(GridIndex new_grid_index,
   most_recent_grid_index_ = new_grid_index;
 }
 
+void AppListItemView::AnimateInFromPromiseApp(
+    const ui::ImageModel& fallback_image,
+    base::RepeatingClosure callback) {
+  // Set up the app list item view so it appears as a promise icon - add a
+  // progress ring (in completed state), scale the icon down, and hide the title
+  // and the new install indicator.
+  forced_progress_indicator_value_ = 0.999999f;
+  UpdateProgressIndicatorState();
+
+  fallback_icon_image_model_ = fallback_image;
+  UpdateIconView(/*update_item_icon=*/false);
+
+  views::View* const icon_view = GetIconView();
+  icon_view->SetPaintToLayer();
+  icon_view->layer()->SetFillsBoundsOpaquely(false);
+
+  title_->SetPaintToLayer();
+  title_->layer()->SetFillsBoundsOpaquely(false);
+  title_->layer()->SetOpacity(0.0f);
+
+  new_install_dot_->SetPaintToLayer();
+  new_install_dot_->layer()->SetFillsBoundsOpaquely(false);
+  new_install_dot_->layer()->SetOpacity(0.0f);
+
+  const gfx::Point center_point =
+      gfx::Rect(app_list_config_->grid_icon_size()).CenterPoint();
+  icon_view->layer()->SetTransform(
+      gfx::GetScaleTransform(center_point, kPromiseIconScaleInstalling));
+
+  // Animate the app list view out of the promise app state.
+  views::AnimationBuilder animation;
+  animation.OnEnded(base::BindOnce(&AppListItemView::OnAnimatedInFromPromiseApp,
+                                   weak_ptr_factory_.GetWeakPtr(), callback));
+  animation.OnAborted(
+      base::BindOnce(&AppListItemView::OnAnimatedInFromPromiseApp,
+                     weak_ptr_factory_.GetWeakPtr(), callback));
+  animation.Once()
+      .SetDuration(kSwapPromiseIconDuration)
+      .SetOpacity(progress_indicator_->layer(), 0.0f,
+                  gfx::Tween::FAST_OUT_LINEAR_IN)
+      .SetOpacity(title_->layer(), 1.0f, gfx::Tween::FAST_OUT_LINEAR_IN)
+      .SetOpacity(new_install_dot_->layer(), 1.0f,
+                  gfx::Tween::FAST_OUT_LINEAR_IN)
+      .SetTransform(icon_view->layer(), gfx::Transform(),
+                    gfx::Tween::FAST_OUT_LINEAR_IN);
+}
+
+void AppListItemView::OnAnimatedInFromPromiseApp(
+    base::RepeatingClosure callback) {
+  title_->DestroyLayer();
+  new_install_dot_->DestroyLayer();
+  forced_progress_indicator_value_.reset();
+  if (progress_indicator_) {
+    layer()->Remove(progress_indicator_->layer());
+  }
+  progress_indicator_.reset();
+  // Clear background set as a result of adding progress indicator.
+  SetBackground(nullptr);
+
+  fallback_icon_image_model_ = ui::ImageModel();
+  GetIconView()->DestroyLayer();
+  UpdateIconView(/*update_item_icon=*/true);
+
+  callback.Run();
+}
+
 absl::optional<size_t> AppListItemView::item_counter_count_for_test() const {
   DCHECK(!use_item_icon_);
   return folder_icon_->GetItemCounterCount();
@@ -2030,11 +2117,6 @@ void AppListItemView::ItemIsNewInstallChanged() {
   }
 }
 
-std::unique_ptr<ui::LayerTreeOwner> AppListItemView::RequestDuplicateLayer() {
-  CHECK(layer());
-  return ::wm::RecreateLayers(this);
-}
-
 void AppListItemView::ItemBeingDestroyed() {
   DCHECK(item_weak_);
   item_weak_->RemoveObserver(this);
@@ -2064,7 +2146,8 @@ void AppListItemView::ItemAppStatusUpdated() {
 }
 
 void AppListItemView::UpdateProgressIndicatorState() {
-  if (!is_promise_app_ || !features::ArePromiseIconsEnabled()) {
+  if ((!is_promise_app_ && !forced_progress_indicator_value_) ||
+      !features::ArePromiseIconsEnabled()) {
     return;
   }
 
@@ -2072,6 +2155,9 @@ void AppListItemView::UpdateProgressIndicatorState() {
     progress_indicator_ =
         ProgressIndicator::CreateDefaultInstance(base::BindRepeating(
             [](AppListItemView* view) -> absl::optional<float> {
+              if (view->forced_progress_indicator_value_) {
+                return *view->forced_progress_indicator_value_;
+              }
               if (view->item()->app_status() == AppStatus::kPending) {
                 return 0.0f;
               }

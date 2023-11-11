@@ -88,8 +88,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   AppsGridView& operator=(const AppsGridView&) = delete;
   ~AppsGridView() override;
 
-  using PendingAppsLayersMap =
-      std::map<std::string, std::unique_ptr<ui::LayerTreeOwner>>;
+  using PendingAppsMap = std::map<std::string, ui::ImageModel>;
 
   // Sets the `AppListConfig` that should be used to configure app list item
   // size within the grid. This will cause all items views to be updated to
@@ -958,17 +957,13 @@ class ASH_EXPORT AppsGridView : public views::View,
       ui::mojom::DragOperation& output_drag_op,
       std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
-  // Add a copy of a layer from an app that is pending for removal into
-  // `pending_promise_apps_removals_`.
-  ui::LayerTreeOwner* AddPendingLayerOwnerForPromiseApp(
-      const std::string& id,
-      std::unique_ptr<ui::LayerTreeOwner> layer_owner);
-
-  // Animate the transition of an incoming app if there was previously a promise
-  // app in place.
-  void AnimateTransitionForPromiseApps(AppListItemView* view,
-                                       ui::Layer* promise_app_layer,
-                                       base::OnceClosure callback);
+  // Registers a pending promise app removal - called when a promise app item is
+  // removed due to a successful app installation. It adds the promise package
+  // ID to the pending promise app removal set, and caches the promise app
+  // image, which will be used as a default/fallback image for the app during
+  // the animation to replace the promise app with the installed app.
+  void AddPendingPromiseAppRemoval(const std::string& id,
+                                   const ui::ImageModel& promise_app_image);
 
   // Called when the transition animation between apps is done.
   void FinishAnimationForPromiseApps(const std::string& pending_app_id);
@@ -1185,7 +1180,7 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // A list of pending promise app layers to be removed when the actual app is
   // pushed into the apps grid.
-  PendingAppsLayersMap pending_promise_apps_removals_;
+  PendingAppsMap pending_promise_apps_removals_;
 
   base::WeakPtrFactory<AppsGridView> weak_factory_{this};
 };

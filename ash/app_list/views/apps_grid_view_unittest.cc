@@ -511,16 +511,11 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     event_generator->ClickLeftButton();
   }
 
-  ui::LayerTreeOwner* GetPendingPromiseLayerForId(
-      const std::string& promise_app_id) {
+  bool HasPendingPromiseAppRemoval(const std::string& promise_app_id) const {
     auto found =
         apps_grid_view_->pending_promise_apps_removals_.find(promise_app_id);
 
-    if (found == apps_grid_view_->pending_promise_apps_removals_.end()) {
-      return nullptr;
-    }
-
-    return found->second.get();
+    return found != apps_grid_view_->pending_promise_apps_removals_.end();
   }
 
   // Simulates a long press on the point `location` if the test is in tablet
@@ -6509,9 +6504,7 @@ TEST_F(AppsGridViewTest, PromiseIconLayers) {
   // Simulate pushing the installed app.
   GetTestModel()->DeleteItem(item->id());
 
-  ui::LayerTreeOwner* promise_app_duplicate_layer =
-      GetPendingPromiseLayerForId(promise_app_id);
-  ASSERT_TRUE(promise_app_duplicate_layer);
+  EXPECT_TRUE(HasPendingPromiseAppRemoval(promise_app_id));
 
   auto* installed_item = GetTestModel()->CreateItem("installed_id");
   auto installed_item_metadata = installed_item->CloneMetadata();
@@ -6522,16 +6515,19 @@ TEST_F(AppsGridViewTest, PromiseIconLayers) {
   AppListItemView* installed_view = apps_grid_view_->GetItemViewAt(0);
   EXPECT_EQ(installed_view->item()->id(), "installed_id");
   ASSERT_TRUE(installed_view->layer());
-  ASSERT_TRUE(GetPendingPromiseLayerForId(promise_app_id));
+  EXPECT_TRUE(HasPendingPromiseAppRemoval(promise_app_id));
 
   // Verify that the layer is still animating.
-  EXPECT_TRUE(installed_view->layer()->GetAnimator()->is_animating());
-  EXPECT_EQ(1.0f, installed_view->layer()->GetAnimator()->GetTargetOpacity());
+  ASSERT_TRUE(installed_view->GetIconView()->layer());
   EXPECT_TRUE(
-      promise_app_duplicate_layer->root()->GetAnimator()->is_animating());
-  EXPECT_EQ(
-      0.0f,
-      promise_app_duplicate_layer->root()->GetAnimator()->GetTargetOpacity());
+      installed_view->GetIconView()->layer()->GetAnimator()->is_animating());
+
+  ui::LayerAnimationStoppedWaiter animation_waiter;
+  animation_waiter.Wait(installed_view->GetIconView()->layer());
+
+  EXPECT_FALSE(installed_view->GetIconView()->layer());
+  EXPECT_FALSE(HasPendingPromiseAppRemoval(promise_app_id));
+  EXPECT_FALSE(installed_view->layer());
 }
 
 }  // namespace test

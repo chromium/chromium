@@ -122,7 +122,6 @@ constexpr base::TimeDelta kFadeOutAnimationDuration = base::Milliseconds(100);
 //
 // The duration of the folder item view fade out animation.
 constexpr base::TimeDelta kFolderItemFadeOutDuration = base::Milliseconds(100);
-constexpr base::TimeDelta kSwapPromiseIconDuration = base::Milliseconds(1000);
 
 // The duraction of the folder item view fade in animation.
 constexpr base::TimeDelta kFolderItemFadeInDuration = base::Milliseconds(300);
@@ -2957,35 +2956,20 @@ void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
   // Attempt to animate the transition from a promise app into an actual app
   const std::string package_name =
       view->item()->GetMetadata()->promise_package_id;
-  PendingAppsLayersMap::iterator found =
-      pending_promise_apps_removals_.find(package_name);
+  auto found = pending_promise_apps_removals_.find(package_name);
 
   if (item->GetMetadata()->app_status == AppStatus::kReady &&
       found != pending_promise_apps_removals_.end()) {
-    AnimateTransitionForPromiseApps(
-        view, found->second->root(),
-        base::BindOnce(&AppsGridView::FinishAnimationForPromiseApps,
-                       weak_factory_.GetWeakPtr(), package_name));
+    view->AnimateInFromPromiseApp(
+        found->second,
+        base::BindRepeating(&AppsGridView::FinishAnimationForPromiseApps,
+                            weak_factory_.GetWeakPtr(), package_name));
   }
-}
-
-void AppsGridView::AnimateTransitionForPromiseApps(AppListItemView* view,
-                                                   ui::Layer* promise_app_layer,
-                                                   base::OnceClosure callback) {
-  view->EnsureLayer();
-  view->layer()->SetOpacity(0.0f);
-
-  views::AnimationBuilder animation;
-  animation.OnEnded(std::move(callback));
-  animation.Once()
-      .SetDuration(kSwapPromiseIconDuration)
-      .SetOpacity(view->layer(), 1.0f, gfx::Tween::FAST_OUT_LINEAR_IN)
-      .SetOpacity(promise_app_layer, 0.0f, gfx::Tween::FAST_OUT_LINEAR_IN);
 }
 
 void AppsGridView::FinishAnimationForPromiseApps(
     const std::string& pending_app_id) {
-  PendingAppsLayersMap::iterator pending_app_found =
+  PendingAppsMap::iterator pending_app_found =
       pending_promise_apps_removals_.find(pending_app_id);
 
   // Discard the pending promise app layer.
@@ -2993,6 +2977,8 @@ void AppsGridView::FinishAnimationForPromiseApps(
     auto pending_app_scope(std::move(pending_app_found->second));
     pending_promise_apps_removals_.erase(pending_app_found);
   }
+
+  DestroyLayerItemsIfNotNeeded();
 }
 
 void AppsGridView::OnListItemRemoved(size_t index, AppListItem* item) {
@@ -3056,11 +3042,11 @@ void AppsGridView::MaybeDuplicatePromiseAppForRemoval(
     }
   }
 
-  // PromiseApps don't get animation for removal if an app lready existst in the
-  // grid.
+  // PromiseApps don't get animation for removal if an app already existst in
+  // the grid.
   if (!existing_app_in_grid) {
-    AddPendingLayerOwnerForPromiseApp(
-        item->id(), promise_app_view->RequestDuplicateLayer());
+    AddPendingPromiseAppRemoval(item->id(),
+                                promise_app_view->icon_image_model());
   }
 }
 
@@ -3103,23 +3089,16 @@ void AppsGridView::OnListItemMoved(size_t from_index,
   }
 }
 
-ui::LayerTreeOwner* AppsGridView::AddPendingLayerOwnerForPromiseApp(
+void AppsGridView::AddPendingPromiseAppRemoval(
     const std::string& id,
-    std::unique_ptr<ui::LayerTreeOwner> layer_owner) {
-  if (!layer_owner) {
-    return nullptr;
-  }
-
-  PendingAppsLayersMap::iterator found =
-      pending_promise_apps_removals_.find(id);
+    const ui::ImageModel& default_image) {
+  auto found = pending_promise_apps_removals_.find(id);
   if (found != pending_promise_apps_removals_.end()) {
     NOTREACHED();
-    return nullptr;
+    return;
   }
 
-  pending_promise_apps_removals_[id] = std::move(layer_owner);
-
-  return pending_promise_apps_removals_[id].get();
+  pending_promise_apps_removals_.emplace(id, default_image);
 }
 
 void AppsGridView::OnAppListModelStatusChanged() {
