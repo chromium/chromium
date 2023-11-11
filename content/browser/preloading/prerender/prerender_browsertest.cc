@@ -4995,13 +4995,17 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ClipboardByExecCommandFail) {
                           EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
-void LoadAndWaitForPrerenderDestroyed(WebContents* const web_contents,
+void LoadAndWaitForPrerenderDestroyed(test::PrerenderTestHelper* helper,
                                       const GURL prerendering_url,
-                                      test::PrerenderTestHelper* helper) {
-  test::PrerenderHostObserver host_observer(*web_contents, prerendering_url);
-  helper->AddPrerenderAsync(prerendering_url);
+                                      const std::string& target_hint) {
+  PrerenderHostCreationWaiter host_creation_waiter;
+  helper->AddPrerendersAsync({prerendering_url}, /*eagerness=*/std::nullopt,
+                             target_hint);
+  int host_id = host_creation_waiter.Wait();
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
+  test::PrerenderHostObserver host_observer(*prerender_web_contents, host_id);
   host_observer.WaitForDestroyed();
-  EXPECT_EQ(helper->GetHostForUrl(prerendering_url),
+  EXPECT_EQ(helper->GetHostForUrl(*prerender_web_contents, prerendering_url),
             RenderFrameHost::kNoFrameTreeNodeId);
 }
 
@@ -5013,15 +5017,16 @@ void LoadAndWaitForPrerenderDestroyed(WebContents* const web_contents,
 // `ContentRendererClient::OverrideCreatePlugin()` (such as for Chrome's PDF
 // viewer), as cancellation depends on the renderer attempting to bind
 // `content::mojom::PepperHost`.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
+IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
+                       PluginsCancelPrerendering) {
   const GURL kInitialUrl = GetUrl("/empty.html");
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   LoadAndWaitForPrerenderDestroyed(
-      web_contents(), GetUrl("/prerender/page-with-embedded-plugin.html"),
-      prerender_helper());
+      prerender_helper(), GetUrl("/prerender/page-with-embedded-plugin.html"),
+      GetTargetHint());
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kMojoBinderPolicy);
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
@@ -5032,8 +5037,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
       InterfaceNameHasher(mojom::PepperHost::Name_), 1);
 
   LoadAndWaitForPrerenderDestroyed(
-      web_contents(), GetUrl("/prerender/page-with-object-plugin.html"),
-      prerender_helper());
+      prerender_helper(), GetUrl("/prerender/page-with-object-plugin.html"),
+      GetTargetHint());
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderFinalStatus::kMojoBinderPolicy, 2);
@@ -5085,7 +5090,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NotificationConstructorAndroid) {
 
 // TODO(crbug.com/1215073): Make a WPT when we have a stable way to wait
 // cancellation runs.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DownloadByScript) {
+IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest, DownloadByScript) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerendering");
 
@@ -5093,10 +5098,17 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DownloadByScript) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Make a prerendered page.
-  int host_id = AddPrerender(kPrerenderingUrl);
-  auto* prerender_host = GetPrerenderedMainFrameHost(host_id);
-  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  PrerenderHostCreationWaiter host_creation_waiter;
+  prerender_helper()->AddPrerendersAsync(
+      {kPrerenderingUrl}, /*eagerness=*/std::nullopt, GetTargetHint());
+  int host_id = host_creation_waiter.Wait();
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
+  test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *prerender_web_contents, kPrerenderingUrl);
 
+  test::PrerenderHostObserver host_observer(*prerender_web_contents, host_id);
+  auto* prerender_host = test::PrerenderTestHelper::GetPrerenderedMainFrameHost(
+      *prerender_web_contents, host_id);
   const std::string js_string = R"(
       document.body.innerHTML =
           "<a id='target' download='download-link' href='cache.txt'>here</a>";
@@ -5105,13 +5117,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DownloadByScript) {
   ExecuteScriptAsync(prerender_host, js_string);
 
   host_observer.WaitForDestroyed();
-  EXPECT_EQ(prerender_helper()->GetHostForUrl(kPrerenderingUrl),
+  EXPECT_EQ(test::PrerenderTestHelper::GetHostForUrl(*prerender_web_contents,
+                                                     kPrerenderingUrl),
             RenderFrameHost::kNoFrameTreeNodeId);
 
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kDownload);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DownloadInMainFrame) {
+IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
+                       DownloadInMainFrame) {
   const GURL kInitialUrl = GetUrl("/empty.html");
 
   // Navigate to an initial page.
@@ -5121,13 +5135,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DownloadInMainFrame) {
   const GURL kDownloadUrl =
       GetUrl("/set-header?Content-Disposition: attachment");
 
-  LoadAndWaitForPrerenderDestroyed(web_contents(), kDownloadUrl,
-                                   prerender_helper());
+  LoadAndWaitForPrerenderDestroyed(prerender_helper(), kDownloadUrl,
+                                   GetTargetHint());
 
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kDownload);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DownloadInSubframe) {
+IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest, DownloadInSubframe) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerendering");
 
@@ -5135,8 +5149,17 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DownloadInSubframe) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Make a prerendered page.
-  int host_id = AddPrerender(kPrerenderingUrl);
-  auto* prerender_host = GetPrerenderedMainFrameHost(host_id);
+  PrerenderHostCreationWaiter host_creation_waiter;
+  prerender_helper()->AddPrerendersAsync(
+      {kPrerenderingUrl}, /*eagerness=*/std::nullopt, GetTargetHint());
+  int host_id = host_creation_waiter.Wait();
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
+  test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *prerender_web_contents, kPrerenderingUrl);
+
+  test::PrerenderHostObserver host_observer(*prerender_web_contents, host_id);
+  auto* prerender_host = test::PrerenderTestHelper::GetPrerenderedMainFrameHost(
+      *prerender_web_contents, host_id);
   EXPECT_TRUE(AddTestUtilJS(prerender_host));
 
   // TODO(crbug.com/1215073): Make a WPT for the content-disposition WPT test.
@@ -5145,9 +5168,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DownloadInSubframe) {
   ExecuteScriptAsync(prerender_host,
                      JsReplace("add_iframe_async($1)", kDownloadUrl));
 
-  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
   host_observer.WaitForDestroyed();
-  EXPECT_EQ(GetHostForUrl(kPrerenderingUrl),
+  EXPECT_EQ(test::PrerenderTestHelper::GetHostForUrl(*prerender_web_contents,
+                                                     kPrerenderingUrl),
             RenderFrameHost::kNoFrameTreeNodeId);
 
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kDownload);
