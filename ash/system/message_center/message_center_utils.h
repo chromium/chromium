@@ -97,6 +97,16 @@ void SlideOutView(views::View* view,
 ResizeImageIfExceedSizeLimit(const gfx::ImageSkia& input_image,
                              size_t size_limit_in_byte);
 
+// Check if the view can be casted to `AshNotificationView`.
+// TODO(b/308814203): remove this function after cleaning the static_cast
+// checks for casting `AshNotificationView*`.
+bool IsAshNotificationView(views::View* sender);
+
+// Check if the notification is Ash notification.
+// TODO(b/308814203): remove this function after cleaning the static_cast
+// checks for casting `AshNotificationView*`.
+bool IsAshNotification(const message_center::Notification* notification);
+
 }  // namespace ash::message_center_utils
 
 #endif  // ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_UTILS_H_

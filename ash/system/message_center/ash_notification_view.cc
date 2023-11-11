@@ -1034,9 +1034,9 @@ void AshNotificationView::PopulateGroupNotifications(
         MessageViewFactory::Create(*notification, /*shown_in_popup=*/false);
     // The child can either be an AshNotificationView or an ARC custom
     // notification view.
-    if (notification->type() != message_center::NOTIFICATION_TYPE_CUSTOM ||
-        notification->notifier_id().type !=
-            message_center::NotifierType::ARC_APPLICATION) {
+    // TODO(b/308814203): clean the static_cast checks by replacing
+    // `AshNotificationView*` with a base class.
+    if (message_center_utils::IsAshNotification(notification)) {
       auto* ash_notification_view =
           static_cast<AshNotificationView*>(notification_view.get());
       ash_notification_view->SetGroupedChildExpanded(IsExpanded());
@@ -1229,16 +1229,9 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
 
     int notification_count = 0;
     for (auto* child : grouped_notifications_container_->children()) {
-      auto* message_view = static_cast<message_center::MessageView*>(child);
-      std::string notification_id = message_view->notification_id();
-
-      message_center::Notification* notification =
-          message_center::MessageCenter::Get()->FindVisibleNotificationById(
-              notification_id);
-
-      if (notification->type() != message_center::NOTIFICATION_TYPE_CUSTOM ||
-          notification->notifier_id().type !=
-              message_center::NotifierType::ARC_APPLICATION) {
+      // TODO(b/308814203): clean the static_cast checks by replacing
+      // `AshNotificationView*` with a base class.
+      if (message_center_utils::IsAshNotificationView(child)) {
         auto* notification_view = static_cast<AshNotificationView*>(child);
         notification_view->AnimateGroupedChildExpandedCollapse(expanded);
         notification_view->SetGroupedChildExpanded(expanded);
