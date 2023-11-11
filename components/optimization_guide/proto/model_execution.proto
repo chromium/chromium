@@ -80,15 +80,13 @@ message OnDeviceModelExecutionInputConfig {
 }
 
 message SubstitutedString {
+  reserved 2, 3;
+
   // String template with %s as the delimiter for substitutions.
   optional string string_template = 1;
 
-  // The number of args that are expected to be substituted in the string
-  // template.
-  optional int32 expected_num_args = 2;
-
-  // The arguments to be substituted in `string_template`.
-  repeated StringArg args = 3;
+  // The strings to be substituted in `string_template`.
+  repeated StringSubstitution substitutions = 6;
 
   // The conditions for which to apply this substituted string.
   optional ConditionList conditions = 4;
@@ -96,6 +94,14 @@ message SubstitutedString {
   // Whether the input context should be ignored if this substituted string is
   // applied.
   optional bool should_ignore_input_context = 5;
+}
+
+message StringSubstitution {
+  // The candidates to use for this string substitution.
+  //
+  // The first candidate that passes all conditions will be the one that is used
+  // for the substitution.
+  repeated StringArg candidates = 1;
 }
 
 message StringArg {

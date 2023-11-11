@@ -188,25 +188,26 @@ OnDeviceModelExecutionConfigInterpreter::ConstructInputString(
       should_ignore_input_context = true;
     }
 
-    std::vector<std::string> args;
-    for (const auto& arg : substitution.args()) {
-      if (!DoConditionsApply(request, arg.conditions())) {
-        continue;
-      }
-
-      if (arg.has_raw_string()) {
-        args.push_back(arg.raw_string());
-      } else if (arg.has_proto_field()) {
-        std::optional<proto::Value> value =
-            GetProtoValue(request, arg.proto_field());
-        if (!value) {
-          return std::nullopt;
+    std::vector<std::string> args(substitution.substitutions_size());
+    for (int32_t i = 0; i < substitution.substitutions_size(); ++i) {
+      const auto& arg = substitution.substitutions(i);
+      for (const auto& candidate : arg.candidates()) {
+        if (!DoConditionsApply(request, candidate.conditions())) {
+          continue;
         }
-        args.push_back(GetStringFromValue(*value));
+
+        if (candidate.has_raw_string()) {
+          args[i] = candidate.raw_string();
+        } else if (candidate.has_proto_field()) {
+          std::optional<proto::Value> value =
+              GetProtoValue(request, candidate.proto_field());
+          if (!value) {
+            return std::nullopt;
+          }
+          args[i] = GetStringFromValue(*value);
+        }
+        break;
       }
-    }
-    if (static_cast<size_t>(substitution.expected_num_args()) != args.size()) {
-      return std::nullopt;
     }
 
     substitutions.push_back(

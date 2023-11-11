@@ -188,29 +188,6 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
-       ConstructInputStringFeatureConfigExistsUnexpectedArgsEvaluated) {
-  proto::OnDeviceModelExecutionConfig config;
-  auto* fc = config.add_feature_configs();
-  fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
-  auto* input_config = fc->mutable_input_config();
-  input_config->set_request_base_name("base.test.TestMessage");
-  auto* substitution = input_config->add_execute_substitutions();
-  substitution->set_string_template("hello this is a %s");
-  substitution->set_expected_num_args(1);
-  substitution->add_args()->set_raw_string("test");
-  substitution->add_args()->set_raw_string("test2");
-  UpdateInterpreterWithConfig(config);
-
-  base::test::TestMessage test;
-  test.set_test("some test");
-  auto result = interpreter()->ConstructInputString(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test,
-      /*want_input_context=*/false);
-
-  EXPECT_FALSE(result);
-}
-
-TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
        ConstructInputStringSimpleRawStringInputContext) {
   proto::OnDeviceModelExecutionConfig config;
   auto* fc = config.add_feature_configs();
@@ -219,8 +196,7 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
   input_config->set_request_base_name("base.test.TestMessage");
   auto* substitution = input_config->add_input_context_substitutions();
   substitution->set_string_template("hello this is a %s");
-  substitution->set_expected_num_args(1);
-  substitution->add_args()->set_raw_string("test");
+  substitution->add_substitutions()->add_candidates()->set_raw_string("test");
   auto* execute_substitution = input_config->add_execute_substitutions();
   execute_substitution->set_string_template("this should be ignored");
   UpdateInterpreterWithConfig(config);
@@ -244,8 +220,7 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
   input_config->set_request_base_name("base.test.TestMessage");
   auto* substitution = input_config->add_execute_substitutions();
   substitution->set_string_template("hello this is a %s");
-  substitution->set_expected_num_args(1);
-  substitution->add_args()->set_raw_string("test");
+  substitution->add_substitutions()->add_candidates()->set_raw_string("test");
   UpdateInterpreterWithConfig(config);
 
   base::test::TestMessage test;
@@ -271,14 +246,19 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
   input_substitutions->set_string_template("this is ignored");
   auto* substitution = input_config->add_execute_substitutions();
   substitution->set_string_template("hello this is a test: %s %s %s");
-  substitution->set_expected_num_args(3);
   substitution->set_should_ignore_input_context(true);
-  auto* proto_field = substitution->add_args()->mutable_proto_field();
+  auto* proto_field = substitution->add_substitutions()
+                          ->add_candidates()
+                          ->mutable_proto_field();
   proto_field->add_proto_descriptors()->set_tag_number(2);
-  auto* proto_field2 = substitution->add_args()->mutable_proto_field();
+  auto* proto_field2 = substitution->add_substitutions()
+                           ->add_candidates()
+                           ->mutable_proto_field();
   proto_field2->add_proto_descriptors()->set_tag_number(3);
   proto_field2->add_proto_descriptors()->set_tag_number(2);
-  auto* proto_field3 = substitution->add_args()->mutable_proto_field();
+  auto* proto_field3 = substitution->add_substitutions()
+                           ->add_candidates()
+                           ->mutable_proto_field();
   proto_field3->add_proto_descriptors()->set_tag_number(7);
   proto_field3->add_proto_descriptors()->set_tag_number(1);
   UpdateInterpreterWithConfig(config);
@@ -307,8 +287,9 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
       "optimization_guide.proto.ComposeRequest");
   auto* substitution = input_config->add_execute_substitutions();
   substitution->set_string_template("hello this is a test: %s");
-  substitution->set_expected_num_args(1);
-  auto* proto_field = substitution->add_args()->mutable_proto_field();
+  auto* proto_field = substitution->add_substitutions()
+                          ->add_candidates()
+                          ->mutable_proto_field();
   proto_field->add_proto_descriptors()->set_tag_number(10000);
   UpdateInterpreterWithConfig(config);
 
@@ -330,14 +311,15 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
   auto* input_config = fc->mutable_input_config();
   input_config->set_request_base_name(
       "optimization_guide.proto.ComposeRequest");
-  auto* substitution = input_config->add_execute_substitutions();
-  substitution->set_string_template("hello this is a test: %s %s");
-  substitution->set_expected_num_args(2);
-  substitution->add_args()
+  auto* execute_substitution = input_config->add_execute_substitutions();
+  execute_substitution->set_string_template("hello this is a test: %s %s");
+  execute_substitution->add_substitutions()
+      ->add_candidates()
       ->mutable_proto_field()
       ->add_proto_descriptors()
       ->set_tag_number(2);
-  auto* arg1 = substitution->add_args();
+  auto* substitution2 = execute_substitution->add_substitutions();
+  auto* arg1 = substitution2->add_candidates();
   auto* proto_field1 = arg1->mutable_proto_field();
   proto_field1->add_proto_descriptors()->set_tag_number(3);
   proto_field1->add_proto_descriptors()->set_tag_number(1);
@@ -353,7 +335,7 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
   arg1_c2->mutable_proto_field()->add_proto_descriptors()->set_tag_number(4);
   arg1_c2->set_operator_type(proto::OPERATOR_TYPE_EQUAL_TO);
   arg1_c1->mutable_value()->set_int32_value(2);
-  auto* arg2 = substitution->add_args();
+  auto* arg2 = substitution2->add_candidates();
   auto* proto_field2 = arg2->mutable_proto_field();
   proto_field2->add_proto_descriptors()->set_tag_number(3);
   proto_field2->add_proto_descriptors()->set_tag_number(2);
@@ -370,14 +352,14 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
   arg2_c2->set_operator_type(proto::OPERATOR_TYPE_EQUAL_TO);
   arg2_c1->mutable_value()->set_int32_value(2);
 
-  auto* substitution2 = input_config->add_execute_substitutions();
-  substitution2->set_string_template("should be ignored: %s");
-  substitution2->set_expected_num_args(1);
-  substitution2->add_args()->set_raw_string("also ignored");
-  auto* conditions = substitution2->mutable_conditions();
-  conditions->set_condition_evaluation_type(
+  auto* execute_substitution2 = input_config->add_execute_substitutions();
+  execute_substitution2->set_string_template("should be ignored: %s");
+  execute_substitution2->add_substitutions()->add_candidates()->set_raw_string(
+      "also ignored");
+  auto* es2_conditions = execute_substitution2->mutable_conditions();
+  es2_conditions->set_condition_evaluation_type(
       proto::CONDITION_EVALUATION_TYPE_AND);
-  auto* c1 = conditions->add_conditions();
+  auto* c1 = es2_conditions->add_conditions();
   auto* c1_proto_field = c1->mutable_proto_field();
   c1_proto_field->add_proto_descriptors()->set_tag_number(4);
   c1->set_operator_type(proto::OPERATOR_TYPE_NOT_EQUAL_TO);
