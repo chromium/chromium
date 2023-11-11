@@ -24,7 +24,8 @@ class FatalCrashEventsObserver::SaveFilePathsProviderInterface {
   // instead of `unique_ptr` or `raw_ptr` here, because we must avoid
   // destructing it at exit time. `unique_ptr` would trigger the error of
   // "declaration requires an exit-time destructor".
-  static const SaveFilePathsProviderInterface* g_default_save_file_paths_;
+  static const SaveFilePathsProviderInterface*
+      g_default_save_file_paths_provider_;
 };
 
 class FatalCrashEventsObserver::DefaultSaveFilePathsProvider final

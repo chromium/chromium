@@ -16,15 +16,15 @@ FatalCrashEventsObserver::DefaultSaveFilePathsProvider::
 // static
 const FatalCrashEventsObserver::SaveFilePathsProviderInterface*
     FatalCrashEventsObserver::SaveFilePathsProviderInterface::
-        g_default_save_file_paths_{nullptr};
+        g_default_save_file_paths_provider_{nullptr};
 
 // static
 const FatalCrashEventsObserver::SaveFilePathsProviderInterface&
 FatalCrashEventsObserver::DefaultSaveFilePathsProvider::Get() {
-  if (!g_default_save_file_paths_) {
-    g_default_save_file_paths_ = new DefaultSaveFilePathsProvider();
+  if (!g_default_save_file_paths_provider_) {
+    g_default_save_file_paths_provider_ = new DefaultSaveFilePathsProvider();
   }
-  return *g_default_save_file_paths_;
+  return *g_default_save_file_paths_provider_;
 }
 
 base::FilePath FatalCrashEventsObserver::DefaultSaveFilePathsProvider::

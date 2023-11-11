@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
@@ -53,24 +53,18 @@ bool IsRecordCrashEvent(const ::reporting::Record& record) {
 }
 
 // Browser test environment for fatal crash events.
-class BrowserTestEnvironment final
+class [[maybe_unused]] BrowserTestEnvironment final
     : public FatalCrashEventsObserver::TestEnvironment::SaveFilePathsProvider {
  public:
-  BrowserTestEnvironment()
-      : original_default_save_file_paths_{g_default_save_file_paths_} {
-    g_default_save_file_paths_ = this;
-  }
-  ~BrowserTestEnvironment() override {
-    g_default_save_file_paths_ = original_default_save_file_paths_;
-  }
+  BrowserTestEnvironment() = default;
+  ~BrowserTestEnvironment() override = default;
   BrowserTestEnvironment(const BrowserTestEnvironment&) = delete;
   BrowserTestEnvironment& operator=(const BrowserTestEnvironment&) = delete;
 
  private:
-  // The original `SaveFilePathsProviderInterface` instance before
-  // entering the browser test environment.
-  const raw_ptr<const SaveFilePathsProviderInterface>
-      original_default_save_file_paths_;
+  // Reset g_default_save_file_paths_provider_ during the test.
+  base::AutoReset<decltype(g_default_save_file_paths_provider_)> auto_reset_{
+      &g_default_save_file_paths_provider_, this};
 };
 
 class FatalCrashEventsBrowserTest
