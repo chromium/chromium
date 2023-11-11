@@ -26,6 +26,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/pickle.h"
+#include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
@@ -50,6 +51,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1238,7 +1240,9 @@ class SimpleTestClientImpl : public IPC::mojom::SimpleTestClient,
   void set_driver(IPC::mojom::SimpleTestDriver* driver) { driver_ = driver; }
   void set_sync_sender(IPC::Sender* sync_sender) { sync_sender_ = sync_sender; }
 
-  void WaitForValueRequest() {
+  void WaitForValueRequest() { Run(); }
+
+  void Run() {
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
@@ -1265,6 +1269,32 @@ class SimpleTestClientImpl : public IPC::mojom::SimpleTestClient,
 
     DCHECK(run_loop_);
     run_loop_->Quit();
+  }
+
+  // No implementation needed. Only called on an endpoint which never binds its
+  // receiver.
+  void BindSync(
+      mojo::PendingAssociatedReceiver<IPC::mojom::SimpleTestClient> receiver,
+      BindSyncCallback callback) override {
+    NOTREACHED();
+  }
+
+  void GetReceiverWithQueuedSyncMessage(
+      GetReceiverWithQueuedSyncMessageCallback callback) override {
+    // Immediately send back a sync IPC over the new pipe and expect the call to
+    // be interrupted without a reply. Note that we also reply *before* issuing
+    // the sync call to allow the main test process to make progress.
+    mojo::AssociatedRemote<IPC::mojom::SimpleTestClient> remote;
+    mojo::PendingAssociatedReceiver<IPC::mojom::SimpleTestClient>
+        queued_receiver;
+    {
+      // The nested receiver we send will already know its peer is closed when
+      // it arrives.
+      mojo::AssociatedRemote<IPC::mojom::SimpleTestClient> unused;
+      queued_receiver = unused.BindNewEndpointAndPassReceiver();
+    }
+    std::move(callback).Run(remote.BindNewEndpointAndPassReceiver());
+    EXPECT_FALSE(remote->BindSync(std::move(queued_receiver)));
   }
 
   // IPC::Listener:
@@ -1334,6 +1364,94 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(SyncAssociatedInterface,
   client_impl.UseSyncSenderForRequest(false);
   client_impl.WaitForValueRequest();
 
+  DestroyProxy();
+}
+
+// TODO(https://crbug.com/1500560): Disabled for flaky behavior of forced
+// process termination. Will be re-enabled with a fix.
+TEST_F(IPCChannelProxyMojoTest, DISABLED_SyncAssociatedInterfacePipeError) {
+  // Regression test for https://crbug.com/1494461.
+
+  Init("SyncAssociatedInterfacePipeError");
+
+  ListenerWithSyncAssociatedInterface listener;
+  CreateProxy(&listener);
+  listener.set_sync_sender(proxy());
+  RunProxy();
+
+  mojo::AssociatedRemote<IPC::mojom::SimpleTestClient> client;
+  proxy()->GetRemoteAssociatedInterface(
+      client.BindNewEndpointAndPassReceiver());
+
+  mojo::AssociatedRemote<IPC::mojom::Terminator> terminator;
+  proxy()->GetRemoteAssociatedInterface(
+      terminator.BindNewEndpointAndPassReceiver());
+
+  // The setup here is to have the client process add a new associated endpoint
+  // with a sync message queued on it, towards us. As soon as we receive the
+  // endpoint we close it, but its state (including its inbound sync message
+  // queue) isn't actually destroyed until the peer is closed too.
+  //
+  // Note that the client creates the endpoint rather than us, because client
+  // endpoints are assigned lower interface IDs and will thus elicit the
+  // necessary endpoint ordering to trigger https://crbug.com/1494461 below.
+  {
+    base::RunLoop loop;
+    client->GetReceiverWithQueuedSyncMessage(base::BindLambdaForTesting(
+        [&loop](mojo::PendingAssociatedReceiver<IPC::mojom::SimpleTestClient>
+                    receiver) { loop.Quit(); }));
+    loop.Run();
+  }
+
+  // If https://crbug.com/1494461 is present, it should be hit within this call,
+  // as soon as client termination signals a local pipe error and marks the
+  // above endpoint's peer as closed.
+  EXPECT_FALSE(terminator->Terminate());
+
+#if BUILDFLAG(IS_ANDROID)
+  // NOTE: On Android, the client's forced termination will look like an error,
+  // but it is not.
+  WaitForClientShutdown();
+#else
+  EXPECT_TRUE(WaitForClientShutdown());
+#endif
+
+  DestroyProxy();
+}
+
+class TerminatorImpl : public IPC::mojom::Terminator {
+ public:
+  TerminatorImpl() = default;
+  ~TerminatorImpl() override = default;
+
+  static void Create(
+      mojo::PendingAssociatedReceiver<IPC::mojom::Terminator> receiver) {
+    mojo::MakeSelfOwnedAssociatedReceiver(std::make_unique<TerminatorImpl>(),
+                                          std::move(receiver));
+  }
+
+  // IPC::mojom::Terminator:
+  void Terminate(TerminateCallback callback) override {
+    base::Process::TerminateCurrentProcessImmediately(0);
+  }
+};
+
+DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(
+    SyncAssociatedInterfacePipeError,
+    ChannelProxyClient) {
+  SimpleTestClientImpl client_impl;
+  CreateProxy(&client_impl);
+
+  // Let the IO thread receive a message to self-terminate this process. This
+  // is used to forcibly shut down the client on the test's request. Without
+  // doing this (and doing a clean shutdown instead) the client will clean up
+  // interfaces and make it impossible to trigger the regression path for
+  // https://crbug.com/1494461.
+  proxy()->AddAssociatedInterfaceForIOThread(
+      base::BindRepeating(&TerminatorImpl::Create));
+
+  RunProxy();
+  client_impl.Run();
   DestroyProxy();
 }
 
