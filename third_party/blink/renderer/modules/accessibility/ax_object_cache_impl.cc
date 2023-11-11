@@ -3198,10 +3198,18 @@ void AXObjectCacheImpl::ScheduleAXUpdate() const {
 AXObject* AXObjectCacheImpl::TreeUpdateObjectIfRelevant(
     Document& document,
     TreeUpdateParams* tree_update) {
+  // When the entire document is marked dirty, individual updates within
+  // the document are irrelevant. Only updates on the document, such as load
+  // start/complete, are relevant.
+  if (mark_all_dirty_) {
+    return tree_update->node == document_ ? Root() : nullptr;
+  }
+
   if (Node* node = tree_update->node) {
     if (node->GetDocument() != document || !node->isConnected()) {
       return nullptr;
     }
+
     AXObject* ax_object = GetOrCreate(node);
     if (!ax_object || ax_object->IsDetached()) {
       return nullptr;
@@ -3234,19 +3242,8 @@ AXObject* AXObjectCacheImpl::TreeUpdateObjectIfRelevant(
     return nullptr;
   }
 
-  // TODO(accessibility) Try to get rid of repair situations by addressing
-  // partial subtrees and mid-tree object removal directly when they occur.
-  if (ax_object->IsMissingParent()) {
-    if (!ax_object->GetNode()) {
-      RemoveIncludedSubtree(ax_object, /* remove_root */ true);
-      return nullptr;
-    }
-    ax_object = RepairChildrenOfIncludedParent(ax_object->GetNode());
-    if (!ax_object) {
-      return nullptr;
-    }
-  }
-  CHECK(!ax_object->IsMissingParent());
+  CHECK(!ax_object->IsMissingParent())
+      << "Missing parent on: " << ax_object->ToString(true, true);
 
   // Update cached attributes for all changed nodes before serialization,
   // because updating ignored/included can cause tree structure changes, and
