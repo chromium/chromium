@@ -25,6 +25,7 @@ import {QueueMode} from '../common/tts_types.js';
 
 import {ISearchUI} from './i_search_ui.js';
 import {MenuManager} from './menu_manager.js';
+import {PanelCaptions} from './panel_captions.js';
 import {PanelInterface} from './panel_interface.js';
 import {PanelMode, PanelModeInfo} from './panel_mode.js';
 
@@ -124,7 +125,9 @@ export class Panel extends PanelInterface {
 
     await LocalStorage.init();
     await SettingsManager.init();
+
     LocaleOutputHelper.init();
+    PanelCaptions.init();
 
     Panel.instance = new Panel();
     PanelInterface.instance = Panel.instance;
@@ -395,49 +398,15 @@ export class Panel extends PanelInterface {
    * @private
    */
   onUpdateBraille_(data) {
-    const groups = data.groups;
-    const cols = data.cols;
-    const rows = data.rows;
+    const {groups, cols, rows} = data;
     const sideBySide = SettingsManager.get('brailleSideBySide');
 
-    const addBorders = event => {
-      const cell = event.target;
-      if (cell.tagName === 'TD') {
-        cell.className = 'highlighted-cell';
-        const companionIDs = cell.getAttribute('data-companionIDs');
-        companionIDs.split(' ').forEach(
-            companionID => $(companionID).className = 'highlighted-cell');
-      }
-    };
-
-    const removeBorders = event => {
-      const cell = event.target;
-      if (cell.tagName === 'TD') {
-        cell.className = 'unhighlighted-cell';
-        const companionIDs = cell.getAttribute('data-companionIDs');
-        companionIDs.split(' ').forEach(
-            companionID => $(companionID).className = 'unhighlighted-cell');
-      }
-    };
-
-    const routeCursor = event => {
-      const cell = event.target;
-      if (cell.tagName === 'TD') {
-        const displayPosition = parseInt(cell.id.split('-')[0], 10);
-        if (Number.isNaN(displayPosition)) {
-          throw new Error(
-              'The display position is calculated assuming that the cell ID ' +
-              'is formatted like int-string. For example, 0-brailleCell is a ' +
-              'valid cell ID.');
-        }
-        chrome.extension.getBackgroundPage()['ChromeVox'].braille.route(
-            displayPosition);
-      }
-    };
-
-    this.brailleContainer_.addEventListener('mouseover', addBorders);
-    this.brailleContainer_.addEventListener('mouseout', removeBorders);
-    this.brailleContainer_.addEventListener('click', routeCursor);
+    this.brailleContainer_.addEventListener(
+        'mouseover', event => PanelCaptions.braille.addBorders(event.target));
+    this.brailleContainer_.addEventListener(
+        'mouseout', event => PanelCaptions.braille.removeBorders(event.target));
+    this.brailleContainer_.addEventListener(
+        'click', event => PanelCaptions.braille.routeCursor(event.target));
 
     // Clear the tables.
     let rowCount = this.brailleTableElement_.rows.length;

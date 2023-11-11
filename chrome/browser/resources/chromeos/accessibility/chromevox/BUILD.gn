@@ -161,6 +161,7 @@ chromevox_es6_modules = [
   "panel/i_search_ui.js",
   "panel/menu_manager.js",
   "panel/panel.js",
+  "panel/panel_captions.js",
   "panel/panel_interface.js",
   "panel/panel_menu.js",
   "panel/panel_menu_item.js",
