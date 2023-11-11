@@ -153,6 +153,12 @@ BASE_FEATURE(kAutofillEnableSaveCardLoadingAndConfirmation,
              "AutofillEnableSaveCardLoadingAndConfirmation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, save card will fallback to a local save if the server upload of
+// a card encounters a failure.
+BASE_FEATURE(kAutofillEnableSaveCardLocalSaveFallback,
+             "AutofillEnableSaveCardLocalSaveFallback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Autofill will attempt to offer upload save for IBANs
 // (International Bank Account Numbers) and autofill server-based IBANs.
 BASE_FEATURE(kAutofillEnableServerIban,

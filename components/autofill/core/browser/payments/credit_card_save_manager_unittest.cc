@@ -133,6 +133,10 @@ class MockPersonalDataManager : public TestPersonalDataManager {
               AddServerCvc,
               (int64_t instrument_id, const std::u16string& cvc),
               (override));
+  MOCK_METHOD(std::string,
+              SaveImportedCreditCard,
+              (const CreditCard& card),
+              (override));
   MOCK_METHOD(void,
               UpdateLocalCvc,
               (const std::string& guid, const std::u16string& cvc),
@@ -5402,6 +5406,45 @@ TEST_F(
                   .text() == get_details_for_enrollment_response_details
                                  .issuer_legal_message[0]
                                  .text());
+}
+
+class CreditCardSaveManagerWithLocalSaveFallbackTest
+    : public CreditCardSaveManagerTest {
+ public:
+  CreditCardSaveManagerWithLocalSaveFallbackTest() {
+    feature_list_.InitWithFeatureState(
+        features::kAutofillEnableSaveCardLocalSaveFallback, true);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that if server card upload fails, we fallback to a local card save.
+TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
+       OnDidUploadCard_FallbackToLocalSaveOnServerUploadFailure) {
+  credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
+
+  EXPECT_CALL(personal_data(), SaveImportedCreditCard);
+
+  credit_card_save_manager_->OnDidUploadCard(
+      AutofillClient::PaymentsRpcResult::kPermanentFailure,
+      payments::PaymentsNetworkInterface::UploadCardResponseDetails());
+}
+
+// Tests that the local card save is skipped if the card is missing the
+// expiration date.
+TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
+       OnDidUploadCard_SkipLocalSaveIfMissingExpirationDate) {
+  auto card = test::GetCreditCard();
+  card.SetExpirationMonth(0);
+  credit_card_save_manager_->set_upload_request_card(card);
+
+  EXPECT_CALL(personal_data(), SaveImportedCreditCard).Times(0);
+
+  credit_card_save_manager_->OnDidUploadCard(
+      AutofillClient::PaymentsRpcResult::kPermanentFailure,
+      payments::PaymentsNetworkInterface::UploadCardResponseDetails());
 }
 
 }  // namespace autofill

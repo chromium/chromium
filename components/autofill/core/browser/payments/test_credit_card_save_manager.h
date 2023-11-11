@@ -85,6 +85,12 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
       OnDidUploadCard_VirtualCardEnrollment_GetDetailsForEnrollmentResponseDetailsReturned);
   FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
                            UploadCreditCard_NumStrikesLoggedOnUploadNotSuccess);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardSaveManagerWithLocalSaveFallbackTest,
+      OnDidUploadCard_FallbackToLocalSaveOnServerUploadFailure);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardSaveManagerWithLocalSaveFallbackTest,
+      OnDidUploadCard_SkipLocalSaveIfMissingExpirationDate);
   FRIEND_TEST_ALL_PREFIXES(SaveCvcTest, OnDidUploadCard_SaveServerCvc);
 };
 

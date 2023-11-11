@@ -484,13 +484,31 @@ void CreditCardSaveManager::OnDidUploadCard(
                           .get_details_for_enrollment_response_details));
       }
     }
-  } else if (show_save_prompt_.has_value() && show_save_prompt_.value()) {
+  } else {
+    // If the upload failed, fallback to a local card save.
+    // Do not save if card does not have the expiration month or the year
+    // because the local save bubble does not support the expiration date fix
+    // flow.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableSaveCardLocalSaveFallback) &&
+        !upload_request_.card
+             .GetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), app_locale_)
+             .empty() &&
+        !upload_request_.card
+             .GetInfo(AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale_)
+             .empty()) {
+      personal_data_manager_->OnAcceptedLocalCreditCardSave(
+          upload_request_.card);
+    }
+
     // If the upload failed and the bubble was actually shown (NOT just the
     // icon), count that as a strike against offering upload in the future.
-    int nth_strike_added = GetCreditCardSaveStrikeDatabase()->AddStrike(
-        base::UTF16ToUTF8(upload_request_.card.LastFourDigits()));
-    // Notify the browsertests that a strike was added.
-    OnStrikeChangeComplete(nth_strike_added);
+    if (show_save_prompt_.has_value() && show_save_prompt_.value()) {
+      int nth_strike_added = GetCreditCardSaveStrikeDatabase()->AddStrike(
+          base::UTF16ToUTF8(upload_request_.card.LastFourDigits()));
+      // Notify the browsertests that a strike was added.
+      OnStrikeChangeComplete(nth_strike_added);
+    }
   }
 
   // Show credit card upload feedback.
