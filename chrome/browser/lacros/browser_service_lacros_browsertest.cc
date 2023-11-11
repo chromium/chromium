@@ -131,7 +131,7 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
     browser_service()->NewWindow(
         incognito, should_trigger_session_restore,
         display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
-        new_window_future.GetCallback());
+        /*profile_id=*/absl::nullopt, new_window_future.GetCallback());
     ASSERT_TRUE(new_window_future.Wait())
         << "NewWindow did not trigger the callback.";
     EXPECT_EQ(new_window_future.Get(), expected_result);
@@ -147,7 +147,8 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
 
   void LaunchSync() {
     base::test::TestFuture<CreationResult> launch_future;
-    browser_service()->Launch(0, launch_future.GetCallback());
+    browser_service()->Launch(0, /*profile_id=*/absl::nullopt,
+                              launch_future.GetCallback());
     ASSERT_TRUE(launch_future.Wait()) << "Launch did not trigger the callback.";
     EXPECT_EQ(launch_future.Get(), CreationResult::kSuccess);
   }
@@ -541,6 +542,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   browser_service()->NewWindow(
       /*incognito=*/false, /*should_trigger_session_restore=*/false,
       display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
+      /*profile_id=*/absl::nullopt,
       /*callback=*/new_window_future.GetCallback());
   profiles::testing::CompleteLacrosFirstRun(LoginUIService::ABORT_SYNC);
 
@@ -572,6 +574,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   browser_service()->NewWindow(
       /*incognito=*/false, /*should_trigger_session_restore=*/false,
       display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
+      /*profile_id=*/absl::nullopt,
       /*callback=*/new_window_future.GetCallback());
   profiles::testing::CompleteLacrosFirstRun(LoginUIService::UI_CLOSED);
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crosapi/browser_action.h"
+#include <cstdint>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
@@ -39,11 +40,13 @@ class NewWindowAction final : public BrowserAction {
  public:
   NewWindowAction(bool incognito,
                   bool should_trigger_session_restore,
-                  int64_t target_display_id)
+                  int64_t target_display_id,
+                  absl::optional<uint64_t> profile_id = absl::nullopt)
       : BrowserAction(true),
         incognito_(incognito),
         should_trigger_session_restore_(should_trigger_session_restore),
         target_display_id_(target_display_id),
+        profile_id_(profile_id),
         weak_ptr_factory_(this) {}
 
   void Perform(const VersionedBrowserService& service,
@@ -54,7 +57,7 @@ class NewWindowAction final : public BrowserAction {
         return;
     }
     service.service->NewWindow(incognito_, should_trigger_session_restore_,
-                               target_display_id_,
+                               target_display_id_, profile_id_,
                                base::BindOnce(&NewWindowAction::OnPerformed,
                                               weak_ptr_factory_.GetWeakPtr(),
                                               std::move(on_performed)));
@@ -64,6 +67,7 @@ class NewWindowAction final : public BrowserAction {
   const bool incognito_;
   const bool should_trigger_session_restore_;
   const int64_t target_display_id_;
+  const absl::optional<uint64_t> profile_id_;
   base::WeakPtrFactory<NewWindowAction> weak_ptr_factory_;
 };
 
@@ -132,9 +136,11 @@ class NewTabAction final : public BrowserAction {
 
 class LaunchAction final : public BrowserAction {
  public:
-  explicit LaunchAction(int64_t target_display_id)
+  explicit LaunchAction(int64_t target_display_id,
+                        absl::optional<uint64_t> profile_id = absl::nullopt)
       : BrowserAction(true),
         target_display_id_(target_display_id),
+        profile_id_(profile_id),
         weak_ptr_factory_(this) {}
 
   void Perform(const VersionedBrowserService& service,
@@ -147,7 +153,7 @@ class LaunchAction final : public BrowserAction {
                                              std::move(on_performed)));
       return;
     }
-    service.service->Launch(target_display_id_,
+    service.service->Launch(target_display_id_, profile_id_,
                             base::BindOnce(&LaunchAction::OnPerformed,
                                            weak_ptr_factory_.GetWeakPtr(),
                                            std::move(on_performed)));
@@ -155,6 +161,7 @@ class LaunchAction final : public BrowserAction {
 
  private:
   int64_t target_display_id_;
+  absl::optional<uint64_t> profile_id_;
   base::WeakPtrFactory<LaunchAction> weak_ptr_factory_;
 };
 

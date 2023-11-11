@@ -62,6 +62,7 @@ class MockBrowserService : public mojom::BrowserServiceInterceptorForTesting {
               (bool incognito,
                bool should_trigger_session_restore,
                int64_t target_display_id,
+               absl::optional<uint64_t> profile_id,
                NewWindowCallback callback),
               (override));
   MOCK_METHOD(void, OpenForFullRestore, (bool skip_crash_restore), (override));
@@ -193,7 +194,7 @@ class BrowserManagerTest : public testing::Test {
     crosapi::browser_util::SetLacrosLaunchSwitchSourceForTest(
         ash::standalone_browser::LacrosAvailability::kUserChoice);
 
-    EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _, _)).Times(0);
+    EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _, _, _)).Times(0);
     EXPECT_CALL(mock_browser_service_, OpenForFullRestore(_)).Times(0);
   }
 
@@ -411,7 +412,7 @@ TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
 
   EXPECT_EQ(fake_browser_manager_->start_count(), 0);
   EXPECT_CALL(*browser_loader_, Load(_));
-  EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _, _))
+  EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _, _, _))
       .Times(1)
       .RetiresOnSaturation();
   fake_browser_manager_->NewWindow(/*incognito=*/false,
@@ -495,7 +496,7 @@ TEST_F(BrowserManagerTest, DoNotOpenNewLacrosWindowInChromeAppKiosk) {
 
   fake_browser_manager_->InitializeAndStartIfNeeded();
 
-  EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _, _)).Times(0);
+  EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _, _, _)).Times(0);
 
   fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
 }
@@ -506,7 +507,7 @@ TEST_F(BrowserManagerTest, DoNotOpenNewLacrosWindowInWebKiosk) {
 
   fake_browser_manager_->InitializeAndStartIfNeeded();
 
-  EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _, _)).Times(0);
+  EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _, _, _)).Times(0);
 
   fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
 }
