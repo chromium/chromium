@@ -20,6 +20,7 @@
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data_util.h"
@@ -559,4 +560,29 @@ TEST_F(TemplateURLPrepopulateDataTest, FindGoogleIndex) {
   EXPECT_GT(index, size_t{0});
   EXPECT_LT(index, urls.size());
   EXPECT_EQ(urls[index]->prepopulate_id, kGoogleId);
+}
+
+// Regression test for https://crbug.com/1500526.
+TEST_F(TemplateURLPrepopulateDataTest, GetPrepopulatedEngineFromFullList) {
+  // Ensure that we use the default set of search engines, which is google,
+  // bing, yahoo.
+  prefs_.SetInteger(country_codes::kCountryIDAtInstall,
+                    country_codes::kCountryIDUnknown);
+  ASSERT_EQ(TemplateURLPrepopulateData::GetPrepopulatedEngines(&prefs_, nullptr)
+                .size(),
+            3u);
+
+  // `GetPrepopulatedEngine()` only looks in the profile country's prepopulated
+  // list.
+  EXPECT_FALSE(TemplateURLPrepopulateData::GetPrepopulatedEngine(
+      &prefs_, TemplateURLPrepopulateData::ecosia.id));
+
+  // Here we look in the full list.
+  auto found_engine =
+      TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
+          &prefs_, TemplateURLPrepopulateData::ecosia.id);
+  EXPECT_TRUE(found_engine);
+  auto expected_engine =
+      TemplateURLDataFromPrepopulatedEngine(TemplateURLPrepopulateData::ecosia);
+  ExpectSimilar(expected_engine.get(), found_engine.get());
 }

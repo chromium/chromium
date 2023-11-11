@@ -1816,6 +1816,47 @@ std::vector<const PrepopulatedEngine*> GetAllPrepopulatedEngines() {
       &kAllEngines[0], &kAllEngines[0] + kAllEnginesLength);
 }
 
+std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
+    PrefService* prefs,
+    int prepopulated_id) {
+  // TODO(crbug.com/1500526): Refactor to better share code with
+  // `GetPrepopulatedEngine()`.
+
+  // If there is a set of search engines in the preferences file, we look for
+  // the ID there first.
+  for (std::unique_ptr<TemplateURLData>& data :
+       GetOverriddenTemplateURLData(prefs)) {
+    if (data->prepopulate_id == prepopulated_id) {
+      return std::move(data);
+    }
+  }
+
+  // We look in the profile country's prepopulated set first. This is intended
+  // to help using the right entry for the case where we have multiple ones in
+  // the full list that share a same prepopulated id.
+  const int country = search_engines::GetSearchEngineChoiceCountryId(prefs);
+  for (const EngineAndTier& engine_and_tier :
+       GetPrepopulationSetFromCountryID(country)) {
+    if (engine_and_tier.search_engine->id == prepopulated_id) {
+      return TemplateURLDataFromPrepopulatedEngine(
+          *engine_and_tier.search_engine);
+    }
+  }
+
+  // Fallback: just grab the first matching entry from the complete list. In
+  // case of IDs shared across multiple entries, we might be returning the
+  // wrong one for the profile country. We can look into better heuristics in
+  // future work.
+  for (size_t i = 0; i < kAllEnginesLength; ++i) {
+    const PrepopulatedEngine* engine = kAllEngines[i];
+    if (engine->id == prepopulated_id) {
+      return TemplateURLDataFromPrepopulatedEngine(*engine);
+    }
+  }
+
+  return nullptr;
+}
+
 void ClearPrepopulatedEnginesInPrefs(PrefService* prefs) {
   if (!prefs)
     return;
