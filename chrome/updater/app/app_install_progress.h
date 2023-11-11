@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_WIN_INSTALL_PROGRESS_OBSERVER_H_
-#define CHROME_UPDATER_WIN_INSTALL_PROGRESS_OBSERVER_H_
+#ifndef CHROME_UPDATER_APP_APP_INSTALL_PROGRESS_H_
+#define CHROME_UPDATER_APP_APP_INSTALL_PROGRESS_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
 #include "base/notreached.h"
+#include "url/gurl.h"
 
 namespace base {
 class Time;
+class Version;
 }  // namespace base
 
 // The data structures defined in this file are similar to those defined
@@ -35,41 +38,21 @@ enum class CompletionCodes {
 };
 
 inline bool IsCompletionCodeSuccess(CompletionCodes completion_code) {
-  switch (completion_code) {
-    case CompletionCodes::COMPLETION_CODE_SUCCESS:
-    case CompletionCodes::COMPLETION_CODE_EXIT_SILENTLY:
-    case CompletionCodes::COMPLETION_CODE_RESTART_ALL_BROWSERS:
-    case CompletionCodes::COMPLETION_CODE_REBOOT:
-    case CompletionCodes::COMPLETION_CODE_RESTART_BROWSER:
-    case CompletionCodes::COMPLETION_CODE_RESTART_ALL_BROWSERS_NOTICE_ONLY:
-    case CompletionCodes::COMPLETION_CODE_REBOOT_NOTICE_ONLY:
-    case CompletionCodes::COMPLETION_CODE_RESTART_BROWSER_NOTICE_ONLY:
-    case CompletionCodes::COMPLETION_CODE_LAUNCH_COMMAND:
-    case CompletionCodes::COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND:
-    case CompletionCodes::COMPLETION_CODE_INSTALL_FINISHED_BEFORE_CANCEL:
-      return true;
-
-    case CompletionCodes::COMPLETION_CODE_ERROR:
-      return false;
-
-    default:
-      NOTREACHED();
-      return false;
-  }
+  return completion_code != CompletionCodes::COMPLETION_CODE_ERROR;
 }
 
 struct AppCompletionInfo {
+  std::string app_id;
   std::u16string display_name;
-  std::u16string app_id;
   std::u16string completion_message;
-  CompletionCodes completion_code;
+  CompletionCodes completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS;
   int error_code = 0;
   int extra_code1 = 0;
   uint32_t installer_result_code = 0;
   bool is_canceled = false;
   bool is_noupdate = false;  // |noupdate| response from server.
-  std::wstring post_install_launch_command_line;
-  std::u16string post_install_url;
+  std::string post_install_launch_command_line;
+  GURL post_install_url;
 
   AppCompletionInfo();
   AppCompletionInfo(const AppCompletionInfo&);
@@ -79,8 +62,8 @@ struct AppCompletionInfo {
 
 struct ObserverCompletionInfo {
   CompletionCodes completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS;
-  std::wstring completion_text;
-  std::string help_url;
+  std::u16string completion_text;
+  GURL help_url;
   std::vector<AppCompletionInfo> apps_info;
 
   ObserverCompletionInfo();
@@ -91,26 +74,26 @@ struct ObserverCompletionInfo {
 
 // Defines an interface for observing install progress. This interface is
 // typically implemented by a progress window.
-class InstallProgressObserver {
+class AppInstallProgress {
  public:
-  virtual ~InstallProgressObserver() = default;
+  virtual ~AppInstallProgress() = default;
   virtual void OnCheckingForUpdate() = 0;
-  virtual void OnUpdateAvailable(const std::u16string& app_id,
+  virtual void OnUpdateAvailable(const std::string& app_id,
                                  const std::u16string& app_name,
-                                 const std::u16string& version_string) = 0;
-  virtual void OnWaitingToDownload(const std::u16string& app_id,
+                                 const base::Version& version) = 0;
+  virtual void OnWaitingToDownload(const std::string& app_id,
                                    const std::u16string& app_name) = 0;
-  virtual void OnDownloading(const std::u16string& app_id,
+  virtual void OnDownloading(const std::string& app_id,
                              const std::u16string& app_name,
                              int time_remaining_ms,
                              int pos) = 0;
-  virtual void OnWaitingRetryDownload(const std::u16string& app_id,
+  virtual void OnWaitingRetryDownload(const std::string& app_id,
                                       const std::u16string& app_name,
                                       const base::Time& next_retry_time) = 0;
-  virtual void OnWaitingToInstall(const std::u16string& app_id,
+  virtual void OnWaitingToInstall(const std::string& app_id,
                                   const std::u16string& app_name,
                                   bool* can_start_install) = 0;
-  virtual void OnInstalling(const std::u16string& app_id,
+  virtual void OnInstalling(const std::string& app_id,
                             const std::u16string& app_name,
                             int time_remaining_ms,
                             int pos) = 0;
@@ -120,4 +103,4 @@ class InstallProgressObserver {
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_WIN_INSTALL_PROGRESS_OBSERVER_H_
+#endif  // CHROME_UPDATER_APP_APP_INSTALL_PROGRESS_H_
