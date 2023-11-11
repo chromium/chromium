@@ -405,11 +405,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
     const mojom::Conv2dPtr& conv2d,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
-  if (conv2d->type == mojom::Conv2d_Type::kTransposed) {
-    return base::unexpected(
-        mojom::Error::New(mojom::Error::Code::kNotSupportedError,
-                          "Operator convTranspose2d is not supported."));
-  }
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, conv2d->input_operand_id);
   // The input tensor description may be transposed.
@@ -477,8 +472,15 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
                                            conv2d->padding->beginning->width};
   std::array<uint32_t, 2> end_padding = {conv2d->padding->ending->height,
                                          conv2d->padding->ending->width};
-  // The outputPadding parameter is used in the ConTranspose2d operator, and is
-  // only used to disambiguate output shape when needed.
+
+  // The outputSizes of WebNN convTranspose2d specifies the sizes of the last
+  // two dimensions of the output tensor but the outputPadding of DirectML
+  // convolution applies a zero padding to the result of the operator. Since
+  // graph builder will explicitly pass in the output tensor shape anyway. So,
+  // there is no ambiguity of the output shape and we set the output_padding to
+  // {0, 0}:
+  // https://www.w3.org/TR/webnn/#dom-mlconvtranspose2doptions-outputpadding
+  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_convolution_operator_desc
   std::array<uint32_t, 2> default_out_padding = {0, 0};
 
   absl::optional<ActivationOperatorDesc> activation_operator_desc;
@@ -494,6 +496,18 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
   }
 
+  DML_CONVOLUTION_DIRECTION conv2d_direction;
+  switch (conv2d->type) {
+    case mojom::Conv2d_Type::kDirect:
+      conv2d_direction =
+          DML_CONVOLUTION_DIRECTION::DML_CONVOLUTION_DIRECTION_FORWARD;
+      break;
+    case mojom::Conv2d_Type::kTransposed:
+      conv2d_direction =
+          DML_CONVOLUTION_DIRECTION::DML_CONVOLUTION_DIRECTION_BACKWARD;
+      break;
+  }
+
   DML_CONVOLUTION_OPERATOR_DESC conv2d_operator_desc{
       .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
       .FilterTensor = &filter_tensor_desc.GetDMLTensorDesc(),
@@ -502,7 +516,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
                         : nullptr,
       .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
       .Mode = DML_CONVOLUTION_MODE_CROSS_CORRELATION,
-      .Direction = DML_CONVOLUTION_DIRECTION_FORWARD,
+      .Direction = conv2d_direction,
       .DimensionCount =
           2u, /*Determines the size of the Strides, Dilations, StartPadding,
                  EndPadding, and OutputPadding arrays.*/

@@ -616,6 +616,183 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
   }
 }
 
+// Test building and computing a DML graph with single operator convTranspose2d.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConvTranspose2d) {
+  // Test convTranspose2d with default attributes.
+  {
+    Conv2dTester<float>{
+        .type = mojom::Conv2d_Type::kTransposed,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3},
+                  .values = {0, 1, 2, 3, 4, 5, 6, 7, 8}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3},
+                   .values = std::vector<float>(18, 1)},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 5, 5},
+                   .values = {0., 1.,  3.,  3.,  2.,  3., 8.,  15., 12., 7.,
+                              9., 21., 36., 27., 15., 9., 20., 33., 24., 13.,
+                              6., 13., 21., 15., 8.,  0., 1.,  3.,  3.,  2.,
+                              3., 8.,  15., 12., 7.,  9., 21., 36., 27., 15.,
+                              9., 20., 33., 24., 13., 6., 13., 21., 15., 8.}}}
+        .Test();
+  }
+  // Test convTranspose2d with NHWC input layout.
+  {
+    Conv2dTester<float>{
+        .type = mojom::Conv2d_Type::kTransposed,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 3, 3, 1},
+                  .values = {0, 1, 2, 3, 4, 5, 6, 7, 8}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3},
+                   .values = std::vector<float>(18, 1)},
+        .attributes = {.input_layout =
+                           mojom::InputOperandLayout::kChannelsLast},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 5, 5, 2},
+                   .values = {0., 0., 1.,  1.,  3.,  3.,  3.,  3.,  2.,  2.,
+                              3., 3., 8.,  8.,  15., 15., 12., 12., 7.,  7.,
+                              9., 9., 21., 21., 36., 36., 27., 27., 15., 15.,
+                              9., 9., 20., 20., 33., 33., 24., 24., 13., 13.,
+                              6., 6., 13., 13., 21., 21., 15., 15., 8.,  8.}}}
+        .Test();
+  }
+  // Test convTranspose2d with padding = {1, 1, 1, 1}.
+  {
+    Conv2dTester<float>{.type = mojom::Conv2d_Type::kTransposed,
+                        .input = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {1, 1, 2, 2},
+                                  .values = {0, 1, 2, 3}},
+                        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {1, 1, 2, 2},
+                                   .values = {0, 1, 2, 3}},
+                        .attributes = {.padding = {1, 1, 1, 1}},
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {1, 1, 1, 1},
+                                   .values = {4.}}}
+        .Test();
+  }
+  // Test convTranspose2d with groups = 2.
+  {
+    Conv2dTester<float>{
+        .type = mojom::Conv2d_Type::kTransposed,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 2, 2},
+                  .values = {2, 4, 0, 1, 2, 4, 0, 1}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 1, 2, 2},
+                   .values = {3, 1, 1, 5, 3, 1, 1, 5}},
+        .attributes = {.groups = 2},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3},
+                   .values = {6., 14., 4., 2., 17., 21., 0., 1., 5., 6., 14.,
+                              4., 2., 17., 21., 0., 1., 5.}}}
+        .Test();
+  }
+  // Test convTranspose2d with strides = {3, 2}.
+  {
+    Conv2dTester<float>{
+        .type = mojom::Conv2d_Type::kTransposed,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3},
+                  .values = {0, 1, 2, 3, 4, 5, 6, 7, 8}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3},
+                   .values = std::vector<float>(18, 1)},
+        .attributes = {.strides = {3, 2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 9, 7},
+                   .values = {0.,  0.,  1., 1.,  3.,  2., 2.,  0.,  0.,  1.,
+                              1.,  3.,  2., 2.,  0.,  0., 1.,  1.,  3.,  2.,
+                              2.,  3.,  3., 7.,  4.,  9., 5.,  5.,  3.,  3.,
+                              7.,  4.,  9., 5.,  5.,  3., 3.,  7.,  4.,  9.,
+                              5.,  5.,  6., 6.,  13., 7., 15., 8.,  8.,  6.,
+                              6.,  13., 7., 15., 8.,  8., 6.,  6.,  13., 7.,
+                              15., 8.,  8., 0.,  0.,  1., 1.,  3.,  2.,  2.,
+                              0.,  0.,  1., 1.,  3.,  2., 2.,  0.,  0.,  1.,
+                              1.,  3.,  2., 2.,  3.,  3., 7.,  4.,  9.,  5.,
+                              5.,  3.,  3., 7.,  4.,  9., 5.,  5.,  3.,  3.,
+                              7.,  4.,  9., 5.,  5.,  6., 6.,  13., 7.,  15.,
+                              8.,  8.,  6., 6.,  13., 7., 15., 8.,  8.,  6.,
+                              6.,  13., 7., 15., 8.,  8.}}}
+        .Test();
+  }
+  // Test convTranspose2d with strides = {3, 2} and specify the output size to
+  // be {10, 8}, which is equivalent to setting outputPadding = {1, 1}.
+  {
+    Conv2dTester<float>{
+        .type = mojom::Conv2d_Type::kTransposed,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3},
+                  .values = {0, 1, 2, 3, 4, 5, 6, 7, 8}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3},
+                   .values = std::vector<float>(18, 1)},
+        .attributes = {.strides = {3, 2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 10, 8},
+                   .values = {0.,  0., 1.,  1.,  3., 2.,  2.,  0., 0.,  0.,  1.,
+                              1.,  3., 2.,  2.,  0., 0.,  0.,  1., 1.,  3.,  2.,
+                              2.,  0., 3.,  3.,  7., 4.,  9.,  5., 5.,  0.,  3.,
+                              3.,  7., 4.,  9.,  5., 5.,  0.,  3., 3.,  7.,  4.,
+                              9.,  5., 5.,  0.,  6., 6.,  13., 7., 15., 8.,  8.,
+                              0.,  6., 6.,  13., 7., 15., 8.,  8., 0.,  6.,  6.,
+                              13., 7., 15., 8.,  8., 0.,  0.,  0., 0.,  0.,  0.,
+                              0.,  0., 0.,  0.,  0., 1.,  1.,  3., 2.,  2.,  0.,
+                              0.,  0., 1.,  1.,  3., 2.,  2.,  0., 0.,  0.,  1.,
+                              1.,  3., 2.,  2.,  0., 3.,  3.,  7., 4.,  9.,  5.,
+                              5.,  0., 3.,  3.,  7., 4.,  9.,  5., 5.,  0.,  3.,
+                              3.,  7., 4.,  9.,  5., 5.,  0.,  6., 6.,  13., 7.,
+                              15., 8., 8.,  0.,  6., 6.,  13., 7., 15., 8.,  8.,
+                              0.,  6., 6.,  13., 7., 15., 8.,  8., 0.,  0.,  0.,
+                              0.,  0., 0.,  0.,  0., 0.}}}
+        .Test();
+  }
+  // Test convTranspose2d fusing with bias.
+  {
+    Conv2dTester<float>{
+        .type = mojom::Conv2d_Type::kTransposed,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 2, 2},
+                  .values = {0, 1, 2, 3}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 2, 2},
+                   .values = {0, 1, 2, 3}},
+        .attributes = {.bias =
+                           OperandInfo<float>{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1},
+                               .values = {1}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = {1., 1., 2., 1., 5., 7., 5., 13., 10.}}}
+        .Test();
+  }
+  // Test convTranspose2d float 16 data type, fusing with bias and relu
+  // activation.
+  {
+    Conv2dTester<float16>{
+        .type = mojom::Conv2d_Type::kTransposed,
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 1, 2, 2},
+                  .values = Float16FromFloat32({0, 1, 2, 3})},
+        .filter = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 1, 2, 2},
+                   .values = Float16FromFloat32({0, 1, 2, 3})},
+        .attributes = {.bias =
+                           OperandInfo<float16>{
+                               .type = mojom::Operand::DataType::kFloat16,
+                               .dimensions = {1},
+                               .values = Float16FromFloat32({-5})},
+                       .activation = mojom::Activation::Tag::kRelu},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = {0., 0., 0., 0., 0., 1., 0., 7., 4.}}}
+        .Test();
+  }
+}
+
 template <typename T>
 struct ElementWiseBinaryTester {
   OperandInfo<T> lhs;
