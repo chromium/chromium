@@ -51,6 +51,12 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   void set_turn_on_do_not_disturb(bool turn_on) {
     turn_on_do_not_disturb_ = turn_on;
   }
+  const std::u16string& selected_task_title() const {
+    return selected_task_title_;
+  }
+  void set_selected_task_title(const std::u16string& selected_task_title) {
+    selected_task_title_ = selected_task_title;
+  }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -110,6 +116,10 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // This will dictate whether DND will be turned on when a Focus Mode session
   // starts. Depends on previous session data (from user prefs) or user input.
   bool turn_on_do_not_disturb_ = true;
+
+  // This is the task title which was created by the user or selected from
+  // existing tasks.
+  std::u16string selected_task_title_;
 
   base::ObserverList<Observer> observers_;
 };

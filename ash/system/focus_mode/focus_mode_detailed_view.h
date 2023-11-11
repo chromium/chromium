@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_task_view.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -60,6 +61,12 @@ class ASH_EXPORT FocusModeDetailedView
   // Updates the row with the timer and functionality to add time to the focus
   // session based on whether focus is in session.
   void UpdateTimerView(bool in_focus_session);
+
+  // Creates the row to show a textfield view to allow a user to manually input
+  // a task and a list of chip carousel, or to show a saved task item view which
+  // was created by the text from the textfield view or selecting from the list
+  // of chip carousel.
+  void CreateTaskView();
 
   // Creates the DND rounded container. This view will be visible only when
   // there is no active focus session. The toggle button in this view will

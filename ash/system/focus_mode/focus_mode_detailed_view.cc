@@ -18,6 +18,7 @@
 #include "ash/style/system_textfield_controller.h"
 #include "ash/style/typography.h"
 #include "ash/system/focus_mode/focus_mode_countdown_view.h"
+#include "ash/system/focus_mode/focus_mode_task_view.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/time/time_view_utils.h"
@@ -72,6 +73,10 @@ constexpr int kTimerSettingViewTextHeight = 32;
 constexpr int kTimerSettingViewBetweenChildSpacing = 8;
 constexpr auto kTimerAdjustmentButtonSize = gfx::Size(63, 36);
 constexpr auto kTimerCountdownViewInsets = gfx::Insets::TLBR(0, 24, 12, 16);
+
+// Task view constants.
+constexpr auto kTaskViewContainerInsets = gfx::Insets::TLBR(0, 24, 22, 24);
+constexpr auto kTaskViewHeaderInsets = gfx::Insets::VH(18, 0);
 
 constexpr int kToggleButtonLeftPadding = 8;
 
@@ -251,6 +256,8 @@ FocusModeDetailedView::FocusModeDetailedView(DetailedViewDelegate* delegate)
   CreateToggleView();
 
   CreateTimerView();
+
+  CreateTaskView();
 
   FocusModeController* focus_mode_controller = FocusModeController::Get();
   const bool in_focus_session = focus_mode_controller->in_focus_session();
@@ -511,6 +518,30 @@ void FocusModeDetailedView::UpdateTimerView(bool in_focus_session) {
   } else {
     UpdateTimerSettingViewUI();
   }
+}
+
+void FocusModeDetailedView::CreateTaskView() {
+  auto* task_view_container =
+      scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
+          RoundedContainer::Behavior::kAllRounded));
+  task_view_container->SetProperty(views::kMarginsKey,
+                                   kDisconnectedContainerMargins);
+  task_view_container->SetBorderInsets(kTaskViewContainerInsets);
+
+  // Create the task header.
+  auto* task_view_header =
+      task_view_container->AddChildView(std::make_unique<views::Label>());
+  task_view_header->SetText(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_SUBHEADER));
+  task_view_header->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  task_view_header->SetBorder(views::CreateEmptyBorder(kTaskViewHeaderInsets));
+  task_view_header->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
+                                        *task_view_header);
+
+  // Create the focus mode task view.
+  task_view_container->AddChildView(std::make_unique<FocusModeTaskView>());
 }
 
 void FocusModeDetailedView::CreateDoNotDisturbContainer() {

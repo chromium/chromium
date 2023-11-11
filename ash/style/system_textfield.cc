@@ -166,6 +166,7 @@ void SystemTextfield::RestoreText() {
 
 void SystemTextfield::SetBackgroundColorEnabled(bool enabled) {
   is_background_color_enabled_ = enabled;
+  UpdateBackground();
 }
 
 gfx::Size SystemTextfield::CalculatePreferredSize() const {
@@ -263,24 +264,21 @@ void SystemTextfield::UpdateTextColor() {
 }
 
 void SystemTextfield::UpdateBackground() {
-  if (!is_background_color_enabled_) {
-    return;
-  }
-  // Create a themed rounded rect background when the mouse hovers on the
-  // textfield or the textfield is focused.
-  if (IsMouseHovered() || HasFocus() || show_background_) {
-    ui::ColorId default_hover_state_color_id =
-        chromeos::features::IsJellyrollEnabled()
-            ? cros_tokens::kCrosSysHoverOnSubtle
-            : static_cast<ui::ColorId>(kColorAshControlBackgroundColorInactive);
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        background_color_id_.value_or(default_hover_state_color_id),
-        kCornerRadius));
+  const bool has_background =
+      is_background_color_enabled_ &&
+      (IsMouseHovered() || HasFocus() || show_background_);
+  if (!has_background) {
+    SetBackground(nullptr);
     return;
   }
 
-  // In other cases, use a transparent background.
-  SetBackground(nullptr);
+  const ui::ColorId default_hover_state_color_id =
+      chromeos::features::IsJellyrollEnabled()
+          ? cros_tokens::kCrosSysHoverOnSubtle
+          : static_cast<ui::ColorId>(kColorAshControlBackgroundColorInactive);
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      background_color_id_.value_or(default_hover_state_color_id),
+      kCornerRadius));
 }
 
 BEGIN_METADATA(SystemTextfield, views::Textfield)
