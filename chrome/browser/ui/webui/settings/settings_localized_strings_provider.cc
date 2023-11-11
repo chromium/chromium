@@ -1568,6 +1568,12 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
   // Toggles the Chrome OS Account Manager submenu in the People section.
   html_source->AddBoolean("isAccountManagerEnabled",
                           ash::IsAccountManagerAvailable(profile));
+  html_source->AddString(
+      "osSettingsAccountsPageUrl",
+      ash::features::IsOsSettingsRevampWayfindingEnabled()
+          ? BuildOSSettingsUrl(chromeos::settings::mojom::kPeopleSectionPath)
+          : BuildOSSettingsUrl(
+                chromeos::settings::mojom::kMyAccountsSubpagePath));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   html_source->AddBoolean(
       "isAccountManagerEnabled",
