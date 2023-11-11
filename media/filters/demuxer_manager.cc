@@ -467,11 +467,11 @@ void DemuxerManager::SetPreload(DataSource::Preload preload) {
   }
 }
 
-void DemuxerManager::StopAndResetClient(Client* client) {
+void DemuxerManager::StopAndResetClient() {
   if (data_source_) {
     data_source_->Stop();
   }
-  client_ = client;
+  client_ = nullptr;
 }
 
 int64_t DemuxerManager::GetDataSourceMemoryUsage() {

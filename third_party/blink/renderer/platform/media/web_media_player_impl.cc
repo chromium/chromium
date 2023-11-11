@@ -570,7 +570,7 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
   simple_watch_timer_.Stop();
   media_log_->OnWebMediaPlayerDestroyed();
 
-  demuxer_manager_->StopAndResetClient(nullptr);
+  demuxer_manager_->StopAndResetClient();
   demuxer_manager_->InvalidateWeakPtrs();
 
   // Disconnect from the surface layer. We still preserve the `bridge_` until
