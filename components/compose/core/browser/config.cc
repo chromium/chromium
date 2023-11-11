@@ -20,6 +20,10 @@ void OverrideFieldTrialParams(Config& config) {
 
   config.input_max_chars = base::GetFieldTrialParamByFeatureAsInt(
       features::kEnableCompose, "input_max_chars", config.input_max_chars);
+
+  config.auto_submit_with_selection = base::GetFieldTrialParamByFeatureAsBool(
+      features::kEnableCompose, "auto_submit_with_selection",
+      config.auto_submit_with_selection);
 }
 
 }  // namespace

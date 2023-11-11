@@ -84,6 +84,10 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   // Non-ComposeSessionPageHandler Methods
 
+  // Begins a Compose session, calling Compose immediately if the initial input
+  // is valid.
+  void InitializeWithText(const std::string& text);
+
   // Saves the last OK response state to the undo stack.
   void SaveLastOKStateToUndoStack();
 
@@ -93,6 +97,10 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   // Sets an initial input value for the session given by the renderer.
   void set_initial_input(const std::string input) { initial_input_ = input; }
+
+  void set_skip_inner_text(bool skip_inner_text) {
+    skip_inner_text_ = skip_inner_text;
+  }
 
   // Refresh the inner text on session resumption.
   void RefreshInnerText();
@@ -110,6 +118,9 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // loop
   void ComposeWithInnerText(const std::string& input,
                             const std::string& inner_text);
+
+  void UpdateInnerTextAndContinueComposeIfNecessary(
+      const std::string& inner_text);
 
   // Outlives `this`.
   raw_ptr<optimization_guide::OptimizationGuideModelExecutor> executor_;
@@ -140,12 +151,12 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // A callback to Autofill that triggers filling the field.
   ComposeCallback callback_;
 
+  bool skip_inner_text_ = false;
+
   InnerTextExtractor inner_text_extractor_;
-
   std::optional<std::string> inner_text_;
-  std::optional<std::string> input_;
 
-  void FindInnerText(const std::string& inner_text);
+  base::OnceCallback<void(const std::string&)> continue_compose_;
 
   base::WeakPtrFactory<ComposeSession> weak_ptr_factory_;
 };

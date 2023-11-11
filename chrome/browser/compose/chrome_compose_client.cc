@@ -88,10 +88,11 @@ void ChromeComposeClient::BindComposeDialog(
   if (origin == url::Origin::Create(GURL(kComposeURL))) {
     debug_session_ =
         std::make_unique<ComposeSession>(&GetWebContents(), GetModelExecutor());
+    debug_session_->set_skip_inner_text(true);
     debug_session_->Bind(std::move(handler), std::move(dialog));
     return;
   }
-  sessions_.at(last_compose_field_id_.value())
+  sessions_.at(active_compose_field_id_.value())
       ->Bind(std::move(handler), std::move(dialog));
 }
 
@@ -101,7 +102,7 @@ void ChromeComposeClient::ShowComposeDialog(
     std::optional<autofill::AutofillClient::PopupScreenLocation>
         popup_screen_location,
     ComposeCallback callback) {
-  CreateSessionIfNeeded(trigger_field, std::move(callback));
+  CreateOrUpdateSession(trigger_field, std::move(callback));
   if (!skip_show_dialog_for_test_) {
     // The bounds given by autofill are relative to the top level frame. Here we
     // offset by the WebContents container to make up for that.
@@ -148,37 +149,27 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
   }
 }
 
-void ChromeComposeClient::CreateSessionIfNeeded(
+void ChromeComposeClient::CreateOrUpdateSession(
     const autofill::FormFieldData& trigger_field,
     ComposeCallback callback) {
-  std::string selected_text = base::UTF16ToUTF8(trigger_field.GetSelection());
-  auto it = sessions_.find(trigger_field.global_id());
-  bool found = it != sessions_.end();
-  if (found && !selected_text.empty()) {
-    // If the user entered the compose dialog by selecting text, the existing
-    // state must be cleared and replaced with the selected text as the input.
-    RemoveActiveSession();
-  }
-  last_compose_field_id_ =
+  active_compose_field_id_ =
       std::make_optional<autofill::FieldGlobalId>(trigger_field.global_id());
-  if (found && selected_text.empty()) {
-    // Update existing session (only if session was not removed earlier).
-    auto& existing_session = *it->second;
-    existing_session.set_compose_callback(std::move(callback));
-    existing_session.RefreshInnerText();
+  std::string selected_text = base::UTF16ToUTF8(trigger_field.GetSelection());
+  ComposeSession* current_session;
+  auto it = sessions_.find(active_compose_field_id_.value());
+  if (!selected_text.empty() || it == sessions_.end()) {
+    auto new_session = std::make_unique<ComposeSession>(
+        &GetWebContents(), GetModelExecutor(), std::move(callback));
+    current_session = new_session.get();
+    // Insert or replace with a new session.
+    sessions_.insert_or_assign(active_compose_field_id_.value(),
+                               std::move(new_session));
   } else {
-    // Insert new session.
-    sessions_.emplace(
-        last_compose_field_id_.value(),
-        std::make_unique<ComposeSession>(&GetWebContents(), GetModelExecutor(),
-                                         std::move(callback)));
+    current_session = it->second.get();
+    current_session->set_compose_callback(std::move(callback));
   }
-  // Capture user-selected text as initial input.
-  if (!selected_text.empty()) {
-    auto& session = sessions_.at(last_compose_field_id_.value());
-    session->set_initial_input(selected_text);
-    session->RefreshInnerText();
-  }
+
+  current_session->InitializeWithText(selected_text);
 }
 
 void ChromeComposeClient::RemoveActiveSession() {
@@ -186,11 +177,11 @@ void ChromeComposeClient::RemoveActiveSession() {
     debug_session_.reset();
     return;
   }
-  auto it = sessions_.find(last_compose_field_id_.value());
+  auto it = sessions_.find(active_compose_field_id_.value());
   CHECK(it != sessions_.end())
       << "Attempted to remove compose session that doesn't exist.";
-  sessions_.erase(last_compose_field_id_.value());
-  last_compose_field_id_.reset();
+  sessions_.erase(active_compose_field_id_.value());
+  active_compose_field_id_.reset();
 }
 
 void ChromeComposeClient::SetSessionCloseReason(
@@ -199,8 +190,8 @@ void ChromeComposeClient::SetSessionCloseReason(
     return;
   }
 
-  if (last_compose_field_id_.has_value()) {
-    auto it = sessions_.find(last_compose_field_id_.value());
+  if (active_compose_field_id_.has_value()) {
+    auto it = sessions_.find(active_compose_field_id_.value());
     if (it != sessions_.end()) {
       it->second->SetCloseReason(close_reason);
     }
@@ -213,7 +204,7 @@ void ChromeComposeClient::RemoveAllSessions() {
   }
 
   sessions_.erase(sessions_.begin(), sessions_.end());
-  last_compose_field_id_.reset();
+  active_compose_field_id_.reset();
 }
 
 compose::ComposeManager& ChromeComposeClient::GetManager() {

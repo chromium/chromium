@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_tokenizer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -40,6 +41,28 @@
 
 namespace {
 
+bool IsValidComposePrompt(const std::string& prompt) {
+  const compose::Config& config = compose::GetComposeConfig();
+  if (prompt.length() > config.input_max_chars) {
+    return false;
+  }
+
+  base::StringTokenizer tokenizer(
+      prompt, " ", base::StringTokenizer::WhitespacePolicy::kSkipOver);
+  unsigned int word_count = 0;
+  while (tokenizer.GetNext()) {
+    ++word_count;
+    if (word_count > config.input_max_words) {
+      return false;
+    }
+  }
+
+  if (word_count < config.input_min_words) {
+    return false;
+  }
+  return true;
+}
+
 const char kComposeBugReportURL[] = "https://goto.google.com/ccbrfd";
 
 void LogComposeResponseStatus(compose::mojom::ComposeStatus status) {
@@ -60,9 +83,6 @@ ComposeSession::ComposeSession(
   callback_ = std::move(callback);
   current_state_ = compose::mojom::ComposeState::New();
   current_state_->style = compose::mojom::StyleModifiers::New();
-  inner_text_extractor_.Extract(web_contents_,
-                                base::BindOnce(&ComposeSession::FindInnerText,
-                                               weak_ptr_factory_.GetWeakPtr()));
 }
 
 ComposeSession::~ComposeSession() {
@@ -91,10 +111,13 @@ void ComposeSession::Compose(compose::mojom::StyleModifiersPtr style,
     ProcessError(compose::mojom::ComposeStatus::kMisconfiguration);
     return;
   }
-  if (inner_text_.has_value()) {
-    ComposeWithInnerText(input, inner_text_.value());
+  if (skip_inner_text_ || inner_text_.has_value()) {
+    ComposeWithInnerText(input, inner_text_.value_or(""));
   } else {
-    input_ = input;
+    // Prepare the compose call, which will be invoked when inner text
+    // extraction is completed.
+    continue_compose_ = base::BindOnce(&ComposeSession::ComposeWithInnerText,
+                                       weak_ptr_factory_.GetWeakPtr(), input);
   }
 }
 
@@ -229,6 +252,21 @@ void ComposeSession::OpenBugReportingLink() {
       /* is_renderer_initiated= */ false));
 }
 
+void ComposeSession::InitializeWithText(const std::string& text) {
+  initial_input_ = text;
+  RefreshInnerText();
+
+  if (!IsValidComposePrompt(initial_input_) ||
+      !compose::GetComposeConfig().auto_submit_with_selection) {
+    return;
+  }
+
+  Compose(compose::mojom::StyleModifiersPtr(absl::in_place,
+                                            compose::mojom::Tone::kUnset,
+                                            compose::mojom::Length::kUnset),
+          initial_input_);
+}
+
 void ComposeSession::SaveLastOKStateToUndoStack() {
   if (!current_state_->response ||
       current_state_->response->status != compose::mojom::ComposeStatus::kOk ||
@@ -242,19 +280,25 @@ void ComposeSession::SaveLastOKStateToUndoStack() {
   last_ok_state_ = current_state_->Clone();
 }
 
-void ComposeSession::FindInnerText(const std::string& inner_text) {
-  if (input_.has_value()) {
-    ComposeWithInnerText(input_.value(), inner_text);
-  } else {
-    inner_text_ = inner_text;
+void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
+    const std::string& inner_text) {
+  inner_text_ = inner_text;
+  if (!continue_compose_.is_null()) {
+    std::move(continue_compose_).Run(inner_text);
   }
 }
 
 void ComposeSession::RefreshInnerText() {
   inner_text_ = std::nullopt;
-  inner_text_extractor_.Extract(web_contents_,
-                                base::BindOnce(&ComposeSession::FindInnerText,
-                                               weak_ptr_factory_.GetWeakPtr()));
+  if (skip_inner_text_) {
+    return;
+  }
+
+  inner_text_extractor_.Extract(
+      web_contents_,
+      base::BindOnce(
+          &ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ComposeSession::SetCloseReason(

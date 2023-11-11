@@ -11,11 +11,14 @@ namespace compose {
 // |GetComposeConfig()| to get the current configuration.
 struct Config {
   // The minimum number of words needed for a valid user input.
-  int input_min_words = 3;
+  unsigned int input_min_words = 3;
   // The maximum number of words allowed for a valid user input.
-  int input_max_words = 500;
+  unsigned int input_max_words = 500;
   // The maximum number of characters allowed for a valid user input.
-  int input_max_chars = 2500;
+  unsigned int input_max_chars = 2500;
+  // Whether to send a compose when the dialog is first opened,
+  // if there is an acceptable input text selected.
+  bool auto_submit_with_selection = true;
 
   Config();
   Config(const Config& other);

@@ -112,6 +112,23 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     client_->SetModelExecutorForTest(&model_executor_);
     client_->SetSkipShowDialogForTest();
     client_->SetOptimizationGuideForTest(&opt_guide_);
+
+    ON_CALL(model_executor(), ExecuteModel(_, _, _))
+        .WillByDefault(testing::WithArg<2>(testing::Invoke(
+            [&](optimization_guide::
+                    OptimizationGuideModelExecutionResultCallback callback) {
+              base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(std::move(callback),
+                                 OptimizationGuideResponse(
+                                     ComposeResponse(true, "Cucumbers")),
+                                 nullptr));
+            })));
+    ON_CALL(compose_dialog(), ResponseReceived(_))
+        .WillByDefault(
+            testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+              compose_future_.SetValue(std::move(response));
+            }));
   }
 
   void ShowDialogAndBindMojo(ComposeCallback callback = base::NullCallback()) {
@@ -175,6 +192,10 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     return page_handler_;
   }
 
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr>& compose_future() {
+    return compose_future_;
+  }
+
   GURL GetPageUrl() { return GURL("http://foo/1"); }
 
   void TearDown() override {
@@ -193,6 +214,12 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     if (client_ != nullptr) {
       client_->GetComposeEnabling().ClearEnabledForTesting();
     }
+  }
+
+  void SetSelection(const std::u16string& selection) {
+    field_data().value = selection;
+    field_data().selection_start = 0;
+    field_data().selection_end = field_data().value.length();
   }
 
  protected:
@@ -236,12 +263,13 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
  private:
   raw_ptr<ChromeComposeClient> client_;
-  MockModelExecutor model_executor_;
+  testing::NiceMock<MockModelExecutor> model_executor_;
   MockOptimizationGuideDecider opt_guide_;
-  MockComposeDialog compose_dialog_;
+  testing::NiceMock<MockComposeDialog> compose_dialog_;
   autofill::FormFieldData field_data_;
   raw_ptr<content::WebContents> contents_;
   base::HistogramTester histogram_tester_;
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future_;
 
   std::unique_ptr<mojo::Receiver<compose::mojom::ComposeDialog>>
       callback_router_;
@@ -748,24 +776,8 @@ TEST_F(ChromeComposeClientTest, TestEmptyUndo) {
 // Tests that Undo is not possible after only one Compose() invocation.
 TEST_F(ChromeComposeClientTest, TestUndoUnavailableFirstCompose) {
   ShowDialogAndBindMojo();
-
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
-      .WillOnce(testing::WithArg<2>(testing::Invoke(
-          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
-                nullptr);
-          })));
-  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
-  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
-      .WillOnce(
-          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
-            compose_future.SetValue(std::move(response));
-          }));
-
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
-  compose::mojom::ComposeResponsePtr response = compose_future.Take();
+  compose::mojom::ComposeResponsePtr response = compose_future().Take();
   EXPECT_FALSE(response->undo_available)
       << "First Compose() response should say undo not available.";
 
@@ -787,31 +799,16 @@ TEST_F(ChromeComposeClientTest, TestUndoUnavailableFirstCompose) {
 TEST_F(ChromeComposeClientTest, TestComposeTwiceThenUpdateWebUIStateThenUndo) {
   ShowDialogAndBindMojo();
 
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
-      .WillRepeatedly(testing::WithArg<2>(testing::Invoke(
-          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
-                nullptr);
-          })));
-  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
-  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
-      .WillRepeatedly(
-          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
-            compose_future.SetValue(std::move(response));
-          }));
-
   page_handler()->SaveWebUIState("this state should be restored with undo");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
 
-  compose::mojom::ComposeResponsePtr response = compose_future.Take();
+  compose::mojom::ComposeResponsePtr response = compose_future().Take();
   EXPECT_FALSE(response->undo_available) << "First Compose() response should "
                                             "say undo is not available.";
   page_handler()->SaveWebUIState("second state");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
 
-  response = compose_future.Take();
+  response = compose_future().Take();
   EXPECT_TRUE(response->undo_available) << "Second Compose() response should "
                                            "say undo is available.";
   page_handler()->SaveWebUIState("user edited the input field further");
@@ -837,38 +834,22 @@ TEST_F(ChromeComposeClientTest, TestComposeTwiceThenUpdateWebUIStateThenUndo) {
 TEST_F(ChromeComposeClientTest, TestUndoStackMultipleUndos) {
   ShowDialogAndBindMojo();
 
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
-      .WillRepeatedly(testing::WithArg<2>(testing::Invoke(
-          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
-                nullptr);
-          })));
-  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
-  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
-      .WillRepeatedly(
-          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
-            compose_future.SetValue(std::move(response));
-          }));
-
   page_handler()->SaveWebUIState("first state");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
 
-  compose::mojom::ComposeResponsePtr response = compose_future.Take();
+  compose::mojom::ComposeResponsePtr response = compose_future().Take();
   EXPECT_FALSE(response->undo_available) << "First Compose() response should "
                                             "say undo is not available.";
-
   page_handler()->SaveWebUIState("second state");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
-  response = compose_future.Take();
+  response = compose_future().Take();
   EXPECT_TRUE(response->undo_available) << "Second Compose() response should "
                                            "say undo is available.";
 
   page_handler()->SaveWebUIState("third state");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
 
-  response = compose_future.Take();
+  response = compose_future().Take();
   EXPECT_TRUE(response->undo_available) << "Third Compose() response should "
                                            "say undo is available.";
 
@@ -891,33 +872,17 @@ TEST_F(ChromeComposeClientTest, TestUndoStackMultipleUndos) {
 // state A.
 TEST_F(ChromeComposeClientTest, TestUndoComposeThenUndoAgain) {
   ShowDialogAndBindMojo();
-
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
-      .WillRepeatedly(testing::WithArg<2>(testing::Invoke(
-          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
-                nullptr);
-          })));
-  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
-  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
-      .WillRepeatedly(
-          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
-            compose_future.SetValue(std::move(response));
-          }));
-
   page_handler()->SaveWebUIState("first state");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
 
-  compose::mojom::ComposeResponsePtr response = compose_future.Take();
+  compose::mojom::ComposeResponsePtr response = compose_future().Take();
   EXPECT_FALSE(response->undo_available) << "First Compose() response should "
                                             "say undo is not available.";
 
   page_handler()->SaveWebUIState("second state");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
 
-  response = compose_future.Take();
+  response = compose_future().Take();
   EXPECT_TRUE(response->undo_available) << "Second Compose() response should "
                                            "say undo is available.";
   page_handler()->SaveWebUIState("wip web ui state");
@@ -929,7 +894,7 @@ TEST_F(ChromeComposeClientTest, TestUndoComposeThenUndoAgain) {
   page_handler()->SaveWebUIState("third state");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
 
-  response = compose_future.Take();
+  response = compose_future().Take();
   EXPECT_TRUE(response->undo_available) << "Third Compose() response should "
                                            "say undo is available.";
 
@@ -991,21 +956,6 @@ TEST_F(ChromeComposeClientTest, ThumbsDownOpensCorrectURL) {
 TEST_F(ChromeComposeClientTest, ResetClientOnNavigation) {
   ShowDialogAndBindMojo();
 
-  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
-      .WillRepeatedly(testing::WithArg<2>(testing::Invoke(
-          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
-                nullptr);
-          })));
-  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
-  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
-      .WillRepeatedly(
-          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
-            compose_future.SetValue(std::move(response));
-          }));
-
   page_handler()->SaveWebUIState("first state");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
 
@@ -1052,6 +1002,83 @@ TEST_F(ChromeComposeClientTest, LoseFocusHistogramTest) {
   histograms().ExpectBucketCount("Compose.SessionCloseReason",
                                  2,  // lost focus
                                  1);
+}
+
+TEST_F(ChromeComposeClientTest, TestAutoCompose) {
+  base::test::TestFuture<void> execute_model_future;
+  // Make model execution hang
+  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
+      .WillOnce(base::test::RunOnceClosure(execute_model_future.GetCallback()));
+
+  SetSelection(u"testing alpha bravo charlie");
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+  compose::mojom::OpenMetadataPtr result = open_test_future.Take();
+  EXPECT_TRUE(result->compose_state->has_pending_request);
+
+  EXPECT_TRUE(execute_model_future.Wait());
+}
+
+TEST_F(ChromeComposeClientTest, TestAutoComposeTooLong) {
+  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _)).Times(0);
+
+  std::u16string words(compose::GetComposeConfig().input_max_chars - 3, u'a');
+  words += u" b c";
+  SetSelection(words);
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+  compose::mojom::OpenMetadataPtr result = open_test_future.Take();
+  EXPECT_FALSE(result->compose_state->has_pending_request);
+}
+
+TEST_F(ChromeComposeClientTest, TestAutoComposeTooFewWords) {
+  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _)).Times(0);
+  std::u16string words(40, u'a');
+  words += u" b";
+  SetSelection(words);
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+  compose::mojom::OpenMetadataPtr result = open_test_future.Take();
+  EXPECT_FALSE(result->compose_state->has_pending_request);
+}
+
+TEST_F(ChromeComposeClientTest, TestAutoComposeTooManyWords) {
+  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _)).Times(0);
+
+  std::u16string words = u"b";
+  // Words should be the max plus 1.
+  for (uint32_t i = 0; i < compose::GetComposeConfig().input_max_words; ++i) {
+    words += u" b";
+  }
+  SetSelection(words);
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+  compose::mojom::OpenMetadataPtr result = open_test_future.Take();
+  EXPECT_FALSE(result->compose_state->has_pending_request);
+}
+
+TEST_F(ChromeComposeClientTest, TestAutoComposeDisabled) {
+  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _)).Times(0);
+
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{compose::features::kEnableCompose,
+                             {{"auto_submit_with_selection", "false"}}},
+                            {optimization_guide::features::
+                                 kOptimizationGuideModelExecution,
+                             {}}},
+      /*disabled_features=*/{});
+
+  SetSelection(u"testing alpha bravo charlie");
+  ShowDialogAndBindMojo();
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)

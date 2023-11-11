@@ -111,17 +111,17 @@ class ChromeComposeClient
   // Creates a session for `trigger_field` and initializes it as necessary.
   // `callback` is a callback to the renderer to insert the compose response
   // into the compose field.
-  void CreateSessionIfNeeded(const autofill::FormFieldData& trigger_field,
+  void CreateOrUpdateSession(const autofill::FormFieldData& trigger_field,
                              ComposeCallback callback);
 
   // Set the exit reason for a session.
   void SetSessionCloseReason(compose::ComposeSessionCloseReason close_reason);
 
-  // Removes `last_compose_field_id_` from `sessions_` and resets
-  // `last_compose_field_id_`.
+  // Removes `active_compose_field_id_` from `sessions_` and resets
+  // `active_compose_field_id_`.
   void RemoveActiveSession();
 
-  // Removes all sessions and resets `last_compose_field_id_`.
+  // Removes all sessions and resets `active_compose_field_id_`.
   void RemoveAllSessions();
 
   compose::ComposeManagerImpl manager_;
@@ -135,7 +135,7 @@ class ChromeComposeClient
       model_executor_for_test_;
 
   // The unique renderer ID of the last field the user selected compose on.
-  std::optional<autofill::FieldGlobalId> last_compose_field_id_;
+  std::optional<autofill::FieldGlobalId> active_compose_field_id_;
 
   // Saved states for each compose field.
   base::flat_map<autofill::FieldGlobalId, std::unique_ptr<ComposeSession>>
