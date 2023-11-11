@@ -1,0 +1,3 @@
+This is a testharness.js-based test.
+[FAIL PASS] text-autospace-first-line-001
+Harness: the test ran to completion.
