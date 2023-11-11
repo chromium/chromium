@@ -4927,6 +4927,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.VirtualCard.StandaloneCvc.FormEvents"
+    enum="VirtualCardStandaloneCvcSuggestionFormEvent"
+    expires_after="2024-07-01">
+  <owner>yishuil@google.com</owner>
+  <owner>alexandertekle@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    These metrics log the autofill form events for virtual card standalone CVC
+    fields, such as when suggestion(s) is/are shown, selected, or filled for a
+    virtual card standalone CVC field, or the form is about to be submitted or
+    submitted after a virtual card standalone CVC field is autofilled.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.VirtualCard.Unenroll.Attempt.{Source}"
     enum="BooleanAttempted" expires_after="2024-07-01">
   <owner>siyua@chromium.org</owner>

@@ -1376,13 +1376,13 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
   // TODO(crbug.com/1330108): Accept credit card by reference.
   credit_card_ = credit_card ? *credit_card : CreditCard();
   bool is_preview = action_persistence != mojom::ActionPersistence::kFill;
-  bool is_virtual_card_standalone_cvc =
+  bool is_virtual_card_standalone_cvc_field =
       credit_card->record_type() == CreditCard::RecordType::kVirtualCard &&
       (autofill_field->Type().GetStorableType() ==
        CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
   bool should_fetch_card =
-      !is_preview &&
-      (WillFillCreditCardNumber(form, field) || is_virtual_card_standalone_cvc);
+      !is_preview && (WillFillCreditCardNumber(form, field) ||
+                      is_virtual_card_standalone_cvc_field);
 
   if (should_fetch_card) {
     credit_card_form_event_logger_->OnDidSelectCardSuggestion(
@@ -2844,6 +2844,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
 
   std::vector<Suggestion> suggestions;
   bool with_offer = false;
+  bool is_virtual_card_standalone_cvc_field = false;
   autofill_metrics::CardMetadataLoggingContext context;
   if (!IsInAutofillSuggestionsDisabledExperiment()) {
     if (trigger_field_type == CREDIT_CARD_STANDALONE_VERIFICATION_CODE &&
@@ -2855,6 +2856,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
         suggestions =
             suggestion_generator_->GetSuggestionsForVirtualCardStandaloneCvc(
                 context, virtual_card_guid_to_last_four_map);
+        is_virtual_card_standalone_cvc_field = true;
         // Always display GPay logo for virtual card suggestions.
         should_display_gpay_logo = true;
       }
@@ -2865,8 +2867,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     }
   }
 
-  credit_card_form_event_logger_->OnDidFetchSuggestion(suggestions, with_offer,
-                                                       context);
+  credit_card_form_event_logger_->OnDidFetchSuggestion(
+      suggestions, with_offer, is_virtual_card_standalone_cvc_field, context);
   return suggestions;
 }
 

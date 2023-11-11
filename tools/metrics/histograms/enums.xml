@@ -66647,6 +66647,18 @@ would be helpful to identify which type is being sent.
   <int value="75" label=".tini"/>
 </enum>
 
+<enum name="VirtualCardStandaloneCvcSuggestionFormEvent">
+  <int value="0" label="Suggestions shown"/>
+  <int value="1" label="Suggestions shown (once)"/>
+  <int value="2" label="Suggestion selected"/>
+  <int value="3" label="Suggestion selected (once)"/>
+  <int value="4" label="Suggestion filled"/>
+  <int value="5" label="Suggestion filled (once)"/>
+  <int value="6"
+      label="Form about to be submitted after suggestion filled (once)"/>
+  <int value="7" label="Form submitted after suggestion filled (once)"/>
+</enum>
+
 <enum name="VirtualKeyboardContainerType">
   <int value="0" label="FULL_WIDTH"/>
   <int value="1" label="FLOATING"/>

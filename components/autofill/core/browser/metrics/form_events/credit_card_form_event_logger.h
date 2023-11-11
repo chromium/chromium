@@ -49,13 +49,19 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
 
   // Invoked when `suggestions` are successfully fetched. `with_offer` indicates
   // whether an offer is attached to any of the suggestion in the list.
+  // `is_virtual_card_standalone_cvc_field` indicates whether the `suggestions`
+  // are fetched for a virtual card standalone CVC field.
   // `metadata_logging_context` contains information about whether any card has
   // a non-empty product description or art image, and whether they are shown.
   void OnDidFetchSuggestion(const std::vector<Suggestion>& suggestions,
                             bool with_offer,
+                            bool is_virtual_card_standalone_cvc_field,
                             const autofill_metrics::CardMetadataLoggingContext&
                                 metadata_logging_context);
 
+  // TODO(crbug.com/1495879): Remove redundant parameters.
+  // form_parsed_timestamp and off_the_record value can be removed, as their
+  // values can be retrieved from 'form' or 'client_'.
   void OnDidShowSuggestions(
       const FormStructure& form,
       const AutofillField& field,
@@ -138,6 +144,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool has_logged_suggestion_with_metadata_selected_ = false;
   bool has_logged_masked_server_card_suggestion_selected_ = false;
   bool has_logged_virtual_card_suggestion_selected_ = false;
+  bool has_logged_suggestion_for_virtual_card_standalone_cvc_shown_ = false;
+  bool has_logged_suggestion_for_virtual_card_standalone_cvc_selected_ = false;
+  bool has_logged_suggestion_for_virtual_card_standalone_cvc_filled_ = false;
   bool logged_suggestion_filled_was_masked_server_card_ = false;
   bool logged_suggestion_filled_was_virtual_card_ = false;
   // If true, the most recent card to be selected as an Autofill suggestion was
@@ -149,6 +158,10 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, the selected server card was filled and it had an equivalent local
   // version on file.
   bool server_card_with_local_duplicate_filled_ = false;
+  // If true, the form contains a standalone CVC field that is associated with a
+  // virtual card.
+  bool is_virtual_card_standalone_cvc_field_ = false;
+
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context_;
 
   // Set when a list of suggestion is shown.
