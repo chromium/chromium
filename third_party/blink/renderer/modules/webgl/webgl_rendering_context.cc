@@ -183,15 +183,15 @@ void WebGLRenderingContext::RegisterContextExtensions() {
   RegisterExtension(angle_instanced_arrays_);
   RegisterExtension(ext_blend_func_extended_, kDraftExtension);
   RegisterExtension(ext_blend_min_max_);
-  RegisterExtension(ext_clip_control_, kDraftExtension);
+  RegisterExtension(ext_clip_control_);
   RegisterExtension(ext_color_buffer_half_float_);
-  RegisterExtension(ext_depth_clamp_, kDraftExtension);
+  RegisterExtension(ext_depth_clamp_);
   RegisterExtension(ext_disjoint_timer_query_, TimerQueryExtensionsEnabled()
                                                    ? kApprovedExtension
                                                    : kDeveloperExtension);
   RegisterExtension(ext_float_blend_);
   RegisterExtension(ext_frag_depth_);
-  RegisterExtension(ext_polygon_offset_clamp_, kDraftExtension);
+  RegisterExtension(ext_polygon_offset_clamp_);
   RegisterExtension(ext_shader_texture_lod_);
   RegisterExtension(ext_texture_compression_bptc_);
   RegisterExtension(ext_texture_compression_rgtc_);
@@ -220,7 +220,7 @@ void WebGLRenderingContext::RegisterContextExtensions() {
   RegisterExtension(webgl_draw_buffers_);
   RegisterExtension(webgl_lose_context_, kApprovedExtension);
   RegisterExtension(webgl_multi_draw_);
-  RegisterExtension(webgl_polygon_mode_, kDraftExtension);
+  RegisterExtension(webgl_polygon_mode_);
 }
 
 void WebGLRenderingContext::Trace(Visitor* visitor) const {

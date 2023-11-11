@@ -167,16 +167,16 @@ ImageBitmap* WebGL2RenderingContext::TransferToImageBitmap(
 void WebGL2RenderingContext::RegisterContextExtensions() {
   // Register extensions.
   RegisterExtension(ext_blend_func_extended_, kDraftExtension);
-  RegisterExtension(ext_clip_control_, kDraftExtension);
+  RegisterExtension(ext_clip_control_);
   RegisterExtension(ext_color_buffer_float_);
   RegisterExtension(ext_color_buffer_half_float_);
   RegisterExtension(ext_conservative_depth_, kDraftExtension);
-  RegisterExtension(ext_depth_clamp_, kDraftExtension);
+  RegisterExtension(ext_depth_clamp_);
   RegisterExtension(
       ext_disjoint_timer_query_web_gl2_,
       TimerQueryExtensionsEnabled() ? kApprovedExtension : kDeveloperExtension);
   RegisterExtension(ext_float_blend_);
-  RegisterExtension(ext_polygon_offset_clamp_, kDraftExtension);
+  RegisterExtension(ext_polygon_offset_clamp_);
   RegisterExtension(ext_render_snorm_, kDraftExtension);
   RegisterExtension(ext_texture_compression_bptc_);
   RegisterExtension(ext_texture_compression_rgtc_);
@@ -205,7 +205,7 @@ void WebGL2RenderingContext::RegisterContextExtensions() {
   RegisterExtension(webgl_multi_draw_);
   RegisterExtension(webgl_multi_draw_instanced_base_vertex_base_instance_,
                     kDraftExtension);
-  RegisterExtension(webgl_polygon_mode_, kDraftExtension);
+  RegisterExtension(webgl_polygon_mode_);
   RegisterExtension(webgl_provoking_vertex_);
   RegisterExtension(webgl_render_shared_exponent_, kDraftExtension);
   RegisterExtension(webgl_shader_pixel_local_storage_, kDraftExtension);
