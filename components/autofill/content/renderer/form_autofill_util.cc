@@ -1108,13 +1108,13 @@ bool ShouldSkipFillField(const FormFieldData& field,
     return true;
   }
 
-  if (element == trigger_element) {
-    return false;
-  }
-
   // Skip if there is no value to fill.
   if (field.value.empty() || !field.is_autofilled) {
     return true;
+  }
+
+  if (element == trigger_element) {
+    return false;
   }
 
   // Skip filling previously autofilled fields unless autofill is instructed to
