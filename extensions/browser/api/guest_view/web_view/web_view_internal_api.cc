@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/types/optional_util.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/crash/core/common/crash_key.h"
@@ -313,15 +314,15 @@ WebViewInternalCaptureVisibleRegionFunction::Run() {
       web_view_internal::CaptureVisibleRegion::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::unique_ptr<ImageDetails> image_details;
+  absl::optional<ImageDetails> image_details;
   if (args().size() > 1) {
-    image_details = ImageDetails::FromValueDeprecated(args()[1]);
+    image_details = ImageDetails::FromValue(args()[1]);
   }
 
   WebViewGuest& guest = GetGuest();
   is_guest_transparent_ = guest.allow_transparency();
   const CaptureResult capture_result = CaptureAsync(
-      guest.web_contents(), image_details.get(),
+      guest.web_contents(), base::OptionalToPtr(image_details),
       base::BindOnce(
           &WebViewInternalCaptureVisibleRegionFunction::CopyFromSurfaceComplete,
           this));
