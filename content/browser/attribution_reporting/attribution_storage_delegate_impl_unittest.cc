@@ -77,7 +77,7 @@ TEST(AttributionStorageDelegateImplTest,
 
     auto result = AttributionStorageDelegateImpl(AttributionNoiseMode::kNone)
                       .GetRandomizedResponse(source.common_info().source_type(),
-                                             source.event_report_windows(),
+                                             source.trigger_specs(),
                                              source.max_event_level_reports(),
                                              source.source_time());
     ASSERT_TRUE(result.has_value());
@@ -130,7 +130,7 @@ TEST(AttributionStorageDelegateImplTest,
         SourceBuilder().SetSourceType(test_case.source_type).BuildStored();
 
     auto result = delegate->GetRandomizedResponse(
-        test_case.source_type, source.event_report_windows(),
+        test_case.source_type, source.trigger_specs(),
         source.max_event_level_reports(), source.source_time());
 
     EXPECT_EQ(result.has_value(), test_case.expected_ok);

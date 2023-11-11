@@ -38,7 +38,6 @@ namespace content {
 
 namespace {
 
-using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::mojom::SourceType;
 
 std::vector<AttributionStorageDelegate::NullAggregatableReport>
@@ -110,7 +109,7 @@ AttributionStorageDelegateImpl::GetDeleteExpiredRateLimitsFrequency() const {
 }
 
 base::Time AttributionStorageDelegateImpl::GetEventLevelReportTime(
-    const EventReportWindows& event_report_windows,
+    const attribution_reporting::EventReportWindows& event_report_windows,
     base::Time source_time,
     base::Time trigger_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -196,28 +195,23 @@ void AttributionStorageDelegateImpl::ShuffleTriggerVerifications(
 }
 
 double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
-    SourceType source_type,
-    const EventReportWindows& event_report_windows,
+    const attribution_reporting::TriggerSpecs& trigger_specs,
     attribution_reporting::MaxEventLevelReports max_event_level_reports) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return content::GetRandomizedResponseRate(
-      GetNumStates(attribution_reporting::TriggerSpecs::Default(
-                       source_type, event_report_windows),
-                   max_event_level_reports),
+      GetNumStates(trigger_specs, max_event_level_reports),
       config_.event_level_limit.randomized_response_epsilon);
 }
 
 AttributionStorageDelegate::GetRandomizedResponseResult
 AttributionStorageDelegateImpl::GetRandomizedResponse(
     SourceType source_type,
-    const EventReportWindows& event_report_windows,
+    const attribution_reporting::TriggerSpecs& trigger_specs,
     attribution_reporting::MaxEventLevelReports max_event_level_reports,
     base::Time source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RandomizedResponseData response = DoRandomizedResponse(
-      attribution_reporting::TriggerSpecs::Default(source_type,
-                                                   event_report_windows),
-      max_event_level_reports,
+      trigger_specs, max_event_level_reports,
       config_.event_level_limit.randomized_response_epsilon);
 
   if (response.channel_capacity() > GetMaxChannelCapacity(source_type)) {

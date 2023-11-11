@@ -78,11 +78,8 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
       source.destination_sites(), common_info.reporting_origin(),
       source.source_time().InMillisecondsFSinceUnixEpoch(),
       source.expiry_time().InMillisecondsFSinceUnixEpoch(),
-      SerializeAttributionJson(
-          attribution_reporting::TriggerSpecs::Default(
-              common_info.source_type(), source.event_report_windows())
-              .ToJson(),
-          /*pretty_print=*/true),
+      SerializeAttributionJson(source.trigger_specs().ToJson(),
+                               /*pretty_print=*/true),
       source.aggregatable_report_window_time().InMillisecondsFSinceUnixEpoch(),
       source.max_event_level_reports(), common_info.source_type(),
       source.priority(), source.debug_key(), source.dedup_keys(),

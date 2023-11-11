@@ -121,8 +121,7 @@ void ConfigurableStorageDelegate::ShuffleTriggerVerifications(
 }
 
 double ConfigurableStorageDelegate::GetRandomizedResponseRate(
-    attribution_reporting::mojom::SourceType,
-    const attribution_reporting::EventReportWindows&,
+    const attribution_reporting::TriggerSpecs&,
     attribution_reporting::MaxEventLevelReports) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return randomized_response_rate_;
@@ -131,7 +130,7 @@ double ConfigurableStorageDelegate::GetRandomizedResponseRate(
 AttributionStorageDelegate::GetRandomizedResponseResult
 ConfigurableStorageDelegate::GetRandomizedResponse(
     attribution_reporting::mojom::SourceType,
-    const attribution_reporting::EventReportWindows&,
+    const attribution_reporting::TriggerSpecs&,
     attribution_reporting::MaxEventLevelReports,
     base::Time source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

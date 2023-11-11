@@ -14,7 +14,6 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
-#include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/trigger_config.h"
@@ -57,7 +56,7 @@ absl::optional<StoredSource> StoredSource::Create(
     attribution_reporting::DestinationSet destination_sites,
     base::Time source_time,
     base::Time expiry_time,
-    attribution_reporting::EventReportWindows event_report_windows,
+    attribution_reporting::TriggerSpecs trigger_specs,
     base::Time aggregatable_report_window_time,
     attribution_reporting::MaxEventLevelReports max_event_level_reports,
     int64_t priority,
@@ -79,7 +78,7 @@ absl::optional<StoredSource> StoredSource::Create(
 
   return StoredSource(
       std::move(common_info), source_event_id, std::move(destination_sites),
-      source_time, expiry_time, std::move(event_report_windows),
+      source_time, expiry_time, std::move(trigger_specs),
       aggregatable_report_window_time, max_event_level_reports, priority,
       std::move(filter_data), debug_key, std::move(aggregation_keys),
       attribution_logic, active_state, source_id, aggregatable_budget_consumed,
@@ -92,7 +91,7 @@ StoredSource::StoredSource(
     attribution_reporting::DestinationSet destination_sites,
     base::Time source_time,
     base::Time expiry_time,
-    attribution_reporting::EventReportWindows event_report_windows,
+    attribution_reporting::TriggerSpecs trigger_specs,
     base::Time aggregatable_report_window_time,
     attribution_reporting::MaxEventLevelReports max_event_level_reports,
     int64_t priority,
@@ -111,7 +110,7 @@ StoredSource::StoredSource(
       destination_sites_(std::move(destination_sites)),
       source_time_(source_time),
       expiry_time_(expiry_time),
-      event_report_windows_(std::move(event_report_windows)),
+      trigger_specs_(std::move(trigger_specs)),
       aggregatable_report_window_time_(aggregatable_report_window_time),
       max_event_level_reports_(max_event_level_reports),
       priority_(priority),

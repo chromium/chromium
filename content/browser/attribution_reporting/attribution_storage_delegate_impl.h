@@ -86,12 +86,11 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   void ShuffleTriggerVerifications(
       std::vector<network::TriggerVerification>& verifications) override;
   double GetRandomizedResponseRate(
-      attribution_reporting::mojom::SourceType,
-      const attribution_reporting::EventReportWindows&,
+      const attribution_reporting::TriggerSpecs&,
       attribution_reporting::MaxEventLevelReports) const override;
   GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
-      const attribution_reporting::EventReportWindows&,
+      const attribution_reporting::TriggerSpecs&,
       attribution_reporting::MaxEventLevelReports,
       base::Time source_time) const override;
   std::vector<NullAggregatableReport> GetNullAggregatableReports(

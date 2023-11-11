@@ -230,11 +230,6 @@ int64_t StorageFileSizeKB(const base::FilePath& path_to_database) {
   return file_size;
 }
 
-uint64_t SanitizeTriggerData(uint64_t trigger_data, SourceType source_type) {
-  return trigger_data %
-         attribution_reporting::DefaultTriggerDataCardinality(source_type);
-}
-
 }  // namespace
 
 struct AttributionStorageSql::StoredSourceData {
@@ -315,11 +310,14 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
     return absl::nullopt;
   }
 
+  auto trigger_specs = attribution_reporting::TriggerSpecs::Default(
+      *source_type, std::move(*event_report_windows));
+
   double randomized_response_rate =
       read_only_source_data_msg->has_randomized_response_rate()
           ? read_only_source_data_msg->randomized_response_rate()
-          : delegate_->GetRandomizedResponseRate(
-                *source_type, *event_report_windows, max_event_level_reports);
+          : delegate_->GetRandomizedResponseRate(trigger_specs,
+                                                 max_event_level_reports);
 
   // If "debug_cookie_set" field was not set in earlier versions, set the value
   // to whether the debug key was set for the source.
@@ -365,7 +363,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       CommonSourceInfo(std::move(*source_origin), std::move(*reporting_origin),
                        *source_type),
       source_event_id, std::move(*destination_set), source_time, expiry_time,
-      std::move(*event_report_windows), aggregatable_report_window_time,
+      std::move(trigger_specs), aggregatable_report_window_time,
       max_event_level_reports, priority, std::move(*filter_data), debug_key,
       std::move(*aggregation_keys), *attribution_logic, *active_state,
       source_id, aggregatable_budget_consumed, randomized_response_rate,
@@ -550,9 +548,12 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   const base::Time aggregatable_report_window_time =
       source_time + reg.aggregatable_report_window;
 
+  auto trigger_specs = attribution_reporting::TriggerSpecs::Default(
+      common_info.source_type(), reg.event_report_windows);
+
   ASSIGN_OR_RETURN(const auto randomized_response_data,
                    delegate_->GetRandomizedResponse(
-                       common_info.source_type(), reg.event_report_windows,
+                       common_info.source_type(), trigger_specs,
                        reg.max_event_level_reports, source_time),
                    [](auto) {
                      return StoreSourceResult(
@@ -634,7 +635,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   absl::optional<StoredSource> stored_source = StoredSource::Create(
       source.common_info(), reg.source_event_id, reg.destination_set,
-      source_time, expiry_time, reg.event_report_windows,
+      source_time, expiry_time, std::move(trigger_specs),
       aggregatable_report_window_time, reg.max_event_level_reports,
       reg.priority, reg.filter_data, reg.debug_key, reg.aggregation_keys,
       attribution_logic, *active_state, source_id,
@@ -650,9 +651,8 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   if (attribution_logic == StoredSource::AttributionLogic::kFalsely) {
     for (const auto& fake_report : *randomized_response_data.response()) {
-      DCHECK_EQ(fake_report.trigger_data,
-                SanitizeTriggerData(fake_report.trigger_data,
-                                    common_info.source_type()));
+      DCHECK(stored_source->trigger_specs().find(fake_report.trigger_data,
+                                                 TriggerDataMatching::kExact));
 
       const EventReportWindows& windows = reg.event_report_windows;
       DCHECK_LT(fake_report.window_index,
@@ -772,6 +772,11 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   DCHECK(data);
 
   const StoredSource& source = data->source;
+  // TODO(crbug.com/1499890): The logic in this method doesn't properly handle
+  // the case in which there are different report windows for different trigger
+  // data. Prior to enabling `attribution_reporting::features::kTriggerConfig`,
+  // this must be fixed.
+  DCHECK(source.trigger_specs().SingleSharedSpec());
 
   // If there's already capacity for the new report, there's nothing to do.
   if (num_conversions < source.max_event_level_reports()) {
@@ -1294,30 +1299,22 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
       return EventLevelResult::kInternalError;
   }
 
-  switch (source.event_report_windows().FallsWithin(attribution_info.time -
-                                                    source.source_time())) {
+  auto trigger_spec_it = source.trigger_specs().find(
+      event_trigger->data, source.trigger_config().trigger_data_matching());
+  if (!trigger_spec_it) {
+    return EventLevelResult::kNoMatchingTriggerData;
+  }
+
+  auto [trigger_data, trigger_spec] = *trigger_spec_it;
+
+  switch (trigger_spec.event_report_windows().FallsWithin(
+      attribution_info.time - source.source_time())) {
     case EventReportWindows::WindowResult::kFallsWithin:
       break;
     case EventReportWindows::WindowResult::kNotStarted:
       return EventLevelResult::kReportWindowNotStarted;
     case EventReportWindows::WindowResult::kPassed:
       return EventLevelResult::kReportWindowPassed;
-  }
-
-  uint64_t trigger_data;
-  switch (source.trigger_config().trigger_data_matching()) {
-    case TriggerDataMatching::kExact: {
-      uint64_t cardinality =
-          attribution_reporting::DefaultTriggerDataCardinality(source_type);
-      if (event_trigger->data >= cardinality) {
-        return EventLevelResult::kNoMatchingTriggerData;
-      }
-      trigger_data = event_trigger->data;
-      break;
-    }
-    case TriggerDataMatching::kModulus:
-      trigger_data = SanitizeTriggerData(event_trigger->data, source_type);
-      break;
   }
 
   switch (
@@ -1333,11 +1330,9 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
       return EventLevelResult::kInternalError;
   }
 
-  const EventReportWindows& event_report_windows =
-      source.event_report_windows();
-
   const base::Time report_time = delegate_->GetEventLevelReportTime(
-      event_report_windows, source.source_time(), attribution_info.time);
+      trigger_spec.event_report_windows(), source.source_time(),
+      attribution_info.time);
 
   // TODO(apaseltiner): Consider informing the manager if the trigger
   // data was out of range for DevTools issue reporting.

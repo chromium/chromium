@@ -231,7 +231,9 @@ StoredSource SourceBuilder::BuildStored() const {
   StoredSource source = *StoredSource::Create(
       CommonSourceInfo(source_origin_, reporting_origin_, source_type_),
       registration_.source_event_id, registration_.destination_set,
-      source_time_, expiry_time, registration_.event_report_windows,
+      source_time_, expiry_time,
+      attribution_reporting::TriggerSpecs::Default(
+          source_type_, registration_.event_report_windows),
       source_time_ + registration_.aggregatable_report_window,
       registration_.max_event_level_reports, registration_.priority,
       registration_.filter_data, registration_.debug_key,
@@ -542,7 +544,7 @@ bool operator==(const StoredSource& a, const StoredSource& b) {
     return std::make_tuple(
         source.common_info(), source.source_event_id(),
         source.destination_sites(), source.source_time(), source.expiry_time(),
-        source.event_report_windows(), source.aggregatable_report_window_time(),
+        source.trigger_specs(), source.aggregatable_report_window_time(),
         source.max_event_level_reports(), source.priority(),
         source.filter_data(), source.debug_key(), source.aggregation_keys(),
         source.attribution_logic(), source.active_state(), source.dedup_keys(),
@@ -704,7 +706,7 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
       << ",destination_sites=" << source.destination_sites()
       << ",source_time=" << source.source_time()
       << ",expiry_time=" << source.expiry_time()
-      << ",event_report_windows=" << source.event_report_windows()
+      << ",trigger_specs=" << source.trigger_specs()
       << ",aggregatable_report_window_time="
       << source.aggregatable_report_window_time()
       << ",max_event_level_reports=" << source.max_event_level_reports()

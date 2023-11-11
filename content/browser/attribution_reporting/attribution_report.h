@@ -56,6 +56,7 @@ class CONTENT_EXPORT AttributionReport {
     // Data provided at trigger time by the attribution destination. Depending
     // on the source type, this contains the associated data in the trigger
     // redirect.
+    // TODO(apaseltiner): Change this to `uint32_t`.
     uint64_t trigger_data;
 
     // Priority specified in conversion redirect.

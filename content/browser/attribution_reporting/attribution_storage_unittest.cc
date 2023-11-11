@@ -76,6 +76,7 @@ using ::testing::IsEmpty;
 using ::testing::IsTrue;
 using ::testing::Le;
 using ::testing::Optional;
+using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
@@ -232,7 +233,13 @@ TEST_F(AttributionStorageTest, UniqueReportWindowsStored_ValuesIdentical) {
       storage()->GetActiveSources(),
       ElementsAre(AllOf(
           Property(&StoredSource::expiry_time, source_time + base::Days(30)),
-          EventReportWindowsIs(event_report_windows),
+          Property(
+              &StoredSource::trigger_specs,
+              Property(
+                  &attribution_reporting::TriggerSpecs::SingleSharedSpec,
+                  Pointee(Property(
+                      &attribution_reporting::TriggerSpec::event_report_windows,
+                      event_report_windows)))),
           Property(&StoredSource::aggregatable_report_window_time,
                    source_time + base::Days(5)))));
 }

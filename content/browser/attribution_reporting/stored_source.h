@@ -13,7 +13,6 @@
 #include "base/types/strong_alias.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
-#include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/trigger_config.h"
@@ -52,7 +51,7 @@ class CONTENT_EXPORT StoredSource {
       attribution_reporting::DestinationSet,
       base::Time source_time,
       base::Time expiry_time,
-      attribution_reporting::EventReportWindows,
+      attribution_reporting::TriggerSpecs,
       base::Time aggregatable_report_window_time,
       attribution_reporting::MaxEventLevelReports,
       int64_t priority,
@@ -91,9 +90,8 @@ class CONTENT_EXPORT StoredSource {
     return aggregatable_report_window_time_;
   }
 
-  const attribution_reporting::EventReportWindows& event_report_windows()
-      const {
-    return event_report_windows_;
+  const attribution_reporting::TriggerSpecs& trigger_specs() const {
+    return trigger_specs_;
   }
 
   attribution_reporting::MaxEventLevelReports max_event_level_reports() const {
@@ -150,7 +148,7 @@ class CONTENT_EXPORT StoredSource {
                attribution_reporting::DestinationSet,
                base::Time source_time,
                base::Time expiry_time,
-               attribution_reporting::EventReportWindows,
+               attribution_reporting::TriggerSpecs,
                base::Time aggregatable_report_window_time,
                attribution_reporting::MaxEventLevelReports,
                int64_t priority,
@@ -171,7 +169,7 @@ class CONTENT_EXPORT StoredSource {
   attribution_reporting::DestinationSet destination_sites_;
   base::Time source_time_;
   base::Time expiry_time_;
-  attribution_reporting::EventReportWindows event_report_windows_;
+  attribution_reporting::TriggerSpecs trigger_specs_;
   base::Time aggregatable_report_window_time_;
   attribution_reporting::MaxEventLevelReports max_event_level_reports_;
   int64_t priority_;
@@ -195,6 +193,7 @@ class CONTENT_EXPORT StoredSource {
 
   double randomized_response_rate_;
 
+  // TODO(apaseltiner): Merge this field with `trigger_specs_`.
   attribution_reporting::TriggerConfig trigger_config_;
 
   bool debug_cookie_set_;
