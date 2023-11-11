@@ -151,21 +151,12 @@ export class Output {
     }
   }
 
-  /**
-   * @return {boolean} True if there's any speech that will be output.
-   */
+  /** @return {boolean} True if there's any speech that will be output. */
   get hasSpeech() {
-    for (let i = 0; i < this.speechBuffer_.length; i++) {
-      if (this.speechBuffer_[i].length) {
-        return true;
-      }
-    }
-    return false;
+    return this.speechBuffer_.some(speech => speech.length);
   }
 
-  /**
-   * @return {boolean} True if there is only whitespace in this output.
-   */
+  /** @return {boolean} True if there is only whitespace in this output. */
   get isOnlyWhitespace() {
     return this.speechBuffer_.every(buff => !/\S+/.test(buff.toString()));
   }
@@ -445,10 +436,6 @@ export class Output {
     // Speech.
     let queueMode = this.determineQueueMode_();
 
-    if (this.speechBuffer_.length > 0) {
-      Output.forceModeForNextSpeechUtterance_ = undefined;
-    }
-
     let encounteredNonWhitespace = false;
     for (let i = 0; i < this.speechBuffer_.length; i++) {
       const buff = this.speechBuffer_[i];
@@ -465,38 +452,12 @@ export class Output {
         continue;
       }
 
-      let speechProps;
-      const speechPropsInstance =
-          /** @type {outputTypes.OutputSpeechProperties} */ (
-              buff.getSpanInstanceOf(outputTypes.OutputSpeechProperties));
-
-      if (!speechPropsInstance) {
-        speechProps = this.initialSpeechProps_;
-      } else {
-        for (const [key, value] of Object.entries(this.initialSpeechProps_)) {
-          if (speechPropsInstance.properties[key] === undefined) {
-            speechPropsInstance.properties[key] = value;
-          }
-        }
-        speechProps = new TtsSpeechProperties(speechPropsInstance.properties);
-      }
-
-      speechProps.category = this.speechCategory_;
-
-      (function() {
-        const scopedBuff = buff;
-        speechProps.startCallback = function() {
-          const actions =
-              scopedBuff.getSpansInstanceOf(outputTypes.OutputAction);
-          if (actions) {
-            actions.forEach(action => action.run());
-          }
-        };
-      }());
+      const speechProps = this.getSpeechPropsForBuff_(buff);
 
       if (i === this.speechBuffer_.length - 1) {
         speechProps.endCallback = this.speechEndCallback_;
       }
+
       let finalSpeech = buff.toString();
       for (const text in this.replacements_) {
         finalSpeech = finalSpeech.replace(text, this.replacements_[text]);
@@ -545,12 +506,48 @@ export class Output {
   /** @return {QueueMode} */
   determineQueueMode_() {
     if (Output.forceModeForNextSpeechUtterance_ !== undefined) {
-      return Output.forceModeForNextSpeechUtterance_;
+      const result = Output.forceModeForNextSpeechUtterance_;
+      if (this.speechBuffer_.length > 0) {
+        Output.forceModeForNextSpeechUtterance_ = undefined;
+      }
+      return result;
     }
     if (this.queueMode_ !== undefined) {
       return this.queueMode_;
     }
     return QueueMode.QUEUE;
+  }
+
+  /**
+   * @param {!Spannable} buff
+   * @return {!TtsSpeechProperties}
+   */
+  getSpeechPropsForBuff_(buff) {
+    let speechProps;
+    const speechPropsInstance =
+        /** @type {outputTypes.OutputSpeechProperties} */ (
+            buff.getSpanInstanceOf(outputTypes.OutputSpeechProperties));
+
+    if (!speechPropsInstance) {
+      speechProps = this.initialSpeechProps_;
+    } else {
+      for (const [key, value] of Object.entries(this.initialSpeechProps_)) {
+        if (speechPropsInstance.properties[key] === undefined) {
+          speechPropsInstance.properties[key] = value;
+        }
+      }
+      speechProps = new TtsSpeechProperties(speechPropsInstance.properties);
+    }
+
+    speechProps.category = this.speechCategory_;
+    speechProps.startCallback = () => {
+      const actions = buff.getSpansInstanceOf(outputTypes.OutputAction);
+      if (actions) {
+        actions.forEach(action => action.run());
+      }
+    };
+
+    return speechProps;
   }
 
   /**
