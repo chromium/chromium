@@ -60,11 +60,12 @@ void AppListNotifierImpl::NotifyResultsUpdated(
   if (location == Location::kList) {
     for (const auto& result : results)
       list_results_[result.id] = result;
-  } else if (location == Location::kAnswerCard) {
+  } else if (location == Location::kAnswerCard ||
+             location == Location::kImage) {
     if (results.size() > 0) {
-      DoStateTransition(Location::kAnswerCard, State::kShown);
+      DoStateTransition(location, State::kShown);
     } else {
-      DoStateTransition(Location::kAnswerCard, State::kNone);
+      DoStateTransition(location, State::kNone);
     }
     results_[location] = results;
   } else {

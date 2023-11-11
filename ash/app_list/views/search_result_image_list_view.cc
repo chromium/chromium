@@ -12,6 +12,7 @@
 
 #include "ash/app_list/views/search_result_image_view.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
@@ -280,6 +281,16 @@ int SearchResultImageListView::DoUpdate() {
     display_results[0]->file_metadata_loader()->RequestFileInfo(
         base::BindRepeating(&SearchResultImageListView::OnImageMetadataLoaded,
                             weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  auto* notifier = view_delegate()->GetNotifier();
+  if (notifier) {
+    std::vector<AppListNotifier::Result> notifier_results;
+    for (const auto* result : display_results) {
+      notifier_results.emplace_back(result->id(), result->metrics_type());
+    }
+    notifier->NotifyResultsUpdated(SearchResultDisplayType::kImage,
+                                   notifier_results);
   }
 
   NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);

@@ -37,6 +37,8 @@ std::string GetViewString(Location location, const std::u16string& raw_query) {
       return "RecentApps";
     case Location::kContinue:
       return "Continue";
+    case Location::kImage:
+      return "Image";
     default:
       LogError(Error::kUntrackedLocation);
       return "Untracked";
