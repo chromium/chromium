@@ -164,6 +164,7 @@ class ScopedScriptInjectionTrackerFailureCrashKeys {
   absl::optional<base::debug::ScopedCrashKeyString> lifecycle_state_crash_key_;
   absl::optional<base::debug::ScopedCrashKeyString>
       frame_debug_string_crash_key_;
+  absl::optional<base::debug::ScopedCrashKeyString> is_guest_crash_key_;
 
   absl::optional<base::debug::ScopedCrashKeyString>
       do_web_view_scripts_match_crash_key_;
@@ -173,6 +174,8 @@ class ScopedScriptInjectionTrackerFailureCrashKeys {
       do_dynamic_content_scripts_match_crash_key_;
   absl::optional<base::debug::ScopedCrashKeyString>
       do_user_scripts_match_crash_key_;
+  absl::optional<base::debug::ScopedCrashKeyString>
+      dynamic_scripts_state_crash_key_;
 };
 
 }  // namespace debug

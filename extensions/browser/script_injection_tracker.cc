@@ -681,45 +681,60 @@ bool DidProcessRunScriptFromExtension(
   return process_data->HasScript(script_type, extension_id);
 }
 
+std::string GetDynScriptsDebugString(
+    const std::vector<const UserScript*>& scripts) {
+  std::string result;
+  for (const UserScript* script : scripts) {
+    if (result.empty()) {
+      result += ";";
+    }
+    result += "<";
+    for (const URLPattern& pattern : script->url_patterns()) {
+      result += ",";
+      result += pattern.host();
+    }
+    result += ">";
+  }
+  return result;
+}
+
+constexpr char kExtensionAffectedByBug1439642[] =
+    "gpdjojdkbbmdfjfahjcgigfpmkopogic";
+
 void AddFrameDebugStringForBug1439642(const ExtensionRegistry& registry,
                                       const char* debug_string_label,
                                       content::RenderFrameHost& frame,
                                       const GURL& url) {
   // TODO(https://crbug.com/1439642): Remove the ad-hoc debugging code after the
   // bug is fixed.
-  auto& process_data =
-      RenderProcessHostUserData::GetOrCreate(*frame.GetProcess());
-  std::string debug_string = ", ";
-  debug_string += debug_string_label;
-  debug_string += ":";
-  const ExtensionId extension_id = "gpdjojdkbbmdfjfahjcgigfpmkopogic";
+  const ExtensionId extension_id = kExtensionAffectedByBug1439642;
   const Extension* extension =
       registry.enabled_extensions().GetByID(extension_id);
-  if (!extension) {
-    if (registry.disabled_extensions().Contains(extension_id)) {
-      debug_string += "disabled,";
-    }
-    if (registry.terminated_extensions().Contains(extension_id)) {
-      debug_string += "terminated,";
-    }
-    if (registry.blocklisted_extensions().Contains(extension_id)) {
-      debug_string += "blocklisted,";
-    }
-    if (registry.blocked_extensions().Contains(extension_id)) {
-      debug_string += "blocked,";
-    }
-    if (registry.ready_extensions().Contains(extension_id)) {
-      debug_string += "ready,";
-    }
-  } else {
-    debug_string += "enabled+";
-    if (DoDynamicContentScriptsMatch(*extension, frame, url)) {
-      debug_string += "dyn-match";
+  if (extension) {
+    std::string debug_string = ", ";
+    debug_string += debug_string_label;
+
+    debug_string += ":url=";
+    if (url.possibly_invalid_spec().size() < 30) {
+      debug_string += url.possibly_invalid_spec();
     } else {
-      debug_string += "no-dyn-match";
+      debug_string += url.possibly_invalid_spec().substr(0, 27);
+      debug_string += "...";
     }
+
+    if (DoDynamicContentScriptsMatch(*extension, frame, url)) {
+      debug_string += "+dyn-match";
+    } else {
+      debug_string += "+no-dyn-match=";
+      auto dynamic_scripts = GetLoadedDynamicScripts(
+          extension_id, UserScript::Source::kDynamicContentScript,
+          *frame.GetProcess());
+      debug_string += GetDynScriptsDebugString(dynamic_scripts);
+    }
+    auto& process_data =
+        RenderProcessHostUserData::GetOrCreate(*frame.GetProcess());
+    process_data.AddFrameDebugString(frame, debug_string);
   }
-  process_data.AddFrameDebugString(frame, debug_string);
 }
 
 const std::string& GetFrameDebugStringForBug1439642(
@@ -929,6 +944,14 @@ void ScriptInjectionTracker::WillUpdateScriptsInRenderer(
       [&any_frame_matches_scripts,
        &extension](content::RenderFrameHost* frame) {
         auto url = frame->GetLastCommittedURL();
+
+        if (extension->id() == kExtensionAffectedByBug1439642) {
+          const ExtensionRegistry* registry =
+              ExtensionRegistry::Get(frame->GetProcess()->GetBrowserContext());
+          DCHECK(registry);  // This method shouldn't be called during shutdown.
+          AddFrameDebugStringForBug1439642(*registry, "WUSIR", *frame, url);
+        }
+
         if (DoWebViewScripstMatch(*extension, *frame) ||
             DoStaticContentScriptsMatch(*extension, *frame, url) ||
             DoDynamicContentScriptsMatch(*extension, *frame, url) ||
@@ -1022,6 +1045,12 @@ base::debug::CrashKeyString* GetFrameDebugStringCrashKey() {
   return crash_key;
 }
 
+base::debug::CrashKeyString* GetIsGuestCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "is_guest", base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
 base::debug::CrashKeyString* GetDoWebViewScriptsMatchCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
       "do_web_view_scripts_match", base::debug::CrashKeySize::Size32);
@@ -1043,6 +1072,12 @@ base::debug::CrashKeyString* GetDoDynamicContentScriptsMatchCrashKey() {
 base::debug::CrashKeyString* GetDoUserScriptsMatchCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
       "do_user_scripts_match", base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetDynamicScriptsStateCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "dynamic_scripts_state", base::debug::CrashKeySize::Size32);
   return crash_key;
 }
 
@@ -1081,6 +1116,10 @@ ScopedScriptInjectionTrackerFailureCrashKeys::
   frame_debug_string_crash_key_.emplace(
       GetFrameDebugStringCrashKey(), GetFrameDebugStringForBug1439642(frame));
 
+  auto* guest = guest_view::GuestViewBase::FromRenderFrameHost(&frame);
+  is_guest_crash_key_.emplace(GetIsGuestCrashKey(),
+                              BoolToCrashKeyValue(!!guest));
+
   const ExtensionRegistry* registry =
       ExtensionRegistry::Get(frame.GetBrowserContext());
   CHECK(registry);
@@ -1102,6 +1141,13 @@ ScopedScriptInjectionTrackerFailureCrashKeys::
     do_user_scripts_match_crash_key_.emplace(
         GetDoUserScriptsMatchCrashKey(),
         BoolToCrashKeyValue(DoUserScriptsMatch(*extension, frame, frame_url)));
+
+    auto dynamic_scripts = GetLoadedDynamicScripts(
+        extension_id, UserScript::Source::kDynamicContentScript,
+        *frame.GetProcess());
+    dynamic_scripts_state_crash_key_.emplace(
+        GetDynamicScriptsStateCrashKey(),
+        GetDynScriptsDebugString(dynamic_scripts));
   }
 }
 
