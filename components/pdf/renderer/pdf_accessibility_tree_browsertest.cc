@@ -2434,6 +2434,10 @@ TEST_F(PdfAccessibilityTreeTest, StitchChildTreeAction) {
   EXPECT_EQ(0u, inline_box->GetChildCount());
 }
 
+// TODO(crbug.com/1442928): Remove the test case below once PDF OCR is launched
+// on Windows, Linux, and macOS as this test will be replaced with the other
+// existing test, `PdfOcrTest.CheckLiveRegionPoliteStatus`.
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PdfAccessibilityTreeTest, CheckLiveRegionPoliteStatus) {
   CreatePdfAccessibilityTree();
 
@@ -2527,6 +2531,7 @@ TEST_F(PdfAccessibilityTreeTest, CheckLiveRegionPoliteStatus) {
   const ui::AXNode* image_node = paragraph_node->GetChildAtIndex(0);
   ASSERT_NE(nullptr, image_node);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 struct PdfOcrServiceTestBatchData {
