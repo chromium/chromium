@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 12
+// Next min version: 13
 
 module cros.mojom;
 
@@ -184,4 +184,59 @@ interface CameraHalServerCallbacks {
   // Fired when the camera software privacy switch status is changed.
   [MinVersion=8]
   CameraSWPrivacySwitchStateChange@2(CameraPrivacySwitchState state);
+};
+
+// CrosCameraServiceObserver is an interface for CrosCameraService to notify
+// observers for any changes on the server side, for example when a
+// CameraHalClient opens or closes a camera device.
+//
+// Next method ID: 3
+interface CrosCameraServiceObserver {
+  // Fired when a CameraHalClient opens or closes a camera device. When a
+  // CameraHalClient loses mojo connection to CameraHalServer, CameraHalServer
+  // would also use this to notify that cameras are closed (not being used).
+  CameraDeviceActivityChange@0(int32 camera_id,
+                               bool opened,
+                               CameraClientType type);
+
+  // Fired when the camera privacy switch status is changed. If the device has
+  // such switch, this observer will get the notification.
+  CameraPrivacySwitchStateChange@1(CameraPrivacySwitchState state,
+                                   int32 camera_id);
+
+  // Fired when the camera software privacy switch status is changed.
+  CameraSWPrivacySwitchStateChange@2(CameraPrivacySwitchState state);
+};
+
+// A client can request the CrosCameraService service from Mojo Service Manager
+// and get the camera module or set/get the camera states.
+//
+// Next method ID: 8
+interface CrosCameraService {
+  // A caller calls GetCameraModule to create a new Mojo channel to the camera
+  // HAL v3 adapter.
+  GetCameraModule@0(CameraClientType type)
+                    => (pending_remote<CameraModule> camera_module_receiver);
+
+  // Enable or disable tracing.
+  SetTracingEnabled@1(bool enabled);
+
+  // Enable or disable auto framing.
+  SetAutoFramingState@2(CameraAutoFramingState state);
+
+  // Get the current camera software privacy switch state.
+  GetCameraSWPrivacySwitchState@3() => (CameraPrivacySwitchState state);
+
+  // Enable or disable the camera software privacy switch.
+  SetCameraSWPrivacySwitchState@4(CameraPrivacySwitchState state);
+
+  // Get if the HAL supports auto framing.
+  GetAutoFramingSupported@5() => (bool supported);
+
+  // Turn ON/OFF and configure specified effect.
+  SetCameraEffect@6(EffectsConfig config) => (SetEffectResult result);
+
+  // Add an obersever which observes the event of the camera service.
+  AddCrosCameraServiceObserver@7(
+      pending_remote<CrosCameraServiceObserver> observer);
 };

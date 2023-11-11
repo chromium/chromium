@@ -27,6 +27,7 @@
 #include "components/chromeos_camera/common/jpeg_encode_accelerator.mojom.h"
 #include "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom.h"
 #include "media/capture/capture_export.h"
+#include "media/capture/video/chromeos/mojo_service_manager_observer.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "media/capture/video/chromeos/token_manager.h"
 #include "media/capture/video/video_capture_device_factory.h"
@@ -89,39 +90,6 @@ class CAPTURE_EXPORT CameraActiveClientObserver : public base::CheckedObserver {
       const base::flat_set<std::string>& active_device_ids) {}
 };
 
-// A class to provide a no-op remote to CameraHalServer that failed
-// registration. When CameraHalServer calls
-// CameraHalDispatcher::RegisterServerWithToken to register itself, a
-// PendingRemote<CameraHalServerCallbacks> is returned. Returning an unbound
-// pending remote would crash CameraHalServer immediately, and thus disallows
-// it from handling authentication failures.
-// TODO(b/170075468): Modify RegisterServerWithToken to return an optional
-// CameraHalServerCallbacks instead.
-class FailedCameraHalServerCallbacks final
-    : public cros::mojom::CameraHalServerCallbacks {
- private:
-  friend class CameraHalDispatcherImpl;
-
-  FailedCameraHalServerCallbacks();
-  ~FailedCameraHalServerCallbacks() override;
-
-  mojo::PendingRemote<cros::mojom::CameraHalServerCallbacks> GetRemote();
-
-  // CameraHalServerCallbacks implementations.
-  void CameraDeviceActivityChange(int32_t camera_id,
-                                  bool opened,
-                                  cros::mojom::CameraClientType type) override;
-  void CameraPrivacySwitchStateChange(
-      cros::mojom::CameraPrivacySwitchState state,
-      int32_t camera_id) override;
-  void CameraSWPrivacySwitchStateChange(
-      cros::mojom::CameraPrivacySwitchState state) override;
-
-  void Reset();
-
-  mojo::Receiver<cros::mojom::CameraHalServerCallbacks> callbacks_;
-};
-
 class CAPTURE_EXPORT CameraPrivacySwitchObserver
     : public base::CheckedObserver {
  public:
@@ -171,8 +139,7 @@ class CAPTURE_EXPORT CameraEffectObserver : public base::CheckedObserver {
 // See https://crbug.com/891961.
 class CAPTURE_EXPORT CameraHalDispatcherImpl final
     : public cros::mojom::CameraHalDispatcher,
-      public cros::mojom::CameraHalServerCallbacks,
-      public chromeos::mojo_service_manager::mojom::ServiceProvider {
+      public cros::mojom::CrosCameraServiceObserver {
  public:
   using CameraEffectsControllerCallback =
       base::RepeatingCallback<void(cros::mojom::EffectsConfigPtr,
@@ -343,19 +310,18 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void OnPeerConnected(mojo::ScopedMessagePipeHandle message_pipe);
 
   // Mojo connection error handlers.
-  void OnCameraHalServerConnectionError();
+  void OnCameraServiceConnectionError();
   void OnCameraHalClientConnectionError(CameraClientObserver* client);
+
+  void OnGetCameraModule(
+      CameraClientObserver* client_observer,
+      mojo::PendingRemote<cros::mojom::CameraModule> camera_module);
 
   // Cleans up everything about the observer
   void CleanupClientOnProxyThread(CameraClientObserver* client_observer);
   void RemoveClientObserversOnProxyThread(
       std::vector<CameraClientObserver*> client_observers,
       base::WaitableEvent* removed);
-
-  void RegisterServerWithTokenOnProxyThread(
-      mojo::PendingRemote<cros::mojom::CameraHalServer> camera_hal_server,
-      const base::UnguessableToken& token,
-      RegisterServerWithTokenCallback callback);
 
   void RegisterClientWithTokenOnProxyThread(
       mojo::PendingRemote<cros::mojom::CameraHalClient> client,
@@ -396,10 +362,10 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void OnCameraEffectsObserverAddOnProxyThread(
       CameraEffectObserverCallback camera_effect_observer_callback);
 
-  // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
-  void Request(
-      chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
-      mojo::ScopedMessagePipeHandle receiver) override;
+  void BindCameraServiceOnProxyThread(
+      mojo::PendingRemote<cros::mojom::CrosCameraService> camera_service);
+
+  void TryConnectToCameraService();
 
   std::string GetDeviceIdFromCameraId(int32_t camera_id);
   base::flat_set<std::string> GetDeviceIdsFromCameraIds(
@@ -427,11 +393,10 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   mojo::ReceiverSet<cros::mojom::CameraHalDispatcher> receiver_set_;
 
-  mojo::Remote<cros::mojom::CameraHalServer> camera_hal_server_;
+  mojo::Remote<cros::mojom::CrosCameraService> camera_service_;
 
-  mojo::Receiver<cros::mojom::CameraHalServerCallbacks>
-      camera_hal_server_callbacks_;
-  FailedCameraHalServerCallbacks failed_camera_hal_server_callbacks_;
+  mojo::Receiver<cros::mojom::CrosCameraServiceObserver>
+      camera_service_observer_receiver_;
 
   std::set<CameraClientObserver*> client_observers_;
 
@@ -485,9 +450,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   base::flat_map<int32_t, std::string> camera_id_to_device_id_
       GUARDED_BY(camera_id_to_device_id_lock_);
 
-  // Receiver for mojo service manager service provider.
-  mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
-      provider_receiver_{this};
+  std::unique_ptr<MojoServiceManagerObserver> mojo_service_manager_observer_;
 
   base::WeakPtrFactory<CameraHalDispatcherImpl> weak_factory_{this};
 };

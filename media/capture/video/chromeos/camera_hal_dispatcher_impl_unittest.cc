@@ -40,37 +40,30 @@ cros::mojom::EffectsConfigPtr GetDefaultCameraEffectsConfigForTesting() {
   return config;
 }
 
-class MockCameraHalServer : public cros::mojom::CameraHalServer {
+class MockCrosCameraService : public cros::mojom::CrosCameraService {
  public:
-  MockCameraHalServer() = default;
+  MockCrosCameraService() = default;
 
-  MockCameraHalServer(const MockCameraHalServer&) = delete;
-  MockCameraHalServer& operator=(const MockCameraHalServer&) = delete;
+  MockCrosCameraService(const MockCrosCameraService&) = delete;
+  MockCrosCameraService& operator=(const MockCrosCameraService&) = delete;
 
-  ~MockCameraHalServer() override = default;
-
-  void CreateChannel(
-      mojo::PendingReceiver<cros::mojom::CameraModule> camera_module_receiver,
-      cros::mojom::CameraClientType camera_client_type) override {
-    DoCreateChannel(std::move(camera_module_receiver), camera_client_type);
-  }
+  ~MockCrosCameraService() override = default;
 
   // **NOTE**: If you add additional mocks here, you will need to
   //           carefully add an EXPECT_CALL with a WillOnce to invoke
   //           CameraHalDispatcherImplTest::QuitRunLoop and increment
   //           RunLoop(val) appropriately. Failing to do this will
   //           introduce flakiness into these tests.
-  MOCK_METHOD2(DoCreateChannel,
-               void(mojo::PendingReceiver<cros::mojom::CameraModule>
-                        camera_module_receiver,
-                    cros::mojom::CameraClientType camera_client_type));
+  MOCK_METHOD2(GetCameraModule,
+               void(cros::mojom::CameraClientType camera_client_type,
+                    GetCameraModuleCallback callback));
 
   MOCK_METHOD1(SetTracingEnabled, void(bool enabled));
   MOCK_METHOD1(SetAutoFramingState,
                void(cros::mojom::CameraAutoFramingState state));
   MOCK_METHOD1(
       GetCameraSWPrivacySwitchState,
-      void(cros::mojom::CameraHalServer::GetCameraSWPrivacySwitchStateCallback
+      void(cros::mojom::CrosCameraService::GetCameraSWPrivacySwitchStateCallback
                callback));
   MOCK_METHOD1(SetCameraSWPrivacySwitchState,
                void(cros::mojom::CameraPrivacySwitchState state));
@@ -79,15 +72,19 @@ class MockCameraHalServer : public cros::mojom::CameraHalServer {
   MOCK_METHOD2(SetCameraEffect,
                void(::cros::mojom::EffectsConfigPtr config,
                     SetCameraEffectCallback callback));
+  MOCK_METHOD1(AddCrosCameraServiceObserver,
+               void(mojo::PendingRemote<cros::mojom::CrosCameraServiceObserver>
+                        observer));
+
   // **NOTE**: Please read the note at the top of these mocks if you're
   //           adding more mocks.
 
-  mojo::PendingRemote<cros::mojom::CameraHalServer> GetPendingRemote() {
+  mojo::PendingRemote<cros::mojom::CrosCameraService> GetPendingRemote() {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
  private:
-  mojo::Receiver<cros::mojom::CameraHalServer> receiver_{this};
+  mojo::Receiver<cros::mojom::CrosCameraService> receiver_{this};
 };
 
 class MockCameraHalClient : public cros::mojom::CameraHalClient {
@@ -196,15 +193,10 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
     }
   }
 
-  static void RegisterServer(
+  static void BindCameraService(
       CameraHalDispatcherImpl* dispatcher,
-      mojo::PendingRemote<cros::mojom::CameraHalServer> server,
-      cros::mojom::CameraHalDispatcher::RegisterServerWithTokenCallback
-          callback) {
-    auto token = base::UnguessableToken::Create();
-    dispatcher->GetTokenManagerForTesting()->AssignServerTokenForTesting(token);
-    dispatcher->RegisterServerWithToken(std::move(server), std::move(token),
-                                        std::move(callback));
+      mojo::PendingRemote<cros::mojom::CrosCameraService> camera_service) {
+    dispatcher->BindCameraServiceOnProxyThread(std::move(camera_service));
   }
 
   static void RegisterClientWithToken(
@@ -216,16 +208,6 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
           callback) {
     dispatcher->RegisterClientWithToken(std::move(client), type, token,
                                         std::move(callback));
-  }
-
-  void OnRegisteredServer(
-      int32_t result,
-      mojo::PendingRemote<cros::mojom::CameraHalServerCallbacks> callbacks) {
-    if (result != 0) {
-      ADD_FAILURE() << "Failed to register server: "
-                    << base::safe_strerror(-result);
-      QuitRunLoop();
-    }
   }
 
   void OnRegisteredClient(int32_t result) {
@@ -270,160 +252,49 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
 };
 
 // Test that the CameraHalDisptcherImpl correctly re-establishes a Mojo channel
-// for the client when the server crashes.
-TEST_F(CameraHalDispatcherImplTest, ServerConnectionError) {
-  // First verify that a the CameraHalDispatcherImpl establishes a Mojo channel
-  // between the server and the client.
-  auto mock_server = std::make_unique<MockCameraHalServer>();
-  auto mock_client = std::make_unique<MockCameraHalClient>();
-
-  // Wait until the client gets the established Mojo channel, and that
-  // all expected mojo calls have been invoked.
-  CreateLoop(5);
-  MockCameraActiveClientObserver observer;
-  dispatcher_->AddActiveClientObserver(&observer);
-  dispatcher_->CameraDeviceActivityChange(
-      /*camera_id=*/0, /*opened=*/true, cros::mojom::CameraClientType::TESTING);
-
-  EXPECT_CALL(*mock_server, DoCreateChannel(_, _))
-      .Times(1)
-      .WillOnce(
-          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  EXPECT_CALL(*mock_client, DoSetUpChannel(_))
-      .Times(1)
-      .WillOnce(
-          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  EXPECT_CALL(*mock_server, SetAutoFramingState(_))
-      .Times(1)
-      .WillOnce(
-          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  EXPECT_CALL(*mock_server, SetCameraEffect(_, _))
-      .Times(1)
-      .WillOnce([this](::cros::mojom::EffectsConfigPtr,
-                       MockCameraHalServer::SetCameraEffectCallback callback) {
-        std::move(callback).Run(::cros::mojom::SetEffectResult::kOk);
-        this->QuitRunLoop();
-      });
-  EXPECT_CALL(observer,
-              DoOnActiveClientChange(cros::mojom::CameraClientType::TESTING,
-                                     true, base::flat_set<std::string>({"0"})))
-      .Times(1)
-      .WillOnce(
-          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-
-  auto server = mock_server->GetPendingRemote();
-  GetProxyTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &CameraHalDispatcherImplTest::RegisterServer,
-          base::Unretained(dispatcher_), std::move(server),
-          base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredServer,
-                         base::Unretained(this))));
-  auto client = mock_client->GetPendingRemote();
-  auto type = cros::mojom::CameraClientType::TESTING;
-  GetProxyTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &CameraHalDispatcherImplTest::RegisterClientWithToken,
-          base::Unretained(dispatcher_), std::move(client), type,
-          dispatcher_->GetTokenForTrustedClient(type),
-          base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredClient,
-                         base::Unretained(this))));
-  RunLoop();
-
-  // The client registration callback may be called after
-  // CameraHalClient::SetUpChannel(). Use a waitable event to make sure we have
-  // the result.
-  register_client_event_.Wait();
-  ASSERT_EQ(last_register_client_result_, 0);
-
-  CreateLoop(1);
-  // Re-create a new server to simulate a server crash.
-  mock_server = std::make_unique<MockCameraHalServer>();
-
-  // Wait for our observer to be told the client is inactive, which means
-  // the server has been cleaned up properly before registering again.
-  EXPECT_CALL(observer,
-              DoOnActiveClientChange(cros::mojom::CameraClientType::TESTING,
-                                     false, base::flat_set<std::string>()))
-      .Times(1)
-      .WillOnce(
-          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  RunLoop();
-
-  // Make sure we create a new Mojo channel from the new server to the same
-  // client.
-  CreateLoop(4);
-  EXPECT_CALL(*mock_server, DoCreateChannel(_, _))
-      .Times(1)
-      .WillOnce(
-          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  EXPECT_CALL(*mock_client, DoSetUpChannel(_))
-      .Times(1)
-      .WillOnce(
-          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  EXPECT_CALL(*mock_server, SetAutoFramingState(_))
-      .Times(1)
-      .WillOnce(
-          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  EXPECT_CALL(*mock_server, SetCameraEffect(_, _))
-      .Times(1)
-      .WillOnce([this](::cros::mojom::EffectsConfigPtr,
-                       MockCameraHalServer::SetCameraEffectCallback callback) {
-        std::move(callback).Run(::cros::mojom::SetEffectResult::kOk);
-        this->QuitRunLoop();
-      });
-
-  server = mock_server->GetPendingRemote();
-  GetProxyTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &CameraHalDispatcherImplTest::RegisterServer,
-          base::Unretained(dispatcher_), std::move(server),
-          base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredServer,
-                         base::Unretained(this))));
-  // Wait until the client gets the established Mojo channel, and that
-  // all expected mojo calls have been invoked.
-  RunLoop();
-}
-
-// Test that the CameraHalDisptcherImpl correctly re-establishes a Mojo channel
 // for the client when the client reconnects after crash.
 TEST_F(CameraHalDispatcherImplTest, ClientConnectionError) {
   // First verify that a the CameraHalDispatcherImpl establishes a Mojo channel
-  // between the server and the client.
-  auto mock_server = std::make_unique<MockCameraHalServer>();
+  // between the camera service and the client.
+  auto mock_service = std::make_unique<MockCrosCameraService>();
   auto mock_client = std::make_unique<MockCameraHalClient>();
 
-  CreateLoop(4);
-  EXPECT_CALL(*mock_server, DoCreateChannel(_, _))
+  CreateLoop(5);
+  EXPECT_CALL(*mock_service, GetCameraModule(_, _))
       .Times(1)
       .WillOnce(
-          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
+          [this](cros::mojom::CameraClientType camera_client_type,
+                 MockCrosCameraService::GetCameraModuleCallback callback) {
+            mojo::PendingReceiver<cros::mojom::CameraModule> receiver;
+            std::move(callback).Run(receiver.InitWithNewPipeAndPassRemote());
+            this->QuitRunLoop();
+          });
   EXPECT_CALL(*mock_client, DoSetUpChannel(_))
       .Times(1)
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  EXPECT_CALL(*mock_server, SetAutoFramingState(_))
+  EXPECT_CALL(*mock_service, SetAutoFramingState(_))
       .Times(1)
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  EXPECT_CALL(*mock_server, SetCameraEffect(_, _))
+  EXPECT_CALL(*mock_service, SetCameraEffect(_, _))
       .Times(1)
-      .WillOnce([this](::cros::mojom::EffectsConfigPtr,
-                       MockCameraHalServer::SetCameraEffectCallback callback) {
-        std::move(callback).Run(::cros::mojom::SetEffectResult::kOk);
-        this->QuitRunLoop();
-      });
+      .WillOnce(
+          [this](::cros::mojom::EffectsConfigPtr,
+                 MockCrosCameraService::SetCameraEffectCallback callback) {
+            std::move(callback).Run(::cros::mojom::SetEffectResult::kOk);
+            this->QuitRunLoop();
+          });
+  EXPECT_CALL(*mock_service, AddCrosCameraServiceObserver(_))
+      .Times(1)
+      .WillOnce(
+          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
 
-  auto server = mock_server->GetPendingRemote();
+  auto service = mock_service->GetPendingRemote();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &CameraHalDispatcherImplTest::RegisterServer,
-          base::Unretained(dispatcher_), std::move(server),
-          base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredServer,
-                         base::Unretained(this))));
+      base::BindOnce(&CameraHalDispatcherImplTest::BindCameraService,
+                     base::Unretained(dispatcher_), std::move(service)));
   auto client = mock_client->GetPendingRemote();
   auto type = cros::mojom::CameraClientType::TESTING;
   GetProxyTaskRunner()->PostTask(
@@ -448,12 +319,17 @@ TEST_F(CameraHalDispatcherImplTest, ClientConnectionError) {
   // Re-create a new client to simulate a client crash.
   mock_client = std::make_unique<MockCameraHalClient>();
 
-  // Make sure we re-create the Mojo channel from the same server to the new
-  // client.
-  EXPECT_CALL(*mock_server, DoCreateChannel(_, _))
+  // Make sure we re-create the Mojo channel from the same camera service
+  // instance to the new client.
+  EXPECT_CALL(*mock_service, GetCameraModule(_, _))
       .Times(1)
       .WillOnce(
-          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
+          [this](cros::mojom::CameraClientType camera_client_type,
+                 MockCrosCameraService::GetCameraModuleCallback callback) {
+            mojo::PendingReceiver<cros::mojom::CameraModule> receiver;
+            std::move(callback).Run(receiver.InitWithNewPipeAndPassRemote());
+            this->QuitRunLoop();
+          });
   EXPECT_CALL(*mock_client, DoSetUpChannel(_))
       .Times(1)
       .WillOnce(
@@ -483,46 +359,52 @@ TEST_F(CameraHalDispatcherImplTest, ClientConnectionError) {
 // registered successfully.
 TEST_F(CameraHalDispatcherImplTest, RegisterClientSuccess) {
   // First verify that a the CameraHalDispatcherImpl establishes a Mojo channel
-  // between the server and the client.
-  auto mock_server = std::make_unique<MockCameraHalServer>();
+  // between the camera service and the client.
+  auto mock_service = std::make_unique<MockCrosCameraService>();
 
-  auto server = mock_server->GetPendingRemote();
+  auto service = mock_service->GetPendingRemote();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &CameraHalDispatcherImplTest::RegisterServer,
-          base::Unretained(dispatcher_), std::move(server),
-          base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredServer,
-                         base::Unretained(this))));
+      base::BindOnce(&CameraHalDispatcherImplTest::BindCameraService,
+                     base::Unretained(dispatcher_), std::move(service)));
 
   bool firstRun = true;
   for (auto type : TokenManager::kTrustedClientTypes) {
     int loopsRequired = 2;
     auto mock_client = std::make_unique<MockCameraHalClient>();
-    EXPECT_CALL(*mock_server, DoCreateChannel(_, _))
+    EXPECT_CALL(*mock_service, GetCameraModule(_, _))
         .Times(1)
         .WillOnce(
-            InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
+            [this](cros::mojom::CameraClientType camera_client_type,
+                   MockCrosCameraService::GetCameraModuleCallback callback) {
+              mojo::PendingReceiver<cros::mojom::CameraModule> receiver;
+              std::move(callback).Run(receiver.InitWithNewPipeAndPassRemote());
+              this->QuitRunLoop();
+            });
     EXPECT_CALL(*mock_client, DoSetUpChannel(_))
         .Times(1)
         .WillOnce(
             InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
     if (firstRun) {
-      EXPECT_CALL(*mock_server, SetAutoFramingState(_))
+      EXPECT_CALL(*mock_service, SetAutoFramingState(_))
           .Times(1)
           .WillOnce(InvokeWithoutArgs(
               this, &CameraHalDispatcherImplTest::QuitRunLoop));
-      EXPECT_CALL(*mock_server, SetCameraEffect(_, _))
+      EXPECT_CALL(*mock_service, SetCameraEffect(_, _))
           .Times(1)
           .WillOnce(
               [this](::cros::mojom::EffectsConfigPtr,
-                     MockCameraHalServer::SetCameraEffectCallback callback) {
+                     MockCrosCameraService::SetCameraEffectCallback callback) {
                 std::move(callback).Run(::cros::mojom::SetEffectResult::kOk);
                 this->QuitRunLoop();
               });
+      EXPECT_CALL(*mock_service, AddCrosCameraServiceObserver(_))
+          .Times(1)
+          .WillOnce(InvokeWithoutArgs(
+              this, &CameraHalDispatcherImplTest::QuitRunLoop));
       // These above calls only happen on the first client connection
       firstRun = false;
-      loopsRequired += 2;
+      loopsRequired += 3;
     }
     CreateLoop(loopsRequired);
     auto client = mock_client->GetPendingRemote();
@@ -549,33 +431,35 @@ TEST_F(CameraHalDispatcherImplTest, RegisterClientSuccess) {
 // provided.
 TEST_F(CameraHalDispatcherImplTest, RegisterClientFail) {
   // First verify that a the CameraHalDispatcherImpl establishes a Mojo channel
-  // between the server and the client.
-  auto mock_server = std::make_unique<MockCameraHalServer>();
+  // between the camera service and the client.
+  auto mock_service = std::make_unique<MockCrosCameraService>();
   auto mock_client = std::make_unique<MockCameraHalClient>();
 
   // Extra RunLoop for failure to register the client. In |OnRegisteredClient|,
   // |QuitRunLoop| is called if the registration fails.
-  CreateLoop(3);
-  EXPECT_CALL(*mock_server, SetAutoFramingState(_))
+  CreateLoop(4);
+  EXPECT_CALL(*mock_service, SetAutoFramingState(_))
       .Times(1)
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  EXPECT_CALL(*mock_server, SetCameraEffect(_, _))
+  EXPECT_CALL(*mock_service, SetCameraEffect(_, _))
       .Times(1)
-      .WillOnce([this](::cros::mojom::EffectsConfigPtr,
-                       MockCameraHalServer::SetCameraEffectCallback callback) {
-        std::move(callback).Run(::cros::mojom::SetEffectResult::kOk);
-        this->QuitRunLoop();
-      });
+      .WillOnce(
+          [this](::cros::mojom::EffectsConfigPtr,
+                 MockCrosCameraService::SetCameraEffectCallback callback) {
+            std::move(callback).Run(::cros::mojom::SetEffectResult::kOk);
+            this->QuitRunLoop();
+          });
+  EXPECT_CALL(*mock_service, AddCrosCameraServiceObserver(_))
+      .Times(1)
+      .WillOnce(
+          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
 
-  auto server = mock_server->GetPendingRemote();
+  auto service = mock_service->GetPendingRemote();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &CameraHalDispatcherImplTest::RegisterServer,
-          base::Unretained(dispatcher_), std::move(server),
-          base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredServer,
-                         base::Unretained(this))));
+      base::BindOnce(&CameraHalDispatcherImplTest::BindCameraService,
+                     base::Unretained(dispatcher_), std::move(service)));
 
   // Use an empty token to make sure authentication fails.
   base::UnguessableToken empty_token;
@@ -703,7 +587,8 @@ TEST_F(CameraHalDispatcherImplTest, CameraEffectObserver) {
 TEST_F(CameraHalDispatcherImplTest, SetCameraEffects) {
   MockCameraEffectObserver observer;
   dispatcher_->AddCameraEffectObserver(&observer, base::DoNothing());
-  // Case (1) SetCameraEffects should fail if server is not initialized.
+  // Case (1) SetCameraEffects should fail if the camera service is not
+  // initialized.
   CreateLoop(1);
   cros::mojom::EffectsConfigPtr config = cros::mojom::EffectsConfig::New();
   EXPECT_CALL(observer, DoOnCameraEffectChanged())
@@ -714,48 +599,51 @@ TEST_F(CameraHalDispatcherImplTest, SetCameraEffects) {
   RunLoop();
   EXPECT_EQ(observer.new_effects(), cros::mojom::EffectsConfigPtr());
 
-  auto mock_server = std::make_unique<MockCameraHalServer>();
+  auto mock_service = std::make_unique<MockCrosCameraService>();
 
-  // Case (2) Connect mock_server will trigger a mock_server->SetCameraEffect
+  // Case (2) Connect mock_serice will trigger a mock_serice->SetCameraEffect
   // call, and we want let this one to succeed.
-  CreateLoop(3);
-  EXPECT_CALL(*mock_server, SetAutoFramingState(_))
+  CreateLoop(4);
+  EXPECT_CALL(*mock_service, SetAutoFramingState(_))
       .Times(1)
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  EXPECT_CALL(*mock_server, SetCameraEffect(_, _))
+  EXPECT_CALL(*mock_service, SetCameraEffect(_, _))
       .Times(1)
-      .WillOnce([this](::cros::mojom::EffectsConfigPtr,
-                       MockCameraHalServer::SetCameraEffectCallback callback) {
-        std::move(callback).Run(::cros::mojom::SetEffectResult::kOk);
-        this->QuitRunLoop();
-      });
+      .WillOnce(
+          [this](::cros::mojom::EffectsConfigPtr,
+                 MockCrosCameraService::SetCameraEffectCallback callback) {
+            std::move(callback).Run(::cros::mojom::SetEffectResult::kOk);
+            this->QuitRunLoop();
+          });
+  EXPECT_CALL(*mock_service, AddCrosCameraServiceObserver(_))
+      .Times(1)
+      .WillOnce(
+          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
   EXPECT_CALL(observer, DoOnCameraEffectChanged())
       .Times(1)
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
 
-  auto server = mock_server->GetPendingRemote();
+  auto service = mock_service->GetPendingRemote();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &CameraHalDispatcherImplTest::RegisterServer,
-          base::Unretained(dispatcher_), std::move(server),
-          base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredServer,
-                         base::Unretained(this))));
+      base::BindOnce(&CameraHalDispatcherImplTest::BindCameraService,
+                     base::Unretained(dispatcher_), std::move(service)));
   RunLoop();
   EXPECT_EQ(observer.new_effects(), config);
 
   // Case (3) if mock_server->SetCameraEffect succeeds, the expected camera
   // effects should be updated.
   CreateLoop(2);
-  EXPECT_CALL(*mock_server, SetCameraEffect(_, _))
+  EXPECT_CALL(*mock_service, SetCameraEffect(_, _))
       .Times(1)
-      .WillOnce([this](::cros::mojom::EffectsConfigPtr config,
-                       MockCameraHalServer::SetCameraEffectCallback callback) {
-        std::move(callback).Run(::cros::mojom::SetEffectResult::kOk);
-        this->QuitRunLoop();
-      });
+      .WillOnce(
+          [this](::cros::mojom::EffectsConfigPtr config,
+                 MockCrosCameraService::SetCameraEffectCallback callback) {
+            std::move(callback).Run(::cros::mojom::SetEffectResult::kOk);
+            this->QuitRunLoop();
+          });
   EXPECT_CALL(observer, DoOnCameraEffectChanged())
       .Times(1)
       .WillOnce(
@@ -766,16 +654,17 @@ TEST_F(CameraHalDispatcherImplTest, SetCameraEffects) {
   RunLoop();
   EXPECT_EQ(observer.new_effects(), config);
 
-  // Case (4) if mock_server->SetCameraEffect fails, the expected camera effects
-  // should not be updated.
+  // Case (4) if mock_service->SetCameraEffect fails, the expected camera
+  // effects should not be updated.
   CreateLoop(2);
-  EXPECT_CALL(*mock_server, SetCameraEffect(_, _))
+  EXPECT_CALL(*mock_service, SetCameraEffect(_, _))
       .Times(1)
-      .WillOnce([this](::cros::mojom::EffectsConfigPtr config,
-                       MockCameraHalServer::SetCameraEffectCallback callback) {
-        std::move(callback).Run(::cros::mojom::SetEffectResult::kError);
-        this->QuitRunLoop();
-      });
+      .WillOnce(
+          [this](::cros::mojom::EffectsConfigPtr config,
+                 MockCrosCameraService::SetCameraEffectCallback callback) {
+            std::move(callback).Run(::cros::mojom::SetEffectResult::kError);
+            this->QuitRunLoop();
+          });
 
   EXPECT_CALL(observer, DoOnCameraEffectChanged())
       .Times(1)

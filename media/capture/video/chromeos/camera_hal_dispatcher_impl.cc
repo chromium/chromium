@@ -43,6 +43,9 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
 
+using chromeos::mojo_service_manager::mojom::ErrorOrServiceState;
+using chromeos::mojo_service_manager::mojom::ServiceState;
+
 namespace media {
 
 namespace {
@@ -176,31 +179,6 @@ bool CameraClientObserver::Authenticate(TokenManager* token_manager) {
   return true;
 }
 
-FailedCameraHalServerCallbacks::FailedCameraHalServerCallbacks()
-    : callbacks_(this) {}
-FailedCameraHalServerCallbacks::~FailedCameraHalServerCallbacks() = default;
-
-mojo::PendingRemote<cros::mojom::CameraHalServerCallbacks>
-FailedCameraHalServerCallbacks::GetRemote() {
-  return callbacks_.BindNewPipeAndPassRemote();
-}
-
-void FailedCameraHalServerCallbacks::CameraDeviceActivityChange(
-    int32_t camera_id,
-    bool opened,
-    cros::mojom::CameraClientType type) {}
-
-void FailedCameraHalServerCallbacks::CameraPrivacySwitchStateChange(
-    cros::mojom::CameraPrivacySwitchState state,
-    int32_t camera_id) {}
-
-void FailedCameraHalServerCallbacks::CameraSWPrivacySwitchStateChange(
-    cros::mojom::CameraPrivacySwitchState state) {}
-
-void FailedCameraHalServerCallbacks::Reset() {
-  callbacks_.reset();
-}
-
 // static
 CameraHalDispatcherImpl* CameraHalDispatcherImpl::GetInstance() {
   return base::Singleton<CameraHalDispatcherImpl>::get();
@@ -222,6 +200,56 @@ bool CameraHalDispatcherImpl::StartThreads() {
   proxy_task_runner_ = proxy_thread_.task_runner();
   blocking_io_task_runner_ = blocking_io_thread_.task_runner();
   return true;
+}
+
+void CameraHalDispatcherImpl::BindCameraServiceOnProxyThread(
+    mojo::PendingRemote<cros::mojom::CrosCameraService> camera_service) {
+  DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+  DCHECK(!camera_service_.is_bound());
+
+  CAMERA_LOG(EVENT) << "Connected to cros-camera.";
+  camera_service_.Bind(std::move(camera_service));
+  camera_service_.set_disconnect_handler(
+      base::BindOnce(&CameraHalDispatcherImpl::OnCameraServiceConnectionError,
+                     base::Unretained(this)));
+  if (auto_framing_supported_callback_) {
+    camera_service_->GetAutoFramingSupported(
+        std::move(auto_framing_supported_callback_));
+  }
+  camera_service_->SetAutoFramingState(current_auto_framing_state_);
+
+  // Should only be called when an effect is set.
+  if (!initial_effects_.is_null() || !current_effects_.is_null()) {
+    // If current_effects_ is set, then a newer effect was applied since
+    // the initial setup and we should use that, as the camera server
+    // may have crashed and restarted.
+    cros::mojom::EffectsConfigPtr& config =
+        current_effects_.is_null() ? initial_effects_ : current_effects_;
+
+    SetCameraEffectsOnProxyThread(config.Clone(), /*is_from_register=*/true);
+  }
+  camera_service_->AddCrosCameraServiceObserver(
+      camera_service_observer_receiver_.BindNewPipeAndPassRemote());
+  // Set up the Mojo channels for clients which registered before cros camera
+  // service starts or that have disconnected from the camera module because the
+  // cros camera service stopped.
+  for (auto* client_observer : client_observers_) {
+    EstablishMojoChannel(client_observer);
+  }
+}
+
+void CameraHalDispatcherImpl::TryConnectToCameraService() {
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(ash::mojo_service_manager::IsServiceManagerBound());
+
+  mojo::PendingRemote<cros::mojom::CrosCameraService> camera_service;
+  ash::mojo_service_manager::GetServiceManagerProxy()->Request(
+      chromeos::mojo_services::kCrosCameraService, absl::nullopt,
+      camera_service.InitWithNewPipeAndPassReceiver().PassPipe());
+  proxy_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CameraHalDispatcherImpl::BindCameraServiceOnProxyThread,
+                     base::Unretained(this), std::move(camera_service)));
 }
 
 bool CameraHalDispatcherImpl::Start(
@@ -262,10 +290,6 @@ bool CameraHalDispatcherImpl::Start(
   // It's important we generate tokens before creating the socket, because
   // once it is available, everyone connecting to socket would start fetching
   // tokens.
-  if (!token_manager_.GenerateServerToken()) {
-    LOG(ERROR) << "Failed to generate authentication token for server";
-    return false;
-  }
   if (HasCrosCameraTest() && !token_manager_.GenerateTestClientToken()) {
     LOG(ERROR) << "Failed to generate token for test client";
     return false;
@@ -274,16 +298,16 @@ bool CameraHalDispatcherImpl::Start(
     LOG(ERROR) << "Failed to generate authentication token for server as a "
                   "sensor client";
   }
-  // CameraHalDispatcher registers itself to Mojo Service Manager.
-  // TODO(b/258095854): Survey what we can do if mojo_service_manager is down.
-  if (ash::mojo_service_manager::IsServiceManagerBound()) {
-    auto* proxy = ash::mojo_service_manager::GetServiceManagerProxy();
-    proxy->Register(
-        /*service_name=*/chromeos::mojo_services::kCrosCameraHalDispatcher,
-        provider_receiver_.BindNewPipeAndPassRemote());
-  } else {
-    LOG(ERROR) << "Mojo Service Manager is not bound.";
-  }
+
+  // TODO(b/228238413): In VCD unittests, the endpoint of mojo service
+  // manager is not bound. Bind it and request the CrosCameraService service
+  // from it to enable real cameras.
+  mojo_service_manager_observer_ = MojoServiceManagerObserver::Create(
+      chromeos::mojo_services::kCrosCameraService,
+      base::BindRepeating(&CameraHalDispatcherImpl::TryConnectToCameraService,
+                          weak_factory_.GetWeakPtr()),
+      base::DoNothing());
+
   blocking_io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraHalDispatcherImpl::CreateSocket,
@@ -423,7 +447,7 @@ CameraHalDispatcherImpl::CameraHalDispatcherImpl()
       proxy_thread_("CameraProxyThread"),
       blocking_io_thread_("CameraBlockingIOThread"),
       main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-      camera_hal_server_callbacks_(this),
+      camera_service_observer_receiver_(this),
       active_client_observers_(
           new base::ObserverListThreadSafe<CameraActiveClientObserver>()),
       privacy_switch_observers_(
@@ -454,68 +478,7 @@ void CameraHalDispatcherImpl::RegisterServerWithToken(
     mojo::PendingRemote<cros::mojom::CameraHalServer> camera_hal_server,
     const base::UnguessableToken& token,
     RegisterServerWithTokenCallback callback) {
-  base::UnguessableToken server_token = token;
-  // Unretained reference is safe here because CameraHalDispatcherImpl owns
-  // |proxy_thread_|.
-  // This function should be run on the thread which MojoServiceManagerProxy
-  // is bound on. Currently it is main thread.
-  proxy_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &CameraHalDispatcherImpl::RegisterServerWithTokenOnProxyThread,
-          base::Unretained(this), std::move(camera_hal_server),
-          std::move(server_token),
-          base::BindPostTaskToCurrentDefault(std::move(callback))));
-}
-
-void CameraHalDispatcherImpl::RegisterServerWithTokenOnProxyThread(
-    mojo::PendingRemote<cros::mojom::CameraHalServer> camera_hal_server,
-    const base::UnguessableToken& token,
-    RegisterServerWithTokenCallback callback) {
-  DCHECK(proxy_task_runner_->BelongsToCurrentThread());
-
-  if (camera_hal_server_) {
-    LOG(ERROR) << "Camera HAL server is already registered";
-    std::move(callback).Run(-EALREADY,
-                            failed_camera_hal_server_callbacks_.GetRemote());
-    return;
-  }
-  if (!token_manager_.AuthenticateServer(token)) {
-    LOG(ERROR) << "Failed to authenticate server";
-    std::move(callback).Run(-EPERM,
-                            failed_camera_hal_server_callbacks_.GetRemote());
-    return;
-  }
-  camera_hal_server_.Bind(std::move(camera_hal_server));
-  camera_hal_server_.set_disconnect_handler(
-      base::BindOnce(&CameraHalDispatcherImpl::OnCameraHalServerConnectionError,
-                     base::Unretained(this)));
-  if (auto_framing_supported_callback_) {
-    camera_hal_server_->GetAutoFramingSupported(
-        std::move(auto_framing_supported_callback_));
-  }
-  camera_hal_server_->SetAutoFramingState(current_auto_framing_state_);
-
-  // Should only be called when an effect is set.
-  if (!initial_effects_.is_null() || !current_effects_.is_null()) {
-    // If current_effects_ is set, then a newer effect was applied since
-    // the initial setup and we should use that, as the camera server
-    // may have crashed and restarted.
-    cros::mojom::EffectsConfigPtr& config =
-        current_effects_.is_null() ? initial_effects_ : current_effects_;
-
-    SetCameraEffectsOnProxyThread(config.Clone(), /*is_from_register=*/true);
-  }
-
-  CAMERA_LOG(EVENT) << "Camera HAL server registered";
-  std::move(callback).Run(
-      0, camera_hal_server_callbacks_.BindNewPipeAndPassRemote());
-
-  // Set up the Mojo channels for clients which registered before the server
-  // registers.
-  for (auto* client_observer : client_observers_) {
-    EstablishMojoChannel(client_observer);
-  }
+  NOTREACHED() << "CameraHalDispatcher::RegisterServerWithToken is deprecated.";
 }
 
 void CameraHalDispatcherImpl::RegisterClient(
@@ -801,22 +764,22 @@ void CameraHalDispatcherImpl::GetCameraSWPrivacySwitchStateOnProxyThread(
     cros::mojom::CameraHalServer::GetCameraSWPrivacySwitchStateCallback
         callback) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
-  if (!camera_hal_server_) {
+  if (!camera_service_.is_bound()) {
     LOG(ERROR) << "Camera HAL server is not registered";
     std::move(callback).Run(cros::mojom::CameraPrivacySwitchState::UNKNOWN);
     return;
   }
-  camera_hal_server_->GetCameraSWPrivacySwitchState(std::move(callback));
+  camera_service_->GetCameraSWPrivacySwitchState(std::move(callback));
 }
 
 void CameraHalDispatcherImpl::SetCameraSWPrivacySwitchStateOnProxyThread(
     cros::mojom::CameraPrivacySwitchState state) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
-  if (!camera_hal_server_) {
+  if (!camera_service_.is_bound()) {
     LOG(ERROR) << "Camera HAL server is not registered";
     return;
   }
-  camera_hal_server_->SetCameraSWPrivacySwitchState(state);
+  camera_service_->SetCameraSWPrivacySwitchState(state);
 }
 
 void CameraHalDispatcherImpl::RegisterClientWithTokenOnProxyThread(
@@ -845,9 +808,11 @@ void CameraHalDispatcherImpl::AddClientObserverOnProxyThread(
     std::move(result_callback).Run(-EPERM);
     return;
   }
-  if (camera_hal_server_) {
+  if (camera_service_.is_bound()) {
     EstablishMojoChannel(observer);
   }
+  // If the cros camera service is stopped, we just put it in the observer list.
+  // The mojo channel will be established once the cros camera service starts.
   client_observers_.insert(observer);
   std::move(result_callback).Run(0);
   CAMERA_LOG(EVENT) << "Camera HAL client registered";
@@ -859,11 +824,20 @@ void CameraHalDispatcherImpl::AddClientObserverOnProxyThread(
 void CameraHalDispatcherImpl::EstablishMojoChannel(
     CameraClientObserver* client_observer) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
-  mojo::PendingRemote<cros::mojom::CameraModule> camera_module;
   const auto& type = client_observer->GetType();
   CAMERA_LOG(EVENT) << "Establishing server channel for " << type;
-  camera_hal_server_->CreateChannel(
-      camera_module.InitWithNewPipeAndPassReceiver(), type);
+  camera_service_->GetCameraModule(
+      type, base::BindOnce(&CameraHalDispatcherImpl::OnGetCameraModule,
+                           base::Unretained(this), client_observer));
+}
+
+void CameraHalDispatcherImpl::OnGetCameraModule(
+    CameraClientObserver* client_observer,
+    mojo::PendingRemote<cros::mojom::CameraModule> camera_module) {
+  DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+  if (client_observers_.find(client_observer) == client_observers_.end()) {
+    return;
+  }
   client_observer->OnChannelCreated(std::move(camera_module));
 }
 
@@ -876,13 +850,13 @@ void CameraHalDispatcherImpl::OnPeerConnected(
   VLOG(1) << "New CameraHalDispatcher binding added";
 }
 
-void CameraHalDispatcherImpl::OnCameraHalServerConnectionError() {
+void CameraHalDispatcherImpl::OnCameraServiceConnectionError() {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
   {
     base::AutoLock lock(opened_camera_id_map_lock_);
     CAMERA_LOG(EVENT) << "Camera HAL server connection lost";
-    camera_hal_server_.reset();
-    camera_hal_server_callbacks_.reset();
+    camera_service_.reset();
+    camera_service_observer_receiver_.reset();
     for (auto& [camera_client_type, camera_id_set] : opened_camera_id_map_) {
       if (!camera_id_set.empty()) {
         active_client_observers_->Notify(
@@ -1016,10 +990,9 @@ void CameraHalDispatcherImpl::StopOnProxyThread() {
 
   mojo_client_observers_.clear();
   client_observers_.clear();
-  camera_hal_server_callbacks_.reset();
-  camera_hal_server_.reset();
+  camera_service_observer_receiver_.reset();
+  camera_service_.reset();
   receiver_set_.Clear();
-  failed_camera_hal_server_callbacks_.Reset();
   {
     base::AutoLock lock(device_id_to_hw_privacy_switch_state_lock_);
     device_id_to_hw_privacy_switch_state_.clear();
@@ -1044,8 +1017,8 @@ void CameraHalDispatcherImpl::SetAutoFramingStateOnProxyThread(
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
 
   current_auto_framing_state_ = state;
-  if (camera_hal_server_) {
-    camera_hal_server_->SetAutoFramingState(state);
+  if (camera_service_.is_bound()) {
+    camera_service_->SetAutoFramingState(state);
   }
 }
 
@@ -1069,7 +1042,7 @@ void CameraHalDispatcherImpl::GetAutoFramingSupported(
 void CameraHalDispatcherImpl::GetAutoFramingSupportedOnProxyThread(
     cros::mojom::CameraHalServer::GetAutoFramingSupportedCallback callback) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
-  if (!camera_hal_server_) {
+  if (!camera_service_.is_bound()) {
     // TODO(pihsun): Currently only AutozoomControllerImpl calls
     // GetAutoFramingSupported. Support multiple call to the function using
     // CallbackList if it's needed.
@@ -1077,7 +1050,7 @@ void CameraHalDispatcherImpl::GetAutoFramingSupportedOnProxyThread(
     auto_framing_supported_callback_ = std::move(callback);
     return;
   }
-  camera_hal_server_->GetAutoFramingSupported(std::move(callback));
+  camera_service_->GetAutoFramingSupported(std::move(callback));
 }
 
 void CameraHalDispatcherImpl::SetCameraEffects(
@@ -1106,8 +1079,8 @@ void CameraHalDispatcherImpl::SetCameraEffectsOnProxyThread(
     bool is_from_register) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
 
-  if (camera_hal_server_) {
-    camera_hal_server_->SetCameraEffect(
+  if (camera_service_.is_bound()) {
+    camera_service_->SetCameraEffect(
         config.Clone(),
         base::BindOnce(
             &CameraHalDispatcherImpl::OnSetCameraEffectsCompleteOnProxyThread,
@@ -1204,17 +1177,6 @@ base::flat_set<std::string> CameraHalDispatcherImpl::GetDeviceIdsFromCameraIds(
 
 TokenManager* CameraHalDispatcherImpl::GetTokenManagerForTesting() {
   return &token_manager_;
-}
-
-void CameraHalDispatcherImpl::Request(
-    chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
-    mojo::ScopedMessagePipeHandle receiver) {
-  // Unretained reference is safe here because CameraHalDispatcherImpl owns
-  // |proxy_thread_|.
-  proxy_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&CameraHalDispatcherImpl::OnPeerConnected,
-                                base::Unretained(this), std::move(receiver)));
-  VLOG(1) << "New CameraHalDispatcher binding added from Mojo Service Manager.";
 }
 
 }  // namespace media
