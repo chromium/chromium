@@ -9500,6 +9500,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kHttpsFirstModeIncognito)},
 
+    {"https-first-mode-for-typically-secure-users",
+     flag_descriptions::kHttpsFirstModeForTypicallySecureUsersName,
+     flag_descriptions::kHttpsFirstModeForTypicallySecureUsersDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kHttpsFirstModeV2ForTypicallySecureUsers)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"omnibox-2023-refresh-connection-security-indicators",
      flag_descriptions::kOmnibox2023RefreshConnectionSecurityIndicatorsName,

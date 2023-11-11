@@ -2008,6 +2008,12 @@ const char kHttpsFirstModeV2ForEngagedSitesDescription[] =
     "interstitial on sites whose HTTPS URLs have high Site Engagement scores. "
     "Requires #https-upgrades feature to be enabled";
 
+const char kHttpsFirstModeForTypicallySecureUsersName[] =
+    "HTTPS-First Mode For Typically Secure Users";
+const char kHttpsFirstModeForTypicallySecureUsersDescription[] =
+    "Automatically enables HTTPS-First Mode if the user has a typically secure "
+    "browsing pattern.";
+
 const char kHttpsUpgradesName[] = "HTTPS Upgrades";
 const char kHttpsUpgradesDescription[] =
     "Enable automatically upgrading all top-level navigations to HTTPS with "

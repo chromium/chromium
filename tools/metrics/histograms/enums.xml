@@ -40109,6 +40109,8 @@ from previous Chrome versions.
   <int value="-1726047833" label="AutofillEnableServerIban:enabled"/>
   <int value="-1725507605" label="enable-web-midi"/>
   <int value="-1722208902" label="CCTModuleCustomRequestHeader:disabled"/>
+  <int value="-1721353722"
+      label="HttpsFirstModeV2ForTypicallySecureUsers:enabled"/>
   <int value="-1720654843"
       label="AutofillMoveLegalTermsAndIconForNewCardEnrollment:enabled"/>
   <int value="-1720576957" label="ThirdPartyStoragePartitioning:disabled"/>
@@ -45577,6 +45579,8 @@ from previous Chrome versions.
   <int value="898719518" label="VSyncDecoding:disabled"/>
   <int value="899347105" label="NearbySharingWifiLan:enabled"/>
   <int value="899532174" label="FeedSignedOutViewDemotion:disabled"/>
+  <int value="900560795"
+      label="HttpsFirstModeV2ForTypicallySecureUsers:disabled"/>
   <int value="900614020" label="ContentSuggestionsShowSummary:disabled"/>
   <int value="902209599" label="ShelfHotseat:enabled"/>
   <int value="902442795" label="time-before-discard-in-minutes"/>

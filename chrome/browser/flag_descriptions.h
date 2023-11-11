@@ -1129,6 +1129,9 @@ extern const char kHttpsFirstModeV2Description[];
 extern const char kHttpsFirstModeV2ForEngagedSitesName[];
 extern const char kHttpsFirstModeV2ForEngagedSitesDescription[];
 
+extern const char kHttpsFirstModeForTypicallySecureUsersName[];
+extern const char kHttpsFirstModeForTypicallySecureUsersDescription[];
+
 extern const char kHttpsUpgradesName[];
 extern const char kHttpsUpgradesDescription[];
 

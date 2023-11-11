@@ -4619,6 +4619,14 @@
     "expiry_milestone": 95
   },
   {
+    "name": "https-first-mode-for-typically-secure-users",
+    "owners": [
+      "meacer@chromium.org",
+      "trusty-transport@chromium.org"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "https-first-mode-incognito",
     "owners": [
       "cthomp@chromium.org",
