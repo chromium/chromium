@@ -110,22 +110,6 @@ ui::ButtonStyle MdTextButton::GetStyle() const {
   return style_;
 }
 
-SkColor MdTextButton::GetHoverColor(ui::ButtonStyle button_style) {
-  if (!features::IsChromeRefresh2023()) {
-    return color_utils::DeriveDefaultIconColor(label()->GetEnabledColor());
-  }
-
-  switch (button_style) {
-    case ui::ButtonStyle::kProminent:
-      return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnProminent);
-    case ui::ButtonStyle::kDefault:
-    case ui::ButtonStyle::kText:
-    case ui::ButtonStyle::kTonal:
-    default:
-      return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
-  }
-}
-
 void MdTextButton::SetBgColorOverride(const absl::optional<SkColor>& color) {
   if (color == bg_color_override_)
     return;
@@ -344,6 +328,22 @@ void MdTextButton::UpdateColors() {
     UpdateBackgroundColor();
     UpdateIconColor();
     SchedulePaint();
+  }
+}
+
+SkColor MdTextButton::GetHoverColor(ui::ButtonStyle button_style) {
+  if (!features::IsChromeRefresh2023()) {
+    return color_utils::DeriveDefaultIconColor(label()->GetEnabledColor());
+  }
+
+  switch (button_style) {
+    case ui::ButtonStyle::kProminent:
+      return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnProminent);
+    case ui::ButtonStyle::kDefault:
+    case ui::ButtonStyle::kText:
+    case ui::ButtonStyle::kTonal:
+    default:
+      return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
   }
 }
 
