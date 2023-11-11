@@ -48,8 +48,7 @@ void FailTest(std::unique_ptr<CallbackHelper> helper, int result) {
 class FakeCTVerifier : public CTVerifier {
  public:
   // CTVerifier implementation:
-  void Verify(base::StringPiece hostname,
-              X509Certificate* cert,
+  void Verify(X509Certificate* cert,
               base::StringPiece stapled_ocsp_response,
               base::StringPiece sct_list_from_tls_extension,
               SignedCertificateTimestampAndStatusList* output_scts,
