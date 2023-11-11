@@ -796,10 +796,7 @@ bool SnapContainerData::IsSnapportCoveredOnAxis(
   }
 }
 
-// TODO(crbug.com/1501103): Use tolerance value less than 1.
-// It is currently set to 1 because of differences in the way Blink and cc
-// currently handle fractional offsets when snapping.
-constexpr float kSnappedToTolerance = 1.0;
+constexpr float kSnappedToTolerance = 0.5;
 bool SnapContainerData::IsSnappedToArea(
     const SnapAreaData& area,
     const gfx::PointF& scroll_offset) const {
@@ -818,7 +815,7 @@ bool SnapContainerData::IsSnappedToArea(
   if (snaps_on_y &&
       area.scroll_snap_align.alignment_block != SnapAlignment::kNone) {
     SnapSearchResult snap_result_y = GetSnapSearchResult(SearchAxis::kY, area);
-    if (((std::abs(snap_result_y.snap_offset() - scroll_offset.y()) <=
+    if (((std::abs(snap_result_y.snap_offset() - scroll_offset.y()) <
           kSnappedToTolerance) ||
          covered_on_y) &&
         gfx::RangeF(scroll_offset.x())
@@ -829,7 +826,7 @@ bool SnapContainerData::IsSnappedToArea(
   if (snaps_on_x &&
       area.scroll_snap_align.alignment_inline != SnapAlignment::kNone) {
     SnapSearchResult snap_result_x = GetSnapSearchResult(SearchAxis::kX, area);
-    if (((std::abs(snap_result_x.snap_offset() - scroll_offset.x()) <=
+    if (((std::abs(snap_result_x.snap_offset() - scroll_offset.x()) <
           kSnappedToTolerance) ||
          covered_on_x) &&
         gfx::RangeF(scroll_offset.y())

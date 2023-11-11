@@ -23,11 +23,11 @@ async function test_snapchanged(test, test_data) {
 
   assertSnapchangedEvent(evt,
       test_data.expected_snap_targets);
-  assert_approx_equals(test_data.scroller.scrollTop,
-    test_data.expected_scroll_offsets.y, 1,
+  assert_equals(test_data.scroller.scrollTop,
+    test_data.expected_scroll_offsets.y,
     "vertical scroll offset mismatch.");
-  assert_approx_equals(test_data.scroller.scrollLeft,
-    test_data.expected_scroll_offsets.x, 1,
+  assert_equals(test_data.scroller.scrollLeft,
+    test_data.expected_scroll_offsets.x,
     "horizontal scroll offset mismatch.");
 }
 
@@ -55,12 +55,4 @@ function waitForSnapChangedEvent(event_target, scroll_happens = true) {
                                    waitForScrollendEventNoTimeout(event_target))
                         : waitForEventUntil(event_target, "snapchanged",
                                    waitForAnimationFrames(2));
-}
-
-function getScrollbarToScrollerRatio(scroller) {
-  // Ideally we'd subtract the length of the scrollbar thumb from
-  // the dividend but there isn't currently a way to get the
-  // scrollbar thumb length.
-  return scroller.clientHeight /
-      (scroller.scrollHeight - scroller.clientHeight);
 }
