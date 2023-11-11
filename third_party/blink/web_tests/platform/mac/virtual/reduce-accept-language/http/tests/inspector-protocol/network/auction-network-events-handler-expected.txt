@@ -1,0 +1,87 @@
+Verifying the events that go through the auction network event handler are accurate.
+Note: There are two bidding requests because we reload the bidding worklet when we are reporting. 
+[
+    [0] : {
+        cacheDisabled : true
+        finished : true
+        headers : {
+            Accept-Language : ar
+            User-Agent : Vending Machine
+            acceptLanguage : ar
+            userAgent : Vending Machine
+        }
+        method : GET
+        received : true
+        requestExtraInfoReceived : true
+        requestHasTiming : true
+        responseExtraInfoReceived : true
+        responseHasTiming : true
+        url : https://a.test:8443/echoall?report_bidder
+    }
+    [1] : {
+        cacheDisabled : true
+        finished : true
+        headers : {
+            Accept-Language : ar
+            User-Agent : Vending Machine
+            acceptLanguage : ar
+            userAgent : Vending Machine
+        }
+        method : GET
+        received : true
+        requestExtraInfoReceived : true
+        requestHasTiming : true
+        responseExtraInfoReceived : true
+        responseHasTiming : true
+        url : https://a.test:8443/echoall?report_seller
+    }
+    [2] : {
+        cacheDisabled : true
+        finished : true
+        headers : {
+            Accept : application/javascript
+            acceptLanguage : ar
+            userAgent : Vending Machine
+        }
+        method : GET
+        received : true
+        requestExtraInfoReceived : true
+        requestHasTiming : true
+        responseExtraInfoReceived : true
+        responseHasTiming : true
+        url : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+    }
+    [3] : {
+        cacheDisabled : true
+        finished : true
+        headers : {
+            Accept : application/javascript
+            acceptLanguage : ar
+            userAgent : Vending Machine
+        }
+        method : GET
+        received : true
+        requestExtraInfoReceived : true
+        requestHasTiming : true
+        responseExtraInfoReceived : true
+        responseHasTiming : true
+        url : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+    }
+    [4] : {
+        cacheDisabled : true
+        finished : true
+        headers : {
+            Accept : application/javascript
+            acceptLanguage : ar
+            userAgent : Vending Machine
+        }
+        method : GET
+        received : true
+        requestExtraInfoReceived : true
+        requestHasTiming : true
+        responseExtraInfoReceived : true
+        responseHasTiming : true
+        url : https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php
+    }
+]
+
