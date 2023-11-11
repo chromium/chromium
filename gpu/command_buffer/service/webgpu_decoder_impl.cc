@@ -1201,24 +1201,24 @@ ContextResult WebGPUDecoderImpl::Initialize(
 
 bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
   switch (feature) {
-    case wgpu::FeatureName::TimestampQuery:
-    case wgpu::FeatureName::ChromiumExperimentalTimestampQueryInsidePasses:
     case wgpu::FeatureName::ChromiumExperimentalDp4a:
-    case wgpu::FeatureName::ChromiumExperimentalReadWriteStorageTexture:
+    case wgpu::FeatureName::ChromiumExperimentalTimestampQueryInsidePasses:
     case wgpu::FeatureName::ChromiumExperimentalSubgroups:
     case wgpu::FeatureName::ChromiumExperimentalSubgroupUniformControlFlow:
+    case wgpu::FeatureName::ChromiumExperimentalReadWriteStorageTexture:
       return allow_unsafe_apis_;
-    case wgpu::FeatureName::DawnMultiPlanarFormats:
-    case wgpu::FeatureName::Depth32FloatStencil8:
     case wgpu::FeatureName::DepthClipControl:
-    case wgpu::FeatureName::Float32Filterable:
+    case wgpu::FeatureName::Depth32FloatStencil8:
+    case wgpu::FeatureName::TimestampQuery:
     case wgpu::FeatureName::TextureCompressionBC:
     case wgpu::FeatureName::TextureCompressionETC2:
     case wgpu::FeatureName::TextureCompressionASTC:
     case wgpu::FeatureName::IndirectFirstInstance:
+    case wgpu::FeatureName::ShaderF16:
     case wgpu::FeatureName::RG11B10UfloatRenderable:
     case wgpu::FeatureName::BGRA8UnormStorage:
-    case wgpu::FeatureName::ShaderF16: {
+    case wgpu::FeatureName::Float32Filterable:
+    case wgpu::FeatureName::DawnMultiPlanarFormats: {
       if (runtime_unsafe_features_.empty()) {
         // Likely case when no features are blocked.
         return true;
