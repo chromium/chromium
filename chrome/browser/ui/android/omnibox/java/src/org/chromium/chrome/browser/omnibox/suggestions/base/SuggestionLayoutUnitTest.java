@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.clearInvocations;
@@ -14,13 +15,21 @@ import android.content.Context;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
+import org.chromium.chrome.browser.omnibox.test.R;
+import org.chromium.chrome.test.util.browser.Features;
 
 /**
  * Tests for {@link SuggestionLayout}.
@@ -31,6 +40,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 public class SuggestionLayoutUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    public @Rule TestRule mProcessor = new Features.JUnitProcessor();
 
     private Context mContext = ContextUtils.getApplicationContext();
     private @Spy SuggestionLayout mLayout = new SuggestionLayout(mContext);
@@ -122,5 +132,44 @@ public class SuggestionLayoutUnitTest {
         assertFalse(
                 "Clipping should be disabled when rounding is not in use",
                 mLayout.getClipToOutline());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    @Config(qualifiers = "sw600dp")
+    public void suggestionPadding_modernUiDisabled() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
+
+        int startSpace =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_start_padding);
+        int endSpace =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_end_padding);
+        assertEquals(startSpace, mLayout.getPaddingStart());
+        assertEquals(endSpace, mLayout.getPaddingEnd());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    @Config(qualifiers = "sw600dp")
+    public void suggestionPadding_modernUiEnabled() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
+
+        // Re-create layout with new feature flags and overrides.
+        mLayout = new SuggestionLayout(mContext);
+
+        int endSpace =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_end_padding_modern);
+        int inflateSize =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_dropdown_side_spacing);
+
+        // We currently make corrections of the same size as the size by which the dropdown is
+        // inflated.
+        assertEquals(endSpace, inflateSize);
+        assertEquals(0, mLayout.getPaddingStart());
+        assertEquals(endSpace, mLayout.getPaddingEnd());
     }
 }
