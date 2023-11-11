@@ -83,15 +83,17 @@ ModelExecutionManager::ModelExecutionManager(
       identity_manager_(identity_manager),
       oauth_scopes_(features::GetOAuthScopesForModelExecution()),
       on_device_model_service_controller_(
-          std::move(on_device_model_service_controller)) {
+          std::move(on_device_model_service_controller)),
+      on_device_model_execution_config_interpreter_(
+          std::make_unique<OnDeviceModelExecutionConfigInterpreter>()) {
   auto model_path_override_switch =
       switches::GetOnDeviceModelExecutionOverride();
   if (model_path_override_switch) {
     auto file_path = StringToFilePath(*model_path_override_switch);
     if (file_path) {
-      on_device_model_service_controller_->Init(
-          *file_path,
-          std::make_unique<OnDeviceModelExecutionConfigInterpreter>());
+      on_device_model_path_ = *file_path;
+      on_device_model_execution_config_interpreter_->UpdateConfigWithFileDir(
+          on_device_model_path_);
     }
   }
 }
@@ -164,11 +166,6 @@ void ModelExecutionManager::ExecuteModel(
       base::BindOnce(&ModelExecutionManager::OnModelExecuteResponse,
                      weak_ptr_factory_.GetWeakPtr(), feature,
                      std::move(callback)));
-}
-
-std::unique_ptr<OptimizationGuideModelExecutor::Session>
-ModelExecutionManager::StartSession(proto::ModelExecutionFeature feature) {
-  return on_device_model_service_controller_->StartSession(feature);
 }
 
 void ModelExecutionManager::OnModelExecuteResponse(

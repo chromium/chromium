@@ -415,15 +415,6 @@ void OptimizationGuideKeyedService::CanApplyOptimizationOnDemand(
                                                request_context, callback);
 }
 
-std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-OptimizationGuideKeyedService::StartSession(
-    optimization_guide::proto::ModelExecutionFeature feature) {
-  if (!model_execution_manager_) {
-    return nullptr;
-  }
-  return model_execution_manager_->StartSession(feature);
-}
-
 void OptimizationGuideKeyedService::ExecuteModel(
     optimization_guide::proto::ModelExecutionFeature feature,
     const google::protobuf::MessageLite& request_metadata,

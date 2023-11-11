@@ -51,9 +51,6 @@ constexpr char kExampleURL[] = "https://example.com";
 class MockModelExecutor
     : public optimization_guide::OptimizationGuideModelExecutor {
  public:
-  MOCK_METHOD(std::unique_ptr<Session>,
-              StartSession,
-              (optimization_guide::proto::ModelExecutionFeature feature));
   MOCK_METHOD(void,
               ExecuteModel,
               (optimization_guide::proto::ModelExecutionFeature feature,

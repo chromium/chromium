@@ -54,7 +54,6 @@ BASE_DECLARE_FEATURE(kOptimizationGuidePersonalizedFetching);
 BASE_DECLARE_FEATURE(kQueryInMemoryTextEmbeddings);
 BASE_DECLARE_FEATURE(kOptimizationGuidePredictionModelKillswitch);
 BASE_DECLARE_FEATURE(kOptimizationGuideModelExecution);
-BASE_DECLARE_FEATURE(kOptimizationGuideOnDeviceModel);
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -361,9 +360,6 @@ GetPredictionModelVersionsInKillSwitch();
 
 // Returns the OAuth scopes to use for model execution.
 std::set<std::string> GetOAuthScopesForModelExecution();
-
-// Returns the idle timeout before the on device model service shuts down.
-base::TimeDelta GetOnDeviceModelIdleTimeout();
 
 }  // namespace features
 }  // namespace optimization_guide
