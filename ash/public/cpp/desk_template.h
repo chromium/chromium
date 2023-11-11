@@ -125,6 +125,13 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
     device_form_factor_ = device_form_factor;
   }
 
+  // The lacros profile ID associated with the saved desk. Only used when type
+  // is `kSaveAndRecall`.
+  void set_lacros_profile_id(uint64_t lacros_profile_id) {
+    lacros_profile_id_ = lacros_profile_id;
+  }
+  uint64_t lacros_profile_id() const { return lacros_profile_id_; }
+
   // Used in cases where copies of a DeskTemplate are needed to be made.
   // This specifically used in the DeskSyncBridge which requires a map
   // of DeskTemplate unique pointers to be valid and needs to pass
@@ -200,6 +207,9 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
 
   // Form Factor of device this template is from.
   syncer::DeviceInfo::FormFactor device_form_factor_;
+
+  // The lacros profile ID associated with the desk.
+  uint64_t lacros_profile_id_ = 0;
 
   // Contains the app launching and window information that can be used to
   // create a new desk instance with the same set of apps/windows specified in
