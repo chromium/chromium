@@ -27,16 +27,19 @@
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/fetch_later.mojom-blink.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_response_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/body.h"
@@ -174,11 +177,28 @@ enum class FetchLaterRendererMetricType {
   kAbortedByUser = 0,
   kContextDestroyed = 1,
   kActivatedByTimeout = 2,
-  kMaxValue = kActivatedByTimeout,
+  kActivatedOnEnteredBackForwardCache = 3,
+  kMaxValue = kActivatedOnEnteredBackForwardCache,
 };
 
 void LogFetchLaterMetric(const FetchLaterRendererMetricType& type) {
   base::UmaHistogramEnumeration("FetchLater.Renderer.Metrics", type);
+}
+
+// Tells whether the FetchLater request should use BackgroundSync permission to
+// decide whether it should send out deferred requests on entering
+// BackForwardCache.
+bool IsFetchLaterUseBackgroundSyncPermissionEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kFetchLaterAPI, "use_background_sync_permission", true);
+}
+
+// Allows manually overriding the "send-on-enter-bfcache" behavior without
+// considering BackgroundSync permission.
+// Defaults to false to delegate the decision to BackgroundSync permission.
+bool IsFetchLaterSendOnEnterBackForwardCacheEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kFetchLaterAPI, "send_on_enter_bfcache", false);
 }
 
 bool HasNonEmptyLocationHeader(const FetchHeaderList* headers) {
@@ -1591,10 +1611,33 @@ void FetchManager::Trace(Visitor* visitor) const {
 }
 
 FetchLaterManager::FetchLaterManager(ExecutionContext* ec)
-    : ExecutionContextLifecycleObserver(ec) {
+    : ExecutionContextLifecycleObserver(ec),
+      permission_observer_receiver_(this, ec) {
   // TODO(crbug.com/1356128): FetchLater API is only supported in Document.
   // Supporting it in workers is blocked by keepalive in browser migration.
   CHECK(ec->IsWindow());
+
+  if (IsFetchLaterUseBackgroundSyncPermissionEnabled()) {
+    auto* permission_service =
+        DomWindow()->document()->GetPermissionService(ec);
+    CHECK(permission_service);
+
+    mojo::PendingRemote<mojom::blink::PermissionObserver> observer;
+    permission_observer_receiver_.Bind(
+        observer.InitWithNewPipeAndPassReceiver(),
+        // Same as `permission_service`'s task type.
+        ec->GetTaskRunner(TaskType::kPermission));
+    CHECK(permission_observer_receiver_.is_bound());
+    // Registers an observer for BackgroundSync permission.
+    // Cannot use `HasPermission()` as it's asynchronous. At the time the
+    // permission status is needed, e.g. on entering BackForwardCache, it may
+    // not have enough time to wait for response.
+    auto descriptor = mojom::blink::PermissionDescriptor::New();
+    descriptor->name = mojom::blink::PermissionName::BACKGROUND_SYNC;
+    permission_service->AddPermissionObserver(std::move(descriptor),
+                                              background_sync_permission_,
+                                              std::move(observer));
+  }
 }
 
 blink::ChildURLLoaderFactoryBundle* FetchLaterManager::GetFactory() {
@@ -1622,10 +1665,37 @@ void FetchLaterManager::ContextDestroyed() {
   deferred_loaders_.clear();
 }
 
+void FetchLaterManager::ContextEnteredBackForwardCache() {
+  // TODO(crbug.com/1465781): Replace with spec once it's finalized.
+  // https://github.com/WICG/pending-beacon/issues/3#issuecomment-1286397825
+  // Sending any requests "after" the context goes into BackForwardCache
+  // requires BackgroundSync permission. If not granted, we should force sending
+  // all of them now instead of waiting until `ContextDestroyed()`.
+  if (IsFetchLaterSendOnEnterBackForwardCacheEnabled() ||
+      (IsFetchLaterUseBackgroundSyncPermissionEnabled() &&
+       !IsBackgroundSyncGranted())) {
+    for (auto& deferred_loader : deferred_loaders_) {
+      deferred_loader->Process(
+          FetchLaterRendererMetricType::kActivatedOnEnteredBackForwardCache);
+      deferred_loader->Dispose();
+    }
+    deferred_loaders_.clear();
+  }
+}
+
 void FetchLaterManager::OnDeferredLoaderFinished(
     DeferredLoader* deferred_loader) {
   deferred_loaders_.erase(deferred_loader);
   deferred_loader->Dispose();
+}
+
+bool FetchLaterManager::IsBackgroundSyncGranted() const {
+  return background_sync_permission_ == mojom::blink::PermissionStatus::GRANTED;
+}
+
+void FetchLaterManager::OnPermissionStatusChange(
+    mojom::blink::PermissionStatus status) {
+  background_sync_permission_ = status;
 }
 
 size_t FetchLaterManager::NumLoadersForTesting() const {
@@ -1681,6 +1751,7 @@ FetchLaterManager::PrepareNetworkRequest(
 
 void FetchLaterManager::Trace(Visitor* visitor) const {
   visitor->Trace(deferred_loaders_);
+  visitor->Trace(permission_observer_receiver_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
