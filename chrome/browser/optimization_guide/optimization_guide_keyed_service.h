@@ -109,6 +109,8 @@ class OptimizationGuideKeyedService
       optimization_guide::OptimizationTargetModelObserver* observer) override;
 
   // optimization_guide::OptimizationGuideModelExecutor implementation:
+  std::unique_ptr<Session> StartSession(
+      optimization_guide::proto::ModelExecutionFeature feature) override;
   void ExecuteModel(
       optimization_guide::proto::ModelExecutionFeature feature,
       const google::protobuf::MessageLite& request_metadata,
