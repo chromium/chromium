@@ -123,10 +123,6 @@ class EditLabelTest : public OverlayViewTestBase {
     EXPECT_EQ(list_item_has_error, IsInErrorState(list_item));
   }
 
-  void AddNewAction(ActionType action_type) {
-    controller_->AddNewAction(action_type);
-  }
-
   // Returns `ButtonOptionsMenu` if there is one shown. Otherwise, return
   // nullptr;
   ButtonOptionsMenu* GetButtonOptionsMenu() {
@@ -301,7 +297,9 @@ TEST_F(EditLabelTest, TestEditingListLabelReservedKey) {
 }
 
 TEST_F(EditLabelTest, TestEditingNewAction) {
-  AddNewAction(ActionType::MOVE);
+  auto bounds = touch_injector_->content_bounds();
+  controller_->AddNewAction(
+      ActionType::MOVE, gfx::Point(bounds.width() / 2, bounds.height() / 2));
   auto* menu = GetButtonOptionsMenu();
   EXPECT_TRUE(menu);
   auto* action = GetAction(menu);

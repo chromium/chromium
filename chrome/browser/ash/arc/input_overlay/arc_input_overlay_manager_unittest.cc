@@ -536,10 +536,12 @@ TEST_P(VersionArcInputOverlayManagerTest, TestGameWithDefaultMapping) {
   EXPECT_TRUE(injector);
   size_t actions_size = injector->actions().size();
 
+  const auto center =
+      gfx::Point(window_bounds.width() / 2, window_bounds.height() / 2);
   if (IsBetaVersion()) {
     // Add two new actions.
-    injector->AddNewAction(ActionType::TAP);
-    injector->AddNewAction(ActionType::TAP);
+    injector->AddNewAction(ActionType::TAP, center);
+    injector->AddNewAction(ActionType::TAP, center);
     EXPECT_EQ(actions_size + 2, injector->actions().size());
   }
 
@@ -569,8 +571,10 @@ TEST_P(VersionArcInputOverlayManagerTest, TestGameWithoutDefaultMapping) {
     EXPECT_TRUE(injector);
     EXPECT_EQ(0u, injector->actions().size());
     // Add two new actions.
-    injector->AddNewAction(ActionType::TAP);
-    injector->AddNewAction(ActionType::TAP);
+    const auto center =
+        gfx::Point(window_bounds.width() / 2, window_bounds.height() / 2);
+    injector->AddNewAction(ActionType::TAP, center);
+    injector->AddNewAction(ActionType::TAP, center);
     injector->OnBindingSave();
   } else {
     EXPECT_FALSE(injector);

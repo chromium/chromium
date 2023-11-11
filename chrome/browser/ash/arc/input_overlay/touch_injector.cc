@@ -942,12 +942,13 @@ size_t TouchInjector::GetActiveActionsSize() {
   return active_size;
 }
 
-void TouchInjector::AddNewAction(ActionType action_type) {
+void TouchInjector::AddNewAction(ActionType action_type,
+                                 const gfx::Point& target_pos) {
   DCHECK(IsBeta());
   auto action = CreateRawAction(action_type, this);
 
   // Check whether the action size extends the maximum.
-  if (!action->InitByAddingNewAction()) {
+  if (!action->InitByAddingNewAction(target_pos)) {
     return;
   }
 

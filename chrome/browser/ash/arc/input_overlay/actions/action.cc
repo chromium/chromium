@@ -17,6 +17,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -57,10 +58,13 @@ std::vector<Position> ParseLocation(const base::Value::List& position) {
   return positions;
 }
 
-// Add a default position in the `positions`.
-void InitPositions(std::vector<Position>& positions) {
+// Add `anchor_to_target` in the `positions`. `vector` is a normalized vector
+// from `Position::anchor_` to target position. Here the `Position::anchor_` is
+// default origin (0, 0).
+void InitPositions(std::vector<Position>& positions,
+                   const gfx::Vector2dF& vector) {
   positions.emplace_back(PositionType::kDefault);
-  positions.back().set_anchor_to_target(gfx::Vector2dF(0.5, 0.5));
+  positions.back().set_anchor_to_target(vector);
 }
 
 }  // namespace
@@ -260,13 +264,17 @@ void Action::OverwriteDefaultActionFromProto(const ActionProto& proto) {
   name_label_index_ = proto.name_index();
 }
 
-bool Action::InitByAddingNewAction() {
+bool Action::InitByAddingNewAction(const gfx::Point& target_pos) {
   DCHECK(touch_injector_);
   id_ = touch_injector_->GetNextNewActionID();
   is_new_ = true;
 
-  InitPositions(original_positions_);
-  InitPositions(current_positions_);
+  const auto bounds = touch_injector_->content_bounds();
+  const gfx::Vector2dF anchor_vector =
+      gfx::Vector2dF(1.0 * target_pos.x() / bounds.width(),
+                     1.0 * target_pos.y() / bounds.height());
+  InitPositions(original_positions_, anchor_vector);
+  InitPositions(current_positions_, anchor_vector);
   UpdateTouchDownPositions();
 
   return true;

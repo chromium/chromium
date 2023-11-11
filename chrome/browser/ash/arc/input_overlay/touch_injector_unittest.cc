@@ -331,8 +331,10 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
                /*expect_ids=*/{0, 1});
   EXPECT_EQ(2u, injector_->GetActiveActionsSize());
 
+  auto bounds = injector_->content_bounds();
+  auto center = gfx::Point(bounds.width() / 2, bounds.height() / 2);
   // Step 1: Add a new action move.
-  injector_->AddNewAction(ActionType::MOVE);
+  injector_->AddNewAction(ActionType::MOVE, center);
   CheckActions(
       injector_.get(), /*expect_size=*/3u,
       /*expect_types=*/{ActionType::TAP, ActionType::TAP, ActionType::MOVE},
@@ -340,7 +342,7 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
   EXPECT_EQ(3u, injector_->GetActiveActionsSize());
 
   // Step 2: Add a new action tap.
-  injector_->AddNewAction(ActionType::TAP);
+  injector_->AddNewAction(ActionType::TAP, center);
   CheckActions(
       injector_.get(), /*expect_size=*/4u,
       /*expect_types=*/
@@ -357,7 +359,7 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
   EXPECT_EQ(3u, injector_->GetActiveActionsSize());
 
   // Step 4: Add a new action tap.
-  injector_->AddNewAction(ActionType::TAP);
+  injector_->AddNewAction(ActionType::TAP, center);
   // Re-use the minimum new user-added ID which is removed at step 3.
   CheckActions(
       injector_.get(), /*expect_size=*/4u,
@@ -384,8 +386,8 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
   // Step 6: Add two more actions, remove the first added action in this
   // step and then add a new action again. This is to test it gets the right
   // action ID in the middle. Add two new actions.
-  injector_->AddNewAction(ActionType::TAP);
-  injector_->AddNewAction(ActionType::MOVE);
+  injector_->AddNewAction(ActionType::TAP, center);
+  injector_->AddNewAction(ActionType::MOVE, center);
   CheckActions(injector_.get(), /*expect_size=*/6u,
                /*expect_types=*/
                {ActionType::TAP, ActionType::TAP, ActionType::TAP,
@@ -409,7 +411,7 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
   EXPECT_TRUE(injector_->actions()[0]->IsDeleted());
   EXPECT_FALSE(injector_->actions()[1]->IsDeleted());
   // Add a new action.
-  injector_->AddNewAction(ActionType::TAP);
+  injector_->AddNewAction(ActionType::TAP, center);
   CheckActions(injector_.get(), /*expect_size=*/6u,
                /*expect_types=*/
                {ActionType::TAP, ActionType::TAP, ActionType::TAP,
@@ -453,7 +455,9 @@ TEST_F(TouchInjectorTest, TestActionTypeChangeWithProtoConversion) {
   EXPECT_EQ(1, injector_->actions()[1]->id());
 
   // Step 1: Add a new action.
-  injector_->AddNewAction(ActionType::TAP);
+  auto bounds = injector_->content_bounds();
+  injector_->AddNewAction(ActionType::TAP,
+                          gfx::Point(bounds.width() / 2, bounds.height() / 2));
   EXPECT_EQ(3u, injector_->actions().size());
   EXPECT_EQ(kMaxDefaultActionID + 1, injector_->actions()[2]->id());
 

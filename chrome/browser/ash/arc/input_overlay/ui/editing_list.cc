@@ -27,6 +27,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
@@ -305,7 +306,11 @@ void EditingList::UpdateOnZeroState(bool is_zero_state) {
 }
 
 void EditingList::OnAddButtonPressed() {
-  controller_->AddNewAction();
+  // TODO(b/304806934): enters into button place mode instead of adding new
+  // action in the window center.
+  auto bounds = controller_->touch_injector()->content_bounds();
+  controller_->AddNewAction(
+      ActionType::TAP, gfx::Point(bounds.width() / 2, bounds.height() / 2));
 }
 
 void EditingList::OnDoneButtonPressed() {

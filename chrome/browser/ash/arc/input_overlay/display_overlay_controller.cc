@@ -631,8 +631,9 @@ InputOverlayWindowStateType DisplayOverlayController::GetWindowStateType()
   return type;
 }
 
-void DisplayOverlayController::AddNewAction(ActionType action_type) {
-  touch_injector_->AddNewAction(action_type);
+void DisplayOverlayController::AddNewAction(ActionType action_type,
+                                            const gfx::Point& target_pos) {
+  touch_injector_->AddNewAction(action_type, target_pos);
 }
 
 void DisplayOverlayController::RemoveAction(Action* action) {

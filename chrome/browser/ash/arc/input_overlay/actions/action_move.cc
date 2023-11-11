@@ -222,8 +222,8 @@ bool ActionMove::ParseFromJson(const base::Value::Dict& value) {
   }
 }
 
-bool ActionMove::InitByAddingNewAction() {
-  if (!Action::InitByAddingNewAction()) {
+bool ActionMove::InitByAddingNewAction(const gfx::Point& target_pos) {
+  if (!Action::InitByAddingNewAction(target_pos)) {
     return false;
   }
 

@@ -62,7 +62,7 @@ class Action {
 
   virtual bool ParseFromJson(const base::Value::Dict& value);
   // Used to create an action from UI.
-  virtual bool InitByAddingNewAction();
+  virtual bool InitByAddingNewAction(const gfx::Point& target_pos);
   virtual void InitByChangingActionType(Action* action);
 
   bool ParseUserAddedActionFromProto(const ActionProto& proto);

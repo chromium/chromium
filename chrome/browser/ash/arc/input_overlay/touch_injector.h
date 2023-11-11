@@ -127,7 +127,7 @@ class TouchInjector : public ui::EventRewriter {
   size_t GetActiveActionsSize();
   // Add a new action of type `action_type` from UI without input binding and
   // with default position binding at the center.
-  void AddNewAction(ActionType action_type);
+  void AddNewAction(ActionType action_type, const gfx::Point& target_pos);
   void RemoveAction(Action* action);
   // Create a new action with guidance from the reference action, and delete
   // the reference action.

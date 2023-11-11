@@ -84,7 +84,7 @@ class DisplayOverlayController : public ui::EventHandler,
   InputOverlayWindowStateType GetWindowStateType() const;
 
   // For editor.
-  void AddNewAction(ActionType action_type = ActionType::TAP);
+  void AddNewAction(ActionType action_type, const gfx::Point& target_pos);
   void RemoveAction(Action* action);
   // Creates a new action with guidance from the reference action, and deletes
   // the reference action.
