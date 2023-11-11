@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -103,6 +104,12 @@ bool GetANGLED3D11DeviceLUID(LUID* luid) {
 
   *luid = adapter_desc.AdapterLuid;
   return true;
+}
+
+bool IsD3D11DebugLayerEnabled(
+    const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device) {
+  Microsoft::WRL::ComPtr<ID3D11Debug> d3d11_debug;
+  return SUCCEEDED(d3d11_device.As(&d3d11_debug));
 }
 
 const char* HRESULTToString(HRESULT result) {
@@ -352,9 +359,15 @@ bool DawnContextProvider::Initialize(
   descriptor.requiredFeatures = features.data();
   descriptor.requiredFeatureCount = std::size(features);
 
+  // ANGLE always tries creating D3D11 device with debug layer when dcheck is
+  // on, so tries creating dawn device with backend validation as well.
+  constexpr bool enable_backend_validation =
+      DCHECK_IS_ON() && BUILDFLAG(IS_WIN);
+
   std::vector<dawn::native::BackendValidationLevel> backend_validation_levels =
       {dawn::native::BackendValidationLevel::Disabled};
-  if (features::kSkiaGraphiteDawnBackendValidation.Get()) {
+  if (features::kSkiaGraphiteDawnBackendValidation.Get() ||
+      enable_backend_validation) {
     backend_validation_levels.push_back(
         dawn::native::BackendValidationLevel::Partial);
     backend_validation_levels.push_back(
@@ -365,7 +378,8 @@ bool DawnContextProvider::Initialize(
   // Try create device with backend validation level.
   for (auto it = backend_validation_levels.rbegin();
        it != backend_validation_levels.rend(); ++it) {
-    instance_->SetBackendValidationLevel(*it);
+    auto level = *it;
+    instance_->SetBackendValidationLevel(level);
     device = adapter.CreateDevice(&descriptor);
     if (device) {
       break;
@@ -387,15 +401,22 @@ bool DawnContextProvider::Initialize(
       backend_type == wgpu::BackendType::Vulkan && force_fallback_adapter;
 
 #if BUILDFLAG(IS_WIN)
+  auto d3d11_device = GetD3D11Device();
+
   // DirectComposition is initialized in ui/gl/init/gl_initializer_win.cc while
   // initializing GL. So we need to shutdown it and re-initialize it here with
   // the D3D11 device from dawn device.
   // TODO(crbug.com/1469283): avoid initializing DirectComposition twice.
-  if (!share_d3d11_device) {
+  if (!share_d3d11_device && d3d11_device) {
     gl::ShutdownDirectComposition();
-    if (auto d3d11_device = GetD3D11Device()) {
-      gl::InitializeDirectComposition(std::move(d3d11_device));
-    }
+    gl::InitializeDirectComposition(d3d11_device);
+  }
+
+  if (d3d11_device) {
+    static auto* crash_key = base::debug::AllocateCrashKeyString(
+        "d3d11-debug-layer", base::debug::CrashKeySize::Size32);
+    const bool enabled = IsD3D11DebugLayerEnabled(d3d11_device);
+    base::debug::SetCrashKeyString(crash_key, enabled ? "enabled" : "disabled");
   }
 #endif  // BUILDFLAG(IS_WIN)
 
