@@ -5154,7 +5154,7 @@
 <translation id="5125967981703109366">درباره این کارت</translation>
 <translation id="512642543295077915">جستجو + پس‌بَر</translation>
 <translation id="5126611267288187364">مشاهده تغییرات</translation>
-<translation id="5127620150973591153">شناسه اتصال امن: <ph name="TOKEN" /></translation>
+<translation id="5127620150973591153">شناسه اتصال ایمن: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">همگام‌سازی خاموش است</translation>
 <translation id="5127881134400491887">مدیریت اتصالات شبکه</translation>
 <translation id="5127986747308934633">دستگاهتان تحت کنترل سرپرست است</translation>
@@ -6312,7 +6312,7 @@
 <translation id="6080689532560039067">بررسی زمان سیستم</translation>
 <translation id="6082877069782862752">نگاشتن کلید</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - بخشی از گروه بدون نام</translation>
-<translation id="6085886413119427067">تعیین چگونگی اتصال به وب‌سایت‌ها ازطریق اتصالی ایمن</translation>
+<translation id="6085886413119427067">تعیین چگونگی اتصال به وب‌سایت‌ها ازطریق اتصال ایمن</translation>
 <translation id="6086004606538989567">حسابی که به‌تأیید رساندید اجازه ندارد به این دستگاه دسترسی پیدا کند.</translation>
 <translation id="6086846494333236931">سرپرست سیستم شما نصب کرده است.</translation>
 <translation id="6087746524533454243">به‌دنبال صفحه درباره مرورگر هستید؟ از این پیوند استفاده کنید:</translation>
@@ -6811,7 +6811,7 @@
 <translation id="6508248480704296122">مرتبط با <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">برنامه: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">گواهینامه رسانه</translation>
-<translation id="6511279028091289182">نحوه اتصال به وب‌سایت‌ها ازطریق اتصالی ایمن را مشخص می‌کند. این ویژگی از رساننده خدمات تحت مدیریت <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> استفاده می‌کند</translation>
+<translation id="6511279028091289182">نحوه اتصال به وب‌سایت‌ها ازطریق اتصال ایمن را مشخص می‌کند. این ویژگی از رساننده خدمات تحت مدیریت <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> استفاده می‌کند</translation>
 <translation id="6511607461419653612">‏Chromebook را بازراه‌اندازی کنید و دوباره امتحان کنید</translation>
 <translation id="6511827214781912955">توصیه می‌کنیم <ph name="FILENAME" /> را حذف کنید تا افراد دیگری که از این دستگاه استفاده می‌کنند نتوانند گذرواژه‌هایتان را ببینند</translation>
 <translation id="6513247462497316522">‏اگر به شبکه دیگری وصل نباشید Google Chrome از داده‌های تلفن همراه استفاده خواهد کرد.</translation>
@@ -8775,7 +8775,7 @@
 <translation id="8082390128630131497">‏غیرفعال کردن اشکال‌زدایی ADB (پل اشکال‌زدایی Android)، <ph name="DEVICE_TYPE" /> را به تنظیمات کارخانه بازنشانی می‌کند. همه حساب‌های کاربر و داده‌های محلی حذف می‌شوند.</translation>
 <translation id="8084114998886531721">گذرواژه ذخیره‌شده</translation>
 <translation id="8084510406207562688">بازیابی همه برگه‌ها</translation>
-<translation id="8084628902026812045">این سایت از اتصال امن استفاده نمی‌کند و ممکن است فایل دستکاری شده باشد</translation>
+<translation id="8084628902026812045">این سایت از اتصال ایمن استفاده نمی‌کند و ممکن است فایل دستکاری شده باشد</translation>
 <translation id="8086015605808120405">درحال پیکربندی <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">این برگه درحال هم‌رسانی صفحه‌نمایش شما است</translation>
 <translation id="8086610718778464681">‏برنامه‌ها و فایل‌های Linux پشتیبان‌گیری نشدند</translation>
@@ -9409,7 +9409,7 @@
 <translation id="8615618338313291042">برنامه ناشناس: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">افزودن <ph name="CONTACT_NAME" /> به مخاطبین</translation>
 <translation id="8617601976406256334">داده‌ها و اجازه‌های سایت <ph name="SITE_NAME" /> حذف شود؟</translation>
-<translation id="8617748779076050570">شناسه اتصال امن: <ph name="CONNECTION_ID" /></translation>
+<translation id="8617748779076050570">شناسه اتصال ایمن: <ph name="CONNECTION_ID" /></translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619803522055190423">سایه‌دار</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
