@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/services/hotspot_config/cros_hotspot_config.h"
 #include "components/device_event_log/device_event_log.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -33,6 +34,13 @@ void BindToInProcessInstance(
   if (g_hotspot_config_override) {
     GetOverrideReceivers().Add(g_hotspot_config_override,
                                std::move(pending_receiver));
+    return;
+  }
+
+  if (!NetworkHandler::IsInitialized()) {
+    NET_LOG(DEBUG)
+        << "Ignoring request to bind Hotspot Config service because no "
+        << "NetworkHandler has been initialized.";
     return;
   }
 

@@ -77,17 +77,13 @@ class HotspotControllerTest : public ::testing::Test {
     hotspot_feature_usage_metrics_->Init(
         enterprise_managed_metadata_store_.get(),
         hotspot_capabilities_provider_.get());
-    technology_state_controller_ =
-        std::make_unique<TechnologyStateController>();
-    technology_state_controller_->Init(
-        network_state_test_helper_.network_state_handler());
     hotspot_state_handler_ = std::make_unique<HotspotStateHandler>();
     hotspot_state_handler_->Init();
     hotspot_controller_ = std::make_unique<HotspotController>();
-    hotspot_controller_->Init(hotspot_capabilities_provider_.get(),
-                              hotspot_feature_usage_metrics_.get(),
-                              hotspot_state_handler_.get(),
-                              technology_state_controller_.get());
+    hotspot_controller_->Init(
+        hotspot_capabilities_provider_.get(),
+        hotspot_feature_usage_metrics_.get(), hotspot_state_handler_.get(),
+        network_state_test_helper_.technology_state_controller());
     hotspot_controller_->AddObserver(&observer_);
     SetReadinessCheckResultReady();
   }
@@ -101,7 +97,6 @@ class HotspotControllerTest : public ::testing::Test {
     hotspot_capabilities_provider_.reset();
     hotspot_state_handler_.reset();
     enterprise_managed_metadata_store_.reset();
-    technology_state_controller_.reset();
   }
 
   void SetHotspotAllowed() {
@@ -228,7 +223,6 @@ class HotspotControllerTest : public ::testing::Test {
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
   std::unique_ptr<HotspotFeatureUsageMetrics> hotspot_feature_usage_metrics_;
   std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
-  std::unique_ptr<TechnologyStateController> technology_state_controller_;
   NetworkStateTestHelper network_state_test_helper_{
       /*use_default_devices_and_services=*/false};
   TestObserver observer_;

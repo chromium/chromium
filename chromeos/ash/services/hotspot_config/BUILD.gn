@@ -37,6 +37,7 @@ component("in_process_hotspot_config") {
   deps = [
     ":hotspot_config",
     "//ash/constants",
+    "//chromeos/ash/components/network",
     "//components/device_event_log",
   ]
 }

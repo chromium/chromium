@@ -57,6 +57,10 @@ class TestKeyboardControllerObserver;
 class TestNewWindowDelegateProvider;
 class TestWallpaperControllerClient;
 
+namespace hotspot_config {
+class CrosHotspotConfigTestHelper;
+}  // namespace hotspot_config
+
 namespace input_method {
 class MockInputMethodManagerImpl;
 }  // namespace input_method
@@ -174,6 +178,11 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     return input_method_manager_;
   }
 
+  hotspot_config::CrosHotspotConfigTestHelper*
+  cros_hotspot_config_test_helper() {
+    return cros_hotspot_config_test_helper_.get();
+  }
+
  private:
   // Scoping objects to manage init/teardown of services.
   class BluezDBusManagerInitializer;
@@ -213,6 +222,8 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   std::unique_ptr<quick_pair::Mediator::Factory> quick_pair_mediator_factory_;
   std::unique_ptr<quick_pair::QuickPairBrowserDelegate>
       quick_pair_browser_delegate_;
+  std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
+      cros_hotspot_config_test_helper_;
 
   // Used only for pixel tests.
   std::unique_ptr<AshPixelTestHelper> pixel_test_helper_;

@@ -12,6 +12,7 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/test/test_assistant_service.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/display_configuration_controller_test_api.h"
 #include "ash/display/screen_ash.h"
@@ -49,6 +50,7 @@
 #include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
+#include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -209,6 +211,7 @@ void AshTestHelper::TearDown() {
 
   // Destroy all owned objects to prevent tests from depending on their state
   // after this returns.
+  cros_hotspot_config_test_helper_.reset();
   test_keyboard_controller_observer_.reset();
   session_controller_client_.reset();
   test_views_delegate_.reset();
@@ -332,6 +335,12 @@ void AshTestHelper::SetUp(InitParams init_params) {
   }
   if (!views::ViewsDelegate::GetInstance()) {
     test_views_delegate_ = MakeTestViewsDelegate();
+  }
+
+  if (features::IsHotspotEnabled()) {
+    cros_hotspot_config_test_helper_ =
+        std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>(
+            /*use_fake_implementation=*/true);
   }
 
   LoginState::Initialize();

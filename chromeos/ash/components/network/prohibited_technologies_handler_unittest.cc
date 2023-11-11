@@ -42,9 +42,6 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
 
     helper_.manager_test()->AddTechnology(shill::kTypeCellular,
                                           true /* enabled */);
-    technology_state_controller_ =
-        base::WrapUnique(new TechnologyStateController());
-    technology_state_controller_->Init(helper_.network_state_handler());
 
     network_config_handler_ = NetworkConfigurationHandler::InitializeForTest(
         helper_.network_state_handler(), nullptr /* network_device_handler */);
@@ -64,9 +61,9 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
         network_config_handler_.get(), nullptr /* network_device_handler */,
         prohibited_technologies_handler_.get(), /*hotspot_controller=*/nullptr);
 
-    prohibited_technologies_handler_->Init(managed_config_handler_.get(),
-                                           helper_.network_state_handler(),
-                                           technology_state_controller_.get());
+    prohibited_technologies_handler_->Init(
+        managed_config_handler_.get(), helper_.network_state_handler(),
+        helper_.technology_state_controller());
 
     base::RunLoop().RunUntilIdle();
 
@@ -114,7 +111,7 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
   }
 
   TechnologyStateController* technology_state_controller() {
-    return technology_state_controller_.get();
+    return helper_.technology_state_controller();
   }
 
   base::Value::Dict global_config_disable_wifi;
@@ -127,7 +124,6 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
   NetworkStateTestHelper helper_{false /* use_default_devices_and_services */};
 
   std::unique_ptr<NetworkConfigurationHandler> network_config_handler_;
-  std::unique_ptr<TechnologyStateController> technology_state_controller_;
   std::unique_ptr<ManagedNetworkConfigurationHandlerImpl>
       managed_config_handler_;
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;

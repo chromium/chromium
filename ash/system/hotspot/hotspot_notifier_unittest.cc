@@ -5,6 +5,7 @@
 #include "ash/system/hotspot/hotspot_notifier.h"
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/network/hotspot_enabled_state_notifier.h"
@@ -56,9 +57,6 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
 
     cros_network_config_test_helper_ =
         std::make_unique<network_config::CrosNetworkConfigTestHelper>();
-    cros_hotspot_config_test_helper_ =
-        std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>(
-            /*use_fake_implementation=*/true);
 
     NoSessionAshTestBase::SetUp();
     LogIn();
@@ -68,40 +66,8 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
 
   void TearDown() override {
     NoSessionAshTestBase::TearDown();
-    cros_hotspot_config_test_helper_.reset();
     cros_network_config_test_helper_.reset();
     network_handler_test_helper_.reset();
-  }
-
-  void SetValidHotspotCapabilities() {
-    base::Value::Dict capabilities_dict;
-    base::Value::List upstream_list;
-    upstream_list.Append(shill::kTypeCellular);
-    capabilities_dict.Set(shill::kTetheringCapUpstreamProperty,
-                          std::move(upstream_list));
-    // Add WiFi to the downstream technology list in Shill
-    base::Value::List downstream_list;
-    downstream_list.Append(shill::kTypeWifi);
-    capabilities_dict.Set(shill::kTetheringCapDownstreamProperty,
-                          std::move(downstream_list));
-    // Add allowed WiFi security mode in Shill
-    base::Value::List security_list;
-    security_list.Append(shill::kSecurityWpa2);
-    security_list.Append(shill::kSecurityWpa3);
-    capabilities_dict.Set(shill::kTetheringCapSecurityProperty,
-                          std::move(security_list));
-    network_handler_test_helper_->manager_test()->SetManagerProperty(
-        shill::kTetheringCapabilitiesProperty,
-        base::Value(std::move(capabilities_dict)));
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void SetReadinessCheckResultReady() {
-    network_handler_test_helper_->manager_test()
-        ->SetSimulateCheckTetheringReadinessResult(
-            FakeShillSimulatedResult::kSuccess,
-            shill::kTetheringReadinessReady);
-    base::RunLoop().RunUntilIdle();
   }
 
   NetworkHandlerTestHelper* helper() {
@@ -109,12 +75,13 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
   }
 
   void EnableHotspot() {
-    cros_hotspot_config_test_helper_->EnableHotspot();
+    ash_test_helper()->cros_hotspot_config_test_helper()->EnableHotspot();
     base::RunLoop().RunUntilIdle();
   }
 
   void SetHotspotConfig(hotspot_config::mojom::HotspotConfigPtr mojom_config) {
-    cros_hotspot_config_test_helper_->SetHotspotConfig(std::move(mojom_config));
+    ash_test_helper()->cros_hotspot_config_test_helper()->SetHotspotConfig(
+        std::move(mojom_config));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -147,7 +114,7 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
     hotspot_info->state = state;
     hotspot_info->allow_status = allow_status;
     hotspot_info->client_count = client_count;
-    cros_hotspot_config_test_helper_->SetFakeHotspotInfo(
+    ash_test_helper()->cros_hotspot_config_test_helper()->SetFakeHotspotInfo(
         std::move(hotspot_info));
     base::RunLoop().RunUntilIdle();
   }
@@ -156,22 +123,11 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
       cros_network_config_test_helper_;
-  std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
-      cros_hotspot_config_test_helper_;
   std::unique_ptr<HotspotNotifier> hotspot_notifier_;
-  mojo::Remote<hotspot_config::mojom::CrosHotspotConfig> cros_hotspot_config_;
 };
 
 TEST_F(HotspotNotifierTest, AdminRestricted) {
-  SetValidHotspotCapabilities();
-  SetReadinessCheckResultReady();
-  AddActiveCellularService();
-  helper()->manager_test()->SetSimulateTetheringEnableResult(
-      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
-  base::RunLoop().RunUntilIdle();
-
   EnableHotspot();
-
   NotifyHotspotTurnedOff(
       hotspot_config::mojom::DisableReason::kProhibitedByPolicy);
   base::RunLoop().RunUntilIdle();
@@ -186,15 +142,7 @@ TEST_F(HotspotNotifierTest, AdminRestricted) {
 }
 
 TEST_F(HotspotNotifierTest, WiFiTurnedOn) {
-  SetValidHotspotCapabilities();
-  SetReadinessCheckResultReady();
-  AddActiveCellularService();
-  helper()->manager_test()->SetSimulateTetheringEnableResult(
-      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
-  base::RunLoop().RunUntilIdle();
-
   EnableHotspot();
-
   NotifyHotspotTurnedOff(hotspot_config::mojom::DisableReason::kWifiEnabled);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
@@ -208,15 +156,7 @@ TEST_F(HotspotNotifierTest, WiFiTurnedOn) {
 }
 
 TEST_F(HotspotNotifierTest, AutoDisabled) {
-  SetValidHotspotCapabilities();
-  SetReadinessCheckResultReady();
-  AddActiveCellularService();
-  helper()->manager_test()->SetSimulateTetheringEnableResult(
-      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
-  base::RunLoop().RunUntilIdle();
-
   EnableHotspot();
-
   NotifyHotspotTurnedOff(hotspot_config::mojom::DisableReason::kAutoDisabled);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
@@ -237,15 +177,7 @@ TEST_F(HotspotNotifierTest, AutoDisabled) {
 }
 
 TEST_F(HotspotNotifierTest, InternalError) {
-  SetValidHotspotCapabilities();
-  SetReadinessCheckResultReady();
-  AddActiveCellularService();
-  helper()->manager_test()->SetSimulateTetheringEnableResult(
-      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
-  base::RunLoop().RunUntilIdle();
-
   EnableHotspot();
-
   NotifyHotspotTurnedOff(hotspot_config::mojom::DisableReason::kInternalError);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
@@ -259,13 +191,6 @@ TEST_F(HotspotNotifierTest, InternalError) {
 }
 
 TEST_F(HotspotNotifierTest, HotspotTurnedOn) {
-  SetValidHotspotCapabilities();
-  SetReadinessCheckResultReady();
-  AddActiveCellularService();
-  helper()->manager_test()->SetSimulateTetheringEnableResult(
-      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
-  base::RunLoop().RunUntilIdle();
-
   SetHotspotConfig(GenerateTestConfig());
   EnableHotspot();
   SetHotspotStateInShill(shill::kTetheringStateActive);

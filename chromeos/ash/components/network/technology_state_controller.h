@@ -24,6 +24,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) TechnologyStateController {
  public:
   class HotspotOperationDelegate {
    public:
+    virtual ~HotspotOperationDelegate() = default;
+
     // Prepare for enable Wifi technology by disabling hotspot if active.
     // Calls |callback| when the preparation is completed.
     virtual void PrepareEnableWifi(

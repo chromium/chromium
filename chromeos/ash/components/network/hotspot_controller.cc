@@ -228,25 +228,28 @@ void HotspotController::CompleteEnableRequest(
   hotspot_feature_usage_metrics_->RecordHotspotEnableAttempt(
       result == HotspotControlResult::kSuccess);
 
+  const bool abort = current_enable_request_->abort;
   HotspotMetricsHelper::RecordSetTetheringEnabledResult(
-      /*enabled=*/true,
-      current_enable_request_->abort ? HotspotControlResult::kAborted : result);
+      /*enabled=*/true, abort ? HotspotControlResult::kAborted : result);
 
-  NET_LOG(EVENT) << "Complete enable tethering request, result: " << result;
-
-  if (wifi_turned_off_ && result != HotspotControlResult::kSuccess &&
-      !current_enable_request_->abort) {
-    // Turn Wifi back on if failed to enable hotspot.
-    technology_state_controller_->SetTechnologiesEnabled(
-        NetworkTypePattern::WiFi(), /*enabled=*/true,
-        network_handler::ErrorCallback());
-  }
+  NET_LOG(EVENT) << "Complete enable tethering request, result: " << result
+                 << ", wifi turned off: " << wifi_turned_off_
+                 << ", abort: " << abort;
 
   if (result == HotspotControlResult::kSuccess) {
     NotifyHotspotTurnedOn();
   }
   std::move(current_enable_request_->callback).Run(result);
   current_enable_request_.reset();
+
+  if (wifi_turned_off_ && result != HotspotControlResult::kSuccess && !abort) {
+    // Turn Wifi back on if failed to enable hotspot.
+    NET_LOG(EVENT) << "Turning WiFi back on due to failed to enable hotspot.";
+    technology_state_controller_->SetTechnologiesEnabled(
+        NetworkTypePattern::WiFi(), /*enabled=*/true,
+        network_handler::ErrorCallback());
+    wifi_turned_off_ = false;
+  }
 }
 
 void HotspotController::CompleteDisableRequest(
