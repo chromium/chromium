@@ -628,7 +628,7 @@ export class AutomationRichEditableText extends AutomationEditableText {
   changed(evt) {
     // This path does not use the Output module to synthesize speech.
     Output.forceModeForNextSpeechUtterance(undefined);
-    ChromeVoxEditableTextBase.prototype.changed.call(this, evt);
+    AutomationEditableText.prototype.changed.call(this, evt);
   }
 
   /**
