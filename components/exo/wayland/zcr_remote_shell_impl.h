@@ -20,6 +20,7 @@
 #include "components/exo/wayland/wayland_display_observer.h"
 #include "components/exo/wayland/zcr_remote_shell.h"
 #include "components/exo/wayland/zcr_remote_shell_event_mapping.h"
+#include "ui/display/manager/display_manager_observer.h"
 
 namespace exo {
 namespace wayland {
@@ -55,7 +56,8 @@ class WaylandRemoteOutput : public WaylandDisplayObserver {
 // for the remote shell interface.
 class WaylandRemoteShell : public ash::TabletModeObserver,
                            public display::DisplayObserver,
-                           public SeatObserver {
+                           public SeatObserver,
+                           public display::DisplayManagerObserver {
  public:
   using OutputResourceProvider = base::RepeatingCallback<wl_resource*(int64_t)>;
 
@@ -91,13 +93,15 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   void OnRemoteSurfaceDestroyed(wl_resource* resource);
 
   // Overridden from display::DisplayObserver:
-  void OnWillProcessDisplayChanges() override;
-  void OnDidProcessDisplayChanges() override;
   void OnDisplayAdded(const display::Display& new_display) override;
   void OnDisplayRemoved(const display::Display& old_display) override;
   void OnDisplayTabletStateChanged(display::TabletState state) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
+
+  // display::DisplayManagerObserver:
+  void OnWillProcessDisplayChanges() override;
+  void OnDidProcessDisplayChanges() override;
 
   // Overridden from ash::TabletModeObserver:
   void OnTabletModeStarted() override;
@@ -181,6 +185,10 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   bool last_has_focused_client_ = false;
 
   display::ScopedDisplayObserver display_observer_{this};
+
+  base::ScopedObservation<display::DisplayManager,
+                          display::DisplayManagerObserver>
+      display_manager_observation_{this};
 
   const raw_ptr<Seat, ExperimentalAsh> seat_;
 

@@ -43,6 +43,7 @@
 #include "ui/display/manager/display_change_observer.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_layout_store.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/screen.h"
@@ -343,17 +344,13 @@ DisplayManager::BeginEndNotifier::BeginEndNotifier(
     DisplayManager* display_manager)
     : display_manager_(display_manager) {
   if (display_manager_->notify_depth_++ == 0) {
-    for (auto& observer : display_manager_->observers_) {
-      observer.OnWillProcessDisplayChanges();
-    }
+    display_manager_->NotifyWillProcessDisplayChanges();
   }
 }
 
 DisplayManager::BeginEndNotifier::~BeginEndNotifier() {
   if (--display_manager_->notify_depth_ == 0) {
-    for (auto& observer : display_manager_->observers_) {
-      observer.OnDidProcessDisplayChanges();
-    }
+    display_manager_->NotifyDidProcessDisplayChanges();
   }
 }
 
@@ -1191,8 +1188,8 @@ void DisplayManager::UpdateDisplaysWith(
   // in comparison to NotifyDisplayRemoved/OnDisplayRemoved which on Ash
   // is called before.
   if (!removed_displays.empty()) {
-    for (auto& observer : observers_) {
-      observer.OnDidRemoveDisplays();
+    for (auto& display_observer : display_observers_) {
+      display_observer.OnDidRemoveDisplays();
     }
   }
 
@@ -2345,36 +2342,56 @@ void DisplayManager::RunPendingTasksForTest() {
 
 void DisplayManager::SetTabletState(const TabletState& tablet_state) {
   tablet_state_ = tablet_state;
-  for (auto& observer : observers_) {
-    observer.OnDisplayTabletStateChanged(tablet_state);
+  for (auto& display_observer : display_observers_) {
+    display_observer.OnDisplayTabletStateChanged(tablet_state);
   }
 }
 
 void DisplayManager::NotifyMetricsChanged(const Display& display,
                                           uint32_t metrics) {
-  for (auto& observer : observers_) {
-    observer.OnDisplayMetricsChanged(display, metrics);
+  for (auto& display_observer : display_observers_) {
+    display_observer.OnDisplayMetricsChanged(display, metrics);
   }
 }
 
 void DisplayManager::NotifyDisplayAdded(const Display& display) {
-  for (auto& observer : observers_) {
-    observer.OnDisplayAdded(display);
+  for (auto& display_observer : display_observers_) {
+    display_observer.OnDisplayAdded(display);
   }
 }
 
 void DisplayManager::NotifyDisplayRemoved(const Display& display) {
-  for (auto& observer : observers_) {
-    observer.OnDisplayRemoved(display);
+  for (auto& display_observer : display_observers_) {
+    display_observer.OnDisplayRemoved(display);
   }
 }
 
-void DisplayManager::AddObserver(DisplayObserver* observer) {
-  observers_.AddObserver(observer);
+void DisplayManager::NotifyWillProcessDisplayChanges() {
+  for (auto& manager_observer : manager_observers_) {
+    manager_observer.OnWillProcessDisplayChanges();
+  }
 }
 
-void DisplayManager::RemoveObserver(DisplayObserver* observer) {
-  observers_.RemoveObserver(observer);
+void DisplayManager::NotifyDidProcessDisplayChanges() {
+  for (auto& manager_observer : manager_observers_) {
+    manager_observer.OnDidProcessDisplayChanges();
+  }
+}
+
+void DisplayManager::AddObserver(DisplayObserver* display_observer) {
+  display_observers_.AddObserver(display_observer);
+}
+
+void DisplayManager::RemoveObserver(DisplayObserver* display_observer) {
+  display_observers_.RemoveObserver(display_observer);
+}
+
+void DisplayManager::AddObserver(DisplayManagerObserver* manager_observer) {
+  manager_observers_.AddObserver(manager_observer);
+}
+
+void DisplayManager::RemoveObserver(DisplayManagerObserver* manager_observer) {
+  manager_observers_.RemoveObserver(manager_observer);
 }
 
 display::TabletState DisplayManager::GetTabletState() const {

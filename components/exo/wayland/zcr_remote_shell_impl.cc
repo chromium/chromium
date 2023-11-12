@@ -476,6 +476,8 @@ WaylandRemoteShell::WaylandRemoteShell(
                                                     fixed_scale);
   }
 
+  display_manager_observation_.Observe(ash::Shell::Get()->display_manager());
+
   SendDisplayMetrics();
 
   // The activation event has been moved to aura_shell, but the
@@ -537,15 +539,6 @@ void WaylandRemoteShell::OnRemoteSurfaceDestroyed(wl_resource* resource) {
   pending_bounds_changes_.erase(resource);
 }
 
-// Overridden from display::DisplayObserver:
-void WaylandRemoteShell::OnWillProcessDisplayChanges() {
-  in_display_update_ = true;
-}
-
-void WaylandRemoteShell::OnDidProcessDisplayChanges() {
-  in_display_update_ = false;
-}
-
 void WaylandRemoteShell::OnDisplayAdded(const display::Display& new_display) {
   ScheduleSendDisplayMetrics(0);
 }
@@ -574,6 +567,14 @@ void WaylandRemoteShell::OnDisplayMetricsChanged(
        DISPLAY_METRIC_ROTATION | DISPLAY_METRIC_WORK_AREA)) {
     ScheduleSendDisplayMetrics(0);
   }
+}
+
+void WaylandRemoteShell::OnWillProcessDisplayChanges() {
+  in_display_update_ = true;
+}
+
+void WaylandRemoteShell::OnDidProcessDisplayChanges() {
+  in_display_update_ = false;
 }
 
 // Overridden from ash::TabletModeObserver:

@@ -17,11 +17,13 @@
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ui/base/display_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace aura {
@@ -43,7 +45,7 @@ class ASH_EXPORT ScreenOrientationController
       public aura::WindowObserver,
       public AccelerometerReader::Observer,
       public TabletModeObserver,
-      public display::DisplayObserver {
+      public display::DisplayManagerObserver {
  public:
   // Observer that reports changes to the state of ScreenOrientationProvider's
   // rotation lock.
@@ -151,7 +153,7 @@ class ASH_EXPORT ScreenOrientationController
   void OnTabletModeEnded() override;
   void OnTabletPhysicalStateChanged() override;
 
-  // display::DisplayObserver:
+  // display::DisplayManagerObserver:
   void OnWillProcessDisplayChanges() override;
   void OnDidProcessDisplayChanges() override;
 
@@ -281,8 +283,10 @@ class ASH_EXPORT ScreenOrientationController
   // orientation.
   std::unordered_map<aura::Window*, LockInfo> lock_info_map_;
 
-  // Register for DisplayObserver callbacks.
-  display::ScopedDisplayObserver display_observer_{this};
+  // Register for display configuration changes.
+  base::ScopedObservation<display::DisplayManager,
+                          display::DisplayManagerObserver>
+      display_manager_observation_{this};
 
   std::unique_ptr<WindowStateChangeNotifier> window_state_change_notifier_;
 };

@@ -55,6 +55,7 @@
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_change_observer.h"
 #include "ui/display/manager/display_layout_store.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/manager/test/touch_device_manager_test_api.h"
@@ -88,7 +89,8 @@ std::string ToDisplayName(int64_t id) {
 
 class DisplayManagerTest : public AshTestBase,
                            public display::DisplayObserver,
-                           public aura::WindowObserver {
+                           public aura::WindowObserver,
+                           public display::DisplayManagerObserver {
  public:
   DisplayManagerTest() = default;
 
@@ -100,10 +102,12 @@ class DisplayManagerTest : public AshTestBase,
   void SetUp() override {
     AshTestBase::SetUp();
     display_observer_.emplace(this);
+    display_manager_observation_.Observe(Shell::Get()->display_manager());
     Shell::GetPrimaryRootWindow()->AddObserver(this);
   }
   void TearDown() override {
     Shell::GetPrimaryRootWindow()->RemoveObserver(this);
+    display_manager_observation_.Reset();
     display_observer_.reset();
     AshTestBase::TearDown();
   }
@@ -154,9 +158,7 @@ class DisplayManagerTest : public AshTestBase,
     return GetDisplayInfo(display_manager()->GetDisplayForId(id));
   }
 
-  // aura::DisplayObserver overrides:
-  void OnWillProcessDisplayChanges() override { ++will_process_count_; }
-  void OnDidProcessDisplayChanges() override { ++did_process_count_; }
+  // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override {
     changed_.push_back(display);
@@ -169,6 +171,10 @@ class DisplayManagerTest : public AshTestBase,
   void OnDisplayRemoved(const display::Display& old_display) override {
     ++removed_count_;
   }
+
+  // display::DisplayManager::Observer:
+  void OnWillProcessDisplayChanges() override { ++will_process_count_; }
+  void OnDidProcessDisplayChanges() override { ++did_process_count_; }
 
   // aura::WindowObserver overrides:
   void OnWindowDestroying(aura::Window* window) override {
@@ -219,6 +225,9 @@ class DisplayManagerTest : public AshTestBase,
   bool check_root_window_on_destruction_ = true;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
+  base::ScopedObservation<display::DisplayManager,
+                          display::DisplayManagerObserver>
+      display_manager_observation_{this};
 
   // Currently `display::features::kRoundedDisplay` feature is used during the
   // `ash::Shell` shutdown as we call `AshTestBase::TearDown()`, therefore

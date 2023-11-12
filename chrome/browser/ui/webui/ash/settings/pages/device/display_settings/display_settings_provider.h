@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "ui/display/display_observer.h"
+#include "ui/display/manager/display_manager_observer.h"
 
 namespace ash::settings {
 
@@ -17,7 +17,7 @@ namespace ash::settings {
 // process. Called by the OS settings app.
 class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
                                 public TabletModeObserver,
-                                public display::DisplayObserver {
+                                public display::DisplayManagerObserver {
  public:
   DisplaySettingsProvider();
   ~DisplaySettingsProvider() override;
@@ -40,7 +40,7 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
   // TabletModeObserver:
   void OnTabletModeEventsBlockingChanged() override;
 
-  // display::DisplayObserver:
+  // display::DisplayManagerObserver:
   void OnDidProcessDisplayChanges() override;
 
  private:

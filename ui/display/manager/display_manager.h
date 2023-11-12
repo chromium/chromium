@@ -46,6 +46,7 @@ namespace display {
 
 class DisplayChangeObserver;
 class DisplayLayoutStore;
+class DisplayManagerObserver;
 class DisplayObserver;
 class NativeDisplayDelegate;
 class Screen;
@@ -496,10 +497,16 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   void NotifyMetricsChanged(const Display& display, uint32_t metrics);
   void NotifyDisplayAdded(const Display& display);
   void NotifyDisplayRemoved(const Display& display);
+  void NotifyWillProcessDisplayChanges();
+  void NotifyDidProcessDisplayChanges();
 
   // Delegated from the Screen implementation.
   void AddObserver(DisplayObserver* observer);
   void RemoveObserver(DisplayObserver* observer);
+
+  // Add/Remove interface for DisplayManager::Obserevrs.
+  void AddObserver(DisplayManagerObserver* observer);
+  void RemoveObserver(DisplayManagerObserver* observer);
 
   display::TabletState GetTabletState() const;
 
@@ -695,7 +702,9 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // time.
   base::OnceClosure created_mirror_window_;
 
-  base::ObserverList<DisplayObserver> observers_;
+  base::ObserverList<DisplayObserver> display_observers_;
+
+  base::ObserverList<DisplayManagerObserver> manager_observers_;
 
   // Not empty if mixed mirror mode should be turned on (the specified source
   // display is mirrored to the specified destination displays). Empty if mixed

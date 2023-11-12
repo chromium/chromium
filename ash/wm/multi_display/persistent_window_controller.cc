@@ -98,41 +98,12 @@ constexpr char
     PersistentWindowController::kNumOfWindowsRestoredOnScreenRotation[];
 
 PersistentWindowController::PersistentWindowController() {
+  display_manager_observation_.Observe(Shell::Get()->display_manager());
   Shell::Get()->session_controller()->AddObserver(this);
 }
 
 PersistentWindowController::~PersistentWindowController() {
   Shell::Get()->session_controller()->RemoveObserver(this);
-}
-
-void PersistentWindowController::OnWillProcessDisplayChanges() {
-  if (!ShouldProcessWindowList()) {
-    return;
-  }
-
-  for (auto* window : GetWindowList()) {
-    WindowState* window_state = WindowState::Get(window);
-    // This implies that we keep the first persistent info until they're valid
-    // to restore, or until they're cleared by user-invoked bounds change.
-    if (PersistentWindowInfo* info =
-            window_state->persistent_window_info_of_display_removal();
-        info) {
-      info->set_display_id_after_removal(
-          display::Screen::GetScreen()->GetDisplayNearestWindow(window).id());
-      continue;
-    }
-    // Place the window that needs persistent window info into the temporary
-    // set. The persistent window info will be created and set if a display is
-    // removed. Store the window's restore bounds in parent here instead of
-    // `OnDisplayRemoved`. As the window's restore bounds in parent are
-    // converted from its restore bounds in screen, which relies on the
-    // displays' layout. And displays' layout will have been updated inside
-    // `OnDisplayRemoved`.
-    need_persistent_info_windows_.Add(
-        window, window_state->HasRestoreBounds()
-                    ? window_state->GetRestoreBoundsInParent()
-                    : gfx::Rect());
-  }
 }
 
 void PersistentWindowController::OnDisplayAdded(
@@ -196,6 +167,36 @@ void PersistentWindowController::OnDisplayMetricsChanged(
       base::BindOnce(&PersistentWindowController::
                          MaybeRestorePersistentWindowBoundsOnScreenRotation,
                      base::Unretained(this));
+}
+
+void PersistentWindowController::OnWillProcessDisplayChanges() {
+  if (!ShouldProcessWindowList()) {
+    return;
+  }
+
+  for (auto* window : GetWindowList()) {
+    WindowState* window_state = WindowState::Get(window);
+    // This implies that we keep the first persistent info until they're valid
+    // to restore, or until they're cleared by user-invoked bounds change.
+    if (PersistentWindowInfo* info =
+            window_state->persistent_window_info_of_display_removal();
+        info) {
+      info->set_display_id_after_removal(
+          display::Screen::GetScreen()->GetDisplayNearestWindow(window).id());
+      continue;
+    }
+    // Place the window that needs persistent window info into the temporary
+    // set. The persistent window info will be created and set if a display is
+    // removed. Store the window's restore bounds in parent here instead of
+    // `OnDisplayRemoved`. As the window's restore bounds in parent are
+    // converted from its restore bounds in screen, which relies on the
+    // displays' layout. And displays' layout will have been updated inside
+    // `OnDisplayRemoved`.
+    need_persistent_info_windows_.Add(
+        window, window_state->HasRestoreBounds()
+                    ? window_state->GetRestoreBoundsInParent()
+                    : gfx::Rect());
+  }
 }
 
 void PersistentWindowController::OnDidProcessDisplayChanges() {

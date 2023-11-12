@@ -196,6 +196,7 @@ ScreenOrientationController::ScreenOrientationController()
       user_rotation_(display::Display::ROTATE_0),
       window_state_change_notifier_(
           std::make_unique<WindowStateChangeNotifier>(this)) {
+  display_manager_observation_.Observe(Shell::Get()->display_manager());
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
   AccelerometerReader::GetInstance()->AddObserver(this);
 }
