@@ -1489,6 +1489,7 @@
 <translation id="2131077480075264">"<ph name="APP_NAME" />" ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ ಏಕೆಂದರೆ ಇದನ್ನು "<ph name="IMPORT_NAME" />" ರಿಂದ ಅನುಮತಿಸಲಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="2133775869826239001">ಸೆಟಪ್ ಮಾಡಲು ಇನ್ನಷ್ಟು ಫೀಚರ್‌ಗಳನ್ನು ಆರಿಸಿ</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
+<translation id="2133939190018801302">ನೀವು ಪ್ರಸ್ತುತ ಬಳಸುತ್ತಿರುವ Chrome ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಈ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತದೆ. <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">ಸಿಸ್ಟಂ CA ಗಳು</translation>
 <translation id="21354425047973905">ಪಿನ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="2135456203358955318">ಡಾಕ್‌‌ ಮಾಡಿರುವ ವರ್ಧಕ</translation>
@@ -2786,6 +2787,7 @@
 <translation id="3117362587799608430">ಡಾಕ್ ಸಂಪೂರ್ಣವಾಗಿ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ಗೆ ಕಳುಹಿಸಲು ವಿಫಲವಾಗಿದೆ}one{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ಗೆ ಕಳುಹಿಸಲು ವಿಫಲವಾಗಿದೆ}other{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ಗೆ ಕಳುಹಿಸಲು ವಿಫಲವಾಗಿದೆ}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> ಸಹಾಯ</translation>
+<translation id="3118748462829336648">ಸೈಡ್ ಪ್ಯಾನೆಲ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="3119948370277171654">ನೀವು ಯಾವ ಕಂಟೆಂಟ್‌/URL ಅನ್ನು ಬಿತ್ತರಿಸುತ್ತಿರುವಿರಿ?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">ಡೇಟಾ ಡೈರೆಕ್ಟರಿ ರಚಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
@@ -4216,6 +4218,7 @@
 <translation id="4274673989874969668">ನೀವು ಸೈಟ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿದ ನಂತರ, ಫೋಟೋಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡುವುದು ಅಥವಾ ಚಾಟ್ ಸಂದೇಶಗಳನ್ನು ಕಳುಹಿಸುವಂತಹ ಕಾರ್ಯಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಇದು ಸಿಂಕ್ ಮಾಡುತ್ತಲೇ ಇರುತ್ತದೆ</translation>
 <translation id="4275291496240508082">ಸ್ಟಾರ್ಟ್‌ಅಪ್ ಧ್ವನಿ</translation>
 <translation id="4275397969489577657">ಈವೆಂಟ್ ಸ್ಟ್ರೀಮ್ ಲಾಗ್ ಇನ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="4275788652681621337">ಸೈಡ್ ಪ್ಯಾನೆಲ್ ಅನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="4275830172053184480">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4277434192562187284">XML ಕಾನ್ಫಿಗರೇಶನ್ ಮೂಲ</translation>
 <translation id="4278390842282768270">ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -5069,6 +5072,7 @@
 <translation id="4953808748584563296">ಡಿಫಾಲ್ಟ್ ಕೇಸರಿ ಅವತಾರ್</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> ಗೋಚರತೆ</translation>
 <translation id="4955710816792587366">ನಿಮ್ಮ ಪಿನ್‌ ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="4958090327979461112">ನಿಮ್ಮ Chrome ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4959262764292427323">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ. ಇದರಿಂದ ನೀವು ಅವುಗಳನ್ನು ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಬಳಸಬಹುದು.</translation>
 <translation id="4960020053211143927">ಕೆಲವು ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5649,6 +5653,7 @@
 <translation id="5436492226391861498">ಪ್ರಾಕ್ಸಿ ಟನಲ್‌‌ಗಾಗಿ ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> ಹುಡುಕಿ:</translation>
 <translation id="5436575196282187764">Google Photos ನೆನಪುಗಳು</translation>
+<translation id="5440425659852470030">ಸೈಡ್ ಪ್ಯಾನೆಲ್ ಅನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="544083962418256601">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ರಚಿಸಿ...</translation>
 <translation id="5441133529460183413">Chrome ಬ್ರೌಸರ್‌ನಿಂದ ವೆಬ್ ಆ್ಯಪ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5441292787273562014">ಪುಟ ಮರುಲೋಡ್ ಮಾಡಿ</translation>
@@ -8064,6 +8069,7 @@
 <translation id="7384804382450832142">Microsoft OneDrive ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="7385490373498027129">ಈ <ph name="DEVICE_TYPE" /> ದಲ್ಲಿ ಇರುವ ಎಲ್ಲಾ ಬಳಕೆದಾರರ ಎಲ್ಲಾ ಫೈಲ್‌ಗಳು ಮತ್ತು ಸ್ಥಳೀಯ ಡೇಟಾವನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="7385854874724088939">ಮುದ್ರಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರುವಾಗ ಯಾವುದೋ ತಪ್ಪು ಸಂಭವಿಸಿದೆ.  ದಯವಿಟ್ಟು ನಿಮ್ಮ ಪ್ರಿಂಟರ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="7387107590792462040">ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಪ್ರಗತಿಯಲ್ಲಿರುವಾಗ ಕಾಯಿರಿ</translation>
 <translation id="7387273928653486359">ಸ್ವೀಕಾರಾರ್ಹವಾದ</translation>
 <translation id="7387951778417998929">ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಹೊರತುಪಡಿಸಿದ ಸರ್ಚ್ ಎಂಜಿನ್ ಬಳಸಲು, ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ಅದರ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಟೈಪ್ ಮಾಡಿ, ನಂತರ ನಿಮ್ಮ ಆದ್ಯತೆಯ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಟೈಪ್ ಮಾಡಿ. ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ಸಹ ನೀವು ಇಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="7388209873137778229">ಬೆಂಬಲಿತ ಸಾಧನಗಳನ್ನು ಮಾತ್ರ ತೋರಿಸಲಾಗುತ್ತದೆ.</translation>
@@ -9203,6 +9209,7 @@
 <translation id="8260864402787962391">ಮೌಸ್</translation>
 <translation id="8261378640211443080">ಈ ವಿಸ್ತರಣೆಯನ್ನು <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ನಲ್ಲಿ ಪಟ್ಟಿ ಮಾಡಲಾಗಿಲ್ಲ ಮತ್ತು ಇದು ನಿಮಗೆ ಅರಿವಿಲ್ಲದಂತೆ ಸೇರಿಸಿರಬಹುದು.</translation>
 <translation id="8261506727792406068">ಅಳಿಸಿ</translation>
+<translation id="8262971894813353037">WebUI ಗಾಗಿ ಹೊಸ ಡೆಸ್ಕ್‌ಟಾಪ್ ವಿನ್ಯಾಸವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ. Chrome ರಿಫ್ರೆಶ್ 2023 ಅನ್ನು ಸಹ ಸಕ್ರಿಯಗೊಳಿಸಬೇಕು.</translation>
 <translation id="8263336784344783289">ಈ ಗುಂಪನ್ನು ಹೆಸರಿಸಿ</translation>
 <translation id="8263744495942430914">ನಿಮ್ಮ ಮೌಸ್ ಕರ್ಸರ್ ಅನ್ನು <ph name="FULLSCREEN_ORIGIN" /> ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದೆ.</translation>
 <translation id="8264024885325823677">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ.</translation>
@@ -10271,6 +10278,7 @@
 <translation id="9080175821499742274">ಮೆಮೊರಿ ಸೇವರ್, ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳಿಂದ ಮೆಮೊರಿಯನ್ನು ಮುಕ್ತಗೊಳಿಸಿ, ಸಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳು ಹಾಗೂ ಇತರ ಆ್ಯಪ್‌ಗಳು ಅದನ್ನು ಬಳಸುವುದಕ್ಕೆ ಅನುವು ಮಾಡಿಕೊಡುತ್ತದೆ.</translation>
 <translation id="9080971985541434310">ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ಅಂದಾಜಿಸುತ್ತದೆ - Chrome ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ಅಂದಾಜಿಸಬಹುದು</translation>
 <translation id="9081543426177426948">ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್‌ಗಳನ್ನು ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಉಳಿಸಲಾಗುವುದಿಲ್ಲ</translation>
+<translation id="9082750838489080452">ಅಪ್ಲಿಕೇಶನ್: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">ವಿಂಡೊ ಅಂತೆ ತೆರೆಯಿರಿ</translation>
 <translation id="9085256200913095638">ಆಯ್ಕೆ ಮಾಡಿದ ಟ್ಯಾಬ್ ನಕಲಿಸಿ</translation>
 <translation id="9085446486797400519">ಕ್ಯಾಮರಾ ಆ್ಯಕ್ಸೆಸ್</translation>
@@ -10440,6 +10448,7 @@
 <translation id="924818813611903184">ChromeOS ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿರುವ ಭಾಷೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="925270020047573546">ಈ ಸಾಧನದಲ್ಲಿ ಡೆಸ್ಕ್‌ಟಾಪ್ ಆಡಿಯೋ ಬಿತ್ತರಿಸುವಿಕೆಗೆ ಬೆಂಬಲವಿಲ್ಲ.</translation>
 <translation id="925575170771547168">ಸೈಟ್‌ಗಳಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ <ph name="TOTAL_USAGE" /> ಡೇಟಾವನ್ನು ಇದು ತೆರವುಗೊಳಿಸುತ್ತದೆ</translation>
+<translation id="930193457234051160">Chrome WebUI ರಿಫ್ರೆಶ್ 2023</translation>
 <translation id="930268624053534560">ವಿವರವಾದ ಸಮಯಮೊಹರುಗಳು</translation>
 <translation id="930551443325541578">ಕೀಗಳ ಪುನರಾವರ್ತನೆ ಹಾಗೂ ಉಚ್ಚಾರಣಾ ಗುರುತುಗಳು</translation>
 <translation id="930893132043726269">ಪ್ರಸ್ತುತ ರೋಮಿಂಗ್‌ನಲ್ಲಿದೆ</translation>

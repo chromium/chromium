@@ -1216,6 +1216,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7367530036083223701">Parollar menejeri vidjeti yordamida asosiy ekrandan parollaringizga xavfsiz kiring.</translation>
 <translation id="7380220816562673297">Hozircha parollarni faqat yaqinlarga ulashish mumkin. <ph name="BEGIN_LINK" />Oilaviy guruh yarating<ph name="END_LINK" /> va unga yana 6 kishigacha taklif qilib, barcha Google mahsulot va obunalaridan birga foydalaning.</translation>
 <translation id="7383797227493018512">Mutolaa ro‘yxati</translation>
+<translation id="739101637685146669">Qaysi URL bukmarklarga kiritilsin?</translation>
 <translation id="7396331865858820922">Parol ulashilmagan</translation>
 <translation id="7398893703713203428">Havola yaratish</translation>
 <translation id="7399802613464275309">Xavfsizlik tekshiruvi</translation>
@@ -1451,6 +1452,7 @@ Maʼlumotlaringiz <ph name="TIME" /> sanasida kodli ibora bilan shifrlangan. Chr
 <translation id="8591976964826315682">Inkognito rejimidagi tashqi cookie fayllarni taqiqlash</translation>
 <translation id="8593565399399144771">Endi yangi varaq ochish mumkin.</translation>
 <translation id="8605219856220328675">Sahifani yopish</translation>
+<translation id="8609743333007776886">Bukmarklarga ${url} manzilini kiritish</translation>
 <translation id="8613883225817609844">Oxirgi varaqlarni yashirish</translation>
 <translation id="8620640915598389714">O‘zgartirish</translation>
 <translation id="8624447588354561276">Joʻnatma raqami</translation>
