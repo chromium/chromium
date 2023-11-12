@@ -460,8 +460,8 @@ class OverviewWindowDragControllerDesksPortraitTabletTest
     UpdateDisplay("800x700");
     const int64_t display_id =
         display::Screen::GetScreen()->GetPrimaryDisplay().id();
-    display::test::ScopedSetInternalDisplayId set_internal(display_manager(),
-                                                           display_id);
+    set_internal_ = std::make_unique<display::test::ScopedSetInternalDisplayId>(
+        display_manager(), display_id);
     ScreenOrientationControllerTestApi test_api(
         Shell::Get()->screen_orientation_controller());
     // Set the screen orientation to primary portrait.
@@ -484,6 +484,9 @@ class OverviewWindowDragControllerDesksPortraitTabletTest
     // the accessibility paint checker checks if they lack an accessible name.
     desks_controller->GetDeskAtIndex(1)->SetName(u"Desk 2", false);
   }
+
+ private:
+  std::unique_ptr<display::test::ScopedSetInternalDisplayId> set_internal_;
 };
 
 TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest,

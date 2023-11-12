@@ -12,7 +12,6 @@
 #include "ash/accelerometer/accelerometer_types.h"
 #include "ash/ash_export.h"
 #include "ash/display/display_configuration_controller.h"
-#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
@@ -43,7 +42,6 @@ class ASH_EXPORT ScreenOrientationController
     : public ::wm::ActivationChangeObserver,
       public aura::WindowObserver,
       public AccelerometerReader::Observer,
-      public WindowTreeHostManager::Observer,
       public TabletModeObserver,
       public display::DisplayObserver {
  public:
@@ -148,9 +146,6 @@ class ASH_EXPORT ScreenOrientationController
   void OnECLidAngleDriverStatusChanged(bool is_supported) override {}
   void OnAccelerometerUpdated(const AccelerometerUpdate& update) override;
 
-  // WindowTreeHostManager::Observer:
-  void OnDisplayConfigurationChanged() override;
-
   // TabletModeObserver:
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
@@ -184,6 +179,10 @@ class ASH_EXPORT ScreenOrientationController
       display::Display::RotationSource source,
       DisplayConfigurationController::RotationAnimation mode =
           DisplayConfigurationController::ANIMATION_ASYNC);
+
+  // Gets the target rotation for the device's internal display from the
+  // `DisplayConfigurationController`.
+  display::Display::Rotation GetInternalDisplayTargetRotation() const;
 
   void SetRotationLockedInternal(bool rotation_locked);
 
@@ -274,10 +273,6 @@ class ASH_EXPORT ScreenOrientationController
   // The currently applied orientation lock that was requested by an app if any.
   absl::optional<chromeos::OrientationType>
       current_app_requested_orientation_lock_ = absl::nullopt;
-
-  // The current rotation set by ScreenOrientationController for the internal
-  // display.
-  display::Display::Rotation current_rotation_;
 
   // Rotation Lock observers.
   base::ObserverList<Observer>::Unchecked observers_;
