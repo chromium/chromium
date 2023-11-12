@@ -1,6 +1,7 @@
 package com.ark.browser.ui.fragment.settings.website;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -15,7 +16,6 @@ import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.recyclerview.EasyRecycler;
 import com.zpj.recyclerview.EasyViewHolder;
 import com.zpj.recyclerview.IEasy;
-import com.zpj.statemanager.State;
 import com.zpj.utils.ClickHelper;
 import com.zpj.utils.PrefsHelper;
 
@@ -99,15 +99,9 @@ public class WebSiteRedirectFragment extends BaseSwipeBackFragment
                             SiteRedirectItem item = new SiteRedirectItem();
                             item.setTargetUrl(target);
                             item.setRedirectUrl(url);
-
-                            PrefsHelper.with("site_redirect_manager").applyString(target, url);
-
+                            updateSiteRedirect(target, url);
                             mRecycler.addItem(item);
-                            if (mRecycler.getState() != State.STATE_CONTENT) {
-                                mRecycler.showContent();
-                            } else {
-                                mRecycler.notifyItemInserted(mRecycler.getItemCount() - 1);
-                            }
+                            mRecycler.notifyDataSetChanged();
                         })
                         .show(context);
             }
@@ -195,12 +189,20 @@ public class WebSiteRedirectFragment extends BaseSwipeBackFragment
                 .setCallback((target, url) -> {
                     item.setTargetUrl(target);
                     item.setRedirectUrl(url);
-
-                    PrefsHelper.with("site_redirect_manager").applyString(target, url);
-
-                    mRecycler.notifyItemChanged(pos);
+                    updateSiteRedirect(target, url);
+                    mRecycler.notifyDataSetChanged();
                 })
                 .show(context);
+    }
+
+    private void updateSiteRedirect(String source, String target) {
+        PrefsHelper.with("site_redirect_manager").applyString(source, target);
+        for (SiteRedirectItem item : mRecycler.getItems()) {
+            if (TextUtils.equals(source, item.redirectUrl)) {
+                item.redirectUrl = target;
+                PrefsHelper.with("site_redirect_manager").applyString(item.targetUrl, item.redirectUrl);
+            }
+        }
     }
 
 }

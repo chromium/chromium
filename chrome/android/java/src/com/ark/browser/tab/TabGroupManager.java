@@ -1,10 +1,10 @@
 package com.ark.browser.tab;
 
-import android.text.TextUtils;
 import android.util.SparseArray;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
@@ -111,22 +111,25 @@ public class TabGroupManager {
         return tabGroup.selectTab(iTab, page);
     }
 
-    public static List<ITab> searchTabs(String keyword) {
-        List<ITab> tabList = new ArrayList<>();
-        if (TextUtils.isEmpty(keyword)) {
-            tabList.addAll(GlobalSelector.getInstance().getTabGroup(false).getTabList());
-            return tabList;
+    public static List<ITab> searchTabs(@Nullable String keyword) {
+        if (keyword != null) {
+            keyword = keyword.toLowerCase();
         }
-        searchTabs(tabList, GlobalSelector.getInstance().getTabGroup(false), keyword.toLowerCase());
+        List<ITab> tabList = new ArrayList<>();
+        searchTabs(tabList, GlobalSelector.getInstance().getTabGroup(false), keyword);
         return tabList;
     }
 
-    private static void searchTabs(List<ITab> results, ITab tab, String keyword) {
+    private static void searchTabs(List<ITab> results, ITab tab, @Nullable String keyword) {
         if (tab instanceof ITabGroup) {
             for (ITab child : ((ITabGroup) tab).getTabList()) {
                 searchTabs(results, child, keyword);
             }
         } else {
+            if (keyword == null) {
+                results.add(tab);
+                return;
+            }
             PageInfo info = tab.getCurrentPageInfo();
             if (info != null) {
                 if (info.getTitle().toLowerCase().contains(keyword)

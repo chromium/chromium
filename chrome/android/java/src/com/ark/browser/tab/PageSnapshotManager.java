@@ -3,6 +3,7 @@ package com.ark.browser.tab;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.TextUtils;
 import android.util.LruCache;
 import android.util.SparseArray;
 import android.widget.ImageView;
@@ -21,10 +22,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -81,21 +79,21 @@ public class PageSnapshotManager {
     }
 
     public void cachePage(PageInfo pageInfo) {
-        if (pageInfo == null) {
-            return;
-        }
-        ArkLogger.d("TabThumbnailManager", "cacheTab page=" + pageInfo.getId());
-        synchronized (snapshotTasks) {
-            int pageId = pageInfo.getId();
-            SnapshotTask task = snapshotTasks.get(pageId);
-            if (task == null) {
-                task = new SnapshotTask(pageId, null);
-                snapshotTasks.put(pageId, task);
-            } else {
-                task.cancel();
-            }
-            task.start();
-        }
+//        if (pageInfo == null) {
+//            return;
+//        }
+//        ArkLogger.d("TabThumbnailManager", "cacheTab page=" + pageInfo.getId());
+//        synchronized (snapshotTasks) {
+//            int pageId = pageInfo.getId();
+//            SnapshotTask task = snapshotTasks.get(pageId);
+//            if (task == null) {
+//                task = new SnapshotTask(pageId, null);
+//                snapshotTasks.put(pageId, task);
+//            } else {
+//                task.cancel();
+//            }
+//            task.start();
+//        }
     }
 
     public void removeSnapshot(int pageId) {
@@ -213,6 +211,10 @@ public class PageSnapshotManager {
                         @Override
                         public void onResult(String result) {
                             ArkLogger.e(SnapshotTask.class, "onResult result=" + result);
+                            if (TextUtils.isEmpty(result)) {
+                                onFinished(null);
+                                return;
+                            }
                             ThreadPool.executeIO(() -> {
                                 File file = new File(result);
                                 if (file.exists()) {
@@ -243,7 +245,16 @@ public class PageSnapshotManager {
                     });
                 }
             } else {
-                onFinished(null);
+//                onFinished(null);
+                ThreadPool.executeIO(() -> {
+                    File file = new File(PathHolder.path, mPageId + ".thumbnail");
+                    if (file.exists()) {
+                        Bitmap bitmap1 = BitmapFactory.decodeFile(file.getAbsolutePath(), mOptions);
+                        ThreadPool.runOnUIThread(() -> onFinished(bitmap1));
+                    } else {
+                        ThreadPool.runOnUIThread(() -> onFinished(null));
+                    }
+                });
             }
         }
 

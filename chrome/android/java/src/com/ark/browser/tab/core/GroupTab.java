@@ -336,10 +336,7 @@ public class GroupTab implements ITabGroup {
     @Override
     public void openInNewTab(ITab currentTab, LoadUrlParams loadUrlParams, @TabLaunchType int type) {
         ArkLogger.e(TAG, "openNewTab url=" + loadUrlParams.getUrl() + " type=" + type);
-
-
         ChildTab newTab = new ChildTab(this);
-
         if (currentTab != null) {
             int index = indexOf(currentTab);
             int position = currentTab.getTabInfo().getPosition();
@@ -405,21 +402,31 @@ public class GroupTab implements ITabGroup {
 
         int index;
         int lastId;
+        int position;
         if (currentTab != null) {
+            position = currentTab.getTabInfo().getPosition();
             tabs.add(currentTab);
 
             lastId = currentTab.getId();
             index = indexOf(currentTab);
             mTabList.set(index, newGroup);
+            currentTab.setParentGroup(newGroup);
             currentTab.getTabInfo().setParentId(newGroup.getId());
             currentTab.getTabInfo().setPosition(0);
             currentTab.saveTabInfo();
+            newGroup.getTabInfo().setChildIndex(0);
+            newGroup.getTabInfo().setCurrentPageId(currentTab.getId());
         } else {
             lastId = ITab.INVALID_TAB_INDEX;
             index = getCount();
             mTabList.add(newGroup);
+            if (mTabList.size() > 1) {
+                position = mTabList.get(mTabList.size() - 2).getTabInfo().getPosition();
+            } else {
+                position = 0;
+            }
         }
-        newGroup.getTabInfo().setPosition(index);
+        newGroup.getTabInfo().setPosition(position);
         newGroup.saveTabInfo();
         onIndexChanged(index);
         saveTabInfo();
