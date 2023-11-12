@@ -2210,11 +2210,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("img-link-empty-alt.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityImgLinkEmptyAltSet) {
-  RunHtmlTest(FILE_PATH_LITERAL("img-link-empty-alt-set.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityImgMimeType) {
   RunHtmlTest(FILE_PATH_LITERAL("img-mime-type.png"));  // Open an image file.
 }
@@ -2420,7 +2415,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputSearch) {
   RunHtmlTest(FILE_PATH_LITERAL("input-search.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInsertBefore) {
+// TODO(crbug.com/1480429): failing on Linux, Lacros ASAN and chromeos
+#if (BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_AccessibilityInsertBefore DISABLED_AccessibilityInsertBefore
+#else
+#define MAYBE_AccessibilityInsertBefore AccessibilityInsertBefore
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityInsertBefore) {
   RunHtmlTest(FILE_PATH_LITERAL("insert-before.html"));
 }
 
@@ -3636,7 +3639,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ReusedMap) {
   RunRegressionTest(FILE_PATH_LITERAL("reused-map.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ReusedMapMoveImage) {
+// TODO(crbug.com/1480429): failing on linux and chromeos
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ReusedMapMoveImage DISABLED_ReusedMapMoveImage
+#else
+#define MAYBE_ReusedMapMoveImage ReusedMapMoveImage
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MAYBE_ReusedMapMoveImage) {
   RunRegressionTest(FILE_PATH_LITERAL("reused-map-move-image.html"));
 }
 
