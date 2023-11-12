@@ -37,6 +37,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
@@ -129,8 +130,8 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(http_server_.Start());
     ASSERT_TRUE(http_server_origin2_.Start());
 
-    scoped_feature_list_.InitAndEnableFeature(
-        media::kRecordMediaEngagementScores);
+    scoped_feature_list_.InitWithFeatures({media::kRecordMediaEngagementScores},
+                                          disabled_features_);
 
     InProcessBrowserTest::SetUp();
 
@@ -298,6 +299,8 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
     for (auto observer : service->contents_observers_)
       observer.second->SetTaskRunnerForTest(task_runner_);
   }
+
+  std::vector<base::test::FeatureRef> disabled_features_;
 
  private:
   void InjectTimerTaskRunner() {
@@ -777,12 +780,22 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
   ExpectScores(2, 2);
 }
 
+class MediaEngagementPreThirdPartyCookieDeprecationBrowserTest
+    : public MediaEngagementBrowserTest {
+ public:
+  MediaEngagementPreThirdPartyCookieDeprecationBrowserTest() {
+    disabled_features_.push_back(
+        content_settings::features::kTrackingProtection3pcd);
+  }
+};
+
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_Ignored DISABLED_Ignored
 #else
 #define MAYBE_Ignored Ignored
 #endif
-IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, MAYBE_Ignored) {
+IN_PROC_BROWSER_TEST_F(MediaEngagementPreThirdPartyCookieDeprecationBrowserTest,
+                       MAYBE_Ignored) {
   const GURL& url = http_server().GetURL("/engagement_test.html");
 
   prerender::NoStatePrefetchManager* no_state_prefetch_manager =
