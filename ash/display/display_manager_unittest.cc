@@ -346,9 +346,9 @@ TEST_F(DisplayManagerTest, UpdateDisplayTest) {
   const vector<display::ManagedDisplayInfo> empty;
   display_manager()->OnNativeDisplaysChanged(empty);
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());
-  // Going to 0 displays doesn't actually change the list and but the detected
-  // is set to false.
-  EXPECT_EQ("1 0 0 0 0", GetCountSummary());
+  // Going to 0 displays doesn't actually change the active display list but the
+  // detected bit for the previously connected displays is propagated as false.
+  EXPECT_EQ("1 0 0 1 1", GetCountSummary());
   EXPECT_FALSE(root_window_destroyed());
   // Display configuration stays the same
   EXPECT_EQ(gfx::Rect(0, 0, 800, 300),

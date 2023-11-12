@@ -826,6 +826,7 @@ void DisplayManager::OnNativeDisplaysChanged(
       // The display will be updated when one of displays is turned on, and the
       // display list will be updated correctly.
 
+      BeginEndNotifier notifier(this);
       for (auto& display : active_display_list_) {
         if (display.detected()) {
           ManagedDisplayInfo info = GetDisplayInfo(display.id());
