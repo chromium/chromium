@@ -7564,3 +7564,8 @@ crbug.com/1486131 [ Debug Linux ] external/wpt/html/browsers/history/the-history
 
 # Gardener 2023-11-10
 crbug.com/1501324 [ Mac ] virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_rate_obfuscation_mitigation_triggered.tentative.https.window.html [ Failure Pass ]
+
+# Tentatively allowed to fail to roll changes in the DevTools frontend.
+crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Pass Failure ]
+crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Pass Failure ]
+crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Pass Failure ]
