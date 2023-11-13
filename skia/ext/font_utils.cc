@@ -31,9 +31,9 @@ sk_sp<SkTypeface> DefaultTypeface() {
     return face;
   }
   // Due to how SkTypeface::MakeDefault() used to work, many callers of this
-  // depend on the returned SkTypeface being non-null.
-  // TODO(kjlubick) replace this with SkTypeface::MakeEmpty()
-  face = SkTypeface::MakeDefault();
+  // depend on the returned SkTypeface being non-null. An empty Typeface is
+  // non-null, but has no glyphs.
+  face = SkTypeface::MakeEmpty();
   CHECK(face);
   return face;
 }
