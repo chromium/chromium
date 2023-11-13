@@ -13,9 +13,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/compositor/compositor.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -757,6 +759,64 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuCloseDeleteAfterRun) {
   if (menu_controller.controller())
     menu_controller.controller()->Cancel(MenuController::ExitType::kAll);
   EXPECT_EQ(nullptr, menu_controller.controller());
+}
+
+// Tests that passing a histogram name to RunMenuAt records a histogram entry.
+TEST_F(MenuRunnerTest, ShowMenuHostDurationMetricsDoesLog) {
+  base::HistogramTester histogram_tester;
+  std::string histogram_name =
+      "Chrome.AppMenu.MenuHostInitToNextFramePresented";
+
+  InitMenuRunner(0);
+  MenuRunner* runner = menu_runner();
+  runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
+                    ui::MENU_SOURCE_NONE, nullptr, absl::nullopt,
+                    histogram_name);
+
+  base::RunLoop run_loop;
+  views::MenuController::GetActiveInstance()
+      ->GetSelectedMenuItem()
+      ->GetSubmenu()
+      ->GetWidget()
+      ->GetCompositor()
+      ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
+          [](base::RunLoop* run_loop, base::TimeTicks bubble_created_time) {
+            run_loop->Quit();
+          },
+          &run_loop));
+
+  histogram_tester.ExpectTotalCount(histogram_name, 0);
+  run_loop.Run();
+  histogram_tester.ExpectTotalCount(histogram_name, 1);
+}
+
+// Tests that not passing a histogram name to RunMenuAt does not record a
+// histogram entry.
+TEST_F(MenuRunnerTest, ShowMenuHostDurationMetricsDoesNotLog) {
+  base::HistogramTester histogram_tester;
+  std::string histogram_name =
+      "Chrome.AppMenu.MenuHostInitToNextFramePresented";
+
+  InitMenuRunner(0);
+  MenuRunner* runner = menu_runner();
+  runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
+                    ui::MENU_SOURCE_NONE, nullptr, absl::nullopt);
+
+  base::RunLoop run_loop;
+  views::MenuController::GetActiveInstance()
+      ->GetSelectedMenuItem()
+      ->GetSubmenu()
+      ->GetWidget()
+      ->GetCompositor()
+      ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
+          [](base::RunLoop* run_loop, base::TimeTicks bubble_created_time) {
+            run_loop->Quit();
+          },
+          &run_loop));
+
+  histogram_tester.ExpectTotalCount(histogram_name, 0);
+  run_loop.Run();
+  histogram_tester.ExpectTotalCount(histogram_name, 0);
 }
 
 }  // namespace views::test

@@ -987,10 +987,12 @@ void AppMenu::RunMenu(views::MenuButtonController* host) {
   UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction", MENU_ACTION_MENU_OPENED,
                             LIMIT_MENU_ACTION);
 
-  menu_runner_->RunMenuAt(host->button()->GetWidget(), host,
-                          host->button()->GetAnchorBoundsInScreen(),
-                          views::MenuAnchorPosition::kTopRight,
-                          ui::MENU_SOURCE_NONE);
+  menu_runner_->RunMenuAt(
+      host->button()->GetWidget(), host,
+      host->button()->GetAnchorBoundsInScreen(),
+      views::MenuAnchorPosition::kTopRight, ui::MENU_SOURCE_NONE,
+      /*native_view_for_gestures=*/gfx::NativeView(), /*corners=*/absl::nullopt,
+      "Chrome.AppMenu.MenuHostInitToNextFramePresented");
 }
 
 void AppMenu::CloseMenu() {
