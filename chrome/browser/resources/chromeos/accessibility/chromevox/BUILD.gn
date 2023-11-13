@@ -282,7 +282,7 @@ template("generate_deps_js") {
 action("chromevox_phonetic_dictionaries_js") {
   script = "tools/phonetic_dictionaries.py"
   src_dir = [ "$root_out_dir/resources/chromeos/accessibility/_locales" ]
-  output_file = "$chromevox_out_dir/phonetic_dictionaries.js"
+  output_file = "$chromevox_out_dir/background/phonetic_dictionaries.js"
   outputs = [ output_file ]
   deps = [
     "//chrome/browser/resources/chromeos/accessibility:accessibility_strings",

@@ -12,7 +12,7 @@ import os
 import sys
 
 
-HEADER = '''goog.provide('PhoneticDictionaries');
+HEADER = '''export const PhoneticDictionaries = {};
 
 PhoneticDictionaries.phoneticMap_ = {
 '''
