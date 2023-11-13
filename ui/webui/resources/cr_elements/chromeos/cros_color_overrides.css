@@ -240,6 +240,31 @@
   --md-select-text-color: var(--cros-sys-on_surface);
 }
 
+:host-context([cros][chrome-refresh-2023]) .md-select {
+  --md-arrow-width: 7px;
+  --md-select-bg-color: var(--cros-sys-input_field_on_base);
+  --md-select-focus-shadow-color: transparent;
+  --md-select-option-bg-color: var(--cros-sys-base_elevated);
+  --md-select-side-padding: 16px;
+  --md-select-text-color: var(--cros-sys-on_surface);
+  border: none;
+  border-radius: 8px;
+  font: var(--cros-body-2-font);
+  height: 36px;
+  line-height: 36px;
+}
+
+:host-context([cros][chrome-refresh-2023]) .md-select:hover {
+  background-color: var(--md-select-bg-color);
+}
+
+:host-context([cros][chrome-refresh-2023]) .md-select[disabled] {
+  background-color: var(--md-select-bg-color);
+  border-color: transparent;
+  color: var(--md-select-text-color);
+  opacity: var(--cros-disabled-opacity);
+}
+
 /* Menu */
 :host-context(body.jelly-enabled) cr-action-menu {
   --cr-menu-background-color: var(--cros-sys-base_elevated);
