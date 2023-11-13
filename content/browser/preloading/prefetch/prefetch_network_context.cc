@@ -51,12 +51,6 @@ PrefetchNetworkContext::PrefetchNetworkContext(
 
 PrefetchNetworkContext::~PrefetchNetworkContext() = default;
 
-network::mojom::NetworkContext* PrefetchNetworkContext::GetNetworkContext()
-    const {
-  CHECK(network_context_);
-  return network_context_.get();
-}
-
 network::mojom::URLLoaderFactory*
 PrefetchNetworkContext::GetURLLoaderFactory() {
   if (!url_loader_factory_) {

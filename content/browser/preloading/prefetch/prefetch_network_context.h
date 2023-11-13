@@ -40,9 +40,6 @@ class CONTENT_EXPORT PrefetchNetworkContext {
   const PrefetchNetworkContext operator=(const PrefetchNetworkContext&) =
       delete;
 
-  // Get a reference to |network_context_|.
-  network::mojom::NetworkContext* GetNetworkContext() const;
-
   // Get a reference to |url_loader_factory_|. If it is null, then
   // |network_context_| is bound and configured, and a new
   // |SharedURLLoaderFactory| is created.
