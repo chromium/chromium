@@ -52,13 +52,18 @@ mojo::ScopedDataPipeProducerHandle NetToMojoPendingBuffer::Complete(
   return std::move(handle_);
 }
 
-NetToMojoIOBuffer::NetToMojoIOBuffer(NetToMojoPendingBuffer* pending_buffer,
-                                     int offset)
+NetToMojoIOBuffer::NetToMojoIOBuffer(
+    scoped_refptr<NetToMojoPendingBuffer> pending_buffer,
+    int offset)
     : net::WrappedIOBuffer(pending_buffer->buffer() + offset,
                            pending_buffer->size() - offset),
-      pending_buffer_(pending_buffer) {}
+      pending_buffer_(std::move(pending_buffer)) {}
 
-NetToMojoIOBuffer::~NetToMojoIOBuffer() {}
+NetToMojoIOBuffer::~NetToMojoIOBuffer() {
+  // Avoid dangling ptr should this destructor remove the last reference
+  // to `pending_buffer_`.
+  data_ = nullptr;
+}
 
 MojoToNetPendingBuffer::MojoToNetPendingBuffer(
     mojo::ScopedDataPipeConsumerHandle handle,
@@ -101,16 +106,21 @@ bool MojoToNetPendingBuffer::IsComplete() const {
   return buffer_.empty();
 }
 
-MojoToNetIOBuffer::MojoToNetIOBuffer(MojoToNetPendingBuffer* pending_buffer,
-                                     int bytes_to_be_read)
+MojoToNetIOBuffer::MojoToNetIOBuffer(
+    scoped_refptr<MojoToNetPendingBuffer> pending_buffer,
+    int bytes_to_be_read)
     : net::WrappedIOBuffer(pending_buffer->buffer(), pending_buffer->size()),
-      pending_buffer_(pending_buffer),
+      pending_buffer_(std::move(pending_buffer)),
       bytes_to_be_read_(bytes_to_be_read) {}
 
 MojoToNetIOBuffer::~MojoToNetIOBuffer() {
   // We can safely notify mojo, that the data has been consumed and can be
   // released at this point.
   pending_buffer_->CompleteRead(bytes_to_be_read_);
+
+  // Prevent dangling ptr should this destructor remove the last reference
+  // to `pending_buffer_`.
+  data_ = nullptr;
 }
 
 }  // namespace network

@@ -97,7 +97,7 @@ class IOBufferPool::Internal::Buffer : public net::IOBuffer {
  private:
   friend class Wrapper;
 
-  ~Buffer() override { data_ = nullptr; }
+  ~Buffer() override = default;
   static void operator delete(void* ptr);
 };
 

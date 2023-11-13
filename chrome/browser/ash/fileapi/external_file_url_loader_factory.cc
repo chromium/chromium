@@ -44,7 +44,7 @@ namespace {
 
 constexpr size_t kDefaultPipeSize = 65536;
 
-// An IOBuffer that doesn't own its data.
+// An IOBuffer that doesn't own its data and accepts void* pointers.
 class MojoPipeIOBuffer : public net::IOBuffer {
  public:
   MojoPipeIOBuffer(void* data, size_t size)
@@ -54,10 +54,7 @@ class MojoPipeIOBuffer : public net::IOBuffer {
   MojoPipeIOBuffer& operator=(const MojoPipeIOBuffer&) = delete;
 
  protected:
-  ~MojoPipeIOBuffer() override {
-    // Set data_ to null so ~IOBuffer won't try to delete it.
-    data_ = nullptr;
-  }
+  ~MojoPipeIOBuffer() override = default;
 };
 
 // A helper class to read data from a FileStreamReader, and write it to a

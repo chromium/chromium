@@ -141,8 +141,8 @@ void CacheStorageBlobToDiskCache::OnDataPipeReadable(MojoResult unused) {
   }
 
   const int bytes_to_read = std::min<int>(kBufferSize, pending_read_->size());
-  auto buffer = base::MakeRefCounted<network::MojoToNetIOBuffer>(
-      pending_read_.get(), bytes_to_read);
+  auto buffer = base::MakeRefCounted<network::MojoToNetIOBuffer>(pending_read_,
+                                                                 bytes_to_read);
 
   net::CompletionOnceCallback cache_write_callback =
       base::BindOnce(&CacheStorageBlobToDiskCache::DidWriteDataToEntry,

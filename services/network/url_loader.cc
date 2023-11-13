@@ -1844,7 +1844,7 @@ void URLLoader::ReadMore() {
 
   CHECK(!slop_bucket_ || !slop_bucket_->IsComplete());
   auto buf = base::MakeRefCounted<NetToMojoIOBuffer>(
-      pending_write_.get(), pending_write_buffer_offset_);
+      pending_write_, pending_write_buffer_offset_);
   read_in_progress_ = true;
   int bytes_read = url_request_->Read(
       buf.get(), static_cast<int>(pending_write_buffer_size_ -

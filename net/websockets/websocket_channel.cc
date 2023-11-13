@@ -145,7 +145,12 @@ class DependentIOBuffer : public WrappedIOBuffer {
         buffer_(std::move(buffer)) {}
 
  private:
-  ~DependentIOBuffer() override = default;
+  ~DependentIOBuffer() override {
+    // Prevent `data_` from dangling should this destructor remove the
+    // last reference to `buffer_`.
+    data_ = nullptr;
+  }
+
   scoped_refptr<IOBufferWithSize> buffer_;
 };
 

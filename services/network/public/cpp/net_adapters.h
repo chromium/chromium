@@ -72,7 +72,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetToMojoIOBuffer
  public:
   // If |offset| is specified then the memory buffer passed to the Net layer
   // will be offset by that many bytes.
-  NetToMojoIOBuffer(NetToMojoPendingBuffer* pending_buffer, int offset = 0);
+  explicit NetToMojoIOBuffer(
+      scoped_refptr<NetToMojoPendingBuffer> pending_buffer,
+      int offset = 0);
 
   NetToMojoIOBuffer(const NetToMojoIOBuffer&) = delete;
   NetToMojoIOBuffer& operator=(const NetToMojoIOBuffer&) = delete;
@@ -137,7 +139,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) MojoToNetIOBuffer
  public:
   // |bytes_to_be_read| contains the number of bytes expected to be read by
   // the consumer.
-  MojoToNetIOBuffer(MojoToNetPendingBuffer* pending_buffer,
+  MojoToNetIOBuffer(scoped_refptr<MojoToNetPendingBuffer> pending_buffer,
                     int bytes_to_be_read);
 
  private:
