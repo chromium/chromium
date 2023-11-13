@@ -81,13 +81,18 @@ TraceConfig DefaultTraceConfig(const StringPiece& category_filter_string,
     track_event_config.add_disabled_categories(excluded_category);
   }
 
-  source_config->set_track_event_config_raw(
-      track_event_config.SerializeAsString());
+  // This category is added by default to tracing sessions initiated via
+  // command-line flags (see TraceConfig::ToPerfettoTrackEventConfigRaw),
+  // so to adopt startup sessions correctly, we need to specify it too.
+  track_event_config.add_enabled_categories("__metadata");
 
   if (privacy_filtering) {
     track_event_config.set_filter_debug_annotations(true);
     track_event_config.set_filter_dynamic_event_names(true);
   }
+
+  source_config->set_track_event_config_raw(
+      track_event_config.SerializeAsString());
 
   return trace_config;
 }

@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, SimpleTraceEvent) {
   absl::Status status = ttp.StopAndParseTrace();
   ASSERT_TRUE(status.ok()) << status.message();
 
-  std::string query = "SELECT name from slice";
+  std::string query = "SELECT name FROM slice WHERE cat = 'foo'";
   auto result = ttp.RunQuery(query);
   ASSERT_TRUE(result.has_value()) << result.error();
 
@@ -234,7 +234,8 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, TwoSessionsSimple) {
   absl::Status status = ttp1.StopAndParseTrace();
   ASSERT_TRUE(status.ok()) << status.message();
 
-  std::string query = "SELECT name from slice";
+  std::string query =
+      "SELECT name from slice WHERE cat IN ('foo', 'test', 'cat') ORDER BY ts";
   auto result1 = ttp1.RunQuery(query);
   ASSERT_TRUE(result1.has_value()) << result1.error();
   EXPECT_THAT(result1.value(),
