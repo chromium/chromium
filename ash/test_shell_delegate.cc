@@ -9,6 +9,8 @@
 
 #include "ash/accelerators/test_accelerator_prefs_delegate.h"
 #include "ash/accessibility/default_accessibility_delegate.h"
+#include "ash/api/tasks/tasks_delegate.h"
+#include "ash/api/tasks/test_tasks_delegate.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/clipboard/test_support/test_clipboard_history_controller_delegate_impl.h"
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
@@ -79,6 +81,11 @@ std::unique_ptr<SavedDeskDelegate> TestShellDelegate::CreateSavedDeskDelegate()
 std::unique_ptr<SystemSoundsDelegate>
 TestShellDelegate::CreateSystemSoundsDelegate() const {
   return std::make_unique<TestSystemSoundsDelegate>();
+}
+
+std::unique_ptr<api::TasksDelegate> TestShellDelegate::CreateTasksDelegate()
+    const {
+  return std::make_unique<api::TestTasksDelegate>();
 }
 
 std::unique_ptr<UserEducationDelegate>

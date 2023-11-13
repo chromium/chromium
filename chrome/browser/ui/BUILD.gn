@@ -2475,6 +2475,8 @@ static_library("ui") {
       "ash/accessibility/accessibility_controller_client.h",
       "ash/ambient/ambient_client_impl.cc",
       "ash/ambient/ambient_client_impl.h",
+      "ash/api/tasks/chrome_tasks_delegate.cc",
+      "ash/api/tasks/chrome_tasks_delegate.h",
       "ash/app_access_notifier.cc",
       "ash/app_access_notifier.h",
       "ash/app_icon_color_cache.cc",

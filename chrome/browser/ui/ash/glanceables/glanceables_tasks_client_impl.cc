@@ -27,7 +27,6 @@
 #include "google_apis/tasks/tasks_api_requests.h"
 #include "google_apis/tasks/tasks_api_response_types.h"
 #include "google_apis/tasks/tasks_api_task_status.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/list_model.h"
 
@@ -46,41 +45,6 @@ using ::google_apis::tasks::TaskLists;
 using ::google_apis::tasks::TaskRequestPayload;
 using ::google_apis::tasks::Tasks;
 using ::google_apis::tasks::TaskStatus;
-
-constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
-    net::DefineNetworkTrafficAnnotation("glanceables_tasks_integration", R"(
-        semantics {
-          sender: "Glanceables keyed service"
-          description: "Provide ChromeOS users quick access to their "
-                       "task lists without opening the app or website"
-          trigger: "User presses the calendar pill in shelf, which triggers "
-                   "opening the calendar, classroom (if available) and tasks "
-                   "widgets. This specific client implementation "
-                   "is responsible for fetching user's tasks data from "
-                   "Google Tasks API."
-          internal {
-            contacts {
-              email: "chromeos-launcher@google.com"
-            }
-          }
-          user_data {
-            type: ACCESS_TOKEN
-          }
-          data: "The request is authenticated with an OAuth2 access token "
-                "identifying the Google account"
-          destination: GOOGLE_OWNED_SERVICE
-          last_reviewed: "2023-08-21"
-        }
-        policy {
-          cookies_allowed: NO
-          setting: "This feature cannot be disabled in settings"
-          chrome_policy {
-            GlanceablesEnabled {
-              GlanceablesEnabled: false
-            }
-          }
-        }
-    )");
 
 // Converts `raw_tasks` received from Google Tasks API to ash-friendly types.
 std::vector<std::unique_ptr<api::Task>> ConvertTasks(
@@ -139,8 +103,10 @@ TasksClientImpl::TasksFetchState::~TasksFetchState() = default;
 
 TasksClientImpl::TasksClientImpl(
     const TasksClientImpl::CreateRequestSenderCallback&
-        create_request_sender_callback)
-    : create_request_sender_callback_(create_request_sender_callback) {}
+        create_request_sender_callback,
+    net::NetworkTrafficAnnotationTag traffic_annotation_tag)
+    : create_request_sender_callback_(create_request_sender_callback),
+      traffic_annotation_tag_(traffic_annotation_tag) {}
 
 TasksClientImpl::~TasksClientImpl() = default;
 
@@ -476,7 +442,7 @@ google_apis::RequestSender* TasksClientImpl::GetRequestSender() {
     request_sender_ = std::move(create_request_sender_callback_)
                           .Run({GaiaConstants::kTasksReadOnlyOAuth2Scope,
                                 GaiaConstants::kTasksOAuth2Scope},
-                               kTrafficAnnotationTag);
+                               traffic_annotation_tag_);
     CHECK(request_sender_);
   }
   return request_sender_.get();

@@ -31,6 +31,10 @@ class OSExchangeData;
 
 namespace ash {
 
+namespace api {
+class TasksDelegate;
+}  // namespace api
+
 class AcceleratorPrefsDelegate;
 class AccessibilityDelegate;
 class BackGestureContextualNudgeController;
@@ -94,6 +98,8 @@ class ASH_EXPORT ShellDelegate {
 
   virtual std::unique_ptr<SavedDeskDelegate> CreateSavedDeskDelegate()
       const = 0;
+
+  virtual std::unique_ptr<api::TasksDelegate> CreateTasksDelegate() const = 0;
 
   // Creates and returns the delegate of the System Sounds feature.
   virtual std::unique_ptr<SystemSoundsDelegate> CreateSystemSoundsDelegate()

@@ -266,6 +266,10 @@ class MultiCaptureServiceClient;
 
 enum class LoginStatus;
 
+namespace api {
+class TasksController;
+}  // namespace api
+
 namespace diagnostics {
 class DiagnosticsLogController;
 }  // namespace diagnostics
@@ -1070,6 +1074,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<SystemTrayModel> system_tray_model_;
   std::unique_ptr<SystemTrayNotifier> system_tray_notifier_;
   std::unique_ptr<SystemSoundsDelegate> system_sounds_delegate_;
+  std::unique_ptr<api::TasksController> tasks_controller_;
   std::unique_ptr<ToastManagerImpl> toast_manager_;
   std::unique_ptr<ClipboardHistoryControllerImpl> clipboard_history_controller_;
   std::unique_ptr<TouchDevicesController> touch_devices_controller_;

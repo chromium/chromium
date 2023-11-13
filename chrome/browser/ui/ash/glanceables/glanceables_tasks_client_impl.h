@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "google_apis/tasks/tasks_api_requests.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/models/list_model.h"
 
 namespace base {
@@ -28,10 +29,6 @@ class TaskLists;
 class Tasks;
 }  // namespace tasks
 }  // namespace google_apis
-
-namespace net {
-struct NetworkTrafficAnnotationTag;
-}  // namespace net
 
 namespace ash {
 
@@ -50,8 +47,9 @@ class TasksClientImpl : public api::TasksClient {
           const std::vector<std::string>& scopes,
           const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)>;
 
-  explicit TasksClientImpl(
-      const CreateRequestSenderCallback& create_request_sender_callback);
+  TasksClientImpl(
+      const CreateRequestSenderCallback& create_request_sender_callback,
+      net::NetworkTrafficAnnotationTag traffic_annotation_tag);
   TasksClientImpl(const TasksClientImpl&) = delete;
   TasksClientImpl& operator=(const TasksClientImpl&) = delete;
   ~TasksClientImpl() override;
@@ -240,6 +238,8 @@ class TasksClientImpl : public api::TasksClient {
   // in tests.
   TaskListsRequestCallback task_lists_request_callback_;
   TasksRequestCallback tasks_request_callback_;
+
+  const net::NetworkTrafficAnnotationTag traffic_annotation_tag_;
 
   base::WeakPtrFactory<TasksClientImpl> weak_factory_{this};
 };

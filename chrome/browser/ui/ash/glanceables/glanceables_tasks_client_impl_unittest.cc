@@ -147,9 +147,10 @@ class TasksClientImplTest : public testing::Test {
           return std::make_unique<google_apis::RequestSender>(
               std::make_unique<google_apis::DummyAuthService>(),
               url_loader_factory_, task_environment_.GetMainThreadTaskRunner(),
-              "test-user-agent", TRAFFIC_ANNOTATION_FOR_TESTS);
+              "test-user-agent", traffic_annotation_tag);
         });
-    client_ = std::make_unique<TasksClientImpl>(create_request_sender_callback);
+    client_ = std::make_unique<TasksClientImpl>(create_request_sender_callback,
+                                                TRAFFIC_ANNOTATION_FOR_TESTS);
 
     test_server_.RegisterRequestHandler(
         base::BindRepeating(&TestRequestHandler::HandleRequest,

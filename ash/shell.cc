@@ -30,6 +30,8 @@
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/ambient/ambient_controller.h"
+#include "ash/api/tasks/tasks_controller.h"
+#include "ash/api/tasks/tasks_delegate.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_feature_usage_metrics.h"
 #include "ash/assistant/assistant_controller_impl.h"
@@ -908,6 +910,8 @@ Shell::~Shell() {
 
   glanceables_controller_.reset();
 
+  tasks_controller_.reset();
+
   multitask_menu_nudge_delegate_.reset();
   tablet_mode_controller_.reset();
   login_screen_controller_.reset();
@@ -1702,6 +1706,11 @@ void Shell::Init(
   }
   post_login_glanceables_metrics_reporter_ =
       std::make_unique<PostLoginGlanceablesMetricsRecorder>();
+
+  if (features::IsFocusModeEnabled()) {
+    tasks_controller_ = std::make_unique<api::TasksController>(
+        shell_delegate_->CreateTasksDelegate());
+  }
 
   projector_controller_ = std::make_unique<ProjectorControllerImpl>();
 

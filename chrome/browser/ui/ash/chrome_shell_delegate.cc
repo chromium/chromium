@@ -40,6 +40,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/ui/ash/api/tasks/chrome_tasks_delegate.h"
 #include "chrome/browser/ui/ash/back_gesture_contextual_nudge_delegate.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/chrome_accelerator_prefs_delegate.h"
@@ -189,6 +190,11 @@ ChromeShellDelegate::CreateSavedDeskDelegate() const {
 std::unique_ptr<ash::SystemSoundsDelegate>
 ChromeShellDelegate::CreateSystemSoundsDelegate() const {
   return std::make_unique<SystemSoundsDelegateImpl>();
+}
+
+std::unique_ptr<ash::api::TasksDelegate>
+ChromeShellDelegate::CreateTasksDelegate() const {
+  return std::make_unique<ash::api::ChromeTasksDelegate>();
 }
 
 std::unique_ptr<ash::UserEducationDelegate>
