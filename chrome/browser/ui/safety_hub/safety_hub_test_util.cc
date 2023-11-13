@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
+
 #include <memory>
 
 #include "base/run_loop.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
+#include "base/test/run_until.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_prefs.h"
@@ -132,6 +134,15 @@ void UpdateSafetyHubServiceAsync(SafetyHubService* service) {
   service->UpdateAsync();
   loop.Run();
   service->RemoveObserver(test_observer.get());
+}
+
+void UpdatePasswordCheckServiceAsync(
+    PasswordStatusCheckService* password_service) {
+  password_service->UpdateInsecureCredentialCountAsync();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !password_service->IsUpdateRunning() &&
+           !password_service->IsInfrastructureReady();
+  }));
 }
 
 std::unique_ptr<testing::NiceMock<MockCWSInfoService>> GetMockCWSInfoService(

@@ -252,6 +252,25 @@ class PasswordStatusCheckServiceParameterizedCardTest
   }
 };
 
+class PasswordStatusCheckServiceWithoutPasswordStoreTest
+    : public testing::Test {
+ public:
+  PasswordStatusCheckService* service() { return service_.get(); }
+
+  content::BrowserTaskEnvironment* task_environment() { return &task_env_; }
+
+ private:
+  void SetUp() override {
+    service_ = std::make_unique<PasswordStatusCheckService>(&profile_);
+    task_env_.RunUntilIdle();
+  }
+
+  content::BrowserTaskEnvironment task_env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TestingProfile profile_;
+  std::unique_ptr<PasswordStatusCheckService> service_;
+};
+
 TEST_F(PasswordStatusCheckServiceBaseTest, NoIssuesInitially) {
   UpdateInsecureCredentials();
   EXPECT_EQ(service()->weak_credential_count(), 0UL);
@@ -448,9 +467,7 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCheck_FindCompromised) {
 
   bulk_leak_check_service()->set_state_and_notify(
       BulkLeakCheckService::State::kIdle);
-  static_cast<BulkLeakCheckDelegateInterface*>(bulk_leak_check_service())
-      ->OnFinishedCredential(LeakCheckCredential(kUsername1, kPassword),
-                             IsLeaked(true));
+  profile_store().UpdateLogin(MakeForm(kUsername1, kUsername1, kOrigin1, true));
   RunUntilIdle();
 
   // New leak is now picked up by service.
@@ -835,6 +852,20 @@ TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
       static_cast<PasswordStatusCheckResult*>(opt_new_result.value().get());
   EXPECT_THAT(new_result->GetCompromisedOrigins(),
               testing::ElementsAre(kOrigin1));
+}
+
+TEST_F(PasswordStatusCheckServiceWithoutPasswordStoreTest, NoPasswordStored) {
+  // Let the time pass until a check should have happened.
+  task_environment()->AdvanceClock(base::Days(30));
+  task_environment()->RunUntilIdle();
+
+  // Expect that nothing is initialized.
+  EXPECT_FALSE(service()->GetSavedPasswordsPresenterForTesting());
+  EXPECT_FALSE(service()->GetPasswordCheckDelegateForTesting());
+  EXPECT_FALSE(service()->IsObservingSavedPasswordsPresenterForTesting());
+  EXPECT_FALSE(service()->IsObservingBulkLeakCheckForTesting());
+  EXPECT_FALSE(service()->is_password_check_running());
+  EXPECT_FALSE(service()->is_update_credential_count_pending());
 }
 
 INSTANTIATE_TEST_SUITE_P(
