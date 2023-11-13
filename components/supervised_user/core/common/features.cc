@@ -19,7 +19,9 @@ BASE_FEATURE(kKidFriendlyContentFeed,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<std::string> kKidFriendlyContentFeedEndpoint{
-    &kKidFriendlyContentFeed, "supervised_feed_endpoint", ""};
+    &kKidFriendlyContentFeed, "supervised_feed_endpoint",
+    "https://www.google.com/httpservice/retry/KidFriendlySearchService/"
+    "GetDiscoverFeed/"};
 
 // Enables local parent approvals for the blocked website on the Family Link
 // user's device.

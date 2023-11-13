@@ -33,6 +33,7 @@ if (is_android) {
   android_resources("java_resources") {
     sources = [
       "android/java/res/drawable/ic_family_link.xml",
+      "android/java/res/layout/supervised_user_discover_bottom_sheet.xml",
       "android/java/res/layout/website_approval_bottom_sheet.xml",
       "android/java/res/values/dimens.xml",
     ]
@@ -60,6 +61,19 @@ if (is_android) {
       "//base:base_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
+  }
+
+  android_library("supervised_user_discover_bottom_sheet_java") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserDiscoverSheetContent.java" ]
+    deps = [
+      ":java_resources",
+      "//base:base_java",
+      "//chrome/browser/ui/android/strings:ui_strings_grd",
+      "//components/browser_ui/bottomsheet/android:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+
+    resources_package = "org.chromium.chrome.browser.supervised_user"
   }
 
   android_library("parent_auth_delegate_impl_java") {

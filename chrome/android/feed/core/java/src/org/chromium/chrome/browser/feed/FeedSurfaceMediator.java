@@ -300,6 +300,19 @@ public class FeedSurfaceMediator
         }
         mPrefChangeRegistrar.addObserver(Pref.ENABLE_SNIPPETS, this::updateContent);
         mPrefChangeRegistrar.addObserver(Pref.ENABLE_SNIPPETS_BY_DSE, this::updateContent);
+        mPrefChangeRegistrar.addObserver(
+                Pref.SUPERVISED_USER_FEED_INFO_CARD_DISMISSED,
+                () -> {
+                    int visibility = shouldShowSupervisedUserInfoCard() ? View.VISIBLE : View.GONE;
+                    setSupervisedUserInfoCardVisibility(visibility);
+                });
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.KID_FRIENDLY_CONTENT_FEED)) {
+            // The content feed must be updated as supervision status changes.
+            // If supervision is enabled, the for-you feed should be replaced with the supervised
+            // feed, and vice versa.
+            mPrefChangeRegistrar.addObserver(Pref.SUPERVISED_USER_ID, this::resetContent);
+        }
 
         if (openingTabId == FeedSurfaceCoordinator.StreamTabId.DEFAULT) {
             mRestoreTabId = FeedFeatures.getFeedTabIdToRestore();
@@ -440,6 +453,13 @@ public class FeedSurfaceMediator
             mCoordinator.setupHeaders(/* feedEnabled= */ false);
             destroyPropertiesForStream();
         }
+    }
+
+    /** Destroys and re-initializes the content feed. */
+    void resetContent() {
+        mCoordinator.setupHeaders(/* feedEnabled= */ false);
+        destroyPropertiesForStream();
+        updateContent();
     }
 
     /** Gets the current state, for restoring later. */
@@ -811,6 +831,14 @@ public class FeedSurfaceMediator
         return mSignInPromo.isVisible();
     }
 
+    /**
+     * @return Whether the supervised user info card should be visible.
+     */
+    boolean shouldShowSupervisedUserInfoCard() {
+        return mCoordinator.shouldDisplaySupervisedFeed()
+                && !getPrefService().getBoolean(Pref.SUPERVISED_USER_FEED_INFO_CARD_DISMISSED);
+    }
+
     /** Clear any dependencies related to the {@link Stream}. */
     @VisibleForTesting
     void destroyPropertiesForStream() {
@@ -893,6 +921,14 @@ public class FeedSurfaceMediator
                 SectionHeaderListProperties.IS_SECTION_ENABLED_KEY, suggestionsVisible);
     }
 
+    void setSupervisedUserInfoCardVisibility(int visibility) {
+        View infoCardView = mCoordinator.getSupervisedUserInfoCardView();
+        if (infoCardView == null || infoCardView.getVisibility() == visibility) {
+            return;
+        }
+        infoCardView.setVisibility(visibility);
+    }
+
     /**
      * Update whether the section header should be expanded.
      *
@@ -919,6 +955,13 @@ public class FeedSurfaceMediator
                                 suggestionsVisible, mTabToStreamMap.get(0).getStreamKind()));
 
         setHeaderIndicatorState(suggestionsVisible);
+
+        // Update the supervised user info card if applicable.
+        int visibility =
+                (suggestionsVisible && shouldShowSupervisedUserInfoCard())
+                        ? View.VISIBLE
+                        : View.GONE;
+        setSupervisedUserInfoCardVisibility(visibility);
 
         // Update toggleswitch item, which is last item in list.
         mSectionHeaderModel.set(SectionHeaderListProperties.MENU_MODEL_LIST_KEY, buildMenuItems());

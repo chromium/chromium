@@ -844,6 +844,32 @@ RefreshResponseData TestWireResponseTranslator::TranslateWireResponse(
     StreamModelUpdateRequest::Source source,
     const AccountInfo& account_info,
     base::Time current_time) const {
+  absl::optional<RefreshResponseData> result =
+      TranslateStreamSource(source, account_info, current_time);
+  return result ? std::move(result.value())
+                : WireResponseTranslator::TranslateWireResponse(
+                      std::move(response), source, account_info, current_time);
+}
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+RefreshResponseData TestWireResponseTranslator::TranslateWireResponse(
+    supervised_user::GetDiscoverFeedResponse response,
+    StreamModelUpdateRequest::Source source,
+    const AccountInfo& account_info,
+    base::Time current_time) const {
+  absl::optional<RefreshResponseData> result =
+      TranslateStreamSource(source, account_info, current_time);
+  return result ? std::move(result.value())
+                : WireResponseTranslator::TranslateWireResponse(
+                      std::move(response), source, account_info, current_time);
+}
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
+absl::optional<RefreshResponseData>
+TestWireResponseTranslator::TranslateStreamSource(
+    StreamModelUpdateRequest::Source source,
+    const AccountInfo& account_info,
+    base::Time current_time) const {
   if (!injected_responses_.empty()) {
     if (injected_responses_[0].model_update_request)
       injected_responses_[0].model_update_request->source = source;
@@ -863,8 +889,7 @@ RefreshResponseData TestWireResponseTranslator::TranslateWireResponse(
     }
     return result;
   }
-  return WireResponseTranslator::TranslateWireResponse(
-      std::move(response), source, account_info, current_time);
+  return absl::nullopt;
 }
 void TestWireResponseTranslator::InjectResponse(
     std::unique_ptr<StreamModelUpdateRequest> response,

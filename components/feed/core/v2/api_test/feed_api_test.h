@@ -442,12 +442,24 @@ class TestWireResponseTranslator : public WireResponseTranslator {
       StreamModelUpdateRequest::Source source,
       const AccountInfo& account_info,
       base::Time current_time) const override;
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  RefreshResponseData TranslateWireResponse(
+      supervised_user::GetDiscoverFeedResponse response,
+      StreamModelUpdateRequest::Source source,
+      const AccountInfo& account_info,
+      base::Time current_time) const override;
+#endif
   void InjectResponse(std::unique_ptr<StreamModelUpdateRequest> response,
                       absl::optional<std::string> session_id = absl::nullopt);
   void InjectResponse(RefreshResponseData response_data);
   bool InjectedResponseConsumed() const;
 
  private:
+  absl::optional<RefreshResponseData> TranslateStreamSource(
+      StreamModelUpdateRequest::Source source,
+      const AccountInfo& account_info,
+      base::Time current_time) const;
+
   mutable std::vector<RefreshResponseData> injected_responses_;
 };
 

@@ -10,4 +10,6 @@ found in the LICENSE file.
   <dimen name="feed_suggestion_card_action_min_height">48dp</dimen>
 
   <dimen name="signin_promo_lateral_paddings">20dp</dimen>
+
+  <dimen name="supervised_user_info_card_lateral_paddings">20dp</dimen>
 </resources>

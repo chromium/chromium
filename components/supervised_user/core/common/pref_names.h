@@ -122,6 +122,11 @@ inline constexpr char kDefaultSupervisedUserFilteringBehavior[] =
 inline constexpr char kFirstTimeInterstitialBannerState[] =
     "profile.managed.banner_state";
 
+// A boolean pref storing whether the info card for the supervised user discover
+// feed is dismissed.
+inline constexpr char kSupervisedUserFeedInfoCardDismissed[] =
+    "profile.managed.feed_info_card_dismissed";
+
 }  // namespace prefs
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_PREF_NAMES_H_
