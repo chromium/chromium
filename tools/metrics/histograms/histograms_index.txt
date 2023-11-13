@@ -78,6 +78,7 @@ tools/metrics/histograms/metadata/history/histograms.xml
 tools/metrics/histograms/metadata/holding_space/enums.xml
 tools/metrics/histograms/metadata/holding_space/histograms.xml
 tools/metrics/histograms/metadata/image/histograms.xml
+tools/metrics/histograms/metadata/input/enums.xml
 tools/metrics/histograms/metadata/input/histograms.xml
 tools/metrics/histograms/metadata/installer/histograms.xml
 tools/metrics/histograms/metadata/interstitial/histograms.xml
