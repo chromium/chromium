@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.page_insights;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -79,6 +80,19 @@ public class PageInsightsDataLoaderTest {
                 /* shouldAttachGaiaToRequest= */ true,
                 (data) -> {
                     assertEquals(data, mPageInsightsMetadata);
+                });
+    }
+
+    @Test
+    public void testLoadInsightsData_destroyed_callbackNotExecuted() {
+        mPageInsightsDataLoader.clearCacheForTesting();
+
+        mPageInsightsDataLoader.destroy();
+        mPageInsightsDataLoader.loadInsightsData(
+                mUrl,
+                /* shouldAttachGaiaToRequest= */ true,
+                (data) -> {
+                    fail("Callback should not have been called after loader destroyed.");
                 });
     }
 
