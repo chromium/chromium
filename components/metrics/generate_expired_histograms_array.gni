@@ -208,6 +208,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/uma/enums.xml",
       "//tools/metrics/histograms/metadata/uma/histograms.xml",
       "//tools/metrics/histograms/metadata/update_engine/histograms.xml",
+      "//tools/metrics/histograms/metadata/v8/enums.xml",
       "//tools/metrics/histograms/metadata/v8/histograms.xml",
       "//tools/metrics/histograms/metadata/variations/enums.xml",
       "//tools/metrics/histograms/metadata/variations/histograms.xml",
