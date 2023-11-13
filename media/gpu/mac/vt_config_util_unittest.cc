@@ -59,8 +59,9 @@ base::span<const uint8_t> GetNestedDataValue(CFDictionaryRef dict,
 
 base::apple::ScopedCFTypeRef<CVImageBufferRef> CreateCVImageBuffer(
     media::VideoColorSpace cs) {
-  base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
-      kCMVideoCodecType_H264, media::H264PROFILE_MAIN, cs, gfx::HDRMetadata());
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt =
+      CreateFormatExtensions(kCMVideoCodecType_H264, media::H264PROFILE_MAIN, 8,
+                             cs, gfx::HDRMetadata(), absl::nullopt);
 
   base::apple::ScopedCFTypeRef<CVImageBufferRef> image_buffer;
   OSStatus err =
@@ -147,9 +148,9 @@ constexpr char kVpccKey[] = "vpcC";
 namespace media {
 
 TEST(VTConfigUtil, CreateFormatExtensions_H264_BT709) {
-  base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt =
-      CreateFormatExtensions(kCMVideoCodecType_H264, H264PROFILE_MAIN,
-                             VideoColorSpace::REC709(), absl::nullopt);
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
+      kCMVideoCodecType_H264, H264PROFILE_MAIN, 8, VideoColorSpace::REC709(),
+      absl::nullopt, absl::nullopt);
 
   EXPECT_EQ("avc1",
             GetStrValue(fmt.get(), kCMFormatDescriptionExtension_FormatName));
@@ -176,12 +177,12 @@ TEST(VTConfigUtil, CreateFormatExtensions_H264_BT709) {
 
 TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_PQ) {
   base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
-      kCMVideoCodecType_H264, H264PROFILE_MAIN,
+      kCMVideoCodecType_H264, H264PROFILE_MAIN, 8,
       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
                       VideoColorSpace::TransferID::SMPTEST2084,
                       VideoColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::FULL),
-      gfx::HDRMetadata());
+      gfx::HDRMetadata(), absl::nullopt);
 
   EXPECT_EQ("avc1",
             GetStrValue(fmt.get(), kCMFormatDescriptionExtension_FormatName));
@@ -202,12 +203,12 @@ TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_PQ) {
 
 TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_HLG) {
   base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
-      kCMVideoCodecType_H264, H264PROFILE_MAIN,
+      kCMVideoCodecType_H264, H264PROFILE_MAIN, 8,
       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
                       VideoColorSpace::TransferID::ARIB_STD_B67,
                       VideoColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::FULL),
-      gfx::HDRMetadata());
+      gfx::HDRMetadata(), absl::nullopt);
 
   EXPECT_EQ("avc1",
             GetStrValue(fmt.get(), kCMFormatDescriptionExtension_FormatName));
@@ -237,12 +238,12 @@ TEST(VTConfigUtil, CreateFormatExtensions_HDRMetadata) {
   const auto& cv_metadata = hdr_meta.smpte_st_2086.value();
 
   base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
-      kCMVideoCodecType_H264, H264PROFILE_MAIN,
+      kCMVideoCodecType_H264, H264PROFILE_MAIN, 8,
       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
                       VideoColorSpace::TransferID::SMPTEST2084,
                       VideoColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::FULL),
-      hdr_meta);
+      hdr_meta, absl::nullopt);
 
   {
     auto mdcv = GetDataValue(
@@ -286,8 +287,9 @@ TEST(VTConfigUtil, CreateFormatExtensions_HDRMetadata) {
 TEST(VTConfigUtil, CreateFormatExtensions_VP9Profile0) {
   constexpr VideoCodecProfile kTestProfile = VP9PROFILE_PROFILE0;
   const auto kTestColorSpace = VideoColorSpace::REC709();
-  base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt(CreateFormatExtensions(
-      kCMVideoCodecType_VP9, kTestProfile, kTestColorSpace, absl::nullopt));
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt(
+      CreateFormatExtensions(kCMVideoCodecType_VP9, kTestProfile, 8,
+                             kTestColorSpace, absl::nullopt, absl::nullopt));
   EXPECT_EQ(8, GetIntValue(fmt.get(),
                            base::SysUTF8ToCFStringRef(kBitDepthKey).get()));
 
@@ -309,8 +311,9 @@ TEST(VTConfigUtil, CreateFormatExtensions_VP9Profile2) {
       VideoColorSpace::PrimaryID::BT2020,
       VideoColorSpace::TransferID::SMPTEST2084,
       VideoColorSpace::MatrixID::BT2020_NCL, gfx::ColorSpace::RangeID::LIMITED);
-  base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
-      kCMVideoCodecType_VP9, kTestProfile, kTestColorSpace, absl::nullopt);
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt =
+      CreateFormatExtensions(kCMVideoCodecType_VP9, kTestProfile, 10,
+                             kTestColorSpace, absl::nullopt, absl::nullopt);
   EXPECT_EQ(10, GetIntValue(fmt.get(),
                             base::SysUTF8ToCFStringRef(kBitDepthKey).get()));
 
@@ -324,6 +327,35 @@ TEST(VTConfigUtil, CreateFormatExtensions_VP9Profile2) {
   ASSERT_TRUE(vpcc_box.Parse(box_reader.get()));
   ASSERT_EQ(kTestProfile, vpcc_box.profile);
   ASSERT_EQ(kTestColorSpace, vpcc_box.color_space);
+}
+
+TEST(VTConfigUtil, CreateFormatExtensions_AV1) {
+  // Dumped from a main profile 10-bit AV1 stream.
+  constexpr uint8_t kAvc1Box[] = {0x81, 0x04, 0x4c, 0x00, 0x0a, 0x0b,
+                                  0x00, 0x00, 0x00, 0x24, 0xcf, 0x7f,
+                                  0x0d, 0xbf, 0xff, 0x38, 0x08};
+
+  constexpr VideoCodecProfile kTestProfile = AV1PROFILE_PROFILE_MAIN;
+  const VideoColorSpace kTestColorSpace(
+      VideoColorSpace::PrimaryID::BT2020,
+      VideoColorSpace::TransferID::SMPTEST2084,
+      VideoColorSpace::MatrixID::BT2020_NCL, gfx::ColorSpace::RangeID::LIMITED);
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
+      kCMVideoCodecType_AV1, kTestProfile, 10, kTestColorSpace, absl::nullopt,
+      base::span<const uint8_t>(kAvc1Box, sizeof(kAvc1Box)));
+  EXPECT_EQ(10, GetIntValue(fmt.get(),
+                            base::SysUTF8ToCFStringRef(kBitDepthKey).get()));
+
+  auto av1c = GetNestedDataValue(
+      fmt.get(), kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms,
+      base::SysUTF8ToCFStringRef("av1C").get());
+  std::unique_ptr<mp4::BoxReader> box_reader(
+      mp4::BoxReader::ReadConcatentatedBoxes(av1c.data(), av1c.size(),
+                                             nullptr));
+  mp4::AV1CodecConfigurationRecord av1c_box;
+  ASSERT_TRUE(av1c_box.Parse(box_reader.get()));
+  ASSERT_EQ(kTestProfile, av1c_box.profile);
+  // No other fields are parsed by mp4::AV1CodecConfigurationRecord.
 }
 
 TEST(VTConfigUtil, GetImageBufferColorSpace_BT601) {

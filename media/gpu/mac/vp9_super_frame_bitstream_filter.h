@@ -39,6 +39,11 @@ class MEDIA_GPU_EXPORT VP9SuperFrameBitstreamFilter {
     return data_ || !partial_buffers_.empty();
   }
 
+  // Creates a CMBlockBufferRef which points into `buffer` and owns a reference
+  // on it that will be released when the block buffer is destroyed.
+  static base::apple::ScopedCFTypeRef<CMBlockBufferRef> CreatePassthroughBuffer(
+      scoped_refptr<DecoderBuffer> buffer);
+
  private:
   bool ShouldShowFrame(Vp9RawBitsReader* reader);
   bool PreparePassthroughBuffer(scoped_refptr<DecoderBuffer> buffer);
