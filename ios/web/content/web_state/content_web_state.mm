@@ -79,11 +79,9 @@ CRWSessionStorage* CreateSessionStorage(
   proto::WebStateStorage storage = std::move(storage_loader).Run();
   *storage.mutable_metadata() = std::move(metadata);
 
-  CRWSessionStorage* session_storage =
-      [[CRWSessionStorage alloc] initWithProto:storage];
-  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = unique_identifier;
-  return session_storage;
+  return [[CRWSessionStorage alloc] initWithProto:storage
+                                 uniqueIdentifier:unique_identifier
+                                 stableIdentifier:[[NSUUID UUID] UUIDString]];
 }
 
 }  // namespace
