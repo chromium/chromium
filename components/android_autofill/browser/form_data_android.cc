@@ -20,8 +20,9 @@
 
 namespace autofill {
 
-FormDataAndroid::FormDataAndroid(const FormData& form)
-    : form_(form),
+FormDataAndroid::FormDataAndroid(const FormData& form, SessionId session_id)
+    : session_id_(session_id),
+      form_(form),
       bridge_(AndroidAutofillBridgeFactory::GetInstance()
                   .CreateFormDataAndroidBridge()) {
   fields_.reserve(form_.fields.size());
@@ -33,7 +34,7 @@ FormDataAndroid::FormDataAndroid(const FormData& form)
 FormDataAndroid::~FormDataAndroid() = default;
 
 base::android::ScopedJavaLocalRef<jobject> FormDataAndroid::GetJavaPeer() {
-  return bridge_->GetOrCreateJavaPeer(form_, fields_);
+  return bridge_->GetOrCreateJavaPeer(form_, session_id_, fields_);
 }
 
 void FormDataAndroid::UpdateFromJava() {

@@ -39,6 +39,7 @@ FormDataAndroidBridgeImpl::~FormDataAndroidBridgeImpl() = default;
 base::android::ScopedJavaLocalRef<jobject>
 FormDataAndroidBridgeImpl::GetOrCreateJavaPeer(
     const FormData& form,
+    SessionId session_id,
     base::span<const std::unique_ptr<FormFieldDataAndroid>> fields_android) {
   JNIEnv* env = AttachCurrentThread();
   if (ScopedJavaLocalRef<jobject> obj = java_ref_.get(env); !obj.is_null()) {
@@ -51,6 +52,7 @@ FormDataAndroidBridgeImpl::GetOrCreateJavaPeer(
     android_objects.push_back(field->GetJavaPeer());
   }
 
+  // TODO(crbug.com/1501800): Use the `SessionId` on the Java side.
   ScopedJavaLocalRef<jobject> obj = Java_FormData_createFormData(
       env, ConvertUTF16ToJavaString(env, form.name),
       /*origin=*/

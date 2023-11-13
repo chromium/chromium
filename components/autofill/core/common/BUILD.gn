@@ -117,7 +117,10 @@ static_library("test_support") {
     "//base/test:test_support",
     "//url",
   ]
-  public_deps = [ ":common" ]
+  public_deps = [
+    ":common",
+    "//testing/gmock",
+  ]
 }
 
 source_set("unit_tests") {

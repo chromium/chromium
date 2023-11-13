@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/android_autofill/browser/autofill_provider.h"
 #include "components/android_autofill/browser/autofill_provider_android_bridge.h"
+#include "components/android_autofill/browser/form_data_android.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -16,8 +17,6 @@ class WebContents;
 }
 
 namespace autofill {
-
-class FormDataAndroid;
 
 // Android implementation of AutofillProvider, it has one instance per
 // WebContents, this class is native peer of AutofillProvider.java.
@@ -126,6 +125,11 @@ class AutofillProviderAndroid : public AutofillProvider,
 
   void Reset();
 
+  // Returns a new session id. Session ids are required when creating a
+  // `FormDataAndroid` object and used to generate virtual ids that identify
+  // form fields uniquely to the Android Autofill framework.
+  SessionId GetSessionId();
+
   // The form of the current session (queried input or changed select box).
   std::unique_ptr<FormDataAndroid> form_;
 
@@ -152,6 +156,11 @@ class AutofillProviderAndroid : public AutofillProvider,
   bool check_submission_ = false;
   // Valid only if check_submission_ is true.
   mojom::SubmissionSource pending_submission_source_;
+
+  static constexpr SessionId kMinimumSessionId = SessionId(1);
+  static constexpr SessionId kMaximumSessionId = SessionId(0xffff);
+  // The last assigned session id.
+  SessionId last_session_id_ = kMaximumSessionId;
 
   // The bridge for C++ <-> Java communication.
   std::unique_ptr<AutofillProviderAndroidBridge> bridge_;

@@ -5,11 +5,15 @@
 #ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_FORM_DATA_ANDROID_BRIDGE_H_
 #define COMPONENTS_ANDROID_AUTOFILL_BROWSER_FORM_DATA_ANDROID_BRIDGE_H_
 
+#include <memory>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
-#include "components/android_autofill/browser/form_field_data_android.h"
+#include "components/android_autofill/browser/form_data_android.h"
 
 namespace autofill {
+
+class FormFieldDataAndroid;
 
 struct FormData;
 
@@ -32,6 +36,7 @@ class FormDataAndroidBridge {
   // If the reference is null or has expired, it creates a new Java `FormData`.
   virtual base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaPeer(
       const FormData& form,
+      SessionId session_id,
       base::span<const std::unique_ptr<FormFieldDataAndroid>>
           fields_android) = 0;
 };

@@ -130,7 +130,7 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
                                               const FormData& form,
                                               const FormFieldData& field,
                                               const gfx::RectF& bounding_box) {
-  form_ = std::make_unique<FormDataAndroid>(form);
+  form_ = std::make_unique<FormDataAndroid>(form, GetSessionId());
   FieldInfo field_info;
   if (!form_->GetFieldIndex(field, &field_info.index)) {
     Reset();
@@ -423,6 +423,13 @@ void AutofillProviderAndroid::Reset() {
   bridge_->HideDatalistPopup();
   // TODO(crbug.com/1488233): Also send an unfocus event to make sure that the
   // Autofill session is truly terminated.
+}
+
+SessionId AutofillProviderAndroid::GetSessionId() {
+  last_session_id_ = last_session_id_ == kMaximumSessionId
+                         ? kMinimumSessionId
+                         : SessionId(last_session_id_.value() + 1);
+  return last_session_id_;
 }
 
 }  // namespace autofill

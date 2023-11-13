@@ -13,6 +13,7 @@
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
 
@@ -211,6 +212,12 @@ inline constexpr char kIbanValue_2[] = "CH93 0076 2011 6238 5295 7";
 // which can be useful for building up more complex test forms.
 [[nodiscard]] FormData CreateTestIbanFormData(
     std::string_view value = kIbanValue);
+
+MATCHER_P(DeepEqualsFormData,
+          form_data,
+          negation ? "does not equal" : "equals") {
+  return FormData::DeepEqual(arg, form_data);
+}
 
 }  // namespace test
 
