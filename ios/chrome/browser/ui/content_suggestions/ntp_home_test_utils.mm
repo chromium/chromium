@@ -77,4 +77,10 @@ SetUpListItemView* SetUpListItemViewWithAccessibilityId(
       SubviewWithAccessibilityIdentifier(accessibility_id, GetSetUpListView()));
 }
 
+SetUpListItemView* SetUpListItemViewInMagicStackWithAccessibilityId(
+    NSString* accessibility_id) {
+  return base::apple::ObjCCast<SetUpListItemView>(
+      SubviewWithAccessibilityIdentifier(accessibility_id, GetAnyKeyWindow()));
+}
+
 }  // namespace ntp_home
