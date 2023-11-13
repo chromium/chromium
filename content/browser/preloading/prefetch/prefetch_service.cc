@@ -455,14 +455,23 @@ void PrefetchService::CheckEligibilityOfPrefetch(
   // While a registry-controlled domain could still resolve to a non-publicly
   // routable IP, this allows hosts which are very unlikely to work via the
   // proxy to be discarded immediately.
-  bool is_host_non_unique =
-      g_host_non_unique_filter ? g_host_non_unique_filter(url.HostNoBrackets())
-                               : net::IsHostnameNonUnique(url.HostNoBrackets());
-  if (!prefetch_container->GetPrefetchType().IsProxyBypassedForTesting() &&
-      prefetch_container->IsProxyRequiredForURL(url) && is_host_non_unique) {
-    std::move(result_callback)
-        .Run(prefetch_container, PreloadingEligibility::kHostIsNonUnique);
-    return;
+  //
+  // Conditions on the outer-most if block:
+  // Host-uniqueness check is only applied to proxied prefetches, where that
+  // matters. Also, we bypass the check for the test hosts, since we run the
+  // test web servers on the localhost or private networks, where the check
+  // fails.
+  if (prefetch_container->IsProxyRequiredForURL(url) &&
+      !ShouldPrefetchBypassProxyForTestHost(url.host())) {
+    bool is_host_non_unique =
+        g_host_non_unique_filter
+            ? g_host_non_unique_filter(url.HostNoBrackets())
+            : net::IsHostnameNonUnique(url.HostNoBrackets());
+    if (is_host_non_unique) {
+      std::move(result_callback)
+          .Run(prefetch_container, PreloadingEligibility::kHostIsNonUnique);
+      return;
+    }
   }
 
   // Only HTTP(S) URLs which are believed to be secure are eligible.

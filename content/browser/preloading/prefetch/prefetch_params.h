@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PARAMS_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PARAMS_H_
 
+#include <string_view>
+
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -68,9 +70,9 @@ bool PrefetchStartsSpareRenderer();
 // forever.
 base::TimeDelta PrefetchContainerLifetimeInPrefetchService();
 
-// Retrieves a host for which the prefetch proxy should be bypassed for testing
-// purposes.
-CONTENT_EXPORT absl::optional<std::string> PrefetchBypassProxyForHost();
+// Returns if the specified host should have the prefetch proxy bypassed for
+// testing purposes. Currently this is only used for WPT test servers.
+CONTENT_EXPORT bool ShouldPrefetchBypassProxyForTestHost(std::string_view host);
 
 // Whether only prefetched resources with a text/html MIME type should be used.
 // If this is false, there is no MIME type restriction.

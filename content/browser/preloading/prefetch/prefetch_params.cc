@@ -4,8 +4,11 @@
 
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 
+#include <string>
+
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/common/features.h"
@@ -157,13 +160,14 @@ bool PrefetchServiceHTMLOnly() {
       features::kPrefetchUseContentRefactor, "html_only", false);
 }
 
-absl::optional<std::string> PrefetchBypassProxyForHost() {
-  absl::optional<std::string> value;
-  auto val_str = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-      "bypass-prefetch-proxy-for-host");
-  if (val_str.size())
-    value = std::move(val_str);
-  return value;
+bool ShouldPrefetchBypassProxyForTestHost(std::string_view host) {
+  static const base::NoDestructor<std::string> bypass(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          "bypass-prefetch-proxy-for-host"));
+  if (bypass->empty()) {
+    return false;
+  }
+  return host == *bypass;
 }
 
 base::TimeDelta PrefetchCacheableDuration() {

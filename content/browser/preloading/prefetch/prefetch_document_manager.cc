@@ -47,11 +47,11 @@ SpeculationCandidateToPrefetchUrlParams(
       candidate->eagerness);
   const GURL& prefetch_url = candidate->url;
 
-  if (const auto& host_to_bypass = PrefetchBypassProxyForHost()) {
-    if (prefetch_type.IsProxyRequiredWhenCrossOrigin() &&
-        prefetch_url.host() == *host_to_bypass) {
-      prefetch_type.SetProxyBypassedForTest();  // IN-TEST
-    }
+  if (prefetch_type.IsProxyRequiredWhenCrossOrigin() &&
+      ShouldPrefetchBypassProxyForTestHost(prefetch_url.host())) {
+    // TODO(crbug.com/1501700): Remove SetProxyBypassedForTest, since it is the
+    // only mutator of the PrefetchType.
+    prefetch_type.SetProxyBypassedForTest();  // IN-TEST
   }
 
   return std::make_tuple(prefetch_url, prefetch_type, *candidate->referrer,
