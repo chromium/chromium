@@ -41,6 +41,11 @@ void BrowserShortcutsCrosapiPublisher::RegisterCrosapiHost(
   RegisterShortcutPublisher(apps::AppType::kStandaloneBrowser);
 }
 
+void BrowserShortcutsCrosapiPublisher::SetLaunchShortcutCallbackForTesting(
+    crosapi::mojom::AppShortcutController::LaunchShortcutCallback callback) {
+  launch_shortcut_callback_for_testing_ = std::move(callback);
+}
+
 void BrowserShortcutsCrosapiPublisher::PublishShortcuts(
     std::vector<apps::ShortcutPtr> deltas,
     PublishShortcutsCallback callback) {
@@ -75,8 +80,16 @@ void BrowserShortcutsCrosapiPublisher::LaunchShortcut(
     const std::string& host_app_id,
     const std::string& local_shortcut_id,
     int64_t display_id) {
-  // TODO(b/304661502): Implement this.
-  NOTIMPLEMENTED();
+  if (!controller_.is_bound()) {
+    LOG(WARNING) << "Controller not connected: " << FROM_HERE.ToString();
+    return;
+  }
+
+  controller_->LaunchShortcut(
+      host_app_id, local_shortcut_id, display_id,
+      launch_shortcut_callback_for_testing_
+          ? std::move(launch_shortcut_callback_for_testing_)
+          : base::DoNothing());
 }
 
 void BrowserShortcutsCrosapiPublisher::RemoveShortcut(

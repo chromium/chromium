@@ -8,9 +8,13 @@
 #include <utility>
 
 #include "base/no_destructor.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/profiles/profile.h"
+// TODO(crbug.com/1402145): Remove circular dependencies on //c/b/ui.
+#include "chrome/browser/ui/startup/first_run_service.h"  // nogncheck
 #include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -22,6 +26,9 @@
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
+#include "ui/base/window_open_disposition.h"
+
+class Browser;
 
 namespace {
 
@@ -49,6 +56,26 @@ LacrosBrowserShortcutsController::~LacrosBrowserShortcutsController() = default;
 void LacrosBrowserShortcutsController::SetInitializedCallbackForTesting(
     base::OnceClosure callback) {
   *GetInitializedCallbackForTesting() = std::move(callback);
+}
+
+void LacrosBrowserShortcutsController::LaunchShortcut(
+    const std::string& host_app_id,
+    const std::string& local_shortcut_id,
+    int64_t display_id,
+    LaunchShortcutCallback callback) {
+  auto* fre_service = FirstRunServiceFactory::GetForBrowserContext(profile_);
+  if (!fre_service || !fre_service->ShouldOpenFirstRun()) {
+    LaunchShortcutInternal(host_app_id, local_shortcut_id, display_id,
+                           std::move(callback));
+    return;
+  }
+
+  fre_service->OpenFirstRunIfNeeded(
+      FirstRunService::EntryPoint::kOther,
+      base::BindOnce(
+          &LacrosBrowserShortcutsController::OnOpenPrimaryProfileFirstRunExited,
+          weak_ptr_factory_.GetWeakPtr(), host_app_id, local_shortcut_id,
+          display_id, std::move(callback)));
 }
 
 void LacrosBrowserShortcutsController::Initialize() {
@@ -148,6 +175,36 @@ void LacrosBrowserShortcutsController::MaybePublishBrowserShortcuts(
     shortcuts.push_back(std::move(shortcut));
   }
   remote_publisher->PublishShortcuts(std::move(shortcuts), std::move(callback));
+}
+
+void LacrosBrowserShortcutsController::OnOpenPrimaryProfileFirstRunExited(
+    const std::string& host_app_id,
+    const std::string& local_shortcut_id,
+    int64_t display_id,
+    LaunchShortcutCallback callback,
+    bool proceed) {
+  if (!proceed) {
+    std::move(callback).Run();
+    return;
+  }
+  LaunchShortcutInternal(host_app_id, local_shortcut_id, display_id,
+                         std::move(callback));
+}
+
+void LacrosBrowserShortcutsController::LaunchShortcutInternal(
+    const std::string& host_app_id,
+    const std::string& local_shortcut_id,
+    int64_t display_id,
+    LaunchShortcutCallback callback) {
+  apps::AppLaunchParams params(
+      local_shortcut_id, apps::LaunchContainer::kLaunchContainerTab,
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      apps::LaunchSource::kFromAppListGrid, display_id);
+  provider_->scheduler().LaunchAppWithCustomParams(
+      std::move(params),
+      base::IgnoreArgs<base::WeakPtr<Browser>,
+                       base::WeakPtr<content::WebContents>,
+                       apps::LaunchContainer>(std::move(callback)));
 }
 
 void LacrosBrowserShortcutsController::OnWebAppInstalled(

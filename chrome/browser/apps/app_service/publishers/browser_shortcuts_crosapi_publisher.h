@@ -40,6 +40,9 @@ class BrowserShortcutsCrosapiPublisher
   void RegisterCrosapiHost(
       mojo::PendingReceiver<crosapi::mojom::AppShortcutPublisher> receiver);
 
+  void SetLaunchShortcutCallbackForTesting(
+      crosapi::mojom::AppShortcutController::LaunchShortcutCallback callback);
+
  private:
   // crosapi::mojom::AppShortcutPublisher overrides.
   void PublishShortcuts(std::vector<apps::ShortcutPtr> deltas,
@@ -63,6 +66,9 @@ class BrowserShortcutsCrosapiPublisher
   mojo::Receiver<crosapi::mojom::AppShortcutPublisher> receiver_{this};
   mojo::Remote<crosapi::mojom::AppShortcutController> controller_;
   const raw_ptr<apps::AppServiceProxy> proxy_;
+
+  crosapi::mojom::AppShortcutController::LaunchShortcutCallback
+      launch_shortcut_callback_for_testing_;
 
   base::WeakPtrFactory<BrowserShortcutsCrosapiPublisher> weak_factory_{this};
 };

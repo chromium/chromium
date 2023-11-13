@@ -24,6 +24,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -39,9 +40,10 @@ class FakeShortcutPublisher : public crosapi::mojom::AppShortcutPublisher {
 
   void clear_deltas() { shortcut_deltas_.clear(); }
 
-  bool controller_registered() { return controller_registered_; }
+  bool controller_registered() { return controller_.is_bound(); }
 
   mojo::Receiver<crosapi::mojom::AppShortcutPublisher> receiver_{this};
+  mojo::Remote<crosapi::mojom::AppShortcutController> controller_;
 
  private:
   // crosapi::mojom::AppShortcutPublisher:
@@ -57,13 +59,12 @@ class FakeShortcutPublisher : public crosapi::mojom::AppShortcutPublisher {
   void RegisterAppShortcutController(
       mojo::PendingRemote<crosapi::mojom::AppShortcutController> controller,
       RegisterAppShortcutControllerCallback callback) override {
-    controller_registered_ = true;
+    controller_.Bind(std::move(controller));
     std::move(callback).Run(
         crosapi::mojom::ControllerRegistrationResult::kSuccess);
   }
 
   std::vector<apps::ShortcutPtr> shortcut_deltas_;
-  bool controller_registered_ = false;
 };
 
 class LacrosBrowserShortcutsControllerTest : public testing::Test,
@@ -76,9 +77,8 @@ class LacrosBrowserShortcutsControllerTest : public testing::Test,
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
-  apps::ShortcutId CreateWebAppBasedShortcut(
-      const GURL& shortcut_url,
-      const std::u16string& shortcut_name) {
+  std::string CreateWebAppBasedShortcut(const GURL& shortcut_url,
+                                        const std::u16string& shortcut_name) {
     // Create web app based shortcut.
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = shortcut_url;
@@ -86,8 +86,7 @@ class LacrosBrowserShortcutsControllerTest : public testing::Test,
     auto local_shortcut_id = web_app::test::InstallWebApp(
         profile(), std::move(web_app_info),
         /*overwrite_existing_manifest_fields=*/true);
-    return apps::GenerateShortcutId(app_constants::kLacrosAppId,
-                                    local_shortcut_id);
+    return local_shortcut_id;
   }
 
   std::string CreateWebApp(const GURL& app_url,
@@ -135,13 +134,17 @@ TEST_F(LacrosBrowserShortcutsControllerTest, PublishShortcuts) {
   InitializeLacrosBrowserShortcutsController();
   ASSERT_TRUE(fake_publisher()->controller_registered());
   ASSERT_EQ(fake_publisher()->get_deltas().size(), 1U);
-  EXPECT_EQ(fake_publisher()->get_deltas().back()->shortcut_id, shortcut_id_1);
+  EXPECT_EQ(fake_publisher()->get_deltas().back()->local_id, shortcut_id_1);
+  EXPECT_EQ(fake_publisher()->get_deltas().back()->host_app_id,
+            app_constants::kLacrosAppId);
 
   auto shortcut_id_2 = CreateWebAppBasedShortcut(
       GURL("https://www.another-example.com/"), u"another shortcut name");
 
   EXPECT_EQ(fake_publisher()->get_deltas().size(), 2U);
-  EXPECT_EQ(fake_publisher()->get_deltas().back()->shortcut_id, shortcut_id_2);
+  EXPECT_EQ(fake_publisher()->get_deltas().back()->local_id, shortcut_id_2);
+  EXPECT_EQ(fake_publisher()->get_deltas().back()->host_app_id,
+            app_constants::kLacrosAppId);
 }
 
 TEST_F(LacrosBrowserShortcutsControllerTest, WebAppNotPublished) {
@@ -155,6 +158,19 @@ TEST_F(LacrosBrowserShortcutsControllerTest, WebAppNotPublished) {
                                u"another app name");
 
   EXPECT_EQ(fake_publisher()->get_deltas().size(), 0U);
+}
+
+TEST_F(LacrosBrowserShortcutsControllerTest, LaunchShortcut) {
+  InitializeLacrosBrowserShortcutsController();
+
+  auto shortcut_id = CreateWebAppBasedShortcut(GURL("https://www.example.com/"),
+                                               u"shortcut name");
+
+  base::RunLoop runloop;
+  fake_publisher()->controller_->LaunchShortcut(
+      app_constants::kLacrosAppId, shortcut_id, display::kDefaultDisplayId,
+      runloop.QuitClosure());
+  runloop.Run();
 }
 
 }  // namespace web_app

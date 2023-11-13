@@ -39,6 +39,12 @@ class LacrosBrowserShortcutsController
 
   static void SetInitializedCallbackForTesting(base::OnceClosure callback);
 
+  // crosapi::mojom::AppController:
+  void LaunchShortcut(const std::string& host_app_id,
+                      const std::string& local_shortcut_id,
+                      int64_t display_id,
+                      LaunchShortcutCallback callback) override;
+
   void Initialize();
 
  private:
@@ -60,6 +66,16 @@ class LacrosBrowserShortcutsController
   void OnWebAppInstalled(const webapps::AppId& app_id) override;
   void OnWebAppInstalledWithOsHooks(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
+
+  void OnOpenPrimaryProfileFirstRunExited(const std::string& host_app_id,
+                                          const std::string& local_shortcut_id,
+                                          int64_t display_id,
+                                          LaunchShortcutCallback callback,
+                                          bool proceed);
+  void LaunchShortcutInternal(const std::string& host_app_id,
+                              const std::string& local_shortcut_id,
+                              int64_t display_id,
+                              LaunchShortcutCallback callback);
 
   const raw_ptr<Profile> profile_;
 
