@@ -16,7 +16,7 @@
 namespace mojo {
 
 // GenericPendingAssociatedReceiver encapsulates a pairing of a receiving
-// associated interface endponit with the name of the mojom interface assumed by
+// associated interface endpoint with the name of the mojom interface assumed by
 // the corresponding remote endpoint.
 //
 // This is used by mojom C++ bindings to represent
