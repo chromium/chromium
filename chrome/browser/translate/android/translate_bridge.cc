@@ -392,7 +392,6 @@ JNI_TranslateBridge_GetCurrentLanguage(
   DCHECK(client);
   const std::string& current_language_code =
       client->GetLanguageState().current_language();
-  DCHECK(!current_language_code.empty());
   base::android::ScopedJavaLocalRef<jstring> j_current_language =
       base::android::ConvertUTF8ToJavaString(env, current_language_code);
   return j_current_language;

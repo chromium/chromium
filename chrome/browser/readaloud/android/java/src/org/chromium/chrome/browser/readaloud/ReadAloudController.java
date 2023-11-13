@@ -15,6 +15,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -259,7 +260,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
             PlaybackArgs args =
                     new PlaybackArgs(
                             stripUserData(tab.getUrl()).getSpec(),
-                            TranslateBridge.getCurrentLanguage(tab),
+                            getLanguageForNewPlayback(tab),
                             mPlaybackHooks.getPlaybackVoiceList(
                                     ReadAloudPrefs.getVoices(getPrefService())),
                             /* dateModifiedMsSinceEpoch= */ 0);
@@ -388,6 +389,24 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
                 /* clearUsername= */ true,
                 /* password= */ null,
                 /* clearPassword= */ true);
+    }
+
+    private String getLanguageForNewPlayback(Tab tab) {
+        String language = TranslateBridge.getCurrentLanguage(tab);
+        if (language == null || language.isEmpty() || language.equals("und")) {
+            language = AppLocaleUtils.getAppLanguagePref();
+        }
+
+        if (language == null) {
+            Log.d(TAG, "Neither page nor app language known. Falling back to en.");
+            language = "en";
+        }
+
+        // If language string is a locale like "en-US", strip the "-US" part.
+        if (language.contains("-")) {
+            language = language.split("-")[0];
+        }
+        return language;
     }
 
     // Player.Delegate

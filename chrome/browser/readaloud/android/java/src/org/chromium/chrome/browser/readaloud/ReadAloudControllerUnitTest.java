@@ -41,6 +41,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -428,6 +429,32 @@ public class ReadAloudControllerUnitTest {
         assertEquals("voiceB", voices.get(1).getVoiceId());
         assertEquals("fr", voices.get(2).getLanguage());
         assertEquals("voiceC", voices.get(2).getVoiceId());
+    }
+
+    @Test
+    public void testPlayTab_tabLanguageEmpty() {
+        AppLocaleUtils.setAppLanguagePref("fr-FR");
+
+        mFakeTranslateBridge.setCurrentLanguage("");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+
+        mController.playTab(mTab);
+
+        verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
+        assertEquals("fr", mPlaybackArgsCaptor.getValue().getLanguage());
+    }
+
+    @Test
+    public void testPlayTab_tabLanguageUnd() {
+        AppLocaleUtils.setAppLanguagePref("fr-FR");
+
+        mFakeTranslateBridge.setCurrentLanguage("und");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+
+        mController.playTab(mTab);
+
+        verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
+        assertEquals("fr", mPlaybackArgsCaptor.getValue().getLanguage());
     }
 
     @Test
