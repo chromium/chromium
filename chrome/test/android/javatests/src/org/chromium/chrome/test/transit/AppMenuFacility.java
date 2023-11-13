@@ -38,9 +38,11 @@ public class AppMenuFacility extends StationFacility<BasePageStation> {
 
         NewTabPageStation destination =
                 new NewTabPageStation(
-                        mChromeTabbedActivityTestRule, /*incognito*/ false, /*isOpeningTab*/ true);
+                        mChromeTabbedActivityTestRule,
+                        /* incognito= */ false,
+                        /* isOpeningTab= */ true);
 
-        return Trip.goSync(
+        return Trip.travelSync(
                 mStation,
                 destination,
                 (t) ->
@@ -58,9 +60,11 @@ public class AppMenuFacility extends StationFacility<BasePageStation> {
 
         NewTabPageStation destination =
                 new NewTabPageStation(
-                        mChromeTabbedActivityTestRule, /*incognito*/ true, /*isOpeningTab*/ true);
+                        mChromeTabbedActivityTestRule,
+                        /* incognito= */ true,
+                        /* isOpeningTab= */ true);
 
-        return Trip.goSync(
+        return Trip.travelSync(
                 mStation,
                 destination,
                 (t) ->

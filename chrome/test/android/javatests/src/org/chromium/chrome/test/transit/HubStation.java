@@ -63,7 +63,7 @@ public class HubStation extends TransitStation {
                         mChromeTabbedActivityTestRule,
                         /* incognito= */ false,
                         /* isOpeningTab= */ false);
-        return Trip.goSync(this, destination, (t) -> Espresso.pressBack());
+        return Trip.travelSync(this, destination, (t) -> Espresso.pressBack());
     }
 
     private class HubIsEnabled extends UiThreadCondition {

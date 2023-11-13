@@ -133,7 +133,7 @@ public class TabSwitcherStation extends TransitStation {
     public NewTabPageStation openNewTabFromButton() {
         recheckEnterConditions();
         NewTabPageStation newTab = new NewTabPageStation(mChromeTabbedActivityTestRule);
-        Trip.goSync(this, newTab, (e) -> onView(NEW_TAB_BUTTON).perform(click()))
+        Trip.travelSync(this, newTab, (e) -> onView(NEW_TAB_BUTTON).perform(click()))
     }
 ```
 
@@ -263,7 +263,7 @@ public void testOpenTabSwitcher() {
 }
 ```
 
-Transitions between `TransitStations` are done by calling `Trip.goSync()`.
+Transitions between `TransitStations` are done by calling `Trip.travelSync()`.
 
 Transitions into and out of `StationFacilities` are done by calling
 `stationFacility.enterSync()` or `stationFacility.leaveSync()`. If the app moves

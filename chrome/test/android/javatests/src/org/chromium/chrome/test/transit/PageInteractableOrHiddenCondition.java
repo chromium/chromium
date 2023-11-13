@@ -8,10 +8,10 @@ import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** Fulfilled when a page is interactable (or hidden). */
-class PageInteractableCondition extends UiThreadCondition {
+class PageInteractableOrHiddenCondition extends UiThreadCondition {
     private final PageLoadedCondition mPageLoadedCondition;
 
-    PageInteractableCondition(PageLoadedCondition pageLoadedCondition) {
+    PageInteractableOrHiddenCondition(PageLoadedCondition pageLoadedCondition) {
         mPageLoadedCondition = pageLoadedCondition;
     }
 

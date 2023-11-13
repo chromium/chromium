@@ -17,8 +17,9 @@ import java.util.List;
  * <p>As a {@link ConditionalState}, it has a defined lifecycle and must declare {@link Elements}
  * that determine its enter and exit {@link Condition}s.
  *
- * <p>Transitions should be done with {@link Trip#goSync(TransitStation, TransitStation, Trigger)}.
- * The transit-layer derived class should expose screen-specific methods for the test-layer to use.
+ * <p>Transitions should be done with {@link Trip#travelSync(TransitStation, TransitStation,
+ * Trigger)}. The transit-layer derived class should expose screen-specific methods for the
+ * test-layer to use.
  */
 public abstract class TransitStation extends ConditionalState {
     private static final String TAG = "Transit";

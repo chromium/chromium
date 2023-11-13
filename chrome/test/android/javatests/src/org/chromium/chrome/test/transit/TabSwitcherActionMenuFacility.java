@@ -71,8 +71,8 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
                             expectedDestination.cast(
                                     new PageStation(
                                             mChromeTabbedActivityTestRule,
-                                            /*incognito*/ false, /*isOpeningTab*/
-                                            false));
+                                            /* incognito= */ false,
+                                            /* isOpeningTab= */ false));
                 }
             } else {
                 // No tabs left, so closing the last will take us to the tab switcher.
@@ -86,11 +86,11 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
                     expectedDestination.cast(
                             new PageStation(
                                     mChromeTabbedActivityTestRule,
-                                    tabModelSelector.isIncognitoSelected(), /*isOpeningTab*/
-                                    false));
+                                    tabModelSelector.isIncognitoSelected(),
+                                    /* isOpeningTab= */ false));
         }
 
-        return Trip.goSync(
+        return Trip.travelSync(
                 mStation, destination, (t) -> onView(CLOSE_TAB_MENU_ITEM).perform(click()));
     }
 
@@ -98,8 +98,10 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
     public PageStation selectNewTab() {
         PageStation destination =
                 new PageStation(
-                        mChromeTabbedActivityTestRule, /*incognito*/ false, /*isOpeningTab*/ true);
-        return Trip.goSync(
+                        mChromeTabbedActivityTestRule,
+                        /* incognito= */ false,
+                        /* isOpeningTab= */ true);
+        return Trip.travelSync(
                 mStation, destination, (t) -> onView(NEW_TAB_MENU_ITEM).perform(click()));
     }
 
@@ -107,8 +109,10 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
     public PageStation selectNewIncognitoTab() {
         PageStation destination =
                 new PageStation(
-                        mChromeTabbedActivityTestRule, /*incognito*/ true, /*isOpeningTab*/ true);
-        return Trip.goSync(
+                        mChromeTabbedActivityTestRule,
+                        /* incognito= */ true,
+                        /* isOpeningTab= */ true);
+        return Trip.travelSync(
                 mStation, destination, (t) -> onView(NEW_INCOGNITO_TAB_MENU_ITEM).perform(click()));
     }
 }

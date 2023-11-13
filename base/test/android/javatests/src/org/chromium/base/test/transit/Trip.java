@@ -43,14 +43,14 @@ public class Trip extends Transition {
      * @return the TransitStation entered.
      * @param <T> the type of TransitStation entered.
      */
-    public static <T extends TransitStation> T goSync(
+    public static <T extends TransitStation> T travelSync(
             @Nullable TransitStation origin, T destination, Trigger trigger) {
         Trip trip = new Trip(origin, destination, trigger);
-        trip.travelSync();
+        trip.travelSyncInternal();
         return destination;
     }
 
-    private void travelSync() {
+    private void travelSyncInternal() {
         embark();
         if (mOrigin != null) {
             Log.i(TAG, "Trip %d: Embarked at %s towards %s", mId, mOrigin, mDestination);
