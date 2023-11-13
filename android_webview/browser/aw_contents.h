@@ -319,8 +319,6 @@ class AwContents : public FindHelper::Listener,
                                               bool crashed) override;
 
  private:
-  void InitAutofillIfNecessary(bool autocomplete_enabled);
-
   // Geolocation API support
   void ShowGeolocationPrompt(const GURL& origin, PermissionCallback);
   void HideGeolocationPrompt(const GURL& origin);

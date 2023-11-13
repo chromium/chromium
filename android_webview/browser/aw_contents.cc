@@ -64,6 +64,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/autofill_provider_android.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -107,7 +108,6 @@
 
 struct AwDrawSWFunctionTable;
 
-using autofill::ContentAutofillDriverFactory;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
@@ -253,11 +253,6 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
   permission_request_handler_ =
       std::make_unique<PermissionRequestHandler>(this, web_contents_.get());
 
-  AwAutofillClient* browser_autofill_manager_delegate =
-      AwAutofillClient::FromWebContents(web_contents_.get());
-  if (browser_autofill_manager_delegate) {
-    InitAutofillIfNecessary(/*autocomplete_enabled=*/false);
-  }
   content::SynchronousCompositor::SetClientForWebContents(
       web_contents_.get(), &browser_view_renderer_);
   AwContentsLifecycleNotifier::GetInstance().OnWebViewCreated(this);
@@ -293,40 +288,17 @@ void AwContents::SetJavaPeers(
 }
 
 void AwContents::InitializeAndroidAutofill(JNIEnv* env) {
-  // Initialize Android Autofill, this method shall only be called in Android O
-  // and beyond.
-  // AutofillProvider shall already be created for |web_contents_| from
-  // AutofillProvider java.
   DCHECK(autofill::AutofillProvider::FromWebContents(web_contents_.get()));
-  // Autocomplete is only supported for Android pre-O, disable it if Android
-  // autofill is enabled.
-  InitAutofillIfNecessary(/*autocomplete_enabled=*/false);
-}
-
-void AwContents::InitAutofillIfNecessary(bool autocomplete_enabled) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // This method initializes either Android autofill or Chrome autocomplete:
-  // - If autofill_provider is available, Android autofill shall be initialized.
-  // - Otherwise, initialize Chrome autocomplete if autocomplete_enabled.
-
-  // Check if the autofill driver factory already exists.
-  content::WebContents* web_contents = web_contents_.get();
-  if (ContentAutofillDriverFactory::FromWebContents(web_contents))
+  if (autofill::ContentAutofillClient::FromWebContents(web_contents_.get())) {
     return;
-
-  // The autofill_provider object is already created by the AutofillProvider
-  // Java object in Android O and beyond.
-  auto* autofill_provider =
-      autofill::AutofillProvider::FromWebContents(web_contents);
-
-  // Just return, if the app neither runs on O sdk nor enables autocomplete.
-  if (!autofill_provider && !autocomplete_enabled)
+  }
+  // The AutofillProvider object is already created by the AutofillProvider
+  // Java object, except in tests.
+  if (!autofill::AutofillProvider::FromWebContents(web_contents_.get())) {
     return;
-
-  // WebView browser tests use BrowserAutofillManager if `!autofill_provider`.
-  AwAutofillClient::CreateForWebContents(
-      web_contents,
-      /*use_android_autofill_manager=*/!!autofill_provider);
+  }
+  AwAutofillClient::CreateForWebContents(web_contents_.get());
 }
 
 void AwContents::SetAwAutofillClient(const JavaRef<jobject>& client) {

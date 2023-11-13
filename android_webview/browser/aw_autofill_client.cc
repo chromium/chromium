@@ -47,18 +47,12 @@ using content::WebContents;
 
 namespace android_webview {
 
-void AwAutofillClient::CreateForWebContents(content::WebContents* contents,
-                                            bool use_android_autofill_manager) {
+void AwAutofillClient::CreateForWebContents(content::WebContents* contents) {
   DCHECK(contents);
-  if (!ContentAutofillClient::FromWebContents(contents)) {
+  if (!FromWebContents(contents)) {
     contents->SetUserData(UserDataKey(),
-                          base::WrapUnique(new AwAutofillClient(
-                              contents, use_android_autofill_manager)));
+                          base::WrapUnique(new AwAutofillClient(contents)));
   }
-#if DCHECK_IS_ON()
-  DCHECK_EQ(use_android_autofill_manager,
-            FromWebContents(contents)->use_android_autofill_manager_);
-#endif
 }
 
 AwAutofillClient::~AwAutofillClient() {
@@ -350,20 +344,10 @@ void AwAutofillClient::SuggestionSelected(JNIEnv* env,
 // AwContents. The native object creates the java peer which handles most
 // autofill functionality at the java side. The java peer is owned by Java
 // AwContents. The native object only maintains a weak ref to it.
-AwAutofillClient::AwAutofillClient(WebContents* contents,
-                                   bool use_android_autofill_manager)
+AwAutofillClient::AwAutofillClient(WebContents* contents)
     : autofill::ContentAutofillClient(
           contents,
-          use_android_autofill_manager
-              ? base::BindRepeating(&autofill::AndroidDriverInitHook, this)
-              : base::BindRepeating(&autofill::BrowserDriverInitHook,
-                                    this,
-                                    base::android::GetDefaultLocaleString()))
-#if DCHECK_IS_ON()
-      ,
-      use_android_autofill_manager_(use_android_autofill_manager)
-#endif
-{
+          base::BindRepeating(&autofill::AndroidDriverInitHook, this)) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> delegate;
   delegate.Reset(

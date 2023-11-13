@@ -47,11 +47,10 @@ namespace android_webview {
 
 // Manager delegate for the autofill functionality.
 //
-// Android O and beyond shall use `AndroidAutofillManager` (and
-// `AutofillProvider`), whereas earlier versions use a `BrowserAutofillManager`.
-// This is determined by the `use_android_autofill_manager` parameters below.
+// Android O and beyond uses `AndroidAutofillManager`, unlike Chrome, which
+// uses `BrowserAutofillManager`.
 //
-// Android webview supports enabling autocomplete feature for each webview
+// Android WebView supports enabling Autofill feature for each webview
 // instance (different than the browser which supports enabling/disabling for a
 // profile). Since there is only one pref service for a given browser context,
 // we cannot enable this feature via UserPrefs. Rather, we always keep the
@@ -59,17 +58,7 @@ namespace android_webview {
 // Lifetime: WebView
 class AwAutofillClient : public autofill::ContentAutofillClient {
  public:
-  static AwAutofillClient* FromWebContents(content::WebContents* web_contents) {
-    return static_cast<AwAutofillClient*>(
-        ContentAutofillClient::FromWebContents(web_contents));
-  }
-
-  // The `use_android_autofill_manager` parameter determines which
-  // DriverInitCallback to use:
-  // - autofill::BrowserDriverInitHook() (to be used before Android O) or
-  // - android_webview::AndroidDriverInitHook() (to be used as of Android O).
-  static void CreateForWebContents(content::WebContents* contents,
-                                   bool use_android_autofill_manager);
+  static void CreateForWebContents(content::WebContents* contents);
 
   AwAutofillClient(const AwAutofillClient&) = delete;
   AwAutofillClient& operator=(const AwAutofillClient&) = delete;
@@ -155,12 +144,9 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
                           jint position);
 
  private:
-  // `use_android_autofill_manager` determines which DriverInitCallback to use
-  // for the ContentAutofillDriverFactory: autofill::BrowserDriverInitHook() or
-  // android_webview::AndroidDriverInitHook().
-  AwAutofillClient(content::WebContents* web_contents,
-                   bool use_android_autofill_manager);
   friend class content::WebContentsUserData<AwAutofillClient>;
+
+  explicit AwAutofillClient(content::WebContents* web_contents);
 
   void ShowAutofillPopupImpl(
       const gfx::RectF& element_bounds,
