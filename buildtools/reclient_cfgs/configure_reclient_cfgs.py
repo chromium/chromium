@@ -52,10 +52,39 @@ def NaclRevision():
     # cloned.
     if not os.path.exists(os.path.join(nacl_dir, 'README.md')):
       return None
-    return subprocess.check_output(
-        ['git', 'log', '-1', '--format=%H'],
-        cwd= nacl_dir, shell=os.name == 'nt', text=True,
-    ).strip()
+
+    if os.path.isdir(os.path.join(nacl_dir, ".git")):
+      return subprocess.run(
+          ['git', 'log', '-1', '--format=%H'],
+          cwd=nacl_dir, shell=os.name == 'nt', text=True, check=True,
+          stdout=subprocess.PIPE
+      ).stdout.strip()
+
+    # If we're in a work tree without .git directories, we can fallback to
+    # the slower method of looking the revision up via `gclient revinfo`.
+    gclient_env = os.environ.copy()
+    gclient_env['DEPOT_TOOLS_UPDATE'] = '0'
+    revinfo = subprocess.run(
+        ['gclient', 'revinfo', '--filter=src/native_client'],
+        shell=os.name == 'nt',
+        text=True,
+        check=True,
+        stdout=subprocess.PIPE,
+        env=gclient_env).stdout.strip()
+    try:
+      # We expect this format: "src/native_client: {url}@{commit}"
+      commit = revinfo.split("@")[1]
+      if not re.match('^[0-9a-f]{40,}$', commit):
+         raise ValueError("invalid commit hash")
+      return commit
+    except (IndexError, ValueError):
+      logging.warning("Could not parse output of 'gclient revinfo "
+                      "--filter=src/native_client': %s",
+                      revinfo if revinfo else "<empty>")
+      logging.warning("src/native_client seems present, but neither Git "
+                      "nor gclient know its revision?")
+
+    return None
 
 class CipdError(Exception):
   """Raised by configure_reclient_cfgs on fatal cipd error."""
