@@ -200,8 +200,14 @@ Color Color::FromColorSpace(ColorSpace color_space,
   }
 
   if (IsLightnessFirstComponent(color_space) && !isnan(result.param0_)) {
-    // param0_ is luminance which cannot be negative or above 100%.
-    result.param0_ = std::min(100.f, std::max(result.param0_, 0.f));
+    // param0_ is lightness which cannot be negative or above 100%.
+    // lab/lch have lightness in the range [0, 100].
+    // oklab/okch have lightness in the range [0, 1].
+    if (color_space == ColorSpace::kLab || color_space == ColorSpace::kLch) {
+      result.param0_ = std::min(100.f, std::max(result.param0_, 0.f));
+    } else {
+      result.param0_ = std::min(1.f, std::max(result.param0_, 0.f));
+    }
   }
   if (IsChromaSecondComponent(color_space)) {
     result.param1_ = std::max(result.param1_, 0.f);
@@ -695,11 +701,17 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space) {
 }
 
 SkColor4f Color::toSkColor4f() const {
-  // Used value of an (ok)lab/lch color with lightness outside of the range
+  // Used value of an lab/lch color with lightness outside of the range
   // (0, 100) maps to black/white respectively.
+  // The same is true for oklab/oklch, except the range is (0, 1).
   // See: https://github.com/w3c/csswg-drafts/issues/8794
   if (IsLightnessFirstComponent(color_space_) && !param0_is_none_) {
-    if (param0_ >= 100.0) {
+    float upper_bound = 100.0;
+    if (color_space_ == ColorSpace::kOklab ||
+        color_space_ == ColorSpace::kOklch) {
+      upper_bound = 1.0;
+    }
+    if (param0_ >= upper_bound) {
       return SkColor4f{1.f, 1.f, 1.f, alpha_};
     }
     if (param0_ <= 0.0) {
@@ -975,14 +987,8 @@ String Color::SerializeAsCSSColor() const {
     result.Append(" ");
   }
 
-  float p0 = param0_;
-  if (color_space_ == ColorSpace::kOklab ||
-      color_space_ == ColorSpace::kOklch) {
-    p0 /= 100.0f;
-  }
-
   param0_is_none_ ? result.Append("none")
-                  : result.Append(ColorParamToString(p0));
+                  : result.Append(ColorParamToString(param0_));
   result.Append(" ");
   param1_is_none_ ? result.Append("none")
                   : result.Append(ColorParamToString(param1_));
