@@ -9,8 +9,8 @@ namespace content {
 bool IsSpeculationRuleType(PreloadingTriggerType type) {
   switch (type) {
     case PreloadingTriggerType::kSpeculationRule:
-      [[fallthrough]];
     case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
+    case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
       return true;
     case PreloadingTriggerType::kEmbedder:
       return false;

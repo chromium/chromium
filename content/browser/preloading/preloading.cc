@@ -35,6 +35,9 @@ PreloadingPredictor GetPredictorForSpeculationRules(
       return content_preloading_predictor::kSpeculationRules;
     case blink::mojom::SpeculationInjectionType::kIsolatedWorldScript:
       return content_preloading_predictor::kSpeculationRulesFromIsolatedWorld;
+    case blink::mojom::SpeculationInjectionType::kAutoSpeculationRules:
+      return content_preloading_predictor::
+          kSpeculationRulesFromAutoSpeculationRules;
   }
   NOTREACHED_NORETURN();
 }

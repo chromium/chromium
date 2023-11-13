@@ -129,6 +129,7 @@ void SetParseErrorMessage(String* out_error, String message) {
 SpeculationRule* ParseSpeculationRule(JSONObject* input,
                                       const KURL& base_url,
                                       ExecutionContext* context,
+                                      bool is_browser_injected,
                                       String* out_error,
                                       Vector<String>& out_warnings) {
   // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-a-speculation-rule
@@ -413,12 +414,18 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     }
   }
 
-  const mojom::blink::SpeculationInjectionType injection_type =
-      context->GetCurrentWorld()
-          ? context->GetCurrentWorld()->IsMainWorld()
-                ? mojom::blink::SpeculationInjectionType::kMainWorldScript
-                : mojom::blink::SpeculationInjectionType::kIsolatedWorldScript
-          : mojom::blink::SpeculationInjectionType::kNone;
+  auto injection_type = mojom::blink::SpeculationInjectionType::kNone;
+  if (is_browser_injected) {
+    injection_type =
+        mojom::blink::SpeculationInjectionType::kAutoSpeculationRules;
+  } else if (auto world = context->GetCurrentWorld()) {
+    if (world->IsMainWorld()) {
+      injection_type = mojom::blink::SpeculationInjectionType::kMainWorldScript;
+    } else {
+      injection_type =
+          mojom::blink::SpeculationInjectionType::kIsolatedWorldScript;
+    }
+  }
 
   return MakeGarbageCollected<SpeculationRule>(
       std::move(urls), document_rule_predicate, requires_anonymous_client_ip,
@@ -598,7 +605,8 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
           String error_message;
           Vector<String> warning_messages;
           SpeculationRule* rule = ParseSpeculationRule(
-              input_rule, base_url, context, &error_message, warning_messages);
+              input_rule, base_url, context, source->IsFromBrowserInjected(),
+              &error_message, warning_messages);
 
           // If parse failed for a rule, then ignore it and continue.
           if (!rule) {

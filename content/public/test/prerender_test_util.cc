@@ -662,6 +662,11 @@ std::string PrerenderTestHelper::GenerateHistogramName(
       DCHECK(embedder_suffix.empty());
       return std::string(histogram_base_name) +
              ".SpeculationRuleFromIsolatedWorld";
+    case content::PreloadingTriggerType::
+        kSpeculationRuleFromAutoSpeculationRules:
+      DCHECK(embedder_suffix.empty());
+      return std::string(histogram_base_name) +
+             ".SpeculationRuleFromAutoSpeculationRules";
     case content::PreloadingTriggerType::kEmbedder:
       DCHECK(!embedder_suffix.empty());
       return std::string(histogram_base_name) + ".Embedder_" + embedder_suffix;

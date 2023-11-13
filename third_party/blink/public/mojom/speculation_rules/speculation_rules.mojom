@@ -58,6 +58,7 @@ enum SpeculationInjectionType {
   kNone,                  // Not injected, i.e., statically-inserted script tags.
   kMainWorldScript,       // Injected by main V8 world's script.
   kIsolatedWorldScript,   // Injected by an isolated V8 world's script.
+  kAutoSpeculationRules,  // Injected by the browser as part of the auto speculation rules feature.
 };
 
 // A single candidate: a URL, an action, a referrer, and any associated

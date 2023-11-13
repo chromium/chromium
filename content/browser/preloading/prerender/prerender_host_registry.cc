@@ -743,6 +743,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
   switch (attributes.trigger_type) {
     case PreloadingTriggerType::kSpeculationRule:
     case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
+    case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
       pending_prerenders_.push_back(frame_tree_node_id);
       // Start the initial prerendering navigation of the pending request in
       // the head of the queue if there's no running prerender and the initiator
@@ -863,6 +864,7 @@ int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
               ->trigger_type()) {
     case PreloadingTriggerType::kSpeculationRule:
     case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
+    case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
       // Check the current memory usage and destroy a prerendering if the entire
       // browser uses excessive memory. This occurs asynchronously.
       DestroyWhenUsingExcessiveMemory(frame_tree_node_id);
@@ -1633,6 +1635,7 @@ PrerenderHostRegistry::GetPrerenderLimitGroup(
   switch (trigger_type) {
     case PreloadingTriggerType::kSpeculationRule:
     case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
+    case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
       CHECK(eagerness.has_value());
       switch (eagerness.value()) {
         // Separate the limits of speculation rules into two categories: eager,
@@ -1760,6 +1763,7 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
   switch (trigger_type) {
     case PreloadingTriggerType::kSpeculationRule:
     case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
+    case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
       // The number of prerenders triggered by speculation rules is limited to
       // a Finch config param.
       return host_count <

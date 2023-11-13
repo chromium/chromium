@@ -451,6 +451,10 @@ std::string PrerenderPageLoadMetricsObserver::AppendSuffix(
     case content::PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
       DCHECK(embedder_histogram_suffix_.empty());
       return histogram_name + ".SpeculationRuleFromIsolatedWorld";
+    case content::PreloadingTriggerType::
+        kSpeculationRuleFromAutoSpeculationRules:
+      DCHECK(embedder_histogram_suffix_.empty());
+      return histogram_name + ".SpeculationRuleFromAutoSpeculationRules";
     case content::PreloadingTriggerType::kEmbedder:
       DCHECK(!embedder_histogram_suffix_.empty());
       return histogram_name + ".Embedder_" + embedder_histogram_suffix_;

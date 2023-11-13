@@ -329,13 +329,13 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     host_resolver()->AddRule("*", "127.0.0.1");
     attempt_ukm_entry_builder_ =
         std::make_unique<test::PreloadingAttemptUkmEntryBuilder>(
-            content_preloading_predictor::kSpeculationRules);
+            PredictorToExpectInUkm());
     attempt_previous_ukm_entry_builder_ =
         std::make_unique<PreloadingAttemptPreviousPrimaryPageUkmEntryBuilder>(
-            content_preloading_predictor::kSpeculationRules);
+            PredictorToExpectInUkm());
     prediction_ukm_entry_builder_ =
         std::make_unique<test::PreloadingPredictionUkmEntryBuilder>(
-            content_preloading_predictor::kSpeculationRules);
+            PredictorToExpectInUkm());
     ssl_server_.AddDefaultHandlers(GetTestDataFilePath());
     ssl_server_.SetSSLConfig(
         net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -690,6 +690,14 @@ class PrerenderBrowserTest : public ContentBrowserTest,
         status);
   }
 
+  void ExpectFinalStatusForSpeculationRuleFromAutoSpeculationRules(
+      PrerenderFinalStatus status) {
+    ExpectFinalStatus(
+        "Prerender.Experimental.PrerenderHostFinalStatus."
+        "SpeculationRuleFromAutoSpeculationRules",
+        status);
+  }
+
   void ExpectFinalStatusForEmbedder(PrerenderFinalStatus status) {
     // UKM can be recorded in an initiator page and an activated page. Embedder
     // triggers don't have an initiator page, so UKM is not recorded anywhere
@@ -736,6 +744,12 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   void TestEmbedderTriggerWithUnsupportedScheme(const GURL& prerendering_url);
 
   net::test_server::EmbeddedTestServer& ssl_server() { return ssl_server_; }
+
+  // Override this in subclasses if you want the test_ukm_recorder() and friends
+  // to expect a different predictor.
+  virtual PreloadingPredictor PredictorToExpectInUkm() {
+    return content_preloading_predictor::kSpeculationRules;
+  }
 
  private:
   void DidStartNavigation(NavigationHandle* handle) override {
@@ -855,6 +869,125 @@ INSTANTIATE_TEST_SUITE_P(All,
                          [](const testing::TestParamInfo<std::string>& info) {
                            return info.param;
                          });
+
+class AutoSpeculationRulesPrerenderBrowserTest : public PrerenderBrowserTest {
+  void SetUp() override {
+    // JavaScriptFramework::kReact is 9, and it is detected by the presence of
+    // data-reactroot attributes.
+    sub_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kAutoSpeculationRules,
+        {{"config", base::StringPrintf(R"(
+    {
+      "framework_to_speculation_rules": {
+        "9": "{\"prerender\":[{\"source\":\"list\", \"urls\":[\"%s\"]}]}"
+      }
+    }
+    )",
+                                       kPrerenderedUrlPath)}});
+
+    ssl_server().RegisterRequestHandler(base::BindLambdaForTesting(
+        [&](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (request.relative_url == kInitialUrlPath) {
+            auto response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content_type("text/html");
+
+            // This will trigger the auto speculation rules configured in
+            // SetUp().
+            response->set_content(
+                "<!DOCTYPE html><main data-reactroot></main>");
+            return response;
+          }
+          return nullptr;
+        }));
+
+    PrerenderBrowserTest::SetUp();
+  }
+
+ protected:
+  PreloadingPredictor PredictorToExpectInUkm() override {
+    return content_preloading_predictor::
+        kSpeculationRulesFromAutoSpeculationRules;
+  }
+
+  GURL GetInitialUrl() { return GetUrl(kInitialUrlPath); }
+
+  GURL GetPrerenderedUrl() { return GetUrl(kPrerenderedUrlPath); }
+
+ private:
+  base::test::ScopedFeatureList sub_feature_list_;
+
+  static constexpr char kInitialUrlPath[] = "/start.html";
+  static constexpr char kPrerenderedUrlPath[] = "/empty.html?prerender";
+};
+
+IN_PROC_BROWSER_TEST_F(AutoSpeculationRulesPrerenderBrowserTest, Metrics) {
+  const GURL kInitialUrl = GetInitialUrl();
+  const GURL kPrerenderingUrl = GetPrerenderedUrl();
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  WaitForPrerenderLoadCompletion(kPrerenderingUrl);
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+
+  NavigationHandleObserver activation_observer(web_contents(),
+                                               kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
+  // Ensure the state has been propagated to renderer processes.
+  ASSERT_EQ(false, EvalJs(web_contents(), "document.prerendering"));
+
+  // The prerender host should be consumed.
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+
+  // Activating the prerendered page should not issue a request.
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+
+  // Check UMA final status
+  ExpectFinalStatusForSpeculationRuleFromAutoSpeculationRules(
+      PrerenderFinalStatus::kActivated);
+
+  // Check UKM metrics, the same as in the
+  // PrerenderBrowserTest.SpeculationRulesPrerender test except the predictor is
+  // overridden by the AutoSpeculationRulesPrerenderBrowserTest class.
+  {
+    // Cross-check that both Preloading_Prediction and Preloading_Attempt UKMs
+    // are logged on successful activation for speculation rules prerender.
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
+    auto prediction_ukm_entries =
+        test_ukm_recorder()->GetEntries(Preloading_Prediction::kEntryName,
+                                        test::kPreloadingPredictionUkmMetrics);
+    EXPECT_EQ(prediction_ukm_entries.size(), 1u);
+    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+
+    auto prerender_page_load_ukm_entries =
+        test_ukm_recorder()->GetEntriesByName(
+            ukm::builders::PrerenderPageLoad::kEntryName);
+
+    ukm::SourceId activation_id = ToSourceId(navigation_ids_[2]);
+    EXPECT_EQ(activation_id, prerender_page_load_ukm_entries.back()->source_id);
+    EXPECT_EQ(activation_id, prediction_ukm_entries.back().source_id);
+    EXPECT_EQ(activation_id, attempt_ukm_entries.back().source_id);
+
+    ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
+        activation_id, PreloadingType::kPrerender,
+        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+        PreloadingTriggeringOutcome::kSuccess,
+        PreloadingFailureReason::kUnspecified,
+        /*accurate=*/true,
+        /*ready_time=*/kMockElapsedTime,
+        blink::mojom::SpeculationEagerness::kEager)});
+
+    ExpectPreloadingPredictionUkm({prediction_ukm_entry_builder().BuildEntry(
+        ukm_source_id,
+        /*confidence=*/100,
+        /*accurate_prediction=*/true)});
+  }
+}
 
 enum class PrerenderingResult { kSuccess, kFailed };
 enum class BodySize { kSmall, kLarge };
@@ -2735,6 +2868,8 @@ class PrerenderMainFrameNavigationBrowserTest
         host_id = static_cast<PrerenderHandleImpl*>(prerender_handle.get())
                       ->frame_tree_node_id_for_testing();
         break;
+      case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
+        FAIL() << "Auto speculation rules does not work with empty.html";
     }
     ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
 
@@ -2771,6 +2906,8 @@ class PrerenderMainFrameNavigationBrowserTest
           case PreloadingTriggerType::kEmbedder:
             NavigatePrimaryPageFromAddressBar(kPrerenderingUrl);
             break;
+          case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
+            FAIL() << "Auto speculation rules does not work with empty.html";
         }
         observer.WaitForActivation();
         EXPECT_TRUE(observer.was_activated());
@@ -2797,6 +2934,8 @@ class PrerenderMainFrameNavigationBrowserTest
       case PreloadingTriggerType::kEmbedder:
         ExpectFinalStatusForEmbedder(expected_status);
         break;
+      case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
+        FAIL() << "Auto speculation rules does not work with empty.html";
     }
   }
 
@@ -2840,6 +2979,8 @@ class PrerenderMainFrameNavigationBrowserTest
         host_id = static_cast<PrerenderHandleImpl*>(prerender_handle.get())
                       ->frame_tree_node_id_for_testing();
         break;
+      case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
+        FAIL() << "Auto speculation rules does not work with empty.html";
     }
     ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
 
@@ -2864,6 +3005,8 @@ class PrerenderMainFrameNavigationBrowserTest
           case PreloadingTriggerType::kEmbedder:
             NavigatePrimaryPageFromAddressBar(kPrerenderingUrl);
             break;
+          case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
+            FAIL() << "Auto speculation rules does not work with empty.html";
         }
         observer.WaitForActivation();
         EXPECT_TRUE(observer.was_activated());
@@ -2890,6 +3033,8 @@ class PrerenderMainFrameNavigationBrowserTest
       case PreloadingTriggerType::kEmbedder:
         ExpectFinalStatusForEmbedder(expected_status);
         break;
+      case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
+        FAIL() << "Auto speculation rules does not work with empty.html";
     }
   }
 
@@ -2943,6 +3088,10 @@ INSTANTIATE_TEST_SUITE_P(
           return "SpeculationRuleFromIsolatedWorld";
         case PreloadingTriggerType::kEmbedder:
           return "Embedder";
+        case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
+          ADD_FAILURE() << "Auto speculation rules does not work with "
+                           "TestMainFrameNavigation";
+          return "SpeculationRuleFromAutoSpeculationRules";
       }
     });
 

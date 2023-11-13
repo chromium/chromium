@@ -193,6 +193,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
     switch (trigger_type) {
       case PreloadingTriggerType::kSpeculationRule:
       case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
+      case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
         return PrerenderAttributes(
             url, trigger_type, embedder_histogram_suffix,
             blink::mojom::SpeculationTargetHint::kNoHint, Referrer(), eagerness,

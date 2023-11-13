@@ -17,6 +17,9 @@ enum class PreloadingTriggerType {
   kSpeculationRule,
   // Same as kSpeculationRule but triggered in isolated worlds like Extensions.
   kSpeculationRuleFromIsolatedWorld,
+  // Same as kSpeculationRule but injected by the browser's auto speculation
+  // rules feature.
+  kSpeculationRuleFromAutoSpeculationRules,
   // Trigger used by content embedders.
   kEmbedder,
 };

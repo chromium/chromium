@@ -30,6 +30,8 @@ PreloadingTriggerType GetTriggerType(
       return PreloadingTriggerType::kSpeculationRule;
     case blink::mojom::SpeculationInjectionType::kIsolatedWorldScript:
       return PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld;
+    case blink::mojom::SpeculationInjectionType::kAutoSpeculationRules:
+      return PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules;
   }
 }
 

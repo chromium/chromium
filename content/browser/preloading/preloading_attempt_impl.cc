@@ -344,7 +344,10 @@ void PreloadingAttemptImpl::SetSpeculationEagerness(
             content_preloading_predictor::kSpeculationRules.ukm_value() ||
         predictor_type_.ukm_value() ==
             content_preloading_predictor::kSpeculationRulesFromIsolatedWorld
-                .ukm_value())
+                .ukm_value() ||
+        predictor_type_.ukm_value() ==
+            content_preloading_predictor::
+                kSpeculationRulesFromAutoSpeculationRules.ukm_value())
       << "predictor_type_: " << predictor_type_.name()
       << " (ukm_value = " << predictor_type_.ukm_value() << ")";
   eagerness_ = eagerness;

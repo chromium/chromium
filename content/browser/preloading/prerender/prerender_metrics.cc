@@ -73,6 +73,10 @@ std::string GenerateHistogramName(const std::string& histogram_base_name,
       CHECK(embedder_suffix.empty());
       return std::string(histogram_base_name) +
              ".SpeculationRuleFromIsolatedWorld";
+    case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
+      CHECK(embedder_suffix.empty());
+      return std::string(histogram_base_name) +
+             ".SpeculationRuleFromAutoSpeculationRules";
     case PreloadingTriggerType::kEmbedder:
       CHECK(!embedder_suffix.empty());
       return std::string(histogram_base_name) + ".Embedder_" + embedder_suffix;

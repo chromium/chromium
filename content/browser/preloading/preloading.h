@@ -43,6 +43,12 @@ static constexpr PreloadingPredictor kSpeculationRulesFromIsolatedWorld(
     52,
     "SpeculationRulesFromIsolatedWorld");
 
+// Same with the kSpeculationRules, but the rules are injected by the browser
+// as part of the auto speculation rules feature.
+static constexpr PreloadingPredictor kSpeculationRulesFromAutoSpeculationRules(
+    53,
+    "SpeculationRulesFromAutoSpeculationRules");
+
 // TODO(crbug.com/1309934): Add more predictors as we integrate Preloading
 // logging.
 }  // namespace content_preloading_predictor
