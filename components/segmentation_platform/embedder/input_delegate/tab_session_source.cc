@@ -127,14 +127,13 @@ void TabSessionSource::AddTabRanks(const std::string& session_tag,
                                    Tensor& inputs) {
   sync_sessions::OpenTabsUIDelegate* open_tab_delegate =
       session_sync_service_->GetOpenTabsUIDelegate();
-  std::vector<const sessions::SessionWindow*> windows;
   int tab_rank_in_session = 0;
-  if (open_tab_delegate->GetForeignSession(session_tag, &windows)) {
-    for (const auto* window : windows) {
-      for (const auto& tab : window->tabs) {
-        if (tab->timestamp > session_tab->timestamp) {
-          tab_rank_in_session++;
-        }
+  std::vector<const sessions::SessionWindow*> windows =
+      open_tab_delegate->GetForeignSession(session_tag);
+  for (const auto* window : windows) {
+    for (const auto& tab : window->tabs) {
+      if (tab->timestamp > session_tab->timestamp) {
+        tab_rank_in_session++;
       }
     }
   }

@@ -566,9 +566,11 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreForeignSession(
   }
 
   // Restoring a full window.
-  std::vector<const sessions::SessionWindow*> windows;
-  if (!open_tabs->GetForeignSession(session_id.session_tag(), &windows))
+  std::vector<const sessions::SessionWindow*> windows =
+      open_tabs->GetForeignSession(session_id.session_tag());
+  if (windows.empty()) {
     return Error(kInvalidSessionIdError, session_id.ToString());
+  }
 
   std::vector<const sessions::SessionWindow*>::const_iterator window =
       windows.begin();

@@ -32,10 +32,9 @@ bool OpenTabsUIDelegateImpl::GetAllForeignSessions(
   return !sessions->empty();
 }
 
-bool OpenTabsUIDelegateImpl::GetForeignSession(
-    const std::string& tag,
-    std::vector<const sessions::SessionWindow*>* windows) {
-  return session_tracker_->LookupSessionWindows(tag, windows);
+std::vector<const sessions::SessionWindow*>
+OpenTabsUIDelegateImpl::GetForeignSession(const std::string& tag) {
+  return session_tracker_->LookupSessionWindows(tag);
 }
 
 bool OpenTabsUIDelegateImpl::GetForeignTab(const std::string& tag,
@@ -48,8 +47,9 @@ bool OpenTabsUIDelegateImpl::GetForeignTab(const std::string& tag,
 bool OpenTabsUIDelegateImpl::GetForeignSessionTabs(
     const std::string& tag,
     std::vector<const sessions::SessionTab*>* tabs) {
-  std::vector<const sessions::SessionWindow*> windows;
-  if (!session_tracker_->LookupSessionWindows(tag, &windows)) {
+  std::vector<const sessions::SessionWindow*> windows =
+      session_tracker_->LookupSessionWindows(tag);
+  if (windows.empty()) {
     return false;
   }
 

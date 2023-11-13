@@ -142,10 +142,9 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
               (const std::string&, SessionID, const sessions::SessionTab**));
 
   MOCK_METHOD(void, DeleteForeignSession, (const std::string&));
-  MOCK_METHOD(bool,
+  MOCK_METHOD(std::vector<const sessions::SessionWindow*>,
               GetForeignSession,
-              (const std::string&,
-               std::vector<const sessions::SessionWindow*>*));
+              (const std::string&));
   MOCK_METHOD(bool, GetLocalSession, (const sync_sessions::SyncedSession**));
 
   // Returns a fake tab with timestamp `modified_time_`.

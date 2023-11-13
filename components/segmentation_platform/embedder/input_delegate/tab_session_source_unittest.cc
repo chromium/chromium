@@ -106,9 +106,9 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
 
   MOCK_METHOD1(DeleteForeignSession, void(const std::string& tag));
 
-  MOCK_METHOD2(GetForeignSession,
-               bool(const std::string& tag,
-                    std::vector<const sessions::SessionWindow*>* windows));
+  MOCK_METHOD1(
+      GetForeignSession,
+      std::vector<const sessions::SessionWindow*>(const std::string& tag));
 
   MOCK_METHOD2(GetForeignSessionTabs,
                bool(const std::string& tag,
@@ -217,14 +217,13 @@ TEST_F(TabSessionSourceTest, ProcessLocal) {
         *tab = picked_tab.get();
         return true;
       });
-  EXPECT_CALL(open_tabs_delegate_, GetForeignSession(_, _))
-      .WillOnce([&local_session](
-                    const std::string& tag,
-                    std::vector<const sessions::SessionWindow*>* windows) {
+  EXPECT_CALL(open_tabs_delegate_, GetForeignSession(_))
+      .WillOnce([&local_session](const std::string& tag) {
+        std::vector<const sessions::SessionWindow*> windows;
         for (const auto& [window_id, window] : local_session->windows) {
-          windows->push_back(&window->wrapped_window);
+          windows.push_back(&window->wrapped_window);
         }
-        return true;
+        return windows;
       });
 
   Tensor result = GetResult(local_session->GetSessionTag(), id);
@@ -267,14 +266,13 @@ TEST_F(TabSessionSourceTest, ProcessForeign) {
         *tab = picked_tab.get();
         return true;
       });
-  EXPECT_CALL(open_tabs_delegate_, GetForeignSession(_, _))
-      .WillOnce([&picked_session](
-                    const std::string& tag,
-                    std::vector<const sessions::SessionWindow*>* windows) {
+  EXPECT_CALL(open_tabs_delegate_, GetForeignSession(_))
+      .WillOnce([&picked_session](const std::string& tag) {
+        std::vector<const sessions::SessionWindow*> windows;
         for (const auto& [window_id, window] : picked_session->windows) {
-          windows->push_back(&window->wrapped_window);
+          windows.push_back(&window->wrapped_window);
         }
-        return true;
+        return windows;
       });
 
   Tensor result = GetResult(picked_session->GetSessionTag(), id);

@@ -201,22 +201,23 @@ SyncedSessionTracker::LookupAllForeignSessions(SessionLookup lookup) const {
   return LookupSessions(lookup, /*exclude_local_session=*/true);
 }
 
-bool SyncedSessionTracker::LookupSessionWindows(
-    const std::string& session_tag,
-    std::vector<const sessions::SessionWindow*>* windows) const {
-  DCHECK(windows);
-  windows->clear();
+std::vector<const sessions::SessionWindow*>
+SyncedSessionTracker::LookupSessionWindows(
+    const std::string& session_tag) const {
+  std::vector<const sessions::SessionWindow*> windows;
 
   const TrackedSession* session = LookupTrackedSession(session_tag);
   if (!session) {
-    return false;  // We have no record of this session.
+    return windows;  // We have no record of this session.
   }
 
   for (const auto& [window_id, window] : session->synced_session.windows) {
-    windows->push_back(&window->wrapped_window);
+    if (!window->wrapped_window.tabs.empty()) {
+      windows.push_back(&window->wrapped_window);
+    }
   }
 
-  return true;
+  return windows;
 }
 
 const sessions::SessionTab* SyncedSessionTracker::LookupSessionTab(
