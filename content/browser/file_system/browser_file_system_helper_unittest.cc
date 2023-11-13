@@ -42,7 +42,12 @@ TEST(BrowserFileSystemHelperTest,
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  BrowserTaskEnvironment task_environment;
+  // We need the task environment to use a separate IO thread so that the
+  // ChildProcessSecurityPolicy checks which perform different logic
+  // based on whether they are called on the UI thread or the IO thread do the
+  // right thing.
+  BrowserTaskEnvironment task_environment{
+      content::BrowserTaskEnvironment::REAL_IO_THREAD};
   TestBrowserContext browser_context;
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
@@ -157,7 +162,12 @@ TEST(BrowserFileSystemHelperTest, PrepareDropDataForChildProcess_LocalFiles) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  BrowserTaskEnvironment task_environment;
+  // We need the task environment to use a separate IO thread so that the
+  // ChildProcessSecurityPolicy checks which perform different logic
+  // based on whether they are called on the UI thread or the IO thread do the
+  // right thing.
+  BrowserTaskEnvironment task_environment{
+      content::BrowserTaskEnvironment::REAL_IO_THREAD};
   TestBrowserContext browser_context;
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
