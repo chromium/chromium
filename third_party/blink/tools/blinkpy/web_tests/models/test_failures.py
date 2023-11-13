@@ -50,6 +50,7 @@ FILENAME_SUFFIX_SAMPLE = "-sample"
 FILENAME_SUFFIX_LEAK_LOG = "-leak-log"
 FILENAME_SUFFIX_HTML_DIFF = "-pretty-diff"
 FILENAME_SUFFIX_OVERLAY = "-overlay"
+FILENAME_SUFFIX_TRACE = "-trace"
 
 _ext_to_file_type = {'.txt': 'text', '.png': 'image', '.wav': 'audio'}
 
@@ -64,6 +65,8 @@ TESTHARNESS_JS_FAILURE_RE = re.compile(r'\+(?:FAIL|Harness Error\.) (.*)$')
 FATAL_MESSAGE_RE = re.compile(
     r'^.*FATAL.*?([a-zA-Z0-9_.]+\.[a-zA-Z0-9_]+\([0-9]+\))\]? (.*)$',
     re.MULTILINE)
+
+IGNORE_RESULT = 'IGNORE'
 
 
 def has_failure_type(failure_type, failure_list):
@@ -692,6 +695,37 @@ class FailureEarlyExit(AbstractTestResultType):
 
     def message(self):
         return 'skipped due to early exit'
+
+
+class TraceFileArtifact(AbstractTestResultType):
+    result = IGNORE_RESULT
+
+    def __init__(self, actual_driver_output, trace_file, suffix):
+        super(TraceFileArtifact, self).__init__(actual_driver_output, None)
+        self._trace_file = trace_file
+        self._suffix = suffix
+
+    def create_artifacts(self, typ_artifacts, force_overwrite=False):
+        typ_artifacts_dir = self.filesystem.join(
+            self.result_directory, typ_artifacts.ArtifactsSubDirectory())
+        trace_file = self._trace_file
+        if (trace_file and self.filesystem.exists(trace_file)):
+            artifact_filename = self.port.output_filename(
+                self.test_name, self._suffix, '.pftrace')
+            artifacts_abspath = self.filesystem.join(typ_artifacts_dir,
+                                                     artifact_filename)
+            if (force_overwrite
+                    or not self.filesystem.exists(artifacts_abspath)):
+                with self.filesystem.open_binary_file_for_reading(
+                        trace_file) as trace_fh:
+                    typ_artifacts.CreateArtifact(
+                        'trace',
+                        artifact_filename,
+                        trace_fh.read(),
+                        force_overwrite=force_overwrite)
+
+    def message(self):
+        return 'test produced a trace file'
 
 
 # Convenient collection of all failure classes for anything that might

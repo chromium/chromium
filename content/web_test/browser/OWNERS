@@ -1,1 +1,2 @@
 per-file *bluetooth*=file://content/browser/bluetooth/OWNERS
+per-file *tracing*=file://base/trace_event/OWNERS
