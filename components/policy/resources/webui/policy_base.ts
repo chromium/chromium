@@ -204,12 +204,21 @@ export class Page {
 
   // Triggers the download of the policies as a JSON file.
   downloadJson(json: string) {
-    const blob = new Blob([json], {type: 'application/json'});
-    const blobUrl = URL.createObjectURL(blob);
+    const jsonObject = JSON.parse(json);
+    const timestamp = new Date(Date.now()).toLocaleString(undefined, {
+      dateStyle: 'short',
+      timeStyle: 'long',
+    });
 
+    jsonObject.policyExportTime = timestamp;
+    const blob = new Blob(
+        [JSON.stringify(jsonObject, null, 3)], {type: 'application/json'});
+    const blobUrl = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = blobUrl;
-    link.download = 'policies.json';
+    // Regex matches GMT timezone pattern, such as "GMT+5:30"
+    link.download =
+        `policies_${timestamp.replace(/ GMT[+-]\d+:\d+/g, '')}.json`;
 
     document.body.appendChild(link);
 
