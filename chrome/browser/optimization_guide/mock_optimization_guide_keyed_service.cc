@@ -8,6 +8,7 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/prediction_model_store.h"
 #include "components/prefs/testing_pref_service.h"
 
@@ -22,19 +23,26 @@ const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[] =
 // static
 void MockOptimizationGuideKeyedService::Initialize(
     TestingPrefServiceSimple* local_state) {
-  base::FilePath model_downloads_dir;
-  base::PathService::Get(chrome::DIR_USER_DATA, &model_downloads_dir);
-  model_downloads_dir =
-      model_downloads_dir.Append(kOptimizationGuideModelStoreDirPrefix);
-  // Create and initialize the install-wide model store.
   TestingBrowserProcess::GetGlobal()->SetLocalState(local_state);
   RegisterLocalState(local_state->registry());
-  optimization_guide::PredictionModelStore::GetInstance()->Initialize(
-      local_state, model_downloads_dir);
+  // Create and initialize the install-wide model store.
+  if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
+    base::FilePath model_downloads_dir;
+    base::PathService::Get(chrome::DIR_USER_DATA, &model_downloads_dir);
+    model_downloads_dir =
+        model_downloads_dir.Append(kOptimizationGuideModelStoreDirPrefix);
+    optimization_guide::PredictionModelStore::GetInstance()->Initialize(
+        local_state, model_downloads_dir);
+  }
 }
 
 // static
 void MockOptimizationGuideKeyedService::TearDown() {
+  if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
+    // Reinitialize the store, so that tests do not use state from the
+    // previous test.
+    optimization_guide::PredictionModelStore::GetInstance()->ResetForTesting();
+  }
   TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 }
 
