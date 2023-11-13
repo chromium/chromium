@@ -77,9 +77,7 @@ NetworkIsolationKey NetworkIsolationKey::CreateWithNewFrameSite(
     const SchemefulSite& new_frame_site) const {
   if (!top_frame_site_)
     return NetworkIsolationKey();
-  NetworkIsolationKey key(top_frame_site_.value(), new_frame_site);
-  key.nonce_ = nonce_;
-  return key;
+  return NetworkIsolationKey(top_frame_site_.value(), new_frame_site, nonce_);
 }
 
 std::optional<std::string> NetworkIsolationKey::ToCacheKeyString() const {
