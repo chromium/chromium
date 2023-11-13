@@ -131,9 +131,11 @@ export async function testNavigationRoots(done: () => void) {
   // Put drive entry in the store.
   const driveRootEntryFileData = createDriveRootEntryListFileData();
   initialState.allEntries[driveRootEntryListKey] = driveRootEntryFileData;
+  initialState.uiEntries.push(driveRootEntryListKey);
   // Put trash entry in the store.
   const trashEntryFileData = createTrashEntryFileData();
   initialState.allEntries[trashRootKey] = trashEntryFileData;
+  initialState.uiEntries.push(trashRootKey);
   // Put the android apps in the store.
   const androidAppsData = createAndroidApps();
   initialState.androidApps[androidAppsData[0].packageName] = androidAppsData[0];
@@ -455,6 +457,7 @@ export async function testNavigationRootsWithVolumes(done: () => void) {
   // Put drive entry in the store.
   const driveRootEntryFileData = createDriveRootEntryListFileData();
   initialState.allEntries[driveRootEntryListKey] = driveRootEntryFileData;
+  initialState.uiEntries.push(driveRootEntryListKey);
 
   // Put removable volume 'hoge' in the store.
   const hogeVolume = createVolumeFileData(

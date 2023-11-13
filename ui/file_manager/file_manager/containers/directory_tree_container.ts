@@ -6,7 +6,7 @@ import {isRTL} from 'chrome://resources/ash/common/util.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {maybeShowTooltip} from '../common/js/dom_utils.js';
-import {isEntryInsideComputers, isEntryInsideDrive, isEntryInsideMyDrive, isGrandRootEntryInDrives, isMyFilesEntry, isOneDriveId, isTrashEntry, isVolumeEntry} from '../common/js/entry_utils.js';
+import {isEntryInsideComputers, isEntryInsideDrive, isEntryInsideMyDrive, isGrandRootEntryInDrives, isMyFilesEntry, isOneDrive, isOneDriveId, isTrashEntry, isVolumeEntry} from '../common/js/entry_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../common/js/files_app_entry_types.js';
 import {vmTypeToIconName} from '../common/js/icon_util.js';
 import {recordEnum, recordUserAction} from '../common/js/metrics.js';
@@ -273,6 +273,12 @@ export class DirectoryTreeContainer {
       // it here and restore it later if needed.
       const isFocused = document.activeElement === navigationRootItem;
       const isRenaming = navigationRootItem.renaming;
+      if (fileData && isVolumeEntry(fileData.entry)) {
+        const isOneDriveRoot = isOneDrive(fileData.entry.volumeInfo);
+        if (isOneDriveRoot) {
+          navigationRootItem.toggleAttribute('one-drive', true);
+        }
+      }
 
       this.renderItem_(
           navigationRoot.key, isAndroidApp ? androidAppData : fileData,

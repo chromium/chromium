@@ -19,7 +19,6 @@ import {getFileErrorString, str, strf} from '../../common/js/translations.js';
 import {deleteIsForever, RestoreFailedType, RestoreFailedTypesUMA, RestoreFailedUMA, shouldMoveToTrash, TrashEntry} from '../../common/js/trash.js';
 import {visitURL} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {NudgeType} from '../../containers/nudge_container.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {State} from '../../externs/ts/state.js';
@@ -1559,8 +1558,6 @@ export class DeleteCommand extends FilesCommand {
     if (!permanentlyDelete &&
         shouldMoveToTrash(entries, fileManager.volumeManager) &&
         fileManager.trashEnabled) {
-      fileManager.ui.nudgeContainer.showNudge(NudgeType['TRASH_NUDGE']);
-
       startIOTask(
           chrome.fileManagerPrivate.IOTaskType.TRASH, entries,
           /*params=*/ {});

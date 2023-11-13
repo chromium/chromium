@@ -2168,10 +2168,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("trashDeleteFromTrash")
             .NewDirectoryTree()
             .FeatureIds({"screenplay-38573550-c60a-4009-ba92-c0af1420fde6"}),
-        // TODO(b/301344220): enable the tests
-        // TestCase("trashDeleteFromTrashOriginallyFromDrive")
-        //     .NewDirectoryTree()
-        //     .FeatureIds({"screenplay-38573550-c60a-4009-ba92-c0af1420fde6"}),
+        TestCase("trashDeleteFromTrashOriginallyFromDrive")
+            .EnableDriveTrash()
+            .NewDirectoryTree()
+            .FeatureIds({"screenplay-38573550-c60a-4009-ba92-c0af1420fde6"}),
         TestCase("trashNoTasksInTrashRoot").NewDirectoryTree(),
         TestCase("trashDoubleClickOnFileInTrashRootShowsDialog")
             .NewDirectoryTree(),
@@ -2185,17 +2185,17 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("trashDragDropRootPerformsTrashAction").NewDirectoryTree(),
         TestCase("trashDragDropNonModifiableEntriesCantBeTrashed")
             .NewDirectoryTree(),
-        // TestCase("trashDontShowTrashRootOnSelectFileDialog").NewDirectoryTree(),
+        TestCase("trashDontShowTrashRootOnSelectFileDialog").NewDirectoryTree(),
         TestCase("trashDontShowTrashRootWhenOpeningAsAndroidFilePicker")
             .NewDirectoryTree(),
         TestCase("trashEnsureOldEntriesArePeriodicallyRemoved")
             .NewDirectoryTree(),
         TestCase("trashDragDropOutOfTrashPerformsRestoration")
             .NewDirectoryTree(),
-        // TestCase("trashTogglingTrashEnabledPrefUpdatesDirectoryTree")
-        //     .NewDirectoryTree(),
-        // TestCase("trashTogglingTrashEnabledNavigatesAwayFromTrashRoot")
-        //     .NewDirectoryTree(),
+        TestCase("trashTogglingTrashEnabledPrefUpdatesDirectoryTree")
+            .NewDirectoryTree(),
+        TestCase("trashTogglingTrashEnabledNavigatesAwayFromTrashRoot")
+            .NewDirectoryTree(),
         TestCase("trashCantRestoreWhenParentDoesntExist").NewDirectoryTree(),
         TestCase("trashInfeasibleActionsForFileDisabledAndHiddenInTrashRoot")
             .NewDirectoryTree(),
@@ -2205,7 +2205,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .NewDirectoryTree(),
         TestCase("trashAllActionsDisabledForBlankSpaceInTrashRoot")
             .NewDirectoryTree(),
-        // TestCase("trashNudgeShownOnFirstTrashOperation").NewDirectoryTree(),
         TestCase("trashStaleTrashInfoFilesAreRemovedAfterOneHour")
             .NewDirectoryTree(),
         // Section end - browser tests for new directory tree
@@ -2253,7 +2252,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("trashInfeasibleActionsForFolderDisabledAndHiddenInTrashRoot"),
         TestCase("trashExtractAllForZipHiddenAndDisabledInTrashRoot"),
         TestCase("trashAllActionsDisabledForBlankSpaceInTrashRoot"),
-        TestCase("trashNudgeShownOnFirstTrashOperation"),
         TestCase("trashStaleTrashInfoFilesAreRemovedAfterOneHour")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
