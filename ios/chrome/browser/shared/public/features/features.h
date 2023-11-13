@@ -15,6 +15,9 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
+// Feature flag to enable the Keyboard Accessory Upgrade.
+BASE_DECLARE_FEATURE(kIOSKeyboardAccessoryUpgrade);
+
 // Feature flag to enable the Payments Bottom Sheet.
 BASE_DECLARE_FEATURE(kIOSPaymentsBottomSheet);
 

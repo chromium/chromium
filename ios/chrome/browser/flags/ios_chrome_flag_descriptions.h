@@ -466,6 +466,10 @@ extern const char kIOSEditMenuHideSearchWebDescription[];
 extern const char kIOSIncognitoDownloadsWarningName[];
 extern const char kIOSIncognitoDownloadsWarningDescription[];
 
+// Title and description for the flag to enable the keyboard accessory upgrade.
+extern const char kIOSKeyboardAccessoryUpgradeName[];
+extern const char kIOSKeyboardAccessoryUpgradeDescription[];
+
 // Title and description for the flag to enable the new iOS post-restore
 // sign-in prompt.
 extern const char kIOSNewPostRestoreExperienceName[];

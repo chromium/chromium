@@ -42,6 +42,10 @@ bool IsFeedOverrideForegroundDefaultsEnabled() {
 
 }  // namespace
 
+BASE_FEATURE(kIOSKeyboardAccessoryUpgrade,
+             "kIOSKeyboardAccessoryUpgrade",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIOSPaymentsBottomSheet,
              "IOSPaymentsBottomSheet",
              base::FEATURE_DISABLED_BY_DEFAULT);

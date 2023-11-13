@@ -548,6 +548,11 @@ const char kIOSIncognitoDownloadsWarningDescription[] =
     "When enabled, users will be warned that downloaded files are saved on the "
     "device and might be seen by other users even if they are in Incognito.";
 
+const char kIOSKeyboardAccessoryUpgradeName[] =
+    "Enable the keyboard accessory upgrade on iOS";
+const char kIOSKeyboardAccessoryUpgradeDescription[] =
+    "When enabled, the upgraded keyboard accessory UI will be presented.";
+
 const char kIOSNewPostRestoreExperienceName[] = "New Post Restore Experience";
 const char kIOSNewPostRestoreExperienceDescription[] =
     "When enabled, a prompt will be presented after a device restore to "

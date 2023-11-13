@@ -4836,6 +4836,11 @@
     "expiry_milestone": 121
   },
   {
+    "name": "ios-keyboard-accessory-upgrade",
+    "owners": [ "noemies@chromium.org", "sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "ios-large-fakebox",
     "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
     "expiry_milestone": 122
