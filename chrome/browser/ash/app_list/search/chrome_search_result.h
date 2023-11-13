@@ -109,6 +109,8 @@ class ChromeSearchResult {
   system_info_answer_card_data() const {
     return metadata_->system_info_answer_card_data;
   }
+  // Only file results have set the filepath.
+  const base::FilePath& filePath() const { return metadata_->file_path; }
   ash::FileMetadataLoader* file_metadata_loader() {
     return &metadata_->file_metadata_loader;
   }

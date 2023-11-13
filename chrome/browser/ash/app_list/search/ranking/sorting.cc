@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/app_list/search/ranking/sorting.h"
 
+#include "base/files/file_path.h"
+#include "chrome/browser/ash/app_list/search/common/search_result_util.h"
+
 namespace app_list {
 
 namespace {
@@ -96,8 +99,25 @@ void SortResults(std::vector<ChromeSearchResult*>& results,
           return a->scoring().continue_rank() > b->scoring().continue_rank();
         }
 
-        // Lastly, sort by display score.
-        return a->display_score() > b->display_score();
+        // Sort by display score.
+        if (a->display_score() != b->display_score()) {
+          return a->display_score() > b->display_score();
+        }
+
+        // Last, sort file results by filepath as it is unique. For the other
+        // results, try to sort by title. It's our best effort to stabilize the
+        // result ordering to avoid result flipping.
+        if (a->category() == ash::AppListSearchResultCategory::kFiles) {
+          return a->filePath().value() < b->filePath().value();
+        } else {
+          // Some providers set `title_vector` and the others sets `title`.
+          if (!a->title().empty()) {
+            return a->title() < b->title();
+          } else {
+            return StringFromTextVector(a->title_text_vector()) <
+                   StringFromTextVector(b->title_text_vector());
+          }
+        }
       });
 }
 
