@@ -229,7 +229,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
             (testDismissSigninFromTabSwitcherFromAdvancedSigninSettings)] ||
       [self isRunningTest:@selector
             (testDismissSigninFromTabSwitcherFromIdentityPicker)] ||
-      [self isRunningTest:@selector(testSigninDisabledByPolicy)] ||
       [self isRunningTest:@selector(testSignInCancelAddAccount)] ||
       [self isRunningTest:@selector(testSignInFromSettingsMenu)] ||
       [self isRunningTest:@selector(testSignInFromSyncOffLink)] ||
@@ -264,6 +263,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       [self isRunningTest:@selector
             (testOpenSignInFromNTPWhenSyncDisabledByPolicy)] ||
       [self isRunningTest:@selector(testSwitchToSupervisedUser)] ||
+      [self isRunningTest:@selector(testSigninDisabledByPolicy)] ||
       [self isRunningTest:@selector(testSignInFromNTPAndDeclineHistorySync)] ||
       [self isRunningTest:@selector(testSignInFromNTPAndAcceptHistorySync)] ||
       [self isRunningTest:@selector(testSignInDisconnectFromChromeManaged)] ||
@@ -960,8 +960,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests that the sign-in coordinator isn't started when sign-in is disabled by
 // policy.
 // kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
 - (void)testSigninDisabledByPolicy {
   // Disable browser sign-in only after the "Sign in to Chrome" button is
   // visible.
