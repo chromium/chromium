@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
+#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
@@ -391,6 +392,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
                                activityIndicatorDimension)];
   UIBarButtonItem* waitButton =
       [[UIBarButtonItem alloc] initWithCustomView:indicator];
+  waitButton.accessibilityLabel = kSettingsWaitButtonId;
 
   if (displayActivityIndicatorOnTheRight) {
     // If there is a right bar button item, then it is the "Done" button.

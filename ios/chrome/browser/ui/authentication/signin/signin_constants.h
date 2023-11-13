@@ -67,6 +67,9 @@ extern NSString* const kWebSigninPrimaryButtonAccessibilityIdentifier;
 extern NSString* const kWebSigninSkipButtonAccessibilityIdentifier;
 // Name of the accessibility identifier for the Tangible Sync view.
 extern NSString* const kTangibleSyncViewAccessibilityIdentifier;
+// Name of the accessibility identifier for the "add account" button in the
+// consistency account chooser.
+extern NSString* const kConsistencyAccountChooserAddAccountIdentifier;
 
 // Action that is required to do to complete the sign-in, or instead of sign-in.
 // This action is in charge of the SigninCoordinator's owner.

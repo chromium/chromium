@@ -13,6 +13,7 @@ source_set("settings_root") {
     "settings_root_view_controlling.h",
   ]
   deps = [
+    ":constants",
     ":settings_root_constants",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/net:crurl",

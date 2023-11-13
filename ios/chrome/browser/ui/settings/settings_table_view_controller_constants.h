@@ -177,6 +177,10 @@ extern NSString* const kSettingsIncognitoInterstitialDisabledId;
 // The accessibility identifier of the Notifications setting.
 extern NSString* const kSettingsNotificationsId;
 
+// The accessibility identifier of the wait button that is used on top of the
+// setting tables view to prevent user interactions.
+extern NSString* const kSettingsWaitButtonId;
+
 // The accessibility identifier of the tabs cell.
 extern NSString* const kSettingsTabsCellId;
 

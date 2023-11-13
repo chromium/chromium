@@ -21,6 +21,8 @@ NSString* const kWebSigninSkipButtonAccessibilityIdentifier =
     @"WebSigninSkipButtonAccessibilityIdentifier";
 NSString* const kTangibleSyncViewAccessibilityIdentifier =
     @"TangibleSyncViewAccessibilityIdentifier";
+NSString* const kConsistencyAccountChooserAddAccountIdentifier =
+    @"ConsistencyAccountChooserAddAccountIdentifier";
 
 const char* kWebSigninConsistencyConsecutiveActiveDismissalLimitParam =
     "consecutive_active_dismissal_limit";
