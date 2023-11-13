@@ -1190,8 +1190,7 @@ void FocusFakebox() {
 // omnibox is empty.
 - (void)testEmptyOmnibox {
   // TODO(crbug.com/1209342): this test fails on iOS 15 devices.
-  if (base::ios::IsRunningOnIOS15OrLater() &&
-      !base::ios::IsRunningOnIOS16OrLater()) {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.");
   }
 
@@ -1365,8 +1364,7 @@ void FocusFakebox() {
 
 - (void)testNoDefaultMatch {
   // TODO(crbug.com/1253345) This test fails on iOS 15 devices.
-  if (base::ios::IsRunningOnIOS15OrLater() &&
-      !base::ios::IsRunningOnIOS16OrLater()) {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.");
   }
 
