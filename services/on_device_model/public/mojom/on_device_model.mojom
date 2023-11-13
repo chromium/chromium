@@ -34,11 +34,16 @@ struct InputOptions {
 
   // The maximum number of tokens that should be processed. If not set, will
   // process all tokens from this input.
-  int32? max_tokens;
+  uint32? max_tokens;
 
   // After text is tokenized, the offset into that vector to start processing.
   // If not set, will start at the first token.
   uint32? token_offset;
+
+  // If this is true, indicates this is a one-off call that wants to ignore the
+  // context for this input. Note that this is less efficient than running on
+  // top of the current context, so only use when necessary.
+  bool ignore_context;
 };
 
 // A session for a model that allows adding context and then executing an input

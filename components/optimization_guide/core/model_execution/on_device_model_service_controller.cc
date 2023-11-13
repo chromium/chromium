@@ -42,10 +42,11 @@ class OnDeviceSession
       return;
     }
     // TODO(b/304890244): Handle passing context until request comes in.
-    session_->AddContext(on_device_model::mojom::InputOptions::New(
-                             input->input_string, /*max_tokens=*/1024,
-                             /*token_offset=*/std::nullopt),
-                         {});
+    session_->AddContext(
+        on_device_model::mojom::InputOptions::New(
+            input->input_string, /*max_tokens=*/1024,
+            /*token_offset=*/std::nullopt, input->should_ignore_input_context),
+        {});
   }
 
   void ExecuteModel(
@@ -67,7 +68,8 @@ class OnDeviceSession
     session_->Execute(
         on_device_model::mojom::InputOptions::New(
             input->input_string,
-            /*max_tokens=*/std::nullopt, /*token_offset=*/std::nullopt),
+            /*max_tokens=*/std::nullopt, /*token_offset=*/std::nullopt,
+            input->should_ignore_input_context),
         receiver_.BindNewPipeAndPassRemote());
     receiver_.set_disconnect_handler(
         base::BindOnce(&OnDeviceSession::OnError, base::Unretained(this)));

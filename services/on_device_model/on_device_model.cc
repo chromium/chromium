@@ -23,8 +23,7 @@ class SessionImpl : public OnDeviceModel::Session {
     if (input->token_offset) {
       text.erase(text.begin(), text.begin() + *input->token_offset);
     }
-    if (input->max_tokens &&
-        *input->max_tokens < static_cast<int32_t>(text.size())) {
+    if (input->max_tokens && *input->max_tokens < text.size()) {
       text.resize(*input->max_tokens);
     }
     context_.push_back(text);
@@ -38,8 +37,10 @@ class SessionImpl : public OnDeviceModel::Session {
       mojom::InputOptionsPtr input,
       mojo::PendingRemote<mojom::StreamingResponder> response) override {
     mojo::Remote<mojom::StreamingResponder> remote(std::move(response));
-    for (const std::string& context : context_) {
-      remote->OnResponse("Context: " + context + "\n");
+    if (!input->ignore_context) {
+      for (const std::string& context : context_) {
+        remote->OnResponse("Context: " + context + "\n");
+      }
     }
     remote->OnResponse("Input: " + input->text + "\n");
     remote->OnComplete();

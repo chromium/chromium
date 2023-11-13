@@ -164,7 +164,8 @@ class OnDeviceInternalsAppElement extends PolymerElement {
     if (this.session_ === null) {
       return;
     }
-    this.session_.addContext({text: this.contextText_}, null);
+    this.session_.addContext(
+        {text: this.contextText_, ignoreContext: false}, null);
     this.contextLength_ += this.contextText_.split(/(\s+)/).length;
     this.contextText_ = '';
   }
@@ -199,7 +200,8 @@ class OnDeviceInternalsAppElement extends PolymerElement {
       return;
     }
     this.session_.execute(
-        {text: this.text_}, this.responseRouter_.$.bindNewPipeAndPassRemote());
+        {text: this.text_, ignoreContext: false},
+        this.responseRouter_.$.bindNewPipeAndPassRemote());
     const onResponseId =
         this.responseRouter_.onResponse.addListener((text: string) => {
           this.set(
