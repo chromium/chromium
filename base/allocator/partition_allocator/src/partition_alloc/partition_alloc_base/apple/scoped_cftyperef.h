@@ -7,7 +7,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/apple/scoped_typeref.h"
+#include "partition_alloc/partition_alloc_base/apple/scoped_typeref.h"
 
 namespace partition_alloc::internal::base::apple {
 

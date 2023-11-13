@@ -2,18 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-include_rules = [
-    # The basic rule is that PartitionAlloc library must not depend on Chromium
-    # project in order to be a standalone library.
-    "-base",
-    "-build",
-    "-build_overrides",
-    "-testing",
-    "-third_party",
+# PartitionAlloc library must not depend on Chromium
+# project in order to be a standalone library.
+noparent = True
 
-    "+base/allocator/partition_allocator",
-    "+build/build_config.h",
-    "+build/buildflag.h",
+include_rules = [
+  # `partition_alloc` can depends on itself, via the `include_dirs` it declares.
+  "+partition_alloc",
+
+  # Build flags to infer the architecture and operating system in use.
+  "+build/build_config.h",
+  "+build/buildflag.h",
 ]
 
 specific_include_rules = {

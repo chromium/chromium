@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/system/sys_info.h"
+#include "partition_alloc/partition_alloc_base/system/sys_info.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
+#include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 
 namespace partition_alloc::internal::base {
 

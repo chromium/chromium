@@ -11,9 +11,9 @@
 #include <cstdint>
 #include <type_traits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 
 namespace partition_alloc::internal::base::bits {
 

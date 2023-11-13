@@ -9,10 +9,10 @@
 #include <atomic>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/rand_util.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/metadata_allocator.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/rand_util.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/starscan/metadata_allocator.h"
 
 namespace partition_alloc::internal {
 

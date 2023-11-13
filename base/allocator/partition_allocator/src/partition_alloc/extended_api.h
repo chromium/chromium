@@ -5,10 +5,10 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_EXTENDED_API_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_EXTENDED_API_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_stats.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_root.h"
+#include "partition_alloc/partition_stats.h"
+#include "partition_alloc/thread_cache.h"
 
 namespace partition_alloc::internal {
 // Get allocation stats for the thread cache partition on the current

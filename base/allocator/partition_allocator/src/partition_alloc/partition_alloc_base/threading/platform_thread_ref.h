@@ -12,11 +12,11 @@
 
 #include <iosfwd>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/win/windows_types.h"
+#include "partition_alloc/partition_alloc_base/win/windows_types.h"
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <pthread.h>
 #endif

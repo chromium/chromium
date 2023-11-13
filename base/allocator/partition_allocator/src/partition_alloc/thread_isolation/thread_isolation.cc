@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_isolation/thread_isolation.h"
+#include "partition_alloc/thread_isolation/thread_isolation.h"
 
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
-#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/reservation_offset_table.h"
+#include "partition_alloc/address_pool_manager.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/reservation_offset_table.h"
 
 #if BUILDFLAG(ENABLE_PKEYS)
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_isolation/pkey.h"
+#include "partition_alloc/thread_isolation/pkey.h"
 #endif
 
 namespace partition_alloc::internal {

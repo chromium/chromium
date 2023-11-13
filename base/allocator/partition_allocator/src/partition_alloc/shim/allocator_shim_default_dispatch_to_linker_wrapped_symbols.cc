@@ -4,8 +4,8 @@
 
 #include <malloc.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "build/build_config.h"
+#include "partition_alloc/shim/allocator_shim.h"
 
 // This translation unit defines a default dispatch for the allocator shim which
 // routes allocations to the original libc functions when using the link-time

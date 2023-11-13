@@ -7,7 +7,7 @@
 
 #include <type_traits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 
 #if !PA_HAS_BUILTIN(__builtin_bit_cast)
 #include <string.h>  // memcpy

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/rand_util.h"
+#include "partition_alloc/partition_alloc_base/rand_util.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <limits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/check.h"
 
 // Prototype for ProcessPrng.
 // See: https://learn.microsoft.com/en-us/windows/win32/seccng/processprng

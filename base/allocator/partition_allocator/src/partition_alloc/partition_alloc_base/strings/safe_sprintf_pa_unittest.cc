@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
+#include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -12,9 +12,9 @@
 #include <limits>
 #include <memory>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Death tests on Android are currently very flaky. No need to add more flaky

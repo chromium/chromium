@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager.h"
+#include "partition_alloc/address_pool_manager.h"
 
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/address_space_stats.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
 #include "build/build_config.h"
+#include "partition_alloc/address_space_stats.h"
+#include "partition_alloc/page_allocator.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc::internal {

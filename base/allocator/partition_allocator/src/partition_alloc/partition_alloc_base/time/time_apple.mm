@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time.h"
+#include "partition_alloc/partition_alloc_base/time/time.h"
 
 #import <Foundation/Foundation.h>
 #include <mach/mach.h>
@@ -18,11 +18,11 @@
 #include <errno.h>
 #endif
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time_override.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/logging.h"
+#include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
+#include "partition_alloc/partition_alloc_base/time/time_override.h"
 
 namespace partition_alloc::internal::base {
 

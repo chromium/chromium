@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/native_library.h"
+#include "partition_alloc/partition_alloc_base/native_library.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/files/file_path.h"
+#include "partition_alloc/partition_alloc_base/files/file_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc::internal::base {

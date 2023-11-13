@@ -5,7 +5,7 @@
 // This is a "No Compile Test" suite.
 // http://dev.chromium.org/developers/testing/no-compile-tests
 
-#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ref.h"
+#include "partition_alloc/pointers/raw_ref.h"
 
 namespace {
 

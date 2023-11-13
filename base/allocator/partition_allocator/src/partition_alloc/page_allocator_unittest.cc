@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
+#include "partition_alloc/page_allocator.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -12,14 +12,14 @@
 #include <string>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/address_space_randomization.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/cpu.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/notreached.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
 #include "build/build_config.h"
+#include "partition_alloc/address_space_randomization.h"
+#include "partition_alloc/page_allocator_constants.h"
+#include "partition_alloc/partition_alloc_base/cpu.h"
+#include "partition_alloc/partition_alloc_base/logging.h"
+#include "partition_alloc/partition_alloc_base/notreached.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/tagging.h"
 
 #if defined(LINUX_NAME_REGION)
 #include "base/debug/proc_maps_linux.h"
@@ -34,7 +34,7 @@
 #include <sys/time.h>
 #endif  // BUILDFLAG(IS_POSIX)
 
-#include "base/allocator/partition_allocator/src/partition_alloc/arm_bti_test_functions.h"
+#include "partition_alloc/arm_bti_test_functions.h"
 
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
 #include <arm_acle.h>

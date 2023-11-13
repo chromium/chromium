@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/compressed_pointer.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/compressed_pointer.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/stack_trace.h"
+#include "partition_alloc/partition_alloc_base/debug/stack_trace.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 
 namespace partition_alloc::internal::base::debug {
 

@@ -37,8 +37,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREAD_ANNOTATIONS_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREAD_ANNOTATIONS_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 
 #if defined(__clang__)
 #define PA_THREAD_ANNOTATION_ATTRIBUTE__(x) __attribute__((x))

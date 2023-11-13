@@ -5,8 +5,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_STARSCAN_STATS_REPORTER_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_STARSCAN_STATS_REPORTER_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/stats_collector.h"
+#include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
+#include "partition_alloc/starscan/stats_collector.h"
 
 namespace partition_alloc {
 

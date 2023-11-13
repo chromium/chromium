@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_hookable_impl.h"
+#include "partition_alloc/pointers/raw_ptr_hookable_impl.h"
 
 #include <atomic>
 #include <cstdint>

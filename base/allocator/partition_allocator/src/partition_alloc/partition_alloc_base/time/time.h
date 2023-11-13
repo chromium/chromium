@@ -68,14 +68,14 @@
 #include <iosfwd>
 #include <limits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/chromeos_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/clamped_math.h"
 #include "build/build_config.h"
+#include "partition_alloc/chromeos_buildflags.h"
+#include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/numerics/clamped_math.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -99,7 +99,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/win/windows_types.h"
+#include "partition_alloc/partition_alloc_base/win/windows_types.h"
 
 namespace ABI {
 namespace Windows {

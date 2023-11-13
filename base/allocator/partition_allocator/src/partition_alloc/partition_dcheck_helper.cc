@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_dcheck_helper.h"
+#include "partition_alloc/partition_dcheck_helper.h"
 
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_bucket.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
+#include "partition_alloc/partition_bucket.h"
+#include "partition_alloc/partition_page.h"
+#include "partition_alloc/partition_root.h"
 
 namespace partition_alloc::internal {
 

@@ -7,7 +7,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
 
 namespace partition_alloc::internal::base::apple {
 

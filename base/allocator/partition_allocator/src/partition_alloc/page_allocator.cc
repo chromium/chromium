@@ -2,29 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
+#include "partition_alloc/page_allocator.h"
 
 #include <atomic>
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/address_space_randomization.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_internal.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_lock.h"
 #include "build/build_config.h"
+#include "partition_alloc/address_space_randomization.h"
+#include "partition_alloc/page_allocator_internal.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
+#include "partition_alloc/partition_alloc_base/thread_annotations.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_lock.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_internals_win.h"
+#include "partition_alloc/page_allocator_internals_win.h"
 #elif BUILDFLAG(IS_POSIX)
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_internals_posix.h"
+#include "partition_alloc/page_allocator_internals_posix.h"
 #elif BUILDFLAG(IS_FUCHSIA)
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_internals_fuchsia.h"
+#include "partition_alloc/page_allocator_internals_fuchsia.h"
 #else
 #error Platform not supported.
 #endif

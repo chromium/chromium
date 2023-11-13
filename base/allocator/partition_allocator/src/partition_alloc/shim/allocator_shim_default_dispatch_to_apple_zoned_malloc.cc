@@ -4,9 +4,9 @@
 
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/malloc_zone_functions_apple.h"
+#include "partition_alloc/shim/allocator_interception_apple.h"
+#include "partition_alloc/shim/allocator_shim.h"
+#include "partition_alloc/shim/malloc_zone_functions_apple.h"
 
 namespace allocator_shim {
 namespace {

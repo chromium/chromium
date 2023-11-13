@@ -5,11 +5,11 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_THREAD_ISOLATION_ALIGNMENT_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_THREAD_ISOLATION_ALIGNMENT_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_constants.h"
+#include "partition_alloc/page_allocator_constants.h"
 
 #define PA_THREAD_ISOLATED_ALIGN_SZ partition_alloc::internal::SystemPageSize()
 #define PA_THREAD_ISOLATED_ALIGN_OFFSET_MASK (PA_THREAD_ISOLATED_ALIGN_SZ - 1)
