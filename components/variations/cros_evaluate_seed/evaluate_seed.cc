@@ -86,19 +86,19 @@ std::unique_ptr<ClientFilterableState> GetClientFilterableState() {
   return state;
 }
 
-absl::optional<SafeSeed> GetSafeSeedData(FILE* stream) {
+std::optional<SafeSeed> GetSafeSeedData(FILE* stream) {
   featured::SeedDetails safe_seed;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(kSafeSeedSwitch)) {
     // Read safe seed from |stream|.
     std::string safe_seed_data;
     if (!base::ReadStreamToString(stream, &safe_seed_data)) {
       PLOG(ERROR) << "Failed to read from stream:";
-      return absl::nullopt;
+      return std::nullopt;
     }
     // Parse safe seed.
     if (!safe_seed.ParseFromString(safe_seed_data)) {
       LOG(ERROR) << "Failed to parse proto from input";
-      return absl::nullopt;
+      return std::nullopt;
     }
     return SafeSeed{true, safe_seed};
   }
@@ -106,7 +106,7 @@ absl::optional<SafeSeed> GetSafeSeedData(FILE* stream) {
 }
 
 int EvaluateSeedMain(FILE* stream) {
-  absl::optional<SafeSeed> safe_seed = GetSafeSeedData(stream);
+  std::optional<SafeSeed> safe_seed = GetSafeSeedData(stream);
   if (!safe_seed.has_value()) {
     LOG(ERROR) << "Failed to read seed from stdin";
     return EXIT_FAILURE;

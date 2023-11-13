@@ -6,6 +6,7 @@
 #define COMPONENTS_VARIATIONS_CROS_EVALUATE_SEED_EVALUATE_SEED_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include <stdio.h>
@@ -14,7 +15,6 @@
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/service/variations_service_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations::cros_early_boot::evaluate_seed {
 
@@ -54,7 +54,7 @@ struct SafeSeed {
 
 // Read the safe seed data from |stream|, if and only if the command-line
 // indicates that we should use the safe seed.
-absl::optional<SafeSeed> GetSafeSeedData(FILE* stream);
+std::optional<SafeSeed> GetSafeSeedData(FILE* stream);
 
 // Evaluate the seed state, writing serialized computed output to stdout.
 // Reads a proto from |stream| for data like safe seed.

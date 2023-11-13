@@ -8,7 +8,6 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #include "components/variations/variations_safe_seed_store.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations::cros_early_boot::evaluate_seed {
 
