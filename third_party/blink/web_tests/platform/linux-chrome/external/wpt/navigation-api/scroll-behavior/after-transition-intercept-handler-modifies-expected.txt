@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] scroll: state should be saved before intercept handlers run
+  assert_equals: expected 100 but got 1100
+Harness: the test ran to completion.
+

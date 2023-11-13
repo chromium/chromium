@@ -7068,7 +7068,13 @@ crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/anima
 crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-position-valid.html [ Failure ]
 
 # Chrome specific failures
+crbug.com/1499775 [ Chrome ] external/wpt/document-policy/font-display/override-to-optional.tentative.html [ Failure ]
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-layout-api/fallback-layout/constructor-error.https.html [ Failure ]
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/initial-letter/initial-letter-block-position-drop-over-ruby.html [ Failure ]
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/initial-letter/initial-letter-block-position-margins.html [ Failure ]
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-ruby/ruby-text-combine-upright-001b.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-backgrounds/background-image-centered-with-border-radius.html [ Failure ]
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/initial-letter/Initial-letter-breaking.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/initial-letter/Initial-letter-breaking-vlr.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/initial-letter/Initial-letter-breaking-vrl.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/initial-letter/initial-letter-block-position-raise-under-ruby.html [ Failure ]
@@ -7086,6 +7092,7 @@ crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/highlight-painting-003.
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/highlight-painting-004.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-ruby/ruby-text-combine-upright-002a.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-shapes/shape-outside/values/shape-outside-ellipse-004.html [ Failure ]
+crbug.com/1499775 [ Chrome ] external/wpt/css/printing/input-file-print.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/mathml/presentation-markup/operators/operator-dictionary-arabic-002.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/svg/linking/reftests/view-viewbox-override.html [ Failure ]
 crbug.com/1499775 [ Chrome ] wpt_internal/css/css-pseudo/spelling-error-color-001.html [ Failure ]
@@ -7189,6 +7196,7 @@ crbug.com/1499775 [ Chrome ] external/wpt/css/css-masking/clip-path/clip-path-in
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-masking/clip-path/clip-path-inline-001.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-masking/clip-path/clip-path-inline-004.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-masking/clip-path/clip-path-inline-010.html [ Failure ] # pass on wpt.fyi
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-masking/clip-path/clip-path-reference-box-004.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-masking/mask-image/mask-opacity-1e.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-multicol/multicol-fill-auto-block-children-002.xht [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-multicol/multicol-width-ch-001.xht [ Failure ]  # Reftest image failure
