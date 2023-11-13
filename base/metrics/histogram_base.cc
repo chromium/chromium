@@ -159,8 +159,6 @@ uint32_t HistogramBase::FindCorruption(const HistogramSamples& samples) const {
   return NO_INCONSISTENCIES;
 }
 
-void HistogramBase::ValidateHistogramContents() const {}
-
 void HistogramBase::WriteJSON(std::string* output,
                               JSONVerbosityLevel verbosity_level) const {
   CountAndBucketData count_and_bucket_data = GetCountAndBucketData();
