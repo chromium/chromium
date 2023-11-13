@@ -120,6 +120,8 @@ void EligibilityService::MarkProfileEligibility(bool is_client_eligible) {
     } else {
       onboarding_service_->MaybeMarkIneligible();
     }
+    MaybeNotifyManagerTrackingProtectionOnboarded(
+        onboarding_service_->GetOnboardingStatus());
   }
 }
 
@@ -152,7 +154,17 @@ void EligibilityService::OnTrackingProtectionOnboardingUpdated(
   if (!kDisable3PCookies.Get()) {
     return;
   }
+  MaybeNotifyManagerTrackingProtectionOnboarded(onboarding_status);
   UpdateCookieDeprecationLabel();
+}
+
+void EligibilityService::MaybeNotifyManagerTrackingProtectionOnboarded(
+    privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus
+        onboarding_status) {
+  if (onboarding_status == privacy_sandbox::TrackingProtectionOnboarding::
+                               OnboardingStatus::kOnboarded) {
+    experiment_manager_->NotifyProfileTrackingProtectionOnboarded();
+  }
 }
 
 }  // namespace tpcd::experiment

@@ -31,6 +31,9 @@ class ExperimentManager {
 
   // Returns whether the experiment version has changed.
   virtual bool DidVersionChange() const = 0;
+
+  // Notifies the manager that a profile has onboarded tracking protection.
+  virtual void NotifyProfileTrackingProtectionOnboarded() = 0;
 };
 
 }  // namespace tpcd::experiment
