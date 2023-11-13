@@ -132,6 +132,7 @@ MouseEventManager::MouseEventManager(LocalFrame& frame,
 
 void MouseEventManager::Clear() {
   element_under_mouse_ = nullptr;
+  original_element_under_mouse_removed_ = false;
   mouse_press_node_ = nullptr;
   mouse_down_may_start_autoscroll_ = false;
   mouse_down_may_start_drag_ = false;
@@ -194,11 +195,13 @@ void MouseEventManager::MouseEventBoundaryEventDispatcher::Dispatch(
 }
 
 void MouseEventManager::SendBoundaryEvents(EventTarget* exited_target,
+                                           bool original_exited_target_removed,
                                            EventTarget* entered_target,
                                            const WebMouseEvent& mouse_event) {
   MouseEventBoundaryEventDispatcher boundary_event_dispatcher(this,
                                                               &mouse_event);
-  boundary_event_dispatcher.SendBoundaryEvents(exited_target, entered_target);
+  boundary_event_dispatcher.SendBoundaryEvents(
+      exited_target, original_exited_target_removed, entered_target);
 }
 
 WebInputEventResult MouseEventManager::DispatchMouseEvent(
@@ -277,6 +280,9 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
   return input_event_result;
 }
 
+// TODO(https://crbug.com/1147674): This bypasses PointerEventManager states!
+// This method is called only from GestureManager, and that's one of the reasons
+// PointerEvents are incomplete for touch gesture.
 WebInputEventResult MouseEventManager::SetMousePositionAndDispatchMouseEvent(
     Element* target_element,
     const AtomicString& event_type,
@@ -397,8 +403,17 @@ bool MouseEventManager::HoverStateDirty() {
 void MouseEventManager::SetElementUnderMouse(
     Element* target,
     const WebMouseEvent& web_mouse_event) {
+  CHECK(
+      !original_element_under_mouse_removed_ ||
+      RuntimeEnabledFeatures::BoundaryEventDispatchTracksNodeRemovalEnabled());
+
   Element* last_element_under_mouse = element_under_mouse_;
+  bool original_last_element_under_mouse_removed =
+      original_element_under_mouse_removed_;
+
   element_under_mouse_ = target;
+  // Clear the "removed" state for the updated `element_under_mouse_`.
+  original_element_under_mouse_removed_ = false;
 
   // TODO(mustaq): Why do we need the `ScrollableArea` code below and not in
   // `PointerEventManager::SetElementUnderPointer()`?
@@ -432,11 +447,15 @@ void MouseEventManager::SetElementUnderMouse(
     last_element_under_mouse = nullptr;
   }
 
-  SendBoundaryEvents(last_element_under_mouse, element_under_mouse_,
-                     web_mouse_event);
+  SendBoundaryEvents(last_element_under_mouse,
+                     original_last_element_under_mouse_removed,
+                     element_under_mouse_, web_mouse_event);
 }
 
 void MouseEventManager::NodeChildrenWillBeRemoved(ContainerNode& container) {
+  if (RuntimeEnabledFeatures::BoundaryEventDispatchTracksNodeRemovalEnabled()) {
+    return;
+  }
   if (container == click_element_)
     return;
   if (!click_element_ ||
@@ -458,6 +477,13 @@ void MouseEventManager::NodeWillBeRemoved(Node& node_to_be_removed) {
     // If the mouse_press_node_ is removed, we should dispatch future default
     // keyboard actions (i.e. scrolling) to the still connected parent.
     mouse_press_node_ = node_to_be_removed.parentNode();
+  }
+  if (RuntimeEnabledFeatures::BoundaryEventDispatchTracksNodeRemovalEnabled() &&
+      element_under_mouse_ &&
+      node_to_be_removed.IsShadowIncludingInclusiveAncestorOf(
+          *element_under_mouse_)) {
+    element_under_mouse_ = node_to_be_removed.parentElement();
+    original_element_under_mouse_removed_ = true;
   }
 }
 
@@ -1150,6 +1176,10 @@ Element* MouseEventManager::ClickElement() {
 }
 
 void MouseEventManager::SetClickElement(Element* element) {
+  // TODO(mustaq): Why is SetDocument() not called earlier at
+  // LocalFrame::DidAttachDocument()?  Because this is delayed call, the methods
+  // MouseEventManager::WillBeRemoved() are not called until a mouse-press or
+  // tap!
   SetDocument(element ? element->ownerDocument() : nullptr);
   click_element_ = element;
 }
