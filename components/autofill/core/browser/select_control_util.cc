@@ -76,7 +76,7 @@ std::optional<std::u16string> GetSelectControlValue(
     return std::nullopt;
   }
 
-  return best_match;
+  return std::move(best_match);
 }
 
 std::optional<std::u16string> GetSelectControlValueSubstringMatch(

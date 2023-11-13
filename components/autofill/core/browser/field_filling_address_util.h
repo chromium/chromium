@@ -24,11 +24,12 @@ std::optional<std::u16string> GetValueForProfile(
     const AutofillType& field_type,
     const FormFieldData* field_data,
     AddressNormalizer* address_normalizer,
-    std::string* failure_to_fill);
+    std::string* failure_to_fill = nullptr);
 
 // Returns the phone number value for the given `field_max_length`. The
 // returned value might be `number`, or `city_and_number`, or could possibly
 // be a meaningful subset `number`, if that's appropriate for the field.
+// TODO(crbug.com/1495294): Move to anonymous namespace in source file.
 std::u16string GetPhoneNumberValueForInput(
     uint64_t field_max_length,
     const std::u16string& number,

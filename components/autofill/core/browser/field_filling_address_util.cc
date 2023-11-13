@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/field_filling_address_util.h"
 
+#include <optional>
+
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -266,10 +268,11 @@ std::u16string GetStreetAddressForInput(
 // The canonical state is checked if it fits in the field and at last the
 // abbreviations are tried. Does not return a state if neither |state_value| nor
 // the canonical state name nor its abbreviation fit into the field.
-std::u16string GetStateTextForInput(const std::u16string& state_value,
-                                    const std::string& country_code,
-                                    uint64_t field_max_length,
-                                    std::string* failure_to_fill) {
+std::optional<std::u16string> GetStateTextForInput(
+    const std::u16string& state_value,
+    const std::string& country_code,
+    uint64_t field_max_length,
+    std::string* failure_to_fill) {
   if (field_max_length == 0 || field_max_length >= state_value.size()) {
     // Return the state value directly.
     return state_value;
@@ -300,14 +303,14 @@ std::u16string GetStateTextForInput(const std::u16string& state_value,
   if (failure_to_fill) {
     *failure_to_fill += "Could not fit raw state nor abbreviation. ";
   }
-  return std::u16string();
+  return std::nullopt;
 }
 
 // Finds the best suitable option in the `field` that corresponds to the
 // `country_code`.
 // If the exact match is not found, extracts the digits (ignoring leading '00'
 // or '+') from each option and compares them with the `country_code`.
-std::u16string GetPhoneCountryCodeSelectControlForInput(
+std::optional<std::u16string> GetPhoneCountryCodeSelectControlForInput(
     const std::u16string& country_code,
     base::span<const SelectOption> field_options,
     std::string* failure_to_fill) {
@@ -330,16 +333,20 @@ std::u16string GetPhoneCountryCodeSelectControlForInput(
       return option.value;
     }
   }
-  return {};
+  if (failure_to_fill) {
+    *failure_to_fill += "Could not match to formatted country code options. ";
+  }
+  return std::nullopt;
 }
 
 // Returns the appropriate `profile` value based on `field_type` to fill
 // into the input `field`.
-std::u16string GetValueForProfileForInput(const AutofillProfile& profile,
-                                          const std::string& app_locale,
-                                          const AutofillType& field_type,
-                                          const FormFieldData* field_data,
-                                          std::string* failure_to_fill) {
+std::optional<std::u16string> GetValueForProfileForInput(
+    const AutofillProfile& profile,
+    const std::string& app_locale,
+    const AutofillType& field_type,
+    const FormFieldData* field_data,
+    std::string* failure_to_fill) {
   const std::u16string value = profile.GetInfo(field_type, app_locale);
   if (field_type.group() == FieldTypeGroup::kPhone) {
     return field_data->IsSelectOrSelectListElement() &&
@@ -359,7 +366,7 @@ std::u16string GetValueForProfileForInput(const AutofillProfile& profile,
         value, data_util::GetCountryCodeWithFallback(profile, app_locale),
         field_data->max_length, failure_to_fill);
   }
-  return value;
+  return std::move(value);
 }
 
 std::optional<std::u16string> GetValueForProfileSelectControl(
@@ -396,12 +403,12 @@ std::optional<std::u16string> GetValueForProfile(
     const FormFieldData* field_data,
     AddressNormalizer* address_normalizer,
     std::string* failure_to_fill) {
-  const std::u16string value = GetValueForProfileForInput(
+  std::optional<std::u16string> value = GetValueForProfileForInput(
       profile, app_locale, field_type, field_data, failure_to_fill);
 
-  return field_data->IsSelectOrSelectListElement()
+  return value && field_data->IsSelectOrSelectListElement()
              ? GetValueForProfileSelectControl(
-                   profile, value, app_locale, field_data->options,
+                   profile, *value, app_locale, field_data->options,
                    field_type.GetStorableType(), address_normalizer,
                    failure_to_fill)
              : value;
@@ -411,26 +418,23 @@ std::u16string GetPhoneNumberValueForInput(
     uint64_t field_max_length,
     const std::u16string& number,
     const std::u16string& city_and_number) {
-  // If no max length was specified, return the complete number.
-  if (field_max_length == 0) {
+  // If the complete `number` fits into the field return it as is.
+  // `field_max_length == 0` means that there's no size limit.
+  if (field_max_length == 0 || field_max_length >= number.length()) {
     return number;
   }
 
-  if (number.length() > field_max_length) {
-    // Try after removing the country code, if |number| exceeds the maximum size
-    // of the field.
-    if (city_and_number.length() <= field_max_length) {
-      return city_and_number;
-    }
-
-    // If `number` exceeds the maximum size of the field, cut the first part to
-    // provide a valid number for the field. For example, the number 15142365264
-    // with a field with a max length of 10 would return 5142365264, thus
-    // filling in the last `field_data.max_length` characters from the `number`.
-    return number.substr(number.length() - field_max_length, field_max_length);
+  // Try after removing the country code, if `number` exceeds the maximum size
+  // of the field.
+  if (city_and_number.length() <= field_max_length) {
+    return city_and_number;
   }
 
-  return number;
+  // If `number` exceeds the maximum size of the field, cut the first part to
+  // provide a valid number for the field. For example, the number 15142365264
+  // with a field with a max length of 10 would return 5142365264, thus
+  // filling in the last `field_data.max_length` characters from the `number`.
+  return number.substr(number.length() - field_max_length, field_max_length);
 }
 
 }  // namespace autofill

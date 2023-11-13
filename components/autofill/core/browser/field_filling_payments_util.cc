@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/field_filling_payments_util.h"
 
+#include <optional>
+
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
@@ -332,9 +334,10 @@ std::u16string GetExpirationYearForVirtualCardPreviewInput(
 // string, the function follows that format. Otherwise, it uses the `field`'s
 // max_length attribute to determine if the `value` needs to be truncated or
 // padded. Returns an empty string in case of a failure.
-std::u16string GetExpirationDateForInput(const CreditCard& credit_card,
-                                         const AutofillField& field,
-                                         std::string* failure_to_fill) {
+std::optional<std::u16string> GetExpirationDateForInput(
+    const CreditCard& credit_card,
+    const AutofillField& field,
+    std::string* failure_to_fill) {
   std::u16string mm = credit_card.Expiration2DigitMonthAsString();
   std::u16string yy = credit_card.Expiration2DigitYearAsString();
   std::u16string yyyy = credit_card.Expiration4DigitYearAsString();
@@ -369,14 +372,14 @@ std::u16string GetExpirationDateForInput(const CreditCard& credit_card,
       *failure_to_fill +=
           "Field to fill must have a max length of at least 4. ";
     }
-    return {};
+    return std::nullopt;
   }
-  return expiration_candidate;
+  return std::move(expiration_candidate);
 }
 
 // Returns the appropriate virtual_card expiration date from for the field based
 // on the `field`'s max_length. Returns an empty string in case of a failure.
-std::u16string GetExpirationDateForVirtualCardPreviewInput(
+std::optional<std::u16string> GetExpirationDateForVirtualCardPreviewInput(
     uint64_t field_max_length,
     std::string* failure_to_fill) {
   switch (field_max_length) {
@@ -387,7 +390,7 @@ std::u16string GetExpirationDateForVirtualCardPreviewInput(
         *failure_to_fill +=
             "Field to fill must have a max length of at least 4. ";
       }
-      return {};
+      return std::nullopt;
     case 4:
       // Expects MMYY
       return CreditCard::GetMidlineEllipsisDots(4);
@@ -408,7 +411,7 @@ std::u16string GetExpirationDateForVirtualCardPreviewInput(
 
 // Returns the appropriate `credit_card` value based on `field`'s type to fill
 // into the input `field`.
-std::u16string GetValueForCreditCardForInput(
+std::optional<std::u16string> GetValueForCreditCardForInput(
     const CreditCard& credit_card,
     const std::u16string& cvc,
     const std::string& app_locale,
@@ -442,7 +445,7 @@ std::u16string GetValueForCreditCardForInput(
 
 // Returns the appropriate `virtual_card` value based on the type of `field` to
 // preview into `field`.
-std::u16string GetValueForVirtualCardInputPreview(
+std::optional<std::u16string> GetValueForVirtualCardInputPreview(
     const CreditCard& virtual_card,
     const std::string& app_locale,
     const AutofillField& field,
@@ -505,7 +508,7 @@ std::optional<std::u16string> GetValueForCreditCard(
     mojom::ActionPersistence action_persistence,
     const AutofillField& field,
     std::string* failure_to_fill) {
-  const std::u16string value =
+  std::optional<std::u16string> value =
       credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
               action_persistence == mojom::ActionPersistence::kPreview
           ? GetValueForVirtualCardInputPreview(credit_card, app_locale, field,
@@ -514,8 +517,8 @@ std::optional<std::u16string> GetValueForCreditCard(
                                           action_persistence, field,
                                           failure_to_fill);
 
-  return field.IsSelectOrSelectListElement()
-             ? GetValueForCreditCardSelectControl(value, app_locale, field,
+  return value && field.IsSelectOrSelectListElement()
+             ? GetValueForCreditCardSelectControl(*value, app_locale, field,
                                                   failure_to_fill)
              : value;
 }

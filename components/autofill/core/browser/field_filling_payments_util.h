@@ -23,7 +23,7 @@ std::optional<std::u16string> GetValueForCreditCard(
     const std::string& app_locale,
     mojom::ActionPersistence action_persistence,
     const AutofillField& field,
-    std::string* failure_to_fill);
+    std::string* failure_to_fill = nullptr);
 
 }  // namespace autofill
 
