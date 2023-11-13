@@ -72,4 +72,9 @@ bool IsFedCmAddAccountEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmAddAccount);
 }
 
+bool IsFedCmExemptIdpWithThirdPartyCookiesEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kFedCmExemptIdpWithThirdPartyCookies);
+}
+
 }  // namespace content

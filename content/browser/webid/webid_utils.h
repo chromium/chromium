@@ -20,6 +20,7 @@ namespace content {
 class BrowserContext;
 enum class FedCmIdpSigninStatusMode;
 class FedCmMetrics;
+class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 enum class IdpSigninStatus;
 
@@ -80,6 +81,13 @@ FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host,
 
 // Returns the eTLD+1 for a given url. For localhost, returns the host.
 std::string FormatUrlWithDomain(const GURL& url, bool for_display);
+
+// Returns true if the IdP has third-party cookies access on the RP top frame.
+bool IsIdpExempted(
+    RenderFrameHost& host,
+    const GURL& provider_url,
+    const url::Origin& embedder_origin,
+    FederatedIdentityApiPermissionContextDelegate* api_permission_delegate);
 
 }  // namespace webid
 

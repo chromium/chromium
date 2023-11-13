@@ -46,6 +46,25 @@ bool ShellFederatedPermissionContext::ShouldCompleteRequestImmediately() const {
   return switches::IsRunWebTestsSwitchPresent();
 }
 
+bool ShellFederatedPermissionContext::HasThirdPartyCookiesAccess(
+    content::RenderFrameHost& host,
+    const GURL& provider_url,
+    const url::Origin& relying_party_embedder) const {
+  return std::find_if(
+             has_third_party_cookies_access_.begin(),
+             has_third_party_cookies_access_.end(), [&](const auto& entry) {
+               return provider_url.spec() == std::get<0>(entry) &&
+                      relying_party_embedder.Serialize() == std::get<1>(entry);
+             }) != has_third_party_cookies_access_.end();
+}
+
+void ShellFederatedPermissionContext::SetHasThirdPartyCookiesAccessForTesting(
+    const std::string& identity_provider,
+    const std::string& relying_party_embedder) {
+  has_third_party_cookies_access_.insert(
+      std::pair(identity_provider, relying_party_embedder));
+}
+
 // FederatedIdentityAutoReauthnPermissionContextDelegate
 bool ShellFederatedPermissionContext::IsAutoReauthnSettingEnabled() {
   return auto_reauthn_permission_;

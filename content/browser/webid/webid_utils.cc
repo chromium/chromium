@@ -13,6 +13,7 @@
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/flags.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "content/public/common/web_identity.h"
 #include "net/base/net_errors.h"
@@ -334,6 +335,16 @@ std::string FormatUrlWithDomain(const GURL& url, bool for_display) {
   return base::UTF16ToUTF8(url_formatter::FormatUrl(
       GURL(url.scheme() + "://" + formatted_url_str), types,
       base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+}
+
+bool IsIdpExempted(
+    RenderFrameHost& host,
+    const GURL& provider_url,
+    const url::Origin& embedder_origin,
+    FederatedIdentityApiPermissionContextDelegate* api_permission_delegate) {
+  return IsFedCmExemptIdpWithThirdPartyCookiesEnabled() &&
+         api_permission_delegate->HasThirdPartyCookiesAccess(host, provider_url,
+                                                             embedder_origin);
 }
 
 }  // namespace content::webid

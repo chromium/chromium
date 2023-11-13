@@ -275,6 +275,10 @@ class WebIdBrowserTest : public ContentBrowserTest {
            base::NumberToString(https_server().port()) + "/fedcm.json";
   }
 
+  std::string BaseRpUrl() {
+    return https_server().GetOrigin(kRpHostName).Serialize();
+  }
+
   std::string GetBasicRequestString() {
     return R"(
         (async () => {
@@ -310,7 +314,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
   IdpTestServer* idp_server() { return idp_server_.get(); }
 
   void SetTestIdentityRequestDialogController(
-      const std::string& dialog_selected_account) {
+      absl::optional<std::string> dialog_selected_account) {
     auto controller = std::make_unique<FakeIdentityRequestDialogController>(
         dialog_selected_account);
     test_browser_client_->SetIdentityRequestDialogController(
@@ -401,6 +405,23 @@ class WebIdAuthzBrowserTest : public WebIdBrowserTest {
     scoped_feature_list_.InitWithFeatures(features, {});
 
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+};
+
+class WebIdExemptIdpBrowserTest : public WebIdBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    std::vector<base::test::FeatureRef> features;
+    features.push_back(features::kFedCmExemptIdpWithThirdPartyCookies);
+    scoped_feature_list_.InitWithFeatures(features, {});
+
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+
+  ShellFederatedPermissionContext* sharing_context() {
+    BrowserContext* context = shell()->web_contents()->GetBrowserContext();
+    return static_cast<ShellFederatedPermissionContext*>(
+        context->GetFederatedIdentityPermissionContext());
   }
 };
 
@@ -1061,6 +1082,26 @@ IN_PROC_BROWSER_TEST_F(WebIdErrorBrowserTest, IdentityCredentialError) {
       "a JavaScript error: \"IdentityCredentialError: Error "
       "retrieving a token.\"\n";
   EXPECT_EQ(expected_error, EvalJs(shell(), GetBasicRequestString()).error);
+}
+
+// Verify that auto re-authn can be triggered if the Rp is on the
+// approved_clients list and the IdP has third party cookies access.
+IN_PROC_BROWSER_TEST_F(WebIdExemptIdpBrowserTest,
+                       IdpHas3PCAccessAndAddsRPInApprovedClients) {
+  // Does not manually select any account. If auto re-authn is not triggered,
+  // the test will time out.
+  SetTestIdentityRequestDialogController(
+      /*dialog_selected_account=*/absl::nullopt);
+
+  // The client id `client_id_1` is on the `approved_clients` list defined in
+  // content/test/data/fedcm/accounts_endpoint.json so by exempting the IdP from
+  // the check, auto re-authn can be triggered and a token can be returned.
+  sharing_context()->SetHasThirdPartyCookiesAccessForTesting(BaseIdpUrl(),
+                                                             BaseRpUrl());
+
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+
+  EXPECT_EQ(std::string(kToken), EvalJs(shell(), GetBasicRequestString()));
 }
 
 }  // namespace content

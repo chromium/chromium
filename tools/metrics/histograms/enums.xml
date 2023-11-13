@@ -38259,6 +38259,7 @@ from previous Chrome versions.
   <int value="-1399525696"
       label="AutofillShowManualFallbackInContextMenu:enabled"/>
   <int value="-1399419572" label="enable-app-list"/>
+  <int value="-1398085246" label="FedCmExemptIdpWithThirdPartyCookies:enabled"/>
   <int value="-1397387245" label="CompactBubbleLauncher:disabled"/>
   <int value="-1396974542" label="UserMediaScreenCapturing:enabled"/>
   <int value="-1396906019" label="EarlyExitOnNoopClassOrStyleChange:disabled"/>
@@ -39172,6 +39173,7 @@ from previous Chrome versions.
   <int value="-970201112"
       label="AutofillEnableDependentLocalityParsing:enabled"/>
   <int value="-970067535" label="BackgroundTaskComponentUpdate:disabled"/>
+  <int value="-969534951" label="FedCmExemptIdpWithThirdPartyCookies:disabled"/>
   <int value="-969332901" label="stop-non-timers-in-background:disabled"/>
   <int value="-969028093" label="FullRestore:disabled"/>
   <int value="-968896078" label="AllowWgcScreenCapturer:enabled"/>

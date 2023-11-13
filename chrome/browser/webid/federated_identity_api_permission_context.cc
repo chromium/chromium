@@ -11,7 +11,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
+#include "net/cookies/site_for_cookies.h"
 #include "url/origin.h"
 
 using PermissionStatus =
@@ -83,4 +85,16 @@ void FederatedIdentityApiPermissionContext::RemoveEmbargoAndResetCounts(
   permission_autoblocker_->RemoveEmbargoAndResetCounts(
       relying_party_embedder.GetURL(),
       ContentSettingsType::FEDERATED_IDENTITY_API);
+}
+
+bool FederatedIdentityApiPermissionContext::HasThirdPartyCookiesAccess(
+    content::RenderFrameHost& host,
+    const GURL& provider_url,
+    const url::Origin& relying_party_embedder) const {
+  return cookie_settings_->IsFullCookieAccessAllowed(
+      /*request_url=*/provider_url,
+      /*first_party_url=*/
+      net::SiteForCookies::FromOrigin(relying_party_embedder),
+      /*top_frame_origin=*/relying_party_embedder,
+      host.GetCookieSettingOverrides());
 }

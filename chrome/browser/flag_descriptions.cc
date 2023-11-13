@@ -1663,14 +1663,22 @@ const char kFedCmAutoSelectedFlagDescription[] =
     "auto-selected with developers post user permission to continue with the "
     "IdP.";
 
-const char kFedCmErrorName[] = "FedCmError";
-const char kFedCmErrorDescription[] =
-    "Enables IDPs to show information about an error.";
-
 const char kFedCmDomainHintName[] = "FedCmDomainHint";
 const char kFedCmDomainHintDescription[] =
     "Enables RPs to request only FedCM invocations to only show accounts "
     "matching a given domain.";
+
+const char kFedCmErrorName[] = "FedCmError";
+const char kFedCmErrorDescription[] =
+    "Enables IDPs to show information about an error.";
+
+const char kFedCmExemptIdpWithThirdPartyCookiesName[] =
+    "FedCmExemptIdPWithThirdPartyCookies";
+const char kFedCmExemptIdpWithThirdPartyCookiesDescription[] =
+    "Exempts the IdP if they have third-party cookies access on the RP site. "
+    "For example, when the IdP claims that a user has created an account on "
+    "the said RP with the IdP, the browser can trust that and treat the user "
+    "as a returning user.";
 
 const char kFedCmIdPRegistrationName[] = "FedCM with IdP Registration support";
 const char kFedCmIdPRegistrationDescription[] =

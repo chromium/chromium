@@ -40,6 +40,10 @@ class ShellFederatedPermissionContext
   void RemoveEmbargoAndResetCounts(
       const url::Origin& relying_party_embedder) override;
   bool ShouldCompleteRequestImmediately() const override;
+  bool HasThirdPartyCookiesAccess(
+      content::RenderFrameHost& host,
+      const GURL& provider_url,
+      const url::Origin& relying_party_embedder) const override;
 
   // FederatedIdentityAutoReauthnPermissionContextDelegate
   bool IsAutoReauthnSettingEnabled() override;
@@ -87,6 +91,10 @@ class ShellFederatedPermissionContext
     idp_signin_status_closure_ = std::move(closure);
   }
 
+  void SetHasThirdPartyCookiesAccessForTesting(
+      const std::string& identity_provider,
+      const std::string& relying_party_embedder);
+
  private:
   // Pairs of <RP embedder, IDP>
   std::set<std::pair<std::string, std::string>> request_permissions_;
@@ -95,6 +103,8 @@ class ShellFederatedPermissionContext
       sharing_permissions_;
   // Map of <IDP, IDPSigninStatus>
   std::map<std::string, absl::optional<bool>> idp_signin_status_;
+  // Pairs of <IDP, RP embedder>
+  std::set<std::pair<std::string, std::string>> has_third_party_cookies_access_;
 
   base::ObserverList<IdpSigninStatusObserver> idp_signin_status_observer_list_;
   base::RepeatingClosure idp_signin_status_closure_;

@@ -53,6 +53,9 @@ bool IsFedCmRevokeEnabled();
 // Whether "Add Account" is enabled.
 bool IsFedCmAddAccountEnabled();
 
+// Whether the ExemptIdpWithThirdPartyCookies feature is enabled.
+bool IsFedCmExemptIdpWithThirdPartyCookiesEnabled();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

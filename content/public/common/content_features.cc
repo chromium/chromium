@@ -378,6 +378,12 @@ BASE_FEATURE(kFedCmDomainHint,
 // ChromeStatus entry: https://chromestatus.com/feature/5384360374566912
 BASE_FEATURE(kFedCmError, "FedCmError", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allows browser to exempt the IdP if they have third-party-cookies access on
+// the RP site.
+BASE_FEATURE(kFedCmExemptIdpWithThirdPartyCookies,
+             "FedCmExemptIdpWithThirdPartyCookies",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables usage of the FedCM IdP Registration API.
 BASE_FEATURE(kFedCmIdPRegistration,
              "FedCmIdPregistration",

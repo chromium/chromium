@@ -934,11 +934,14 @@ extern const char kFedCmAuthzDescription[];
 extern const char kFedCmAutoSelectedFlagName[];
 extern const char kFedCmAutoSelectedFlagDescription[];
 
+extern const char kFedCmDomainHintName[];
+extern const char kFedCmDomainHintDescription[];
+
 extern const char kFedCmErrorName[];
 extern const char kFedCmErrorDescription[];
 
-extern const char kFedCmDomainHintName[];
-extern const char kFedCmDomainHintDescription[];
+extern const char kFedCmExemptIdpWithThirdPartyCookiesName[];
+extern const char kFedCmExemptIdpWithThirdPartyCookiesDescription[];
 
 extern const char kFedCmIdPRegistrationName[];
 extern const char kFedCmIdPRegistrationDescription[];

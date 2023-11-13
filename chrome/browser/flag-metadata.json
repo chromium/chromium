@@ -4061,6 +4061,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "fedcm-exempt-idp-with-third-party-cookies",
+    "owners": ["yigu@chromium.org", "web-identity-eng@google.com"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "fedcm-idp-registration",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 125

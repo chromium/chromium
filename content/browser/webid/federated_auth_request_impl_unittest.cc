@@ -2104,6 +2104,49 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 }
 
+// Test that if browser has not observed sign-in in the past, but the IdP has
+// third-party cookies access, the sign-in mode is set to auto if IdP claims
+// that the user is returning.
+TEST_F(FederatedAuthRequestImplTest,
+       AutoReauthnBrowserNotObservedSigninButIdpHasThirdPartyCookiesAccess) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmExemptIdpWithThirdPartyCookies);
+
+  // Pretend the sharing permission has not been granted for this account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull),
+                           Optional(std::string(kAccountId))))
+      .Times(2)
+      .WillRepeatedly(Return(false));
+
+  // Pretend the auto re-authn permission has been granted.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnSettingEnabled())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(false));
+
+  // Pretend the IdP was given third-party cookies access.
+  EXPECT_CALL(*test_api_permission_delegate_,
+              HasThirdPartyCookiesAccess(_, GURL(kProviderUrlFull),
+                                         OriginFromString(kRpUrl)))
+      .WillOnce(Return(true));
+
+  // Set IDP claims user is signed in.
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts[0].login_state =
+      LoginState::kSignIn;
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+
+  ASSERT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
+  EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kAuto);
+}
+
 // Test that auto re-authn for a first time user sets the sign-in mode to
 // explicit.
 TEST_F(FederatedAuthRequestImplTest, AutoReauthnForFirstTimeUser) {
