@@ -12,7 +12,6 @@
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/seed_response.h"
 #include "components/version_info/channel.h"
-#include "components/version_info/version_info.h"
 
 namespace network {
 class SharedURLLoaderFactory;

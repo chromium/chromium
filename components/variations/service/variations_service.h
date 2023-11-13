@@ -25,7 +25,6 @@
 #include "components/variations/variations_request_scheduler.h"
 #include "components/variations/variations_seed_simulator.h"
 #include "components/variations/variations_seed_store.h"
-#include "components/version_info/version_info.h"
 #include "components/web_resource/resource_request_allowed_notifier.h"
 #include "url/gurl.h"
 

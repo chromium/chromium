@@ -10,7 +10,7 @@
 
 #include "base/callback_list.h"
 #include "components/sync/base/model_type.h"
-#include "components/version_info/version_info.h"
+#include "components/version_info/channel.h"
 
 namespace syncer {
 

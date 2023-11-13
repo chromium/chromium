@@ -9,7 +9,7 @@
 #include <string>
 
 #include "components/security_interstitials/content/cert_logger.pb.h"
-#include "components/version_info/version_info.h"
+#include "components/version_info/channel.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verifier.h"
 #include "net/net_buildflags.h"

@@ -15,7 +15,6 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/local_device_info_provider.h"
-#include "components/version_info/version_info.h"
 
 namespace syncer {
 

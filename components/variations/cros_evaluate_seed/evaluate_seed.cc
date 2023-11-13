@@ -15,6 +15,7 @@
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/service/variations_field_trial_creator.h"
+#include "components/version_info/version_info.h"
 
 namespace variations::cros_early_boot::evaluate_seed {
 

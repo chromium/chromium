@@ -22,7 +22,6 @@
 #include "components/metrics/persistent_synthetic_trial_observer.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/version_info/android/channel_getter.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_process_host_creation_observer.h"

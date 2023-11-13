@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/network_time/network_time_tracker.h"
+#include "components/version_info/version_info.h"
 #include "crypto/crypto_buildflags.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/x509_certificate.h"

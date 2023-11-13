@@ -35,6 +35,7 @@ source_set("evaluate_seed_lib") {
     "//components/variations",
     "//components/variations/proto",
     "//components/variations/service",
+    "//components/version_info",
   ]
 
   # restrict to only other targets in this BUILD.gn file.
