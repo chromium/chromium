@@ -100,9 +100,7 @@ void TouchToFillPasswordGenerationController::OnGeneratedPasswordAccepted(
 }
 
 void TouchToFillPasswordGenerationController::OnGeneratedPasswordRejected() {
-  manual_filling_controller_->OnAccessoryActionAvailabilityChanged(
-      ShouldShowAction(true),
-      autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC);
+  // TODO (crbug.com/1495639) Trigger Keyboard Accessory here.
 }
 
 void TouchToFillPasswordGenerationController::AddSuppressShowingImeCallback() {

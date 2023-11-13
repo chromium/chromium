@@ -185,18 +185,6 @@ public class TouchToFillPasswordGenerationModuleTest {
     }
 
     @Test
-    public void testKeyboardIsDisplayedWhenPasswordRejected() {
-        ViewAndroidDelegate viewAndroidDelegate = ViewAndroidDelegate.createBasicDelegate(mContent);
-        when(mWebContents.getViewAndroidDelegate()).thenReturn(viewAndroidDelegate);
-
-        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
-
-        Button rejectPasswordButton = mContent.findViewById(R.id.reject_password_button);
-        rejectPasswordButton.performClick();
-        verify(mKeyboardVisibilityDelegate).showKeyboard(mContent);
-    }
-
-    @Test
     public void testKeyboardIsHiddenWhenBottomSheetIsDisplayed() {
         ViewAndroidDelegate viewAndroidDelegate = ViewAndroidDelegate.createBasicDelegate(mContent);
         when(mWebContents.getViewAndroidDelegate()).thenReturn(viewAndroidDelegate);
