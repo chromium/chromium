@@ -173,13 +173,13 @@ void ExpectSigninConsentHistogram(
   GREYAssertNil(error, @"Failed to record show count histogram");
 }
 
-void ExpectSyncConsentHistogram(
+void ExpectNoSyncConsentHistogram(
     signin_metrics::SigninAccountType signinAccountType) {
   NSError* error =
-      [MetricsAppInterface expectTotalCount:1
+      [MetricsAppInterface expectTotalCount:0
                                forHistogram:@"Signin.AccountType.SyncConsent"];
   GREYAssertNil(error, @"Failed to record show count histogram");
-  error = [MetricsAppInterface expectCount:1
+  error = [MetricsAppInterface expectCount:0
                                  forBucket:static_cast<int>(signinAccountType)
                               forHistogram:@"Signin.AccountType.SyncConsent"];
   GREYAssertNil(error, @"Failed to record show count histogram");
@@ -219,7 +219,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       [self isRunningTest:@selector
             (testSignInSwitchAccountsAndKeepDataSeparate)] ||
       [self isRunningTest:@selector(testSignInSwitchAccountsAndImportData)] ||
-      [self isRunningTest:@selector(testSignInDisconnectFromChromeManaged)] ||
       [self isRunningTest:@selector(testSignInCancelIdentityPicker)] ||
       [self isRunningTest:@selector(testSignInCancelAuthenticationFlow)] ||
       [self isRunningTest:@selector(testSignInCancelFromBookmarks)] ||
@@ -248,7 +247,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
             (MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn)] ||
       [self isRunningTest:@selector(testAddAccountAutomatically)] ||
       [self isRunningTest:@selector(testCancelFromSyncOffLink)] ||
-      [self isRunningTest:@selector(testSignInOneUser)] ||
       [self
           isRunningTest:@selector
           (testPrimaryAccountLabelUpdate_ReplaceSyncPromosWithSignInPromosDisabled
@@ -267,7 +265,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
             (testOpenSignInFromNTPWhenSyncDisabledByPolicy)] ||
       [self isRunningTest:@selector(testSwitchToSupervisedUser)] ||
       [self isRunningTest:@selector(testSignInFromNTPAndDeclineHistorySync)] ||
-      [self isRunningTest:@selector(testSignInFromNTPAndAcceptHistorySync)]) {
+      [self isRunningTest:@selector(testSignInFromNTPAndAcceptHistorySync)] ||
+      [self isRunningTest:@selector(testSignInDisconnectFromChromeManaged)] ||
+      [self isRunningTest:@selector(testSignInOneUser)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -295,9 +295,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that opening the sign-in screen from the Settings and signing in works
 // correctly when there is already an identity on the device.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
 - (void)testSignInOneUser {
   // Set up a fake identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -306,7 +303,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Check `fakeIdentity` is signed-in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   ExpectSigninConsentHistogram(signin_metrics::SigninAccountType::kRegular);
-  ExpectSyncConsentHistogram(signin_metrics::SigninAccountType::kRegular);
+  ExpectNoSyncConsentHistogram(signin_metrics::SigninAccountType::kRegular);
 }
 
 // Tests that opening the sign-in screen from the Settings and signing in works
@@ -447,13 +444,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that signing out of a managed account from the Settings works
 // correctly.
-// kReplaceSyncPromosWithSignInPromos is disabled.
 - (void)testSignInDisconnectFromChromeManaged {
   // Sign-in with a managed account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   ExpectSigninConsentHistogram(signin_metrics::SigninAccountType::kManaged);
-  ExpectSyncConsentHistogram(signin_metrics::SigninAccountType::kManaged);
+  ExpectNoSyncConsentHistogram(signin_metrics::SigninAccountType::kManaged);
 
   // Sign out.
   [SigninEarlGreyUI
