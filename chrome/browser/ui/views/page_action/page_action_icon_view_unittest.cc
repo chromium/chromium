@@ -128,9 +128,12 @@ class PageActionIconViewTest : public ChromeViewsTestBase {
     widget_->Show();
   }
   void TearDown() override {
+    ClearView();
     widget_.reset();
     ChromeViewsTestBase::TearDown();
   }
+
+  void ClearView() { view_ = nullptr; }
 
   TestPageActionIconView* view() { return view_; }
   views::Widget* widget() { return widget_.get(); }
@@ -138,7 +141,7 @@ class PageActionIconViewTest : public ChromeViewsTestBase {
 
  private:
   TestPageActionIconDelegate delegate_;
-  raw_ptr<TestPageActionIconView, DanglingUntriaged> view_;
+  raw_ptr<TestPageActionIconView> view_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
 };
 
@@ -169,6 +172,11 @@ TEST_F(PageActionIconViewTest, ShouldNotResetSlideAnimationWhenShowIcons) {
 
 TEST_F(PageActionIconViewTest, UsesIconImageIfAvailable) {
   auto delegate = TestPageActionIconDelegate();
+
+  // We're about to reset the 'ContentsView' of the Widget. As such
+  // we need to clear the reference to |view_| beforehand, otherwise
+  // it will become dangling.
+  ClearView();
   auto* icon_view = widget()->SetContentsView(
       std::make_unique<TestPageActionIconViewWithIconImage>(
           /*command_updater=*/nullptr,
