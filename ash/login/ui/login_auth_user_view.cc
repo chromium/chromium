@@ -1079,6 +1079,7 @@ void LoginAuthUserView::OnAuthSubmit(const std::u16string& password) {
 
 void LoginAuthUserView::OnAuthComplete(bool authenticated_by_pin,
                                        absl::optional<bool> auth_success) {
+  AuthEventsRecorder::Get()->OnAuthComplete(auth_success);
   bool failed = !auth_success.value_or(false);
   LOG(WARNING) << "crbug.com/1339004 : OnAuthComplete " << failed;
 

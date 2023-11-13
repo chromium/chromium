@@ -139,6 +139,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder
   // Report that the user submitted an auth method.
   void OnAuthSubmit();
 
+  // Report that the authentication is completed.
+  void OnAuthComplete(absl::optional<bool> auth_success);
+
   // Report that the user submitted the pin input field.
   void OnPinSubmit();
 
