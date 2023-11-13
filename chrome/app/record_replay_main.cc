@@ -259,14 +259,20 @@ static __attribute__((noinline)) void BusyWait() {
   while (x) {}
 }
 
-static bool RecordReplayRecordingDisabled() {
+static bool RecordReplayRecordingDisabled(bool cmdline_for_recording) {
   // When RECORD_REPLAY_DONT_RECORD is set we don't record.
   if (getenv("RECORD_REPLAY_DONT_RECORD")) {
     if (getenv("RECORD_REPLAY_WAIT_AT_DONT_RECORD"))
       BusyWait();
     return true;
   }
-  return false;
+  if (getenv("RECORD_ALL_CONTENT")) {
+    return false;
+  }
+  if (cmdline_for_recording) {
+    return false;
+  }
+  return true;
 }
 
 // Return whether the current process should be recorded. May update the arguments.
@@ -282,7 +288,8 @@ static bool RecordReplayShouldRecord(int* pargc, const char*** pargv) {
   if (type.length()) {
     // Only renderer processes are recorded/replayed.
     if (type == "renderer") {
-      return !RecordReplayRecordingDisabled();
+      bool for_recording_flag = command_line->HasSwitch("record-replay-for-recording");
+      return !RecordReplayRecordingDisabled(for_recording_flag);
     }
     return false;
   }
@@ -293,19 +300,24 @@ static bool RecordReplayShouldRecord(int* pargc, const char*** pargv) {
 
 #else // !BUILDFLAG(IS_WIN)
 
+  // Also check flags for `record-replay-for-recording` argument.
+  bool for_recording_flag = false;
+
   // Figure out what type of process this is.
   const char* type = nullptr;
   for (int i = 0; i < *pargc; i++) {
     if (!strncmp((*pargv)[i], "--type=", 7)) {
       type = (*pargv)[i] + 7;
-      break;
+    }
+    if (!strcmp((*pargv)[i], "--record-replay-for-recording")) {
+      for_recording_flag = true;
     }
   }
 
   if (type) {
     // Only renderer processes are recorded/replayed.
     if (!strcmp(type, "renderer")) {
-      return !RecordReplayRecordingDisabled();
+      return !RecordReplayRecordingDisabled(for_recording_flag);
     }
     return false;
   }

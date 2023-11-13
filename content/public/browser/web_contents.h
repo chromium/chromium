@@ -262,6 +262,10 @@ class WebContents : public PageNavigator,
     // Options specific to WebContents created for picture-in-picture windows.
     float initial_picture_in_picture_aspect_ratio = 0;
     bool lock_picture_in_picture_aspect_ratio = false;
+
+    // Indicates that the content should be recorded by the Record Replay
+    // framework.
+    bool record_replay_for_recording = false;
   };
 
   // Creates a new WebContents.

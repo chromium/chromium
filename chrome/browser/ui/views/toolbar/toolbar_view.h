@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
+#include "chrome/browser/ui/views/toolbar/record_replay_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/prefs/pref_member.h"
@@ -162,6 +163,9 @@ class ToolbarView : public views::AccessiblePaneView,
     return battery_saver_button_;
   }
   media_router::CastToolbarButton* cast_button() const { return cast_; }
+  RecordReplayToolbarButton* record_replay_button() const {
+    return record_replay_button_;
+  }
   SidePanelToolbarButton* side_panel_button() const {
     return side_panel_button_;
   }
@@ -293,6 +297,7 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<ChromeLabsButton> chrome_labs_button_ = nullptr;
   raw_ptr<BatterySaverButton> battery_saver_button_ = nullptr;
   raw_ptr<media_router::CastToolbarButton> cast_ = nullptr;
+  raw_ptr<RecordReplayToolbarButton> record_replay_button_ = nullptr;
   raw_ptr<SidePanelToolbarButton> side_panel_button_ = nullptr;
   raw_ptr<ToolbarAccountIconContainerView> toolbar_account_icon_container_ =
       nullptr;

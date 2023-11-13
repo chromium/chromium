@@ -36,6 +36,7 @@
 #include "base/observer_list.h"
 #include "base/process/process.h"
 #include "base/ranges/algorithm.h"
+#include "base/record_replay.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -3061,12 +3062,28 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
   if (!params.last_active_time.is_null())
     last_active_time_ = params.last_active_time;
 
+  // RecordReplay [RUN-2762]
+  // If the `record_replay_for_recording` flag is set on the params, then
+  // `site_instance` on params should be null.
+  if (params.record_replay_for_recording) {
+    CHECK(params.site_instance.get() == nullptr);
+  }
+
   scoped_refptr<SiteInstance> site_instance = params.site_instance;
   if (!site_instance)
     site_instance = SiteInstance::Create(params.browser_context);
   if (params.desired_renderer_state == CreateParams::kNoRendererProcess) {
     static_cast<SiteInstanceImpl*>(site_instance.get())
         ->PreventAssociationWithSpareProcess();
+  }
+  if (params.record_replay_for_recording) {
+    // RecordReplay [RUN-2762]
+    // If the `record_replay_for_recording` flag is set on the params, then
+    // we need to tell the site instance that was created that
+    static_cast<SiteInstanceImpl*>(site_instance.get())
+        ->PreventAssociationWithSpareProcess();
+    static_cast<SiteInstanceImpl*>(site_instance.get())
+        ->RecordReplaySetForRecording();
   }
 
   // Iniitalize the primary FrameTree.

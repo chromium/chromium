@@ -69,6 +69,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
+#include "chrome/browser/ui/views/toolbar/record_replay_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -287,6 +288,14 @@ void ToolbarView::Init() {
     side_panel_button = std::make_unique<SidePanelToolbarButton>(browser_);
   }
 
+  // RecordReplay: #RUN-2762
+  // Only show the record-button if `RECORD_ALL_CONTENT` is not set.
+  std::unique_ptr<RecordReplayToolbarButton> record_replay_button;
+  if (getenv("RECORD_ALL_CONTENT") == nullptr) {
+    record_replay_button =
+      std::make_unique<RecordReplayToolbarButton>(browser_);
+  }
+
   // Always add children in order from left to right, for accessibility.
   back_ = AddChildView(std::move(back));
   forward_ = AddChildView(std::move(forward));
@@ -331,6 +340,9 @@ void ToolbarView::Init() {
     battery_saver_button_ =
         AddChildView(std::make_unique<BatterySaverButton>(browser_view_));
   }
+
+  if (record_replay_button)
+    record_replay_button_ = AddChildView(std::move(record_replay_button));
 
   if (cast)
     cast_ = AddChildView(std::move(cast));

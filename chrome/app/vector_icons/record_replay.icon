@@ -1,0 +1,11 @@
+// Copyright 2023 Record Replay Inc. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+CANVAS_DIMENSIONS, 16,
+PATH_COLOR_ARGB, 0xFF, 0xDD, 0x22, 0x22,
+CIRCLE, 8, 8, 7,
+CIRCLE, 8, 8, 3,
+CIRCLE, 8, 8, 2,
+CIRCLE, 8, 8, 1,
+CLOSE
