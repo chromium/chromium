@@ -94,8 +94,7 @@ struct Data {
   // downloaded. Used to determine whether to show a special warning message.
   SafeBrowsingState safe_browsing_state;
   // Whether the download had a Safe Browsing verdict. This is used to determine
-  // whether to call a file type warning "suspicious" or "unverified". If the
-  // safe browsing state is kNoSafeBrowsing, this should always be false.
+  // whether to call a file type warning "suspicious" or "unverified".
   bool has_safe_browsing_verdict;
 };
 
