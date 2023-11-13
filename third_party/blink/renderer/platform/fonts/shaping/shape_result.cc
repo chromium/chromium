@@ -1132,15 +1132,20 @@ scoped_refptr<ShapeResult> ShapeResult::UnapplyAutoSpacing(
   scoped_refptr<ShapeResult> sub_range = SubRange(start_offset, break_offset);
 
   // Remove the auto-spacing from the last glyph.
-  RunInfo& last_run = *sub_range->runs_.back();
-  DCHECK(last_run.HasOneRef());  // Ensure it's copied and thus safe to modify.
-  HarfBuzzRunGlyphData& last_glyph = last_run.glyph_data_.back();
-  DCHECK(PrimaryFont());
-  const float width = TextAutoSpace::GetSpacingWidth(*PrimaryFont());
-  DCHECK_GE(last_glyph.advance, width);
-  last_glyph.advance -= width;
-  last_run.width_ -= width;
-  sub_range->width_ -= width;
+  for (const scoped_refptr<RunInfo>& run : base::Reversed(sub_range->runs_)) {
+    if (UNLIKELY(!run->NumGlyphs())) {
+      continue;
+    }
+    DCHECK(run->HasOneRef());  // Ensure it's copied and thus safe to modify.
+    HarfBuzzRunGlyphData& last_glyph = run->glyph_data_.back();
+    DCHECK(PrimaryFont());
+    const float width = TextAutoSpace::GetSpacingWidth(*PrimaryFont());
+    DCHECK_GE(last_glyph.advance, width);
+    last_glyph.advance -= width;
+    run->width_ -= width;
+    sub_range->width_ -= width;
+    break;
+  }
   return sub_range;
 }
 
