@@ -391,9 +391,7 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
   profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
   url_ = web_contents->GetLastCommittedURL();
   title_ = base::UTF16ToUTF8(web_contents->GetTitle());
-  std::string user_action_token = base::RandBytesAsString(128);
-  user_action_id_ =
-      base::HexEncode(user_action_token.data(), user_action_token.size());
+  user_action_id_ = base::HexEncode(base::RandBytesAsVector(128));
   page_content_type_ = web_contents->GetContentsMimeType();
   result_.text_results.resize(data_.text.size(), false);
   result_.image_result = false;

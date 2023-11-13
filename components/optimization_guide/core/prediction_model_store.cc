@@ -410,8 +410,8 @@ base::FilePath PredictionModelStore::GetBaseModelDirForModelCacheKey(
                             .AppendASCII(base::NumberToString(
                                 static_cast<int>(optimization_target)))
                             .AppendASCII(GetModelCacheKeyHash(model_cache_key));
-  return base_model_dir.AppendASCII(base::HexEncode(
-      base::as_bytes(base::make_span(base::RandBytesAsString(8)))));
+  return base_model_dir.AppendASCII(
+      base::HexEncode(base::RandBytesAsVector(8)));
 }
 
 void PredictionModelStore::UpdateModelCacheKeyMapping(

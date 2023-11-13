@@ -158,7 +158,7 @@ void WebSocket::OnSocketConnect(int code) {
     return;
   }
 
-  base::Base64Encode(base::RandBytesAsString(16), &sec_key_);
+  sec_key_ = base::Base64Encode(base::RandBytesAsVector(16));
   std::string handshake = base::StringPrintf(
       "GET %s HTTP/1.1\r\n"
       "Host: %s\r\n"

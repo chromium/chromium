@@ -21,10 +21,7 @@ const char kTestServicePrefix[] =
     "com.google.ChromeRemoteDesktop.RemotingKeychainTest.";
 
 std::string RandomBase64String(int byte_length) {
-  std::string random_bytes = base::RandBytesAsString(byte_length);
-  std::string random_string;
-  base::Base64Encode(random_bytes, &random_string);
-  return random_string;
+  return base::Base64Encode(base::RandBytesAsVector(byte_length));
 }
 
 NSString* KeyToService(Keychain::Key key) {

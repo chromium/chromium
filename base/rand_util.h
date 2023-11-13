@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <string>
+#include <vector>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -89,6 +90,15 @@ BASE_EXPORT float BitsToOpenEndedUnitIntervalF(uint64_t bits);
 // crypto::RandBytes instead to ensure the requirement is easily discoverable.
 BASE_EXPORT void RandBytes(void* output, size_t output_length);
 
+// Creates a vector of `length` bytes, fills it with random data, and returns
+// it. Thread-safe.
+//
+// Although implementations are required to use a cryptographically secure
+// random number source, code outside of base/ that relies on this should use
+// crypto::RandBytes instead to ensure the requirement is easily discoverable.
+BASE_EXPORT std::vector<uint8_t> RandBytesAsVector(size_t length);
+
+// DEPRECATED. Prefert RandBytesAsVector() above.
 // Fills a string of length |length| with random data and returns it.
 // |length| should be nonzero. Thread-safe.
 //

@@ -28,10 +28,10 @@ DistillerViewer::DistillerViewer(
     DistillationFinishedCallback callback)
     : DistillerViewerInterface(prefs),
       url_(url),
+      csp_nonce_(base::Base64Encode(base::RandBytesAsVector(16))),
       callback_(std::move(callback)) {
   DCHECK(distillerService);
   DCHECK(url.is_valid());
-  base::Base64Encode(base::RandBytesAsString(16), &csp_nonce_);
   std::unique_ptr<dom_distiller::DistillerPage> page =
       distillerService->CreateDefaultDistillerPage(gfx::Size());
   std::unique_ptr<ViewerHandle> viewer_handle =
@@ -47,9 +47,9 @@ DistillerViewer::DistillerViewer(
     DistillationFinishedCallback callback)
     : DistillerViewerInterface(prefs),
       url_(url),
+      csp_nonce_(base::Base64Encode(base::RandBytesAsVector(16))),
       callback_(std::move(callback)) {
   DCHECK(url.is_valid());
-  base::Base64Encode(base::RandBytesAsString(16), &csp_nonce_);
   SendCommonJavaScript();
   distiller_ = distiller_factory->CreateDistillerForUrl(url);
   distiller_->DistillPage(

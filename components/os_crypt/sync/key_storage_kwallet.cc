@@ -161,8 +161,7 @@ bool KeyStorageKWallet::InitFolder() {
 }
 
 absl::optional<std::string> KeyStorageKWallet::GenerateAndStorePassword() {
-  std::string password;
-  base::Base64Encode(base::RandBytesAsString(16), &password);
+  std::string password = base::Base64Encode(base::RandBytesAsVector(16));
   bool success;
   KWalletDBus::Error error = kwallet_dbus_->WritePassword(
       handle_, KeyStorageLinux::kFolderName, KeyStorageLinux::kKey, password,

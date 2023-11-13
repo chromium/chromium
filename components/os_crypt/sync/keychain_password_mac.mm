@@ -43,8 +43,7 @@ std::string AddRandomPasswordToKeychain(const AppleKeychain& keychain,
                                         const std::string& account_name) {
   // Generate a password with 128 bits of randomness.
   const int kBytes = 128 / 8;
-  std::string password;
-  base::Base64Encode(base::RandBytesAsString(kBytes), &password);
+  std::string password = base::Base64Encode(base::RandBytesAsVector(kBytes));
   void* password_data =
       const_cast<void*>(static_cast<const void*>(password.data()));
 

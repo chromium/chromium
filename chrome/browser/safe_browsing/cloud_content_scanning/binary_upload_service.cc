@@ -240,10 +240,8 @@ void BinaryUploadService::Request::set_reason(
 
 std::string BinaryUploadService::Request::SetRandomRequestToken() {
   DCHECK(request_token().empty());
-
-  std::string token = base::RandBytesAsString(128);
   content_analysis_request_.set_request_token(
-      base::HexEncode(token.data(), token.size()));
+      base::HexEncode(base::RandBytesAsVector(128)));
   return content_analysis_request_.request_token();
 }
 

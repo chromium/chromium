@@ -529,8 +529,7 @@ int32_t PepperMediaStreamVideoTrackHost::OnHostMsgConfigure(
 }
 
 void PepperMediaStreamVideoTrackHost::InitBlinkTrack() {
-  std::string source_id;
-  base::Base64Encode(base::RandBytesAsString(64), &source_id);
+  std::string source_id = base::Base64Encode(base::RandBytesAsVector(64));
   blink::WebMediaStreamSource webkit_source;
   auto source = std::make_unique<VideoSource>(weak_factory_.GetWeakPtr());
   blink::MediaStreamVideoSource* const source_ptr = source.get();

@@ -135,6 +135,22 @@ TEST(RandUtilTest, RandBytes0) {
   base::RandBytes(nullptr, 0);
 }
 
+TEST(RandUtilTest, RandBytesAsVector) {
+  std::vector<uint8_t> random_vec = base::RandBytesAsVector(0);
+  EXPECT_TRUE(random_vec.empty());
+  random_vec = base::RandBytesAsVector(1);
+  EXPECT_EQ(1U, random_vec.size());
+  random_vec = base::RandBytesAsVector(145);
+  EXPECT_EQ(145U, random_vec.size());
+  char accumulator = 0;
+  for (auto i : random_vec) {
+    accumulator |= i;
+  }
+  // In theory this test can fail, but it won't before the universe dies of
+  // heat death.
+  EXPECT_NE(0, accumulator);
+}
+
 TEST(RandUtilTest, RandBytesAsString) {
   std::string random_string = base::RandBytesAsString(1);
   EXPECT_EQ(1U, random_string.size());

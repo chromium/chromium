@@ -62,9 +62,7 @@ enum class SyncTransportDataStartupState {
 std::string GenerateCacheGUID() {
   // Generate a GUID with 128 bits of randomness.
   const int kGuidBytes = 128 / 8;
-  std::string guid;
-  base::Base64Encode(base::RandBytesAsString(kGuidBytes), &guid);
-  return guid;
+  return base::Base64Encode(base::RandBytesAsVector(kGuidBytes));
 }
 
 SyncTransportDataStartupState ValidateSyncTransportData(
