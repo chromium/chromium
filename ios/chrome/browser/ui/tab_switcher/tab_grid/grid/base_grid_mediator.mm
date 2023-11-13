@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -507,10 +506,8 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
                                    .identifier = itemID,
                                    .pinned_state = PinnedState::kNonPinned,
                                });
-      SceneState* targetSceneState =
-          SceneStateBrowserAgent::FromBrowser(browser)->GetSceneState();
-      SceneState* currentSceneState =
-          SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+      SceneState* targetSceneState = browser->GetSceneState();
+      SceneState* currentSceneState = self.browser->GetSceneState();
 
       UISceneActivationRequestOptions* options =
           [[UISceneActivationRequestOptions alloc] init];

@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -292,9 +291,8 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   DCHECK(browser_);
 
   if (params.in_incognito) {
-    IncognitoReauthSceneAgent* reauth_agent = [IncognitoReauthSceneAgent
-        agentFromScene:SceneStateBrowserAgent::FromBrowser(browser_)
-                           ->GetSceneState()];
+    IncognitoReauthSceneAgent* reauth_agent =
+        [IncognitoReauthSceneAgent agentFromScene:browser_->GetSceneState()];
     DCHECK(!reauth_agent.authenticationRequired);
   }
 

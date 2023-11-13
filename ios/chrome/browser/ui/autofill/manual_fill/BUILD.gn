@@ -174,7 +174,6 @@ source_set("unit_tests") {
     "//components/prefs",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/passwords/model:store_factory",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

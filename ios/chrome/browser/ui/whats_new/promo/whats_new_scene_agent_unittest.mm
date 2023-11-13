@@ -11,8 +11,7 @@
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -56,10 +55,13 @@ void ClearWhatsNewUserData() {
 class WhatsNewSceneAgentTest : public PlatformTest {
  public:
   WhatsNewSceneAgentTest() : PlatformTest() {
+    scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
+    scene_state_.scene = static_cast<UIWindowScene*>(
+        [[[UIApplication sharedApplication] connectedScenes] anyObject]);
     std::unique_ptr<TestChromeBrowserState> browser_state_ =
         TestChromeBrowserState::Builder().Build();
     std::unique_ptr<Browser> browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get());
+        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
     FakeStartupInformation* startup_information_ =
         [[FakeStartupInformation alloc] init];
     app_state_ =
@@ -67,13 +69,8 @@ class WhatsNewSceneAgentTest : public PlatformTest {
     promos_manager_ = std::make_unique<MockPromosManager>();
     agent_ = [[WhatsNewSceneAgent alloc]
         initWithPromosManager:promos_manager_.get()];
-    scene_state_ =
-        [[FakeSceneState alloc] initWithAppState:app_state_
-                                    browserState:browser_state_.get()];
-    scene_state_.scene = static_cast<UIWindowScene*>(
-        [[[UIApplication sharedApplication] connectedScenes] anyObject]);
+
     agent_.sceneState = scene_state_;
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
   }
 
   void TearDown() override { ClearWhatsNewUserData(); }
@@ -82,7 +79,7 @@ class WhatsNewSceneAgentTest : public PlatformTest {
   WhatsNewSceneAgent* agent_;
   // SceneState only weakly holds AppState, so keep it alive here.
   AppState* app_state_;
-  FakeSceneState* scene_state_;
+  SceneState* scene_state_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockPromosManager> promos_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;

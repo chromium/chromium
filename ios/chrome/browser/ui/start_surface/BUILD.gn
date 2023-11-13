@@ -36,7 +36,6 @@ source_set("start_surface") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/url:constants",

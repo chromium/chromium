@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -115,8 +114,7 @@
       SyncServiceFactory::GetForBrowserState(browserState);
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(browserState);
-  SceneState* currentSceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* currentSceneState = self.browser->GetSceneState();
   BOOL isDisabled =
       IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs());
   self.mediator =

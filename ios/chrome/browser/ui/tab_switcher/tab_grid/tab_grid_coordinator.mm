@@ -31,7 +31,6 @@
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -386,8 +385,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)showTabGrid {
   BOOL animated = !self.animationsDisabledForTesting;
 
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.regularBrowser)->GetSceneState();
+  SceneState* sceneState = self.regularBrowser->GetSceneState();
   [[NonModalDefaultBrowserPromoSchedulerSceneAgent agentFromScene:sceneState]
       logTabGridEntered];
 
@@ -828,8 +826,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       SyncServiceFactory::GetForBrowserState(regularBrowserState);
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(regularBrowserState);
-  SceneState* currentSceneState =
-      SceneStateBrowserAgent::FromBrowser(self.regularBrowser)->GetSceneState();
+  SceneState* currentSceneState = self.regularBrowser->GetSceneState();
   // TODO(crbug.com/1457146): Rename in recentTabsMediator.
   self.remoteTabsMediator = [[RecentTabsMediator alloc]
       initWithSessionSyncService:syncService
@@ -904,8 +901,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       startDispatchingToTarget:[self bookmarksCoordinator]
                    forProtocol:@protocol(BookmarksCommands)];
 
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.regularBrowser)->GetSceneState();
+  SceneState* sceneState = self.regularBrowser->GetSceneState();
   [sceneState addObserver:self];
 
   // Once the mediators are set up, stop keeping pointers to the browsers used
@@ -915,8 +911,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)stop {
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.regularBrowser)->GetSceneState();
+  SceneState* sceneState = self.regularBrowser->GetSceneState();
   [sceneState removeObserver:self];
 
   // The TabGridViewController may still message its application commands

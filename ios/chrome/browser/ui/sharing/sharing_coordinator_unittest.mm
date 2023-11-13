@@ -16,8 +16,6 @@
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -58,8 +56,7 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTestSupport {
   SharingCoordinatorTest()
       : base_view_controller_([[UIViewController alloc] init]),
         fake_origin_view_([[UIView alloc] init]),
-        test_scenario_(SharingScenario::TabShareButton),
-        scene_state_([[SceneState alloc] initWithAppState:nil]) {
+        test_scenario_(SharingScenario::TabShareButton) {
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
   }
 
@@ -74,8 +71,6 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTestSupport {
         startDispatchingToTarget:OCMStrictProtocolMock(
                                      @protocol(BookmarksCommands))
                      forProtocol:@protocol(BookmarksCommands)];
-
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
   }
 
   void AppendNewWebState(std::unique_ptr<web::FakeWebState> web_state) {
@@ -89,7 +84,6 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTestSupport {
   UIView* fake_origin_view_;
   id snackbar_handler_;
   SharingScenario test_scenario_;
-  SceneState* scene_state_;
 };
 
 // Tests that the start method shares the current page and ends up presenting

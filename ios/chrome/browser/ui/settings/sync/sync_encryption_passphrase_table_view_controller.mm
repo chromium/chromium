@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -159,8 +158,7 @@ const CGFloat kSpinnerButtonPadding = 18;
   [self loadModel];
   [self setRightNavBarItem];
 
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* sceneState = self.browser->GetSceneState();
   _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
 }
 

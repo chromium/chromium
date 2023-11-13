@@ -9,8 +9,6 @@
 #import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -36,8 +34,7 @@ namespace {
 
 class TabStripControllerTest : public PlatformTest {
  protected:
-  TabStripControllerTest()
-      : scene_state_([[SceneState alloc] initWithAppState:nil]) {
+  TabStripControllerTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
   }
@@ -63,8 +60,6 @@ class TabStripControllerTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_popup_menu_commands_handler_
                      forProtocol:@protocol(PopupMenuCommands)];
-
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
     controller_ = [[TabStripController alloc]
         initWithBaseViewController:nil
@@ -107,7 +102,6 @@ class TabStripControllerTest : public PlatformTest {
   id mock_application_settings_commands_handler_;
   TabStripController* controller_;
   UIWindow* window_;
-  SceneState* scene_state_;
 };
 
 TEST_F(TabStripControllerTest, LoadAndDisplay) {

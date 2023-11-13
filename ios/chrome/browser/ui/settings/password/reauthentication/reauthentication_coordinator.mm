@@ -11,7 +11,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -85,7 +84,7 @@
 
 - (void)start {
   if (password_manager::features::IsAuthOnEntryV2Enabled()) {
-    [self.sceneState addObserver:self];
+    [self.browser->GetSceneState() addObserver:self];
   }
 
   if (_authOnStart) {
@@ -94,7 +93,7 @@
 }
 
 - (void)stop {
-  [self.sceneState removeObserver:self];
+  [self.browser->GetSceneState() removeObserver:self];
   _reauthViewController.delegate = nil;
   _reauthViewController = nil;
 }
@@ -263,11 +262,6 @@
   [_baseNavigationController popViewControllerAnimated:NO];
   _reauthViewController.delegate = nil;
   _reauthViewController = nil;
-}
-
-// Helper returning current sceneState.
-- (SceneState*)sceneState {
-  return SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
 }
 
 @end

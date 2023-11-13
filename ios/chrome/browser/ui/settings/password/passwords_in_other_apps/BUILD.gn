@@ -70,7 +70,6 @@ source_set("unit_tests") {
     ":passwords_in_other_apps",
     ":passwords_in_other_apps_ui",
     "//base/test:test_support",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state",

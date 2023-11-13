@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 
@@ -29,13 +29,7 @@ LayoutGuideCenter* LayoutGuideCenterForBrowser(Browser* browser) {
     return SharedInstance();
   }
 
-  SceneStateBrowserAgent* sceneStateBrowserAgent =
-      SceneStateBrowserAgent::FromBrowser(browser);
-  if (!sceneStateBrowserAgent) {
-    return SharedInstance();
-  }
-
-  SceneState* sceneState = sceneStateBrowserAgent->GetSceneState();
+  SceneState* sceneState = browser->GetSceneState();
   LayoutGuideSceneAgent* layoutGuideSceneAgent =
       [LayoutGuideSceneAgent agentFromScene:sceneState];
   if (!layoutGuideSceneAgent) {

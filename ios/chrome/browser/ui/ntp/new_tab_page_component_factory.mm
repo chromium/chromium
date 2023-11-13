@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -100,9 +99,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   PrefService* prefService =
       ChromeBrowserState::FromBrowserState(browser->GetBrowserState())
           ->GetPrefs();
-  BOOL isSafeMode = [SceneStateBrowserAgent::FromBrowser(browser)
-                         ->GetSceneState()
-                         .appState resumingFromSafeMode];
+  BOOL isSafeMode = [browser->GetSceneState().appState resumingFromSafeMode];
   return [[NewTabPageMediator alloc]
       initWithTemplateURLService:templateURLService
                        URLLoader:UrlLoadingBrowserAgent::FromBrowser(browser)

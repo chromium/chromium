@@ -22,8 +22,6 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -75,8 +73,7 @@ class KeyCommandsProviderTest : public PlatformTest {
     web_state_list_ = browser_->GetWebStateList();
     LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
+
     bookmark_model_ =
         ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
             browser_state_.get());
@@ -164,7 +161,6 @@ class KeyCommandsProviderTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   WebStateList* web_state_list_;
-  SceneState* scene_state_;
   base::UserActionTester user_action_tester_;
   bookmarks::BookmarkModel* bookmark_model_;
   KeyCommandsProvider* provider_;

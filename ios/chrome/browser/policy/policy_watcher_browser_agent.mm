@@ -19,7 +19,6 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -138,8 +137,7 @@ void PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded() {
           syncer::prefs::internal::kSyncManaged);
 
   if (!syncDisabledAlertShown && isSyncDisabledByAdministrator) {
-    SceneState* scene_state =
-        SceneStateBrowserAgent::FromBrowser(browser_)->GetSceneState();
+    SceneState* scene_state = browser_->GetSceneState();
     BOOL scene_is_active =
         scene_state.activationLevel >= SceneActivationLevelForegroundActive;
     if (scene_is_active) {
@@ -184,8 +182,7 @@ void PolicyWatcherBrowserAgent::RemoveObserver(
 }
 
 void PolicyWatcherBrowserAgent::OnSignOutComplete() {
-  SceneState* scene_state =
-      SceneStateBrowserAgent::FromBrowser(browser_)->GetSceneState();
+  SceneState* scene_state = browser_->GetSceneState();
   sign_out_in_progress_ = false;
   BOOL scene_is_active =
       scene_state.activationLevel >= SceneActivationLevelForegroundActive;

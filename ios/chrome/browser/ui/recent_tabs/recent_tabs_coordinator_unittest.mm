@@ -30,9 +30,9 @@
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -177,15 +177,13 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
         chrome_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
 
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     FakeStartupInformation* startup_information_ =
         [[FakeStartupInformation alloc] init];
     app_state_ =
         [[AppState alloc] initWithStartupInformation:startup_information_];
-    scene_state_ =
-        [[FakeSceneState alloc] initWithAppState:app_state_
-                                    browserState:chrome_browser_state_.get()];
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
+    scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
+    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
+                                             scene_state_);
   }
 
   void TearDown() override {
@@ -296,7 +294,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
   AppState* app_state_;
-  FakeSceneState* scene_state_;
+  SceneState* scene_state_;
 
   ScopedKeyWindow scoped_key_window_;
   UIViewController* base_view_controller_;

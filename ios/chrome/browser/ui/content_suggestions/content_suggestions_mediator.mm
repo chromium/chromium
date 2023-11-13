@@ -64,7 +64,6 @@
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_observer_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -354,8 +353,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       _tabResumptionHelper = std::make_unique<TabResumptionHelper>(browser);
     }
 
-    SceneState* sceneState =
-        SceneStateBrowserAgent::FromBrowser(browser)->GetSceneState();
+    SceneState* sceneState = browser->GetSceneState();
 
     [sceneState addObserver:self];
 
@@ -422,8 +420,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
   [_setUpList disconnect];
   _setUpList = nil;
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* sceneState = self.browser->GetSceneState();
   [sceneState.appState removeObserver:self];
   [sceneState removeObserver:self];
   _localState = nullptr;
@@ -807,8 +804,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)mostRecentTabTitleWasUpdated:(NSString*)title {
   if (self.returnToRecentTabItem) {
-    SceneState* scene =
-        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+    SceneState* scene = self.browser->GetSceneState();
     NSString* time_label = GetRecentTabTileTimeLabelForSceneState(scene);
     self.returnToRecentTabItem.subtitle =
         [self constructReturnToRecentTabSubtitleWithPageTitle:title

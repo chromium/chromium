@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_coordinator.h"
 
 #import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
@@ -94,9 +94,8 @@
 - (void)start {
   // TODO(crbug.com/1246931): refactor to call setIncognitoBrowser from this
   // function.
-  _reauthAgent = [IncognitoReauthSceneAgent
-      agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
-                         ->GetSceneState()];
+  _reauthAgent =
+      [IncognitoReauthSceneAgent agentFromScene:self.browser->GetSceneState()];
 
   GridContainerViewController* container =
       [[GridContainerViewController alloc] init];

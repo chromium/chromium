@@ -45,7 +45,6 @@ source_set("incognito_interstitial") {
     "//ios/chrome/app:mode",
     "//ios/chrome/app/application_delegate:tab_opening",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/ntp/incognito",

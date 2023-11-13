@@ -24,7 +24,6 @@ source_set("sync") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/settings/model/sync/utils",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",

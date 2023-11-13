@@ -6,8 +6,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
@@ -27,10 +25,8 @@ class QRGeneratorCoordinatorTest : public PlatformTest {
   QRGeneratorCoordinatorTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
     base_view_controller_ = [[UIViewController alloc] init];
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
   }
 
   void SetUp() override {
@@ -57,8 +53,6 @@ class QRGeneratorCoordinatorTest : public PlatformTest {
   id mock_qr_generation_commands_handler_;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* base_view_controller_;
-  SceneState* scene_state_;
-
   QRGeneratorCoordinator* coordinator_;
 };
 

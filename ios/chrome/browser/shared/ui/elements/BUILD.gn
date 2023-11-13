@@ -106,7 +106,6 @@ source_set("elements_internal") {
     ":constants",
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/scoped_ui_blocker:scoped_ui_blocker",

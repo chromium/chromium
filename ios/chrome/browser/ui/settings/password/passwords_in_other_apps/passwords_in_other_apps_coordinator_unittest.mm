@@ -7,7 +7,6 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -33,9 +32,14 @@ class PasswordsInOtherAppsCoordinatorTest : public PlatformTest {
     scoped_feature_list_.InitAndEnableFeature(
         password_manager::features::kIOSPasswordAuthOnEntryV2);
 
+    // Create scene state for reauthentication coordinator.
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
     TestChromeBrowserState::Builder builder;
     browser_state_ = builder.Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    browser_ =
+        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
 
     mock_reauth_module_ = [[MockReauthenticationModule alloc] init];
     // Delay auth result so auth doesn't pass right after starting coordinator.
@@ -53,11 +57,6 @@ class PasswordsInOtherAppsCoordinatorTest : public PlatformTest {
     coordinator_ = [[PasswordsInOtherAppsCoordinator alloc]
         initWithBaseNavigationController:navigation_controller_
                                  browser:browser_.get()];
-
-    // Create scene state for reauthentication coordinator.
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
-    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
     [coordinator_ start];
 

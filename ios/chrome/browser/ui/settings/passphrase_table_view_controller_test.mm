@@ -17,7 +17,6 @@
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -91,10 +90,10 @@ void PassphraseTableViewControllerTest::SetUp() {
   AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
       chrome_browser_state_.get(),
       std::make_unique<FakeAuthenticationServiceDelegate>());
-  browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
   app_state_ = [[AppState alloc] initWithStartupInformation:nil];
   scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
-  SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
+  browser_ =
+      std::make_unique<TestBrowser>(chrome_browser_state_.get(), scene_state_);
 
   fake_sync_service_ = static_cast<syncer::MockSyncService*>(
       SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get()));

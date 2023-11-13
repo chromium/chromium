@@ -20,8 +20,6 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -97,9 +95,6 @@ class SettingsTableViewControllerTest
 
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     browser_state_ = TestChromeBrowserState::Builder().Build();
-
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
@@ -215,7 +210,6 @@ class SettingsTableViewControllerTest
   std::unique_ptr<ios::ChromeBrowserStateManager> test_manager_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  SceneState* scene_state_;
 
   SettingsTableViewController* controller_ = nullptr;
 };

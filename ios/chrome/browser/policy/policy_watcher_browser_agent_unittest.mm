@@ -17,8 +17,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -61,20 +60,18 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
     GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
                                 static_cast<int>(BrowserSigninMode::kEnabled));
 
+    // SceneState.
+    app_state_ = [[AppState alloc] initWithStartupInformation:nil];
+    scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
+    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
     // Set up the test browser and attach the browser agents.
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
+                                             scene_state_);
 
     // Browser Agent under test.
     PolicyWatcherBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = PolicyWatcherBrowserAgent::FromBrowser(browser_.get());
-
-    // SceneState Browser Agent.
-    app_state_ = [[AppState alloc] initWithStartupInformation:nil];
-    scene_state_ =
-        [[FakeSceneState alloc] initWithAppState:app_state_
-                                    browserState:chrome_browser_state_.get()];
-    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
   }
 
   std::unique_ptr<PrefServiceSyncable> CreatePrefService() {
@@ -105,7 +102,7 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   PolicyWatcherBrowserAgent* agent_;
   std::unique_ptr<Browser> browser_;
-  FakeSceneState* scene_state_;
+  SceneState* scene_state_;
   // Keep app_state_ alive as it is a weak property of the scene state.
   AppState* app_state_;
 };
@@ -265,19 +262,15 @@ TEST_F(PolicyWatcherBrowserAgentTest, SignOutIfPolicyChangedAtColdStart) {
                               static_cast<int>(BrowserSigninMode::kDisabled));
 
   // Set up the test browser and attach the browser agents.
+  SceneState* scene_state = [[SceneState alloc] initWithAppState:app_state_];
+  scene_state.activationLevel = SceneActivationLevelForegroundActive;
   std::unique_ptr<Browser> browser =
-      std::make_unique<TestBrowser>(chrome_browser_state_.get());
+      std::make_unique<TestBrowser>(chrome_browser_state_.get(), scene_state);
 
   // Browser Agent under test.
   PolicyWatcherBrowserAgent::CreateForBrowser(browser.get());
   PolicyWatcherBrowserAgent* agent =
       PolicyWatcherBrowserAgent::FromBrowser(browser.get());
-
-  FakeSceneState* scene_state =
-      [[FakeSceneState alloc] initWithAppState:app_state_
-                                  browserState:chrome_browser_state_.get()];
-  scene_state.activationLevel = SceneActivationLevelForegroundActive;
-  SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
 
   // The SignOut will occur when the handler is set.
   ASSERT_TRUE(authentication_service->HasPrimaryIdentity(
@@ -374,8 +367,10 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
 
   // Browser Agent under test.
   // Set up the test browser and attach the browser agents.
+  SceneState* scene_state = [[SceneState alloc] initWithAppState:app_state_];
+  scene_state.activationLevel = SceneActivationLevelForegroundActive;
   std::unique_ptr<Browser> browser =
-      std::make_unique<TestBrowser>(chrome_browser_state_.get());
+      std::make_unique<TestBrowser>(chrome_browser_state_.get(), scene_state);
 
   // Browser Agent under test.
   PolicyWatcherBrowserAgent::CreateForBrowser(browser.get());
@@ -383,12 +378,6 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
       PolicyWatcherBrowserAgent::FromBrowser(browser.get());
 
   @autoreleasepool {
-    FakeSceneState* scene_state =
-        [[FakeSceneState alloc] initWithAppState:app_state_
-                                    browserState:chrome_browser_state_.get()];
-    scene_state.activationLevel = SceneActivationLevelForegroundActive;
-    SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
-
     id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
     OCMExpect([mockHandler showSyncDisabledPrompt]);
     agent->Initialize(mockHandler);
@@ -421,8 +410,10 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
 
   // Browser Agent under test.
   // Set up the test browser and attach the browser agents.
+  SceneState* scene_state = [[SceneState alloc] initWithAppState:app_state_];
+  scene_state.activationLevel = SceneActivationLevelForegroundActive;
   std::unique_ptr<Browser> browser =
-      std::make_unique<TestBrowser>(chrome_browser_state_.get());
+      std::make_unique<TestBrowser>(chrome_browser_state_.get(), scene_state);
 
   // Browser Agent under test.
   PolicyWatcherBrowserAgent::CreateForBrowser(browser.get());
@@ -430,12 +421,6 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
       PolicyWatcherBrowserAgent::FromBrowser(browser.get());
 
   @autoreleasepool {
-    FakeSceneState* scene_state =
-        [[FakeSceneState alloc] initWithAppState:app_state_
-                                    browserState:chrome_browser_state_.get()];
-    scene_state.activationLevel = SceneActivationLevelForegroundActive;
-    SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
-
     id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
     OCMExpect([mockHandler showSyncDisabledPrompt]);
     agent->Initialize(mockHandler);

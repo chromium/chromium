@@ -43,7 +43,6 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -333,8 +332,7 @@
 }
 
 - (UIEdgeInsets)safeAreaInsetsForDiscoverFeed {
-  return [SceneStateBrowserAgent::FromBrowser(self.browser)
-              ->GetSceneState()
+  return [self.browser->GetSceneState()
               .window.rootViewController.view safeAreaInsets];
 }
 
@@ -787,8 +785,7 @@
 #pragma mark - Helpers
 
 - (void)configureStartSurfaceIfNeeded {
-  SceneState* scene =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* scene = self.browser->GetSceneState();
   if (!NewTabPageTabHelper::FromWebState(self.webState)
            ->ShouldShowStartSurface()) {
     return;
