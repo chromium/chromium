@@ -111,10 +111,12 @@ class CookieSettings
                                     const GURL& first_party_url) const;
 
   // Sets the `TPCD_HEURISTICS_GRANTS` setting for the given (`url`,
-  // `first_party_url`) pair, for the provided `ttl`. If
-  // `use_schemeless_pattern` is set, the patterns will be generated from
-  // `ContentSettingsPattern::FromUrl`, which maps HTTP URLs onto a wildcard
-  // scheme.
+  // `first_party_url`) pair, for the provided `ttl`. By default, the patterns
+  // are generated from `ContentSettingsPattern::FromURLToSchemefulSitePattern`
+  // that keeps the scheme and host. If `use_schemeless_pattern` is set, the
+  // patterns will be generated from
+  // `ContentSettingsPattern::ToHostOnlyPattern(FromURLToSchemefulSitePattern)',
+  // which also maps HTTP URLs onto a wildcard scheme.
   //
   // This should only be called on the UI thread.
   void SetTemporaryCookieGrantForHeuristic(

@@ -116,15 +116,18 @@ class OpenerHeuristicBrowserTest : public PlatformBrowserTest {
         past_interaction_grant_enabled ? "20m" : "0s";
     std::string backfill_grant_enabled_lookback =
         backfill_grant_enabled ? "10m" : "0m";
-    feature_list_.InitAndEnableFeatureWithParameters(
-        content_settings::features::kTpcdHeuristicsGrants,
-        {{"TpcdReadHeuristicsGrants", "true"},
-         {"TpcdWritePopupCurrentInteractionHeuristicsGrants",
-          current_interaction_grant_enabled_ttl},
-         {"TpcdWritePopupPastInteractionHeuristicsGrants",
-          past_interaction_grant_enabled_ttl},
-         {"TpcdBackfillPopupHeuristicsGrants",
-          backfill_grant_enabled_lookback}});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{content_settings::features::kTpcdHeuristicsGrants,
+          {{"TpcdReadHeuristicsGrants", "true"},
+           {"TpcdWritePopupCurrentInteractionHeuristicsGrants",
+            current_interaction_grant_enabled_ttl},
+           {"TpcdWritePopupPastInteractionHeuristicsGrants",
+            past_interaction_grant_enabled_ttl},
+           {"TpcdBackfillPopupHeuristicsGrants",
+            backfill_grant_enabled_lookback}}}},
+        // Disable tracking protection by default to test third-party cookie
+        // behavior for PostPopupCookieAccess events.
+        {content_settings::features::kTrackingProtection3pcd});
   }
 
   void SetUp() override {
@@ -483,11 +486,6 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   GURL opener_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
 
-  // Allow access for third-party cookies from popup_url.
-  auto cookie_settings = CookieSettingsFactory::GetForProfile(
-      Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
-  cookie_settings->SetCookieSetting(popup_url, CONTENT_SETTING_ALLOW);
-
   // Initialize interaction and popup.
   RecordInteraction(popup_url, clock_.Now() - base::Hours(3));
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
@@ -711,13 +709,6 @@ IN_PROC_BROWSER_TEST_F(
   GURL popup_url_2 =
       embedded_test_server()->GetURL("b.test", "/server-redirect?title1.html");
   GURL popup_url_3 = embedded_test_server()->GetURL("b.test", "/title1.html");
-
-  // Allow access for third-party cookies from the popup URLs.
-  auto cookie_settings = CookieSettingsFactory::GetForProfile(
-      Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
-  cookie_settings->SetCookieSetting(popup_url_1, CONTENT_SETTING_ALLOW);
-  cookie_settings->SetCookieSetting(popup_url_2, CONTENT_SETTING_ALLOW);
-  cookie_settings->SetCookieSetting(popup_url_3, CONTENT_SETTING_ALLOW);
 
   // Initialize popup and interaction.
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
