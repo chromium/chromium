@@ -41,8 +41,10 @@ namespace views {
 
 MdTextButton::MdTextButton(PressedCallback callback,
                            const std::u16string& text,
-                           int button_context)
-    : LabelButton(std::move(callback), text, button_context) {
+                           int button_context,
+                           bool use_text_color_for_icon)
+    : LabelButton(std::move(callback), text, button_context),
+      use_text_color_for_icon_(use_text_color_for_icon) {
   InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   SetShowInkDropWhenHotTracked(true);
@@ -310,7 +312,8 @@ void MdTextButton::UpdateBackgroundColor() {
 }
 
 void MdTextButton::UpdateIconColor() {
-  if (features::IsChromeRefresh2023() && HasImage(ButtonState::STATE_NORMAL)) {
+  if (features::IsChromeRefresh2023() && use_text_color_for_icon_ &&
+      HasImage(ButtonState::STATE_NORMAL)) {
     auto image_model = GetImageModel(ButtonState::STATE_NORMAL);
     if (image_model.IsVectorIcon()) {
       LabelButton::SetImageModel(ButtonState::STATE_NORMAL,

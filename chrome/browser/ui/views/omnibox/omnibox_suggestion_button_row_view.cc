@@ -64,7 +64,10 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
                              const gfx::VectorIcon& icon,
                              OmniboxPopupViewViews* popup_view,
                              OmniboxPopupSelection selection)
-      : MdTextButton(std::move(callback), text, CONTEXT_OMNIBOX_PRIMARY),
+      : MdTextButton(std::move(callback),
+                     text,
+                     CONTEXT_OMNIBOX_PRIMARY,
+                     /*use_text_color_for_icon=*/false),
         icon_(&icon),
         popup_view_(popup_view),
         selection_(selection) {

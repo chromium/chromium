@@ -27,7 +27,8 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
 
   explicit MdTextButton(PressedCallback callback = PressedCallback(),
                         const std::u16string& text = std::u16string(),
-                        int button_context = style::CONTEXT_BUTTON_MD);
+                        int button_context = style::CONTEXT_BUTTON_MD,
+                        bool use_text_color_for_icon = true);
 
   MdTextButton(const MdTextButton&) = delete;
   MdTextButton& operator=(const MdTextButton&) = delete;
@@ -93,6 +94,9 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
 
   // Used to override default padding.
   absl::optional<gfx::Insets> custom_padding_;
+
+  // When set, the icon color will match the text color.
+  bool use_text_color_for_icon_ = true;
 };
 
 template <>
