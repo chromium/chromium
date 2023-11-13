@@ -321,7 +321,7 @@ std::string CreateStartSessionRequestData(
 
   base::Value::Dict assertion_info;
   assertion_info.Set(kEmailKey, fido_assertion_info.email);
-  assertion_info.Set(kCredentialIdKey, fido_assertion_info.credential_id);
+  assertion_info.Set(kCredentialIdKey, *fido_assertion_info.credential_id);
   // The following fields are binary data that will be represented as a protobuf
   // `bytes` field on Google's side. Protobuf guarantees a stable translation
   // between byte arrays and Base64 encoded JSON fields.

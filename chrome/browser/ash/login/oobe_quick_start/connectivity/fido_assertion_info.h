@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "chromeos/ash/components/quick_start/types.h"
+
 namespace ash::quick_start {
 
 // A `struct` to store the information related to a FIDO assertion. It is used
@@ -22,8 +24,8 @@ struct FidoAssertionInfo {
   // User's email.
   std::string email;
 
-  // Key identifier of the key used. (encoded as Base64 URL with padding)
-  std::string credential_id;
+  // Key identifier of the key used.
+  Base64String credential_id;
 
   // The authenticator data returned by the authenticator.
   // https://www.w3.org/TR/webauthn/#dom-authenticatorassertionresponse-authenticatordata

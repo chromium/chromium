@@ -6,7 +6,7 @@
 
 #include <array>
 
-#include "base/base64url.h"
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/components/quick_start/quick_start_requests.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
@@ -236,9 +237,8 @@ void Connection::OnRequestAccountTransferAssertionResponse(
   assertion_info.email = fido_response->email;
 
   // The credential_id response is sent to us as raw bytes, Base64 encode them.
-  base::Base64UrlEncode(fido_response->credential_id,
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &assertion_info.credential_id);
+  assertion_info.credential_id =
+      Base64String(base::Base64Encode(fido_response->credential_id));
 
   assertion_info.authenticator_data = fido_response->auth_data;
   assertion_info.signature = fido_response->signature;
