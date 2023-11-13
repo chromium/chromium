@@ -58304,13 +58304,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="25" label="FIT_TO_PAPER"/>
 </enum>
 
-<enum name="PrivacyBudgetRecordedSample">
-  <int value="0" label="Accepted"/>
-  <int value="1" label="DroppedMaxTrackedSources"/>
-  <int value="2" label="DroppedMaxTrackedSurfaces"/>
-  <int value="3" label="DroppedMaxTrackedPerSurfacePerSource"/>
-</enum>
-
 <enum name="PrivacyIndicatorsSource">
   <int value="0" label="Apps"/>
   <int value="1" label="Linux VM"/>
