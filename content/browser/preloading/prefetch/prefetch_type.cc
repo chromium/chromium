@@ -23,17 +23,4 @@ void PrefetchType::SetProxyBypassedForTest() {
   proxy_bypassed_for_testing_ = true;
 }
 
-bool operator==(const PrefetchType& prefetch_type_1,
-                const PrefetchType& prefetch_type_2) {
-  return std::tie(prefetch_type_1.use_prefetch_proxy_,
-                  prefetch_type_1.eagerness_) ==
-         std::tie(prefetch_type_2.use_prefetch_proxy_,
-                  prefetch_type_2.eagerness_);
-}
-
-bool operator!=(const PrefetchType& prefetch_type_1,
-                const PrefetchType& prefetch_type_2) {
-  return !(prefetch_type_1 == prefetch_type_2);
-}
-
 }  // namespace content

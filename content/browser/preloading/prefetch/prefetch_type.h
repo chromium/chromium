@@ -21,6 +21,9 @@ class CONTENT_EXPORT PrefetchType {
   PrefetchType(const PrefetchType& prefetch_type);
   PrefetchType& operator=(const PrefetchType& prefetch_type) = delete;
 
+  bool operator==(const PrefetchType& rhs) const = default;
+  bool operator!=(const PrefetchType& rhs) const = default;
+
   // Whether this prefetch should bypass the proxy even though it would need to
   // be proxied for anonymity. For use in test automation only.
   bool IsProxyBypassedForTesting() const { return proxy_bypassed_for_testing_; }
@@ -35,18 +38,10 @@ class CONTENT_EXPORT PrefetchType {
   blink::mojom::SpeculationEagerness GetEagerness() const { return eagerness_; }
 
  private:
-  friend CONTENT_EXPORT bool operator==(const PrefetchType& prefetch_type_1,
-                                        const PrefetchType& prefetch_type_2);
-
   bool use_prefetch_proxy_;
   bool proxy_bypassed_for_testing_ = false;
   blink::mojom::SpeculationEagerness eagerness_;
 };
-
-CONTENT_EXPORT bool operator==(const PrefetchType& prefetch_type_1,
-                               const PrefetchType& prefetch_type_2);
-CONTENT_EXPORT bool operator!=(const PrefetchType& prefetch_type_1,
-                               const PrefetchType& prefetch_type_2);
 
 }  // namespace content
 
