@@ -1877,6 +1877,18 @@ Permissions you've already given to websites and apps may apply to this account.
                  desc="Error message displayed in the main dialog when the computer does not meet the application's minimum hardware requirements.">
           Installation failed because your computer does not meet the minimum hardware requirements.
         </message>
+        <message name="IDS_NO_HASH"
+                 desc="Error message displayed in the main dialog when the server does not have the application installer's hash.">
+          Installation failed because the update server does not have any hash data for the application.
+        </message>
+        <message name="IDS_UNSUPPORTED_PROTOCOL"
+                 desc="Error message displayed in the main dialog for protocols that do not support multiple packages.">
+          Installation failed because of an unsupported protocol error.
+        </message>
+        <message name="IDS_INTERNAL"
+                 desc="Error message displayed in the main dialog when the update server encounters an internal error.">
+          Installation failed because of an update server internal error.
+        </message>
         <message name="IDS_GENERIC_UPDATE_CHECK_ERROR"
                  desc="Error message displayed in the main dialog when the update client returns an error in the update check.">
           Update check error: <ph name="UPDATE_CHECK_ERROR">$1<ex>error-internal</ex></ph>.

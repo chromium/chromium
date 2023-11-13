@@ -2545,6 +2545,43 @@ INSTANTIATE_TEST_SUITE_P(
             base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
                           "\",\"status\":\"error-hwnotsupported\"}"}),
         },
+
+        // Interactive install via the command line,
+        // `update_client::ProtocolError::NO_HASH` error.
+        {
+            true,
+            "INSTALLER_RESULT=0",
+            static_cast<int>(update_client::ProtocolError::NO_HASH),
+            base::WideToUTF8(GetLocalizedString(IDS_NO_HASH_BASE)),
+            {},
+            base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
+                          "\",\"status\":\"error-hash\"}"}),
+        },
+
+        // Interactive install via the command line,
+        // `update_client::ProtocolError::UNSUPPORTED_PROTOCOL` error.
+        {
+            true,
+            "INSTALLER_RESULT=0",
+            static_cast<int>(
+                update_client::ProtocolError::UNSUPPORTED_PROTOCOL),
+            base::WideToUTF8(GetLocalizedString(IDS_UNSUPPORTED_PROTOCOL_BASE)),
+            {},
+            base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
+                          "\",\"status\":\"error-unsupportedprotocol\"}"}),
+        },
+
+        // Interactive install via the command line,
+        // `update_client::ProtocolError::INTERNAL` error.
+        {
+            true,
+            "INSTALLER_RESULT=0",
+            static_cast<int>(update_client::ProtocolError::INTERNAL),
+            base::WideToUTF8(GetLocalizedString(IDS_INTERNAL_BASE)),
+            {},
+            base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
+                          "\",\"status\":\"error-internal\"}"}),
+        },
     }));
 
 TEST_P(IntegrationInstallerResultsTest, TestCases) {

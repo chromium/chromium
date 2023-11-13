@@ -297,6 +297,18 @@ void UpdateEngine::UpdateCheckResultsAvailable(
           return std::make_pair(ErrorCategory::kUpdateCheck,
                                 ProtocolError::HW_NOT_SUPPORTED);
         }
+        if (status == "error-hash") {
+          return std::make_pair(ErrorCategory::kUpdateCheck,
+                                ProtocolError::NO_HASH);
+        }
+        if (status == "error-unsupportedprotocol") {
+          return std::make_pair(ErrorCategory::kUpdateCheck,
+                                ProtocolError::UNSUPPORTED_PROTOCOL);
+        }
+        if (status == "error-internal") {
+          return std::make_pair(ErrorCategory::kUpdateCheck,
+                                ProtocolError::INTERNAL);
+        }
         // If the parser has return a valid result and the status is not one of
         // the literals above, then this must be a success an not a parse error.
         return std::make_pair(ErrorCategory::kNone, ProtocolError::NONE);

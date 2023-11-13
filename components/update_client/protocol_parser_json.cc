@@ -280,7 +280,10 @@ bool ParseApp(const base::Value& app_node_val,
         result->status == "error-unknownApplication" ||
         result->status == "error-invalidAppId" ||
         result->status == "error-osnotsupported" ||
-        result->status == "error-hwnotsupported") {
+        result->status == "error-hwnotsupported" ||
+        result->status == "error-hash" ||
+        result->status == "error-unsupportedprotocol" ||
+        result->status == "error-internal") {
       return true;
     }
 

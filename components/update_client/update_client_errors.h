@@ -132,6 +132,9 @@ enum class ProtocolError : int {
   INVALID_APPID = -10008,
   OS_NOT_SUPPORTED = -10009,
   HW_NOT_SUPPORTED = -10010,
+  NO_HASH = -10011,
+  UNSUPPORTED_PROTOCOL = -10012,
+  INTERNAL = -10013,
 };
 
 }  // namespace update_client
