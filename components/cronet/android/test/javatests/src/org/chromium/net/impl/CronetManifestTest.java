@@ -44,6 +44,9 @@ public class CronetManifestTest {
     @Test
     @SmallTest
     public void testTelemetryOptIn_whenNoMetadata() throws Exception {
+        // simulates an empty metadata file to avoid clashes with other manifest files added
+        // to test binary.
+        mCronetTestFramework.interceptContext(new CronetManifestInterceptor(new Bundle()));
         for (CronetSource source : CronetSource.values()) {
             switch (source) {
                 case CRONET_SOURCE_STATICALLY_LINKED:
