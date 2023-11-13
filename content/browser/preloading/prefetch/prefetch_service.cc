@@ -64,6 +64,7 @@
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -1639,54 +1640,41 @@ void PrefetchService::WaitOnPrefetchToServeHead(
       break;
   }
 
-  if (key.prefetch_url() == prefetch_container->GetURL()) {
+  const GURL& nav_url = key.prefetch_url();
+  if (nav_url == prefetch_container->GetURL()) {
     HandlePrefetchContainerToServe(key, *prefetch_container,
                                    *prefetch_match_resolver);
     return;
   }
 
-  if (const auto* head = prefetch_container->GetHead()) {
-    if (!head->parsed_headers ||
-        !head->parsed_headers->no_vary_search_with_parse_error ||
-        head->parsed_headers->no_vary_search_with_parse_error
-            ->is_parse_error()) {
-      // is_parse_error() == true includes the case where the header is
-      // not there (kOk) and the case where the header is equivalent
-      // to default behavior (exactly match URL - kDefaultValue)
-      prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
-      prefetch_container->UpdateServingPageMetrics();
-      ReturnPrefetchToServe(prefetch_url, {}, *prefetch_match_resolver);
-      return;
-    }
-    auto no_vary_search_data =
-        no_vary_search::ParseHttpNoVarySearchDataFromMojom(
-            head->parsed_headers->no_vary_search_with_parse_error
-                ->get_no_vary_search());
-    if (!no_vary_search_data.AreEquivalent(key.prefetch_url(),
-                                           prefetch_container->GetURL())) {
-      prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
-      prefetch_container->UpdateServingPageMetrics();
-      ReturnPrefetchToServe(prefetch_url, {}, *prefetch_match_resolver);
-      return;
-    }
-    DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead::" << key
-             << "::" << "matches by NVS header the prefetch "
-             << prefetch_container->GetURL();
-    if (auto attempt = prefetch_container->preloading_attempt()) {
-      // Before No-Vary-Search hint, the decision to use a prefetched response
-      // was made in `DidStartNavigation`. `SetIsAccurateTriggering` is called
-      // by `PreloadingDataImpl::DidStartNavigation`. With No-Vary-Search
-      // hint the decision to use an in-flight prefetched response is
-      // delayed until the headers are received from the server. This
-      // happens after `DidStartNavigation`. At this point in the code we
-      // have already decided we are going to use the prefetch, so we can
-      // safely call `SetIsAccurateTriggering`.
-      static_cast<PreloadingAttemptImpl*>(attempt.get())
-          ->SetIsAccurateTriggering(key.prefetch_url());
-    }
-    HandlePrefetchContainerToServe(key, *prefetch_container,
-                                   *prefetch_match_resolver);
+  // No-Vary-Search response header is already populated by
+  // PrefetchContainer::OnReceivedHead.
+  auto no_vary_search_data = prefetch_container->GetNoVarySearchData();
+  if (!no_vary_search_data.has_value() ||
+      !no_vary_search_data.value().AreEquivalent(
+          nav_url, prefetch_container->GetURL())) {
+    prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
+    prefetch_container->UpdateServingPageMetrics();
+    ReturnPrefetchToServe(prefetch_url, {}, *prefetch_match_resolver);
+    return;
   }
+  DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead::" << "url = "
+           << nav_url << "::" << "matches by NVS header the prefetch "
+           << prefetch_container->GetURL();
+  if (auto attempt = prefetch_container->preloading_attempt()) {
+    // Before No-Vary-Search hint, the decision to use a prefetched response
+    // was made in `DidStartNavigation`. `SetIsAccurateTriggering` is called
+    // by `PreloadingDataImpl::DidStartNavigation`. With No-Vary-Search
+    // hint the decision to use an in-flight prefetched response is
+    // delayed until the headers are received from the server. This
+    // happens after `DidStartNavigation`. At this point in the code we
+    // have already decided we are going to use the prefetch, so we can
+    // safely call `SetIsAccurateTriggering`.
+    static_cast<PreloadingAttemptImpl*>(attempt.get())
+        ->SetIsAccurateTriggering(nav_url);
+  }
+  HandlePrefetchContainerToServe(key, *prefetch_container,
+                                 *prefetch_match_resolver);
 }
 
 PrefetchService::HandlePrefetchContainerResult
