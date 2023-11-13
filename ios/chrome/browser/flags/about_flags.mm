@@ -1635,6 +1635,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"fullscreen-improvement", flag_descriptions::kFullscreenImprovementName,
      flag_descriptions::kFullscreenImprovementDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kFullscreenImprovement)},
+    {"tab-groups-in-grid", flag_descriptions::kTabGroupsInGridName,
+     flag_descriptions::kTabGroupsInGridDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabGroupsInGrid)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

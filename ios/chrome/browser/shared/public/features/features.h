@@ -312,6 +312,9 @@ BASE_DECLARE_FEATURE(kIOSHideFeedWithSearchChoice);
 // Feature flag to enable a more stable fullscreen.
 BASE_DECLARE_FEATURE(kFullscreenImprovement);
 
+// Feature flag to enable Tab Groups in Grid.
+BASE_DECLARE_FEATURE(kTabGroupsInGrid);
+
 // Feature param under `kEnableFeedBackgroundRefresh` to also enable background
 // refresh for the Following feed.
 extern const char kEnableFollowingFeedBackgroundRefresh[];

@@ -1037,6 +1037,10 @@ const char kTabGridNewTransitionsDescription[] =
     "When enabled, the new Tab Grid to Browser (and vice versa) transitions"
     "are used.";
 
+const char kTabGroupsInGridName[] = "Enable Tab Groups in grid";
+const char kTabGroupsInGridDescription[] =
+    "When enabled, tab groups can be created from the grid.";
+
 const char kTabInactivityThresholdName[] = "Change Tab inactivity threshold";
 const char kTabInactivityThresholdDescription[] =
     "When enabled, the tabs older than the threshold are considered inactive "

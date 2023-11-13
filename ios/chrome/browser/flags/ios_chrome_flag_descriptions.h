@@ -909,6 +909,10 @@ extern const char kTabGridRefactoringDescription[];
 extern const char kTabGridNewTransitionsName[];
 extern const char kTabGridNewTransitionsDescription[];
 
+// Title and description for the tab groups in grid feature.
+extern const char kTabGroupsInGridName[];
+extern const char kTabGroupsInGridDescription[];
+
 // Title and description for the flag to determine tab inactivity in the
 // TabGrid.
 extern const char kTabInactivityThresholdName[];
