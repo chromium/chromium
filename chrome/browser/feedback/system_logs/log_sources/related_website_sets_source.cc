@@ -4,6 +4,7 @@
 
 #include "chrome/browser/feedback/system_logs/log_sources/related_website_sets_source.h"
 
+#include <set>
 #include <utility>
 
 #include "base/json/json_writer.h"
@@ -65,24 +66,30 @@ std::string ComputeRelatedWebsiteSetsInfo() {
     return "";
   }
 
-  // Iterate through all RWS effective entries and form a dict of primary -> a
-  // single set. A single set contains fields of "PrimarySites",
-  // "AssociatedSites" and "ServiceSites".
-  std::map<std::string, base::Value::Dict> rws_dict;
+  // Collect all effective RWS entries for this profile.
+  std::map<std::string, std::map<net::SiteType, std::set<std::string>>> sets;
   service->ForEachEffectiveSetEntry([&](const net::SchemefulSite& site,
                                         const net::FirstPartySetEntry& entry) {
-    rws_dict[entry.primary().Serialize()]
-        .EnsureList(GetSiteType(entry.site_type()))
-        ->Append(site.Serialize());
+    sets[entry.primary().Serialize()][entry.site_type()].insert(
+        site.Serialize());
     return true;
   });
 
-  base::Value::List rws_list;
-  for (auto& [_, value] : rws_dict) {
-    rws_list.Append(std::move(value));
+  base::Value::List list;
+  list.reserve(sets.size());
+  for (auto& [unused_primary, set] : sets) {
+    base::Value::Dict value;
+    for (auto& [site_type, sites] : set) {
+      base::Value::List* subset = value.EnsureList(GetSiteType(site_type));
+      subset->reserve(sites.size());
+      for (auto& site : sites) {
+        subset->Append(std::move(site));
+      }
+    }
+    list.Append(std::move(value));
   }
 
-  return base::WriteJsonWithOptions(rws_list,
+  return base::WriteJsonWithOptions(list,
                                     base::JsonOptions::OPTIONS_PRETTY_PRINT)
       .value_or(kSerializationError);
 }

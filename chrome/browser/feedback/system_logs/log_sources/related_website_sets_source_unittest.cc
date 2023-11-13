@@ -171,8 +171,8 @@ TEST_F(RelatedWebsiteSetsSourceTest, RWS) {
                   .Set("AssociatedSites",
                        base::Value::List().Append(associate_site.Serialize()))
                   .Set("PrimarySites", base::Value::List()
-                                           .Append(primary1_site.Serialize())
-                                           .Append(primary1_cctld.Serialize())))
+                                           .Append(primary1_cctld.Serialize())
+                                           .Append(primary1_site.Serialize())))
           .Append(
               base::Value::Dict()
                   .Set("PrimarySites",
@@ -182,6 +182,61 @@ TEST_F(RelatedWebsiteSetsSourceTest, RWS) {
   auto response = GetRelatedWebsiteSetsSource();
   EXPECT_EQ(expected.DebugString(),
             response->at(RelatedWebsiteSetsSource::kSetsInfoField));
+}
+
+TEST_F(RelatedWebsiteSetsSourceTest, SubsetsAreSorted) {
+  const net::SchemefulSite primary(GURL("https://primary.test"));
+  const net::SchemefulSite associated1(GURL("https://associated1.test"));
+  const net::SchemefulSite associated2(GURL("https://associated2.test"));
+  const net::SchemefulSite associated3(GURL("https://associated3.test"));
+
+  const net::SchemefulSite service1(GURL("https://service1.test"));
+  const net::SchemefulSite service2(GURL("https://service2.test"));
+  const net::SchemefulSite service3(GURL("https://service3.test"));
+
+  SetGlobalSets(net::GlobalFirstPartySets(
+      base::Version("0.0"),
+      {
+          {primary,
+           {net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
+                                    absl::nullopt)}},
+          {associated3,
+           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 2)}},
+          {associated1,
+           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 0)}},
+          {associated2,
+           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 1)}},
+          {service2,
+           {net::FirstPartySetEntry(primary, net::SiteType::kService,
+                                    absl::nullopt)}},
+          {service1,
+           {net::FirstPartySetEntry(primary, net::SiteType::kService,
+                                    absl::nullopt)}},
+          {service3,
+           {net::FirstPartySetEntry(primary, net::SiteType::kService,
+                                    absl::nullopt)}},
+      },
+      {}));
+
+  service()->InitForTesting();
+
+  EXPECT_EQ(
+      GetRelatedWebsiteSetsSource()->at(
+          RelatedWebsiteSetsSource::kSetsInfoField),
+      base::Value::List()
+          .Append(
+              base::Value::Dict()
+                  .Set("AssociatedSites", base::Value::List()
+                                              .Append(associated1.Serialize())
+                                              .Append(associated2.Serialize())
+                                              .Append(associated3.Serialize()))
+                  .Set("PrimarySites",
+                       base::Value::List().Append(primary.Serialize()))
+                  .Set("ServiceSites", base::Value::List()
+                                           .Append(service1.Serialize())
+                                           .Append(service2.Serialize())
+                                           .Append(service3.Serialize())))
+          .DebugString());
 }
 
 }  // namespace system_logs
