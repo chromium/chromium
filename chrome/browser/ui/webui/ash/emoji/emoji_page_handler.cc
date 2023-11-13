@@ -66,6 +66,11 @@ void LogLoadTime(base::TimeDelta delay) {
                                 delay);
 }
 
+void LogInsertionLatency(base::TimeDelta delay) {
+  base::UmaHistogramTimes("InputMethod.SystemEmojiPicker.InsertionLatency",
+                          delay);
+}
+
 void CopyEmojiToClipboard(const std::string& emoji_to_copy) {
   if (base::FeatureList::IsEnabled(features::kImeSystemEmojiPickerClipboard)) {
     auto clipboard = std::make_unique<ui::ScopedClipboardWriter>(
@@ -104,6 +109,7 @@ void CopyGifToClipboard(const GURL& gif_to_copy) {
 class InsertObserver : public ui::InputMethodObserver {
  public:
   explicit InsertObserver(ui::InputMethod* ime) : ime_(ime) {
+    start_time_ = base::TimeTicks::Now();
     delete_timer_.Start(
         FROM_HERE, base::Seconds(1),
         base::BindOnce(&InsertObserver::DestroySelf, base::Unretained(this)));
@@ -161,7 +167,10 @@ class InsertObserver : public ui::InputMethodObserver {
   void OnInputMethodDestroyed(const ui::InputMethod* client) override {}
 
  protected:
-  void MarkInserted() { this->inserted_ = true; }
+  void MarkInserted() {
+    this->inserted_ = true;
+    LogInsertionLatency(base::TimeTicks::Now() - start_time_);
+  }
 
  private:
   void DestroySelf() {
@@ -174,6 +183,7 @@ class InsertObserver : public ui::InputMethodObserver {
   base::OneShotTimer delete_timer_;
   raw_ptr<ui::InputMethod, LeakedDanglingUntriaged | ExperimentalAsh> ime_;
   bool inserted_ = false;
+  base::TimeTicks start_time_;
 };
 
 // Used to insert an emoji after WebUI handler is destroyed, before

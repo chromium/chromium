@@ -1450,6 +1450,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.SystemEmojiPicker.InsertionLatency" units="ms"
+    expires_after="2024-12-31">
+  <owner>greywang@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Time between when emoji is clicked and when the emoji is successfully
+    inserted (fallback coping to clipboard does not count here). The metric is
+    recorded every time when emoji / image insertion is successfully finished in
+    System Emoji Picker.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.SystemEmojiPicker.LoadTime" units="ms"
     expires_after="2024-04-28">
   <owner>jopalmer@chromium.org</owner>
