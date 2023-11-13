@@ -220,6 +220,12 @@ bool AutoPipSettingView::WantsEvent(const gfx::Point& point_in_screen) {
 // views::BubbleDialogDelegate:
 gfx::Rect AutoPipSettingView::GetAnchorRect() const {
   const auto anchor_rect = BubbleDialogDelegate::GetAnchorRect();
+  // If arrow is FLOAT, do not offset the anchor rect. This ensures that the
+  // widget is centered for video pip windows.
+  if (arrow() == views::BubbleBorder::Arrow::FLOAT) {
+    return anchor_rect;
+  }
+
   const auto old_origin = anchor_rect.origin();
   const auto old_size = anchor_rect.size();
   const auto new_anchor_rect =
