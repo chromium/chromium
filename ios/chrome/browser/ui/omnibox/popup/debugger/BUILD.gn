@@ -1,0 +1,18 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("debugger") {
+  sources = [
+    "omnibox_autocomplete_event.h",
+    "omnibox_autocomplete_event.mm",
+    "omnibox_autocomplete_event_view_controller.h",
+    "omnibox_autocomplete_event_view_controller.mm",
+    "omnibox_event.h",
+  ]
+  deps = [
+    "//base",
+    "//components/omnibox/browser",
+    "//ios/chrome/browser/ui/omnibox/popup:popup_internal",
+  ]
+}
