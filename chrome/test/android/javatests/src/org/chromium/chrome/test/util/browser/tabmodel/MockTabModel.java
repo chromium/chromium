@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.test.util.browser.tabmodel;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -16,6 +20,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
 import java.util.ArrayList;
 
@@ -39,6 +44,7 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
 
     private int mIndex = TabModel.INVALID_TAB_INDEX;
 
+    private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
     private final ObserverList<TabModelObserver> mObservers = new ObserverList<>();
     private final ArrayList<Tab> mTabs = new ArrayList<Tab>();
     private final Profile mProfile;
@@ -113,6 +119,11 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
+    public @NonNull ObservableSupplier<Tab> getCurrentTabSupplier() {
+        return mCurrentTabSupplier;
+    }
+
+    @Override
     public int index() {
         return mIndex;
     }
@@ -120,6 +131,7 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     @Override
     public void setIndex(int i, @TabSelectionType int type, boolean skipLoadingTab) {
         mIndex = i;
+        mCurrentTabSupplier.set(TabModelUtils.getCurrentTab(this));
         if (mIndex == TabModel.INVALID_TAB_INDEX) return;
 
         for (TabModelObserver observer : mObservers) {

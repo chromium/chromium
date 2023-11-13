@@ -4,8 +4,13 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import androidx.annotation.NonNull;
+
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -37,6 +42,9 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     private final ObserverList<TabModelObserver> mObservers = new ObserverList<>();
     private final ObserverList<IncognitoTabModelObserver> mIncognitoObservers =
             new ObserverList<>();
+    private final Callback<Tab> mDelegateModelCurrentTabSupplierObserver;
+    private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
+
     private TabModel mDelegateModel;
     private int mCountOfAddingOrClosingTabs;
     private boolean mActive;
@@ -47,6 +55,7 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     IncognitoTabModelImpl(IncognitoTabModelDelegate tabModelCreator) {
         mDelegate = tabModelCreator;
         mDelegateModel = EmptyTabModel.getInstance();
+        mDelegateModelCurrentTabSupplierObserver = mCurrentTabSupplier::set;
     }
 
     /**
@@ -57,6 +66,9 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
         if (!(mDelegateModel instanceof EmptyTabModel)) return;
 
         mDelegateModel = mDelegate.createTabModel();
+        mDelegateModel
+                .getCurrentTabSupplier()
+                .addObserver(mDelegateModelCurrentTabSupplierObserver);
         for (TabModelObserver observer : mObservers) {
             mDelegateModel.addObserver(observer);
         }
@@ -78,6 +90,7 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
         }
 
         mDelegateModel.destroy();
+        mCurrentTabSupplier.set(null);
 
         mDelegateModel = EmptyTabModel.getInstance();
     }
@@ -183,6 +196,11 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     @Override
     public int index() {
         return mDelegateModel.index();
+    }
+
+    @Override
+    public @NonNull ObservableSupplier<Tab> getCurrentTabSupplier() {
+        return mCurrentTabSupplier;
     }
 
     @Override

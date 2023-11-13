@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -155,6 +157,13 @@ public interface TabModel extends TabList {
      *         {@link #supportsPendingClosures()}, as this will include all pending closure tabs.
      */
     public TabList getComprehensiveModel();
+
+    /**
+     * Returns a supplier of the current {@link Tab}. The tab may be null if no tab is present in
+     * the model or selected. The contained tab should always match the result of {@code
+     * getTabAt(index())}.
+     */
+    public @NonNull ObservableSupplier<Tab> getCurrentTabSupplier();
 
     /**
      * Selects a tab by its index.

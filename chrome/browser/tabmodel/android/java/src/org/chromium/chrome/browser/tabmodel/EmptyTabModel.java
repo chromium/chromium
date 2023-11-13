@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -86,6 +89,12 @@ public class EmptyTabModel implements TabModel {
     @Override
     public int index() {
         return INVALID_TAB_INDEX;
+    }
+
+    @Override
+    public @NonNull ObservableSupplier<Tab> getCurrentTabSupplier() {
+        assert false : "This should be unreachable in production, it may be mocked for testing.";
+        return new ObservableSupplierImpl<>();
     }
 
     @Override

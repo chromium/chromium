@@ -19,12 +19,14 @@ import java.util.List;
  */
 public interface TabModelObserver {
     /**
-     * Called when a tab is selected.
+     * Called when a tab is selected. This may not be called in some cases if this model is not the
+     * active model. If observing the current tab in this model is desired consider using {@link
+     * TabModel#getCurrentTabSupplier()} and observing that instead.
      *
      * @param tab The newly selected tab.
      * @param type The type of selection.
      * @param lastId The ID of the last selected tab, or {@link Tab#INVALID_TAB_ID} if no tab was
-     * selected.
+     *     selected.
      */
     default void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {}
 

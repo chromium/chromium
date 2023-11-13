@@ -12,6 +12,8 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -79,6 +81,7 @@ public class TabModelImpl extends TabModelJniBridge {
     private final ObserverList<TabModelObserver> mObservers;
     private final NextTabPolicySupplier mNextTabPolicySupplier;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
+    private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
 
     // Undo State Tracking -------------------------------------------------------------------------
 
@@ -106,61 +109,75 @@ public class TabModelImpl extends TabModelJniBridge {
         mAsyncTabParamsManager = asyncTabParamsManager;
         mModelDelegate = modelDelegate;
         if (supportUndo && !isIncognito()) {
-            mPendingTabClosureManager = new PendingTabClosureManager(
-                    this, new PendingTabClosureManager.PendingTabClosureDelegate() {
-                        @Override
-                        public void insertUndoneTabClosureAt(Tab tab, int insertIndex) {
-                            if (mIndex >= insertIndex) mIndex++;
-                            assert !tab.isDestroyed() : "Attempting to undo tab that is destroyed.";
-                            mTabs.add(insertIndex, tab);
+            mPendingTabClosureManager =
+                    new PendingTabClosureManager(
+                            this,
+                            new PendingTabClosureManager.PendingTabClosureDelegate() {
+                                @Override
+                                public void insertUndoneTabClosureAt(Tab tab, int insertIndex) {
+                                    if (mIndex >= insertIndex) mIndex++;
+                                    assert !tab.isDestroyed()
+                                            : "Attempting to undo tab that is destroyed.";
+                                    mTabs.add(insertIndex, tab);
 
-                            WebContents webContents = tab.getWebContents();
-                            if (webContents != null) webContents.setAudioMuted(false);
+                                    WebContents webContents = tab.getWebContents();
+                                    if (webContents != null) webContents.setAudioMuted(false);
 
-                            // Start by setting a valid index to the restored tab if not already
-                            // valid. This ensures getting the current index is valid for any
-                            // observers.
-                            boolean wasInvalidIndex = mIndex == INVALID_TAB_INDEX;
-                            if (wasInvalidIndex) {
-                                mIndex = insertIndex;
-                            }
+                                    // Start by setting a valid index to the restored tab if not
+                                    // already valid. This ensures getting the current index is
+                                    // valid for
+                                    // any observers.
+                                    boolean wasInvalidIndex = mIndex == INVALID_TAB_INDEX;
+                                    if (wasInvalidIndex) {
+                                        mIndex = insertIndex;
+                                    }
 
-                            // Alert observers the tab closure was undone before calling
-                            // setIndex if necessary as
-                            // * Observers may rely on this signal to re-introduce the tab to
-                            //   their visibility if it is selected before this it may not exist
-                            //   for those observers.
-                            // * UndoRefocusHelper may update the index out-of-band.
-                            for (TabModelObserver obs : mObservers) obs.tabClosureUndone(tab);
+                                    // Alert observers the tab closure was undone before calling
+                                    // setIndex if necessary as
+                                    // * Observers may rely on this signal to re-introduce the tab
+                                    //   to their visibility if it is selected before this it may
+                                    //   not exist for those observers.
+                                    // * UndoRefocusHelper may update the index out-of-band.
+                                    for (TabModelObserver obs : mObservers) {
+                                        obs.tabClosureUndone(tab);
+                                    }
 
-                            // If the mIndex we set earlier is still in use then trigger a proper
-                            // index update and notify any observers.
-                            if (wasInvalidIndex && isActiveModel() && mIndex == insertIndex) {
-                                // Reset the index first so the event is raised properly as a index
-                                // change and not re-using the current index.
-                                mIndex = INVALID_TAB_INDEX;
-                                TabModelUtils.setIndex(TabModelImpl.this, insertIndex, false,
-                                        TabSelectionType.FROM_UNDO);
-                            }
-                        }
+                                    // If the mIndex we set earlier is still in use then trigger a
+                                    // proper index update and notify any observers.
+                                    if (wasInvalidIndex
+                                            && isActiveModel()
+                                            && mIndex == insertIndex) {
+                                        // Reset the index first so the event is raised properly as
+                                        // a index change and not re-using the current index.
+                                        mIndex = INVALID_TAB_INDEX;
+                                        TabModelUtils.setIndex(
+                                                TabModelImpl.this,
+                                                insertIndex,
+                                                false,
+                                                TabSelectionType.FROM_UNDO);
+                                    } else if (wasInvalidIndex && !isActiveModel()) {
+                                        mCurrentTabSupplier.set(
+                                                TabModelUtils.getCurrentTab(TabModelImpl.this));
+                                    }
+                                }
 
-                        @Override
-                        public void finalizeClosure(Tab tab) {
-                            finalizeTabClosure(tab, true);
-                        }
+                                @Override
+                                public void finalizeClosure(Tab tab) {
+                                    finalizeTabClosure(tab, true);
+                                }
 
-                        @Override
-                        public void notifyAllTabsClosureUndone() {
-                            for (TabModelObserver obs : mObservers) {
-                                obs.allTabsClosureUndone();
-                            }
-                        }
+                                @Override
+                                public void notifyAllTabsClosureUndone() {
+                                    for (TabModelObserver obs : mObservers) {
+                                        obs.allTabsClosureUndone();
+                                    }
+                                }
 
-                        @Override
-                        public void notifyOnFinishingMultipleTabClosure(List<Tab> tabs) {
-                            TabModelImpl.this.notifyOnFinishingMultipleTabClosure(tabs);
-                        }
-                    });
+                                @Override
+                                public void notifyOnFinishingMultipleTabClosure(List<Tab> tabs) {
+                                    TabModelImpl.this.notifyOnFinishingMultipleTabClosure(tabs);
+                                }
+                            });
         }
         mObservers = new ObserverList<TabModelObserver>();
         // The call to initializeNative() should be as late as possible, as it results in calling
@@ -215,6 +232,7 @@ public class TabModelImpl extends TabModelJniBridge {
                 TabModelUtils.setIndex(this, 0, false);
             } else {
                 mIndex = 0;
+                mCurrentTabSupplier.set(TabModelUtils.getCurrentTab(this));
             }
         }
 
@@ -273,6 +291,9 @@ public class TabModelImpl extends TabModelJniBridge {
                 // first one is added.  When in the foreground, calls to setIndex will take care of
                 // this.
                 mIndex = Math.max(mIndex, 0);
+                if (!selectTab) {
+                    mCurrentTabSupplier.set(TabModelUtils.getCurrentTab(this));
+                }
             }
 
             if (supportsPendingClosures()) {
@@ -619,6 +640,11 @@ public class TabModelImpl extends TabModelJniBridge {
         return false;
     }
 
+    @Override
+    public ObservableSupplier<Tab> getCurrentTabSupplier() {
+        return mCurrentTabSupplier;
+    }
+
     // This function is complex and its behavior depends on persisted state, including mIndex.
     @Override
     public void setIndex(int i, final @TabSelectionType int type, boolean skipLoadingTab) {
@@ -640,6 +666,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
             if (!skipLoadingTab || tab == null) mModelDelegate.requestToShowTab(tab, type);
 
+            mCurrentTabSupplier.set(tab);
             if (tab != null) {
                 for (TabModelObserver obs : mObservers) obs.didSelectTab(tab, type, lastId);
 
@@ -732,12 +759,15 @@ public class TabModelImpl extends TabModelJniBridge {
                 mModelDelegate.getModel(nextIsIncognito), nextTabId);
 
         if (nextTab != currentTabInModel) {
-            if (nextIsIncognito != isIncognito()) mIndex = indexOf(adjacentTabInModel);
+            if (nextIsIncognito != isIncognito()) {
+                mIndex = indexOf(adjacentTabInModel);
+            }
 
             TabModel nextModel = mModelDelegate.getModel(nextIsIncognito);
             nextModel.setIndex(nextTabIndex, selectionType, false);
         } else {
             mIndex = nextTabIndex;
+            mCurrentTabSupplier.set(TabModelUtils.getCurrentTab(this));
         }
 
         if (updatePendingTabClosureManager && supportsPendingClosures()) {
