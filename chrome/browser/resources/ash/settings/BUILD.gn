@@ -298,6 +298,7 @@ build_webui("build") {
     "os_privacy_page/os_privacy_page.ts",
     "os_privacy_page/peripheral_data_access_protection_dialog.ts",
     "os_privacy_page/privacy_hub_app_permission_row.ts",
+    "os_privacy_page/privacy_hub_camera_subpage.ts",
     "os_privacy_page/privacy_hub_geolocation_subpage.ts",
     "os_privacy_page/privacy_hub_microphone_subpage.ts",
     "os_privacy_page/privacy_hub_subpage.ts",

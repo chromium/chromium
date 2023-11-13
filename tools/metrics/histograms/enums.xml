@@ -54012,6 +54012,7 @@ Called by update_net_error_codes.py.-->
   <int value="1103" label="Smart Privacy Protections"/>
   <int value="1104" label="Privacy Hub"/>
   <int value="1105" label="Privacy Hub Microphone"/>
+  <int value="1106" label="Privacy Hub Camera"/>
   <int value="1107" label="Privacy Hub Geolocation"/>
   <int value="1200" label="Languages And Input Details"/>
   <int value="1201" label="Manage Input Methods"/>

@@ -67,10 +67,7 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         },
       },
 
-      useCameraToggleFallbackSubtext_: {
-        type: Boolean,
-        value: false,
-      },
+      cameraSubLabel_: String,
 
       /**
        * The list of connected cameras.
@@ -171,8 +168,8 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   }
 
   private browserProxy_: PrivacyHubBrowserProxy;
+  private cameraSubLabel_: string;
   private camerasConnected_: string[];
-  private useCameraToggleFallbackSubtext_: boolean;
   private isCameraListEmpty_: boolean;
   private isMicListEmpty_: boolean;
   private isHatsSurveyEnabled_: boolean;
@@ -213,7 +210,7 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         });
 
     this.browserProxy_.getCameraLedFallbackState().then((enabled) => {
-      this.setCameraLedFallbackState_(enabled);
+      this.setCameraSubLabel_(enabled);
     });
 
     this.updateMediaDeviceLists_();
@@ -258,10 +255,13 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   }
 
   /**
-   * @param enabled whether the fallback mechanism for camera LED is enabled
+   * @param fallbackEnabled whether the fallback mechanism for camera LED is
+   * enabled
    */
-  private setCameraLedFallbackState_(enabled: boolean): void {
-    this.useCameraToggleFallbackSubtext_ = enabled;
+  private setCameraSubLabel_(fallbackEnabled: boolean): void {
+    this.cameraSubLabel_ = fallbackEnabled ?
+        this.i18n('cameraToggleFallbackSubtext') :
+        this.i18n('cameraToggleSubtext');
   }
 
   /**
@@ -305,6 +305,10 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
     chrome.metricsPrivate.recordBoolean(
         'ChromeOS.PrivacyHub.Microphone.Settings.Enabled',
         (event.target as SettingsToggleButtonElement).checked);
+  }
+
+  private onCameraSubpageLinkClick_(): void {
+    Router.getInstance().navigateTo(routes.PRIVACY_HUB_CAMERA);
   }
 
   private onMicrophoneSubpageLinkClick_(): void {

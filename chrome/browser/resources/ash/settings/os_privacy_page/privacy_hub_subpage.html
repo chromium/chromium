@@ -13,45 +13,49 @@
   }
 </style>
 
-<div id="camera">
-  <template is="dom-if" if="[[useCameraToggleFallbackSubtext_]]" restamp>
-  <settings-toggle-button
-      pref="{{prefs.ash.user.camera_allowed}}"
-      id="cameraToggle"
-      label="$i18n{cameraToggleTitle}"
-      sub-label="$i18n{cameraToggleFallbackSubtext}"
-      deep-link-focus-id$="[[Setting.kCameraOnOff]]"
-      disabled="[[shouldDisableCameraToggle_]]"
-      on-change="onCameraToggleChanged_">
-  </settings-toggle-button>
-  </template>
-  <template is="dom-if" if="[[!useCameraToggleFallbackSubtext_]]" restamp>
-  <settings-toggle-button
-      pref="{{prefs.ash.user.camera_allowed}}"
-      id="cameraToggle"
-      label="$i18n{cameraToggleTitle}"
-      sub-label="$i18n{cameraToggleSubtext}"
-      deep-link-focus-id$="[[Setting.kCameraOnOff]]"
-      disabled="[[shouldDisableCameraToggle_]]"
-      on-change="onCameraToggleChanged_">
-  </settings-toggle-button>
-  </template>
-
-  <div class="list-frame">
-    <template is="dom-if" if="[[isCameraListEmpty_]]" restamp>
-      <div id="noCamera" class="list-item">
-        $i18n{noCameraConnectedText}
-      </div>
-    </template>
-
-    <template is="dom-if" if="[[!isCameraListEmpty_]]" restamp>
-      <template id="cameraList" is="dom-repeat" items="[[camerasConnected_]]">
-        <div class="list-item">
-          [[item]]
+<div id="cameraSection">
+  <template is="dom-if" if="[[!showAppPermissions_]]">
+    <settings-toggle-button
+        id="cameraToggle"
+        pref="{{prefs.ash.user.camera_allowed}}"
+        label="$i18n{cameraToggleTitle}"
+        sub-label="[[cameraSubLabel_]]"
+        deep-link-focus-id$="[[Setting.kCameraOnOff]]"
+        disabled="[[shouldDisableCameraToggle_]]"
+        on-change="onCameraToggleChanged_">
+    </settings-toggle-button>
+    <div class="list-frame">
+      <template is="dom-if" if="[[isCameraListEmpty_]]" restamp>
+        <div id="noCamera" class="list-item">
+          $i18n{noCameraConnectedText}
         </div>
       </template>
-    </template>
-  </div>
+      <template is="dom-if" if="[[!isCameraListEmpty_]]" restamp>
+        <template id="cameraList" is="dom-repeat" items="[[camerasConnected_]]">
+          <div class="list-item">
+            [[item]]
+          </div>
+        </template>
+      </template>
+    </div>
+  </template>
+  <template is="dom-if" if="[[showAppPermissions_]]">
+    <div id="cameraRow" class="settings-box no-padding">
+      <cr-link-row id="cameraSubpageLink"
+          start-icon="app-management:camera"
+          label="$i18n{cameraToggleTitle}"
+          sub-label="[[cameraSubLabel_]]"
+          on-click="onCameraSubpageLinkClick_">
+      </cr-link-row>
+      <div class="separator"></div>
+      <cr-toggle
+          id="cameraToggle"
+          class="margin-matches-padding"
+          checked="{{prefs.ash.user.camera_allowed.value}}"
+          disabled="[[shouldDisableCameraToggle_]]">
+      </cr-toggle>
+    </div>
+  </template>
 </div>
 
 <div id="microphoneSection">

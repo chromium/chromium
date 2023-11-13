@@ -44,6 +44,7 @@ namespace mojom {
 using ::chromeos::settings::mojom::kFingerprintSubpagePathV2;
 using ::chromeos::settings::mojom::kManageOtherPeopleSubpagePathV2;
 using ::chromeos::settings::mojom::kPrivacyAndSecuritySectionPath;
+using ::chromeos::settings::mojom::kPrivacyHubCameraSubpagePath;
 using ::chromeos::settings::mojom::kPrivacyHubGeolocationSubpagePath;
 using ::chromeos::settings::mojom::kPrivacyHubMicrophoneSubpagePath;
 using ::chromeos::settings::mojom::kPrivacyHubSubpagePath;
@@ -674,15 +675,26 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // Privacy hub microphone.
   generator->RegisterTopLevelSubpage(
       IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_TITLE,
-      mojom::Subpage::kPrivacyHubMicrophone, mojom::SearchResultIcon::kShield,
+      mojom::Subpage::kPrivacyHubMicrophone,
+      mojom::SearchResultIcon::kMicrophone,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kPrivacyHubMicrophoneSubpagePath);
 
+  // Privacy hub geolocation.
   generator->RegisterTopLevelSubpage(
       IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_AREA_TITLE,
-      mojom::Subpage::kPrivacyHubGeolocation, mojom::SearchResultIcon::kShield,
+      mojom::Subpage::kPrivacyHubGeolocation,
+      mojom::SearchResultIcon::kGeolocation,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kPrivacyHubGeolocationSubpagePath);
+
+  // Privacy hub camera.
+  generator->RegisterTopLevelSubpage(
+      IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_TOGGLE_TITLE,
+      mojom::Subpage::kPrivacyHubCamera, mojom::SearchResultIcon::kCamera,
+      mojom::SearchResultDefaultRank::kMedium,
+      mojom::kPrivacyHubCameraSubpagePath);
+
   // `sync_subsection_` is initialized only if the feature revamp wayfinding is
   // enabled.
   if (sync_subsection_) {
