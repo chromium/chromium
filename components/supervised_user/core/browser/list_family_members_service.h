@@ -15,7 +15,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
-#include "net/base/backoff_entry.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -73,7 +72,6 @@ class ListFamilyMembersService : public KeyedService {
       ProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>>
       fetcher_;
   base::OneShotTimer timer_;
-  net::BackoffEntry backoff_;
 };
 
 }  // namespace supervised_user

@@ -83,22 +83,6 @@ constexpr FetcherConfig kClassifyUrlConfig = {
         },
 };
 
-constexpr FetcherConfig kListFamilyMembersLegacyConfig{
-    .service_path = "/kidsmanagement/v1/families/mine/members",
-    .method = FetcherConfig::Method::kGet,
-    .histogram_basename = "Signin.ListFamilyMembersRequest",
-    .traffic_annotation = annotations::ListFamilyMembersTag,
-    .access_token_config{
-        // Wait for the token to be issued. This fetch is asynchronous and not
-        // latency sensitive.
-        .mode =
-            signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-
-        // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-        .oauth2_scope = "https://www.googleapis.com/auth/kid.family.readonly",
-    },
-};
-
 constexpr FetcherConfig kListFamilyMembersConfig{
     .service_path = "/kidsmanagement/v1/families/mine/members",
     .method = FetcherConfig::Method::kGet,

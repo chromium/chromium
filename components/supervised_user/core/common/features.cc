@@ -40,9 +40,6 @@ BASE_FEATURE(kLocalWebApprovals,
 BASE_FEATURE(kEnableProtoApiForClassifyUrl,
              "EnableProtoApiForClassifyUrl",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kUseBuiltInRetryingMechanismForListFamilyMembers,
-             "UseBuiltInRetryingMechanismForListFamilyMembers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGoogleBrandedBuild() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -67,11 +64,6 @@ bool IsLocalWebApprovalsEnabled() {
 
 bool IsProtoApiForClassifyUrlEnabled() {
   return base::FeatureList::IsEnabled(kEnableProtoApiForClassifyUrl);
-}
-
-bool IsRetryMechanismForListFamilyMembersEnabled() {
-  return base::FeatureList::IsEnabled(
-      kUseBuiltInRetryingMechanismForListFamilyMembers);
 }
 
 // The following flags control whether supervision features are enabled on
