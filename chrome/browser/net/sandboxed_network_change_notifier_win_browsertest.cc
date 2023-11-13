@@ -29,6 +29,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_devinfo.h"
 #include "base/win/win_util.h"
+#include "base/win/windows_version.h"
+#include "build/build_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_features.h"
@@ -168,6 +170,14 @@ IN_PROC_BROWSER_TEST_P(SandboxedNetworkChangeNotifierBrowserTest,
   if (!::IsUserAnAdmin()) {
     GTEST_SKIP() << "This test requires running elevated.";
   }
+#if defined(ARCH_CPU_X86)
+  if (!base::win::OSInfo::GetInstance()->IsWowDisabled()) {
+    GTEST_SKIP()
+        << "SetupDiCallClassInstaller can't be called from a 32 bit app"
+        << " running in a 64 bit environment";
+  }
+#endif  // defined(ARCH_CPU_X86)
+
   mojo::Remote<network::mojom::NetworkChangeManager> network_change_manager;
   GetNetworkService()->GetNetworkChangeManager(
       network_change_manager.BindNewPipeAndPassReceiver());
