@@ -54,11 +54,12 @@ import './screens/osauth/local_password_setup.js';
 import './screens/osauth/osauth_error.js';
 import './screens/osauth/password_selection.js';
 import './screens/osauth/pin_setup.js';
+// AUTHENTICATION SCREENS USED DURING THE LOGIN FLOW
+import './screens/osauth/cryptohome_recovery.js';
+import './screens/osauth/gaia_password_changed.js';
 // SCREENS USED DURING THE LOGIN FLOW
 import './screens/login/arc_vm_data_migration.js';
-import './screens/login/cryptohome_recovery.js';
 import './screens/login/encryption_migration.js';
-import './screens/login/gaia_password_changed.js';
 import './screens/login/lacros_data_backward_migration.js';
 import './screens/login/lacros_data_migration.js';
 import './screens/login/management_transition.js';

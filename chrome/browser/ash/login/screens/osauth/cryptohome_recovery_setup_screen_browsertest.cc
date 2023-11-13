@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/screens/cryptohome_recovery_setup_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/cryptohome_recovery_setup_screen.h"
 
 #include <string>
 #include <utility>

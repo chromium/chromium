@@ -11,8 +11,10 @@ js_type_check("closure_compile") {
   closure_flags = default_closure_args
   deps = [
     ":apply_online_password",
+    ":cryptohome_recovery",
     ":cryptohome_recovery_setup",
     ":fingerprint_setup",
+    ":gaia_password_changed",
     ":local_password_setup",
     ":osauth_error",
     ":password_selection",
@@ -26,6 +28,18 @@ js_library("apply_online_password") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/dialogs:oobe_loading_dialog",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("cryptohome_recovery") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/osauth/cryptohome_recovery.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:multi_step_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_loading_dialog",
   ]
   extra_deps = [ ":web_components" ]
@@ -60,6 +74,22 @@ js_library("fingerprint_setup") {
     "//ash/webui/common/resources/quick_unlock/fingerprint_progress_externs.js",
   ]
 
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("gaia_password_changed") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/osauth/gaia_password_changed.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:multi_step_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/buttons:oobe_next_button",
+    "../../components/buttons:oobe_text_button",
+    "../../components/dialogs:oobe_adaptive_dialog",
+    "../../components/dialogs:oobe_loading_dialog",
+  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
   extra_deps = [ ":web_components" ]
 }
 
@@ -134,8 +164,10 @@ js_library("pin_setup") {
 html_to_js("web_components") {
   js_files = [
     "apply_online_password.js",
+    "cryptohome_recovery.js",
     "cryptohome_recovery_setup.js",
     "fingerprint_setup.js",
+    "gaia_password_changed.js",
     "local_password_setup.js",
     "osauth_error.js",
     "password_selection.js",

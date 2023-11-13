@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/screens/gaia_password_changed_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/gaia_password_changed_screen.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/check_op.h"

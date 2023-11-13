@@ -7,7 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/screens/gaia_password_changed_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/gaia_password_changed_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
