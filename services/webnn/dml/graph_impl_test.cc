@@ -2825,6 +2825,112 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneInputAndOneConstantOperand) {
             std::vector<float>({12, 14, 12, 14}));
 }
 
+template <typename T>
+struct MatmulTester {
+  OperandInfo<T> input_a;
+  OperandInfo<T> input_b;
+  OperandInfo<T> output;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t a_operand_id =
+        builder.BuildInput("input_a", input_a.dimensions, input_a.type);
+    uint64_t b_operand_id =
+        builder.BuildInput("input_b", input_b.dimensions, input_b.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildMatmul(a_operand_id, b_operand_id, output_operand_id);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input_a", VectorToBigBuffer(input_a.values)});
+    named_inputs.insert({"input_b", VectorToBigBuffer(input_b.values)});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyFloatDataIsEqual(
+        GetFloatOutputData(std::move(named_outputs["output"]), output.type),
+        output.values);
+  }
+};
+
+// Test building and computing a DML graph with single operator matmul.
+TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorMatmul) {
+  // DML_GEMM_OPERATOR_DESC support for 2~4 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
+
+  // Test matmul with 2-D * 2-D inputs.
+  {
+    MatmulTester<float>{.input_a = {.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2, 2},
+                                    .values = {1, 2, 3, 4}},
+                        .input_b = {.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2, 2},
+                                    .values = {1, 2, 3, 4}},
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2, 2},
+                                   .values = {7, 10, 15, 22}}}
+        .Test();
+  }
+  // Test matmul with 3-D * 3-D inputs using broadcasting.
+  {
+    MatmulTester<float>{.input_a = {.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {1, 2, 3},
+                                    .values = {1, 2, 3, 4, 5, 6}},
+                        .input_b = {.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2, 3, 1},
+                                    .values = {1, 2, 3, 4, 5, 6}},
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2, 2, 1},
+                                   .values = {14, 32, 32, 77}}}
+        .Test();
+  }
+  // Test matmul with 2-D * 3-D inputs using broadcasting.
+  {
+    MatmulTester<float>{.input_a = {.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2, 3},
+                                    .values = {1, 2, 3, 4, 5, 6}},
+                        .input_b = {.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2, 3, 1},
+                                    .values = {1, 2, 3, 4, 5, 6}},
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2, 2, 1},
+                                   .values = {14, 32, 32, 77}}}
+        .Test();
+  }
+  // Test matmul with 3-D * 4-D inputs using broadcasting.
+  {
+    MatmulTester<float>{
+        .input_a = {.type = mojom::Operand::DataType::kFloat32,
+                    .dimensions = {2, 2, 3},
+                    .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}},
+        .input_b = {.type = mojom::Operand::DataType::kFloat32,
+                    .dimensions = {2, 1, 3, 1},
+                    .values = {1, 2, 3, 4, 5, 6}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2, 2, 1},
+                   .values = {14, 32, 50, 68, 32, 77, 122, 167}}}
+        .Test();
+  }
+  // Test matmul with 4-D * 4-D inputs.
+  {
+    MatmulTester<float>{
+        .input_a = {.type = mojom::Operand::DataType::kFloat32,
+                    .dimensions = {2, 1, 2, 3},
+                    .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}},
+        .input_b = {.type = mojom::Operand::DataType::kFloat32,
+                    .dimensions = {2, 1, 3, 1},
+                    .values = {1, 2, 3, 4, 5, 6}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 1, 2, 1},
+                   .values = {14, 32, 122, 167}}}
+        .Test();
+  }
+}
+
 // Test building and computing a DML graph with two inputs and two constant in
 // the following topology.
 //    [input_a] [constant_a] [input_b] [constant_b]

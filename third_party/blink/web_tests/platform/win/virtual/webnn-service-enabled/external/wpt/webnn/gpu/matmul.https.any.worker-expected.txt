@@ -13,24 +13,18 @@ This is a testharness.js-based test.
   Failed to execute 'matmul' on 'MLGraphBuilder': The rank of input must be larger than or equal to 2.
 [FAIL] matmul float32 2D and 1D tensors / sync
   Failed to execute 'matmul' on 'MLGraphBuilder': The rank of input must be larger than or equal to 2.
-[FAIL] matmul float32 2D and 2D tensors / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': This operator (matmul) is not supported.
-[FAIL] matmul float32 3D and 3D tensors / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': This operator (matmul) is not supported.
-[FAIL] matmul float32 3D and 3D (broadcast) tensors / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': This operator (matmul) is not supported.
-[FAIL] matmul float32 3D and 2D tensors / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': This operator (matmul) is not supported.
+[PASS] matmul float32 2D and 2D tensors / sync
+[PASS] matmul float32 3D and 3D tensors / sync
+[PASS] matmul float32 3D and 3D (broadcast) tensors / sync
+[PASS] matmul float32 3D and 2D tensors / sync
 [FAIL] matmul float32 3D and 1D tensors / sync
   Failed to execute 'matmul' on 'MLGraphBuilder': The rank of input must be larger than or equal to 2.
-[FAIL] matmul float32 4D and 4D (broadcast) tensors / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': This operator (matmul) is not supported.
-[FAIL] matmul float32 4D and 3D tensors / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': This operator (matmul) is not supported.
+[PASS] matmul float32 4D and 4D (broadcast) tensors / sync
+[PASS] matmul float32 4D and 3D tensors / sync
 [FAIL] matmul float32 5D and 5D tensors / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': This operator (matmul) is not supported.
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to create matmul operator.
 [FAIL] matmul float32 5D and 2D tensors / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': This operator (matmul) is not supported.
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to create matmul operator.
 [FAIL] matmul float32 1D and 1D tensors all positive produces a scalar / async
   promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'matmul' on 'MLGraphBuilder': The rank of input must be larger than or equal to 2."
 [FAIL] matmul float32 1D and 1D tensors all negative produces a scalar / async

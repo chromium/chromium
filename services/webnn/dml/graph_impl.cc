@@ -1409,6 +1409,66 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLeakyRelu(
   return base::ok();
 }
 
+// Using DML_GEMM_OPERATOR_DESC to implement WebNN matmul.
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::MatmulPtr& matmul,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input_a_node_output =
+      GetNodeOutputForOperand(id_to_node_output_map, matmul->a_operand_id);
+  auto input_a_tensor_desc = input_a_node_output->GetTensorDesc();
+  const NodeOutput* input_b_node_output =
+      GetNodeOutputForOperand(id_to_node_output_map, matmul->b_operand_id);
+  auto input_b_tensor_desc = input_b_node_output->GetTensorDesc();
+
+  uint64_t output_id = matmul->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+  const auto output_tensor_dims = output_tensor_desc.GetDimensions();
+  // Because DML_GEMM_OPERATOR_DESC restricts input_a_tensor and input_b_tensor,
+  // output_tensor must have the same DimensionCount and can't support
+  // broadcasting, input_a_tensor and input_b_tensor may need to be broadcasted.
+  if (output_tensor_dims.size() > 2) {
+    input_a_tensor_desc.BroadcastTo(output_tensor_dims, 2);
+    input_b_tensor_desc.BroadcastTo(output_tensor_dims, 2);
+  }
+
+  CHECK_EQ(input_a_tensor_desc.GetDimensions().size(),
+           input_b_tensor_desc.GetDimensions().size());
+  CHECK_EQ(input_a_tensor_desc.GetDimensions().size(),
+           output_tensor_dims.size());
+
+  DML_GEMM_OPERATOR_DESC matmul_operator_desc{
+      .ATensor = &input_a_tensor_desc.GetDMLTensorDesc(),
+      .BTensor = &input_b_tensor_desc.GetDMLTensorDesc(),
+      .CTensor = nullptr,
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .TransA = DML_MATRIX_TRANSFORM_NONE,
+      .TransB = DML_MATRIX_TRANSFORM_NONE,
+      .Alpha = 1.0f,
+      .Beta = 0.0f,
+      .FusedActivation = nullptr,
+  };
+
+  std::array<const NodeOutput*, 2> inputs{input_a_node_output,
+                                          input_b_node_output};
+  const OperatorNode* matmul_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_GEMM, &matmul_operator_desc, inputs);
+  if (!matmul_node) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Failed to create matmul operator."));
+  }
+
+  const NodeOutput* output = graph_builder.CreateNodeOutput(
+      matmul_node, std::move(output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+
+  return base::ok();
+}
+
 // Transpose is not a real DirectML operator. As for implementation, the input
 // tensor is remapped for reading elements following the strides after the
 // permutation, and an identity operator is appended to consume the remapped
@@ -1944,6 +2004,12 @@ void GraphImpl::CreateAndBuild(
       case Operation::Tag::kLeakyRelu: {
         create_operator_result = CreateOperatorNodeForLeakyRelu(
             id_to_operand_map, operation->get_leaky_relu(), graph_builder,
+            id_to_node_output_map);
+        break;
+      }
+      case mojom::Operation::Tag::kMatmul: {
+        create_operator_result = CreateOperatorNodeForMatmul(
+            id_to_operand_map, operation->get_matmul(), graph_builder,
             id_to_node_output_map);
         break;
       }
