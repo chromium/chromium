@@ -24,7 +24,7 @@ const size_t kPermissionsGrantedButtonIndex = 1;
 // `capture_allow()` indicating ther user's answer on the media capture request;
 // created with an AlertResponse.
 std::unique_ptr<OverlayResponse> CreatePermissionsDialogResponse(
-    std::unique_ptr<OverlayResponse> response) API_AVAILABLE(ios(15.0)) {
+    std::unique_ptr<OverlayResponse> response) {
   AlertResponse* alert_response = response->GetInfo<AlertResponse>();
   if (!alert_response) {
     return nullptr;

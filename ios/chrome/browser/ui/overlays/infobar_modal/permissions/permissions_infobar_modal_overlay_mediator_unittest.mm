@@ -86,7 +86,7 @@ class PermissionsInfobarModalOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  PermissionsInfobarModalOverlayMediator* mediator_ API_AVAILABLE(ios(15.0));
+  PermissionsInfobarModalOverlayMediator* mediator_;
   std::unique_ptr<OverlayRequest> request_;
   web::FakeWebState web_state_;
   std::unique_ptr<InfoBarIOS> infobar_;

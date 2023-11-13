@@ -113,7 +113,7 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
                                       type:(WKMediaCaptureType)type
                            decisionHandler:
                                (void (^)(WKPermissionDecision decision))
-                                   decisionHandler API_AVAILABLE(ios(15.0)) {
+                                   decisionHandler {
   RecordHistogramForPermissionRequestForWKMediaCaptureType(type);
   CRWMediaCapturePermissionRequest* request =
       [[CRWMediaCapturePermissionRequest alloc]

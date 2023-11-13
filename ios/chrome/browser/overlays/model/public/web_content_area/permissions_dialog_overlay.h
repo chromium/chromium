@@ -13,7 +13,7 @@
 
 // Configuration object for OverlayRequests for dialogs that ask for camera or
 // microphone permissions.
-class API_AVAILABLE(ios(15.0)) PermissionsDialogRequest
+class PermissionsDialogRequest
     : public OverlayRequestConfig<PermissionsDialogRequest> {
  public:
   ~PermissionsDialogRequest() override;
@@ -32,7 +32,7 @@ class API_AVAILABLE(ios(15.0)) PermissionsDialogRequest
 };
 
 // Response type used for permissions dialogs.
-class API_AVAILABLE(ios(15.0)) PermissionsDialogResponse
+class PermissionsDialogResponse
     : public OverlayResponseInfo<PermissionsDialogResponse> {
  public:
   ~PermissionsDialogResponse() override;

@@ -24,7 +24,7 @@ constexpr base::TimeDelta kTimeout = base::Milliseconds(250);
 // Completion callback for permissions alert overlay.
 void HandlePermissionDialogResponse(
     web::WebStatePermissionDecisionHandler handler,
-    OverlayResponse* response) API_AVAILABLE(ios(15.0)) {
+    OverlayResponse* response) {
   PermissionsDialogResponse* dialog_response =
       response ? response->GetInfo<PermissionsDialogResponse>() : nullptr;
   web::PermissionDecision decision =

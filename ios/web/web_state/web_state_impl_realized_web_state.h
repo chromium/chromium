@@ -209,19 +209,14 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void CloseWebState();
   bool SetSessionStateData(NSData* data);
   NSData* SessionStateData() const;
-  PermissionState GetStateForPermission(Permission permission) const
-      API_AVAILABLE(ios(15.0));
-  void SetStateForPermission(PermissionState state, Permission permission)
-      API_AVAILABLE(ios(15.0));
-  NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions() const
-      API_AVAILABLE(ios(15.0));
-  void OnStateChangedForPermission(Permission permission)
-      API_AVAILABLE(ios(15.0));
+  PermissionState GetStateForPermission(Permission permission) const;
+  void SetStateForPermission(PermissionState state, Permission permission);
+  NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions() const;
+  void OnStateChangedForPermission(Permission permission);
   void RequestPermissionsWithDecisionHandler(
       NSArray<NSNumber*>* permissions,
       const GURL& origin,
-      PermissionDecisionHandler web_view_decision_handler)
-      API_AVAILABLE(ios(15.0));
+      PermissionDecisionHandler web_view_decision_handler);
 
   // NavigationManagerDelegate:
   void ClearDialogs() final;

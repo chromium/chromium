@@ -139,8 +139,7 @@ class WebStateImpl final : public WebState {
 
   // Notifies web state observers when any of the web state's permission has
   // changed.
-  void OnStateChangedForPermission(Permission permission)
-      API_AVAILABLE(ios(15.0));
+  void OnStateChangedForPermission(Permission permission);
 
   // Returns the NavigationManager for this WebState.
   NavigationManagerImpl& GetNavigationManagerImpl();
@@ -279,12 +278,10 @@ class WebStateImpl final : public WebState {
 
   // Requests the user's permission to access requested `permissions` on
   // top-level `origin`.
-  typedef void (^PermissionDecisionHandler)(WKPermissionDecision decision)
-      API_AVAILABLE(ios(15.0));
+  typedef void (^PermissionDecisionHandler)(WKPermissionDecision decision);
   void RequestPermissionsWithDecisionHandler(NSArray<NSNumber*>* permissions,
                                              const GURL& origin,
-                                             PermissionDecisionHandler handler)
-      API_AVAILABLE(ios(15.0));
+                                             PermissionDecisionHandler handler);
 
   // WebState:
   void SerializeToProto(proto::WebStateStorage& storage) const final;
@@ -307,8 +304,7 @@ class WebStateImpl final : public WebState {
   base::WeakPtr<WebState> GetWeakPtr() final;
   void OpenURL(const WebState::OpenURLParams& params) final;
   void LoadSimulatedRequest(const GURL& url,
-                            NSString* response_html_string) final
-      API_AVAILABLE(ios(15.0));
+                            NSString* response_html_string) final;
   void LoadSimulatedRequest(const GURL& url,
                             NSData* response_data,
                             NSString* mime_type) final API_AVAILABLE(ios(15.0));
@@ -355,12 +351,10 @@ class WebStateImpl final : public WebState {
   void CloseWebState() final;
   bool SetSessionStateData(NSData* data) final;
   NSData* SessionStateData() final;
-  PermissionState GetStateForPermission(Permission permission) const final
-      API_AVAILABLE(ios(15.0));
-  void SetStateForPermission(PermissionState state, Permission permission) final
-      API_AVAILABLE(ios(15.0));
-  NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions() const final
-      API_AVAILABLE(ios(15.0));
+  PermissionState GetStateForPermission(Permission permission) const final;
+  void SetStateForPermission(PermissionState state,
+                             Permission permission) final;
+  NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions() const final;
   void DownloadCurrentPage(NSString* destination_file,
                            id<CRWWebViewDownloadDelegate> delegate,
                            void (^handler)(id<CRWWebViewDownload>)) final

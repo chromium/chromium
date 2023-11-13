@@ -21,8 +21,8 @@ using alert_overlays::ButtonConfig;
 // Test fixture for permissions dialog overlays.
 class PermissionsDialogOverlayTest : public PlatformTest {
  protected:
-  std::unique_ptr<OverlayRequest> CreateRequest(NSArray<NSNumber*>* permissions)
-      API_AVAILABLE(ios(15.0)) {
+  std::unique_ptr<OverlayRequest> CreateRequest(
+      NSArray<NSNumber*>* permissions) {
     return OverlayRequest::CreateWithConfig<PermissionsDialogRequest>(
         GURL("http://www.chromium.test"), permissions);
   }

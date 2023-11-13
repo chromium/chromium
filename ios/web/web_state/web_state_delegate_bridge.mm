@@ -67,7 +67,7 @@ JavaScriptDialogPresenter* WebStateDelegateBridge::GetJavaScriptDialogPresenter(
 void WebStateDelegateBridge::HandlePermissionsDecisionRequest(
     WebState* source,
     NSArray<NSNumber*>* permissions,
-    WebStatePermissionDecisionHandler handler) API_AVAILABLE(ios(15.0)) {
+    WebStatePermissionDecisionHandler handler) {
   if ([delegate_ respondsToSelector:@selector(webState:
                                         handlePermissions:decisionHandler:)]) {
     [delegate_ webState:source

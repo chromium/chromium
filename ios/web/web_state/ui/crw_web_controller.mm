@@ -1627,12 +1627,12 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 }
 
 // Called when WKWebView cameraCaptureState property has changed.
-- (void)webViewCameraCaptureStateDidChange API_AVAILABLE(ios(15.0)) {
+- (void)webViewCameraCaptureStateDidChange {
   self.webStateImpl->OnStateChangedForPermission(web::PermissionCamera);
 }
 
 // Called when WKWebView microphoneCaptureState property has changed.
-- (void)webViewMicrophoneCaptureStateDidChange API_AVAILABLE(ios(15.0)) {
+- (void)webViewMicrophoneCaptureStateDidChange {
   self.webStateImpl->OnStateChangedForPermission(web::PermissionMicrophone);
 }
 
