@@ -2438,10 +2438,10 @@ bool FederatedAuthRequestImpl::GetSingleReturningAccount(
       if (!permission_delegate_->HasSharingPermission(
               origin(), GetEmbeddingOrigin(),
               url::Origin::Create(idp_info.first), account.id) &&
-          !webid::IsIdpExempted(render_frame_host(),
-                                /*provider_url=*/idp_info.first,
-                                GetEmbeddingOrigin(),
-                                api_permission_delegate_)) {
+          !webid::IdpHasThirdPartyCookiesAccess(render_frame_host(),
+                                                /*provider_url=*/idp_info.first,
+                                                GetEmbeddingOrigin(),
+                                                api_permission_delegate_)) {
         continue;
       }
 

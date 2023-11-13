@@ -83,7 +83,7 @@ FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host,
 std::string FormatUrlWithDomain(const GURL& url, bool for_display);
 
 // Returns true if the IdP has third-party cookies access on the RP top frame.
-bool IsIdpExempted(
+bool IdpHasThirdPartyCookiesAccess(
     RenderFrameHost& host,
     const GURL& provider_url,
     const url::Origin& embedder_origin,

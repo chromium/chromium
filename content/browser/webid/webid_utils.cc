@@ -337,7 +337,7 @@ std::string FormatUrlWithDomain(const GURL& url, bool for_display) {
       base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
 }
 
-bool IsIdpExempted(
+bool IdpHasThirdPartyCookiesAccess(
     RenderFrameHost& host,
     const GURL& provider_url,
     const url::Origin& embedder_origin,
