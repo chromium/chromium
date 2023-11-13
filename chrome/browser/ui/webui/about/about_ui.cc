@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/about_ui.h"
+#include "chrome/browser/ui/webui/about/about_ui.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -745,7 +745,8 @@ void AboutUIHTMLSource::FinishDataRequest(
 
 std::string AboutUIHTMLSource::GetMimeType(const GURL& url) {
   const base::StringPiece path = url.path_piece().substr(1);
-  if (path == kCreditsJsPath || path == kStatsJsPath || path == kStringsJsPath) {
+  if (path == kCreditsJsPath || path == kStatsJsPath ||
+      path == kStringsJsPath) {
     return "application/javascript";
   }
 

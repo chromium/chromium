@@ -9183,7 +9183,7 @@ test("unit_tests") {
         "../browser/extensions/system_display/display_info_provider_chromeos_unittest.cc",
         "../browser/media_galleries/chromeos/mtp_device_object_enumerator_unittest.cc",
         "../browser/policy/restricted_mgs_policy_provider_ash_unittest.cc",
-        "../browser/ui/webui/about_ui_unittest.cc",
+        "../browser/ui/webui/about/about_ui_unittest.cc",
         "../browser/ui/webui/ash/parent_access/parent_access_ui_handler_impl_unittest.cc",
         "../common/chromeos/extensions/chromeos_system_extension_info_unittest.cc",
         "../common/chromeos/extensions/manifest_tests/extension_manifests_chromeos_system_extension_unittest.cc",

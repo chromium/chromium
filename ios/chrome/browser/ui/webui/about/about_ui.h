@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_WEBUI_ABOUT_UI_H_
-#define IOS_CHROME_BROWSER_UI_WEBUI_ABOUT_UI_H_
+#ifndef IOS_CHROME_BROWSER_UI_WEBUI_ABOUT_ABOUT_UI_H_
+#define IOS_CHROME_BROWSER_UI_WEBUI_ABOUT_ABOUT_UI_H_
 
 #include <string>
 
@@ -25,4 +25,4 @@ class AboutUI : public web::WebUIIOSController {
   ~AboutUI() override;
 };
 
-#endif  // IOS_CHROME_BROWSER_UI_WEBUI_ABOUT_UI_H_
+#endif  // IOS_CHROME_BROWSER_UI_WEBUI_ABOUT_ABOUT_UI_H_
