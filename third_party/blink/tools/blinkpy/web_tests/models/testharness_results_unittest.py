@@ -251,7 +251,7 @@ class TestResultCheckerTest(unittest.TestCase):
                 This is a testharness.js-based test.
                 Harness Error. harness_status.status = 1 , harness_status.message = ReferenceError: ShadowRealm is not defined
                 [PASS] Query "geolocation" permission
-                [ FAIL, TIMEOUT ] Window interface: attribute\\n\\0\\r\\\\nevent
+                [ FAIL TIMEOUT ] Window interface: attribute\\n\\0\\r\\\\nevent
                   assert_true: property should be enumerable\\n\\0\\r\\\\n  expected true got false
 
                 CONSOLE ERROR: Console error
@@ -360,7 +360,7 @@ class TestResultCheckerTest(unittest.TestCase):
                 CONSOLE WARNING: warning before test
                 This is a testharness.js-based test.
                 Harness Error. harness_status.status = 1 , harness_status.message = SyntaxError
-                [PASS, TIMEOUT] subtest-1\\n\\r\\0\\\\n
+                [PASS TIMEOUT] subtest-1\\n\\r\\0\\\\n
                   fake-message\\n\\r\\0\\\\n
                 [NOTRUN] subtest-2
                 Harness: the test ran to completion.

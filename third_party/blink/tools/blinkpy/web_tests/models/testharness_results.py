@@ -57,7 +57,7 @@ _HARNESS_ERROR_FORMAT = ('harness_status.status = %s , '
 _HARNESS_ERROR_PATTERN = re.compile(
     re.escape(_HARNESS_ERROR_FORMAT) % ('(?P<status>.*)', '(?P<message>.*)'))
 _STATUS_UNION = '\s*(' + '|'.join(status.name for status in Status) + ')\s*'
-_SUBTEST_PATTERN = re.compile(rf'^\[{_STATUS_UNION}(,{_STATUS_UNION})*\]')
+_SUBTEST_PATTERN = re.compile(rf'^\[{_STATUS_UNION}(\s{_STATUS_UNION})*\]')
 _MESSAGE_PREFIX = ' ' * 2
 # Threshold at which a "Found [N] tests; ..." line will be written.
 _COUNT_THRESHOLD = 50
@@ -89,6 +89,8 @@ def parse_testharness_baseline(content_text: str) -> List[TestharnessLine]:
         }
         assert len(
             maybe_type) <= 1, f'line types {maybe_type} are not prefix-free'
+        # Unknown content is allowed, as we may be attempting to parse a
+        # non-testharness.js baseline.
         if maybe_type:
             line_type = maybe_type.pop()
             message, statuses = line[len(line_type.value):], frozenset()
@@ -174,8 +176,8 @@ def format_testharness_baseline(lines: List[TestharnessLine],
     for line in lines:
         if line.line_type is LineType.SUBTEST:
             assert line.subtest and line.statuses, line
-            statuses = ', '.join(
-                sorted(status.name for status in line.statuses))
+            statuses = ' '.join(sorted(status.name
+                                       for status in line.statuses))
             content += f'[{statuses}] {_escape(line.subtest)}\n'
             if line.message:
                 content += f'{_MESSAGE_PREFIX}{_escape(line.message)}\n'
@@ -206,7 +208,7 @@ def format_testharness_baseline(lines: List[TestharnessLine],
 def _parse_statuses(subtest_match: re.Match) -> FrozenSet[Status]:
     start, end = len('['), subtest_match.end() - len(']')
     return frozenset(Status[status.strip()]
-                     for status in subtest_match.string[start:end].split(','))
+                     for status in subtest_match.string[start:end].split())
 
 
 _UNESCAPE_SUBSTITUTIONS = {
