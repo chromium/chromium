@@ -22,6 +22,7 @@
 #include "base/command_line.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/debug/handle_hooks_win.h"
 #include "base/file_version_info.h"
 #include "base/files/file_path.h"
@@ -273,7 +274,21 @@ LONG OverwriteDisplayVersionsAfterMsiexec(base::win::ScopedHandle startup_event,
 
     // Notify the parent process that this one is ready to go.
     if (startup_event.IsValid()) {
-      ::SetEvent(startup_event.Get());
+      if (!::SetEvent(startup_event.Get())) {
+        // Failure to signal the event likely means that the handle is invalid.
+        // Clear the ScopedHandle to prevent a crash upon close and proceed with
+        // the operation. The parent process will wait for 30s in this case (see
+        // DelayedOverwriteDisplayVersions) and will then continue on its merry
+        // way.
+        if (auto error = ::GetLastError(); error != ERROR_INVALID_HANDLE) {
+          // It is highly unexpected that this would fail for any other reason.
+          // Send diagnostics for analysis just in case.
+          // TODO(grt): Check for data and remove this in March 2024.
+          base::debug::Alias(&error);
+          base::debug::DumpWithoutCrashing();
+        }
+        (void)startup_event.release();
+      }
       startup_event.Close();
     }
 
