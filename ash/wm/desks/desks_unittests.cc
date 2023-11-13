@@ -11179,13 +11179,13 @@ TEST_P(DeskButtonTest, SuspendShelfAutoHideWhenActivated) {
   ClickDeskButton();
   UnhoverDeskButton();
   EXPECT_TRUE(desk_button->is_activated());
-  EXPECT_FALSE(desk_button->is_hovered());
+  EXPECT_FALSE(desk_button->GetHovered());
   EXPECT_TRUE(shelf->disable_auto_hide());
 
   ClickDeskButton();
   UnhoverDeskButton();
   EXPECT_FALSE(desk_button->is_activated());
-  EXPECT_FALSE(desk_button->is_hovered());
+  EXPECT_FALSE(desk_button->GetHovered());
   ASSERT_FALSE(shelf->disable_auto_hide());
 }
 
@@ -11201,12 +11201,12 @@ TEST_P(DeskButtonTest, SuspendShelfAutoHideWhenHovered) {
 
   HoverDeskButton();
   EXPECT_FALSE(desk_button->is_activated());
-  EXPECT_TRUE(desk_button->is_hovered());
+  EXPECT_TRUE(desk_button->GetHovered());
   EXPECT_TRUE(shelf->disable_auto_hide());
 
   UnhoverDeskButton();
   EXPECT_FALSE(desk_button->is_activated());
-  EXPECT_FALSE(desk_button->is_hovered());
+  EXPECT_FALSE(desk_button->GetHovered());
   EXPECT_FALSE(shelf->disable_auto_hide());
 }
 
@@ -11232,7 +11232,7 @@ TEST_P(DeskButtonTest, ValidateDeskButtonPosition) {
     // Check the desk button when *not* hovered.
     auto* event_generator = GetEventGenerator();
     event_generator->MoveMouseTo(gfx::Point(0, 0));
-    ASSERT_FALSE(desk_button->is_hovered());
+    ASSERT_FALSE(desk_button->GetHovered());
     EXPECT_EQ(desk_button->bounds(),
               GetParam().alignment == ShelfAlignment::kBottom
                   ? gfx::Rect(0, 0, 96, 36)
@@ -11247,7 +11247,7 @@ TEST_P(DeskButtonTest, ValidateDeskButtonPosition) {
     // Check the desk button when hovered.
     event_generator->MoveMouseTo(
         desk_button->GetBoundsInScreen().CenterPoint());
-    ASSERT_TRUE(desk_button->is_hovered());
+    ASSERT_TRUE(desk_button->GetHovered());
     EXPECT_EQ(desk_button->bounds(), gfx::Rect(0, 0, 96, 36));
     EXPECT_EQ(prev_desk_button->GetShown(), should_show_prev_desk_button);
     EXPECT_EQ(next_desk_button->GetShown(), should_show_next_desk_button);
@@ -11308,7 +11308,7 @@ TEST_P(DeskButtonTest, LayoutInRTL) {
   ASSERT_TRUE(desk_button);
   ASSERT_EQ(desk_button->is_expanded_for_test(),
             GetParam().alignment == ShelfAlignment::kBottom);
-  ASSERT_FALSE(desk_button->is_hovered());
+  ASSERT_FALSE(desk_button->GetHovered());
   ASSERT_FALSE(desk_button->is_activated());
 
   // The desk button should show up to the right of the shelf apps in horizontal
@@ -11338,7 +11338,7 @@ TEST_P(DeskButtonTest, LayoutInRTL) {
 
   // Hover over the button to show the desk switch buttons.
   event_generator->MoveMouseTo(desk_button_bounds.CenterPoint());
-  ASSERT_TRUE(desk_button->is_hovered());
+  ASSERT_TRUE(desk_button->GetHovered());
   auto* prev_desk_button = GetPrevDeskButton();
   auto* next_desk_button = GetNextDeskButton();
   ASSERT_TRUE(prev_desk_button->GetEnabled());
@@ -11551,6 +11551,25 @@ TEST_P(DeskButtonTest, SendFocusBackToDeskButton) {
   // Hit esc and verify focus is sent back to the desk button.
   SendKey(ui::VKEY_ESCAPE);
   ASSERT_TRUE(GetDeskButton()->HasFocus());
+}
+
+// Tests that desk button shows context menu when right clicked.
+TEST_P(DeskButtonTest, ContextMenuRightClick) {
+  auto* event_generator = GetEventGenerator();
+  auto* desk_button = GetDeskButton();
+  RightClickOnView(desk_button, event_generator);
+  EXPECT_FALSE(desk_button->GetHovered());
+  EXPECT_TRUE(GetPrimaryShelf()->GetShelfViewForTesting()->IsShowingMenu());
+}
+
+// Tests that desk button shows context menu when long tapped.
+TEST_P(DeskButtonTest, ContextMenuLongTap) {
+  auto* event_generator = GetEventGenerator();
+  auto* desk_button = GetDeskButton();
+  LongGestureTap(desk_button->GetBoundsInScreen().CenterPoint(),
+                 event_generator);
+  EXPECT_FALSE(desk_button->GetHovered());
+  EXPECT_TRUE(GetPrimaryShelf()->GetShelfViewForTesting()->IsShowingMenu());
 }
 
 // TODO(afakhry): Add more tests:
