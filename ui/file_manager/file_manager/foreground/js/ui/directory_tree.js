@@ -9,7 +9,6 @@ import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {compareLabelAndGroupBottomEntries, compareName, isComputersEntry, isDescendantEntry, isEntryInsideDrive, isOneDrive, isOneDriveId, isRecentRootType, isSameEntry, isSharedDriveEntry} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
-import {isJellyEnabled} from '../../../common/js/flags.js';
 import {vmTypeToIconName} from '../../../common/js/icon_util.js';
 import {recordEnum, recordInterval, recordSmallCount, recordUserAction, startInterval} from '../../../common/js/metrics.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
@@ -208,7 +207,7 @@ directorytree.styleRowElementDepth = (item, depth) => {
   // 'TreeItem'.
   const fileRowElement = item.rowElement.firstElementChild;
 
-  const indent = depth * (isJellyEnabled() ? 20 : 22);
+  const indent = depth * 20;
   let style = 'padding-inline-start: ' + indent + 'px';
   const width = indent + 60;
   style += '; min-width: ' + width + 'px;';

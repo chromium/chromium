@@ -1343,8 +1343,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
 
   dict->Set("GUEST_OS", true);
 
-  dict->Set("JELLY", chromeos::features::IsJellyEnabled());
-
   dict->Set("DRIVE_FS_BULK_PINNING",
             drive::util::IsDriveFsBulkPinningAvailable(profile));
 

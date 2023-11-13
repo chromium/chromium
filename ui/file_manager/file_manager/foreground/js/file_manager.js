@@ -24,7 +24,7 @@ import {getKeyModifiers, queryDecoratedElement, queryRequiredElement} from '../.
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
-import {isDlpEnabled, isGuestOsEnabled, isJellyEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
+import {isDlpEnabled, isGuestOsEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {recordEnum, recordInterval, startInterval} from '../../common/js/metrics.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {str} from '../../common/js/translations.js';
@@ -1040,14 +1040,6 @@ export class FileManager extends EventTarget {
     this.document_.documentElement.classList.add('files-ng');
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.dialogDom_.classList.add('files-ng');
-
-    // Add theme attribute so widgets can render different styles based on
-    // this attribute:
-    // [theme="legacy"] -> Legacy style, [theme="refresh23"] -> Refresh23 style
-    const theme = isJellyEnabled() ? 'refresh23' : 'legacy';
-    this.document_.documentElement.setAttribute('theme', theme);
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
-    this.dialogDom_.setAttribute('theme', theme);
 
     chrome.fileManagerPrivate.isTabletModeEnabled(
         this.onTabletModeChanged_.bind(this));

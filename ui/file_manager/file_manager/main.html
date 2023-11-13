@@ -324,176 +324,173 @@ found in the LICENSE file.
     </menus>
 
     <div class="dialog-container">
-      <div class="dialog-navigation-list" slot="splitter-before">
-        <div class="dialog-navigation-list-contents" role="navigation">
-          <tree id="directory-tree" role="tree" tabindex="0" files-ng></tree>
+      <xf-splitter class="splitter" id="navigation-list-splitter">
+        <div class="dialog-navigation-list" slot="splitter-before">
+          <div class="dialog-navigation-list-contents" role="navigation">
+            <tree id="directory-tree" role="tree" tabindex="0" files-ng></tree>
+          </div>
         </div>
-      </div>
-      <div class="splitter" id="navigation-list-splitter">
-        <cr-button aria-hidden="true" class="splitter-button" tabindex="-1">
-          <div class="icon"></div>
-        </cr-button>
-      </div>
-      <div class="dialog-main" slot="splitter-after">
-        <div class="dialog-header files-ng" role="contentinfo">
-          <div id="location-breadcrumbs" class="breadcrumbs"></div>
-          <div id="read-only-indicator" aria-label="$i18n{READONLY_INDICATOR_TOOLTIP}" hidden
-               has-tooltip show-card-tooltip>
-            <span id="read-only-icon"></span>
-            <span id="read-only-label">$i18n{READ_ONLY_LABEL}</span>
-          </div>
-          <div id="cancel-selection-button-wrapper">
-            <cr-button id="cancel-selection-button" class="menu-button" tabindex="0"
-                  aria-label="$i18n{CANCEL_SELECTION_BUTTON_LABEL}" has-tooltip>
-              <span class="icon-arrow-back"></span>
-              <span id="cancel-selection-label">$i18n{CANCEL_SELECTION_BUTTON_LABEL}</span>
-            </cr-button>
-          </div>
-          <div id="files-selected-label"></div>
-          <div class="spacer"></div>
-          <div id="action-bar">
-            <div id="pinned-toggle-wrapper" hidden>
-              <span id="pinned-toggle-label">$i18n{OFFLINE_COLUMN_LABEL}</span>
-              <xf-jellybean>
-                <cros-switch
-                    slot="jelly"
-                    id="pinned-toggle-jelly"
-                    command="#toggle-pinned"
-                    aria-labelledby="pinned-toggle-label">
-                </cros-switch>
-                <cr-toggle
-                    slot="old"
-                    id="pinned-toggle"
-                    command="#toggle-pinned"
-                    aria-labelledby="pinned-toggle-label">
-                </cr-toggle>
-              </xf-jellybean>
+        <div class="dialog-main" slot="splitter-after">
+          <div class="dialog-header files-ng" role="contentinfo">
+            <div id="location-breadcrumbs" class="breadcrumbs"></div>
+            <div id="read-only-indicator" aria-label="$i18n{READONLY_INDICATOR_TOOLTIP}" hidden
+                has-tooltip show-card-tooltip>
+              <span id="read-only-icon"></span>
+              <span id="read-only-label">$i18n{READ_ONLY_LABEL}</span>
             </div>
-            <cr-button id="tasks" class="combobutton menu-button" menu="#tasks-menu"
-                    tabindex="0" hidden
-                    aria-label="$i18n{TASKS_BUTTON_LABEL}">
-            </cr-button>
-            <cr-button id="sharesheet-button" class="icon-button menu-button" tabindex="0" hidden
-                    aria-label="$i18n{SHARESHEET_BUTTON_LABEL}"
-                    visibleif="full-page"
-                    command="#invoke-sharesheet"
-                    has-tooltip>
-              <div class="icon"></div>
-            </cr-button>
-            <cr-button id="move-to-trash-button" class="icon-button menu-button" tabindex="0" hidden
-                    aria-label="$i18n{MOVE_TO_TRASH_BUTTON_LABEL}"
-                    visibleif="full-page"
-                    has-tooltip>
-              <div class="icon"></div>
-            </cr-button>
-            <cr-button id="delete-button" class="icon-button menu-button" tabindex="0" hidden
-                    aria-label="$i18n{DELETE_BUTTON_LABEL}"
-                    visibleif="full-page"
-                    has-tooltip>
-              <div class="icon"></div>
-            </cr-button>
-            <cr-button id="restore-from-trash-button" class="icon-button menu-button" tabindex="0" hidden
-                    aria-label="$i18n{RESTORE_FROM_TRASH_BUTTON_LABEL}"
-                    visibleif="full-page"
-                    has-tooltip>
-              <div class="icon"></div>
-            </cr-button>
-            <div id="search-wrapper">
-              <cr-button id="search-button" class="icon-button menu-button" tabindex="0"
-                      aria-label="$i18n{SEARCH_TEXT_LABEL}"
+            <div id="cancel-selection-button-wrapper">
+              <cr-button id="cancel-selection-button" class="menu-button" tabindex="0"
+                    aria-label="$i18n{CANCEL_SELECTION_BUTTON_LABEL}" has-tooltip>
+                <span class="icon-arrow-back"></span>
+                <span id="cancel-selection-label">$i18n{CANCEL_SELECTION_BUTTON_LABEL}</span>
+              </cr-button>
+            </div>
+            <div id="files-selected-label"></div>
+            <div class="spacer"></div>
+            <div id="action-bar">
+              <div id="pinned-toggle-wrapper" hidden>
+                <span id="pinned-toggle-label">$i18n{OFFLINE_COLUMN_LABEL}</span>
+                <xf-jellybean>
+                  <cros-switch
+                      slot="jelly"
+                      id="pinned-toggle-jelly"
+                      command="#toggle-pinned"
+                      aria-labelledby="pinned-toggle-label">
+                  </cros-switch>
+                  <cr-toggle
+                      slot="old"
+                      id="pinned-toggle"
+                      command="#toggle-pinned"
+                      aria-labelledby="pinned-toggle-label">
+                  </cr-toggle>
+                </xf-jellybean>
+              </div>
+              <cr-button id="tasks" class="combobutton menu-button" menu="#tasks-menu"
+                      tabindex="0" hidden
+                      aria-label="$i18n{TASKS_BUTTON_LABEL}">
+              </cr-button>
+              <cr-button id="sharesheet-button" class="icon-button menu-button" tabindex="0" hidden
+                      aria-label="$i18n{SHARESHEET_BUTTON_LABEL}"
+                      visibleif="full-page"
+                      command="#invoke-sharesheet"
                       has-tooltip>
                 <div class="icon"></div>
               </cr-button>
-              <div id="search-box">
-                <cr-input type="search" disabled
-                    aria-label="$i18n{SEARCH_TEXT_LABEL}" placeholder="$i18n{SEARCH_TEXT_LABEL}">
-                  <cr-button class="clear" slot="suffix" tabindex="0"
-                    aria-label="$i18n{SEARCH_CLEAR_LABEL}" has-tooltip>
-                    <div class="icon"></div>
-                  </cr-button>
-                </cr-input>
+              <cr-button id="move-to-trash-button" class="icon-button menu-button" tabindex="0" hidden
+                      aria-label="$i18n{MOVE_TO_TRASH_BUTTON_LABEL}"
+                      visibleif="full-page"
+                      has-tooltip>
+                <div class="icon"></div>
+              </cr-button>
+              <cr-button id="delete-button" class="icon-button menu-button" tabindex="0" hidden
+                      aria-label="$i18n{DELETE_BUTTON_LABEL}"
+                      visibleif="full-page"
+                      has-tooltip>
+                <div class="icon"></div>
+              </cr-button>
+              <cr-button id="restore-from-trash-button" class="icon-button menu-button" tabindex="0" hidden
+                      aria-label="$i18n{RESTORE_FROM_TRASH_BUTTON_LABEL}"
+                      visibleif="full-page"
+                      has-tooltip>
+                <div class="icon"></div>
+              </cr-button>
+              <div id="search-wrapper">
+                <cr-button id="search-button" class="icon-button menu-button" tabindex="0"
+                        aria-label="$i18n{SEARCH_TEXT_LABEL}"
+                        has-tooltip>
+                  <div class="icon"></div>
+                </cr-button>
+                <div id="search-box">
+                  <cr-input type="search" disabled
+                      aria-label="$i18n{SEARCH_TEXT_LABEL}" placeholder="$i18n{SEARCH_TEXT_LABEL}">
+                    <cr-button class="clear" slot="suffix" tabindex="0"
+                      aria-label="$i18n{SEARCH_CLEAR_LABEL}" has-tooltip>
+                      <div class="icon"></div>
+                    </cr-button>
+                  </cr-input>
+                </div>
               </div>
+              <cr-button id="cloud-button" class="icon-button menu-button"
+                      hidden
+                      tabindex="0"
+                      aria-haspopup="true"
+                      aria-label="Cloud Placeholder"
+                      has-tooltip>
+                <xf-icon type="cloud" size="small" slot="prefix-icon"></xf-icon>
+                <xf-icon type="blank" slot="suffix-icon"></xf-icon>
+              </cr-button>
+              <cr-button id="refresh-button" class="icon-button menu-button" tabindex="0" hidden
+                      aria-label="$i18n{REFRESH_BUTTON_LABEL}"
+                      command="#refresh" has-tooltip>
+                <div class="icon"></div>
+              </cr-button>
+              <cr-button id="view-button" class="icon-button menu-button" tabindex="0"
+                      aria-label="$i18n{CHANGE_TO_THUMBNAILVIEW_BUTTON_LABEL}"
+                      has-tooltip>
+                <div class="icon"></div>
+              </cr-button>
+              <cr-button id="sort-button" class="icon-button menu-button" tabindex="0"
+                      menu="#sort-menu"
+                      aria-haspopup="true"
+                      aria-label="$i18n{SORT_BUTTON_TOOLTIP}"
+                      aria-activedescendant="sort-menu"
+                      has-tooltip>
+                <div class="icon"></div>
+              </cr-button>
+              <cr-button id="gear-button" class="icon-button menu-button" tabindex="0"
+                      menu="#gear-menu"
+                      aria-label="$i18n{GEAR_BUTTON_TOOLTIP}"
+                      aria-haspopup="true"
+                      aria-activedescendant="gear-menu"
+                      has-tooltip>
+                <div class="icon"></div>
+              </cr-button>
+              <cr-button id="selection-menu-button" class="icon-button menu-button" tabindex="0"
+                      menu="#file-context-menu"
+                      aria-label="$i18n{SELECTION_MENU_BUTTON_TOOLTIP}"
+                      aria-activedescendant="file-context-menu"
+                      has-tooltip hidden>
+                <div class="icon"></div>
+              </cr-button>
             </div>
-            <cr-button id="cloud-button" class="icon-button menu-button"
-                    hidden
-                    tabindex="0"
-                    aria-haspopup="true"
-                    aria-label="Cloud Placeholder"
-                    has-tooltip>
-              <xf-icon type="cloud" size="small" slot="prefix-icon"></xf-icon>
-              <xf-icon type="blank" slot="suffix-icon"></xf-icon>
-            </cr-button>
-            <cr-button id="refresh-button" class="icon-button menu-button" tabindex="0" hidden
-                    aria-label="$i18n{REFRESH_BUTTON_LABEL}"
-                    command="#refresh" has-tooltip>
-              <div class="icon"></div>
-            </cr-button>
-            <cr-button id="view-button" class="icon-button menu-button" tabindex="0"
-                    aria-label="$i18n{CHANGE_TO_THUMBNAILVIEW_BUTTON_LABEL}"
-                    has-tooltip>
-              <div class="icon"></div>
-            </cr-button>
-            <cr-button id="sort-button" class="icon-button menu-button" tabindex="0"
-                    menu="#sort-menu"
-                    aria-haspopup="true"
-                    aria-label="$i18n{SORT_BUTTON_TOOLTIP}"
-                    aria-activedescendant="sort-menu"
-                    has-tooltip>
-              <div class="icon"></div>
-            </cr-button>
-            <cr-button id="gear-button" class="icon-button menu-button" tabindex="0"
-                    menu="#gear-menu"
-                    aria-label="$i18n{GEAR_BUTTON_TOOLTIP}"
-                    aria-haspopup="true"
-                    aria-activedescendant="gear-menu"
-                    has-tooltip>
-              <div class="icon"></div>
-            </cr-button>
-            <cr-button id="selection-menu-button" class="icon-button menu-button" tabindex="0"
-                    menu="#file-context-menu"
-                    aria-label="$i18n{SELECTION_MENU_BUTTON_TOOLTIP}"
-                    aria-activedescendant="file-context-menu"
-                    has-tooltip hidden>
-              <div class="icon"></div>
-            </cr-button>
           </div>
-        </div>
-        <div id="search-options-container"></div>
-        <div class="dialog-body">
-          <div id="a11y-msg" aria-live="polite" style="display: inline-block; position: fixed; clip: rect(0, 0, 0, 0);"></div>
-          <div class="main-panel">
-            <div class="filelist-panel">
-              <div id="banners"></div>
-              <div id="file-type-filter-container" hidden></div>
-              <div id="list-container" role="main">
-                <div id="more-actions-info" hidden>$i18n{SEE_MENU_FOR_ACTIONS}</div>
-                <div id="sort-column-asc" hidden>$i18n{COLUMN_ASC_SORT_MESSAGE}</div>
-                <div id="sort-column-desc" hidden>$i18n{COLUMN_DESC_SORT_MESSAGE}</div>
-                <div id="external-link-label" hidden>$i18n{EXTERNAL_LINK_MESSAGE}</div>
-                <div id="empty-folder" hidden>
-                  <div class="image">
-                    <svg>
-                      <use></use>
-                    </svg>
+          <div id="search-options-container"></div>
+          <div class="dialog-body">
+            <div id="a11y-msg" aria-live="polite" style="display: inline-block; position: fixed; clip: rect(0, 0, 0, 0);"></div>
+            <div class="main-panel">
+              <div class="filelist-panel">
+                <div id="banners"></div>
+                <div id="file-type-filter-container" hidden></div>
+                <div id="list-container" role="main">
+                  <div id="more-actions-info" hidden>$i18n{SEE_MENU_FOR_ACTIONS}</div>
+                  <div id="sort-column-asc" hidden>$i18n{COLUMN_ASC_SORT_MESSAGE}</div>
+                  <div id="sort-column-desc" hidden>$i18n{COLUMN_DESC_SORT_MESSAGE}</div>
+                  <div id="external-link-label" hidden>$i18n{EXTERNAL_LINK_MESSAGE}</div>
+                  <div id="empty-folder" hidden>
+                    <div class="image">
+                      <svg>
+                        <use></use>
+                      </svg>
+                    </div>
+                    <span class="label"></span>
                   </div>
-                  <span class="label"></span>
+                  <div class="detail-table" id="detail-table" tabindex="0">
+                  </div>
+                  <grid class="thumbnail-grid" tabindex="0" hidden></grid>
+                  <files-spinner class="loading-indicator" hidden></files-spinner>
+                  <div class="drive-welcome page"></div>
                 </div>
-                <div class="detail-table" id="detail-table" tabindex="0">
-                </div>
-                <grid class="thumbnail-grid" tabindex="0" hidden></grid>
-                <files-spinner class="loading-indicator" hidden></files-spinner>
-                <div class="drive-welcome page"></div>
               </div>
             </div>
           </div>
+          <div id="path-display-container"></div>
+          <div class="files-feedback-panels" visibleif="full-page">
+            <xf-display-panel id="progress-panel" role="complementary"
+                              aria-label="$i18n{FILES_FEEDBACK_WINDOW}">
+            </xf-display-panel>
+          </div>
         </div>
-        <div id="path-display-container"></div>
-        <div class="files-feedback-panels" visibleif="full-page">
-          <xf-display-panel id="progress-panel" role="complementary"
-                            aria-label="$i18n{FILES_FEEDBACK_WINDOW}">
-          </xf-display-panel>
-        </div>
-      </div>
+      </xf-splitter>
     </div>
     <div class="dialog-footer progressable" tabindex="-1"
          visibleif="saveas-file open-file open-multi-file folder upload-folder">

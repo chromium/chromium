@@ -47,7 +47,6 @@ export function setUp() {
   installMockChrome(mockChrome);
   // Initialize directory tree container.
   const {directoryModel, volumeManager} = window.fileManager;
-  document.body.setAttribute('theme', 'refresh23');
   directoryTreeContainer = new DirectoryTreeContainer(
       document.body, directoryModel, volumeManager, createMockMetadataModel());
 }

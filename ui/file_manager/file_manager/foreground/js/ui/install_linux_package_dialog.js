@@ -4,7 +4,6 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
-import {isJellyEnabled} from '../../../common/js/flags.js';
 import {str} from '../../../common/js/translations.js';
 
 import {FileManagerDialogBase} from './file_manager_dialog_base.js';
@@ -41,21 +40,15 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
 
     // The OK button normally dismisses the dialog, so add a button we can
     // customize.
-    if (isJellyEnabled()) {
-      // Need to copy the whole sub tree because we need child elements.
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
-      this.installButton_ = this.okButton.cloneNode(true /* deep */);
-      // When Jelly is on, we have child elements inside the button, setting
-      // textContent of the button will remove all children.
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-      this.installButton_.childNodes[0].textContent =
-          str('INSTALL_LINUX_PACKAGE_INSTALL_BUTTON');
-    } else {
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
-      this.installButton_ = this.okButton.cloneNode(false /* deep */);
-      this.installButton_.textContent =
-          str('INSTALL_LINUX_PACKAGE_INSTALL_BUTTON');
-    }
+    // Need to copy the whole sub tree because we need child elements.
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
+    this.installButton_ = this.okButton.cloneNode(true /* deep */);
+    // We have child elements inside the button, setting
+    // textContent of the button will remove all children.
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
+    this.installButton_.childNodes[0].textContent =
+        str('INSTALL_LINUX_PACKAGE_INSTALL_BUTTON');
+
     this.installButton_.addEventListener(
         'click', this.onInstallClick_.bind(this));
     // @ts-ignore: error TS2531: Object is possibly 'null'.

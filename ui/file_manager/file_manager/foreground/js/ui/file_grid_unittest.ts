@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -45,9 +44,6 @@ function setupBody(): HTMLElement {
 
 // Set up test components.
 export function setUp() {
-  loadTimeData.overrideValues({
-    JELLY: true,
-  });
   // Setup mock components.
   volumeManager = new MockVolumeManager();
   metadataModel = new MockMetadataModel({}) as unknown as MetadataModel;

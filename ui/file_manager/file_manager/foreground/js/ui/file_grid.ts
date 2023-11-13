@@ -12,7 +12,6 @@ import {decorate} from '../../../common/js/cr_ui.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {entriesToURLs} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
-import {isJellyEnabled} from '../../../common/js/flags.js';
 import {getEntryLabel, str} from '../../../common/js/translations.js';
 import type {VolumeManager} from '../../../externs/volume_manager.js';
 import type {FilesTooltip} from '../../elements/files_tooltip.js';
@@ -509,7 +508,7 @@ export class FileGrid extends Grid {
   private getFolderItemHeight_(): number {
     // Align with CSS value for .thumbnail-item.directory: height + margin +
     // border.
-    const height = isJellyEnabled() ? 48 : 40;
+    const height = 48;
     return height + this.getItemMarginTop_() + 2;
   }
 
@@ -528,11 +527,10 @@ export class FileGrid extends Grid {
   private getGroupHeadingHeight_(groupIndex: number): number {
     assert(this.dataModel);
     const fileListModel = this.dataModel;
-    // For FilesRefresh, we have an additional margin for non-first group, check
+    // We have an additional margin for non-first group, check
     // the CSS rule ".grid-title ~ .grid-title" for more information in the CSS
     // file.
-    const groupMarginTop =
-        isJellyEnabled() && groupIndex > 0 ? GROUP_MARGIN_TOP : 0;
+    const groupMarginTop = groupIndex > 0 ? GROUP_MARGIN_TOP : 0;
     switch (fileListModel.groupByField) {
       case GROUP_BY_FIELD_DIRECTORY:
         return DIRECTORY_GROUP_HEADING_HEIGHT + groupMarginTop;
@@ -586,7 +584,7 @@ export class FileGrid extends Grid {
    */
   private getItemWidth_(): number {
     // Align with CSS value for .thumbnail-item: width + margin + border.
-    const width = isJellyEnabled() ? 160 : 180;
+    const width = 160;
     return width + this.getItemMarginLeft_() + 2;
   }
 
@@ -925,12 +923,7 @@ export class FileGrid extends Grid {
    */
   private setGenericThumbnail_(
       box: HTMLDivElement, entry: Entry, mimeType?: string) {
-    if (entry.isDirectory) {
-      // There is no space to show the thumbnail so don't add one for Jelly.
-      if (!isJellyEnabled()) {
-        box.setAttribute('generic-thumbnail', 'folder');
-      }
-    } else if (FileType.isEncrypted(entry, mimeType)) {
+    if (FileType.isEncrypted(entry, mimeType)) {
       box.setAttribute('generic-thumbnail', 'encrypted');
       box.setAttribute('aria-label', str('ENCRYPTED_ICON_TOOLTIP'));
       document.querySelector<FilesTooltip>('files-tooltip')!.addTarget(box);
@@ -1072,7 +1065,7 @@ export class FileGrid extends Grid {
  * Grid size, in "px".
  */
 function gridSize(): number {
-  return isJellyEnabled() ? 160 : 180;
+  return 160;
 }
 
 class FileGridItem extends ListItem {

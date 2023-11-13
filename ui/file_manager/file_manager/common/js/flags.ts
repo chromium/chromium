@@ -31,13 +31,6 @@ export function isGuestOsEnabled() {
 }
 
 /**
- * Returns true if Jelly flag is enabled.
- */
-export function isJellyEnabled() {
-  return isFlagEnabled('JELLY');
-}
-
-/**
  * Returns true if the cros-components flag is enabled.
  */
 export function isCrosComponentsEnabled() {
