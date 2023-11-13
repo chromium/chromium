@@ -695,6 +695,13 @@ public final class ChromePreferenceKeys {
     public static final String PROMOS_SKIPPED_ON_FIRST_START = "promos_skipped_on_first_start";
 
     /**
+     * Key for the PWA Restore feature. Used in {@link
+     * org.chromium.chrome.browser.webapps.PwaRestorePromoUtils} to figure out when to show the
+     * promo.
+     */
+    public static final String PWA_RESTORE_PROMO_STAGE = "Chrome.PwaRestore.PromoStage";
+
+    /**
      * The next timestamp to decide whether to show query tiles.
      */
     public static final String QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS =
@@ -1091,6 +1098,7 @@ public final class ChromePreferenceKeys {
                 PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
                 PROMO_IS_DISMISSED.pattern(),
                 PROMO_TIMES_SEEN.pattern(),
+                PWA_RESTORE_PROMO_STAGE,
                 QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
                 QUERY_TILES_SHOW_ON_NTP,
                 QUERY_TILES_SHOW_SEGMENTATION_RESULT,

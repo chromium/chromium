@@ -958,8 +958,18 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 preferenceManager.writeBoolean(
                         ChromePreferenceKeys.PROMOS_SKIPPED_ON_FIRST_START, true);
             }
+
+            if (FirstRunStatus.isFirstRunTriggered()) {
+                notifyPromosOfFirstRunTriggered();
+            }
+
             return isShowingPromo;
         }
+    }
+
+    /** Notifies promos of the First Run Experience having triggered during this launch. */
+    private void notifyPromosOfFirstRunTriggered() {
+        PwaRestorePromoUtils.notifyFirstRunPromoTriggered();
     }
 
     private boolean maybeShowPromo() {
