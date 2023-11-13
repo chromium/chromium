@@ -53,6 +53,12 @@ id<GREYMatcher> ImageViewWithImageNamed(NSString* imageName) {
   return [ChromeMatchersAppInterface imageViewWithImageNamed:imageName];
 }
 
+id<GREYMatcher> ImageViewWithCustomSymbolNameAndPointSize(NSString* symbolName,
+                                                          CGFloat pointSize) {
+  return [ChromeMatchersAppInterface imageViewWithCustomSymbolNamed:symbolName
+                                                          pointSize:pointSize];
+}
+
 id<GREYMatcher> ImageViewWithImage(UIImage* image) {
   return [ChromeMatchersAppInterface imageViewWithImage:image];
 }

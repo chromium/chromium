@@ -49,6 +49,11 @@
 // Matcher for element with an image defined by its name in the main bundle.
 + (id<GREYMatcher>)imageViewWithImageNamed:(NSString*)imageName;
 
+// Matcher for element with a custom symbol defined by its name and point size
+// in the main bundle.
++ (id<GREYMatcher>)imageViewWithCustomSymbolNamed:(NSString*)symbolName
+                                        pointSize:(CGFloat)pointSize;
+
 // Matcher for element with an image corresponding to `imageID` and
 // accessibility trait UIAccessibilityTraitButton.
 + (id<GREYMatcher>)buttonWithImage:(int)imageID;
