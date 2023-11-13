@@ -1298,13 +1298,13 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case AcceleratorAction::kSwitchToNextUser:
       MultiProfileUMA::RecordSwitchActiveUser(
-          MultiProfileUMA::SWITCH_ACTIVE_USER_BY_ACCELERATOR);
+          MultiProfileUMA::SwitchActiveUserAction::kByAccelerator);
       base::RecordAction(UserMetricsAction("Accel_Switch_To_Next_User"));
       accelerators::CycleUser(CycleUserDirection::NEXT);
       break;
     case AcceleratorAction::kSwitchToPreviousUser:
       MultiProfileUMA::RecordSwitchActiveUser(
-          MultiProfileUMA::SWITCH_ACTIVE_USER_BY_ACCELERATOR);
+          MultiProfileUMA::SwitchActiveUserAction::kByAccelerator);
       base::RecordAction(UserMetricsAction("Accel_Switch_To_Previous_User"));
       accelerators::CycleUser(CycleUserDirection::PREVIOUS);
       break;

@@ -11,7 +11,7 @@ namespace ash {
 // static
 void MultiProfileUMA::RecordSwitchActiveUser(SwitchActiveUserAction action) {
   UMA_HISTOGRAM_ENUMERATION("MultiProfile.SwitchActiveUserUIPath", action,
-                            NUM_SWITCH_ACTIVE_USER_ACTIONS);
+                             SwitchActiveUserAction::kNumActions);
 }
 
 }  // namespace ash
