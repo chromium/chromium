@@ -132,7 +132,6 @@ class CallbackListBase {
  public:
   using CallbackType =
       typename CallbackListTraits<CallbackListImpl>::CallbackType;
-  static_assert(IsBaseCallback<CallbackType>::value, "");
 
   // TODO(crbug.com/1103086): Update references to use this directly and by
   // value, then remove.

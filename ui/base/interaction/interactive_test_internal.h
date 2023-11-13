@@ -370,9 +370,6 @@ InteractiveTestPrivate::MultiStep InteractiveTestPrivate::PostTask(
   return result;
 }
 
-template <typename T>
-constexpr bool IsCallbackValue = base::IsBaseCallback<T>::value;
-
 template <typename T, typename SFINAE = void>
 struct IsCallable {
   static constexpr bool value = false;
@@ -405,7 +402,8 @@ struct MaybeBindHelper;
 
 // Callbacks are already callbacks, so can be returned as-is.
 template <typename F>
-struct MaybeBindHelper<F, std::enable_if_t<IsCallbackValue<F>>> {
+  requires(base::IsBaseCallback<F>)
+struct MaybeBindHelper<F> {
   template <class G>
   static auto MaybeBind(G&& function) {
     return std::forward<G>(function);
@@ -655,7 +653,7 @@ InteractionSequence::Builder BuildSubsequence(
 
 #define INTERACTIVE_TEST_UNWRAP_IMPL(arg, Arg)                    \
   [&]() {                                                         \
-    if constexpr (internal::IsCallbackValue<Arg>) {               \
+    if constexpr (base::IsBaseCallback<Arg>) {                    \
       return std::move(arg).Run();                                \
     } else if constexpr (internal::IsFunctionPointerValue<Arg>) { \
       return (*arg)();                                            \

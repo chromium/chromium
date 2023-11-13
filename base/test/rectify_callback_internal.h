@@ -130,9 +130,7 @@ template <template <typename> typename DesiredCallbackType,
           typename R,
           typename... Args,
           typename T>
-struct RectifyCallbackImpl<DesiredCallbackType<R(Args...)>,
-                           T,
-                           std::enable_if_t<!IsBaseCallback<T>::value>>
+struct RectifyCallbackImpl<DesiredCallbackType<R(Args...)>, T>
     : RectifyCallbackImpl<DesiredCallbackType<R(Args...)>,
                           DesiredCallbackType<R(Args...)>> {};
 
