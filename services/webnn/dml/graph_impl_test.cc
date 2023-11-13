@@ -2439,6 +2439,171 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithTwoOutputs) {
                           13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}));
 }
 
+template <typename T>
+struct ReduceTester {
+  OperandInfo<T> input;
+  std::vector<uint32_t> axes;
+  bool keep_dimensions;
+  mojom::Reduce::Kind kind;
+  OperandInfo<float> output;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildReduce(kind, input_operand_id, output_operand_id, axes,
+                        keep_dimensions);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyFloatDataIsEqual(
+        GetFloatOutputData(std::move(named_outputs["output"]), output.type),
+        output.values);
+  }
+};
+
+// Test building and computing a DML graph with single operator reduce.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorReduce) {
+  // Test reduceL1 with axes = {1} and keep_dimensions = true.
+  {
+    ReduceTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 3},
+                                  .values = {1, 2, 3, 4, 5, 6}},
+                        .axes = {1},
+                        .keep_dimensions = true,
+                        .kind = mojom::Reduce::Kind::kL1,
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2, 1},
+                                   .values = {6, 15}}}
+        .Test();
+  }
+  // Test reduceL2 with axes = {1} and keep_dimensions = true.
+  {
+    ReduceTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 3},
+                                  .values = {1, 2, 3, 4, 5, 6}},
+                        .axes = {1},
+                        .keep_dimensions = true,
+                        .kind = mojom::Reduce::Kind::kL2,
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2, 1},
+                                   .values = {3.74165738, 8.77496438}}}
+        .Test();
+  }
+  // Test reduceLogSum with axes = {1} and keep_dimensions = true.
+  {
+    ReduceTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 3},
+                                  .values = {1, 2, 3, 4, 5, 6}},
+                        .axes = {1},
+                        .keep_dimensions = true,
+                        .kind = mojom::Reduce::Kind::kLogSum,
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2, 1},
+                                   .values = {1.79175946, 2.70805020}}}
+        .Test();
+  }
+  // Test reduceLosSumExp with axes = {1} and keep_dimensions = true.
+  {
+    ReduceTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 3},
+                                  .values = {1, 2, 3, 4, 5, 6}},
+                        .axes = {1},
+                        .keep_dimensions = true,
+                        .kind = mojom::Reduce::Kind::kLogSumExp,
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2, 1},
+                                   .values = {3.40760596, 6.40760596}}}
+        .Test();
+  }
+  // Test reduceMax with axes = {1} and keep_dimensions = true.
+  {
+    ReduceTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 3},
+                                  .values = {1, 2, 3, 4, 5, 6}},
+                        .axes = {1},
+                        .keep_dimensions = true,
+                        .kind = mojom::Reduce::Kind::kMax,
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2, 1},
+                                   .values = {3, 6}}}
+        .Test();
+  }
+  // Test reduceMean with axes = {1} and keep_dimensions = true.
+  {
+    ReduceTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 3},
+                                  .values = {1, 2, 3, 4, 5, 6}},
+                        .axes = {1},
+                        .keep_dimensions = true,
+                        .kind = mojom::Reduce::Kind::kMean,
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2, 1},
+                                   .values = {2, 5}}}
+        .Test();
+  }
+  // Test reduceMin with axes = {1} and keep_dimensions = false.
+  {
+    ReduceTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 3},
+                                  .values = {1, 2, 3, 4, 5, 6}},
+                        .axes = {1},
+                        .keep_dimensions = false,
+                        .kind = mojom::Reduce::Kind::kMin,
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {1, 4}}}
+        .Test();
+  }
+  // Test reduceProduct with axes = {1} and keep_dimensions = false.
+  {
+    ReduceTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 3},
+                                  .values = {1, 2, 3, 4, 5, 6}},
+                        .axes = {1},
+                        .keep_dimensions = false,
+                        .kind = mojom::Reduce::Kind::kProduct,
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {6, 120}}}
+        .Test();
+  }
+  // Test reduceSum with axes = {1} and keep_dimensions = false.
+  {
+    ReduceTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 3},
+                                  .values = {1, 2, 3, 4, 5, 6}},
+                        .axes = {1},
+                        .keep_dimensions = false,
+                        .kind = mojom::Reduce::Kind::kSum,
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {6, 15}}}
+        .Test();
+  }
+  // Test reduceSumSquare with axes = {1} and keep_dimensions = false.
+  {
+    ReduceTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 3},
+                                  .values = {1, 2, 3, 4, 5, 6}},
+                        .axes = {1},
+                        .keep_dimensions = false,
+                        .kind = mojom::Reduce::Kind::kSumSquare,
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {14, 77}}}
+        .Test();
+  }
+}
+
 struct GemmAttributes {
   absl::optional<uint64_t> c_operand_id;
   // TODO(crbug.com/1273291): Add test cases for below attributes.

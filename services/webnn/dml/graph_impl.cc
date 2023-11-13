@@ -85,6 +85,57 @@ std::string OpKindToString(mojom::ElementWiseBinary::Kind kind) {
   NOTREACHED_NORETURN();
 }
 
+std::string ReduceOpKindToString(mojom::Reduce::Kind kind) {
+  switch (kind) {
+    case mojom::Reduce::Kind::kL1:
+      return "ReduceL1";
+    case mojom::Reduce::Kind::kL2:
+      return "ReduceL2";
+    case mojom::Reduce::Kind::kLogSum:
+      return "ReduceLogSum";
+    case mojom::Reduce::Kind::kLogSumExp:
+      return "ReduceLogSumExp";
+    case mojom::Reduce::Kind::kMax:
+      return "ReduceMax";
+    case mojom::Reduce::Kind::kMean:
+      return "ReduceMean";
+    case mojom::Reduce::Kind::kMin:
+      return "ReduceMin";
+    case mojom::Reduce::Kind::kProduct:
+      return "ReduceProduct";
+    case mojom::Reduce::Kind::kSum:
+      return "ReduceSum";
+    case mojom::Reduce::Kind::kSumSquare:
+      return "ReduceSumSquare";
+  }
+  NOTREACHED_NORETURN();
+}
+
+DML_REDUCE_FUNCTION MapReduceKindToReduceFuntion(mojom::Reduce::Kind kind) {
+  switch (kind) {
+    case mojom::Reduce::Kind::kL1:
+      return DML_REDUCE_FUNCTION_L1;
+    case mojom::Reduce::Kind::kL2:
+      return DML_REDUCE_FUNCTION_L2;
+    case mojom::Reduce::Kind::kLogSum:
+      return DML_REDUCE_FUNCTION_LOG_SUM;
+    case mojom::Reduce::Kind::kLogSumExp:
+      return DML_REDUCE_FUNCTION_LOG_SUM_EXP;
+    case mojom::Reduce::Kind::kMax:
+      return DML_REDUCE_FUNCTION_MAX;
+    case mojom::Reduce::Kind::kMean:
+      return DML_REDUCE_FUNCTION_AVERAGE;
+    case mojom::Reduce::Kind::kMin:
+      return DML_REDUCE_FUNCTION_MIN;
+    case mojom::Reduce::Kind::kProduct:
+      return DML_REDUCE_FUNCTION_MULTIPLY;
+    case mojom::Reduce::Kind::kSum:
+      return DML_REDUCE_FUNCTION_SUM;
+    case mojom::Reduce::Kind::kSumSquare:
+      return DML_REDUCE_FUNCTION_SUM_SQUARE;
+  }
+  NOTREACHED_NORETURN();
+}
 std::string OpTagToString(Operation::Tag tag) {
   switch (tag) {
     case Operation::Tag::kClamp:
@@ -1136,6 +1187,54 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForResample2d(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForReduce(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::ReducePtr& reduce,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, reduce->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+  uint64_t output_id = reduce->output_operand_id;
+  const auto& output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+  const auto& axes = reduce->axes;
+  // Determine output sizes. Ignore output_desc->dimensions for the dimensions,
+  // since DirectML expects the output dimensions to have the same rank as the
+  // input, and output_desc->dimensions may have removed dimensions if
+  // keepDimensions was false.
+  std::vector<uint32_t> output_dimensions = input_tensor_desc.GetDimensions();
+  for (uint32_t axis : axes) {
+    CHECK_LT(axis, output_dimensions.size());
+    output_dimensions[axis] = 1u;
+  }
+  TensorDesc new_output_tensor_desc(output_tensor_desc.GetDataType(),
+                                    output_dimensions);
+
+  std::array<const NodeOutput*, 1> inputs = {input};
+  DML_REDUCE_OPERATOR_DESC operator_desc = {};
+  operator_desc.Function = MapReduceKindToReduceFuntion(reduce->kind);
+  operator_desc.InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+  operator_desc.OutputTensor = &new_output_tensor_desc.GetDMLTensorDesc(),
+  operator_desc.AxisCount = static_cast<uint32_t>(axes.size());
+  operator_desc.Axes = axes.data();
+  const OperatorNode* reduce_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_REDUCE, &operator_desc, inputs);
+  if (!reduce_node) {
+    return base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError,
+        "Failed to create " + ReduceOpKindToString(reduce->kind) +
+            " operator."));
+  }
+
+  const NodeOutput* output =
+      graph_builder.CreateNodeOutput(reduce_node, output_tensor_desc);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+
+  return base::ok();
+}
+
 // DirectML API does not have a real Reshape operator. The WebNN Reshape is
 // implemented by creating a new NodeOutput for the input Node. The new
 // NodeOutput has the reshaped dimensions and is used as the output of the WebNN
@@ -1863,6 +1962,12 @@ void GraphImpl::CreateAndBuild(
       case Operation::Tag::kPrelu: {
         create_operator_result = CreateOperatorNodeForPrelu(
             id_to_operand_map, operation->get_prelu(), graph_builder,
+            id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kReduce: {
+        create_operator_result = CreateOperatorNodeForReduce(
+            id_to_operand_map, operation->get_reduce(), graph_builder,
             id_to_node_output_map);
         break;
       }
