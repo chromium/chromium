@@ -5910,7 +5910,7 @@
   {
       "name": "omnibox-new-textfield-implementation",
       "owners": ["stkhapugin@chromium.org", "rkgibson@google.com", "chrome-omnibox-team@google.com"],
-      "expiry_milestone": 120
+      "expiry_milestone": 125
   },
   {
     "name": "omnibox-on-clobber-focus-type-on-content",
@@ -7386,7 +7386,7 @@
       "bling-flags@google.com",
       "stkhapugin@chromium.org"
     ],
-    "expiry_milestone": 121
+    "expiry_milestone": 126
   },
   {
     "name": "spotlight-open-tabs-source",
@@ -7394,7 +7394,7 @@
       "bling-flags@google.com",
       "stkhapugin@chromium.org"
     ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "spotlight-reading-list-source",
@@ -7402,7 +7402,7 @@
       "bling-flags@google.com",
       "stkhapugin@chromium.org"
     ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "start-surface",
