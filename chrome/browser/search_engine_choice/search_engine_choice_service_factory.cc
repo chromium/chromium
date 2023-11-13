@@ -117,26 +117,9 @@ SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
 // static
 bool SearchEngineChoiceServiceFactory::IsSelectedChoiceProfile(Profile& profile,
                                                                bool try_claim) {
-  base::CommandLine* const command_line =
-      base::CommandLine::ForCurrentProcess();
-  // Force-enable the choice screen for testing the screen itself.
-  if (command_line->HasSwitch(switches::kForceSearchEngineChoiceScreen)) {
-    return true;
-  }
-
-  auto* local_state = g_browser_process->local_state();
-  CHECK(local_state);
-  if (!local_state->HasPrefPath(prefs::kSearchEnginesChoiceProfile)) {
-    if (try_claim) {
-      // Claim the dialog so other profiles don't trigger.
-      local_state->SetFilePath(prefs::kSearchEnginesChoiceProfile,
-                               profile.GetBaseName());
-    }
-    return true;
-  }
-
-  return profile.GetBaseName() ==
-         local_state->GetFilePath(prefs::kSearchEnginesChoiceProfile);
+  // TODO(b/309936758): Remove this method and deprecate
+  // prefs::kSearchEnginesChoiceProfile
+  return true;
 }
 
 // static
