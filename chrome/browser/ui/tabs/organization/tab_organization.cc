@@ -23,13 +23,23 @@ TabOrganization::TabOrganization(
     std::vector<std::u16string> names,
     absl::variant<size_t, std::u16string> current_name,
     absl::optional<UserChoice> choice)
-    : tab_datas_(std::move(tab_datas)),
-      names_(names),
+    : names_(names),
       current_name_(current_name),
       choice_(choice),
       organization_id_(kNextOrganizationID) {
   kNextOrganizationID++;
+
+  // TabDatas must not be duplicates, immediately destroy TabDatas that are.
+  std::vector<content::WebContents*> existing_contents;
+  for (auto& tab_data : tab_datas) {
+    if (!base::Contains(existing_contents, tab_data->web_contents())) {
+      existing_contents.emplace_back(tab_data->web_contents());
+      tab_data->AddObserver(this);
+      tab_datas_.emplace_back(std::move(tab_data));
+    }
+  }
 }
+
 TabOrganization::~TabOrganization() {
   for (auto& tab_data : tab_datas_) {
     tab_data->RemoveObserver(this);
@@ -74,9 +84,16 @@ bool TabOrganization::IsValidForOrganizing() const {
 }
 
 // TODO(1469128) Add UKM/UMA Logging on user add.
-void TabOrganization::AddTabData(std::unique_ptr<TabData> tab_data) {
-  tab_data->AddObserver(this);
-  tab_datas_.emplace_back(std::move(tab_data));
+void TabOrganization::AddTabData(std::unique_ptr<TabData> new_tab_data) {
+  // Guarantee uniqueness. early return and drop the new tab data if not unique.
+  for (std::unique_ptr<TabData>& existing_tab_data : tab_datas_) {
+    if (existing_tab_data->web_contents() == new_tab_data->web_contents()) {
+      return;
+    }
+  }
+
+  new_tab_data->AddObserver(this);
+  tab_datas_.emplace_back(std::move(new_tab_data));
   NotifyObserversOfUpdate();
 }
 
@@ -114,9 +131,12 @@ void TabOrganization::Accept() {
     // Individual tabs may become invalid. in those cases, where the tab is
     // invalid but the organization is not, do not include the tab in the
     // organization, but still create the organization.
-    if (tab_data->IsValidForOrganizing()) {
-      valid_indices.emplace_back(
-          tab_strip_model->GetIndexOfWebContents(tab_data->web_contents()));
+
+    const int index =
+        tab_strip_model->GetIndexOfWebContents(tab_data->web_contents());
+    if (tab_data->IsValidForOrganizing() &&
+        !base::Contains(valid_indices, index)) {
+      valid_indices.emplace_back(index);
     }
   }
   std::sort(valid_indices.begin(), valid_indices.end());

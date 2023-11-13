@@ -175,6 +175,7 @@ void TabOrganizationSession::PopulateOrganizations(
         continue;
       }
 
+      // Reconstruct the tab data in for the organization.
       std::unique_ptr<TabData> tab_data_for_org =
           std::make_unique<TabData>((*matching_tab)->original_tab_strip_model(),
                                     (*matching_tab)->web_contents());

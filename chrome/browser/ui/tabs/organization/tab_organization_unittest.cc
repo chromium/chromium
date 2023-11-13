@@ -410,6 +410,19 @@ TEST_F(TabOrganizationTest, TabOrganizationIsValidForOrganizing) {
   EXPECT_TRUE(organization.IsValidForOrganizing());
 }
 
+TEST_F(TabOrganizationTest, TabOrganizationNoUniqueTabDatas) {
+  content::WebContents* tab_1 = AddTab();
+  TabOrganization::TabDatas duplicated_tab_datas;
+  duplicated_tab_datas.emplace_back(
+      std::make_unique<TabData>(tab_strip_model(), tab_1));
+  duplicated_tab_datas.emplace_back(
+      std::make_unique<TabData>(tab_strip_model(), tab_1));
+
+  TabOrganization organization(std::move(duplicated_tab_datas),
+                               {u"default_name"}, 0u, absl::nullopt);
+  EXPECT_EQ(organization.tab_datas().size(), 1u);
+}
+
 // TabOrganizationRequest tests.
 TEST_F(TabOrganizationTest, TabOrganizationRequestOnStartRequest) {
   bool start_called = false;
@@ -686,6 +699,7 @@ TEST_F(TabOrganizationTest,
   std::unique_ptr<TabOrganizationResponse> response =
       std::make_unique<TabOrganizationResponse>(organizations);
   EXPECT_EQ(response->organizations.size(), 1u);
+  EXPECT_EQ(response->organizations[0].tab_ids.size(), 3u);
 
   session->StartRequest();
   request_ptr->CompleteRequestForTesting(std::move(response));
