@@ -243,7 +243,8 @@ bool PersistentSystemProfile::RecordAllocator::ReadData(
   } else if (*type == kUnusedSpace) {
     *type = static_cast<RecordType>(header.as_parts.type);
   } else if (*type != header.as_parts.type) {
-    NOTREACHED();  // Continuation didn't match start of record.
+    DUMP_WILL_BE_NOTREACHED_NORETURN();  // Continuation didn't match start of
+                                         // record.
     *type = kUnusedSpace;
     record->clear();
     return false;
@@ -260,7 +261,7 @@ bool PersistentSystemProfile::RecordAllocator::ReadData(
                             alloc_size_);
 #endif  // !BUILDFLAG(IS_NACL)
 
-    NOTREACHED();  // Invalid header amount.
+    DUMP_WILL_BE_NOTREACHED_NORETURN();  // Invalid header amount.
     *type = kUnusedSpace;
     return true;  // Don't try again.
   }
