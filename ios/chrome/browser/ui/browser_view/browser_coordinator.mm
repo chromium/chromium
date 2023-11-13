@@ -87,6 +87,7 @@
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/passwords_account_storage_notice_commands.h"
+#import "ios/chrome/browser/shared/public/commands/phone_number_commands.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
@@ -172,6 +173,7 @@
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/passwords/password_suggestion_coordinator.h"
+#import "ios/chrome/browser/ui/phone_number/add_contacts_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_iph_coordinator.h"
@@ -275,6 +277,7 @@ enum class ToolbarKind {
     PasswordSuggestionBottomSheetCoordinatorDelegate,
     PasswordsAccountStorageNoticeCommands,
     PriceNotificationsCommands,
+    PhoneNumberCommands,
     PromosManagerCommands,
     PolicyChangeCommands,
     PreloadControllerDelegate,
@@ -519,6 +522,7 @@ enum class ToolbarKind {
   LayoutGuideCenter* _layoutGuideCenter;
   WebNavigationBrowserAgent* _webNavigationBrowserAgent;
   UrlLoadingBrowserAgent* _urlLoadingBrowserAgent;
+  AddContactsCoordinator* _addContactsCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -682,6 +686,9 @@ enum class ToolbarKind {
 
   [self.viewController clearPresentedStateWithCompletion:completion
                                           dismissOmnibox:dismissOmnibox];
+
+  [_addContactsCoordinator stop];
+  _addContactsCoordinator = nil;
 }
 
 #pragma mark - Private
@@ -821,6 +828,7 @@ enum class ToolbarKind {
     @protocol(MiniMapCommands),
     @protocol(ParcelTrackingOptInCommands),
     @protocol(UnitConversionCommands),
+    @protocol(PhoneNumberCommands),
   ];
 
   for (Protocol* protocol in protocols) {
@@ -1379,6 +1387,9 @@ enum class ToolbarKind {
 
   [self.unitConversionCoordinator stop];
   self.unitConversionCoordinator = nil;
+
+  [_addContactsCoordinator stop];
+  _addContactsCoordinator = nil;
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -1953,6 +1964,21 @@ enum class ToolbarKind {
   findBarCoordinator.presentationDelegate = self.viewController;
 
   return findBarCoordinator;
+}
+
+#pragma mark - PhoneNumberCommands
+
+- (void)presentAddContactsForPhoneNumber:(NSString*)phoneNumber {
+  _addContactsCoordinator = [[AddContactsCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                     phoneNumber:phoneNumber];
+  [_addContactsCoordinator start];
+}
+
+- (void)hideAddContacts {
+  [_addContactsCoordinator stop];
+  _addContactsCoordinator = nil;
 }
 
 #pragma mark - PromosManagerCommands
