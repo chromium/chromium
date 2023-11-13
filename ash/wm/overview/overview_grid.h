@@ -312,16 +312,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
       const gfx::Point& screen_location,
       OverviewItemBase* dragged_item);
 
-  // Transforms `desks_bar_view_` from zero state to expanded state. Called when
-  // a normal drag starts to enable user dragging a window and dropping it to
-  // the new desk. `screen_location` is the center point of the window being
-  // dragged.
-  void MaybeExpandDesksBarView(const gfx::PointF& screen_location);
-
-  // Transforms `desks_bar_view_` from expanded state to zero state. Called when
-  // a normal drag is completed.
-  void MaybeShrinkDesksBarView();
-
   // Prepares the |scroll_offset_min_| as a limit for |scroll_offset| from
   // scrolling or positioning windows too far offscreen.
   void StartScroll();

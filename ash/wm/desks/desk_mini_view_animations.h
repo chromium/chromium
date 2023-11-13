@@ -28,18 +28,14 @@ class ExpandedDesksBarButton;
 
 // When deleting a desk on overview desk bar, this performs a fade out animation
 // on `removed_mini_view`'s layer by changing its opacity from 1 to 0 and
-// scaling it down around the center of desk bar view while switching back to
-// zero state. `removed_mini_view` will be deleted when the animation is
-// complete or aborted.
-void PerformRemoveDeskMiniViewAnimation(DeskMiniView* removed_mini_view,
-                                        const bool to_zero_state);
+// scaling it down around the center of desk bar view. `removed_mini_view` will
+// be deleted when the animation is complete or aborted.
+void PerformRemoveDeskMiniViewAnimation(DeskMiniView* removed_mini_view);
 
 // Performs the animation on desk mini view when adding a new desk.
 // `new_mini_views` contains a list of the newly-created mini_views. `shift_x`
 // is the amount by which the mini_views will be moved horizontally as a result
-// of creating the new mini_views. With Jelly disabled, the newly added mini
-// view will shift with `shift_x` and fade in. When Jelly is enabled, the new
-// mini view will scale up and fade in.
+// of creating the new mini_views. The new mini view will scale up and fade in.
 // * Notes:
 // - It assumes that the new_mini_views have already been created, and all
 // mini_views have already been laid out in their final positions.
@@ -63,25 +59,6 @@ void PerformDeskBarChildViewShiftAnimation(
 // bar's height to the expanded bar's height.
 void PerformZeroStateToExpandedStateMiniViewAnimation(
     DeskBarViewBase* bar_view);
-
-void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
-    DeskBarViewBase* bar_view);
-
-// Performs the animation of switching from expanded state desk bar to zero
-// state desk bar. This happens when a desk is removed such that a single desk
-// is remaining. It scales down and fades out the `removed_mini_views` and the
-// ExpandedDesksBarButton. `removed_mini_views` will be removed from the
-// views hierarchy. But the ExpandedDesksBarButton will be kept and set to
-// invisible. It will also animate the desk bar view from the expanded bar's
-// height to zero state bar's height.
-//
-// * Notes:
-// - It assumes `removed_mini_views` and the ExpandedDesksBarButton are still
-//   laid out at their previous positions before the bar state transition.
-// - Layout will be done once the animation is completed.
-void PerformExpandedStateToZeroStateMiniViewAnimation(
-    DeskBarViewBase* bar_view,
-    std::vector<DeskMiniView*> removed_mini_views);
 
 // Performs the animation for desk bar when desk is added. Desk bar will expand
 // during animation.
@@ -125,7 +102,7 @@ void PerformLibraryButtonVisibilityAnimation(
 // * Notes:
 // - It assumes all the mini views in `bar_view`, new desk button and library
 // button have been laid out in their final positions.
-void PerformDeskIconButtonScaleAnimationCrOSNext(
+void PerformDeskIconButtonScaleAnimation(
     CrOSNextDeskIconButton* button,
     DeskBarViewBase* bar_view,
     const gfx::Transform& new_desk_button_rects_transform,

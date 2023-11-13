@@ -126,13 +126,6 @@ constexpr int kMinimumItemsForScrollingLayout = 6;
 
 constexpr int kTabletModeOverviewItemTopPaddingDp = 16;
 
-// The threshold for expanding desks bar while dragging the window. When the
-// length between the center point of the window being dragged and the center
-// point of the `zero_state_new_desk_button_` is smaller than
-// `kExpandDesksBarThreshold`, desks bar will be transformed from zero state to
-// expanded state to help user dropping the dragged window on the new desk.
-constexpr int kExpandDesksBarThreshold = 130;
-
 // Wait a while before unpausing the occlusion tracker after a scroll has
 // completed as the user may start another scroll.
 constexpr base::TimeDelta kOcclusionUnpauseDurationForScroll =
@@ -1618,13 +1611,7 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
     return false;
   }
 
-  const bool is_point_on_new_desk_button =
-      is_jellyroll_enabled
-          ? desks_bar_view_->new_desk_button()->IsPointOnButton(screen_location)
-          : desks_bar_view_->expanded_state_new_desk_button()->IsPointOnButton(
-                screen_location);
-
-  if (!is_point_on_new_desk_button) {
+  if (!desks_bar_view_->new_desk_button()->IsPointOnButton(screen_location)) {
     return false;
   }
 
@@ -1632,28 +1619,6 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
       DesksCreationRemovalSource::kDragToNewDeskButton);
 
   return move_windows_to_target_desk(desks_controller->desks().back().get());
-}
-
-void OverviewGrid::MaybeExpandDesksBarView(const gfx::PointF& screen_location) {
-  if (desks_bar_view_ && desks_bar_view_->IsZeroState()) {
-    if ((gfx::ToRoundedPoint(screen_location) -
-         desks_bar_view_->zero_state_new_desk_button()
-             ->GetBoundsInScreen()
-             .CenterPoint())
-            .LengthSquared() <=
-        kExpandDesksBarThreshold * kExpandDesksBarThreshold) {
-      desks_bar_view_->UpdateNewMiniViews(/*initializing_bar_view=*/false,
-                                          /*expanding_bar_view=*/true);
-    }
-  }
-}
-
-void OverviewGrid::MaybeShrinkDesksBarView() {
-  if (desks_bar_view_ && !desks_bar_view_->IsZeroState() &&
-      !IsShowingSavedDeskLibrary() &&
-      desks_bar_view_->mini_views().size() == 1) {
-    desks_bar_view_->SwitchToZeroState();
-  }
 }
 
 void OverviewGrid::StartScroll() {
@@ -2803,7 +2768,6 @@ void OverviewGrid::OnSavedDeskGridFadedOut() {
   saved_desk_library_widget_->Hide();
 
   desks_bar_view_->UpdateButtonsForSavedDeskGrid();
-  desks_bar_view_->OnSavedDeskLibraryHidden();
   UpdateSaveDeskButtons();
   UpdateNoWindowsWidget(/*no_items=*/empty(), /*animate=*/true,
                         /*is_continuous_enter=*/false);

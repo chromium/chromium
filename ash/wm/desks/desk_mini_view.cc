@@ -58,16 +58,12 @@ namespace {
 constexpr int kLabelPreviewSpacing = 8;
 constexpr int kCloseButtonMargin = 4;
 constexpr int kMinDeskNameViewWidth = 56;
-constexpr int kPreviewFocusRingRadiusOld = 6;
+constexpr int kPreviewFocusRingRadius = 10;
 constexpr int kShortcutViewBorderWidth = 6;
 constexpr int kShortcutViewBorderHeight = 3;
 constexpr int kShortcutViewHeight = 20;
 constexpr int kShortcutViewIconSize = 14;
 constexpr int kShortcutViewDistanceFromBottom = 4;
-
-// TODO(http://b/291622042): After CrOS Next is launched, remove
-// `kPreviewFocusRingRadiusOld`.
-constexpr int kPreviewFocusRingRadius = 10;
 
 gfx::Rect ConvertScreenRect(views::View* view, const gfx::Rect& screen_rect) {
   gfx::Point origin = screen_rect.origin();
@@ -138,9 +134,7 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
   views::FocusRing* preview_focus_ring = views::FocusRing::Get(desk_preview_);
   preview_focus_ring->SetOutsetFocusRingDisabled(true);
   views::InstallRoundRectHighlightPathGenerator(
-      desk_preview_, gfx::Insets(kFocusRingHaloInset),
-      chromeos::features::IsJellyrollEnabled() ? kPreviewFocusRingRadius
-                                               : kPreviewFocusRingRadiusOld);
+      desk_preview_, gfx::Insets(kFocusRingHaloInset), kPreviewFocusRingRadius);
 
   preview_focus_ring->SetHasFocusPredicate(base::BindRepeating(
       [](const DeskMiniView* mini_view, const views::View* view) {
@@ -319,10 +313,7 @@ void DeskMiniView::OnWidgetGestureTap(const gfx::Rect& screen_rect,
 absl::optional<ui::ColorId> DeskMiniView::GetFocusColor() const {
   CHECK(desk_);
   const ui::ColorId focused_desk_color_id = ui::kColorAshFocusRing;
-  const ui::ColorId active_desk_color_id =
-      chromeos::features::IsJellyrollEnabled()
-          ? cros_tokens::kCrosSysTertiary
-          : static_cast<ui::ColorId>(kColorAshCurrentDeskColor);
+  const ui::ColorId active_desk_color_id = cros_tokens::kCrosSysTertiary;
 
   switch (owner_bar_->type()) {
     case DeskBarViewBase::Type::kOverview:

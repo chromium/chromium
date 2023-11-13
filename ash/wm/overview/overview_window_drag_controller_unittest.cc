@@ -383,13 +383,7 @@ TEST_F(OverviewWindowDragControllerTest,
   // Click on the zero state new desk button to create a new desk. This
   // shouldn't end overview mode. The desks bar view should be transformed to
   // the expanded state.
-  views::LabelButton* new_desk_button = nullptr;
-  if (is_jellyroll_enabled) {
-    new_desk_button =
-        const_cast<CrOSNextDeskIconButton*>(desks_bar_view->new_desk_button());
-  } else {
-    new_desk_button = desks_bar_view->zero_state_new_desk_button();
-  }
+  auto* new_desk_button = desks_bar_view->new_desk_button();
 
   const gfx::Point new_desk_button_center =
       new_desk_button->GetBoundsInScreen().CenterPoint();

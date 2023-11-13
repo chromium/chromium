@@ -524,18 +524,8 @@ TEST_F(DockedMagnifierTest, OverviewTabbing) {
                                   ->GetGridWithRootWindow(root_window)
                                   ->desks_bar_view();
 
-  views::LabelButton* default_desk_button = nullptr;
-  views::LabelButton* new_desk_button = nullptr;
-  if (chromeos::features::IsJellyrollEnabled()) {
-    default_desk_button = const_cast<CrOSNextDefaultDeskButton*>(
-        desk_bar_view->default_desk_button());
-    new_desk_button =
-        const_cast<CrOSNextDeskIconButton*>(desk_bar_view->new_desk_button());
-  } else {
-    ASSERT_TRUE(desk_bar_view->IsZeroState());
-    default_desk_button = desk_bar_view->zero_state_default_desk_button();
-    new_desk_button = desk_bar_view->zero_state_new_desk_button();
-  }
+  auto* default_desk_button = desk_bar_view->default_desk_button();
+  auto* new_desk_button = desk_bar_view->new_desk_button();
 
   // Tab once. The viewport should be centered on the beginning of the overview
   // item's title.

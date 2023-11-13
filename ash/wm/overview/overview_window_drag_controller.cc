@@ -694,7 +694,7 @@ void OverviewWindowDragController::ContinueNormalDrag(
   item_->SetBounds(bounds, OVERVIEW_ANIMATION_NONE);
 
   auto* desks_bar_view = overview_grid->desks_bar_view();
-  if (desks_bar_view && chromeos::features::IsJellyrollEnabled()) {
+  if (desks_bar_view) {
     auto* new_desk_button = desks_bar_view->new_desk_button();
 
     // When `Jellyroll` is enabled, the header of window is shown during
@@ -719,12 +719,6 @@ void OverviewWindowDragController::ContinueNormalDrag(
           FROM_HERE, kScaleUpNewDeskButtonGracePeriod, this,
           &OverviewWindowDragController::MaybeScaleUpNewDeskButton);
     }
-  } else {
-    // We may need to transform desks bar from zero state to expanded state if
-    // `kDragWindowToNewDesk` is enabled while dragging continues and the
-    // square length between the window being dragged and new desk button
-    // reaches `kExpandDesksBarThreshold`.
-    overview_grid->MaybeExpandDesksBarView(location_in_screen);
   }
 
   if (display_count_ > 1u)
@@ -806,12 +800,10 @@ OverviewWindowDragController::CompleteNormalDrag(
     // ended. Thus we need to check whether `overview_session_` is being
     // shutting down or not here before triggering `MaybeShrinkDesksBarView`.
     if (!overview_session_->is_shutting_down()) {
-      if (desks_bar_view && chromeos::features::IsJellyrollEnabled()) {
+      if (desks_bar_view) {
         desks_bar_view->UpdateDeskIconButtonState(
             desks_bar_view->new_desk_button(),
             CrOSNextDeskIconButton::State::kExpanded);
-      } else {
-        current_grid->MaybeShrinkDesksBarView();
       }
     }
     return DragResult::kSnap;
@@ -852,12 +844,10 @@ OverviewWindowDragController::CompleteNormalDrag(
   } else {
     item_->set_should_restack_on_animation_end(true);
     overview_session_->PositionWindows(/*animate=*/true);
-    if (desks_bar_view && chromeos::features::IsJellyrollEnabled()) {
+    if (desks_bar_view) {
       desks_bar_view->UpdateDeskIconButtonState(
           desks_bar_view->new_desk_button(),
           CrOSNextDeskIconButton::State::kExpanded);
-    } else {
-      current_grid->MaybeShrinkDesksBarView();
     }
   }
   RecordNormalDrag(kToGrid, is_dragged_to_other_display);
