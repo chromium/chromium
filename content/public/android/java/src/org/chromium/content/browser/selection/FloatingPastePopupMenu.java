@@ -21,7 +21,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.SortedSet;
 
 /**
  * Paste popup implementation based on floating ActionModes.
@@ -127,7 +127,7 @@ public class FloatingPastePopupMenu implements PastePopupMenu {
                     return mDelegate.canPasteAsPlainText();
                 }
             };
-            PriorityQueue<SelectionMenuGroup> nonSelectionMenuItems =
+            SortedSet<SelectionMenuGroup> nonSelectionMenuItems =
                     SelectActionMenuHelper.getNonSelectionMenuItems(
                             actionMenuDelegate, mAdditionalItemProvider);
             SelectionPopupControllerImpl.initializeActionMenu(

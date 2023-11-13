@@ -35,7 +35,8 @@ import org.chromium.content_public.browser.SelectionMenuItem;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
-import java.util.PriorityQueue;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Utility class around menu items for the text selection action menu.
@@ -56,16 +57,22 @@ public class SelectActionMenuHelper {
     }
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({DefaultItemOrder.CUT, DefaultItemOrder.COPY, DefaultItemOrder.PASTE,
-            DefaultItemOrder.SHARE, DefaultItemOrder.SELECT_ALL,
-            DefaultItemOrder.PASTE_AS_PLAIN_TEXT, DefaultItemOrder.WEB_SEARCH})
+    @IntDef({
+        DefaultItemOrder.CUT,
+        DefaultItemOrder.COPY,
+        DefaultItemOrder.PASTE,
+        DefaultItemOrder.PASTE_AS_PLAIN_TEXT,
+        DefaultItemOrder.SHARE,
+        DefaultItemOrder.SELECT_ALL,
+        DefaultItemOrder.WEB_SEARCH
+    })
     public @interface DefaultItemOrder {
         int CUT = 1;
         int COPY = 2;
         int PASTE = 3;
-        int SHARE = 4;
-        int SELECT_ALL = 5;
-        int PASTE_AS_PLAIN_TEXT = 6;
+        int PASTE_AS_PLAIN_TEXT = 4;
+        int SHARE = 5;
+        int SELECT_ALL = 6;
         int WEB_SEARCH = 7;
     }
 
@@ -115,13 +122,13 @@ public class SelectActionMenuHelper {
     }
 
     /**
-     * Returns all items for the text selection menu when there is no text selected
-     * (i.e. an editable input field).
+     * Returns all items for the text selection menu when there is no text selected (i.e. an
+     * editable input field).
      */
-    public static PriorityQueue<SelectionMenuGroup> getNonSelectionMenuItems(
+    public static SortedSet<SelectionMenuGroup> getNonSelectionMenuItems(
             SelectActionMenuDelegate delegate,
             @Nullable AdditionalSelectionMenuItemProvider nonSelectionAdditionalItemProvider) {
-        PriorityQueue<SelectionMenuGroup> pasteMenuItems = new PriorityQueue<>();
+        SortedSet<SelectionMenuGroup> pasteMenuItems = new TreeSet<>();
         pasteMenuItems.add(getDefaultItems(delegate));
 
         if (nonSelectionAdditionalItemProvider != null
@@ -136,17 +143,20 @@ public class SelectActionMenuHelper {
 
     /**
      * Returns all items for the text selection menu when there is text selected.
+     *
      * @param context the context used by the menu.
      * @param classificationResult the text classification result.
      * @param isSelectionReadOnly true if the selection is non-editable.
      * @param textProcessingIntentHandler the intent handler for text processing actions.
      */
-    public static PriorityQueue<SelectionMenuGroup> getSelectionMenuItems(
-            SelectActionMenuDelegate delegate, Context context,
-            @Nullable SelectionClient.Result classificationResult, boolean isSelectionPassword,
+    public static SortedSet<SelectionMenuGroup> getSelectionMenuItems(
+            SelectActionMenuDelegate delegate,
+            Context context,
+            @Nullable SelectionClient.Result classificationResult,
+            boolean isSelectionPassword,
             boolean isSelectionReadOnly,
             @Nullable TextProcessingIntentHandler textProcessingIntentHandler) {
-        PriorityQueue<SelectionMenuGroup> itemGroups = new PriorityQueue<>();
+        SortedSet<SelectionMenuGroup> itemGroups = new TreeSet<>();
         itemGroups.add(getDefaultItems(delegate));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             SelectionMenuGroup primaryAssistItem =

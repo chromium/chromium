@@ -20,7 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import java.util.PriorityQueue;
+import java.util.SortedSet;
 
 /**
  * Data class representing an item in the text selection menu.
@@ -91,9 +91,7 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         return mIcon;
     }
 
-    /**
-     * For comparison. Mainly to be enable {@link PriorityQueue} sorting by order.
-     */
+    /** For comparison. Mainly to be enable {@link SortedSet} sorting by order. */
     @Override
     public int compareTo(SelectionMenuItem otherItem) {
         return orderInCategory - otherItem.orderInCategory;

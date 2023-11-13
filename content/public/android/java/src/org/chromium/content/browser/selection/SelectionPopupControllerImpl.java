@@ -84,7 +84,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.SortedSet;
 
 /**
  * Implementation of the interface {@link SelectionPopupController}.
@@ -730,16 +730,15 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private MVCListAdapter.ModelList getDropdownItems() {
         MVCListAdapter.ModelList items = new MVCListAdapter.ModelList();
         if (mDropdownMenuDelegate != null) {
-            PriorityQueue<SelectionMenuGroup> allItemGroups;
+            SortedSet<SelectionMenuGroup> allItemGroups;
             if (hasSelection()) {
                 allItemGroups = getSelectionMenuItems();
             } else {
                 allItemGroups = getNonSelectionMenuItems(this, mNonSelectionAdditionalItemProvider);
             }
 
-            SelectionMenuGroup group = allItemGroups.poll();
             int groupIndex = 0;
-            while (group != null) {
+            for (SelectionMenuGroup group : allItemGroups) {
                 // First determine if any item in the group contains an icon. Given
                 // there will always be a small amount of items in the menu it is
                 // okay to run this loop twice. This property will be used later on when
@@ -785,7 +784,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                                     item.clickListener,
                                     item.intent));
                 }
-                group = allItemGroups.poll();
                 groupIndex++;
             }
         }
@@ -1022,14 +1020,14 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         return true;
     }
 
-    private PriorityQueue<SelectionMenuGroup> getSelectionMenuItems() {
+    private SortedSet<SelectionMenuGroup> getSelectionMenuItems() {
         TextProcessingIntentHandler textProcessingIntentHandler =
                 isSelectActionModeAllowed(MENU_ITEM_PROCESS_TEXT) ? this::processText : null;
         return SelectActionMenuHelper.getSelectionMenuItems(this, mContext, mClassificationResult,
                 isSelectionPassword(), !isFocusedNodeEditable(), textProcessingIntentHandler);
     }
 
-    private static PriorityQueue<SelectionMenuGroup> getNonSelectionMenuItems(
+    private static SortedSet<SelectionMenuGroup> getNonSelectionMenuItems(
             SelectActionMenuDelegate delegate,
             @Nullable AdditionalSelectionMenuItemProvider nonSelectionAdditionalItemProvider) {
         return SelectActionMenuHelper.getNonSelectionMenuItems(
@@ -1038,12 +1036,15 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     /**
      * Initializes the action menu.
+     *
      * @param customMenuItemClickListeners map to populate any custom click listeners for menu
-     *         items.
+     *     items.
      * @param additionalMenuItemClickListener executes after every menu item is clicked.
      */
-    public static void initializeActionMenu(Context context,
-            PriorityQueue<SelectionMenuGroup> menuGroups, Menu menu,
+    public static void initializeActionMenu(
+            Context context,
+            SortedSet<SelectionMenuGroup> menuGroups,
+            Menu menu,
             Map<MenuItem, View.OnClickListener> customMenuItemClickListeners,
             @Nullable MenuItem.OnMenuItemClickListener additionalMenuItemClickListener) {
         for (SelectionMenuGroup group : menuGroups) {
