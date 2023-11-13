@@ -87,6 +87,17 @@ std::unique_ptr<WebApkProto> WebApkProtoFromSpecifics(
   return app_proto;
 }
 
+std::unique_ptr<WebApkProto> CloneWebApkProto(const WebApkProto& app) {
+  std::unique_ptr<WebApkProto> clone = std::make_unique<WebApkProto>();
+
+  *clone = app;
+
+  sync_pb::WebApkSpecifics* mutable_specifics = clone->mutable_sync_data();
+  *mutable_specifics = app.sync_data();
+
+  return clone;
+}
+
 }  // anonymous namespace
 
 WebApkSyncBridge::WebApkSyncBridge(
@@ -365,6 +376,42 @@ WebApkSyncBridge::ApplyIncrementalSyncChanges(
   return absl::nullopt;
 }
 
+void WebApkSyncBridge::OnWebApkUsed(
+    std::unique_ptr<sync_pb::WebApkSpecifics> app_specifics) {
+  AddOrModifyAppInSync(
+      WebApkProtoFromSpecifics(app_specifics.get(), true /* installed */));
+}
+
+void WebApkSyncBridge::OnWebApkUninstalled(const std::string& manifest_id) {
+  webapps::AppId app_id = ManifestIdStrToAppId(manifest_id);
+  WebApkProto* app = GetAppByIdMutable(registry_, app_id);
+
+  if (app == nullptr) {
+    return;
+  }
+
+  if (!AppWasUsedRecently(&app->sync_data())) {
+    DeleteAppFromSync(app_id);
+    return;
+  }
+
+  // This updates the registry entry directly, so we don't need to call
+  // ApplyIncrementalSyncChangesToRegistry() later.
+  app->set_is_locally_installed(false);
+
+  // We don't need to update Sync, since this change only affects the
+  // non-Specifics part of the proto.
+  std::unique_ptr<RegistryUpdateData> registry_update =
+      std::make_unique<RegistryUpdateData>();
+  registry_update->apps_to_create.push_back(CloneWebApkProto(*app));
+
+  database_->Write(
+      *registry_update,
+      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList(),
+      base::BindOnce(&WebApkSyncBridge::OnDataWritten,
+                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
+}
+
 void WebApkSyncBridge::GetData(StorageKeyList storage_keys,
                                DataCallback callback) {
   auto data_batch = std::make_unique<syncer::MutableDataBatch>();
@@ -405,6 +452,45 @@ std::string WebApkSyncBridge::GetClientTag(
 std::string WebApkSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
   return GetClientTag(entity_data);
+}
+
+void WebApkSyncBridge::AddOrModifyAppInSync(std::unique_ptr<WebApkProto> app) {
+  webapps::AppId app_id = ManifestIdStrToAppId(app->sync_data().manifest_id());
+  std::unique_ptr<syncer::EntityData> entity_data =
+      CreateSyncEntityDataFromSpecifics(app->sync_data());
+
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  change_processor()->Put(app_id, std::move(entity_data),
+                          metadata_change_list.get());
+
+  std::unique_ptr<RegistryUpdateData> registry_update =
+      std::make_unique<RegistryUpdateData>();
+  registry_update->apps_to_create.push_back(std::move(app));
+
+  database_->Write(
+      *registry_update, std::move(metadata_change_list),
+      base::BindOnce(&WebApkSyncBridge::OnDataWritten,
+                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
+
+  ApplyIncrementalSyncChangesToRegistry(std::move(registry_update));
+}
+
+void WebApkSyncBridge::DeleteAppFromSync(const webapps::AppId& app_id) {
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  change_processor()->Delete(app_id, metadata_change_list.get());
+
+  std::unique_ptr<RegistryUpdateData> registry_update =
+      std::make_unique<RegistryUpdateData>();
+  registry_update->apps_to_delete.push_back(app_id);
+
+  database_->Write(
+      *registry_update, std::move(metadata_change_list),
+      base::BindOnce(&WebApkSyncBridge::OnDataWritten,
+                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
+
+  ApplyIncrementalSyncChangesToRegistry(std::move(registry_update));
 }
 
 const Registry& WebApkSyncBridge::GetRegistryForTesting() const {

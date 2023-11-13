@@ -115,6 +115,9 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
       const syncer::EntityChangeList& sync_changes,
       RegistryUpdateData* registry_update_from_installed_and_sync) const;
 
+  void OnWebApkUsed(std::unique_ptr<sync_pb::WebApkSpecifics> app_specifics);
+  void OnWebApkUninstalled(const std::string& manifest_id);
+
   const Registry& GetRegistryForTesting() const;
 
  private:
@@ -155,6 +158,9 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
   void PrepareRegistryUpdateFromSyncApps(
       const syncer::EntityChangeList& sync_changes,
       RegistryUpdateData* registry_update_from_sync) const;
+
+  void AddOrModifyAppInSync(std::unique_ptr<WebApkProto> app);
+  void DeleteAppFromSync(const webapps::AppId& app_id);
 
   std::unique_ptr<WebApkDatabase> database_;
   Registry registry_;
