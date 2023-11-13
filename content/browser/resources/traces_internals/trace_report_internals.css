@@ -10,8 +10,4 @@ body {
   html {
     background: var(--md-background-color);
   }
-
-  h1 {
-    color: white;
-  }
 }

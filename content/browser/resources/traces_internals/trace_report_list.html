@@ -1,4 +1,12 @@
-<style>
+<style include="cr-hidden-style">
+  :host h1 {
+    display: flex;
+  }
+
+  h1 > .trace-counter {
+    margin-left: 14px;
+  }
+
   .loading-spinner {
     width: 100%;
     height: 100px;
@@ -69,8 +77,47 @@
   .icon-container.update > iron-icon {
     --iron-icon-fill-color: rgb(34, 135, 211);
   }
-</style>
 
+  .traces-header {
+    margin: 12px 0;
+    display: flex;
+    width: min-content;
+  }
+
+  .traces-header h1 {
+    font-size: 3em;
+    color: var(--cr-primary-text-color);
+  }
+
+  .traces-header .traces-counter {
+    padding: 2px 8px;
+    height: fit-content;
+    margin-top: 16px;
+    margin-left: 4px;
+    font-weight: 800;
+    color: var(--cr-primary-text-color)
+  }
+
+  .empty-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 16px;
+    color: var(--cr-secondary-text-color);
+  }
+
+  .empty-message iron-icon {
+    --iron-icon-width: 40px;
+    --iron-icon-height: 40px;
+  }
+</style>
+<div class="traces-header">
+  <h1>Traces
+    <span class="trace-counter" hidden$="[[!hasTraces_(traces)]]">
+      [[traces.length]]
+    </span>
+  </h1>
+</div>
 <template is="dom-if" if="[[isLoading]]">
   <div class="loading-spinner">
     <paper-spinner-lite active="[[isLoading]]">
@@ -83,6 +130,10 @@
     <trace-report trace="[[item]]" on-show-toast="showToastHandler_">
     </trace-report>
   </template>
+  <div class="empty-message" hidden$="[[hasTraces_(traces)]]">
+    <iron-icon icon="cr:warning"></iron-icon>
+    <h1>Could not find any traces saved locally.</h1>
+  </div>
 </template>
 
 <cr-toast id="toast" duration="5000">
