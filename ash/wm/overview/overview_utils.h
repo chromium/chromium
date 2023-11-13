@@ -84,7 +84,7 @@ gfx::Rect GetGridBoundsInScreen(
 // in splitview, or if we aren't showing a splitview preview.
 absl::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio();
 
-// Check if kNewOverviewLayout is enabled for tablet mode.
+// Check if the grid layout in tablet mode should be used.
 bool ShouldUseTabletModeGridLayout();
 
 // Returns a Rect by rounding the values of the given RectF in a way that

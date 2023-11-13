@@ -89,12 +89,20 @@ class OverviewGroupItem : public OverviewItemBase,
   void OnOverviewItemWindowDestroying(OverviewItem* overview_item,
                                       bool reposition) override;
 
+  const std::vector<std::unique_ptr<OverviewItem>>& overview_items_for_testing()
+      const {
+    return overview_items_;
+  }
+
  protected:
   // OverviewItemBase:
-  void CreateItemWidget() override;
+  void HandleDragEvent(const gfx::PointF& location_in_screen) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(SnapGroupTest, ReflectSnapRatioInOverviewGroupItem);
+  // Creates `item_widget_` with `OverviewGroupContainerView` as its contents
+  // view.
+  void CreateItemWidget();
+
   // A list of `OverviewItem`s hosted and owned by `this`.
   std::vector<std::unique_ptr<OverviewItem>> overview_items_;
 

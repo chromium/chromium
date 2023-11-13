@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/system_shadow.h"
+#include "ash/wm/overview/event_handler_delegate.h"
 #include "ash/wm/overview/overview_types.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -41,16 +42,17 @@ class RoundedLabelWidget;
 class SystemShadow;
 
 // Defines the interface for the overview item which will be implemented by
-// `OverviewItem` and `OverviewGroupItem`. The `OverviewGrid` creates and owns
-// the instance of this interface.
-class ASH_EXPORT OverviewItemBase {
+// `OverviewItem`, `OverviewGroupItem` or `OverviewDropTarget`. The
+// `OverviewGrid` creates and owns the top-level concrete instance of this
+// interface.
+class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
  public:
   OverviewItemBase(OverviewSession* overview_session,
                    OverviewGrid* overview_grid,
                    aura::Window* root_window);
   OverviewItemBase(const OverviewItemBase&) = delete;
   OverviewItemBase& operator=(const OverviewItemBase&) = delete;
-  virtual ~OverviewItemBase();
+  ~OverviewItemBase() override;
 
   // Creates an instance of the `this` based on whether the given `window`
   // belongs to a snap group or not.
@@ -59,7 +61,7 @@ class ASH_EXPORT OverviewItemBase {
       OverviewSession* overview_session,
       OverviewGrid* overview_grid);
 
-  // Checks if `this` is currently being dragged.
+  // Returns true if `this` is currently being dragged.
   bool IsDragItem() const;
 
   // Refreshes visuals of the `shadow_` by setting the visibility and updating
@@ -69,15 +71,12 @@ class ASH_EXPORT OverviewItemBase {
   // Updates the type for the `shadow_` while being dragged and dropped.
   void UpdateShadowTypeForDrag(bool is_dragging);
 
-  // Handles events forwarded from the contents view.
-  void OnFocusedViewActivated();
-  void OnFocusedViewClosed();
-  void HandleMouseEvent(const ui::MouseEvent& event);
-  void HandleGestureEvent(ui::GestureEvent* event);
-
   // If in tablet mode, maybe forward events to `OverviewGridEventHandler` as we
-  // might want to process scroll events on `this`.
-  void HandleGestureEventForTabletModeLayout(ui::GestureEvent* event);
+  // might want to process scroll events on `this`. `event_source_item`
+  // specifies the sender of the event.
+  void HandleGestureEventForTabletModeLayout(
+      ui::GestureEvent* event,
+      OverviewItemBase* event_source_item);
 
   void set_should_animate_when_entering(bool should_animate) {
     should_animate_when_entering_ = should_animate;
@@ -297,6 +296,12 @@ class ASH_EXPORT OverviewItemBase {
 
   virtual const gfx::RoundedCornersF GetRoundedCorners() const = 0;
 
+  // EventHandlerDelegate:
+  void HandleMouseEvent(const ui::MouseEvent& event,
+                        OverviewItemBase* event_source_item) override;
+  void HandleGestureEvent(ui::GestureEvent* event,
+                          OverviewItemBase* event_source_item) override;
+
   void set_target_bounds_for_testing(const gfx::RectF& target_bounds) {
     target_bounds_ = target_bounds;
   }
@@ -310,10 +315,6 @@ class ASH_EXPORT OverviewItemBase {
   }
 
  protected:
-  // Creates `item_widget_` with `OverviewItemView` or
-  // `OverviewGroupContainerView` as its contents view.
-  virtual void CreateItemWidget() = 0;
-
   // Returns the widget init params needed to create the `item_widget_`.
   views::Widget::InitParams CreateOverviewItemWidgetParams(
       aura::Window* parent_window,
@@ -324,12 +325,10 @@ class ASH_EXPORT OverviewItemBase {
   // `item_widget_` has been created.
   void ConfigureTheShadow();
 
-  // Sets the opacity of `windows` based on `visible`, animating them if
-  // necessary. Used to "hide" overview when dragging a window from the shelf in
-  // tablet mode.
-  void SetVisibleDuringItemDragging(const aura::Window::Windows& windows,
-                                    bool visible,
-                                    bool animate);
+  // Drag event can be handled differently based on the concreate instance of
+  // `this`. For `OverviewItem`, the drag will be on window-level. For
+  // `OverviewGroupItem`, the drag will be on group-leve.
+  virtual void HandleDragEvent(const gfx::PointF& location_in_screen);
 
   // The root window `this` is being displayed on.
   raw_ptr<aura::Window> root_window_;
@@ -405,18 +404,19 @@ class ASH_EXPORT OverviewItemBase {
  private:
   friend class OverviewTestBase;
 
-  // TODO(sammiequon): Current events go from OverviewItemView to
-  // OverviewItem to OverviewSession to OverviewWindowDragController. We may be
-  // able to shorten this pipeline.
+  // TODO(sammiequon): Current events go from `OverviewItemView` to
+  // `EventHandlerDelegate` to `OverviewSession` to
+  // `OverviewWindowDragController`. We may be able to shorten this pipeline.
   void HandlePressEvent(const gfx::PointF& location_in_screen,
-                        bool from_touch_gesture);
+                        bool from_touch_gesture,
+                        OverviewItemBase* event_source_item);
   void HandleReleaseEvent(const gfx::PointF& location_in_screen);
-  void HandleDragEvent(const gfx::PointF& location_in_screen);
   void HandleLongPressEvent(const gfx::PointF& location_in_screen);
   void HandleFlingStartEvent(const gfx::PointF& location_in_screen,
                              float velocity_x,
                              float velocity_y);
-  void HandleTapEvent();
+  void HandleTapEvent(const gfx::PointF& location_in_screen,
+                      OverviewItemBase* event_source_item);
   void HandleGestureEndEvent();
 };
 

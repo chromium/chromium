@@ -6,6 +6,7 @@
 #define ASH_WM_SPLITVIEW_SPLIT_VIEW_DIVIDER_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"

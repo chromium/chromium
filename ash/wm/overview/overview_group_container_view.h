@@ -25,13 +25,6 @@ class OverviewGroupContainerView : public views::View {
       delete;
   ~OverviewGroupContainerView() override;
 
- protected:
-  // views::View:
-  bool OnMousePressed(const ui::MouseEvent& event) override;
-  bool OnMouseDragged(const ui::MouseEvent& event) override;
-  void OnMouseReleased(const ui::MouseEvent& event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
-
  private:
   const raw_ptr<OverviewGroupItem> overview_group_item_;
 };

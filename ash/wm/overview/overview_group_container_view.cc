@@ -16,25 +16,6 @@ OverviewGroupContainerView::OverviewGroupContainerView(
 
 OverviewGroupContainerView::~OverviewGroupContainerView() = default;
 
-bool OverviewGroupContainerView::OnMousePressed(const ui::MouseEvent& event) {
-  overview_group_item_->HandleMouseEvent(event);
-  return true;
-}
-
-bool OverviewGroupContainerView::OnMouseDragged(const ui::MouseEvent& event) {
-  overview_group_item_->HandleMouseEvent(event);
-  return true;
-}
-
-void OverviewGroupContainerView::OnMouseReleased(const ui::MouseEvent& event) {
-  overview_group_item_->HandleMouseEvent(event);
-}
-
-void OverviewGroupContainerView::OnGestureEvent(ui::GestureEvent* event) {
-  overview_group_item_->HandleGestureEvent(event);
-  event->SetHandled();
-}
-
 BEGIN_METADATA(OverviewGroupContainerView, views::View)
 END_METADATA
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/wm/overview/overview_item.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -93,7 +94,8 @@ class ASH_EXPORT OverviewWindowDragController {
 
   OverviewWindowDragController(OverviewSession* overview_session,
                                OverviewItemBase* item,
-                               bool is_touch_dragging);
+                               bool is_touch_dragging,
+                               OverviewItemBase* event_source_item);
 
   OverviewWindowDragController(const OverviewWindowDragController&) = delete;
   OverviewWindowDragController& operator=(const OverviewWindowDragController&) =
@@ -202,6 +204,10 @@ class ASH_EXPORT OverviewWindowDragController {
   // The drag target item in the overview mode.
   raw_ptr<OverviewItemBase, DanglingUntriaged | ExperimentalAsh> item_ =
       nullptr;
+
+  // The source item of the drag event.
+  raw_ptr<OverviewItemBase, DanglingUntriaged | ExperimentalAsh>
+      event_source_item_ = nullptr;
 
   DragBehavior current_drag_behavior_ = DragBehavior::kNoDrag;
 

@@ -1238,7 +1238,8 @@ TEST_P(OverviewSessionTest, ActivateDraggedOverviewWindowNotCancelOverview) {
   auto* item = GetOverviewItemForWindow(window.get());
   gfx::PointF drag_point = item->target_bounds().CenterPoint();
   GetOverviewSession()->InitiateDrag(item, drag_point,
-                                     /*is_touch_dragging=*/false);
+                                     /*is_touch_dragging=*/false,
+                                     /*event_source_item=*/item);
   drag_point.Offset(5.f, 0.f);
   GetOverviewSession()->Drag(item, drag_point);
   wm::ActivateWindow(window.get());
@@ -1257,7 +1258,8 @@ TEST_P(OverviewSessionTest,
   OverviewItemBase* item1 = GetOverviewItemForWindow(window1.get());
   gfx::PointF drag_point = item1->target_bounds().CenterPoint();
   GetOverviewSession()->InitiateDrag(item1, drag_point,
-                                     /*is_touch_dragging=*/false);
+                                     /*is_touch_dragging=*/false,
+                                     /*event_source_item=*/item1);
   drag_point.Offset(5.f, 0.f);
   GetOverviewSession()->Drag(item1, drag_point);
   wm::ActivateWindow(window2.get());
@@ -1278,7 +1280,8 @@ TEST_P(OverviewSessionTest,
   auto* item1 = GetOverviewItemForWindow(window1.get());
   gfx::PointF drag_point = item1->target_bounds().CenterPoint();
   GetOverviewSession()->InitiateDrag(item1, drag_point,
-                                     /*is_touch_dragging=*/false);
+                                     /*is_touch_dragging=*/false,
+                                     /*event_source_item=*/item1);
   drag_point.Offset(5.f, 0.f);
   GetOverviewSession()->Drag(item1, drag_point);
   wm::ActivateWindow(window2.get());
@@ -1545,7 +1548,8 @@ TEST_P(OverviewSessionTest, DropTargetOnCorrectDisplayForDraggingFromOverview) {
   EXPECT_FALSE(GetDropTarget(1));
   gfx::PointF drag_point = primary_screen_item->target_bounds().CenterPoint();
   GetOverviewSession()->InitiateDrag(primary_screen_item, drag_point,
-                                     /*is_touch_dragging=*/true);
+                                     /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/primary_screen_item);
   EXPECT_FALSE(GetDropTarget(0));
   EXPECT_FALSE(GetDropTarget(1));
   drag_point.Offset(5.f, 0.f);
@@ -1557,8 +1561,10 @@ TEST_P(OverviewSessionTest, DropTargetOnCorrectDisplayForDraggingFromOverview) {
   EXPECT_FALSE(GetDropTarget(0));
   EXPECT_FALSE(GetDropTarget(1));
   drag_point = secondary_screen_item->target_bounds().CenterPoint();
-  GetOverviewSession()->InitiateDrag(secondary_screen_item, drag_point,
-                                     /*is_touch_dragging=*/true);
+  GetOverviewSession()->InitiateDrag(
+      secondary_screen_item, drag_point,
+      /*is_touch_dragging=*/true,
+      /*event_source_item=*/secondary_screen_item);
   EXPECT_FALSE(GetDropTarget(0));
   EXPECT_FALSE(GetDropTarget(1));
   drag_point.Offset(5.f, 0.f);
@@ -1880,7 +1886,8 @@ TEST_P(OverviewSessionTest, DragMinimizedWindowHasStableSize) {
 
   gfx::PointF drag_point(workarea.CenterPoint());
   GetOverviewSession()->InitiateDrag(overview_item, drag_point,
-                                     /*is_touch_dragging=*/true);
+                                     /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/overview_item);
   gfx::Size target_size =
       GetTransformedTargetBounds(widget->GetNativeWindow()).size();
 
@@ -5766,7 +5773,7 @@ TEST_F(TabletModeOverviewSessionTest, StackingOrderAfterGestureEvent) {
   ui::GestureEvent gesture_end(item_center.x(), item_center.y(), 0,
                                ui::EventTimeForNow(),
                                ui::GestureEventDetails(ui::ET_GESTURE_END));
-  item->HandleGestureEvent(&gesture_end);
+  item->HandleGestureEvent(&gesture_end, item);
   EXPECT_TRUE(window_util::IsStackedBelow(window2.get(), window1.get()));
 
   // Tests that if we drag the window around, then release, the window also
@@ -6320,14 +6327,16 @@ TEST_F(TabletModeOverviewSessionTest, DragToClose) {
 
   // This drag has not covered enough distance, so the widget is not closed and
   // we remain in overview mode.
-  GetOverviewSession()->InitiateDrag(item, start, /*is_touch_dragging=*/true);
+  GetOverviewSession()->InitiateDrag(item, start, /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/item);
   GetOverviewSession()->Drag(item, start + gfx::Vector2dF(0, 80));
   GetOverviewSession()->CompleteDrag(item, start + gfx::Vector2dF(0, 80));
   ASSERT_TRUE(GetOverviewSession());
 
   // Verify that the second drag has enough vertical distance, so the widget
   // will be closed and overview mode will be exited.
-  GetOverviewSession()->InitiateDrag(item, start, /*is_touch_dragging=*/true);
+  GetOverviewSession()->InitiateDrag(item, start, /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/item);
   GetOverviewSession()->Drag(item, start + gfx::Vector2dF(0, 180));
   GetOverviewSession()->CompleteDrag(item, start + gfx::Vector2dF(0, 180));
   base::RunLoop().RunUntilIdle();
@@ -6350,21 +6359,24 @@ TEST_F(TabletModeOverviewSessionTest, FlingToClose) {
   ASSERT_TRUE(item);
 
   // Verify that items flung horizontally do not close the item.
-  GetOverviewSession()->InitiateDrag(item, start, /*is_touch_dragging=*/true);
+  GetOverviewSession()->InitiateDrag(item, start, /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/item);
   GetOverviewSession()->Drag(item, start + gfx::Vector2dF(0, 50));
   GetOverviewSession()->Fling(item, start, 2500, 0);
   ASSERT_TRUE(GetOverviewSession());
 
   // Verify that items flung vertically but without enough velocity do not
   // close the item.
-  GetOverviewSession()->InitiateDrag(item, start, /*is_touch_dragging=*/true);
+  GetOverviewSession()->InitiateDrag(item, start, /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/item);
   GetOverviewSession()->Drag(item, start + gfx::Vector2dF(0, 50));
   GetOverviewSession()->Fling(item, start, 0, 1500);
   ASSERT_TRUE(GetOverviewSession());
 
   // Verify that flinging the item closes it, and since it is the last item in
   // overview mode, overview mode is exited.
-  GetOverviewSession()->InitiateDrag(item, start, /*is_touch_dragging=*/true);
+  GetOverviewSession()->InitiateDrag(item, start, /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/item);
   GetOverviewSession()->Drag(item, start + gfx::Vector2dF(0, 50));
   GetOverviewSession()->Fling(item, start, 0, 2500);
   base::RunLoop().RunUntilIdle();
@@ -6398,7 +6410,8 @@ TEST_F(TabletModeOverviewSessionTest, BasicNudging) {
   // Drag |item1| vertically. |item2| and |item3| bounds should change as they
   // should be nudging towards their final bounds.
   GetOverviewSession()->InitiateDrag(item1, item1_bounds.CenterPoint(),
-                                     /*is_touch_dragging=*/true);
+                                     /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/item1);
   GetOverviewSession()->Drag(
       item1, item1_bounds.CenterPoint() + gfx::Vector2dF(0, 160));
   EXPECT_NE(item2_bounds, item2->target_bounds());
@@ -6412,7 +6425,8 @@ TEST_F(TabletModeOverviewSessionTest, BasicNudging) {
   // Drag |item3| vertically. |item1| and |item2| bounds should change as they
   // should be nudging towards their final bounds.
   GetOverviewSession()->InitiateDrag(item3, item3_bounds.CenterPoint(),
-                                     /*is_touch_dragging=*/true);
+                                     /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/item3);
   GetOverviewSession()->Drag(
       item3, item3_bounds.CenterPoint() + gfx::Vector2dF(0, 160));
   EXPECT_NE(item1_bounds, item1->target_bounds());
@@ -6447,7 +6461,8 @@ TEST_F(TabletModeOverviewSessionTest, NoNudgingWhenNumRowsChange) {
   // Drag |item1| past the drag to swipe threshold. None of the other window
   // bounds should change, as none of them should be nudged.
   GetOverviewSession()->InitiateDrag(item1, item1_bounds.CenterPoint(),
-                                     /*is_touch_dragging=*/true);
+                                     /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/item1);
   GetOverviewSession()->Drag(
       item1, item1_bounds.CenterPoint() + gfx::Vector2dF(0, 160));
   EXPECT_EQ(item2_bounds, item2->target_bounds());
@@ -6484,7 +6499,8 @@ TEST_F(TabletModeOverviewSessionTest, NoNudgingWhenLastItemOnPreviousRowDrops) {
   // deleting the fourth item will cause the third item to drop down from the
   // first row to the second.
   GetOverviewSession()->InitiateDrag(items[3], item_bounds[3].CenterPoint(),
-                                     /*is_touch_dragging=*/true);
+                                     /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/items[3]);
   GetOverviewSession()->Drag(
       items[3], item_bounds[3].CenterPoint() + gfx::Vector2dF(0, 160));
   EXPECT_EQ(item_bounds[0], items[0]->target_bounds());
@@ -6502,7 +6518,8 @@ TEST_F(TabletModeOverviewSessionTest, NoNudgingWhenLastItemOnPreviousRowDrops) {
   // row. The fourth and fifth items should not nudge as they are in a different
   // row than the first item.
   GetOverviewSession()->InitiateDrag(items[0], item_bounds[0].CenterPoint(),
-                                     /*is_touch_dragging=*/true);
+                                     /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/items[0]);
   GetOverviewSession()->Drag(
       items[0], item_bounds[0].CenterPoint() + gfx::Vector2dF(0, 160));
   EXPECT_NE(item_bounds[1], items[1]->target_bounds());
@@ -6526,7 +6543,8 @@ TEST_F(TabletModeOverviewSessionTest, DestroyWindowDuringNudge) {
 
   // Drag |item1| vertically to start nudging.
   GetOverviewSession()->InitiateDrag(item, item_center,
-                                     /*is_touch_dragging=*/true);
+                                     /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/item);
   GetOverviewSession()->Drag(item, item_center + gfx::Vector2dF(0, 160));
 
   // Destroy |window2| and |window3|,then keep dragging. There should be no
@@ -6768,7 +6786,8 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
         break;
     }
     GetOverviewSession()->InitiateDrag(item, start_location,
-                                       /*is_touch_dragging=*/true);
+                                       /*is_touch_dragging=*/true,
+                                       /*event_source_item=*/item);
     if (long_press)
       GetOverviewSession()->StartNormalDragMode(start_location);
     GetOverviewSession()->Drag(item, end_location);
@@ -6916,7 +6935,8 @@ TEST_F(SplitViewOverviewSessionTest,
   gfx::RectF overview_item_bounds = overview_item->target_bounds();
   gfx::PointF start_location(overview_item_bounds.CenterPoint());
   GetOverviewSession()->InitiateDrag(overview_item, start_location,
-                                     /*is_touch_dragging=*/false);
+                                     /*is_touch_dragging=*/false,
+                                     /*event_source_item=*/overview_item);
 
   // Verify that when dragged to the left, the window grid is located where the
   // right window of split view mode should be.
@@ -6958,7 +6978,8 @@ TEST_F(SplitViewOverviewSessionTest,
   overview_item_bounds = overview_item->target_bounds();
   start_location = overview_item_bounds.CenterPoint();
   GetOverviewSession()->InitiateDrag(overview_item, start_location,
-                                     /*is_touch_dragging=*/false);
+                                     /*is_touch_dragging=*/false,
+                                     /*event_source_item=*/overview_item);
 
   // Verify that when there is a snapped window, the window grid bounds remain
   // constant despite overview items being dragged left and right.
@@ -6993,7 +7014,7 @@ TEST_F(SplitViewOverviewSessionTest, DraggingUnsnappableAppWithSplitView) {
   auto* overview_item = GetOverviewItemForWindow(unsnappable_window.get());
   GetOverviewSession()->InitiateDrag(
       overview_item, overview_item->target_bounds().CenterPoint(),
-      /*is_touch_dragging=*/false);
+      /*is_touch_dragging=*/false, /*event_source_item=*/overview_item);
   GetOverviewSession()->Drag(overview_item, gfx::PointF());
   EXPECT_EQ(expected_grid_bounds, GetGridBounds());
   GetOverviewSession()->Drag(overview_item,
@@ -7020,7 +7041,7 @@ TEST_F(SplitViewOverviewSessionTest,
       overview_grid->GetOverviewItemContaining(unsnappable_window.get());
   GetOverviewSession()->InitiateDrag(
       overview_item, overview_item->target_bounds().CenterPoint(),
-      /*is_touch_dragging=*/false);
+      /*is_touch_dragging=*/false, /*event_source_item=*/overview_item);
   GetOverviewSession()->Drag(overview_item, gfx::PointF());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kFromOverview,
             overview_grid->split_view_drag_indicators()
@@ -7085,9 +7106,9 @@ TEST_F(SplitViewOverviewSessionTest, Clipping) {
     auto* item2 = GetOverviewItemForWindow(window2.get());
     auto* item3 = GetOverviewItemForWindow(window3.get());
     auto* item4 = GetOverviewItemForWindow(window4.get());
-    GetOverviewSession()->InitiateDrag(item1,
-                                       item1->target_bounds().CenterPoint(),
-                                       /*is_touch_dragging=*/false);
+    GetOverviewSession()->InitiateDrag(
+        item1, item1->target_bounds().CenterPoint(),
+        /*is_touch_dragging=*/false, /*event_source_item=*/item1);
 
     // Tests that after we drag to a preview area, the items target bounds have
     // a matching aspect ratio to what the window would have if it were to be
@@ -7203,9 +7224,9 @@ TEST_F(SplitViewOverviewSessionTest, NoClippingWhenSplitviewDisabled) {
 
   // Drag to the edge of the screen. There should be no clipping and no crash.
   auto* item1 = GetOverviewItemForWindow(window1.get());
-  GetOverviewSession()->InitiateDrag(item1,
-                                     item1->target_bounds().CenterPoint(),
-                                     /*is_touch_dragging=*/false);
+  GetOverviewSession()->InitiateDrag(
+      item1, item1->target_bounds().CenterPoint(),
+      /*is_touch_dragging=*/false, /*event_source_item=*/item1);
   GetOverviewSession()->Drag(item1, gfx::PointF());
   EXPECT_EQ(clipping1, window1->layer()->clip_rect());
   EXPECT_EQ(clipping2, window2->layer()->clip_rect());
@@ -7979,7 +8000,8 @@ TEST_F(SplitViewOverviewSessionTest, OverviewItemLongPressed) {
   // stay in overview mode and the bounds of the item are the same as they were
   // before the press sequence started.
   GetOverviewSession()->InitiateDrag(overview_item, start_location,
-                                     /*is_touch_dragging=*/true);
+                                     /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/overview_item);
   GetOverviewSession()->ResetDraggedWindowGesture();
   EXPECT_TRUE(GetOverviewController()->InOverviewSession());
   EXPECT_EQ(original_bounds, overview_item->target_bounds());
@@ -7987,7 +8009,8 @@ TEST_F(SplitViewOverviewSessionTest, OverviewItemLongPressed) {
   // Verify that when a overview item is tapped, we exit overview mode,
   // and the current active window is the item.
   GetOverviewSession()->InitiateDrag(overview_item, start_location,
-                                     /*is_touch_dragging=*/true);
+                                     /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/overview_item);
   GetOverviewSession()->ActivateDraggedWindow();
   EXPECT_FALSE(GetOverviewController()->InOverviewSession());
   EXPECT_EQ(window1.get(), window_util::GetActiveWindow());
@@ -8585,7 +8608,7 @@ TEST_F(SplitViewOverviewSessionTest,
   auto* overview_item = GetOverviewItemForWindow(overview_window.get());
   GetOverviewSession()->InitiateDrag(
       overview_item, overview_item->target_bounds().CenterPoint(),
-      /*is_touch_dragging=*/true);
+      /*is_touch_dragging=*/true, /*event_source_item=*/overview_item);
   EXPECT_FALSE(overview_item->IsDragItem());
 }
 
@@ -8604,7 +8627,7 @@ TEST_F(SplitViewOverviewSessionTest, GridBoundsAfterWindowDestroyed) {
   auto* overview_item = GetOverviewItemForWindow(window1.get());
   GetOverviewSession()->InitiateDrag(
       overview_item, overview_item->target_bounds().CenterPoint(),
-      /*is_touch_dragging=*/true);
+      /*is_touch_dragging=*/true, /*event_source_item=*/overview_item);
   GetOverviewSession()->Drag(overview_item, gfx::PointF(1.f, 1.f));
   EXPECT_NE(grid_bounds, GetGridBounds());
 
@@ -9475,7 +9498,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   EXPECT_FALSE(GetDropTarget(1));
   gfx::PointF drag_point = overview_item->target_bounds().CenterPoint();
   GetOverviewSession()->InitiateDrag(overview_item, drag_point,
-                                     /*is_touch_dragging=*/false);
+                                     /*is_touch_dragging=*/false,
+                                     /*event_source_item=*/overview_item);
   EXPECT_FALSE(GetDropTarget(0));
   EXPECT_FALSE(GetDropTarget(1));
   drag_point.Offset(5.f, 0.f);
@@ -9711,9 +9735,9 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 
   Shell::Get()->cursor_manager()->SetDisplay(
       display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]));
-  GetOverviewSession()->InitiateDrag(item1,
-                                     item1->target_bounds().CenterPoint(),
-                                     /*is_touch_dragging=*/false);
+  GetOverviewSession()->InitiateDrag(
+      item1, item1->target_bounds().CenterPoint(),
+      /*is_touch_dragging=*/false, /*event_source_item=*/item1);
   const gfx::PointF right_snap_point(1599.f, 300.f);
   GetOverviewSession()->Drag(item1, right_snap_point);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary,
@@ -9728,9 +9752,9 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
             split_view_controller->state());
   EXPECT_EQ(window1.get(), split_view_controller->secondary_window());
 
-  GetOverviewSession()->InitiateDrag(item2,
-                                     item2->target_bounds().CenterPoint(),
-                                     /*is_touch_dragging=*/false);
+  GetOverviewSession()->InitiateDrag(
+      item2, item2->target_bounds().CenterPoint(),
+      /*is_touch_dragging=*/false, /*event_source_item=*/item2);
   const gfx::PointF left_of_middle(1150.f, 300.f);
   GetOverviewSession()->Drag(item2, left_of_middle);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kFromOverview,
@@ -9740,9 +9764,9 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
             split_view_controller->state());
   EXPECT_EQ(window1.get(), split_view_controller->secondary_window());
 
-  GetOverviewSession()->InitiateDrag(item2,
-                                     item2->target_bounds().CenterPoint(),
-                                     /*is_touch_dragging=*/false);
+  GetOverviewSession()->InitiateDrag(
+      item2, item2->target_bounds().CenterPoint(),
+      /*is_touch_dragging=*/false, /*event_source_item=*/item2);
   const gfx::PointF left_snap_point(810.f, 300.f);
   GetOverviewSession()->Drag(item2, left_snap_point);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
@@ -9780,9 +9804,9 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
       grid_on_root2->split_view_drag_indicators();
 
   ASSERT_EQ(display_with_root1.id(), cursor_manager->GetDisplay().id());
-  GetOverviewSession()->InitiateDrag(item1,
-                                     item1->target_bounds().CenterPoint(),
-                                     /*is_touch_dragging=*/false);
+  GetOverviewSession()->InitiateDrag(
+      item1, item1->target_bounds().CenterPoint(),
+      /*is_touch_dragging=*/false, /*event_source_item=*/item1);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             indicators_on_root1->current_window_dragging_state());
   EXPECT_EQ(display_with_root1.work_area(),
@@ -9924,9 +9948,9 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   auto* item4 = grid2->GetOverviewItemContaining(window4.get());
   // Start dragging |item4| from |grid2|.
   cursor_manager->SetDisplay(display_with_root2);
-  GetOverviewSession()->InitiateDrag(item4,
-                                     item4->target_bounds().CenterPoint(),
-                                     /*is_touch_dragging=*/false);
+  GetOverviewSession()->InitiateDrag(
+      item4, item4->target_bounds().CenterPoint(),
+      /*is_touch_dragging=*/false, /*event_source_item=*/item4);
   GetOverviewSession()->Drag(item4, gfx::PointF(1200.f, 0.f));
   // On the grid where the drag starts (|grid2|), the drop target is inserted at
   // the index immediately following the dragged item (|item4|).
@@ -9958,7 +9982,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
             item->GetWindowDimensionsType());
   EXPECT_EQ(2.f, item_bounds.width() / item_bounds.height());
   GetOverviewSession()->InitiateDrag(item, item->target_bounds().CenterPoint(),
-                                     /*is_touch_dragging=*/false);
+                                     /*is_touch_dragging=*/false,
+                                     /*event_source_item=*/item);
   Shell::Get()->cursor_manager()->SetDisplay(
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay());
@@ -9992,7 +10017,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
         display_manager());
     cursor_manager->SetDisplay(display_manager_test.GetSecondaryDisplay());
     GetOverviewSession()->InitiateDrag(item, drag_starting_point,
-                                       /*is_touch_dragging=*/false);
+                                       /*is_touch_dragging=*/false,
+                                       /*event_source_item=*/item);
     cursor_manager->SetDisplay(
         display::Screen::GetScreen()->GetPrimaryDisplay());
     GetOverviewSession()->Drag(item, gfx::PointF(300.f, 0.f));

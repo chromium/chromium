@@ -863,7 +863,7 @@ TEST_F(SplitViewControllerTest, DividerStateWhenDraggedOverviewItemDestroyed) {
       overview_session->GetOverviewItemForWindow(window2.get());
   gfx::PointF drag_point = overview_item->target_bounds().CenterPoint();
   overview_session->InitiateDrag(overview_item, drag_point,
-                                 /*is_touch_dragging=*/false);
+                                 /*is_touch_dragging=*/false, overview_item);
   drag_point.Offset(5.f, 0.f);
   overview_session->Drag(overview_item, drag_point);
   EXPECT_EQ(ui::ZOrderLevel::kNormal,
@@ -902,7 +902,7 @@ TEST_F(SplitViewControllerTest, DividerStateWhenOverviewItemDragCancelled) {
       overview_session->GetOverviewItemForWindow(window2.get());
   gfx::PointF drag_point = overview_item->target_bounds().CenterPoint();
   overview_session->InitiateDrag(overview_item, drag_point,
-                                 /*is_touch_dragging=*/false);
+                                 /*is_touch_dragging=*/false, overview_item);
   drag_point.Offset(5.f, 0.f);
   overview_session->Drag(overview_item, drag_point);
   EXPECT_EQ(ui::ZOrderLevel::kNormal,

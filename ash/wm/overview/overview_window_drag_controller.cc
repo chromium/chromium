@@ -237,9 +237,11 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
 OverviewWindowDragController::OverviewWindowDragController(
     OverviewSession* overview_session,
     OverviewItemBase* item,
-    bool is_touch_dragging)
+    bool is_touch_dragging,
+    OverviewItemBase* event_source_item)
     : overview_session_(overview_session),
       item_(item),
+      event_source_item_(event_source_item),
       display_count_(Shell::GetAllRootWindows().size()),
       is_touch_dragging_(is_touch_dragging),
       is_eligible_for_drag_to_snap_(IsEligibleForDragToSnap(item)),
@@ -336,6 +338,7 @@ OverviewWindowDragController::CompleteDrag(
   }
 
   item_ = nullptr;
+  event_source_item_ = nullptr;
   current_drag_behavior_ = DragBehavior::kNoDrag;
   UnpauseOcclusionTracker();
   presentation_time_recorder_.reset();
@@ -439,6 +442,7 @@ OverviewWindowDragController::DragResult OverviewWindowDragController::Fling(
           (location_in_screen - initial_event_location_).y() < 0);
       did_move_ = false;
       item_ = nullptr;
+      event_source_item_ = nullptr;
       current_drag_behavior_ = DragBehavior::kNoDrag;
       UnpauseOcclusionTracker();
       RecordDragToClose(kFlingToClose);
@@ -463,10 +467,12 @@ void OverviewWindowDragController::ActivateDraggedWindow() {
   SplitViewController::State split_state = split_view_controller->state();
   if (!is_eligible_for_drag_to_snap_ ||
       split_state == SplitViewController::State::kNoSnap) {
-    overview_session_->SelectWindow(item_);
+    overview_session_->SelectWindow(event_source_item_);
     // Explicitly set `item_` to null to avoid being accessed after been
-    // released in `OverviewGrid::RemoveItem()`. See UaF reported in b/301368132
+    // released in `OverviewGrid::RemoveItem()`. See UaF reported in
+    // b/301368132.
     item_ = nullptr;
+    event_source_item_ = nullptr;
   } else if (split_view_controller->CanSnapWindow(item_->GetWindow())) {
     SnapWindow(split_view_controller,
                split_state == SplitViewController::State::kPrimarySnapped
@@ -474,11 +480,13 @@ void OverviewWindowDragController::ActivateDraggedWindow() {
                    : SplitViewController::SnapPosition::kPrimary);
   } else {
     split_view_controller->EndSplitView();
-    overview_session_->SelectWindow(item_);
+    overview_session_->SelectWindow(event_source_item_);
     // Same as above, explicitly set `item_` to nullptr to avoid UaF.
     item_ = nullptr;
+    event_source_item_ = nullptr;
     ShowAppCannotSnapToast();
   }
+
   current_drag_behavior_ = DragBehavior::kNoDrag;
   UnpauseOcclusionTracker();
 }
@@ -508,6 +516,7 @@ void OverviewWindowDragController::ResetGesture() {
   // This function gets called after a long press release, which bypasses
   // CompleteDrag but stops dragging as well, so reset |item_|.
   item_ = nullptr;
+  event_source_item_ = nullptr;
   current_drag_behavior_ = DragBehavior::kNoDrag;
   UnpauseOcclusionTracker();
 }
@@ -783,6 +792,7 @@ OverviewWindowDragController::CompleteNormalDrag(
       // Window was successfully moved to another desk, and |item_| was
       // removed from the grid. It may never be accessed after this.
       item_ = nullptr;
+      event_source_item_ = nullptr;
       overview_session_->PositionWindows(/*animate=*/true);
       RecordNormalDrag(kToDesk, is_dragged_to_other_display);
       return DragResult::kDragToDesk;
@@ -832,6 +842,7 @@ OverviewWindowDragController::CompleteNormalDrag(
     overview_session_->RemoveItem(item_, /*item_destroying=*/false,
                                   /*reposition=*/false);
     item_ = nullptr;
+    event_source_item_ = nullptr;
     // The |OverviewItemMoveHelper| will self destruct when we move |window| to
     // |target_root|.
     new OverviewItemMoveHelper(window, target_item_bounds);
@@ -995,6 +1006,7 @@ void OverviewWindowDragController::SnapWindow(
   // See crbug.com/1330042 for more details. `item_` will be deleted after
   // SplitViewController::SnapWindow().
   item_ = nullptr;
+  event_source_item_ = nullptr;
   split_view_controller->SnapWindow(
       window, snap_position,
       WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap,

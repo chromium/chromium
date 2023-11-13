@@ -4,7 +4,6 @@
 
 #include "ash/wm/overview/overview_group_item.h"
 
-#include "ash/display/screen_orientation_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -21,6 +20,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -80,6 +80,9 @@ OverviewGroupItem::OverviewGroupItem(const Windows& windows,
   CreateItemWidget();
 
   CHECK_EQ(windows.size(), 2u);
+
+  const aura::Window* topmost_window = window_util::GetTopMostWindow(windows);
+  OverviewItem* bottom_item = nullptr;
   for (auto* window : windows) {
     // Create the overview items hosted by `this`, which will be the delegate to
     // handle the window destroying if the overview representation for the
@@ -88,17 +91,22 @@ OverviewGroupItem::OverviewGroupItem(const Windows& windows,
     // group-level shadow will be installed instead.
     std::unique_ptr<OverviewItem> overview_item =
         std::make_unique<OverviewItem>(window, overview_session_,
-                                       overview_grid_, /*delegate=*/this,
+                                       overview_grid_,
+                                       /*destruction_delegate=*/this,
+                                       /*event_handler_delegate=*/this,
                                        /*eligible_for_shadow_config=*/false);
-
-    // Disallow events to be forwarded to the individual overview item(s) hosted
-    // by `this` so that we can perform group-level operation on event received
-    // by the contents view of `this`.
-    OverviewItemView* overview_item_view = overview_item->overview_item_view();
-    overview_item_view->SetCanProcessEventsWithinSubtree(false);
-    overview_item_view->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+    if (window != topmost_window) {
+      bottom_item = overview_item.get();
+    }
     overview_items_.push_back(std::move(overview_item));
   }
+
+  // Explicitly stack the window of the group item widget below the item widget
+  // whose window is lower in stacking order so that the `OverviewItemView` will
+  // be able to receive the events.
+  aura::Window* widget_window = item_widget_->GetNativeWindow();
+  widget_window->parent()->StackChildBelow(
+      widget_window, bottom_item->item_widget()->GetNativeWindow());
 }
 
 OverviewGroupItem::~OverviewGroupItem() = default;
@@ -290,10 +298,6 @@ void OverviewGroupItem::CloseWindows() {
 void OverviewGroupItem::Restack() {}
 
 void OverviewGroupItem::StartDrag() {
-  DCHECK(item_widget_);
-  aura::Window* widget_window = item_widget_->GetNativeWindow();
-  widget_window->parent()->StackChildAtTop(widget_window);
-
   for (const auto& item : overview_items_) {
     item->StartDrag();
   }
@@ -302,11 +306,6 @@ void OverviewGroupItem::StartDrag() {
 void OverviewGroupItem::OnOverviewItemDragStarted(OverviewItemBase* item) {}
 
 void OverviewGroupItem::OnOverviewItemDragEnded(bool snap) {
-  // TODO(michelefan): Figure out why we need to explicitly stack the
-  // `item_widget_` on top by looking into the `Restack()`.
-  DCHECK(item_widget_);
-  aura::Window* widget_window = item_widget_->GetNativeWindow();
-  widget_window->parent()->StackChildAtTop(widget_window);
 }
 
 void OverviewGroupItem::OnOverviewItemContinuousScroll(
@@ -389,6 +388,12 @@ void OverviewGroupItem::OnOverviewItemWindowDestroying(
       item_view->ResetRoundedCorners();
       item_view->RefreshItemVisuals();
     }
+  }
+}
+
+void OverviewGroupItem::HandleDragEvent(const gfx::PointF& location_in_screen) {
+  if (IsDragItem()) {
+    overview_session_->Drag(this, location_in_screen);
   }
 }
 

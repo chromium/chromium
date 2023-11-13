@@ -337,7 +337,8 @@ TEST_P(OverviewFocusCyclerTest, FocusLocationWhileDragging) {
   const gfx::PointF start_point = item->target_bounds().CenterPoint();
   const gfx::PointF end_point(20.f, 20.f);
   GetOverviewSession()->InitiateDrag(item, start_point,
-                                     /*is_touch_dragging=*/true);
+                                     /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/item);
   GetOverviewSession()->Drag(item, end_point);
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
   EXPECT_EQ(window3.get(), GetOverviewFocusedWindow());

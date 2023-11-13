@@ -90,7 +90,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // false otherwise.
   bool AcceptSelection();
 
-  // Activates the window or window group associated with the `item`.
+  // Activates the window associated with the `item`.
   void SelectWindow(OverviewItemBase* item);
 
   // Sets the dragged window on the split view drag indicators.
@@ -159,7 +159,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   void InitiateDrag(OverviewItemBase* item,
                     const gfx::PointF& location_in_screen,
-                    bool is_touch_dragging);
+                    bool is_touch_dragging,
+                    OverviewItemBase* event_source_item);
   void Drag(OverviewItemBase* item, const gfx::PointF& location_in_screen);
   void CompleteDrag(OverviewItemBase* item,
                     const gfx::PointF& location_in_screen);
@@ -263,8 +264,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void RestoreWindowActivation(bool restore);
 
   // Handles requests to active or close the currently focused `item`.
-  void OnFocusedItemActivated(OverviewItemBase* item);
-  void OnFocusedItemClosed(OverviewItemBase* item);
+  void OnFocusedItemActivated(OverviewItem* item);
+  void OnFocusedItemClosed(OverviewItem* item);
 
   // Called explicitly (with no list of observers) by the |RootWindowController|
   // of |root|, so that the associated grid is properly removed and destroyed.

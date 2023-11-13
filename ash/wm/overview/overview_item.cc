@@ -165,18 +165,19 @@ bool IsContinuousScrollInProgress() {
 OverviewItem::OverviewItem(aura::Window* window,
                            OverviewSession* overview_session,
                            OverviewGrid* overview_grid,
-                           WindowDestructionDelegate* delegate,
+                           WindowDestructionDelegate* destruction_delegate,
+                           EventHandlerDelegate* event_handler_delegate,
                            bool eligible_for_shadow_config)
     : OverviewItemBase(overview_session,
                        overview_grid,
                        window->GetRootWindow()),
       root_window_(window->GetRootWindow()),
       transform_window_(this, window),
-      window_destruction_delegate_(delegate),
+      window_destruction_delegate_(destruction_delegate),
       eligible_for_shadow_config_(eligible_for_shadow_config),
       animation_disabler_(window) {
   CHECK(window_destruction_delegate_);
-  CreateItemWidget();
+  CreateItemWidget(event_handler_delegate);
   window->AddObserver(this);
   WindowState::Get(window)->AddObserver(this);
 }
@@ -185,6 +186,14 @@ OverviewItem::~OverviewItem() {
   aura::Window* window = GetWindow();
   WindowState::Get(window)->RemoveObserver(this);
   window->RemoveObserver(this);
+}
+
+void OverviewItem::OnFocusedViewActivated() {
+  overview_session_->OnFocusedItemActivated(this);
+}
+
+void OverviewItem::OnFocusedViewClosed() {
+  overview_session_->OnFocusedItemClosed(this);
 }
 
 void OverviewItem::UpdateItemContentViewForMinimizedWindow() {
@@ -1092,7 +1101,8 @@ void OverviewItem::OnPostWindowStateTypeChange(WindowState* window_state,
   overview_grid_->PositionWindows(/*animate=*/false);
 }
 
-void OverviewItem::CreateItemWidget() {
+void OverviewItem::CreateItemWidget(
+    EventHandlerDelegate* event_handler_delegate) {
   TRACE_EVENT0("ui", "OverviewItem::CreateItemWidget");
 
   item_widget_ = std::make_unique<views::Widget>();
@@ -1111,7 +1121,7 @@ void OverviewItem::CreateItemWidget() {
 
   overview_item_view_ =
       item_widget_->SetContentsView(std::make_unique<OverviewItemView>(
-          this,
+          this, event_handler_delegate ? event_handler_delegate : this,
           base::BindRepeating(&OverviewItem::CloseButtonPressed,
                               base::Unretained(this)),
           GetWindow(), transform_window_.IsMinimizedOrTucked()));

@@ -2529,6 +2529,7 @@ component("ash") {
     "wm/overview/delayed_animation_observer.h",
     "wm/overview/delayed_animation_observer_impl.cc",
     "wm/overview/delayed_animation_observer_impl.h",
+    "wm/overview/event_handler_delegate.h",
     "wm/overview/glanceables/glanceables_bar_view.cc",
     "wm/overview/glanceables/glanceables_bar_view.h",
     "wm/overview/glanceables/glanceables_chip_button.cc",

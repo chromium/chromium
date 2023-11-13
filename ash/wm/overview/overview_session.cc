@@ -10,7 +10,6 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/metrics/user_metrics_recorder.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/root_window_settings.h"
@@ -37,8 +36,6 @@
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_float_container_stacker.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
-#include "ash/wm/splitview/auto_snap_controller.h"
-#include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
@@ -48,7 +45,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -430,7 +426,12 @@ void OverviewSession::SelectWindow(OverviewItemBase* item) {
   const aura::Window::Windows window_list =
       Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
           kActiveDesk);
-  aura::Window* window = GetWindowForSelection(item, window_list);
+
+  const auto windows = item->GetWindows();
+  CHECK(!windows.empty());
+  aura::Window* window = windows.size() > 1u
+                             ? GetWindowForSelection(item, window_list)
+                             : windows[0];
 
   if (!window_list.empty()) {
     // Record `WindowSelector_ActiveWindowChanged` if the user is selecting a
@@ -443,8 +444,8 @@ void OverviewSession::SelectWindow(OverviewItemBase* item) {
           TaskSwitchSource::OVERVIEW_MODE);
     }
 
-    const auto it = base::ranges::find(window_list, window);
-    if (it != window_list.end()) {
+    if (const auto it = base::ranges::find(window_list, window);
+        it != window_list.end()) {
       // Record 1-based index so that selecting a top MRU window will record 1.
       UMA_HISTOGRAM_COUNTS_100("Ash.Overview.SelectionDepth",
                                1 + it - window_list.begin());
@@ -631,7 +632,8 @@ void OverviewSession::RemoveDropTargets() {
 
 void OverviewSession::InitiateDrag(OverviewItemBase* item,
                                    const gfx::PointF& location_in_screen,
-                                   bool is_touch_dragging) {
+                                   bool is_touch_dragging,
+                                   OverviewItemBase* event_source_item) {
   if (OverviewController::Get()->IsInStartAnimation() ||
       SplitViewController::Get(Shell::GetPrimaryRootWindow())
           ->IsDividerAnimating()) {
@@ -640,7 +642,7 @@ void OverviewSession::InitiateDrag(OverviewItemBase* item,
 
   focus_cycler_->SetFocusVisibility(false);
   window_drag_controller_ = std::make_unique<OverviewWindowDragController>(
-      this, item, is_touch_dragging);
+      this, item, is_touch_dragging, event_source_item);
   window_drag_controller_->InitiateDrag(location_in_screen);
 
   for (std::unique_ptr<OverviewGrid>& grid : grid_list_) {
@@ -1015,7 +1017,7 @@ void OverviewSession::RestoreWindowActivation(bool restore) {
   active_window_before_overview_ = nullptr;
 }
 
-void OverviewSession::OnFocusedItemActivated(OverviewItemBase* item) {
+void OverviewSession::OnFocusedItemActivated(OverviewItem* item) {
   UMA_HISTOGRAM_COUNTS_100("Ash.Overview.ArrowKeyPresses", num_key_presses_);
   UMA_HISTOGRAM_CUSTOM_COUNTS("Ash.Overview.KeyPressesOverItemsRatio",
                               (num_key_presses_ * 100) / num_items_, 1, 300,
@@ -1025,7 +1027,7 @@ void OverviewSession::OnFocusedItemActivated(OverviewItemBase* item) {
   SelectWindow(item);
 }
 
-void OverviewSession::OnFocusedItemClosed(OverviewItemBase* item) {
+void OverviewSession::OnFocusedItemClosed(OverviewItem* item) {
   base::RecordAction(
       base::UserMetricsAction("WindowSelector_OverviewCloseKey"));
   item->CloseWindows();

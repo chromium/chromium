@@ -75,9 +75,8 @@ class OverviewDropTarget : public OverviewItemBase {
   gfx::Point GetMagnifierFocusPointInScreen() const override;
   const gfx::RoundedCornersF GetRoundedCorners() const override;
 
- protected:
-  // OverviewItemBase:
-  void CreateItemWidget() override;
+ private:
+  void CreateItemWidget();
 };
 
 }  // namespace ash

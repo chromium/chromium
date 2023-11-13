@@ -234,9 +234,9 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
   // activated.
   // TODO(sammiequon): This does not handle the case if either the snapped
   // window or this window is an always on top window.
-  auto* split_view_controller =
-      SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  if (ShouldUseTabletModeGridLayout() &&
+  if (auto* split_view_controller =
+          SplitViewController::Get(Shell::GetPrimaryRootWindow());
+      ShouldUseTabletModeGridLayout() &&
       split_view_controller->InSplitViewMode()) {
     aura::Window* snapped_window =
         split_view_controller->GetDefaultSnappedWindow();
@@ -705,8 +705,9 @@ void ScopedOverviewTransformWindow::SetImmediateCloseForTests(bool immediate) {
 
 void ScopedOverviewTransformWindow::CloseWidget() {
   aura::Window* parent_window = wm::GetTransientRoot(window_);
-  if (parent_window)
+  if (parent_window) {
     window_util::CloseWidgetForWindow(parent_window);
+  }
 }
 
 void ScopedOverviewTransformWindow::AddHiddenTransientWindows(
