@@ -99,6 +99,14 @@ export class PolicyTestBrowserProxy {
     return sendWithPromise('setUserAffiliation', affiliation);
   }
 
+  async getAppliedTestPolicies(): Promise<PolicyInfo[]> {
+    const policies: string = await sendWithPromise('getAppliedTestPolicies');
+    if (!policies.length) {
+      return [];
+    }
+    return JSON.parse(policies);
+  }
+
   static getInstance(): PolicyTestBrowserProxy {
     return instance || (instance = new PolicyTestBrowserProxy());
   }

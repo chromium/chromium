@@ -57,6 +57,7 @@ class PolicyUIHandler
   void HandleRevertLocalTestPolicies(const base::Value::List& args);
   void HandleRestartBrowser(const base::Value::List& args);
   void HandleSetUserAffiliated(const base::Value::List& args);
+  void HandleGetAppliedTestPolicies(const base::Value::List& args);
 
 #if !BUILDFLAG(IS_CHROMEOS)
   void HandleUploadReport(const base::Value::List& args);

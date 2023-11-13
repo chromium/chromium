@@ -219,6 +219,19 @@ class PolicyTestHandlerTest : public PlatformBrowserTest {
     return handler;
   }
 
+  /* Helper methods for executing JS strings. */
+  content::EvalJsResult GetNumberOfRows() {
+    const std::string getNumRowsJs =
+        R"(
+          document
+            .querySelector('policy-test-table')
+            .shadowRoot
+            .querySelectorAll('policy-test-row')
+            .length;
+        )";
+    return content::EvalJs(web_contents(), getNumRowsJs);
+  }
+
   Profile* GetProfile() { return chrome_test_utils::GetProfile(this); }
 
  protected:
@@ -251,6 +264,12 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
       {"level": 1,"scope": 1,"source": 2,
       "name": "CloudReportingEnabled","value": true}
       ])";
+  const std::string revertAppliedPoliciesButtonDisabledJs =
+      R"(
+        document
+          .querySelector('#revert-applied-policies')
+          .disabled;
+      )";
 
   base::Value::List list_args;
 
@@ -258,9 +277,27 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
   list_args.Append(jsonString);
   list_args.Append("{}");
 
+  // Open chrome://policy/test for the first time
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  EXPECT_EQ(GetNumberOfRows(), 1);
+  EXPECT_EQ(
+      content::EvalJs(web_contents(), revertAppliedPoliciesButtonDisabledJs),
+      true);
+
   web_ui()->HandleReceivedMessage("setLocalTestPolicies", list_args);
 
   base::RunLoop().RunUntilIdle();
+
+  // Navigate away and re-open chrome://policy/test for the first time
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIChromeURLsURL)));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  EXPECT_EQ(GetNumberOfRows(), 2);
+  EXPECT_EQ(
+      content::EvalJs(web_contents(), revertAppliedPoliciesButtonDisabledJs),
+      false);
 
   const policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME,
                                                  std::string());
@@ -308,6 +345,16 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
   web_ui()->HandleReceivedMessage("revertLocalTestPolicies", list_args);
 
   base::RunLoop().RunUntilIdle();
+
+  // Navigate away and re-open chrome://policy/test for the first time
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIChromeURLsURL)));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  EXPECT_EQ(GetNumberOfRows(), 1);
+  EXPECT_EQ(
+      content::EvalJs(web_contents(), revertAppliedPoliciesButtonDisabledJs),
+      true);
 
   policy_map = &policy_service->GetPolicies(chrome_namespace);
   ASSERT_TRUE(policy_map);

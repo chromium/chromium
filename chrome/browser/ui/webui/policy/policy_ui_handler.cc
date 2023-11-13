@@ -210,7 +210,10 @@ void PolicyUIHandler::RegisterMessages() {
       "setUserAffiliation",
       base::BindRepeating(&PolicyUIHandler::HandleSetUserAffiliated,
                           base::Unretained(this)));
-
+  web_ui()->RegisterMessageCallback(
+      "getAppliedTestPolicies",
+      base::BindRepeating(&PolicyUIHandler::HandleGetAppliedTestPolicies,
+                          base::Unretained(this)));
 #if !BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterMessageCallback(
       "uploadReport", base::BindRepeating(&PolicyUIHandler::HandleUploadReport,
@@ -341,6 +344,18 @@ void PolicyUIHandler::HandleSetUserAffiliated(const base::Value::List& args) {
   local_test_provider->SetUserAffiliated(affiliated);
   AllowJavascript();
   ResolveJavascriptCallback(args[0], true);
+}
+
+void PolicyUIHandler::HandleGetAppliedTestPolicies(
+    const base::Value::List& args) {
+  CHECK_EQ(static_cast<int>(args.size()), 1);
+
+  auto* local_test_provider = static_cast<policy::LocalTestPolicyProvider*>(
+      g_browser_process->browser_policy_connector()
+          ->local_test_policy_provider());
+
+  AllowJavascript();
+  ResolveJavascriptCallback(args[0], local_test_provider->GetPolicies());
 }
 
 void PolicyUIHandler::HandleGetPolicyLogs(const base::Value::List& args) {

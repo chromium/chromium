@@ -100,6 +100,7 @@ void LocalTestPolicyLoader::SetPolicyListJson(
   }
   std::vector<std::unique_ptr<PolicyMigrator>> migrators;
   bundle_ = PolicyServiceImpl::MergePolicyBundles(bundles_to_merge, migrators);
+  policies_ = policy_list_json;
 }
 
 void LocalTestPolicyLoader::VerifyJsonContents(base::Value::Dict* policy_dict) {
@@ -121,6 +122,7 @@ void LocalTestPolicyLoader::VerifyJsonContents(base::Value::Dict* policy_dict) {
 
 void LocalTestPolicyLoader::ClearPolicies() {
   bundle_.Clear();
+  policies_.clear();
 }
 
 void LocalTestPolicyLoader::SetUserAffiliated(bool affiliated) {

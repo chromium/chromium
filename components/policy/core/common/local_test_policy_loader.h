@@ -36,8 +36,11 @@ class POLICY_EXPORT LocalTestPolicyLoader {
 
   void SetUserAffiliated(bool affiliated);
 
+  const std::string& policies() const { return policies_; }
+
  private:
   bool is_user_affiliated_ = false;
+  std::string policies_;
 
   PolicyBundle bundle_;
 };
