@@ -412,7 +412,7 @@ void CookieControlsBubbleViewController::FetchFaviconFrom(
   }
 
   favicon_service->GetFaviconImageForPageURL(
-      web_contents->GetVisibleURL(),
+      web_contents->GetLastCommittedURL(),
       base::BindOnce(&CookieControlsBubbleViewController::OnFaviconFetched,
                      weak_factory_.GetWeakPtr()),
       &cancelable_task_tracker_);
@@ -426,7 +426,7 @@ std::u16string CookieControlsBubbleViewController::GetSubjectUrlName(
   CHECK(web_contents);
   return UrlIdentity::CreateFromUrl(
              Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-             web_contents->GetVisibleURL(), kUrlIdentityAllowedTypes,
+             web_contents->GetLastCommittedURL(), kUrlIdentityAllowedTypes,
              kUrlIdentityOptions)
       .name;
 }
