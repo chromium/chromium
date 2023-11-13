@@ -70,6 +70,7 @@ export class BrowserInstance {
       '--disable-component-update',
       '--disable-default-apps',
       '--disable-features=DialMediaRouteProvider',
+      '--disable-infobars',
       '--disable-notifications',
       '--disable-popup-blocking',
       '--enable-automation',
