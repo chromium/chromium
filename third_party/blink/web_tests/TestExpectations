@@ -7072,6 +7072,8 @@ crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/anima
 crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-position-valid.html [ Failure ]
 
 # Chrome specific failures
+crbug.com/1499775 [ Chrome ] external/wpt/editing/other/join-pre-and-other-block.html?method=forwarddelete&block=blockquote [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-input-search-text-border-inline-start-color-001.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/document-policy/font-display/override-to-optional.tentative.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-layout-api/fallback-layout/constructor-error.https.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/initial-letter/initial-letter-block-position-drop-over-ruby.html [ Failure ]
