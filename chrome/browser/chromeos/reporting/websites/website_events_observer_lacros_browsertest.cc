@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteEventsObserverBrowserTest,
   EXPECT_THAT(website_opened_data.url(), StrEq(kTestUrl));
   EXPECT_TRUE(website_opened_data.has_render_process_host_id());
   EXPECT_TRUE(website_opened_data.has_render_frame_routing_id());
-  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecords());
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 IN_PROC_BROWSER_TEST_F(WebsiteEventsObserverBrowserTest, DisallowAllUrlOpened) {
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteEventsObserverBrowserTest, DisallowAllUrlOpened) {
   website_metrics_browser_test_mixin_.InsertForegroundTab(browser, kTestUrl);
 
   // Verify data is not enqueued.
-  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecords());
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 IN_PROC_BROWSER_TEST_F(WebsiteEventsObserverBrowserTest, ReportAllUrlClosed) {
@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteEventsObserverBrowserTest,
   EXPECT_THAT(website_closed_data.url(), StrEq(kTestUrl));
   EXPECT_TRUE(website_closed_data.has_render_process_host_id());
   EXPECT_TRUE(website_closed_data.has_render_frame_routing_id());
-  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecords());
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 IN_PROC_BROWSER_TEST_F(WebsiteEventsObserverBrowserTest, DisallowAllUrlClosed) {
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteEventsObserverBrowserTest, DisallowAllUrlClosed) {
   browser->tab_strip_model()->CloseAllTabs();
 
   // Verify data is not enqueued.
-  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecords());
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 }  // namespace

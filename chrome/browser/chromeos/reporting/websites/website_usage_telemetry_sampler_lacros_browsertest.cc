@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
   // collection.
   test::MockClock::Get().Advance(
       metrics::kDefaultWebsiteTelemetryCollectionRate);
-  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecords());
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
       metrics::kDefaultWebsiteTelemetryCollectionRate);
 
   // Verify no telemetry data is enqueued.
-  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecords());
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
       metrics::kDefaultWebsiteTelemetryCollectionRate);
 
   // Verify no telemetry data is enqueued.
-  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecords());
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
   // collection.
   test::MockClock::Get().Advance(
       metrics::kDefaultWebsiteTelemetryCollectionRate);
-  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecords());
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 }  // namespace

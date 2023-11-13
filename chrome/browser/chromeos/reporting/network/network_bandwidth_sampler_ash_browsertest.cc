@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(NetworkBandwidthSamplerBrowserTest,
       base::BindRepeating(&IsNetworkBandwidthTelemetry));
   test::MockClock::Get().Advance(
       metrics::kDefaultNetworkTelemetryCollectionRate);
-  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecords());
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 }  // namespace

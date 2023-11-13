@@ -50,13 +50,23 @@ class MissiveClientTestObserver
   GetNextEnqueuedRecord();
 
   // Returns true immediately if there any records in the queue. Return false
-  // otherwise. Does not wait for new records to arrive. Intended to be called
-  // after GetNextEnqueuedRecord().
-  bool HasNewEnqueuedRecords();
+  // otherwise. Does not wait for new records to arrive, i.e., does not run the
+  // run loop. Keep in mind that the internally stored record is cleared after a
+  // call to `GetNextEnqueuedRecord`; That is, this method always returns false
+  // immediately after a call to `GetNextEnqueuedRecord`.
+  //
+  // To properly test whether new enqueued records have arrived, usually at
+  // least manually running some tasks of the run loop is needed. For example:
+  //
+  // base::RunLoop run_loop;
+  // base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+  //    run_loop.QuitClosure());
+  // EXPECT_FALSE(observer.HasNewEnqueuedRecords());
+  bool HasNewEnqueuedRecord();
 
  private:
   base::test::TestFuture<::reporting::Priority, ::reporting::Record>
-      enqueued_records_;
+      enqueued_record_;
 
   RecordFilterCb record_filter_cb_;
 };

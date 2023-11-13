@@ -50,16 +50,16 @@ void MissiveClientTestObserver::OnRecordEnqueued(
     return;
   }
 
-  enqueued_records_.SetValue(priority, record);
+  enqueued_record_.SetValue(priority, record);
 }
 
 std::tuple<::reporting::Priority, ::reporting::Record>
 MissiveClientTestObserver::GetNextEnqueuedRecord() {
-  return enqueued_records_.Take();
+  return enqueued_record_.Take();
 }
 
-bool MissiveClientTestObserver::HasNewEnqueuedRecords() {
-  return enqueued_records_.IsReady();
+bool MissiveClientTestObserver::HasNewEnqueuedRecord() {
+  return enqueued_record_.IsReady();
 }
 
 }  // namespace chromeos
