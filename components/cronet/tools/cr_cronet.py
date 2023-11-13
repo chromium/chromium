@@ -106,6 +106,7 @@ def get_ninja_jobs_options():
 def map_config_to_android_builder(is_release, target_cpu):
   target_cpu_to_base_builder = {
       'x86': 'android-cronet-x86',
+      'x64': 'android-cronet-x64',
       'arm': 'android-cronet-arm',
       'arm64': 'android-cronet-arm64',
       'riscv64': 'android-cronet-riscv64',
@@ -170,6 +171,9 @@ def main():
                       help='name of the build directory')
   parser.add_argument('-x', '--x86', action='store_true',
                       help='build for Intel x86 architecture')
+  parser.add_argument('--x64',
+                      action='store_true',
+                      help='build for Intel x86_64 architecture')
   parser.add_argument('-R',
                       '--riscv64',
                       action='store_true',
@@ -188,6 +192,9 @@ def main():
   if options.x86:
     target_cpu = 'x86'
     out_dir_suffix = '-x86'
+  elif options.x64:
+    target_cpu = 'x64'
+    out_dir_suffix = '-x64'
   elif options.riscv64:
     target_cpu = 'riscv64'
     out_dir_suffix = '-riscv64'
