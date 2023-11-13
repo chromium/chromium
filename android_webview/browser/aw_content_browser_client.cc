@@ -1229,7 +1229,8 @@ bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(
     content::RenderFrameHost* rfh,
     const url::Origin* source_origin,
     const url::Origin* destination_origin,
-    const url::Origin* reporting_origin) {
+    const url::Origin* reporting_origin,
+    bool* can_bypass) {
   // Check if attribution reporting has been disabled.
   // This method should not be called at all if the configured behavior is
   // DISABLED.

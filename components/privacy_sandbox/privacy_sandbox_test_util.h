@@ -108,6 +108,12 @@ class MockPrivacySandboxSettingsDelegate
     });
   }
 
+  void SetUpAreThirdPartyCookiesBlockedByCookieDeprecationExperimentResponse(
+      bool result) {
+    ON_CALL(*this, AreThirdPartyCookiesBlockedByCookieDeprecationExperiment)
+        .WillByDefault([=]() { return result; });
+  }
+
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (const, override));
   MOCK_METHOD(bool,
               IsPrivacySandboxCurrentlyUnrestricted,
@@ -126,6 +132,10 @@ class MockPrivacySandboxSettingsDelegate
               (),
               (const, override));
   MOCK_METHOD(bool, IsCookieDeprecationLabelAllowed, (), (const, override));
+  MOCK_METHOD(bool,
+              AreThirdPartyCookiesBlockedByCookieDeprecationExperiment,
+              (),
+              (const, override));
 };
 
 // A declarative test case is a collection of key value pairs, which each define

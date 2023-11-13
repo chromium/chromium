@@ -748,3 +748,91 @@ TEST_P(CookieDeprecationLabelAllowedTest, OnboardingStatusChecked) {
 INSTANTIATE_TEST_SUITE_P(All,
                          CookieDeprecationLabelAllowedTest,
                          testing::Bool());
+
+namespace {
+
+struct ThirdPartyCookiesBlockedByCookieDeprecationExperimentTestCase {
+  bool is_client_eligible;
+  bool is_profile_onboarded = false;
+  content_settings::CookieControlsMode cookie_controls_mode_pref =
+      content_settings::CookieControlsMode::kOff;
+  bool block_all_3pc_toggle_enabled = false;
+  bool expected;
+};
+
+const ThirdPartyCookiesBlockedByCookieDeprecationExperimentTestCase
+    kThirdPartyCookiesBlockedByCookieDeprecationExperimentTestCases[] = {
+        {
+            .is_client_eligible = false,
+            .expected = false,
+        },
+        {
+            .is_client_eligible = true,
+            .is_profile_onboarded = false,
+            .expected = false,
+        },
+        {
+            .is_client_eligible = true,
+            .is_profile_onboarded = true,
+            .expected = true,
+        },
+        {
+            .is_client_eligible = true,
+            .is_profile_onboarded = true,
+            .cookie_controls_mode_pref =
+                content_settings::CookieControlsMode::kBlockThirdParty,
+            .expected = false,
+        },
+        {
+            .is_client_eligible = true,
+            .is_profile_onboarded = true,
+            .block_all_3pc_toggle_enabled = true,
+            .expected = false,
+        },
+};
+
+class ThirdPartyCookiesBlockedByCookieDeprecationExperimentTest
+    : public PrivacySandboxSettingsDelegateTest,
+      public ::testing::WithParamInterface<
+          ThirdPartyCookiesBlockedByCookieDeprecationExperimentTestCase> {
+ public:
+  ThirdPartyCookiesBlockedByCookieDeprecationExperimentTest() {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        features::kCookieDeprecationFacilitatedTesting,
+        {{tpcd::experiment::kDisable3PCookiesName, "true"}});
+  }
+};
+
+}  // namespace
+
+TEST_P(ThirdPartyCookiesBlockedByCookieDeprecationExperimentTest,
+       AreThirdPartyCookiesBlockedByExperiment) {
+  const ThirdPartyCookiesBlockedByCookieDeprecationExperimentTestCase&
+      test_case = GetParam();
+
+  if (test_case.is_profile_onboarded) {
+    auto* onboarding_service =
+        TrackingProtectionOnboardingFactory::GetForProfile(profile());
+    // Simulate onboarding a profile.
+    onboarding_service->MaybeMarkEligible();
+    onboarding_service->OnboardingNoticeShown();
+  }
+
+  prefs()->SetInteger(prefs::kCookieControlsMode,
+                      static_cast<int>(test_case.cookie_controls_mode_pref));
+  prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled,
+                      test_case.block_all_3pc_toggle_enabled);
+
+  EXPECT_CALL(*experiment_manager(), IsClientEligible)
+      .WillOnce(::testing::Return(test_case.is_client_eligible));
+
+  EXPECT_EQ(
+      delegate()->AreThirdPartyCookiesBlockedByCookieDeprecationExperiment(),
+      test_case.expected);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ThirdPartyCookiesBlockedByCookieDeprecationExperiment,
+    ThirdPartyCookiesBlockedByCookieDeprecationExperimentTest,
+    ::testing::ValuesIn(
+        kThirdPartyCookiesBlockedByCookieDeprecationExperimentTestCases));

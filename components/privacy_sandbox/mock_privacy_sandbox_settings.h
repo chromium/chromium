@@ -54,7 +54,7 @@ class MockPrivacySandboxSettings
               (override, const));
   MOCK_METHOD(bool,
               IsAttributionReportingTransitionalDebuggingAllowed,
-              (const url::Origin&, const url::Origin&),
+              (const url::Origin&, const url::Origin&, bool&),
               (override, const));
   MOCK_METHOD(void,
               SetFledgeJoiningAllowed,

@@ -12,6 +12,7 @@
 #include "components/browsing_topics/test_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
@@ -224,6 +225,9 @@ class PrivacySandboxSettingsTest : public testing::Test {
         /*eligibility_reason=*/TpcdExperimentEligibility::Reason::kEligible);
     mock_delegate()->SetUpIsCookieDeprecationLabelAllowedResponse(
         /*allowed=*/true);
+    mock_delegate()
+        ->SetUpAreThirdPartyCookiesBlockedByCookieDeprecationExperimentResponse(
+            /*result=*/false);
   }
 
   privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate*
@@ -380,6 +384,8 @@ TEST_F(PrivacySandboxSettingsTest, DefaultContentSettingBlockOverridePref) {
 }
 
 TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
+  bool ara_transitional_debug_reporting_can_bypass = false;
+
   // All cookie exceptions which disable access should apply to the Privacy
   // Sandbox. General topics calculations should however remain allowed.
   privacy_sandbox_test_util::SetupTestState(
@@ -410,7 +416,9 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
   EXPECT_FALSE(privacy_sandbox_settings()
                    ->IsAttributionReportingTransitionalDebuggingAllowed(
                        url::Origin::Create(GURL("https://test.com")),
-                       url::Origin::Create(GURL("https://embedded.com"))));
+                       url::Origin::Create(GURL("https://embedded.com")),
+                       ara_transitional_debug_reporting_can_bypass));
+  EXPECT_FALSE(ara_transitional_debug_reporting_can_bypass);
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -464,7 +472,9 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
   EXPECT_FALSE(privacy_sandbox_settings()
                    ->IsAttributionReportingTransitionalDebuggingAllowed(
                        url::Origin::Create(GURL("https://test.com")),
-                       url::Origin::Create(GURL("https://embedded.com"))));
+                       url::Origin::Create(GURL("https://embedded.com")),
+                       ara_transitional_debug_reporting_can_bypass));
+  EXPECT_FALSE(ara_transitional_debug_reporting_can_bypass);
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -530,11 +540,16 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
   EXPECT_FALSE(privacy_sandbox_settings()
                    ->IsAttributionReportingTransitionalDebuggingAllowed(
                        url::Origin::Create(GURL("https://test.com")),
-                       url::Origin::Create(GURL("https://embedded.com"))));
+                       url::Origin::Create(GURL("https://embedded.com")),
+                       ara_transitional_debug_reporting_can_bypass));
+  EXPECT_FALSE(ara_transitional_debug_reporting_can_bypass);
+
   EXPECT_TRUE(privacy_sandbox_settings()
                   ->IsAttributionReportingTransitionalDebuggingAllowed(
                       url::Origin::Create(GURL("https://unrelated-a.com")),
-                      url::Origin::Create(GURL("https://unrelated-b.com"))));
+                      url::Origin::Create(GURL("https://unrelated-b.com")),
+                      ara_transitional_debug_reporting_can_bypass));
+  EXPECT_FALSE(ara_transitional_debug_reporting_can_bypass);
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -626,7 +641,9 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
   EXPECT_TRUE(privacy_sandbox_settings()
                   ->IsAttributionReportingTransitionalDebuggingAllowed(
                       url::Origin::Create(GURL("https://another-test.com")),
-                      url::Origin::Create(GURL("https://embedded.com"))));
+                      url::Origin::Create(GURL("https://embedded.com")),
+                      ara_transitional_debug_reporting_can_bypass));
+  EXPECT_FALSE(ara_transitional_debug_reporting_can_bypass);
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
       url::Origin::Create(GURL("https://another-test.com")),
@@ -679,7 +696,9 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
   EXPECT_FALSE(privacy_sandbox_settings()
                    ->IsAttributionReportingTransitionalDebuggingAllowed(
                        url::Origin::Create(GURL("https://test.com")),
-                       url::Origin::Create(GURL("https://embedded.com"))));
+                       url::Origin::Create(GURL("https://embedded.com")),
+                       ara_transitional_debug_reporting_can_bypass));
+  EXPECT_FALSE(ara_transitional_debug_reporting_can_bypass);
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -704,6 +723,8 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
 }
 
 TEST_F(PrivacySandboxSettingsTest, ThirdPartyCookies) {
+  bool ara_transitional_debug_reporting_can_bypass = false;
+
   // Privacy Sandbox APIs should be disabled if Third Party Cookies are blocked.
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
@@ -729,7 +750,9 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyCookies) {
   EXPECT_FALSE(privacy_sandbox_settings()
                    ->IsAttributionReportingTransitionalDebuggingAllowed(
                        url::Origin::Create(GURL("https://test.com")),
-                       url::Origin::Create(GURL("https://embedded.com"))));
+                       url::Origin::Create(GURL("https://embedded.com")),
+                       ara_transitional_debug_reporting_can_bypass));
+  EXPECT_FALSE(ara_transitional_debug_reporting_can_bypass);
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -777,7 +800,9 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyCookies) {
   EXPECT_FALSE(privacy_sandbox_settings()
                    ->IsAttributionReportingTransitionalDebuggingAllowed(
                        url::Origin::Create(GURL("https://test.com")),
-                       url::Origin::Create(GURL("https://embedded.com"))));
+                       url::Origin::Create(GURL("https://embedded.com")),
+                       ara_transitional_debug_reporting_can_bypass));
+  EXPECT_FALSE(ara_transitional_debug_reporting_can_bypass);
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -1263,6 +1288,95 @@ TEST_F(PrivacySandboxSettingsTest, IsCookieDeprecationLabelAllowed) {
       .Times(1)
       .WillOnce(testing::Return(true));
   EXPECT_TRUE(privacy_sandbox_settings()->IsCookieDeprecationLabelAllowed());
+}
+
+TEST_F(
+    PrivacySandboxSettingsTest,
+    IsAttributionReportingTransitionalDebuggingAllowed_CanBypassInCookieDeprecationExperiment) {
+  for (bool enabled : {false, true}) {
+    SCOPED_TRACE(enabled);
+
+    base::test::ScopedFeatureList feature_list_;
+    if (enabled) {
+      feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{content_settings::features::kTrackingProtection3pcd, {}},
+           {kAttributionDebugReportingCookieDeprecationTesting, {}}},
+          /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{{content_settings::features::
+                                     kTrackingProtection3pcd,
+                                 {}}},
+          /*disabled_features=*/{
+              kAttributionDebugReportingCookieDeprecationTesting});
+    }
+
+    bool ara_transitional_debug_reporting_can_bypass = false;
+
+    if (enabled) {
+      EXPECT_CALL(*mock_delegate(),
+                  AreThirdPartyCookiesBlockedByCookieDeprecationExperiment())
+          .WillOnce(testing::Return(false));
+    } else {
+      EXPECT_CALL(*mock_delegate(),
+                  AreThirdPartyCookiesBlockedByCookieDeprecationExperiment())
+          .Times(0);
+    }
+
+    // Disallowed not due to cookie deprecation experiment, therefore cannot
+    // bypass.
+    privacy_sandbox_test_util::SetupTestState(
+        prefs(), host_content_settings_map(),
+        /*privacy_sandbox_enabled=*/false,
+        /*block_third_party_cookies=*/false,
+        /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+        /*user_cookie_exceptions=*/{},
+        /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
+        /*managed_cookie_exceptions=*/{});
+    EXPECT_FALSE(privacy_sandbox_settings()
+                     ->IsAttributionReportingTransitionalDebuggingAllowed(
+                         url::Origin::Create(GURL("https://test.com")),
+                         url::Origin::Create(GURL("https://embedded.com")),
+                         ara_transitional_debug_reporting_can_bypass));
+    EXPECT_FALSE(ara_transitional_debug_reporting_can_bypass);
+
+    if (enabled) {
+      EXPECT_CALL(*mock_delegate(),
+                  AreThirdPartyCookiesBlockedByCookieDeprecationExperiment())
+          .WillOnce(testing::Return(true));
+    } else {
+      EXPECT_CALL(*mock_delegate(),
+                  AreThirdPartyCookiesBlockedByCookieDeprecationExperiment())
+          .Times(0);
+    }
+
+    // Disallowed due to cookie deprecation experiment, therefore can bypass
+    // when feature enabled.
+    EXPECT_FALSE(privacy_sandbox_settings()
+                     ->IsAttributionReportingTransitionalDebuggingAllowed(
+                         url::Origin::Create(GURL("https://test.com")),
+                         url::Origin::Create(GURL("https://embedded.com")),
+                         ara_transitional_debug_reporting_can_bypass));
+    EXPECT_EQ(ara_transitional_debug_reporting_can_bypass, enabled);
+
+    // Disallowed due to user's exception, therefore cannot bypass.
+    privacy_sandbox_test_util::SetupTestState(
+        prefs(), host_content_settings_map(),
+        /*privacy_sandbox_enabled=*/false,
+        /*block_third_party_cookies=*/false,
+        /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+        /*user_cookie_exceptions=*/
+        {{"https://embedded.com", "*", ContentSetting::CONTENT_SETTING_BLOCK}},
+        /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
+        /*managed_cookie_exceptions=*/{});
+    EXPECT_FALSE(privacy_sandbox_settings()
+                     ->IsAttributionReportingTransitionalDebuggingAllowed(
+                         url::Origin::Create(GURL("https://test.com")),
+                         url::Origin::Create(GURL("https://embedded.com")),
+                         ara_transitional_debug_reporting_can_bypass));
+    EXPECT_FALSE(ara_transitional_debug_reporting_can_bypass);
+  }
 }
 
 class PrivacySandboxSettingsTestCookiesClearOnExitTurnedOff

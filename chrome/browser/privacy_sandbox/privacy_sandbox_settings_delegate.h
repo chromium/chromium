@@ -42,6 +42,8 @@ class PrivacySandboxSettingsDelegate
   privacy_sandbox::TpcdExperimentEligibility
   GetCookieDeprecationExperimentCurrentEligibility() const override;
   bool IsCookieDeprecationLabelAllowed() const override;
+  bool AreThirdPartyCookiesBlockedByCookieDeprecationExperiment()
+      const override;
 
 #if BUILDFLAG(IS_ANDROID)
   void OverrideWebappRegistryForTesting(
