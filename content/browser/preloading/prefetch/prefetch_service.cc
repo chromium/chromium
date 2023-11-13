@@ -1131,8 +1131,8 @@ PrefetchService::GetURLLoaderFactoryForCurrentPrefetch(
   if (g_url_loader_factory_for_testing) {
     return g_url_loader_factory_for_testing;
   }
-  return prefetch_container->GetOrCreateNetworkContextForCurrentPrefetch(this)
-      ->GetURLLoaderFactory();
+  return prefetch_container->GetOrCreateNetworkContextForCurrentPrefetch()
+      ->GetURLLoaderFactory(this);
 }
 
 void PrefetchService::OnPrefetchRedirect(

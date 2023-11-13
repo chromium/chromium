@@ -271,8 +271,7 @@ class CONTENT_EXPORT PrefetchContainer {
   void StopAllCookieListeners();
 
   // The network context used to make network requests for the next prefetch.
-  PrefetchNetworkContext* GetOrCreateNetworkContextForCurrentPrefetch(
-      PrefetchService* prefetch_service);
+  PrefetchNetworkContext* GetOrCreateNetworkContextForCurrentPrefetch();
 
   // Closes idle connections for all elements in |network_contexts_|.
   void CloseIdleConnections();

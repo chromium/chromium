@@ -506,8 +506,7 @@ PrefetchContainer::ReleaseProxyLookupClient() {
 }
 
 PrefetchNetworkContext*
-PrefetchContainer::GetOrCreateNetworkContextForCurrentPrefetch(
-    PrefetchService* prefetch_service) {
+PrefetchContainer::GetOrCreateNetworkContextForCurrentPrefetch() {
   bool is_isolated_network_context_required =
       IsIsolatedNetworkContextRequiredForCurrentPrefetch();
 
@@ -516,11 +515,10 @@ PrefetchContainer::GetOrCreateNetworkContextForCurrentPrefetch(
   if (network_context_itr == network_contexts_.end()) {
     network_context_itr =
         network_contexts_
-            .emplace(
-                is_isolated_network_context_required,
-                std::make_unique<PrefetchNetworkContext>(
-                    prefetch_service, is_isolated_network_context_required,
-                    prefetch_type_, referrer_, referring_render_frame_host_id_))
+            .emplace(is_isolated_network_context_required,
+                     std::make_unique<PrefetchNetworkContext>(
+                         is_isolated_network_context_required, prefetch_type_,
+                         referrer_, referring_render_frame_host_id_))
             .first;
   }
 
