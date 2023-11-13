@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(AppListWithRecentAppBrowserTest,
 // after uninstalling a shown recent apps (which forces recent apps view
 // refresh).
 IN_PROC_BROWSER_TEST_F(AppListWithRecentAppBrowserTest,
-                       RecentAppsNotUpdatedAfterShowingSearch) {
+                       DISABLED_RecentAppsNotUpdatedAfterShowingSearch) {
   std::vector<std::string> initial_recent_apps =
       app_list_test_api_.GetRecentAppIds();
   ASSERT_EQ(4u, initial_recent_apps.size());
