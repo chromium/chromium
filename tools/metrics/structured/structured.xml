@@ -730,6 +730,58 @@
     </metric>
   </event>
 
+  <event name="Hover">
+    <summary>
+      Recorded whenever user hovers on a tracked visual element.
+    </summary>
+    <metric name="VeId" type="int">
+      <summary>
+        Visual Element ID
+      </summary>
+    </metric>
+    <metric name="Time" type="int">
+      <summary>
+        Number of seconds the hover has lasted
+      </summary>
+    </metric>
+    <metric name="Context" type="int">
+      <summary>
+        Arbitrary contextual information for the event.
+      </summary>
+    </metric>
+    <metric name="TimeSinceLastAction" type="int">
+      <summary>
+        Time in milliseconds since last DevTools event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Drag">
+    <summary>
+      Recorded whenever user drags in a tracked visual element.
+    </summary>
+    <metric name="VeId" type="int">
+      <summary>
+        Visual Element ID
+      </summary>
+    </metric>
+    <metric name="Distance" type="int">
+      <summary>
+        Number of pixels dragged
+      </summary>
+    </metric>
+    <metric name="Context" type="int">
+      <summary>
+        Arbitrary contextual information for the event.
+      </summary>
+    </metric>
+    <metric name="TimeSinceLastAction" type="int">
+      <summary>
+        Time in milliseconds since last DevTools event.
+      </summary>
+    </metric>
+  </event>
+
   <event name="Change">
     <summary>
       Recorded whenever user changes a value of a tracked visual element.

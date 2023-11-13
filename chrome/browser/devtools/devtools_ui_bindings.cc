@@ -1448,6 +1448,34 @@ void DevToolsUIBindings::RecordClick(const ClickEvent& event) {
 #endif
 }
 
+void DevToolsUIBindings::RecordHover(const HoverEvent& event) {
+  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+    return;
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  metrics::structured::events::v2::dev_tools::Hover()
+      .SetVeId(event.veid)
+      .SetTime(event.time)
+      .SetContext(event.context)
+      .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .Record();
+#endif
+}
+
+void DevToolsUIBindings::RecordDrag(const DragEvent& event) {
+  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+    return;
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  metrics::structured::events::v2::dev_tools::Drag()
+      .SetVeId(event.veid)
+      .SetDistance(event.distance)
+      .SetContext(event.context)
+      .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .Record();
+#endif
+}
+
 void DevToolsUIBindings::RecordChange(const ChangeEvent& event) {
   if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
     return;

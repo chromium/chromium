@@ -8,10 +8,10 @@
 #include <vector>
 
 struct VisualElementImpression {
-  int id = 0;
-  int type = 0;
-  int parent = 0;
-  int context = 0;
+  int id = -1;
+  int type = -1;
+  int parent = -1;
+  int context = -1;
 };
 
 struct ImpressionEvent {
@@ -21,19 +21,31 @@ struct ImpressionEvent {
 };
 
 struct ClickEvent {
-  int veid = 0;
-  int mouse_button = 0;
-  int context = 0;
+  int veid = -1;
+  int mouse_button = -1;
+  int context = -1;
+};
+
+struct HoverEvent {
+  int veid = -1;
+  int time = -1;
+  int context = -1;
+};
+
+struct DragEvent {
+  int veid = -1;
+  int distance = -1;
+  int context = -1;
 };
 
 struct ChangeEvent {
-  int veid = 0;
-  int context = 0;
+  int veid = -1;
+  int context = -1;
 };
 
 struct KeyDownEvent {
-  int veid = 0;
-  int context = 0;
+  int veid = -1;
+  int context = -1;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_VISUAL_LOGGING_H_

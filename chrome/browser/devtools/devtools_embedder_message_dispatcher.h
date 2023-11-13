@@ -18,6 +18,8 @@
 struct RegisterOptions;
 struct ImpressionEvent;
 struct ClickEvent;
+struct HoverEvent;
+struct DragEvent;
 struct ChangeEvent;
 struct KeyDownEvent;
 
@@ -108,6 +110,8 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void RecordUserMetricsAction(const std::string& name) = 0;
     virtual void RecordImpression(const ImpressionEvent& event) = 0;
     virtual void RecordClick(const ClickEvent& event) = 0;
+    virtual void RecordHover(const HoverEvent& event) = 0;
+    virtual void RecordDrag(const DragEvent& event) = 0;
     virtual void RecordChange(const ChangeEvent& event) = 0;
     virtual void RecordKeyDown(const KeyDownEvent& event) = 0;
     virtual void SendJsonRequest(DispatchCallback callback,
