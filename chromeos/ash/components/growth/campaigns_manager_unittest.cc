@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/mock_campaigns_manager_client.h"
@@ -189,6 +190,17 @@ class CampaignsManagerTest : public testing::Test {
                                                milestone_range.c_str());
     LoadComponentAndVerifyLoadComplete(base::StringPrintf(
         kValidCampaignsFileTemplate, device_targeting.c_str()));
+  }
+
+  void LoadComponentWithScheduling(const std::string& schedulings) {
+    auto session_targeting = base::StringPrintf(R"(
+            "session": {
+              "schedulings": %s
+            }
+          )",
+                                                schedulings.c_str());
+    LoadComponentAndVerifyLoadComplete(base::StringPrintf(
+        kValidCampaignsFileTemplate, session_targeting.c_str()));
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -698,6 +710,100 @@ TEST_F(CampaignsManagerTest, GetCampaignApplicationLocaleMismatch) {
       base::StringPrintf(R"("max": %d)", current_version));
   EXPECT_CALL(mock_client_, GetApplicationLocale())
       .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-CA")));
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetSchedulingCampiagn) {
+  const auto now = base::Time::Now();
+  auto start = now;
+  auto end = now + base::Seconds(5);
+  LoadComponentWithScheduling(base::StringPrintf(
+      R"([{"start": %f, "end": %f}])", start.InSecondsFSinceUnixEpoch(),
+      end.InSecondsFSinceUnixEpoch()));
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetSchedulingCampiagnMultipleSchedulings) {
+  const auto now = base::Time::Now();
+  // First scheduling start and end before now.
+  auto start = now - base::Seconds(10);
+  auto end = now - base::Seconds(5);
+
+  // Second scheduling start after now.
+  auto start2 = now + base::Seconds(10);
+  auto end2 = now + base::Seconds(20);
+
+  // Third scheduling start now and end 10 secs from now.
+  auto start3 = now;
+  auto end3 = now + base::Seconds(10);
+  LoadComponentWithScheduling(base::StringPrintf(
+      R"([
+          {"start": %f, "end": %f},
+          {"start": %f, "end": %f},
+          {"start": %f, "end": %f}
+        ])",
+      start.InSecondsFSinceUnixEpoch(), end.InSecondsFSinceUnixEpoch(),
+      start2.InSecondsFSinceUnixEpoch(), end2.InSecondsFSinceUnixEpoch(),
+      start3.InSecondsFSinceUnixEpoch(), end3.InSecondsFSinceUnixEpoch()));
+
+  // Verify that there is a match.
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetSchedulingCampiagnMismatch) {
+  const auto now = base::Time::Now();
+  auto start = now + base::Seconds(5);
+  auto end = now + base::Seconds(10);
+  LoadComponentWithScheduling(base::StringPrintf(
+      R"([{"start": %f, "end": %f}])", start.InSecondsFSinceUnixEpoch(),
+      end.InSecondsFSinceUnixEpoch()));
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetSchedulingCampiagnStartOnly) {
+  const auto now = base::Time::Now();
+  LoadComponentWithScheduling(
+      base::StringPrintf(R"([{"start": %f}])", now.InSecondsFSinceUnixEpoch()));
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetSchedulingCampiagnStartOnlyMismatch) {
+  const auto now = base::Time::Now();
+  auto start = now + base::Seconds(5);
+  LoadComponentWithScheduling(base::StringPrintf(
+      R"([{"start": %f}])", start.InSecondsFSinceUnixEpoch()));
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetSchedulingCampiagnEndOnly) {
+  const auto now = base::Time::Now();
+  auto end = now + base::Seconds(5);
+  LoadComponentWithScheduling(
+      base::StringPrintf(R"([{"end": %f}])", end.InSecondsFSinceUnixEpoch()));
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetSchedulingCampiagnEndOnlyMismatch) {
+  const auto now = base::Time::Now();
+  auto end = now - base::Seconds(10);
+  LoadComponentWithScheduling(
+      base::StringPrintf(R"([{"end": %f}])", end.InSecondsFSinceUnixEpoch()));
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetSchedulingCampiagnInvalidTargeting) {
+  LoadComponentWithScheduling("test");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }

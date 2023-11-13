@@ -5,15 +5,24 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MODEL_H_
 #define CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MODEL_H_
 
+#include <memory>
+
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class Time;
+}
 
 namespace growth {
 
 enum class Slot { kDemoModeApp = 0 };
 
 // Dictionary of supported targetings. For example:
-// { "demoModeTargeting" : {...} }
+// {
+//    "demoMode" : {...},
+//    "session": {...}
+// }
 using Targeting = base::Value::Dict;
 
 // List of `Targeting`.
@@ -182,6 +191,46 @@ class DeviceTargeting : public TargetingBase {
   const base::Value::List* GetLocales() const;
   const absl::optional<int> GetMinMilestone() const;
   const absl::optional<int> GetMaxMilestone() const;
+};
+
+// Wrapper around scheduling targeting dictionary.
+//
+// The structure looks like:
+// {
+//   "start": 1697046365,
+//   "end": 1697046598
+// }
+//
+// Start and end are the number of seconds since epoch in UTC.
+class SchedulingTargeting {
+ public:
+  explicit SchedulingTargeting(const base::Value::Dict* scheduling);
+  SchedulingTargeting(const SchedulingTargeting&) = delete;
+  SchedulingTargeting& operator=(const SchedulingTargeting) = delete;
+  ~SchedulingTargeting();
+
+  const base::Time GetStartTime() const;
+  const base::Time GetEndTime() const;
+
+ private:
+  raw_ptr<const base::Value::Dict, ExperimentalAsh> scheduling_dict_;
+};
+
+// Wrapper around scheduling targeting dictionary.
+//
+// The structure looks like:
+// {
+//   "scheduling": []
+// }
+class SessionTargeting : public TargetingBase {
+ public:
+  explicit SessionTargeting(const Targeting& targeting_dict);
+  SessionTargeting(const SessionTargeting&) = delete;
+  SessionTargeting& operator=(const SessionTargeting) = delete;
+  ~SessionTargeting();
+
+  const std::vector<std::unique_ptr<SchedulingTargeting>> GetSchedulings()
+      const;
 };
 
 }  // namespace growth

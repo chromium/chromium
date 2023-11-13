@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
+#include <memory>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
@@ -42,6 +43,31 @@ bool MatchPref(const base::Value::List* criterias,
 
 int GetMilestone() {
   return version_info::GetMajorVersionNumberAsInt();
+}
+
+// Matched if any of the given `scheduling_targetings` is matched.
+bool MatchSchedulings(const std::vector<std::unique_ptr<SchedulingTargeting>>&
+                          scheduling_targetings) {
+  const auto now = base::Time::Now();
+  for (const auto& scheduling_targeting : scheduling_targetings) {
+    if (scheduling_targeting->GetStartTime().ToDeltaSinceWindowsEpoch() <=
+            now.ToDeltaSinceWindowsEpoch() &&
+        scheduling_targeting->GetEndTime().ToDeltaSinceWindowsEpoch() >=
+            now.ToDeltaSinceWindowsEpoch()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool MatchSessionTargeting(const SessionTargeting& targeting) {
+  if (!targeting.IsValid()) {
+    // Campaigns matched if there is no demo mode targeting.
+    return true;
+  }
+
+  return MatchSchedulings(targeting.GetSchedulings());
 }
 
 }  // namespace
@@ -205,7 +231,8 @@ bool CampaignsMatcher::Matched(const Targetings* targetings) const {
     return false;
   }
 
-  return MaybeMatchDemoModeTargeting(DemoModeTargeting(*targeting)) &&
+  return MatchSessionTargeting(SessionTargeting(*targeting)) &&
+         MaybeMatchDemoModeTargeting(DemoModeTargeting(*targeting)) &&
          MatchDeviceTargeting(DeviceTargeting(*targeting));
 }
 

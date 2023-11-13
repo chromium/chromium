@@ -4,8 +4,12 @@
 
 #include "chromeos/ash/components/growth/campaigns_model.h"
 
+#include <memory>
+
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 
 namespace growth {
 namespace {
@@ -32,6 +36,14 @@ inline constexpr char kDeviceTargeting[] = "device";
 inline constexpr char kDeviceLocales[] = "locales";
 inline constexpr char kMinMilestone[] = "milestone.min";
 inline constexpr char kMaxMilestone[] = "milestone.max";
+
+// Session Targeting paths.
+inline constexpr char kSessionTargeting[] = "session";
+
+// Scheduling Targeting paths.
+inline constexpr char kSchedulingTargetings[] = "schedulings";
+inline constexpr char kSchedulingStart[] = "start";
+inline constexpr char kSchedulingEnd[] = "end";
 
 // Payloads
 inline constexpr char kPayloadPathTemplate[] = "payload.%s";
@@ -156,6 +168,58 @@ const absl::optional<int> DeviceTargeting::GetMinMilestone() const {
 
 const absl::optional<int> DeviceTargeting::GetMaxMilestone() const {
   return GetIntCriteria(kMaxMilestone);
+}
+
+// Scheduling Targeting.
+SchedulingTargeting::SchedulingTargeting(
+    const base::Value::Dict* scheduling_dict)
+    : scheduling_dict_(scheduling_dict) {}
+
+SchedulingTargeting::~SchedulingTargeting() = default;
+
+const base::Time SchedulingTargeting::GetStartTime() const {
+  auto start = scheduling_dict_->FindDouble(kSchedulingStart);
+  if (start.has_value()) {
+    return base::Time::FromSecondsSinceUnixEpoch(start.value());
+  }
+
+  return base::Time::Min();
+}
+
+const base::Time SchedulingTargeting::GetEndTime() const {
+  auto end = scheduling_dict_->FindDouble(kSchedulingEnd);
+  if (end.has_value()) {
+    return base::Time::FromSecondsSinceUnixEpoch(end.value());
+  }
+
+  return base::Time::Max();
+}
+
+// Session Targeting.
+SessionTargeting::SessionTargeting(const Targeting& targeting_dict)
+    : TargetingBase(targeting_dict, kSessionTargeting) {}
+
+SessionTargeting::~SessionTargeting() = default;
+
+const std::vector<std::unique_ptr<SchedulingTargeting>>
+SessionTargeting::GetSchedulings() const {
+  std::vector<std::unique_ptr<SchedulingTargeting>> schedulings;
+
+  auto* scheduling_dicts = GetListCriteria(kSchedulingTargetings);
+  if (!scheduling_dicts) {
+    LOG(ERROR) << "Invalid scheduling targetings";
+    // TODO(b/309005344): Records invalid scheduling error.
+    return schedulings;
+  }
+
+  for (auto& scheduling_dict : *scheduling_dicts) {
+    if (!scheduling_dict.is_dict()) {
+      continue;
+    }
+    schedulings.push_back(
+        std::make_unique<SchedulingTargeting>(&scheduling_dict.GetDict()));
+  }
+  return schedulings;
 }
 
 }  // namespace growth
