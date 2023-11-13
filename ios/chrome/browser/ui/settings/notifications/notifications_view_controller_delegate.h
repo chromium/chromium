@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_NOTIFICATIONS_NOTIFICATIONS_VIEW_CONTROLLER_DELEGATE_H_
 
 @class TableViewItem;
+@class TableViewSwitchItem;
 
 // Delegate for NotificationsViewController instance to manage the
 // model.
@@ -13,6 +14,9 @@
 
 // Sends `item` to the model to handle logic and navigation.
 - (void)didSelectItem:(TableViewItem*)item;
+
+// Sends switch toggle response to the model so that it can be updated.
+- (void)didToggleSwitchItem:(TableViewSwitchItem*)item withValue:(BOOL)value;
 
 @end
 

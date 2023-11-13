@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/commerce/model/push_notification/commerce_push_notification_client.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 PushNotificationClientManager::PushNotificationClientManager() {
   if (IsPriceNotificationsEnabled() &&
@@ -83,6 +84,10 @@ void PushNotificationClientManager::RegisterActionableNotifications() {
 
 std::vector<PushNotificationClientId>
 PushNotificationClientManager::GetClients() {
+  if (IsContentPushNotificationsEnabled()) {
+    return {PushNotificationClientId::kCommerce,
+            PushNotificationClientId::kContent};
+  }
   return {PushNotificationClientId::kCommerce};
 }
 
@@ -97,6 +102,9 @@ std::string PushNotificationClientManager::PushNotificationClientIdToString(
   switch (client_id) {
     case PushNotificationClientId::kCommerce: {
       return "PRICE_DROP";
+    }
+    case PushNotificationClientId::kContent: {
+      return "CONTENT";
     }
   }
 }

@@ -38,6 +38,10 @@
 
 #pragma mark - PrefObserverDelegate
 
+// TODO(b/304830588) Decouple kFeaturePushNotificationPermissions from Price
+// Tracking to make it universally usable. Add two separate prefs for Content
+// and Price Tracking, and keep the original one which is updated if at least
+// one of the other prefs is True, and becomes false when both are False.
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (preferenceName == commerce::kPriceEmailNotificationsEnabled ||
       preferenceName == prefs::kFeaturePushNotificationPermissions) {

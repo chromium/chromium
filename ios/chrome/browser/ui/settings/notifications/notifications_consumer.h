@@ -17,6 +17,13 @@
 // Initializes price tracking item.
 - (void)setPriceTrackingItem:(TableViewItem*)priceTrackingItem;
 
+// Initializes the content notifications item.
+- (void)setContentNotificationsItem:(TableViewItem*)contentNotificationsItem;
+
+// Initializes the content notifications footer item.
+- (void)setContentNotificationsFooterItem:
+    (TableViewHeaderFooterItem*)contentNotificationsFooterItem;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_CONSUMER_H_

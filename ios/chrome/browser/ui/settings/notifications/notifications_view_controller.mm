@@ -4,8 +4,13 @@
 
 #import "ios/chrome/browser/ui/settings/notifications/notifications_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_constants.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_view_controller_delegate.h"
@@ -15,7 +20,8 @@
 namespace {
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierNotificationsContent = kSectionIdentifierEnumZero,
+  SectionIdentifierNotificationsPriceTracking = kSectionIdentifierEnumZero,
+  SectionIdentifierNotificationsContent,
 };
 
 }  // namespace
@@ -24,6 +30,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 // All the items for the price notifications section received by mediator.
 @property(nonatomic, strong) TableViewItem* priceTrackingItem;
+// All the items for the content notifications section received by mediator.
+@property(nonatomic, strong) TableViewSwitchItem* contentNotificationsItem;
+// Content Notifications footer item received by the mediator.
+@property(nonatomic, strong)
+    TableViewHeaderFooterItem* contentNotificationsFooterItem;
 
 @end
 
@@ -54,9 +65,34 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [super loadModel];
 
   TableViewModel* model = self.tableViewModel;
-  [model addSectionWithIdentifier:SectionIdentifierNotificationsContent];
+  [model addSectionWithIdentifier:SectionIdentifierNotificationsPriceTracking];
   [model addItem:self.priceTrackingItem
-      toSectionWithIdentifier:SectionIdentifierNotificationsContent];
+      toSectionWithIdentifier:SectionIdentifierNotificationsPriceTracking];
+  if (IsContentPushNotificationsEnabled()) {
+    [model addSectionWithIdentifier:SectionIdentifierNotificationsContent];
+    [model addItem:self.contentNotificationsItem
+        toSectionWithIdentifier:SectionIdentifierNotificationsContent];
+    [model setFooter:self.contentNotificationsFooterItem
+        forSectionWithIdentifier:SectionIdentifierNotificationsContent];
+  }
+}
+
+#pragma mark - UITableViewDataSource
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  UITableViewCell* cell = [super tableView:tableView
+                     cellForRowAtIndexPath:indexPath];
+  if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
+    TableViewSwitchCell* switchCell =
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
+    [switchCell.switchView addTarget:self
+                              action:@selector(switchAction:)
+                    forControlEvents:UIControlEventValueChanged];
+    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+    switchCell.switchView.tag = item.type;
+  }
+  return cell;
 }
 
 #pragma mark - UIViewController
@@ -75,6 +111,20 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   TableViewModel* model = self.tableViewModel;
   TableViewItem* selectedItem = [model itemAtIndexPath:indexPath];
   [self.modelDelegate didSelectItem:selectedItem];
+}
+
+#pragma mark - Private
+
+// Called when switch is toggled.
+- (void)switchAction:(UISwitch*)sender {
+  NSIndexPath* indexPath =
+      [self.tableViewModel indexPathForItemType:sender.tag];
+  DCHECK(indexPath);
+  TableViewSwitchItem* switchItem =
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(
+          [self.tableViewModel itemAtIndexPath:indexPath]);
+  DCHECK(switchItem);
+  [self.modelDelegate didToggleSwitchItem:switchItem withValue:sender.isOn];
 }
 
 @end
