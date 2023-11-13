@@ -204,6 +204,7 @@ build_webui("build") {
     "os_apps_page/app_management_page/app_detail_view.ts",
     "os_apps_page/app_management_page/app_details_item.ts",
     "os_apps_page/app_management_page/app_item.ts",
+    "os_apps_page/app_management_page/app_language_item.ts",
     "os_apps_page/app_management_page/app_management_page.ts",
     "os_apps_page/app_management_page/arc_detail_view.ts",
     "os_apps_page/app_management_page/chrome_app_detail_view.ts",

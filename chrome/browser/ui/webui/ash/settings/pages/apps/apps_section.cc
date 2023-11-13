@@ -471,6 +471,9 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"appBadgingToggleSublabel", IDS_SETTINGS_APP_BADGING_TOGGLE_SUBLABEL},
       {"enableIsolatedWebAppsToggleLabel",
        IDS_SETTINGS_ENABLE_ISOLATED_WEB_APPS_LABEL},
+      {"appManagementAppLanguageLabel", IDS_APP_MANAGEMENT_APP_LANGUAGE_LABEL},
+      {"appManagementAppLanguageDeviceLanguageLabel",
+       IDS_APP_MANAGEMENT_APP_LANGUAGE_DEVICE_LANGUAGE_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

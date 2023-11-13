@@ -83,6 +83,7 @@ import './nearby_share_page/nearby_share_receive_dialog.js';
 import './nearby_share_page/nearby_share_subpage.js';
 import './os_apps_page/app_management_page/app_details_item.js';
 import './os_apps_page/app_management_page/app_item.js';
+import './os_apps_page/app_management_page/app_language_item.js';
 import './os_apps_page/app_management_page/arc_detail_view.js';
 import './os_apps_page/app_management_page/borealis_page/borealis_detail_view.js';
 import './os_apps_page/app_management_page/chrome_app_detail_view.js';
@@ -221,6 +222,7 @@ export {SettingsAndroidAppsSubpageElement} from './os_apps_page/android_apps_sub
 export {AppManagementAppDetailViewElement} from './os_apps_page/app_management_page/app_detail_view.js';
 export {AppManagementAppDetailsItem} from './os_apps_page/app_management_page/app_details_item.js';
 export {AppManagementAppItemElement} from './os_apps_page/app_management_page/app_item.js';
+export {AppManagementAppLanguageItemElement} from './os_apps_page/app_management_page/app_language_item.js';
 export {SettingsAppManagementPageElement} from './os_apps_page/app_management_page/app_management_page.js';
 export {AppManagementArcDetailViewElement} from './os_apps_page/app_management_page/arc_detail_view.js';
 export {AppManagementBorealisDetailViewElement} from './os_apps_page/app_management_page/borealis_page/borealis_detail_view.js';

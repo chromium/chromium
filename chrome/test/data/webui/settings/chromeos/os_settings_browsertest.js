@@ -690,6 +690,10 @@ TEST_F(
    'os_apps_page/app_management_page/app_item_test.js'
  ],
  [
+   'OsAppsPageAppManagementPageAppLanguageItem',
+   'os_apps_page/app_management_page/app_language_item_test.js'
+ ],
+ [
    'OsAppsPageAppManagementPage',
    'os_apps_page/app_management_page/app_management_page_test.js'
  ],
