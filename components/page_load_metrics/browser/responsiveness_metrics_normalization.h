@@ -14,6 +14,31 @@
 namespace page_load_metrics {
 
 constexpr uint64_t kHighPercentileUpdateFrequency = 50;
+// The struct that stores normalized user interactions latencies.
+struct NormalizedInteractionLatencies {
+  NormalizedInteractionLatencies();
+  ~NormalizedInteractionLatencies();
+
+  // The maximum value of user interaction latencies.
+  base::TimeDelta worst_latency;
+
+  // A min priority queue. The top is the smallest base::TimeDelta in the queue.
+  // We use the worst 10 latencies to approximate a high percentile.
+  std::priority_queue<base::TimeDelta,
+                      std::vector<base::TimeDelta>,
+                      std::greater<>>
+      worst_ten_latencies;
+};
+
+// The struct that stores all normalization results for a page load.
+struct NormalizedResponsivenessMetrics {
+  NormalizedResponsivenessMetrics();
+  ~NormalizedResponsivenessMetrics();
+  uint64_t num_user_interactions = 0;
+  // Max event duration
+  NormalizedInteractionLatencies normalized_max_event_durations;
+};
+
 // ResponsivenessMetricsNormalization implements some experimental normalization
 // strategies for responsiveness metrics. We aggregate user interaction latency
 // data from all renderer frames and calculate a score per page load.
@@ -31,23 +56,28 @@ class ResponsivenessMetricsNormalization {
       uint64_t num_new_interactions,
       const mojom::UserInteractionLatencies& max_event_durations);
 
-  void ClearAllUserInteractionLatencies();
+  const NormalizedResponsivenessMetrics& GetNormalizedResponsivenessMetrics()
+      const {
+    return normalized_responsiveness_metrics_;
+  }
+  void ClearAllUserInteractionLatencies() {
+    normalized_responsiveness_metrics_ = NormalizedResponsivenessMetrics();
+  }
 
   // Approximate a high percentile of user interaction latency.
-  absl::optional<base::TimeDelta> ApproximateHighPercentile() const;
-
-  uint64_t num_user_interactions() const { return num_user_interactions_; }
-
-  absl::optional<base::TimeDelta> worst_latency() const;
+  static base::TimeDelta ApproximateHighPercentile(
+      uint64_t num_interactions,
+      std::priority_queue<base::TimeDelta,
+                          std::vector<base::TimeDelta>,
+                          std::greater<>> worst_ten_latencies);
 
  private:
   void NormalizeUserInteractionLatencies(
-      const mojom::UserInteractionLatencies& user_interaction_latencies);
-
-  // A sorted list of the worst ten latencies, used to approximate a high
-  // percentile.
-  std::vector<base::TimeDelta> worst_ten_latencies_;
-  uint64_t num_user_interactions_ = 0;
+      const mojom::UserInteractionLatencies& user_interaction_latencies,
+      NormalizedInteractionLatencies& normalized_event_durations,
+      uint64_t last_num_user_interactions,
+      uint64_t current_num_user_interactions);
+  NormalizedResponsivenessMetrics normalized_responsiveness_metrics_;
 };
 
 }  // namespace page_load_metrics
