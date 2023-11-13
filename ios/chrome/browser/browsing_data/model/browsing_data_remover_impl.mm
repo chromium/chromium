@@ -274,14 +274,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
   // browsing data even if `browser_state` is destroyed after this method call.
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_HISTORY)) {
-    if (session_service_) {
-      const base::FilePath& state_path = browser_state_->GetStatePath();
-      [session_service_
-          deleteAllSessionFilesInDirectory:state_path
-                                completion:
-                                    CreatePendingTaskCompletionClosure()];
-    }
-
     // Remove the screenshots taken by the system when backgrounding the
     // application. Partial removal based on timePeriod is not required.
     ClearIOSSnapshots(CreatePendingTaskCompletionClosure());

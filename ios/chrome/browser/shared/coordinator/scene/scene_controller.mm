@@ -173,10 +173,6 @@
 #import "net/base/mac/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
-
 namespace {
 
 // Feature to control whether Search Intents (Widgets, Application
@@ -3702,18 +3698,6 @@ void InjectNTP(Browser* browser) {
 
   for (SceneController* sceneController in sceneControllers) {
     [sceneController willDestroyIncognitoBrowserState];
-  }
-
-  // Delete all the remaining sessions. This is asynchronous, but will happen
-  // after all pending saves, if any, have completed. There is a risk of a
-  // race-condition with loading them, but as -incognitoBrowserStateCreated
-  // does not load the session, the only risk is if the application were to
-  // crash before the deletion could complete (in which case the user may
-  // see the previous state of the app before closing the last incognito tab).
-  if (!web::features::UseSessionSerializationOptimizations()) {
-    [[SessionServiceIOS sharedService]
-        deleteAllSessionFilesInDirectory:otrBrowserState->GetStatePath()
-                              completion:base::DoNothing()];
   }
 
   // Record off-the-record metrics before detroying the BrowserState.

@@ -294,19 +294,6 @@ using SaveSessionCallback =
       base::apple::NSStringToFilePath(sessionPath));
 }
 
-- (void)deleteAllSessionFilesInDirectory:(const base::FilePath&)directory
-                              completion:(base::OnceClosure)callback {
-  NSString* sessionsDirectory =
-      base::apple::FilePathToNSString(directory.Append(kLegacySessionFilename));
-  NSArray<NSString*>* allSessionIDs = [[NSFileManager defaultManager]
-      contentsOfDirectoryAtPath:sessionsDirectory
-                          error:nil];
-
-  [self deleteSessions:allSessionIDs
-             directory:directory
-            completion:std::move(callback)];
-}
-
 - (void)deleteSessions:(NSArray<NSString*>*)sessionIDs
              directory:(const base::FilePath&)directory
             completion:(base::OnceClosure)callback {

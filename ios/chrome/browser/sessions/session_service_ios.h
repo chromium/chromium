@@ -57,10 +57,6 @@
 // of errors.
 - (SessionWindowIOS*)loadSessionFromPath:(NSString*)sessionPath;
 
-// Schedules deletion of the all session files from a specific `directory`.
-- (void)deleteAllSessionFilesInDirectory:(const base::FilePath&)directory
-                              completion:(base::OnceClosure)callback;
-
 // Schedule deletion of session directories with `sessionIDs` which resides in
 // a specific browser state `directory`.
 - (void)deleteSessions:(NSArray<NSString*>*)sessionIDs
