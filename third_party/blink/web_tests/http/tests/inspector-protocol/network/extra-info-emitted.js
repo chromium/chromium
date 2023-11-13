@@ -32,13 +32,14 @@
     testRunner.log('');
   }
 
-  async function assertNoExtraInfoNavigation(url) {
-    const responseReceivedPromise = dp.Network.onceResponseReceived();
+  async function assertNoRequest(url) {
+    const navigatedPromise = dp.Page.onceFrameNavigated();
+    dp.Network.onResponseReceived(() => {
+      testRunner.log(`Unexpected network response received`);
+    });
     await session.navigate(url);
-    const responseReceived = await responseReceivedPromise;
+    await navigatedPromise;
     testRunner.log(`navigated to: ${url}`);
-    testRunner.log(`responseReceived.url: ${responseReceived.params.response.url}`);
-    testRunner.log(`responseReceived.hasExtraInfo: ${responseReceived.params.hasExtraInfo}`);
     testRunner.log('');
   }
 
@@ -61,7 +62,7 @@
 
   await assertHasExtraInfoNavigation('/');
   await assertHasExtraInfoNavigation('data:text/html,<div>helloWorld</div>');
-  await assertHasExtraInfoNavigation('about:blank');
+  await assertNoRequest('about:blank');
 
   // TODO can I also test file urls in web_tests...?
 

@@ -1,5 +1,5 @@
 (async function(testRunner) {
-  const {page, session, dp} = await testRunner.startBlank(
+  const {page, dp} = await testRunner.startBlank(
       `Test that back/forward navigations report the bfcache status`);
 
   await dp.Page.enable();
@@ -9,7 +9,7 @@
     'https://devtools.test:8443/inspector-protocol/bfcache/resources/page-with-blocking-feature.html');
 
   // Navigate to Page B.
-  await page.navigate('chrome://version');
+  await page.navigate('resources/empty.html');
 
   const {result: history} = await dp.Page.getNavigationHistory();
 

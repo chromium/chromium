@@ -1,6 +1,7 @@
 (async function(testRunner) {
-  const {page, session, dp} = await testRunner.startBlank(
-      `Test that back/forward navigations report the bfcache status`);
+  const { page, dp } = await testRunner.startBlank(
+    `Test that back/forward navigations report the bfcache status`,
+  );
 
   await dp.Page.enable();
 
@@ -9,7 +10,7 @@
       'http://localhost:8000/inspector-protocol/bfcache/resources/page-with-embed.html');
 
   // Navigate to Page B.
-  await page.navigate('chrome://version');
+  await page.navigate('resources/empty.html');
 
   const {result: history} = await dp.Page.getNavigationHistory();
 
