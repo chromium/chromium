@@ -280,7 +280,7 @@ OSCrypt::InitResult OSCryptImpl::InitWithExistingKey(PrefService* local_state) {
 
   if (!base::StartsWith(encrypted_key_with_header, kDPAPIKeyPrefix,
                         base::CompareCase::SENSITIVE)) {
-    NOTREACHED() << "Invalid key format.";
+    DUMP_WILL_BE_NOTREACHED_NORETURN() << "Invalid key format.";
     return OSCrypt::kInvalidKeyFormat;
   }
 
