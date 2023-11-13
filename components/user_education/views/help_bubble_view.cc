@@ -876,6 +876,11 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
     frame_view->set_use_anchor_window_bounds(false);
   }
 
+  // Bubbles get a 1-dip border that's either light or dark depending on system
+  // light or dark mode, but this does not match with the help bubble (see
+  // b/303069420).
+  frame_view->bubble_border()->set_draw_border_stroke(false);
+
   SizeToContents();
 
   // Most help bubbles with buttons take focus when they show.

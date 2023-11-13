@@ -708,13 +708,15 @@ void BubbleBorder::PaintVisibleArrow(const View& view, gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setStrokeCap(cc::PaintFlags::kRound_Cap);
 
-  flags.setColor(view.GetColorProvider()->GetColor(ui::kColorBubbleBorder));
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setStrokeWidth(1.2);
-  flags.setAntiAlias(true);
-  canvas->DrawPath(
-      GetVisibleArrowPath(arrow_, arrow_bounds, BubbleArrowPart::kBorder),
-      flags);
+  if (ShouldDrawStroke()) {
+    flags.setColor(view.GetColorProvider()->GetColor(ui::kColorBubbleBorder));
+    flags.setStyle(cc::PaintFlags::kStroke_Style);
+    flags.setStrokeWidth(1.2);
+    flags.setAntiAlias(true);
+    canvas->DrawPath(
+        GetVisibleArrowPath(arrow_, arrow_bounds, BubbleArrowPart::kBorder),
+        flags);
+  }
 
   flags.setColor(color());
   flags.setStyle(cc::PaintFlags::kFill_Style);
