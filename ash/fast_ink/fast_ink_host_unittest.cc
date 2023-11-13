@@ -24,6 +24,7 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -192,7 +193,7 @@ TEST_P(FastInkHostTest, CorrectFrameSubmittedToLayerTreeFrameSink) {
 TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
   // Buffer is not initialized when there is no begin frame received.
   ASSERT_FALSE(fast_ink_host_->gpu_memory_buffer_for_test());
-  ASSERT_TRUE(fast_ink_host_->mailbox_for_test().IsZero());
+  ASSERT_FALSE(fast_ink_host_->client_si_for_test());
   EXPECT_EQ(fast_ink_host_->get_pending_bitmaps_size_for_test(), 0);
 
   int pending_bitmaps_size = 0;
@@ -221,9 +222,9 @@ TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
     gfx::GpuMemoryBuffer* gpu_memory_buffer =
         fast_ink_host_->gpu_memory_buffer_for_test();
     if (use_one_si_for_fast_ink_host_resources_) {
-      ASSERT_FALSE(fast_ink_host_->mailbox_for_test().IsZero());
+      ASSERT_TRUE(fast_ink_host_->client_si_for_test());
     } else {
-      ASSERT_TRUE(fast_ink_host_->mailbox_for_test().IsZero());
+      ASSERT_FALSE(fast_ink_host_->client_si_for_test());
     }
 
     ASSERT_TRUE(gpu_memory_buffer);
@@ -237,8 +238,8 @@ TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
     gpu_memory_buffer->Unmap();
   } else {
     // MappableSI should be initialized after receiving the first begin frame.
-    gpu::Mailbox mailbox = fast_ink_host_->mailbox_for_test();
-    ASSERT_FALSE(mailbox.IsZero());
+    ASSERT_TRUE(fast_ink_host_->client_si_for_test());
+    auto mailbox = fast_ink_host_->client_si_for_test()->mailbox();
     // Pending bitmaps should be drawn and cleared.
     EXPECT_EQ(fast_ink_host_->get_pending_bitmaps_size_for_test(), 0);
 

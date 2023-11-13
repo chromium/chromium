@@ -23,6 +23,10 @@ class GpuMemoryBuffer;
 class Size;
 }  // namespace gfx
 
+namespace gpu {
+class ClientSharedImage;
+}
+
 namespace aura {
 class Window;
 }  // namespace aura
@@ -53,8 +57,9 @@ ASH_EXPORT std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuBuffer(
     const gfx::BufferUsageAndFormat& usage_and_format);
 
 // Creates a Mappable SharedImage of given `size`, `shared_image_usage`, and
-// `buffer_usage`. The returned Mailbox will be zero if creation failed.
-ASH_EXPORT gpu::Mailbox CreateMappableSharedImage(
+// `buffer_usage`. The returned ClientSharedImage will be null if creation
+// failed.
+ASH_EXPORT scoped_refptr<gpu::ClientSharedImage> CreateMappableSharedImage(
     const gfx::Size& size,
     uint32_t shared_image_usage,
     gfx::BufferUsage buffer_usage);

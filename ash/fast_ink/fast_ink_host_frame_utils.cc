@@ -119,16 +119,14 @@ std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuBuffer(
                               nullptr);
 }
 
-gpu::Mailbox CreateMappableSharedImage(const gfx::Size& size,
-                                       uint32_t shared_image_usage,
-                                       gfx::BufferUsage buffer_usage) {
-  auto client_shared_image =
-      GetContextProvider()->SharedImageInterface()->CreateSharedImage(
-          kFastInkSharedImageFormat, size, gfx::ColorSpace(),
-          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
-          "FastInkHostUIResource", gpu::kNullSurfaceHandle, buffer_usage);
-  LOG_IF(ERROR, !client_shared_image) << "Failed to create MappableSI";
-  return client_shared_image ? client_shared_image->mailbox() : gpu::Mailbox();
+scoped_refptr<gpu::ClientSharedImage> CreateMappableSharedImage(
+    const gfx::Size& size,
+    uint32_t shared_image_usage,
+    gfx::BufferUsage buffer_usage) {
+  return GetContextProvider()->SharedImageInterface()->CreateSharedImage(
+      kFastInkSharedImageFormat, size, gfx::ColorSpace(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
+      "FastInkHostUIResource", gpu::kNullSurfaceHandle, buffer_usage);
 }
 
 std::unique_ptr<UiResource> CreateUiResource(
