@@ -11766,7 +11766,8 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MantaService",
-                        "OrcaDogfood"
+                        "OrcaDogfood",
+                        "OrcaOnWorkspace"
                     ]
                 }
             ]

@@ -9,12 +9,14 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chrome/browser/ash/input_method/editor_identity_utils.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "extensions/common/constants.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/network_change_notifier.h"
 #include "ui/base/ime/text_input_type.h"
 
@@ -47,7 +49,7 @@ constexpr AppType kAppTypeDenylist[] = {
     AppType::CROSTINI_APP,
 };
 
-const char* kDomainsWithPathDenylist[][2] = {
+const char* kWorkspaceDomainsWithPathDenylist[][2] = {
     {"calendar.google", ""},
     {"docs.google", "/document"},
     {"docs.google", "/presentation"},
@@ -59,19 +61,31 @@ const char* kDomainsWithPathDenylist[][2] = {
     {"meet.google", ""},
 };
 
-constexpr int kTextLengthMaxLimit = 10000;
-
-const char* kAppIdDenylist[] = {
+const char* kWorkspaceAppIdDenylist[] = {
     extension_misc::kGmailAppId,        extension_misc::kCalendarAppId,
-    extension_misc::kFilesManagerAppId, extension_misc::kGoogleDocsAppId,
-    extension_misc::kGoogleSlidesAppId, extension_misc::kGoogleSheetsAppId,
-    extension_misc::kGoogleDriveAppId,  extension_misc::kGoogleKeepAppId,
-    file_manager::kFileManagerSwaAppId, web_app::kGmailAppId,
+    extension_misc::kGoogleDocsAppId,   extension_misc::kGoogleSlidesAppId,
+    extension_misc::kGoogleSheetsAppId, extension_misc::kGoogleDriveAppId,
+    extension_misc::kGoogleKeepAppId,   web_app::kGmailAppId,
     web_app::kGoogleChatAppId,          web_app::kGoogleMeetAppId,
     web_app::kGoogleDocsAppId,          web_app::kGoogleSlidesAppId,
     web_app::kGoogleSheetsAppId,        web_app::kGoogleDriveAppId,
     web_app::kGoogleKeepAppId,          web_app::kGoogleCalendarAppId,
 };
+
+const char* kNonWorkspaceAppIdDenylist[] = {
+    extension_misc::kFilesManagerAppId,
+    file_manager::kFileManagerSwaAppId,
+};
+
+constexpr int kTextLengthMaxLimit = 10000;
+
+bool IsGoogleInternalAccountEmailFromProfile(Profile* profile) {
+  absl::optional<std::string> user_email =
+      GetSignedInUserEmailFromProfile(profile);
+
+  return user_email.has_value() &&
+         gaia::IsGoogleInternalAccountEmail(*user_email);
+}
 
 bool IsCountryAllowed(std::string_view country_code) {
   return base::Contains(kCountryAllowlist, country_code);
@@ -95,19 +109,29 @@ bool IsTriggerableFromConsentStatus(ConsentStatus consent_status) {
          consent_status == ConsentStatus::kUnset;
 }
 
-template <size_t N>
-bool IsUrlAllowed(const char* (&denied_domains_with_paths)[N][2], GURL url) {
-  for (size_t i = 0; i < N; ++i) {
-    if (IsSubDomainWithPathPrefix(url, denied_domains_with_paths[i][0],
-                                  denied_domains_with_paths[i][1])) {
+bool IsUrlAllowed(Profile* profile, GURL url) {
+  if (IsGoogleInternalAccountEmailFromProfile(profile) &&
+      base::FeatureList::IsEnabled(features::kOrcaOnWorkspace)) {
+    return true;
+  }
+
+  for (auto& denied_domain_with_path : kWorkspaceDomainsWithPathDenylist) {
+    if (IsSubDomainWithPathPrefix(url, denied_domain_with_path[0],
+                                  denied_domain_with_path[1])) {
       return false;
     }
   }
   return true;
 }
 
-bool IsAppAllowed(std::string_view app_id) {
-  return !base::Contains(kAppIdDenylist, app_id);
+bool IsAppAllowed(Profile* profile, std::string_view app_id) {
+  if (base::Contains(kNonWorkspaceAppIdDenylist, app_id)) {
+    return false;
+  }
+
+  return (IsGoogleInternalAccountEmailFromProfile(profile) &&
+          base::FeatureList::IsEnabled(features::kOrcaOnWorkspace)) ||
+         !base::Contains(kWorkspaceAppIdDenylist, app_id);
 }
 
 }  // namespace
@@ -154,9 +178,8 @@ bool EditorSwitch::CanBeTriggered() const {
   return IsAllowedForUse() && IsInputMethodEngineAllowed(active_engine_id_) &&
          IsInputTypeAllowed(input_type_) && IsAppTypeAllowed(app_type_) &&
          IsTriggerableFromConsentStatus(current_consent_status) &&
-         IsUrlAllowed(kDomainsWithPathDenylist, url_) &&
-         IsAppAllowed(app_id_) && !net::NetworkChangeNotifier::IsOffline() &&
-         !tablet_mode_enabled_ &&
+         IsUrlAllowed(profile_, url_) && IsAppAllowed(profile_, app_id_) &&
+         !net::NetworkChangeNotifier::IsOffline() && !tablet_mode_enabled_ &&
          // user pref value
          profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled) &&
          text_length_ <= kTextLengthMaxLimit;
