@@ -16,7 +16,6 @@
 #include "extensions/common/api/scripts_internal.h"
 #include "extensions/common/api/scripts_internal/script_serialization.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/mojom/host_id.mojom.h"
@@ -86,9 +85,7 @@ std::unique_ptr<UserScript> CreateUserScript(
   // specified. `match_origin_as_fallback` can only be specified for extensions
   // running manifest version 3 or higher. `match_about_blank` can be specified
   // by any extensions (and is used by MV3+ extensions for compatibility).
-  if (content_script.match_origin_as_fallback &&
-      base::FeatureList::IsEnabled(
-          extensions_features::kContentScriptsMatchOriginAsFallback)) {
+  if (content_script.match_origin_as_fallback) {
     if (extension->manifest_version() >= 3) {
       serialized_script.match_origin_as_fallback =
           content_script.match_origin_as_fallback;

@@ -76,12 +76,6 @@ BASE_FEATURE(kCheckingNoExtensionIdInExtensionIpcs,
              "EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables support for the "match_origin_as_fallback" property in content
-// scripts.
-BASE_FEATURE(kContentScriptsMatchOriginAsFallback,
-             "ContentScriptsMatchOriginAsFallback",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Determine if dynamic extension URLs are handled and redirected.
 BASE_FEATURE(kExtensionDynamicURLRedirection,
              "ExtensionDynamicURLRedirection",

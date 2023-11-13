@@ -519,21 +519,9 @@ IN_PROC_BROWSER_TEST_F(
       *popup->GetPrimaryMainFrame()->GetProcess(), extension_id));
 }
 
-class ScriptInjectionTrackerMatchOriginAsFallbackBrowserTest
-    : public ScriptInjectionTrackerBrowserTest {
- public:
-  ScriptInjectionTrackerMatchOriginAsFallbackBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kContentScriptsMatchOriginAsFallback);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Covers detecting content script injection into a 'data:...' URL.
 IN_PROC_BROWSER_TEST_F(
-    ScriptInjectionTrackerMatchOriginAsFallbackBrowserTest,
+    ScriptInjectionTrackerBrowserTest,
     ContentScriptDeclarationInExtensionManifest_DataUrlIframe) {
   // Install a test extension.
   TestExtensionDir dir;

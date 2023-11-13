@@ -55,8 +55,6 @@ BASE_DECLARE_FEATURE(kAvoidEarlyExtensionScriptContextCreation);
 
 BASE_DECLARE_FEATURE(kCheckingNoExtensionIdInExtensionIpcs);
 
-BASE_DECLARE_FEATURE(kContentScriptsMatchOriginAsFallback);
-
 BASE_DECLARE_FEATURE(kExtensionDynamicURLRedirection);
 
 BASE_DECLARE_FEATURE(kExtensionSidePanelIntegration);

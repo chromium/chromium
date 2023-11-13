@@ -49,7 +49,6 @@
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/utils/content_script_utils.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -1900,16 +1899,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 class ContentScriptMatchOriginAsFallbackTest
     : public ContentScriptRelatedFrameTest {
  public:
-  ContentScriptMatchOriginAsFallbackTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kContentScriptsMatchOriginAsFallback);
-  }
+  ContentScriptMatchOriginAsFallbackTest() = default;
   ~ContentScriptMatchOriginAsFallbackTest() override = default;
 
   bool IncludeMatchOriginAsFallback() override { return true; }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Inject a content script on an iframe to a data: URL on an allowed site.
