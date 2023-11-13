@@ -32,6 +32,8 @@ namespace ash::carrier_lock {
 
 namespace {
 
+CarrierLockManager* g_instance = nullptr;
+
 // test configuration
 const char kFcmAppId[] = "com.google.chromeos.carrier_lock";
 const char kFcmSenderId[] = "727210445342";
@@ -208,6 +210,7 @@ std::unique_ptr<CarrierLockManager> CarrierLockManager::Create(
 
   manager->Initialize();
 
+  g_instance = manager.get();
   return manager;
 }
 
@@ -231,6 +234,7 @@ std::unique_ptr<CarrierLockManager> CarrierLockManager::CreateForTesting(
   // Start with PSM check.
   manager->RunStep(ConfigurationState::kPsmCheckClaim);
 
+  g_instance = manager.get();
   return manager;
 }
 
@@ -244,17 +248,18 @@ void CarrierLockManager::RegisterLocalPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kSignedConfigPref, std::string());
 }
 
+// static
 ModemLockStatus CarrierLockManager::GetModemLockStatus() {
   if (!ash::features::IsCellularCarrierLockEnabled()) {
     return ModemLockStatus::kNotLocked;
   }
-  if (!local_state_) {
+  if (!g_instance || !g_instance->local_state_) {
     return ModemLockStatus::kUnknown;
   }
-  if (local_state_->GetBoolean(kDisableManagerPref)) {
+  if (g_instance->local_state_->GetBoolean(kDisableManagerPref)) {
     return ModemLockStatus::kNotLocked;
   }
-  if (!local_state_->GetString(kFcmTopicPref).empty()) {
+  if (!g_instance->local_state_->GetString(kFcmTopicPref).empty()) {
     return ModemLockStatus::kCarrierLocked;
   }
   return ModemLockStatus::kUnknown;
@@ -264,6 +269,7 @@ CarrierLockManager::CarrierLockManager(PrefService* local_state)
     : local_state_(local_state), retry_backoff_(&kRetryBackoffPolicy) {}
 
 CarrierLockManager::~CarrierLockManager() {
+  g_instance = nullptr;
   if (session_manager_) {
     session_manager_->RemoveObserver(this);
   }

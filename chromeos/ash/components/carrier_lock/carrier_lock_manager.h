@@ -96,7 +96,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK) CarrierLockManager
   static void RegisterLocalPrefs(PrefRegistrySimple*);
 
   // Return current status of modem lock configuration
-  ModemLockStatus GetModemLockStatus();
+  static ModemLockStatus GetModemLockStatus();
 
  private:
   friend class CarrierLockManagerTest;

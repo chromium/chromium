@@ -642,4 +642,62 @@ TEST_F(CarrierLockManagerTest, CarrierLockStartManagerSubscriptionRetry) {
                                        1);
 }
 
+TEST_F(CarrierLockManagerTest, CarrierLockStartManagerStatusNotLocked) {
+  // Set return values for fake auxiliary classes
+  fake_psm_verifier_->SetMemberAndResult(/*membership*/ false,
+                                         /*result*/ Result::kSuccess);
+
+  // Run Carrier Lock Manager
+  RunManager();
+  task_environment_.RunUntilIdle();
+
+  // Check returned lock status
+  EXPECT_EQ(ModemLockStatus::kNotLocked,
+            CarrierLockManager::GetModemLockStatus());
+}
+
+TEST_F(CarrierLockManagerTest, CarrierLockStartManagerStatusUnknown) {
+  // Set return values for fake auxiliary classes
+  fake_modem_handler_->set_carrier_lock_result(CarrierLockResult::kSuccess);
+  fake_fcm_subscriber_->SetTokenAndResult(/*token*/ std::string("Token"),
+                                          /*result*/ Result::kSuccess);
+  fake_psm_verifier_->SetMemberAndResult(/*membership*/ true,
+                                         /*result*/ Result::kSuccess);
+  fake_config_fetcher_->SetConfigTopicAndResult(
+      /*configuration*/ std::string("InvalidConfig"),
+      /*restriction mode*/ ::carrier_lock::DEFAULT_DISALLOW,
+      /*fcm topic*/ std::string(),
+      /*result*/ Result::kSuccess);
+
+  // Run Carrier Lock Manager
+  RunManager();
+  task_environment_.RunUntilIdle();
+
+  // Check returned lock status
+  EXPECT_EQ(ModemLockStatus::kUnknown,
+            CarrierLockManager::GetModemLockStatus());
+}
+
+TEST_F(CarrierLockManagerTest, CarrierLockStartManagerStatusLocked) {
+  // Set return values for fake auxiliary classes
+  fake_modem_handler_->set_carrier_lock_result(CarrierLockResult::kSuccess);
+  fake_fcm_subscriber_->SetTokenAndResult(/*token*/ std::string("Token"),
+                                          /*result*/ Result::kSuccess);
+  fake_psm_verifier_->SetMemberAndResult(/*membership*/ true,
+                                         /*result*/ Result::kSuccess);
+  fake_config_fetcher_->SetConfigTopicAndResult(
+      /*configuration*/ std::string("LockedConfig"),
+      /*restriction mode*/ ::carrier_lock::DEFAULT_DISALLOW,
+      /*fcm topic*/ std::string(kTestTopic),
+      /*result*/ Result::kSuccess);
+
+  // Run Carrier Lock Manager
+  RunManager();
+  task_environment_.RunUntilIdle();
+
+  // Check returned lock status
+  EXPECT_EQ(ModemLockStatus::kCarrierLocked,
+            CarrierLockManager::GetModemLockStatus());
+}
+
 }  // namespace ash::carrier_lock
