@@ -383,26 +383,25 @@ void LoadStreamTask::SendFeedQueryRequest() {
 
 void LoadStreamTask::KidFriendlyRequestComplete(
     FeedNetwork::KidFriendlyQueryRequestResult result) {
-  // TODO(b/300455747): Add wire translator to extract relevant feed data from
-  // kid-friendly request.
-  ProcessNetworkResponse(std::make_unique<feedwire::Response>(),
-                         std::move(result.response_info));
+  ProcessNetworkResponse<supervised_user::GetDiscoverFeedResponse>(
+      std::move(result.response_body), std::move(result.response_info));
 }
 
 void LoadStreamTask::QueryRequestComplete(
     FeedNetwork::QueryRequestResult result) {
-  ProcessNetworkResponse(std::move(result.response_body),
-                         std::move(result.response_info));
+  ProcessNetworkResponse<feedwire::Response>(std::move(result.response_body),
+                                             std::move(result.response_info));
 }
 
 void LoadStreamTask::QueryApiRequestComplete(
     FeedNetwork::ApiResult<feedwire::Response> result) {
-  ProcessNetworkResponse(std::move(result.response_body),
-                         std::move(result.response_info));
+  ProcessNetworkResponse<feedwire::Response>(std::move(result.response_body),
+                                             std::move(result.response_info));
 }
 
+template <typename Response>
 void LoadStreamTask::ProcessNetworkResponse(
-    std::unique_ptr<feedwire::Response> response_body,
+    std::unique_ptr<Response> response_body,
     NetworkResponseInfo response_info) {
   latencies_->StepComplete(LoadLatencyTimes::kQueryRequest);
 

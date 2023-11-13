@@ -7,6 +7,10 @@
 
 #include "components/feed/core/v2/protocol_translator.h"
 
+namespace supervised_user {
+class GetDiscoverFeedResponse;
+}  // namespace supervised_user
+
 namespace feed {
 struct AccountInfo;
 
@@ -18,6 +22,11 @@ class WireResponseTranslator {
   ~WireResponseTranslator() = default;
   virtual RefreshResponseData TranslateWireResponse(
       feedwire::Response response,
+      StreamModelUpdateRequest::Source source,
+      const AccountInfo& account_info,
+      base::Time current_time) const;
+  virtual RefreshResponseData TranslateWireResponse(
+      supervised_user::GetDiscoverFeedResponse response,
       StreamModelUpdateRequest::Source source,
       const AccountInfo& account_info,
       base::Time current_time) const;
