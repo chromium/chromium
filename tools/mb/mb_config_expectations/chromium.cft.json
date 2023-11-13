@@ -2,9 +2,11 @@
   "linux-arm64-rel-cft": {
     "gn_args": {
       "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
       "is_chrome_for_testing": true,
       "is_component_build": false,
       "is_debug": false,
+      "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
       "use_remoteexec": true
@@ -13,9 +15,11 @@
   "linux-rel-cft": {
     "gn_args": {
       "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
       "is_chrome_for_testing": true,
       "is_component_build": false,
       "is_debug": false,
+      "proprietary_codecs": true,
       "symbol_level": 1,
       "use_remoteexec": true
     }
@@ -23,9 +27,11 @@
   "mac-rel-cft": {
     "gn_args": {
       "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
       "is_chrome_for_testing": true,
       "is_component_build": false,
       "is_debug": false,
+      "proprietary_codecs": true,
       "symbol_level": 1,
       "use_remoteexec": true
     }
@@ -33,9 +39,11 @@
   "win-rel-cft": {
     "gn_args": {
       "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
       "is_chrome_for_testing": true,
       "is_component_build": false,
       "is_debug": false,
+      "proprietary_codecs": true,
       "symbol_level": 1,
       "use_remoteexec": true
     }

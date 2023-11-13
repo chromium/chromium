@@ -2981,11 +2981,11 @@
     ],
 
     'release_bot_minimal_symbols_chrome_for_testing_reclient': [
-      'release_bot_reclient', 'minimal_symbols', 'chrome_for_testing',
+      'release_bot_reclient', 'minimal_symbols', 'chrome_for_testing', 'chrome_with_codecs',
     ],
 
     'release_bot_minimal_symbols_chrome_for_testing_reclient_arm64': [
-      'release_bot_reclient', 'minimal_symbols', 'chrome_for_testing', 'arm64',
+      'release_bot_reclient', 'minimal_symbols', 'chrome_for_testing', 'chrome_with_codecs', 'arm64',
     ],
 
     'release_bot_minimal_symbols_no_com_init_hooks_with_codecs_reclient': [
