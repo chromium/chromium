@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.readaloud;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -46,6 +49,8 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.translate.FakeTranslateBridgeJni;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.modules.readaloud.Playback;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooks;
@@ -54,11 +59,15 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.List;
 
 /** Unit tests for {@link ReadAloudController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -86,11 +95,15 @@ public class ReadAloudControllerUnitTest {
     @Mock private PlaybackListener.PhraseTiming mPhraseTiming;
     @Mock private BrowserControlsSizer mBrowserControlsSizer;
     @Mock private LayoutManager mLayoutManager;
+    @Mock private ReadAloudPrefs.Natives mReadAloudPrefsNatives;
+    @Mock private UserPrefsJni mUserPrefsNatives;
+    @Mock private PrefService mPrefService;
 
     MockTabModelSelector mTabModelSelector;
 
     @Captor ArgumentCaptor<ReadAloudReadabilityHooks.ReadabilityCallback> mCallbackCaptor;
     @Captor ArgumentCaptor<ReadAloudPlaybackHooks.CreatePlaybackCallback> mPlaybackCallbackCaptor;
+    @Captor ArgumentCaptor<PlaybackArgs> mPlaybackArgsCaptor;
     @Mock private Playback mPlayback;
     @Mock private Playback.Metadata mMetadata;
     @Mock private WebContents mWebContents;
@@ -114,6 +127,9 @@ public class ReadAloudControllerUnitTest {
 
         mFakeTranslateBridge = new FakeTranslateBridgeJni();
         mJniMocker.mock(TranslateBridgeJni.TEST_HOOKS, mFakeTranslateBridge);
+        mJniMocker.mock(ReadAloudPrefsJni.TEST_HOOKS, mReadAloudPrefsNatives);
+        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
+        doReturn(mPrefService).when(mUserPrefsNatives).get(any());
         mTabModelSelector =
                 new MockTabModelSelector(
                         mMockProfile,
@@ -147,6 +163,8 @@ public class ReadAloudControllerUnitTest {
         when(mWebContents.getMainFrame()).thenReturn(mRenderFrameHost);
         when(mRenderFrameHost.getGlobalRenderFrameHostId()).thenReturn(mGlobalRenderFrameHostId);
         mController.setHighlighterForTests(mHighlighter);
+
+        doReturn(false).when(mPlaybackHooks).voicesInitialized();
     }
 
     @Test
@@ -382,6 +400,34 @@ public class ReadAloudControllerUnitTest {
         newTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Alphabet_Inc."));
         mController.playTab(newTab);
         verify(mPlayback, times(1)).release();
+    }
+
+    @Test
+    public void testPlayTab_sendsVoiceList() {
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        doReturn(
+                        List.of(
+                                new PlaybackVoice("en", "voiceA", ""),
+                                new PlaybackVoice("es", "voiceB", ""),
+                                new PlaybackVoice("fr", "voiceC", "")))
+                .when(mPlaybackHooks)
+                .getPlaybackVoiceList(any());
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+
+        mController.playTab(mTab);
+
+        verify(mPlaybackHooks, times(1)).initVoices();
+        verify(mPlaybackHooks, times(1)).createPlayback(mPlaybackArgsCaptor.capture(), any());
+
+        List<PlaybackVoice> voices = mPlaybackArgsCaptor.getValue().getVoices();
+        assertNotNull(voices);
+        assertEquals(3, voices.size());
+        assertEquals("en", voices.get(0).getLanguage());
+        assertEquals("voiceA", voices.get(0).getVoiceId());
+        assertEquals("es", voices.get(1).getLanguage());
+        assertEquals("voiceB", voices.get(1).getVoiceId());
+        assertEquals("fr", voices.get(2).getLanguage());
+        assertEquals("voiceC", voices.get(2).getVoiceId());
     }
 
     @Test

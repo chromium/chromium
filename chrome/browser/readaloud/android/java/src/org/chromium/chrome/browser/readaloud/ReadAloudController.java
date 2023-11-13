@@ -252,13 +252,17 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
                 mPlayback = null;
             }
 
-            // TODO Create voice list from settings.
+            if (!mPlaybackHooks.voicesInitialized()) {
+                mPlaybackHooks.initVoices();
+            }
+
             PlaybackArgs args =
                     new PlaybackArgs(
                             stripUserData(tab.getUrl()).getSpec(),
                             TranslateBridge.getCurrentLanguage(tab),
-                            /* voice= */ null,
-                            /* dateModifiedMsSinceEpock= */ 0);
+                            mPlaybackHooks.getPlaybackVoiceList(
+                                    ReadAloudPrefs.getVoices(getPrefService())),
+                            /* dateModifiedMsSinceEpoch= */ 0);
             mPlaybackHooks.createPlayback(args, mPlaybackCallback);
 
             // Notify player UI that playback is happening soon.
