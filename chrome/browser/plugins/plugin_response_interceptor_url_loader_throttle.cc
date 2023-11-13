@@ -24,10 +24,15 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "pdf/buildflags.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace {
 
@@ -148,15 +153,35 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   mojo::PendingReceiver<network::mojom::URLLoaderClient> new_client_receiver =
       new_client.BindNewPipeAndPassReceiver();
 
-  // The resource is handled by frame-based MimeHandlerView, so let the
-  // MimeHandlerView code set the payload.
-  const std::string payload = extensions::MimeHandlerViewAttachHelper::
-      OverrideBodyForInterceptedResponse(
-          frame_tree_node_id_, response_url, response_head->mime_type,
-          stream_id,
-          base::BindOnce(
-              &PluginResponseInterceptorURLLoaderThrottle::ResumeLoad,
-              weak_factory_.GetWeakPtr()));
+  std::string payload;
+#if BUILDFLAG(ENABLE_PDF)
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
+      response_head->mime_type == "application/pdf") {
+    // For the PDF viewer, set the payload without creating a MimeHandlerView.
+    payload =
+        extensions::MimeHandlerViewAttachHelper::CreateTemplateMimeHandlerPage(
+            response_url, response_head->mime_type,
+            /*internal_id=*/base::UnguessableToken::Create().ToString());
+    // Schedule `ResumeLoad()` for later to provide an opportunity for other UI
+    // thread initializations.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PluginResponseInterceptorURLLoaderThrottle::ResumeLoad,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+#endif  // BUILDFLAG(ENABLE_PDF)
+    // The resource is handled by frame-based MimeHandlerView, so let the
+    // MimeHandlerView code set the payload.
+    payload = extensions::MimeHandlerViewAttachHelper::
+        OverrideBodyForInterceptedResponse(
+            frame_tree_node_id_, response_url, response_head->mime_type,
+            stream_id,
+            base::BindOnce(
+                &PluginResponseInterceptorURLLoaderThrottle::ResumeLoad,
+                weak_factory_.GetWeakPtr()));
+#if BUILDFLAG(ENABLE_PDF)
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
   *defer = true;
 
   mojo::ScopedDataPipeProducerHandle producer_handle;

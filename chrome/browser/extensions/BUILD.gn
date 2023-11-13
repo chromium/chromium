@@ -1398,6 +1398,7 @@ static_library("extensions") {
       "//chrome/browser/pdf",
       "//components/pdf/browser",
       "//pdf:buildflags",
+      "//pdf:features",
     ]
   }
 

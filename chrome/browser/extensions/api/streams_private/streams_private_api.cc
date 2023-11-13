@@ -17,6 +17,14 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
+#include "pdf/buildflags.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "base/feature_list.h"
+#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
+#include "extensions/common/constants.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace extensions {
 
@@ -77,6 +85,17 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
   std::unique_ptr<StreamContainer> stream_container(
       new StreamContainer(tab_id, embedded, handler_url, extension_id,
                           std::move(transferrable_loader), original_url));
+
+#if BUILDFLAG(ENABLE_PDF)
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
+      extension_id == extension_misc::kPdfExtensionId) {
+    pdf::PdfViewerStreamManager::CreateForWebContents(web_contents);
+    pdf::PdfViewerStreamManager::FromWebContents(web_contents)
+        ->AddStreamContainer(frame_tree_node_id, std::move(stream_container));
+    return;
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
   MimeHandlerStreamManager::Get(browser_context)
       ->AddStream(stream_id, std::move(stream_container), frame_tree_node_id);
 }
