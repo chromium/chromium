@@ -17,7 +17,8 @@ This is a testharness.js-based test.
 [FAIL] .inline-block
   assert_equals: .inline-block display expected "inline-block" but got "block"
 [FAIL] .ruby
-  assert_equals: .ruby display expected "inline" but got "block ruby"
-[PASS] .rt
+  assert_equals: .ruby display expected "ruby" but got "block ruby"
+[FAIL] .rt
+  assert_equals: .rt display expected "ruby-text" but got "block"
 Harness: the test ran to completion.
 

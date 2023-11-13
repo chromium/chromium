@@ -1,2 +1,1 @@
-CONSOLE MESSAGE: A <ruby> with `display: block` won't render its ruby annotation correctly with future versions of the browser. A workaround is to specify `display: block; display: block ruby;`.
 Passed if this test did not crash or assert.

@@ -18,6 +18,26 @@ HTMLRubyElement::HTMLRubyElement(Document& document)
     : HTMLElement(html_names::kRubyTag, document) {}
 
 LayoutObject* HTMLRubyElement::CreateLayoutObject(const ComputedStyle& style) {
+  if (RuntimeEnabledFeatures::CssDisplayRubyEnabled()) {
+    if (style.Display() == EDisplay::kBlock &&
+        RuntimeEnabledFeatures::BlockRubyConsoleMessageEnabled()) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kRubyElementWithDisplayBlock);
+      if (Traversal<HTMLRTElement>::FirstChild(*this)) {
+        UseCounter::Count(GetDocument(),
+                          WebFeature::kRubyElementWithDisplayBlockAndRt);
+      }
+      GetDocument().AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              ConsoleMessage::Source::kRendering, ConsoleMessage::Level::kInfo,
+              "A <ruby> with `display: block` doesn't render its ruby "
+              "annotation correctly. A workaround compatible with older "
+              "browsers and newer browsers is to specify `display: block; "
+              "display: block ruby;`."),
+          /* discard_duplicates */ true);
+    }
+    return LayoutObject::CreateObject(this, style);
+  }
   if (style.Display() == EDisplay::kInline)
     return MakeGarbageCollected<LayoutRubyAsInline>(this);
   if (style.Display() == EDisplay::kBlock) {

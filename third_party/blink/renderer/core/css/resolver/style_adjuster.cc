@@ -235,10 +235,13 @@ static bool IsAtMediaUAShadowBoundary(const Element* element) {
 // to manually stop text-decorations to apply to text inside media controls.
 static bool StopPropagateTextDecorations(const ComputedStyleBuilder& builder,
                                          const Element* element) {
+  const bool is_ruby_text = RuntimeEnabledFeatures::CssDisplayRubyEnabled()
+                                ? (builder.Display() == EDisplay::kRubyText)
+                                : IsA<HTMLRTElement>(element);
   return builder.IsDisplayReplacedType() ||
          IsAtMediaUAShadowBoundary(element) || builder.IsFloating() ||
          builder.HasOutOfFlowPosition() || IsOutermostSVGElement(element) ||
-         IsA<HTMLRTElement>(element);
+         is_ruby_text;
 }
 
 static bool LayoutParentStyleForcesZIndexToCreateStackingContext(

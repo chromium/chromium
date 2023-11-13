@@ -15,6 +15,9 @@ HTMLRTElement::HTMLRTElement(Document& document)
     : HTMLElement(html_names::kRtTag, document) {}
 
 LayoutObject* HTMLRTElement::CreateLayoutObject(const ComputedStyle& style) {
+  if (RuntimeEnabledFeatures::CssDisplayRubyEnabled()) {
+    return LayoutObject::CreateObject(this, style);
+  }
   if (style.Display() == EDisplay::kBlock)
     return MakeGarbageCollected<LayoutRubyText>(this);
   return LayoutObject::CreateObject(this, style);
