@@ -5,6 +5,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -37,5 +38,8 @@ void BottomStatusIndicator::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = role_;
   node_data->SetName(label()->GetText());
 }
+
+BEGIN_METADATA(BottomStatusIndicator)
+END_METADATA
 
 }  // namespace ash

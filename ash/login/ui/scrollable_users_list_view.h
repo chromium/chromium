@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace views {
@@ -29,6 +30,8 @@ namespace ash {
 // bottom. Can be styled with LayoutParams that define spacing and sizing.
 class ASH_EXPORT ScrollableUsersListView : public views::ScrollView,
                                            public WallpaperControllerObserver {
+  METADATA_HEADER(ScrollableUsersListView, views::ScrollView)
+
  public:
   // TestApi is used for tests to get internal implementation details.
   class ASH_EXPORT TestApi {

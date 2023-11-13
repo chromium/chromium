@@ -22,6 +22,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -95,6 +96,8 @@ PinRequest::~PinRequest() = default;
 
 // Label button that displays focus ring.
 class PinRequestView::FocusableLabelButton : public views::LabelButton {
+  METADATA_HEADER(FocusableLabelButton, views::LabelButton)
+
  public:
   FocusableLabelButton(PressedCallback callback, const std::u16string& text)
       : views::LabelButton(std::move(callback), text) {
@@ -107,6 +110,9 @@ class PinRequestView::FocusableLabelButton : public views::LabelButton {
   FocusableLabelButton& operator=(const FocusableLabelButton&) = delete;
   ~FocusableLabelButton() override = default;
 };
+
+BEGIN_METADATA(PinRequestView, FocusableLabelButton, views::LabelButton)
+END_METADATA
 
 PinRequestView::TestApi::TestApi(PinRequestView* view) : view_(view) {
   DCHECK(view_);

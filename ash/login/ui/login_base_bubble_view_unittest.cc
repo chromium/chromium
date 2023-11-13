@@ -11,6 +11,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -23,7 +25,12 @@ namespace {
 constexpr int kBubbleTotalWidthDp = 192;
 
 class AnchorView : public views::View,
-                   public base::SupportsWeakPtr<AnchorView> {};
+                   public base::SupportsWeakPtr<AnchorView> {
+  METADATA_HEADER(AnchorView, views::View)
+};
+
+BEGIN_METADATA(AnchorView)
+END_METADATA
 
 }  // namespace
 

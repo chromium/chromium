@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -34,6 +35,8 @@ class ASH_EXPORT LockScreenMediaView
       public media_session::mojom::MediaControllerImageObserver,
       public media_message_center::MediaNotificationContainer,
       public base::PowerSuspendObserver {
+  METADATA_HEADER(LockScreenMediaView, views::View)
+
  public:
   using MediaControlsEnabledCallback = const base::RepeatingCallback<bool()>&;
 

@@ -779,6 +779,7 @@ component("ash") {
     "login/ui/animation_frame.h",
     "login/ui/arrow_button_view.cc",
     "login/ui/arrow_button_view.h",
+    "login/ui/auth_error_bubble.cc",
     "login/ui/auth_error_bubble.h",
     "login/ui/auth_factor_model.cc",
     "login/ui/auth_factor_model.h",

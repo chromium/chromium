@@ -9,6 +9,7 @@
 #include "ash/style/ash_color_id.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -110,5 +111,8 @@ LoginCameraTimeoutView::~LoginCameraTimeoutView() = default;
 void LoginCameraTimeoutView::RequestFocus() {
   return arrow_button_->RequestFocus();
 }
+
+BEGIN_METADATA(LoginCameraTimeoutView)
+END_METADATA
 
 }  // namespace ash

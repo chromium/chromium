@@ -8,6 +8,7 @@
 #include "ash/login/ui/login_base_bubble_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -17,6 +18,8 @@ class Label;
 namespace ash {
 
 class LoginTooltipView : public LoginBaseBubbleView {
+  METADATA_HEADER(LoginTooltipView, LoginBaseBubbleView)
+
  public:
   LoginTooltipView(const std::u16string& message,
                    base::WeakPtr<views::View> anchor_view);

@@ -15,6 +15,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -104,5 +105,8 @@ gfx::Point KioskAppDefaultMessage::CalculatePosition() {
                     parent()->GetLocalBounds().height() / 2) -
          gfx::Vector2d(width() / 2, height());
 }
+
+BEGIN_METADATA(KioskAppDefaultMessage)
+END_METADATA
 
 }  // namespace ash

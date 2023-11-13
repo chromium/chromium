@@ -149,6 +149,8 @@ const gfx::VectorIcon& GetVectorIconForMediaAction(MediaSessionAction action) {
 
 // MediaActionButton is an image button with a custom ink drop mask.
 class MediaActionButton : public views::ImageButton {
+  METADATA_HEADER(MediaActionButton, views::ImageButton)
+
  public:
   MediaActionButton(LockScreenMediaControlsView* view,
                     int icon_size,
@@ -216,6 +218,9 @@ class MediaActionButton : public views::ImageButton {
 
   int const icon_size_;
 };
+
+BEGIN_METADATA(MediaActionButton)
+END_METADATA
 
 }  // namespace
 

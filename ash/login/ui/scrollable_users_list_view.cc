@@ -22,6 +22,7 @@
 #include "cc/paint/paint_shader.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
@@ -346,5 +347,8 @@ void ScrollableUsersListView::OnWallpaperBlurChanged() {
   gradient_params_ = GradientParams::BuildForStyle(display_style_, this);
   SchedulePaint();
 }
+
+BEGIN_METADATA(ScrollableUsersListView)
+END_METADATA
 
 }  // namespace ash

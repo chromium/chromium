@@ -11,6 +11,7 @@
 #include "ash/shelf/shelf_background_animator_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class ImageView;
@@ -25,6 +26,8 @@ namespace ash {
 class ASH_EXPORT KioskAppDefaultMessage
     : public LoginBaseBubbleView,
       public ShelfBackgroundAnimatorObserver {
+  METADATA_HEADER(KioskAppDefaultMessage, LoginBaseBubbleView)
+
  public:
   KioskAppDefaultMessage();
 
