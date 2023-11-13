@@ -141,14 +141,6 @@ PrerenderNewTabHandle::TakeWebContentsIfAvailable(
   return std::move(web_contents_);
 }
 
-PrerenderHost* PrerenderNewTabHandle::GetPrerenderHostForTesting() {
-  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
-  PrerenderHost* host = registry.FindNonReservedHostById(prerender_host_id_);
-  if (host)
-    return host;
-  return registry.FindReservedHostById(prerender_host_id_);
-}
-
 PrerenderHostRegistry& PrerenderNewTabHandle::GetPrerenderHostRegistry() {
   CHECK(web_contents_);
   return *web_contents_->GetPrerenderHostRegistry();

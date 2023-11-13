@@ -6733,8 +6733,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
           prerender_host_id));
   EXPECT_FALSE(
-      web_contents_impl()->GetPrerenderHostRegistry()->FindReservedHostById(
-          prerender_host_id));
+      web_contents_impl()->GetPrerenderHostRegistry()->HasReservedHost());
 
   EXPECT_TRUE(activation_observer.was_activated());
   EXPECT_TRUE(activation_observer.was_successful());
@@ -6810,8 +6809,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
           prerender_host_id));
   EXPECT_FALSE(
-      web_contents_impl()->GetPrerenderHostRegistry()->FindReservedHostById(
-          prerender_host_id));
+      web_contents_impl()->GetPrerenderHostRegistry()->HasReservedHost());
 
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl2);
   EXPECT_TRUE(activation_observer.was_activated());
@@ -6914,8 +6912,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
           prerender_host_id));
   EXPECT_FALSE(
-      web_contents_impl()->GetPrerenderHostRegistry()->FindReservedHostById(
-          prerender_host_id));
+      web_contents_impl()->GetPrerenderHostRegistry()->HasReservedHost());
 
   EXPECT_FALSE(activation_observer.was_activated());
   EXPECT_TRUE(activation_observer.was_successful());

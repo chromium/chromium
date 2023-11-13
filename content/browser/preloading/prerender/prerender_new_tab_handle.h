@@ -54,9 +54,6 @@ class PrerenderNewTabHandle {
       const mojom::CreateNewWindowParams& create_new_window_params,
       const WebContents::CreateParams& web_contents_create_params);
 
-  // Returns PrerenderHost that `web_contents_` is hosting.
-  PrerenderHost* GetPrerenderHostForTesting();
-
   // Returns PreloadingTriggerType.
   PreloadingTriggerType trigger_type() const {
     return attributes_.trigger_type;

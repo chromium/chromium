@@ -1128,15 +1128,8 @@ PrerenderHost* PrerenderHostRegistry::FindNonReservedHostById(
   return id_iter->second.get();
 }
 
-PrerenderHost* PrerenderHostRegistry::FindReservedHostById(
-    int frame_tree_node_id) {
-  if (!reserved_prerender_host_)
-    return nullptr;
-
-  if (frame_tree_node_id != reserved_prerender_host_->frame_tree_node_id())
-    return nullptr;
-
-  return reserved_prerender_host_.get();
+bool PrerenderHostRegistry::HasReservedHost() const {
+  return !!reserved_prerender_host_;
 }
 
 std::unique_ptr<WebContentsImpl>
@@ -1621,18 +1614,16 @@ void PrerenderHostRegistry::NotifyCancel(
 
 PreloadingTriggerType PrerenderHostRegistry::GetPrerenderTriggerType(
     int frame_tree_node_id) {
-  PrerenderHost* prerender_host = FindReservedHostById(frame_tree_node_id);
-  CHECK(prerender_host);
-
-  return prerender_host->trigger_type();
+  CHECK(reserved_prerender_host_);
+  CHECK_EQ(reserved_prerender_host_->frame_tree_node_id(), frame_tree_node_id);
+  return reserved_prerender_host_->trigger_type();
 }
 
 const std::string& PrerenderHostRegistry::GetPrerenderEmbedderHistogramSuffix(
     int frame_tree_node_id) {
-  PrerenderHost* prerender_host = FindReservedHostById(frame_tree_node_id);
-  CHECK(prerender_host);
-
-  return prerender_host->embedder_histogram_suffix();
+  CHECK(reserved_prerender_host_);
+  CHECK_EQ(reserved_prerender_host_->frame_tree_node_id(), frame_tree_node_id);
+  return reserved_prerender_host_->embedder_histogram_suffix();
 }
 
 PrerenderHostRegistry::PrerenderLimitGroup

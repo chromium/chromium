@@ -192,9 +192,8 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // does not match any non-reserved host.
   PrerenderHost* FindNonReservedHostById(int frame_tree_node_id);
 
-  // Returns the reserved host with the given id. Returns nullptr if the id
-  // does not match any reserved host.
-  PrerenderHost* FindReservedHostById(int frame_tree_node_id);
+  // Returns true if this registry reserves a host for activation.
+  bool HasReservedHost() const;
 
   // Returns the ownership of a pre-created WebContentsImpl that contains a
   // prerendered page that corresponds to the given params for a new tab
