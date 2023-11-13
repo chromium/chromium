@@ -4,6 +4,6 @@ set noparent
 ayui@chromium.org
 
 # Secondary
-asully@chromium.org
-dmurph@chromium.org
+asully@chromium.org  #{LAST_RESORT_SUGGESTION}
+estade@chromium.org
 jsbell@chromium.org

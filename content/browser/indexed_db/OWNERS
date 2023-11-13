@@ -3,11 +3,11 @@ estade@chromium.org
 
 # Secondary
 arichiv@chromium.org
-asully@chromium.org
 ayui@chromium.org
 cmp@chromium.org
 dmurph@chromium.org
 jsbell@chromium.org
+memmott@chromium.org
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
