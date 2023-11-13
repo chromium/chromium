@@ -648,6 +648,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SHOW_PASSWORD_MANAGER:
       ShowPasswordManager(browser_);
       break;
+    case IDC_SHOW_PASSWORD_CHECKUP:
+      ShowPasswordCheck(browser_);
+      break;
     case IDC_SHOW_PAYMENT_METHODS:
       ShowPaymentMethods(browser_);
       break;
