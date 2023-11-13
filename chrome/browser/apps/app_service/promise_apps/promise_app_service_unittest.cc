@@ -61,6 +61,7 @@ class PromiseAppServiceTest : public testing::Test,
             url_loader_factory_.get());
     service_ = proxy()->PromiseAppService();
     service_->SetSkipApiKeyCheckForTesting(true);
+    service_->SetSkipAlmanacForTesting(false);
   }
 
   void TearDown() override {
