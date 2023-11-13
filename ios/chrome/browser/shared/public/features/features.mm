@@ -413,7 +413,7 @@ const char kIOSHideFeedWithSearchChoiceTargeted[] =
     "IOSHideFeedWithSearchChoiceTargeted";
 
 bool IsWebChannelsEnabled() {
-  std::string launched_countries[6] = {"AU", "CA", "GB", "NZ", "US", "ZA"};
+  std::string launched_countries[5] = {"AU", "GB", "NZ", "US", "ZA"};
   if (base::Contains(launched_countries,
                      country_codes::GetCurrentCountryCode())) {
     return true;
