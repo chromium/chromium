@@ -549,8 +549,7 @@ void MenuItemView::SetIconView(std::unique_ptr<ImageView> icon_view) {
     base::AutoReset setter(
         &update_selection_based_state_in_view_herarchy_changed_, false);
     if (icon_view_) {
-      RemoveChildViewT(icon_view_.get());
-      icon_view_ = nullptr;
+      RemoveChildViewT(icon_view_.ExtractAsDangling());
     }
 
     if (icon_view)

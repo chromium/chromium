@@ -636,7 +636,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool show_mnemonics_ = false;
 
   // Pointer to a view with a menu icon.
-  raw_ptr<ImageView, DanglingUntriaged> icon_view_ = nullptr;
+  raw_ptr<ImageView> icon_view_ = nullptr;
 
   // The tooltip to show on hover for this menu item.
   std::u16string tooltip_;
