@@ -26,9 +26,6 @@ build_webui_tests("build") {
     "chrome://webui-test/chromeos/arc_account_picker/*|" +
         rebase_path("//chrome/test/data/webui/chromeos/arc_account_picker/*",
                     target_gen_dir),
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
   ]
 
   ts_deps = [
