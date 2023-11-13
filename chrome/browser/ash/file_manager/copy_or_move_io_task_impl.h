@@ -102,6 +102,9 @@ class CopyOrMoveIOTaskImpl {
       const storage::FileSystemURL& destination_url);
 
  protected:
+  // A helper for `GetHookDelegate`.
+  bool ShouldSkipEncryptedFiles();
+
   // Returns the storage::CopyOrMoveHookDelegate to be used for the copy or move
   // operation.
   virtual std::unique_ptr<storage::CopyOrMoveHookDelegate> GetHookDelegate(
@@ -168,6 +171,8 @@ class CopyOrMoveIOTaskImpl {
   void OnCopyOrMoveComplete(size_t idx, base::File::Error error);
   void SetCurrentOperationID(
       storage::FileSystemOperationRunner::OperationID id);
+
+  void OnEncryptedFileSkipped(size_t idx, storage::FileSystemURL url);
 
   raw_ptr<Profile, ExperimentalAsh> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
