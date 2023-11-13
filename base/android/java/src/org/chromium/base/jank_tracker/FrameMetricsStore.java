@@ -4,7 +4,9 @@
 
 package org.chromium.base.jank_tracker;
 
+
 import org.chromium.base.ThreadUtils.ThreadChecker;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.BuildConfig;
 
@@ -39,6 +41,7 @@ public class FrameMetricsStore {
     // Stores the timestamp (nanoseconds) of the most recent frame metric as a scenario started.
     // Zero if no FrameMetrics have been received.
     private final HashMap<Integer, Long> mScenarioPreviousFrameTimestampNs = new HashMap<>();
+    private final HashMap<Integer, Long> mPendingStartTimestampNs = new HashMap<>();
 
     public FrameMetricsStore() {
         // Add 0 to mTimestampNS array. This simplifies handling edge case when starting a scenario
@@ -107,6 +110,8 @@ public class FrameMetricsStore {
             // Ignore multiple calls to startTrackingScenario without corresponding
             // stopTrackingScenario calls.
             if (mScenarioPreviousFrameTimestampNs.containsKey(scenario)) {
+                mPendingStartTimestampNs.put(
+                        scenario, TimeUtils.uptimeMillis() * TimeUtils.NANOSECONDS_PER_MILLISECOND);
                 return;
             }
             // Make a unique ID for each scenario for tracing.
@@ -185,6 +190,10 @@ public class FrameMetricsStore {
                             mIsJanky.subList(startingIndex, endingIndex));
             removeUnusedFrames();
 
+            Long pendingStartTimestampNs = mPendingStartTimestampNs.remove(scenario);
+            if (pendingStartTimestampNs != null && pendingStartTimestampNs > endScenarioTimeNs) {
+                startTrackingScenario(scenario);
+            }
             return jankMetrics;
         }
     }

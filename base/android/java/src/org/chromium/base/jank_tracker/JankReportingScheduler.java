@@ -19,6 +19,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class JankReportingScheduler {
     private static final long PERIODIC_METRIC_DELAY_MS = 5_000;
     private final FrameMetricsStore mFrameMetricsStore;
+    // TODO(b/308551047): Fix/cleanup this member variable. We do query the map but we never add
+    // anything to it.
     private final HashMap<Integer, JankReportingRunnable> mRunnableStore;
 
     public JankReportingScheduler(FrameMetricsStore frameMetricsStore) {
