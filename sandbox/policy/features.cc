@@ -4,6 +4,7 @@
 
 #include "sandbox/policy/features.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "sandbox/features.h"
@@ -139,6 +140,17 @@ BASE_FEATURE(kForceSpectreVariant2Mitigation,
 BASE_FEATURE(kForceDisableSpectreVariant2MitigationInNetworkService,
              "kForceDisableSpectreVariant2MitigationInNetworkService",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Increase the renderer sandbox memory limit. As of 2023, there are no limits
+// on macOS, and a 1TiB limit on Windows. There are reports of users bumping
+// into the limit. This increases the limit by 2x compared to the default
+// state. We are not increasing it all the way as on Windows as Linux systems
+// typically ship with overcommit, so there is no "commit limit" to save us
+// from egregious cases as on Windows.
+BASE_FEATURE(kHigherRendererMemoryLimit,
+             "HigherRendererMemoryLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)

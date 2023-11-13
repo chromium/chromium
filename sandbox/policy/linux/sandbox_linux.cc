@@ -479,17 +479,26 @@ rlim_t GetProcessDataSizeLimit(sandbox::mojom::Sandbox sandbox_type) {
     // to 64 GB.
     constexpr rlim_t GB = 1024 * 1024 * 1024;
     const rlim_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
+    rlim_t limit;
     if (sandbox_type == sandbox::mojom::Sandbox::kGpu &&
         physical_memory > 64 * GB) {
-      return 64 * GB;
+      limit = 64 * GB;
     } else if (sandbox_type == sandbox::mojom::Sandbox::kGpu &&
                physical_memory > 32 * GB) {
-      return 32 * GB;
+      limit = 32 * GB;
     } else if (physical_memory > 16 * GB) {
-      return 16 * GB;
+      limit = 16 * GB;
     } else {
-      return 8 * GB;
+      limit = 8 * GB;
     }
+
+    if (sandbox_type == sandbox::mojom::Sandbox::kRenderer &&
+        base::FeatureList::IsEnabled(
+            sandbox::policy::features::kHigherRendererMemoryLimit)) {
+      limit *= 2;
+    }
+
+    return limit;
   }
 #endif
 
