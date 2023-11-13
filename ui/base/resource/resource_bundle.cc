@@ -22,6 +22,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -199,7 +200,7 @@ void DecompressIfNeeded(base::StringPiece data, OutputBufferType output) {
     DCHECK(success);
   } else {
     base::span<uint8_t> dest = GetBufferForWriting(output, data.size());
-    memcpy(dest.data(), data.data(), dest.size());
+    base::ranges::copy(data, dest.data());
   }
 }
 
