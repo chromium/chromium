@@ -55,7 +55,6 @@ class BookmarkModelObserver;
 class BookmarkStorage;
 class ModelLoader;
 class ScopedGroupBookmarkActions;
-class TestBookmarkClient;
 class TitledUrlIndex;
 class UrlIndex;
 
@@ -417,12 +416,16 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // TODO(crbug.com/1497923): Remove this method.
   static void WipeAccountStorageForRollback(const base::FilePath& profile_path);
 
+  // Similar to Load() but allows unit-tests to mimic an empty JSON file being
+  // loaded from disk, without dealing with actual files, and complete loading
+  // synchronously.
+  void LoadEmptyForTest();
+
  private:
   friend class BookmarkCodecTest;
   friend class BookmarkModelFaviconTest;
   friend class BookmarkStorage;
   friend class ScopedGroupBookmarkActions;
-  friend class TestBookmarkClient;
 
   // BookmarkUndoProvider:
   void RestoreRemovedNode(const BookmarkNode* parent,
@@ -554,10 +557,6 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // All nodes indexed by UUID.
   UuidIndex uuid_index_;
 
-  // WARNING: in some tests this does *not* refer to
-  // `ModelLoader::history_bookmark_model_`. This is because some tests
-  // directly call DoneLoading().
-  // TODO: this is confusing, fix tests not to circumvent ModelLoader.
   scoped_refptr<UrlIndex> url_index_;
 
   // See description of IsDoingExtensiveChanges above.

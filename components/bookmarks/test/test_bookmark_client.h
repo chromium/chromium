@@ -36,7 +36,7 @@ class TestBookmarkClient : public BookmarkClient {
 
   // Returns a new BookmarkModel using |client|.
   static std::unique_ptr<BookmarkModel> CreateModelWithClient(
-      std::unique_ptr<BookmarkClient> client);
+      std::unique_ptr<TestBookmarkClient> client);
 
   // Causes the the next call to CreateModel() or GetLoadManagedNodeCallback()
   // to return a node representing managed bookmarks. The raw pointer of this

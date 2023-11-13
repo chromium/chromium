@@ -1059,6 +1059,13 @@ void BookmarkModel::WipeAccountStorageForRollback(
                      std::move(account_storage_path)));
 }
 
+void BookmarkModel::LoadEmptyForTest() {
+  auto details = std::make_unique<BookmarkLoadDetails>(client_.get());
+  model_loader_ = ModelLoader::CreateForTest(details.get());
+  DoneLoading(std::move(details));
+  CHECK(loaded_);
+}
+
 void BookmarkModel::RestoreRemovedNode(const BookmarkNode* parent,
                                        size_t index,
                                        std::unique_ptr<BookmarkNode> node) {

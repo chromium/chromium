@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "components/bookmarks/browser/bookmark_load_details.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_storage.h"
@@ -33,15 +32,10 @@ std::unique_ptr<BookmarkModel> TestBookmarkClient::CreateModel() {
 
 // static
 std::unique_ptr<BookmarkModel> TestBookmarkClient::CreateModelWithClient(
-    std::unique_ptr<BookmarkClient> client) {
-  BookmarkClient* client_ptr = client.get();
-  std::unique_ptr<BookmarkModel> bookmark_model(new BookmarkModel(
-      std::move(client), /*allow_folders_for_account_storage=*/false));
-  std::unique_ptr<BookmarkLoadDetails> details =
-      std::make_unique<BookmarkLoadDetails>(client_ptr);
-  details->LoadManagedNode();
-  details->CreateIndices();
-  bookmark_model->DoneLoading(std::move(details));
+    std::unique_ptr<TestBookmarkClient> client) {
+  auto bookmark_model = std::make_unique<BookmarkModel>(
+      std::move(client), /*allow_folders_for_account_storage=*/false);
+  bookmark_model->LoadEmptyForTest();
   return bookmark_model;
 }
 
