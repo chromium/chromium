@@ -27,7 +27,7 @@ class DevToolsAgentCoverageObserver
       ShouldInspectDevToolsAgentHostCallback should_inspect_callback);
   ~DevToolsAgentCoverageObserver() override;
 
-  bool CoverageEnabled();
+  bool CoverageEnabled() const;
   void CollectCoverage(const std::string& test_name);
 
  protected:
