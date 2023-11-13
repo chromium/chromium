@@ -3590,8 +3590,7 @@ bool AutofillTable::AddFormFieldValueTime(
   s_exists.BindString16(0, element.name);
   s_exists.BindString16(1, element.value);
   if (!s_exists.Step()) {
-    SCOPED_CRASH_KEY_STRING1024("autofill", "sql", create_debug_info("SELECT"));
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN() << create_debug_info("SELECT");
     return false;
   }
 
@@ -3604,9 +3603,7 @@ bool AutofillTable::AddFormFieldValueTime(
     s.BindString16(1, element.name);
     s.BindString16(2, element.value);
     if (!s.Run()) {
-      SCOPED_CRASH_KEY_STRING1024("autofill", "sql",
-                                  create_debug_info("UPDATE"));
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN() << create_debug_info("UPDATE");
       return false;
     }
   } else {
@@ -3622,9 +3619,7 @@ bool AutofillTable::AddFormFieldValueTime(
     s.BindInt64(4, time_as_time_t);
     s.BindInt(5, 1);
     if (!s.Run()) {
-      SCOPED_CRASH_KEY_STRING1024("autofill", "sql",
-                                  create_debug_info("INSERT"));
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN() << create_debug_info("INSERT");
       return false;
     }
   }
