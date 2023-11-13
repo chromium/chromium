@@ -2087,8 +2087,7 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(
     // back to normal (non-lazy) parsing. If that happens, we've wasted some
     // work; specifically, the SkipToEndOfBlock(), and potentially that we
     // cannot use the CachedCSSTokenizer if that would otherwise be in use.
-    if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
-        MayContainNestedRules(lazy_state_->SheetText(), block_start_offset,
+    if (MayContainNestedRules(lazy_state_->SheetText(), block_start_offset,
                               block_length)) {
       CSSTokenizer tokenizer(lazy_state_->SheetText(), block_start_offset);
       CSSParserTokenStream block_stream(tokenizer);
@@ -2181,24 +2180,17 @@ void CSSParserImpl::ConsumeDeclarationList(
       case kSemicolonToken:
         stream.UncheckedConsume();
         break;
-      case kAtKeywordToken:
-        if (RuntimeEnabledFeatures::CSSNestingEnabled()) {
-          CSSParserToken name_token = stream.ConsumeIncludingWhitespace();
-          const StringView name = name_token.Value();
-          const CSSAtRuleID id = CssAtRuleID(name);
-          StyleRuleBase* child = ConsumeNestedRule(id, stream, nesting_type,
-                                                   parent_rule_for_nesting);
-          if (child && child_rules) {
-            child_rules->push_back(child);
-          }
-          break;
+      case kAtKeywordToken: {
+        CSSParserToken name_token = stream.ConsumeIncludingWhitespace();
+        const StringView name = name_token.Value();
+        const CSSAtRuleID id = CssAtRuleID(name);
+        StyleRuleBase* child = ConsumeNestedRule(id, stream, nesting_type,
+                                                 parent_rule_for_nesting);
+        if (child && child_rules) {
+          child_rules->push_back(child);
         }
-        // Consume the remainder of the declaration (if any) for error
-        // recovery.
-        // TODO(sesse): This is largely untested; we need WPT tests
-        // for error recovery, once the syntax has settled.
-        ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleInvalid);
         break;
+      }
       case kIdentToken: {
         CSSParserTokenStream::State state = stream.Save();
         bool consumed_declaration = false;
@@ -2234,8 +2226,7 @@ void CSSParserImpl::ConsumeDeclarationList(
         [[fallthrough]];
       }
       default:
-        if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
-            parent_rule_for_nesting != nullptr) {  // [1] (see function comment)
+        if (parent_rule_for_nesting != nullptr) {  // [1] (see function comment)
           StyleRuleBase* child = ConsumeNestedRule(
               absl::nullopt, stream, nesting_type, parent_rule_for_nesting);
           if (child) {
@@ -2284,7 +2275,7 @@ void CSSParserImpl::ConsumeRuleListOrNestedDeclarationList(
     HeapVector<Member<StyleRuleBase>, 4>* child_rules) {
   DCHECK(child_rules);
 
-  if (RuntimeEnabledFeatures::CSSNestingEnabled() && is_nested_group_rule) {
+  if (is_nested_group_rule) {
     // This is a nested group rule, which allows *declarations* to appear
     // directly within the body of the rule, e.g.:
     //
@@ -2323,8 +2314,6 @@ StyleRuleBase* CSSParserImpl::ConsumeNestedRule(
     CSSParserTokenStream& stream,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting) {
-  DCHECK(RuntimeEnabledFeatures::CSSNestingEnabled());
-
   // A nested style rule. Recurse into the parser; we need to move the parsed
   // properties out of the way while we're parsing the child rule, though.
   // TODO(sesse): The spec says that any properties after a nested rule

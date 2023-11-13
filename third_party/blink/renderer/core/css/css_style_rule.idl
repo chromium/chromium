@@ -28,7 +28,7 @@
     [SameObject, MeasureAs=CSSTypedOMStylePropertyMap] readonly attribute StylePropertyMap styleMap;
 
     // https://drafts.csswg.org/css-nesting-1/#cssom-style
-    [SameObject, RuntimeEnabled=CSSNesting] readonly attribute CSSRuleList cssRules;
-    [RaisesException, CallWith=ExecutionContext, RuntimeEnabled=CSSNesting] unsigned long insertRule(DOMString rule, optional unsigned long index = 0);
-    [RaisesException, RuntimeEnabled=CSSNesting] void deleteRule(unsigned long index);
+    [SameObject] readonly attribute CSSRuleList cssRules;
+    [RaisesException, CallWith=ExecutionContext] unsigned long insertRule(DOMString rule, optional unsigned long index = 0);
+    [RaisesException] void deleteRule(unsigned long index);
 };
