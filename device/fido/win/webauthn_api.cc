@@ -482,7 +482,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
       exclude_list_ptrs.data()};
 
   WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS options{
-      WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_6,
+      WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_7,
       kWinWebAuthnTimeoutMilliseconds,
       WEBAUTHN_CREDENTIALS{
           0, nullptr},  // Ignored because pExcludeCredentialList is set.
@@ -502,6 +502,9 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
           ResidentKeyRequirement::kPreferred,
       request_options.is_off_the_record_context,
       request.hmac_secret,
+      /*pLinkedDevice=*/nullptr,
+      /*cbJsonExt=*/0,
+      /*pbJsonExt=*/nullptr,
   };
 
   FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorMakeCredential("
@@ -616,7 +619,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
   static BOOL kUseAppIdTrue = TRUE;    // const
   static BOOL kUseAppIdFalse = FALSE;  // const
   WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS options{
-      WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_6,
+      WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_7,
       kWinWebAuthnTimeoutMilliseconds,
       // As of Nov 2018, the WebAuthNAuthenticatorGetAssertion method will
       // fail to challenge credentials via CTAP1 if the allowList is passed
@@ -644,6 +647,10 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
       large_blob.data(),
       hmac_salt_values,
       request_options.is_off_the_record_context,
+      /*pLinkedDevice=*/nullptr,
+      /*bAutoFill=*/FALSE,
+      /*cbJsonExt=*/0,
+      /*pbJsonExt=*/nullptr,
   };
 
   FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorGetAssertion("
