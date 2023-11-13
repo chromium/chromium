@@ -594,6 +594,8 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
        event_type_names::kSlotchange, nullptr},
       {html_names::kOnsnapchangedAttr, kNoWebFeature,
        event_type_names::kSnapchanged, nullptr},
+      {html_names::kOnsnapchangingAttr, kNoWebFeature,
+       event_type_names::kSnapchanging, nullptr},
       {html_names::kOnstalledAttr, kNoWebFeature, event_type_names::kStalled,
        nullptr},
       {html_names::kOnsubmitAttr, kNoWebFeature, event_type_names::kSubmit,

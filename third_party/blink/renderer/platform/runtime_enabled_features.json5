@@ -1047,7 +1047,7 @@
       // https://drafts.csswg.org/css-scroll-snap-2/#snap-events
       name: "CSSScrollSnapEvents",
       status: "test",
-      implied_by: ["CSSSnapChangedEvent"],
+      implied_by: ["CSSSnapChangedEvent", "CSSSnapChangingEvent"],
     },
     {
       // https://drafts.csswg.org/css-scroll-snap-2#scroll-start
@@ -1075,6 +1075,10 @@
       // https://drafts.csswg.org/css-scroll-snap-2/#snap-events
       name: "CSSSnapChangedEvent",
       status: "test",
+    },
+    {
+      // https://drafts.csswg.org/css-scroll-snap-2/#snap-events
+      name: "CSSSnapChangingEvent",
     },
     {
       name: "CSSSnapContainerQueries",
