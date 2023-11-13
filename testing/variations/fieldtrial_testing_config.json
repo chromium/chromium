@@ -9663,6 +9663,29 @@
             ]
         }
     ],
+    "LCPPLazyLoadImagePreload": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableWithNativeLazyLoading_20231113",
+                    "params": {
+                        "lcpp_preload_lazy_load_image_type": "native_lazy_loading"
+                    },
+                    "enable_features": [
+                        "LCPPLazyLoadImagePreload"
+                    ]
+                }
+            ]
+        }
+    ],
     "LCPVideoFirstFrame": [
         {
             "platforms": [
