@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.ArrayList;
@@ -259,7 +258,7 @@ public abstract class TabModelSelectorBase
                         + " Is destroyed "
                         + tab.isDestroyed()
                         + " Is detached "
-                        + TabUtils.isDetached(tab);
+                        + tab.isDetached();
         return false;
     }
 

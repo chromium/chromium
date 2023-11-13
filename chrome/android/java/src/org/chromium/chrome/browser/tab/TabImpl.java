@@ -195,6 +195,9 @@ public class TabImpl implements Tab {
     /** Whether the tab can currently be interacted with. */
     private boolean mInteractableState;
 
+    /** Whether the tab is currently detached for reparenting. */
+    private boolean mIsDetached;
+
     /** Whether or not the tab's active view is attached to the window. */
     private boolean mIsViewAttachedToWindow;
 
@@ -331,11 +334,14 @@ public class TabImpl implements Tab {
 
         if (window != null) {
             updateWindowAndroid(window);
+
             if (tabDelegateFactory != null) setDelegateFactory(tabDelegateFactory);
 
             // Reload the NativePage (if any), since the old NativePage has a reference to the old
             // activity.
             if (isNativePage()) maybeShowNativePage(getUrl().getSpec(), true);
+        } else {
+            updateIsDetached(window);
         }
 
         // Notify the event to observers only when we do the reparenting task, not when we simply
@@ -495,6 +501,37 @@ public class TabImpl implements Tab {
     @Override
     public boolean isUserInteractable() {
         return mInteractableState;
+    }
+
+    @Override
+    public boolean isDetached() {
+        assert !checkAttached() == mIsDetached
+                : "Activity/Window attachment does not match Tab.mIsDetached == " + mIsDetached;
+        return mIsDetached;
+    }
+
+    private void updateIsDetached(WindowAndroid window) {
+        // HiddenTabHolder relies on isDetached() being true to determine whether the tab is
+        // a background tab during initWebContents() before invoking ReparentingTask#detach().
+        // In this scenario, the tab owns its own WindowAndroid and has no activity attachment.
+        // We must check this as an additional condition to detachment for this case to continue
+        // to work. See https://crbug.com/1501849.
+        mIsDetached = window == null || !windowHasActivity(window);
+    }
+
+    private boolean checkAttached() {
+        // getWindowAndroid() cannot be null (see updateWindowAndroid()) so this is effectively
+        // checking to ensure whether the WebContents has a window and the tab is attached to an
+        // activity.
+        boolean hasActivity = getWindowAndroid() != null && windowHasActivity(getWindowAndroid());
+        WebContents webContents = getWebContents();
+        return webContents == null
+                ? !mIsDetached && hasActivity
+                : (webContents.getTopLevelNativeWindow() != null && hasActivity);
+    }
+
+    private boolean windowHasActivity(WindowAndroid window) {
+        return ContextUtils.activityFromContext(window.getContext().get()) != null;
     }
 
     /**
@@ -1033,6 +1070,8 @@ public class TabImpl implements Tab {
         mWindowAndroid = windowAndroid;
         WebContents webContents = getWebContents();
         if (webContents != null) webContents.setTopLevelNativeWindow(mWindowAndroid);
+
+        updateIsDetached(windowAndroid);
     }
 
     TabDelegateFactory getDelegateFactory() {
@@ -1196,7 +1235,7 @@ public class TabImpl implements Tab {
         // While detached for reparenting we don't have an owning Activity, or TabModelSelector,
         // so we can't create the native page. The native page will be created once reparenting is
         // completed.
-        if (TabUtils.isDetached(this)) return false;
+        if (isDetached()) return false;
         NativePage candidateForReuse = forceReload ? null : getNativePage();
         NativePage nativePage = mDelegateFactory.createNativePage(url, candidateForReuse, this);
         if (nativePage != null) {
@@ -1435,12 +1474,16 @@ public class TabImpl implements Tab {
 
             mWebContentsDelegate = createWebContentsDelegate();
 
+            // TODO(crbug/1501849): Find a better way of indicating this is a background tab (or
+            // move the logic elsewhere).
+            boolean isBackgroundTab = isDetached();
+
             assert mNativeTabAndroid != 0;
             TabImplJni.get()
                     .initWebContents(
                             mNativeTabAndroid,
                             isIncognito(),
-                            TabUtils.isDetached(this),
+                            isBackgroundTab,
                             webContents,
                             mWebContentsDelegate,
                             new TabContextMenuPopulatorFactory(
@@ -1536,7 +1579,7 @@ public class TabImpl implements Tab {
      */
     private void updateInteractableState() {
         boolean currentState =
-                !mIsHidden && !isFrozen() && mIsViewAttachedToWindow && !TabUtils.isDetached(this);
+                !mIsHidden && !isFrozen() && mIsViewAttachedToWindow && !isDetached();
 
         if (currentState == mInteractableState) return;
 

@@ -205,6 +205,9 @@ public interface Tab extends TabLifecycle {
      */
     boolean isUserInteractable();
 
+    /** Returns whether the tab is detached for reparenting. */
+    boolean isDetached();
+
     /**
      *  Sets Parent for the current Tab and other tab related parent properties.
      */

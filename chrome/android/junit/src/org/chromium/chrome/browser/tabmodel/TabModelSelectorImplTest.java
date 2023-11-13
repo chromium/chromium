@@ -16,6 +16,9 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import android.content.Context;
 
 import androidx.test.filters.SmallTest;
 
@@ -26,7 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
@@ -49,6 +51,8 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link TabModelSelectorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -73,6 +77,7 @@ public class TabModelSelectorImplTest {
     @Mock private ProfileProvider mProfileProvider;
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
+    @Mock private Context mContext;
 
     private TabModelSelectorImpl mTabModelSelector;
     private MockTabCreatorManager mTabCreatorManager;
@@ -191,7 +196,10 @@ public class TabModelSelectorImplTest {
         mTabModelSelector
                 .getModel(false)
                 .addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        tab.updateAttachment(Mockito.mock(WindowAndroid.class), mTabDelegateFactory);
+        WindowAndroid window = mock(WindowAndroid.class);
+        WeakReference<Context> weakContext = new WeakReference<>(mContext);
+        when(window.getContext()).thenReturn(weakContext);
+        tab.updateAttachment(window, mTabDelegateFactory);
 
         Assert.assertEquals(
                 "moving a tab between windows shouldn't remove it from the model",

@@ -25,9 +25,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
@@ -133,22 +131,6 @@ public class TabUtils {
 
     public static Tab fromWebContents(WebContents webContents) {
         return TabImplJni.get().fromWebContents(webContents);
-    }
-
-    /**
-     * @param tab {@link Tab} instance being checked.
-     * @return Whether the tab is detached from any Activity and its {@link WindowAndroid}.
-     * Certain functionalities will not work until it is attached to an activity
-     * with {@link ReparentingTask#finish}.
-     */
-    public static boolean isDetached(Tab tab) {
-        if (tab.getWebContents() == null) return true;
-        // Should get WindowAndroid from WebContents since the one from |getWindowAndroid()|
-        // is always non-null even when the tab is in detached state. See the comment in |detach()|.
-        WindowAndroid window = tab.getWebContents().getTopLevelNativeWindow();
-        if (window == null) return true;
-        Activity activity = ContextUtils.activityFromContext(window.getContext().get());
-        return !(activity instanceof ChromeActivity);
     }
 
     /**
