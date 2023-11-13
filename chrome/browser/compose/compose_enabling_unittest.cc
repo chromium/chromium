@@ -33,6 +33,7 @@ using testing::Return;
 
 namespace {
 constexpr char kEmail[] = "example@gmail.com";
+constexpr char kExampleURL[] = "https://example.com";
 using translate::testing::MockTranslateClient;
 
 class MockTranslateLanguageProvider : public TranslateLanguageProvider {
@@ -51,6 +52,36 @@ class MockTranslateManager : public translate::TranslateManager {
 
   explicit MockTranslateManager(translate::TranslateClient* translate_client)
       : TranslateManager(translate_client, nullptr, nullptr) {}
+};
+
+class MockOptimizationGuideDecider
+    : public optimization_guide::OptimizationGuideDecider {
+ public:
+  MOCK_METHOD(void,
+              CanApplyOptimization,
+              (const GURL& url,
+               optimization_guide::proto::OptimizationType optimization_type,
+               optimization_guide::OptimizationGuideDecisionCallback callback));
+
+  MOCK_METHOD(
+      optimization_guide::OptimizationGuideDecision,
+      CanApplyOptimization,
+      (const GURL& url,
+       optimization_guide::proto::OptimizationType optimization_type,
+       optimization_guide::OptimizationMetadata* optimization_metadata));
+  MOCK_METHOD(void,
+              RegisterOptimizationTypes,
+              (const std::vector<optimization_guide::proto::OptimizationType>&
+                   optimization_types));
+  MOCK_METHOD(
+      void,
+      CanApplyOptimizationOnDemand,
+      (const std::vector<GURL>& urls,
+       const base::flat_set<optimization_guide::proto::OptimizationType>&
+           optimization_types,
+       optimization_guide::proto::RequestContext request_context,
+       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
+           callback));
 };
 
 }  // namespace
@@ -88,6 +119,8 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
         new_state);
   }
 
+  MockOptimizationGuideDecider& opt_guide() { return opt_guide_; }
+
  protected:
   void SetLanguage(std::string lang) {
     ON_CALL(mock_translate_language_provider_, GetSourceLanguage(testing::_))
@@ -119,6 +152,8 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
   signin::IdentityTestEnvironment identity_test_env_;
 
   content::ContextMenuParams context_menu_params_;
+
+  MockOptimizationGuideDecider opt_guide_;
 
   translate::testing::MockTranslateDriver translate_driver_;
   std::unique_ptr<MockTranslateClient> mock_translate_client_;
@@ -320,7 +355,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupDisabledTest) {
 
   EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
-      has_saved_state, GetOrigin(), GetOrigin()));
+      has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageTest) {
@@ -335,7 +370,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageTest) {
 
   EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
-      has_saved_state, GetOrigin(), GetOrigin()));
+      has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageBypassTest) {
@@ -360,7 +395,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageBypassTest) {
   // the bypass is enabled.
   EXPECT_TRUE(compose_enabling.ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
-      has_saved_state, GetOrigin(), GetOrigin()));
+      has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupAutocompleteTest) {
@@ -376,7 +411,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupAutocompleteTest) {
 
   EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
-      has_saved_state, GetOrigin(), GetOrigin()));
+      has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupSavedStateTest) {
@@ -392,7 +427,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupSavedStateTest) {
 
   EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
-      has_saved_state, GetOrigin(), GetOrigin()));
+      has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupAllEnabledTest) {
@@ -406,7 +441,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupAllEnabledTest) {
 
   EXPECT_TRUE(compose_enabling.ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
-      has_saved_state, GetOrigin(), GetOrigin()));
+      has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupNudgeDisabledTest) {
@@ -423,7 +458,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupNudgeDisabledTest) {
   SetLanguage("en");
   EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
       "", GetProfile(), mock_translate_manager_.get(),
-      /* has_saved_state= */ false, GetOrigin(), GetOrigin()));
+      /* has_saved_state= */ false, GetOrigin(), GetOrigin(),
+      GURL(kExampleURL)));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupCrossOrigin) {
@@ -437,7 +473,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupCrossOrigin) {
   SetLanguage("en");
   EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
-      has_saved_state, GetOrigin(), url::Origin()));
+      has_saved_state, GetOrigin(), url::Origin(), GURL(kExampleURL)));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuCrossOrigin) {
@@ -458,4 +494,89 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuCrossOrigin) {
   histogram_tester.ExpectUniqueSample(
       compose::kComposeShowStatus,
       compose::ComposeShowStatus::kFormFieldInCrossOriginFrame, 1);
+}
+
+TEST_F(ComposeEnablingTest, GetOptimizationGuidanceShowNudgeTest) {
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  // Set up a fake metadata to return from the mock.
+  optimization_guide::OptimizationMetadata test_metadata;
+  compose::ComposeHintMetadata compose_hint_metadata;
+  compose_hint_metadata.set_decision(
+      compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED);
+  test_metadata.SetAnyMetadataForTesting(compose_hint_metadata);
+
+  EXPECT_CALL(opt_guide(),
+              CanApplyOptimization(
+                  GURL(kExampleURL),
+                  optimization_guide::proto::OptimizationType::COMPOSE,
+                  ::testing::An<optimization_guide::OptimizationMetadata*>()))
+      .WillRepeatedly(testing::DoAll(
+          testing::SetArgPointee<2>(test_metadata),
+          testing::Return(
+              optimization_guide::OptimizationGuideDecision::kTrue)));
+  compose_enabling.SetOptimizationGuideForTest(&opt_guide());
+
+  GURL example(kExampleURL);
+  compose::ComposeHintDecision decision =
+      compose_enabling.GetOptimizationGuidanceForUrl(example, GetProfile());
+
+  // Verify response from CanApplyOptimization is as we expect.
+  EXPECT_EQ(compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED,
+            decision);
+}
+
+TEST_F(ComposeEnablingTest, GetOptimizationGuidanceNoFeedbackTest) {
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  // Set up a fake metadata to return from the mock.
+  optimization_guide::OptimizationMetadata test_metadata;
+  compose::ComposeHintMetadata compose_hint_metadata;
+  compose_hint_metadata.set_decision(
+      compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED);
+  test_metadata.SetAnyMetadataForTesting(compose_hint_metadata);
+
+  EXPECT_CALL(opt_guide(),
+              CanApplyOptimization(
+                  GURL(kExampleURL),
+                  optimization_guide::proto::OptimizationType::COMPOSE,
+                  ::testing::An<optimization_guide::OptimizationMetadata*>()))
+      .WillRepeatedly(testing::DoAll(
+          testing::SetArgPointee<2>(test_metadata),
+          testing::Return(
+              optimization_guide::OptimizationGuideDecision::kFalse)));
+  compose_enabling.SetOptimizationGuideForTest(&opt_guide());
+
+  GURL example(kExampleURL);
+  compose::ComposeHintDecision decision =
+      compose_enabling.GetOptimizationGuidanceForUrl(example, GetProfile());
+
+  // Verify response from CanApplyOptimization is as we expect.
+  EXPECT_EQ(compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED,
+            decision);
+}
+
+TEST_F(ComposeEnablingTest, GetOptimizationGuidanceNoComposeMetadataTest) {
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  // Set up a fake metadata to return from the mock.
+  optimization_guide::OptimizationMetadata test_metadata;
+  compose::ComposeHintMetadata compose_hint_metadata;
+  test_metadata.SetAnyMetadataForTesting(compose_hint_metadata);
+
+  EXPECT_CALL(opt_guide(),
+              CanApplyOptimization(
+                  GURL(kExampleURL),
+                  optimization_guide::proto::OptimizationType::COMPOSE,
+                  ::testing::An<optimization_guide::OptimizationMetadata*>()))
+      .WillRepeatedly(testing::DoAll(
+          testing::SetArgPointee<2>(test_metadata),
+          testing::Return(
+              optimization_guide::OptimizationGuideDecision::kTrue)));
+  compose_enabling.SetOptimizationGuideForTest(&opt_guide());
+
+  GURL example(kExampleURL);
+  compose::ComposeHintDecision decision =
+      compose_enabling.GetOptimizationGuidanceForUrl(example, GetProfile());
+
+  // Verify response from CanApplyOptimization is as we expect.
+  EXPECT_EQ(compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED,
+            decision);
 }

@@ -6,9 +6,14 @@
 #define CHROME_BROWSER_COMPOSE_COMPOSE_ENABLING_H_
 
 #include "base/types/expected.h"
+#include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "chrome/browser/compose/translate_language_provider.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/compose/core/browser/compose_metrics.h"
+#include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "content/public/browser/context_menu_params.h"
@@ -26,19 +31,27 @@ class ComposeEnabling {
       signin::IdentityManager* identity_manager);
   void SetEnabledForTesting();
   void ClearEnabledForTesting();
+  void SetOptimizationGuideForTest(
+      optimization_guide::OptimizationGuideDecider* opt_guide);
   std::string GetLanguage();
   bool ShouldTriggerPopup(std::string_view autocomplete_attribute,
                           Profile* profile,
                           translate::TranslateManager* translate_manager,
                           bool has_saved_state,
                           const url::Origin& top_level_frame_origin,
-                          const url::Origin& element_frame_origin);
+                          const url::Origin& element_frame_origin,
+                          GURL url);
   bool ShouldTriggerContextMenu(Profile* profile,
                                 translate::TranslateManager* translate_manager,
                                 content::RenderFrameHost* rfh,
                                 content::ContextMenuParams& params);
+
+  compose::ComposeHintDecision GetOptimizationGuidanceForUrl(const GURL& url,
+                                                             Profile* profile);
+
  private:
   raw_ptr<TranslateLanguageProvider> translate_language_provider_;
+  raw_ptr<optimization_guide::OptimizationGuideDecider> opt_guide_;
   bool enabled_for_testing_;
 
   base::expected<void, compose::ComposeShowStatus> PageLevelChecks(

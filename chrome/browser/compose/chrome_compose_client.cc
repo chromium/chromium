@@ -26,9 +26,6 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/core/browser/compose_metrics.h"
-#include "components/optimization_guide/core/optimization_guide_decider.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
@@ -226,10 +223,12 @@ bool ChromeComposeClient::ShouldTriggerPopup(
   content::RenderFrameHost* top_level_frame =
       GetWebContents().GetPrimaryMainFrame();
 
+  GURL url = GetWebContents().GetPrimaryMainFrame()->GetLastCommittedURL();
+
   return compose_enabling_.ShouldTriggerPopup(
       form_field_data.autocomplete_attribute, profile_, translate_manager,
       saved_state, top_level_frame->GetLastCommittedOrigin(),
-      form_field_data.origin);
+      form_field_data.origin, url);
 }
 
 bool ChromeComposeClient::ShouldTriggerContextMenu(
@@ -262,42 +261,8 @@ void ChromeComposeClient::SetSkipShowDialogForTest() {
   skip_show_dialog_for_test_ = true;
 }
 
-void ChromeComposeClient::SetOptimizationGuideForTest(
-    optimization_guide::OptimizationGuideDecider* opt_guide) {
-  opt_guide_ = opt_guide;
-}
-
 int ChromeComposeClient::GetSessionCountForTest() {
   return sessions_.size();
-}
-
-compose::ComposeHintDecision ChromeComposeClient::GetOptimizationGuidanceForUrl(
-    const GURL& url) {
-  if (!GetOptimizationGuide()) {
-    return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED;
-  }
-
-  if (!compose_enabling_.IsEnabledForProfile(profile_).has_value()) {
-    return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_COMPOSE_DISABLED;
-  }
-
-  optimization_guide::OptimizationMetadata metadata;
-
-  auto opt_guide_has_hint = GetOptimizationGuide()->CanApplyOptimization(
-      url, optimization_guide::proto::OptimizationType::COMPOSE, &metadata);
-  if (opt_guide_has_hint !=
-      optimization_guide::OptimizationGuideDecision::kTrue) {
-    return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED;
-  }
-
-  absl::optional<compose::ComposeHintMetadata> compose_metadata =
-      optimization_guide::ParsedAnyMetadata<compose::ComposeHintMetadata>(
-          metadata.any_metadata().value());
-  if (!compose_metadata.has_value()) {
-    return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED;
-  }
-
-  return compose_metadata->decision();
 }
 
 void ChromeComposeClient::PrimaryPageChanged(content::Page& page) {
