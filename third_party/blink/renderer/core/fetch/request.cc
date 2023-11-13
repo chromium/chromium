@@ -657,7 +657,7 @@ Request* Request::CreateRequestWithRequestOrString(
     if (signal) {
       signals.push_back(signal);
     }
-    // "Set |r|'s signal to the result of creating a new  dependent abort signal
+    // "Set |r|'s signal to the result of creating a new dependent abort signal
     // from |signals|".
     request_signal = MakeGarbageCollected<AbortSignal>(script_state, signals);
   } else {
