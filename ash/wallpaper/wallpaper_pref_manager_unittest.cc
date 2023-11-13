@@ -394,21 +394,6 @@ TEST_F(WallpaperPrefManagerTest, GetNextDailyRefreshUpdate_Recent) {
                     Lt(base::Hours(22) + base::Minutes(1))));
 }
 
-TEST_F(WallpaperPrefManagerTest, CacheProminentColors) {
-  WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
-
-  const char location[] = "/test/location";
-  info.location = location;
-
-  const std::vector<SkColor> expected_colors = {
-      SK_ColorGREEN, SK_ColorGREEN, SK_ColorGREEN,
-      SkColorSetRGB(0xAB, 0xBC, 0xEF)};
-
-  pref_manager_->CacheProminentColors(location, expected_colors);
-  EXPECT_EQ(expected_colors,
-            *pref_manager_->GetCachedProminentColors(location));
-}
-
 TEST_F(WallpaperPrefManagerTest, CacheKMeansColor) {
   WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
   const char location[] = "/test/location";
@@ -464,19 +449,11 @@ TEST_F(WallpaperPrefManagerTest, CalculatedColors) {
   const SkColor celebi_color = SkColorSetRGB(0xFF, 0xCC, 0x22);
   pref_manager_->CacheCelebiColor(location, celebi_color);
 
-  // Cache prominent colors even though they should not be retrieved.
-  const std::vector<SkColor> prominent_colors = {
-      SK_ColorGREEN, SK_ColorGREEN, SK_ColorGREEN,
-      SkColorSetRGB(0xAB, 0xBC, 0xEF)};
-  pref_manager_->CacheProminentColors(location, prominent_colors);
-
   absl::optional<WallpaperCalculatedColors> actual_colors =
       pref_manager_->GetCachedWallpaperColors(location);
   ASSERT_TRUE(actual_colors);
   EXPECT_EQ(k_mean_color, actual_colors->k_mean_color);
   EXPECT_EQ(celebi_color, actual_colors->celebi_color);
-  EXPECT_EQ(std::vector<SkColor>(), actual_colors->prominent_colors)
-      << "Prominent colors are ignored";
 }
 
 TEST_F(WallpaperPrefManagerTest, CalculatedColorsEmptyIfKMeanMissing) {

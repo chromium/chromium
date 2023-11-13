@@ -133,15 +133,8 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
   virtual absl::optional<WallpaperCalculatedColors> GetCachedWallpaperColors(
       base::StringPiece location) const = 0;
 
-  virtual void CacheProminentColors(base::StringPiece location,
-                                    const std::vector<SkColor>& colors) = 0;
-
+  // DEPRECATED: Will be removed soon.
   virtual void RemoveProminentColors(const AccountId& account_id) = 0;
-
-  // Returns the cached prominent colors for a wallpaper with `location` if
-  // present.
-  virtual absl::optional<std::vector<SkColor>> GetCachedProminentColors(
-      const base::StringPiece location) const = 0;
 
   virtual void CacheKMeanColor(base::StringPiece location,
                                SkColor k_mean_color) = 0;

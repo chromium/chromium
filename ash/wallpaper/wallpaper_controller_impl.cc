@@ -371,14 +371,6 @@ base::FilePath WallpaperControllerImpl::GetCustomWallpaperDir(
   return GlobalChromeOSCustomWallpapersDir().Append(sub_dir);
 }
 
-SkColor WallpaperControllerImpl::GetProminentColor(
-    ColorProfile color_profile) const {
-  if (!calculated_colors_) {
-    return kInvalidWallpaperColor;
-  }
-  return calculated_colors_->GetProminentColor(color_profile);
-}
-
 SkColor WallpaperControllerImpl::GetKMeanColor() const {
   return calculated_colors_ ? calculated_colors_->k_mean_color
                             : kInvalidWallpaperColor;
@@ -1504,8 +1496,6 @@ void WallpaperControllerImpl::OnColorCalculationComplete(
 
   // Use |WallpaperInfo::location| as the key for storing |prominent_colors_| in
   // the |kWallpaperColors| pref.
-  pref_manager_->CacheProminentColors(
-      info.location, wallpaper_calculated_colors.prominent_colors);
   pref_manager_->CacheKMeanColor(info.location,
                                  wallpaper_calculated_colors.k_mean_color);
   pref_manager_->CacheCelebiColor(info.location,
@@ -1711,7 +1701,7 @@ void WallpaperControllerImpl::CreateEmptyWallpaperForTesting() {
   UpdateWallpaperForAllRootWindows(/*lock_state_changed=*/false);
   // Simulate default color sampling behavior.
   SetCalculatedColors(WallpaperCalculatedColors(
-      /*prominent_colors=*/{}, /*k_means=*/SK_ColorWHITE,
+      /*k_means=*/SK_ColorWHITE,
       /*celebi=*/gfx::kGoogleBlue400));
 }
 

@@ -17,10 +17,6 @@ namespace base {
 class TaskRunner;
 }
 
-namespace color_utils {
-struct ColorProfile;
-}
-
 namespace ash {
 
 // Calculates colors based on a wallpaper image.
@@ -54,10 +50,6 @@ class ASH_EXPORT WallpaperColorCalculator {
   // Explicitly sets the |task_runner_| for testing.
   void SetTaskRunnerForTest(scoped_refptr<base::TaskRunner> task_runner);
 
-  // Overrides the default color profiles.
-  void SetColorProfiles(
-      const std::vector<color_utils::ColorProfile>& color_profiles);
-
  private:
   // Handles asynchronous calculation results. |async_start_time| is used to
   // record duration metrics.
@@ -71,9 +63,6 @@ class ASH_EXPORT WallpaperColorCalculator {
 
   // The image to calculate colors from.
   gfx::ImageSkia image_;
-
-  // The color profiles used to calculate colors.
-  std::vector<color_utils::ColorProfile> color_profiles_;
 
   // The task runner to run the calculation on.
   scoped_refptr<base::TaskRunner> task_runner_;

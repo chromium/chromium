@@ -115,10 +115,6 @@ void WallpaperColorCalculatorTest::InstallTaskRunner(
 void WallpaperColorCalculatorTest::CreateCalculator(
     const gfx::ImageSkia& image) {
   calculator_ = std::make_unique<WallpaperColorCalculator>(image);
-  std::vector<color_utils::ColorProfile> color_profiles;
-  color_profiles.emplace_back(color_utils::LumaRange::NORMAL,
-                              color_utils::SaturationRange::VIBRANT);
-  calculator_->SetColorProfiles(color_profiles);
 }
 
 // Used to group the asynchronous calculation tests.
@@ -177,8 +173,6 @@ TEST_F(WallpaperColorCalculatorSyncTest, SetsCalculatedColorsSync) {
   EXPECT_FALSE(calculator_->get_calculated_colors().has_value());
   EXPECT_TRUE(calculator_->StartCalculation(base::DoNothing()));
   EXPECT_TRUE(calculator_->get_calculated_colors().has_value());
-  EXPECT_THAT(calculator_->get_calculated_colors()->prominent_colors,
-              ElementsAre(kVibrantGreen));
   EXPECT_SKCOLOR_EQ(calculator_->get_calculated_colors()->k_mean_color, kGray);
 }
 
@@ -189,9 +183,6 @@ TEST_F(WallpaperColorCalculatorSyncTest, SyncFailedExtraction) {
   EXPECT_TRUE(calculator_->StartCalculation(base::DoNothing()));
   auto calculated_colors = calculator_->get_calculated_colors();
   EXPECT_TRUE(calculated_colors.has_value());
-  // 1 color profile in test that failed to extract color.
-  EXPECT_THAT(calculated_colors->prominent_colors,
-              ElementsAre(kInvalidWallpaperColor));
   // `CreateNonColorProducingImage` returns solid gray.
   EXPECT_SKCOLOR_EQ(kGray, calculated_colors->k_mean_color);
 }

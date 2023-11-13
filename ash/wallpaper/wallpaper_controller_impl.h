@@ -55,10 +55,6 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
-namespace color_utils {
-struct ColorProfile;
-}  // namespace color_utils
-
 namespace ash {
 
 class OnlineWallpaperManager;
@@ -80,7 +76,7 @@ using CustomWallpaperMap = std::map<AccountId, CustomWallpaperElement>;
 // Controls the desktop background wallpaper:
 //   - Sets a wallpaper image and layout;
 //   - Handles display change (add/remove display, configuration change etc);
-//   - Calculates prominent colors.
+//   - Calculates colors from wallpaper;
 //   - Move wallpaper to locked container(s) when session state is not ACTIVE to
 //     hide the user desktop and move it to unlocked container when session
 //     state is ACTIVE;
@@ -126,9 +122,6 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Returns custom wallpaper directory by appending corresponding |sub_dir|.
   static base::FilePath GetCustomWallpaperDir(const std::string& sub_dir);
-
-  // Returns the prominent color based on |color_profile|.
-  SkColor GetProminentColor(color_utils::ColorProfile color_profile) const;
 
   // Returns the k mean color of the current wallpaper.
   SkColor GetKMeanColor() const;
