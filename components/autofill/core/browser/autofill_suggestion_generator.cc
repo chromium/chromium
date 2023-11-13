@@ -810,7 +810,10 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
     suggestions.back().popup_item_id = GetProfileSuggestionPopupItemId(
         last_targeted_fields, trigger_field_type_group);
-
+    if (suggestions.back().popup_item_id == PopupItemId::kFieldByFieldFilling) {
+      suggestions.back().field_by_field_filling_type_used =
+          std::optional(trigger_field_type);
+    }
     // We add an icon to the address (profile) suggestion if there is more than
     // one profile related field in the form.
     if (contains_profile_related_fields) {

@@ -1251,7 +1251,10 @@ TEST_F(
       profile(), absl::optional<ServerFieldTypeSet>({NAME_LAST}), NAME_FIRST);
 
   ASSERT_EQ(suggestions.size(), 1u);
-  EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kFieldByFieldFilling);
+  EXPECT_THAT(suggestions[0],
+              EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
+                               profile().GetInfo(NAME_FIRST, app_locale()),
+                               NAME_FIRST));
 }
 
 TEST_F(AutofillChildrenSuggestionsGenenarationTest,
