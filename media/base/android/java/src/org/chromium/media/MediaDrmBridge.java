@@ -953,6 +953,15 @@ public class MediaDrmBridge {
         int systemCode = MediaDrmSystemCode.UPDATE_FAILED;
         try {
             SessionInfo sessionInfo = mSessionManager.get(sessionId);
+            if (sessionInfo == null) {
+                assert false; // Should never happen.
+                onPromiseRejected(
+                        promiseId,
+                        MediaDrmSystemCode.INVALID_SESSION_ID,
+                        "Internal error: No info for session: " + sessionId.toHexString());
+                return;
+            }
+
             boolean isKeyRelease = sessionInfo.keyType() == MediaDrm.KEY_TYPE_RELEASE;
 
             byte[] keySetId = null;
@@ -1034,6 +1043,14 @@ public class MediaDrmBridge {
             assert Arrays.equals(sessionId.drmId(), drmId);
 
             SessionInfo sessionInfo = mSessionManager.get(sessionId);
+            if (sessionInfo == null) {
+                assert false; // Should never happen.
+                onPromiseRejected(
+                        promiseId,
+                        MediaDrmSystemCode.INVALID_SESSION_ID,
+                        "Internal error: No info for session: " + sessionId.toHexString());
+                return;
+            }
 
             // If persistent license (KEY_TYPE_OFFLINE) is released but we don't receive the ack
             // from the server, we should avoid restoring the keys. Report success to JS so that
@@ -1115,6 +1132,15 @@ public class MediaDrmBridge {
         }
 
         final SessionInfo sessionInfo = mSessionManager.get(sessionId);
+        if (sessionInfo == null) {
+            assert false; // Should never happen.
+            onPromiseRejected(
+                    promiseId,
+                    MediaDrmSystemCode.INVALID_SESSION_ID,
+                    "Internal error: No info for session: " + sessionId.toHexString());
+            return;
+        }
+
         if (sessionInfo.keyType() == MediaDrm.KEY_TYPE_STREAMING) {
             // TODO(yucliu): Support 'remove' of temporary session.
             onPromiseRejected(promiseId, MediaDrmSystemCode.NOT_PERSISTENT_LICENSE,
@@ -1497,18 +1523,32 @@ public class MediaDrmBridge {
         public void onEvent(
                 MediaDrm mediaDrm, byte[] drmSessionId, int event, int extra, byte[] data) {
             if (drmSessionId == null) {
-                Log.e(TAG, "EventListener: No session for event %d.", event);
+                // Prior to Android M EVENT_PROVISION_REQUIRED was used to signify that provisioning
+                // was required before the session could be created. Unprovisioned errors are
+                // handled elsewhere, so no need to log a message.
+                if (event != MediaDrm.EVENT_PROVISION_REQUIRED) {
+                    Log.e(TAG, "EventListener: No session for event %d.", event);
+                }
                 return;
             }
-            SessionId sessionId = getSessionIdByDrmId(drmSessionId);
 
+            SessionId sessionId = getSessionIdByDrmId(drmSessionId);
             if (sessionId == null) {
-                Log.e(TAG, "EventListener: Invalid session %s",
+                // May happen if the event gets scheduled after the session is gone.
+                Log.w(
+                        TAG,
+                        "EventListener: Invalid session %s",
                         SessionId.toHexString(drmSessionId));
                 return;
             }
 
             SessionInfo sessionInfo = mSessionManager.get(sessionId);
+            if (sessionInfo == null) {
+                // May happen if the event gets scheduled after the session is gone.
+                Log.w(TAG, "EventListener: No info for session %s", sessionId.toHexString());
+                return;
+            }
+
             MediaDrm.KeyRequest request = null;
             switch (event) {
                 case MediaDrm.EVENT_KEY_REQUIRED:
@@ -1538,7 +1578,7 @@ public class MediaDrmBridge {
                     }
                     break;
                 default:
-                    Log.e(TAG, "Invalid DRM event " + event);
+                    Log.w(TAG, "Ignoring MediaDrm event " + event);
                     break;
             }
         }
