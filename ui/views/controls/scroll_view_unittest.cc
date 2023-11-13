@@ -42,6 +42,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_test_api.h"
+#include "ui/views/view_tracker.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/test/scoped_preferred_scroller_style_mac.h"
@@ -101,22 +102,6 @@ class ScrollViewTestApi {
 
  private:
   raw_ptr<ScrollView> scroll_view_;
-};
-
-class ObserveViewDeletion : public ViewObserver {
- public:
-  explicit ObserveViewDeletion(View* view) { observer_.Observe(view); }
-
-  void OnViewIsDeleting(View* observed_view) override {
-    deleted_view_ = observed_view;
-    observer_.Reset();
-  }
-
-  View* deleted_view() { return deleted_view_; }
-
- private:
-  base::ScopedObservation<View, ViewObserver> observer_{this};
-  raw_ptr<View, DanglingUntriaged> deleted_view_ = nullptr;
 };
 
 }  // namespace test
@@ -432,8 +417,9 @@ class WidgetScrollViewTest : public test::WidgetTest,
   // testing::Test:
   void TearDown() override {
     widget_->GetCompositor()->RemoveObserver(this);
-    if (widget_)
-      widget_->CloseNow();
+    if (widget_) {
+      widget_.ExtractAsDangling()->CloseNow();
+    }
     WidgetTest::TearDown();
   }
 
@@ -447,7 +433,7 @@ class WidgetScrollViewTest : public test::WidgetTest,
     quit_closure_.Reset();
   }
 
-  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
 
   // Disable scrollbar hiding (i.e. disable overlay scrollbars) by default.
   bool use_overlay_scrollers_ = false;
@@ -2249,7 +2235,8 @@ TEST_F(ScrollViewTest, IgnoreOverlapWithHiddenVerticalScroll) {
 
 TEST_F(ScrollViewTest, TestSettingContentsToNull) {
   View* contents = InstallContents();
-  test::ObserveViewDeletion view_deletion{contents};
+  ViewTracker tracker(contents);
+  ASSERT_TRUE(tracker.view());
 
   // Make sure the content is installed and working.
   EXPECT_EQ("0,0 100x100", contents->parent()->bounds().ToString());
@@ -2260,8 +2247,9 @@ TEST_F(ScrollViewTest, TestSettingContentsToNull) {
   // The content should now be gone.
   EXPECT_FALSE(scroll_view_->contents());
 
-  // The contents view should have also been deleted.
-  EXPECT_EQ(contents, view_deletion.deleted_view());
+  // The contents view should have also been deleted (and therefore the tracker
+  // is no longer tracking a view).
+  EXPECT_FALSE(tracker.view());
 }
 
 // Test scrolling behavior when clicking on the scroll track.
