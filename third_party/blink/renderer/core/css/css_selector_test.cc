@@ -169,13 +169,6 @@ TEST(CSSSelector, Specificity_Has) {
             Specificity("div > div"));
   EXPECT_EQ(Specificity(":has(.c + .c + .c, .b + .c:not(span), .b + .c + .e)"),
             Specificity(".c + .c + .c"));
-
-  {
-    ScopedCSSPseudoHasNonForgivingParsingForTest scoped_feature(false);
-
-    EXPECT_EQ(Specificity(".a+:has(.b+span.f, :has(.c>.e, .g))"),
-              Specificity(".a+.b+span.f"));
-  }
 }
 
 TEST(CSSSelector, HasLinkOrVisited) {

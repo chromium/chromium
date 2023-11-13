@@ -30282,7 +30282,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4358" label="WebAuthnConditionalUiGetSuccess"/>
   <int value="4359" label="WebAuthnRkRequiredCreationSuccess"/>
   <int value="4360" label="DestructiveDocumentWriteAfterModuleScript"/>
-  <int value="4361" label="CSSAtSupportsDropInvalidWhileForgivingParsing"/>
+  <int value="4361"
+      label="OBSOLETE_CSSAtSupportsDropInvalidWhileForgivingParsing"/>
   <int value="4362" label="PermissionsPolicyUnload"/>
   <int value="4363" label="ServiceWorkerSkippedForSubresourceLoad"/>
   <int value="4364" label="ClientHintsPrefersReducedMotion"/>
@@ -30368,8 +30369,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4438" label="CSSBackgroundClipPadding"/>
   <int value="4439"
       label="DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning"/>
-  <int value="4440" label="CSSPseudoHasContainsMixOfValidAndInvalid"/>
-  <int value="4441" label="CSSPseudoIsWhereContainsMixOfValidAndInvalid"/>
+  <int value="4440" label="OBSOLETE_kCSSPseudoHasContainsMixOfValidAndInvalid"/>
+  <int value="4441"
+      label="OBSOLETE_kCSSPseudoIsWhereContainsMixOfValidAndInvalid"/>
   <int value="4442" label="PrivateNetworkAccessFetchedSubFrame"/>
   <int value="4443" label="PrivateNetworkAccessFetchedTopFrame"/>
   <int value="4444" label="DisableThirdPartyStoragePartitioning"/>

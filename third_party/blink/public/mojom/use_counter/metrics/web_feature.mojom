@@ -3692,7 +3692,7 @@ enum WebFeature {
   kWebAuthnConditionalUiGetSuccess = 4358,
   kWebAuthnRkRequiredCreationSuccess = 4359,
   kDestructiveDocumentWriteAfterModuleScript = 4360,
-  kCSSAtSupportsDropInvalidWhileForgivingParsing = 4361,
+  kOBSOLETE_CSSAtSupportsDropInvalidWhileForgivingParsing = 4361,
   kPermissionsPolicyUnload = 4362,
   // The items above roughly this point are available in the M107 branch.
 
@@ -3777,8 +3777,8 @@ enum WebFeature {
   kCSSBackgroundClipContent = 4437,
   kCSSBackgroundClipPadding = 4438,
   kDisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning = 4439,
-  kCSSPseudoHasContainsMixOfValidAndInvalid = 4440,
-  kCSSPseudoIsWhereContainsMixOfValidAndInvalid = 4441,
+  kOBSOLETE_kCSSPseudoHasContainsMixOfValidAndInvalid = 4440,
+  kOBSOLETE_kCSSPseudoIsWhereContainsMixOfValidAndInvalid = 4441,
   kPrivateNetworkAccessFetchedSubFrame = 4442,
   kPrivateNetworkAccessFetchedTopFrame = 4443,
   kDisableThirdPartyStoragePartitioning = 4444,

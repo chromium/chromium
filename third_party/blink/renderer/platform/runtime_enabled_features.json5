@@ -805,12 +805,6 @@
       base_feature: "none",
     },
     {
-      // https://drafts.csswg.org/css-conditional-4/#support-definition-ext
-      // https://github.com/w3c/csswg-drafts/issues/7280#issuecomment-1143852187
-      name: "CSSAtSupportsAlwaysNonForgivingParsing",
-      status: "stable",
-    },
-    {
       // https://chromestatus.com/feature/5125388091260928
       name: "CSSBackgroundClipUnprefix",
       status: "stable",
@@ -1036,10 +1030,6 @@
       // Shipping in M120.  Flag should be removed after M120 has been
       // shipping to stable for a few weeks.
       name: "CSSPseudoDir",
-      status: "stable",
-    },
-    {
-      name: "CSSPseudoHasNonForgivingParsing",
       status: "stable",
     },
     {
