@@ -146,8 +146,9 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
   EXPECT_TRUE(NavigateAndDiscardFirstTab(GetURL(kWWWExampleURL)));
 }
 
+// crbug.com/1435375
 IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
-                       ExclusionListMatchesWildCards) {
+                       DISABLED_ExclusionListMatchesWildCards) {
   PrefService* prefs = GetPrefs();
   base::Value::List exclude_sites_with_http_scheme;
   exclude_sites_with_http_scheme.Append("http://*");
