@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/exo/surface.h"
 #include "components/exo/wayland/server_util.h"
+#include "components/exo/wayland/wayland_display_observer.h"
 
 namespace exo {
 namespace wayland {
@@ -53,7 +54,18 @@ WaylandDisplayOutput::~WaylandDisplayOutput() {
   // Empty the output_ids_ so that Unregister will be no op.
   auto ids = std::move(output_ids_);
   for (auto pair : ids) {
-    wl_resource_destroy(pair.second);
+    if (wl_resource_get_version(pair.second) >=
+        WL_OUTPUT_RELEASE_SINCE_VERSION) {
+      // At version >= 3, clients should send wl_output.release to let server
+      // know that an output object will be unused. Remove the user_data and
+      // destructor, keep wl_resource alive as there could be other requests
+      // referencing it asynchronously.
+      DestroyUserData<WaylandDisplayHandler>(pair.second);
+      wl_resource_set_user_data(pair.second, nullptr);
+      wl_resource_set_destructor(pair.second, nullptr);
+    } else {
+      wl_resource_destroy(pair.second);
+    }
   }
 
   if (global_) {
