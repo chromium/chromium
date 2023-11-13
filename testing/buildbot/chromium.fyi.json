@@ -6,11 +6,6 @@
       "all"
     ]
   },
-  "Comparison Linux (reclient)": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
   "Comparison Mac (reclient)": {
     "additional_compile_targets": [
       "all"

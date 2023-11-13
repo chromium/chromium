@@ -29,28 +29,6 @@
       }
     }
   },
-  "Comparison Linux (reclient)": {
-    "build1": {
-      "gn_args": {
-        "dcheck_always_on": false,
-        "ffmpeg_branding": "Chrome",
-        "is_component_build": false,
-        "is_debug": false,
-        "proprietary_codecs": true,
-        "use_remoteexec": true
-      }
-    },
-    "build2": {
-      "gn_args": {
-        "dcheck_always_on": false,
-        "ffmpeg_branding": "Chrome",
-        "is_component_build": false,
-        "is_debug": false,
-        "proprietary_codecs": true,
-        "use_remoteexec": true
-      }
-    }
-  },
   "Comparison Mac (reclient)": {
     "build1": {
       "gn_args": {

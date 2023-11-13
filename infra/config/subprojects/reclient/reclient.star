@@ -681,3 +681,67 @@ ci.builder(
         "RBE_cache_silo": "Linux Builder (canonical wd) (reclient compare)",
     },
 )
+
+ci.builder(
+    name = "Comparison Linux (reclient)",
+    executable = "recipe:reclient_reclient_comparison",
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+        short_name = "cmp",
+    ),
+    execution_timeout = 6 * time.hour,
+    gn_args = {
+        "build1": gn_args.config(
+            configs = ["gpu_tests", "release_builder", "reclient"],
+        ),
+        "build2": gn_args.config(
+            configs = ["gpu_tests", "release_builder", "reclient"],
+        ),
+    },
+    reclient_bootstrap_env = {
+        "RBE_ip_reset_min_delay": "-1s",
+        "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
+        "RBE_fast_log_collection": "true",
+    },
+    reclient_cache_silo = "Comparison Linux - cache siloed",
+    reclient_instance = reclient.instance.TEST_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+)
+
+ci.builder(
+    name = "Comparison Linux (reclient)(CQ)",
+    description_html = """\
+This builder measures Linux build performance with reclient prod vs test in cq configuration.<br/>\
+The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/linux-rel-compilator">linux-rel-compilator</a>.\
+""",
+    executable = "recipe:reclient_reclient_comparison",
+    cores = 16,
+    os = os.LINUX_DEFAULT,
+    ssd = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|cq",
+        short_name = "cmp",
+    ),
+    execution_timeout = 6 * time.hour,
+    gn_args = {
+        "build1": gn_args.config(
+            configs = ["gpu_tests", "release_builder", "reclient"],
+        ),
+        "build2": gn_args.config(
+            configs = ["gpu_tests", "release_builder", "reclient"],
+        ),
+    },
+    reclient_bootstrap_env = {
+        "RBE_ip_reset_min_delay": "-1s",
+        "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
+        "RBE_fast_log_collection": "true",
+    },
+    reclient_cache_silo = "Comparison Linux CQ - cache siloed",
+    reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    reclient_jobs = 150,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+)

@@ -36,7 +36,6 @@ exempted_from_description_builders = {
         "Centipede Upload Linux ASan",
         "ChromeOS FYI Release (amd64-generic)",
         "ChromiumOS ASAN Release",
-        "Comparison Linux (reclient)",
         "Comparison Mac (reclient)",
         "Comparison Mac arm64 (reclient)",
         "Comparison Mac arm64 on arm64 (reclient)",
@@ -594,6 +593,7 @@ exempted_from_description_builders = {
     ]),
     "reclient": set([
         "Comparison Linux (reclient vs reclient remote links)",
+        "Comparison Linux (reclient)",
     ]),
     "reviver": set([
         "android-coverage-launcher",

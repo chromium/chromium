@@ -3198,14 +3198,6 @@
           'all'
         ],
       },
-      'Comparison Linux (reclient)': {
-        'mixins': [
-          'isolate_profile_data',
-        ],
-        'additional_compile_targets': [
-          'all'
-        ],
-      },
       'Comparison Mac (reclient)': {
         'additional_compile_targets': [
           'all'
@@ -5391,6 +5383,14 @@
     'mixins': ['chromium-tester-service-account'],
     'machines': {
       'Comparison Linux (reclient vs reclient remote links)': {
+        'mixins': [
+          'isolate_profile_data',
+        ],
+        'additional_compile_targets': [
+          'all'
+        ],
+      },
+      'Comparison Linux (reclient)': {
         'mixins': [
           'isolate_profile_data',
         ],

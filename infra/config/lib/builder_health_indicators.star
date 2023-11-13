@@ -120,8 +120,6 @@ _exempted_from_contact_builders = {
         "Comparison Android (reclient) (reproxy cache)",
         "Comparison Android (reclient)",
         "Comparison Android (reclient)(CQ)",
-        "Comparison Linux (reclient)",
-        "Comparison Linux (reclient)(CQ)",
         "Comparison Mac (reclient)",
         "Comparison Mac (reclient)(CQ)",
         "Comparison Mac arm64 (reclient)",
@@ -900,6 +898,8 @@ _exempted_from_contact_builders = {
     ],
     "reclient": [
         "Comparison Linux (reclient vs reclient remote links)",
+        "Comparison Linux (reclient)",
+        "Comparison Linux (reclient)(CQ)",
         "Linux Builder (canonical wd) (reclient compare)",
         "Linux Builder reclient staging untrusted",
         "Linux Builder reclient staging",
