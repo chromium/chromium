@@ -95,6 +95,12 @@ namespace {
 // Password is considered not generated when user edits it below 4 characters.
 constexpr int kMinimumLengthForEditedPassword = 4;
 
+// Kill switch for fix preventing Autifill heuristics being passed to the
+// Password Manager as server predictions. See crbug.com/1492875.
+BASE_FEATURE(kSkipAutofillHeuristicsFix,
+             "SkipAutofillHeuristicsFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace
 
 NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
@@ -379,6 +385,14 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                        forForm:(FormGlobalId)form
                     fromSource:
                         (AutofillManager::Observer::FieldTypeSource)source {
+  // Heuristics predictions are not relevant to PWM because it runs its own
+  // heuristics - only server predictions are.
+  if (base::FeatureList::IsEnabled(kSkipAutofillHeuristicsFix) &&
+      source == AutofillManager::Observer::FieldTypeSource::
+                    kHeuristicsOrAutocomplete) {
+    return;
+  }
+
   auto& driver = static_cast<autofill::AutofillDriverIOS&>(manager.driver());
   web::WebFrame* frame = driver.web_frame();
   if (!frame) {
