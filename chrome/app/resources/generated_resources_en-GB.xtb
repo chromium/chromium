@@ -4212,6 +4212,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4261429981378979799">Extension permissions</translation>
 <translation id="4262004481148703251">Dismiss warning</translation>
 <translation id="4263223596040212967">Check your keyboard layout and try again.</translation>
+<translation id="4265301768135164545">You can also set up an eSIM profile <ph name="BEGIN_LINK" />manually<ph name="END_LINK" /></translation>
 <translation id="426564820080660648">To check for updates, please use Ethernet, Wi-Fi or mobile data.</translation>
 <translation id="426652736638196239">This IBAN will be saved to this device only</translation>
 <translation id="4266679478228765574">Removing folders will stop sharing but will not delete files.</translation>
@@ -7324,7 +7325,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6787097042755590313">Other Tab</translation>
 <translation id="6787839852456839824">Keyboard shortcuts</translation>
 <translation id="6788210894632713004">Unpacked extension</translation>
-<translation id="678939393857169499">Enables the new desktop design.</translation>
 <translation id="6789592661892473991">Split horizontal</translation>
 <translation id="6789834167207639931">Enter your Google Account password again on the next screen to finish recovery</translation>
 <translation id="6790428901817661496">Play</translation>
@@ -9749,6 +9749,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8676313779986170923">Thank you for sending feedback.</translation>
 <translation id="8676374126336081632">Clear input</translation>
 <translation id="8676770494376880701">Low-power charger connected</translation>
+<translation id="8676985325915861058">Skip and set up new profile</translation>
 <translation id="8677212948402625567">Collapse all...</translation>
 <translation id="8678192320753081984">Provides Google’s strongest account security for people at risk of targeted attacks</translation>
 <translation id="8678378565142776698">Restart and get automatic updates</translation>

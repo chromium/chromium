@@ -502,6 +502,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="371230970611282515">Predicts and warns you about dangerous events before they happen.</translation>
 <translation id="3714981814255182093">Open the Find Bar</translation>
 <translation id="3716182511346448902">This page uses too much memory, so Chrome paused it.</translation>
+<translation id="3720422586473670527">No thanks</translation>
 <translation id="3721119614952978349">You and Google</translation>
 <translation id="3737319253362202215">Translation settings</translation>
 <translation id="3737402728074743863">To use this device as a security key, set a screen lock</translation>
@@ -799,6 +800,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Downloading file…}other{Downloading # files…}}</translation>
 <translation id="5210286577605176222">Jump to the previous tab</translation>
 <translation id="5210365745912300556">Close tab</translation>
+<translation id="5216863793077689658">Your activity in Page Insights is saved in your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" />.</translation>
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5226378907213531272">You’ll unlock your screen every time you use the car</translation>
 <translation id="5227554086496586518">Tap to see search results</translation>

@@ -1492,6 +1492,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2131077480075264"><ph name="APP_NAME" /> не може да се инсталира, защото няма разрешение за импортиране на ресурси от <ph name="IMPORT_NAME" /></translation>
 <translation id="2133775869826239001">Изберете още функции за настройване</translation>
 <translation id="2133857665503360653">Нов опит за <ph name="FILE_NAME" /></translation>
+<translation id="2133939190018801302">Това приложение ще бъде инсталирано в понастоящем използвания от вас потребителски профил в Chrome. <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">Системни сертифициращи органи</translation>
 <translation id="21354425047973905">Скриване на ПИН кодовете</translation>
 <translation id="2135456203358955318">Лупа в прикрепен режим</translation>
@@ -2789,6 +2790,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3117362587799608430">Докинг станцията не е напълно съвместима</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Изпращането на <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" /> не бе успешно}other{Изпращането на <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" /> не бе успешно}}</translation>
 <translation id="3118319026408854581">Помощ за <ph name="PRODUCT_NAME" /></translation>
+<translation id="3118748462829336648">Отваряне на страничния панел</translation>
 <translation id="3119948370277171654">Какво съдържание/кой URL адрес предавахте?</translation>
 <translation id="3122464029669770682">Процесор</translation>
 <translation id="3122496702278727796">Неуспешно създаване на директория за данни</translation>
@@ -4219,6 +4221,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4274673989874969668">След като напуснете сайт, синхронизирането може да продължи до завършване на задачите, като например качване на снимки или изпращане на съобщение в чата</translation>
 <translation id="4275291496240508082">Звук при стартиране</translation>
 <translation id="4275397969489577657">Активиране на записването в регистрационен файл за потоците на събития</translation>
+<translation id="4275788652681621337">Затваряне на страничния панел</translation>
 <translation id="4275830172053184480">Рестартиране на устройството ви</translation>
 <translation id="4277434192562187284">Източник на конфигурацията чрез XML</translation>
 <translation id="4278390842282768270">Разрешено</translation>
@@ -5072,6 +5075,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4953808748584563296">Стандартен оранжев аватар</translation>
 <translation id="4955707703665801001">Видимост за „<ph name="FEATURE_NAME" />“</translation>
 <translation id="4955710816792587366">Изберете ПИН код</translation>
+<translation id="4958090327979461112">Управление на потребителските ви профили в Chrome</translation>
 <translation id="4959262764292427323">Паролите се запазват в профила ви в Google, за да можете да ги използвате на всяко устройство</translation>
 <translation id="4960020053211143927">Не се поддържа от някои приложения</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5652,6 +5656,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5436492226391861498">Изчаква се прокси тунел...</translation>
 <translation id="5436510242972373446">Търсене с <ph name="SITE_NAME" />:</translation>
 <translation id="5436575196282187764">Спомени от Google Снимки</translation>
+<translation id="5440425659852470030">Затваряне на страничния панел</translation>
 <translation id="544083962418256601">Създаване на преки пътища...</translation>
 <translation id="5441133529460183413">Уеб приложение, инсталирано от браузъра Chrome</translation>
 <translation id="5441292787273562014">Презареждане на страницата</translation>
@@ -7312,7 +7317,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6787097042755590313">Друг раздел</translation>
 <translation id="6787839852456839824">Клавишни комбинации</translation>
 <translation id="6788210894632713004">Разпакетирано разширение</translation>
-<translation id="678939393857169499">Активира новия дизайн за настолни компютри.</translation>
 <translation id="6789592661892473991">Хоризонтално разделяне</translation>
 <translation id="6789834167207639931">На следващия екран отново въведете паролата за профила си в Google, за да завършите възстановяването</translation>
 <translation id="6790428901817661496">Пускане</translation>
@@ -8064,6 +8068,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7384804382450832142">Свързване с Microsoft OneDrive</translation>
 <translation id="7385490373498027129">Всички файлове и локални данни за всички потребители на това устройство <ph name="DEVICE_TYPE" /> ще бъдат изтрити за постоянно.</translation>
 <translation id="7385854874724088939">При опита за печат нещо се обърка.  Моля, проверете принтера си и опитайте отново.</translation>
+<translation id="7387107590792462040">Изчакайте, докато инсталирането е в ход</translation>
 <translation id="7387273928653486359">Приемливо</translation>
 <translation id="7387951778417998929">За да използвате търсеща машина, различна от основната, въведете прекия ѝ път в адресната лента и натиснете предпочитаната от вас клавишна комбинация. Тук можете също да промените основната си търсеща машина.</translation>
 <translation id="7388209873137778229">Показани са само поддържаните устройства.</translation>
@@ -9208,6 +9213,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8260864402787962391">Мишка</translation>
 <translation id="8261378640211443080">Това разширение не е посочено в <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и може да е било добавено без ваше знание.</translation>
 <translation id="8261506727792406068">Изтриване</translation>
+<translation id="8262971894813353037">Активира новия дизайн за настолни компютри за потребителския уеб интерфейс. Обновяването на Chrome за 2023 г. също трябва да бъде активирано.</translation>
 <translation id="8263336784344783289">Наименувайте тази група</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> деактивира курсора на мишката ви.</translation>
 <translation id="8264024885325823677">Тази настройка се управлява от администратора ви.</translation>
@@ -10275,6 +10281,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9080175821499742274">Режимът „Икономия на памет“ освобождава памет от неактивните раздели, за да може да се използва от активните раздели и другите приложения.</translation>
 <translation id="9080971985541434310">прогнозира интересите ви – Chrome може да прогнозира интересите ви</translation>
 <translation id="9081543426177426948">Сайтовете, които посещавате в режим „инкогнито“, не се запазват</translation>
+<translation id="9082750838489080452">Приложение: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Отваряне като прозорец</translation>
 <translation id="9085256200913095638">Дублиране на избрания раздел</translation>
 <translation id="9085446486797400519">Достъп до камерата</translation>
@@ -10443,6 +10450,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="924818813611903184">Управление на езиците в настройките на Chrome OS</translation>
 <translation id="925270020047573546">Предаването на звук от работен плот не се поддържа на това устройство.</translation>
 <translation id="925575170771547168">Съхраняваните от сайтовете данни в размер на <ph name="TOTAL_USAGE" /> ще бъдат изтрити</translation>
+<translation id="930193457234051160">Обновяване на потребителския уеб интерфейс на Chrome 2023 г.</translation>
 <translation id="930268624053534560">Подробни клейма за време</translation>
 <translation id="930551443325541578">Повтаряне на клавиши и ударения</translation>
 <translation id="930893132043726269">Понастоящем се използва роуминг</translation>

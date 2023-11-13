@@ -1497,6 +1497,7 @@
 <translation id="2131077480075264"><ph name="IMPORT_NAME" />에서 허용하지 않으므로 '<ph name="APP_NAME" />'을(를) 설치할 수 없습니다.</translation>
 <translation id="2133775869826239001">설정할 기능 더 선택</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> 다시 시도</translation>
+<translation id="2133939190018801302">이 애플리케이션이 현재 사용하는 Chrome 프로필에 설치됩니다. <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">시스템 CA</translation>
 <translation id="21354425047973905">PIN 숨기기</translation>
 <translation id="2135456203358955318">고정 돋보기</translation>
@@ -2795,6 +2796,7 @@
 <translation id="3117362587799608430">도크가 완전히 호환되지 않음</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에 <ph name="ATTACHMENTS" /> 전송 실패}other{<ph name="DEVICE_NAME" />에 <ph name="ATTACHMENTS" /> 전송 실패}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> 도움말</translation>
+<translation id="3118748462829336648">측면 패널 열기</translation>
 <translation id="3119948370277171654">어떤 콘텐츠/URL을 전송하고 계셨나요?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">데이터 디렉터리 만들기 실패</translation>
@@ -4222,6 +4224,7 @@
 <translation id="4274673989874969668">사이트에서 나간 후에도 사이트가 동기화를 계속하여 사진 업로드나 채팅 메시지 전송과 같은 작업을 마무리합니다.</translation>
 <translation id="4275291496240508082">시작 알림음</translation>
 <translation id="4275397969489577657">이벤트 스트림 로깅 사용</translation>
+<translation id="4275788652681621337">측면 패널 닫기</translation>
 <translation id="4275830172053184480">기기 다시 시작</translation>
 <translation id="4277434192562187284">XML 구성 소스</translation>
 <translation id="4278390842282768270">허용됨</translation>
@@ -5075,6 +5078,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4953808748584563296">기본 주황색 아바타</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> 공개 상태</translation>
 <translation id="4955710816792587366">PIN 선택</translation>
+<translation id="4958090327979461112">Chrome 프로필 관리</translation>
 <translation id="4959262764292427323">어느 기기에서나 사용할 수 있도록 비밀번호가 Google 계정에 저장됩니다.</translation>
 <translation id="4960020053211143927">일부 앱에서 지원되지 않습니다.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5655,6 +5659,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5436492226391861498">프록시 터널을 기다리는 중...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> 검색:</translation>
 <translation id="5436575196282187764">Google 포토 추억</translation>
+<translation id="5440425659852470030">측면 패널 닫기</translation>
 <translation id="544083962418256601">바로가기 만들기...</translation>
 <translation id="5441133529460183413">Chrome 브라우저에서 설치된 웹 앱</translation>
 <translation id="5441292787273562014">페이지 새로고침</translation>
@@ -7314,7 +7319,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6787097042755590313">다른 탭</translation>
 <translation id="6787839852456839824">단축키</translation>
 <translation id="6788210894632713004">압축해제된 확장 프로그램</translation>
-<translation id="678939393857169499">새 데스크톱 디자인을 사용 설정합니다.</translation>
 <translation id="6789592661892473991">수평 분할</translation>
 <translation id="6789834167207639931">복구를 완료할 수 있도록 다음 화면에서 Google 계정 비밀번호를 다시 입력해 주세요</translation>
 <translation id="6790428901817661496">재생</translation>
@@ -8066,6 +8070,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7384804382450832142">Microsoft OneDrive에 연결</translation>
 <translation id="7385490373498027129">이 <ph name="DEVICE_TYPE" /> 기기 내 모든 사용자의 파일 및 로컬 데이터가 영구적으로 삭제됩니다.</translation>
 <translation id="7385854874724088939">인쇄를 시도하는 동안 문제가 발생했습니다. 프린터를 점검한 다음 다시 시도해 보세요.</translation>
+<translation id="7387107590792462040">설치가 진행되는 동안 잠시 기다려 주세요</translation>
 <translation id="7387273928653486359">양호함</translation>
 <translation id="7387951778417998929">기본 검색엔진이 아닌 다른 검색엔진을 사용하려면 주소 표시줄에 사용할 검색엔진의 바로가기를 입력한 다음 원하는 단축키를 누르세요. 여기에서 기본 검색엔진을 변경할 수도 있습니다.</translation>
 <translation id="7388209873137778229">지원되는 기기만 표시됩니다.</translation>
@@ -9210,6 +9215,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8260864402787962391">마우스</translation>
 <translation id="8261378640211443080">이 확장 프로그램은 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않으며 사용자 모르게 추가되었을 수 있습니다.</translation>
 <translation id="8261506727792406068">삭제</translation>
+<translation id="8262971894813353037">WebUI의 새로운 데스크톱 디자인을 사용 설정합니다. Chrome Refresh 2023도 사용 설정해야 합니다.</translation>
 <translation id="8263336784344783289">그룹 이름 지정</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />에서 마우스 커서를 사용 중지했습니다.</translation>
 <translation id="8264024885325823677">관리자가 관리하는 설정입니다.</translation>
@@ -10277,6 +10283,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9080175821499742274">메모리 절약 모드는 활성 탭과 기타 앱에 사용할 수 있도록 비활성 탭에서 메모리를 확보합니다.</translation>
 <translation id="9080971985541434310">관심분야를 예측합니다. Chrome에서 내 관심분야를 예측합니다.</translation>
 <translation id="9081543426177426948">시크릿 모드에서는 방문한 사이트가 저장되지 않음</translation>
+<translation id="9082750838489080452">애플리케이션: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">창으로 열기</translation>
 <translation id="9085256200913095638">선택한 탭 복사</translation>
 <translation id="9085446486797400519">카메라 액세스</translation>
@@ -10445,6 +10452,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="924818813611903184">ChromeOS 설정에서 언어 관리</translation>
 <translation id="925270020047573546">이 기기에서는 데스크톱 오디오를 전송할 수 없습니다</translation>
 <translation id="925575170771547168">사이트에서 저장한 <ph name="TOTAL_USAGE" />의 데이터가 삭제됩니다.</translation>
+<translation id="930193457234051160">Chrome WebUI Refresh 2023</translation>
 <translation id="930268624053534560">상세 타임스탬프</translation>
 <translation id="930551443325541578">키 및 악센트 표시 반복</translation>
 <translation id="930893132043726269">현재 로밍 중</translation>

@@ -1216,6 +1216,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7367530036083223701">Безбедно приступајте лозинкама са почетног екрана помоћу виџета Менаџер лозинки.</translation>
 <translation id="7380220816562673297">За сада лозинке можете да делите само са члановима породице. <ph name="BEGIN_LINK" />Направите групу за породицу<ph name="END_LINK" /> са највише 6 чланова и добијте више из производа и претплата у свим Google услугама.</translation>
 <translation id="7383797227493018512">Листа за читање</translation>
+<translation id="739101637685146669">Који URL желите да обележите?</translation>
 <translation id="7396331865858820922">Лозинка се не дели</translation>
 <translation id="7398893703713203428">Create Link (Направи линк)</translation>
 <translation id="7399802613464275309">Безбедносна провера</translation>
@@ -1451,6 +1452,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8591976964826315682">Блокирајте колачиће трећих страна у режиму без архивирања</translation>
 <translation id="8593565399399144771">Овде можете да отворите нову картицу.</translation>
 <translation id="8605219856220328675">Затвори картицу.</translation>
+<translation id="8609743333007776886">Додај ${url} у обележиваче</translation>
 <translation id="8613883225817609844">Сакриј опцију Недавне картице</translation>
 <translation id="8620640915598389714">Измени</translation>
 <translation id="8624447588354561276">Број пакета</translation>

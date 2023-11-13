@@ -226,6 +226,7 @@
 <translation id="5352264705793813212">Chromium таны шалгавал зохих аюулгүй байдлын зарим зөвлөмжийг оллоо</translation>
 <translation id="5358375970380395591">Та удирдан ажиллаж буй хаягт нэвтэрч байгаагаас гадна таны Chromium профайлыг хянах эрхийг системийн ажилтанд шилжүүлж байна. Таны апп, хавчуурга, түүх, нууц үг болон бусад тохиргоо гэх мэт таны Chromium өгөгдлийг <ph name="USER_NAME" />-тэй холбох болно. Та энэхүү өгөгдлийг Google Accounts Dashboard-р дамжуулан устгах боломжтой боловч та энэхүү өгөгдлийн өөр хаягтай холбох боломжгүй байна. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Нэмэлт код: <ph name="EXTRA_CODE" />.</translation>
+<translation id="5383439451358640070">Chromium зарим файлыг яагаад блоклодог болохыг мэдэж авах</translation>
 <translation id="5386450000063123300">Chromium-г шинэчилж байна (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium-д нэвтрэхийг зөвшөөрөх</translation>
 <translation id="5398878173008909840">Ашиглах боломжтой Chromium-ийн шинэ хувилбар байна.</translation>
@@ -394,6 +395,7 @@
 <translation id="800195749539500647">Chromium-г бүрэн ашиглаарай</translation>
 <translation id="8013436988911883588">Chromium-д хандалт олгосны дараа веб сайтууд таны хандалтыг асуух боломжтой болно.</translation>
 <translation id="80471789339884597">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө бүх хөтчөө дахин эхлүүлэх ёстой.</translation>
+<translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium-д энэ сайтад зориулж байршлын зөвшөөрөл шаардлагатай</translation>
 <translation id="8133124826068723441">Синк нь таны домэйнд боломжгүй тул ChromiumOS таны өгөгдлийг синк хийж чадсангүй.</translation>
 <translation id="813913629614996137">Эхлүүлж байна…</translation>

@@ -1216,6 +1216,7 @@
 <translation id="7367530036083223701">パスワード マネージャー ウィジェットを使用すると、ホーム画面からパスワードに安全にアクセスできます。</translation>
 <translation id="7380220816562673297">現在のところ、パスワードはファミリー メンバーとのみ共有できます。最大 6 人のメンバーを招待して<ph name="BEGIN_LINK" />ファミリー グループを作成<ph name="END_LINK" />すると、Google のさまざまなサービスやサブスクリプションをさらに活用できます。</translation>
 <translation id="7383797227493018512">リーディング リスト</translation>
+<translation id="739101637685146669">ブックマークする URL を指定してください。</translation>
 <translation id="7396331865858820922">パスワードは共有されませんでした</translation>
 <translation id="7398893703713203428">リンクを作成</translation>
 <translation id="7399802613464275309">安全チェック</translation>
@@ -1451,6 +1452,7 @@
 <translation id="8591976964826315682">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="8593565399399144771">ここで新しいタブを開くことができます。</translation>
 <translation id="8605219856220328675">タブを閉じる。</translation>
+<translation id="8609743333007776886">${url} をブックマークに追加する</translation>
 <translation id="8613883225817609844">最近使ったタブを非表示</translation>
 <translation id="8620640915598389714">編集</translation>
 <translation id="8624447588354561276">荷物番号</translation>

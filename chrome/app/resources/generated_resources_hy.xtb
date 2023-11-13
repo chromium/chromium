@@ -843,6 +843,7 @@
 <translation id="1641113438599504367">Անվտանգ դիտարկում</translation>
 <translation id="1641496881756082050">«<ph name="NETWORK_NAME" />» քարտին առնչվող այլ գործողություններ</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 այլ գաղտնաբառ չի ներմուծվել, քանի որ այն սխալ կերպով է ֆորմատավորվել}one{{NUM_PASSWORDS} այլ գաղտնաբառ չի ներմուծվել, քանի որ այն սխալ կերպով է ֆորմատավորվել}other{{NUM_PASSWORDS} այլ գաղտնաբառ չի ներմուծվել, քանի որ դրանք սխալ կերպով են ֆորմատավորվել}}</translation>
+<translation id="1642299742557467312">Այս ֆայլը կարող է վնասել ձեր սարքը</translation>
 <translation id="1642492862748815878">Կապ է հաստատվել «<ph name="DEVICE" />» ու <ph name="NUMBER_OF_DEVICES" /> այլ Bluetooth սարքերի հետ</translation>
 <translation id="1642494467033190216">Հարկավոր է հեռացնել rootfs պաշտպանությունը և վերագործարկել՝ մինչ այլ վրիպազերծման գործառույթները միացնելը:</translation>
 <translation id="1643072738649235303">X9.62 ECDSA ստորագրություն SHA-1-ով</translation>
@@ -1486,6 +1487,7 @@
 <translation id="2131077480075264">Անհնար է տեղադրել «<ph name="APP_NAME" />» հավելվածը, քանի որ այն արգելված է «<ph name="IMPORT_NAME" />»-ի կողմից</translation>
 <translation id="2133775869826239001">Ընտրեք ավելի շատ գործառույթներ՝ կարգավորելու համար</translation>
 <translation id="2133857665503360653">Նորից փորձել <ph name="FILE_NAME" /> ֆայլը</translation>
+<translation id="2133939190018801302">Այս հավելվածը կտեղադրվի Chrome պրոֆիլում, որը ներկայումս օգտագործում եք։ <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">Համակարգի հավաստագրման կենտրոններ</translation>
 <translation id="21354425047973905">Թաքցնել PIN կոդերը</translation>
 <translation id="2135456203358955318">Ամրացված խոշորացույց</translation>
@@ -2778,6 +2780,7 @@
 <translation id="3117362587799608430">Դոկ-կայանն ամբողջությամբ համատեղելի չէ</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Չհաջողվեց <ph name="ATTACHMENTS" /> ուղարկել <ph name="DEVICE_NAME" /> սարքին}one{Չհաջողվեց <ph name="ATTACHMENTS" /> ուղարկել <ph name="DEVICE_NAME" /> սարքին}other{Չհաջողվեց <ph name="ATTACHMENTS" /> ուղարկել <ph name="DEVICE_NAME" /> սարքին}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Help</translation>
+<translation id="3118748462829336648">Բացել կողային վահանակը</translation>
 <translation id="3119948370277171654">Ի՞նչ բովանդակություն/URL էիք հեռարձակում։</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Չհաջողվեց ստեղծել տվյալների գրացուցակը</translation>
@@ -4070,6 +4073,7 @@
 <translation id="4148195018520464922">Դուք կարող եք թույլատրել մուտքը միայն որոշակի օգտատերերի։ Այդ դեպքում մուտքի էկրանից կհեռացվի «Ավելացնել օգտատեր» ընտրանքը։ Դուք նաև կարող եք հեռացնել առկա օգտատերերին։</translation>
 <translation id="4148957013307229264">Տեղադրում…</translation>
 <translation id="4150201353443180367">Էկրան</translation>
+<translation id="4150417452770391330">Միացրեք տեսախցիկ</translation>
 <translation id="4150569944729499860">Էկրանի համատեքստ</translation>
 <translation id="4151449637210235443">Պատմեք մեզ խաղային ձեր վերջին փորձառության մասին</translation>
 <translation id="4151503145138736576">Անցանց հիշողությունը դատարկ է</translation>
@@ -4170,6 +4174,7 @@
 <translation id="4244238649050961491">Որոնել ստիլուսի համար այլ հավելվածներ</translation>
 <translation id="4246980464509998944">Լրացուցիչ մեկնաբանություններ՝</translation>
 <translation id="424726838611654458">Միշտ բացել Adobe Reader-ում</translation>
+<translation id="4248401726442101648">Տեսախցիկ միացված չէ</translation>
 <translation id="4249248555939881673">Սպասում է ցանցի կապակցմանը…</translation>
 <translation id="4249373718504745892">Այս էջին արգելված է օգտագործել ձեր տեսախցիկն ու խոսափողը:</translation>
 <translation id="424963718355121712">Հավելվածները պետք է բեռնվեն այն կայքից, որի հետ աշխատում են</translation>
@@ -4207,6 +4212,7 @@
 <translation id="4274673989874969668">Երբ կայքից դուրս գաք, համաժամացումը կարող է շարունակվել այնքան ժամանակ, մինչև առաջադրանքները (օրինակ՝ լուսանկարների վերբեռնումը և հաղորդագրության ուղարկումը) չավարտվեն</translation>
 <translation id="4275291496240508082">Գործարկման ձայնը</translation>
 <translation id="4275397969489577657">Միացնել միջոցառումների հոսքի գրանցումը</translation>
+<translation id="4275788652681621337">Փակել կողային վահանակը</translation>
 <translation id="4275830172053184480">Սարքի վերագործարկում:</translation>
 <translation id="4277434192562187284">XML-ի կազմաձևման աղբյուր</translation>
 <translation id="4278390842282768270">Թույլատրված է</translation>
@@ -4291,6 +4297,7 @@
 <translation id="4345457680916430965">&amp;Բացել <ph name="APP" /> հավելվածում</translation>
 <translation id="4345587454538109430">Կազմաձևել…</translation>
 <translation id="4345732373643853732">Սերվերում չկա այսպիսի օգտանուն</translation>
+<translation id="4346159263667201092">Ավելացնել լրացուցիչ տվյալներ</translation>
 <translation id="4348426576195894795">Եթե հեռացնեք այս հաշիվը, Chrome-ի՝ այս հաշվով գրանցված բոլոր պրոֆիլները նույնպես կջնջվեն։</translation>
 <translation id="4348766275249686434">Հավաքել տվյալներ սխալների մասին</translation>
 <translation id="4349828822184870497">Օգտակար էր</translation>
@@ -4375,6 +4382,7 @@
 <translation id="4406883609789734330">Կենդանի ենթագրեր</translation>
 <translation id="4407039574263172582">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK" />օգտագործման պայմաններին<ph name="END_LINK" />։</translation>
 <translation id="4408599188496843485">Օգ&amp;նություն</translation>
+<translation id="4408965460206576430">Այս ֆայլը վնասագիր է պարունակում կամ կասկածելի կայքից է</translation>
 <translation id="4409271659088619928">Դուք օգտագործում եք <ph name="DSE" /> որոնողական համակարգը։ Որոնումների պատմությունը ջնջելու համար կարդացեք համապատասխան ցուցումները։</translation>
 <translation id="4409697491990005945">Լուսանցքներ</translation>
 <translation id="4409779593816003679">Գաղտնաբառեր և &amp;ինքնալրացում</translation>
@@ -5060,6 +5068,7 @@
 <translation id="4953808748584563296">Կանխադրված նարնջագույն ավատար</translation>
 <translation id="4955707703665801001">«<ph name="FEATURE_NAME" />» գործառույթի տեսանելիությունը</translation>
 <translation id="4955710816792587366">Ընտրեք ձեր PIN-ը</translation>
+<translation id="4958090327979461112">Կառավարել իմ Chrome պրոֆիլները</translation>
 <translation id="4959262764292427323">Գաղտնաբառերը պահվում են ձեր Google հաշվում, որպեսզի կարողանաք օգտագործել դրանք ցանկացած սարքում</translation>
 <translation id="4960020053211143927">Չի աջակցվում որոշ հավելվածների կողմից</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5642,6 +5651,7 @@
 <translation id="5436492226391861498">Պրոքսիի ուղու ստեղծման սպասում…</translation>
 <translation id="5436510242972373446">Որոնել <ph name="SITE_NAME" />-ը՝</translation>
 <translation id="5436575196282187764">Հիշողություններ Google Լուսանկարներից</translation>
+<translation id="5440425659852470030">Փակել կողային վահանակը</translation>
 <translation id="544083962418256601">Ստեղծել դյուրանցումներ…</translation>
 <translation id="5441133529460183413">Վեբ հավելվածը տեղադրվել է Chrome դիտարկիչից</translation>
 <translation id="5441292787273562014">Նորից բեռնել էջը</translation>
@@ -7300,7 +7310,6 @@
 <translation id="6787097042755590313">Այլ ներդիր</translation>
 <translation id="6787839852456839824">Ստեղնային դյուրանցումներ</translation>
 <translation id="6788210894632713004">Չփաթեթավորված ընդլայնում</translation>
-<translation id="678939393857169499">Միացնում է աշխատասեղանի նոր դիզայնը։</translation>
 <translation id="6789592661892473991">Հորիզոնական տրոհում</translation>
 <translation id="6789834167207639931">Վերականգնումն ավարտելու համար հաջորդ էկրանին նորից մուտքագրեք ձեր Google հաշվի գաղտնաբառը</translation>
 <translation id="6790428901817661496">Նվագարկել</translation>
@@ -8051,6 +8060,7 @@
 <translation id="7384804382450832142">Միացեք Microsoft OneDrive-ին</translation>
 <translation id="7385490373498027129">Այս <ph name="DEVICE_TYPE" /> սարքի բոլոր օգտատերերի ֆայլերն ու տեղային տվյալները ընդմիշտ կջնջվեն։</translation>
 <translation id="7385854874724088939">Տպման ընթացքում սխալ առաջացավ: Ստուգեք տպիչը և կրկին փորձեք:</translation>
+<translation id="7387107590792462040">Սպասեք, մինչև տեղադրումն ավարտվի</translation>
 <translation id="7387273928653486359">Ընդունելի</translation>
 <translation id="7387951778417998929">Կանխադրված որոնողական համակարգի փոխարեն մեկ ուրիշն օգտագործելու համար հասցեագոտում մուտքագրեք դրա դյուրանցումը, ապա՝ ձեր նախընտրած ստեղնային դյուրանցումը։ Այստեղ կարող եք նաև փոխել ձեր կանխադրված որոնողական համակարգը։</translation>
 <translation id="7388209873137778229">Ցուցադրվում են միայն աջակցվող սարքերը։</translation>
@@ -9193,6 +9203,7 @@
 <translation id="8260864402787962391">Մկնիկ</translation>
 <translation id="8261378640211443080">Այս ընդլայնումը նշված չէ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-ում և կարող է ավելացվել առանց ձեր իմացության:</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
+<translation id="8262971894813353037">Միացնում է աշխատասեղանի նոր դիզայն վեբ միջերեսի համար։ Հարկավոր է նաև միացնել Chrome Refresh 2023-ը։</translation>
 <translation id="8263336784344783289">Անվանեք այս խումբը</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />-ն անջատել է մկնիկի նշորդը:</translation>
 <translation id="8264024885325823677">Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից։</translation>
@@ -10261,6 +10272,7 @@
 <translation id="9080175821499742274">Հիշողության տնտեսման ռեժիմը ազատում է ոչ ակտիվ ներդիրների հիշողությունը, որպեսզի այն օգտագործվի ակտիվ ներդիրների և այլ հավելվածների կողմից։</translation>
 <translation id="9080971985541434310">գնահատում է ձեր հետաքրքրությունները – Chrome-ը կարող է գնահատել ձեր հետաքրքրությունները</translation>
 <translation id="9081543426177426948">Ինկոգնիտո ռեժիմում այցելած կայքերի մասին տեղեկությունները չեն պահվում</translation>
+<translation id="9082750838489080452">Հավելված՝ <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Բացել որպես պատուհան</translation>
 <translation id="9085256200913095638">Կրկնօրինակել ընտրված ներդիրը</translation>
 <translation id="9085446486797400519">Տեսախցիկի հասանելիություն</translation>
@@ -10429,6 +10441,7 @@
 <translation id="924818813611903184">Կառավարել լեզուները ChromeOS-ի կարգավորումներում</translation>
 <translation id="925270020047573546">Համակարգչից ձայնի հեռարձակումն այս սարքում չի աջակցվում։</translation>
 <translation id="925575170771547168">Կայքերի կողմից պահված <ph name="TOTAL_USAGE" /> ծավալով տվյալները կջնջվեն</translation>
+<translation id="930193457234051160">Chrome WebUI Refresh 2023</translation>
 <translation id="930268624053534560">Մանրամասն ժամադրոշմներ</translation>
 <translation id="930551443325541578">Մուտքագրման կրկնություն և առոգանության նշաններ</translation>
 <translation id="930893132043726269">Այս պահին ռոումինգում է</translation>

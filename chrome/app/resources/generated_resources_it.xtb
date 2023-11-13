@@ -1484,6 +1484,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2131077480075264">Impossibile installare "<ph name="APP_NAME" />" perché non è consentita da "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2133775869826239001">Scegli altre funzionalità da configurare</translation>
 <translation id="2133857665503360653">Riprova l'azione per il file <ph name="FILE_NAME" /></translation>
+<translation id="2133939190018801302">Questa applicazione verrà installata sul profilo Chrome attualmente in uso. <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">CA del sistema</translation>
 <translation id="21354425047973905">Nascondi i codici PIN</translation>
 <translation id="2135456203358955318">Lente d'ingrandimento ancorata</translation>
@@ -2778,6 +2779,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3117362587799608430">Il dock non è del tutto compatibile</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Impossibile inviare <ph name="ATTACHMENTS" /> al dispositivo <ph name="DEVICE_NAME" />}other{Impossibile inviare <ph name="ATTACHMENTS" /> al dispositivo <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581">Guida di <ph name="PRODUCT_NAME" /></translation>
+<translation id="3118748462829336648">Apri riquadro laterale</translation>
 <translation id="3119948370277171654">Quali contenuti/URL stavi trasmettendo?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Creazione directory dati non riuscita</translation>
@@ -4207,6 +4209,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4274673989874969668">Dopo aver chiuso un sito, il sito può continuare la sincronizzazione per terminare attività come il caricamento di foto o l'invio di un messaggio di chat</translation>
 <translation id="4275291496240508082">Suono avvio</translation>
 <translation id="4275397969489577657">Abilita la registrazione del flusso di eventi</translation>
+<translation id="4275788652681621337">Chiudi riquadro laterale</translation>
 <translation id="4275830172053184480">Riavvia il dispositivo</translation>
 <translation id="4277434192562187284">Origine della configurazione XML</translation>
 <translation id="4278390842282768270">Autorizzazione consentita</translation>
@@ -5059,6 +5062,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4953808748584563296">Avatar arancione predefinito</translation>
 <translation id="4955707703665801001">Visibilità della funzionalità <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Scegli il PIN</translation>
+<translation id="4958090327979461112">Gestisci i profili Chrome</translation>
 <translation id="4959262764292427323">Le password vengono salvate nel tuo Account Google affinché tu possa usarle su qualsiasi dispositivo</translation>
 <translation id="4960020053211143927">Non supportata da alcune app</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5639,6 +5643,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5436492226391861498">In attesa del tunnel proxy...</translation>
 <translation id="5436510242972373446">Cerca su <ph name="SITE_NAME" />:</translation>
 <translation id="5436575196282187764">Ricordi di Google Foto</translation>
+<translation id="5440425659852470030">Chiudi riquadro laterale</translation>
 <translation id="544083962418256601">Crea scorciatoie...</translation>
 <translation id="5441133529460183413">App web installata dal browser Chrome</translation>
 <translation id="5441292787273562014">Ricarica pagina</translation>
@@ -7295,7 +7300,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6787097042755590313">Un'altra scheda</translation>
 <translation id="6787839852456839824">Scorciatoie da tastiera</translation>
 <translation id="6788210894632713004">Estensione non pacchettizzata</translation>
-<translation id="678939393857169499">Consente di attivare il nuovo design desktop.</translation>
 <translation id="6789592661892473991">Divisione in orizzontale</translation>
 <translation id="6789834167207639931">Inserisci di nuovo la password del tuo Account Google nella prossima schermata per completare il ripristino</translation>
 <translation id="6790428901817661496">Riproduci</translation>
@@ -8047,6 +8051,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7384804382450832142">Collegati a Microsoft OneDrive</translation>
 <translation id="7385490373498027129">Tutti i file e i dati locali di tutti gli utenti su questo <ph name="DEVICE_TYPE" /> verranno eliminati in modo permanente.</translation>
 <translation id="7385854874724088939">Si è verificato un problema durante il tentativo di stampa. Controlla la stampante e riprova.</translation>
+<translation id="7387107590792462040">Attendi mentre è in corso l'installazione</translation>
 <translation id="7387273928653486359">Accettabile</translation>
 <translation id="7387951778417998929">Per usare un motore di ricerca diverso da quello predefinito, digita la relativa scorciatoia nella barra degli indirizzi seguita dalla tua scorciatoia da tastiera preferita. Puoi anche modificare il tuo motore di ricerca predefinito qui.</translation>
 <translation id="7388209873137778229">Sono visualizzati solo i dispositivi supportati.</translation>
@@ -9191,6 +9196,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8260864402787962391">Mouse</translation>
 <translation id="8261378640211443080">Questa estensione non è elencata nel <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e potrebbe essere stata aggiunta a tua insaputa.</translation>
 <translation id="8261506727792406068">Elimina</translation>
+<translation id="8262971894813353037">Consente di attivare il nuovo design desktop per WebUI. È necessario attivare anche l'aggiornamento di Chrome 2023.</translation>
 <translation id="8263336784344783289">Assegna un nome a questo gruppo</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> ha disattivato il puntatore del mouse.</translation>
 <translation id="8264024885325823677">Questa impostazione è gestita dall'amministratore.</translation>
@@ -10258,6 +10264,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9080175821499742274">La funzionalità Risparmio memoria libera memoria dalle schede non attive affinché possa essere usata da schede attive e altre app.</translation>
 <translation id="9080971985541434310">stima i tuoi interessi - Chrome può stimare i tuoi interessi</translation>
 <translation id="9081543426177426948">I siti che visiti non vengono salvati in modalità di navigazione in incognito</translation>
+<translation id="9082750838489080452">Applicazione: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Apri in una finestra</translation>
 <translation id="9085256200913095638">Duplica scheda selezionata</translation>
 <translation id="9085446486797400519">Accesso alla fotocamera</translation>
@@ -10426,6 +10433,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="924818813611903184">Gestisci le lingue nelle impostazioni di ChromeOS</translation>
 <translation id="925270020047573546">La trasmissione dell'audio del computer non è supportata su questo dispositivo.</translation>
 <translation id="925575170771547168">Questa operazione comporterà l'eliminazione di <ph name="TOTAL_USAGE" /> di dati memorizzati dai siti</translation>
+<translation id="930193457234051160">Aggiornamento della UI web di Chrome 2023</translation>
 <translation id="930268624053534560">Timestamp dettagliati</translation>
 <translation id="930551443325541578">Ripeti tasti e accenti</translation>
 <translation id="930893132043726269">Roaming attualmente attivo</translation>

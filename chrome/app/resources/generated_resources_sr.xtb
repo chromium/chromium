@@ -840,6 +840,7 @@
 <translation id="1641113438599504367">Безбедно прегледање</translation>
 <translation id="1641496881756082050">Још радњи за <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Није увезена још 1 лозинка јер је неправилно форматирана}one{Није увезена још {NUM_PASSWORDS} лозинка јер је неправилно форматирана}few{Нису увезене још {NUM_PASSWORDS} лозинке јер су неправилно форматиране}other{Није увезено још {NUM_PASSWORDS} лозинки јер су неправилно форматиране}}</translation>
+<translation id="1642299742557467312">Овај фајл може да нашкоди уређају</translation>
 <translation id="1642492862748815878">Повезани сте са уређајем <ph name="DEVICE" /> и још <ph name="NUMBER_OF_DEVICES" /> Bluetooth уређаја</translation>
 <translation id="1642494467033190216">Да бисте омогућили друге функције за отклањање грешака, морате да уклоните rootfs заштиту и да рестартујете уређај.</translation>
 <translation id="1643072738649235303">Потпис X9.62 ECDSA путем SHA-1</translation>
@@ -4070,6 +4071,7 @@
 <translation id="4148195018520464922">Можете да ограничите пријављивање на одређене кориснике. Тиме се уклања опција Додај особу са екрана за пријављивање. Можете да уклоните и актуелне кориснике.</translation>
 <translation id="4148957013307229264">Инсталирање...</translation>
 <translation id="4150201353443180367">Екран</translation>
+<translation id="4150417452770391330">Повежите камеру</translation>
 <translation id="4150569944729499860">Контекст екрана</translation>
 <translation id="4151449637210235443">Поделите са нама утиске о недавној игри</translation>
 <translation id="4151503145138736576">Нема офлајн меморијског простора за ослобађање</translation>
@@ -4170,6 +4172,7 @@
 <translation id="4244238649050961491">Пронађи још апликација за писаљку</translation>
 <translation id="4246980464509998944">Додатни коментари:</translation>
 <translation id="424726838611654458">Увек отвори у Adobe Reader-у</translation>
+<translation id="4248401726442101648">Није повезана ниједна камера</translation>
 <translation id="4249248555939881673">Чека се мрежна веза...</translation>
 <translation id="4249373718504745892">Овој страници је забрањен приступ камери и микрофону.</translation>
 <translation id="424963718355121712">Апликације морају да се приказују са хоста на који утичу</translation>
@@ -4292,6 +4295,7 @@
 <translation id="4345457680916430965">Отвори у: <ph name="APP" /></translation>
 <translation id="4345587454538109430">Конфигуриши...</translation>
 <translation id="4345732373643853732">Сервер не препознаје корисничко име</translation>
+<translation id="4346159263667201092">Додајте опционалне детаље</translation>
 <translation id="4348426576195894795">Уклањањем овог налога избрисаћете и све Chrome профиле пријављене помоћу овог налога</translation>
 <translation id="4348766275249686434">Прикупљај грешке</translation>
 <translation id="4349828822184870497">Корисно</translation>
@@ -4376,6 +4380,7 @@
 <translation id="4406883609789734330">Титл уживо</translation>
 <translation id="4407039574263172582">Да бисте наставили, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ће делити ваше име, имејл адресу и слику профила са овим сајтом. Погледајте <ph name="BEGIN_LINK" />Услове коришћења услуге<ph name="END_LINK" /> за овај сајт.</translation>
 <translation id="4408599188496843485">П&amp;омоћ</translation>
+<translation id="4408965460206576430">Овај фајл садржи малвер или потиче са сумњивог сајта</translation>
 <translation id="4409271659088619928">Ваш претраживач је <ph name="DSE" />. Погледајте упутства тог претраживача за брисање историје претраге ако је то примењиво.</translation>
 <translation id="4409697491990005945">Маргине</translation>
 <translation id="4409779593816003679">Лозинке и аутоматско попуњавање</translation>
@@ -7305,7 +7310,6 @@
 <translation id="6787097042755590313">Друге картице</translation>
 <translation id="6787839852456839824">Тастерске пречице</translation>
 <translation id="6788210894632713004">Отпакован додатак</translation>
-<translation id="678939393857169499">Омогућава нови дизајн екрана.</translation>
 <translation id="6789592661892473991">Подели хоризонтално</translation>
 <translation id="6789834167207639931">На следећем екрану поново унесите лозинку за Google налог да бисте довршили опоравак</translation>
 <translation id="6790428901817661496">Пусти</translation>

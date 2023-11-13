@@ -107,6 +107,7 @@
 <translation id="5048795749726991615">保存したパスワードを他のアプリでも簡単に利用するには、Chromium の自動入力を使用します</translation>
 <translation id="5076601183701536878">Chromium の閲覧データを削除する</translation>
 <translation id="5131565040785979529">組織（<ph name="DOMAIN" />）が、ログインしているアカウントと Chromium の使用方法を管理しています。</translation>
+<translation id="5146749061471423558">Chromium にブックマークを追加する</translation>
 <translation id="5171868502429358653">Chromium にログイン</translation>
 <translation id="5213683223491576284">Chromium でパスワード マネージャーを開きます。</translation>
 <translation id="5224391634244552924">保存されているパスワードがありません。パスワードを保存すると、Chromium で確認できるようになります。</translation>
@@ -114,6 +115,7 @@
 
         数分待ってからログアウトしてください。今すぐログアウトすると、このデータは削除されます。</translation>
 <translation id="5308226104666789935">Chromium でアップデートを確認できません</translation>
+<translation id="5311557153294205270">入力した URL を Chromium のブックマークに追加します。</translation>
 <translation id="5396916991083608703">Chromium を既定に設定しますか？</translation>
 <translation id="5453478652154926037">現在、Chromium ではパスワードをチェックできません。</translation>
 <translation id="5521125884468363740">どのデバイスからでも Chromium で自分のタブにアクセスするには、ログインして同期をオンにしてください</translation>
