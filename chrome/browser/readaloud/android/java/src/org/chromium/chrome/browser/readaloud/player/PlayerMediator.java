@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
+import org.chromium.chrome.modules.readaloud.contentjs.Highlighter.Mode;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator class in charge of updating player UI property model. */
@@ -86,6 +87,7 @@ class PlayerMediator implements InteractionHandler {
             mPlayback.addListener(mPlaybackListener);
             mModel.set(PlayerProperties.TITLE, mPlayback.getMetadata().title());
             mModel.set(PlayerProperties.PUBLISHER, mPlayback.getMetadata().publisher());
+            onSpeedChange(ReadAloudPrefs.getSpeed(mDelegate.getPrefService()));
         }
     }
 
@@ -160,6 +162,11 @@ class PlayerMediator implements InteractionHandler {
     public void onSpeedChange(float newSpeed) {
         ReadAloudPrefs.setSpeed(mDelegate.getPrefService(), newSpeed);
         mPlayback.setRate(newSpeed);
+        if (newSpeed >= 2.0f) {
+            mDelegate.setHighlighterMode(Mode.TEXT_HIGHLIGHTING_MODE_PARAGRAPH);
+        } else {
+            mDelegate.setHighlighterMode(Mode.TEXT_HIGHLIGHTING_MODE_WORD);
+        }
     }
 
     @Override

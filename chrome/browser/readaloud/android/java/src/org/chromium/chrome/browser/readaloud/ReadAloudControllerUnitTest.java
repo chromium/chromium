@@ -511,4 +511,15 @@ public class ReadAloudControllerUnitTest {
         assertTrue(mController.isReadable(mTab));
         assertTrue(mController.timepointsSupported(mTab));
     }
+
+    @Test
+    public void testSetHighlighterMode() {
+        mController.setTimepointsSupportedForTest(mTab.getUrl().getSpec(), true);
+        mController.playTab(mTab);
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        mPlaybackCallbackCaptor.getValue().onSuccess(mPlayback);
+        mController.setHighlighterMode(2);
+        verify(mHighlighter, times(1)).handleTabReloaded(mTab);
+    }
 }

@@ -29,6 +29,7 @@ import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooks;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooksProvider;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
+import org.chromium.chrome.modules.readaloud.contentjs.Highlighter.Mode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.prefs.PrefService;
@@ -70,7 +71,8 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     private ReadAloudPlaybackHooks mPlaybackHooks;
     @Nullable
     private static ReadAloudPlaybackHooks sPlaybackHooksForTesting;
-    @Nullable private Highlighter mHighligher;
+    @Nullable private Highlighter mHighlighter;
+    @Nullable private Highlighter.Config mHighlighterConfig;
 
     // Information tied to a playback. When playback is reset it should be set to null together
     //  with the mCurrentlyPlayingTab and mGlobalRenderFrameId
@@ -319,12 +321,12 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
 
     private void maybeSetUpHighlighter(Playback.Metadata metadata) {
         if (timepointsSupported(mCurrentlyPlayingTab)) {
-            if (mHighligher == null) {
-                mHighligher = mPlaybackHooks.createHighlighter();
+            if (mHighlighter == null) {
+                mHighlighter = mPlaybackHooks.createHighlighter();
             }
-
-            mHighligher.initializeJs(
-                    mCurrentlyPlayingTab, metadata, new Highlighter.Config(mActivity));
+            mHighlighterConfig = new Highlighter.Config(mActivity);
+            mHighlighterConfig.setMode(Mode.TEXT_HIGHLIGHTING_MODE_WORD);
+            mHighlighter.initializeJs(mCurrentlyPlayingTab, metadata, mHighlighterConfig);
             assert (mCurrentlyPlayingTab.getWebContents() != null
                     && mCurrentlyPlayingTab.getWebContents().getMainFrame() != null);
             if (mCurrentlyPlayingTab.getWebContents() != null
@@ -339,14 +341,14 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     }
 
     private void maybeClearHighlights() {
-        if (mHighligher != null && mGlobalRenderFrameId != null && mCurrentlyPlayingTab != null) {
-            mHighligher.clearHighlights(mGlobalRenderFrameId, mCurrentlyPlayingTab);
+        if (mHighlighter != null && mGlobalRenderFrameId != null && mCurrentlyPlayingTab != null) {
+            mHighlighter.clearHighlights(mGlobalRenderFrameId, mCurrentlyPlayingTab);
         }
     }
 
     private void maybeHighlightText(PhraseTiming phraseTiming) {
-        if (mHighligher != null && mGlobalRenderFrameId != null && mCurrentlyPlayingTab != null) {
-            mHighligher.highlightText(mGlobalRenderFrameId, mCurrentlyPlayingTab, phraseTiming);
+        if (mHighlighter != null && mGlobalRenderFrameId != null && mCurrentlyPlayingTab != null) {
+            mHighlighter.highlightText(mGlobalRenderFrameId, mCurrentlyPlayingTab, phraseTiming);
         }
     }
 
@@ -364,10 +366,10 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     }
 
     private void maybeHandleTabReload(Tab tab, GURL newUrl) {
-        if (mHighligher != null
+        if (mHighlighter != null
                 && tab.getUrl() != null
                 && tab.getUrl().getSpec().equals(newUrl.getSpec())) {
-            mHighligher.handleTabReloaded(tab);
+            mHighlighter.handleTabReloaded(tab);
         }
     }
 
@@ -400,6 +402,14 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     public ObservableSupplierImpl<Boolean> getHighlightingEnabledSupplier() {
         // TODO: implement
         return new ObservableSupplierImpl<Boolean>();
+    }
+
+    @Override
+    public void setHighlighterMode(@Highlighter.Mode int mode) {
+        mHighlighterConfig.setMode(mode);
+        mHighlighter.handleTabReloaded(mCurrentlyPlayingTab);
+        mHighlighter.initializeJs(
+                mCurrentlyPlayingTab, mPlayback.getMetadata(), mHighlighterConfig);
     }
 
     @Override
@@ -469,7 +479,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
 
     // Tests.
     public void setHighlighterForTests(Highlighter highighter) {
-        mHighligher = highighter;
+        mHighlighter = highighter;
     }
 
     public void setTimepointsSupportedForTest(String url, boolean supported) {

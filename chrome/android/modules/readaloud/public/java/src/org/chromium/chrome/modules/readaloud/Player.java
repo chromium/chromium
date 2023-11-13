@@ -11,6 +11,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
+import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.prefs.PrefService;
 
@@ -25,6 +26,10 @@ public interface Player {
         BottomSheetController getBottomSheetController();
         /** Returns true if highlighting is supported. */
         boolean isHighlightingSupported();
+
+        /** Set highlighter mode. */
+        void setHighlighterMode(@Highlighter.Mode int mode);
+
         /** Returns the supplier for the "highlighting enabled" setting. */
         ObservableSupplierImpl<Boolean> getHighlightingEnabledSupplier();
         /** Returns the supplier for the list of voices to show in the voice menu. */

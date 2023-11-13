@@ -41,6 +41,7 @@ import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
+import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -128,6 +129,9 @@ public class PlayerMediatorUnitTest {
         public ObservableSupplierImpl<Boolean> getHighlightingEnabledSupplier() {
             return new ObservableSupplierImpl<Boolean>();
         }
+
+        @Override
+        public void setHighlighterMode(@Highlighter.Mode int mode) {}
 
         @Override
         public ObservableSupplier<List<PlaybackVoice>> getCurrentLanguageVoicesSupplier() {
