@@ -78,6 +78,7 @@ def _RunGitCommand(directory, command):
     stdout, stderr = tuple(x.decode(encoding='utf_8')
                            for x in proc.communicate())
     stdout = stdout.strip()
+    stderr = stderr.strip()
     logging.debug("returncode: %d", proc.returncode)
     logging.debug("stdout: %s", stdout)
     logging.debug("stderr: %s", stderr)
