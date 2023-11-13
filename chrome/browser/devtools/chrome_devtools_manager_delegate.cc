@@ -106,13 +106,9 @@ bool GetExtensionInfo(content::WebContents* wc,
     return true;
   }
 
-  // Set type to other for component views such as virtual keyboard.
-  if (view_type == extensions::mojom::ViewType::kComponent) {
-    *type = DevToolsAgentHost::kTypeOther;
-    return true;
-  }
-
-  return false;
+  // Set type to other for extensions if not matched previously.
+  *type = DevToolsAgentHost::kTypeOther;
+  return true;
 }
 
 ChromeDevToolsManagerDelegate* g_instance;
