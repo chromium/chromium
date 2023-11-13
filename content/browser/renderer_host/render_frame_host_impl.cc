@@ -123,7 +123,6 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/page_delegate.h"
-#include "content/browser/renderer_host/page_factory.h"
 #include "content/browser/renderer_host/pending_beacon_host.h"
 #include "content/browser/renderer_host/pending_beacon_service.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
@@ -436,13 +435,6 @@ using TokenFrameMap = std::unordered_map<blink::LocalFrameToken,
                                          blink::LocalFrameToken::Hasher>;
 base::LazyInstance<TokenFrameMap>::Leaky g_token_frame_map =
     LAZY_INSTANCE_INITIALIZER;
-
-auto& GetDocumentTokenMap() {
-  static base::NoDestructor<std::unordered_map<
-      blink::DocumentToken, RenderFrameHostImpl*, blink::DocumentToken::Hasher>>
-      map;
-  return *map;
-}
 
 BackForwardCacheMetrics::NotRestoredReason
 RendererEvictionReasonToNotRestoredReason(
@@ -1426,11 +1418,12 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromDocumentToken(
     const blink::DocumentToken& document_token,
     mojo::ReportBadMessageCallback* process_mismatch_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  const auto it = GetDocumentTokenMap().find(document_token);
-  if (it == GetDocumentTokenMap().end())
+  auto* rfh = DocumentAssociatedData::GetDocumentFromToken({}, document_token);
+  if (!rfh) {
     return nullptr;
+  }
 
-  if (it->second->GetProcess()->GetID() != process_id) {
+  if (rfh->GetProcess()->GetID() != process_id) {
     if (process_mismatch_callback) {
       SYSLOG(WARNING)
           << "Denying illegal RenderFrameHost::FromDocumentToken request.";
@@ -1440,7 +1433,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromDocumentToken(
     return nullptr;
   }
 
-  return it->second;
+  return rfh;
 }
 
 // static
@@ -16008,49 +16001,6 @@ void RenderFrameHostImpl::GetSandboxedFileSystemForBucket(
 GlobalRenderFrameHostId RenderFrameHostImpl::GetAssociatedRenderFrameHostId()
     const {
   return GetGlobalId();
-}
-
-RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(
-    RenderFrameHostImpl& document,
-    const blink::DocumentToken& token)
-    : token_(token), weak_factory_(&document) {
-  auto [_, inserted] = GetDocumentTokenMap().insert({token_, &document});
-  CHECK(inserted);
-
-  // Only create page object for the main document as the PageImpl is 1:1 with
-  // main document.
-  if (!document.GetParent()) {
-    PageDelegate* page_delegate = document.frame_tree()->page_delegate();
-    DCHECK(page_delegate);
-    owned_page_ = PageFactory::Create(document, *page_delegate);
-  }
-}
-
-void RenderFrameHostImpl::DocumentAssociatedData::RemoveAllServices() {
-  while (!services_.empty()) {
-    // DocumentServiceBase unregisters itself at destruction time.
-    services_.back()->WillBeDestroyed(
-        DocumentServiceDestructionReason::kEndOfDocumentLifetime);
-    services_.back()->ResetAndDeleteThis();
-  }
-}
-
-RenderFrameHostImpl::DocumentAssociatedData::~DocumentAssociatedData() {
-  RemoveAllServices();
-
-  // Explicitly clear all user data here, so that the other fields of
-  // DocumentAssociatedData are still valid while user data is being destroyed.
-  ClearAllUserData();
-
-  // Last in case any DocumentService / DocumentUserData service destructors try
-  // to look up RenderFrameHosts by DocumentToken.
-  CHECK_EQ(1u, GetDocumentTokenMap().erase(token_));
-}
-
-void RenderFrameHostImpl::DocumentAssociatedData::
-    set_navigation_or_document_handle(
-        scoped_refptr<NavigationOrDocumentHandle> handle) {
-  navigation_or_document_handle_ = std::move(handle);
 }
 
 std::ostream& operator<<(std::ostream& o,
