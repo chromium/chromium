@@ -66,7 +66,6 @@ BASE_DECLARE_FEATURE(kCCTRealTimeEngagementSignalsAlternativeImpl);
 BASE_DECLARE_FEATURE(kCCTRedirectPreconnect);
 BASE_DECLARE_FEATURE(kCCTRemoveRemoteViewIds);
 BASE_DECLARE_FEATURE(kCCTReportParallelRequestStatus);
-BASE_DECLARE_FEATURE(kCCTResizable90MaximumHeight);
 BASE_DECLARE_FEATURE(kCCTResizableForThirdParties);
 BASE_DECLARE_FEATURE(kCCTResizableSideSheet);
 BASE_DECLARE_FEATURE(kCCTResizableSideSheetForThirdParties);

@@ -195,9 +195,6 @@ public abstract class ChromeFeatureList {
     public static final String CCT_REMOVE_REMOTE_VIEW_IDS = "CCTRemoveRemoteViewIds";
     public static final String CCT_REPORT_PARALLEL_REQUEST_STATUS =
             "CCTReportParallelRequestStatus";
-    public static final String CCT_RESIZABLE_90_MAXIMUM_HEIGHT = "CCTResizable90MaximumHeight";
-    public static final String CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE =
-            "CCTResizableAllowResizeByUserGesture";
     public static final String CCT_RESIZABLE_FOR_THIRD_PARTIES = "CCTResizableForThirdParties";
     public static final String CCT_RESIZABLE_SIDE_SHEET = "CCTResizableSideSheet";
     public static final String CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES =
@@ -538,8 +535,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(CCT_PAGE_INSIGHTS_HUB, false);
     public static final CachedFlag sCctRemoveRemoteViewIds =
             new CachedFlag(CCT_REMOVE_REMOTE_VIEW_IDS, true);
-    public static final CachedFlag sCctResizable90MaximumHeight =
-            new CachedFlag(CCT_RESIZABLE_90_MAXIMUM_HEIGHT, false);
     public static final CachedFlag sCctResizableForThirdParties =
             new CachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, true);
     public static final CachedFlag sCctResizableSideSheet =
@@ -671,7 +666,6 @@ public abstract class ChromeFeatureList {
                     sCctMinimized,
                     sCctPageInsightsHub,
                     sCctRemoveRemoteViewIds,
-                    sCctResizable90MaximumHeight,
                     sCctResizableForThirdParties,
                     sCctResizableSideSheet,
                     sCctResizableSideSheetForThirdParties,

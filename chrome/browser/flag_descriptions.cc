@@ -3926,13 +3926,6 @@ const char kCCTPreventTouchesDescription[] =
     "Prevent touches from being processed if they are coming from an overlay "
     "activity.";
 
-const char kCCTResizable90MaximumHeightName[] =
-    "Bottom sheet Custom Tabs maximum height";
-const char kCCTResizable90MaximumHeightDescription[] =
-    "When enabled, the bottom sheet Custom Tabs will have maximum height 90% "
-    "of the screen height, otherwise the maximum height is 100% of the screen "
-    "height. In both cases, Custom Tabs will yield to the top status bar when "
-    "at full stop";
 const char kCCTResizableForThirdPartiesName[] =
     "Bottom sheet Custom Tabs (third party)";
 const char kCCTResizableForThirdPartiesDescription[] =

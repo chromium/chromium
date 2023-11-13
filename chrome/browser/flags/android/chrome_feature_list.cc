@@ -210,7 +210,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTRedirectPreconnect,
     &kCCTRemoveRemoteViewIds,
     &kCCTReportParallelRequestStatus,
-    &kCCTResizable90MaximumHeight,
     &kCCTResizableForThirdParties,
     &kCCTResizableSideSheet,
     &kCCTResizableSideSheetForThirdParties,
@@ -630,10 +629,6 @@ BASE_FEATURE(kCCTRemoveRemoteViewIds,
 
 BASE_FEATURE(kCCTReportParallelRequestStatus,
              "CCTReportParallelRequestStatus",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTResizable90MaximumHeight,
-             "CCTResizable90MaximumHeight",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTResizableForThirdParties,

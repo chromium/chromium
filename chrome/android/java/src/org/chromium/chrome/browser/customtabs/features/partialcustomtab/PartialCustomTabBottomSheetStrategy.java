@@ -112,7 +112,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     private GestureDetector mGestureDetector;
     private ContentGestureListener mGestureHandler;
 
-    private @Px int mFullyExpandedAdjustmentHeight;
     private TabAnimator mTabAnimator;
 
     private @HeightStatus int mStatus = HeightStatus.INITIAL_HEIGHT;
@@ -222,7 +221,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     private boolean isFullyExpanded() {
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
-        return attrs.y <= getFullyExpandedYWithAdjustment();
+        return attrs.y <= getFullyExpandedY();
     }
 
     @Override
@@ -262,7 +261,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
                     attrs.height = mDisplayHeight - mNavbarHeight;
                     window.setAttributes(attrs);
                 }
-                end = getFullyExpandedYWithAdjustment();
+                end = getFullyExpandedY();
                 break;
             case HeightStatus.INITIAL_HEIGHT:
                 end = initialY();
@@ -459,12 +458,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     protected void initializeHeight() {
         super.initializeHeight();
 
-        // When the flag is enabled, we make the max snap point 10% shorter, so it will only occupy
-        // 90% of the height.
-        mFullyExpandedAdjustmentHeight = ChromeFeatureList.sCctResizable90MaximumHeight.isEnabled()
-                ? (int) ((mDisplayHeight - getFullyExpandedY()) * EXTRA_HEIGHT_RATIO)
-                : 0;
-
         int maxExpandedY = getFullyExpandedY();
         @Px
         int height = 0;
@@ -613,7 +606,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     private void updateWindowPos(@Px int y, boolean userGesture) {
         // Do not allow the Window to go above the minimum threshold capped by the status
         // bar and (optionally) the 90%-height adjustment.
-        int topY = getFullyExpandedYWithAdjustment();
+        int topY = getFullyExpandedY();
         y = MathUtils.clamp(y, topY, mDisplayHeight);
         Window window = mActivity.getWindow();
         WindowManager.LayoutParams attrs = window.getAttributes();
@@ -811,22 +804,15 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         }
     }
 
-    private @Px int getFullyExpandedY() {
+    @VisibleForTesting
+    @Px
+    int getFullyExpandedY() {
         return mStatusbarHeight;
     }
 
     @Override
     protected boolean isMaximized() {
         return mStatus == HeightStatus.TOP;
-    }
-
-    @VisibleForTesting
-    @Px
-    int getFullyExpandedYWithAdjustment() {
-        // Adding |mFullyExpandedAdjustmentHeight| to the y coordinate because the
-        // coordinates system's origin is at the top left and y is growing in downward, larger y
-        // means smaller height of the bottom sheet CCT.
-        return getFullyExpandedY() + mFullyExpandedAdjustmentHeight;
     }
 
     // CustomTabHeightStrategy implementation
@@ -872,7 +858,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     public void onDragEnd(int flingDistance) {
         int currentY = mActivity.getWindow().getAttributes().y;
         int finalY = currentY + flingDistance;
-        int topY = getFullyExpandedYWithAdjustment();
+        int topY = getFullyExpandedY();
         int initialY = initialY();
         int bottomY = mDisplayHeight - mNavbarHeight;
 

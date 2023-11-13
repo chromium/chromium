@@ -79,7 +79,6 @@ import java.util.concurrent.TimeUnit;
         shadows = {PartialCustomTabTestRule.ShadowSemanticColorUtils.class})
 @EnableFeatures({
     ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
-    ChromeFeatureList.CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE,
     UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK
 })
 @LooperMode(Mode.PAUSED)
@@ -539,7 +538,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
         clearInvocations(mPCCTTestRule.mSpinnerView);
 
         // Verify the spinner remains invisible after the tab reaches the top.
-        int topY = strategy.getFullyExpandedYWithAdjustment();
+        int topY = strategy.getFullyExpandedY();
         actionMove(handleStrategy, timestamp, topY);
         verify(mPCCTTestRule.mSpinnerView).setVisibility(View.GONE);
         clearInvocations(mPCCTTestRule.mSpinnerView);
