@@ -22,8 +22,6 @@ class NET_EXPORT CertVerifyProcAndroid : public CertVerifyProc {
   CertVerifyProcAndroid(const CertVerifyProcAndroid&) = delete;
   CertVerifyProcAndroid& operator=(const CertVerifyProcAndroid&) = delete;
 
-  bool SupportsAdditionalTrustAnchors() const override;
-
  protected:
   ~CertVerifyProcAndroid() override;
 
@@ -33,7 +31,6 @@ class NET_EXPORT CertVerifyProcAndroid : public CertVerifyProc {
                      const std::string& ocsp_response,
                      const std::string& sct_list,
                      int flags,
-                     const CertificateList& additional_trust_anchors,
                      CertVerifyResult* verify_result,
                      const NetLogWithSource& net_log) override;
 

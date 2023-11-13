@@ -111,7 +111,8 @@ class DummyCertVerifier : public net::CertVerifierWithUpdatableProc {
   void RemoveObserver(Observer* observer) override { observer_ = nullptr; }
   void UpdateVerifyProcData(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-      const net::CertVerifyProcFactory::ImplParams& impl_params) override {
+      const net::CertVerifyProc::ImplParams& impl_params,
+      const net::CertVerifyProc::InstanceParams& instance_params) override {
     ADD_FAILURE() << "not handled";
   }
 
@@ -200,8 +201,10 @@ class CertVerifierServiceTest : public PlatformTest,
     (void)new internal::CertVerifierServiceImpl(
         base::WrapUnique(dummy_cv_.get()),
         cv_service_remote_.BindNewPipeAndPassReceiver(),
+        cv_service_updater_remote_.BindNewPipeAndPassReceiver(),
         cv_service_client_.BindNewPipeAndPassRemote(),
-        /*cert_net_fetcher=*/nullptr);
+        /*cert_net_fetcher=*/nullptr,
+        /*instance_params=*/{});
   }
 
   void SetUp() override { ASSERT_TRUE(GetTestCert()); }
@@ -283,6 +286,7 @@ class CertVerifierServiceTest : public PlatformTest,
   base::test::TaskEnvironment task_environment_;
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote_;
+  mojo::Remote<mojom::CertVerifierServiceUpdater> cv_service_updater_remote_;
   mojo::Receiver<mojom::CertVerifierServiceClient> cv_service_client_;
   unsigned cv_service_client_changed_count_ = 0;
   raw_ptr<DummyCertVerifier> dummy_cv_;

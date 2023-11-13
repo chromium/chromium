@@ -3256,12 +3256,12 @@ EVENT_TYPE(CERT_VERIFIER_TASK)
 //   }
 EVENT_TYPE(CERT_VERIFIER_TASK_BOUND)
 
+// This event is created when a CertVerifyProc instance is created.
+EVENT_TYPE(CERT_VERIFY_PROC_CREATED)
+
 // This event is created when CertVerifyProc is verifying a certificate.
 // The BEGIN phase event parameters are:
 // {
-//   "additional_trust_anchors": <Optionally, a list of PEM encoded
-//                                certificates to be used as trust anchors
-//                                in addition to the trust store.>
 //   "certificates": <A list of PEM encoded certificates, the first one
 //                    being the certificate to verify and the remaining
 //                    being intermediate certificates to assist path
@@ -3334,10 +3334,16 @@ EVENT_TYPE(CERT_VERIFY_PROC_INPUT_CERT)
 //   }
 EVENT_TYPE(CERT_VERIFY_PROC_CHROME_ROOT_STORE_VERSION)
 
-// This event is created for each additional trust anchor passed into
+// This event is created for each additional certificate added to
 // CertVerifyProcBuiltin.
-// The parameters are the same as for CERT_VERIFY_PROC_TARGET_CERT.
-EVENT_TYPE(CERT_VERIFY_PROC_ADDITIONAL_TRUST_ANCHOR)
+// The event parameters are:
+//   {
+//      "certificate": <The PEM encoded certificate.>
+//      "trust": <The trust setting used for this certificate.>
+//      "errors": <Optionally, a string describing any errors or warnings
+//                 encountered while parsing the certificate.>
+//   }
+EVENT_TYPE(CERT_VERIFY_PROC_ADDITIONAL_CERT)
 
 // This event is created for each path building attempt performed by
 // CertVerifyProcBuiltin.

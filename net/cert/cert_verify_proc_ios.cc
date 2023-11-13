@@ -386,10 +386,6 @@ CertStatus CertVerifyProcIOS::GetCertFailureStatusFromTrust(SecTrustRef trust) {
 #endif  // !defined(__IPHONE_12_0) || __IPHONE_OS_VERSION_MIN_REQUIRED <
         // __IPHONE_12_0
 
-bool CertVerifyProcIOS::SupportsAdditionalTrustAnchors() const {
-  return false;
-}
-
 CertVerifyProcIOS::~CertVerifyProcIOS() = default;
 
 int CertVerifyProcIOS::VerifyInternal(
@@ -398,7 +394,6 @@ int CertVerifyProcIOS::VerifyInternal(
     const std::string& ocsp_response,
     const std::string& sct_list,
     int flags,
-    const CertificateList& additional_trust_anchors,
     CertVerifyResult* verify_result,
     const NetLogWithSource& net_log) {
   ScopedCFTypeRef<CFArrayRef> trust_policies;

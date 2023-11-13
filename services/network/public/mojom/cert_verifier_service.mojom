@@ -26,8 +26,16 @@ struct CertVerifierConfig {
   bool require_rev_checking_local_anchors;
   bool enable_sha1_local_anchors;
   bool disable_symantec_enforcement;
-  array<network.mojom.X509Certificate> additional_trust_anchors;
-  array<network.mojom.X509Certificate> additional_untrusted_authorities;
+};
+
+struct AdditionalCertificates {
+  // TODO(crbug.com/1477317): store these as bytestrings
+
+  // List of untrusted certificates, which will be used during path building.
+  array<network.mojom.X509Certificate> all_certificates;
+
+  // List of additional trust anchors.
+  array<network.mojom.X509Certificate> trust_anchors;
 };
 
 // Allows the CertVerifierService to connect a new URLLoaderFactory if its
@@ -58,6 +66,15 @@ interface CertVerifierService {
          pending_remote<CertVerifierRequest> cert_verifier_request);
   // Sets the config for the underlying CertVerifier.
   SetConfig(CertVerifierConfig config);
+};
+
+// Updates a Cert Verifier with new parameters.
+interface CertVerifierServiceUpdater {
+  // Called when trust parameters change for Cert Verification.  All parameters
+  // will override any previously provided parameters that were provide (either
+  // via previous calls to UpdateCertVerifier or that were specified in
+  // cert_verifier.mojom.CertVerifierCreationParams.
+  UpdateAdditionalCertificates(AdditionalCertificates certificates);
 };
 
 // Receives events from the CertVerifierService.

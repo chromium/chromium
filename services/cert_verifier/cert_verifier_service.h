@@ -18,6 +18,7 @@
 #include "net/cert/cert_verify_proc.h"
 #include "net/log/net_log_with_source.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
@@ -35,13 +36,16 @@ namespace internal {
 
 // This class will delete itself upon disconnection of its Mojo receiver.
 class CertVerifierServiceImpl : public mojom::CertVerifierService,
+                                public mojom::CertVerifierServiceUpdater,
                                 public net::CertVerifier::Observer {
  public:
   explicit CertVerifierServiceImpl(
       std::unique_ptr<net::CertVerifierWithUpdatableProc> verifier,
-      mojo::PendingReceiver<mojom::CertVerifierService> receiver,
+      mojo::PendingReceiver<mojom::CertVerifierService> service_receiver,
+      mojo::PendingReceiver<mojom::CertVerifierServiceUpdater> updater_receiver,
       mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
-      scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher);
+      scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher,
+      net::CertVerifyProc::InstanceParams instance_params);
 
   // mojom::CertVerifierService implementation:
   void Verify(const net::CertVerifier::RequestParams& params,
@@ -54,6 +58,10 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
       mojo::PendingRemote<mojom::URLLoaderFactoryConnector> reconnector)
       override;
 
+  // mojom::CertVerifierServiceUpdater implementation:
+  void UpdateAdditionalCertificates(
+      mojom::AdditionalCertificatesPtr additional_certificates) override;
+
   // Set a pointer to the CertVerifierServiceFactory so that it may be notified
   // when we are deleted.
   void SetCertVerifierServiceFactory(
@@ -61,8 +69,7 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
           service_factory_impl);
 
   // Update the wrapped verifier with CRLSet and ChromeRootStoreData.
-  void UpdateVerifierData(
-      const net::CertVerifyProcFactory::ImplParams& impl_params);
+  void UpdateVerifierData(const net::CertVerifyProc::ImplParams& impl_params);
 
  private:
   ~CertVerifierServiceImpl() override;
@@ -72,8 +79,10 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
 
   void OnDisconnectFromService();
 
+  net::CertVerifyProc::InstanceParams instance_params_;
   std::unique_ptr<net::CertVerifierWithUpdatableProc> verifier_;
-  mojo::Receiver<mojom::CertVerifierService> receiver_;
+  mojo::Receiver<mojom::CertVerifierService> service_receiver_;
+  mojo::Receiver<mojom::CertVerifierServiceUpdater> updater_receiver_;
   mojo::Remote<mojom::CertVerifierServiceClient> client_;
   scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher_;
   base::WeakPtr<cert_verifier::CertVerifierServiceFactoryImpl>

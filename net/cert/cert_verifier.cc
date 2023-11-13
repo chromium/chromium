@@ -28,21 +28,22 @@ class DefaultCertVerifyProcFactory : public net::CertVerifyProcFactory {
  public:
   scoped_refptr<net::CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-      const CertVerifyProcFactory::ImplParams& impl_params) override {
+      const CertVerifyProc::ImplParams& impl_params,
+      const CertVerifyProc::InstanceParams& instance_params) override {
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
     if (impl_params.use_chrome_root_store) {
       return CertVerifyProc::CreateBuiltinWithChromeRootStore(
           std::move(cert_net_fetcher), impl_params.crl_set,
-          base::OptionalToPtr(impl_params.root_store_data));
+          base::OptionalToPtr(impl_params.root_store_data), instance_params);
     }
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_ONLY)
     return CertVerifyProc::CreateBuiltinWithChromeRootStore(
         std::move(cert_net_fetcher), impl_params.crl_set,
-        base::OptionalToPtr(impl_params.root_store_data));
+        base::OptionalToPtr(impl_params.root_store_data), instance_params);
 #elif BUILDFLAG(IS_FUCHSIA)
-    return CertVerifyProc::CreateBuiltinVerifyProc(std::move(cert_net_fetcher),
-                                                   impl_params.crl_set);
+    return CertVerifyProc::CreateBuiltinVerifyProc(
+        std::move(cert_net_fetcher), impl_params.crl_set, instance_params);
 #else
     return CertVerifyProc::CreateSystemVerifyProc(std::move(cert_net_fetcher),
                                                   impl_params.crl_set);
@@ -116,7 +117,7 @@ CertVerifier::CreateDefaultWithoutCaching(
     scoped_refptr<CertNetFetcher> cert_net_fetcher) {
   auto proc_factory = base::MakeRefCounted<DefaultCertVerifyProcFactory>();
   return std::make_unique<MultiThreadedCertVerifier>(
-      proc_factory->CreateCertVerifyProc(std::move(cert_net_fetcher), {}),
+      proc_factory->CreateCertVerifyProc(std::move(cert_net_fetcher), {}, {}),
       proc_factory);
 }
 
@@ -132,14 +133,10 @@ bool operator==(const CertVerifier::Config& lhs,
                 const CertVerifier::Config& rhs) {
   return std::tie(
              lhs.enable_rev_checking, lhs.require_rev_checking_local_anchors,
-             lhs.enable_sha1_local_anchors, lhs.disable_symantec_enforcement,
-             lhs.additional_trust_anchors,
-             lhs.additional_untrusted_authorities) ==
+             lhs.enable_sha1_local_anchors, lhs.disable_symantec_enforcement) ==
          std::tie(
              rhs.enable_rev_checking, rhs.require_rev_checking_local_anchors,
-             rhs.enable_sha1_local_anchors, rhs.disable_symantec_enforcement,
-             rhs.additional_trust_anchors,
-             rhs.additional_untrusted_authorities);
+             rhs.enable_sha1_local_anchors, rhs.disable_symantec_enforcement);
 }
 
 bool operator!=(const CertVerifier::Config& lhs,

@@ -163,6 +163,7 @@ TEST(CertVerifierServiceFactoryTest, GetNewCertVerifier) {
 
   cv_service_factory_remote->GetNewCertVerifier(
       cv_service_remote.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
       cv_service_client.InitWithNewPipeAndPassRemote(),
       std::move(cv_creation_params));
 
@@ -215,6 +216,7 @@ TEST(CertVerifierServiceFactoryTest, GetNewCertVerifierWithUpdatedRootStore) {
 
   cv_service_factory_remote->GetNewCertVerifier(
       cv_service_remote.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
       cv_service_client.client_.BindNewPipeAndPassRemote(),
       std::move(cv_creation_params));
 
@@ -249,6 +251,7 @@ TEST(CertVerifierServiceFactoryTest, UpdateExistingCertVerifierWithRootStore) {
 
   cv_service_factory_remote->GetNewCertVerifier(
       cv_service_remote.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
       cv_service_client.client_.BindNewPipeAndPassRemote(),
       std::move(cv_creation_params));
 
@@ -333,6 +336,7 @@ TEST(CertVerifierServiceFactoryTest, OldRootStoreUpdateIgnored) {
 
   cv_service_factory_remote->GetNewCertVerifier(
       cv_service_remote.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
       cv_service_client.client_.BindNewPipeAndPassRemote(),
       std::move(cv_creation_params));
 
@@ -385,6 +389,7 @@ TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
 
   cv_service_factory_remote->GetNewCertVerifier(
       cv_service_remote.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
       cv_service_client.client_.BindNewPipeAndPassRemote(),
       std::move(cv_creation_params));
 
@@ -529,18 +534,19 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithCompiledRootStore) {
 
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
-class CertVerifierServiceFactoryCRLSetTest : public ::testing::Test {
+class CertVerifierServiceFactoryBuiltinVerifierTest : public ::testing::Test {
  public:
   void SetUp() override {
-    if (!SystemSupportsCRLSets()) {
-      GTEST_SKIP() << "Skipping test because system doesn't support CRLSets";
+    if (!SystemUsesBuiltinVerifier()) {
+      GTEST_SKIP()
+          << "Skipping test because system doesn't use builtin verifier";
     }
 
     ::testing::Test::SetUp();
   }
 
  private:
-  bool SystemSupportsCRLSets() {
+  bool SystemUsesBuiltinVerifier() {
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(CHROME_ROOT_STORE_ONLY)
     return true;
 #elif BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
@@ -561,7 +567,7 @@ class CertVerifierServiceFactoryCRLSetTest : public ::testing::Test {
 
 // Test that a new Cert verifier will use an updated CRLSet if
 // one was already passed into CertVerifierServiceFactory.
-TEST_F(CertVerifierServiceFactoryCRLSetTest,
+TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest,
        GetNewCertVerifierWithUpdatedCRLSet) {
   scoped_refptr<net::X509Certificate> test_root(net::ImportCertFromFile(
       net::GetTestCertsDirectory(), "root_ca_cert.pem"));
@@ -589,6 +595,7 @@ TEST_F(CertVerifierServiceFactoryCRLSetTest,
   // CRLSet already active.
   cv_service_factory_remote->GetNewCertVerifier(
       cv_service_remote.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
       cv_service_client.client_.BindNewPipeAndPassRemote(),
       std::move(cv_creation_params));
 
@@ -603,7 +610,7 @@ TEST_F(CertVerifierServiceFactoryCRLSetTest,
 
 // Test that an existing CertVerifierService will use an updated CRLSet if one
 // is provided to the CertVerifierServiceFactory
-TEST_F(CertVerifierServiceFactoryCRLSetTest,
+TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest,
        UpdateExistingCertVerifierWithCRLSet) {
   scoped_refptr<net::X509Certificate> test_root(net::ImportCertFromFile(
       net::GetTestCertsDirectory(), "root_ca_cert.pem"));
@@ -626,6 +633,7 @@ TEST_F(CertVerifierServiceFactoryCRLSetTest,
 
   cv_service_factory_remote->GetNewCertVerifier(
       cv_service_remote.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
       cv_service_client.client_.BindNewPipeAndPassRemote(),
       std::move(cv_creation_params));
 
@@ -652,7 +660,7 @@ TEST_F(CertVerifierServiceFactoryCRLSetTest,
 }
 
 // Verifies newer CRLSets (by sequence number) are applied.
-TEST_F(CertVerifierServiceFactoryCRLSetTest, CRLSetIsUpdatedIfNewer) {
+TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest, CRLSetIsUpdatedIfNewer) {
   scoped_refptr<net::X509Certificate> test_root(net::ImportCertFromFile(
       net::GetTestCertsDirectory(), "root_ca_cert.pem"));
   ASSERT_TRUE(test_root);
@@ -674,6 +682,7 @@ TEST_F(CertVerifierServiceFactoryCRLSetTest, CRLSetIsUpdatedIfNewer) {
 
   cv_service_factory_remote->GetNewCertVerifier(
       cv_service_remote.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
       cv_service_client.client_.BindNewPipeAndPassRemote(),
       std::move(cv_creation_params));
 
@@ -716,7 +725,7 @@ TEST_F(CertVerifierServiceFactoryCRLSetTest, CRLSetIsUpdatedIfNewer) {
 
 // Verifies that attempting to send an older CRLSet (by sequence number)
 // does not apply to existing or new contexts.
-TEST_F(CertVerifierServiceFactoryCRLSetTest, CRLSetDoesNotDowngrade) {
+TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest, CRLSetDoesNotDowngrade) {
   scoped_refptr<net::X509Certificate> test_root(net::ImportCertFromFile(
       net::GetTestCertsDirectory(), "root_ca_cert.pem"));
   ASSERT_TRUE(test_root);
@@ -738,6 +747,7 @@ TEST_F(CertVerifierServiceFactoryCRLSetTest, CRLSetDoesNotDowngrade) {
 
   cv_service_factory_remote->GetNewCertVerifier(
       cv_service_remote.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
       cv_service_client.client_.BindNewPipeAndPassRemote(),
       std::move(cv_creation_params));
 
@@ -778,12 +788,14 @@ TEST_F(CertVerifierServiceFactoryCRLSetTest, CRLSetDoesNotDowngrade) {
   // Create a new CertVerifierService and ensure the latest CRLSet is still
   // applied.
   mojo::Remote<mojom::CertVerifierService> cv_service_remote2;
+  mojo::Remote<mojom::CertVerifierServiceUpdater> cv_service_updater_remote2;
   DummyCVServiceClient cv_service_client2;
   mojom::CertVerifierCreationParamsPtr cv_creation_params2 =
       mojom::CertVerifierCreationParams::New();
 
   cv_service_factory_remote->GetNewCertVerifier(
       cv_service_remote2.BindNewPipeAndPassReceiver(),
+      cv_service_updater_remote2.BindNewPipeAndPassReceiver(),
       cv_service_client2.client_.BindNewPipeAndPassRemote(),
       std::move(cv_creation_params2));
 
@@ -798,7 +810,7 @@ TEST_F(CertVerifierServiceFactoryCRLSetTest, CRLSetDoesNotDowngrade) {
 
 // Verifies that attempting to send an invalid CRLSet does not affect existing
 // or new contexts.
-TEST_F(CertVerifierServiceFactoryCRLSetTest, BadCRLSetIgnored) {
+TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest, BadCRLSetIgnored) {
   scoped_refptr<net::X509Certificate> test_root(net::ImportCertFromFile(
       net::GetTestCertsDirectory(), "root_ca_cert.pem"));
   ASSERT_TRUE(test_root);
@@ -820,6 +832,7 @@ TEST_F(CertVerifierServiceFactoryCRLSetTest, BadCRLSetIgnored) {
 
   cv_service_factory_remote->GetNewCertVerifier(
       cv_service_remote.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
       cv_service_client.client_.BindNewPipeAndPassRemote(),
       std::move(cv_creation_params));
 
@@ -867,12 +880,14 @@ TEST_F(CertVerifierServiceFactoryCRLSetTest, BadCRLSetIgnored) {
   // Create a new CertVerifierService and ensure the latest valid CRLSet is
   // still applied.
   mojo::Remote<mojom::CertVerifierService> cv_service_remote2;
+  mojo::Remote<mojom::CertVerifierServiceUpdater> cv_service_updater_remote2;
   DummyCVServiceClient cv_service_client2;
   mojom::CertVerifierCreationParamsPtr cv_creation_params2 =
       mojom::CertVerifierCreationParams::New();
 
   cv_service_factory_remote->GetNewCertVerifier(
       cv_service_remote2.BindNewPipeAndPassReceiver(),
+      cv_service_updater_remote2.BindNewPipeAndPassReceiver(),
       cv_service_client2.client_.BindNewPipeAndPassRemote(),
       std::move(cv_creation_params2));
 
@@ -882,6 +897,78 @@ TEST_F(CertVerifierServiceFactoryCRLSetTest, BadCRLSetIgnored) {
     auto [net_error, result] = Verify(cv_service_remote2, ok_cert, "127.0.0.1");
     EXPECT_THAT(net_error, IsError(net::ERR_CERT_REVOKED));
     EXPECT_TRUE(result.cert_status & net::CERT_STATUS_REVOKED);
+  }
+}
+
+TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest,
+       GetNewCertVerifierWithAdditionalCerts) {
+  auto [leaf1, intermediate1, root1] = net::CertBuilder::CreateSimpleChain3();
+  auto [leaf2, intermediate2, root2] = net::CertBuilder::CreateSimpleChain3();
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
+
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote;
+  mojo::Remote<mojom::CertVerifierServiceUpdater> cv_service_updater_remote;
+  DummyCVServiceClient cv_service_client;
+  mojom::CertVerifierCreationParamsPtr cv_creation_params =
+      mojom::CertVerifierCreationParams::New();
+  // Initial creation params supply `root1` as an additional trust anchor and
+  // `intermediate1` as an untrusted cert.
+  cv_creation_params->initial_additional_certificates =
+      mojom::AdditionalCertificates::New();
+  cv_creation_params->initial_additional_certificates->trust_anchors.push_back(
+      root1->GetX509Certificate());
+  cv_creation_params->initial_additional_certificates->all_certificates
+      .push_back(intermediate1->GetX509Certificate());
+
+  // Create the cert verifier. It should start with the additional trust
+  // anchors from the creation params already trusted.
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote.BindNewPipeAndPassReceiver(),
+      cv_service_updater_remote.BindNewPipeAndPassReceiver(),
+      cv_service_client.client_.BindNewPipeAndPassRemote(),
+      std::move(cv_creation_params));
+
+  // `leaf1` should be trusted and `leaf2` should not be trusted.
+  {
+    auto [net_error, result] = Verify(
+        cv_service_remote, leaf1->GetX509Certificate(), "www.example.com");
+    EXPECT_THAT(net_error, IsError(net::OK));
+  }
+  {
+    auto [net_error, result] = Verify(
+        cv_service_remote, leaf2->GetX509Certificate(), "www.example.com");
+    EXPECT_THAT(net_error, IsError(net::ERR_CERT_AUTHORITY_INVALID));
+  }
+
+  EXPECT_EQ(cv_service_client.changed_count_, 0u);
+
+  // Supply a new set of additional certificates with `root2` trusted this time.
+  auto new_additional_certificates = mojom::AdditionalCertificates::New();
+  new_additional_certificates->trust_anchors.push_back(
+      root2->GetX509Certificate());
+  new_additional_certificates->all_certificates.push_back(
+      intermediate2->GetX509Certificate());
+  cv_service_updater_remote->UpdateAdditionalCertificates(
+      std::move(new_additional_certificates));
+
+  // Client should have received notification of the update.
+  EXPECT_NO_FATAL_FAILURE(cv_service_client.WaitForCertVerifierChange(1u));
+
+  // Now `leaf1` should not be trusted and `leaf2` should be trusted.
+  {
+    auto [net_error, result] = Verify(
+        cv_service_remote, leaf1->GetX509Certificate(), "www.example.com");
+    EXPECT_THAT(net_error, IsError(net::ERR_CERT_AUTHORITY_INVALID));
+  }
+  {
+    auto [net_error, result] = Verify(
+        cv_service_remote, leaf2->GetX509Certificate(), "www.example.com");
+    EXPECT_THAT(net_error, IsError(net::OK));
   }
 }
 

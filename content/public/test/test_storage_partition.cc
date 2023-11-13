@@ -26,6 +26,10 @@ base::FilePath TestStoragePartition::GetPath() {
 network::mojom::NetworkContext* TestStoragePartition::GetNetworkContext() {
   return network_context_;
 }
+cert_verifier::mojom::CertVerifierServiceUpdater*
+TestStoragePartition::GetCertVerifierServiceUpdater() {
+  return nullptr;
+}
 
 storage::SharedStorageManager* TestStoragePartition::GetSharedStorageManager() {
   return nullptr;
@@ -248,6 +252,8 @@ int TestStoragePartition::GetDataRemovalObserverCount() {
 void TestStoragePartition::ClearBluetoothAllowedDevicesMapForTesting() {}
 
 void TestStoragePartition::FlushNetworkInterfaceForTesting() {}
+
+void TestStoragePartition::FlushCertVerifierInterfaceForTesting() {}
 
 void TestStoragePartition::WaitForDeletionTasksForTesting() {}
 

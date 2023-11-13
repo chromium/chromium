@@ -44,10 +44,11 @@ namespace cert_verifier {
 namespace {
 
 internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
-    mojo::PendingReceiver<mojom::CertVerifierService> receiver,
+    mojo::PendingReceiver<mojom::CertVerifierService> service_receiver,
+    mojo::PendingReceiver<mojom::CertVerifierServiceUpdater> updater_receiver,
     mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
     mojom::CertVerifierCreationParamsPtr creation_params,
-    const net::CertVerifyProcFactory::ImplParams& impl_params,
+    const net::CertVerifyProc::ImplParams& impl_params,
     scoped_refptr<CertNetFetcherURLLoader>* out_cert_net_fetcher) {
   scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher;
 
@@ -58,8 +59,18 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
     cert_net_fetcher = base::MakeRefCounted<CertNetFetcherURLLoader>();
   }
 
+  // Populate initial instance params from creation params.
+  net::CertVerifyProc::InstanceParams instance_params;
+  if (creation_params->initial_additional_certificates) {
+    instance_params.additional_trust_anchors =
+        creation_params->initial_additional_certificates->trust_anchors;
+    instance_params.additional_untrusted_authorities =
+        creation_params->initial_additional_certificates->all_certificates;
+  }
+
   std::unique_ptr<net::CertVerifierWithUpdatableProc> cert_verifier =
-      CreateCertVerifier(creation_params.get(), cert_net_fetcher, impl_params);
+      CreateCertVerifier(creation_params.get(), cert_net_fetcher, impl_params,
+                         instance_params);
 
   // As an optimization, if the CertNetFetcher isn't used by the CertVerifier,
   // shut it down immediately.
@@ -74,8 +85,9 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
 
   // The service will delete itself upon disconnection.
   return new internal::CertVerifierServiceImpl(
-      std::move(cert_verifier), std::move(receiver), std::move(client),
-      std::move(cert_net_fetcher));
+      std::move(cert_verifier), std::move(service_receiver),
+      std::move(updater_receiver), std::move(client),
+      std::move(cert_net_fetcher), std::move(instance_params));
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -122,24 +134,27 @@ CertVerifierServiceFactoryImpl::CertVerifierServiceFactoryImpl(
 CertVerifierServiceFactoryImpl::~CertVerifierServiceFactoryImpl() = default;
 
 void CertVerifierServiceFactoryImpl::GetNewCertVerifier(
-    mojo::PendingReceiver<mojom::CertVerifierService> receiver,
+    mojo::PendingReceiver<mojom::CertVerifierService> service_receiver,
+    mojo::PendingReceiver<mojom::CertVerifierServiceUpdater> updater_receiver,
     mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
     mojom::CertVerifierCreationParamsPtr creation_params) {
-  internal::CertVerifierServiceImpl* service_impl =
-      GetNewCertVerifierImpl(std::move(receiver), std::move(client),
-                             std::move(creation_params), proc_params_,
-                             /*out_cert_net_fetcher=*/nullptr);
+  internal::CertVerifierServiceImpl* service_impl = GetNewCertVerifierImpl(
+      std::move(service_receiver), std::move(updater_receiver),
+      std::move(client), std::move(creation_params), proc_params_,
+      /*out_cert_net_fetcher=*/nullptr);
 
   verifier_services_.insert(service_impl);
   service_impl->SetCertVerifierServiceFactory(weak_factory_.GetWeakPtr());
 }
 
 void CertVerifierServiceFactoryImpl::GetNewCertVerifierForTesting(
-    mojo::PendingReceiver<mojom::CertVerifierService> receiver,
+    mojo::PendingReceiver<mojom::CertVerifierService> service_receiver,
+    mojo::PendingReceiver<mojom::CertVerifierServiceUpdater> updater_receiver,
     mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
     mojom::CertVerifierCreationParamsPtr creation_params,
     scoped_refptr<CertNetFetcherURLLoader>* cert_net_fetcher_ptr) {
-  GetNewCertVerifierImpl(std::move(receiver), std::move(client),
+  GetNewCertVerifierImpl(std::move(service_receiver),
+                         std::move(updater_receiver), std::move(client),
                          std::move(creation_params), proc_params_,
                          cert_net_fetcher_ptr);
 }
