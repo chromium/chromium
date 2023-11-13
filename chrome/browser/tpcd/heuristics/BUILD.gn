@@ -15,20 +15,3 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
-
-source_set("browser_tests") {
-  testonly = true
-  sources = [ "opener_heuristic_browsertest.cc" ]
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  deps = [
-    "//base",
-    "//chrome/browser",
-    "//chrome/test:test_support",
-    "//components/ukm:test_support",
-    "//content/test:test_support",
-    "//net:test_support",
-    "//testing/gtest",
-  ]
-}

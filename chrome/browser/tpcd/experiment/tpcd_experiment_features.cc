@@ -87,6 +87,8 @@ const char kTpcdWritePopupPastInteractionHeuristicsGrantsName[] =
     "TpcdWritePopupPastInteractionHeuristicsGrants";
 const char kTpcdBackfillPopupHeuristicsGrantsName[] =
     "TpcdBackfillPopupHeuristicsGrants";
+const char kTpcdPopupHeuristicDisableForAdTaggedPopupsName[] =
+    "TpcdPopupHeuristicDisableForAdTaggedPopups";
 const char kTpcdWriteRedirectHeuristicGrantsName[] =
     "TpcdWriteRedirectHeuristicGrants";
 const char kTpcdRedirectHeuristicRequireABAFlowName[] =
@@ -108,6 +110,10 @@ const base::FeatureParam<base::TimeDelta>
 const base::FeatureParam<base::TimeDelta> kTpcdBackfillPopupHeuristicsGrants{
     &content_settings::features::kTpcdHeuristicsGrants,
     kTpcdBackfillPopupHeuristicsGrantsName, base::TimeDelta()};
+
+const base::FeatureParam<bool> kTpcdPopupHeuristicDisableForAdTaggedPopups{
+    &content_settings::features::kTpcdHeuristicsGrants,
+    kTpcdPopupHeuristicDisableForAdTaggedPopupsName, false};
 
 const base::FeatureParam<base::TimeDelta> kTpcdWriteRedirectHeuristicGrants{
     &content_settings::features::kTpcdHeuristicsGrants,
