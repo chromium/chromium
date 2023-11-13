@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/download_status/display_manager.h"
 
+#include <functional>
+
 #include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ui/ash/download_status/display_client.h"
@@ -54,6 +56,26 @@ absl::optional<int64_t> GetReceivedBytes(
   return received_bytes;
 }
 
+// Returns the text to display for the download specified by `download_status`.
+absl::optional<std::u16string> GetText(
+    const crosapi::mojom::DownloadStatus& download_status) {
+  CHECK(CanDisplay(download_status));
+
+  // By default, text is generated from the full path.
+  std::reference_wrapper<const base::FilePath> file_path =
+      *download_status.full_path;
+
+  // Generate text from the target file path if:
+  // 1. The associated download is in progress.
+  // 2. The target file path exists.
+  if (download_status.state == crosapi::mojom::DownloadState::kInProgress &&
+      download_status.target_file_path) {
+    file_path = *download_status.target_file_path;
+  }
+
+  return file_path.get().BaseName().LossyDisplayName();
+}
+
 // Calculates the metadata to display the download update specified by
 // `download_status`. This function should be called only when the specified
 // download can be displayed.
@@ -66,6 +88,7 @@ download_status::DisplayMetadata CalculateDisplayMetadata(
   download_status::DisplayMetadata display_metadata;
   display_metadata.file_path = *download_status.full_path;
   display_metadata.received_bytes = GetReceivedBytes(download_status);
+  display_metadata.text = GetText(download_status);
   display_metadata.total_bytes = GetTotalBytes(download_status);
 
   return display_metadata;

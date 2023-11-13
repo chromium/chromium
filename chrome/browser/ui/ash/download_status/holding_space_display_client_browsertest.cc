@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
@@ -25,8 +26,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 namespace ash::download_status {
 
@@ -113,6 +116,26 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {
           test_api().GetHoldingSpaceItemId(cached_download_chip));
   EXPECT_EQ(item->progress().GetValue(), 0.f);
 
+  // Cache the primary label.
+  auto* const primary_label = views::AsViewClass<views::Label>(
+      cached_download_chip->GetViewByID(kHoldingSpaceItemPrimaryChipLabelId));
+
+  // When the target file path is unavailable, the primary text should be the
+  // display name of the file referenced by the full path.
+  ASSERT_TRUE(download->full_path);
+  EXPECT_FALSE(download->target_file_path);
+  EXPECT_EQ(primary_label->GetText(),
+            download->full_path->BaseName().LossyDisplayName());
+
+  download->target_file_path = CreateFile();
+  EXPECT_NE(download->target_file_path, download->full_path);
+  Update(download->Clone());
+
+  // When the target file path of an in-progress download item exists, the
+  // primary text should be the target file's display name.
+  EXPECT_EQ(primary_label->GetText(),
+            download->target_file_path->BaseName().LossyDisplayName());
+
   // Update the received bytes count to half of the total bytes count and
   // then check the progress value.
   download->received_bytes = download->total_bytes.value() / 2.f;
@@ -129,6 +152,11 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {
   download_chips = test_api().GetDownloadChips();
   ASSERT_EQ(download_chips.size(), 1u);
   EXPECT_EQ(download_chips[0], cached_download_chip);
+
+  // A completed download item's primary text should be the display name of the
+  // file referenced by the full path.
+  EXPECT_EQ(primary_label->GetText(),
+            download->full_path->BaseName().LossyDisplayName());
 
   // Remove the download chip.
   Click(download_chips[0]);

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ASH_DOWNLOAD_STATUS_DISPLAY_METADATA_H_
 #define CHROME_BROWSER_UI_ASH_DOWNLOAD_STATUS_DISPLAY_METADATA_H_
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -24,6 +26,9 @@ struct DisplayMetadata {
 
   // The received bytes of download.
   absl::optional<int64_t> received_bytes;
+
+  // The primary text of the displayed download.
+  absl::optional<std::u16string> text;
 
   // The total bytes of download.
   absl::optional<int64_t> total_bytes;

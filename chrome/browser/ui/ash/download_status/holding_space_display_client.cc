@@ -63,7 +63,9 @@ void HoldingSpaceDisplayClient::AddOrUpdate(
 
   // TODO(http://b/307347158): Update the holding space item specified by
   // `holding_space_item_id` with `display_metadata`.
-  service->UpdateItem(item_id_by_guid->second)->SetProgress(progress);
+  service->UpdateItem(item_id_by_guid->second)
+      ->SetProgress(progress)
+      .SetText(display_metadata.text);
 
   // Since `item_ids_by_guids_` no longer needs `guid` after the download
   // specified by `guid` completes, remove `guid` from `item_ids_by_guids_`.
