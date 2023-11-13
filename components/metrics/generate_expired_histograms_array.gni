@@ -89,7 +89,6 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/diagnostics/histograms.xml",
       "//tools/metrics/histograms/metadata/disk/histograms.xml",
       "//tools/metrics/histograms/metadata/download/histograms.xml",
-      "//tools/metrics/histograms/metadata/enterprise/enums.xml",
       "//tools/metrics/histograms/metadata/enterprise/histograms.xml",
       "//tools/metrics/histograms/metadata/event/histograms.xml",
       "//tools/metrics/histograms/metadata/extensions/histograms.xml",
