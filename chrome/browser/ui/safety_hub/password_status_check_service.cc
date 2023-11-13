@@ -507,7 +507,12 @@ base::Value::Dict PasswordStatusCheckService::GetPasswordCardData(
   return GetNoWeakOrReusedPasswordCardData(signed_in);
 }
 
-const PasswordStatusCheckResult& PasswordStatusCheckService::GetCachedResult()
-    const {
-  return *latest_result_;
+// TODO(crbug.com/1443466): Consider pass by value for GetCachedResult
+// functions.
+absl::optional<std::unique_ptr<SafetyHubService::Result>>
+PasswordStatusCheckService::GetCachedResult() {
+  if (latest_result_) {
+    return std::make_unique<PasswordStatusCheckResult>(*latest_result_);
+  }
+  return absl::nullopt;
 }

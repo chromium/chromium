@@ -54,6 +54,7 @@ enum class SafetyHubModuleType {
   NOTIFICATION_PERMISSIONS,
   SAFE_BROWSING,
   EXTENSIONS,
+  PASSWORDS,
 };
 
 }  // namespace safety_hub
