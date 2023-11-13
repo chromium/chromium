@@ -2498,7 +2498,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2931157624143513983">Tilpass til det utskrivbare området</translation>
 <translation id="2932085390869194046">Foreslå passord</translation>
 <translation id="2932483646085333864">Logg av og på igjen for å starte synkroniseringen</translation>
-<translation id="2932883381142163287">Rapportér uriktig bruk</translation>
+<translation id="2932883381142163287">Rapporter uriktig bruk</translation>
 <translation id="2933632078076743449">Siste oppdatering</translation>
 <translation id="2934999512438267372">Full kontroll over MIDI-enheter tillates</translation>
 <translation id="2935225303485967257">Administrer profiler</translation>
@@ -5828,7 +5828,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5691772641933328258">Gjenkjenner ikke fingeravtrykket</translation>
 <translation id="5692183275898619210">Utskriften er fullført</translation>
 <translation id="5695184138696833495">Android-app-ADB for Linux</translation>
-<translation id="5696143504434933566">Rapportér uriktig bruk fra «<ph name="EXTENSION_NAME" />»</translation>
+<translation id="5696143504434933566">Rapporter uriktig bruk fra «<ph name="EXTENSION_NAME" />»</translation>
 <translation id="5696679855467848181">Gjeldende PPD-fil i bruk: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Emojivelger</translation>
 <translation id="5698462638680260399">Logg på for å bruke passord</translation>
