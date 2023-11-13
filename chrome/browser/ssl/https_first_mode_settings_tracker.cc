@@ -85,10 +85,11 @@ const base::FeatureParam<int> kNavigationCounterRollingWindowSizeInDays{
 // rolling window of kNavigationCounterDefaultRollingWindowSizeInDays for a user
 // to be considered typically secure. If the user doesn't have at least this
 // many navigations counted, they might not have used Chrome sufficiently for us
-// to auto-enable HFM.
+// to auto-enable HFM. A default value of 1500 is 100 navigations per day during
+// the 15 day rolling window.
 const base::FeatureParam<int> kMinRecentNavigationsForTypicallySecureUser{
     &features::kHttpsFirstModeV2ForTypicallySecureUsers,
-    "min-recent-navigations", 100};
+    "min-recent-navigations", 1500};
 
 // The key for the fallback events in the base preference.
 constexpr char kFallbackEventsKey[] = "fallback_events";

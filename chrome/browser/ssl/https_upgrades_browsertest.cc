@@ -1057,7 +1057,7 @@ IN_PROC_BROWSER_TEST_P(
   HttpsFirstModeService* hfm_service =
       HttpsFirstModeServiceFactory::GetForProfile(profile);
   // Do lots of navigations so that Typically Secure User can kick in.
-  for (size_t i = 0; i < 100; i++) {
+  for (size_t i = 0; i < 1500; i++) {
     hfm_service->IncrementRecentNavigationCount();
   }
 
