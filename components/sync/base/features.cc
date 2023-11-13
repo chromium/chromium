@@ -99,7 +99,7 @@ BASE_FEATURE(kEnablePreferencesAccountStorage,
 );
 
 BASE_FEATURE(kSyncPollImmediatelyOnEveryStartup,
-             "SyncPollImmediatelyOnEveryStartup",
+             "SyncPollImmediatelyOnEveryStartup2",
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT

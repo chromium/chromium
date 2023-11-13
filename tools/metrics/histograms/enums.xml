@@ -41307,6 +41307,7 @@ from previous Chrome versions.
   <int value="-1173283620" label="MouseAndTrackpadDropdownMenu:disabled"/>
   <int value="-1172572865" label="NTPShowGoogleGInOmnibox:enabled"/>
   <int value="-1172204005" label="enable-offline-auto-reload-visible-only"/>
+  <int value="-1171556368" label="SyncPollImmediatelyOnEveryStartup2:disabled"/>
   <int value="-1170286604" label="Commander:disabled"/>
   <int value="-1169571217" label="SharingDesktopScreenshotsEdit:disabled"/>
   <int value="-1168910727"
@@ -45317,6 +45318,7 @@ from previous Chrome versions.
   <int value="758845666" label="WebXrInternals:enabled"/>
   <int value="759296601" label="DiscountConsentV2:disabled"/>
   <int value="760542355" label="ServiceWorkerScriptFullCodeCache:enabled"/>
+  <int value="761254781" label="SyncPollImmediatelyOnEveryStartup2:enabled"/>
   <int value="761770770"
       label="OverrideLanguagePrefsForHrefTranslate:disabled"/>
   <int value="761815665" label="BlockInsecureDownloads:disabled"/>
