@@ -51,14 +51,6 @@ enum NotificationType {
 
   // WebContents ---------------------------------------------------------------
 
-  // Indicates that a render process was closed (meaning it exited, but the
-  // RenderProcessHost might be reused).  The source will be the corresponding
-  // RenderProcessHost.  The details will be a ChildProcessTerminationInfo
-  // struct. This may get sent along with RENDERER_PROCESS_TERMINATED.
-  // DEPRECATED: Use RenderProcessHostObserver::RenderProcessExited()
-  // TODO(https://crbug.com/357627): Remove.
-  NOTIFICATION_RENDERER_PROCESS_CLOSED,
-
   // Indicates that a RenderWidgetHost has become unresponsive for a period of
   // time. The source will be the RenderWidgetHost that corresponds to the
   // hung view, and no details are expected.

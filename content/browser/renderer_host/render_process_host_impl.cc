@@ -4934,9 +4934,6 @@ void RenderProcessHostImpl::ProcessDied(
   for (auto& observer : observers_)
     observer.RenderProcessExited(this, info);
 
-  NotificationService::current()->Notify(
-      NOTIFICATION_RENDERER_PROCESS_CLOSED, Source<RenderProcessHost>(this),
-      Details<ChildProcessTerminationInfo>(&info));
   within_process_died_observer_ = false;
 
   // Initialize a new ChannelProxy in case this host is re-used for a new
