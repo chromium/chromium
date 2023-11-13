@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.supervised_user.website_approval;
 
 import android.graphics.Bitmap;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -36,14 +37,17 @@ public class WebsiteApprovalCoordinator {
     }
 
     /**
-     * Constructor for the co-ordinator.  Callers should then call {@link show()} to display the
-     * UI.
+     * Constructor for the co-ordinator. Callers should then call {@link show()} to display the UI.
      *
      * @param url the full URL for which the request is being made (code in this module is
-     * responsible for displaying the appropriate part of the URL to the user)
+     *     responsible for displaying the appropriate part of the URL to the user)
      */
-    public WebsiteApprovalCoordinator(WindowAndroid windowAndroid, GURL url,
-            CompletionCallback completionCallback, Bitmap favicon) {
+    public WebsiteApprovalCoordinator(
+            WindowAndroid windowAndroid,
+            GURL url,
+            CompletionCallback completionCallback,
+            Bitmap favicon,
+            Profile profile) {
         PropertyModel model = new PropertyModel.Builder(WebsiteApprovalProperties.ALL_KEYS)
                                       .with(WebsiteApprovalProperties.URL, url)
                                       .with(WebsiteApprovalProperties.FAVICON, favicon)
@@ -56,8 +60,9 @@ public class WebsiteApprovalCoordinator {
 
         PropertyModelChangeProcessor.create(model, sheetContent, WebsiteApprovalViewBinder::bind);
 
-        mMediator = new WebsiteApprovalMediator(
-                completionCallback, bottomSheetController, sheetContent, model);
+        mMediator =
+                new WebsiteApprovalMediator(
+                        completionCallback, bottomSheetController, sheetContent, model, profile);
     }
 
     /** Displays the UI to request parent approval in a new bottom sheet. */

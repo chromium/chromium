@@ -12,6 +12,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.supervised_user.android.AndroidLocalWebApprovalFlowOutcome;
 import org.chromium.chrome.browser.supervised_user.website_approval.WebsiteApprovalCoordinator;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
@@ -77,21 +78,26 @@ class WebsiteParentApproval {
     /**
      * Request local approval from a parent for viewing a given website.
      *
-     * This method handles displaying relevant UI, and when complete calls the provided callback
-     * with the result.  It should only be called after {@link isLocalApprovalSupported} has
-     * returned true (it will perform a no-op if local approvals are unsupported).
+     * <p>This method handles displaying relevant UI, and when complete calls the provided callback
+     * with the result. It should only be called after {@link isLocalApprovalSupported} has returned
+     * true (it will perform a no-op if local approvals are unsupported).
      *
      * @param windowAndroid the window to which the approval UI should be attached
      * @param url the full URL the supervised user navigated to
-     *
-     * */
+     * @param profile the profile of the current user
+     */
     @CalledByNative
-    private static void requestLocalApproval(WindowAndroid windowAndroid, GURL url) {
+    private static void requestLocalApproval(
+            WindowAndroid windowAndroid, GURL url, Profile profile) {
         // First ask the parent to authenticate.
         ParentAuthDelegate delegate = ParentAuthDelegateProvider.getInstance();
         FaviconHelper faviconHelper = new FaviconHelper();
-        delegate.requestLocalAuth(windowAndroid, url,
-                (success) -> { onParentAuthComplete(success, windowAndroid, url, faviconHelper); });
+        delegate.requestLocalAuth(
+                windowAndroid,
+                url,
+                (success) -> {
+                    onParentAuthComplete(success, windowAndroid, url, faviconHelper, profile);
+                });
 
         int desiredFaviconWidthPx =
                 windowAndroid.getContext().get().getResources().getDimensionPixelSize(
@@ -101,11 +107,16 @@ class WebsiteParentApproval {
                 desiredFaviconWidthPx, (Bitmap favicon) -> faviconHelper.setFavicon(favicon));
         faviconHelper.setFallbackIcon(
                 createFaviconFallback(windowAndroid.getContext().get().getResources(), url));
+
     }
 
-    /** Displays the screen giving the parent the option to approve or deny the website.*/
+    /** Displays the screen giving the parent the option to approve or deny the website. */
     private static void onParentAuthComplete(
-            boolean success, WindowAndroid windowAndroid, GURL url, FaviconHelper faviconHelper) {
+            boolean success,
+            WindowAndroid windowAndroid,
+            GURL url,
+            FaviconHelper faviconHelper,
+            Profile profile) {
         if (!success) {
             WebsiteParentApprovalJni.get().onCompletion(
                     AndroidLocalWebApprovalFlowOutcome.INCOMPLETE);
@@ -115,26 +126,33 @@ class WebsiteParentApproval {
         Bitmap favicon = faviconHelper.getFavicon() != null ? faviconHelper.getFavicon()
                                                             : faviconHelper.getFallbackIcon();
         // Launch the bottom sheet.
-        WebsiteApprovalCoordinator websiteApprovalUi = new WebsiteApprovalCoordinator(
-                windowAndroid, url, new WebsiteApprovalCoordinator.CompletionCallback() {
-                    @Override
-                    public void onWebsiteApproved() {
-                        WebsiteParentApprovalMetrics.recordOutcomeMetric(
-                                WebsiteParentApprovalMetrics.FamilyLinkUserLocalWebApprovalOutcome
-                                        .APPROVED_BY_PARENT);
-                        WebsiteParentApprovalJni.get().onCompletion(
-                                AndroidLocalWebApprovalFlowOutcome.APPROVED);
-                    }
+        WebsiteApprovalCoordinator websiteApprovalUi =
+                new WebsiteApprovalCoordinator(
+                        windowAndroid,
+                        url,
+                        new WebsiteApprovalCoordinator.CompletionCallback() {
+                            @Override
+                            public void onWebsiteApproved() {
+                                WebsiteParentApprovalMetrics.recordOutcomeMetric(
+                                        WebsiteParentApprovalMetrics
+                                                .FamilyLinkUserLocalWebApprovalOutcome
+                                                .APPROVED_BY_PARENT);
+                                WebsiteParentApprovalJni.get()
+                                        .onCompletion(AndroidLocalWebApprovalFlowOutcome.APPROVED);
+                            }
 
-                    @Override
-                    public void onWebsiteDenied() {
-                        WebsiteParentApprovalMetrics.recordOutcomeMetric(
-                                WebsiteParentApprovalMetrics.FamilyLinkUserLocalWebApprovalOutcome
-                                        .DENIED_BY_PARENT);
-                        WebsiteParentApprovalJni.get().onCompletion(
-                                AndroidLocalWebApprovalFlowOutcome.REJECTED);
-                    }
-                }, favicon);
+                            @Override
+                            public void onWebsiteDenied() {
+                                WebsiteParentApprovalMetrics.recordOutcomeMetric(
+                                        WebsiteParentApprovalMetrics
+                                                .FamilyLinkUserLocalWebApprovalOutcome
+                                                .DENIED_BY_PARENT);
+                                WebsiteParentApprovalJni.get()
+                                        .onCompletion(AndroidLocalWebApprovalFlowOutcome.REJECTED);
+                            }
+                        },
+                        favicon,
+                        profile);
 
         websiteApprovalUi.show();
     }

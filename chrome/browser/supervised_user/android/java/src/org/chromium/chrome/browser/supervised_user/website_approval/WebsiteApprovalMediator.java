@@ -22,14 +22,19 @@ class WebsiteApprovalMediator {
     private final BottomSheetController mBottomSheetController;
     private final WebsiteApprovalSheetContent mSheetContent;
     private final PropertyModel mModel;
+    private final Profile mProfile;
 
-    WebsiteApprovalMediator(WebsiteApprovalCoordinator.CompletionCallback completionCallback,
-            BottomSheetController bottomSheetController, WebsiteApprovalSheetContent sheetContent,
-            PropertyModel model) {
+    WebsiteApprovalMediator(
+            WebsiteApprovalCoordinator.CompletionCallback completionCallback,
+            BottomSheetController bottomSheetController,
+            WebsiteApprovalSheetContent sheetContent,
+            PropertyModel model,
+            Profile profile) {
         mCompletionCallback = completionCallback;
         mBottomSheetController = bottomSheetController;
         mSheetContent = sheetContent;
         mModel = model;
+        mProfile = profile;
     }
 
     void show() {
@@ -46,8 +51,8 @@ class WebsiteApprovalMediator {
 
         // Set the child name.  We use the given name if there is one for this account, otherwise we
         // use the full account email address.
-        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
         String childEmail = CoreAccountInfo.getEmailFrom(
                 identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         if (childEmail == null) {
@@ -62,6 +67,7 @@ class WebsiteApprovalMediator {
         if (childAccountInfo != null && !childAccountInfo.getGivenName().isEmpty()) {
             childNameProperty = childAccountInfo.getGivenName();
         }
+
         mModel.set(WebsiteApprovalProperties.CHILD_NAME, childNameProperty);
 
         // Now show the actual content.
