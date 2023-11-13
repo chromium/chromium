@@ -151,19 +151,22 @@ class RenderWidgetHostViewChildFrameTest
     EXPECT_EQ(screen_info, view_->GetScreenInfo());
     EXPECT_EQ(screen_infos, view_->GetScreenInfos());
 
-    test_frame_connector_ = new MockFrameConnector();
+    test_frame_connector_ = std::make_unique<MockFrameConnector>();
     test_frame_connector_->SetView(view_);
-    view_->SetFrameConnector(test_frame_connector_);
+    view_->SetFrameConnector(test_frame_connector_.get());
   }
 
   void TearDown() override {
     sink_ = nullptr;
-    if (view_)
-      view_->Destroy();
+    if (view_) {
+      RenderWidgetHostViewChildFrame* local_view = view_;
+      view_ = nullptr;
+      local_view->Destroy();
+    }
     widget_host_.reset();
     site_instance_group_.reset();
     process_host_->Cleanup();
-    delete test_frame_connector_;
+    test_frame_connector_.reset();
 
     process_host_.reset();
 
@@ -188,8 +191,8 @@ class RenderWidgetHostViewChildFrameTest
   // Tests should set these to NULL if they've already triggered their
   // destruction.
   std::unique_ptr<RenderWidgetHostImpl> widget_host_;
-  raw_ptr<RenderWidgetHostViewChildFrame, DanglingUntriaged> view_;
-  raw_ptr<MockFrameConnector, DanglingUntriaged> test_frame_connector_;
+  raw_ptr<RenderWidgetHostViewChildFrame> view_ = nullptr;
+  std::unique_ptr<MockFrameConnector> test_frame_connector_;
 };
 
 TEST_F(RenderWidgetHostViewChildFrameTest, VisibilityTest) {
@@ -206,7 +209,7 @@ TEST_F(RenderWidgetHostViewChildFrameTest, VisibilityTest) {
   ASSERT_FALSE(view_->IsShowing());
 
   // Restore the MockFrameConnector to avoid a crash during destruction.
-  view_->SetFrameConnector(test_frame_connector_);
+  view_->SetFrameConnector(test_frame_connector_.get());
 }
 
 // Tests that the viewport intersection rect is dispatched to the RenderWidget
