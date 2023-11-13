@@ -3591,13 +3591,6 @@ const char kWallpaperPerDeskName[] =
 const char kWallpaperPerDeskDescription[] =
     "Allow users to set different wallpapers on each of their active desks";
 
-const char kWebAuthnFilterGooglePasskeysName[] =
-    "Filter passkeys for google.com";
-const char kWebAuthnFilterGooglePasskeysDescription[] =
-    "When servicing a webauthn request for google.com, filter webauthn "
-    "credentials that do not match a user.id prefix identifying them as "
-    "passkeys, e.g. because they are used for autofill auth.";
-
 const char kWebAuthnScreenReaderModeName[] =
     "Enable screen reader mode for webauthn UI";
 const char kWebAuthnScreenReaderModeDescription[] =

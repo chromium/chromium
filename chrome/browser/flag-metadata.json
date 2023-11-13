@@ -8179,11 +8179,6 @@
     "expiry_milestone": 124
   },
   {
-    "name": "web-authentication-filter-google-passkeys",
-    "owners": [ "chrome-webauthn@google.com" ],
-    "expiry_milestone": 121
-  },
-  {
     "name": "web-authentication-new-passkey-ui",
     "owners": [ "chrome-webauthn@google.com" ],
     "expiry_milestone": 125

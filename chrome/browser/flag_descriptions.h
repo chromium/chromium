@@ -2071,9 +2071,6 @@ extern const char kWallpaperGooglePhotosSharedAlbumsDescription[];
 extern const char kWallpaperPerDeskName[];
 extern const char kWallpaperPerDeskDescription[];
 
-extern const char kWebAuthnFilterGooglePasskeysName[];
-extern const char kWebAuthnFilterGooglePasskeysDescription[];
-
 extern const char kWebAuthnScreenReaderModeName[];
 extern const char kWebAuthnScreenReaderModeDescription[];
 
