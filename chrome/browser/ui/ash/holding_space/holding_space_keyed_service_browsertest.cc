@@ -39,6 +39,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_test_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -134,46 +135,6 @@ void WaitForItemAddition(
   run_loop.Run();
 }
 
-// Waits for a holding space item matching the provided `predicate` to be
-// removed from the holding space model. Returns immediately if the model does
-// not contain such an item.
-void WaitForItemRemoval(
-    base::RepeatingCallback<bool(const HoldingSpaceItem*)> predicate) {
-  auto* const model = HoldingSpaceController::Get()->model();
-  if (base::ranges::none_of(model->items(), [&predicate](const auto& item) {
-        return predicate.Run(item.get());
-      })) {
-    return;
-  }
-
-  testing::NiceMock<MockHoldingSpaceModelObserver> mock;
-  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
-      observer{&mock};
-  observer.Observe(model);
-
-  base::RunLoop run_loop;
-  ON_CALL(mock, OnHoldingSpaceItemsRemoved)
-      .WillByDefault([&](const std::vector<const HoldingSpaceItem*>& items) {
-        for (const HoldingSpaceItem* item : items) {
-          if (predicate.Run(item)) {
-            run_loop.Quit();
-            return;
-          }
-        }
-      });
-  run_loop.Run();
-}
-
-// Waits for a holding space item with the provided `item_id` to be removed from
-// the holding space model. Returns immediately if the model does not contain
-// such an item.
-void WaitForItemRemoval(const std::string& item_id) {
-  WaitForItemRemoval(
-      base::BindLambdaForTesting([&item_id](const HoldingSpaceItem* item) {
-        return item->id() == item_id;
-      }));
-}
-
 // Waits for a holding space item matching the provided `predicate` to be added
 // to the holding space model and initialized. Returns immediately if the item
 // already exists and is initialized.
@@ -266,7 +227,7 @@ void RemoveHoldingSpaceItemViaClosure(
 
   const std::string item_id = holding_space_item->id();
   std::move(closure).Run();
-  WaitForItemRemoval(item_id);
+  WaitForItemRemovalById(item_id);
 }
 
 }  // namespace
@@ -408,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
   ASSERT_TRUE(fake_power_manager_client);
   fake_power_manager_client->SendSuspendImminent(
       power_manager::SuspendImminent::IDLE);
-  WaitForItemRemoval(existing_item_id);
+  WaitForItemRemovalById(existing_item_id);
   EXPECT_TRUE(holding_space_model->items().empty());
 
   // Try to add a new holding space item.
@@ -495,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
   drivefs_delegate().FlushForTesting();
 
   // Because `src` was deleted, the holding space item should be removed.
-  WaitForItemRemoval(item->id());
+  WaitForItemRemovalById(item->id());
 
   // Add another holding space item, again pointing to `src`.
   item = AddHoldingSpaceItem(browser()->profile(), src);
@@ -523,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
   // Because `src` was deleted and cannot be determined to refer to the same
   // document that was created at `dst`, the holding space item should be
   // removed.
-  WaitForItemRemoval(item->id());
+  WaitForItemRemovalById(item->id());
 
   // Add another holding space item, again pointing to `src`.
   item = AddHoldingSpaceItem(browser()->profile(), src);
@@ -555,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
 
   // Because the document was ultimately deleted, the holding space item should
   // be removed.
-  WaitForItemRemoval(item->id());
+  WaitForItemRemovalById(item->id());
 
   // Add another holding space item, pointing to `src` in `src_dir`.
   base::FilePath src_dir = GetTestMountPoint().Append("src/");
@@ -608,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
 
   // Because the parent directory in which the holding space item's backing file
   // is contained has been deleted, the holding space item should be removed.
-  WaitForItemRemoval(item->id());
+  WaitForItemRemovalById(item->id());
 }
 
 // Verifies that drive files pinned to holding space are pinned for offline use.

@@ -7,10 +7,11 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
@@ -30,30 +31,44 @@ HoldingSpaceDisplayClient::~HoldingSpaceDisplayClient() = default;
 void HoldingSpaceDisplayClient::AddOrUpdate(
     const std::string& guid,
     const DisplayMetadata& display_metadata) {
-  if (!base::Contains(item_ids_by_guids_, guid)) {
-    // Create a holding space item when displaying a new download.
+  // Point to the mapping from `guid` to the holding space item ID.
+  auto item_id_by_guid = item_ids_by_guids_.find(guid);
+
+  HoldingSpaceKeyedService* const service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile_);
+  const HoldingSpaceProgress progress(display_metadata.received_bytes,
+                                      display_metadata.total_bytes);
+
+  if (item_id_by_guid == item_ids_by_guids_.end() ||
+      !HoldingSpaceController::Get()->model()->GetItem(
+          item_id_by_guid->second)) {
+    // Create a holding space item when displaying a new download. A download is
+    // considered new if:
+    // 1. The key `guid` does not exist in `item_ids_by_guids_`; OR
+    // 2. The item specified by the ID associated with `guid` is not found.
+    // NOTE: Adding a new download holding space item may not always be
+    // successful. For example, item additions should be avoided during service
+    // suspension.
     std::string id =
-        HoldingSpaceKeyedServiceFactory::GetInstance()
-            ->GetService(profile_)
-            ->AddItemOfType(HoldingSpaceItem::Type::kLacrosDownload,
-                            display_metadata.file_path);
-    if (!id.empty()) {
-      item_ids_by_guids_.emplace(guid, std::move(id));
-    }
+        service->AddItemOfType(HoldingSpaceItem::Type::kLacrosDownload,
+                               display_metadata.file_path, progress);
+    item_id_by_guid = id.empty() ? item_ids_by_guids_.end()
+                                 : item_ids_by_guids_.insert_or_assign(
+                                       item_id_by_guid, guid, std::move(id));
   }
 
-  // TODO(http://b/308213441): Handle the case where the holding space item
-  // specified by `guid` already exists.
+  if (item_id_by_guid == item_ids_by_guids_.end()) {
+    return;
+  }
 
-  // TODO(http://b/307347158): Update the holding space item specified by `guid`
-  // with `display_metadata`.
+  // TODO(http://b/307347158): Update the holding space item specified by
+  // `holding_space_item_id` with `display_metadata`.
+  service->UpdateItem(item_id_by_guid->second)->SetProgress(progress);
 
   // Since `item_ids_by_guids_` no longer needs `guid` after the download
   // specified by `guid` completes, remove `guid` from `item_ids_by_guids_`.
-  if (HoldingSpaceProgress(display_metadata.received_bytes,
-                           display_metadata.total_bytes)
-          .IsComplete()) {
-    item_ids_by_guids_.erase(guid);
+  if (progress.IsComplete()) {
+    item_ids_by_guids_.erase(item_id_by_guid);
   }
 }
 

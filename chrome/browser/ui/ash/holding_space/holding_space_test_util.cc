@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_test_util.h"
 
+#include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_model_observer.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h"
@@ -83,6 +85,39 @@ views::MenuItemView* SelectMenuItemWithCommandId(
   // If this LOC is reached the menu has been completely traversed without
   // finding a menu item for the desired `command_id`.
   return nullptr;
+}
+
+void WaitForItemRemoval(
+    base::FunctionRef<bool(const HoldingSpaceItem*)> predicate) {
+  auto* const model = HoldingSpaceController::Get()->model();
+  if (base::ranges::none_of(model->items(), [&predicate](const auto& item) {
+        return predicate(item.get());
+      })) {
+    return;
+  }
+
+  testing::NiceMock<MockHoldingSpaceModelObserver> mock;
+  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+      observer{&mock};
+  observer.Observe(model);
+
+  base::RunLoop run_loop;
+  ON_CALL(mock, OnHoldingSpaceItemsRemoved)
+      .WillByDefault([&](const std::vector<const HoldingSpaceItem*>& items) {
+        for (const HoldingSpaceItem* item : items) {
+          if (predicate(item)) {
+            run_loop.Quit();
+            return;
+          }
+        }
+      });
+  run_loop.Run();
+}
+
+void WaitForItemRemovalById(const std::string& item_id) {
+  WaitForItemRemoval([&item_id](const HoldingSpaceItem* item) {
+    return item->id() == item_id;
+  });
 }
 
 void WaitForSuggestionsInModel(

@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <limits>
 #include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
@@ -16,6 +19,8 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_test_util.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -102,11 +107,25 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {
   ASSERT_EQ(download_chips.size(), 1u);
   const views::View* const cached_download_chip = download_chips[0];
 
+  // Check the holding space item's progress value when download starts.
+  const HoldingSpaceItem* const item =
+      HoldingSpaceController::Get()->model()->GetItem(
+          test_api().GetHoldingSpaceItemId(cached_download_chip));
+  EXPECT_EQ(item->progress().GetValue(), 0.f);
+
+  // Update the received bytes count to half of the total bytes count and
+  // then check the progress value.
+  download->received_bytes = download->total_bytes.value() / 2.f;
+  Update(download->Clone());
+  EXPECT_NEAR(item->progress().GetValue().value(), 0.5f,
+              std::numeric_limits<float>::epsilon());
+
   // Complete `download`. Verify that the download chip associated to `download`
   // still exists.
   download->state = crosapi::mojom::DownloadState::kComplete;
   download->received_bytes = download->total_bytes;
   Update(download->Clone());
+  EXPECT_EQ(item->progress().GetValue(), 1.f);
   download_chips = test_api().GetDownloadChips();
   ASSERT_EQ(download_chips.size(), 1u);
   EXPECT_EQ(download_chips[0], cached_download_chip);
@@ -144,6 +163,46 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
   download->state = crosapi::mojom::DownloadState::kInterrupted;
   Update(download->Clone());
   EXPECT_TRUE(test_api().GetDownloadChips().empty());
+}
+
+// Verifies the behavior when the holding space keyed service is suspended
+// during download.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
+                       ServiceSuspendedDuringDownload) {
+  crosapi::mojom::DownloadStatusPtr download = CreateInProgressDownloadStatus();
+  Update(download->Clone());
+  test_api().Show();
+
+  // Cache the holding space item ID.
+  std::vector<views::View*> download_chips = test_api().GetDownloadChips();
+  ASSERT_EQ(download_chips.size(), 1u);
+  const std::string item_id =
+      test_api().GetHoldingSpaceItemId(download_chips[0]);
+
+  // Suspend the service. Wait until the item specified by `item_id` is removed.
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
+      power_manager::SuspendImminent_Reason_OTHER);
+  WaitForItemRemovalById(item_id);
+
+  // Check that a download update during suspension does not create a new item.
+  // Use a different file path to prevent the new item, if any, from being
+  // filtered out due to duplication.
+  download->full_path = CreateFile();
+  Update(download->Clone());
+  EXPECT_TRUE(HoldingSpaceController::Get()->model()->items().empty());
+
+  // End suspension. The holding space model should be empty. Since the download
+  // is in progress, its associated holding space item is not persistent.
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
+  EXPECT_TRUE(HoldingSpaceController::Get()->model()->items().empty());
+
+  // Update the download after suspension. A new holding space item should be
+  // created.
+  Update(download->Clone());
+  EXPECT_EQ(HoldingSpaceController::Get()->model()->items().size(), 1u);
+  download_chips = test_api().GetDownloadChips();
+  ASSERT_EQ(download_chips.size(), 1u);
+  EXPECT_NE(test_api().GetHoldingSpaceItemId(download_chips[0]), item_id);
 }
 
 }  // namespace ash::download_status
