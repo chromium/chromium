@@ -270,9 +270,7 @@ bool ManifestParser::Parse() {
   }
 
   if (RuntimeEnabledFeatures::WebAppTabStripCustomizationsEnabled(
-          execution_context_) &&
-      manifest_->display_override.Contains(
-          mojom::blink::DisplayMode::kTabbed)) {
+          execution_context_)) {
     manifest_->tab_strip = ParseTabStrip(root_object.get());
   }
 

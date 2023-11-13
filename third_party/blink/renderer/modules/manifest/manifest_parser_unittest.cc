@@ -6523,8 +6523,9 @@ TEST_F(ManifestParserTest, DarkColorOverrideParseRules) {
 TEST_F(ManifestParserTest, TabStripParseRules) {
   using Visibility = mojom::blink::TabStripMemberVisibility;
   {
-    ScopedWebAppTabStripForTest feature(false);
-    // Feature not enabled, should not be parsed.
+    ScopedWebAppTabStripForTest feature1(true);
+    ScopedWebAppTabStripCustomizationsForTest feature2(false);
+    // Tab strip customizations feature not enabled, should not be parsed.
     {
       auto& manifest =
           ParseManifest(R"({ "tab_strip": {"home_tab": "auto"} })");
@@ -6533,13 +6534,14 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     }
   }
   {
-    ScopedWebAppTabStripForTest feature(true);
+    ScopedWebAppTabStripForTest feature1(true);
+    ScopedWebAppTabStripCustomizationsForTest feature2(true);
 
-    // Display mode not 'tabbed', 'tab_strip' should not be parsed.
+    // Display mode not 'tabbed', 'tab_strip' should still be parsed.
     {
       auto& manifest =
           ParseManifest(R"({ "tab_strip": {"home_tab": "auto"} })");
-      EXPECT_TRUE(manifest->tab_strip.is_null());
+      EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_EQ(0u, GetErrorCount());
     }
 
@@ -6552,8 +6554,7 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
 
     // 'tab_strip' object is empty.
     {
-      auto& manifest = ParseManifest(
-          R"({  "display_override": [ "tabbed" ], "tab_strip": {} })");
+      auto& manifest = ParseManifest(R"({  "tab_strip": {} })");
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
                 Visibility::kAuto);
@@ -6564,7 +6565,6 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     // Home tab and new tab button are empty objects.
     {
       auto& manifest = ParseManifest(R"({
-          "display_override": [ "tabbed" ],
           "tab_strip": {"home_tab": {}, "new_tab_button": {}} })");
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
@@ -6579,7 +6579,6 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     // Home tab and new tab button are invalid.
     {
       auto& manifest = ParseManifest(R"({
-          "display_override": [ "tabbed" ],
           "tab_strip": {"home_tab": "something", "new_tab_button": 42} })");
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
@@ -6592,7 +6591,6 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     // Unknown members of 'tab_strip' are ignored.
     {
       auto& manifest = ParseManifest(R"({
-          "display_override": [ "tabbed" ],
           "tab_strip": {"unknown": {}} })");
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
@@ -6605,7 +6603,6 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     // Home tab with icons and new tab button with url are parsed.
     {
       auto& manifest = ParseManifest(R"({
-          "display_override": [ "tabbed" ],
           "tab_strip": {
             "home_tab": {"icons": [{"src": "foo.jpg"}]},
             "new_tab_button": {"url": "foo"}} })");
@@ -6620,7 +6617,6 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     // New tab button url out of scope.
     {
       auto& manifest = ParseManifest(R"({
-          "display_override": [ "tabbed" ],
           "tab_strip": {"new_tab_button": {"url": "https://bar.com"}} })");
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_FALSE(manifest->tab_strip->new_tab_button->url.has_value());
@@ -6633,7 +6629,6 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     // Home tab and new tab button set to 'auto'.
     {
       auto& manifest = ParseManifest(R"({
-          "display_override": [ "tabbed" ],
           "tab_strip": {"home_tab": "auto", "new_tab_button": "auto"} })");
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
@@ -6646,7 +6641,6 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     // Home tab set to 'absent'.
     {
       auto& manifest = ParseManifest(R"({
-          "display_override": [ "tabbed" ],
           "tab_strip": {"home_tab": "absent"} })");
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
@@ -6659,7 +6653,6 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     // Home tab with 'auto' icons and new tab button with 'auto' url.
     {
       auto& manifest = ParseManifest(R"({
-          "display_override": [ "tabbed" ],
           "tab_strip": {
             "home_tab": {"icons": "auto"},
             "new_tab_button": {"url": "auto"}} })");
@@ -6678,7 +6671,6 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
   // Valid scope patterns are parsed.
   {
     auto& manifest = ParseManifest(R"({
-        "display_override": [ "tabbed" ],
         "tab_strip": {
           "home_tab": {"scope_patterns":
             [{"pathname": "foo"}, {"pathname": "foo/bar/"}]}} })");
@@ -6693,7 +6685,6 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
   // Reject patterns containing custom regex.
   {
     auto& manifest = ParseManifest(R"({
-        "display_override": [ "tabbed" ],
         "tab_strip": {
           "home_tab": {"scope_patterns":
             [{"pathname": "([a-z]+)/"}, {"pathname": "/foo/([a-z]+)/"}]}} })");
@@ -6708,7 +6699,6 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
   // Allow patterns with wildcards and named groups.
   {
     auto& manifest = ParseManifest(R"({
-        "display_override": [ "tabbed" ],
         "tab_strip": {
           "home_tab": {"scope_patterns":
             [{"pathname": "*"}, {"pathname": ":foo"}, {"pathname": "/foo/*"},
@@ -6726,7 +6716,6 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
   // Patterns list doesn't contain objects.
   {
     auto& manifest = ParseManifest(R"({
-        "display_override": [ "tabbed" ],
         "tab_strip": {
           "home_tab": {"scope_patterns": ["blah", 3]}} })");
     EXPECT_FALSE(manifest->tab_strip.is_null());
@@ -6740,7 +6729,6 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
   // Pattern list is empty.
   {
     auto& manifest = ParseManifest(R"({
-        "display_override": [ "tabbed" ],
         "tab_strip": {
           "home_tab": {"scope_patterns": []}} })");
     EXPECT_FALSE(manifest->tab_strip.is_null());
