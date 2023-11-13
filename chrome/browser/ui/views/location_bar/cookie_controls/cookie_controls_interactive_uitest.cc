@@ -48,6 +48,8 @@ const char kUMABubbleReloadingTimeout[] =
     "CookieControls.Bubble.ReloadingTimeout";
 }  // namespace
 
+// TODO(http://b/306151669): Update tests to check different strings based
+// on 3PCD state rather than explicitly disabling 3PCD.
 class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
  public:
   CookieControlsInteractiveUiTest() {
@@ -226,7 +228,8 @@ class CookieControlsInteractiveUiNoFeedbackTest
 
  protected:
   std::vector<base::test::FeatureRef> DisabledFeatures() override {
-    return {content_settings::features::kUserBypassFeedback};
+    return {content_settings::features::kUserBypassFeedback,
+            content_settings::features::kTrackingProtection3pcd};
   }
 };
 
