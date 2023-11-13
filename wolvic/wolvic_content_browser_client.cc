@@ -9,7 +9,6 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/user_level_memory_pressure_signal_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
@@ -147,40 +146,6 @@ void WolvicContentBrowserClient::ConfigureNetworkContextParams(
   base::PathService::Get(SHELL_DIR_USER_DATA, &user_data_path);
   network_context_params->http_cache_directory =
       user_data_path.Append(FILE_PATH_LITERAL("Cache"));
-}
-
-void WolvicContentBrowserClient::AppendExtraCommandLineSwitches(
-    base::CommandLine* command_line,
-    int child_process_id) {
-  // The following code adds the command line flag to correctly initialize the
-  // UserLevelMemoryPressureSignalGenerator feature. It's copied
-  // from chrome/browser/chrome_content_browser_client.cc.
-#if BUILDFLAG(IS_ANDROID)
-  // The browser process only decides to enable or disable
-  // UserLevelMemoryPressureSignalGenerator feature. Renderer processes
-  // follow the decision. If the browser process enables the feature, renderer
-  // processes will provide private memory footprint for the browser process
-  // and will generate memory pressure signals when the browser process
-  // requests. So the decision will be provided for renderer processes
-  // via commandline flag.
-  std::ostringstream user_level_memory_pressure_params;
-  if (features::IsUserLevelMemoryPressureSignalEnabledOn4GbDevices()) {
-    user_level_memory_pressure_params
-        << features::InertIntervalFor4GbDevices().InSeconds() << "s,"
-        << features::MinUserMemoryPressureIntervalOn4GbDevices().InSeconds()
-        << "s";
-  } else if (features::IsUserLevelMemoryPressureSignalEnabledOn6GbDevices()) {
-    user_level_memory_pressure_params
-        << features::InertIntervalFor6GbDevices().InSeconds() << "s,"
-        << features::MinUserMemoryPressureIntervalOn6GbDevices().InSeconds()
-        << "s";
-  }
-  if (user_level_memory_pressure_params.tellp() > 0) {
-    command_line->AppendSwitchASCII(
-        switches::kUserLevelMemoryPressureSignalParams,
-        user_level_memory_pressure_params.str());
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
