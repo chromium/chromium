@@ -63,6 +63,8 @@ void SafeBrowsingLookupMechanism::CompleteCheck(
     std::unique_ptr<CompleteCheckResult> result) {
   DCHECK(complete_check_callback_);
   std::move(complete_check_callback_).Run(std::move(result));
+  // NOTE: Invoking the callback results in the synchronous destruction of this
+  // object, so there is nothing safe to do here but return.
 }
 
 }  // namespace safe_browsing

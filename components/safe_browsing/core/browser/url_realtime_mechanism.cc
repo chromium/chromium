@@ -118,6 +118,9 @@ void UrlRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(
     // If the URL matches the high-confidence allowlist, still do the hash based
     // checks.
     PerformHashBasedCheck(url_, /*real_time_request_failed=*/false);
+    // NOTE: Calling PerformHashBasedCheck may result in the synchronous
+    // destruction of this object, so there is nothing safe to do here but
+    // return.
   } else {
     ui_task_runner_->PostTask(
         FROM_HERE,
@@ -202,6 +205,9 @@ void UrlRealTimeMechanism::OnLookupResponse(
 
   if (!is_lookup_successful) {
     PerformHashBasedCheck(url_, /*real_time_request_failed=*/true);
+    // NOTE: Calling PerformHashBasedCheck may result in the synchronous
+    // destruction of this object, so there is nothing safe to do here but
+    // return.
     return;
   }
 
@@ -218,6 +224,9 @@ void UrlRealTimeMechanism::OnLookupResponse(
   if (is_cached_response && sb_threat_type == SB_THREAT_TYPE_SAFE) {
     is_cached_safe_url_ = true;
     PerformHashBasedCheck(url_, /*real_time_request_failed=*/false);
+    // NOTE: Calling PerformHashBasedCheck may result in the synchronous
+    // destruction of this object, so there is nothing safe to do here but
+    // return.
   } else {
     CompleteCheck(std::make_unique<CompleteCheckResult>(
         url_, sb_threat_type, ThreatMetadata(),
@@ -226,6 +235,8 @@ void UrlRealTimeMechanism::OnLookupResponse(
         /*locally_cached_results_threat_type=*/
         is_cached_response ? sb_threat_type : SBThreatType::SB_THREAT_TYPE_SAFE,
         /*real_time_request_failed=*/false));
+    // NOTE: Calling CompleteCheck results in the synchronous destruction of
+    // this object, so there is nothing safe to do here but return.
   }
 }
 
@@ -289,6 +300,9 @@ void UrlRealTimeMechanism::PerformHashBasedCheck(
     OnHashDatabaseCompleteCheckResultInternal(
         SB_THREAT_TYPE_SAFE, ThreatMetadata(), /*threat_source=*/absl::nullopt,
         real_time_request_failed);
+    // NOTE: Calling OnHashDatabaseCompleteCheckResultInternal results in the
+    // synchronous destruction of this object, so there is nothing safe to do
+    // here but return.
   }
 }
 
@@ -299,6 +313,9 @@ void UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResult(
   OnHashDatabaseCompleteCheckResultInternal(
       result->threat_type, result->metadata, result->threat_source,
       real_time_request_failed);
+  // NOTE: Calling OnHashDatabaseCompleteCheckResultInternal results in the
+  // synchronous destruction of this object, so there is nothing safe to do here
+  // but return.
 }
 
 void UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResultInternal(
@@ -319,6 +336,8 @@ void UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResultInternal(
           ? absl::optional<SBThreatType>(SBThreatType::SB_THREAT_TYPE_SAFE)
           : absl::nullopt,
       /*real_time_request_failed=*/real_time_request_failed));
+  // NOTE: Calling CompleteCheck results in the synchronous destruction of this
+  // object, so there is nothing safe to do here but return.
 }
 
 }  // namespace safe_browsing

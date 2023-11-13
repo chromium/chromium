@@ -57,6 +57,8 @@ void DatabaseManagerMechanism::OnCheckBrowseUrlResult(
       /*matched_high_confidence_allowlist=*/absl::nullopt,
       /*locally_cached_results_threat_type=*/absl::nullopt,
       /*real_time_request_failed=*/false));
+  // NOTE: Calling CompleteCheck results in the synchronous destruction of this
+  // object, so there is nothing safe to do here but return.
 }
 
 }  // namespace safe_browsing
