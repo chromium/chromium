@@ -32,7 +32,7 @@ class NGFieldsetLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
     FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
         space, node, /* break_token */ nullptr, /* is_intrinsic */ true);
 
-    NGFieldsetLayoutAlgorithm algorithm({node, fragment_geometry, space});
+    FieldsetLayoutAlgorithm algorithm({node, fragment_geometry, space});
     return algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput()).sizes;
   }
 

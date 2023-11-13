@@ -58,7 +58,7 @@ NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
   const NGLayoutResult* result =
-      NGFieldsetLayoutAlgorithm(
+      FieldsetLayoutAlgorithm(
           {node, fragment_geometry, space, To<NGBlockBreakToken>(break_token)})
           .Layout();
 

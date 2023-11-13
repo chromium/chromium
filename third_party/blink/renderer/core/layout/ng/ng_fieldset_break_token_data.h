@@ -9,15 +9,15 @@
 
 namespace blink {
 
-struct NGFieldsetBreakTokenData final : NGBlockBreakTokenData {
-  explicit NGFieldsetBreakTokenData(const NGBlockBreakTokenData* other_data)
+struct FieldsetBreakTokenData final : NGBlockBreakTokenData {
+  explicit FieldsetBreakTokenData(const NGBlockBreakTokenData* other_data)
       : NGBlockBreakTokenData(kFieldsetBreakTokenData, other_data) {}
 
   LayoutUnit legend_block_size_contribution;
 };
 
 template <>
-struct DowncastTraits<NGFieldsetBreakTokenData> {
+struct DowncastTraits<FieldsetBreakTokenData> {
   static bool AllowFrom(const NGBlockBreakTokenData& token_data) {
     return token_data.IsFieldsetType();
   }

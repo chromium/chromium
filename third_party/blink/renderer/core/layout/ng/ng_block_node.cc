@@ -183,7 +183,7 @@ NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
   } else if (box.IsLayoutReplaced()) {
     CreateAlgorithmAndRun<NGReplacedLayoutAlgorithm>(params, callback);
   } else if (box.IsFieldset()) {
-    CreateAlgorithmAndRun<NGFieldsetLayoutAlgorithm>(params, callback);
+    CreateAlgorithmAndRun<FieldsetLayoutAlgorithm>(params, callback);
   } else if (box.IsFrameSet()) {
     CreateAlgorithmAndRun<NGFrameSetLayoutAlgorithm>(params, callback);
   }
