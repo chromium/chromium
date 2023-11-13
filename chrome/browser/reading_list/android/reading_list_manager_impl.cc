@@ -53,7 +53,8 @@ ReadingListManagerImpl::ReadingListManagerImpl(
     : reading_list_model_(reading_list_model),
       maximum_id_(0L),
       loaded_(false),
-      performing_batch_update_(false) {
+      performing_batch_update_(false),
+      changes_applied_during_batch_(false) {
   DCHECK(reading_list_model_);
   root_ = std::make_unique<BookmarkNode>(
       maximum_id_++, base::Uuid::GenerateRandomV4(), GURL());
@@ -116,23 +117,30 @@ void ReadingListManagerImpl::ReadingListDidUpdateEntry(
 void ReadingListManagerImpl::ReadingListDidApplyChanges(
     ReadingListModel* model) {
   // Ignores ReadingListDidApplyChanges() invocations during batch update.
-  if (performing_batch_update_)
+  if (performing_batch_update_) {
+    changes_applied_during_batch_ = true;
     return;
+  }
 
   NotifyReadingListChanged();
 }
 
 void ReadingListManagerImpl::ReadingListModelBeganBatchUpdates(
     const ReadingListModel* model) {
+  DCHECK(!changes_applied_during_batch_);
   performing_batch_update_ = true;
 }
 
 void ReadingListManagerImpl::ReadingListModelCompletedBatchUpdates(
     const ReadingListModel* model) {
-  performing_batch_update_ = false;
+  // Batch update is done -- notify the observers only once, but only if there
+  // were actual changes.
+  if (changes_applied_during_batch_) {
+    NotifyReadingListChanged();
+  }
 
-  // Batch update is done, notify the observer only once.
-  NotifyReadingListChanged();
+  performing_batch_update_ = false;
+  changes_applied_during_batch_ = false;
 }
 
 void ReadingListManagerImpl::AddObserver(Observer* observer) {
