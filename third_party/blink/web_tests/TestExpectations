@@ -7572,3 +7572,11 @@ crbug.com/1501324 [ Mac ] virtual/compute-pressure/external/wpt/compute-pressure
 crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Pass Failure ]
 crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Pass Failure ]
 crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Pass Failure ]
+
+# Gardener 2023-11-13
+crbug.com/1501802 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/pointer_pen.py [ Pass Failure ]
+crbug.com/1501802 [ Linux ] virtual/pna-permission/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Pass Failure ]
+crbug.com/1501802 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribute-change.https.html [ Pass Failure ]
+crbug.com/1501802 [ Linux ] external/wpt/idle-detection/idle-detection-allowed-by-permissions-policy.https.sub.html [ Pass Failure ]
+
+
