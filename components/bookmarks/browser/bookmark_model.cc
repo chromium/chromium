@@ -157,6 +157,12 @@ BookmarkModel::~BookmarkModel() {
   // ChromeBookmarkClient indirectly observes the model. The client should thus
   // be reset before the observer list.
   client_.reset();
+
+  // Set raw_ptr values to null to avoid danling pointer detection when UrlIndex
+  // is destroyed.
+  account_bookmark_bar_node_ = nullptr;
+  account_other_node_ = nullptr;
+  account_mobile_node_ = nullptr;
 }
 
 void BookmarkModel::Load(const base::FilePath& profile_path,
@@ -1064,6 +1070,26 @@ void BookmarkModel::LoadEmptyForTest() {
   model_loader_ = ModelLoader::CreateForTest(details.get());
   DoneLoading(std::move(details));
   CHECK(loaded_);
+}
+
+void BookmarkModel::CreateAccountPermanentFoldersForTest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(allow_folders_for_account_storage_);
+
+  // Note that permanent account folders use the same UUIDs as the "regular",
+  // local-or-syncable permanent folders.
+  account_bookmark_bar_node_ = static_cast<BookmarkPermanentNode*>(
+      root_->Add(BookmarkPermanentNode::CreateBookmarkBar(
+          next_node_id_++, client_->IsPermanentNodeVisibleWhenEmpty(
+                               BookmarkNode::BOOKMARK_BAR))));
+  account_other_node_ = static_cast<BookmarkPermanentNode*>(
+      root_->Add(BookmarkPermanentNode::CreateOtherBookmarks(
+          next_node_id_++,
+          client_->IsPermanentNodeVisibleWhenEmpty(BookmarkNode::OTHER_NODE))));
+  account_mobile_node_ = static_cast<BookmarkPermanentNode*>(
+      root_->Add(BookmarkPermanentNode::CreateMobileBookmarks(
+          next_node_id_++,
+          client_->IsPermanentNodeVisibleWhenEmpty(BookmarkNode::MOBILE))));
 }
 
 void BookmarkModel::RestoreRemovedNode(const BookmarkNode* parent,

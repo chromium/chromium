@@ -421,6 +421,9 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // synchronously.
   void LoadEmptyForTest();
 
+  // TODO(crbug.com/1494120): Replace with an actual, non-test API.
+  void CreateAccountPermanentFoldersForTest();
+
  private:
   friend class BookmarkCodecTest;
   friend class BookmarkModelFaviconTest;

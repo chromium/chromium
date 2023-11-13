@@ -833,7 +833,7 @@ void BookmarkModelTypeProcessor::TriggerWipeModelUponSyncDisabledBehavior() {
           syncer::WipeModelUponSyncDisabledBehavior::kNever;
       [[fallthrough]];
     case syncer::WipeModelUponSyncDisabledBehavior::kAlways:
-      bookmark_model_->RemoveAllUserBookmarks();
+      bookmark_model_->RemoveAllSyncableNodes();
       break;
   }
 }

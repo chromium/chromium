@@ -211,12 +211,9 @@ void ChromeBookmarkClient::DecodeBookmarkSyncMetadata(
   // TODO(crbug.com/1494120): Pass along sync metadata once BookmarkClient API
   // is capable of reading it from BookmarkModel.
   if (account_bookmark_sync_service_) {
-    // TODO(crbug.com/1494120): `BookmarkModelViewUsingLocalOrSyncableNodes` is
-    // not the right thing to use here, because the underlying model is shared.
     account_bookmark_sync_service_->DecodeBookmarkSyncMetadata(
         std::string(), schedule_save_closure,
-        std::make_unique<
-            sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(
+        std::make_unique<sync_bookmarks::BookmarkModelViewUsingAccountNodes>(
             model_));
   }
 }

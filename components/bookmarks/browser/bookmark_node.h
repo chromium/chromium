@@ -234,6 +234,7 @@ class BookmarkPermanentNode : public BookmarkNode {
 
  private:
   friend class BookmarkLoadDetails;
+  friend class BookmarkModel;
 
   // Permanent nodes are well-known, it's not allowed to create arbitrary ones.
   static std::unique_ptr<BookmarkPermanentNode> CreateBookmarkBar(

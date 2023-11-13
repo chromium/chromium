@@ -33,10 +33,17 @@ std::unique_ptr<BookmarkModel> TestBookmarkClient::CreateModel() {
 // static
 std::unique_ptr<BookmarkModel> TestBookmarkClient::CreateModelWithClient(
     std::unique_ptr<TestBookmarkClient> client) {
+  const bool are_folders_for_account_storage_allowed =
+      client->are_folders_for_account_storage_allowed_;
+
   auto bookmark_model = std::make_unique<BookmarkModel>(
-      std::move(client), /*allow_folders_for_account_storage=*/false);
+      std::move(client), are_folders_for_account_storage_allowed);
   bookmark_model->LoadEmptyForTest();
   return bookmark_model;
+}
+
+void TestBookmarkClient::AllowFoldersForAccountStorage() {
+  are_folders_for_account_storage_allowed_ = true;
 }
 
 BookmarkPermanentNode* TestBookmarkClient::EnableManagedNode() {

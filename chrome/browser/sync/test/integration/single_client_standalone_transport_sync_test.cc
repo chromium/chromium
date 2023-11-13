@@ -504,10 +504,11 @@ class SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest
   SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest() {
     // Various features that are required for types to be supported in transport
     // mode are unconditionally enabled.
+    // TODO(crbug.com/1494120): Re-enable
+    // `syncer::kEnableBookmarksAccountStorage` when possible.
     default_features_.InitWithFeatures(
         /*enabled_features=*/
-        {syncer::kEnableBookmarksAccountStorage,
-         syncer::kReadingListEnableDualReadingListModel,
+        {syncer::kReadingListEnableDualReadingListModel,
          syncer::kReadingListEnableSyncTransportModeUponSignIn,
          password_manager::features::kEnablePasswordsAccountStorage,
          syncer::kSyncEnableContactInfoDataTypeInTransportMode,
@@ -538,8 +539,11 @@ IN_PROC_BROWSER_TEST_F(
 
   // E.g. Bookmarks and Passwords are enabled by default (based on the Features
   // set by the fixture).
-  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kBookmarks));
+  // TODO(crbug.com/1494120): Re-enable
+  // `syncer::kEnableBookmarksAccountStorage` when possible and reflect
+  // expectations below.
+  // ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+  //    syncer::UserSelectableType::kBookmarks));
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPasswords));
   // Preferences is not supported in transport mode (based on the Features
@@ -577,8 +581,11 @@ IN_PROC_BROWSER_TEST_F(
 
   // Bookmarks and Passwords should still be enabled and disabled, respectively.
   // Note that GetSelectedTypes() now reads from the account-scoped prefs!
-  EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kBookmarks));
+  // TODO(crbug.com/1494120): Re-enable
+  // `syncer::kEnableBookmarksAccountStorage` when possible and reflect
+  // expectations below.
+  // EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+  //    syncer::UserSelectableType::kBookmarks));
   EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPasswords));
   // Preferences should've been disabled by the migration.

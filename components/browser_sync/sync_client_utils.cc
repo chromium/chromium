@@ -322,7 +322,7 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
           .Merge();
       // Remove all bookmarks from the local model.
       helper_->local_bookmark_sync_service_->bookmark_model_view()
-          ->RemoveAllUserBookmarks();
+          ->RemoveAllSyncableNodes();
     }
     if (types_.Has(syncer::READING_LIST)) {
       CHECK(helper_->dual_reading_list_model_);
