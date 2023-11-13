@@ -11,7 +11,7 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/web/chrome_web_client.h"
+#import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -24,7 +24,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-// Unit tests for ios/chrome/browser/web/resources/autofill_controller.js
+// Unit tests for ios/chrome/browser/web/model/resources/autofill_controller.js
 namespace {
 
 using base::test::ios::kWaitForJSCompletionTimeout;

@@ -197,7 +197,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/autofill",
     "//ios/chrome/browser/ui/autofill/form_input_accessory",
     "//ios/chrome/browser/ui/settings:test_support",
-    "//ios/chrome/browser/web:web_internal",
+    "//ios/chrome/browser/web/model:web_internal",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/test:test_support",
     "//ios/testing:block_swizzler",
