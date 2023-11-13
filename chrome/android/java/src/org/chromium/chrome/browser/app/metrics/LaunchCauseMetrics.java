@@ -16,6 +16,7 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -42,6 +43,7 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
     private PerLaunchState mPerLaunchState = new PerLaunchState();
     private BetweenLaunchState mBetweenLaunchState = new BetweenLaunchState();
     private final Activity mActivity;
+    private long mActivityId;
 
     @SuppressLint("StaticFieldLeak")
     private static Activity sLastResumedActivity;
@@ -65,6 +67,8 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
     }
 
     // These values are persisted in histograms. Please do not renumber. Append only.
+    // These values are also recorded in chrome_track_event.proto in Startup.LaunchCauseType.
+    // Keep values in sync between the two files.
     @IntDef({
         LaunchCause.OTHER,
         LaunchCause.CUSTOM_TAB,
@@ -188,6 +192,10 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
         return mPerLaunchState.mReceivedIntent;
     }
 
+    public void setActivityId(long activityId) {
+        mActivityId = activityId;
+    }
+
     /**
      * Called after Chrome has launched and all information necessary to compute why Chrome was
      * launched is available.
@@ -211,6 +219,7 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
 
             RecordHistogram.recordEnumeratedHistogram(
                     LAUNCH_CAUSE_HISTOGRAM, cause, LaunchCause.NUM_ENTRIES);
+            TraceEvent.startupLaunchCause(mActivityId, cause);
         } else if (mPerLaunchState.mOtherChromeActivityLastFocused) {
             // Handle the case where we're intentionally transitioning between two Chrome
             // Activities while Chrome is in the foreground, and want to count that as a Launch.
@@ -220,6 +229,7 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
                 if (DEBUG) logLaunchCause(cause);
                 RecordHistogram.recordEnumeratedHistogram(
                         LAUNCH_CAUSE_HISTOGRAM, cause, LaunchCause.NUM_ENTRIES);
+                TraceEvent.startupLaunchCause(mActivityId, cause);
             }
         }
         resetPerLaunchState();

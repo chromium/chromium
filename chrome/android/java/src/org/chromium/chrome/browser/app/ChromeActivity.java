@@ -263,6 +263,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public static final String UNFOLD_LATENCY_BEGIN_TIMESTAMP = "unfold_latency_begin_timestamp";
     private C mComponent;
 
+    /** Used to generate a unique ID for each ChromeActivity. */
+    private static long sNextActivityId;
+
+    private long mActivityId;
+
     /** Used to access the {@link ShareDelegate} from {@link WindowAndroid}. */
     private final UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier =
             new ShareDelegateSupplier();
@@ -402,6 +407,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     protected ChromeActivity() {
         mManualFillingComponentSupplier.set(ManualFillingComponentFactory.createComponent());
+        sNextActivityId++;
+        mActivityId = sNextActivityId;
     }
 
     private void incrementCounter(String key) {
@@ -421,7 +428,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         CachedFlagsSafeMode.getInstance().onStartOrResumeCheckpoint();
         if (earlyInitializeStartupMetrics()) {
             mActivityTabStartupMetricsTracker =
-                    new ActivityTabStartupMetricsTracker(mTabModelSelectorSupplier);
+                    new ActivityTabStartupMetricsTracker(mActivityId, mTabModelSelectorSupplier);
         }
         super.onPreCreate();
         initializeBackPressHandling();
@@ -733,7 +740,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 this, mTabModelSelectorSupplier);
         if (!earlyInitializeStartupMetrics()) {
             mActivityTabStartupMetricsTracker =
-                    new ActivityTabStartupMetricsTracker(mTabModelSelectorSupplier);
+                    new ActivityTabStartupMetricsTracker(mActivityId, mTabModelSelectorSupplier);
         }
     }
 
@@ -1189,6 +1196,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // Resume the ChromeActivity...
 
         RecordUserAction.record("MobileComeToForeground");
+        getLaunchCauseMetrics().setActivityId(mActivityId);
         getLaunchCauseMetrics().recordLaunchCause();
 
         Tab tab = getActivityTab();

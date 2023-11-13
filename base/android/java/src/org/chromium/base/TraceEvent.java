@@ -447,6 +447,19 @@ public class TraceEvent implements AutoCloseable {
         }
     }
 
+    /** Records 'Startup.LaunchCause' event with the 'interactions' category. */
+    public static void startupLaunchCause(long activityId, int launchCause) {
+        if (!sEnabled) return;
+        TraceEventJni.get().startupLaunchCause(activityId, launchCause);
+    }
+
+    /** Records 'Startup.TimeToFirstVisibleContent2' event with the 'interactions' category. */
+    public static void startupTimeToFirstVisibleContent2(
+            long activityId, long startTimeMs, long durationMs) {
+        if (!sEnabled) return;
+        TraceEventJni.get().startupTimeToFirstVisibleContent2(activityId, startTimeMs, durationMs);
+    }
+
     /**
      * Snapshots the view hierarchy state on the main thread and then finishes emitting a trace
      * event on the threadpool.
@@ -599,6 +612,8 @@ public class TraceEvent implements AutoCloseable {
         void webViewStartupTotalFactoryInit(long startTimeMs, long durationMs);
         void webViewStartupStage1(long startTimeMs, long durationMs);
         void webViewStartupStage2(long startTimeMs, long durationMs, boolean isColdStartup);
+        void startupLaunchCause(long activityId, int launchCause);
+        void startupTimeToFirstVisibleContent2(long activityId, long startTimeMs, long durationMs);
     }
 
     /**

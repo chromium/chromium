@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.metrics;
 
 import android.os.SystemClock;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -60,6 +61,7 @@ public class ActivityTabStartupMetricsTracker {
     // The time of the activity onCreate(). All metrics (such as time to first visible content) are
     // reported in milliseconds relative to this value.
     private final long mActivityStartTimeMs;
+    private final long mActivityId;
 
     // Event duration recorded from the |mActivityStartTimeMs|.
     private long mFirstCommitTimeMs;
@@ -95,7 +97,8 @@ public class ActivityTabStartupMetricsTracker {
     private final AtomicLong mFirstSafeBrowsingResponseTimeMicros = new AtomicLong();
 
     public ActivityTabStartupMetricsTracker(
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            long activityId, ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+        mActivityId = activityId;
         mActivityStartTimeMs = SystemClock.uptimeMillis();
         tabModelSelectorSupplier.addObserver(this::registerObservers);
         SafeBrowsingApiBridge.setOneTimeSafetyNetApiUrlCheckObserver(
@@ -353,6 +356,7 @@ public class ActivityTabStartupMetricsTracker {
         mFirstVisibleContent2Recorded = true;
         RecordHistogram.recordMediumTimesHistogram(
                 "Startup.Android.Cold.TimeToFirstVisibleContent2", durationMs);
+        TraceEvent.startupTimeToFirstVisibleContent2(mActivityId, mActivityStartTimeMs, durationMs);
     }
 
     /**

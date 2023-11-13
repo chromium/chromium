@@ -15,6 +15,7 @@
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 #include "base/trace_event/trace_event_impl.h"  // no-presubmit-check
+#include "third_party/perfetto/include/perfetto/tracing/track.h"  // no-presubmit-check nogncheck
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
@@ -360,6 +361,105 @@ static void JNI_TraceEvent_WebViewStartupStage2(JNIEnv* env,
 
   TRACE_EVENT_END("android_webview.timeline", t,
                   TimeTicks() + Milliseconds(start_time_ms + duration_ms));
+}
+
+static void JNI_TraceEvent_StartupLaunchCause(
+    JNIEnv* env,
+    jlong activity_id,
+    jint cause) {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  using Startup = perfetto::protos::pbzero::StartUp;
+  auto launchType = Startup::OTHER;
+  switch (cause) {
+    case Startup::CUSTOM_TAB:
+      launchType = Startup::CUSTOM_TAB;
+      break;
+    case Startup::TWA:
+      launchType = Startup::TWA;
+      break;
+    case Startup::RECENTS:
+      launchType = Startup::RECENTS;
+      break;
+    case Startup::RECENTS_OR_BACK:
+      launchType = Startup::RECENTS_OR_BACK;
+      break;
+    case Startup::FOREGROUND_WHEN_LOCKED:
+      launchType = Startup::FOREGROUND_WHEN_LOCKED;
+      break;
+    case Startup::MAIN_LAUNCHER_ICON:
+      launchType = Startup::MAIN_LAUNCHER_ICON;
+      break;
+    case Startup::MAIN_LAUNCHER_ICON_SHORTCUT:
+      launchType = Startup::MAIN_LAUNCHER_ICON_SHORTCUT;
+      break;
+    case Startup::HOME_SCREEN_WIDGET:
+      launchType = Startup::HOME_SCREEN_WIDGET;
+      break;
+    case Startup::OPEN_IN_BROWSER_FROM_MENU:
+      launchType = Startup::OPEN_IN_BROWSER_FROM_MENU;
+      break;
+    case Startup::EXTERNAL_SEARCH_ACTION_INTENT:
+      launchType = Startup::EXTERNAL_SEARCH_ACTION_INTENT;
+      break;
+    case Startup::NOTIFICATION:
+      launchType = Startup::NOTIFICATION;
+      break;
+    case Startup::EXTERNAL_VIEW_INTENT:
+      launchType = Startup::EXTERNAL_VIEW_INTENT;
+      break;
+    case Startup::OTHER_CHROME:
+      launchType = Startup::OTHER_CHROME;
+      break;
+    case Startup::WEBAPK_CHROME_DISTRIBUTOR:
+      launchType = Startup::WEBAPK_CHROME_DISTRIBUTOR;
+      break;
+    case Startup::WEBAPK_OTHER_DISTRIBUTOR:
+      launchType = Startup::WEBAPK_OTHER_DISTRIBUTOR;
+      break;
+    case Startup::HOME_SCREEN_SHORTCUT:
+      launchType = Startup::HOME_SCREEN_SHORTCUT;
+      break;
+    case Startup::SHARE_INTENT:
+      launchType = Startup::SHARE_INTENT;
+      break;
+    case Startup::NFC:
+      launchType = Startup::NFC;
+      break;
+    default:
+      break;
+  }
+
+  TRACE_EVENT_INSTANT(
+      "interactions", "Startup.LaunchCause", [&](perfetto::EventContext ctx) {
+        auto* start_up = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                             ->set_startup();
+        start_up->set_activity_id(activity_id);
+        start_up->set_launch_cause(launchType);
+      });
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+}
+
+static void JNI_TraceEvent_StartupTimeToFirstVisibleContent2(
+    JNIEnv* env,
+    jlong activity_id,
+    jlong start_time_ms,
+    jlong duration_ms) {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  [[maybe_unused]] const perfetto::Track track(
+      base::trace_event::GetNextGlobalTraceId(),
+      perfetto::ProcessTrack::Current());
+  TRACE_EVENT_BEGIN(
+      "interactions", "Startup.TimeToFirstVisibleContent2", track,
+      TimeTicks() + Milliseconds(start_time_ms),
+      [&](perfetto::EventContext ctx) {
+        auto* start_up = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                             ->set_startup();
+        start_up->set_activity_id(activity_id);
+      });
+
+  TRACE_EVENT_END("interactions", track,
+                  TimeTicks() + Milliseconds(start_time_ms + duration_ms));
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 static void JNI_TraceEvent_Begin(JNIEnv* env,
