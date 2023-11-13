@@ -40,6 +40,7 @@ if (is_win && use_fuzzing_engine) {
 
   static_library("skia_test_fonts") {
     sources = [
+      "//third_party/skia/tools/fonts/FontToolUtils.cpp",
       "//third_party/skia/tools/fonts/TestFontMgr.cpp",
       "//third_party/skia/tools/fonts/TestSVGTypeface.cpp",
       "//third_party/skia/tools/fonts/TestTypeface.cpp",
