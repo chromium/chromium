@@ -3404,7 +3404,7 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
 
   html_source->AddBoolean(
       "blockMidiByDefault",
-      base::FeatureList::IsEnabled(permissions::features::kBlockMidiByDefault));
+      base::FeatureList::IsEnabled(features::kBlockMidiByDefault));
 
   // The exception placeholder should not be translated. See
   // crbug.com/1095878.

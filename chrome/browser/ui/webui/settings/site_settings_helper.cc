@@ -573,8 +573,7 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
       base_types->push_back(ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
     }
 
-    if (base::FeatureList::IsEnabled(
-            permissions::features::kBlockMidiByDefault)) {
+    if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
       base_types->push_back(ContentSettingsType::MIDI);
     } else {
       base_types->push_back(ContentSettingsType::MIDI_SYSEX);

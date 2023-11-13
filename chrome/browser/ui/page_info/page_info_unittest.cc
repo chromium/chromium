@@ -50,6 +50,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/ssl_status.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -2398,7 +2399,7 @@ TEST_F(PageInfoTest, WithoutPageSpecificContentSettings) {
 
 TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenAllowMidi) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(permissions::features::kBlockMidiByDefault);
+  feature_list.InitAndEnableFeature(features::kBlockMidiByDefault);
 
   std::set<ContentSettingsType> expected_visible_permissions;
 
@@ -2424,7 +2425,7 @@ TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenAllowMidi) {
 
 TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenBlockMidi) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(permissions::features::kBlockMidiByDefault);
+  feature_list.InitAndEnableFeature(features::kBlockMidiByDefault);
 
   std::set<ContentSettingsType> expected_visible_permissions;
 
@@ -2450,7 +2451,7 @@ TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenBlockMidi) {
 
 TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenBlockMidiAllowSysex) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(permissions::features::kBlockMidiByDefault);
+  feature_list.InitAndEnableFeature(features::kBlockMidiByDefault);
 
   std::set<ContentSettingsType> expected_visible_permissions;
 
@@ -2478,7 +2479,7 @@ TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenBlockMidiAllowSysex) {
 
 TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenAllowkMidiAllowSysex) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(permissions::features::kBlockMidiByDefault);
+  feature_list.InitAndEnableFeature(features::kBlockMidiByDefault);
 
   std::set<ContentSettingsType> expected_visible_permissions;
 
@@ -2506,8 +2507,7 @@ TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenAllowkMidiAllowSysex) {
 
 TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenNotBlockMidiByDefaultAllowMidi) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      permissions::features::kBlockMidiByDefault);
+  feature_list.InitAndDisableFeature(features::kBlockMidiByDefault);
 
   std::set<ContentSettingsType> expected_visible_permissions;
 
@@ -2532,8 +2532,7 @@ TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenNotBlockMidiByDefaultAllowMidi) {
 
 TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenNotBlockMidiByDefaultBlockMidi) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      permissions::features::kBlockMidiByDefault);
+  feature_list.InitAndDisableFeature(features::kBlockMidiByDefault);
 
   std::set<ContentSettingsType> expected_visible_permissions;
 
@@ -2559,8 +2558,7 @@ TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenNotBlockMidiByDefaultBlockMidi) {
 TEST_F(PageInfoTest,
        MidiGrantsAreFilteredWhenNotBlockMidiByDefaultBlockMidiAllowSysex) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      permissions::features::kBlockMidiByDefault);
+  feature_list.InitAndDisableFeature(features::kBlockMidiByDefault);
 
   std::set<ContentSettingsType> expected_visible_permissions;
 
@@ -2589,8 +2587,7 @@ TEST_F(PageInfoTest,
 TEST_F(PageInfoTest,
        MidiGrantsAreFilteredWhenNotBlockMidiByDefaultAllowkMidiAllowSysex) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      permissions::features::kBlockMidiByDefault);
+  feature_list.InitAndDisableFeature(features::kBlockMidiByDefault);
 
   std::set<ContentSettingsType> expected_visible_permissions;
 

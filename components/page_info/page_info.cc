@@ -1334,8 +1334,7 @@ bool PageInfo::ShouldShowPermission(
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kBlockMidiByDefault)) {
+  if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
     ContentSetting midi_sysex_setting = GetContentSettings()->GetContentSetting(
         site_url_, site_url_, ContentSettingsType::MIDI_SYSEX);
     // At most one of MIDI and MIDI-SysEx should be displayed in the page info

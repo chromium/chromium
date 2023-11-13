@@ -12,11 +12,11 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/contexts/geolocation_permission_context.h"
 #include "components/permissions/contexts/midi_permission_context.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
@@ -41,8 +41,7 @@ class PermissionContextBasePermissionsPolicyTest
     : public ChromeRenderViewHostTestHarness {
  public:
   void EnableBlockMidiByDefault() {
-    feature_list_.InitAndEnableFeature(
-        permissions::features::kBlockMidiByDefault);
+    feature_list_.InitAndEnableFeature(features::kBlockMidiByDefault);
   }
   PermissionContextBasePermissionsPolicyTest()
       : last_request_result_(CONTENT_SETTING_DEFAULT) {}

@@ -21,13 +21,13 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/private_network_settings.h"
-#include "components/permissions/features.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -285,8 +285,7 @@ class MidiPolicyTest : public PolicyTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // TODO(crbug.com/1420307): Remove this switch once MIDI is blocked by
     // default
-    feature_list_.InitAndEnableFeature(
-        permissions::features::kBlockMidiByDefault);
+    feature_list_.InitAndEnableFeature(features::kBlockMidiByDefault);
     PolicyTest::SetUpCommandLine(command_line);
   }
 

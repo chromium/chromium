@@ -353,8 +353,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
         can_send_midi_sysex_(false),
         browser_context_(browser_context),
         resource_context_(GetResourceContext(browser_context)) {
-    if (!base::FeatureList::IsEnabled(
-            permissions::features::kBlockMidiByDefault)) {
+    if (!base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
       can_send_midi_ = true;
     }
   }
@@ -634,8 +633,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   }
 
   bool CanSendMidi() const {
-    if (base::FeatureList::IsEnabled(
-            permissions::features::kBlockMidiByDefault)) {
+    if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
       // Ensure the flags are in a consistent state: we can only send SysEx
       // messages if we can also send non-SysEx messages
       CHECK(can_send_midi_ || !can_send_midi_sysex_);
@@ -646,8 +644,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   }
 
   bool CanSendMidiSysEx() const {
-    if (base::FeatureList::IsEnabled(
-            permissions::features::kBlockMidiByDefault)) {
+    if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
       // Ensure the flags are in a consistent state: we can only send SysEx
       // messages if we can also send non-SysEx messages
       CHECK(can_send_midi_ || !can_send_midi_sysex_);
@@ -1118,8 +1115,7 @@ void ChildProcessSecurityPolicyImpl::GrantDeleteFromFileSystem(
 }
 
 void ChildProcessSecurityPolicyImpl::GrantSendMidiMessage(int child_id) {
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kBlockMidiByDefault)) {
+  if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
     base::AutoLock lock(lock_);
 
     auto state = security_state_.find(child_id);

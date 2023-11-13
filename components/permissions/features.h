@@ -82,9 +82,6 @@ BASE_DECLARE_FEATURE(kWindowPlacementPermissionAlias);
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kShowRelatedWebsiteSetsPermissionGrants);
 
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-BASE_DECLARE_FEATURE(kBlockMidiByDefault);
-
 }  // namespace features
 namespace feature_params {
 
