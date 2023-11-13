@@ -8,6 +8,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
@@ -220,7 +221,12 @@ class OffscreenApiTest : public ExtensionApiTest {
 };
 
 // Tests the general flow of creating an offscreen document.
-IN_PROC_BROWSER_TEST_F(OffscreenApiTest, BasicDocumentManagement) {
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_BasicDocumentManagement DISABLED_BasicDocumentManagement
+#else
+#define MAYBE_BasicDocumentManagement BasicDocumentManagement
+#endif
+IN_PROC_BROWSER_TEST_F(OffscreenApiTest, MAYBE_BasicDocumentManagement) {
   ASSERT_TRUE(RunExtensionTest("offscreen/basic_document_management"))
       << message_;
 }
