@@ -1316,7 +1316,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     // This will be considered as a value entered by the user.
     control_elements[1].SetValue(WebString::FromUTF16(u"Earp"));
-    control_elements[1].SetUserHasEditedTheFieldForTest();
+    control_elements[1].SetUserHasEditedTheField(true);
 
     // This will be ignored, the string will be sanitized into an empty string.
     control_elements[2].SetValue(WebString::FromUTF16(u"(___)-___-____"));
@@ -1329,7 +1329,6 @@ class FormAutofillTest : public ChromeRenderViewTest {
     control_elements[4].SetValue(WebString::FromUTF16(u"Enter your city.."));
 
     control_elements[5].SetValue(WebString::FromUTF16(u"AK"));
-    control_elements[5].SetUserHasEditedTheFieldForTest();
 
     // Find the form that contains the input element.
     FormData form;
@@ -1611,7 +1610,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // This will be ignored.
     control_elements[1].SetValue(WebString::FromUTF16(u"____/__"));
     control_elements[2].SetValue(WebString::FromUTF16(u"John Smith"));
-    control_elements[2].SetUserHasEditedTheFieldForTest();
+    control_elements[2].SetUserHasEditedTheField(true);
 
     // Find the form that contains the input element.
     FormData form;
@@ -1727,7 +1726,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // This will be ignored.
     control_elements[1].SetValue(WebString::FromUTF16(u"____/__"));
     control_elements[2].SetValue(WebString::FromUTF16(u"john smith"));
-    control_elements[2].SetUserHasEditedTheFieldForTest();
+    control_elements[2].SetUserHasEditedTheField(true);
 
     // Sometimes the JS modifies the value entered by the user.
     ExecuteJavaScriptForTests(

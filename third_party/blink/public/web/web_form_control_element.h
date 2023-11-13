@@ -71,8 +71,6 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   bool PreventHighlightingOfAutofilledFields() const;
   bool UserHasEditedTheField() const;
   void SetUserHasEditedTheField(bool value);
-  // This is only used for simulating the user's action in tests.
-  void SetUserHasEditedTheFieldForTest();
 
   // The autofill section to which this element belongs (e.g. billing address,
   // shipping address, .. .)

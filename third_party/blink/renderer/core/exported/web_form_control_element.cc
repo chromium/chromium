@@ -91,29 +91,22 @@ bool WebFormControlElement::IsPreviewed() const {
 }
 
 bool WebFormControlElement::UserHasEditedTheField() const {
-  if (IsA<HTMLInputElement>(*private_) || IsA<HTMLSelectElement>(*private_) ||
-      IsA<HTMLSelectListElement>(*private_)) {
-    return ::blink::To<HTMLFormControlElementWithState>(*private_)
-        .UserHasEditedTheField();
+  if (auto* control =
+          ::blink::DynamicTo<HTMLFormControlElementWithState>(*private_)) {
+    return control->UserHasEditedTheField();
   }
-  return true;
+  return false;
 }
 
 void WebFormControlElement::SetUserHasEditedTheField(bool value) {
-  if (IsA<HTMLInputElement>(*private_) || IsA<HTMLSelectElement>(*private_) ||
-      IsA<HTMLSelectListElement>(*private_)) {
-    auto& control = ::blink::To<HTMLFormControlElementWithState>(*private_);
+  if (auto* control =
+          ::blink::DynamicTo<HTMLFormControlElementWithState>(*private_)) {
     if (value) {
-      control.SetUserHasEditedTheField();
+      control->SetUserHasEditedTheField();
     } else {
-      control.ClearUserHasEditedTheField();
+      control->ClearUserHasEditedTheField();
     }
   }
-}
-
-void WebFormControlElement::SetUserHasEditedTheFieldForTest() {
-  if (auto* input = ::blink::DynamicTo<HTMLInputElement>(*private_))
-    input->SetUserHasEditedTheField();
 }
 
 void WebFormControlElement::SetAutofillState(WebAutofillState autofill_state) {
