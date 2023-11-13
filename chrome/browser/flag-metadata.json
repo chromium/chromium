@@ -2443,7 +2443,7 @@
   {
     "name": "enable-desktop-pwas-sub-apps",
     "owners": [ "samicolon@google.com", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-desktop-pwas-tab-strip",
