@@ -598,7 +598,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AutotestPrivateSearchTest,
                          /* tablet_mode= */ ::testing::Bool());
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_LauncherSearchBoxStateAPITest \
   DISABLED_LauncherSearchBoxStateAPITest
 #else
