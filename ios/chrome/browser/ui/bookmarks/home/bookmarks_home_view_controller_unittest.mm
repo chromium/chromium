@@ -67,8 +67,8 @@ TEST_P(BookmarksHomeViewControllerTest,
         local_or_syncable_bookmark_model_->mobile_node();
     AddBookmark(mobileNode, u"foo");
     controller.displayedFolderNode = mobileNode;
-    // sections: Bookmarks, root profile, root account, message.
-    EXPECT_EQ(4, [controller numberOfSectionsInTableView:controller.tableView]);
+    // sections: Bookmarks, root profile, root account, message, batch upload.
+    EXPECT_EQ(5, [controller numberOfSectionsInTableView:controller.tableView]);
     EXPECT_EQ(1, [controller tableView:controller.tableView
                      numberOfRowsInSection:
                          [controller.tableViewModel
@@ -90,6 +90,11 @@ TEST_P(BookmarksHomeViewControllerTest,
                          [controller.tableViewModel
                              sectionForSectionIdentifier:
                                  BookmarksHomeSectionIdentifierMessages]]);
+    EXPECT_EQ(0, [controller tableView:controller.tableView
+                     numberOfRowsInSection:
+                         [controller.tableViewModel
+                             sectionForSectionIdentifier:
+                                 BookmarksBatchUploadSectionIdentifier]]);
     [controller shutdown];
   }
 }
@@ -128,8 +133,9 @@ TEST_P(BookmarksHomeViewControllerTest,
         local_or_syncable_bookmark_model_->mobile_node();
     AddBookmark(mobileNode, u"foo");  // Ensure there are bookmarks
     controller.displayedFolderNode = rootNode;
-    // sections: Promo, Bookmarks, root profile, root account, message.
-    EXPECT_EQ(5, [controller numberOfSectionsInTableView:controller.tableView]);
+    // sections: Promo, Bookmarks, root profile, root account, message, batch
+    // upload.
+    EXPECT_EQ(6, [controller numberOfSectionsInTableView:controller.tableView]);
     EXPECT_EQ(1, [controller tableView:controller.tableView
                      numberOfRowsInSection:
                          [controller.tableViewModel
@@ -156,6 +162,11 @@ TEST_P(BookmarksHomeViewControllerTest,
                          [controller.tableViewModel
                              sectionForSectionIdentifier:
                                  BookmarksHomeSectionIdentifierMessages]]);
+    EXPECT_EQ(0, [controller tableView:controller.tableView
+                     numberOfRowsInSection:
+                         [controller.tableViewModel
+                             sectionForSectionIdentifier:
+                                 BookmarksBatchUploadSectionIdentifier]]);
     [controller shutdown];
   }
 }

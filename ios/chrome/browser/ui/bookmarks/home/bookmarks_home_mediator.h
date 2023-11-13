@@ -33,6 +33,8 @@ typedef NS_ENUM(NSInteger, BookmarksHomeSectionIdentifier) {
   BookmarksHomeSectionIdentifierRootLocalOrSyncable,
   // Section to display a message, such as "no result" for a search.
   BookmarksHomeSectionIdentifierMessages,
+  // Section to display the batch upload option.
+  BookmarksBatchUploadSectionIdentifier,
 };
 
 // Whether this section contains bookmarks nodes.
@@ -46,6 +48,8 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
   BookmarksHomeItemTypePromo,
   BookmarksHomeItemTypeBookmark,
   BookmarksHomeItemTypeMessage,
+  BookmarksHomeItemTypeBatchUploadButton,
+  BookmarksHomeItemTypeBatchUploadRecommendation,
 };
 
 namespace bookmarks {

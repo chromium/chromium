@@ -60,3 +60,8 @@ NSString* const kBookmarkCreateNewAccountFolderCellIdentifier =
 
 NSString* const kBookmarkEmptyStateExplanatoryLabelIdentifier =
     @"kBookmarkEmptyStateExplanatoryLabelIdentifier";
+
+NSString* const kBookmarksHomeBatchUploadRecommendationItemIdentifier =
+    @"kBookmarksHomeBatchUploadRecommendationItemIdentifier";
+NSString* const kBookmarksHomeBatchUploadButtonIdentifier =
+    @"kBookmarksHomeBatchUploadButtonIdentifier";
