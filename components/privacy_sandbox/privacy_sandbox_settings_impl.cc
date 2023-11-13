@@ -231,26 +231,9 @@ PrivacySandboxSettingsImpl::GetFinchPrioritizedTopics() {
 }
 
 bool PrivacySandboxSettingsImpl::IsTopicsAllowed() const {
-  // M1 specific
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status = GetM1TopicAllowedStatus();
-    JoinHistogram(kIsTopicsAllowedHistogram, status);
-    return IsAllowed(status);
-  }
-
-  // Topics API calculation should be prevented if the user has blocked 3PC
-  // cookies, as there will be no context specific check.
-  const auto cookie_controls_mode =
-      static_cast<content_settings::CookieControlsMode>(
-          pref_service_->GetInteger(prefs::kCookieControlsMode));
-  const auto default_content_setting =
-      cookie_settings_->GetDefaultCookieSetting();
-
-  const bool third_party_cookies_blocked =
-      default_content_setting == ContentSetting::CONTENT_SETTING_BLOCK ||
-      cookie_controls_mode ==
-          content_settings::CookieControlsMode::kBlockThirdParty;
-  return IsPrivacySandboxEnabled() && !third_party_cookies_blocked;
+  Status status = GetM1TopicAllowedStatus();
+  JoinHistogram(kIsTopicsAllowedHistogram, status);
+  return IsAllowed(status);
 }
 
 bool PrivacySandboxSettingsImpl::IsTopicsAllowedForContext(
@@ -271,20 +254,12 @@ bool PrivacySandboxSettingsImpl::IsTopicsAllowedForContext(
     return false;
   }
 
-  // M1 specific
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status = GetM1TopicAllowedStatus();
-    if (IsAllowed(status)) {
-      status = GetSiteAccessAllowedStatus(top_frame_origin, url);
-    }
-    JoinHistogram(kIsTopicsAllowedForContextHistogram, status);
-    return IsAllowed(status);
+  Status status = GetM1TopicAllowedStatus();
+  if (IsAllowed(status)) {
+    status = GetSiteAccessAllowedStatus(top_frame_origin, url);
   }
-
-  // If the Topics API is disabled completely, it is not available in any
-  // context.
-  return IsTopicsAllowed() &&
-         IsPrivacySandboxEnabledForContext(top_frame_origin, url);
+  JoinHistogram(kIsTopicsAllowedForContextHistogram, status);
+  return IsAllowed(status);
 }
 
 bool PrivacySandboxSettingsImpl::IsTopicAllowed(const CanonicalTopic& topic) {
@@ -397,15 +372,10 @@ PrivacySandboxSettingsImpl::GetM1AttributionReportingAllowedStatus(
 }
 
 bool PrivacySandboxSettingsImpl::IsAttributionReportingEverAllowed() const {
-  // M1 specific
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status = GetM1PrivacySandboxApiEnabledStatus(
-        prefs::kPrivacySandboxM1AdMeasurementEnabled);
-    JoinHistogram(kIsAttributionReportingEverAllowedHistogram, status);
-    return IsAllowed(status);
-  }
-
-  return IsPrivacySandboxEnabled();
+  Status status = GetM1PrivacySandboxApiEnabledStatus(
+      prefs::kPrivacySandboxM1AdMeasurementEnabled);
+  JoinHistogram(kIsAttributionReportingEverAllowedHistogram, status);
+  return IsAllowed(status);
 }
 
 bool PrivacySandboxSettingsImpl::IsAttributionReportingAllowed(
@@ -428,16 +398,10 @@ bool PrivacySandboxSettingsImpl::IsAttributionReportingAllowed(
     return false;
   }
 
-  // M1 specific
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status = GetM1AttributionReportingAllowedStatus(top_frame_origin,
-                                                           reporting_origin);
-    JoinHistogram(kIsAttributionReportingAllowedHistogram, status);
-    return IsAllowed(status);
-  }
-
-  return IsPrivacySandboxEnabledForContext(top_frame_origin,
-                                           reporting_origin.GetURL());
+  Status status = GetM1AttributionReportingAllowedStatus(top_frame_origin,
+                                                         reporting_origin);
+  JoinHistogram(kIsAttributionReportingAllowedHistogram, status);
+  return IsAllowed(status);
 }
 
 bool PrivacySandboxSettingsImpl::MaySendAttributionReport(
@@ -461,29 +425,16 @@ bool PrivacySandboxSettingsImpl::MaySendAttributionReport(
     return false;
   }
 
-  // M1 specific
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status = GetM1AttributionReportingAllowedStatus(
-        /*top_frame_origin=*/source_origin,
+  Status status = GetM1AttributionReportingAllowedStatus(
+      /*top_frame_origin=*/source_origin,
+      /*reporting_origin=*/reporting_origin);
+  if (IsAllowed(status)) {
+    status = GetM1AttributionReportingAllowedStatus(
+        /*top_frame_origin=*/destination_origin,
         /*reporting_origin=*/reporting_origin);
-    if (IsAllowed(status)) {
-      status = GetM1AttributionReportingAllowedStatus(
-          /*top_frame_origin=*/destination_origin,
-          /*reporting_origin=*/reporting_origin);
-    }
-    JoinHistogram(kMaySendAttributionReportHistogram, status);
-    return IsAllowed(status);
   }
-
-  // The |reporting_origin| needs to have been accessible in both source
-  // and trigger contexts. These are both checked when they occur, but
-  // user settings may have changed between then and when the attribution report
-  // is sent.
-  return IsPrivacySandboxEnabledForContext(/*top_frame_origin=*/source_origin,
-                                           reporting_origin.GetURL()) &&
-         IsPrivacySandboxEnabledForContext(
-             /*top_frame_origin=*/destination_origin,
-             reporting_origin.GetURL());
+  JoinHistogram(kMaySendAttributionReportHistogram, status);
+  return IsAllowed(status);
 }
 
 bool PrivacySandboxSettingsImpl::
@@ -655,14 +606,9 @@ bool PrivacySandboxSettingsImpl::IsFledgeAllowed(
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status = GetM1FledgeAllowedStatus(top_frame_origin, auction_party);
-    JoinFledgeHistogram(interest_group_api_operation, status);
-    return IsAllowed(status);
-  }
-
-  return IsPrivacySandboxEnabledForContext(top_frame_origin,
-                                           auction_party.GetURL());
+  Status status = GetM1FledgeAllowedStatus(top_frame_origin, auction_party);
+  JoinFledgeHistogram(interest_group_api_operation, status);
+  return IsAllowed(status);
 }
 
 bool PrivacySandboxSettingsImpl::IsSharedStorageAllowed(
@@ -685,33 +631,21 @@ bool PrivacySandboxSettingsImpl::IsSharedStorageAllowed(
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status = GetPrivacySandboxAllowedStatus();
-    if (IsAllowed(status)) {
-      status = GetSiteAccessAllowedStatus(top_frame_origin,
-                                          accessing_origin.GetURL());
-    }
-    JoinHistogram(kIsSharedStorageAllowedHistogram, status);
-    return IsAllowed(status);
+  Status status = GetPrivacySandboxAllowedStatus();
+  if (IsAllowed(status)) {
+    status =
+        GetSiteAccessAllowedStatus(top_frame_origin, accessing_origin.GetURL());
   }
-
-  // Ensures that Shared Storage is only allowed if both Privacy Sandbox is
-  // enabled and full cookie access is enabled for this context.
-  return IsPrivacySandboxEnabledForContext(top_frame_origin,
-                                           accessing_origin.GetURL());
+  JoinHistogram(kIsSharedStorageAllowedHistogram, status);
+  return IsAllowed(status);
 }
 
 bool PrivacySandboxSettingsImpl::IsSharedStorageSelectURLAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& accessing_origin) const {
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status =
-        GetM1FledgeAllowedStatus(top_frame_origin, accessing_origin);
-    JoinHistogram(kIsSharedStorageSelectURLAllowedHistogram, status);
-    return IsAllowed(status);
-  }
-
-  return IsSharedStorageAllowed(top_frame_origin, accessing_origin);
+  Status status = GetM1FledgeAllowedStatus(top_frame_origin, accessing_origin);
+  JoinHistogram(kIsSharedStorageSelectURLAllowedHistogram, status);
+  return IsAllowed(status);
 }
 
 bool PrivacySandboxSettingsImpl::IsPrivateAggregationAllowed(
@@ -727,15 +661,10 @@ bool PrivacySandboxSettingsImpl::IsPrivateAggregationAllowed(
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    Status status = GetM1AttributionReportingAllowedStatus(top_frame_origin,
-                                                           reporting_origin);
-    JoinHistogram(kIsPrivateAggregationAllowedHistogram, status);
-    return IsAllowed(status);
-  }
-
-  return IsPrivacySandboxEnabledForContext(top_frame_origin,
-                                           reporting_origin.GetURL());
+  Status status = GetM1AttributionReportingAllowedStatus(top_frame_origin,
+                                                         reporting_origin);
+  JoinHistogram(kIsPrivateAggregationAllowedHistogram, status);
+  return IsAllowed(status);
 }
 
 bool PrivacySandboxSettingsImpl::IsPrivateAggregationDebugModeAllowed(
@@ -770,24 +699,13 @@ bool PrivacySandboxSettingsImpl::IsPrivacySandboxEnabled() const {
 }
 
 void PrivacySandboxSettingsImpl::SetAllPrivacySandboxAllowedForTesting() {
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
-    pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
-    pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
-                              true);
-    return;
-  }
-
-  pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
+  pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
+  pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
+  pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
 }
 
 void PrivacySandboxSettingsImpl::SetTopicsBlockedForTesting() {
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
-    return;
-  }
-
-  pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
+  pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
 }
 
 void PrivacySandboxSettingsImpl::SetPrivacySandboxEnabled(bool enabled) {
@@ -835,20 +753,6 @@ void PrivacySandboxSettingsImpl::RemoveObserver(Observer* observer) {
 void PrivacySandboxSettingsImpl::SetDelegateForTesting(
     std::unique_ptr<Delegate> delegate) {
   delegate_ = std::move(delegate);
-}
-
-bool PrivacySandboxSettingsImpl::IsPrivacySandboxEnabledForContext(
-    const absl::optional<url::Origin>& top_frame_origin,
-    const GURL& url) const {
-  if (!IsPrivacySandboxEnabled()) {
-    return false;
-  }
-
-  // Third party cookies must also be available for this context. An empty site
-  // for cookies is provided so the context is always treated as a third party.
-  return cookie_settings_->IsFullCookieAccessAllowed(
-      url, net::SiteForCookies(), top_frame_origin,
-      net::CookieSettingOverrides());
 }
 
 void PrivacySandboxSettingsImpl::SetTopicsDataAccessibleFromNow() const {

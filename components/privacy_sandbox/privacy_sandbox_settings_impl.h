@@ -134,15 +134,6 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   // Called when the Related Website Sets enabled preference is changed.
   void OnRelatedWebsiteSetsEnabledPrefChanged();
 
-  // Determines based on the current features, preferences and provided
-  // |cookie_settings| whether Privacy Sandbox APIs are generally allowable for
-  // |url| on |top_frame_origin|. Individual APIs may perform additional checks
-  // for allowability (such as incognito) on top of this. |cookie_settings| is
-  // provided as a parameter to allow callers to cache it between calls.
-  bool IsPrivacySandboxEnabledForContext(
-      const absl::optional<url::Origin>& top_frame_origin,
-      const GURL& url) const;
-
   void SetTopicsDataAccessibleFromNow() const;
 
   // These values are persisted to logs. Entries should not be renumbered and
