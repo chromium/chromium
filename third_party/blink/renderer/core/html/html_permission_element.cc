@@ -134,14 +134,6 @@ int GetMessageIDMultiplePermissions(
     return IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE_ALLOWED;
   }
 
-  if (camera_it->value == PermissionStatus::GRANTED) {
-    return IDS_PERMISSION_REQUEST_MICROPHONE;
-  }
-
-  if (mic_it->value == PermissionStatus::GRANTED) {
-    return IDS_PERMISSION_REQUEST_CAMERA;
-  }
-
   return IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE;
 }
 
