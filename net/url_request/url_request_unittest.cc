@@ -37,6 +37,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -3567,6 +3568,87 @@ TEST_P(URLRequestSameSiteCookiesTest, SettingSameSiteCookies_Redirect) {
 INSTANTIATE_TEST_SUITE_P(/* no label */,
                          URLRequestSameSiteCookiesTest,
                          ::testing::Bool());
+
+TEST_F(URLRequestTest, PartitionedCookiesRedirect) {
+  EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  RegisterDefaultHandlers(&https_server);
+  ASSERT_TRUE(https_server.Start());
+
+  const std::string kHost = "a.test";
+  const std::string kCrossSiteHost = "b.test";
+
+  const GURL create_cookie_url = https_server.GetURL(kHost, "/");
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->SetCookieStore(
+      std::make_unique<CookieMonster>(nullptr, nullptr));
+  auto context = context_builder->Build();
+  auto& cm = *static_cast<CookieMonster*>(context->cookie_store());
+
+  // Set partitioned cookie with same-site partitionkey.
+  {
+    auto same_site_partitioned_cookie = CanonicalCookie::Create(
+        create_cookie_url, "samesite_partitioned=1;Secure;Partitioned",
+        base::Time::Now(), absl::nullopt,
+        CookiePartitionKey::FromURLForTesting(create_cookie_url));
+    ASSERT_TRUE(same_site_partitioned_cookie);
+    ASSERT_TRUE(same_site_partitioned_cookie->IsPartitioned());
+    base::test::TestFuture<CookieAccessResult> future;
+    cm.SetCanonicalCookieAsync(
+        std::move(same_site_partitioned_cookie), create_cookie_url,
+        CookieOptions::MakeAllInclusive(), future.GetCallback());
+    ASSERT_TRUE(future.Get().status.IsInclude());
+  }
+
+  // Set a partitioned cookie with a cross-site partition key.
+  // In the redirect below from site B to A, this cookie's partition key is site
+  // B it should not be sent in the redirected request.
+  {
+    auto cross_site_partitioned_cookie = CanonicalCookie::Create(
+        create_cookie_url, "xsite_partitioned=1;Secure;Partitioned",
+        base::Time::Now(), absl::nullopt,
+        CookiePartitionKey::FromURLForTesting(
+            https_server.GetURL(kCrossSiteHost, "/")));
+    ASSERT_TRUE(cross_site_partitioned_cookie);
+    ASSERT_TRUE(cross_site_partitioned_cookie->IsPartitioned());
+    base::test::TestFuture<CookieAccessResult> future;
+    cm.SetCanonicalCookieAsync(
+        std::move(cross_site_partitioned_cookie), create_cookie_url,
+        CookieOptions::MakeAllInclusive(), future.GetCallback());
+    ASSERT_TRUE(future.Get().status.IsInclude());
+  }
+
+  const auto kCrossSiteOrigin =
+      url::Origin::Create(https_server.GetURL(kCrossSiteHost, "/"));
+  const auto kCrossSiteSiteForCookies =
+      SiteForCookies::FromOrigin(kCrossSiteOrigin);
+
+  // Test that when a request is redirected that the partitioned cookies
+  // attached to the redirected request match the partition key of the new
+  // request.
+  TestDelegate d;
+  GURL url = https_server.GetURL(
+      kCrossSiteHost,
+      "/server-redirect?" +
+          https_server.GetURL(kHost, "/echoheader?Cookie").spec());
+  std::unique_ptr<URLRequest> req = context->CreateRequest(
+      url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+  req->set_isolation_info(IsolationInfo::Create(
+      IsolationInfo::RequestType::kMainFrame, kCrossSiteOrigin,
+      kCrossSiteOrigin, kCrossSiteSiteForCookies));
+  req->set_first_party_url_policy(
+      RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
+  req->set_site_for_cookies(kCrossSiteSiteForCookies);
+  req->set_initiator(kCrossSiteOrigin);
+  req->Start();
+  d.RunUntilComplete();
+
+  EXPECT_EQ(2u, req->url_chain().size());
+  EXPECT_NE(std::string::npos,
+            d.data_received().find("samesite_partitioned=1"));
+  EXPECT_EQ(std::string::npos, d.data_received().find("xsite_partitioned=1"));
+}
 
 // Tests that __Secure- cookies can't be set on non-secure origins.
 TEST_F(URLRequestTest, SecureCookiePrefixOnNonsecureOrigin) {

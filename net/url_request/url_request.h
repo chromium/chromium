@@ -962,8 +962,12 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   SiteForCookies site_for_cookies_;
 
   IsolationInfo isolation_info_;
-  // TODO(dylancutler): Have URLRequestHttpJob use this partition key instead of
-  // keeping its own copy.
+  // The cookie partition key for the request. Partitioned cookies should be set
+  // using this key and only partitioned cookies with this partition key should
+  // be sent. The cookie partition key is optional(nullopt) if cookie
+  // partitioning is not enabled, or if the NIK has no top-frame site.
+  //
+  // Unpartitioned cookies are unaffected by this field.
   absl::optional<CookiePartitionKey> cookie_partition_key_ = absl::nullopt;
 
   bool force_ignore_site_for_cookies_ = false;

@@ -984,8 +984,8 @@ void URLRequest::Redirect(
   referrer_ = redirect_info.new_referrer;
   referrer_policy_ = redirect_info.new_referrer_policy;
   site_for_cookies_ = redirect_info.new_site_for_cookies;
-  isolation_info_ = isolation_info_.CreateForRedirect(
-      url::Origin::Create(redirect_info.new_url));
+  set_isolation_info(isolation_info_.CreateForRedirect(
+      url::Origin::Create(redirect_info.new_url)));
 
   if ((load_flags_ & LOAD_CAN_USE_SHARED_DICTIONARY) &&
       (load_flags_ &

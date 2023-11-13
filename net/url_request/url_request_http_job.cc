@@ -397,11 +397,6 @@ void URLRequestHttpJob::OnGotFirstPartySetMetadata(
   AddExtraHeaders();
 
   if (ShouldAddCookieHeader()) {
-    // We shouldn't overwrite this if we've already computed the key.
-    DCHECK(!cookie_partition_key_.has_value());
-
-    cookie_partition_key_ = CookiePartitionKey::FromNetworkIsolationKey(
-        request_->isolation_info().network_isolation_key());
     AddCookieHeaderAndStart();
   } else {
     StartTransaction();
@@ -690,7 +685,8 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
 
   cookie_store->GetCookieListWithOptionsAsync(
       request_->url(), options,
-      CookiePartitionKeyCollection::FromOptional(cookie_partition_key_.value()),
+      CookiePartitionKeyCollection::FromOptional(
+          request_->cookie_partition_key()),
       base::BindOnce(&URLRequestHttpJob::SetCookieHeaderAndStart,
                      weak_factory_.GetWeakPtr(), options));
 }
@@ -816,7 +812,7 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
         }
       }
 
-      if (IsPartitionedCookiesEnabled()) {
+      if (ShouldRecordPartitionedCookieUsage()) {
         base::UmaHistogramCounts100("Cookie.PartitionedCookiesInRequest",
                                     n_partitioned_cookies);
       }
@@ -969,7 +965,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
     DCHECK(cookie_string.find('\n') == std::string::npos);
     std::unique_ptr<CanonicalCookie> cookie = net::CanonicalCookie::Create(
         request_->url(), cookie_string, base::Time::Now(), server_time,
-        cookie_partition_key_.value(), /*block_truncated=*/true,
+        request_->cookie_partition_key(), /*block_truncated=*/true,
         &returned_status);
 
     absl::optional<CanonicalCookie> cookie_to_return = absl::nullopt;
@@ -1827,10 +1823,8 @@ bool URLRequestHttpJob::ShouldAddCookieHeader() const {
   return request_->context()->cookie_store() && request_->allow_credentials();
 }
 
-bool URLRequestHttpJob::IsPartitionedCookiesEnabled() const {
-  // Only valid to call this after we've computed the key.
-  DCHECK(cookie_partition_key_.has_value());
-  return cookie_partition_key_.value().has_value();
+bool URLRequestHttpJob::ShouldRecordPartitionedCookieUsage() const {
+  return request_->cookie_partition_key().has_value();
 }
 
 }  // namespace net
