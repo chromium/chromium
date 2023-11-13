@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import urllib.request
+import argparse
 
 # Windows 11, version 22H2 EWDK with Visual Studio Build Tools 17.1.5
 EWDK_URL = "https://go.microsoft.com/fwlink/?linkid=2195661"
@@ -100,19 +101,28 @@ def build(ewdk_path, output_path):
     shutil.copy(os.path.join(build_path, "ChromiumVirtualDisplayDriver.cer"),
                 output_path)
 
+def copy_drive(drive_letter, dest):
+    """Copy the contents of the specified drive letter to the specified path"""
+    src_path = drive_letter + ":\\"
+    print(f"Copying directory {src_path} to {dest}")
+    shutil.copytree(src_path, dest, dirs_exist_ok=True)
 
 def main():
+    parser = argparse.ArgumentParser()
+    # Args passed by the 3pp recipe (See: recipes/recipe_modules/support_3pp/spec.proto).
+    parser.add_argument('output_prefix')
+    parser.add_argument('deps_prefix')
+    # Some environments fail when executing binaries directly on a mounted disk.
+    # This flag copies the contents to the local disk.
+    parser.add_argument('-c', '--copy_ewdk', action='store_true')
+    args = parser.parse_args()
     mounted_drive_letter = fetch_and_mount_ewdk()
     try:
-        # msbuild fails with "Access Denied" if executing directly on the mounted ISO.
-        # Copy the contents to the real filesystem.
-        ewdk_path = get_ewdk_iso_extract_path()
-        src_path = mounted_drive_letter + ":\\"
-        print(f"Copying directory {src_path} to {ewdk_path}")
-        shutil.copytree(src_path, ewdk_path, dirs_exist_ok=True)
-        # If second argument exists, copy build output to it, otherwise use the
-        # current directory.
-        build(ewdk_path, sys.argv[2] if len(sys.argv) > 2 else os.getcwd())
+        ewdk_path = mounted_drive_letter + ":\\"
+        if (args.copy_ewdk):
+          ewdk_path = get_ewdk_iso_extract_path()
+          copy_drive(mounted_drive_letter, ewdk_path)
+        build(ewdk_path, args.output_prefix)
     finally:
         print("Unmounting ISO")
         unmount_ewdk()
