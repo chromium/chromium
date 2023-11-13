@@ -1,5 +1,33 @@
 <structured-metrics>
 
+<project name="PopularDisplays">
+  <owner>markyacoub@google.com</owner>
+  <owner>chromeos-gfx-display@google.com</owner>
+  <id>none</id>
+  <scope>device</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Project for recording monitor infos
+  </summary>
+
+  <event name="MonitorInfo">
+    <summary>
+      Records a unique external monitor information, only once when it's plugged
+      in by a user for the very first time on that device.
+    </summary>
+    <metric name="DisplayName" type="raw-string">
+      <summary>
+        The Name of the Monitor.
+      </summary>
+    </metric>
+    <metric name="ProductCode" type="int">
+      <summary>
+        An identifier for the display ManufacturerId and ProductId
+      </summary>
+    </metric>
+  </event>
+</project>
+
 <project name="FastPair">
   <owner>jackshira@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
