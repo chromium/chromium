@@ -71,6 +71,7 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Field;
 using ::testing::Ge;
 using ::testing::IsEmpty;
 using ::testing::IsTrue;
@@ -80,6 +81,7 @@ using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
+using ::testing::VariantWith;
 
 using AttributionFilterData = ::attribution_reporting::FilterData;
 
@@ -1517,9 +1519,13 @@ TEST_F(AttributionStorageTest,
               {net::SchemefulSite::Deserialize("https://b.example")})
           .SetSourceType(SourceType::kEvent)
           .Build());
-  EXPECT_EQ(result.status(),
-            StorableSource::Result::kInsufficientUniqueDestinationCapacity);
-  EXPECT_EQ(result.max_destinations_per_source_site_reporting_site(), 1);
+
+  EXPECT_THAT(
+      result.result(),
+      VariantWith<StoreSourceResult::InsufficientUniqueDestinationCapacity>(
+          Field(
+              &StoreSourceResult::InsufficientUniqueDestinationCapacity::limit,
+              1)));
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 }
@@ -1835,15 +1841,27 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsMinFakeReportTime) {
 
   const struct {
     RandomizedResponse randomized_response;
-    absl::optional<base::Time> expected;
+    ::testing::Matcher<StoreSourceResult::Result> matches;
   } kTestCases[] = {
-      {absl::nullopt, absl::nullopt},
-      {std::vector<FakeEventLevelReport>(), absl::nullopt},
-      {std::vector<FakeEventLevelReport>{
-           {.trigger_data = 0, .window_index = 0},
-           {.trigger_data = 0, .window_index = 1},
-           {.trigger_data = 0, .window_index = 2}},
-       now + base::Days(1)},
+      {
+          absl::nullopt,
+          VariantWith<StoreSourceResult::Success>(_),
+      },
+      {
+          std::vector<FakeEventLevelReport>(),
+          VariantWith<StoreSourceResult::SuccessNoised>(
+              Field(&StoreSourceResult::SuccessNoised::min_fake_report_time,
+                    absl::nullopt)),
+      },
+      {
+          std::vector<FakeEventLevelReport>{
+              {.trigger_data = 0, .window_index = 0},
+              {.trigger_data = 0, .window_index = 1},
+              {.trigger_data = 0, .window_index = 2}},
+          VariantWith<StoreSourceResult::SuccessNoised>(
+              Field(&StoreSourceResult::SuccessNoised::min_fake_report_time,
+                    now + base::Days(1))),
+      },
   };
 
   for (const auto& test_case : kTestCases) {
@@ -1856,10 +1874,8 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsMinFakeReportTime) {
                     base::Days(0),
                     {base::Days(1), base::Days(2), base::Days(3)}))
             .Build());
-    EXPECT_EQ(result.status(), test_case.randomized_response
-                                   ? StorableSource::Result::kSuccessNoised
-                                   : StorableSource::Result::kSuccess);
-    EXPECT_EQ(result.min_fake_report_time(), test_case.expected);
+
+    EXPECT_THAT(result.result(), test_case.matches);
   }
 }
 

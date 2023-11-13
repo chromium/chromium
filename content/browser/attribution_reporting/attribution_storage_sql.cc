@@ -453,13 +453,13 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   // Force the creation of the database if it doesn't exist, as we need to
   // persist the source.
   if (!LazyInit(DbCreationPolicy::kCreateIfAbsent)) {
-    return StoreSourceResult(StorableSource::Result::kInternalError);
+    return StoreSourceResult::InternalError();
   }
 
   const base::Time source_time = base::Time::Now();
 
   if (StoreSourceResult result = CheckDestinationRateLimit(source, source_time);
-      result.status() != StorableSource::Result::kSuccess) {
+      !absl::holds_alternative<StoreSourceResult::Success>(result.result())) {
     return result;
   }
 
@@ -470,7 +470,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   DCHECK_GE(delete_frequency, base::TimeDelta());
   if (source_time - last_deleted_expired_sources_ >= delete_frequency) {
     if (!DeleteExpiredSources()) {
-      return StoreSourceResult(StorableSource::Result::kInternalError);
+      return StoreSourceResult::InternalError();
     }
     last_deleted_expired_sources_ = source_time;
   }
@@ -494,10 +494,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
             file_size * 1024 / *number_of_sources);
       }
     }
-    return StoreSourceResult(
-        StorableSource::Result::kInsufficientSourceCapacity,
-        /*min_fake_report_time=*/absl::nullopt,
-        /*max_destinations_per_source_site_reporting_site=*/absl::nullopt,
+    return StoreSourceResult::InsufficientSourceCapacity(
         delegate_->GetMaxSourcesPerOrigin());
   }
 
@@ -506,12 +503,10 @@ StoreSourceResult AttributionStorageSql::StoreSource(
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
-      return StoreSourceResult(
-          StorableSource::Result::kInsufficientUniqueDestinationCapacity,
-          /*min_fake_report_time=*/absl::nullopt,
+      return StoreSourceResult::InsufficientUniqueDestinationCapacity(
           delegate_->GetMaxDestinationsPerSourceSiteReportingSite());
     case RateLimitResult::kError:
-      return StoreSourceResult(StorableSource::Result::kInternalError);
+      return StoreSourceResult::InternalError();
   }
 
   switch (rate_limit_table_.SourceAllowedForReportingOriginLimit(&db_, source,
@@ -519,10 +514,9 @@ StoreSourceResult AttributionStorageSql::StoreSource(
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
-      return StoreSourceResult(
-          StorableSource::Result::kExcessiveReportingOrigins);
+      return StoreSourceResult::ExcessiveReportingOrigins();
     case RateLimitResult::kError:
-      return StoreSourceResult(StorableSource::Result::kInternalError);
+      return StoreSourceResult::InternalError();
   }
 
   switch (rate_limit_table_.SourceAllowedForReportingOriginPerSiteLimit(
@@ -530,15 +524,14 @@ StoreSourceResult AttributionStorageSql::StoreSource(
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
-      return StoreSourceResult(
-          StorableSource::Result::kReportingOriginsPerSiteLimitReached);
+      return StoreSourceResult::ReportingOriginsPerSiteLimitReached();
     case RateLimitResult::kError:
-      return StoreSourceResult(StorableSource::Result::kInternalError);
+      return StoreSourceResult::InternalError();
   }
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
-    return StoreSourceResult(StorableSource::Result::kInternalError);
+    return StoreSourceResult::InternalError();
   }
 
   const attribution_reporting::SourceRegistration& reg = source.registration();
@@ -555,9 +548,8 @@ StoreSourceResult AttributionStorageSql::StoreSource(
                    delegate_->GetRandomizedResponse(
                        common_info.source_type(), trigger_specs,
                        reg.max_event_level_reports, source_time),
-                   [](auto) {
-                     return StoreSourceResult(
-                         StorableSource::Result::kExceedsMaxChannelCapacity);
+                   [](auto) -> StoreSourceResult {
+                     return StoreSourceResult::ExceedsMaxChannelCapacity();
                    });
 
   int num_conversions = 0;
@@ -614,7 +606,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
                                       reg.trigger_config, debug_cookie_set));
 
   if (!statement.Run()) {
-    return StoreSourceResult(StorableSource::Result::kInternalError);
+    return StoreSourceResult::InternalError();
   }
 
   const StoredSource::Id source_id(db_.GetLastInsertRowId());
@@ -629,7 +621,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
     insert_destination_statement.Reset(/*clear_bound_vars=*/false);
     insert_destination_statement.BindString(1, site.Serialize());
     if (!insert_destination_statement.Run()) {
-      return StoreSourceResult(StorableSource::Result::kInternalError);
+      return StoreSourceResult::InternalError();
     }
   }
 
@@ -644,7 +636,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   if (!stored_source.has_value() ||
       !rate_limit_table_.AddRateLimitForSource(&db_, *stored_source)) {
-    return StoreSourceResult(StorableSource::Result::kInternalError);
+    return StoreSourceResult::InternalError();
   }
 
   absl::optional<base::Time> min_fake_report_time;
@@ -681,7 +673,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
           AttributionReport::EventLevelData(fake_report.trigger_data,
                                             /*priority=*/0, *stored_source));
       if (!StoreAttributionReport(fake_attribution_report)) {
-        return StoreSourceResult(StorableSource::Result::kInternalError);
+        return StoreSourceResult::InternalError();
       }
 
       if (!min_fake_report_time.has_value() ||
@@ -698,19 +690,18 @@ StoreSourceResult AttributionStorageSql::StoreSource(
                             /*debug_key=*/absl::nullopt,
                             /*context_origin=*/common_info.source_origin()),
             *stored_source)) {
-      return StoreSourceResult(StorableSource::Result::kInternalError);
+      return StoreSourceResult::InternalError();
     }
   }
 
   if (!transaction.Commit()) {
-    return StoreSourceResult(StorableSource::Result::kInternalError);
+    return StoreSourceResult::InternalError();
   }
 
-  return StoreSourceResult(
-      attribution_logic == StoredSource::AttributionLogic::kTruthfully
-          ? StorableSource::Result::kSuccess
-          : StorableSource::Result::kSuccessNoised,
-      min_fake_report_time);
+  if (attribution_logic == StoredSource::AttributionLogic::kTruthfully) {
+    return StoreSourceResult::Success();
+  }
+  return StoreSourceResult::SuccessNoised(min_fake_report_time);
 }
 
 StoreSourceResult AttributionStorageSql::CheckDestinationRateLimit(
@@ -725,28 +716,17 @@ StoreSourceResult AttributionStorageSql::CheckDestinationRateLimit(
 
   switch (rate_limit_result) {
     case RateLimitTable::DestinationRateLimitResult::kAllowed:
-      return StoreSourceResult(StorableSource::Result::kSuccess);
+      return StoreSourceResult::Success();
     case RateLimitTable::DestinationRateLimitResult::kHitGlobalLimit:
-      return StoreSourceResult(
-          StorableSource::Result::kDestinationGlobalLimitReached);
+      return StoreSourceResult::DestinationGlobalLimitReached();
     case RateLimitTable::DestinationRateLimitResult::kHitReportingLimit:
-      return StoreSourceResult(
-          StorableSource::Result::kDestinationReportingLimitReached,
-          /*min_fake_report_time=*/absl::nullopt,
-          /*max_destinations_per_source_site_reporting_site=*/absl::nullopt,
-          /*max_sources_per_origin=*/absl::nullopt,
-          /*max_destinations_per_rate_limit_window_reporting_origin=*/
+      return StoreSourceResult::DestinationReportingLimitReached(
           delegate_->GetDestinationRateLimit().max_per_reporting_site);
     case RateLimitTable::DestinationRateLimitResult::kHitBothLimits:
-      return StoreSourceResult(
-          StorableSource::Result::kDestinationBothLimitsReached,
-          /*min_fake_report_time=*/absl::nullopt,
-          /*max_destinations_per_source_site_reporting_site=*/absl::nullopt,
-          /*max_sources_per_origin=*/absl::nullopt,
-          /*max_destinations_per_rate_limit_window_reporting_origin=*/
+      return StoreSourceResult::DestinationBothLimitsReached(
           delegate_->GetDestinationRateLimit().max_per_reporting_site);
     case RateLimitTable::DestinationRateLimitResult::kError:
-      return StoreSourceResult(StorableSource::Result::kInternalError);
+      return StoreSourceResult::InternalError();
   }
 }
 
