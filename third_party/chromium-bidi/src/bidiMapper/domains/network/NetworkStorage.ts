@@ -35,7 +35,7 @@ export class NetworkStorage {
     Network.Intercept,
     {
       urlPatterns: Network.UrlPattern[];
-      phases: Network.InterceptPhase[];
+      phases: Network.AddInterceptParameters['phases'];
     }
   >();
 
@@ -66,7 +66,7 @@ export class NetworkStorage {
    */
   addIntercept(value: {
     urlPatterns: Network.UrlPattern[];
-    phases: Network.InterceptPhase[];
+    phases: Network.AddInterceptParameters['phases'];
   }): Network.Intercept {
     // Check if the given intercept entry already exists.
     for (const [
@@ -111,13 +111,23 @@ export class NetworkStorage {
     const patterns: Protocol.Fetch.RequestPattern[] = [];
 
     for (const value of this.#interceptMap.values()) {
-      for (const urlPatternSpec of value.urlPatterns) {
-        const urlPattern: string =
-          NetworkStorage.cdpFromSpecUrlPattern(urlPatternSpec);
-        for (const phase of value.phases) {
+      for (const phase of value.phases) {
+        const requestStage = NetworkStorage.requestStageFromPhase(phase);
+
+        if (value.urlPatterns.length === 0) {
+          patterns.push({
+            urlPattern: '*',
+            requestStage,
+          });
+          continue;
+        }
+        for (const urlPatternSpec of value.urlPatterns) {
+          const urlPattern =
+            NetworkStorage.cdpFromSpecUrlPattern(urlPatternSpec);
+
           patterns.push({
             urlPattern,
-            requestStage: NetworkStorage.requestStageFromPhase(phase),
+            requestStage,
           });
         }
       }
@@ -176,6 +186,10 @@ export class NetworkStorage {
     pathname,
     search,
   }: Network.UrlPatternPattern): string {
+    if (!protocol && !hostname && !port && !pathname && !search) {
+      return '*';
+    }
+
     let url: string = '';
 
     if (protocol) {

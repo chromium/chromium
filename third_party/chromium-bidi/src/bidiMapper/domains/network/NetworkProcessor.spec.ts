@@ -162,5 +162,15 @@ describe('NetworkProcessor', () => {
         },
       ]);
     });
+
+    it('valid pattern empty', () => {
+      expect(
+        NetworkProcessor.parseUrlPatterns([{type: 'pattern'}])
+      ).to.deep.equal([
+        {
+          type: 'pattern',
+        },
+      ]);
+    });
   });
 });

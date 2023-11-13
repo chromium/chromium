@@ -334,6 +334,17 @@ export class NetworkProcessor {
           return urlPattern;
         }
         case 'pattern':
+          // No params signifies intercept all
+          if (
+            urlPattern.protocol === undefined &&
+            urlPattern.hostname === undefined &&
+            urlPattern.port === undefined &&
+            urlPattern.pathname === undefined &&
+            urlPattern.search === undefined
+          ) {
+            return urlPattern;
+          }
+
           if (urlPattern.protocol === '') {
             throw new InvalidArgumentException(
               `URL pattern must specify a protocol`
