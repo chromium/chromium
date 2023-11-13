@@ -112,9 +112,7 @@ public class PageInfoIPHControllerUnitTest {
 
     @Test
     public void showCookieControlsReminderIPH() {
-        final Runnable callback = () -> {};
-
-        mController.showCookieControlsReminderIPH(TIMEOUT, IPH_RES_ID, callback);
+        mController.showCookieControlsReminderIPH(TIMEOUT, IPH_RES_ID);
         verify(mHelper).requestShowIPH(mIPHCmdCaptor.capture());
         var cmd = mIPHCmdCaptor.getValue();
         cmd.fetchFromResources();
@@ -125,7 +123,6 @@ public class PageInfoIPHControllerUnitTest {
         assertEquals(STATUS_INSETS, cmd.insetRect);
         assertTrue(cmd.dismissOnTouch);
         assertNull(cmd.anchorRect);
-        assertEquals(callback, cmd.onShowCallback);
         assertEquals(mView, cmd.anchorView);
     }
 }

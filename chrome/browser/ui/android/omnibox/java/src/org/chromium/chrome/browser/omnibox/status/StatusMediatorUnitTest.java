@@ -648,8 +648,7 @@ public final class StatusMediatorUnitTest {
 
         // IPH should be shown
         mMediator.onPageLoadStopped();
-        verify(mPageInfoIPHController, times(1))
-                .showCookieControlsReminderIPH(anyInt(), anyInt(), any(Runnable.class));
+        verify(mPageInfoIPHController, times(1)).showCookieControlsReminderIPH(anyInt(), anyInt());
     }
 
     @Test
@@ -667,8 +666,7 @@ public final class StatusMediatorUnitTest {
 
         // IPH should NOT be shown
         mMediator.onPageLoadStopped();
-        verify(mPageInfoIPHController, never())
-                .showCookieControlsReminderIPH(anyInt(), anyInt(), any(Runnable.class));
+        verify(mPageInfoIPHController, never()).showCookieControlsReminderIPH(anyInt(), anyInt());
     }
 
     @Test
@@ -687,8 +685,7 @@ public final class StatusMediatorUnitTest {
 
         // IPH should NOT be shown
         mMediator.onPageLoadStopped();
-        verify(mPageInfoIPHController, never())
-                .showCookieControlsReminderIPH(anyInt(), anyInt(), any(Runnable.class));
+        verify(mPageInfoIPHController, never()).showCookieControlsReminderIPH(anyInt(), anyInt());
     }
 
     @Test
@@ -705,8 +702,7 @@ public final class StatusMediatorUnitTest {
 
         // IPH should NOT be shown
         mMediator.onPageLoadStopped();
-        verify(mPageInfoIPHController, never())
-                .showCookieControlsReminderIPH(anyInt(), anyInt(), any(Runnable.class));
+        verify(mPageInfoIPHController, never()).showCookieControlsReminderIPH(anyInt(), anyInt());
     }
 
     @Test
@@ -723,8 +719,7 @@ public final class StatusMediatorUnitTest {
 
         // IPH should NOT be shown
         mMediator.onPageLoadStopped();
-        verify(mPageInfoIPHController, never())
-                .showCookieControlsReminderIPH(anyInt(), anyInt(), any(Runnable.class));
+        verify(mPageInfoIPHController, never()).showCookieControlsReminderIPH(anyInt(), anyInt());
     }
 
     @Test

@@ -849,9 +849,7 @@ public class StatusMediator
         if (mBlockingStatus3pcd != CookieBlocking3pcdStatus.NOT_IN3PCD) {
             if (mCookieBlockingStatus != CookieControlsStatus.ENABLED) return;
             mPageInfoIPHController.showCookieControlsReminderIPH(
-                    getIPHTimeout(),
-                    R.string.cookie_controls_reminder_iph_message,
-                    this::animateCookieControlsIcon);
+                    getIPHTimeout(), R.string.cookie_controls_reminder_iph_message);
         } else if (mHighConfidenceBreakageReceived) {
             mPageInfoIPHController.showCookieControlsIPH(
                     getIPHTimeout(), R.string.cookie_controls_iph_message);

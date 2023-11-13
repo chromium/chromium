@@ -112,17 +112,14 @@ public class PageInfoIPHController {
      * @param iphTimeout The timeout after which the IPH bubble should disappear if it was shown.
      * @param stringId Resource id of the string displayed. The string will also be used for
      *     accessibility.
-     * @param onShownCallback Callback triggered when the IPH is shown.
      */
-    public void showCookieControlsReminderIPH(
-            int iphTimeout, @StringRes int stringId, Runnable onShownCallback) {
+    public void showCookieControlsReminderIPH(int iphTimeout, @StringRes int stringId) {
         mUserEducationHelper.requestShowIPH(
                 new IPHCommandBuilder(
                                 mStatusView.getContext().getResources(),
                                 FeatureConstants.COOKIE_CONTROLS_3PCD_FEATURE,
                                 stringId,
                                 stringId)
-                        .setOnShowCallback(onShownCallback)
                         .setAutoDismissTimeout(iphTimeout)
                         .setInsetRect(new Rect())
                         .setAnchorView(mStatusView)
