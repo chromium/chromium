@@ -19,7 +19,7 @@ namespace aggregation_service {
 namespace {
 
 // An identifier to specify the deployment option for the aggregation service.
-enum AggregationCoordinator {
+enum class AggregationCoordinator {
   kAwsCloud,
   kGcpCloud,
 
