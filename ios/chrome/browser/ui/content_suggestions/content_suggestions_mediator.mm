@@ -596,11 +596,11 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       // User has signed in, mark SetUpList item complete. Delayed to allow
       // Signin UI flow to be fully dismissed before starting SetUpList
       // completion animation.
-      PrefService* localState = _localState;
+      __weak __typeof(self) weakSelf = self;
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, base::BindOnce(^{
-            set_up_list_prefs::MarkItemComplete(localState,
-                                                SetUpListItemType::kSignInSync);
+            [weakSelf
+                markSetUpListItemPrefComplete:SetUpListItemType::kSignInSync];
           }),
           base::Seconds(0.5));
     } break;
@@ -624,12 +624,12 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     if ([weakSelf.setUpList allItemsComplete]) {
       [weakSelf.consumer showSetUpListDoneWithAnimations:^{
         if (!IsMagicStackEnabled()) {
-          [self.delegate contentSuggestionsWasUpdated];
+          [weakSelf.delegate contentSuggestionsWasUpdated];
         }
       }];
     } else if (IsMagicStackEnabled()) {
-      [self.consumer scrollToNextMagicStackModuleForCompletedModule:
-                         SetUpListModuleTypeForSetUpListType(item.type)];
+      [weakSelf.consumer scrollToNextMagicStackModuleForCompletedModule:
+                             SetUpListModuleTypeForSetUpListType(item.type)];
     }
   };
   [self.consumer markSetUpListItemComplete:item.type completion:completion];
@@ -1151,15 +1151,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 // Shows a snackbar with an action to undo the removal of the most visited item
 // with a `URL`.
 - (void)showMostVisitedUndoForURL:(GURL)URL {
-  GURL copiedURL = URL;
-
   MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
   __weak ContentSuggestionsMediator* weakSelf = self;
   action.handler = ^{
-    ContentSuggestionsMediator* strongSelf = weakSelf;
-    if (!strongSelf)
-      return;
-    [strongSelf allowMostVisitedURL:copiedURL];
+    [weakSelf allowMostVisitedURL:URL];
   };
   action.title = l10n_util::GetNSString(IDS_NEW_TAB_UNDO_THUMBNAIL_REMOVE);
   action.accessibilityIdentifier = @"Undo";
@@ -1482,23 +1477,25 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
           // The completion handler sent to ASCredentialIdentityStore is
           // executed on a background thread. Putting it back onto the main
           // thread to update local state prefs.
-          runner->PostTask(FROM_HERE, base::BindOnce(^{
-                             __typeof(self) strongSelf = weakSelf;
-                             if (!strongSelf) {
-                               return;
-                             }
-                             set_up_list_prefs::MarkItemComplete(
-                                 strongSelf->_localState,
-                                 SetUpListItemType::kAutofill);
-                           }));
+          runner->PostTask(
+              FROM_HERE, base::BindOnce(^{
+                [weakSelf
+                    markSetUpListItemPrefComplete:SetUpListItemType::kAutofill];
+              }));
         }
       }];
 }
 
+// Sets the pref for a SetUpList item to indicate it is complete.
+- (void)markSetUpListItemPrefComplete:(SetUpListItemType)type {
+  set_up_list_prefs::MarkItemComplete(_localState, type);
+}
+
 // Hides the Set Up List with an animation.
 - (void)hideSetUpList {
+  __weak __typeof(self) weakSelf = self;
   [self.consumer hideSetUpListWithAnimations:^{
-    [self.delegate contentSuggestionsWasUpdated];
+    [weakSelf.delegate contentSuggestionsWasUpdated];
   }];
 }
 
@@ -1734,8 +1731,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (preferenceName == prefs::kIosCredentialProviderPromoLastActionTaken &&
       CredentialProviderPromoDismissed(_localState)) {
-    set_up_list_prefs::MarkItemComplete(_localState,
-                                        SetUpListItemType::kAutofill);
+    [self markSetUpListItemPrefComplete:SetUpListItemType::kAutofill];
   } else if (preferenceName == set_up_list_prefs::kDisabled &&
              set_up_list_prefs::IsSetUpListDisabled(_localState)) {
     [self hideSetUpList];
@@ -1835,8 +1831,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
         HasManagedSyncDataType(_syncService)) {
       // Sync is now disabled, so mark the SetUpList item complete so that it
       // cannot be used again.
-      set_up_list_prefs::MarkItemComplete(_localState,
-                                          SetUpListItemType::kSignInSync);
+      [self markSetUpListItemPrefComplete:SetUpListItemType::kSignInSync];
     }
   }
   if (IsTabResumptionEnabled()) {
@@ -1861,8 +1856,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
         // Signin is now disabled, so mark the SetUpList item complete so that
         // it cannot be used again.
-        set_up_list_prefs::MarkItemComplete(_localState,
-                                            SetUpListItemType::kSignInSync);
+        [self markSetUpListItemPrefComplete:SetUpListItemType::kSignInSync];
     }
   }
 }
