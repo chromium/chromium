@@ -296,9 +296,11 @@ void PolicyUIHandler::HandleSetLocalTestPolicies(
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   std::string profile_separation_policy_response = args[2].GetString();
-  Profile::FromWebUI(web_ui())->GetPrefs()->SetString(
+  Profile::FromWebUI(web_ui())->GetPrefs()->ClearPref(
+      prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage);
+  Profile::FromWebUI(web_ui())->GetPrefs()->SetDefaultPrefValue(
       prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage,
-      profile_separation_policy_response);
+      base::Value(profile_separation_policy_response));
 #endif
 
   Profile::FromWebUI(web_ui())
@@ -315,6 +317,9 @@ void PolicyUIHandler::HandleRevertLocalTestPolicies(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   Profile::FromWebUI(web_ui())->GetPrefs()->ClearPref(
       prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage);
+  Profile::FromWebUI(web_ui())->GetPrefs()->SetDefaultPrefValue(
+      prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage,
+      base::Value(std::string()));
 #endif
   Profile::FromWebUI(web_ui())
       ->GetProfilePolicyConnector()
