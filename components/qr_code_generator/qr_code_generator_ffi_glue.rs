@@ -7,10 +7,6 @@ use qr_code::types::{Color, EcLevel, QrError};
 use qr_code::{QrCode, Version};
 use std::pin::Pin;
 
-// Requires this allow since cxx generates unsafe code.
-//
-// TODO(crbug.com/1422745): patch upstream cxx to generate compatible code.
-#[allow(unsafe_op_in_unsafe_fn)]
 #[cxx::bridge(namespace = "qr_code_generator")]
 mod ffi {
     extern "Rust" {
