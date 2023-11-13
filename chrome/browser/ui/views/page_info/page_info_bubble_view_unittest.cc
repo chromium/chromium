@@ -253,6 +253,22 @@ class PageInfoBubbleViewTestApi {
         ->GetText();
   }
 
+  std::u16string GetTrackingProtectionButtonTitleText() {
+    auto* button = bubble_delegate_->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
+    return static_cast<RichHoverButton*>(button)
+        ->GetTitleViewForTesting()
+        ->GetText();
+  }
+
+  std::u16string GetTrackingProtectionButtonSubTitleText() {
+    auto* button = bubble_delegate_->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
+    return static_cast<RichHoverButton*>(button)
+        ->GetSubTitleViewForTesting()
+        ->GetText();
+  }
+
   std::u16string GetPermissionLabelTextAt(int index) {
     return GetPermissionToggleRowAt(index)->row_view_->GetTitleForTesting();
   }
@@ -406,19 +422,19 @@ class ScopedWebContentsTestHelper {
 
 class PageInfoBubbleViewTest : public testing::Test {
  public:
-  explicit PageInfoBubbleViewTest(bool off_the_record = false) {
-    web_contents_helper_ =
-        std::make_unique<ScopedWebContentsTestHelper>(off_the_record);
-    views_helper_ = std::make_unique<views::ScopedViewsTestHelper>(
-        std::make_unique<ChromeTestViewsDelegate<>>());
-  }
-
+  PageInfoBubbleViewTest() = default;
   PageInfoBubbleViewTest(const PageInfoBubbleViewTest& chip) = delete;
   PageInfoBubbleViewTest& operator=(const PageInfoBubbleViewTest& chip) =
       delete;
 
   // testing::Test:
   void SetUp() override {
+    if (!web_contents_helper_) {
+      web_contents_helper_ =
+          std::make_unique<ScopedWebContentsTestHelper>(false);
+    }
+    views_helper_ = std::make_unique<views::ScopedViewsTestHelper>(
+        std::make_unique<ChromeTestViewsDelegate<>>());
     views::Widget::InitParams parent_params;
     parent_params.context = views_helper_->GetContext();
     parent_window_ = new views::Widget();
@@ -573,8 +589,9 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfo) {
 
 class PageInfoBubbleViewOffTheRecordTest : public PageInfoBubbleViewTest {
  public:
-  PageInfoBubbleViewOffTheRecordTest()
-      : PageInfoBubbleViewTest(/*off_the_record=*/true) {}
+  PageInfoBubbleViewOffTheRecordTest() {
+    web_contents_helper_ = std::make_unique<ScopedWebContentsTestHelper>(true);
+  }
 };
 
 // Test resetting blocked in Incognito permission.
@@ -1131,22 +1148,108 @@ TEST_F(PageInfoBubbleViewTest, EvDetailsShowForCertWithStateButNoLocality) {
             api_->GetCertificateButtonSubtitleText());
 }
 
+class PageInfoBubbleViewCookies3pcdButtonTest
+    : public PageInfoBubbleViewTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PageInfoBubbleViewCookies3pcdButtonTest() {
+    feature_list_.InitWithFeatures(
+        {content_settings::features::kTrackingProtection3pcd,
+         content_settings::features::kUserBypassUI},
+        {});
+    web_contents_helper_ =
+        std::make_unique<ScopedWebContentsTestHelper>(GetParam());
+  }
+
+ protected:
+  void NavigateToPage(content::WebContents* web_contents,
+                      const std::string& url) {
+    web_contents->GetController().LoadURL(GURL(url), content::Referrer(),
+                                          ui::PAGE_TRANSITION_FROM_ADDRESS_BAR,
+                                          std::string());
+    content::RenderFrameHostTester::CommitPendingLoad(
+        &web_contents->GetController());
+  }
+
+  void CreateCookieExceptionForSite(const std::string& pattern) {
+    auto top_level_domain_pattern = ContentSettingsPattern::FromString(pattern);
+    HostContentSettingsMapFactory::GetForProfile(
+        web_contents_helper_->profile())
+        ->SetContentSettingCustomScope(ContentSettingsPattern::Wildcard(),
+                                       top_level_domain_pattern,
+                                       ContentSettingsType::COOKIES,
+                                       ContentSetting::CONTENT_SETTING_ALLOW);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(PageInfoBubbleViewCookies3pcdButtonTest,
+       DisplaysTrackingProtectionButtonLabelsWhen3pcLimited) {
+  EXPECT_EQ(api_->GetTrackingProtectionButtonTitleText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_NAME));
+  // 3PC are blocked in incognito even if limited in regular profile
+  EXPECT_EQ(
+      api_->GetTrackingProtectionButtonSubTitleText(),
+      l10n_util::GetStringUTF16(
+          GetParam()
+              ? IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_BLOCKED
+              : IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_LIMITED));
+}
+
+TEST_P(PageInfoBubbleViewCookies3pcdButtonTest,
+       DisplaysTrackingProtectionButtonLabelsWhen3pcBlocked) {
+  // Block all 3PC
+  web_contents_helper_->profile()->GetPrefs()->SetBoolean(
+      prefs::kBlockAll3pcToggleEnabled, true);
+  // Rerender with the new pref set
+  api_->CreateView();
+
+  EXPECT_EQ(api_->GetTrackingProtectionButtonTitleText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_NAME));
+  EXPECT_EQ(
+      api_->GetTrackingProtectionButtonSubTitleText(),
+      l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_BLOCKED));
+}
+
+TEST_P(
+    PageInfoBubbleViewCookies3pcdButtonTest,
+    DisplaysTrackingProtectionButtonLabelsWhenCookiesAllowedViaSiteException) {
+  // Add a new cookies site exception for kUrl.
+  CreateCookieExceptionForSite(std::string("[*.]example.com"));
+  // Navigate to a page with the new site exception and rerender.
+  NavigateToPage(web_contents_helper_->web_contents(), kUrl);
+  api_->CreateView();
+
+  EXPECT_EQ(api_->GetTrackingProtectionButtonTitleText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_NAME));
+  EXPECT_EQ(
+      api_->GetTrackingProtectionButtonSubTitleText(),
+      l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_ALLOWED));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageInfoBubbleViewCookies3pcdButtonTest,
+                         /*is_otr*/ testing::Bool());
+
 namespace {
 class PageInfoBubbleViewCookiesSubpageTest : public PageInfoBubbleViewTest {
  public:
   PageInfoBubbleViewCookiesSubpageTest() {
-    feature_list.InitWithFeatures(
+    feature_list_.InitWithFeatures(
         {privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
         {content_settings::features::kUserBypassUI});
-  }
-
-  void SetUp() override {
+    web_contents_helper_ = std::make_unique<ScopedWebContentsTestHelper>(false);
     mock_privacy_sandbox_service_ = static_cast<MockPrivacySandboxService*>(
         PrivacySandboxServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             web_contents_helper_->profile(),
             base::BindRepeating(&BuildMockPrivacySandboxService)));
-
-    PageInfoBubbleViewTest::SetUp();
   }
   void ExpectViewContainsText(views::View* view, const std::u16string& text) {
     EXPECT_TRUE(view);
@@ -1159,7 +1262,7 @@ class PageInfoBubbleViewCookiesSubpageTest : public PageInfoBubbleViewTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list;
+  base::test::ScopedFeatureList feature_list_;
   raw_ptr<MockPrivacySandboxService> mock_privacy_sandbox_service_;
 };
 
