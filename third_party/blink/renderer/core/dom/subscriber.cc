@@ -31,16 +31,20 @@ void Subscriber::next(ScriptValue value) {
 }
 
 void Subscriber::complete() {
-  if (complete_) {
-    complete_->InvokeAndReportException(nullptr);
-    CloseSubscription();
+  Member<V8ObserverCompleteCallback> complete = complete_;
+  CloseSubscription();
+
+  if (complete) {
+    complete->InvokeAndReportException(nullptr);
   }
 }
 
-void Subscriber::error(ScriptState* script_state, ScriptValue error) {
-  if (error_) {
-    error_->InvokeAndReportException(nullptr, error);
-    CloseSubscription();
+void Subscriber::error(ScriptState* script_state, ScriptValue error_value) {
+  Member<V8ObserverCallback> error = error_;
+  CloseSubscription();
+
+  if (error) {
+    error->InvokeAndReportException(nullptr, error_value);
   } else {
     // The given observer's `error()` handler can be null here for one of two
     // reasons:
@@ -61,7 +65,7 @@ void Subscriber::error(ScriptState* script_state, ScriptValue error) {
     }
     ScriptState::Scope scope(script_state);
     V8ScriptRunner::ReportException(script_state->GetIsolate(),
-                                    error.V8Value());
+                                    error_value.V8Value());
   }
 }
 

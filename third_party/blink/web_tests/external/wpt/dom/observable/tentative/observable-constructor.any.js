@@ -395,3 +395,67 @@ test(() => {
   assert_equals(errorReported.error, error2, "Error object is equivalent");
 }, "Errors pushed by initializer function after subscriber is closed by " +
    "error are reported");
+
+test(() => {
+  const results = [];
+  const target = new EventTarget();
+
+  const source = new Observable((subscriber) => {
+    target.addEventListener('custom event', e => {
+      subscriber.next(1);
+      subscriber.complete();
+      subscriber.error('not a real error');
+    });
+  });
+
+  source.subscribe({
+    next: (x) => results.push(x),
+    error: (error) => results.push(error),
+    complete: () => {
+      results.push('complete'),
+      // Re-entrantly tries to invoke `complete()`. However, this function must
+      // only ever run once.
+      target.dispatchEvent(new Event('custom event'));
+    },
+  });
+
+  target.dispatchEvent(new Event('custom event'));
+
+  assert_array_equals(
+    results,
+    [1, 'complete'],
+    "complete() can only be called once, and cannot invoke other Observer methods"
+  );
+}, "Subscriber#complete() cannot re-entrantly invoke itself");
+
+test(() => {
+  const results = [];
+  const target = new EventTarget();
+
+  const source = new Observable((subscriber) => {
+    target.addEventListener('custom event', e => {
+      subscriber.next(1);
+      subscriber.error('not a real error');
+      subscriber.complete();
+    });
+  });
+
+  source.subscribe({
+    next: (x) => results.push(x),
+    error: (error) => {
+      results.push('error'),
+      // Re-entrantly tries to invoke `error()`. However, this function must
+      // only ever run once.
+      target.dispatchEvent(new Event('custom event'));
+    },
+    complete: () => results.push('complete'),
+  });
+
+  target.dispatchEvent(new Event('custom event'));
+
+  assert_array_equals(
+    results,
+    [1, 'error'],
+    "error() can only be called once, and cannot invoke other Observer methods"
+  );
+}, "Subscriber#error() cannot re-entrantly invoke itself");
