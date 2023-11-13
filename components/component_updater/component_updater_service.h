@@ -24,6 +24,10 @@
 class ComponentsHandler;
 class PluginObserver;
 
+namespace ash {
+class SmartDimComponentIntegrationTest;
+}
+
 namespace policy {
 class ComponentUpdaterPolicyTest;
 }
@@ -215,6 +219,7 @@ class OnDemandUpdater {
   friend class SodaLanguagePackComponentInstallerPolicy;
   friend class ::extensions::AutotestPrivateLoadSmartDimComponentFunction;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  friend class ash::SmartDimComponentIntegrationTest;
   friend class CrOSComponentInstaller;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
