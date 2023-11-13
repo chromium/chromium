@@ -151,10 +151,6 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
   EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl);
   EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl);
 
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(
-      "Commerce.PriceInsights.OmniboxIconClickedAfterLabelShown", 0);
-
   RunTestSequence(
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
@@ -168,9 +164,6 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
       // Click on the action chip again to close the side panel
       PressButton(kPriceInsightsChipElementId),
       WaitForHide(kSidePanelElementId), FlushEvents());
-
-  histogram_tester.ExpectTotalCount(
-      "Commerce.PriceInsights.OmniboxIconClickedAfterLabelShown", 2);
 }
 
 IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
@@ -244,33 +237,33 @@ class PriceInsightsIconViewEngagementTest
 
   void VerifyIconExpandedOncePerDay() {
     base::HistogramTester histogram_tester;
-    histogram_tester.ExpectTotalCount(
-        "Commerce.PriceInsights.OmniboxIconShownLabel", 0);
+    histogram_tester.ExpectTotalCount("Commerce.PriceInsights.OmniboxIconShown",
+                                      0);
 
     NavigateToANonShoppingPage();
-    histogram_tester.ExpectTotalCount(
-        "Commerce.PriceInsights.OmniboxIconShownLabel", 0);
+    histogram_tester.ExpectTotalCount("Commerce.PriceInsights.OmniboxIconShown",
+                                      0);
 
     NavigateToAShoppingPage(/*expected_to_show_label=*/true);
-    histogram_tester.ExpectTotalCount(
-        "Commerce.PriceInsights.OmniboxIconShownLabel", 1);
+    histogram_tester.ExpectTotalCount("Commerce.PriceInsights.OmniboxIconShown",
+                                      1);
     histogram_tester.ExpectBucketCount(
-        "Commerce.PriceInsights.OmniboxIconShownLabel", 1, 1);
+        "Commerce.PriceInsights.OmniboxIconShown", 1, 1);
 
     NavigateToANonShoppingPage();
-    histogram_tester.ExpectTotalCount(
-        "Commerce.PriceInsights.OmniboxIconShownLabel", 1);
+    histogram_tester.ExpectTotalCount("Commerce.PriceInsights.OmniboxIconShown",
+                                      1);
     histogram_tester.ExpectBucketCount(
-        "Commerce.PriceInsights.OmniboxIconShownLabel", 1, 1);
+        "Commerce.PriceInsights.OmniboxIconShown", 1, 1);
 
     NavigateToAShoppingPage(/*expected_to_show_label=*/false);
-    histogram_tester.ExpectTotalCount(
-        "Commerce.PriceInsights.OmniboxIconShownLabel", 2);
+    histogram_tester.ExpectTotalCount("Commerce.PriceInsights.OmniboxIconShown",
+                                      2);
     histogram_tester.ExpectBucketCount(
-        "Commerce.PriceInsights.OmniboxIconShownLabel", 0, 1);
+        "Commerce.PriceInsights.OmniboxIconShown", 0, 1);
     EXPECT_THAT(
         histogram_tester.GetAllSamples(
-            "Commerce.PriceInsights.OmniboxIconShownLabel"),
+            "Commerce.PriceInsights.OmniboxIconShown"),
         BucketsAre(base::Bucket(0, 1), base::Bucket(1, 1), base::Bucket(2, 0)));
   }
 

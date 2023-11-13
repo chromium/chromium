@@ -60,10 +60,6 @@ void PriceInsightsIconView::UpdateImpl() {
   bool should_show = ShouldShow();
 
   if (should_show) {
-    // Reset the last_shown_label_type_ first.
-    last_shown_label_type_ =
-        PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
-
     MaybeShowPageActionLabel();
   } else {
     HidePageActionLabel();
@@ -90,7 +86,6 @@ void PriceInsightsIconView::MaybeShowPageActionLabel() {
   }
 
   should_extend_label_shown_duration_ = true;
-  last_shown_label_type_ = GetLabelTypeForPage();
   UpdatePriceInsightsIconLabel();
 
   AnimateIn(absl::nullopt);
@@ -111,13 +106,15 @@ PriceInsightsIconView::GetLabelTypeForPage() {
 }
 
 void PriceInsightsIconView::UpdatePriceInsightsIconLabel() {
-  if (last_shown_label_type_ ==
+  PriceInsightsIconView::PriceInsightsIconLabelType label_type =
+      GetLabelTypeForPage();
+  if (label_type ==
       PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsLow) {
     SetLabel(
         l10n_util::GetStringUTF16(
             IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE),
         l10n_util::GetStringUTF16(IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT));
-  } else if (last_shown_label_type_ ==
+  } else if (label_type ==
              PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsHigh) {
     SetLabel(
         l10n_util::GetStringUTF16(
@@ -164,9 +161,6 @@ void PriceInsightsIconView::OnExecuting(
   CHECK(tab_helper);
 
   tab_helper->OnPriceInsightsIconClicked();
-  base::UmaHistogramEnumeration(
-      "Commerce.PriceInsights.OmniboxIconClickedAfterLabelShown",
-      last_shown_label_type_);
   SetHighlighted(false);
 }
 

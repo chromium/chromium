@@ -271,6 +271,10 @@ class ShoppingListUiTabHelper
   // track of which page action actually expanded.
   absl::optional<PageActionIconType> page_action_expanded_;
 
+  // The price insights icon label type for the current page load.
+  PriceInsightsIconView::PriceInsightsIconLabelType price_insights_label_type_ =
+      PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
+
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<ShoppingService, SubscriptionsObserver>
       scoped_observation_{this};
