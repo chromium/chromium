@@ -195,15 +195,11 @@ BASE_FEATURE(kWebAuthnRequireUIForComplexDiscoveries,
              "WebAuthenticationRequestUIForComplexDiscoveries",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enabled in M118 for non-ChromeOS (see crbug.com/1480732).
+// Enabled in M118 on all platforms except ChromeOS. Enabled on M121 for
+// ChromeOS. Remove in or after M124.
 BASE_FEATURE(kWebAuthnFilterGooglePasskeys,
              "WebAuthenticationFilterGooglePasskeys",
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enabled in M118. Remove in or after M121.
 BASE_FEATURE(kWebAuthnPINProtocolInHMACSecret,
