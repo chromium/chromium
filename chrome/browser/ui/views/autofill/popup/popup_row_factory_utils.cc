@@ -5,9 +5,15 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/compose/core/browser/compose_features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -20,6 +26,7 @@
 namespace autofill {
 
 namespace {
+
 // The size of a close or delete icon.
 constexpr int kCloseIconSize = 16;
 
@@ -34,8 +41,8 @@ base::RepeatingClosure CreateExecuteSoonWrapper(base::RepeatingClosure task) {
       },
       std::move(task));
 }
-}  // namespace
 
+// Creates the row for an Autocomplete entry with a delete button.
 std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
     base::WeakPtr<AutofillPopupController> controller,
     PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
@@ -104,6 +111,71 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
       a11y_selection_delegate, selection_delegate, controller, line_number,
       std::move(view), std::move(button),
       PopupRowWithButtonView::ButtonBehavior::kShowOnHoverOrSelect);
+}
+
+}  // namespace
+
+std::unique_ptr<PopupRowView> CreateRowView(
+    base::WeakPtr<AutofillPopupController> controller,
+    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
+    PopupRowView::SelectionDelegate& selection_delegate,
+    int line_number) {
+  CHECK(controller);
+
+  PopupItemId popup_item_id =
+      controller->GetSuggestionAt(line_number).popup_item_id;
+  std::optional<PopupRowView::ScopedNewBadgeTrackerWithAcceptAction>
+      new_badge_tracker;
+
+  if (popup_item_id == PopupItemId::kAutocompleteEntry &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillShowAutocompleteDeleteButton)) {
+    return CreateAutocompleteRowWithDeleteButton(
+        controller, a11y_selection_delegate, selection_delegate, line_number);
+  }
+
+  std::unique_ptr<PopupRowStrategy> strategy;
+  switch (popup_item_id) {
+    // These `popup_item_id` should never be displayed in a `PopupRowView`.
+    case PopupItemId::kSeparator:
+    case PopupItemId::kMixedFormMessage:
+    case PopupItemId::kInsecureContextPaymentDisabledMessage:
+      NOTREACHED_NORETURN();
+    case PopupItemId::kUsernameEntry:
+    case PopupItemId::kPasswordEntry:
+    case PopupItemId::kAccountStorageUsernameEntry:
+    case PopupItemId::kAccountStoragePasswordEntry:
+      strategy = std::make_unique<PopupPasswordSuggestionStrategy>(controller,
+                                                                   line_number);
+      break;
+    case PopupItemId::kCompose: {
+      auto tracker = std::make_unique<ScopedNewBadgeTracker>(
+          controller->GetWebContents()->GetBrowserContext());
+      strategy = std::make_unique<PopupComposeSuggestionStrategy>(
+          controller, line_number,
+          tracker->TryShowNewBadge(
+              feature_engagement::kIPHComposeNewBadgeFeature,
+              &compose::features::kEnableCompose));
+      new_badge_tracker.emplace(std::move(tracker),
+                                /*action_name=*/"compose_activated");
+    } break;
+    default:
+      if (IsFooterPopupItemId(popup_item_id)) {
+        strategy =
+            std::make_unique<PopupFooterStrategy>(controller, line_number);
+      } else {
+        strategy =
+            std::make_unique<PopupSuggestionStrategy>(controller, line_number);
+      }
+      break;
+  }
+
+  auto row_view = std::make_unique<PopupRowView>(
+      a11y_selection_delegate, selection_delegate, controller, line_number,
+      strategy->CreateContent());
+  row_view->set_new_badge_tracker(std::move(new_badge_tracker));
+
+  return row_view;
 }
 
 }  // namespace autofill

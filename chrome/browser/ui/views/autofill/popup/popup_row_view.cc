@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
@@ -28,8 +27,6 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/compose/core/browser/compose_features.h"
-#include "components/feature_engagement/public/feature_list.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -183,69 +180,6 @@ PopupRowView::ScopedNewBadgeTrackerWithAcceptAction::operator=(
 void PopupRowView::ScopedNewBadgeTrackerWithAcceptAction::
     OnSuggestionAccepted() {
   tracker_->ActionPerformed(action_name_);
-}
-
-// static
-// TODO(crbug.com/1491373): Move this method into popup_row_factory_utils.h/cc
-std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
-                                                   int line_number) {
-  base::WeakPtr<AutofillPopupController> controller = popup_view.controller();
-  CHECK(controller);
-
-  PopupItemId popup_item_id =
-      controller->GetSuggestionAt(line_number).popup_item_id;
-  std::optional<ScopedNewBadgeTrackerWithAcceptAction> new_badge_tracker;
-
-  if (popup_item_id == PopupItemId::kAutocompleteEntry &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillShowAutocompleteDeleteButton)) {
-    return CreateAutocompleteRowWithDeleteButton(
-        controller, /*a11y_selection_delegate=*/popup_view,
-        /*selection_delegate=*/popup_view, line_number);
-  }
-
-  std::unique_ptr<PopupRowStrategy> strategy;
-  switch (popup_item_id) {
-    // These `popup_item_id` should never be displayed in a `PopupRowView`.
-    case PopupItemId::kSeparator:
-    case PopupItemId::kMixedFormMessage:
-    case PopupItemId::kInsecureContextPaymentDisabledMessage:
-      NOTREACHED_NORETURN();
-    case PopupItemId::kUsernameEntry:
-    case PopupItemId::kPasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
-    case PopupItemId::kAccountStoragePasswordEntry:
-      strategy = std::make_unique<PopupPasswordSuggestionStrategy>(controller,
-                                                                   line_number);
-      break;
-    case PopupItemId::kCompose: {
-      auto tracker = std::make_unique<ScopedNewBadgeTracker>(
-          controller->GetWebContents()->GetBrowserContext());
-      strategy = std::make_unique<PopupComposeSuggestionStrategy>(
-          controller, line_number,
-          tracker->TryShowNewBadge(
-              feature_engagement::kIPHComposeNewBadgeFeature,
-              &compose::features::kEnableCompose));
-      new_badge_tracker.emplace(std::move(tracker),
-                                /*action_name=*/"compose_activated");
-    } break;
-    default:
-      if (IsFooterPopupItemId(popup_item_id)) {
-        strategy =
-            std::make_unique<PopupFooterStrategy>(controller, line_number);
-      } else {
-        strategy =
-            std::make_unique<PopupSuggestionStrategy>(controller, line_number);
-      }
-      break;
-  }
-
-  auto row_view = std::make_unique<PopupRowView>(
-      /*a11y_selection_delegate=*/popup_view, /*selection_delegate=*/popup_view,
-      controller, line_number, strategy->CreateContent());
-  row_view->set_new_badge_tracker(std::move(new_badge_tracker));
-
-  return row_view;
 }
 
 PopupRowView::PopupRowView(

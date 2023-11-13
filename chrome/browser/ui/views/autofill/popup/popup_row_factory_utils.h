@@ -13,14 +13,14 @@
 namespace autofill {
 
 class AutofillPopupController;
-class PopupRowWithButtonView;
 
-// Creates the row for an Autocomplete entry with a delete button.
-std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
+// Creates a row view depending on the suggestion type at `line_number`.
+std::unique_ptr<PopupRowView> CreateRowView(
     base::WeakPtr<AutofillPopupController> controller,
     PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
     PopupRowView::SelectionDelegate& selection_delegate,
     int line_number);
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_ROW_FACTORY_UTILS_H_

@@ -34,7 +34,6 @@ namespace autofill {
 class AutofillPopupController;
 class PopupRowContentView;
 class PopupRowStrategy;
-class PopupViewViews;
 
 // `PopupRowView` represents a single selectable popup row. Different styles
 // of the row can be achieved by injecting the respective `PopupRowStrategy`
@@ -108,10 +107,6 @@ class PopupRowView : public views::View, public views::ViewObserver {
   PopupRowView(const PopupRowView&) = delete;
   PopupRowView& operator=(const PopupRowView&) = delete;
   ~PopupRowView() override;
-
-  // Acts as a factory method for creating a row view.
-  static std::unique_ptr<PopupRowView> Create(PopupViewViews& popup_view,
-                                              int line_number);
 
   void set_new_badge_tracker(
       std::optional<ScopedNewBadgeTrackerWithAcceptAction> new_badge_tracker) {

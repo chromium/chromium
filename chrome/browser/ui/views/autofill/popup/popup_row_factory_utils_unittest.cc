@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
+#include "base/check_op.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
@@ -63,9 +64,11 @@ class AutocompleteRowWithDeleteButtonTest : public ChromeViewsTestBase {
   void ShowSuggestion(Suggestion suggestion) {
     // Show the button.
     controller().set_suggestions({std::move(suggestion)});
-    view_ = widget_->SetContentsView(CreateAutocompleteRowWithDeleteButton(
-        controller().GetWeakPtr(), a11y_selection_delegate(),
-        selection_delegate(), 0));
+    PopupRowView* view = widget_->SetContentsView(
+        CreateRowView(controller().GetWeakPtr(), a11y_selection_delegate(),
+                      selection_delegate(), 0));
+    CHECK_EQ(view->GetClassMetaData()->type_name(), "PopupRowWithButtonView");
+    view_ = static_cast<PopupRowWithButtonView*>(view);
     widget_->Show();
   }
 

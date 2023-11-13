@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_separator_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
@@ -636,7 +637,8 @@ void PopupViewViews::CreateChildViews() {
         // autocomplete, address, credit cards and passwords.
         default:
           PopupRowView* row_view = body_container->AddChildView(
-              PopupRowView::Create(*this, current_line_number));
+              CreateRowView(controller(), /*a11y_selection_delegate=*/*this,
+                            /*selection_delegate=*/*this, current_line_number));
           rows_.push_back(row_view);
 
           const std::string& feature_for_iph =
@@ -702,7 +704,8 @@ void PopupViewViews::CreateChildViews() {
           std::make_unique<PopupSeparatorView>()));
     } else {
       rows_.push_back(footer_container_->AddChildView(
-          PopupRowView::Create(*this, current_line_number)));
+          CreateRowView(controller(), /*a11y_selection_delegate=*/*this,
+                        /*selection_delegate=*/*this, current_line_number)));
     }
   }
 }
