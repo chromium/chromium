@@ -243,6 +243,10 @@
             "_bug_id": "crbug.com/1482550"
           },
           {
+            "match": "android.webkit.cts.WebViewTest#testPauseResumeTimers",
+            "_bug_id": "crbug.com/1500845"
+          },
+          {
             "match": "android.webkit.cts.WebViewTest#testLoadUrl",
             "_bug_id": "crbug.com/1450170"
           }
@@ -316,6 +320,10 @@
             "_bug_id": "crbug.com/1482550"
           },
           {
+            "match": "android.webkit.cts.WebViewTest#testPauseResumeTimers",
+            "_bug_id": "crbug.com/1500845"
+          },
+          {
             "match": "android.webkit.cts.WebViewClientTest#testShouldOverrideUrlLoadingOnCreateWindow",
             "_bug_id": "crbug.com/1100950"
           },
@@ -387,6 +395,10 @@
           {
             "match": "android.webkit.cts.WebViewTest#testPageScroll",
             "_bug_id": "crbug.com/1482550"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testPauseResumeTimers",
+            "_bug_id": "crbug.com/1500845"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingMalwareCode",
@@ -487,6 +499,10 @@
           {
             "match": "android.webkit.cts.WebViewTest#testPageScroll",
             "_bug_id": "crbug.com/1482550"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testPauseResumeTimers",
+            "_bug_id": "crbug.com/1500845"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingMalwareCode",
@@ -635,6 +651,10 @@
           {
             "match": "android.webkit.cts.WebViewTest#testPageScroll",
             "_bug_id": "crbug.com/1482550"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testPauseResumeTimers",
+            "_bug_id": "crbug.com/1500845"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingMalwareCode",
@@ -810,6 +830,10 @@
           {
             "match": "android.webkit.cts.WebViewTest#testPageScroll",
             "_bug_id": "crbug.com/1482550"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testPauseResumeTimers",
+            "_bug_id": "crbug.com/1500845"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingMalwareCode",
