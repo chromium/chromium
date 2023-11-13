@@ -188,6 +188,24 @@ bool IsBrowserProcess() {
                name:kWindowDidChangePositionInWindowList
              object:nil];
 
+    // orderWindow:relativeTo: was the override point that caught all window
+    // list ordering changes up until Sonoma. With Sonoma, it appears that
+    // window cycling (Cmd+`) goes directly to -[NSWindow makeKeyWindow]. Add
+    // these window main notifications to catch the changes. Unfortunately,
+    // there doesn't appear to be a way to trigger any of the the window
+    // cycling machinery, so automated testing is impossible.
+    [notificationCenter
+        addObserver:self
+           selector:@selector(windowDidChangePositionInWindowList:)
+               name:NSWindowDidBecomeMainNotification
+             object:nil];
+
+    [notificationCenter
+        addObserver:self
+           selector:@selector(windowDidChangePositionInWindowList:)
+               name:NSWindowDidResignMainNotification
+             object:nil];
+
     [[[NSWorkspace sharedWorkspace] notificationCenter]
         addObserver:self
            selector:@selector(displaysDidSleep:)
