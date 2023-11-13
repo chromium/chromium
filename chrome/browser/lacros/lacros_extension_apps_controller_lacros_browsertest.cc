@@ -150,10 +150,9 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LaunchPinnedApp) {
                                          success_future.GetCallback());
   ASSERT_TRUE(success_future.Take());
 
-  // Wait for the app window to be shown, which is not guaranteed by
-  // WaitForShelfItem above. It's necessary to wait because otherwise
-  // WaitForWindowDestruction below might terminate immediately despite the
-  // window still being alive (and affecting the behavior of SelectItemInShelf).
+  // WaitForShelfItem above does not guarantee that the app window is already
+  // shown. Wait for that explicitly, in order to satisfy
+  // WaitForWindowDestruction's precondition.
   extensions::AppWindowRegistry::AppWindowList app_windows =
       extensions::AppWindowRegistry::Get(profile())->app_windows();
   ASSERT_EQ(1u, app_windows.size());

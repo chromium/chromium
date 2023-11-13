@@ -36,6 +36,13 @@ namespace browser_test_util {
 [[nodiscard]] bool WaitForWindowCreation(const std::string& id);
 
 // Waits for the window to be destroyed. |id| comes from |GetWindowId|.
+// WaitForWindowDestruction requires the window to be already completely closed,
+// or visible/minimized on the Ash side (but about to close) for it to work.
+// This means that you need to ensure that the information about the window
+// existence and its state has reached the Ash side, for example by calling
+// WaitForWindowCreation first. Without this, WaitForWindowDestruction may
+// return immediately if e.g. the information about the window's existence
+// hasn't reached Ash yet.
 // Returns false if Ash is unavailable or lacks the required TestController
 // functionality.
 [[nodiscard]] bool WaitForWindowDestruction(const std::string& id);
