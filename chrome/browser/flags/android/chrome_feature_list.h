@@ -175,7 +175,6 @@ BASE_DECLARE_FEATURE(kShowScrollableMVTOnNtpPhoneAndroid);
 BASE_DECLARE_FEATURE(kFeedPositionAndroid);
 BASE_DECLARE_FEATURE(kScrollToTLDOptimization);
 BASE_DECLARE_FEATURE(kSearchResumptionModuleAndroid);
-BASE_DECLARE_FEATURE(kShouldIgnoreIntentSkipInternalCheck);
 BASE_DECLARE_FEATURE(kShareSheetCustomActionsPolish);
 BASE_DECLARE_FEATURE(kShareSheetMigrationAndroid);
 BASE_DECLARE_FEATURE(kSpecialLocaleWrapper);

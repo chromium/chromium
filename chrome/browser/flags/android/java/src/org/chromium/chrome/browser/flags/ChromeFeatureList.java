@@ -422,8 +422,6 @@ public abstract class ChromeFeatureList {
             "SearchReadyOmniboxAllowQueryEdit";
     public static final String SEARCH_RESUMPTION_MODULE_ANDROID = "SearchResumptionModuleAndroid";
     public static final String SEED_ACCOUNTS_REVAMP = "SeedAccountsRevamp";
-    public static final String SHOULD_IGNORE_INTENT_SKIP_INTERNAL_CHECK =
-            "ShouldIgnoreIntentSkipInternalCheck";
     public static final String SHARE_SHEET_CUSTOM_ACTIONS_POLISH = "ShareSheetCustomActionsPolish";
     public static final String SHARE_SHEET_MIGRATION_ANDROID = "ShareSheetMigrationAndroid";
     public static final String SEND_TAB_TO_SELF_V2 = "SendTabToSelfV2";
@@ -602,8 +600,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sQueryTilesOnStart = new CachedFlag(QUERY_TILES_ON_START, false);
     public static final CachedFlag sSearchEngineChoice =
             new CachedFlag(SEARCH_ENGINE_CHOICE, false);
-    public static final CachedFlag sShouldIgnoreIntentSkipInternalCheck =
-            new CachedFlag(SHOULD_IGNORE_INTENT_SKIP_INTERNAL_CHECK, true);
     public static final CachedFlag sShowNtpAtStartupAndroid =
             new CachedFlag(SHOW_NTP_AT_STARTUP_ANDROID, false);
     public static final CachedFlag sSpareTab = new CachedFlag(SPARE_TAB, false);
@@ -701,7 +697,6 @@ public abstract class ChromeFeatureList {
                     sQueryTiles,
                     sQueryTilesOnStart,
                     sSearchEngineChoice,
-                    sShouldIgnoreIntentSkipInternalCheck,
                     sShowNtpAtStartupAndroid,
                     sSpareTab,
                     sStartSurfaceAndroid,

@@ -308,7 +308,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kScrollToTLDOptimization,
     &kShareSheetMigrationAndroid,
     &kShareSheetCustomActionsPolish,
-    &kShouldIgnoreIntentSkipInternalCheck,
     &kSpecialLocaleWrapper,
     &kSpecialUserDecision,
     &kSuppressToolbarCaptures,
@@ -1116,10 +1115,6 @@ BASE_FEATURE(kFeedPositionAndroid,
 BASE_FEATURE(kSearchResumptionModuleAndroid,
              "SearchResumptionModuleAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kShouldIgnoreIntentSkipInternalCheck,
-             "ShouldIgnoreIntentSkipInternalCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStartSurfaceOnTablet,
              "StartSurfaceOnTablet",

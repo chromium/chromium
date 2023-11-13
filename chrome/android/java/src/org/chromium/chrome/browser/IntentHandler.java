@@ -798,17 +798,8 @@ public class IntentHandler {
                 return true;
             }
 
+            // Determine if this intent came from a trustworthy source (Chrome).
             boolean isFromChrome = wasIntentSenderChrome(intent);
-
-            // Determine if this intent came from a trustworthy source (either Chrome or Google
-            // first party applications).
-            boolean isInternal = false;
-            if (ChromeFeatureList.sShouldIgnoreIntentSkipInternalCheck.isEnabled()) {
-                // When removing the flag replace the isInternal usage with isFromChrome.
-                isInternal = isFromChrome;
-            } else {
-                isInternal = notSecureIsIntentChromeOrFirstParty(intent);
-            }
 
             if (IntentUtils.safeGetBooleanExtra(intent, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
                     && !isAllowedIncognitoIntent(isFromChrome, isCustomTab, intent)) {
@@ -827,7 +818,7 @@ public class IntentHandler {
                 return false;
             }
 
-            if (isInternal) return false;
+            if (isFromChrome) return false;
 
             // Ignore all intents that specify a Chrome internal scheme if they did not come from
             // a trustworthy source.
