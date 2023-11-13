@@ -43,8 +43,13 @@ const char kPreferDcheckOptIn[] = "opt-in";
 const char kPreferDcheckOptOut[] = "opt-out";
 
 // Switch to control which serving campaigns file versions to select in test
-// cohort.
+// cohort. Example: `--campaigns-test-tag=dev1` will select test cohort which
+// tag matches dev1.
 const char kCompaignsTestTag[] = "campaigns-test-tag";
+// Switch to control which serving demo mode app versions to select in test
+// cohort. Example: `--demo-app-test-tag=dev1` will select test cohort which tag
+// matches dev1.
+const char kDemoModeAppTestTag[] = "demo-app-test-tag";
 
 // Root path where all components are stored.
 constexpr char kComponentsRootPath[] = "cros-components";
@@ -304,6 +309,12 @@ DemoAppInstallerPolicy::GetInstallerAttributes() const {
       ash::demo_mode::IsCloudGamingDevice() ? "true" : "false";
   demo_app_installer_attributes["is_feature_aware_device"] =
       ash::demo_mode::IsFeatureAwareDevice() ? "true" : "false";
+
+  auto* const cmdline = base::CommandLine::ForCurrentProcess();
+  if (cmdline->HasSwitch(kDemoModeAppTestTag)) {
+    demo_app_installer_attributes["tag"] =
+        cmdline->GetSwitchValueASCII(kDemoModeAppTestTag);
+  }
   return demo_app_installer_attributes;
 }
 
