@@ -2434,7 +2434,8 @@ bool FederatedAuthRequestImpl::GetSingleReturningAccount(
       }
       // account.login_state could be set to kSignIn if the client is on the
       // `approved_clients` list provided by IDP. However, in this case we have
-      // to trust the browser observed sign-in.
+      // to trust the browser observed sign-in unless the IDP can be exempted.
+      // For example, they have third party cookies access on the RP site.
       if (!permission_delegate_->HasSharingPermission(
               origin(), GetEmbeddingOrigin(),
               url::Origin::Create(idp_info.first), account.id) &&
