@@ -121,14 +121,14 @@ ViewTreeHostRootViewFrameFactory::CreateUiResource(
       LOG(ERROR) << "Failed to create MappableSharedImage";
       return nullptr;
     }
-    resource->SetMailbox(client_shared_image->mailbox());
+    resource->SetClientSharedImage(std::move(client_shared_image));
   } else {
     auto client_shared_image = sii->CreateSharedImage(
         format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType, usage, "FastInkRootViewFrame",
         resource->gpu_memory_buffer->CloneHandle());
     CHECK(client_shared_image);
-    resource->SetMailbox(client_shared_image->mailbox());
+    resource->SetClientSharedImage(std::move(client_shared_image));
   }
 
   resource->sync_token = sii->GenVerifiedSyncToken();

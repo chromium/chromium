@@ -152,8 +152,6 @@ std::unique_ptr<UiResource> CreateUiResource(
 
   if (mailbox.IsZero()) {
     // The UiResource needs to create its own Mailbox, which it will own.
-    resource->owns_mailbox = true;
-
     gpu::SharedImageInterface* sii =
         resource->context_provider->SharedImageInterface();
 
@@ -167,12 +165,11 @@ std::unique_ptr<UiResource> CreateUiResource(
         gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
         "FastInkHostUIResource", gpu_memory_buffer->CloneHandle());
     CHECK(client_shared_image);
-    resource->SetMailbox(client_shared_image->mailbox());
+    resource->SetClientSharedImage(std::move(client_shared_image));
     resource->sync_token = sii->GenVerifiedSyncToken();
   } else {
     // This UiResource is operating on a shared SharedImage.
-    resource->owns_mailbox = false;
-    resource->SetMailbox(mailbox);
+    resource->SetExternallyOwnedMailbox(mailbox);
     resource->sync_token = sync_token;
   }
 

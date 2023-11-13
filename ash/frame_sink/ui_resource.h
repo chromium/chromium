@@ -9,6 +9,7 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/gfx/geometry/size.h"
@@ -29,16 +30,31 @@ class ASH_EXPORT UiResource {
 
   virtual ~UiResource();
 
-  void SetMailbox(const gpu::Mailbox& mailbox) { mailbox_internal_ = mailbox; }
-  const gpu::Mailbox& mailbox() const { return mailbox_internal_; }
+  // It is valid to call only one of the two below setters on a given instance,
+  // and that setter should be called only once.
+  void SetExternallyOwnedMailbox(const gpu::Mailbox& mailbox) {
+    CHECK(external_mailbox_.IsZero());
+    CHECK(!client_shared_image_);
+    external_mailbox_ = mailbox;
+  }
+  void SetClientSharedImage(
+      scoped_refptr<gpu::ClientSharedImage> client_shared_image) {
+    CHECK(external_mailbox_.IsZero());
+    CHECK(!client_shared_image_);
+    client_shared_image_ = std::move(client_shared_image);
+  }
+
+  // Returns `client_shared_image_->mailbox()` if `client_shared_image_` has
+  // been set and `external_mailbox_` otherwise.
+  const gpu::Mailbox& mailbox() const {
+    return client_shared_image_ ? client_shared_image_->mailbox()
+                                : external_mailbox_;
+  }
 
   scoped_refptr<viz::RasterContextProvider> context_provider;
   gpu::SyncToken sync_token;
   viz::SharedImageFormat format;
   gfx::Size resource_size;
-  // Set this to false if UiResource is not responsible for calling
-  // DestroySharedImage() on `mailbox` in its destructor.
-  bool owns_mailbox = true;
 
   // This id can be used to identify the resource back to the type of source
   // generating the resourse. It must be a non-zero number.
@@ -54,9 +70,8 @@ class ASH_EXPORT UiResource {
   bool damaged = true;
 
  private:
-  // NOTE: This is private as an upcoming CL will change UiResource to instead
-  // hold ClientSharedImage.
-  gpu::Mailbox mailbox_internal_;
+  gpu::Mailbox external_mailbox_;
+  scoped_refptr<gpu::ClientSharedImage> client_shared_image_;
 };
 
 }  // namespace ash
