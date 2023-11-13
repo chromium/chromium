@@ -82,7 +82,9 @@ Node* SameBlockWordIterator<Direction>::NextVisibleTextNodeWithinBlock(
   Node* node = &start_node;
   do {
     node = Direction::Next(*node);
-    node = Direction::AdvanceUntilVisibleTextNode(*node);
+    if (node) {
+      node = Direction::AdvanceUntilVisibleTextNode(*node);
+    }
   } while (node && !node->GetLayoutObject());
 
   // Stop, if crossed block boundaries.
