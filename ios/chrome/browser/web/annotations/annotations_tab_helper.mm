@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/text_selection/model/text_classifier_model_service_factory.h"
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
 #import "ios/web/common/annotations_utils.h"
+#import "ios/web/common/features.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/annotations/annotations_text_manager.h"
 #import "ios/web/public/browser_state.h"
@@ -174,8 +175,9 @@ void AnnotationsTabHelper::ApplyDeferredProcessing(
     auto* manager = web::AnnotationsTextManager::FromWebState(web_state_);
     DCHECK(manager);
     std::vector<web::TextAnnotation> annotations(std::move(deferred.value()));
-    if (IsIOSParcelTrackingEnabled() &&
-        !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) {
+    if ((IsIOSParcelTrackingEnabled() &&
+         !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) ||
+        base::FeatureList::IsEnabled(web::features::kEnableMeasurements)) {
       AnnotationsTabHelper::ProcessAnnotations(annotations);
     }
     base::Value::List decorations_list;
@@ -223,15 +225,22 @@ void AnnotationsTabHelper::ProcessAnnotations(
       // Remove the parcel from annotations_list to prevent decorating the
       // tracking number.
       annotation = annotations_list.erase(annotation);
+      continue;
     } else if (match.resultType == TCTextCheckingTypeMeasurement) {
-      ++detected_measurements;
+      detected_measurements++;
     }
+    annotation++;
   }
 
-  base::UmaHistogramCounts100("IOS.UnitConversion.DetectedMeasurements",
-                              detected_measurements);
+  if (base::FeatureList::IsEnabled(web::features::kEnableMeasurements)) {
+    base::UmaHistogramCounts100("IOS.UnitConversion.DetectedMeasurements",
+                                detected_measurements);
+  }
+
   // Show UI only if this is the currently active WebState.
   if ([unique_parcels count] > 0 && web_state_->IsVisible()) {
+    DCHECK(IsIOSParcelTrackingEnabled() &&
+           !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState()));
     // Call asynchronously to allow the rest of the annotations to be decorated
     // first.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
