@@ -174,6 +174,8 @@ Suggestion GetFillEverythingFromAddressProfileSuggestion(
 // Append new suggestions to `suggestions` based on the `ServerFieldType` list
 // provided. Suggestions are not added if their info is not found in the
 // provided `profile`. Returns true if any suggestion was added.
+// Note that adding a new field-by-field filling `ServerFieldType` should be
+// reflected in `AutofillFieldByFieldFillingTypes`.
 bool AddFieldByFieldSuggestions(const std::vector<ServerFieldType>& field_types,
                                 const AutofillProfile& profile,
                                 const std::string& app_locale,

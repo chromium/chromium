@@ -1692,6 +1692,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FieldByFieldFilling.FieldTypeUsed"
+    enum="AutofillFieldByFieldFillingTypes" expires_after="2024-11-03">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Recorded when a field-by-field filling suggestion is accepted by the user.
+    Specifies the field type used to fill a specific field.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FieldContextMenuImpressions.ByAutocomplete"
     enum="AutofillAutocompleteState" expires_after="2024-03-17">
   <owner>vidhanj@google.com</owner>
@@ -1869,7 +1879,7 @@ chromium-metrics-reviews@google.com.
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    Recorded when the an address suggestion is accepted by the user. The filling
+    Recorded when an address suggestion is accepted by the user. The filling
     method defines whether the user chose to fill the whole form, a specific
     field or a group of fields (address fields, phone fields, name fields or
     email fields).
