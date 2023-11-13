@@ -167,6 +167,21 @@
                     "try_builder": "linux-chromeos-rel"
                 },
                 "shards": "7"
+            },
+            "unit_tests": {
+                "debug": {
+                    "avg_num_builds_per_peak_hour": 104,
+                    "estimated_bot_hour_delta": 2.08,
+                    "prev_avg_pending_time_sec": 126.2,
+                    "prev_p50_pending_time_sec": 1.0,
+                    "prev_p90_pending_time_sec": 344.0,
+                    "prev_percentile_duration_minutes": 16.12,
+                    "prev_shard_count": 2,
+                    "simulated_max_shard_duration": 10.75,
+                    "test_overhead_min": 1.2,
+                    "try_builder": "linux-chromeos-rel"
+                },
+                "shards": 3
             }
         },
         "linux-lacros-tester-rel": {
