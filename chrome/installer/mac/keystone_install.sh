@@ -968,7 +968,7 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   old_brand="$(infoplist_read "${old_ks_plist}" \
                               "${KS_BRAND_KEY}" 2> /dev/null ||
                true)"
-  note "old_brand = ${old_brand}"
+  note "old_brand (from app) = ${old_brand}"
 
   local update_versioned_dir=
   if [[ -z "${is_patch}" ]]; then
@@ -1284,18 +1284,43 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
 
   local set_brand_file_access=
   local brand_plist
+  local cbcm_path
   if [[ -n "${system_ticket}" ]]; then
     # System ticket.
     set_brand_file_access="y"
     brand_plist="/${UNROOTED_BRAND_PLIST}"
+    cbcm_path="/Library/Application Support/Google/CloudManagement"
   else
     # User ticket.
     brand_plist=~/"${UNROOTED_BRAND_PLIST}"
+    cbcm_path=~"/Library/Application Support/Google/Chrome/Cloud Enrollment"
   fi
   local brand_plist_path="${brand_plist}.plist"
   note "set_brand_file_access = ${set_brand_file_access}"
   note "brand_plist = ${brand_plist}"
   note "brand_plist_path = ${brand_plist_path}"
+
+  # If there is no brand plist in the old browser installation, read the brand
+  # from the keystone file.
+  if [[ ! -n "${old_brand}" ]]; then
+    old_brand=$(defaults read "${brand_plist}" "${KS_BRAND_KEY}" || echo -n "")
+    note "old_brand (from brand plist) = ${old_brand}"
+  fi
+
+  # Rewrite the brand code according to CBCM enrollment.
+  local new_brand
+  if [[ "${old_brand}" == "GCEA" && -e "${cbcm_path}" ]]; then
+    new_brand="GCCA"
+  elif [[ "${old_brand}" == "GCCA" && ! -e "${cbcm_path}" ]]; then
+    new_brand="GCEA"
+  elif [[ "${old_brand}" == "GCEM" && -e "${cbcm_path}" ]]; then
+    new_brand="GCCM"
+  elif [[ "${old_brand}" == "GCCM" && ! -e "${cbcm_path}" ]]; then
+    new_brand="GCEM"
+  else
+    new_brand="${old_brand}"
+  fi
+  note "new_brand = ${new_brand}"
 
   local ksadmin_brand_plist_path
   local ksadmin_brand_key
@@ -1311,14 +1336,14 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
     # Side-by-side capable Chrome.
     note "skipping brand code on side-by-side channel ${channel}"
   elif [[ "${channel}" = "beta" ]] || [[ "${channel}" = "dev" ]]; then
-    note "defeating brand code on channel ${channel}"
+    note "deleting brand code on channel ${channel}"
     rm -f "${brand_plist_path}" 2>/dev/null || true
   else
     # Stable channel.
     # If the user manually updated their copy of Chrome, there might be new
     # brand information in the app bundle, and that needs to be copied out
     # into the file Keystone looks at.
-    if [[ -n "${old_brand}" ]]; then
+    if [[ -n "${new_brand}" ]]; then
       local brand_dir
       brand_dir="$(dirname "${brand_plist_path}")"
       note "brand_dir = ${brand_dir}"
@@ -1326,7 +1351,7 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
         err "couldn't mkdir brand_dir, continuing"
       else
         if ! defaults write "${brand_plist}" "${KS_BRAND_KEY}" \
-                            -string "${old_brand}"; then
+                            -string "${new_brand}"; then
           err "couldn't write brand_plist, continuing"
         elif [[ -n "${set_brand_file_access}" ]]; then
           if ! chown "root:wheel" "${brand_plist_path}"; then
