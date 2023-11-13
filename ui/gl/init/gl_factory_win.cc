@@ -56,7 +56,7 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
     case kGLImplementationDisabled:
       return nullptr;
     default:
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       return nullptr;
   }
 }
