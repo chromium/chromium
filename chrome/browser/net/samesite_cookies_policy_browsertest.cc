@@ -7,12 +7,15 @@
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/net/storage_test_utils.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -63,8 +66,9 @@ class SameSiteCookiesPolicyTest : public PolicyTest,
   }
 
   GURL GetURL(const std::string& host, const std::string& path, bool secure) {
-    if (secure)
+    if (secure) {
       return https_server_.GetURL(host, path);
+    }
 
     return http_server_.GetURL(host, path);
   }
@@ -232,6 +236,8 @@ IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
 
 IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
                        AllowCrossSchemeFrameLegacyCookies) {
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetCookieSetting(GetURL("a.test", true), CONTENT_SETTING_ALLOW);
   PolicyMap policies;
   // Set a policy to force legacy access for our cookies.
   base::Value::List policy_value;
