@@ -40,6 +40,11 @@ def parse_arguments(arguments):
         help='The typescript gn build target which builds the source code '
              'files',
         required=True)
+    parser.add_argument(
+        '--custom_def_files',
+        help='Comma separate file list which will be added to "files" section '
+             'in tsconfig as additional type definitions',
+        required=False)
     return parser.parse_args(arguments)
 
 
@@ -74,6 +79,9 @@ def main(args):
         out_json = json.load(f)
 
     out_json_dir = os.path.dirname(out_json_path)
+    definitions = ['.d.ts']
+    if arguments.custom_def_files:
+        definitions.extend(arguments.custom_def_files.split(','))
     local_json = {
         'extends': normalize_path(out_json_dir, out_json['extends']),
         'compilerOptions': {
@@ -93,7 +101,7 @@ def main(args):
         'files': [
             # Add the .d.ts files.
             normalize_path(out_json_dir, path)
-            for path in out_json['files'] if path.endswith('.d.ts')
+            for path in out_json['files'] if path.endswith(tuple(definitions))
         ],
         'include': [
             # Include every source file underneath the generated tsconfig.json.
