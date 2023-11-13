@@ -76,9 +76,6 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
 
   ~AwAutofillClient() override;
 
-  void SetSaveFormData(bool enabled);
-  bool GetSaveFormData() const;
-
   // AutofillClient:
   bool IsOffTheRecord() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
@@ -172,7 +169,6 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
 
   content::WebContents& GetWebContents() const;
 
-  bool save_form_data_ = false;
   JavaObjectWeakGlobalRef java_ref_;
 
   ui::ViewAndroid::ScopedAnchorView anchor_view_;

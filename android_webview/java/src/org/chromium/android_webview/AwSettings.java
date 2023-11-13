@@ -183,7 +183,6 @@ public class AwSettings {
     private int mCacheMode = WebSettings.LOAD_DEFAULT;
     private boolean mShouldFocusFirstNode = true;
     private boolean mGeolocationEnabled = true;
-    private boolean mAutoCompleteEnabled = Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
     private boolean mFullscreenSupported;
     private boolean mSupportZoom = true;
     private boolean mBuiltInZoomControls;
@@ -649,40 +648,6 @@ public class AwSettings {
         synchronized (mAwSettingsLock) {
             return mGeolocationEnabled;
         }
-    }
-
-    /**
-     * See {@link android.webkit.WebSettings#setSaveFormData}.
-     */
-    public void setSaveFormData(final boolean enable) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) return;
-        if (TRACE) Log.i(TAG, "setSaveFormData=" + enable);
-        synchronized (mAwSettingsLock) {
-            if (mAutoCompleteEnabled != enable) {
-                mAutoCompleteEnabled = enable;
-                mEventHandler.runOnUiThreadBlockingAndLocked(() -> {
-                    if (mNativeAwSettings != 0) {
-                        AwSettingsJni.get().updateFormDataPreferencesLocked(
-                                mNativeAwSettings, AwSettings.this);
-                    }
-                });
-            }
-        }
-    }
-
-    /**
-     * See {@link android.webkit.WebSettings#getSaveFormData}.
-     */
-    public boolean getSaveFormData() {
-        synchronized (mAwSettingsLock) {
-            return getSaveFormDataLocked();
-        }
-    }
-
-    @CalledByNative
-    private boolean getSaveFormDataLocked() {
-        assert Thread.holdsLock(mAwSettingsLock);
-        return mAutoCompleteEnabled;
     }
 
     public void setUserAgent(int ua) {
@@ -2150,7 +2115,6 @@ public class AwSettings {
         void updateWebkitPreferencesLocked(long nativeAwSettings, AwSettings caller);
         String getDefaultUserAgent();
         AwUserAgentMetadata getDefaultUserAgentMetadata();
-        void updateFormDataPreferencesLocked(long nativeAwSettings, AwSettings caller);
         void updateRendererPreferencesLocked(long nativeAwSettings, AwSettings caller);
         void updateOffscreenPreRasterLocked(long nativeAwSettings, AwSettings caller);
         void updateWillSuppressErrorStateLocked(long nativeAwSettings, AwSettings caller);

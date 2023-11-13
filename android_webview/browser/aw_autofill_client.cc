@@ -65,14 +65,6 @@ AwAutofillClient::~AwAutofillClient() {
   HideAutofillPopup(autofill::PopupHidingReason::kTabGone);
 }
 
-void AwAutofillClient::SetSaveFormData(bool enabled) {
-  save_form_data_ = enabled;
-}
-
-bool AwAutofillClient::GetSaveFormData() const {
-  return save_form_data_;
-}
-
 bool AwAutofillClient::IsOffTheRecord() {
   return GetWebContents().GetBrowserContext()->IsOffTheRecord();
 }
@@ -282,7 +274,7 @@ void AwAutofillClient::HideAutofillPopup(autofill::PopupHidingReason reason) {
 }
 
 bool AwAutofillClient::IsAutocompleteEnabled() const {
-  return GetSaveFormData();
+  return false;
 }
 
 bool AwAutofillClient::IsPasswordManagerEnabled() {

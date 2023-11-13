@@ -100,9 +100,6 @@ class AwSettings : public content::WebContentsObserver {
   void UpdateWebkitPreferencesLocked(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
-  void UpdateFormDataPreferencesLocked(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
   void UpdateRendererPreferencesLocked(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);

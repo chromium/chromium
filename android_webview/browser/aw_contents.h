@@ -288,7 +288,6 @@ class AwContents : public FindHelper::Listener,
   void SetDipScale(JNIEnv* env, jfloat dip_scale);
   base::android::ScopedJavaLocalRef<jstring> GetScheme(JNIEnv* env);
   void OnInputEvent(JNIEnv* env);
-  void SetSaveFormData(bool enabled);
 
   // Sets the java client
   void SetAwAutofillClient(const base::android::JavaRef<jobject>& client);

@@ -256,8 +256,7 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
   AwAutofillClient* browser_autofill_manager_delegate =
       AwAutofillClient::FromWebContents(web_contents_.get());
   if (browser_autofill_manager_delegate) {
-    InitAutofillIfNecessary(
-        browser_autofill_manager_delegate->GetSaveFormData());
+    InitAutofillIfNecessary(/*autocomplete_enabled=*/false);
   }
   content::SynchronousCompositor::SetClientForWebContents(
       web_contents_.get(), &browser_view_renderer_);
@@ -302,17 +301,6 @@ void AwContents::InitializeAndroidAutofill(JNIEnv* env) {
   // Autocomplete is only supported for Android pre-O, disable it if Android
   // autofill is enabled.
   InitAutofillIfNecessary(/*autocomplete_enabled=*/false);
-}
-
-void AwContents::SetSaveFormData(bool enabled) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  InitAutofillIfNecessary(enabled);
-  // We need to check for the existence, since browser_autofill_manager_delegate
-  // may not be created when the setting is false.
-  if (AwAutofillClient::FromWebContents(web_contents_.get())) {
-    AwAutofillClient::FromWebContents(web_contents_.get())
-        ->SetSaveFormData(enabled);
-  }
 }
 
 void AwContents::InitAutofillIfNecessary(bool autocomplete_enabled) {

@@ -38,7 +38,6 @@ public abstract class AwParameterizedTest {
                   settings.setJavaScriptEnabled(true);
                   settings.setLoadWithOverviewMode(true);
                   settings.setMediaPlaybackRequiresUserGesture(false);
-                  settings.setSaveFormData(false);
                   settings.setShouldFocusFirstNode(false);
                   settings.setSupportMultipleWindows(true);
                   settings.setUseWideViewPort(true);

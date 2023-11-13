@@ -206,7 +206,6 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateWebkitPreferencesLocked(env, obj);
   UpdateUserAgentLocked(env, obj);
   ResetScrollAndScaleState(env, obj);
-  UpdateFormDataPreferencesLocked(env, obj);
   UpdateRendererPreferencesLocked(env, obj);
   UpdateOffscreenPreRasterLocked(env, obj);
   UpdateWillSuppressErrorStateLocked(env, obj);
@@ -322,18 +321,6 @@ void AwSettings::UpdateWillSuppressErrorStateLocked(
 
   bool suppress = Java_AwSettings_getWillSuppressErrorPageLocked(env, obj);
   rvhe->SetWillSuppressErrorPage(suppress);
-}
-
-void AwSettings::UpdateFormDataPreferencesLocked(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!web_contents())
-    return;
-  AwContents* contents = AwContents::FromWebContents(web_contents());
-  if (!contents)
-    return;
-
-  contents->SetSaveFormData(Java_AwSettings_getSaveFormDataLocked(env, obj));
 }
 
 void AwSettings::UpdateRendererPreferencesLocked(

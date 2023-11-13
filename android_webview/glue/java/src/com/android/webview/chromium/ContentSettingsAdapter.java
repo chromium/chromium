@@ -5,7 +5,6 @@
 package com.android.webview.chromium;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebSettings.PluginState;
@@ -210,22 +209,13 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public void setSaveFormData(boolean save) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) return;
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_SAVE_FORM_DATA")) {
-            WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_SAVE_FORM_DATA);
-            mAwSettings.setSaveFormData(save);
-        }
+        // Intentional no-op since Android O.
     }
 
     @Override
     public boolean getSaveFormData() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) return false;
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_SAVE_FORM_DATA")) {
-            WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_SAVE_FORM_DATA);
-            return mAwSettings.getSaveFormData();
-        }
+        // Intentional no-op since Android O.
+        return false;
     }
 
     @Override
@@ -780,8 +770,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setJavaScriptCanOpenWindowsAutomatically(boolean flag) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.ApiCall.WEB_SETTINGS_SET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.ApiCall.WEB_SETTINGS_SET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY);
             mAwSettings.setJavaScriptCanOpenWindowsAutomatically(flag);
@@ -790,8 +781,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized boolean getJavaScriptCanOpenWindowsAutomatically() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.ApiCall.WEB_SETTINGS_GET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.ApiCall.WEB_SETTINGS_GET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_GET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY);
             return mAwSettings.getJavaScriptCanOpenWindowsAutomatically();
