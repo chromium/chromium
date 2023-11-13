@@ -14,7 +14,9 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
 #include "chrome/browser/ui/cocoa/last_active_browser_cocoa.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -34,7 +36,7 @@ class AppControllerMainMenuInteractiveUITest : public InProcessBrowserTest {
   AppControllerMainMenuInteractiveUITest() = default;
 };
 
-// Note: These tests interacts with SharedController which requires the browser's
+// Note: These tests interact with SharedController which requires the browser's
 // focus. In browser_tests other tests that are running in parallel cause
 // flakiness to test test. See: https://crbug.com/1469960
 
@@ -112,6 +114,37 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
   EXPECT_TRUE(new_browser->profile()->IsRegularProfile());
   EXPECT_EQ(profile, new_browser->profile());
+}
+
+// ---------------AppControllerIncognitoSwitchInteractiveUITest----------------
+
+class AppControllerIncognitoSwitchInteractiveUITest
+    : public InProcessBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kIncognito);
+  }
+};
+
+// Regression test for https://crbug.com/1248661
+IN_PROC_BROWSER_TEST_F(AppControllerIncognitoSwitchInteractiveUITest,
+                       ObserveProfileDestruction) {
+  // Chrome is launched in incognito.
+  Profile* otr_profile = browser()->profile();
+  EXPECT_EQ(otr_profile,
+            otr_profile->GetPrimaryOTRProfile(/*create_if_needed=*/false));
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  AppController* app_controller = AppController.sharedController;
+
+  // The last profile is the incognito profile.
+  EXPECT_EQ([app_controller lastProfileIfLoaded], otr_profile);
+  // Destroy the incognito profile.
+  ProfileDestructionWaiter waiter(otr_profile);
+  CloseBrowserSynchronously(browser());
+  waiter.Wait();
+  // Check that |-lastProfileIfLoaded| is not pointing to released memory.
+  EXPECT_NE([app_controller lastProfileIfLoaded], otr_profile);
 }
 
 }  // namespace

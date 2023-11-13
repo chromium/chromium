@@ -1179,39 +1179,6 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   EXPECT_EQ(profile, new_browser->profile()->GetOriginalProfile());
 }
 
-class AppControllerIncognitoSwitchTest : public InProcessBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kIncognito);
-  }
-};
-
-// Regression test for https://crbug.com/1248661
-IN_PROC_BROWSER_TEST_F(AppControllerIncognitoSwitchTest,
-                       ObserveProfileDestruction) {
-  // Chrome is launched in incognito.
-  Profile* otr_profile = browser()->profile();
-  EXPECT_EQ(otr_profile,
-            otr_profile->GetPrimaryOTRProfile(/*create_if_needed=*/false));
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  AppController* app_controller = AppController.sharedController;
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:NSWindowDidBecomeMainNotification
-                    object:browser()
-                               ->window()
-                               ->GetNativeWindow()
-                               .GetNativeNSWindow()];
-  // The last profile is the incognito profile.
-  EXPECT_EQ([app_controller lastProfileIfLoaded], otr_profile);
-  // Destroy the incognito profile.
-  ProfileDestructionWaiter waiter(otr_profile);
-  CloseBrowserSynchronously(browser());
-  waiter.Wait();
-  // Check that |-lastProfileIfLoaded| is not pointing to released memory.
-  EXPECT_NE([app_controller lastProfileIfLoaded], otr_profile);
-}
-
 }  // namespace
 
 //--------------------------AppControllerHandoffBrowserTest---------------------
