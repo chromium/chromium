@@ -171,6 +171,12 @@ void MetricsRenderFrameObserver::DidObserveSoftNavigation(
     soft_nav_metrics.start_time = CreateTimeDeltaFromTimestampsInSeconds(
         soft_nav_metrics.start_time.InSecondsF(), metrics.NavigationStart());
 
+    // TODO(crbug.com/1489583): Avoid a crash here, while further investigating
+    // its causes.
+    if (soft_nav_metrics.start_time.is_zero()) {
+      return;
+    }
+
     page_timing_metrics_sender_->DidObserveSoftNavigation(soft_nav_metrics);
   }
 }
