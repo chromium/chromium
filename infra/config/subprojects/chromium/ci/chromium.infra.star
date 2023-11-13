@@ -98,8 +98,8 @@ packager_builder(
     name = "3pp-windows-amd64-packager",
     description_html = "3PP Packager for Windows",
     executable = "recipe:chromium_3pp",
-    # TODO(crbug.com/1267449): Trigger builds routinely once works fine.
-    schedule = "triggered",
+    # Every 6 hours starting at 5am UTC.
+    schedule = "0 5/6 * * * *",
     triggered_by = [],
     builderless = True,
     cores = None,
