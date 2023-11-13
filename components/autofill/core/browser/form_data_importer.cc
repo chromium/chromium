@@ -849,10 +849,13 @@ absl::optional<CreditCard> FormDataImporter::ExtractCreditCard(
     if (maybe_updated_card.UpdateFromImportedCard(candidate, app_locale_)) {
       personal_data_manager_->UpdateCreditCard(maybe_updated_card);
       credit_card_import_type_ = CreditCardImportType::kLocalCard;
-      if (!maybe_updated_card.nickname().empty()) {
-        // The nickname may be shown in the upload save bubble.
-        candidate.SetNickname(maybe_updated_card.nickname());
-      }
+      // Update `candidate` to reflect all the details of the updated card.
+      // `UpdateFromImportedCard` has updated all values except for the
+      // extracted CVC, as we will not update that until later after prompting
+      // the user to store their CVC.
+      std::u16string extracted_cvc = candidate.cvc();
+      candidate = maybe_updated_card;
+      candidate.set_cvc(extracted_cvc);
     }
   }
 

@@ -58,8 +58,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
@@ -2124,9 +2122,11 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_ShouldReturnLocalCard) {
                                           nullptr);
   absl::optional<CreditCard> extracted_credit_card2 =
       ExtractCreditCard(form_structure2);
-  EXPECT_TRUE(extracted_credit_card2);
   // The local card is returned after an update.
   EXPECT_TRUE(extracted_credit_card2);
+  // Verify the local card from PDM is equal to `extracted_credit_card2`.
+  EXPECT_EQ(extracted_credit_card2.value(),
+            *personal_data_manager_->GetLocalCreditCards()[0]);
 
   // Expect that the newer information is saved.  In this case the year is
   // updated to "2999".
@@ -2137,6 +2137,53 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_ShouldReturnLocalCard) {
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results2.size());
   EXPECT_THAT(*results2[0], ComparesEqual(expected2));
+}
+
+TEST_F(FormDataImporterTest,
+       ExtractCreditCard_ShouldReturnLocalCard_WithExtractedCvc) {
+  // Start with a single valid credit card form.
+  FormData form1 = CreateFullCreditCardForm(
+      "Biggie Smalls", "4111-1111-1111-1111", "01", "2998");
+
+  FormStructure form_structure1(form1);
+  form_structure1.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                          nullptr);
+  absl::optional<CreditCard> extracted_credit_card =
+      ExtractCreditCard(form_structure1);
+  EXPECT_TRUE(extracted_credit_card);
+  personal_data_manager_->OnAcceptedLocalCreditCardSave(*extracted_credit_card);
+
+  CreditCard expected(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                      test::kEmptyOrigin);
+  test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
+                          "2998", "");  // Imported cards have no billing info.
+  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+              UnorderedElementsCompareEqual(expected));
+
+  // Create a form with CVC field present and filled.
+  FormData form2 = CreateFullCreditCardForm(
+      "Biggie Smalls", "4111 1111 1111 1111", "01", "2998");
+  form2.fields.push_back(
+      CreateTestFormField("CVC:", "cvc", "123", FormControlType::kInputText));
+
+  FormStructure form_structure2(form2);
+  form_structure2.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                          nullptr);
+  absl::optional<CreditCard> extracted_credit_card2 =
+      ExtractCreditCard(form_structure2);
+
+  // The local card is returned after an update.
+  EXPECT_TRUE(extracted_credit_card2);
+  // Verify the local card from PDM is equal to the
+  // `extracted_credit_card2` for card_number and expiration date but not for
+  // the CVC.
+  const CreditCard local_saved_credit_card =
+      *personal_data_manager_->GetLocalCreditCards()[0];
+  EXPECT_TRUE(extracted_credit_card2->HasSameNumberAs(local_saved_credit_card));
+  EXPECT_TRUE(
+      extracted_credit_card2->HasSameExpirationDateAs(local_saved_credit_card));
+  EXPECT_NE(extracted_credit_card2->cvc(), local_saved_credit_card.cvc());
+  EXPECT_EQ(extracted_credit_card2->cvc(), u"123");
 }
 
 TEST_F(FormDataImporterTest, ExtractCreditCard_EmptyCardWithConflict) {
