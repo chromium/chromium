@@ -2868,7 +2868,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return !GetProfile()->IsOffTheRecord();
 
     default:
-      NOTREACHED() << "Unhandled id: " << id;
+      DUMP_WILL_BE_NOTREACHED_NORETURN() << "Unhandled id: " << id;
       return false;
   }
 }
