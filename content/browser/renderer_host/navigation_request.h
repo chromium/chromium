@@ -755,10 +755,14 @@ class CONTENT_EXPORT NavigationRequest
 
   // Returns true for navigation responses to be rendered in a renderer process.
   // This excludes:
-  //  - 204/205 navigation responses.
-  //  - downloads.
+  //  - 204/205 navigation responses
+  //  - Most downloads
+  //  (Note: downloads with unsuccessful response codes will render an error
+  //  page, causing this to return true.)
   //
-  // Must not be called before having received the response.
+  // Must not be called before having received the response. After
+  // OnResponseStarted(), this is expected to be equivalent to
+  // HasRenderFrameHost().
   bool response_should_be_rendered() const {
     DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
     return response_should_be_rendered_;

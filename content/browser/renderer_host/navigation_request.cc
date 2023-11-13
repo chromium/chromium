@@ -1085,6 +1085,14 @@ GetRenderFrameHostForBackForwardCacheRestore(FrameTreeNode* frame_tree_node,
   return restored_rfh->GetSafeRef();
 }
 
+// Returns true in cases where an attempted download will end up replacing the
+// current document anyway, due to showing an error page.
+bool IsFailedDownload(bool is_download,
+                      const net::HttpResponseHeaders* headers) {
+  return is_download && headers &&
+         !network::IsSuccessfulStatus(headers->response_code());
+}
+
 }  // namespace
 
 NavigationRequest::PrerenderActivationNavigationState::
@@ -4077,8 +4085,11 @@ void NavigationRequest::OnResponseStarted(
   CheckForIsolationOptIn(GetURL());
 
   // Check if the response should be sent to a renderer.
+  // Regular downloads should not be rendered, but downloads with an
+  // unsuccessful response code will cause an error page to be rendered.
   response_should_be_rendered_ =
-      !is_download &&
+      (!is_download ||
+       IsFailedDownload(is_download, response_head_->headers.get())) &&
       (!response_head_->headers.get() ||
        (response_head_->headers->response_code() != net::HTTP_NO_CONTENT &&
         response_head_->headers->response_code() != net::HTTP_RESET_CONTENT &&
@@ -4460,8 +4471,7 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
   // know how to display the content.  We follow Firefox here and show our
   // own error page instead of intercepting the request as a stream or a
   // download.
-  if (is_download && (response_head_->headers.get() &&
-                      (response_head_->headers->response_code() / 100 != 2))) {
+  if (IsFailedDownload(is_download, response_head_->headers.get())) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_INVALID_RESPONSE),
         false /* skip_throttles */, absl::nullopt /* error_page_content */,
@@ -7557,14 +7567,17 @@ NavigationRequest::GetOriginForURLLoaderFactoryAfterResponseWithDebugInfo() {
   DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
 
   // Downloads and/or 204 responses don't commit anything - there is no frame to
-  // commit in (and therefor there is no origin that will get committed and we
+  // commit in (and therefore there is no origin that will get committed and we
   // indicate this by returning `nullopt`).
-  if (!GetRenderFrameHost())
+  if (!response_should_be_rendered_) {
     return std::make_pair(absl::nullopt, "no_commit");
+  }
 
-  if (IsSameDocument() || IsPageActivation())
+  if (IsSameDocument() || IsPageActivation()) {
+    CHECK(HasRenderFrameHost());
     return std::make_pair(GetRenderFrameHost()->GetLastCommittedOrigin(),
                           "same_doc_or_page_activation");
+  }
 
   std::pair<url::Origin, std::string> origin_with_debug_info =
       GetOriginForURLLoaderFactoryBeforeResponseWithDebugInfo(
@@ -7614,26 +7627,30 @@ NavigationRequest::GetOriginForURLLoaderFactoryAfterResponseWithDebugInfo() {
   // to make network request on behalf of the real origin.
   DCHECK(!IsMhtmlOrSubframe() || origin_with_debug_info.first.opaque());
 
-  // Note that GetRenderFrameHost() only allows to retrieve the RenderFrameHost
-  // once it has been set for this navigation.  This will happens either at
+  // If the target of this navigation will be rendered in a RenderFrameHost,
+  // then verify that the chosen origin is allowed to be accessed from that
+  // process.
+  //
+  // Note that GetRenderFrameHost() only allows retrieving the RenderFrameHost
+  // once it has been set for this navigation. This happens either at
   // WillProcessResponse time for regular navigations or at WillFailRequest time
   // for error pages.
-  // Check that |origin| is allowed to be accessed from the process that is the
-  // target of this navigation.
-  if (GetRenderFrameHost()->ShouldBypassSecurityChecksForErrorPage(this))
-    return origin_with_debug_info;
+  //
+  // There are some exceptions where this check must be skipped:
+  // * Some error pages may commit in an error process that allows many origins.
+  // * MHTML iframes can load documents from any origin, no matter the current
+  //   policy of the process being used. This is because the content is loaded
+  //   from the MHTML archive within the process. There are no data loaded from
+  //   the network.
+  if (HasRenderFrameHost() &&
+      !GetRenderFrameHost()->ShouldBypassSecurityChecksForErrorPage(this) &&
+      !IsForMhtmlSubframe()) {
+    int process_id = GetRenderFrameHost()->GetProcess()->GetID();
+    auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+    CHECK(policy->CanAccessDataForOrigin(process_id,
+                                         origin_with_debug_info.first));
+  }
 
-  // MHTML iframes can load documents from any origin, no matter the current
-  // policy of the process being used. This is because the content is loaded
-  // from the MHTML archive within the process. There are no data loaded from
-  // the network.
-  if (IsForMhtmlSubframe())
-    return origin_with_debug_info;
-
-  int process_id = GetRenderFrameHost()->GetProcess()->GetID();
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  CHECK(
-      policy->CanAccessDataForOrigin(process_id, origin_with_debug_info.first));
   return origin_with_debug_info;
 }
 
