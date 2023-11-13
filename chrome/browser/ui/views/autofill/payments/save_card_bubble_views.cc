@@ -73,9 +73,9 @@ void SaveCardBubbleViews::Hide() {
 }
 
 void SaveCardBubbleViews::OnDialogAccepted() {
-  // TODO(https://crbug.com/1046793): Maybe delete this.
-  if (controller_)
+  if (controller_) {
     controller_->OnSaveButton({});
+  }
 }
 
 void SaveCardBubbleViews::AddedToWidget() {

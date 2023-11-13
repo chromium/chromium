@@ -89,15 +89,15 @@ void LocalCardMigrationBubbleViews::Hide() {
 }
 
 void LocalCardMigrationBubbleViews::OnDialogAccepted() {
-  // TODO(https://crbug.com/1046793): Maybe delete this.
-  if (controller_)
+  if (controller_) {
     controller_->OnConfirmButtonClicked();
+  }
 }
 
 void LocalCardMigrationBubbleViews::OnDialogCancelled() {
-  // TODO(https://crbug.com/1046793): Maybe delete this.
-  if (controller_)
+  if (controller_) {
     controller_->OnCancelButtonClicked();
+  }
 }
 
 void LocalCardMigrationBubbleViews::AddedToWidget() {
