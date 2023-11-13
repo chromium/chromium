@@ -2169,6 +2169,7 @@ void AppListItemView::UpdateProgressIndicatorState() {
                          : ProgressIndicator::kProgressComplete;
             },
             base::Unretained(this)));
+    progress_indicator_->SetHasRoundCap(true);
     progress_indicator_->SetInnerIconVisible(false);
     progress_indicator_->SetInnerRingVisible(false);
     progress_indicator_->SetOuterRingStrokeWidth(2.0);

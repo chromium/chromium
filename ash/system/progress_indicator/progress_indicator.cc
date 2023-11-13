@@ -391,6 +391,20 @@ void ProgressIndicator::SetColorId(
   InvalidateLayer();
 }
 
+void ProgressIndicator::SetHasRoundCap(bool has_round_cap) {
+  if (has_round_cap_ == has_round_cap) {
+    return;
+  }
+
+  has_round_cap_ = has_round_cap;
+
+  // It's not necessary to invalidate the `layer()` if progress is complete
+  // since the inner icon is only painted while progress is incomplete.
+  if (progress_ != kProgressComplete) {
+    InvalidateLayer();
+  }
+}
+
 void ProgressIndicator::SetInnerIconVisible(bool visible) {
   if (inner_icon_visible_ == visible)
     return;
@@ -508,7 +522,8 @@ void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setStrokeCap(cc::PaintFlags::Cap::kDefault_Cap);
+  flags.setStrokeCap(has_round_cap_ ? cc::PaintFlags::Cap::kRound_Cap
+                                    : cc::PaintFlags::Cap::kDefault_Cap);
   flags.setStrokeWidth(outer_ring_stroke_width);
   flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
 
