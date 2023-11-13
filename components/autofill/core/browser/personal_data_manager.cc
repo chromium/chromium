@@ -1281,6 +1281,16 @@ Iban* PersonalDataManager::GetIbanByGUID(const std::string& guid) {
   return iter != ibans.end() ? *iter : nullptr;
 }
 
+const Iban* PersonalDataManager::GetIbanByInstrumentId(
+    int64_t instrument_id) const {
+  for (const Iban* iban : GetServerIbans()) {
+    if (iban->instrument_id() == instrument_id) {
+      return iban;
+    }
+  }
+  return nullptr;
+}
+
 CreditCard* PersonalDataManager::GetCreditCardByGUID(const std::string& guid) {
   const std::vector<CreditCard*>& credit_cards = GetCreditCards();
   auto iter = FindElementByGUID(credit_cards, guid);

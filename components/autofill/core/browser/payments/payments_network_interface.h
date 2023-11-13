@@ -486,7 +486,7 @@ class PaymentsNetworkInterface {
   // Triggers a request to the Payments server to unmask an IBAN. `callback` is
   // the callback function that is triggered when a response is received from
   // the server and the full IBAN value is returned via callback.
-  void UnmaskIban(
+  virtual void UnmaskIban(
       const UnmaskIbanRequestDetails& request_details,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                               const std::u16string&)> callback);

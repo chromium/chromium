@@ -23,8 +23,9 @@ class PersonalDataManager;
 struct SuggestionsContext;
 
 // Per-profile IBAN Manager. This class handles IBAN-related functionality
-// such as retrieving IBAN data, managing IBAN suggestions, filling IBAN fields,
-// and handling form submission data when there is an IBAN field present.
+// such as retrieving IBAN data from PersonalDataManager, managing IBAN
+// suggestions, filling IBAN fields, and handling form submission data when
+// there is an IBAN field present.
 class IbanManager : public SingleFieldFormFiller,
                     public KeyedService,
                     public AutofillSubject {

@@ -26,6 +26,13 @@ class MockTestPaymentsNetworkInterface : public payments::TestPaymentsNetworkInt
                                         const std::u16string&,
                                         std::unique_ptr<base::Value::Dict>)>)),
               (override));
+  MOCK_METHOD(
+      void,
+      UnmaskIban,
+      (const payments::PaymentsNetworkInterface::UnmaskIbanRequestDetails&,
+       (base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                                const std::u16string&)>)),
+      (override));
 };
 
 }  // namespace autofill

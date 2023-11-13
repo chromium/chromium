@@ -379,6 +379,10 @@ class PersonalDataManager : public KeyedService,
   // with the specified |guid|.
   virtual Iban* GetIbanByGUID(const std::string& guid);
 
+  // Returns the IBAN if any cached IBAN in `server_ibans_` has the same
+  // `instrument_id` as the given `instrument_id`, otherwise returns nullptr.
+  const Iban* GetIbanByInstrumentId(int64_t instrument_id) const;
+
   // Returns the credit card with the specified |guid|, or nullptr if there is
   // no credit card with the specified |guid|.
   virtual CreditCard* GetCreditCardByGUID(const std::string& guid);
