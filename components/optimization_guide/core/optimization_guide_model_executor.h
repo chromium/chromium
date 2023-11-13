@@ -70,7 +70,7 @@ class OptimizationGuideModelExecutor {
   };
 
   // Starts a session which allows streaming input and output from the model.
-  // May return nullptr if sessions are not supported.
+  // May return nullptr if model execution is not supported.
   virtual std::unique_ptr<Session> StartSession(
       proto::ModelExecutionFeature feature) = 0;
 

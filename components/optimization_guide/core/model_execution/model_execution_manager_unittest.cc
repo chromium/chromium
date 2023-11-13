@@ -133,6 +133,34 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
   run_loop.RunUntilIdle();
 }
 
+TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
+  base::test::TestMessage test_message;
+  test_message.set_test("some test");
+  base::RunLoop run_loop;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+  auto session = model_execution_manager()->StartSession(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  session->ExecuteModel(
+      test_message,
+      base::BindRepeating(
+          [](base::RunLoop* run_loop,
+             OptimizationGuideModelStreamingExecutionResult result,
+             std::unique_ptr<ModelQualityLogEntry> log_entry) {
+            EXPECT_TRUE(result.has_value());
+            EXPECT_EQ("foo response",
+                      ParsedAnyMetadata<TestMessage>(result->response)->test());
+            EXPECT_TRUE(result->is_complete);
+            EXPECT_EQ(log_entry.get(), nullptr);
+            run_loop->Quit();
+          },
+          &run_loop));
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+  SimulateSuccessfulResponse();
+  run_loop.RunUntilIdle();
+}
+
 }  // namespace
 
 }  // namespace optimization_guide

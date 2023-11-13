@@ -63,6 +63,47 @@ GURL GetModelExecutionServiceURL() {
   return GURL(kOptimizationGuideServiceModelExecutionDefaultURL);
 }
 
+// Session which passes through all ExecuteModel() calls to the underlying
+// ModelExecutionManager.
+class PassthroughSession : public OptimizationGuideModelExecutor::Session {
+ public:
+  PassthroughSession(proto::ModelExecutionFeature feature,
+                     ModelExecutionManager& execution_manager)
+      : feature_(feature), execution_manager_(execution_manager) {}
+
+  // OptimizationGuideModelExecutor::Session:
+  void SetDisconnectHandler(base::OnceClosure on_disconnect) override {}
+  void AddContext(
+      const google::protobuf::MessageLite& request_metadata) override {}
+  void ExecuteModel(const google::protobuf::MessageLite& request_metadata,
+                    OptimizationGuideModelExecutionResultStreamingCallback
+                        callback) override {
+    execution_manager_->ExecuteModel(
+        feature_, request_metadata,
+        base::BindOnce(
+            [](OptimizationGuideModelExecutionResultStreamingCallback callback,
+               OptimizationGuideModelExecutionResult result,
+               std::unique_ptr<ModelQualityLogEntry> log_entry) {
+              if (result.has_value()) {
+                callback.Run(
+                    StreamingResponse{
+                        .response = *result,
+                        .is_complete = true,
+                    },
+                    std::move(log_entry));
+              } else {
+                callback.Run(base::unexpected(result.error()),
+                             std::move(log_entry));
+              }
+            },
+            callback));
+  }
+
+ private:
+  proto::ModelExecutionFeature feature_;
+  raw_ref<ModelExecutionManager> execution_manager_;
+};
+
 }  // namespace
 
 using ModelExecutionError =
@@ -168,7 +209,14 @@ void ModelExecutionManager::ExecuteModel(
 
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
 ModelExecutionManager::StartSession(proto::ModelExecutionFeature feature) {
-  return on_device_model_service_controller_->StartSession(feature);
+  if (on_device_model_service_controller_) {
+    auto session = on_device_model_service_controller_->StartSession(feature);
+    if (session) {
+      return session;
+    }
+  }
+
+  return std::make_unique<PassthroughSession>(feature, *this);
 }
 
 void ModelExecutionManager::OnModelExecuteResponse(
