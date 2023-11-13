@@ -582,6 +582,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
        scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
            encoder_metrics_provider_factory,
        webrtc::VideoCodecType video_codec_type,
+       absl::optional<webrtc::ScalabilityMode> scalability_mode,
        webrtc::VideoContentType video_content_type,
        UpdateEncoderInfoCallback update_encoder_info_callback,
        base::RepeatingClosure execute_software_fallback,
@@ -742,6 +743,9 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // The video codec type, as reported to WebRTC.
   const webrtc::VideoCodecType video_codec_type_;
 
+  // The scalability mode, as reported to WebRTC.
+  const absl::optional<webrtc::ScalabilityMode> scalability_mode_;
+
   // The content type, as reported to WebRTC (screenshare vs realtime video).
   const webrtc::VideoContentType video_content_type_;
 
@@ -791,6 +795,7 @@ RTCVideoEncoder::Impl::Impl(
     scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
         encoder_metrics_provider_factory,
     webrtc::VideoCodecType video_codec_type,
+    absl::optional<webrtc::ScalabilityMode> scalability_mode,
     webrtc::VideoContentType video_content_type,
     UpdateEncoderInfoCallback update_encoder_info_callback,
     base::RepeatingClosure execute_software_fallback,
@@ -799,6 +804,7 @@ RTCVideoEncoder::Impl::Impl(
       encoder_metrics_provider_factory_(
           std::move(encoder_metrics_provider_factory)),
       video_codec_type_(video_codec_type),
+      scalability_mode_(scalability_mode),
       video_content_type_(video_content_type),
       update_encoder_info_callback_(std::move(update_encoder_info_callback)),
       execute_software_fallback_(std::move(execute_software_fallback)) {
@@ -1176,6 +1182,9 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
 
   webrtc::CodecSpecificInfo info;
   info.codecType = video_codec_type_;
+  if (scalability_mode_.has_value()) {
+    info.scalability_mode = scalability_mode_;
+  }
   switch (video_codec_type_) {
     case webrtc::kVideoCodecH264: {
       webrtc::CodecSpecificInfoH264& h264 = info.codecSpecific.H264;
@@ -1873,7 +1882,8 @@ int32_t RTCVideoEncoder::InitEncode(
 
   impl_ = std::make_unique<Impl>(
       gpu_factories_, encoder_metrics_provider_factory_,
-      ProfileToWebRtcVideoCodecType(profile_), webrtc_content_type,
+      ProfileToWebRtcVideoCodecType(profile_),
+      codec_settings->GetScalabilityMode(), webrtc_content_type,
       update_encoder_info_callback, execute_software_fallback, weak_impl_);
 
   media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_I420;
