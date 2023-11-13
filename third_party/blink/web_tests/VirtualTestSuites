@@ -1567,8 +1567,8 @@
     "owners": ["masonf@chromium.org", "dom-dev@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "external/wpt/html/semantics/popovers/popover-anchor-idl-property.html",
-      "external/wpt/html/semantics/popovers/popover-anchor-nesting.html",
+      "external/wpt/html/semantics/popovers/popover-anchor-idl-property.tentative.html",
+      "external/wpt/html/semantics/popovers/popover-anchor-nesting.tentative.html",
       "external/wpt/html/semantics/popovers/popover-attribute-all-elements.html",
       "external/wpt/html/semantics/popovers/popover-attribute-basic.html",
       "external/wpt/html/semantics/popovers/popover-beforetoggle-opening-event.html",
