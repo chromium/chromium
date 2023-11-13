@@ -39,9 +39,14 @@ TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
                                                     gfx::Insets()),
       this);
 
+  if (features::IsTabOrganization()) {
+    tab_organization_service_ = TabOrganizationServiceFactory::GetForProfile(
+        tab_strip_controller->GetProfile());
+  }
+
   std::unique_ptr<TabSearchButton> tab_search_button =
       std::make_unique<TabSearchButton>(
-          tab_strip_controller, features::IsTabOrganization()
+          tab_strip_controller, tab_organization_service_
                                     ? GetFlatEdge(true, before_tab_strip)
                                     : Edge::kNone);
   tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
@@ -49,11 +54,6 @@ TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
 
   if (before_tab_strip) {
     tab_search_button_ = AddChildView(std::move(tab_search_button));
-  }
-
-  if (features::IsTabOrganization()) {
-    tab_organization_service_ = TabOrganizationServiceFactory::GetForProfile(
-        tab_strip_controller->GetProfile());
   }
 
   if (tab_organization_service_) {
@@ -67,7 +67,7 @@ TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
             // mode.
             base::BindRepeating(&TabSearchContainer::ExecuteHideTabOrganization,
                                 base::Unretained(this)),
-            features::IsTabOrganization() ? GetFlatEdge(false, before_tab_strip)
+            tab_organization_service_ ? GetFlatEdge(false, before_tab_strip)
                                           : Edge::kNone));
     tab_organization_button_->SetProperty(views::kCrossAxisAlignmentKey,
                                           views::LayoutAlignment::kCenter);
@@ -89,7 +89,7 @@ TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
 }
 
 TabSearchContainer::~TabSearchContainer() {
-  if (features::IsTabOrganization()) {
+  if (tab_organization_service_) {
     tab_organization_service_->RemoveObserver(this);
   }
 }
