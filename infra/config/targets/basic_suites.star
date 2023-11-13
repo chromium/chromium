@@ -614,6 +614,14 @@ targets.legacy_basic_suite(
                 enable = True,
             ),
         ),
+        "chromedriver_py_tests_headless_shell": targets.legacy_test_config(
+            args = [
+                "--test-type=integration",
+            ],
+            resultdb = targets.resultdb(
+                enable = True,
+            ),
+        ),
         "chromedriver_replay_unittests": None,
     },
 )

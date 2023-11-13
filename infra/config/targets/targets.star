@@ -556,7 +556,20 @@ targets.script(
         "../../testing/scripts/run_chromedriver_tests.py",
         "../../chrome/test/chromedriver/test/run_py_tests.py",
         "--chromedriver=chromedriver",
-        "--log-path=${ISOLATED_OUTDIR}/chromedriver.log",
+        "--log-path=${ISOLATED_OUTDIR}/chrome.chromedriver.log",
+        "--browser-name=chrome",
+    ],
+)
+
+targets.script(
+    name = "chromedriver_py_tests_headless_shell",
+    label = "//chrome/test/chromedriver:chromedriver_py_tests_headless_shell",
+    script = "//testing/scripts/run_chromedriver_tests.py",
+    args = [
+        "../../chrome/test/chromedriver/test/run_py_tests.py",
+        "--chromedriver=chromedriver",
+        "--log-path=${ISOLATED_OUTDIR}/chrome-headless-shell.chromedriver.log",
+        "--browser-name=chrome-headless-shell",
     ],
 )
 

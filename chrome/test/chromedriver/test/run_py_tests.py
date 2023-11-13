@@ -159,6 +159,14 @@ _OS_SPECIFIC_FILTER['mac'] = [
 
 _BROWSER_SPECIFIC_FILTER = {}
 _BROWSER_SPECIFIC_FILTER['chrome'] = [
+    'ChromeDownloadDirTest.testFileDownloadAfterTabHeadless',
+    'ChromeDownloadDirTest.testFileDownloadWithClickHeadless',
+    'ChromeDownloadDirTest.testFileDownloadWithGetHeadless',
+    'ChromeDriverTest.testHeadlessWithExistingUserDataDirStarts',
+    'ChromeDriverTest.testHeadlessWithUserDataDirStarts',
+    'HeadlessChromeDriverTest.*',
+    'HeadlessInvalidCertificateTest.*',
+    'RemoteBrowserTest.testConnectToRemoteBrowserLiteralAddressHeadless',
 ]
 _BROWSER_SPECIFIC_FILTER['chrome-headless-shell'] = [
     # TODO: Each test in this list must have an explanation why it is expected
@@ -185,6 +193,32 @@ _BROWSER_SPECIFIC_FILTER['chrome-headless-shell'] = [
     'ChromeDriverTest.testShouldHandleNewWindowLoadingProperly',
     'ChromeDriverTest.testSetRPHResgistrationMode',
     'ChromeDownloadDirTest.testDownloadDirectoryOverridesExistingPreferences',
+]
+
+_BROWSER_AND_PLATFORM_SPECIFIC_FILTER = {
+    'chrome': {},
+    'chrome-headless-shell': {},
+}
+_BROWSER_AND_PLATFORM_SPECIFIC_FILTER['chrome-headless-shell']['mac'] = [
+    # Unable to run chrome-headless-shell with logging enabled on Mac. See
+    # crbug.com/1011000.
+    'ChromeLogPathCapabilityTest.testChromeLogPath',
+    # TODO: Each test in this list must have an explanation why it is expected
+    # to fail. If the test is not expected to fail a corresponding issue must
+    # be created and referred to in the comment above the excluded test.
+    # See crbug.com/chromedriver/4358.
+    'ChromeDriverTest.testWindowMinimize',
+    'ChromeDriverTest.testWindowPosition',
+    'ChromeDriverTest.testWindowRect',
+    'ChromeDriverTest.testWindowSize',
+    'ChromeDriverW3cTest.testSendKeysToElementDoesNotAppend',
+    'CustomBidiMapperTest.testInvalidCustomBidiMapperPath',
+    'CustomBidiMapperTest.testValidCustomBidiMapperPath',
+]
+_BROWSER_AND_PLATFORM_SPECIFIC_FILTER['chrome-headless-shell']['win'] = [
+    # Temporarily disabled on Windows due to the massive tab crashes.
+    # See crbug.com/chromedriver/4358.
+    '*',
 ]
 
 _DESKTOP_NEGATIVE_FILTER = [
@@ -227,6 +261,9 @@ def _GetDesktopNegativeFilter(browser_name = 'chrome'):
     filter += _OS_SPECIFIC_FILTER[os]
   if browser_name in _BROWSER_SPECIFIC_FILTER:
     filter += _BROWSER_SPECIFIC_FILTER[browser_name]
+  if (browser_name in _BROWSER_AND_PLATFORM_SPECIFIC_FILTER and
+      os in _BROWSER_AND_PLATFORM_SPECIFIC_FILTER[browser_name]):
+    filter += _BROWSER_AND_PLATFORM_SPECIFIC_FILTER[browser_name][os]
   return filter
 
 _ANDROID_NEGATIVE_FILTER = {}

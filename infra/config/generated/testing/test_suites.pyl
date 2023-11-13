@@ -501,6 +501,14 @@
           'enable': True,
         },
       },
+      'chromedriver_py_tests_headless_shell': {
+        'args': [
+          '--test-type=integration',
+        ],
+        'resultdb': {
+          'enable': True,
+        },
+      },
       'chromedriver_replay_unittests': {},
     },
 

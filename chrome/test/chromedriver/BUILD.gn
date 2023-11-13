@@ -450,9 +450,7 @@ if (is_linux) {
 if (is_mac) {
   buildflag_header("buildflags") {
     header = "buildflags.h"
-    flags = [
-      "CHROMEDRIVER_DISCLAIM_RESPONSIBILITY=$chromedriver_disclaim_responsibility",
-    ]
+    flags = [ "CHROMEDRIVER_DISCLAIM_RESPONSIBILITY=$chromedriver_disclaim_responsibility" ]
   }
 }
 
@@ -482,6 +480,24 @@ python_library("chromedriver_py_tests") {
     # On Windows, the following target produces the final chrome.exe
     data_deps += [ "//chrome:reorder_imports" ]
   }
+}
+
+python_library("chromedriver_py_tests_headless_shell") {
+  testonly = true
+  deps = [ ":chromedriver_server" ]
+
+  pydeps_file = "test/run_py_tests.pydeps"
+  data = [
+    "//chrome/test/data/chromedriver/",
+    "//chrome/test/chromedriver/js/",
+    "//testing/scripts/run_chromedriver_tests.py",
+  ]
+
+  data_deps = [
+    "//chrome/test/chromedriver:chromedriver_server",
+    "//headless:headless_shell",
+    "//testing:test_scripts_shared",
+  ]
 }
 
 python_library("chromedriver_replay_unittests") {
