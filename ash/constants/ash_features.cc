@@ -2170,11 +2170,6 @@ BASE_FEATURE(kPrinterSettingsPrinterStatus,
              "PrinterSettingsPrinterStatus",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables to allocate more video capture buffers.
-BASE_FEATURE(kMoreVideoCaptureBuffers,
-             "MoreVideoCaptureBuffers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables showing notification and status area indicators when an app is
 // using camera/microphone.
 BASE_FEATURE(kPrivacyIndicators,

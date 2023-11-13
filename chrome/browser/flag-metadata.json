@@ -5379,11 +5379,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "more-video-capture-buffers",
-    "owners": [ "chromeos-camera-eng@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "mouse-and-trackpad-dropdown-menu",
     "owners": [ "wbjacksonjr@chromium.org" ],
     "expiry_milestone": 124

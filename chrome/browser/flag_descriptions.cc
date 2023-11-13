@@ -5835,12 +5835,6 @@ const char kPreferConstantFrameRateDescription[] =
     "Enables this flag to prefer using constant frame rate for camera when "
     "streaming";
 
-const char kMoreVideoCaptureBuffersName[] = "More Video Capture Buffers";
-const char kMoreVideoCaptureBuffersDescription[] =
-    "This flag enables using a larger amount Chrome-allocated buffers for "
-    "video capture. This larger amount is needed for deeper pipelines, e.g. "
-    "sophisticated camera effects.";
-
 const char kForceControlFaceAeName[] = "Force control face AE";
 const char kForceControlFaceAeDescription[] =
     "Control this flag to force enable or disable face AE for camera";
