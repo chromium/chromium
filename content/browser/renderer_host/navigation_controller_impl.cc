@@ -74,6 +74,7 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
 #include "content/browser/renderer_host/navigator.h"
+#include "content/browser/renderer_host/page_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/system_entropy_utils.h"
@@ -4789,7 +4790,10 @@ bool NavigationControllerImpl::ShouldMaintainTrivialSessionHistory(
   // TODO(https://crbug.com/1197384): We may have to add portals in addition to
   // prerender and fenced frames. This should be kept in sync with
   // LocalFrame version, LocalFrame::ShouldMaintainTrivialSessionHistory.
+  // The preview mode appears as prerendered page in renderers, and
+  // GetDocument()->IsPrerendering() covers the case together.
   return frame_tree_->is_prerendering() ||
+         frame_tree_->page_delegate()->IsInPreviewMode() ||
          frame_tree_node->IsInFencedFrameTree();
 }
 

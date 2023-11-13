@@ -16,6 +16,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mojo_capability_control_test_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -134,6 +135,34 @@ IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, PromoteToNewTab) {
   EXPECT_EQ(2, tab_strip_model->count());
   EXPECT_EQ(false,
             content::EvalJs(preview_web_contents, "document.prerendering"));
+}
+
+IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, TrivialSessionHistory) {
+  const std::string title1_path = "/title1.html";
+  const GURL title1_url = embedded_test_server()->GetURL(title1_path);
+  const GURL title2_url = embedded_test_server()->GetURL("/title2.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), title1_url));
+
+  helper().InitiatePreview(title2_url);
+  helper().WaitUntilLoadFinished();
+
+  base::WeakPtr<content::WebContents> preview_web_contents =
+      helper().GetWebContentsForPreviewTab();
+  ASSERT_TRUE(preview_web_contents);
+
+  EXPECT_EQ(title2_url, preview_web_contents->GetLastCommittedURL());
+  EXPECT_EQ(1, preview_web_contents->GetController().GetEntryCount());
+  EXPECT_EQ(
+      1, EvalJs(preview_web_contents->GetPrimaryMainFrame(), "history.length"));
+
+  ASSERT_EQ(title1_path, EvalJs(preview_web_contents->GetPrimaryMainFrame(),
+                                "location = '/title1.html';"));
+  helper().WaitUntilLoadFinished();
+
+  EXPECT_EQ(title1_url, preview_web_contents->GetLastCommittedURL());
+  EXPECT_EQ(1, preview_web_contents->GetController().GetEntryCount());
+  EXPECT_EQ(
+      1, EvalJs(preview_web_contents->GetPrimaryMainFrame(), "history.length"));
 }
 
 class MojoCapabilityControlTestContentBrowserClient
