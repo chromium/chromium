@@ -258,7 +258,7 @@ int SandboxedVfs::GetLastError(int message_size, char* message) const {
   size_t error_string_size = error_string.length() + 1;
   size_t copy_length =
       std::min(static_cast<size_t>(message_size), error_string_size);
-  std::memcpy(message, error_string.c_str(), copy_length);
+  std::copy_n(error_string.c_str(), copy_length, message);
   // The return value is zero if the message fits in the buffer, and non-zero if
   // it does not fit.
   return copy_length != error_string_size;
