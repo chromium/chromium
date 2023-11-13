@@ -591,6 +591,15 @@
       chrome_status_feature: 5133113939722240,
     },
     {
+      name: "UnloadHandler",
+      message: "Unload event listeners are deprecated and will be removed.",
+      translation_note: "A deprecation warning shown in the DevTools Issues tab. It's shown when a listener for the `unload` event is added.",
+      web_features: [
+        "kDocumentUnloadRegistered",
+      ],
+      chrome_status_feature: 5579556305502208,
+    },
+    {
       name: "V8SharedArrayBufferConstructedInExtensionWithoutIsolation",
       message: "Extensions should opt into cross-origin isolation to continue using `SharedArrayBuffer`. See https://developer.chrome.com/docs/extensions/mv3/cross-origin-isolation/.",
       translation_note: "A deprecation warning shown in the DevTools Issues tab. The placeholder is always the noun 'SharedArrayBuffer' which refers to a JavaScript construct. 'Extensions' refers to Chrome extensions. The warning is shown when Chrome Extensions attempt to use 'SharedArrayBuffer's under insecure circumstances.",

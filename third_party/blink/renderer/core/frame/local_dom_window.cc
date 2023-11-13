@@ -1984,7 +1984,7 @@ void LocalDOMWindow::AddedEventListener(
   }
 
   if (event_type == event_type_names::kUnload) {
-    UseCounter::Count(this, WebFeature::kDocumentUnloadRegistered);
+    CountDeprecation(WebFeature::kDocumentUnloadRegistered);
   } else if (event_type == event_type_names::kBeforeunload) {
     UseCounter::Count(this, WebFeature::kDocumentBeforeUnloadRegistered);
     if (GetFrame() && !GetFrame()->IsMainFrame())
