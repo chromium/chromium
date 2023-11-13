@@ -21,6 +21,8 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -284,23 +286,40 @@ absl::optional<gfx::RectF> ComputeCaptureRect(
       captured_ink_overflow_subrect_in_snapshot_root_space);
 }
 
-int ComputeMaxCaptureSize(absl::optional<int> max_texture_size,
+int ComputeMaxCaptureSize(Document& document,
+                          absl::optional<int> max_texture_size,
                           const gfx::Size& snapshot_root_size) {
+  // If the max texture size is not known yet, use the size of the snapshot
+  // root.
+  if (!max_texture_size) {
+    return std::max(snapshot_root_size.width(), snapshot_root_size.height());
+  }
+
+  // The snapshot root corresponds to the maximum screen bounds so we should be
+  // able to allocate a buffer of that size. However, Chrome Android's scaling
+  // behavior of the position-fixed viewport means the snapshot root may
+  // actually be larger than the screen bounds, though it gets scaled down by
+  // the page-scale-factor in the compositor. Since this maximum is applied to
+  // layout-generated bounds, project it into layout-space by using the minimum
+  // possible scale (which is how the position-fixed viewport size is
+  // computed).
+  const float min_page_scale_factor = document.GetPage()
+                                          ->GetPageScaleConstraintsSet()
+                                          .FinalConstraints()
+                                          .minimum_scale;
+  const int max_texture_size_in_layout =
+      static_cast<int>(std::ceil(*max_texture_size / min_page_scale_factor));
+
+  CHECK_LE(snapshot_root_size.width(), max_texture_size_in_layout);
+  CHECK_LE(snapshot_root_size.height(), max_texture_size_in_layout);
+
   // While we can render up to the max texture size, that would significantly
   // add to the memory overhead. So limit to up to a viewport worth of
   // additional content.
   const int max_bounds_based_on_viewport =
       2 * std::max(snapshot_root_size.width(), snapshot_root_size.height());
 
-  // If the max texture size is not known yet, clip to the size of the snapshot
-  // root. The snapshot root corresponds to the maximum screen bounds, we must
-  // be able to allocate a buffer of that size.
-  const int computed_max_texture_size = max_texture_size.value_or(
-      std::max(snapshot_root_size.width(), snapshot_root_size.height()));
-  DCHECK_LE(snapshot_root_size.width(), computed_max_texture_size);
-  DCHECK_LE(snapshot_root_size.height(), computed_max_texture_size);
-
-  return std::min(max_bounds_based_on_viewport, computed_max_texture_size);
+  return std::min(max_bounds_based_on_viewport, max_texture_size_in_layout);
 }
 
 gfx::Transform ComputeViewportTransform(const LayoutObject& object) {
@@ -1048,6 +1067,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
   }
 
   const int max_capture_size = ComputeMaxCaptureSize(
+      *document_,
       document_->GetPage()->GetChromeClient().GetMaxRenderBufferBounds(
           *document_->GetFrame()),
       *snapshot_root_size_at_capture_);
@@ -1482,15 +1502,28 @@ gfx::Outsets GetFixedToSnapshotViewportOutsets(Document& document) {
 }  // namespace
 
 gfx::Rect ViewTransitionStyleTracker::GetSnapshotRootInFixedViewport() const {
+  DCHECK(document_->View());
   DCHECK(document_->GetLayoutView());
 
   LayoutView& layout_view = *document_->GetLayoutView();
+  LocalFrameView& frame_view = *document_->View();
 
   // Start with the position: fixed viewport and expand it by any
   // insetting UI such as the mobile URL bar, virtual-keyboard, scrollbars,
   // etc.
-  gfx::Rect snapshot_viewport_rect(layout_view.ClientWidth().ToInt(),
-                                   layout_view.ClientHeight().ToInt());
+  // TODO(bokan): Differing behavior based on ViewportEnabled is a bit of a
+  // kludge but is required since with ViewportEnabled the frame size may
+  // actually be larger than than the LayoutView (the ICB) so we must use it.
+  // However, LayoutView::ClientWidth/Height is the only way I know to get the
+  // correct content size when the frame is inset by a scrollbar-gutter.
+  // Luckily these two cases are mutually exclusive: ViewportEnabled is only
+  // used with overlay scrollbars which have no gutter, however, it'd be better
+  // if we could query a single property directly from layout information.
+  gfx::Rect snapshot_viewport_rect =
+      document_->GetSettings()->GetViewportEnabled()
+          ? gfx::Rect(frame_view.Size().width(), frame_view.Size().height())
+          : gfx::Rect(layout_view.ClientWidth().ToInt(),
+                      layout_view.ClientHeight().ToInt());
   snapshot_viewport_rect.Outset(GetFixedToSnapshotViewportOutsets(*document_));
 
   return snapshot_viewport_rect;

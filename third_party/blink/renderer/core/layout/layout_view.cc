@@ -537,10 +537,10 @@ PhysicalRect LayoutView::ViewRect() const {
       // one pixel) than the frame on mobile viewport. Investigate why. Consider
       // adding `<meta name="viewport" content="width=device-width">` to the
       // HTML if this occurs.
-      DCHECK_GE(transition->GetSnapshotRootSize().width(),
-                frame_view_->Size().width());
-      DCHECK_GE(transition->GetSnapshotRootSize().height(),
-                frame_view_->Size().height());
+      CHECK_GE(transition->GetSnapshotRootSize().width(),
+               frame_view_->Size().width());
+      CHECK_GE(transition->GetSnapshotRootSize().height(),
+               frame_view_->Size().height());
 
       return PhysicalRect(
           PhysicalOffset(transition->GetFrameToSnapshotRootOffset()),
