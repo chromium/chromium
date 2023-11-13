@@ -850,6 +850,8 @@ bool AutomationTreeManagerOwner::GetChildIDAtIndex(const AXTreeID& tree_id,
   AXNode* child_node = nullptr;
   if (!child_roots.empty() && static_cast<size_t>(index) < child_roots.size()) {
     child_node = child_roots[index];
+  } else if (node->IsIgnored()) {
+    return false;
   } else if (static_cast<size_t>(index) >= node->GetUnignoredChildCount()) {
     return false;
   } else {
