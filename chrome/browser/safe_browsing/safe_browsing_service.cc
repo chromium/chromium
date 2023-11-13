@@ -89,6 +89,10 @@
 #include "chrome/browser/safe_browsing/incident_reporting/binary_integrity_analyzer.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#endif
+
 using content::BrowserThread;
 
 namespace safe_browsing {
@@ -424,6 +428,26 @@ void SafeBrowsingService::OnProfileAdded(Profile* profile) {
   // should always be more than the count of enhanced protection.
   UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.Pref.Enhanced",
                         pref_service->GetBoolean(prefs::kSafeBrowsingEnhanced));
+
+  // Record the current pref state for enhanced protection for regular profiles
+  // only.
+  bool should_record_metrics = profile->IsRegularProfile();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeOS creates various irregular profiles (login, lock screen...); they
+  // are of type kRegular (returns true for `Profile::IsRegular()`), that aren't
+  // used to browse the web and users can't configure. Don't collect metrics
+  // about them.
+  should_record_metrics =
+      should_record_metrics && ash::IsUserBrowserContext(profile);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (should_record_metrics) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "SafeBrowsing.Pref.Enhanced.RegularProfile",
+        pref_service->GetBoolean(prefs::kSafeBrowsingEnhanced));
+  }
+
   // Extended Reporting metrics are handled together elsewhere.
   RecordExtendedReportingMetrics(*pref_service);
 

@@ -415,7 +415,10 @@ static_library("safe_browsing") {
         ]
       }
       if (is_chromeos_ash) {
-        deps += [ "//ash/constants:constants" ]
+        deps += [
+          "//ash/constants:constants",
+          "//chromeos/ash/components/browser_context_helper:browser_context_helper",
+        ]
       }
       if (is_chromeos_lacros) {
         deps += [ "//chromeos/lacros:lacros" ]

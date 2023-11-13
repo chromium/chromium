@@ -1949,6 +1949,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.Pref.Enhanced.RegularProfile"
+    enum="BooleanEnabled" expires_after="2024-11-08">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Whether the Safe Browsing enhanced protection service is currently enabled.
+    Recorded for non-Incognito user profiles on profile startup.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.Pref.Extended" enum="BooleanEnabled"
     expires_after="2024-04-28">
   <owner>vakh@chromium.org</owner>
