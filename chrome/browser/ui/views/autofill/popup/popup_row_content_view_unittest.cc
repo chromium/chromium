@@ -2,24 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 
 #include <memory>
 #include <utility>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
-#include "chrome/browser/ui/views/autofill/popup/test_popup_row_strategy.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/autofill/core/common/aliases.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/style/typography.h"
@@ -29,7 +22,7 @@
 
 namespace autofill {
 
-class PopupCellViewTest : public ChromeViewsTestBase {
+class PopupRowContentViewTest : public ChromeViewsTestBase {
  public:
   // views::ViewsTestBase:
   void SetUp() override {
@@ -39,7 +32,7 @@ class PopupCellViewTest : public ChromeViewsTestBase {
         GetRootWindow(widget_.get()));
   }
 
-  void ShowView(std::unique_ptr<PopupCellView> cell_view) {
+  void ShowView(std::unique_ptr<PopupRowContentView> cell_view) {
     view_ = widget_->SetContentsView(std::move(cell_view));
     widget_->Show();
   }
@@ -61,38 +54,36 @@ class PopupCellViewTest : public ChromeViewsTestBase {
         views::PaintInfo::CreateRootPaintInfo(canvas_painter.context(), size));
   }
 
-  std::unique_ptr<PopupCellView> CreatePopupCellView() {
-    return views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
-        .Build();
+  std::unique_ptr<PopupRowContentView> CreatePopupCellView() {
+    return std::make_unique<PopupRowContentView>();
   }
 
  protected:
   ui::test::EventGenerator& generator() { return *generator_; }
-  PopupCellView& view() { return *view_; }
+  PopupRowContentView& view() { return *view_; }
   views::Widget& widget() { return *widget_; }
 
  private:
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
-  raw_ptr<PopupCellView> view_ = nullptr;
+  raw_ptr<PopupRowContentView> view_ = nullptr;
 };
 
-TEST_F(PopupCellViewTest, RefreshStyleUpdatesBackground) {
-  ShowView(CreatePopupCellView());
+TEST_F(PopupRowContentViewTest, SetSelectedUpdatesBackground) {
+  ShowView(std::make_unique<PopupRowContentView>());
 
-  // The unselected background.
   views::Background* background = view().GetBackground();
   ASSERT_FALSE(background);
 
-  view().RefreshStyle(/*selected=*/true);
+  view().UpdateStyle(true);
   background = view().GetBackground();
   ASSERT_TRUE(background);
   EXPECT_EQ(background->get_color(), view().GetColorProvider()->GetColor(
                                          ui::kColorDropdownBackgroundSelected));
 }
 
-TEST_F(PopupCellViewTest, RefreshStyleUpdatesTrackedLabels) {
-  std::unique_ptr<PopupCellView> cell = CreatePopupCellView();
+TEST_F(PopupRowContentViewTest, SetSelectedUpdatesTrackedLabels) {
+  auto cell = std::make_unique<PopupRowContentView>();
   views::Label* tracked_label =
       cell->AddChildView(std::make_unique<views::Label>(
           u"Label text 1", views::style::CONTEXT_DIALOG_BODY_TEXT,
@@ -118,7 +109,7 @@ TEST_F(PopupCellViewTest, RefreshStyleUpdatesTrackedLabels) {
       get_expected_color(*untracked_label, untracked_label->GetTextStyle()));
 
   // On select updates only the tracked label's style.
-  view().RefreshStyle(/*selected=*/true);
+  view().UpdateStyle(/*selected=*/true);
   EXPECT_NE(
       tracked_label->GetEnabledColor(),
       get_expected_color(*tracked_label, untracked_label->GetTextStyle()));

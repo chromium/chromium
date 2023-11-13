@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -44,9 +44,6 @@ namespace {
 
 // The default icon size used in the suggestion drop down.
 constexpr int kIconSize = 16;
-
-// Max width for the username and masked password.
-constexpr int kAutofillPopupUsernameMaxWidth = 272;
 
 // Max width for address profile suggestion text.
 constexpr int kAutofillPopupAddressProfileMaxWidth = 192;
@@ -349,7 +346,7 @@ void AddSuggestionContentTableToView(
     std::unique_ptr<views::Label> minor_text_label,
     std::unique_ptr<views::Label> description_label,
     std::vector<std::unique_ptr<views::View>> subtext_views,
-    PopupCellView& content_view) {
+    PopupRowContentView& content_view) {
   const int kDividerSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
   auto content_table =
@@ -421,7 +418,7 @@ void AddSuggestionContentToView(
     std::unique_ptr<views::Label> minor_text_label,
     std::unique_ptr<views::Label> description_label,
     std::vector<std::unique_ptr<views::View>> subtext_views,
-    PopupCellView& content_view) {
+    PopupRowContentView& content_view) {
   views::BoxLayout& layout =
       *content_view.SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
@@ -468,7 +465,7 @@ void AddSuggestionContentToView(
   }
 
   // Force a refresh to ensure all the labels'styles are correct.
-  content_view.RefreshStyle(/*selected=*/false);
+  content_view.UpdateStyle(/*selected=*/false);
 }
 
 void FormatLabel(views::Label& label,
@@ -508,28 +505,8 @@ std::unique_ptr<views::Label> CreateMinorTextLabel(
                    views::style::STYLE_SECONDARY);
 }
 
-std::unique_ptr<views::Label> CreateDescriptionLabel(
-    PopupCellView& content_view,
-    base::WeakPtr<AutofillPopupController> controller,
-    int line_number) {
-  const Suggestion& kSuggestion = controller->GetSuggestionAt(line_number);
-  if (kSuggestion.labels.empty()) {
-    return nullptr;
-  }
-
-  DCHECK_EQ(kSuggestion.labels.size(), 1u);
-  DCHECK_EQ(kSuggestion.labels[0].size(), 1u);
-
-  auto label = std::make_unique<views::Label>(
-      kSuggestion.labels[0][0].value, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_SECONDARY);
-  label->SetElideBehavior(gfx::ELIDE_HEAD);
-  label->SetMaximumWidthSingleLine(kAutofillPopupUsernameMaxWidth);
-  return label;
-}
-
 std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
-    PopupCellView& content_view,
+    PopupRowContentView& content_view,
     base::WeakPtr<AutofillPopupController> controller,
     int line_number,
     int text_style) {
@@ -569,7 +546,7 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
 }
 
 void AddSuggestionStrategyContentCellChildren(
-    PopupCellView* view,
+    PopupRowContentView* view,
     base::WeakPtr<AutofillPopupController> controller,
     int line_number) {
   DCHECK(controller);

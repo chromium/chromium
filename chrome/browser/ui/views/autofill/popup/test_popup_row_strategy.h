@@ -7,11 +7,10 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
 
 namespace autofill {
-
-class PopupCellView;
 
 // A `PopupRowStrategy` used solely in tests.
 class TestPopupRowStrategy : public PopupRowStrategy {
@@ -19,7 +18,7 @@ class TestPopupRowStrategy : public PopupRowStrategy {
   explicit TestPopupRowStrategy(int line_number);
   ~TestPopupRowStrategy() override;
 
-  std::unique_ptr<PopupCellView> CreateContent() override;
+  std::unique_ptr<PopupRowContentView> CreateContent() override;
 
   int GetLineNumber() const override;
 

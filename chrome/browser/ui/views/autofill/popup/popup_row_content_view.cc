@@ -2,44 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
-
+#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include <memory>
-#include <utility>
-
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "components/autofill/core/common/aliases.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_id.h"
-#include "ui/events/event.h"
-#include "ui/events/event_utils.h"
-#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/style/typography.h"
-#include "ui/views/style/typography_provider.h"
-#include "ui/views/view.h"
+
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
-PopupCellView::PopupCellView() {
+PopupRowContentView::PopupRowContentView() {
   SetNotifyEnterExitOnChild(true);
-  RefreshStyle(/*selected=*/false);
+  UpdateStyle(false);
 }
 
-PopupCellView::~PopupCellView() = default;
+PopupRowContentView::~PopupRowContentView() = default;
 
-void PopupCellView::TrackLabel(views::Label* label) {
+void PopupRowContentView::TrackLabel(views::Label* label) {
   tracked_labels_.push_back(label);
 }
 
-void PopupCellView::RefreshStyle(bool selected) {
+void PopupRowContentView::UpdateStyle(bool selected) {
   if (selected) {
     if (ShouldApplyNewAutofillPopupStyle()) {
       SetBackground(views::CreateThemedRoundedRectBackground(
@@ -72,7 +60,7 @@ void PopupCellView::RefreshStyle(bool selected) {
   SchedulePaint();
 }
 
-BEGIN_METADATA(PopupCellView, views::View)
+BEGIN_METADATA(PopupRowContentView, views::View)
 END_METADATA
 
 }  // namespace autofill

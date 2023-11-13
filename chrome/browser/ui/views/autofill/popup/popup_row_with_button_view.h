@@ -10,7 +10,7 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view_observer.h"
@@ -55,7 +55,7 @@ class PopupRowWithButtonView : public PopupRowView, public ButtonDelegate {
       SelectionDelegate& selection_delegate,
       base::WeakPtr<AutofillPopupController> controller,
       int line_number,
-      std::unique_ptr<PopupCellView> content_view,
+      std::unique_ptr<PopupRowContentView> content_view,
       std::unique_ptr<views::ImageButton> button,
       ButtonBehavior button_behavior);
 

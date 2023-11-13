@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "components/autofill/core/common/aliases.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -19,11 +18,9 @@ TestPopupRowStrategy::TestPopupRowStrategy(int line_number)
 
 TestPopupRowStrategy::~TestPopupRowStrategy() = default;
 
-std::unique_ptr<PopupCellView> TestPopupRowStrategy::CreateContent() {
-  std::unique_ptr<PopupCellView> cell =
-      views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
-          .SetUseDefaultFillLayout(true)
-          .Build();
+std::unique_ptr<PopupRowContentView> TestPopupRowStrategy::CreateContent() {
+  auto cell = std::make_unique<PopupRowContentView>();
+  cell->SetUseDefaultFillLayout(true);
   cell->AddChildView(std::make_unique<views::Label>(u"Test content"));
   return cell;
 }

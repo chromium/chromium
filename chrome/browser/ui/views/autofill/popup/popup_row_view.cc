@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
@@ -253,7 +253,7 @@ PopupRowView::PopupRowView(
     SelectionDelegate& selection_delegate,
     base::WeakPtr<AutofillPopupController> controller,
     int line_number,
-    std::unique_ptr<PopupCellView> content_view)
+    std::unique_ptr<PopupRowContentView> content_view)
     : a11y_selection_delegate_(a11y_selection_delegate),
       selection_delegate_(selection_delegate),
       controller_(controller),
@@ -405,7 +405,7 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> new_cell) {
 
   // If the previous cell was content, set it as unselected.
   if (selected_cell_ == CellType::kContent) {
-    content_view_->RefreshStyle(/*selected=*/false);
+    content_view_->UpdateStyle(/*selected=*/false);
     content_view_->GetViewAccessibility().OverrideIsSelected(false);
     if (controller_) {
       controller_->SelectSuggestion(absl::nullopt);
@@ -416,7 +416,7 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> new_cell) {
     if (controller_) {
       controller_->SelectSuggestion(line_number_);
     }
-    content_view_->RefreshStyle(/*selected=*/true);
+    content_view_->UpdateStyle(/*selected=*/true);
     content_view_->GetViewAccessibility().OverrideIsSelected(true);
     GetA11ySelectionDelegate().NotifyAXSelection(*content_view_);
     NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);

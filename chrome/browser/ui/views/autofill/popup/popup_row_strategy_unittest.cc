@@ -10,11 +10,12 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
@@ -173,13 +174,13 @@ class PopupSuggestionStrategyTest : public ChromeViewsTestBase {
  protected:
   MockAutofillPopupController& controller() { return controller_; }
   ui::test::EventGenerator& generator() { return *generator_; }
-  PopupCellView& view() { return *view_; }
+  PopupRowContentView& view() { return *view_; }
   views::Widget& widget() { return *widget_; }
 
  private:
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
-  raw_ptr<PopupCellView> view_ = nullptr;
+  raw_ptr<PopupRowContentView> view_ = nullptr;
   MockAutofillPopupController controller_;
   std::unique_ptr<PopupSuggestionStrategy> strategy_;
   // All current Autocomplete tests assume that the deletion button feature is

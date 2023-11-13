@@ -14,7 +14,7 @@
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/test_popup_row_strategy.h"
@@ -51,17 +51,6 @@ using CellType = PopupRowView::CellType;
 using CellIndex = PopupRowView::SelectionDelegate::CellIndex;
 
 constexpr gfx::Point kOutOfBounds{1000, 1000};
-
-class MockingTestPopupRowStrategy : public TestPopupRowStrategy {
- public:
-  explicit MockingTestPopupRowStrategy(int line_number)
-      : TestPopupRowStrategy(line_number) {}
-  ~MockingTestPopupRowStrategy() override = default;
-
-  std::unique_ptr<PopupCellView> CreateContent() override {
-    return std::make_unique<PopupCellView>();
-  }
-};
 
 }  // namespace
 

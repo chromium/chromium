@@ -32,7 +32,7 @@ class ScopedNewBadgeTracker;
 namespace autofill {
 
 class AutofillPopupController;
-class PopupCellView;
+class PopupRowContentView;
 class PopupRowStrategy;
 class PopupViewViews;
 
@@ -104,7 +104,7 @@ class PopupRowView : public views::View, public views::ViewObserver {
                SelectionDelegate& selection_delegate,
                base::WeakPtr<AutofillPopupController> controller,
                int line_number,
-               std::unique_ptr<PopupCellView> content_view);
+               std::unique_ptr<PopupRowContentView> content_view);
   PopupRowView(const PopupRowView&) = delete;
   PopupRowView& operator=(const PopupRowView&) = delete;
   ~PopupRowView() override;
@@ -147,7 +147,7 @@ class PopupRowView : public views::View, public views::ViewObserver {
       const content::NativeWebKeyboardEvent& event);
 
   // Returns the view representing the content area of the row.
-  PopupCellView& GetContentView() { return *content_view_; }
+  PopupRowContentView& GetContentView() { return *content_view_; }
 
   // Returns the view representing the suggestions expanding control of the row.
   views::View* GetExpandChildSuggestionsView() {
@@ -211,7 +211,7 @@ class PopupRowView : public views::View, public views::ViewObserver {
   absl::optional<CellType> selected_cell_;
 
   // The cell wrapping the content area of the row.
-  raw_ptr<PopupCellView> content_view_ = nullptr;
+  raw_ptr<PopupRowContentView> content_view_ = nullptr;
   // The cell wrapping the control area of the row.
   // TODO(crbug.com/1411172): Add keyboard event handling.
   raw_ptr<ExpandChildSuggestionsView> expand_child_suggestions_view_ = nullptr;

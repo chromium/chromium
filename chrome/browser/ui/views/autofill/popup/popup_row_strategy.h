@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 
@@ -33,9 +33,9 @@ class PopupRowStrategy {
   PopupRowStrategy& operator=(const PopupRowStrategy&) = delete;
   virtual ~PopupRowStrategy() = default;
 
-  // Creates the `PopupCellView` that contains the content area of the popup
-  // row.
-  virtual std::unique_ptr<PopupCellView> CreateContent() = 0;
+  // Creates the `PopupRowContentView` that contains the content area
+  // of the popup row.
+  virtual std::unique_ptr<PopupRowContentView> CreateContent() = 0;
 
  private:
   // Returns the line number of the popup row that this strategy is for.
@@ -78,12 +78,12 @@ class PopupSuggestionStrategy : public PopupRowBaseStrategy {
   ~PopupSuggestionStrategy() override;
 
   // PopupRowStrategy:
-  std::unique_ptr<PopupCellView> CreateContent() override;
+  std::unique_ptr<PopupRowContentView> CreateContent() override;
 
  private:
   // Adds content and labels for a suggestion. A helper method used by all
   // suggestion types.
-  void AddContentLabelsAndCallbacks(PopupCellView& view);
+  void AddContentLabelsAndCallbacks(PopupRowContentView& view);
 };
 
 // A `PopupRowStrategy` that creates the content of a Compose row.
@@ -96,7 +96,7 @@ class PopupComposeSuggestionStrategy : public PopupRowBaseStrategy {
   ~PopupComposeSuggestionStrategy() override;
 
   // PopupRowStrategy:
-  std::unique_ptr<PopupCellView> CreateContent() override;
+  std::unique_ptr<PopupRowContentView> CreateContent() override;
 
  private:
   // Indicates whether to show the "NEW" IPH badge.
@@ -116,7 +116,7 @@ class PopupPasswordSuggestionStrategy : public PopupRowBaseStrategy {
   ~PopupPasswordSuggestionStrategy() override;
 
   // PopupRowStrategy:
-  std::unique_ptr<PopupCellView> CreateContent() override;
+  std::unique_ptr<PopupRowContentView> CreateContent() override;
 
  private:
   // Creates the description label for this suggestion.
@@ -126,7 +126,7 @@ class PopupPasswordSuggestionStrategy : public PopupRowBaseStrategy {
   // labels inside them for tracking with `content_view`, it assumes that the
   // returned views are added to `content_view` afterwards.
   std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
-      PopupCellView& content_view) const;
+      PopupRowContentView& content_view) const;
 };
 
 // A `PopupRowStrategy` that creates the content for Autofill popup footers.
@@ -139,7 +139,7 @@ class PopupFooterStrategy : public PopupRowBaseStrategy {
   ~PopupFooterStrategy() override;
 
   // PopupRowStrategy:
-  std::unique_ptr<PopupCellView> CreateContent() override;
+  std::unique_ptr<PopupRowContentView> CreateContent() override;
 };
 
 }  // namespace autofill

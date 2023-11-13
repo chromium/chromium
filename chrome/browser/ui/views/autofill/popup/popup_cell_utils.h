@@ -21,7 +21,7 @@ class ImageView;
 
 namespace autofill {
 class AutofillPopupController;
-class PopupCellView;
+class PopupRowContentView;
 }  // namespace autofill
 
 namespace gfx {
@@ -92,7 +92,7 @@ void AddSuggestionContentTableToView(
     std::unique_ptr<views::Label> minor_text_label,
     std::unique_ptr<views::Label> description_label,
     std::vector<std::unique_ptr<views::View>> subtext_views,
-    PopupCellView& content_view);
+    PopupRowContentView& content_view);
 
 // Creates the content structure shared by autocomplete, address, credit card,
 // and password suggestions.
@@ -106,7 +106,7 @@ void AddSuggestionContentToView(
     std::unique_ptr<views::Label> minor_text_label,
     std::unique_ptr<views::Label> description_label,
     std::vector<std::unique_ptr<views::View>> subtext_views,
-    PopupCellView& content_view);
+    PopupRowContentView& content_view);
 
 void FormatLabel(views::Label& label,
                  const Suggestion::Text& text,
@@ -122,18 +122,13 @@ std::unique_ptr<views::Label> CreateMinorTextLabel(
     const Suggestion::Text& minor_text);
 
 std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
-    PopupCellView& content_view,
+    PopupRowContentView& content_view,
     base::WeakPtr<AutofillPopupController> controller,
     int line_number,
     int text_style = views::style::STYLE_SECONDARY);
 
-std::unique_ptr<views::Label> CreateDescriptionLabel(
-    PopupCellView& content_view,
-    base::WeakPtr<AutofillPopupController> controller,
-    int line_number);
-
 void AddSuggestionStrategyContentCellChildren(
-    PopupCellView* view,
+    PopupRowContentView* view,
     base::WeakPtr<AutofillPopupController> controller,
     int line_number);
 

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -78,18 +79,18 @@ PopupSuggestionStrategy::PopupSuggestionStrategy(
 
 PopupSuggestionStrategy::~PopupSuggestionStrategy() = default;
 
-std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateContent() {
+std::unique_ptr<PopupRowContentView> PopupSuggestionStrategy::CreateContent() {
   if (!GetController()) {
     return nullptr;
   }
 
-  auto view = std::make_unique<PopupCellView>();
+  auto view = std::make_unique<PopupRowContentView>();
   AddContentLabelsAndCallbacks(*view);
   return view;
 }
 
 void PopupSuggestionStrategy::AddContentLabelsAndCallbacks(
-    PopupCellView& view) {
+    PopupRowContentView& view) {
   // Add the actual views.
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
@@ -119,17 +120,15 @@ PopupComposeSuggestionStrategy::PopupComposeSuggestionStrategy(
 
 PopupComposeSuggestionStrategy::~PopupComposeSuggestionStrategy() = default;
 
-std::unique_ptr<PopupCellView> PopupComposeSuggestionStrategy::CreateContent() {
+std::unique_ptr<PopupRowContentView>
+PopupComposeSuggestionStrategy::CreateContent() {
   if (!GetController()) {
     return nullptr;
   }
 
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
-  std::unique_ptr<PopupCellView> view =
-      views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
-          .Build();
-
+  auto view = std::make_unique<PopupRowContentView>();
   auto main_text_label = std::make_unique<user_education::NewBadgeLabel>(
       kSuggestion.main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_BODY_3_MEDIUM);
@@ -154,7 +153,7 @@ PopupPasswordSuggestionStrategy::PopupPasswordSuggestionStrategy(
 
 PopupPasswordSuggestionStrategy::~PopupPasswordSuggestionStrategy() = default;
 
-std::unique_ptr<PopupCellView>
+std::unique_ptr<PopupRowContentView>
 PopupPasswordSuggestionStrategy::CreateContent() {
   if (!GetController()) {
     return nullptr;
@@ -162,9 +161,7 @@ PopupPasswordSuggestionStrategy::CreateContent() {
 
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
-  std::unique_ptr<PopupCellView> view =
-      views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
-          .Build();
+  auto view = std::make_unique<PopupRowContentView>();
 
   // Add the actual views.
   std::unique_ptr<views::Label> main_text_label =
@@ -201,7 +198,7 @@ PopupPasswordSuggestionStrategy::CreateDescriptionLabel() const {
 
 std::vector<std::unique_ptr<views::View>>
 PopupPasswordSuggestionStrategy::CreateAndTrackSubtextViews(
-    PopupCellView& content_view) const {
+    PopupRowContentView& content_view) const {
   std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
       GetController()->GetSuggestionAt(GetLineNumber()).additional_label,
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
@@ -222,17 +219,14 @@ PopupFooterStrategy::PopupFooterStrategy(
 
 PopupFooterStrategy::~PopupFooterStrategy() = default;
 
-std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
+std::unique_ptr<PopupRowContentView> PopupFooterStrategy::CreateContent() {
   if (!GetController()) {
     return nullptr;
   }
 
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
-  std::unique_ptr<PopupCellView> view =
-      views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
-          .Build();
-
+  auto view = std::make_unique<PopupRowContentView>();
   views::BoxLayout* layout_manager =
       view->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
@@ -289,7 +283,7 @@ std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
   }
 
   // Force a refresh to ensure all the labels'styles are correct.
-  view->RefreshStyle(/*selected=*/false);
+  view->UpdateStyle(/*selected=*/false);
 
   return view;
 }

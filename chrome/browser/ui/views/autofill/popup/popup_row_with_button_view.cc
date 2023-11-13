@@ -151,7 +151,7 @@ PopupRowWithButtonView::PopupRowWithButtonView(
     SelectionDelegate& selection_delegate,
     base::WeakPtr<AutofillPopupController> controller,
     int line_number,
-    std::unique_ptr<PopupCellView> content_view,
+    std::unique_ptr<PopupRowContentView> content_view,
     std::unique_ptr<views::ImageButton> button,
     ButtonBehavior button_behavior)
     : PopupRowView(a11y_selection_delegate,

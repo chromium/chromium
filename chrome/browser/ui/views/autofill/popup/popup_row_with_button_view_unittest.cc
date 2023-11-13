@@ -15,6 +15,7 @@
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/test_popup_row_strategy.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -79,7 +80,7 @@ class PopupRowWithButtonViewTest : public ChromeViewsTestBase {
       base::RepeatingClosure button_callback = base::DoNothing(),
       ButtonBehavior button_behavior =
           ButtonBehavior::kShowOnHoverOrSelect) {
-    auto content_view = std::make_unique<PopupCellView>();
+    auto content_view = std::make_unique<PopupRowContentView>();
     content_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));
     content_view->AddChildView(std::make_unique<views::Label>(u"Some label"));
