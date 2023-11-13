@@ -6704,9 +6704,8 @@ chromium-metrics-reviews@google.com.
   <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
-    The length of time between TouchView activations.
-    Warning: this histogram was expired from 2023-03-19 to 2023-11-06; data may
-    be missing.
+    The length of time between TouchView activations. Warning: this histogram
+    was expired from 2023-03-19 to 2023-11-06; data may be missing.
   </summary>
 </histogram>
 
@@ -6715,9 +6714,8 @@ chromium-metrics-reviews@google.com.
   <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
-    The total time that TouchView is not active during a session.
-    Warning: this histogram was expired from 2023-03-19 to 2023-11-06; data may
-    be missing.
+    The total time that TouchView is not active during a session. Warning: this
+    histogram was expired from 2023-03-19 to 2023-11-06; data may be missing.
   </summary>
 </histogram>
 
