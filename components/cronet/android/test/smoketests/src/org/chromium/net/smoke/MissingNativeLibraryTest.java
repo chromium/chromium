@@ -55,10 +55,11 @@ public class MissingNativeLibraryTest {
         boolean foundNativeProvider = false;
         CronetProvider platformProvider = null;
         for (CronetProvider provider : availableProviders) {
-            assertThat(provider.isEnabled()).isTrue();
             if (provider.getName().equals(CronetProvider.PROVIDER_NAME_APP_PACKAGED)) {
+                assertThat(provider.isEnabled()).isTrue();
                 foundNativeProvider = true;
             } else if (provider.getName().equals(CronetProvider.PROVIDER_NAME_FALLBACK)) {
+                assertThat(provider.isEnabled()).isTrue();
                 platformProvider = provider;
             }
         }

@@ -110,6 +110,10 @@ public abstract class CronetProvider {
                 + "enabled=" + isEnabled() + "]";
     }
 
+    /** Name of the HttpEngine Native {@link CronetProvider} class. */
+    private static final String HTTPENGINE_NATIVE_PROVIDER_CLASS =
+            "org.chromium.net.impl.HttpEngineNativeProvider";
+
     /**
      * Name of the Java {@link CronetProvider} class.
      */
@@ -150,6 +154,8 @@ public abstract class CronetProvider {
                 context, PLAY_SERVICES_CRONET_PROVIDER_CLASS, providers, false);
         addCronetProviderImplByClassName(context, GMS_CORE_CRONET_PROVIDER_CLASS, providers, false);
         addCronetProviderImplByClassName(context, NATIVE_CRONET_PROVIDER_CLASS, providers, false);
+        addCronetProviderImplByClassName(
+                context, HTTPENGINE_NATIVE_PROVIDER_CLASS, providers, false);
         addCronetProviderImplByClassName(context, JAVA_CRONET_PROVIDER_CLASS, providers, false);
         return Collections.unmodifiableList(new ArrayList<>(providers));
     }

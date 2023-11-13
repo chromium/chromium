@@ -1291,6 +1291,7 @@ instrumentation_test_apk("cronet_test_instrumentation_apk") {
       "$target_gen_dir/cronet_impl_native_proguard.cfg",
       "cronet_impl_common_proguard.cfg",
       "cronet_impl_platform_proguard.cfg",
+      "httpengine_native_provider_proguard.cfg",
       "test/proguard.cfg",
     ]
   }
@@ -1416,6 +1417,7 @@ android_apk("cronet_perf_test_apk") {
     proguard_configs = [
       "$target_gen_dir/cronet_impl_native_proguard.cfg",
       "cronet_impl_common_proguard.cfg",
+      "httpengine_native_provider_proguard.cfg",
       "test/proguard.cfg",
       "//testing/android/proguard_for_test.flags",
       "//third_party/jni_zero/proguard_for_test.flags",
@@ -1685,6 +1687,7 @@ copy("cronet_package_copy") {
     "cronet_impl_common_proguard.cfg",
     "cronet_impl_fake_proguard.cfg",
     "cronet_impl_platform_proguard.cfg",
+    "httpengine_native_provider_proguard.cfg",
     "implementation_api_version.txt",
     "interface_api_version.txt",
   ]
