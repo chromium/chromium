@@ -277,14 +277,16 @@ def main(argv=None):
     sys.exit(2)
 
   source_dir = args.source_dir or os.path.dirname(os.path.abspath(__file__))
+
+  git_top_dir = None
   try:
     git_top_dir = GetGitTopDirectory(source_dir)
   except GitError as e:
-    logging.error("Failed to get git top directory from '%s': %s",
-                  source_dir, e)
-    return 2
+    logging.warning("Failed to get git top directory from '%s': %s", source_dir,
+                    e)
 
-  if args.merge_base_ref:
+  merge_base_sha = 'HEAD'
+  if git_top_dir and args.merge_base_ref:
     try:
       merge_base_sha = GetMergeBase(git_top_dir, args.merge_base_ref)
     except GitError as e:
@@ -292,18 +294,24 @@ def main(argv=None):
                     "merge base could be found between it and HEAD. Git "
                     "reports: %s", args.merge_base_ref, e)
       return 3
-  else:
-    merge_base_sha = 'HEAD'
 
-  try:
-    version_info = FetchGitRevision(git_top_dir, commit_filter, merge_base_sha)
-  except GitError as e:
-    logging.error("Failed to get version info: %s", e)
-    logging.info(("Falling back to a version of 0.0.0 to allow script to "
+  version_info = None
+  if git_top_dir:
+    try:
+      version_info = FetchGitRevision(git_top_dir, commit_filter,
+                                      merge_base_sha)
+    except GitError as e:
+      logging.error("Failed to get version info: %s", e)
+
+  if not version_info:
+    logging.warning(
+        "Falling back to a version of 0.0.0 to allow script to "
         "finish. This is normal if you are bootstrapping a new environment "
         "or do not have a git repository for any other reason. If not, this "
-        "could represent a serious error."))
-    version_info = VersionInfo('0', '0', 0)
+        "could represent a serious error.")
+    # Use a dummy revision that has the same length as a Git commit hash,
+    # same as what we use in build/util/LASTCHANGE.dummy.
+    version_info = VersionInfo('0' * 40, '0' * 40, 0)
 
   revision_string = version_info.revision
   if args.revision_id_only:
