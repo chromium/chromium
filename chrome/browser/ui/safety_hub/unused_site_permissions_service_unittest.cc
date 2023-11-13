@@ -350,7 +350,9 @@ TEST_F(UnusedSitePermissionsServiceTest, MultipleRevocationsForSameOrigin) {
             ContentSettingsType::MEDIASTREAM_CAMERA);
 }
 
-TEST_F(UnusedSitePermissionsServiceTest, ClearRevokedPermissionsListAfter30d) {
+// TODO(crbug.com/1476021): Flaky on all platforms.
+TEST_F(UnusedSitePermissionsServiceTest,
+       DISABLED_ClearRevokedPermissionsListAfter30d) {
   base::test::ScopedFeatureList scoped_feature;
   scoped_feature.InitAndEnableFeature(
       content_settings::features::kSafetyCheckUnusedSitePermissions);
