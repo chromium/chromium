@@ -292,7 +292,7 @@
   },
   "enterprise.kioskInput": {
     "channel": "stable",
-    "extension_types": ["extension", "platform_app"],
+    "extension_types": ["extension"],
     "location": "policy",
     // TODO(b/303379531): Add support for Lacros
     "platforms": ["chromeos"],
