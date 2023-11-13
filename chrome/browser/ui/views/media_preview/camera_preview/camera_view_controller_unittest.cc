@@ -24,10 +24,16 @@ class CameraViewControllerTest : public TestWithBrowserView {
  protected:
   void SetUp() override {
     TestWithBrowserView::SetUp();
+
+    // TODO(b/296946814): Remove once CameraViewController is hooked up.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_WIN)
+    GTEST_SKIP() << "Skip until CameraViewController is used on Windows";
+#else
     media_view_ = std::make_unique<MediaView>(/*is_subsection=*/false);
     controller_ = std::make_unique<CameraViewController>(
         *media_view_, source_change_callback_.Get(),
         /*needs_borders=*/true, combobox_model_);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_WIN)
   }
 
   void TearDown() override {

@@ -62,12 +62,18 @@ class CameraCoordinatorTest : public TestWithBrowserView {
  protected:
   void SetUp() override {
     TestWithBrowserView::SetUp();
+
+    // TODO(b/296946814): Remove once CameraViewController is hooked up.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_WIN)
+    GTEST_SKIP() << "Skip until CameraViewController is used on Windows";
+#else
     content::OverrideVideoCaptureServiceForTesting(
         &mock_video_capture_service_);
 
     parent_view_ = std::make_unique<views::View>();
     coordinator_ = std::make_unique<CameraCoordinator>(*parent_view_,
                                                        /*needs_borders=*/true);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_WIN)
   }
 
   void TearDown() override {
