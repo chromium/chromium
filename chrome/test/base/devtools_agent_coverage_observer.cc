@@ -5,8 +5,10 @@
 #include "chrome/test/base/devtools_agent_coverage_observer.h"
 
 #include <ostream>
+#include <utility>
 
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -27,15 +29,15 @@ std::ostream& operator<<(std::ostream& out, DevToolsAgentHost* h) {
 
 DevToolsAgentCoverageObserver::DevToolsAgentCoverageObserver(
     base::FilePath devtools_code_coverage_dir)
-    : devtools_code_coverage_dir_(devtools_code_coverage_dir) {
-  DevToolsAgentHost::AddObserver(this);
-}
+    : DevToolsAgentCoverageObserver(devtools_code_coverage_dir,
+                                    base::NullCallback()) {}
 
 DevToolsAgentCoverageObserver::DevToolsAgentCoverageObserver(
     base::FilePath devtools_code_coverage_dir,
     ShouldInspectDevToolsAgentHostCallback should_inspect_callback)
-    : DevToolsAgentCoverageObserver(devtools_code_coverage_dir) {
-  should_inspect_callback_ = std::move(should_inspect_callback);
+    : devtools_code_coverage_dir_(devtools_code_coverage_dir),
+      should_inspect_callback_(std::move(should_inspect_callback)) {
+  DevToolsAgentHost::AddObserver(this);
 }
 
 DevToolsAgentCoverageObserver::~DevToolsAgentCoverageObserver() = default;
