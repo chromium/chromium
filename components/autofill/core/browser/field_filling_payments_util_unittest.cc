@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/field_filler.h"
-#include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 
 #include <stddef.h>
 
@@ -22,37 +20,21 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/address_normalizer.h"
-#include "components/autofill/core/browser/address_normalizer_impl.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field.h"
-#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
-#include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/libaddressinput/src/cpp/include/libaddressinput/null_storage.h"
-#include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
-#include "third_party/libaddressinput/src/cpp/include/libaddressinput/storage.h"
-#include "third_party/libaddressinput/src/cpp/test/testdata_source.h"
-
-using base::StringToInt;
 
 namespace autofill {
 
-using ::i18n::addressinput::NullStorage;
-using ::i18n::addressinput::Source;
-using ::i18n::addressinput::Storage;
-using ::i18n::addressinput::TestdataSource;
-using test::CreateTestFormField;
-using test::CreateTestSelectField;
+namespace {
 
 std::u16string kMidlineEllipsis2Dots = CreditCard::GetMidlineEllipsisDots(2);
 std::u16string kMidlineEllipsis3Dots = CreditCard::GetMidlineEllipsisDots(3);
@@ -85,7 +67,7 @@ const std::vector<const char*> NotNumericMonthsContentsWithPlaceholder() {
 AutofillField CreateTestSelectAutofillField(
     const std::vector<const char*>& values,
     ServerFieldType heuristic_type) {
-  AutofillField field{CreateTestSelectField(values)};
+  AutofillField field{test::CreateTestSelectField(values)};
   field.set_heuristic_type(GetActiveHeuristicSource(), heuristic_type);
   return field;
 }
@@ -104,7 +86,8 @@ size_t GetIndexOfValue(const std::vector<SelectOption>& values,
 void TestFillingExpirationMonth(const std::vector<const char*>& values,
                                 const std::vector<const char*>& contents) {
   // Create the select field.
-  AutofillField field{CreateTestSelectField("", "", "", values, contents)};
+  AutofillField field{
+      test::CreateTestSelectField("", "", "", values, contents)};
   field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_EXP_MONTH);
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -138,226 +121,32 @@ struct CreditCardTestCase {
 // Returns the offset to be set within the credit card number field.
 size_t GetNumberOffset(size_t index, const CreditCardTestCase& test) {
   size_t result = 0;
-  for (size_t i = 0; i < index; ++i)
+  for (size_t i = 0; i < index; ++i) {
     result += test.splits_[i];
+  }
   return result;
 }
 
-class AutofillFieldFillerTest : public testing::Test {
+class FieldFillingPaymentsUtilTest : public testing::Test {
  public:
-  AutofillFieldFillerTest(const AutofillFieldFillerTest&) = delete;
-  AutofillFieldFillerTest& operator=(const AutofillFieldFillerTest&) = delete;
+  FieldFillingPaymentsUtilTest(const FieldFillingPaymentsUtilTest&) = delete;
+  FieldFillingPaymentsUtilTest& operator=(const FieldFillingPaymentsUtilTest&) =
+      delete;
 
  protected:
-  AutofillFieldFillerTest()
-      : credit_card_(test::GetCreditCard()),
-        address_(std::make_unique<AutofillProfile>(test::GetFullProfile())) {}
+  FieldFillingPaymentsUtilTest() : credit_card_(test::GetCreditCard()) {}
 
   CreditCard* credit_card() { return &credit_card_; }
-  AutofillProfile* address() { return address_.get(); }
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   CreditCard credit_card_;
-  std::unique_ptr<AutofillProfile> address_;
 };
-
-TEST_F(AutofillFieldFillerTest, Type) {
-  AutofillField field;
-
-  ASSERT_EQ(NO_SERVER_DATA, field.server_type());
-  ASSERT_EQ(UNKNOWN_TYPE, field.heuristic_type());
-
-  // |server_type_| is NO_SERVER_DATA, so |heuristic_type_| is returned.
-  EXPECT_EQ(UNKNOWN_TYPE, field.Type().GetStorableType());
-
-  // Set the heuristic type and check it.
-  field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
-  EXPECT_EQ(NAME_FIRST, field.Type().GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kName, field.Type().group());
-
-  // Set the server type and check it.
-  field.set_server_predictions(
-      {::autofill::test::CreateFieldPrediction(ADDRESS_HOME_LINE1)});
-  EXPECT_EQ(ADDRESS_HOME_LINE1, field.Type().GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kAddress, field.Type().group());
-
-  // Checks that overall_type trumps everything.
-  field.SetTypeTo(AutofillType(ADDRESS_HOME_ZIP));
-  EXPECT_EQ(ADDRESS_HOME_ZIP, field.Type().GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kAddress, field.Type().group());
-
-  // Checks that setting server type resets overall type.
-  field.set_server_predictions(
-      {::autofill::test::CreateFieldPrediction(ADDRESS_HOME_LINE1)});
-  EXPECT_EQ(ADDRESS_HOME_LINE1, field.Type().GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kAddress, field.Type().group());
-
-  // Remove the server type to make sure the heuristic type is preserved.
-  field.set_server_predictions(
-      {::autofill::test::CreateFieldPrediction(NO_SERVER_DATA)});
-  EXPECT_EQ(NAME_FIRST, field.Type().GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kName, field.Type().group());
-
-  // Checks that overall_type trumps everything.
-  field.SetTypeTo(AutofillType(ADDRESS_HOME_ZIP));
-  EXPECT_EQ(ADDRESS_HOME_ZIP, field.Type().GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kAddress, field.Type().group());
-
-  // Set the heuristic type and check it and reset overall Type.
-  field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
-  EXPECT_EQ(NAME_FIRST, field.Type().GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kName, field.Type().group());
-}
-
-// Tests that if both autocomplete attributes and server agree it's a phone
-// field, always use server predicted type. If they disagree with autocomplete
-// says it's a phone field, always use autocomplete attribute.
-TEST_F(AutofillFieldFillerTest,
-       Type_ServerPredictionOfCityAndNumber_OverrideHtml) {
-  AutofillField field;
-
-  field.SetHtmlType(HtmlFieldType::kTel, HtmlFieldMode::kNone);
-
-  field.set_server_predictions(
-      {::autofill::test::CreateFieldPrediction(PHONE_HOME_CITY_AND_NUMBER)});
-  EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER, field.Type().GetStorableType());
-
-  // Overrides to another number format.
-  field.set_server_predictions(
-      {::autofill::test::CreateFieldPrediction(PHONE_HOME_NUMBER)});
-  EXPECT_EQ(PHONE_HOME_NUMBER, field.Type().GetStorableType());
-
-  // Overrides autocomplete=tel-national too.
-  field.SetHtmlType(HtmlFieldType::kTelNational, HtmlFieldMode::kNone);
-  field.set_server_predictions(
-      {::autofill::test::CreateFieldPrediction(PHONE_HOME_WHOLE_NUMBER)});
-  EXPECT_EQ(PHONE_HOME_WHOLE_NUMBER, field.Type().GetStorableType());
-
-  // If autocomplete=tel-national but server says it's not a phone field,
-  // do not override.
-  field.SetHtmlType(HtmlFieldType::kTelNational, HtmlFieldMode::kNone);
-  field.set_server_predictions({::autofill::test::CreateFieldPrediction(
-      CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR)});
-  EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER, field.Type().GetStorableType());
-
-  // If html type not specified, we still use server prediction.
-  field.SetHtmlType(HtmlFieldType::kUnspecified, HtmlFieldMode::kNone);
-  field.set_server_predictions(
-      {::autofill::test::CreateFieldPrediction(PHONE_HOME_CITY_AND_NUMBER)});
-  EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER, field.Type().GetStorableType());
-}
-
-TEST_F(AutofillFieldFillerTest, IsEmpty) {
-  AutofillField field;
-  ASSERT_EQ(std::u16string(), field.value);
-
-  // Field value is empty.
-  EXPECT_TRUE(field.IsEmpty());
-
-  // Field value is non-empty.
-  field.value = u"Value";
-  EXPECT_FALSE(field.IsEmpty());
-}
-
-TEST_F(AutofillFieldFillerTest, FieldSignatureAsStr) {
-  AutofillField field;
-  AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
-      prediction;
-  ASSERT_EQ(std::u16string(), field.name);
-  ASSERT_EQ(FormControlType::kInputText, field.form_control_type);
-
-  // Signature is empty.
-  EXPECT_EQ("1318412689", field.FieldSignatureAsStr());
-
-  // Field name is set.
-  field.name = u"Name";
-  EXPECT_EQ("502192749", field.FieldSignatureAsStr());
-
-  // Field form control type is set.
-  field.form_control_type = FormControlType::kSelectOne;
-  EXPECT_EQ("448081278", field.FieldSignatureAsStr());
-
-  // Heuristic type does not affect FieldSignature.
-  field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
-  EXPECT_EQ("448081278", field.FieldSignatureAsStr());
-
-  // Server type does not affect FieldSignature.
-  prediction.set_type(NAME_LAST);
-  field.set_server_predictions({prediction});
-  EXPECT_EQ("448081278", field.FieldSignatureAsStr());
-}
-
-TEST_F(AutofillFieldFillerTest, IsFieldFillable) {
-  AutofillField field;
-  ASSERT_EQ(UNKNOWN_TYPE, field.Type().GetStorableType());
-
-  // Type is unknown.
-  EXPECT_FALSE(field.IsFieldFillable());
-
-  // Only heuristic type is set.
-  field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
-  EXPECT_TRUE(field.IsFieldFillable());
-
-  // Only server type is set.
-  field.set_heuristic_type(GetActiveHeuristicSource(), UNKNOWN_TYPE);
-  field.set_server_predictions(
-      {::autofill::test::CreateFieldPrediction(NAME_LAST)});
-  EXPECT_TRUE(field.IsFieldFillable());
-
-  // Both types set.
-  field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
-  field.set_server_predictions(
-      {::autofill::test::CreateFieldPrediction(NAME_LAST)});
-  EXPECT_TRUE(field.IsFieldFillable());
-
-  // Field has autocomplete="off" set. Since autofill was able to make a
-  // prediction, it is still considered a fillable field.
-  field.should_autocomplete = false;
-  EXPECT_TRUE(field.IsFieldFillable());
-}
-
-// Verify that non credit card related fields with the autocomplete attribute
-// set to off are filled on desktop when the feature to Autofill all
-// addresses is enabled (default).
-TEST_F(AutofillFieldFillerTest,
-       FillFormField_AutocompleteOffNotRespected_AddressField) {
-  AutofillField field;
-  field.should_autocomplete = false;
-  field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
-
-  // Non credit card related field.
-  address()->SetRawInfo(NAME_FIRST, u"Test");
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-
-  // Verify that the field is filled in all circumstances.
-  EXPECT_EQ(u"Test", field.value);
-}
-
-// Verify that a forced fill_value takes precedence.
-TEST_F(AutofillFieldFillerTest, FillFormField_ForcedFillValues) {
-  AutofillField field;
-  field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
-
-  // Non credit card related field.
-  address()->SetRawInfo(NAME_FIRST, u"Test");
-  std::map<FieldGlobalId, std::u16string> forced_fill_values;
-  forced_fill_values[field.global_id()] = u"Test2";
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, address(), forced_fill_values, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-
-  // Verify that the field is filled with the overridden value.
-  EXPECT_EQ(u"Test2", field.value);
-}
 
 // Verify that credit card related fields with the autocomplete attribute
 // set to off get filled.
-TEST_F(AutofillFieldFillerTest, FillFormField_AutocompleteOff_CreditCardField) {
+TEST_F(FieldFillingPaymentsUtilTest,
+       FillFormField_AutocompleteOff_CreditCardField) {
   AutofillField field;
   field.should_autocomplete = false;
   field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_NUMBER);
@@ -375,7 +164,7 @@ TEST_F(AutofillFieldFillerTest, FillFormField_AutocompleteOff_CreditCardField) {
 
 // Verify that the correct value is returned if the maximum length of the credit
 // card value exceeds the actual length.
-TEST_F(AutofillFieldFillerTest,
+TEST_F(FieldFillingPaymentsUtilTest,
        FillFormField_MaxLength_CreditCardField_MaxLengthExceedsLength) {
   AutofillField field;
   field.max_length = 30;
@@ -396,7 +185,7 @@ TEST_F(AutofillFieldFillerTest,
 
 // Verify that the full credit card number is returned if the offset exceeds the
 // length.
-TEST_F(AutofillFieldFillerTest,
+TEST_F(FieldFillingPaymentsUtilTest,
        FillFormField_MaxLength_CreditCardField_OffsetExceedsLength) {
   AutofillField field;
   field.max_length = 18;
@@ -416,7 +205,7 @@ TEST_F(AutofillFieldFillerTest,
 
 // Verify that only the truncated and offsetted value of the credit card number
 // is set.
-TEST_F(AutofillFieldFillerTest,
+TEST_F(FieldFillingPaymentsUtilTest,
        FillFormField_MaxLength_CreditCardField_WithOffset) {
   AutofillField field;
   field.max_length = 1;
@@ -436,7 +225,7 @@ TEST_F(AutofillFieldFillerTest,
 }
 
 // Verify that only the truncated value of the credit card number is set.
-TEST_F(AutofillFieldFillerTest, FillFormField_MaxLength_CreditCardField) {
+TEST_F(FieldFillingPaymentsUtilTest, FillFormField_MaxLength_CreditCardField) {
   AutofillField field;
   field.max_length = 1;
   field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_NUMBER);
@@ -454,7 +243,7 @@ TEST_F(AutofillFieldFillerTest, FillFormField_MaxLength_CreditCardField) {
 }
 
 // Test that in the preview credit card numbers are obfuscated.
-TEST_F(AutofillFieldFillerTest, FillFormField_Preview_CreditCardField) {
+TEST_F(FieldFillingPaymentsUtilTest, FillFormField_Preview_CreditCardField) {
   AutofillField field;
   field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_NUMBER);
 
@@ -472,7 +261,7 @@ TEST_F(AutofillFieldFillerTest, FillFormField_Preview_CreditCardField) {
 }
 
 class CreditCardVerificationCodeTest
-    : public AutofillFieldFillerTest,
+    : public FieldFillingPaymentsUtilTest,
       public testing::WithParamInterface<mojom::ActionPersistence> {};
 
 // Test that verify CVC should be expected value for Preview and Fill.
@@ -567,98 +356,27 @@ TEST_P(CreditCardVerificationCodeTest,
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(AutofillFieldFillerTest,
+INSTANTIATE_TEST_SUITE_P(FieldFillingPaymentsUtilTest,
                          CreditCardVerificationCodeTest,
                          testing::Values(mojom::ActionPersistence::kPreview,
                                          mojom::ActionPersistence::kFill));
 
-struct AutofillFieldFillerTestCase {
+struct FieldFillingPaymentsUtilTestCase {
   HtmlFieldType field_type;
   size_t field_max_length;
   std::u16string expected_value;
 
-  AutofillFieldFillerTestCase(HtmlFieldType field_type,
-                              size_t field_max_length,
-                              std::u16string expected_value)
+  FieldFillingPaymentsUtilTestCase(HtmlFieldType field_type,
+                                   size_t field_max_length,
+                                   std::u16string expected_value)
       : field_type(field_type),
         field_max_length(field_max_length),
         expected_value(expected_value) {}
 };
 
-struct AutofillPhoneFieldFillerTestCase : public AutofillFieldFillerTestCase {
-  std::u16string phone_home_whole_number_value;
-
-  AutofillPhoneFieldFillerTestCase(HtmlFieldType field_type,
-                                   size_t field_max_length,
-                                   std::u16string expected_value,
-                                   std::u16string phone_home_whole_number_value)
-      : AutofillFieldFillerTestCase(field_type,
-                                    field_max_length,
-                                    expected_value),
-        phone_home_whole_number_value(phone_home_whole_number_value) {}
-};
-
-class PhoneNumberTest
-    : public AutofillFieldFillerTest,
-      public testing::WithParamInterface<AutofillPhoneFieldFillerTestCase> {};
-
-TEST_P(PhoneNumberTest, FillPhoneNumber) {
-  auto test_case = GetParam();
-  AutofillField field;
-  field.SetHtmlType(test_case.field_type, HtmlFieldMode());
-  field.max_length = test_case.field_max_length;
-
-  AutofillProfile address(AddressCountryCode("US"));
-  address.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                     test_case.phone_home_whole_number_value);
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(test_case.expected_value, field.value);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    AutofillFieldFillerTest,
-    PhoneNumberTest,
-    testing::Values(
-        // Filling a prefix type field should just fill the prefix.
-        AutofillPhoneFieldFillerTestCase{HtmlFieldType::kTelLocalPrefix,
-                                         /*field_max_length=*/0, u"555",
-                                         u"+15145554578"},
-        // Filling a suffix type field with a phone number of 7 digits should
-        // just fill the suffix.
-        AutofillPhoneFieldFillerTestCase{HtmlFieldType::kTelLocalSuffix,
-                                         /*field_max_length=*/0, u"4578",
-                                         u"+15145554578"},
-        // TODO(crbug.com/581485): There should be a test case where the full
-        // number is requested (HtmlFieldType::kTel) but a
-        // field_max_length of 3 would fill the prefix. Filling a phone type
-        // field with a max length of 4 should fill only the suffix.
-        AutofillPhoneFieldFillerTestCase{HtmlFieldType::kTel,
-                                         /*field_max_length=*/4, u"4578",
-                                         u"+15145554578"},
-        // Filling a phone type field with a max length of 10 with a phone
-        // number including the country code should fill the phone number
-        // without the country code.
-        AutofillPhoneFieldFillerTestCase{HtmlFieldType::kTel,
-                                         /*field_max_length=*/10, u"5145554578",
-                                         u"+15145554578"},
-        // Filling a phone type field with a max length of 5 with a phone number
-        // should fill with the last 5 digits of that phone number.
-        AutofillPhoneFieldFillerTestCase{HtmlFieldType::kTel,
-                                         /*field_max_length=*/5, u"54578",
-                                         u"+15145554578"},
-        // Filling a phone type field with a max length of 10 with a phone
-        // number including the country code should fill the phone number
-        // without the country code.
-        AutofillPhoneFieldFillerTestCase{HtmlFieldType::kTel,
-                                         /*field_max_length=*/10, u"123456789",
-                                         u"+886123456789"}));
-
 class ExpirationYearTest
-    : public AutofillFieldFillerTest,
-      public testing::WithParamInterface<AutofillFieldFillerTestCase> {};
+    : public FieldFillingPaymentsUtilTest,
+      public testing::WithParamInterface<FieldFillingPaymentsUtilTestCase> {};
 
 TEST_P(ExpirationYearTest, FillExpirationYearInput) {
   auto test_case = GetParam();
@@ -677,39 +395,41 @@ TEST_P(ExpirationYearTest, FillExpirationYearInput) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    AutofillFieldFillerTest,
+    FieldFillingPaymentsUtilTest,
     ExpirationYearTest,
     testing::Values(
         // A field predicted as a 2 digits expiration year should fill the last
         // 2 digits of the expiration year if the field has an unspecified max
         // length (0) or if it's greater than 1.
-        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp2DigitYear,
-                                    /* default value */ 0, u"23"},
-        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp2DigitYear, 2,
-                                    u"23"},
-        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp2DigitYear, 12,
-                                    u"23"},
+        FieldFillingPaymentsUtilTestCase{
+            HtmlFieldType::kCreditCardExp2DigitYear,
+            /* default value */ 0, u"23"},
+        FieldFillingPaymentsUtilTestCase{
+            HtmlFieldType::kCreditCardExp2DigitYear, 2, u"23"},
+        FieldFillingPaymentsUtilTestCase{
+            HtmlFieldType::kCreditCardExp2DigitYear, 12, u"23"},
         // A field predicted as a 2 digit expiration year should fill the last
         // digit of the expiration year if the field has a max length of 1.
-        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp2DigitYear, 1,
-                                    u"3"},
+        FieldFillingPaymentsUtilTestCase{
+            HtmlFieldType::kCreditCardExp2DigitYear, 1, u"3"},
         // A field predicted as a 4 digit expiration year should fill the 4
         // digits of the expiration year if the field has an unspecified max
         // length (0) or if it's greater than 3 .
-        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp4DigitYear,
-                                    /* default value */ 0, u"2023"},
-        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp4DigitYear, 4,
-                                    u"2023"},
-        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp4DigitYear, 12,
-                                    u"2023"},
+        FieldFillingPaymentsUtilTestCase{
+            HtmlFieldType::kCreditCardExp4DigitYear,
+            /* default value */ 0, u"2023"},
+        FieldFillingPaymentsUtilTestCase{
+            HtmlFieldType::kCreditCardExp4DigitYear, 4, u"2023"},
+        FieldFillingPaymentsUtilTestCase{
+            HtmlFieldType::kCreditCardExp4DigitYear, 12, u"2023"},
         // A field predicted as a 4 digits expiration year should fill the last
         // 2 digits of the expiration year if the field has a max length of 2.
-        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp4DigitYear, 2,
-                                    u"23"},
+        FieldFillingPaymentsUtilTestCase{
+            HtmlFieldType::kCreditCardExp4DigitYear, 2, u"23"},
         // A field predicted as a 4 digits expiration year should fill the last
         // digit of the expiration year if the field has a max length of 1.
-        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp4DigitYear, 1,
-                                    u"3"}));
+        FieldFillingPaymentsUtilTestCase{
+            HtmlFieldType::kCreditCardExp4DigitYear, 1, u"3"}));
 
 struct FillUtilExpirationDateTestCase {
   const char* name;
@@ -731,7 +451,7 @@ struct FillUtilExpirationDateTestCase {
 };
 
 class ExpirationDateTest
-    : public AutofillFieldFillerTest,
+    : public FieldFillingPaymentsUtilTest,
       public testing::WithParamInterface<
           std::tuple<FillUtilExpirationDateTestCase,
                      // Whether kAutofillEnableExpirationDateImprovements should
@@ -789,8 +509,9 @@ TEST_P(ExpirationDateTest, FillExpirationDateInput) {
     prediction.set_override(true);
     field.set_server_predictions({prediction});
   }
-  if (test_case.opt_label)
+  if (test_case.opt_label) {
     field.label = base::UTF8ToUTF16(test_case.opt_label);
+  }
 
   CreditCard card = test::GetCreditCard();
   card.SetExpirationDateFromString(u"03/2022");
@@ -803,7 +524,7 @@ TEST_P(ExpirationDateTest, FillExpirationDateInput) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    AutofillFieldFillerTest,
+    FieldFillingPaymentsUtilTest,
     ExpirationDateTest,
     testing::Combine(
         testing::Values(
@@ -1001,171 +722,13 @@ INSTANTIATE_TEST_SUITE_P(
                 u"0322", true, "mm/yy", CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}),
         testing::Bool()));
 
-struct FillSelectTestCase {
-  std::vector<const char*> select_values;
-  const char16_t* input_value;
-  const char16_t* expected_value_without_normalization;
-  const char16_t* expected_value_with_normalization = nullptr;
-};
-
-class AutofillSelectWithStatesTest
-    : public AutofillFieldFillerTest,
-      public testing::WithParamInterface<FillSelectTestCase> {
- public:
-  AutofillSelectWithStatesTest() {
-    base::FilePath file_path;
-    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path));
-    file_path = file_path.Append(FILE_PATH_LITERAL("third_party"))
-                    .Append(FILE_PATH_LITERAL("libaddressinput"))
-                    .Append(FILE_PATH_LITERAL("src"))
-                    .Append(FILE_PATH_LITERAL("testdata"))
-                    .Append(FILE_PATH_LITERAL("countryinfo.txt"));
-
-    normalizer_ = std::make_unique<AddressNormalizerImpl>(
-        std::unique_ptr<Source>(
-            new TestdataSource(true, file_path.AsUTF8Unsafe())),
-        std::unique_ptr<Storage>(new NullStorage), "en-US");
-
-    test::PopulateAlternativeStateNameMapForTesting(
-        "US", "California",
-        {{.canonical_name = "California",
-          .abbreviations = {"CA"},
-          .alternative_names = {}}});
-    test::PopulateAlternativeStateNameMapForTesting(
-        "US", "North Carolina",
-        {{.canonical_name = "North Carolina",
-          .abbreviations = {"NC"},
-          .alternative_names = {}}});
-    // Make sure the normalizer is done initializing its member(s) in
-    // background task(s).
-    task_environment_.RunUntilIdle();
-  }
-
-  AutofillSelectWithStatesTest(const AutofillSelectWithStatesTest&) = delete;
-  AutofillSelectWithStatesTest& operator=(const AutofillSelectWithStatesTest&) =
-      delete;
-
- protected:
-  AddressNormalizer* normalizer() { return normalizer_.get(); }
-
- private:
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<AddressNormalizerImpl> normalizer_;
-};
-
-TEST_P(AutofillSelectWithStatesTest, FillSelectWithStates) {
-  auto test_case = GetParam();
-  AutofillField field = CreateTestSelectAutofillField(test_case.select_values,
-                                                      ADDRESS_HOME_STATE);
-  // Without a normalizer.
-  AutofillProfile address = test::GetFullProfile();
-  address.SetRawInfo(ADDRESS_HOME_STATE, test_case.input_value);
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  // nullptr means we expect them not to match without normalization.
-  if (test_case.expected_value_without_normalization != nullptr) {
-    EXPECT_EQ(test_case.expected_value_without_normalization, field.value);
-  }
-
-  // With a normalizer.
-  AutofillProfile canadian_address = test::GetFullCanadianProfile();
-  canadian_address.SetRawInfo(ADDRESS_HOME_STATE, test_case.input_value);
-  // Fill a first time without loading the rules for the region.
-  FieldFiller canadian_filler(/*app_locale=*/"en-US", normalizer());
-  canadian_filler.FillFormField(
-      field, &canadian_address, /*forced_fill_values=*/{}, &field,
-      /*cvc=*/std::u16string(), mojom::ActionPersistence::kFill);
-  // If the expectation with normalization is nullptr, this means that the same
-  // result than without a normalizer is expected.
-  if (test_case.expected_value_with_normalization == nullptr) {
-    EXPECT_EQ(test_case.expected_value_without_normalization, field.value);
-  } else {
-    // We needed a normalizer with loaded rules. The first fill should have
-    // failed.
-    EXPECT_NE(test_case.expected_value_with_normalization, field.value);
-
-    // Load the rules and try again.
-    normalizer()->LoadRulesForRegion("CA");
-    canadian_filler.FillFormField(
-        field, &canadian_address, /*forced_fill_values=*/{}, &field,
-        /*cvc=*/std::u16string(), mojom::ActionPersistence::kFill);
-    EXPECT_EQ(test_case.expected_value_with_normalization, field.value);
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    AutofillFieldFillerTest,
-    AutofillSelectWithStatesTest,
-    testing::Values(
-        // Filling the abbreviation.
-        FillSelectTestCase{{"Alabama", "California"}, u"CA", u"California"},
-        // Attempting to fill the full name in a select full of abbreviations.
-        FillSelectTestCase{{"AL", "CA"}, u"California", u"CA"},
-        // Different case and diacritics.
-        FillSelectTestCase{{"QUÉBEC", "ALBERTA"}, u"Quebec", u"QUÉBEC"},
-        // The value and the field options are different but normalize to the
-        // same (NB).
-        FillSelectTestCase{{"Nouveau-Brunswick", "Alberta"},
-                           u"New Brunswick",
-                           nullptr,
-                           u"Nouveau-Brunswick"},
-        FillSelectTestCase{{"NB", "AB"}, u"New Brunswick", nullptr, u"NB"},
-        FillSelectTestCase{{"NB", "AB"}, u"Nouveau-Brunswick", nullptr, u"NB"},
-        FillSelectTestCase{{"Nouveau-Brunswick", "Alberta"},
-                           u"NB",
-                           nullptr,
-                           u"Nouveau-Brunswick"},
-        FillSelectTestCase{{"New Brunswick", "Alberta"},
-                           u"NB",
-                           nullptr,
-                           u"New Brunswick"},
-        // Inexact state names.
-        FillSelectTestCase{
-            {"SC - South Carolina", "CA - California", "NC - North Carolina"},
-            u"California",
-            u"CA - California"},
-        // Don't accidentally match "Virginia" to "West Virginia".
-        FillSelectTestCase{
-            {"WV - West Virginia", "VA - Virginia", "NV - North Virginia"},
-            u"Virginia",
-            u"VA - Virginia"},
-        // Do accidentally match "Virginia" to "West Virginia".
-        // TODO(crbug.com/624770): This test should not pass, but it does
-        // because "Virginia" is a substring of "West Virginia".
-        FillSelectTestCase{{"WV - West Virginia", "TX - Texas"},
-                           u"Virginia",
-                           u"WV - West Virginia"},
-        // Tests that substring matches work for full state names (a full token
-        // match isn't required). Also tests that matches work for states with
-        // whitespace in the middle.
-        FillSelectTestCase{{"California.", "North Carolina."},
-                           u"North Carolina",
-                           u"North Carolina."},
-        FillSelectTestCase{{"NC - North Carolina", "CA - California"},
-                           u"CA",
-                           u"CA - California"}));
-
-TEST_F(AutofillFieldFillerTest, FillSelectWithCountries) {
-  AutofillField field = CreateTestSelectAutofillField({"Albania", "Canada"},
-                                                      ADDRESS_HOME_COUNTRY);
-  AutofillProfile address = test::GetFullProfile();
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"Canada", field.value);
-}
-
 struct FillWithExpirationMonthTestCase {
   std::vector<const char*> select_values;
   std::vector<const char*> select_contents;
 };
 
 class AutofillSelectWithExpirationMonthTest
-    : public AutofillFieldFillerTest,
+    : public FieldFillingPaymentsUtilTest,
       public testing::WithParamInterface<FillWithExpirationMonthTestCase> {};
 
 TEST_P(AutofillSelectWithExpirationMonthTest,
@@ -1178,7 +741,7 @@ TEST_P(AutofillSelectWithExpirationMonthTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    AutofillFieldFillerTest,
+    FieldFillingPaymentsUtilTest,
     AutofillSelectWithExpirationMonthTest,
     testing::Values(
         // Values start at 1.
@@ -1265,7 +828,8 @@ INSTANTIATE_TEST_SUITE_P(
              "12"},
             NotNumericMonthsContentsWithPlaceholder()}));
 
-TEST_F(AutofillFieldFillerTest, FillSelectControlWithAbbreviatedMonthName) {
+TEST_F(FieldFillingPaymentsUtilTest,
+       FillSelectControlWithAbbreviatedMonthName) {
   AutofillField field =
       CreateTestSelectAutofillField({"Jan", "Feb", "Mar", "Apr", "May", "Jun",
                                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"},
@@ -1280,7 +844,7 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlWithAbbreviatedMonthName) {
   EXPECT_EQ(u"Apr", field.value);
 }
 
-TEST_F(AutofillFieldFillerTest, FillSelectControlWithMonthName) {
+TEST_F(FieldFillingPaymentsUtilTest, FillSelectControlWithMonthName) {
   AutofillField field = CreateTestSelectAutofillField(
       {"January", "February", "March", "April", "May", "June", "July", "August",
        "September", "October", "November", "December"},
@@ -1294,7 +858,7 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlWithMonthName) {
   EXPECT_EQ(u"April", field.value);
 }
 
-TEST_F(AutofillFieldFillerTest, FillSelectControlWithMonthNameAndDigits) {
+TEST_F(FieldFillingPaymentsUtilTest, FillSelectControlWithMonthNameAndDigits) {
   AutofillField field = CreateTestSelectAutofillField(
       {"January (01)", "February (02)", "March (03)", "April (04)", "May (05)",
        "June (06)", "July (07)", "August (08)", "September (09)",
@@ -1309,7 +873,7 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlWithMonthNameAndDigits) {
   EXPECT_EQ(u"April (04)", field.value);
 }
 
-TEST_F(AutofillFieldFillerTest,
+TEST_F(FieldFillingPaymentsUtilTest,
        FillSelectControlWithMonthNameAndDigits_French) {
   AutofillField field = CreateTestSelectAutofillField(
       {
@@ -1333,7 +897,7 @@ TEST_F(AutofillFieldFillerTest,
   EXPECT_EQ(u"12 - DECEMBRE", field.value);
 }
 
-TEST_F(AutofillFieldFillerTest, FillSelectControlWithMonthName_French) {
+TEST_F(FieldFillingPaymentsUtilTest, FillSelectControlWithMonthName_French) {
   AutofillField field = CreateTestSelectAutofillField(
       {"JANV", "FÉVR.", "MARS", "décembre"}, CREDIT_CARD_EXP_MONTH);
   CreditCard card = test::GetCreditCard();
@@ -1357,7 +921,7 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlWithMonthName_French) {
   EXPECT_EQ(u"décembre", field.value);
 }
 
-TEST_F(AutofillFieldFillerTest,
+TEST_F(FieldFillingPaymentsUtilTest,
        FillSelectControlWithNumericMonthSansLeadingZero) {
   std::vector<const char*> kMonthsNumeric = {
       "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12",
@@ -1374,7 +938,8 @@ TEST_F(AutofillFieldFillerTest,
   EXPECT_EQ(u"4", field.value);
 }
 
-TEST_F(AutofillFieldFillerTest, FillSelectControlWithTwoDigitCreditCardYear) {
+TEST_F(FieldFillingPaymentsUtilTest,
+       FillSelectControlWithTwoDigitCreditCardYear) {
   AutofillField field = CreateTestSelectAutofillField(
       {"12", "13", "14", "15", "16", "17", "18", "19"},
       CREDIT_CARD_EXP_2_DIGIT_YEAR);
@@ -1388,7 +953,7 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlWithTwoDigitCreditCardYear) {
   EXPECT_EQ(u"17", field.value);
 }
 
-TEST_F(AutofillFieldFillerTest, FillSelectControlWithCreditCardType) {
+TEST_F(FieldFillingPaymentsUtilTest, FillSelectControlWithCreditCardType) {
   AutofillField field = CreateTestSelectAutofillField(
       {"Visa", "Mastercard", "AmEx", "discover"}, CREDIT_CARD_TYPE);
   CreditCard card = test::GetCreditCard();
@@ -1423,7 +988,7 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlWithCreditCardType) {
   EXPECT_EQ(u"discover", field.value);
 }
 
-TEST_F(AutofillFieldFillerTest, FillMonthControl) {
+TEST_F(FieldFillingPaymentsUtilTest, FillMonthControl) {
   AutofillField field;
   field.form_control_type = FormControlType::kInputMonth;
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -1446,55 +1011,7 @@ TEST_F(AutofillFieldFillerTest, FillMonthControl) {
   EXPECT_EQ(u"2019-03", field.value);
 }
 
-TEST_F(AutofillFieldFillerTest, FillStreetAddressTextArea) {
-  AutofillField field;
-  field.form_control_type = FormControlType::kTextArea;
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  field.set_heuristic_type(GetActiveHeuristicSource(),
-                           ADDRESS_HOME_STREET_ADDRESS);
-
-  std::u16string value = u"123 Fake St.\nApt. 42";
-  address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), value, "en-US");
-  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(value, field.value);
-
-  std::u16string ja_value = u"桜丘町26-1\nセルリアンタワー6階";
-  address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), ja_value,
-                     "ja-JP");
-  address()->set_language_code("ja-JP");
-  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(ja_value, field.value);
-}
-
-TEST_F(AutofillFieldFillerTest, FillStreetAddressTextField) {
-  AutofillField field;
-  field.form_control_type = FormControlType::kInputText;
-  field.set_server_predictions(
-      {::autofill::test::CreateFieldPrediction(ADDRESS_HOME_STREET_ADDRESS)});
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-
-  std::u16string value = u"123 Fake St.\nApt. 42";
-  address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), value, "en-US");
-  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"123 Fake St., Apt. 42", field.value);
-
-  std::u16string ja_value = u"桜丘町26-1\nセルリアンタワー6階";
-  address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), ja_value,
-                     "ja-JP");
-  address()->set_language_code("ja-JP");
-  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"桜丘町26-1セルリアンタワー6階", field.value);
-}
-
-TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithoutSplits) {
+TEST_F(FieldFillingPaymentsUtilTest, FillCreditCardNumberWithoutSplits) {
   // Case 1: card number without any split.
   AutofillField cc_number_full;
   cc_number_full.set_heuristic_type(GetActiveHeuristicSource(),
@@ -1511,7 +1028,7 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithoutSplits) {
   EXPECT_EQ(0U, cc_number_full.credit_card_number_offset());
 }
 
-TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithEqualSizeSplits) {
+TEST_F(FieldFillingPaymentsUtilTest, FillCreditCardNumberWithEqualSizeSplits) {
   // Case 2: card number broken up into four equal groups, of length 4.
   CreditCardTestCase test;
   test.card_number_ = u"5187654321098765";
@@ -1553,7 +1070,8 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithEqualSizeSplits) {
   EXPECT_EQ(test.card_number_, cc_number_full.value);
 }
 
-TEST_F(AutofillFieldFillerTest, PreviewCreditCardNumberWithEqualSizeSplits) {
+TEST_F(FieldFillingPaymentsUtilTest,
+       PreviewCreditCardNumberWithEqualSizeSplits) {
   // Case 2: card number broken up into four equal groups, of length 4.
   CreditCardTestCase test;
   test.card_number_ = u"5187654321098765";
@@ -1601,7 +1119,8 @@ TEST_F(AutofillFieldFillerTest, PreviewCreditCardNumberWithEqualSizeSplits) {
   EXPECT_EQ(obfuscated_card_number, cc_number_full.value);
 }
 
-TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithUnequalSizeSplits) {
+TEST_F(FieldFillingPaymentsUtilTest,
+       FillCreditCardNumberWithUnequalSizeSplits) {
   // Case 3: card with 15 digits number, broken up into three unequal groups, of
   // lengths 4, 6, and 5.
   CreditCardTestCase test;
@@ -1645,7 +1164,8 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithUnequalSizeSplits) {
   EXPECT_EQ(test.card_number_, cc_number_full.value);
 }
 
-TEST_F(AutofillFieldFillerTest, PreviewCreditCardNumberWithUnequalSizeSplits) {
+TEST_F(FieldFillingPaymentsUtilTest,
+       PreviewCreditCardNumberWithUnequalSizeSplits) {
   // Case 3: card with 15 digits number, broken up into three unequal groups, of
   // lengths 4, 6, and 5.
   CreditCardTestCase test;
@@ -1697,334 +1217,7 @@ TEST_F(AutofillFieldFillerTest, PreviewCreditCardNumberWithUnequalSizeSplits) {
   EXPECT_EQ(obfuscated_card_number, cc_number_full.value);
 }
 
-// Tests that text state fields are filled correctly depending on their
-// maxlength attribute value.
-struct FillStateTextTestCase {
-  HtmlFieldType field_type;
-  size_t field_max_length;
-  std::u16string value_to_fill;
-  std::u16string expected_value;
-  bool should_fill;
-};
-
-class AutofillStateTextTest
-    : public AutofillFieldFillerTest,
-      public testing::WithParamInterface<FillStateTextTestCase> {};
-
-TEST_P(AutofillStateTextTest, FillStateText) {
-  auto test_case = GetParam();
-  AutofillField field;
-  field.SetHtmlType(test_case.field_type, HtmlFieldMode());
-  field.max_length = test_case.field_max_length;
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  AutofillProfile address = test::GetFullProfile();
-  address.SetRawInfo(ADDRESS_HOME_STATE, test_case.value_to_fill);
-  bool has_filled = filler.FillFormField(
-      field, &address, /*forced_fill_values=*/{}, &field,
-      /*cvc=*/std::u16string(), mojom::ActionPersistence::kFill);
-
-  EXPECT_EQ(test_case.should_fill, has_filled);
-  EXPECT_EQ(test_case.expected_value, field.value);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    AutofillFieldFillerTest,
-    AutofillStateTextTest,
-    testing::Values(
-        // Filling a state to a text field with the default maxlength value
-        // should
-        // fill the state value as is.
-        FillStateTextTestCase{HtmlFieldType::kAddressLevel1,
-                              /* default value */ 0, u"New York", u"New York",
-                              true},
-        FillStateTextTestCase{HtmlFieldType::kAddressLevel1,
-                              /* default value */ 0, u"NY", u"NY", true},
-        // Filling a state to a text field with a maxlength value equal to the
-        // value's length should fill the state value as is.
-        FillStateTextTestCase{HtmlFieldType::kAddressLevel1, 8, u"New York",
-                              u"New York", true},
-        // Filling a state to a text field with a maxlength value lower than the
-        // value's length but higher than the value's abbreviation should fill
-        // the state abbreviation.
-        FillStateTextTestCase{HtmlFieldType::kAddressLevel1, 2, u"New York",
-                              u"NY", true},
-        FillStateTextTestCase{HtmlFieldType::kAddressLevel1, 2, u"NY", u"NY",
-                              true},
-        // Filling a state to a text field with a maxlength value lower than the
-        // value's length and the value's abbreviation should not fill at all.
-        FillStateTextTestCase{HtmlFieldType::kAddressLevel1, 1, u"New York",
-                              u"", false},
-        FillStateTextTestCase{HtmlFieldType::kAddressLevel1, 1, u"NY", u"",
-                              false},
-        // Filling a state to a text field with a maxlength value lower than the
-        // value's length and that has no associated abbreviation should not
-        // fill at all.
-        FillStateTextTestCase{HtmlFieldType::kAddressLevel1, 3, u"Quebec", u"",
-                              false}));
-
-// Tests that augment phone country code fields are filled correctly.
-struct FillAugmentedPhoneCountryCodeTestCase {
-  std::vector<const char*> phone_country_code_selection_options;
-  std::u16string phone_home_whole_number_value;
-  std::u16string expected_value;
-};
-
-class AutofillFillAugmentedPhoneCountryCodeTest
-    : public AutofillFieldFillerTest,
-      public testing::WithParamInterface<
-          FillAugmentedPhoneCountryCodeTestCase> {};
-
-void DoTestFillAugmentedPhoneCountryCodeField(
-    const FillAugmentedPhoneCountryCodeTestCase& test_case,
-    FormControlType field_type) {
-  AutofillField field(test::CreateTestSelectOrSelectListField(
-      /*label=*/"", /*name=*/"", /*value=*/"", /*autocomplete=*/"",
-      test_case.phone_country_code_selection_options,
-      test_case.phone_country_code_selection_options, field_type));
-  field.set_heuristic_type(GetActiveHeuristicSource(), PHONE_HOME_COUNTRY_CODE);
-
-  AutofillProfile address(AddressCountryCode("US"));
-  address.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                     test_case.phone_home_whole_number_value);
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(field.value, test_case.expected_value);
-}
-
-TEST_P(AutofillFillAugmentedPhoneCountryCodeTest,
-       FillAugmentedPhoneCountryCodeField) {
-  DoTestFillAugmentedPhoneCountryCodeField(GetParam(),
-                                           FormControlType::kSelectOne);
-}
-
-TEST_P(AutofillFillAugmentedPhoneCountryCodeTest,
-       FillAugmentedPhoneCountryCodeSelectListField) {
-  DoTestFillAugmentedPhoneCountryCodeField(GetParam(),
-                                           FormControlType::kSelectList);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    AutofillFieldFillerTest,
-    AutofillFillAugmentedPhoneCountryCodeTest,
-    testing::Values(
-        // Filling phone country code selection field when one of the options
-        // exactly matches the phone country code.
-        FillAugmentedPhoneCountryCodeTestCase{{"91", "1", "20", "49"},
-                                              u"+15145554578",
-                                              u"1"},
-        // Filling phone country code selection field when the options
-        // are preceded by a plus sign and the field is of
-        // `PHONE_HOME_COUNTRY_CODE` type.
-        FillAugmentedPhoneCountryCodeTestCase{{"+91", "+1", "+20", "+49"},
-                                              u"+918890888888",
-                                              u"+91"},
-        // Filling phone country code selection field when the options
-        // are preceded by a '00' and the field is of `PHONE_HOME_COUNTRY_CODE`
-        // type.
-        FillAugmentedPhoneCountryCodeTestCase{{"0091", "001", "0020", "0049"},
-                                              u"+918890888888",
-                                              u"0091"},
-        // Filling phone country code selection field when the options are
-        // composed of the country code and the country name.
-        FillAugmentedPhoneCountryCodeTestCase{
-            {"Please select an option", "+91 (India)", "+1 (United States)",
-             "+20 (Egypt)", "+49 (Germany)"},
-            u"+49151669087345",
-            u"+49 (Germany)"},
-        // Filling phone country code selection field when the options are
-        // composed of the country code having whitespace and the country name.
-        FillAugmentedPhoneCountryCodeTestCase{
-            {"Please select an option", "(00 91) India", "(00 1) United States",
-             "(00 20) Egypt", "(00 49) Germany"},
-            u"+49151669087345",
-            u"(00 49) Germany"},
-        // Filling phone country code selection field when the options are
-        // composed of the country code that is preceded by '00' and the country
-        // name.
-        FillAugmentedPhoneCountryCodeTestCase{
-            {"Please select an option", "(0091) India", "(001) United States",
-             "(0020) Egypt", "(0049) Germany"},
-            u"+49151669087345",
-            u"(0049) Germany"}));
-
-// Tests that the abbreviated state names are selected correctly.
-TEST_F(AutofillFieldFillerTest, FillSelectAbbreviatedState) {
-  test::ClearAlternativeStateNameMapForTesting();
-  test::PopulateAlternativeStateNameMapForTesting();
-
-  AutofillField field = CreateTestSelectAutofillField({"BA", "BB", "BC", "BY"},
-                                                      ADDRESS_HOME_STATE);
-  AutofillProfile address(AddressCountryCode("DE"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"BY", field.value);
-}
-
-// Tests that the localized state names are selected correctly.
-TEST_F(AutofillFieldFillerTest, FillSelectLocalizedState) {
-  test::ClearAlternativeStateNameMapForTesting();
-  test::PopulateAlternativeStateNameMapForTesting();
-
-  AutofillField field = CreateTestSelectAutofillField(
-      {"Bayern", "Berlin", "Brandenburg", "Bremen"}, ADDRESS_HOME_STATE);
-  AutofillProfile address(AddressCountryCode("DE"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"Bayern", field.value);
-}
-
-// Tests that the state names are selected correctly when the state name exists
-// as a substring in the selection options.
-TEST_F(AutofillFieldFillerTest, FillSelectLocalizedStateSubstring) {
-  test::ClearAlternativeStateNameMapForTesting();
-  test::PopulateAlternativeStateNameMapForTesting();
-
-  AutofillField field = CreateTestSelectAutofillField(
-      {"Bavaria Has Munich", "Berlin has Berlin"}, ADDRESS_HOME_STATE);
-  AutofillProfile address(AddressCountryCode("DE"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"Bavaria Has Munich", field.value);
-}
-
-// Tests that the state abbreviations are filled in the text field when the
-// field length is limited.
-TEST_F(AutofillFieldFillerTest, FillStateAbbreviationInTextField) {
-  test::ClearAlternativeStateNameMapForTesting();
-  test::PopulateAlternativeStateNameMapForTesting();
-
-  AutofillField field(
-      CreateTestFormField("State", "state", "", FormControlType::kInputText));
-  field.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_STATE);
-  field.max_length = 4;
-
-  AutofillProfile address(AddressCountryCode("DE"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"BY", field.value);
-}
-
-// Tests that the state names are selected correctly even though the state
-// value saved in the address is not recognized by the AlternativeStateNameMap.
-TEST_F(AutofillFieldFillerTest, FillStateFieldWithSavedValueInProfile) {
-  test::ClearAlternativeStateNameMapForTesting();
-  test::PopulateAlternativeStateNameMapForTesting();
-
-  AutofillField field = CreateTestSelectAutofillField(
-      {"Bavari", "Berlin", "Lower Saxony"}, ADDRESS_HOME_STATE);
-  AutofillProfile address(AddressCountryCode("DE"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavari");
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"Bavari", field.value);
-}
-
-// Tests that Autofill does not wrongly fill the state when the appropriate
-// state is not in the list of selection options given that the abbreviation is
-// saved in the profile.
-TEST_F(AutofillFieldFillerTest, FillStateFieldWhenStateIsNotInOptions) {
-  test::ClearAlternativeStateNameMapForTesting();
-  test::PopulateAlternativeStateNameMapForTesting(
-      "US", "Colorado",
-      {{.canonical_name = "Colorado",
-        .abbreviations = {"CO"},
-        .alternative_names = {}}});
-
-  AutofillField field = CreateTestSelectAutofillField(
-      {"Connecticut", "California"}, ADDRESS_HOME_STATE);
-  AutofillProfile address(AddressCountryCode("US"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"", field.value);
-}
-
-// Tests that Autofill uses the static states data of US as a fallback mechanism
-// for filling when |AlternativeStateNameMap| is not populated.
-TEST_F(AutofillFieldFillerTest,
-       FillStateFieldWhenAlternativeStateNameMapIsNotPopulated) {
-  test::ClearAlternativeStateNameMapForTesting();
-
-  AutofillField field = CreateTestSelectAutofillField(
-      {"Colorado", "Connecticut", "California"}, ADDRESS_HOME_STATE);
-  AutofillProfile address(AddressCountryCode("US"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"Colorado", field.value);
-}
-
-// Tests that Autofill fills upper case abbreviation in the input field when
-// field length is limited.
-TEST_F(AutofillFieldFillerTest, FillUpperCaseAbbreviationInStateTextField) {
-  test::ClearAlternativeStateNameMapForTesting();
-  test::PopulateAlternativeStateNameMapForTesting("DE", "Bavaria",
-                                                  {{.canonical_name = "Bavaria",
-                                                    .abbreviations = {"by"},
-                                                    .alternative_names = {}}});
-
-  AutofillField field{
-      CreateTestFormField("State", "state", "", FormControlType::kInputText)};
-  field.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_STATE);
-  field.max_length = 4;
-
-  AutofillProfile address(AddressCountryCode("DE"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"BY", field.value);
-}
-
-// Tests that Autofill does not fill the state when abbreviated data is stored
-// in the profile and none of the options match with the abbreviated state.
-TEST_F(AutofillFieldFillerTest,
-       DoNotFillStateFieldWhenAbbrStoredInProfileAndNotInOptionsList) {
-  test::ClearAlternativeStateNameMapForTesting();
-
-  AutofillField field = CreateTestSelectAutofillField(
-      {"Colombia", "Connecticut", "California"}, ADDRESS_HOME_STATE);
-  AutofillProfile address(AddressCountryCode("US"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"", field.value);
-}
-
-TEST_F(AutofillFieldFillerTest, PreviewVirtualMonth) {
+TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualMonth) {
   AutofillField field;
   field.form_control_type = FormControlType::kInputText;
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -2048,7 +1241,7 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualMonth) {
   EXPECT_EQ(kMidlineEllipsis2Dots, field.value);
 }
 
-TEST_F(AutofillFieldFillerTest, PreviewVirtualYear) {
+TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualYear) {
   AutofillField field;
   field.form_control_type = FormControlType::kInputText;
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -2072,7 +1265,7 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualYear) {
   EXPECT_EQ(kMidlineEllipsis2Dots, field.value);
 }
 
-TEST_F(AutofillFieldFillerTest, PreviewVirtualShortenedYear) {
+TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedYear) {
   // Test reducing 4 digit year to 2 digits.
   AutofillField field;
   field.max_length = 2;
@@ -2090,7 +1283,7 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualShortenedYear) {
   EXPECT_EQ(kMidlineEllipsis2Dots, field.value);
 }
 
-TEST_F(AutofillFieldFillerTest, PreviewVirtualDate) {
+TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualDate) {
   AutofillField field;
   field.form_control_type = FormControlType::kInputText;
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -2125,7 +1318,7 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualDate) {
   EXPECT_EQ(expected, field.value);
 }
 
-TEST_F(AutofillFieldFillerTest, PreviewVirtualShortenedDate) {
+TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedDate) {
   // Test reducing dates to various max length field values.
   AutofillField field;
   field.form_control_type = FormControlType::kInputText;
@@ -2177,7 +1370,7 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualShortenedDate) {
   EXPECT_EQ(expected, field.value);
 }
 
-TEST_F(AutofillFieldFillerTest, PreviewVirtualCVC) {
+TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualCVC) {
   AutofillField field;
   field.form_control_type = FormControlType::kInputText;
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -2193,7 +1386,7 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCVC) {
   EXPECT_EQ(kMidlineEllipsis3Dots, field.value);
 }
 
-TEST_F(AutofillFieldFillerTest, PreviewVirtualCVCAmericanExpress) {
+TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualCVCAmericanExpress) {
   AutofillField field;
   field.form_control_type = FormControlType::kInputText;
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -2209,7 +1402,7 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCVCAmericanExpress) {
   EXPECT_EQ(kMidlineEllipsis4Dots, field.value);
 }
 
-TEST_F(AutofillFieldFillerTest, PreviewVirtualCardNumber) {
+TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualCardNumber) {
   AutofillField field;
   field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_NUMBER);
   field.form_control_type = FormControlType::kInputText;
@@ -2235,7 +1428,8 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCardNumber) {
 
 // Verify that the obfuscated virtual card number is returned if the offset is
 // greater than 0 and the offset exceeds the length.
-TEST_F(AutofillFieldFillerTest, PreviewVirtualCardNumber_OffsetExceedsLength) {
+TEST_F(FieldFillingPaymentsUtilTest,
+       PreviewVirtualCardNumber_OffsetExceedsLength) {
   AutofillField field;
   field.max_length = 17;
   field.set_credit_card_number_offset(18);
@@ -2260,7 +1454,7 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCardNumber_OffsetExceedsLength) {
   EXPECT_EQ(expected, field.value);
 }
 
-TEST_F(AutofillFieldFillerTest, PreviewVirtualCardholderName) {
+TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualCardholderName) {
   std::u16string name = u"Jone Doe";
 
   AutofillField field;
@@ -2277,5 +1471,7 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCardholderName) {
                        /*failure_to_fill*/ nullptr);
   EXPECT_EQ(name, field.value);
 }
+
+}  // namespace
 
 }  // namespace autofill

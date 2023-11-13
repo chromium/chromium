@@ -11,6 +11,80 @@
 namespace autofill {
 namespace {
 
+class AutofillFieldTest : public testing::Test {
+ public:
+  AutofillFieldTest() = default;
+
+ private:
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
+};
+
+// Tests that if both autocomplete attributes and server agree it's a phone
+// field, always use server predicted type. If they disagree with autocomplete
+// says it's a phone field, always use autocomplete attribute.
+TEST_F(AutofillFieldTest, Type_ServerPredictionOfCityAndNumber_OverrideHtml) {
+  AutofillField field;
+
+  field.SetHtmlType(HtmlFieldType::kTel, HtmlFieldMode::kNone);
+
+  field.set_server_predictions(
+      {::autofill::test::CreateFieldPrediction(PHONE_HOME_CITY_AND_NUMBER)});
+  EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER, field.Type().GetStorableType());
+
+  // Overrides to another number format.
+  field.set_server_predictions(
+      {::autofill::test::CreateFieldPrediction(PHONE_HOME_NUMBER)});
+  EXPECT_EQ(PHONE_HOME_NUMBER, field.Type().GetStorableType());
+
+  // Overrides autocomplete=tel-national too.
+  field.SetHtmlType(HtmlFieldType::kTelNational, HtmlFieldMode::kNone);
+  field.set_server_predictions(
+      {::autofill::test::CreateFieldPrediction(PHONE_HOME_WHOLE_NUMBER)});
+  EXPECT_EQ(PHONE_HOME_WHOLE_NUMBER, field.Type().GetStorableType());
+
+  // If autocomplete=tel-national but server says it's not a phone field,
+  // do not override.
+  field.SetHtmlType(HtmlFieldType::kTelNational, HtmlFieldMode::kNone);
+  field.set_server_predictions({::autofill::test::CreateFieldPrediction(
+      CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR)});
+  EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER, field.Type().GetStorableType());
+
+  // If html type not specified, we still use server prediction.
+  field.SetHtmlType(HtmlFieldType::kUnspecified, HtmlFieldMode::kNone);
+  field.set_server_predictions(
+      {::autofill::test::CreateFieldPrediction(PHONE_HOME_CITY_AND_NUMBER)});
+  EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER, field.Type().GetStorableType());
+}
+
+TEST_F(AutofillFieldTest, IsFieldFillable) {
+  AutofillField field;
+  ASSERT_EQ(UNKNOWN_TYPE, field.Type().GetStorableType());
+
+  // Type is unknown.
+  EXPECT_FALSE(field.IsFieldFillable());
+
+  // Only heuristic type is set.
+  field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
+  EXPECT_TRUE(field.IsFieldFillable());
+
+  // Only server type is set.
+  field.set_heuristic_type(GetActiveHeuristicSource(), UNKNOWN_TYPE);
+  field.set_server_predictions(
+      {::autofill::test::CreateFieldPrediction(NAME_LAST)});
+  EXPECT_TRUE(field.IsFieldFillable());
+
+  // Both types set.
+  field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
+  field.set_server_predictions(
+      {::autofill::test::CreateFieldPrediction(NAME_LAST)});
+  EXPECT_TRUE(field.IsFieldFillable());
+
+  // Field has autocomplete="off" set. Since autofill was able to make a
+  // prediction, it is still considered a fillable field.
+  field.should_autocomplete = false;
+  EXPECT_TRUE(field.IsFieldFillable());
+}
+
 // Parameters for `PrecedenceOverAutocompleteTest`
 struct PrecedenceOverAutocompleteParams {
   // These values are used to parameterize feature
