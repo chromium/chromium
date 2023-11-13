@@ -435,15 +435,18 @@ class OriginIsolationPrerenderOptInHeaderTest
   }
 
   void set_prerender_web_contents(WebContents* web_contents) {
-    prerender_web_contents_ = web_contents;
+    prerender_web_contents_ = web_contents->GetWeakPtr();
   }
-  WebContents* prerender_web_contents() { return prerender_web_contents_; }
+  WebContents* prerender_web_contents() {
+    CHECK(prerender_web_contents_);
+    return prerender_web_contents_.get();
+  }
 
  protected:
   test::PrerenderTestHelper prerender_helper_;
 
  private:
-  raw_ptr<WebContents, DanglingUntriaged> prerender_web_contents_;
+  base::WeakPtr<WebContents> prerender_web_contents_;
 };  // class OriginIsolationPrerenderOptInHeaderTest
 
 // As in OriginIsolationOptInHeaderTest, but with same-process origin
@@ -2660,8 +2663,9 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](URLLoaderInterceptor::RequestParams* params) {
         if (params->url_request.url.host() == "foo.com") {
-          if (params->url_request.url.path() != "/")
+          if (params->url_request.url.path() != "/") {
             return false;
+          }
 
           const std::string headers =
               "HTTP/1.1 200 OK\n"
@@ -3079,8 +3083,8 @@ class InjectIsolationRequestingNavigation
     return true;
   }
 
-  raw_ptr<OriginIsolationOptInHeaderTest> test_framework_;
-  raw_ptr<Shell, DanglingUntriaged> tab2_;
+  raw_ptr<OriginIsolationOptInHeaderTest> test_framework_ = nullptr;
+  raw_ptr<Shell> tab2_ = nullptr;
   const raw_ref<const GURL> url_;
   bool was_called_ = false;
 };
@@ -3513,8 +3517,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, Subframe) {
 // https://crbug.com/711006.
 IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
                        NoOOPIFWhenIsolatedOriginNavigatesToNonIsolatedOrigin) {
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   GURL top_url(
       embedded_test_server()->GetURL("www.foo.com", "/page_with_iframe.html"));
@@ -3898,8 +3903,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, ProcessLimit) {
   // the site-less SiteInstance is allowed to reuse the first tab's foo.com
   // process (which isn't dedicated), and then it swaps to the isolated.foo.com
   // process during navigation.
-  if (!AreAllSitesIsolatedForTesting())
+  if (!AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ(child->current_frame_host()->GetProcess(), isolated_foo_process);
+  }
 
   // Navigate iframe on the first tab to a non-isolated site.  This should swap
   // processes so that it does not reuse the isolated origin's process.
@@ -4355,10 +4361,12 @@ class StoragePartitonInterceptor
       const blink::StorageKey& storage_key,
       const blink::LocalFrameToken& local_frame_token,
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver) override {
-    if (save_first_local_frame_token_ && !saved_first_local_frame_token_)
+    if (save_first_local_frame_token_ && !saved_first_local_frame_token_) {
       saved_first_local_frame_token_ = local_frame_token;
-    if (saved_first_local_frame_token_ && !local_frame_token_to_inject_)
+    }
+    if (saved_first_local_frame_token_ && !local_frame_token_to_inject_) {
       local_frame_token_to_inject_ = saved_first_local_frame_token_;
+    }
     GetForwardingInterface()->OpenLocalStorage(
         storage_key_to_inject_ ? *storage_key_to_inject_ : storage_key,
         local_frame_token_to_inject_ ? *local_frame_token_to_inject_
@@ -4374,10 +4382,12 @@ class StoragePartitonInterceptor
       const blink::LocalFrameToken& local_frame_token,
       const std::string& namespace_id,
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver) override {
-    if (save_first_local_frame_token_ && !saved_first_local_frame_token_)
+    if (save_first_local_frame_token_ && !saved_first_local_frame_token_) {
       saved_first_local_frame_token_ = local_frame_token;
-    if (saved_first_local_frame_token_ && !local_frame_token_to_inject_)
+    }
+    if (saved_first_local_frame_token_ && !local_frame_token_to_inject_) {
       local_frame_token_to_inject_ = saved_first_local_frame_token_;
+    }
     GetForwardingInterface()->BindSessionStorageArea(
         storage_key_to_inject_ ? *storage_key_to_inject_ : storage_key,
         local_frame_token_to_inject_ ? *local_frame_token_to_inject_
@@ -4389,7 +4399,7 @@ class StoragePartitonInterceptor
   static absl::optional<blink::LocalFrameToken> saved_first_local_frame_token_;
   // Keep a pointer to the original implementation of the service, so all
   // calls can be forwarded to it.
-  raw_ptr<blink::mojom::DomStorage> dom_storage_;
+  raw_ptr<blink::mojom::DomStorage> dom_storage_ = nullptr;
   absl::optional<blink::StorageKey> storage_key_to_inject_;
   absl::optional<blink::LocalFrameToken> local_frame_token_to_inject_;
   bool save_first_local_frame_token_;
@@ -5058,8 +5068,9 @@ class IsolatedOriginTrialOverrideTest : public IsolatedOriginFieldTrialTest {
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedOriginTrialOverrideTest, Test) {
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
   EXPECT_FALSE(IsIsolatedOrigin(GURL("https://field.trial.com/")));
   EXPECT_FALSE(IsIsolatedOrigin(GURL("https://bar.com/")));
 }
@@ -5086,8 +5097,9 @@ class IsolatedOriginPolicyOverrideTest : public IsolatedOriginFieldTrialTest {
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedOriginPolicyOverrideTest, Test) {
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
   EXPECT_FALSE(IsIsolatedOrigin(GURL("https://field.trial.com/")));
   EXPECT_FALSE(IsIsolatedOrigin(GURL("https://bar.com/")));
 }
@@ -5226,8 +5238,9 @@ class DynamicIsolatedOriginTest : public IsolatedOriginTest {
 IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
                        IsolationAppliesToFutureBrowsingInstances) {
   // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   // Start on a non-isolated origin with same-site iframe.
   GURL foo_url(
@@ -5332,8 +5345,9 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
 // BrowsingInstances only, focusing on various main frame navigations.
 IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, MainFrameNavigations) {
   // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   // Create three windows on a non-isolated origin.
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
@@ -5422,8 +5436,9 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, MainFrameNavigations) {
 // for the same origin from accessing cookies.
 IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, OldProcessCanAccessCookies) {
   // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
@@ -5503,8 +5518,9 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, OldProcessCanAccessCookies) {
 // start to be treated as cross-site for process model decisions.
 IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, IsolatedSubdomain) {
   // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   GURL foo_url(
       embedded_test_server()->GetURL("foo.com", "/page_with_iframe.html"));
@@ -5553,8 +5569,9 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, IsolatedSubdomain) {
 IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
                        NewBrowsingInstanceInOldProcess) {
   // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   // Force process reuse for main frames in new BrowsingInstances.
   RenderProcessHost::SetMaxRendererProcessCount(1);
@@ -5662,8 +5679,9 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
 IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
                        LockedProcessNotReusedForNonisolatedSameSiteNavigation) {
   // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   // Set the process limit to 1.
   RenderProcessHost::SetMaxRendererProcessCount(1);
@@ -5721,8 +5739,9 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
 // and that they don't apply to other profiles.
 IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, PerProfileIsolation) {
   // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   // Create a browser in a different profile.
   BrowserContext* main_context = shell()->web_contents()->GetBrowserContext();
@@ -5781,8 +5800,9 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, PerProfileIsolation) {
 // there are no script references to the frame being navigated.
 IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, ForceBrowsingInstanceSwap) {
   // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   // Navigate to a non-isolated page with a cross-site iframe.  The frame
   // shouldn't be in an OOPIF.
@@ -5838,8 +5858,9 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, ForceBrowsingInstanceSwap) {
 IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
                        ForceBrowsingInstanceSwap_RendererInitiated) {
   // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   // Navigate to a foo.com page.
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
@@ -5889,8 +5910,9 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
 IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
                        DontForceBrowsingInstanceSwapWhenScriptReferencesExist) {
   // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   // Navigate to a page that won't be in a dedicated process.
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
@@ -5929,8 +5951,9 @@ IN_PROC_BROWSER_TEST_F(
     DynamicIsolatedOriginTest,
     DontForceBrowsingInstanceSwapWithPendingNavigationInNewWindow) {
   // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   // Navigate to a page that won't be in a dedicated process.
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
@@ -5993,8 +6016,9 @@ class IsolatedOriginTestWithStrictSiteInstances : public IsolatedOriginTest {
 IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
                        NonIsolatedFramesCanShareDefaultProcess) {
   // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   GURL top_url(
       embedded_test_server()->GetURL("/frame_tree/page_with_two_frames.html"));
@@ -6056,8 +6080,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
 IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
                        IsolatedChildWithNonIsolatedGrandchild) {
   // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   GURL top_url(
       embedded_test_server()->GetURL("www.foo.com", "/page_with_iframe.html"));
@@ -6119,8 +6144,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
 IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
                        SubframeNavigatesOutofIsolationThenToIsolation) {
   // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   GURL isolated_url(embedded_test_server()->GetURL("isolated.foo.com",
                                                    "/page_with_iframe.html"));
@@ -6172,8 +6198,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
 IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
                        NonIsolatedPopup) {
   // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   GURL foo_url(
       embedded_test_server()->GetURL("www.foo.com", "/page_with_iframe.html"));
@@ -6445,8 +6472,9 @@ class COOPIsolationTest : public IsolatedOriginTestBase {
 // gesture) triggers isolation for that site within the current
 // BrowsingInstance.
 IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SameOrigin) {
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   GURL no_coop_url = https_server()->GetURL("a.com", "/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), no_coop_url));
@@ -6513,8 +6541,9 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SameOrigin) {
 // Verify that the same-origin-allow-popups COOP header value triggers
 // isolation, and that this behaves sanely with window.open().
 IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SameOriginAllowPopups) {
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   // Navigate to a coop.com URL with COOP.
   GURL coop_url = https_server()->GetURL(
@@ -6593,8 +6622,9 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SameOriginAllowPopups) {
 // (*) In the future, COOP may disallow document.domain, in which case we may
 // need to revisit this.  See https://github.com/whatwg/html/issues/6177.
 IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SiteGranularity) {
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   // Navigate to a URL with COOP, where the origin doesn't match the site.
   GURL coop_url = https_server()->GetURL(
@@ -6837,8 +6867,9 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SiteAlreadyRequiresDedicatedProcess) {
 // of that document's site in future BrowsingInstances, but doesn't affect any
 // existing BrowsingInstances.
 IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivation) {
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   GURL coop_url = https_server()->GetURL(
       "b.com", "/set-header?Cross-Origin-Opener-Policy: same-origin");
@@ -6939,8 +6970,9 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivation) {
 // subframe also triggers isolation of a COOP site in the main frame for future
 // BrowsingInstances.
 IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivationInSubframe) {
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   GURL coop_url = https_server()->GetURL(
       "b.com", "/set-header?Cross-Origin-Opener-Policy: same-origin");
@@ -7151,8 +7183,9 @@ IN_PROC_BROWSER_TEST_P(JITIsolationTest, DefaultSiteTest) {
   // Skip the test if --site-per-process is used on the command line, as the
   // test needs to run without strict site isolation (see
   // JitContentBrowserClient below).
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   bool jit_disabled_by_default = GetParam();
   JitContentBrowserClient policy(jit_disabled_by_default,
