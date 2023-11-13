@@ -198,9 +198,9 @@ std::unique_ptr<WebState> CreateUnrealizedWebStateWithItems(
   // TODO(crbug.com/1383087): remove when the feature has launched.
   if (!features::UseSessionSerializationOptimizations()) {
     CRWSessionStorage* session_storage =
-        [[CRWSessionStorage alloc] initWithProto:storage];
-    session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-    session_storage.uniqueIdentifier = web::WebStateID::NewUnique();
+        [[CRWSessionStorage alloc] initWithProto:storage
+                                uniqueIdentifier:web::WebStateID::NewUnique()
+                                stableIdentifier:[[NSUUID UUID] UUIDString]];
 
     std::unique_ptr<WebState> web_state = WebState::CreateWithStorageSession(
         WebState::CreateParams(browser_state), session_storage);

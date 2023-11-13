@@ -38,8 +38,11 @@ class WebStateStorage;
 @property(nonatomic, assign) base::Time lastActiveTime;
 @property(nonatomic, assign) base::Time creationTime;
 
-// Convenience initializer that creates an instance from proto representation.
-- (instancetype)initWithProto:(const web::proto::WebStateStorage&)storage;
+// Convenience initializer that creates an instance from proto representation
+// and identifiers.
+- (instancetype)initWithProto:(const web::proto::WebStateStorage&)storage
+             uniqueIdentifier:(web::WebStateID)uniqueIdentifier
+             stableIdentifier:(NSString*)stableIdentifier;
 
 // Serializes the CRWSessionStorage into `storage`.
 - (void)serializeToProto:(web::proto::WebStateStorage&)storage;

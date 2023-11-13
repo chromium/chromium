@@ -321,11 +321,10 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   if (!web::features::UseSessionSerializationOptimizations()) {
     if (!_cachedSessionStorage) {
       _cachedSessionStorage = [[CRWSessionStorage alloc]
-          initWithProto:_cachedProtobufStorage.storage];
+             initWithProto:_cachedProtobufStorage.storage
+          uniqueIdentifier:_cachedProtobufStorage.webStateID
+          stableIdentifier:[[NSUUID UUID] UUIDString]];
 
-      _cachedSessionStorage.stableIdentifier = [[NSUUID UUID] UUIDString];
-      _cachedSessionStorage.uniqueIdentifier =
-          _cachedProtobufStorage.webStateID;
       _cachedProtobufStorage = nil;
     }
     DCHECK(_cachedSessionStorage);

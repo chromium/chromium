@@ -608,9 +608,10 @@ CRWSessionStorage* WebStateImpl::BuildSessionStorage() const {
 
     // Convert the proto::WebStateStorage to CRWSessionStorage as this
     // is still the format used outside of //ios/web.
-    session_storage = [[CRWSessionStorage alloc] initWithProto:storage];
-    session_storage.stableIdentifier = GetStableIdentifier();
-    session_storage.uniqueIdentifier = GetUniqueIdentifier();
+    session_storage =
+        [[CRWSessionStorage alloc] initWithProto:storage
+                                uniqueIdentifier:GetUniqueIdentifier()
+                                stableIdentifier:GetStableIdentifier()];
   } else {
     session_storage = saved_->GetSessionStorage();
   }

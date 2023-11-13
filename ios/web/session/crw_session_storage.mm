@@ -50,12 +50,14 @@ NSString* const kTabIdKey = @"TabId";
 
 @implementation CRWSessionStorage
 
-- (instancetype)initWithProto:(const web::proto::WebStateStorage&)storage {
+- (instancetype)initWithProto:(const web::proto::WebStateStorage&)storage
+             uniqueIdentifier:(web::WebStateID)uniqueIdentifier
+             stableIdentifier:(NSString*)stableIdentifier {
   if ((self = [super init])) {
-    // As the protobuf message does not contain the unique or stable
-    // identifiers, generate new random values.
-    _uniqueIdentifier = web::WebStateID::NewUnique();
-    _stableIdentifier = [[NSUUID UUID] UUIDString];
+    DCHECK(uniqueIdentifier.valid());
+    DCHECK(stableIdentifier.length);
+    _uniqueIdentifier = uniqueIdentifier;
+    _stableIdentifier = stableIdentifier;
 
     _hasOpener = storage.has_opener();
     _userAgentType = web::UserAgentTypeFromProto(storage.user_agent());

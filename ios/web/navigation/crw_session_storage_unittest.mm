@@ -131,7 +131,9 @@ TEST_F(CRWSessionStorageTest, EncodeDecodeToProto) {
   [session_storage_ serializeToProto:storage];
 
   CRWSessionStorage* decoded =
-      [[CRWSessionStorage alloc] initWithProto:storage];
+      [[CRWSessionStorage alloc] initWithProto:storage
+                              uniqueIdentifier:web::WebStateID::NewUnique()
+                              stableIdentifier:[[NSUUID UUID] UUIDString]];
 
   // The serialization to proto does not maintain the following properties
   // - stableIdentifier
