@@ -285,7 +285,7 @@ vars = {
   'sysroots_json_path': 'build/linux/sysroot_scripts/sysroots.json',
 
   # siso CIPD package version.
-  'siso_version': 'git_revision:9aef05a1a1bddf2cf8e60bc7d9312c7afbfbe9a2',
+  'siso_version': 'git_revision:c4b451b1bbfc63c12459aba4960686f8a82417df',
 
   # download libaom test data
   'download_libaom_testdata': False,
