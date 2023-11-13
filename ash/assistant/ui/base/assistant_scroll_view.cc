@@ -20,6 +20,8 @@ namespace {
 // ContentView ----------------------------------------------------------------
 
 class ContentView : public views::View, views::ViewObserver {
+  METADATA_HEADER(ContentView, views::View)
+
  public:
   ContentView() { AddObserver(this); }
 
@@ -46,6 +48,9 @@ class ContentView : public views::View, views::ViewObserver {
     PreferredSizeChanged();
   }
 };
+
+BEGIN_METADATA(ContentView)
+END_METADATA
 
 }  // namespace
 

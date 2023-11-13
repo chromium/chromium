@@ -11,6 +11,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/animation_abort_handle.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
@@ -34,6 +35,8 @@ class ASH_EXPORT DeskMiniView : public views::View,
                                 public Desk::Observer,
                                 public views::TextfieldController,
                                 public views::ViewObserver {
+  METADATA_HEADER(DeskMiniView, views::View)
+
  public:
   // Returns the width of the desk preview based on its |preview_height| and the
   // aspect ratio of the root window taken from |root_window_size|.

@@ -9,6 +9,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
@@ -222,5 +223,8 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
     return;
   }
 }
+
+BEGIN_METADATA(SplitViewHighlightView)
+END_METADATA
 
 }  // namespace ash

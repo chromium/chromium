@@ -84,6 +84,9 @@ GlanceablesTasksViewBase::GlanceablesTasksViewBase(
     DetailedViewDelegate* delegate)
     : GlanceableTrayChildBubble(delegate, /*for_glanceables_container=*/true) {}
 
+BEGIN_METADATA(GlanceablesTasksViewBase)
+END_METADATA
+
 GlanceablesTasksView::GlanceablesTasksView(
     DetailedViewDelegate* delegate,
     const ui::ListModel<api::TaskList>* task_lists)

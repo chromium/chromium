@@ -9,6 +9,7 @@
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -19,6 +20,8 @@ namespace ash {
 // with rounded corners. If animations are needed, they are performed by
 // animating the layer's clip rect.
 class ASH_EXPORT SplitViewHighlightView : public views::View {
+  METADATA_HEADER(SplitViewHighlightView, views::View)
+
  public:
   explicit SplitViewHighlightView(bool is_right_or_bottom);
   ~SplitViewHighlightView() override;

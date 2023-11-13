@@ -39,6 +39,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -761,5 +762,8 @@ void DeskMiniView::LayoutDeskNameView(const gfx::Rect& preview_bounds) {
                                   text_width, desk_name_view_size.height()};
   desk_name_view_->SetBoundsRect(desk_name_view_bounds);
 }
+
+BEGIN_METADATA(DeskMiniView)
+END_METADATA
 
 }  // namespace ash

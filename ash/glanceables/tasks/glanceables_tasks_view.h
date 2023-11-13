@@ -34,6 +34,8 @@ class TasksComboboxModel;
 // Temporary interface to allow smooth migration from `TasksBubbleView` to
 // `GlanceablesTasksView`.
 class ASH_EXPORT GlanceablesTasksViewBase : public GlanceableTrayChildBubble {
+  METADATA_HEADER(GlanceablesTasksViewBase, GlanceableTrayChildBubble)
+
  public:
   explicit GlanceablesTasksViewBase(DetailedViewDelegate* delegate);
   GlanceablesTasksViewBase(const GlanceablesTasksViewBase&) = delete;
