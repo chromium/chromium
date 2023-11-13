@@ -222,7 +222,6 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
-#import "ios/chrome/browser/web/web_state_update_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -1002,8 +1001,6 @@ enum class ToolbarKind {
       [[SafeAreaProvider alloc] initWithBrowser:self.browser];
   _viewControllerDependencies.pagePlaceholderBrowserAgent =
       PagePlaceholderBrowserAgent::FromBrowser(self.browser);
-  _viewControllerDependencies.webStateUpdateBrowserAgent =
-      WebStateUpdateBrowserAgent::FromBrowser(self.browser);
 }
 
 - (void)updateViewControllerDependencies {
@@ -1069,7 +1066,6 @@ enum class ToolbarKind {
   _viewControllerDependencies.voiceSearchController = nil;
   _viewControllerDependencies.safeAreaProvider = nil;
   _viewControllerDependencies.pagePlaceholderBrowserAgent = nil;
-  _viewControllerDependencies.webStateUpdateBrowserAgent = nil;
 
   [_voiceSearchController dismissMicPermissionHelp];
   [_voiceSearchController disconnect];

@@ -50,7 +50,6 @@ class TabUsageRecorderBrowserAgent;
 @protocol LoadQueryCommands;
 class UrlLoadingBrowserAgent;
 @protocol VoiceSearchController;
-class WebStateUpdateBrowserAgent;
 
 typedef struct {
   BubblePresenter* bubblePresenter;
@@ -76,7 +75,6 @@ typedef struct {
   TabUsageRecorderBrowserAgent* tabUsageRecorderBrowserAgent;
   base::WeakPtr<WebStateList> webStateList;
   SafeAreaProvider* safeAreaProvider;
-  WebStateUpdateBrowserAgent* webStateUpdateBrowserAgent;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers
