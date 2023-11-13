@@ -214,7 +214,7 @@ void GlanceableTrayBubbleView::InitializeContents() {
         scroll_view_->contents()->AddChildView(std::make_unique<CalendarView>(
             detailed_view_delegate_.get(), /*for_glanceables_container=*/true));
     // TODO(b:277268122): Update with glanceable spec.
-    calendar_view_->SetPreferredSize(gfx::Size(kRevampedTrayMenuWidth, 400));
+    calendar_view_->SetPreferredSize(gfx::Size(kWideTrayMenuWidth, 400));
   }
 
   auto* const tasks_client =

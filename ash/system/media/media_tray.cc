@@ -109,7 +109,7 @@ class GlobalMediaControlsTitleView : public views::View {
       title_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
       TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
                                             *title_label_);
-      SetPreferredSize(gfx::Size(kRevampedTrayMenuWidth, kTitleViewHeight));
+      SetPreferredSize(gfx::Size(kWideTrayMenuWidth, kTitleViewHeight));
     } else {
       title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       title_label_->SetFontList(views::Label::GetDefaultFontList().Derive(
@@ -400,7 +400,7 @@ void MediaTray::ShowBubbleWithItem(const std::string& item_id) {
       MediaNotificationProvider::Get()->GetMediaNotificationListView(
           kMenuSeparatorWidth, /*should_clip_height=*/true, item_id));
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
-    bubble_view->SetPreferredWidth(kRevampedTrayMenuWidth);
+    bubble_view->SetPreferredWidth(kWideTrayMenuWidth);
     content_view_->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, 0, kMediaNotificationListViewBottomPadding, 0)));
   }

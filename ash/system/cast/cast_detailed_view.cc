@@ -78,8 +78,9 @@ std::unique_ptr<views::View> MakeButtonContainer() {
   manager->set_between_child_spacing(kTrayPopupLabelRightPadding);
   button_container->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::TLBR(0, 0, 0,
-                        kStopButtonExtraMargin + kQsExtraMarginsFromRightEdge));
+      gfx::Insets::TLBR(
+          0, 0, 0,
+          kStopButtonExtraMargin + kWideMenuExtraMarginsFromRightEdge));
   return button_container;
 }
 

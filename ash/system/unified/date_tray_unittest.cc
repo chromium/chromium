@@ -1026,7 +1026,7 @@ TEST_P(GlanceablesDateTrayTest,
   const auto new_view_bounds =
       GetGlanceableTrayBubble()->GetBubbleView()->GetBoundsInScreen();
 
-  // Constant `kRevampedTrayMenuWidth`.
+  // Constant `kWideTrayMenuWidth`.
   EXPECT_EQ(old_view_bounds.width(), new_view_bounds.width());
 
   // Margins between the top, right and bottom edges of the view and the

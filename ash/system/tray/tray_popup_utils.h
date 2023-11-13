@@ -68,7 +68,7 @@ class ASH_EXPORT TrayPopupUtils {
   //
   // The CENTER container has a flexible width.
   //
-  // `use_wide_layout` uses a wider layout, typically for QsRevamp.
+  // `use_wide_layout` uses a wider layout.
   static TriView* CreateDefaultRowView(bool use_wide_layout);
 
   // Creates a container view to be used by system menu sub-section header rows.
@@ -106,7 +106,7 @@ class ASH_EXPORT TrayPopupUtils {
   // Clients can use ConfigureContainer() to configure their own container views
   // before adding them to the returned TriView.
   //
-  // `use_wide_layout` uses a wider layout, typically for QsRevamp.
+  // `use_wide_layout` uses a wider layout.
   static TriView* CreateMultiTargetRowView(bool use_wide_layout);
 
   // Returns a label that has been configured for system menu layout. This
@@ -126,7 +126,7 @@ class ASH_EXPORT TrayPopupUtils {
   //
   // TODO(bruthig): Update all system menu rows to use this.
   //
-  // `use_wide_layout` uses a wider layout, typically for QsRevamp.
+  // `use_wide_layout` uses a wider layout.
   static views::ImageView* CreateMainImageView(bool use_wide_layout);
 
   // Creates a default focus painter used for most things in tray popups.
@@ -169,7 +169,7 @@ class ASH_EXPORT TrayPopupUtils {
 
   // Returns true if it is possible to show the night light feature tile, i.e.
   // the `session_manager::SessionState` is ACTIVE, LOGGED_IN_NOT_ACTIVE, or
-  // LOCKED. This should only be used when `kQsRevamp` is enabled.
+  // LOCKED.
   static bool CanShowNightLightFeatureTile();
 
   // Initializes a row in the system menu as checkable and update the check mark
@@ -191,8 +191,7 @@ class ASH_EXPORT TrayPopupUtils {
 
   // Sets the font list for |label| based on |style|.
   // DEPRECATED: Use `TypographyProvider` in new code. If you need legacy fonts,
-  // use TypographyToken::kLegacy*. This function DCHECKs if used when QsRevamp
-  // and Jelly are both enabled.
+  // use TypographyToken::kLegacy*.
   static void SetLabelFontList(views::Label* label, FontStyle style);
 };
 

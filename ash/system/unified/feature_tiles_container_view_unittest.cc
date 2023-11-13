@@ -486,7 +486,7 @@ TEST_F(FeatureTilesContainerViewTest, PaginationTransition) {
 
   // Page position after the transition ends should be a page offset to the
   // left.
-  int page_offset = kRevampedTrayMenuWidth;
+  int page_offset = kWideTrayMenuWidth;
   gfx::Rect final_bounds =
       gfx::Rect(initial_bounds.x() - page_offset, initial_bounds.y(),
                 initial_bounds.width(), initial_bounds.height());

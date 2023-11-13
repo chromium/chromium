@@ -20,7 +20,7 @@ GlanceableTrayBubble::GlanceableTrayBubble(DateTray* tray, bool from_keyboard)
   TrayBubbleView::InitParams init_params =
       CreateInitParamsForTrayBubble(tray, /*anchor_to_shelf_corner=*/true);
   // TODO(b:277268122): Update with glanceable spec.
-  init_params.preferred_width = kRevampedTrayMenuWidth;
+  init_params.preferred_width = kWideTrayMenuWidth;
   init_params.transparent = true;
   init_params.has_shadow = false;
   init_params.translucent = false;

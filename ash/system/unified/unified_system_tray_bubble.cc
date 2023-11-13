@@ -43,7 +43,7 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
 
   TrayBubbleView::InitParams init_params =
       CreateInitParamsForTrayBubble(tray, /*anchor_to_shelf_corner=*/true);
-  init_params.preferred_width = kRevampedTrayMenuWidth;
+  init_params.preferred_width = kWideTrayMenuWidth;
   init_params.close_on_deactivate = false;
 
   bubble_view_ = new TrayBubbleView(init_params);

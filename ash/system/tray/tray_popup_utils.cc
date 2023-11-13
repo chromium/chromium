@@ -58,7 +58,7 @@ std::unique_ptr<views::LayoutManager> CreateDefaultCenterLayoutManager(
     bool use_wide_layout) {
   const auto insets =
       gfx::Insets::VH(kTrayPopupLabelVerticalPadding,
-                      use_wide_layout ? kQsPopupLabelHorizontalPadding
+                      use_wide_layout ? kWideTrayPopupLabelHorizontalPadding
                                       : kTrayPopupLabelHorizontalPadding);
   auto box_layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, insets);
@@ -104,15 +104,15 @@ void ConfigureDefaultSizeAndFlex(TriView* tri_view,
   int min_width = 0;
   switch (container) {
     case TriView::Container::START:
-      min_width = use_wide_layout ? kQsPopupItemMinStartWidth
-                                  : kTrayPopupItemMinStartWidth;
+      min_width = use_wide_layout ? kTrayPopupItemMinStartWidth
+                                  : kWideTrayPopupItemMinStartWidth;
       break;
     case TriView::Container::CENTER:
       tri_view->SetFlexForContainer(TriView::Container::CENTER, 1.f);
       break;
     case TriView::Container::END:
-      min_width =
-          use_wide_layout ? kQsPopupItemMinEndWidth : kTrayPopupItemMinEndWidth;
+      min_width = use_wide_layout ? kWideTrayPopupItemMinEndWidth
+                                  : kTrayPopupItemMinEndWidth;
       break;
   }
 
@@ -187,11 +187,11 @@ TriView* TrayPopupUtils::CreateSubHeaderRowView(bool start_visible) {
 TriView* TrayPopupUtils::CreateMultiTargetRowView(bool use_wide_layout) {
   TriView* tri_view = new TriView(0 /* padding_between_items */);
 
-  tri_view->SetInsets(
-      gfx::Insets::TLBR(0,
-                        use_wide_layout ? kQsExtraMarginFromLeftEdge
-                                        : kMenuExtraMarginFromLeftEdge,
-                        0, use_wide_layout ? kQsExtraMarginsFromRightEdge : 0));
+  tri_view->SetInsets(gfx::Insets::TLBR(
+      0,
+      use_wide_layout ? kWideMenuExtraMarginFromLeftEdge
+                      : kMenuExtraMarginFromLeftEdge,
+      0, use_wide_layout ? kWideMenuExtraMarginsFromRightEdge : 0));
 
   ConfigureDefaultSizeAndFlex(tri_view, TriView::Container::START,
                               use_wide_layout);
@@ -230,7 +230,7 @@ views::ImageView* TrayPopupUtils::CreateMainImageView(bool use_wide_layout) {
     image->SetPreferredSize(gfx::Size(kMenuIconSize, kMenuIconSize));
   } else {
     image->SetPreferredSize(
-        gfx::Size(kTrayPopupItemMinStartWidth, kTrayPopupItemMinHeight));
+        gfx::Size(kWideTrayPopupItemMinStartWidth, kTrayPopupItemMinHeight));
   }
   return image;
 }
