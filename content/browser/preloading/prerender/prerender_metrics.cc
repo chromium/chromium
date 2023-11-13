@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/preloading/preloading_trigger_type_impl.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -158,13 +159,22 @@ PrerenderCancellationReason::BuildForMojoBinderPolicy(
                                      interface_name);
 }
 
+const std::vector<PrerenderMismatchedHeaders>*
+PrerenderCancellationReason::GetPrerenderMismatchedHeaders() const {
+  return absl::get_if<std::vector<PrerenderMismatchedHeaders>>(&explanation_);
+}
+
 // static
-PrerenderCancellationReason
-PrerenderCancellationReason::BuildForActivationNavigationParameterMismatch(
-    std::unique_ptr<PrerenderMismatchedHeaders> mismatched_headers) {
+PrerenderCancellationReason PrerenderCancellationReason::
+    CreateCandidateReasonForActivationParameterMismatch() {
   return PrerenderCancellationReason(
-      PrerenderFinalStatus::kActivationNavigationParameterMismatch,
-      std::move(*mismatched_headers.get()));
+      PrerenderFinalStatus::kActivationNavigationParameterMismatch);
+}
+
+void PrerenderCancellationReason::SetPrerenderMismatchedHeaders(
+    std::unique_ptr<std::vector<PrerenderMismatchedHeaders>>
+        mismatched_headers) {
+  explanation_ = std::move(*mismatched_headers);
 }
 
 //  static
@@ -213,7 +223,8 @@ void PrerenderCancellationReason::ReportMetrics(
                                  embedder_histogram_suffix);
       break;
     case PrerenderFinalStatus::kActivationNavigationParameterMismatch:
-      CHECK(absl::holds_alternative<PrerenderMismatchedHeaders>(explanation_) ||
+      CHECK(absl::holds_alternative<std::vector<PrerenderMismatchedHeaders>>(
+                explanation_) ||
             absl::holds_alternative<absl::monostate>(explanation_));
       // TODO(https://crbug.com/1456673): Report
       // ActivationNavigationParameterMismatch.
@@ -247,11 +258,6 @@ PrerenderMismatchedHeaders::~PrerenderMismatchedHeaders() = default;
 
 PrerenderMismatchedHeaders::PrerenderMismatchedHeaders(
     PrerenderMismatchedHeaders&& other) = default;
-
-absl::optional<const PrerenderMismatchedHeaders*>
-PrerenderCancellationReason::GetPrerenderMismatchedHeaders() const {
-  return absl::get_if<PrerenderMismatchedHeaders>(&explanation_);
-}
 
 void RecordPrerenderTriggered(ukm::SourceId ukm_id) {
   ukm::builders::PrerenderPageLoad(ukm_id).SetTriggeredPrerender(true).Record(

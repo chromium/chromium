@@ -26,7 +26,7 @@ void DevToolsPrerenderAttempt::SetTriggeringOutcome(
       attributes.prerendering_url, attributes.target_hint, outcome,
       /*prerender_status=*/absl::nullopt,
       /*disallowed_mojo_interface=*/absl::nullopt,
-      /*mismatched_headers=*/absl::nullopt);
+      /*mismatched_headers=*/nullptr);
 }
 
 void DevToolsPrerenderAttempt::SetFailureReason(
@@ -47,7 +47,7 @@ void DevToolsPrerenderAttempt::SetFailureReason(
       attributes.prerendering_url, attributes.target_hint,
       PreloadingTriggeringOutcome::kFailure, prerender_status,
       /*disallowed_mojo_interface=*/absl::nullopt,
-      /*mismatched_headers=*/absl::nullopt);
+      /*mismatched_headers=*/nullptr);
 }
 
 void DevToolsPrerenderAttempt::SetFailureReason(
@@ -55,7 +55,7 @@ void DevToolsPrerenderAttempt::SetFailureReason(
     const PrerenderCancellationReason& reason) {
   PrerenderFinalStatus prerender_status = reason.final_status();
   absl::optional<std::string> disallowed_mojo_interface;
-  absl::optional<const PrerenderMismatchedHeaders*> mismatched_headers;
+  const std::vector<PrerenderMismatchedHeaders>* mismatched_headers = nullptr;
 
   // Ensured by PrerenderCancellationReason.
   switch (prerender_status) {
@@ -79,7 +79,7 @@ void DevToolsPrerenderAttempt::SetFailureReason(
       attributes.initiator_devtools_navigation_token.value(),
       attributes.prerendering_url, attributes.target_hint,
       PreloadingTriggeringOutcome::kFailure, prerender_status,
-      disallowed_mojo_interface, std::move(mismatched_headers));
+      disallowed_mojo_interface, mismatched_headers);
 }
 
 }  // namespace content

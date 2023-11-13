@@ -684,7 +684,7 @@ void DidUpdatePrerenderStatus(
     PreloadingTriggeringOutcome status,
     absl::optional<PrerenderFinalStatus> prerender_status,
     absl::optional<std::string> disallowed_mojo_interface,
-    absl::optional<const PrerenderMismatchedHeaders*> mismatched_headers) {
+    const std::vector<PrerenderMismatchedHeaders>* mismatched_headers) {
   auto* ftn = FrameTreeNode::GloballyFindByID(initiator_frame_tree_node_id);
   // ftn will be null if this is browser-initiated, which has no initiator.
   if (!ftn) {

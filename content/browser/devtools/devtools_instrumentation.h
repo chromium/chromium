@@ -242,7 +242,7 @@ void DidUpdatePrerenderStatus(
     PreloadingTriggeringOutcome status,
     absl::optional<PrerenderFinalStatus> prerender_status,
     absl::optional<std::string> disallowed_mojo_interface,
-    absl::optional<const PrerenderMismatchedHeaders*> mismatched_headers);
+    const std::vector<PrerenderMismatchedHeaders>* mismatched_headers);
 
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,
