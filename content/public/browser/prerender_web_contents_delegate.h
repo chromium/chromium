@@ -18,6 +18,8 @@ class CONTENT_EXPORT PrerenderWebContentsDelegate : public WebContentsDelegate {
   ~PrerenderWebContentsDelegate() override = default;
 
   // WebContentsDelegate overrides.
+  WebContents* OpenURLFromTab(WebContents* source,
+                              const OpenURLParams& params) override;
   void AddNewContents(WebContents* source,
                       std::unique_ptr<WebContents> new_contents,
                       const GURL& target_url,

@@ -10,6 +10,12 @@
 
 namespace content {
 
+WebContents* PrerenderWebContentsDelegate::OpenURLFromTab(
+    WebContents* source,
+    const OpenURLParams& params) {
+  NOTREACHED_NORETURN();
+}
+
 void PrerenderWebContentsDelegate::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,

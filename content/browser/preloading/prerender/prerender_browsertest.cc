@@ -3448,7 +3448,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivationDoesntRunThrottles) {
 
 // Ensures that if we attempt to open a URL while prerendering with a window
 // disposition other than CURRENT_TAB, we fail.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SuppressOpenURL) {
+IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest, SuppressOpenURL) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender1");
   const GURL kSecondUrl = GetUrl("/empty.html?prerender2");
@@ -3459,12 +3459,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SuppressOpenURL) {
 
   // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
-  int host_id = AddPrerender(kPrerenderingUrl);
-  RenderFrameHostImpl* prerendered_render_frame_host =
-      GetPrerenderedMainFrameHost(host_id);
+  int host_id = prerender_helper()->AddPrerender(
+      kPrerenderingUrl, /*eagerness=*/absl::nullopt, GetTargetHint());
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
+  RenderFrameHost* prerendered_render_frame_host =
+      test::PrerenderTestHelper::GetPrerenderedMainFrameHost(
+          *prerender_web_contents, host_id);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-  auto* web_contents =
-      WebContents::FromRenderFrameHost(prerendered_render_frame_host);
   OpenURLParams params(kSecondUrl, Referrer(),
                        prerendered_render_frame_host->GetFrameTreeNodeId(),
                        WindowOpenDisposition::NEW_WINDOW,
@@ -3474,7 +3475,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SuppressOpenURL) {
   params.source_render_process_id =
       prerendered_render_frame_host->GetProcess()->GetID();
   params.source_render_frame_id = prerendered_render_frame_host->GetRoutingID();
-  auto* new_web_contents = web_contents->OpenURL(params);
+  auto* new_web_contents = prerender_web_contents->OpenURL(params);
   EXPECT_EQ(nullptr, new_web_contents);
 }
 
