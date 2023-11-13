@@ -390,12 +390,6 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   void VerifyNoAshBrowserWindowOpenRightNow();
   void CloseAllAshBrowserWindows();
   void WaitUntilAtLeastOneAshBrowserWindowOpen();
-  // Returns true if CloseAllAshBrowserWindows and
-  // WaitUntilAtLeaseOneAshBrowserWindowOpen is supported.
-  // TODO(crbug.com/1473375): Remove the following function once Ash stable
-  // channel supports the Ash Browser Window APIs in
-  // crosapi::mojom::TestController needed by the above functions.
-  bool IsCloseAndWaitAshBrowserWindowApisSupported() const;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)

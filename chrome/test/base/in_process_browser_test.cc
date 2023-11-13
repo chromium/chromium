@@ -268,6 +268,19 @@ bool IsCrosapiEnabled() {
               ->GetSwitchValuePath("lacros-mojo-socket-for-testing")
               .empty();
 }
+
+// Returns true if crosapi::mojom::TestController is available.
+// Note: crosapi::mojom::TestController can be unavailable in the following
+// case:
+// 1. BrowserParamsProxy::IsCrosapiDisabledForTesting() returns true.
+// 2. BrowserParamsProxy::InterfaceVersions() has no value. This happens in
+// some tests that call chromeos::BrowserInitParams::SetInitParamsForTests.
+bool IsTestControllerAvailable() {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  return lacros_service &&
+         lacros_service->IsAvailable<crosapi::mojom::TestController>();
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void EnsureBrowserContextKeyedServiceFactoriesForTestingBuilt() {
@@ -342,10 +355,11 @@ base::Version InProcessBrowserTest::GetAshChromeVersion() {
 }
 
 void InProcessBrowserTest::VerifyNoAshBrowserWindowOpenRightNow() {
-  auto* lacros_service = chromeos::LacrosService::Get();
-  DCHECK(lacros_service);
+  CHECK(IsTestControllerAvailable());
   crosapi::mojom::TestControllerAsyncWaiter waiter(
-      lacros_service->GetRemote<crosapi::mojom::TestController>().get());
+      chromeos::LacrosService::Get()
+          ->GetRemote<crosapi::mojom::TestController>()
+          .get());
 
   uint32_t number = 1;
   waiter.GetOpenAshBrowserWindows(&number);
@@ -354,7 +368,7 @@ void InProcessBrowserTest::VerifyNoAshBrowserWindowOpenRightNow() {
 }
 
 void InProcessBrowserTest::CloseAllAshBrowserWindows() {
-  DCHECK(IsCloseAndWaitAshBrowserWindowApisSupported());
+  CHECK(IsTestControllerAvailable());
   crosapi::mojom::TestControllerAsyncWaiter waiter(
       chromeos::LacrosService::Get()
           ->GetRemote<crosapi::mojom::TestController>()
@@ -365,7 +379,7 @@ void InProcessBrowserTest::CloseAllAshBrowserWindows() {
 }
 
 void InProcessBrowserTest::WaitUntilAtLeastOneAshBrowserWindowOpen() {
-  DCHECK(IsCloseAndWaitAshBrowserWindowApisSupported());
+  CHECK(IsTestControllerAvailable());
   crosapi::mojom::TestControllerAsyncWaiter waiter(
       chromeos::LacrosService::Get()
           ->GetRemote<crosapi::mojom::TestController>()
@@ -373,19 +387,6 @@ void InProcessBrowserTest::WaitUntilAtLeastOneAshBrowserWindowOpen() {
   bool has_open_window;
   waiter.CheckAtLeastOneAshBrowserWindowOpen(&has_open_window);
   EXPECT_TRUE(has_open_window);
-}
-
-bool InProcessBrowserTest::IsCloseAndWaitAshBrowserWindowApisSupported() const {
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service ||
-      !lacros_service->IsAvailable<crosapi::mojom::TestController>()) {
-    return false;
-  }
-
-  return lacros_service
-             ->GetInterfaceVersion<crosapi::mojom::TestController>() >=
-         static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
-                              kCheckAtLeastOneAshBrowserWindowOpenMinVersion);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -879,7 +880,7 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
   content::NetworkConnectionChangeSimulator network_change_simulator;
   network_change_simulator.InitializeChromeosConnectionType();
 
-  if (IsCrosapiEnabled() && IsCloseAndWaitAshBrowserWindowApisSupported()) {
+  if (IsCrosapiEnabled() && IsTestControllerAvailable()) {
     // There should NOT be any open ash browser window UI at this point.
     VerifyNoAshBrowserWindowOpenRightNow();
   }
@@ -950,7 +951,7 @@ void InProcessBrowserTest::PostRunTestOnMainThread() {
   CHECK(BrowserList::GetInstance()->empty());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (IsCrosapiEnabled() && IsCloseAndWaitAshBrowserWindowApisSupported()) {
+  if (IsCrosapiEnabled() && IsTestControllerAvailable()) {
     // At this point, there should NOT be any ash browser UIs(e.g. SWA, etc)
     // open; otherwise, the tests running after the current one could be
     // polluted if the tests are running against the shared Ash (by default).

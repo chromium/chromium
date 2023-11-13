@@ -47,9 +47,7 @@ class AutofillContextMenuManagerFeedbackUILacrosBrowserTest
   void TearDownOnMainThread() override {
     autofill_context_menu_manager_.reset();
 
-    if (IsCloseAndWaitAshBrowserWindowApisSupported()) {
-      CloseAllAshBrowserWindows();
-    }
+    CloseAllAshBrowserWindows();
 
     InProcessBrowserTest::TearDownOnMainThread();
   }
@@ -64,12 +62,10 @@ class AutofillContextMenuManagerFeedbackUILacrosBrowserTest
     autofill_context_menu_manager_->ExecuteCommand(
         IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK);
     // Verify the Feedback UI opens in Ash.
-    if (IsCloseAndWaitAshBrowserWindowApisSupported()) {
-      // There has not been a convenient way to verify a specific UI in Ash from
-      // Lacros yet. Therefore, we just verify there is an Ash window opened
-      // since Feedback UI is a SWA.
-      WaitUntilAtLeastOneAshBrowserWindowOpen();
-    }
+    // There has not been a convenient way to verify a specific UI in Ash from
+    // Lacros yet. Therefore, we just verify there is an Ash window opened
+    // since Feedback UI is a SWA.
+    WaitUntilAtLeastOneAshBrowserWindowOpen();
   }
 
   std::unique_ptr<TestRenderViewContextMenu> render_view_context_menu_;
