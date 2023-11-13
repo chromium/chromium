@@ -126,7 +126,7 @@ export class TabOrganizationNotStartedElement extends
       case SyncState.UNSYNCED:
         return loadTimeData.getString('notStartedButtonUnsynced');
       case SyncState.SYNC_PAUSED:
-        return loadTimeData.getString('notStartedButtonPaused');
+        return loadTimeData.getString('notStartedButtonSyncPaused');
       case SyncState.UNSYNCED_HISTORY:
         return loadTimeData.getString('notStartedButtonUnsyncedHistory');
       case SyncState.SYNCED:

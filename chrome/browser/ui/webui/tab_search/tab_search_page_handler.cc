@@ -472,7 +472,7 @@ void TabSearchPageHandler::TriggerSync() {
 
 void TabSearchPageHandler::TriggerSignIn() {
   Profile* profile = chrome::FindLastActive()->profile();
-  signin_ui_util::ShowSigninPromptFromPromo(
+  signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
       profile, signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION);
 }
 
