@@ -1235,10 +1235,22 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
       mock_privacy_sandbox_service_;
 };
 
+class PageInfoBubbleViewPre3pcdBrowserTestCookiesSubpage
+    : public PageInfoBubbleViewBrowserTestCookiesSubpage {
+ public:
+  PageInfoBubbleViewPre3pcdBrowserTestCookiesSubpage() {
+    feature_list_.InitAndDisableFeature(
+        content_settings::features::kTrackingProtection3pcd);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Checks if there is correct number of buttons in cookies subpage when fps are
 // blocked and third party cookies are allowed(in settings) and checks if the
 // metrics for opening cookies dialog work properly.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewPre3pcdBrowserTestCookiesSubpage,
                        ClickingCookieDialogButton) {
   SetCookieControlsMode(content_settings::CookieControlsMode::kIncognitoOnly);
   OpenPageInfoAndGoToCookiesSubpage(/*fps_owner =*/{});
@@ -1378,7 +1390,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 // Checks if there is a correct number of buttons in cookies subpage when fps
 // are allowed and third party cookies are allowed(in settings) and click on
 // link in description of cookies subapge.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewPre3pcdBrowserTestCookiesSubpage,
                        LinkInDescriptionForCookiesSettings) {
   GURL url_example = GURL("http://example/other/stuff.htm");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
@@ -1512,3 +1524,6 @@ IN_PROC_BROWSER_TEST_F(
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PageInfoBubbleViewBrowserTestCookiesSubpage);
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PageInfoBubbleViewPre3pcdBrowserTestCookiesSubpage);
