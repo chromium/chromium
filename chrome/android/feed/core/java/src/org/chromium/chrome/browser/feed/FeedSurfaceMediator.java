@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ObserverList;
@@ -414,6 +415,9 @@ public class FeedSurfaceMediator
 
     /** Update the content based on supervised user or enterprise policy. */
     void updateContent() {
+        // See https://crbug.com/1498004.
+        if (ApplicationStatus.isEveryActivityDestroyed()) return;
+
         mFeedEnabled = FeedFeatures.isFeedEnabled();
         if (mFeedEnabled && !mTabToStreamMap.isEmpty()) {
             return;

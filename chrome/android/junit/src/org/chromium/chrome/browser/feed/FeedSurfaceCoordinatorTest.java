@@ -41,6 +41,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.jank_tracker.PlaceholderJankTracker;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -279,6 +281,8 @@ public class FeedSurfaceCoordinatorTest {
         TrackerFactory.setTrackerForTests(mTracker);
         when(mTabModelSelector.getModel(eq(false))).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(eq(true))).thenReturn(mTabModelIncognito);
+
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
 
         mCoordinator = createCoordinator();
 

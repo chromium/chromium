@@ -41,6 +41,8 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -135,6 +137,8 @@ public class FeedSurfaceMediatorTest {
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
         mocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
+
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
 
         // We want to make the feed service bridge ignore the ablation flag.
         when(mFeedServiceBridgeJniMock.isEnabled())
