@@ -245,6 +245,12 @@ SK_API void SkDebugf_FileLine(const char* file,
 */
 #define SK_IMPROVE_RASTER_PIPELINE_PRECISION
 
+/*
+ * Uses a version of init_stop_pos in SkGradientBaseShader that divides by
+ * (t_r - t_l) rather than multiplying by 1/(t_r - t_l)
+ */
+#define SK_USE_LEGACY_INIT_STOP_POS
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
