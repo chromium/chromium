@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/table_layout_view.h"
@@ -99,5 +100,8 @@ void ActionEditView::OnActionInputBindingUpdated() {
 void ActionEditView::OnClicked() {
   ClickCallback();
 }
+
+BEGIN_METADATA(ActionEditView)
+END_METADATA
 
 }  // namespace arc::input_overlay

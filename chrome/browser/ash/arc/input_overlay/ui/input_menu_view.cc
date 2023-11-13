@@ -21,6 +21,7 @@
 #include "net/base/url_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_styles.h"
@@ -118,6 +119,8 @@ int GetAlphaLeftMargin(int parent_width) {
 }  // namespace
 
 class InputMenuView::FeedbackButton : public views::LabelButton {
+  METADATA_HEADER(FeedbackButton, views::LabelButton)
+
  public:
   explicit FeedbackButton(PressedCallback callback = PressedCallback(),
                           const std::u16string& text = std::u16string())
@@ -154,6 +157,9 @@ class InputMenuView::FeedbackButton : public views::LabelButton {
   FeedbackButton& operator=(const FeedbackButton&) = delete;
   ~FeedbackButton() override = default;
 };
+
+BEGIN_METADATA(InputMenuView, FeedbackButton, views::LabelButton)
+END_METADATA
 
 // static
 std::unique_ptr<InputMenuView> InputMenuView::BuildMenuView(
@@ -467,5 +473,8 @@ void InputMenuView::SetCustomToggleColor(views::ToggleButton* toggle) {
   toggle->SetTrackOffColor(color_provider->GetContentLayerColor(
       ash::AshColorProvider::ContentLayerType::kSwitchTrackColorInactive));
 }
+
+BEGIN_METADATA(InputMenuView)
+END_METADATA
 
 }  // namespace arc::input_overlay

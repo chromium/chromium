@@ -6,6 +6,7 @@
 
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
@@ -134,5 +135,8 @@ void ActionTypeButton::RefreshColors() {
                       /*radius=*/kCornerRadius,
                       cros_tokens::kCrosSysHoverOnSubtle));
 }
+
+BEGIN_METADATA(ActionTypeButton)
+END_METADATA
 
 }  // namespace arc::input_overlay

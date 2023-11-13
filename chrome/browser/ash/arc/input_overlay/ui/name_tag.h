@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/view.h"
 
@@ -32,6 +33,8 @@ namespace arc::input_overlay {
 // |icon |Sub-title||
 // +----------------+
 class NameTag : public views::View {
+  METADATA_HEADER(NameTag, views::View)
+
  public:
   static std::unique_ptr<NameTag> CreateNameTag(const std::u16string& title,
                                                 bool for_editing_list);

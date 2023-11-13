@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -135,5 +136,8 @@ void NameTag::Init() {
   subtitle_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   subtitle_label_->SetVisible(false);
 }
+
+BEGIN_METADATA(NameTag)
+END_METADATA
 
 }  // namespace arc::input_overlay

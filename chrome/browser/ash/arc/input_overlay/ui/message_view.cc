@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -111,5 +112,8 @@ void MessageView::AddShadow() {
   view_shadow_ = std::make_unique<ash::ViewShadow>(this, kShadowElevation);
   view_shadow_->SetRoundedCornerRadius(kCornerRadius);
 }
+
+BEGIN_METADATA(MessageView)
+END_METADATA
 
 }  // namespace arc::input_overlay

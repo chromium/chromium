@@ -17,6 +17,7 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
@@ -259,5 +260,8 @@ void MenuEntryView::SetRepositionController() {
   reposition_controller_->set_key_released_callback(base::BindRepeating(
       &MenuEntryView::OnKeyReleasedCallback, base::Unretained(this)));
 }
+
+BEGIN_METADATA(MenuEntryView)
+END_METADATA
 
 }  // namespace arc::input_overlay

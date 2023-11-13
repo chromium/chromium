@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace arc::input_overlay {
@@ -21,6 +22,8 @@ class NameTag;
 
 // EditLabels wraps the input labels belonging to one action.
 class EditLabels : public views::View {
+  METADATA_HEADER(EditLabels, views::View)
+
  public:
   // Create key layout view depending on action type.
   // ActionTap for keyboard binding:

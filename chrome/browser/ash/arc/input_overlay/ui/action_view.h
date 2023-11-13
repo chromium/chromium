@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/view.h"
@@ -30,6 +31,8 @@ constexpr int kDefaultLabelIndex = -1;
 
 // ActionView is the view for each action.
 class ActionView : public views::View {
+  METADATA_HEADER(ActionView, views::View)
+
  public:
   ActionView(Action* action,
              DisplayOverlayController* display_overlay_controller);

@@ -57,6 +57,8 @@ constexpr float kDeleteButtonHaloThickness = 3.0f;
 // | |Name tag|        |keys| |
 // ----------------------------
 class ButtonOptionsActionEdit : public ActionEditView {
+  METADATA_HEADER(ButtonOptionsActionEdit, ActionEditView)
+
  public:
   ButtonOptionsActionEdit(DisplayOverlayController* controller, Action* action)
       : ActionEditView(controller,
@@ -86,11 +88,16 @@ class ButtonOptionsActionEdit : public ActionEditView {
   void ClickCallback() override { labels_view_->FocusLabel(); }
 };
 
+BEGIN_METADATA(ButtonOptionsActionEdit)
+END_METADATA
+
 // DeleteButton shows in ButtonOptions and allows the user to delete the action.
 // ------------------------------
 // ||      Delete button       ||
 // ------------------------------
 class DeleteButton : public views::LabelButton {
+  METADATA_HEADER(DeleteButton, views::LabelButton)
+
  public:
   explicit DeleteButton(PressedCallback pressed_callback)
       // TODO(b/274690042): Replace placeholder text with localized strings.
@@ -137,6 +144,9 @@ class DeleteButton : public views::LabelButton {
     focus_ring->SetHaloThickness(kDeleteButtonHaloThickness);
   }
 };
+
+BEGIN_METADATA(DeleteButton)
+END_METADATA
 
 ButtonOptionsMenu::ButtonOptionsMenu(DisplayOverlayController* controller,
                                      Action* action)

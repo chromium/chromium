@@ -78,6 +78,8 @@ bool IsBottom(TapLabelPosition position) {
 }
 
 class ActionLabelTap : public ActionLabel {
+  METADATA_HEADER(ActionLabelTap, ActionLabel)
+
  public:
   ActionLabelTap(MouseAction mouse_action, TapLabelPosition label_position)
       : ActionLabel(mouse_action), label_position_(label_position) {
@@ -182,7 +184,12 @@ class ActionLabelTap : public ActionLabel {
   TapLabelPosition label_position_ = TapLabelPosition::kNone;
 };
 
+BEGIN_METADATA(ActionLabelTap)
+END_METADATA
+
 class ActionLabelMove : public ActionLabel {
+  METADATA_HEADER(ActionLabelMove, ActionLabel)
+
  public:
   ActionLabelMove(const std::u16string& text, size_t index)
       : ActionLabel(text, index) {}
@@ -209,6 +216,9 @@ class ActionLabelMove : public ActionLabel {
 
   void UpdateLabelPositionType(TapLabelPosition label_position) override {}
 };
+
+BEGIN_METADATA(ActionLabelMove)
+END_METADATA
 
 }  // namespace
 

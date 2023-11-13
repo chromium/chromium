@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace arc::input_overlay {
 
@@ -36,5 +37,8 @@ void ActionViewListItem::ShowEduNudgeForEditingTip() {
 void ActionViewListItem::OnMouseEntered(const ui::MouseEvent& event) {
   controller_->AddDeleteEditShortcutWidget(this);
 }
+
+BEGIN_METADATA(ActionViewListItem)
+END_METADATA
 
 }  // namespace arc::input_overlay

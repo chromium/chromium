@@ -16,6 +16,7 @@
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -279,5 +280,8 @@ void EducationalView::AddShadow() {
 void EducationalView::OnAcceptedPressed() {
   display_overlay_controller_->OnEducationalViewDismissed();
 }
+
+BEGIN_METADATA(EducationalView)
+END_METADATA
 
 }  // namespace arc::input_overlay
