@@ -12,6 +12,10 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    EmbeddedPermissionPromptPreviouslyDeniedView,
+    kAllowThisTimeId);
+
 EmbeddedPermissionPromptPreviouslyDeniedView::
     EmbeddedPermissionPromptPreviouslyDeniedView(
         Browser* browser,
@@ -69,7 +73,7 @@ EmbeddedPermissionPromptPreviouslyDeniedView::GetButtonsConfiguration() const {
   if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission)) {
     buttons.emplace_back(
         l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME),
-        ButtonType::kAllowThisTime, ui::ButtonStyle::kTonal);
+        ButtonType::kAllowThisTime, ui::ButtonStyle::kTonal, kAllowThisTimeId);
   } else {
     buttons.emplace_back(l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW),
                          ButtonType::kAllow, ui::ButtonStyle::kTonal);

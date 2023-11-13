@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -29,6 +31,9 @@ constexpr int DISTANCE_BUTTON_VERTICAL = 8;
 
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
+                                      kMainViewId);
+
 const std::vector<permissions::PermissionRequest*>&
 EmbeddedPermissionPromptBaseView::Delegate::Requests() const {
   if (auto permission_prompt_delegate = GetPermissionPromptDelegate()) {
@@ -45,7 +50,9 @@ EmbeddedPermissionPromptBaseView::EmbeddedPermissionPromptBaseView(
     : PermissionPromptBaseView(browser,
                                delegate->GetPermissionPromptDelegate()),
       browser_(browser),
-      delegate_(delegate) {}
+      delegate_(delegate) {
+  SetProperty(views::kElementIdentifierKey, kMainViewId);
+}
 
 EmbeddedPermissionPromptBaseView::~EmbeddedPermissionPromptBaseView() = default;
 
@@ -184,6 +191,8 @@ void EmbeddedPermissionPromptBaseView::AddButton(
   button_view->SetID(GetViewId(button.type));
 
   button_view->SetStyle(button.style);
+
+  button_view->SetProperty(views::kElementIdentifierKey, button.identifier);
 
   buttons_container.AddChildView(std::move(button_view));
 }

@@ -18,6 +18,7 @@ class Browser;
 class EmbeddedPermissionPromptPreviouslyDeniedView
     : public EmbeddedPermissionPromptBaseView {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowThisTimeId);
   EmbeddedPermissionPromptPreviouslyDeniedView(
       Browser* browser,
       base::WeakPtr<Delegate> delegate);

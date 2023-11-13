@@ -11,6 +11,10 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    EmbeddedPermissionPromptPreviouslyGrantedView,
+    kStopAllowingId);
+
 EmbeddedPermissionPromptPreviouslyGrantedView::
     EmbeddedPermissionPromptPreviouslyGrantedView(
         Browser* browser,
@@ -63,7 +67,7 @@ EmbeddedPermissionPromptPreviouslyGrantedView::GetButtonsConfiguration() const {
 
   buttons.emplace_back(
       l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_STOP_ALLOWING),
-      ButtonType::kStopAllowing, ui::ButtonStyle::kTonal);
+      ButtonType::kStopAllowing, ui::ButtonStyle::kTonal, kStopAllowingId);
   return buttons;
 }
 

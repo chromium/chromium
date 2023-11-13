@@ -22,6 +22,14 @@
     })();
     return true;
   }
+
+  // Create a "ready" element after a second has passed to allow interactive
+  // tests to have a signal that the PEPC elements are ready to be clicked.
+  setTimeout(function() {
+    let el = document.createElement('div');
+    el.id = "ready";
+    document.body.appendChild(el);
+  }, 1000);
 </script>
 <body>
   <permission id="geolocation" type="geolocation">

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 #include "components/permissions/permission_prompt.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -41,6 +42,8 @@ class Browser;
 
 class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainViewId);
+
   class Delegate {
    public:
     virtual void Allow() = 0;
@@ -94,6 +97,7 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
     std::u16string label;
     ButtonType type;
     ui::ButtonStyle style;
+    ui::ElementIdentifier identifier;
   };
 
   static int GetViewId(ButtonType button) { return static_cast<int>(button); }
