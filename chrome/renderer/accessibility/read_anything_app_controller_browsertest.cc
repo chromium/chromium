@@ -545,25 +545,37 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent_WithSelection) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetUrl) {
-  std::string url = "http://www.google.com";
+  std::string http_url = "http://www.google.com";
+  std::string https_url = "https://www.google.com";
   std::string invalid_url = "cats";
   std::string missing_url = "";
+  std::string js = "javascript:alert(origin)";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(3);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[2].id = 4;
-  update.nodes[0].AddStringAttribute(ax::mojom::StringAttribute::kUrl, url);
+  update.nodes.resize(6);
+  update.nodes[0].id = 1;
+  update.nodes[1].id = 2;
+  update.nodes[2].id = 3;
+  update.nodes[3].id = 4;
+  update.nodes[4].id = 5;
+  update.nodes[5].id = 6;
+  update.nodes[0].child_ids = {2, 3, 4, 5, 6};
   update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kUrl,
-                                     invalid_url);
+                                     http_url);
   update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                                     https_url);
+  update.nodes[3].AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                                     invalid_url);
+  update.nodes[4].AddStringAttribute(ax::mojom::StringAttribute::kUrl,
                                      missing_url);
+  update.nodes[5].AddStringAttribute(ax::mojom::StringAttribute::kUrl, js);
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
-  EXPECT_EQ(url, GetUrl(2));
-  EXPECT_EQ(invalid_url, GetUrl(3));
-  EXPECT_EQ(missing_url, GetUrl(4));
+  EXPECT_EQ(http_url, GetUrl(2));
+  EXPECT_EQ(https_url, GetUrl(3));
+  EXPECT_EQ("", GetUrl(4));
+  EXPECT_EQ("", GetUrl(5));
+  EXPECT_EQ("", GetUrl(6));
 }
 
 TEST_F(ReadAnythingAppControllerTest, ShouldBold) {

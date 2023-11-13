@@ -40,6 +40,7 @@
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "url/url_util.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-microtask-queue.h"
 
@@ -928,7 +929,18 @@ std::string ReadAnythingAppController::GetTextDirection(
 std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kUrl);
+  const char* url =
+      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kUrl).c_str();
+
+  // Prevent XSS from href attribute, which could be set to a script instead of
+  // a valid website.
+  if (url::FindAndCompareScheme(url, static_cast<int>(strlen(url)), "http",
+                                nullptr) ||
+      url::FindAndCompareScheme(url, static_cast<int>(strlen(url)), "https",
+                                nullptr)) {
+    return url;
+  }
+  return "";
 }
 
 bool ReadAnythingAppController::ShouldBold(ui::AXNodeID ax_node_id) const {
