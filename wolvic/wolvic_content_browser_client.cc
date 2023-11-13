@@ -15,7 +15,6 @@
 #include "media/mojo/mojom/media_drm_storage.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "wolvic/browser/session_settings.h"
-#include "wolvic/browser/youtube/youtube_url_loader_request_interceptor.h"
 #include "wolvic/wolvic_browser_context.h"
 #include "wolvic/wolvic_content_main_delegate.h"
 #include "wolvic/wolvic_main_parts.h"
@@ -147,21 +146,6 @@ void WolvicContentBrowserClient::ConfigureNetworkContextParams(
   network_context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
   network_context_params->file_paths->http_cache_directory =
       user_data_path.Append(FILE_PATH_LITERAL("Cache"));
-}
-
-std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
-WolvicContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
-    content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id,
-    int64_t navigation_id,
-    scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
-  std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
-      interceptors;
-
-  interceptors.push_back(
-      std::make_unique<wolvic::YoutubeURLLoaderRequestInterceptor>());
-
-  return interceptors;
 }
 
 void WolvicContentBrowserClient::BindMediaServiceReceiver(
