@@ -1407,13 +1407,15 @@ void HTMLDocumentParser::ProcessPreloadData(
 
   if (base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution) &&
       features::kDelayAsyncScriptExecutionWhenLcpFoundInHtml.Get()) {
-    // If kDelayAsyncScriptExecutionWhenLcpFoundInHtml flag is turned on,
-    // check if HTML has LCP element present.
-    //  If found, start/continue delaying async script execution on the document
-    //  until the configured  milestone.
-    if (preload_data->has_located_potential_lcp_element) {
-      GetDocument()->SetLcpElementFoundInHtml(true);
-      GetDocument()->DelayAsyncScriptExecution();
+    // If LCP element is found during preload scanning of main document,
+    // start/continue delaying async script execution on the document until the
+    // configured  milestone.
+    Document* document = GetDocument();
+    LocalFrame* frame = document->GetFrame();
+    if (preload_data->has_located_potential_lcp_element && frame &&
+        frame->IsMainFrame()) {
+      document->SetLcpElementFoundInHtml(true);
+      document->DelayAsyncScriptExecution();
     }
   }
 
