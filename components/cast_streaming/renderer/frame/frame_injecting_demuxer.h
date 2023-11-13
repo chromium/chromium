@@ -79,7 +79,7 @@ class FrameInjectingDemuxer final : public media::Demuxer {
 
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> original_task_runner_;
-  raw_ptr<media::DemuxerHost, ExperimentalRenderer> host_ = nullptr;
+  raw_ptr<media::DemuxerHost> host_ = nullptr;
 
   scoped_refptr<StreamTimestampOffsetTracker> timestamp_tracker_;
   std::unique_ptr<FrameInjectingAudioDemuxerStream> audio_stream_;

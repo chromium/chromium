@@ -1038,6 +1038,7 @@ void FFmpegDemuxer::Stop() {
   stopped_ = true;
   weak_factory_.InvalidateWeakPtrs();
   cancel_pending_seek_factory_.InvalidateWeakPtrs();
+  host_ = nullptr;
 }
 
 void FFmpegDemuxer::StartWaitingForSeek(base::TimeDelta seek_time) {}
