@@ -542,8 +542,9 @@ void PictureInPictureControllerImpl::OnStopped() {
 
 void PictureInPictureControllerImpl::SetMayThrottleIfUndrawnFrames(
     bool may_throttle) {
-  if (!GetSupplementable()->GetFrame()->GetWidgetForLocalRoot()) {
-    // Tests do not always have a widget.
+  if (!GetSupplementable()->GetFrame() ||
+      !GetSupplementable()->GetFrame()->GetWidgetForLocalRoot()) {
+    // Tests do not always have a frame or widget.
     return;
   }
   GetSupplementable()

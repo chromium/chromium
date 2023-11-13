@@ -1833,7 +1833,8 @@ void InputMethodController::SetVirtualKeyboardVisibilityRequest(
 }
 
 DOMNodeId InputMethodController::NodeIdOfFocusedElement() const {
-  return GetDocument().FocusedElement()->GetDomNodeId();
+  Element* element = GetDocument().FocusedElement();
+  return element ? element->GetDomNodeId() : kInvalidDOMNodeId;
 }
 
 WebTextInputType InputMethodController::TextInputType() const {
