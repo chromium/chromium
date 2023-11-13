@@ -321,9 +321,6 @@ class WebThemeEngine {
       const ui::RendererColorMap& forced_colors_map) {
     return false;
   }
-  virtual void AdjustForcedColorsProvider(
-      ui::ColorProviderKey::ForcedColors forced_colors_state,
-      ui::ColorProviderKey::ColorMode color_mode) {}
 };
 
 }  // namespace blink
