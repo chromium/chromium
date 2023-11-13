@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/safety_hub/extensions_result.h"
-#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
@@ -367,18 +366,6 @@ void SafetyHubHandler::HandleResetNotificationPermissionForOrigins(
   SendNotificationPermissionReviewList();
 }
 
-void SafetyHubHandler::HandleDismissActiveMenuNotification(
-    const base::Value::List& args) {
-  SafetyHubMenuNotificationServiceFactory::GetForProfile(profile_)
-      ->DismissActiveNotification();
-}
-
-void SafetyHubHandler::HandleDismissPasswordMenuNotification(
-    const base::Value::List& args) {
-  SafetyHubMenuNotificationServiceFactory::GetForProfile(profile_)
-      ->DismissPasswordNotification();
-}
-
 void SafetyHubHandler::HandleBlockNotificationPermissionForOrigins(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
@@ -685,16 +672,6 @@ void SafetyHubHandler::RegisterMessages() {
       "resetNotificationPermissionForOrigins",
       base::BindRepeating(
           &SafetyHubHandler::HandleResetNotificationPermissionForOrigins,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "dismissActiveMenuNotification",
-      base::BindRepeating(
-          &SafetyHubHandler::HandleDismissActiveMenuNotification,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "dismissSafetyHubPasswordMenuNotification",
-      base::BindRepeating(
-          &SafetyHubHandler::HandleDismissPasswordMenuNotification,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "blockNotificationPermissionForOrigins",

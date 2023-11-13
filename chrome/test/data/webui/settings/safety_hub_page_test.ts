@@ -6,7 +6,6 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CardInfo, CardState, ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent,SettingsSafetyHubPageElement} from 'chrome://settings/lazy_load.js';
 import {LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, PasswordManagerImpl, PasswordManagerPage, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -56,9 +55,6 @@ suite('SafetyHubPage', function() {
   };
 
   setup(function() {
-    loadTimeData.overrideValues({
-      enableSafetyHub: true,
-    });
     safetyHubBrowserProxy = new TestSafetyHubBrowserProxy();
     safetyHubBrowserProxy.setPasswordCardData(passwordCardMockData);
     safetyHubBrowserProxy.setVersionCardData(versionCardMockData);
@@ -362,10 +358,5 @@ suite('SafetyHubPage', function() {
         new KeyboardEvent('keydown', {key: ' ', bubbles: true}));
     // Ensure the Security Settings page is shown.
     assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
-  });
-
-  test('Dismiss all menu notifications on page load', async function() {
-    Router.getInstance().navigateTo(routes.SAFETY_HUB);
-    await safetyHubBrowserProxy.whenCalled('dismissActiveMenuNotification');
   });
 });

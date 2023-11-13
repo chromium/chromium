@@ -20,7 +20,7 @@ import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/passwor
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyHubCardState} from '../metrics_browser_proxy.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 import {routes} from '../route.js';
-import {RouteObserverMixin, Router} from '../router.js';
+import {Router} from '../router.js';
 
 import {CardInfo, CardState, NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
 import {SiteInfo} from './safety_hub_module.js';
@@ -34,8 +34,8 @@ export interface SettingsSafetyHubPageElement {
   };
 }
 
-const SettingsSafetyHubPageElementBase = RouteObserverMixin(
-    RelaunchMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
+const SettingsSafetyHubPageElementBase =
+    RelaunchMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
 export class SettingsSafetyHubPageElement extends
     SettingsSafetyHubPageElementBase {
@@ -105,15 +105,6 @@ export class SettingsSafetyHubPageElement extends
     this.initializeCards_();
     this.initializeModules_();
     this.initializeUserEducation_();
-  }
-
-  override currentRouteChanged() {
-    if (Router.getInstance().getCurrentRoute() !== routes.SAFETY_HUB) {
-      return;
-    }
-    // When the user navigates to the Safety Hub page, any active menu
-    // notification is dismissed.
-    this.browserProxy_.dismissActiveMenuNotification();
   }
 
   private initializeCards_() {

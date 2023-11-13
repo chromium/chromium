@@ -377,9 +377,6 @@ export interface PasswordManagerProxy {
    * @param ids The ids for the password entries being moved.
    */
   movePasswordsToAccount(ids: number[]): void;
-
-  /** Dismiss the menu notifications for the Safety Hub password module. */
-  dismissSafetyHubPasswordMenuNotification(): void;
 }
 
 /**
@@ -603,10 +600,6 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   movePasswordsToAccount(ids: number[]) {
     chrome.passwordsPrivate.movePasswordsToAccount(ids);
-  }
-
-  dismissSafetyHubPasswordMenuNotification() {
-    chrome.send('dismissSafetyHubPasswordMenuNotification');
   }
 
   static getInstance(): PasswordManagerProxy {

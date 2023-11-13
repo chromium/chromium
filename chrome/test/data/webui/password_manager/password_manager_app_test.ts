@@ -242,12 +242,4 @@ suite('PasswordManagerAppTest', function() {
     assertTrue(!!spinner);
     assertTrue(spinner.active);
   });
-
-  test(
-      'dismiss Safety Hub menu notification for password module',
-      async function() {
-        Router.getInstance().navigateTo(Page.CHECKUP);
-        await passwordManager.whenCalled(
-            'dismissSafetyHubPasswordMenuNotification');
-      });
 });
