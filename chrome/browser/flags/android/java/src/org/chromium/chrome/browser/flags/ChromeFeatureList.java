@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.flags;
 
 import org.chromium.base.FeatureMap;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 
 import java.util.List;
 import java.util.Map;
@@ -550,8 +549,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCollectAndroidFrameTimelineMetrics =
             new CachedFlag(COLLECT_ANDROID_FRAME_TIMELINE_METRICS, false);
     public static final CachedFlag sCommandLineOnNonRooted =
-            new CachedFlag(COMMAND_LINE_ON_NON_ROOTED,
-                    ChromePreferenceKeys.FLAGS_CACHED_COMMAND_LINE_ON_NON_ROOTED_ENABLED, false);
+            new CachedFlag(COMMAND_LINE_ON_NON_ROOTED, false);
     public static final CachedFlag sDeferTabSwitcherLayoutCreation =
             new CachedFlag(DEFER_TAB_SWITCHER_LAYOUT_CREATION, false);
     public static final CachedFlag sDelayTempStripRemoval =
@@ -609,8 +607,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sShowNtpAtStartupAndroid =
             new CachedFlag(SHOW_NTP_AT_STARTUP_ANDROID, false);
     public static final CachedFlag sSpareTab = new CachedFlag(SPARE_TAB, false);
-    public static final CachedFlag sStartSurfaceAndroid = new CachedFlag(
-            START_SURFACE_ANDROID, ChromePreferenceKeys.FLAGS_CACHED_START_SURFACE_ENABLED, true);
+    public static final CachedFlag sStartSurfaceAndroid =
+            new CachedFlag(START_SURFACE_ANDROID, true);
     public static final CachedFlag sStartSurfaceDisabledFeedImprovement =
             new CachedFlag(START_SURFACE_DISABLED_FEED_IMPROVEMENT, false);
     public static final CachedFlag sStartSurfaceOnTablet =

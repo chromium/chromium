@@ -306,37 +306,6 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix FLAGS_FIELD_TRIAL_PARAM_CACHED =
             new KeyPrefix("Chrome.Flags.FieldTrialParamCached.*");
 
-    /**
-     * Whether or not the adaptive toolbar is enabled.
-     * Default value is true.
-     */
-    public static final String FLAGS_CACHED_ADAPTIVE_TOOLBAR_ENABLED = "adaptive_toolbar_enabled";
-
-    /**
-     * Whether or not command line on non-rooted devices is enabled.
-     * Default value is false.
-     */
-    public static final String FLAGS_CACHED_COMMAND_LINE_ON_NON_ROOTED_ENABLED =
-            "command_line_on_non_rooted_enabled";
-
-    /**
-     * Whether or not the grid tab switcher is enabled.
-     * Default value is false.
-     */
-    public static final String FLAGS_CACHED_GRID_TAB_SWITCHER_ENABLED = "grid_tab_switcher_enabled";
-    /**
-     * Whether or not the start surface is enabled.
-     * Default value is false.
-     */
-    public static final String FLAGS_CACHED_START_SURFACE_ENABLED = "start_surface_enabled";
-
-    /**
-     * Whether or not the tab group is enabled.
-     * Default value is false.
-     */
-    public static final String FLAGS_CACHED_TAB_GROUPS_ANDROID_ENABLED =
-            "tab_group_android_enabled";
-
     /** See CachedFeatureFlags.getLastCachedMinimalBrowserFlagsTimeMillis(). */
     public static final String FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS =
             "Chrome.Flags.LastCachedMinimalBrowserFlagsTimeMillis";
