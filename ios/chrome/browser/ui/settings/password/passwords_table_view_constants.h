@@ -76,7 +76,7 @@ enum class PasswordManagerWidgetPromoAction {
   kOpenInstructions = 1,  // The user opened the instruction view.
   kMaxValue = kOpenInstructions,
 };
-// LINT.ThenChange(src/tools/metrics/histograms/enums.xml:PromoWithInstructionsAction)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:PromoWithInstructionsAction)
 
 // Sections of the password settings
 typedef NS_ENUM(NSInteger, PasswordSectionIdentifier) {

@@ -30,7 +30,7 @@ enum class ContentSuggestionsModuleType {
   kParcelTrackingSeeMore = 12,
   kMaxValue = kParcelTrackingSeeMore,
 };
-// LINT.ThenChange(/tools/metrics/histograms/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
 // Represents the content suggestions collection view.
 extern NSString* const kContentSuggestionsCollectionIdentifier;
