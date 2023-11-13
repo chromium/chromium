@@ -196,6 +196,19 @@ export class BrowsingContextProcessor {
     return {};
   }
 
+  async traverseHistory(
+    params: BrowsingContext.TraverseHistoryParameters
+  ): Promise<BrowsingContext.TraverseHistoryResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    if (!context) {
+      throw new InvalidArgumentException(
+        `No browsing context with id ${params.context}`
+      );
+    }
+    await context.traverseHistory(params.delta);
+    return {};
+  }
+
   async handleUserPrompt(
     params: BrowsingContext.HandleUserPromptParameters
   ): Promise<EmptyResult> {

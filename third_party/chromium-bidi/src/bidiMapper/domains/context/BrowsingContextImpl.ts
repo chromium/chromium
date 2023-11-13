@@ -22,6 +22,7 @@ import {
   ChromiumBidi,
   InvalidArgumentException,
   NoSuchElementException,
+  NoSuchHistoryEntryException,
   Script,
   UnableToCaptureScreenException,
   UnknownErrorException,
@@ -961,6 +962,28 @@ export class BrowsingContextImpl {
 
   async close(): Promise<void> {
     await this.#cdpTarget.cdpClient.sendCommand('Page.close');
+  }
+
+  async traverseHistory(delta: number): Promise<void> {
+    if (delta === 0) {
+      return;
+    }
+
+    const history = await this.#cdpTarget.cdpClient.sendCommand(
+      'Page.getNavigationHistory'
+    );
+    const entry = history.entries[history.currentIndex + delta];
+    if (!entry) {
+      throw new NoSuchHistoryEntryException(
+        `No history entry at delta ${delta}`
+      );
+    }
+    await this.#cdpTarget.cdpClient.sendCommand('Page.navigateToHistoryEntry', {
+      entryId: entry.id,
+    });
+
+    this.#resetDeferredsIfFinished();
+    await this.lifecycleLoaded();
   }
 }
 

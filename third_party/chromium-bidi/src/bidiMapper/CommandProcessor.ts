@@ -181,7 +181,9 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseSetViewportParams(command.params)
         );
       case 'browsingContext.traverseHistory':
-        break;
+        return await this.#browsingContextProcessor.traverseHistory(
+          this.#parser.parseTraverseHistoryParams(command.params)
+        );
       // keep-sorted end
 
       // CDP domain

@@ -215,6 +215,15 @@ export namespace BrowsingContext {
     );
   }
 
+  export function parseTraverseHistoryParams(
+    params: unknown
+  ): Protocol.BrowsingContext.TraverseHistoryParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.BrowsingContext.TraverseHistoryParametersSchema
+    );
+  }
+
   export function parseHandleUserPromptParameters(
     params: unknown
   ): Protocol.BrowsingContext.HandleUserPromptParameters {

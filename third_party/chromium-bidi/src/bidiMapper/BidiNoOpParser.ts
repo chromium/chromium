@@ -65,6 +65,11 @@ export class BidiNoOpParser implements IBidiParser {
   ): BrowsingContext.SetViewportParameters {
     return params as BrowsingContext.SetViewportParameters;
   }
+  parseTraverseHistoryParams(
+    params: unknown
+  ): BrowsingContext.TraverseHistoryParameters {
+    return params as BrowsingContext.TraverseHistoryParameters;
+  }
   // keep-sorted end
 
   // CDP domain

@@ -43,6 +43,9 @@ export interface IBidiParser {
   parseSetViewportParams(
     params: unknown
   ): BrowsingContext.SetViewportParameters;
+  parseTraverseHistoryParams(
+    params: unknown
+  ): BrowsingContext.TraverseHistoryParameters;
   // keep-sorted end
 
   // CDP domain
