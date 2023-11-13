@@ -4526,6 +4526,21 @@
             ]
         }
     ],
+    "CrOSLateBootAllowFirmwareDumps": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootAllowFirmwareDumps"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootAudioHFPOffload": [
         {
             "platforms": [
