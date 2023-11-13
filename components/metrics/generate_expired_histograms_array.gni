@@ -35,6 +35,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/histograms.xml",
       "//tools/metrics/histograms/metadata/accessibility/histograms.xml",
       "//tools/metrics/histograms/metadata/account_manager/histograms.xml",
+      "//tools/metrics/histograms/metadata/android/enums.xml",
       "//tools/metrics/histograms/metadata/android/histograms.xml",
       "//tools/metrics/histograms/metadata/apps/enums.xml",
       "//tools/metrics/histograms/metadata/apps/histograms.xml",
