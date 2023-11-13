@@ -14,7 +14,6 @@
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/filesystem_interception.h"
 #include "sandbox/win/src/ipc_tags.h"
-#include "sandbox/win/src/named_pipe_interception.h"
 #include "sandbox/win/src/policy_engine_processor.h"
 #include "sandbox/win/src/policy_low_level.h"
 #include "sandbox/win/src/policy_params.h"
@@ -33,7 +32,6 @@ enum TestId {
   TESTIPC_NTOPENFILE,
   TESTIPC_NTCREATEFILE,
   TESTIPC_CREATETHREAD,
-  TESTIPC_CREATENAMEDPIPEW,
   TESTIPC_LAST
 };
 
@@ -46,30 +44,6 @@ PolicyGlobal* MakePolicyMemory() {
   PolicyGlobal* policy = reinterpret_cast<PolicyGlobal*>(mem);
   policy->data_size = kTotalPolicySz - sizeof(PolicyGlobal);
   return policy;
-}
-
-// CreateNamedPipeW
-HANDLE WINAPI DummyCreateNamedPipeW(LPCWSTR pipe_name,
-                                    DWORD open_mode,
-                                    DWORD pipe_mode,
-                                    DWORD max_instance,
-                                    DWORD out_buffer_size,
-                                    DWORD in_buffer_size,
-                                    DWORD default_timeout,
-                                    LPSECURITY_ATTRIBUTES security_attributes) {
-  return INVALID_HANDLE_VALUE;
-}
-
-void TestCreateNamedPipeW() {
-  HANDLE handle;
-
-  handle = TargetCreateNamedPipeW(
-      reinterpret_cast<CreateNamedPipeWFunction>(DummyCreateNamedPipeW),
-      L"\\??\\leak", PIPE_ACCESS_DUPLEX,
-      PIPE_TYPE_MESSAGE | PIPE_WAIT | PIPE_REJECT_REMOTE_CLIENTS, 1, 0x1000,
-      0x1000, 100, nullptr);
-  if (handle != INVALID_HANDLE_VALUE)
-    CloseHandle(handle);
 }
 
 // NtCreateFile
@@ -224,9 +198,6 @@ SBOX_TESTS_COMMAND int IPC_Leak(int argc, wchar_t** argv) {
     case TESTIPC_CREATETHREAD:
       TestCreateThread();
       break;
-    case TESTIPC_CREATENAMEDPIPEW:
-      TestCreateNamedPipeW();
-      break;
     case TESTIPC_LAST:
       NOTREACHED_NT();
       break;
@@ -264,9 +235,7 @@ TEST(IPCTest, IPCLeak) {
     HANDLE expected_result;
   } test_data[] = {{TESTIPC_NTOPENFILE, "TESTIPC_NTOPENFILE", nullptr},
                    {TESTIPC_NTCREATEFILE, "TESTIPC_NTCREATEFILE", nullptr},
-                   {TESTIPC_CREATETHREAD, "TESTIPC_CREATETHREAD", nullptr},
-                   {TESTIPC_CREATENAMEDPIPEW, "TESTIPC_CREATENAMEDPIPEW",
-                    INVALID_HANDLE_VALUE}};
+                   {TESTIPC_CREATETHREAD, "TESTIPC_CREATETHREAD", nullptr}};
 
   static_assert(std::size(test_data) == TESTIPC_LAST, "Not enough tests.");
   for (auto test : test_data) {

@@ -41,10 +41,10 @@ IN_PROC_BROWSER_TEST_F(RendererAppContainerFeatureBrowserTest, Navigate) {
       shell(), embedded_test_server()->GetURL("foo.com", "/title1.html")));
 }
 
-// Test class to verify the behavior of the pipe interceptions for renderers.
-class PipeLockdownFeatureBrowserTest : public ContentBrowserTest {
+// Test class to verify the behavior underlying chrome://sandbox for renderers.
+class SandboxDiagnosticsBrowserTest : public ContentBrowserTest {
  public:
-  PipeLockdownFeatureBrowserTest() = default;
+  SandboxDiagnosticsBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     // Support multiple sites on the test server.
@@ -57,7 +57,7 @@ class PipeLockdownFeatureBrowserTest : public ContentBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PipeLockdownFeatureBrowserTest, Navigate) {
+IN_PROC_BROWSER_TEST_F(SandboxDiagnosticsBrowserTest, Navigate) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("foo.com", "/title1.html")));
@@ -79,10 +79,9 @@ IN_PROC_BROWSER_TEST_F(PipeLockdownFeatureBrowserTest, Navigate) {
   const base::Value::List* process_list = out_args.GetIfList();
   ASSERT_TRUE(process_list);
   bool found_renderer = false;
-  bool found_chrome_pipe_create_pipe_rule = false;
-  bool found_chrome_pipe_open_rule = false;
-  bool found_chrome_sync_pipe_create_pipe_rule = false;
-  bool found_chrome_sync_pipe_open_rule = false;
+  bool found_device_api = false;
+  bool found_ksec_dd = false;
+
   for (const base::Value& process_value : *process_list) {
     const base::Value::Dict* process = process_value.GetIfDict();
     ASSERT_TRUE(process);
@@ -91,46 +90,29 @@ IN_PROC_BROWSER_TEST_F(PipeLockdownFeatureBrowserTest, Navigate) {
     if (base::checked_cast<base::ProcessId>(pid.value()) != renderer_process_id)
       continue;
     found_renderer = true;
-    auto* rules = process->FindDict("policyRules");
+    auto* rules = process->FindDict("handlesToClose");
     ASSERT_TRUE(rules);
 
-    const base::Value::List* open_file_opcodes = rules->FindList("NtOpenFile");
-    if (open_file_opcodes) {
-      for (const base::Value& opcode : *open_file_opcodes) {
-        auto* value = opcode.GetIfString();
-        ASSERT_TRUE(value);
-        if (value->find("chrome.'") != value->npos)
-          found_chrome_pipe_open_rule = true;
-        if (value->find("chrome.sync.'") != value->npos)
-          found_chrome_sync_pipe_open_rule = true;
-      }
-    }
+    const base::Value::List* handles_to_close = rules->FindList("File");
+    ASSERT_TRUE(handles_to_close);
 
-    const base::Value::List* create_named_pipe_opcodes =
-        rules->FindList("CreateNamedPipeW");
-    if (create_named_pipe_opcodes) {
-      for (const base::Value& opcode : *create_named_pipe_opcodes) {
-        auto* value = opcode.GetIfString();
-        ASSERT_TRUE(value);
-        if (value->find("chrome.'") != value->npos)
-          found_chrome_pipe_create_pipe_rule = true;
-        if (value->find("chrome.sync.'") != value->npos)
-          found_chrome_sync_pipe_create_pipe_rule = true;
+    // Validate that there are a couple of listed handle names to be sure there
+    // is something in the rule.
+    for (const base::Value& opcode : *handles_to_close) {
+      auto* value = opcode.GetIfString();
+      ASSERT_TRUE(value);
+      if (value->find("DeviceApi") != value->npos) {
+        found_device_api = true;
+      }
+      if (value->find("KsecDD") != value->npos) {
+        found_ksec_dd = true;
       }
     }
   }
 
   EXPECT_TRUE(found_renderer);
-
-  // There should never be an NtOpenFile rule for chrome.sync.*.
-  EXPECT_FALSE(found_chrome_sync_pipe_open_rule);
-
-  // There should never be a way to Create pipes for chrome.*.
-  EXPECT_FALSE(found_chrome_pipe_create_pipe_rule);
-
-  // With pipe lockdown enabled, no pipe rules should exist for renderers.
-  EXPECT_FALSE(found_chrome_sync_pipe_create_pipe_rule);
-  EXPECT_FALSE(found_chrome_pipe_open_rule);
+  EXPECT_TRUE(found_ksec_dd);
+  EXPECT_TRUE(found_device_api);
 }
 
 }  // namespace content

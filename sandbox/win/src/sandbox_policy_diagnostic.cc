@@ -159,8 +159,6 @@ std::string GetIpcTagAsString(IpcTag service) {
       return "NtQueryFullAttributesFile";
     case IpcTag::NTSETINFO_RENAME:
       return "NtSetInfoRename";
-    case IpcTag::CREATENAMEDPIPEW:
-      return "CreateNamedPipeW";
     case IpcTag::NTOPENTHREAD:
       return "NtOpenThread";
     case IpcTag::NTOPENPROCESSTOKENEX:

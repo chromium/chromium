@@ -26,7 +26,6 @@
 #include "sandbox/win/src/filesystem_policy.h"
 #include "sandbox/win/src/interception.h"
 #include "sandbox/win/src/job.h"
-#include "sandbox/win/src/named_pipe_policy.h"
 #include "sandbox/win/src/policy_broker.h"
 #include "sandbox/win/src/policy_engine_processor.h"
 #include "sandbox/win/src/policy_low_level.h"
@@ -231,14 +230,6 @@ sandbox::LowLevelPolicy* ConfigBase::PolicyMaker() {
 ResultCode ConfigBase::AllowFileAccess(FileSemantics semantics,
                                        const wchar_t* pattern) {
   if (!FileSystemPolicy::GenerateRules(pattern, semantics, PolicyMaker())) {
-    NOTREACHED();
-    return SBOX_ERROR_BAD_PARAMS;
-  }
-  return SBOX_ALL_OK;
-}
-
-ResultCode ConfigBase::AllowNamedPipes(const wchar_t* pattern) {
-  if (!NamedPipePolicy::GenerateRules(pattern, PolicyMaker())) {
     NOTREACHED();
     return SBOX_ERROR_BAD_PARAMS;
   }

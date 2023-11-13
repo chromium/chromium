@@ -216,18 +216,6 @@ bool TestRunner::AllowFileAccess(FileSemantics semantics,
           policy_->GetConfig()->AllowFileAccess(semantics, pattern));
 }
 
-bool TestRunner::AllowNamedPipes(const wchar_t* pattern) {
-  if (!is_init_) {
-    return false;
-  }
-
-  if (policy_->GetConfig()->IsConfigured()) {
-    return false;
-  }
-
-  return (SBOX_ALL_OK == policy_->GetConfig()->AllowNamedPipes(pattern));
-}
-
 bool TestRunner::AddRuleSys32(FileSemantics semantics, const wchar_t* pattern) {
   if (!is_init_)
     return false;

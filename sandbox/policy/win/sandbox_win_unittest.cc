@@ -66,9 +66,6 @@ class TestTargetConfig : public TargetConfig {
                              const wchar_t* pattern) override {
     return SBOX_ALL_OK;
   }
-  ResultCode AllowNamedPipes(const wchar_t* pattern) override {
-    return SBOX_ALL_OK;
-  }
   ResultCode AllowExtraDlls(const wchar_t* pattern) override {
     return SBOX_ALL_OK;
   }

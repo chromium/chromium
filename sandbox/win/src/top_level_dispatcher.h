@@ -40,7 +40,6 @@ class TopLevelDispatcher : public Dispatcher {
 
   raw_ptr<PolicyBase> policy_;
   std::unique_ptr<Dispatcher> filesystem_dispatcher_;
-  std::unique_ptr<Dispatcher> named_pipe_dispatcher_;
   std::unique_ptr<Dispatcher> thread_process_dispatcher_;
   std::unique_ptr<Dispatcher> handle_dispatcher_;
   std::unique_ptr<Dispatcher> process_mitigations_win32k_dispatcher_;

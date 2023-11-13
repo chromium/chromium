@@ -145,13 +145,6 @@ class [[clang::lto_visibility_public]] TargetConfig {
                                                    const wchar_t* pattern) = 0;
 
   // Adds a policy rule effective for processes spawned using this policy.
-  // Named pipes matching `pattern` (see AllowFileAccess) can be created.
-  //
-  // Note: Do not add new uses of this function - instead proxy pipe handles
-  // into your process via normal Chrome IPC.
-  [[nodiscard]] virtual ResultCode AllowNamedPipes(const wchar_t* pattern) = 0;
-
-  // Adds a policy rule effective for processes spawned using this policy.
   // Modules patching `pattern` (see AllowFileAccess) can still be loaded under
   // Code-Integrity Guard (MITIGATION_FORCE_MS_SIGNED_BINS).
   [[nodiscard]] virtual ResultCode AllowExtraDlls(const wchar_t* pattern) = 0;
