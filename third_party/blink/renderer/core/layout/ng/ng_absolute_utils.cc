@@ -544,7 +544,8 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
       result = node.Layout(builder.ToConstraintSpace());
     }
 
-    return NGFragment(style.GetWritingDirection(), result->PhysicalFragment())
+    return LogicalFragment(style.GetWritingDirection(),
+                           result->PhysicalFragment())
         .BlockSize();
   };
 

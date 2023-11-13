@@ -232,7 +232,7 @@ TableTypes::Row ComputeMinimumRowBlockSize(
     const auto cell_space = space_builder.ToConstraintSpace();
     const NGLayoutResult* layout_result = cell.Layout(cell_space);
 
-    const NGBoxFragment fragment(
+    const LogicalBoxFragment fragment(
         table_writing_direction,
         To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment()));
     const Length& cell_specified_block_length =
@@ -1704,7 +1704,7 @@ void ColspanCellTabulator::ProcessCell(const NGBlockNode& cell) {
 }
 
 void RowBaselineTabulator::ProcessCell(
-    const NGBoxFragment& fragment,
+    const LogicalBoxFragment& fragment,
     EVerticalAlign align,
     const bool is_rowspanned,
     const bool descendant_depends_on_percentage_block_size) {

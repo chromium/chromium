@@ -70,8 +70,8 @@ const NGLayoutResult* MathPaddedLayoutAlgorithm::Layout() {
         To<NGPhysicalBoxFragment>(content_layout_result->PhysicalFragment());
     content_margins =
         ComputeMarginsFor(constraint_space, content.Style(), ConstraintSpace());
-    NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                           content_fragment);
+    LogicalBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
+                                content_fragment);
     content_ascent = content_margins.block_start +
                      fragment.FirstBaseline().value_or(fragment.BlockSize());
     content_descent =

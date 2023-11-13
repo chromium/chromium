@@ -14,11 +14,11 @@
 
 namespace blink {
 
-class CORE_EXPORT NGBoxFragment final : public NGFragment {
+class CORE_EXPORT LogicalBoxFragment final : public LogicalFragment {
  public:
-  NGBoxFragment(WritingDirectionMode writing_direction,
-                const NGPhysicalBoxFragment& physical_fragment)
-      : NGFragment(writing_direction, physical_fragment) {}
+  LogicalBoxFragment(WritingDirectionMode writing_direction,
+                     const NGPhysicalBoxFragment& physical_fragment)
+      : LogicalFragment(writing_direction, physical_fragment) {}
 
   const NGPhysicalBoxFragment& PhysicalBoxFragment() const {
     return To<NGPhysicalBoxFragment>(physical_fragment_);

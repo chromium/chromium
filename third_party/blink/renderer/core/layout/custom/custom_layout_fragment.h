@@ -29,8 +29,8 @@ class ScriptValue;
 // The web developer can position this child fragment (setting inlineOffset,
 // and blockOffset), which are relative to its parent.
 //
-// This should eventually mirror the information in a NGFragment, it has the
-// additional capability that it is exposed to web developers.
+// This should eventually mirror the information in a LogicalFragment, it has
+// the additional capability that it is exposed to web developers.
 class CustomLayoutFragment : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 

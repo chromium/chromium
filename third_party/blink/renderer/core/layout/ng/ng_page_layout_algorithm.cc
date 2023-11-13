@@ -57,7 +57,7 @@ const NGLayoutResult* NGPageLayoutAlgorithm::Layout() {
     container_builder_.AddChild(*page, page_offset);
 
     LayoutUnit page_block_size =
-        NGFragment(writing_direction, *page).BlockSize();
+        LogicalFragment(writing_direction, *page).BlockSize();
     intrinsic_block_size = std::max(intrinsic_block_size,
                                     page_offset.block_offset + page_block_size);
     page_offset.block_offset += page_block_size;

@@ -234,7 +234,7 @@ void NGBoxFragmentBuilder::AddChild(
         }
 
         // Use the original offset (*without* relative-positioning applied).
-        NGFragment fragment(GetWritingDirection(), child);
+        LogicalFragment fragment(GetWritingDirection(), child);
         LogicalRect bounds = {child_offset, fragment.Size()};
 
         // Margins affect the inflow-bounds in interesting ways.
@@ -381,8 +381,8 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
   if (ConstraintSpace().IsPaginated() && child_is_in_same_flow &&
       !IsFragmentainerBoxType()) {
     DCHECK(ConstraintSpace().HasKnownFragmentainerBlockSize());
-    NGFragment logical_fragment(child_fragment.Style().GetWritingDirection(),
-                                child_fragment);
+    LogicalFragment logical_fragment(
+        child_fragment.Style().GetWritingDirection(), child_fragment);
     LayoutUnit fragment_block_end =
         offset.block_offset + logical_fragment.BlockSize();
     LayoutUnit fragmentainer_overflow =

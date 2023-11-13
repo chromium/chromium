@@ -66,7 +66,7 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
       !inherits_inline_stretch_size_constraint) {
     auto UpdateBlockStretchSizes =
         [&](const NGLayoutResult* result) {
-          NGBoxFragment fragment(
+          LogicalBoxFragment fragment(
               ConstraintSpace().GetWritingDirection(),
               To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
           LayoutUnit ascent = fragment.FirstBaselineOrSynthesize(baseline_type);
@@ -152,8 +152,8 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
       DetermineOperatorSpacing(To<NGBlockNode>(child), &lspace, &rspace);
     const auto& physical_fragment =
         To<NGPhysicalBoxFragment>(child_layout_result->PhysicalFragment());
-    NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                           physical_fragment);
+    LogicalBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
+                                physical_fragment);
 
     BoxStrut margins = ComputeMarginsFor(child_constraint_space, child.Style(),
                                          ConstraintSpace());

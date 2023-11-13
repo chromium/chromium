@@ -179,7 +179,7 @@ LayoutUnit FlexItem::CrossAxisMarginExtent() const {
 LayoutUnit FlexItem::MarginBoxAscent(bool is_last_baseline,
                                      bool is_wrap_reverse) const {
   DCHECK(layout_result_);
-  NGBoxFragment baseline_fragment(
+  LogicalBoxFragment baseline_fragment(
       baseline_writing_direction_,
       To<NGPhysicalBoxFragment>(layout_result_->PhysicalFragment()));
 

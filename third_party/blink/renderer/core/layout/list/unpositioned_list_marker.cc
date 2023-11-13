@@ -72,8 +72,8 @@ absl::optional<LayoutUnit> UnpositionedListMarker::ContentAlignmentBaseline(
   // If this child content does not have any line boxes, the list marker
   // should be aligned to the first line box of next child.
   // https://github.com/w3c/csswg-drafts/issues/2417
-  return NGBoxFragment(space.GetWritingDirection(),
-                       To<NGPhysicalBoxFragment>(content))
+  return LogicalBoxFragment(space.GetWritingDirection(),
+                            To<NGPhysicalBoxFragment>(content))
       .FirstBaseline();
 }
 
@@ -90,8 +90,8 @@ void UnpositionedListMarker::AddToBox(
       To<NGPhysicalBoxFragment>(marker_layout_result.PhysicalFragment());
 
   // Compute the inline offset of the marker.
-  NGBoxFragment marker_fragment(space.GetWritingDirection(),
-                                marker_physical_fragment);
+  LogicalBoxFragment marker_fragment(space.GetWritingDirection(),
+                                     marker_physical_fragment);
   LogicalOffset marker_offset(InlineOffset(marker_fragment.Size().inline_size),
                               *block_offset);
 

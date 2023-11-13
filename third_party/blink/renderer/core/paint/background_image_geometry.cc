@@ -294,7 +294,8 @@ PhysicalRect ComputeStitchedTableGridRect(
     if (&walker == &fragment)
       fragment_local_grid_rect = local_grid_rect;
 
-    stitched_block_size += NGFragment(writing_direction, walker).BlockSize();
+    stitched_block_size +=
+        LogicalFragment(writing_direction, walker).BlockSize();
   }
 
   // Make the rect relative to the fragment we are currently painting.

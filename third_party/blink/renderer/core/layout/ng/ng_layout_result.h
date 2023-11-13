@@ -42,7 +42,7 @@ class NGFragmentBuilder;
 // for painting, hit testing, etc., as well as additional data which is only
 // necessary during layout and stored on this object.
 // Layout code should access the NGPhysicalFragment through the wrappers in
-// NGFragment et al.
+// LogicalFragment et al.
 class CORE_EXPORT NGLayoutResult final
     : public GarbageCollected<NGLayoutResult> {
  public:

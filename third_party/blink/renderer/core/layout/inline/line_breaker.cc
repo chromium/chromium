@@ -2594,8 +2594,8 @@ void LineBreaker::HandleAtomicInline(const InlineItem& item,
     const auto& physical_box_fragment = To<NGPhysicalBoxFragment>(
         item_result->layout_result->PhysicalFragment());
     item_result->inline_size =
-        NGFragment(constraint_space_.GetWritingDirection(),
-                   physical_box_fragment)
+        LogicalFragment(constraint_space_.GetWritingDirection(),
+                        physical_box_fragment)
             .InlineSize();
 
     if (UNLIKELY(is_initial_letter_box) &&
@@ -2730,7 +2730,7 @@ void LineBreaker::HandleBlockInInline(
 
     const NGPhysicalFragment& fragment = layout_result->PhysicalFragment();
     item_result->inline_size =
-        NGFragment(constraint_space_.GetWritingDirection(), fragment)
+        LogicalFragment(constraint_space_.GetWritingDirection(), fragment)
             .InlineSize();
 
     item_result->should_create_line_box = !layout_result->IsSelfCollapsing();

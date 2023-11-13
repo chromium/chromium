@@ -836,9 +836,9 @@ void InlineLayoutAlgorithm::PlaceLayoutResult(InlineItemResult* item_result,
   const InlineItem& item = *item_result->item;
   DCHECK(item.Style());
   FontHeight metrics =
-      NGBoxFragment(ConstraintSpace().GetWritingDirection(),
-                    To<NGPhysicalBoxFragment>(
-                        item_result->layout_result->PhysicalFragment()))
+      LogicalBoxFragment(ConstraintSpace().GetWritingDirection(),
+                         To<NGPhysicalBoxFragment>(
+                             item_result->layout_result->PhysicalFragment()))
           .BaselineMetrics(item_result->margins, baseline_type_);
   if (box)
     box->metrics.Unite(metrics);
@@ -863,7 +863,8 @@ void InlineLayoutAlgorithm::PlaceBlockInInline(const InlineItem& item,
   const NGLayoutResult& result = *item_result->layout_result;
   const auto& box_fragment =
       To<NGPhysicalBoxFragment>(result.PhysicalFragment());
-  NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(), box_fragment);
+  LogicalBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
+                              box_fragment);
 
   // Setup |container_builder_|. Set it up here instead of in |CreateLine|,
   // because there should be only one block-in-inline, and we need data from the
@@ -1077,8 +1078,8 @@ void InlineLayoutAlgorithm::PlaceFloatingObjects(
 
     // We need to manually account for the flipped-lines writing mode here :(.
     if (IsFlippedLinesWritingMode(ConstraintSpace().GetWritingMode())) {
-      NGFragment fragment(ConstraintSpace().GetWritingDirection(),
-                          child.layout_result->PhysicalFragment());
+      LogicalFragment fragment(ConstraintSpace().GetWritingDirection(),
+                               child.layout_result->PhysicalFragment());
 
       block_offset = -fragment.BlockSize() - block_offset;
     }

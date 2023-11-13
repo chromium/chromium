@@ -184,7 +184,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   const ComputedStyle& style = node.Style();
   const NGPhysicalBoxFragment& physical_fragment =
       To<NGPhysicalBoxFragment>(layout_result.PhysicalFragment());
-  NGBoxFragment fragment(style.GetWritingDirection(), physical_fragment);
+  LogicalBoxFragment fragment(style.GetWritingDirection(), physical_fragment);
 
   if (fragment_geometry.border_box_size.inline_size != fragment.InlineSize())
     return NGLayoutCacheStatus::kNeedsLayout;
@@ -432,9 +432,10 @@ bool IntrinsicSizeWillChange(
         CalculateInitialFragmentGeometry(new_space, node, break_token);
   }
 
-  LayoutUnit inline_size = NGFragment(style.GetWritingDirection(),
-                                      cached_layout_result.PhysicalFragment())
-                               .InlineSize();
+  LayoutUnit inline_size =
+      LogicalFragment(style.GetWritingDirection(),
+                      cached_layout_result.PhysicalFragment())
+          .InlineSize();
 
   if ((*fragment_geometry)->border_box_size.inline_size != inline_size)
     return true;

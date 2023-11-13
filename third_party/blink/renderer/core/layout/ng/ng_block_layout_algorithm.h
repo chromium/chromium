@@ -22,9 +22,9 @@
 
 namespace blink {
 
-enum class NGBreakStatus;
+class LogicalFragment;
 class NGConstraintSpace;
-class NGFragment;
+enum class NGBreakStatus;
 
 // This struct is used for communicating to a child the position of the previous
 // inflow child. This will be used to calculate the position of the next child.
@@ -139,7 +139,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       const absl::optional<LayoutUnit>& child_bfc_block_offset,
       const LogicalOffset&,
       const NGLayoutResult&,
-      const NGFragment&,
+      const LogicalFragment&,
       bool self_collapsing_child_had_clearance);
 
   // Position an self-collapsing child using the parent BFC block-offset.
@@ -330,7 +330,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // {@code known_fragment_offset} if the fragment knows it's offset
   // @return Fragment's offset relative to the fragment's parent.
   LogicalOffset CalculateLogicalOffset(
-      const NGFragment& fragment,
+      const LogicalFragment& fragment,
       LayoutUnit child_bfc_line_offset,
       const absl::optional<LayoutUnit>& child_bfc_block_offset);
 
@@ -387,7 +387,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // Adjusts the inline offset of the slider thumb box from the value of
   // HTMLInputElement.
   LogicalOffset AdjustSliderThumbInlineOffset(
-      const NGFragment& fragment,
+      const LogicalFragment& fragment,
       const LogicalOffset& logical_offset);
 
   LogicalSize child_percentage_size_;

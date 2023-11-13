@@ -51,7 +51,7 @@ enum class NGOutlineType;
 // such that paint/hit-testing/etc don't modify it.
 //
 // Layout code should only access geometry information through the
-// NGFragment wrapper classes which transforms information into the logical
+// LogicalFragment wrapper classes which transforms information into the logical
 // coordinate system.
 class CORE_EXPORT NGPhysicalFragment
     : public GarbageCollected<NGPhysicalFragment> {

@@ -266,7 +266,8 @@ const ExclusionArea* PostPlaceInitialLetterBox(
       line_style.GetWritingDirection();
 
   const LogicalSize initial_letter_box_size =
-      NGFragment(writing_direction_mode, initial_letter_box_fragment).Size();
+      LogicalFragment(writing_direction_mode, initial_letter_box_fragment)
+          .Size();
 
   LayoutUnit initial_letter_block_start_adjust;
   const LayoutUnit initial_letter_border_box_block_offset =

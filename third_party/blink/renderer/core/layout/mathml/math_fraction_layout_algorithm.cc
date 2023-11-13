@@ -171,10 +171,10 @@ const NGLayoutResult* MathFractionLayoutAlgorithm::Layout() {
   const auto denominator_margins = ComputeMarginsFor(
       denominator_space, denominator.Style(), ConstraintSpace());
 
-  const NGBoxFragment numerator_fragment(
+  const LogicalBoxFragment numerator_fragment(
       ConstraintSpace().GetWritingDirection(),
       To<NGPhysicalBoxFragment>(numerator_layout_result->PhysicalFragment()));
-  const NGBoxFragment denominator_fragment(
+  const LogicalBoxFragment denominator_fragment(
       ConstraintSpace().GetWritingDirection(),
       To<NGPhysicalBoxFragment>(denominator_layout_result->PhysicalFragment()));
   const auto baseline_type = Style().GetFontBaseline();

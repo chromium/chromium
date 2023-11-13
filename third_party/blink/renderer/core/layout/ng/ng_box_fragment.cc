@@ -11,8 +11,9 @@
 
 namespace blink {
 
-FontHeight NGBoxFragment::BaselineMetrics(const LineBoxStrut& margins,
-                                          FontBaseline baseline_type) const {
+FontHeight LogicalBoxFragment::BaselineMetrics(
+    const LineBoxStrut& margins,
+    FontBaseline baseline_type) const {
   // For checkbox and radio controls, we always use the border edge instead of
   // the margin edge.
   if (physical_fragment_.Style().IsCheckboxOrRadioPart())
@@ -64,7 +65,7 @@ FontHeight NGBoxFragment::BaselineMetrics(const LineBoxStrut& margins,
   return FontHeight(block_size - block_size / 2, block_size / 2);
 }
 
-LayoutUnit NGBoxFragment::BlockEndLayoutOverflow() const {
+LayoutUnit LogicalBoxFragment::BlockEndLayoutOverflow() const {
   WritingModeConverter converter(writing_direction_, physical_fragment_.Size());
   LogicalRect overflow =
       converter.ToLogical(PhysicalBoxFragment().LayoutOverflow());

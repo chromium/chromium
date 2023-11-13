@@ -14,12 +14,12 @@ namespace blink {
 
 struct LogicalSize;
 
-class CORE_EXPORT NGFragment {
+class CORE_EXPORT LogicalFragment {
   STACK_ALLOCATED();
 
  public:
-  NGFragment(WritingDirectionMode writing_direction,
-             const NGPhysicalFragment& physical_fragment)
+  LogicalFragment(WritingDirectionMode writing_direction,
+                  const NGPhysicalFragment& physical_fragment)
       : physical_fragment_(physical_fragment),
         writing_direction_(writing_direction) {}
 

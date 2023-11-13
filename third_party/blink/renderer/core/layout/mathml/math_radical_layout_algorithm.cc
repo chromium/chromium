@@ -89,8 +89,8 @@ const NGLayoutResult* MathRadicalLayoutAlgorithm::Layout() {
         To<NGPhysicalBoxFragment>(base_layout_result->PhysicalFragment());
     base_margins =
         ComputeMarginsFor(constraint_space, base.Style(), ConstraintSpace());
-    NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                           base_fragment);
+    LogicalBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
+                                base_fragment);
     base_ascent = base_margins.block_start +
                   fragment.FirstBaselineOrSynthesize(baseline_type);
     base_descent = fragment.BlockSize() + base_margins.BlockSum() - base_ascent;
@@ -105,8 +105,8 @@ const NGLayoutResult* MathRadicalLayoutAlgorithm::Layout() {
         To<NGPhysicalBoxFragment>(index_layout_result->PhysicalFragment());
     index_margins =
         ComputeMarginsFor(constraint_space, index.Style(), ConstraintSpace());
-    NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                           index_fragment);
+    LogicalBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
+                                index_fragment);
     index_inline_size = fragment.InlineSize() + index_margins.InlineSum();
     index_ascent = index_margins.block_start +
                    fragment.FirstBaselineOrSynthesize(baseline_type);

@@ -448,7 +448,7 @@ MinMaxSizesResult NGBlockLayoutAlgorithm::ComputeMinMaxSizes(
 }
 
 LogicalOffset NGBlockLayoutAlgorithm::CalculateLogicalOffset(
-    const NGFragment& fragment,
+    const LogicalFragment& fragment,
     LayoutUnit child_bfc_line_offset,
     const absl::optional<LayoutUnit>& child_bfc_block_offset) {
   LayoutUnit inline_size = container_builder_.InlineSize();
@@ -1390,7 +1390,8 @@ void NGBlockLayoutAlgorithm::HandleFloat(
   const NGPhysicalFragment& physical_fragment =
       positioned_float.layout_result->PhysicalFragment();
   LayoutUnit float_inline_size =
-      NGFragment(ConstraintSpace().GetWritingDirection(), physical_fragment)
+      LogicalFragment(ConstraintSpace().GetWritingDirection(),
+                      physical_fragment)
           .InlineSize();
 
   BfcOffset bfc_offset = {ConstraintSpace().GetBfcOffset().line_offset,
@@ -1592,8 +1593,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
   }
 
   const auto& physical_fragment = layout_result->PhysicalFragment();
-  NGFragment fragment(ConstraintSpace().GetWritingDirection(),
-                      physical_fragment);
+  LogicalFragment fragment(ConstraintSpace().GetWritingDirection(),
+                           physical_fragment);
 
   LogicalOffset logical_offset = LogicalFromBfcOffsets(
       child_bfc_offset, ContainerBfcOffset(), fragment.InlineSize(),
@@ -1740,7 +1741,8 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
     DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
 
     // Check if we can fit in the opportunity block direction.
-    NGFragment fragment(writing_direction, layout_result->PhysicalFragment());
+    LogicalFragment fragment(writing_direction,
+                             layout_result->PhysicalFragment());
     if (fragment.BlockSize() > opportunity.rect.BlockSize())
       continue;
 
@@ -1759,7 +1761,8 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
       LayoutUnit marker_inline_size;
       if (!marker_fragment.Children().empty()) {
         marker_inline_size =
-            NGFragment(writing_direction, *marker_fragment.Children().front())
+            LogicalFragment(writing_direction,
+                            *marker_fragment.Children().front())
                 .InlineSize();
       }
       auto_margins.inline_start = UnpositionedListMarker(To<NGBlockNode>(child))
@@ -2208,8 +2211,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
   }
 
   const auto& physical_fragment = layout_result->PhysicalFragment();
-  NGFragment fragment(ConstraintSpace().GetWritingDirection(),
-                      physical_fragment);
+  LogicalFragment fragment(ConstraintSpace().GetWritingDirection(),
+                           physical_fragment);
 
   if (line_box_bfc_block_offset)
     child_bfc_block_offset = line_box_bfc_block_offset;
@@ -2340,7 +2343,7 @@ NGPreviousInflowPosition NGBlockLayoutAlgorithm::ComputeInflowPosition(
     const absl::optional<LayoutUnit>& child_bfc_block_offset,
     const LogicalOffset& logical_offset,
     const NGLayoutResult& layout_result,
-    const NGFragment& fragment,
+    const LogicalFragment& fragment,
     bool self_collapsing_child_had_clearance) {
   // Determine the child's end logical offset, for the next child to use.
   LayoutUnit logical_block_offset;
@@ -3003,8 +3006,8 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
     return;
 
   const auto& physical_fragment = To<NGPhysicalBoxFragment>(child);
-  NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                         physical_fragment);
+  LogicalBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
+                              physical_fragment);
 
   if (!container_builder_.FirstBaseline()) {
     if (auto first_baseline = fragment.FirstBaseline())
@@ -3324,8 +3327,8 @@ LayoutUnit NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
       const auto& grand_children = child.PostLayoutChildren();
       const auto begin = grand_children.begin();
       if (begin != grand_children.end()) {
-        NGFragment grand_child_fragment(ConstraintSpace().GetWritingDirection(),
-                                        *begin->fragment);
+        LogicalFragment grand_child_fragment(
+            ConstraintSpace().GetWritingDirection(), *begin->fragment);
         available_size.inline_size = grand_child_fragment.InlineSize();
       }
     }
@@ -3351,8 +3354,9 @@ LayoutUnit NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
     return FinishTextControlPlaceholder(result, offset, apply_fixed_size,
                                         previous_inflow_position);
   }
-  NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+  LogicalBoxFragment fragment(
+      ConstraintSpace().GetWritingDirection(),
+      To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
   // We should apply FirstBaseline() of the placeholder fragment because the
   // placeholder might have the 'overflow' property, and its LastBaseline()
   // might be the block-end margin.
@@ -3392,13 +3396,14 @@ LayoutUnit NGBlockLayoutAlgorithm::FinishTextControlPlaceholder(
   if (apply_fixed_size) {
     return block_offset;
   }
-  NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+  LogicalBoxFragment fragment(
+      ConstraintSpace().GetWritingDirection(),
+      To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
   return std::max(block_offset, offset.block_offset + fragment.BlockSize());
 }
 
 LogicalOffset NGBlockLayoutAlgorithm::AdjustSliderThumbInlineOffset(
-    const NGFragment& fragment,
+    const LogicalFragment& fragment,
     const LogicalOffset& logical_offset) {
   // See LayoutSliderTrack::UpdateLayout().
   const LayoutUnit available_extent =

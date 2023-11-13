@@ -14,7 +14,7 @@ namespace blink {
 
 class NGConstraintSpace;
 
-// This struct represents an 2D-area where a NGFragment can fit within the
+// This struct represents an 2D-area where a LogicalFragment can fit within the
 // exclusion space. A layout opportunity is produced by the exclusion space by
 // calling FindLayoutOpportunity, or AllLayoutOpportunities.
 //

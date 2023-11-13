@@ -102,8 +102,8 @@ TableLayoutAlgorithm::CaptionResult LayoutCaption(
       caption.Layout(caption_constraint_space, break_token, early_break);
   DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
 
-  NGFragment fragment(table_constraint_space.GetWritingDirection(),
-                      layout_result->PhysicalFragment());
+  LogicalFragment fragment(table_constraint_space.GetWritingDirection(),
+                           layout_result->PhysicalFragment());
   ResolveInlineAutoMargins(caption.Style(), table_style, table_inline_size,
                            fragment.InlineSize(), &margins);
 
@@ -160,8 +160,8 @@ void ComputeCaptionFragments(
     TableLayoutAlgorithm::CaptionResult caption_result =
         LayoutCaption(table_constraint_space, table_style, table_inline_size,
                       caption_constraint_space, caption, margins);
-    NGFragment fragment(table_constraint_space.GetWritingDirection(),
-                        caption_result.layout_result->PhysicalFragment());
+    LogicalFragment fragment(table_constraint_space.GetWritingDirection(),
+                             caption_result.layout_result->PhysicalFragment());
     captions_block_size +=
         fragment.BlockSize() + caption_result.margins.BlockSum();
     if (captions)
@@ -956,8 +956,8 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
         LogicalOffset(caption.margins.inline_start, *block_offset),
         caption.margins);
 
-    *block_offset += NGFragment(table_writing_direction,
-                                caption.layout_result->PhysicalFragment())
+    *block_offset += LogicalFragment(table_writing_direction,
+                                     caption.layout_result->PhysicalFragment())
                          .BlockSize() +
                      caption.margins.block_end;
   };
@@ -1365,7 +1365,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
 
     const auto& physical_fragment =
         To<NGPhysicalBoxFragment>(child_result->PhysicalFragment());
-    NGBoxFragment fragment(table_writing_direction, physical_fragment);
+    LogicalBoxFragment fragment(table_writing_direction, physical_fragment);
     if (child.IsTableSection()) {
       if (!is_repeated_section) {
         has_entered_non_repeated_section = true;

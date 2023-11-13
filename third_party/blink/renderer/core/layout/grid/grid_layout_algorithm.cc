@@ -999,7 +999,7 @@ LayoutUnit GetExtraMarginForBaseline(const BoxStrut& margins,
 }
 
 LayoutUnit GetLogicalBaseline(const GridItemData& grid_item,
-                              const NGBoxFragment& baseline_fragment,
+                              const LogicalBoxFragment& baseline_fragment,
                               GridTrackSizingDirection track_direction) {
   const auto font_baseline = grid_item.parent_grid_font_baseline;
 
@@ -1013,7 +1013,7 @@ LayoutUnit GetSynthesizedLogicalBaseline(
     const GridItemData& grid_item,
     LayoutUnit block_size,
     GridTrackSizingDirection track_direction) {
-  const auto synthesized_baseline = NGBoxFragment::SynthesizedBaseline(
+  const auto synthesized_baseline = LogicalBoxFragment::SynthesizedBaseline(
       grid_item.parent_grid_font_baseline,
       grid_item.BaselineWritingDirection(track_direction).IsFlippedLines(),
       block_size);
@@ -1165,7 +1165,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
       result = LayoutGridItemForMeasure(*grid_item, space, sizing_constraint);
     }
 
-    NGBoxFragment baseline_fragment(
+    LogicalBoxFragment baseline_fragment(
         grid_item->BaselineWritingDirection(track_direction),
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
 
@@ -1556,7 +1556,7 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
 
     const auto baseline_writing_direction =
         grid_item.BaselineWritingDirection(track_direction);
-    const NGBoxFragment baseline_fragment(
+    const LogicalBoxFragment baseline_fragment(
         baseline_writing_direction,
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
 
@@ -3318,7 +3318,7 @@ class BaselineAccumulator {
       : font_baseline_(font_baseline) {}
 
   void Accumulate(const GridItemData& grid_item,
-                  const NGBoxFragment& fragment,
+                  const LogicalBoxFragment& fragment,
                   const LayoutUnit block_offset) {
     auto StartsBefore = [](const GridArea& a, const GridArea& b) -> bool {
       if (a.rows.StartLine() < b.rows.StartLine())
@@ -3487,7 +3487,7 @@ void GridLayoutAlgorithm::PlaceGridItems(
     auto* result = grid_item.node.Layout(space);
     const auto& physical_fragment =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());
-    NGBoxFragment fragment(container_writing_direction, physical_fragment);
+    LogicalBoxFragment fragment(container_writing_direction, physical_fragment);
 
     auto BaselineOffset = [&](GridTrackSizingDirection track_direction,
                               LayoutUnit size) -> LayoutUnit {
@@ -3495,7 +3495,7 @@ void GridLayoutAlgorithm::PlaceGridItems(
         return LayoutUnit();
       }
 
-      NGBoxFragment baseline_fragment(
+      LogicalBoxFragment baseline_fragment(
           grid_item.BaselineWritingDirection(track_direction),
           physical_fragment);
       // The baseline offset is the difference between the grid item's baseline
@@ -3800,7 +3800,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
                         fragment_relative_block_offset),
           item_placement_data.relative_offset);
 
-      const NGBoxFragment fragment(
+      const LogicalBoxFragment fragment(
           container_writing_direction,
           To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
       baseline_accumulator.Accumulate(grid_item, fragment,

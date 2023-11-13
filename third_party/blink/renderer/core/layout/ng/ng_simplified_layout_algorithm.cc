@@ -168,7 +168,7 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
 
   if (keep_old_size) {
     LayoutUnit old_block_size =
-        NGFragment(writing_direction_, physical_fragment).BlockSize();
+        LogicalFragment(writing_direction_, physical_fragment).BlockSize();
     container_builder_.SetFragmentBlockSize(old_block_size);
   } else {
     container_builder_.SetIntrinsicBlockSize(result.IntrinsicBlockSize());
@@ -186,7 +186,7 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
       container_builder_.SetFragmentBlockSize(ComputeNewBlockSize());
     } else {
       LayoutUnit old_block_size =
-          NGFragment(writing_direction_, physical_fragment).BlockSize();
+          LogicalFragment(writing_direction_, physical_fragment).BlockSize();
 #if DCHECK_IS_ON()
       // Tables, sections, rows don't respect the typical block-sizing rules.
       if (!physical_fragment.IsTable() && !physical_fragment.IsTableSection() &&

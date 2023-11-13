@@ -12,8 +12,8 @@
 
 namespace blink {
 
+class LogicalBoxFragment;
 class NGBlockNode;
-class NGBoxFragment;
 class NGBoxFragmentBuilder;
 class NGConstraintSpaceBuilder;
 class TableBorders;
@@ -125,7 +125,7 @@ class ColspanCellTabulator {
 // or bottom content edge of non-baseline-aligned cells.
 class RowBaselineTabulator {
  public:
-  void ProcessCell(const NGBoxFragment& fragment,
+  void ProcessCell(const LogicalBoxFragment& fragment,
                    EVerticalAlign align,
                    bool is_rowspanned,
                    bool descendant_depends_on_percentage_block_size);

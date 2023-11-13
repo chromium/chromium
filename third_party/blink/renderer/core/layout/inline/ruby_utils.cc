@@ -131,13 +131,13 @@ AnnotationOverhang GetOverhang(const InlineItemResult& item) {
     const ComputedStyle& base_style = child_fragment.Style();
     const auto writing_direction = base_style.GetWritingDirection();
     const LayoutUnit base_inline_size =
-        NGFragment(writing_direction, child_fragment).InlineSize();
+        LogicalFragment(writing_direction, child_fragment).InlineSize();
     // RubyBase's inline_size is always same as RubyColumn's inline_size.
     // Overhang values are offsets from RubyBase's inline edges to
     // the outmost text.
     for (const auto& base_child_link : child_fragment.PostLayoutChildren()) {
       const LayoutUnit line_inline_size =
-          NGFragment(writing_direction, *base_child_link).InlineSize();
+          LogicalFragment(writing_direction, *base_child_link).InlineSize();
       if (line_inline_size == LayoutUnit())
         continue;
       found_line = true;

@@ -51,7 +51,7 @@ class BaselineAccumulator {
   explicit BaselineAccumulator(const ComputedStyle& style)
       : font_baseline_(style.GetFontBaseline()) {}
 
-  void AccumulateItem(const NGBoxFragment& fragment,
+  void AccumulateItem(const LogicalBoxFragment& fragment,
                       const LayoutUnit block_offset,
                       bool is_first_line,
                       bool is_last_line) {
@@ -1515,7 +1515,7 @@ NGLayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
           To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
 
       const auto writing_direction = ConstraintSpace().GetWritingDirection();
-      NGBoxFragment fragment(writing_direction, physical_fragment);
+      LogicalBoxFragment fragment(writing_direction, physical_fragment);
       if (!InvolvedInBlockFragmentation(container_builder_)) {
         container_builder_.AddResult(
             *layout_result, offset,
@@ -1903,8 +1903,8 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     const auto& physical_fragment =
         To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
 
-    NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                           physical_fragment);
+    LogicalBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
+                                physical_fragment);
 
     bool is_at_block_end = !physical_fragment.BreakToken() ||
                            physical_fragment.BreakToken()->IsAtBlockEnd();
@@ -2130,8 +2130,8 @@ void FlexLayoutAlgorithm::AdjustButtonBaseline(
   const NGLogicalLink& child = children[0];
   DCHECK(!child.fragment->IsLineBox());
   const NGConstraintSpace& space = ConstraintSpace();
-  NGBoxFragment fragment(space.GetWritingDirection(),
-                         To<NGPhysicalBoxFragment>(*child.fragment));
+  LogicalBoxFragment fragment(space.GetWritingDirection(),
+                              To<NGPhysicalBoxFragment>(*child.fragment));
   absl::optional<LayoutUnit> child_baseline =
       space.BaselineAlgorithmType() == NGBaselineAlgorithmType::kDefault
           ? fragment.FirstBaseline()

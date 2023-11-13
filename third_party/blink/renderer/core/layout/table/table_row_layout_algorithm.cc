@@ -180,8 +180,8 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
       bool has_rowspan = cell_data.rowspan_block_size != kIndefiniteSize;
       const auto& physical_fragment =
           To<NGPhysicalBoxFragment>(cell_result->PhysicalFragment());
-      const NGBoxFragment fragment(table_data.table_writing_direction,
-                                   physical_fragment);
+      const LogicalBoxFragment fragment(table_data.table_writing_direction,
+                                        physical_fragment);
       row_baseline_tabulator.ProcessCell(
           fragment, cell_style.VerticalAlign(), has_rowspan,
           cell_data.has_descendant_that_depends_on_percentage_block_size);

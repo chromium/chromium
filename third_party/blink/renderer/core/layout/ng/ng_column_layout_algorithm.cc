@@ -823,7 +823,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
                      result->BreakAppeal());
 
         LayoutUnit block_end_overflow =
-            NGBoxFragment(ConstraintSpace().GetWritingDirection(), column)
+            LogicalBoxFragment(ConstraintSpace().GetWritingDirection(), column)
                 .BlockEndLayoutOverflow();
         if (row_offset + block_end_overflow >
             FragmentainerSpaceLeft(ConstraintSpace())) {
@@ -1085,8 +1085,8 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
 
   const auto& spanner_fragment =
       To<NGPhysicalBoxFragment>(result->PhysicalFragment());
-  NGFragment logical_fragment(ConstraintSpace().GetWritingDirection(),
-                              spanner_fragment);
+  LogicalFragment logical_fragment(ConstraintSpace().GetWritingDirection(),
+                                   spanner_fragment);
 
   ResolveInlineAutoMargins(spanner_style, Style(),
                            ChildAvailableSize().inline_size,
@@ -1163,7 +1163,7 @@ void NGColumnLayoutAlgorithm::PositionAnyUnclaimedListMarker() {
 void NGColumnLayoutAlgorithm::PropagateBaselineFromChild(
     const NGPhysicalBoxFragment& child,
     LayoutUnit block_offset) {
-  NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(), child);
+  LogicalBoxFragment fragment(ConstraintSpace().GetWritingDirection(), child);
 
   // The first-baseline is the highest first-baseline of all fragments.
   if (auto first_baseline = fragment.FirstBaseline()) {
@@ -1327,8 +1327,8 @@ LayoutUnit NGColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
       // getting truncated. After all, they don't really require any space, so
       // what we're doing currently might be seen as unnecessary (and slightly
       // unpredictable) column over-stretching.
-      NGFragment logical_fragment(ConstraintSpace().GetWritingDirection(),
-                                  fragment);
+      LogicalFragment logical_fragment(ConstraintSpace().GetWritingDirection(),
+                                       fragment);
       column_block_size =
           std::max(column_block_size, logical_fragment.BlockSize());
       content_runs.AddRun(column_block_size);

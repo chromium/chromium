@@ -929,8 +929,8 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
 
     const NGLayoutResult* layout_result = Layout(constraint_space);
     DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
-    sizes = NGFragment({container_writing_mode, TextDirection::kLtr},
-                       layout_result->PhysicalFragment())
+    sizes = LogicalFragment({container_writing_mode, TextDirection::kLtr},
+                            layout_result->PhysicalFragment())
                 .InlineSize();
     const bool depends_on_block_constraints =
         Style().LogicalWidth().IsAuto() ||

@@ -105,8 +105,8 @@ const NGLayoutResult* TableSectionLayoutAlgorithm::Layout() {
 
     const auto& physical_fragment =
         To<NGPhysicalBoxFragment>(row_result->PhysicalFragment());
-    const NGBoxFragment fragment(table_data.table_writing_direction,
-                                 physical_fragment);
+    const LogicalBoxFragment fragment(table_data.table_writing_direction,
+                                      physical_fragment);
 
     // TODO(crbug.com/736093): Due to inconsistent writing-direction of
     // table-parts these DCHECKs may fail. When the above bug is fixed use the

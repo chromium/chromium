@@ -273,7 +273,7 @@ MathScriptsLayoutAlgorithm::LayoutAndGetMetrics(NGBlockNode child) const {
       Node(), ChildAvailableSize(), ConstraintSpace(), child);
   child_and_metrics.result =
       child.Layout(constraint_space, nullptr /*break_token*/);
-  NGBoxFragment fragment(
+  LogicalBoxFragment fragment(
       ConstraintSpace().GetWritingDirection(),
       To<NGPhysicalBoxFragment>(child_and_metrics.result->PhysicalFragment()));
   child_and_metrics.inline_size = fragment.InlineSize();

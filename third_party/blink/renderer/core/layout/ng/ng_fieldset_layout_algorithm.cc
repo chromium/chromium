@@ -255,7 +255,7 @@ void FieldsetLayoutAlgorithm::LayoutLegend(NGBlockNode& legend) {
   const auto& physical_fragment = result->PhysicalFragment();
 
   LayoutUnit legend_border_box_block_size =
-      NGFragment(writing_direction_, physical_fragment).BlockSize();
+      LogicalFragment(writing_direction_, physical_fragment).BlockSize();
   LayoutUnit legend_margin_box_block_size = legend_margins.block_start +
                                             legend_border_box_block_size +
                                             legend_margins.block_end;
@@ -285,7 +285,8 @@ void FieldsetLayoutAlgorithm::LayoutLegend(NGBlockNode& legend) {
 
   LayoutUnit legend_inline_start = ComputeLegendInlineOffset(
       legend.Style(),
-      NGFragment(writing_direction_, result->PhysicalFragment()).InlineSize(),
+      LogicalFragment(writing_direction_, result->PhysicalFragment())
+          .InlineSize(),
       legend_margins, Style(), BorderScrollbarPadding().inline_start,
       ChildAvailableSize().inline_size);
   LogicalOffset legend_offset = {legend_inline_start, block_offset};
@@ -377,7 +378,7 @@ NGBreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
     if (result) {
       const auto& fragment = result->PhysicalFragment();
       LayoutUnit total_block_size =
-          NGFragment(writing_direction_, fragment).BlockSize();
+          LogicalFragment(writing_direction_, fragment).BlockSize();
       if (content_break_token)
         total_block_size += content_break_token->ConsumedBlockSize();
       if (total_block_size >= max_content_block_size)
@@ -421,7 +422,7 @@ NGBreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
       container_builder_.SetUseLastBaselineForInlineBaseline();
 
     intrinsic_block_size_ +=
-        NGFragment(writing_direction_, fragment).BlockSize();
+        LogicalFragment(writing_direction_, fragment).BlockSize();
     container_builder_.SetHasSeenAllChildren();
   } else if (break_status == NGBreakStatus::kBrokeBefore) {
     ConsumeRemainingFragmentainerSpace();
