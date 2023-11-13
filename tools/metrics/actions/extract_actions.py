@@ -335,7 +335,7 @@ def GrepForActions(path, actions):
     # property LongPathsEnabled is set to 1. As a workaround, the "\\?\"
     # disables all string parsing by the Windows API and thus allows us to
     # exceed Windows' path length limit of 260 characters.
-    path = '\\\\?\\' + os.abspath(path)
+    path = '\\\\?\\' + os.path.abspath(path)
 
   finder = ActionNameFinder(path,
                             open(path, encoding='utf-8').read(), action_re)
