@@ -27,6 +27,7 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -70,8 +71,26 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::SetUp();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+    InteractiveBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    InteractiveBrowserTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+    // This test uses a mock time, so use mock cert verifier to not have cert
+    // verification depend on the current mocked time.
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(https_server());
     https_server()->StartAcceptingConnections();
@@ -218,6 +237,7 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
   base::UserActionTester user_actions_;
   feature_engagement::test::ScopedIphFeatureList iph_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
+  content::ContentMockCertVerifier mock_cert_verifier_;
 };
 
 class CookieControlsInteractiveUiNoFeedbackTest
