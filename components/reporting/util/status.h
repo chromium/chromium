@@ -59,7 +59,7 @@ class [[nodiscard]] Status {
   // code, and error message.  If "code == 0", error_message is
   // ignored and a Status object identical to Status::OK is
   // constructed.
-  Status(error::Code error_code, std::string_view error_message);
+  Status(error::Code error_code, std::string error_message);
 
   // Pre-defined Status object
   static const Status& StatusOK();
@@ -68,8 +68,8 @@ class [[nodiscard]] Status {
   bool ok() const { return error_code_ == error::OK; }
   int error_code() const { return error_code_; }
   error::Code code() const { return error_code_; }
-  std::string_view error_message() const { return error_message_; }
-  std::string_view message() const { return error_message_; }
+  const std::string& error_message() const { return error_message_; }
+  const std::string& message() const { return error_message_; }
 
   bool operator==(const Status& x) const;
   bool operator!=(const Status& x) const { return !operator==(x); }
