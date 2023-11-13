@@ -231,6 +231,50 @@ extensions::BlocklistState ConvertTelemetryResponseVerdictToBlocklistState(
   }
 }
 
+// Checks for extensions specified in the -load-extension commandline switch.
+// Creates and returns a set of extension objects for such extensions.
+// NOTE: These extensions are not installed - the information is only collected
+// for telemetry purposes.
+// This function is executed on a separate thread from the UI thread since it
+// involves reading the manifest files from disk.
+extensions::ExtensionSet CollectCommandLineExtensionInfo() {
+  extensions::ExtensionSet commandline_extensions;
+
+  // If there are no commandline extensions, return an empty set.
+  base::CommandLine* cmdline(base::CommandLine::ForCurrentProcess());
+  if (!cmdline || !cmdline->HasSwitch(extensions::switches::kLoadExtension)) {
+    return commandline_extensions;
+  }
+
+  // Otherwise, create an extension object for each extension specified in the
+  // commandline. Note that the extension is not installed.
+  base::CommandLine::StringType path_list =
+      cmdline->GetSwitchValueNative(extensions::switches::kLoadExtension);
+  base::StringTokenizerT<base::CommandLine::StringType,
+                         base::CommandLine::StringType::const_iterator>
+      t(path_list, FILE_PATH_LITERAL(","));
+
+  while (t.GetNext()) {
+    auto tmp_path = extensions::path_util::ResolveHomeDirectory(
+        base::FilePath(t.token_piece()));
+    auto extension_path = base::MakeAbsoluteFilePath(tmp_path);
+    std::string error;
+    // Use default creation flags. Since we are not installing the extension,
+    // it doesn't really mattter.
+    int flags = extensions::Extension::FOLLOW_SYMLINKS_ANYWHERE |
+                extensions::Extension::ALLOW_FILE_ACCESS |
+                extensions::Extension::REQUIRE_MODERN_MANIFEST_VERSION;
+    scoped_refptr<extensions::Extension> extension =
+        extensions::file_util::LoadExtension(
+            extension_path, ManifestLocation::kCommandLine, flags, &error);
+    if (error.empty()) {
+      commandline_extensions.Insert(extension);
+    }
+  }
+
+  return commandline_extensions;
+}
+
 }  // namespace
 
 ExtensionTelemetryService::~ExtensionTelemetryService() = default;
@@ -364,6 +408,15 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
           FROM_HERE,
           base::Seconds(kExtensionTelemetryFileDataStartupDelaySeconds.Get()),
           this, &ExtensionTelemetryService::StartOffstoreFileDataCollection);
+      if (base::FeatureList::IsEnabled(
+              kExtensionTelemetryFileDataForCommandLineExtensions)) {
+        base::ThreadPool::PostTaskAndReplyWithResult(
+            FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+            base::BindOnce(CollectCommandLineExtensionInfo),
+            base::BindOnce(&ExtensionTelemetryService::
+                               OnCommandLineExtensionsInfoCollected,
+                           weak_factory_.GetWeakPtr()));
+      }
     }
 
     if (current_reporting_interval_.is_positive()) {
@@ -1054,47 +1107,11 @@ void ExtensionTelemetryService::StartOffstoreFileDataCollection() {
   CollectOffstoreFileData();
 }
 
-void ExtensionTelemetryService::CollectCommandLineExtensionInfo() {
-  if (!base::FeatureList::IsEnabled(
-          kExtensionTelemetryFileDataForCommandLineExtensions)) {
-    return;
-  }
-
-  // Only collect commandline extension information once.
-  if (collected_commandline_extension_info_) {
-    return;
-  }
-  collected_commandline_extension_info_ = true;
-
-  // If there are no commandline extensions, do nothing.
-  base::CommandLine* cmdline(base::CommandLine::ForCurrentProcess());
-  if (!cmdline || !cmdline->HasSwitch(extensions::switches::kLoadExtension)) {
-    return;
-  }
-
-  // Otherwise, store an extension object for each extension specified in the
-  // commandline. Note that the extension is not installed.
-  base::CommandLine::StringType path_list =
-      cmdline->GetSwitchValueNative(extensions::switches::kLoadExtension);
-  base::StringTokenizerT<base::CommandLine::StringType,
-                         base::CommandLine::StringType::const_iterator>
-      t(path_list, FILE_PATH_LITERAL(","));
-  while (t.GetNext()) {
-    auto tmp_path = extensions::path_util::ResolveHomeDirectory(
-        base::FilePath(t.token_piece()));
-    auto extension_path = base::MakeAbsoluteFilePath(tmp_path);
-    std::string error;
-    // Use default creation flags. Since we are not installing the extension,
-    // it doesn't really mattter.
-    int flags = extensions::Extension::FOLLOW_SYMLINKS_ANYWHERE |
-                extensions::Extension::ALLOW_FILE_ACCESS |
-                extensions::Extension::REQUIRE_MODERN_MANIFEST_VERSION;
-    scoped_refptr<extensions::Extension> extension =
-        extensions::file_util::LoadExtension(
-            extension_path, ManifestLocation::kCommandLine, flags, &error);
-    if (error.empty()) {
-      commandline_extensions_.Insert(extension);
-    }
+void ExtensionTelemetryService::OnCommandLineExtensionsInfoCollected(
+    extensions::ExtensionSet commandline_extensions) {
+  if (enabled_) {
+    // Only store this information if the telemetry service is enabled.
+    commandline_extensions_ = std::move(commandline_extensions);
   }
 }
 
@@ -1110,8 +1127,9 @@ void ExtensionTelemetryService::GetOffstoreExtensionDirs() {
   }
 
   // Also add any extensions that were part of the --load-extension commandline
-  // switch if applicable.
-  CollectCommandLineExtensionInfo();
+  // switch if applicable. The information about these extensions is collected
+  // (only one time) off-thread using `CollectCommandLineExtensionsInfo` when
+  // the extension telemetry service is enabled.
   for (const auto& extension : commandline_extensions_) {
     offstore_extension_dirs_[extension->id()] = extension->path();
   }
