@@ -58,6 +58,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -1015,6 +1016,17 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, Redirect) {
   VerifyNavigationMetrics({final_url});
 }
 
+class PageLoadMetricsPre3pcdBrowserTest : public PageLoadMetricsBrowserTest {
+ public:
+  PageLoadMetricsPre3pcdBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        content_settings::features::kTrackingProtection3pcd);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // TODO(crbug.com/1482170): Re-enable this test on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_NoStatePrefetchMetrics DISABLED_NoStatePrefetchMetrics
@@ -1023,7 +1035,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, Redirect) {
 #endif
 // Triggers nostate prefetch, and verifies that the UKM metrics related to
 // nostate prefetch are recorded correctly.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsPre3pcdBrowserTest,
                        MAYBE_NoStatePrefetchMetrics) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
