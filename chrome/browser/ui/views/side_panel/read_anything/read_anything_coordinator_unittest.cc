@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -32,7 +33,10 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
  public:
   void SetUp() override {
     base::test::ScopedFeatureList features;
-    scoped_feature_list_.InitWithFeatures({features::kReadAnything}, {});
+    // TODO(b/310047213): Fix tests from failing when companion enabled.
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnything},
+        {companion::features::internal::kSidePanelCompanion});
     TestWithBrowserView::SetUp();
 
     side_panel_coordinator_ =

@@ -13,6 +13,7 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model_factory.h"
@@ -54,6 +55,7 @@ std::unique_ptr<SidePanelEntry> CreateEntry(const SidePanelEntry::Key& key) {
 class SidePanelCoordinatorTest : public TestWithBrowserView {
  public:
   void SetUp() override {
+    SetUpFeatureList();
     TestWithBrowserView::SetUp();
 
     AddTab(browser_view()->browser(), GURL("http://foo1.com"));
@@ -110,6 +112,14 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
               SidePanelEntry::Id::kSideSearch);
   }
 
+  virtual void SetUpFeatureList() {
+    // TODO(b/310047213): Fix tests from failing when companion enabled.
+    // Companion adds a contextual entry when the browser starts. Disable to
+    // prevent.
+    feature_list_.InitAndDisableFeature(
+        companion::features::internal::kSidePanelCompanion);
+  }
+
   void VerifyEntryExistenceAndValue(absl::optional<SidePanelEntry*> entry,
                                     SidePanelEntry::Id id) {
     ASSERT_TRUE(entry.has_value());
@@ -141,6 +151,7 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   raw_ptr<SidePanelCoordinator, DanglingUntriaged> coordinator_;
   raw_ptr<SidePanelRegistry, DanglingUntriaged> global_registry_;
   std::vector<raw_ptr<SidePanelRegistry, DanglingUntriaged>>
@@ -1727,7 +1738,6 @@ TEST_F(SidePanelCoordinatorTest, DeregisterAndReturnView) {
 class SidePanelPinningCoordinatorTest : public SidePanelCoordinatorTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kSidePanelPinning);
     SidePanelCoordinatorTest::SetUp();
     content::WebContents* const web_contents =
         browser_view()->browser()->tab_strip_model()->GetWebContentsAt(0);
@@ -1746,6 +1756,13 @@ class SidePanelPinningCoordinatorTest : public SidePanelCoordinatorTest {
         base::BindRepeating(
             &SidePanelPinningCoordinatorTest::BuildPinnedToolbarActionsModel));
     return factories;
+  }
+
+  void SetUpFeatureList() override {
+    // TODO(b/310047213): Fix tests from failing when companion enabled.
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSidePanelPinning},
+        {companion::features::internal::kSidePanelCompanion});
   }
 
   static std::unique_ptr<KeyedService> BuildPinnedToolbarActionsModel(

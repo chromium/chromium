@@ -592,6 +592,9 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     if (enable_feature_side_panel_companion_) {
       enabled_features.emplace_back(
           companion::features::internal::kSidePanelCompanion, params);
+    } else {
+      disabled_features.emplace_back(
+          companion::features::internal::kSidePanelCompanion);
     }
 
     if (enable_feature_visual_search_) {
@@ -2221,6 +2224,8 @@ class SidePanelCompanion2BrowserEnabledTest : public CompanionPageBrowserTest {
       disabled_features.emplace_back(lens::features::kLensStandalone);
     }
 
+    disabled_features.emplace_back(
+        companion::features::internal::kSidePanelCompanion);
     if (enable_feature_side_panel_companion_) {
       enabled_features.emplace_back(
           companion::features::internal::kSidePanelCompanion2, enabled_params);
@@ -2232,8 +2237,6 @@ class SidePanelCompanion2BrowserEnabledTest : public CompanionPageBrowserTest {
         EXPECT_FALSE(companion::IsCompanionFeatureEnabled());
       }
     } else {
-      disabled_features.emplace_back(
-          companion::features::internal::kSidePanelCompanion);
       disabled_features.emplace_back(
           companion::features::internal::kSidePanelCompanion2);
       disabled_features.emplace_back(

@@ -231,9 +231,16 @@ void PinnedToolbarActionsModel::UpdatePinnedActionIds() {
 
 void PinnedToolbarActionsModel::MaybeMigrateSearchCompanionPinnedState() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Checks if the search companion action id is present beceause in tests this
+  // model can be created before the browser actions are initialized if testing
+  // factories are added to create this model. This prevents failures when the
+  // companion feature is enabled.
   if (pref_service_->GetBoolean(
           prefs::kPinnedSearchCompanionMigrationComplete) ||
-      !CanUpdate()) {
+      !CanUpdate() ||
+      !actions::ActionIdMap::ActionIdToString(
+           kActionSidePanelShowSearchCompanion)
+           .has_value()) {
     return;
   }
 
