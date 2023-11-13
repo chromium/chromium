@@ -309,6 +309,21 @@ bool PrerenderHostObserver::was_activated() const {
   return impl_->was_activated();
 }
 
+PrerenderHostCreationWaiter::PrerenderHostCreationWaiter() {
+  PrerenderHost::SetHostCreationCallbackForTesting(
+      base::BindLambdaForTesting([&](int host_id) {
+        created_host_id_ = host_id;
+        run_loop_.QuitClosure().Run();
+      }));
+}
+
+int PrerenderHostCreationWaiter::Wait() {
+  EXPECT_EQ(created_host_id_, RenderFrameHost::kNoFrameTreeNodeId);
+  run_loop_.Run();
+  EXPECT_NE(created_host_id_, RenderFrameHost::kNoFrameTreeNodeId);
+  return created_host_id_;
+}
+
 ScopedPrerenderFeatureList::ScopedPrerenderFeatureList() {
   // Disable the memory requirement of Prerender2
   // so the test can run on any bot.

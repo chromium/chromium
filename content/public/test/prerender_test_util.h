@@ -79,6 +79,19 @@ class PrerenderHostObserver {
   std::unique_ptr<PrerenderHostObserverImpl> impl_;
 };
 
+// This waits for creation of PrerenderHost and then returns its host id.
+class PrerenderHostCreationWaiter {
+ public:
+  PrerenderHostCreationWaiter();
+  ~PrerenderHostCreationWaiter() = default;
+
+  int Wait();
+
+ private:
+  base::RunLoop run_loop_;
+  int created_host_id_ = content::RenderFrameHost::kNoFrameTreeNodeId;
+};
+
 // Enables appropriate features for Prerender2.
 // This also disables the memory requirement of Prerender2 on Android so that
 // test can run on any bot.

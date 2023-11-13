@@ -291,30 +291,6 @@ class FakeWebContentsDelegate : public WebContentsDelegate {
   }
 };
 
-// This waits for creation of PrerenderHost and then returns its host id.
-class PrerenderHostCreationWaiter {
- public:
-  PrerenderHostCreationWaiter() {
-    PrerenderHost::SetHostCreationCallbackForTesting(
-        base::BindLambdaForTesting([&](int host_id) {
-          created_host_id_ = host_id;
-          run_loop_.QuitClosure().Run();
-        }));
-  }
-  ~PrerenderHostCreationWaiter() = default;
-
-  int Wait() {
-    EXPECT_EQ(created_host_id_, RenderFrameHost::kNoFrameTreeNodeId);
-    run_loop_.Run();
-    EXPECT_NE(created_host_id_, RenderFrameHost::kNoFrameTreeNodeId);
-    return created_host_id_;
-  }
-
- private:
-  base::RunLoop run_loop_;
-  int created_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
-};
-
 class PrerenderBrowserTest : public ContentBrowserTest,
                              public WebContentsObserver {
  public:
@@ -1412,7 +1388,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Start prerendering `kPrerenderingUrl`.
-  PrerenderHostCreationWaiter host_creation_waiter;
+  test::PrerenderHostCreationWaiter host_creation_waiter;
   prerender_helper()->AddPrerendersAsync(
       {kPrerenderingUrl}, /*eagerness=*/absl::nullopt, GetTargetHint());
   int host_id = host_creation_waiter.Wait();
@@ -1436,7 +1412,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Add prerendering to the 404 error page, then check that it got cancelled.
-  PrerenderHostCreationWaiter host_creation_waiter;
+  test::PrerenderHostCreationWaiter host_creation_waiter;
   prerender_helper()->AddPrerendersAsync(
       {kPrerenderingUrl}, /*eagerness=*/absl::nullopt, GetTargetHint());
   int host_id = host_creation_waiter.Wait();
@@ -1460,7 +1436,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Add prerendering to the 500 error page, then check that it got cancelled.
-  PrerenderHostCreationWaiter host_creation_waiter;
+  test::PrerenderHostCreationWaiter host_creation_waiter;
   prerender_helper()->AddPrerendersAsync(
       {kPrerenderingUrl}, /*eagerness=*/absl::nullopt, GetTargetHint());
   int host_id = host_creation_waiter.Wait();
@@ -1481,7 +1457,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
 
   // Start prerendering `kPrerenderingUrl` that returns 204 response code.
   const GURL kPrerenderingUrl = GetUrl("/echo?status=204");
-  PrerenderHostCreationWaiter host_creation_waiter;
+  test::PrerenderHostCreationWaiter host_creation_waiter;
   prerender_helper()->AddPrerendersAsync(
       {kPrerenderingUrl}, /*eagerness=*/absl::nullopt, GetTargetHint());
   int host_id = host_creation_waiter.Wait();
@@ -1505,7 +1481,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
 
   // Start prerendering `kPrerenderingUrl` that returns 205 response code.
   const GURL kPrerenderingUrl = GetUrl("/echo?status=205");
-  PrerenderHostCreationWaiter host_creation_waiter;
+  test::PrerenderHostCreationWaiter host_creation_waiter;
   prerender_helper()->AddPrerendersAsync(
       {kPrerenderingUrl}, /*eagerness=*/absl::nullopt, GetTargetHint());
   int host_id = host_creation_waiter.Wait();
@@ -4998,7 +4974,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ClipboardByExecCommandFail) {
 void LoadAndWaitForPrerenderDestroyed(test::PrerenderTestHelper* helper,
                                       const GURL prerendering_url,
                                       const std::string& target_hint) {
-  PrerenderHostCreationWaiter host_creation_waiter;
+  test::PrerenderHostCreationWaiter host_creation_waiter;
   helper->AddPrerendersAsync({prerendering_url}, /*eagerness=*/std::nullopt,
                              target_hint);
   int host_id = host_creation_waiter.Wait();
@@ -5098,7 +5074,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest, DownloadByScript) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Make a prerendered page.
-  PrerenderHostCreationWaiter host_creation_waiter;
+  test::PrerenderHostCreationWaiter host_creation_waiter;
   prerender_helper()->AddPrerendersAsync(
       {kPrerenderingUrl}, /*eagerness=*/std::nullopt, GetTargetHint());
   int host_id = host_creation_waiter.Wait();
@@ -5149,7 +5125,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest, DownloadInSubframe) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Make a prerendered page.
-  PrerenderHostCreationWaiter host_creation_waiter;
+  test::PrerenderHostCreationWaiter host_creation_waiter;
   prerender_helper()->AddPrerendersAsync(
       {kPrerenderingUrl}, /*eagerness=*/std::nullopt, GetTargetHint());
   int host_id = host_creation_waiter.Wait();
@@ -8275,7 +8251,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewLimitAndSchedulerBrowserTest,
                        GetParam());
     preloading_decider_observer.WaitUpdateSpeculationCandidates();
 
-    PrerenderHostCreationWaiter host_creation_waiter;
+    test::PrerenderHostCreationWaiter host_creation_waiter;
     PointerHoverToAnchor(prerendering_url);
     int host_id = host_creation_waiter.Wait();
     auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
@@ -8299,7 +8275,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewLimitAndSchedulerBrowserTest,
 
   // Hover the first link again. This should be retriggered.
   const auto& prerendering_url_first = prerendering_urls[0];
-  PrerenderHostCreationWaiter host_creation_waiter;
+  test::PrerenderHostCreationWaiter host_creation_waiter;
   PointerHoverToAnchor(prerendering_url_first);
   int host_id = host_creation_waiter.Wait();
   auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
