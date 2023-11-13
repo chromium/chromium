@@ -538,13 +538,10 @@ void NavigationURLLoaderImpl::CreateInterceptors(
   }
 
   // Set up an interceptor for prefetch.
-  std::unique_ptr<PrefetchURLLoaderInterceptor> prefetch_interceptor =
-      content::PrefetchURLLoaderInterceptor::MaybeCreateInterceptor(
+  interceptors_.push_back(
+      std::make_unique<PrefetchURLLoaderInterceptor>(
           frame_tree_node_id_, request_info_->initiator_document_token,
-          request_info_->prefetch_serving_page_metrics_container);
-  if (prefetch_interceptor) {
-    interceptors_.push_back(std::move(prefetch_interceptor));
-  }
+          request_info_->prefetch_serving_page_metrics_container));
 
   // See if embedders want to add interceptors.
   std::vector<std::unique_ptr<URLLoaderRequestInterceptor>>
