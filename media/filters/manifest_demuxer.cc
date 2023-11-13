@@ -67,6 +67,7 @@ ManifestDemuxer::~ManifestDemuxer() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   impl_->Stop();
   impl_.reset();
+  streams_.clear();
   chunk_demuxer_.reset();
 }
 
