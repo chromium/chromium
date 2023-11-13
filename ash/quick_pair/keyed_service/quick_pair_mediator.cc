@@ -11,6 +11,7 @@
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/companion_app/companion_app_broker_impl.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_lookup_impl.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/feature_status_tracker/fast_pair_pref_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker.h"
@@ -314,6 +315,7 @@ void Mediator::CancelPairing() {
   // instance. Shut them down before destroying the handshakes.
   pairer_broker_->StopPairing();
   FastPairHandshakeLookup::GetInstance()->Clear();
+  FastPairGattServiceClientLookup::GetInstance()->Clear();
 
   // Don't modify the delegate's list when flag is disabled.
   if (!features::IsFastPairDevicesBluetoothSettingsEnabled()) {

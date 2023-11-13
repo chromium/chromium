@@ -73,10 +73,6 @@ class FastPairHandshake {
     return fast_pair_data_encryptor_.get();
   }
 
-  FastPairGattServiceClient* fast_pair_gatt_service_client() {
-    return fast_pair_gatt_service_client_.get();
-  }
-
   void BleAddressRotated(OnBleAddressRotationCallback callback) {
     on_ble_address_rotation_callback_ = std::move(callback);
   }
@@ -99,7 +95,6 @@ class FastPairHandshake {
   OnCompleteCallbackNew on_complete_callback_new_;
   OnFailureCallback on_failure_callback_;
   std::unique_ptr<FastPairDataEncryptor> fast_pair_data_encryptor_;
-  std::unique_ptr<FastPairGattServiceClient> fast_pair_gatt_service_client_;
 
   // This callback will only be set if a BLE Address rotation happens during a
   // retroactive pair. The callback being set signals that a rotation

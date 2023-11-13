@@ -17,6 +17,7 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor_impl.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_impl.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_lookup_impl.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
@@ -147,9 +148,6 @@ FastPairPairerImpl::FastPairPairerImpl(
 
   DCHECK(fast_pair_handshake_);
   DCHECK(fast_pair_handshake_->completed_successfully());
-
-  fast_pair_gatt_service_client_ =
-      fast_pair_handshake_->fast_pair_gatt_service_client();
 
   // If we have a valid handshake, we already have a GATT connection that we
   // maintain in order to prevent addresses changing for some devices when the
@@ -304,6 +302,8 @@ void FastPairPairerImpl::ConfirmPasskey(device::BluetoothDevice* device,
   RecordProtocolPairingStep(FastPairProtocolPairingSteps::kPasskeyNegotiated,
                             *device_);
 
+  auto* ble_device = adapter_->GetDevice(device_->ble_address());
+
   // TODO(b/251281330): Make handling this edge case more robust.
   //
   // We can get to this point where the BLE instance of the device is lost
@@ -311,7 +311,7 @@ void FastPairPairerImpl::ConfirmPasskey(device::BluetoothDevice* device,
   // and |fast_pair_handshake_| is garbage memory, but the classic Bluetooth
   // pairing continues. We stop the pairing in this case and show an error to
   // the user.
-  if (!FastPairHandshakeLookup::GetInstance()->Get(device_)) {
+  if (!FastPairHandshakeLookup::GetInstance()->Get(device_) || !ble_device) {
     CD_LOG(ERROR, Feature::FP)
         << __func__ << ": BLE device instance lost during passkey exchange";
 
@@ -326,7 +326,12 @@ void FastPairPairerImpl::ConfirmPasskey(device::BluetoothDevice* device,
 
   pairing_device_address_ = device->GetAddress();
   expected_passkey_ = passkey;
-  fast_pair_gatt_service_client_->WritePasskeyAsync(
+
+  auto* fast_pair_gatt_service_client =
+      FastPairGattServiceClientLookup::GetInstance()->Get(ble_device);
+  CHECK(fast_pair_gatt_service_client);
+
+  fast_pair_gatt_service_client->WritePasskeyAsync(
       /*message_type=*/0x02, /*passkey=*/expected_passkey_,
       fast_pair_handshake_->fast_pair_data_encryptor(),
       base::BindOnce(&FastPairPairerImpl::OnPasskeyResponse,
@@ -589,7 +594,21 @@ void FastPairPairerImpl::WriteAccountKey() {
         FastPairInitialSuccessFunnelEvent::kPreparingToWriteAccountKey);
   }
 
-  fast_pair_gatt_service_client_->WriteAccountKey(
+  auto* device = adapter_->GetDevice(device_->ble_address());
+  if (!device) {
+    CD_LOG(WARNING, Feature::FP)
+        << __func__
+        << ": device lost when attempting to retrieve GATT service client.";
+    std::move(account_key_failure_callback_)
+        .Run(device_, AccountKeyFailure::kGattErrorFailed);
+    return;
+  }
+
+  auto* fast_pair_gatt_service_client =
+      FastPairGattServiceClientLookup::GetInstance()->Get(device);
+  CHECK(fast_pair_gatt_service_client);
+
+  fast_pair_gatt_service_client->WriteAccountKey(
       account_key, fast_pair_handshake_->fast_pair_data_encryptor(),
       base::BindOnce(&FastPairPairerImpl::OnWriteAccountKey,
                      weak_ptr_factory_.GetWeakPtr(), account_key));

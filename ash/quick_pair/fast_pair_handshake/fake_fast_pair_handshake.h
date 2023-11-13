@@ -31,9 +31,6 @@ class FakeFastPairHandshake : public FastPairHandshake {
   void Reset() override;
 
   void InvokeCallback(absl::optional<PairFailure> failure = absl::nullopt);
-  void SetGattClientAndDataEncryptorForTesting(
-      std::unique_ptr<FastPairGattServiceClient> gatt_service_client,
-      std::unique_ptr<FastPairDataEncryptor> data_encryptor);
 
   void set_completed_successfully(bool completed_successfully) {
     completed_successfully_ = completed_successfully;

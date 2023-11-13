@@ -45,11 +45,4 @@ void FakeFastPairHandshake::InvokeCallback(
   std::move(on_complete_callback_).Run(device_, failure);
 }
 
-void FakeFastPairHandshake::SetGattClientAndDataEncryptorForTesting(
-    std::unique_ptr<FastPairGattServiceClient> gatt_service_client,
-    std::unique_ptr<FastPairDataEncryptor> data_encryptor) {
-  fast_pair_gatt_service_client_ = std::move(gatt_service_client);
-  fast_pair_data_encryptor_ = std::move(data_encryptor);
-}
-
 }  // namespace ash::quick_pair

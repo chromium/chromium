@@ -23,6 +23,7 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor_impl.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_impl.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_lookup_impl.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer.h"
@@ -284,8 +285,13 @@ class FastPairPairerImplTest : public AshTestBase {
 
   void AddConnectedHandshake() {
     FakeFastPairHandshakeLookup::GetFakeInstance()->CreateForTesting(
-        adapter_, device_, base::DoNothing(), std::move(gatt_service_client_),
+        adapter_, device_, base::DoNothing(), nullptr,
         std::move(data_encryptor_unique_));
+
+    // Add fake GATT service client to the lookup class. In normal
+    // flow this is usually done when handshake is created.
+    FastPairGattServiceClientLookup::GetInstance()->InsertFakeForTesting(
+        fake_bluetooth_device_ptr_, std::move(gatt_service_client_));
   }
 
   void EraseHandshake() {
@@ -1197,8 +1203,8 @@ TEST_F(FastPairPairerImplTest, PairedDeviceLost_Initial) {
 
   // This time, this helper function is used to make the device lost during
   // Passkey exchange.
-  SetGetDeviceNullptr();
   NotifyConfirmPasskey();
+  SetGetDeviceNullptr();
   RunWritePasskeyCallback(kResponseBytes);
   EXPECT_EQ(GetPairFailure(), PairFailure::kPairingDeviceLost);
   ExpectStepMetrics<FastPairProtocolPairingSteps>(
@@ -1228,8 +1234,8 @@ TEST_F(FastPairPairerImplTest, PairedDeviceLost_Subsequent) {
 
   // This time, this helper function is used to make the device lost during
   // Passkey exchange.
-  SetGetDeviceNullptr();
   NotifyConfirmPasskey();
+  SetGetDeviceNullptr();
   RunWritePasskeyCallback(kResponseBytes);
   EXPECT_EQ(GetPairFailure(), PairFailure::kPairingDeviceLost);
   ExpectStepMetrics<FastPairProtocolPairingSteps>(

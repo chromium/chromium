@@ -186,8 +186,6 @@ class FastPairPairerImpl : public FastPairPairer,
   uint32_t expected_passkey_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<Device> device_;
-  raw_ptr<FastPairGattServiceClient, DanglingUntriaged | ExperimentalAsh>
-      fast_pair_gatt_service_client_;
   std::string pairing_device_address_;
   base::OnceCallback<void(scoped_refptr<Device>)> paired_callback_;
   base::OnceCallback<void(scoped_refptr<Device>, PairFailure)>
