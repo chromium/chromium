@@ -17,15 +17,21 @@ import './menu_item.js';
 
 import {getDeviceName} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {BluetoothSystemProperties, DeviceConnectionState, PairedBluetoothDeviceProperties, SystemPropertiesObserverReceiver as BluetoothPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {CrosNetworkConfigInterface, FilterType, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists, castExists} from '../assert_extras.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
-import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
+import {Constructor} from '../common/types.js';
 import {FakeInputDeviceSettingsProvider} from '../device_page/fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from '../device_page/input_device_mojo_interface_provider.js';
 import {InputDeviceSettingsProviderInterface, Keyboard, Mouse, PointingStick, Touchpad} from '../device_page/input_device_settings_types.js';
@@ -68,8 +74,47 @@ function capitalize(str: string): string {
   return `${firstChar}${remainingStr}`;
 }
 
+function getPrioritizedConnectedNetwork(
+    networkStateList: OncMojo.NetworkStateProperties[]):
+    OncMojo.NetworkStateProperties|null {
+  // The priority of the network types. Both Cellular and Tether belongs to
+  // the Mobile Data.
+  const orderedNetworkTypes = [
+    NetworkType.kEthernet,
+    NetworkType.kWiFi,
+    NetworkType.kCellular,
+    NetworkType.kTether,
+    NetworkType.kVPN,
+  ];
+
+  const networkStates:
+      Record<NetworkType, OncMojo.NetworkStateProperties[]> = {};
+
+  for (const networkType of orderedNetworkTypes) {
+    networkStates[networkType] = [];
+  }
+
+  for (const networkState of networkStateList) {
+    networkStates[networkState.type].push(networkState);
+  }
+
+  for (const type of orderedNetworkTypes) {
+    for (const networkState of networkStates[type]) {
+      if (OncMojo.connectionStateIsConnected(networkState.connectionState)) {
+        return networkState;
+      }
+    }
+  }
+
+  return null;
+}
+
 const OsSettingsMenuElementBase =
-    WebUiListenerMixin(RouteObserverMixin(I18nMixin(PolymerElement)));
+    mixinBehaviors(
+        [NetworkListenerBehavior],
+        WebUiListenerMixin(RouteObserverMixin(I18nMixin(PolymerElement)))) as
+    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
+                RouteObserverMixinInterface&NetworkListenerBehaviorInterface>;
 
 export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   static get is() {
@@ -101,6 +146,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
             'accountsMenuItemDescription_,' +
             'bluetoothMenuItemDescription_,' +
             'deviceMenuItemDescription_,' +
+            'internetMenuItemDescription_,' +
             'multideviceMenuItemDescription_)',
         readOnly: true,
       },
@@ -166,6 +212,11 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         type: String,
         value: '',
       },
+
+      internetMenuItemDescription_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -201,6 +252,10 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   private touchpadSettingsObserverReceiver_: TouchpadSettingsObserverReceiver|
       undefined;
 
+  // Internet section members.
+  private networkConfig_: CrosNetworkConfigInterface;
+  private internetMenuItemDescription_: string;
+
   // Multidevice section members.
   private multideviceBrowserProxy_: MultiDeviceBrowserProxy;
   private multideviceMenuItemDescription_: string;
@@ -230,6 +285,11 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
       this.observeMouseSettings_();
       this.observePointingStickSettings_();
       this.observeTouchpadSettings_();
+
+      // Internet menu item.
+      this.networkConfig_ =
+          MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
+      this.updateInternetMenuItemDescription_();
 
       // Multidevice menu item.
       this.addWebUiListener(
@@ -303,6 +363,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           path: `/${routesMojom.NETWORK_SECTION_PATH}`,
           icon: 'os-settings:network-wifi',
           label: this.i18n('internetPageTitle'),
+          sublabel: this.internetMenuItemDescription_,
         },
         {
           section: Section.kBluetooth,
@@ -547,31 +608,6 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   }
 
   /**
-   * Updates the "Multidevice" menu item description to one of the following:
-   * - If there is a phone connected, show "Connected to <phone name>".
-   * - If there is a phone connected but the device name is missing, show
-   *   "Connected to Android phone".
-   * - If there is no phone connected, show "Phone Hub, Nearby Share".
-   */
-  private updateMultideviceMenuItemDescription_(
-      pageContentData: MultiDevicePageContentData): void {
-    if (pageContentData.mode === MultiDeviceSettingsMode.HOST_SET_VERIFIED) {
-      if (pageContentData.hostDeviceName) {
-        this.multideviceMenuItemDescription_ = this.i18n(
-            'multideviceMenuItemDescriptionPhoneConnected',
-            pageContentData.hostDeviceName);
-      } else {
-        this.multideviceMenuItemDescription_ =
-            this.i18n('multideviceMenuItemDescriptionDeviceNameMissing');
-      }
-      return;
-    }
-
-    this.multideviceMenuItemDescription_ =
-        this.i18n('multideviceMenuItemDescription');
-  }
-
-  /**
    * Updates the "Accounts" menu item description to one of the following:
    * - If there are multiple accounts (> 1), show "N accounts".
    * - If there is only one account, show the account email.
@@ -626,6 +662,89 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     this.bluetoothMenuItemDescription_ = this.i18n(
         'bluetoothMenuItemDescriptionMultipleDevicesConnected',
         connectedDevices.length);
+  }
+
+  /** NetworkListenerBehavior override */
+  override onNetworkStateListChanged(): void {
+    this.updateInternetMenuItemDescription_();
+  }
+
+  /** NetworkListenerBehavior override */
+  override onDeviceStateListChanged(): void {
+    this.updateInternetMenuItemDescription_();
+  }
+
+  /** NetworkListenerBehavior override */
+  override onActiveNetworksChanged(): void {
+    this.updateInternetMenuItemDescription_();
+  }
+
+  /**
+   * Updates the "Internet" menu item description to one of the followings:
+   * - If there are networks connected, show the name of one connected network
+   *   with the priority: Ethernet, Wi-Fi, mobile(Cellular, Tether) and VPN.
+   * - If there is no networks connected show "Wi-Fi, mobile data".
+   */
+  private async updateInternetMenuItemDescription_(): Promise<void> {
+    // Return early if the feature revamp wayfinding is not enabled since
+    // `networkConfig_` is not defined and we don't need to show the description
+    // if the feature is disabled.
+    if (!this.isRevampWayfindingEnabled_) {
+      return;
+    }
+
+    const {result: networkStateList} =
+        await this.networkConfig_.getNetworkStateList({
+          filter: FilterType.kVisible,
+          limit: NO_LIMIT,
+          networkType: NetworkType.kAll,
+        });
+
+
+    const prioritizedConnectedNetwork =
+        getPrioritizedConnectedNetwork(networkStateList);
+    if (prioritizedConnectedNetwork) {
+      this.internetMenuItemDescription_ = prioritizedConnectedNetwork.name;
+      return;
+    }
+
+    // TODO(b/310253896): Check if there are available instant hotspot, if
+    // there're, show "Instant hotspot available".
+
+    // TODO(b/310683941): Check if the device supports mobile data or not, if
+    // not, show "Wi-Fi" instand of "Wi-Fi, mobile data".
+
+    this.internetMenuItemDescription_ =
+        this.i18n('internetMenuItemDescription');
+  }
+
+  /**
+   * Updates the "Multidevice" menu item description to one of the following:
+   * - If there is a phone connected, show "Connected to <phone name>".
+   * - If there is a phone connected but the device name is missing, show
+   *   "Connected to Android phone".
+   * - If there is no phone connected, show "Phone Hub, Nearby Share".
+   */
+  private updateMultideviceMenuItemDescription_(
+      pageContentData: MultiDevicePageContentData): void {
+    if (!this.isRevampWayfindingEnabled_) {
+      return;
+    }
+
+    if (pageContentData.mode === MultiDeviceSettingsMode.HOST_SET_VERIFIED) {
+      if (pageContentData.hostDeviceName) {
+        this.multideviceMenuItemDescription_ = this.i18n(
+            'multideviceMenuItemDescriptionPhoneConnected',
+            pageContentData.hostDeviceName);
+      } else {
+        this.multideviceMenuItemDescription_ =
+            this.i18n('multideviceMenuItemDescriptionDeviceNameMissing');
+      }
+      return;
+    }
+
+    this.multideviceMenuItemDescription_ =
+        this.i18n('multideviceMenuItemDescription');
   }
 
   private observeKeyboardSettings_(): void {
