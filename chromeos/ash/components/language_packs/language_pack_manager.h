@@ -186,15 +186,15 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // Returns true if the given Language Pack exists and can be installed on
   // this device.
   // TODO(claudiomagni): Check per board.
-  bool IsPackAvailable(const std::string& feature_id,
-                       const std::string& locale);
+  static bool IsPackAvailable(const std::string& feature_id,
+                              const std::string& locale);
 
   // Installs the Language Pack.
   // It takes a callback that will be triggered once the operation is done.
   // A state is passed to the callback.
-  void InstallPack(const std::string& feature_id,
-                   const std::string& locale,
-                   OnInstallCompleteCallback callback);
+  static void InstallPack(const std::string& feature_id,
+                          const std::string& locale,
+                          OnInstallCompleteCallback callback);
 
   // Checks the state of a Language Pack.
   // It takes a callback that will be triggered once the operation is done.
@@ -202,9 +202,9 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // If the state marks the Language Pack as ready, then there's no need to
   // call Install(), otherwise the client should call Install() and not call
   // this method a second time.
-  void GetPackState(const std::string& feature_id,
-                    const std::string& locale,
-                    GetPackStateCallback callback);
+  static void GetPackState(const std::string& feature_id,
+                           const std::string& locale,
+                           GetPackStateCallback callback);
 
   // Features should call this method to indicate that they do not intend to
   // use the Pack again, until they will call |InstallPack()|.
@@ -212,19 +212,19 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // when that will happen.
   // TODO(claudiomagni): Allow callers to force immediate removal. Useful to
   //                     clear space on disk for another language.
-  void RemovePack(const std::string& feature_id,
-                  const std::string& locale,
-                  OnUninstallCompleteCallback callback);
+  static void RemovePack(const std::string& feature_id,
+                         const std::string& locale,
+                         OnUninstallCompleteCallback callback);
 
   // Explicitly installs the base pack for |feature_id|.
-  void InstallBasePack(const std::string& feature_id,
-                       OnInstallBasePackCompleteCallback callback);
+  static void InstallBasePack(const std::string& feature_id,
+                              OnInstallBasePackCompleteCallback callback);
 
   // Installs relevant language packs during OOBE.
   // This method should only be called during OOBE and will do nothing if called
   // outside it.
-  void UpdatePacksForOobe(const std::string& locale,
-                          OnUpdatePacksForOobeCallback callback);
+  static void UpdatePacksForOobe(const std::string& locale,
+                                 OnUpdatePacksForOobeCallback callback);
 
   // Adds an observer to the observer list.
   void AddObserver(Observer* observer);
