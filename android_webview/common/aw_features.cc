@@ -31,9 +31,12 @@ BASE_FEATURE(kWebViewCheckReturnResources,
 
 // Whether to destroy the WebView rendering functor when after a WebView window
 // becomes invisible.
+//
+// From a stable experiment in October 2023, this saves tens of MiB of graphics
+// memory at high quantiles, at no performance cost.
 BASE_FEATURE(kWebViewClearFunctorInBackground,
              "WebViewClearFunctorInBackground",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use the SafeBrowsingApiHandlerBridge which uses the connectionless GMS APIs.
 // This Feature is checked and used in downstream internal code.
