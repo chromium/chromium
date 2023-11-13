@@ -70,6 +70,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kUploadOfficeToCloud);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kUploadOfficeToCloudForEnterprise);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kRoundedWindows);
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+BASE_DECLARE_FEATURE(kMicrosoftOneDriveIntegrationForEnterprise);
 
 // Keep alphabetized.
 
@@ -108,6 +110,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsUploadOfficeToCloudEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsUploadOfficeToCloudForEnterpriseEnabled();
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled();
 
 }  // namespace features
 }  // namespace chromeos

@@ -157,6 +157,12 @@ BASE_FEATURE(kUploadOfficeToCloudForEnterprise,
              "UploadOfficeToCloudForEnterprise",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the Microsoft OneDrive integration workflow for enterprise users to
+// cloud integration support.
+BASE_FEATURE(kMicrosoftOneDriveIntegrationForEnterprise,
+             "MicrosoftOneDriveIntegrationForEnterprise",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kRoundedWindows,
              "RoundedWindows",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -287,6 +293,11 @@ bool IsUploadOfficeToCloudForEnterpriseEnabled() {
   return base::FeatureList::IsEnabled(kUploadOfficeToCloud) &&
          base::FeatureList::IsEnabled(kUploadOfficeToCloudForEnterprise);
 #endif
+}
+
+bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() {
+  return base::FeatureList::IsEnabled(
+      kMicrosoftOneDriveIntegrationForEnterprise);
 }
 
 bool IsRoundedWindowsEnabled() {
