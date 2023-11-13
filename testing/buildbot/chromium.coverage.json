@@ -822,7 +822,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "touch_to_fill_junit_tests",
-        "test_id_prefix": "ninja://chrome/browser/touch_to_fill/android:touch_to_fill_junit_tests/",
+        "test_id_prefix": "ninja://chrome/browser/touch_to_fill/password_manager/android:touch_to_fill_junit_tests/",
         "use_isolated_scripts_api": true
       },
       {
@@ -8122,7 +8122,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "touch_to_fill_junit_tests",
-        "test_id_prefix": "ninja://chrome/browser/touch_to_fill/android:touch_to_fill_junit_tests/",
+        "test_id_prefix": "ninja://chrome/browser/touch_to_fill/password_manager/android:touch_to_fill_junit_tests/",
         "use_isolated_scripts_api": true
       },
       {

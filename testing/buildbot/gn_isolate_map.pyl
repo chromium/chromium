@@ -1657,7 +1657,7 @@
     "script": "//testing/run_pytype.py",
   },
   "touch_to_fill_junit_tests": {
-    "label": "//chrome/browser/touch_to_fill/android:touch_to_fill_junit_tests",
+    "label": "//chrome/browser/touch_to_fill/password_manager/android:touch_to_fill_junit_tests",
     "type": "generated_script",
   },
   "trace_processor_shell": {
