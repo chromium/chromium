@@ -138,6 +138,8 @@ This builder should be removed after migrating win-rel from Ninja to Siso. b/277
 
 try_.compilator_builder(
     name = "win-siso-rel-compilator",
+    # TODO(jwata): Change to 32 once bots have landed
+    cores = "16|32",
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
     main_list_view = "try",
