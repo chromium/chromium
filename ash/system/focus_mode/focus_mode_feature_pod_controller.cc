@@ -92,6 +92,10 @@ void FocusModeFeaturePodController::OnTimerTick() {
   UpdateUI();
 }
 
+void FocusModeFeaturePodController::OnSessionDurationChanged() {
+  UpdateUI();
+}
+
 void FocusModeFeaturePodController::UpdateUI() {
   auto* controller = FocusModeController::Get();
   CHECK(controller);

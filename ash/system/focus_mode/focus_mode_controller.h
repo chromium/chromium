@@ -30,6 +30,9 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
     // Called every `timer_` tick for updating UI elements during a Focus Mode
     // session.
     virtual void OnTimerTick() {}
+
+    // Notifies clients every time `SetSessionDuration` is called.
+    virtual void OnSessionDurationChanged() {}
   };
 
   FocusModeController();
@@ -71,7 +74,8 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   void ExtendActiveSessionDuration();
 
   // Sets a specific value for `session_duration_` and updates `end_time_` only
-  // during an active focus session.
+  // during an active focus session. Also notifies observers that session
+  // duration was changed.
   void SetSessionDuration(const base::TimeDelta& new_session_duration);
 
   // Returns whether the user has ever started a focus session previously.
@@ -80,6 +84,7 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
  private:
   void SetEnabled(bool enabled);
 
+  // Called every time a second passes on `timer_` while the session is active.
   void OnTimerTick();
 
   // This is called when the active user changes, and is important to update our

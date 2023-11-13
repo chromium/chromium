@@ -50,6 +50,7 @@ class ASH_EXPORT FocusModeDetailedView
   // FocusModeController::Observer:
   void OnFocusModeChanged(bool in_focus_session) override;
   void OnTimerTick() override;
+  void OnSessionDurationChanged() override;
 
   // Creates the row with functionality to start and stop focus mode.
   void CreateToggleView();
@@ -128,9 +129,6 @@ class ASH_EXPORT FocusModeDetailedView
   // This view contains a toggle for turning on/off DND.
   raw_ptr<RoundedContainer> do_not_disturb_view_ = nullptr;
   raw_ptr<Switch> do_not_disturb_toggle_button_ = nullptr;
-
-  // The last time the `toggle_view_` end time sub label was updated.
-  base::Time cached_end_time_;
 
   // Updates the subheading of the toggle view so that it can correctly show
   // what time the focus mode session will end. This is activated when the panel

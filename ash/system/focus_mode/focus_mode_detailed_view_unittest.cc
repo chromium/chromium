@@ -16,10 +16,15 @@
 #include "ash/style/system_textfield.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_countdown_view.h"
+#include "ash/system/focus_mode/focus_mode_feature_pod_controller.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
+#include "ash/system/tray/tri_view.h"
+#include "ash/system/unified/feature_tile.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "base/i18n/time_formatting.h"
 #include "base/test/scoped_feature_list.h"
@@ -534,6 +539,26 @@ TEST_F(FocusModeDetailedViewTest, FirstTimeUserFlow) {
 
   // Verify that the first time user flow text no longer is displayed.
   EXPECT_FALSE(IsToggleRowSubLabelVisible());
+}
+
+// Tests that changing the duration in the detailed view while the session is
+// inactive changes the duration on the feature pod.
+TEST_F(FocusModeDetailedViewTest,
+       InactiveSessionDurationChangeSyncsWithFeaturePod) {
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  auto controller = std::make_unique<FocusModeFeaturePodController>(
+      GetPrimaryUnifiedSystemTray()
+          ->bubble()
+          ->unified_system_tray_controller());
+  auto pod = controller->CreateTile();
+
+  auto* timer_textfield = GetTimerSettingTextfield();
+  auto textfield_text_before_increment = timer_textfield->GetText();
+  LeftClickOn(GetTimerSettingIncrementButton());
+  auto textfield_text_after_increment = timer_textfield->GetText();
+  ASSERT_NE(textfield_text_before_increment, textfield_text_after_increment);
+  EXPECT_EQ(base::StrCat({textfield_text_after_increment, u" min"}),
+            pod->sub_label()->GetText());
 }
 
 }  // namespace ash

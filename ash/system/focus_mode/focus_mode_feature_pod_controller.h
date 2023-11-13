@@ -38,6 +38,7 @@ class ASH_EXPORT FocusModeFeaturePodController
   // FocusModeController::Observer:
   void OnFocusModeChanged(bool in_focus_session) override;
   void OnTimerTick() override;
+  void OnSessionDurationChanged() override;
 
  private:
   void UpdateUI();

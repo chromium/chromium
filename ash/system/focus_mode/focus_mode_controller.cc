@@ -102,11 +102,6 @@ void FocusModeController::ExtendActiveSessionDuration() {
   CHECK(in_focus_session_);
   SetSessionDuration(session_duration_ + kExtendDuration);
 
-  // Update all observers that may be using `end_time_` or `session_duration_`,
-  // the countdown view UI timers for example, so they don't have to wait for
-  // the next timer tick to update the UI.
-  OnTimerTick();
-
   // Only update the notification if DND was turned on by the focus mode.
   if (!IsQuietModeOnSetByFocusMode()) {
     return;
@@ -136,6 +131,10 @@ void FocusModeController::SetSessionDuration(
   // the user has not yet indicated their preferred timer duration by starting
   // the timer.
   session_duration_ = valid_new_session_duration;
+
+  for (auto& observer : observers_) {
+    observer.OnSessionDurationChanged();
+  }
 }
 
 void FocusModeController::SetEnabled(bool enabled) {

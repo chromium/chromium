@@ -122,9 +122,11 @@ void FocusModeTray::OnFocusModeChanged(bool in_focus_session) {
 }
 
 void FocusModeTray::OnTimerTick() {
-  if (countdown_view_) {
-    countdown_view_->UpdateUI();
-  }
+  MaybeUpdateCountdownViewUI();
+}
+
+void FocusModeTray::OnSessionDurationChanged() {
+  MaybeUpdateCountdownViewUI();
 }
 
 void FocusModeTray::UpdateTrayIcon() {
@@ -146,6 +148,12 @@ void FocusModeTray::FocusModeIconActivated(const ui::Event& event) {
   }
 
   ShowBubble();
+}
+
+void FocusModeTray::MaybeUpdateCountdownViewUI() {
+  if (countdown_view_) {
+    countdown_view_->UpdateUI();
+  }
 }
 
 BEGIN_METADATA(FocusModeTray)

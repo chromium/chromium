@@ -299,7 +299,6 @@ void FocusModeDetailedView::OnFocusModeChanged(bool in_focus_session) {
   if (toggle_view_->sub_text_label()) {
     toggle_view_->sub_text_label()->SetVisible(false);
   }
-  cached_end_time_ = base::Time();
   views::AsViewClass<PillButton>(toggle_view_->right_view())
       ->SetText(l10n_util::GetStringUTF16(
           in_focus_session
@@ -313,15 +312,16 @@ void FocusModeDetailedView::OnFocusModeChanged(bool in_focus_session) {
 }
 
 void FocusModeDetailedView::OnTimerTick() {
-  // Only update the sub label if the end time has changed since the last time
-  // it was updated.
-  base::Time end_time = FocusModeController::Get()->end_time();
-  if (cached_end_time_ != end_time) {
-    toggle_view_->SetSubText(
-        focus_mode_util::GetFormattedEndTimeString(end_time));
-    cached_end_time_ = end_time;
-  }
   timer_countdown_view_->UpdateUI();
+}
+
+void FocusModeDetailedView::OnSessionDurationChanged() {
+  toggle_view_->SetSubText(focus_mode_util::GetFormattedEndTimeString(
+      FocusModeController::Get()->end_time()));
+
+  if (FocusModeController::Get()->in_focus_session()) {
+    timer_countdown_view_->UpdateUI();
+  }
 }
 
 void FocusModeDetailedView::CreateToggleView() {
@@ -355,9 +355,8 @@ void FocusModeDetailedView::CreateToggleView() {
   }
 
   if (in_focus_session) {
-    cached_end_time_ = focus_mode_controller->end_time();
-    toggle_view_->SetSubText(
-        focus_mode_util::GetFormattedEndTimeString(cached_end_time_));
+    toggle_view_->SetSubText(focus_mode_util::GetFormattedEndTimeString(
+        focus_mode_controller->end_time()));
     toggle_view_->sub_text_label()->SetEnabledColorId(
         cros_tokens::kCrosSysSecondary);
     TypographyProvider::Get()->StyleLabel(

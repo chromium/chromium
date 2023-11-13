@@ -48,6 +48,7 @@ class FocusModeTray : public TrayBackgroundView,
   // FocusModeController::Observer:
   void OnFocusModeChanged(bool in_focus_session) override;
   void OnTimerTick() override;
+  void OnSessionDurationChanged() override;
 
  private:
   // Updates the image and color of the icon.
@@ -55,6 +56,9 @@ class FocusModeTray : public TrayBackgroundView,
 
   // Button click handler for shelf icon.
   void FocusModeIconActivated(const ui::Event& event);
+
+  // Calls `UpdateUI` on `countdown_view_` if it exists.
+  void MaybeUpdateCountdownViewUI();
 
   // Image view of the focus mode lamp.
   const raw_ptr<views::ImageView> image_view_;
