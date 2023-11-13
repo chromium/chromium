@@ -249,6 +249,8 @@ static_library("test_support") {
     "../public/test/mock_render_thread.h",
     "../public/test/mock_web_contents_observer.cc",
     "../public/test/mock_web_contents_observer.h",
+    "../public/test/mojo_capability_control_test_util.cc",
+    "../public/test/mojo_capability_control_test_util.h",
     "../public/test/navigation_handle_observer.cc",
     "../public/test/navigation_handle_observer.h",
     "../public/test/navigation_simulator.h",
@@ -1059,10 +1061,10 @@ static_library("browsertest_support") {
 
 mojom("content_test_mojo_bindings") {
   sources = [
+    "../public/test/mojo_capability_control_test_interfaces.mojom",
     "../public/test/test_service.mojom",
     "frame_host_test_interface.mojom",
     "test_browser_associated_interfaces.mojom",
-    "test_mojo_binder_policy_applier_unittest.mojom",
   ]
   public_deps = [
     "//mojo/public/mojom/base",

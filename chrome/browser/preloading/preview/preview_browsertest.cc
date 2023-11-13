@@ -2,16 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/barrier_closure.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/preloading/preview/preview_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/mojo_capability_control_test_util.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -127,4 +134,101 @@ IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, PromoteToNewTab) {
   EXPECT_EQ(2, tab_strip_model->count());
   EXPECT_EQ(false,
             content::EvalJs(preview_web_contents, "document.prerendering"));
+}
+
+class MojoCapabilityControlTestContentBrowserClient
+    : public ChromeContentBrowserClient,
+      public content::test::MojoCapabilityControlTestHelper {
+ public:
+  MojoCapabilityControlTestContentBrowserClient() {
+    previous_client_ = content::SetBrowserClientForTesting(this);
+  }
+  ~MojoCapabilityControlTestContentBrowserClient() override {
+    content::SetBrowserClientForTesting(previous_client_);
+  }
+  MojoCapabilityControlTestContentBrowserClient(
+      const MojoCapabilityControlTestContentBrowserClient&) = delete;
+  MojoCapabilityControlTestContentBrowserClient& operator=(
+      const MojoCapabilityControlTestContentBrowserClient&) = delete;
+
+ private:
+  // ChromeContentBrowserClient implementation.
+  void RegisterBrowserInterfaceBindersForFrame(
+      content::RenderFrameHost* render_frame_host,
+      mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override {
+    if (previous_client_) {
+      previous_client_->RegisterBrowserInterfaceBindersForFrame(
+          render_frame_host, map);
+    }
+    RegisterTestBrowserInterfaceBindersForFrame(render_frame_host, map);
+  }
+  void RegisterMojoBinderPoliciesForPreview(
+      content::MojoBinderPolicyMap& policy_map) override {
+    RegisterTestMojoBinderPolicies(policy_map);
+  }
+
+  raw_ptr<content::ContentBrowserClient> previous_client_;
+};
+
+IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, MojoCapabilityControl) {
+  MojoCapabilityControlTestContentBrowserClient test_browser_client;
+
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/title1.html");
+  const GURL kPreviewUrl =
+      embedded_test_server()->GetURL("/page_with_iframe.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
+
+  // Open the target page in preview mode.
+  helper().InitiatePreview(kPreviewUrl);
+  helper().WaitUntilLoadFinished();
+
+  // Gather RenderFrameHosts for the preview tab.
+  std::vector<content::RenderFrameHost*> frames;
+  base::WeakPtr<content::WebContents> preview_web_contents =
+      helper().GetWebContentsForPreviewTab();
+  ASSERT_TRUE(preview_web_contents);
+  preview_web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [&](content::RenderFrameHost* rfh) { frames.push_back(rfh); });
+  CHECK_EQ(frames.size(), 2U);
+
+  // A barrier closure to wait until a deferred interface is granted on all
+  // frames.
+  base::RunLoop run_loop;
+  auto barrier_closure =
+      base::BarrierClosure(frames.size(), run_loop.QuitClosure());
+
+  mojo::RemoteSet<content::mojom::TestInterfaceForDefer> defer_remote_set;
+  mojo::RemoteSet<content::mojom::TestInterfaceForGrant> grant_remote_set;
+  for (auto* frame : frames) {
+    // Try to bind a kDefer interface.
+    mojo::Remote<content::mojom::TestInterfaceForDefer> defer_remote;
+    test_browser_client.GetInterface(frame,
+                                     defer_remote.BindNewPipeAndPassReceiver());
+    //  The barrier closure will be called after the deferred interface is
+    //  granted.
+    defer_remote->Ping(barrier_closure);
+    defer_remote_set.Add(std::move(defer_remote));
+
+    // Try to bind a kGrant interface.
+    mojo::Remote<content::mojom::TestInterfaceForGrant> grant_remote;
+    test_browser_client.GetInterface(frame,
+                                     grant_remote.BindNewPipeAndPassReceiver());
+    grant_remote_set.Add(std::move(grant_remote));
+  }
+
+  // Verify that BrowserInterfaceBrokerImpl defers running binders whose
+  // policies are kDefer until the prerendered page is activated.
+  EXPECT_EQ(test_browser_client.GetDeferReceiverSetSize(), 0U);
+  // Verify that BrowserInterfaceBrokerImpl executes kGrant binders immediately.
+  EXPECT_EQ(test_browser_client.GetGrantReceiverSetSize(), frames.size());
+
+  // Activate the prerendered page.
+  helper().PromoteToNewTab();
+
+  // Wait until the deferred interface is granted on all frames.
+  run_loop.Run();
+  EXPECT_EQ(test_browser_client.GetDeferReceiverSetSize(), frames.size());
 }

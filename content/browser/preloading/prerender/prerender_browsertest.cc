@@ -82,6 +82,8 @@
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/mock_web_contents_observer.h"
+#include "content/public/test/mojo_capability_control_test_interfaces.mojom.h"
+#include "content/public/test/mojo_capability_control_test_util.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
@@ -97,7 +99,6 @@
 #include "content/test/portal/portal_activated_observer.h"
 #include "content/test/portal/portal_created_observer.h"
 #include "content/test/render_document_feature.h"
-#include "content/test/test_mojo_binder_policy_applier_unittest.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/system/functions.h"
@@ -3716,74 +3717,25 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
 class MojoCapabilityControlTestContentBrowserClient
     : public ContentBrowserTestContentBrowserClient,
-      mojom::TestInterfaceForDefer,
-      mojom::TestInterfaceForGrant,
-      mojom::TestInterfaceForCancel,
-      mojom::TestInterfaceForUnexpected {
+      public test::MojoCapabilityControlTestHelper {
  public:
+  MojoCapabilityControlTestContentBrowserClient() = default;
+  ~MojoCapabilityControlTestContentBrowserClient() override = default;
+  MojoCapabilityControlTestContentBrowserClient(
+      const MojoCapabilityControlTestContentBrowserClient&) = delete;
+  MojoCapabilityControlTestContentBrowserClient& operator=(
+      const MojoCapabilityControlTestContentBrowserClient&) = delete;
+
+  // ContentBrowserClient implementation.
   void RegisterBrowserInterfaceBindersForFrame(
       RenderFrameHost* render_frame_host,
       mojo::BinderMapWithContext<RenderFrameHost*>* map) override {
-    map->Add<mojom::TestInterfaceForDefer>(base::BindRepeating(
-        &MojoCapabilityControlTestContentBrowserClient::BindDeferInterface,
-        base::Unretained(this)));
-    map->Add<mojom::TestInterfaceForGrant>(base::BindRepeating(
-        &MojoCapabilityControlTestContentBrowserClient::BindGrantInterface,
-        base::Unretained(this)));
-    map->Add<mojom::TestInterfaceForCancel>(base::BindRepeating(
-        &MojoCapabilityControlTestContentBrowserClient::BindCancelInterface,
-        base::Unretained(this)));
-    map->Add<mojom::TestInterfaceForUnexpected>(base::BindRepeating(
-        &MojoCapabilityControlTestContentBrowserClient::BindUnexpectedInterface,
-        base::Unretained(this)));
+    RegisterTestBrowserInterfaceBindersForFrame(render_frame_host, map);
   }
-
   void RegisterMojoBinderPoliciesForSameOriginPrerendering(
       MojoBinderPolicyMap& policy_map) override {
-    policy_map.SetNonAssociatedPolicy<mojom::TestInterfaceForGrant>(
-        MojoBinderNonAssociatedPolicy::kGrant);
-    policy_map.SetNonAssociatedPolicy<mojom::TestInterfaceForCancel>(
-        MojoBinderNonAssociatedPolicy::kCancel);
-    policy_map.SetNonAssociatedPolicy<mojom::TestInterfaceForUnexpected>(
-        MojoBinderNonAssociatedPolicy::kUnexpected);
+    RegisterTestMojoBinderPolicies(policy_map);
   }
-
-  void BindDeferInterface(
-      RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<mojom::TestInterfaceForDefer> receiver) {
-    defer_receiver_set_.Add(this, std::move(receiver));
-  }
-
-  void BindGrantInterface(
-      RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<mojom::TestInterfaceForGrant> receiver) {
-    grant_receiver_set_.Add(this, std::move(receiver));
-  }
-
-  void BindCancelInterface(
-      RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<mojom::TestInterfaceForCancel> receiver) {
-    cancel_receiver_set_.Add(this, std::move(receiver));
-  }
-
-  void BindUnexpectedInterface(
-      RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<mojom::TestInterfaceForUnexpected> receiver) {
-    unexpected_receiver_.Bind(std::move(receiver));
-  }
-
-  // mojom::TestInterfaceForDefer implementation.
-  void Ping(PingCallback callback) override { std::move(callback).Run(); }
-
-  size_t GetDeferReceiverSetSize() { return defer_receiver_set_.size(); }
-
-  size_t GetGrantReceiverSetSize() { return grant_receiver_set_.size(); }
-
- private:
-  mojo::ReceiverSet<mojom::TestInterfaceForDefer> defer_receiver_set_;
-  mojo::ReceiverSet<mojom::TestInterfaceForGrant> grant_receiver_set_;
-  mojo::ReceiverSet<mojom::TestInterfaceForCancel> cancel_receiver_set_;
-  mojo::Receiver<mojom::TestInterfaceForUnexpected> unexpected_receiver_{this};
 };
 
 // Tests that binding requests are handled according to MojoBinderPolicyMap
