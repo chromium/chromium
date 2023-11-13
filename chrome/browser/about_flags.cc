@@ -11177,12 +11177,13 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"app-to-app-link-capturing", flag_descriptions::kAppToAppLinkCapturingName,
-     flag_descriptions::kAppToAppLinkCapturingDescription, kOsCrOS,
+     flag_descriptions::kAppToAppLinkCapturingDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(apps::features::kAppToAppLinkCapturing)},
 
     {"app-to-app-link-capturing-workspace-apps",
      flag_descriptions::kAppToAppLinkCapturingWorkspaceAppsName,
-     flag_descriptions::kAppToAppLinkCapturingWorkspaceAppsDescription, kOsCrOS,
+     flag_descriptions::kAppToAppLinkCapturingWorkspaceAppsDescription,
+     kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(apps::features::kAppToAppLinkCapturingWorkspaceApps)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
