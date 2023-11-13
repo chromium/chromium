@@ -221,7 +221,7 @@ class LorgnetteScannerManagerTest : public testing::Test {
   void GetScannerInfoList(LocalScannerFilter local_only,
                           SecureScannerFilter secure_only) {
     lorgnette_scanner_manager_->GetScannerInfoList(
-        local_only, secure_only,
+        "client-id", local_only, secure_only,
         base::BindOnce(&LorgnetteScannerManagerTest::GetScannerInfoListCallback,
                        base::Unretained(this)));
   }

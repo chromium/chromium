@@ -37,7 +37,6 @@ namespace ash {
 namespace {
 
 LorgnetteManagerClient* g_instance = nullptr;
-constexpr char kListScannersDiscoveryClientId[] = "ListScanners";
 
 // The LorgnetteManagerClient implementation used in production.
 class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
@@ -49,15 +48,24 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   ~LorgnetteManagerClientImpl() override = default;
 
   void ListScanners(
+      const std::string& client_id,
       bool local_only,
       chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback)
       override {
     if (features::IsAsynchronousScannerDiscoveryEnabled()) {
+      // The client ID is required for asynchronous discovery.  If none is
+      // provided, exit early with an error result.
+      if (client_id.empty()) {
+        lorgnette::ListScannersResponse response;
+        response.set_result(lorgnette::OPERATION_RESULT_INVALID);
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback), std::move(response)));
+        return;
+      }
+
       lorgnette::StartScannerDiscoveryRequest request;
-      // ListScanners doesn't support concurrent calls and completes the session
-      // before it finishes, so hardcoding a single client id shouldn't cause
-      // cross-caller interference.
-      request.set_client_id(kListScannersDiscoveryClientId);
+      request.set_client_id(client_id);
       request.set_preferred_only(true);
       request.set_local_only(local_only);
 

@@ -75,6 +75,7 @@ void FakeLorgnetteScannerManager::GetScannerNames(
 }
 
 void FakeLorgnetteScannerManager::GetScannerInfoList(
+    const std::string& client_id,
     LocalScannerFilter local_only,
     SecureScannerFilter secure_only,
     GetScannerInfoListCallback callback) {

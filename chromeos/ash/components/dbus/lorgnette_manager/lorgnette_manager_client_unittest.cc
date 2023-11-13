@@ -959,6 +959,7 @@ TEST_F(LorgnetteManagerClientTest, ListScanners) {
 
   base::RunLoop run_loop;
   GetClient()->ListScanners(
+      kClientId,
       /*local_only=*/false,
       base::BindLambdaForTesting(
           [&](absl::optional<lorgnette::ListScannersResponse> result) {
@@ -992,6 +993,7 @@ TEST_F(LorgnetteManagerClientTest, ListScannersViaAsyncDiscovery) {
 
   base::RunLoop run_loop;
   GetClient()->ListScanners(
+      kClientId,
       /*local_only=*/false,
       base::BindLambdaForTesting(
           [&](absl::optional<lorgnette::ListScannersResponse> result) {
@@ -1020,6 +1022,28 @@ TEST_F(LorgnetteManagerClientTest, ListScannersViaAsyncDiscovery) {
   run_loop.Run();
 }
 
+TEST_F(LorgnetteManagerClientTest, ListScannersAsyncEmptyClient) {
+  auto feature = base::test::ScopedFeatureList(
+      ash::features::kAsynchronousScannerDiscovery);
+
+  // Since the client ID is empty, an invalid result code should get set.
+  lorgnette::ListScannersResponse expected_response;
+  expected_response.set_result(lorgnette::OPERATION_RESULT_INVALID);
+
+  base::RunLoop run_loop;
+  GetClient()->ListScanners(
+      /*client_id=*/"",
+      /*local_only=*/false,
+      base::BindLambdaForTesting(
+          [&](absl::optional<lorgnette::ListScannersResponse> result) {
+            run_loop.Quit();
+            ASSERT_TRUE(result.has_value());
+            EXPECT_THAT(result.value(), EqualsProto(expected_response));
+          }));
+
+  run_loop.Run();
+}
+
 // Test that the client handles a null response to a kListScannersMethod D-Bus
 // call.
 TEST_F(LorgnetteManagerClientTest, NullResponseToListScanners) {
@@ -1027,6 +1051,7 @@ TEST_F(LorgnetteManagerClientTest, NullResponseToListScanners) {
 
   base::RunLoop run_loop;
   GetClient()->ListScanners(
+      kClientId,
       /*local_only=*/false,
       base::BindLambdaForTesting(
           [&](absl::optional<lorgnette::ListScannersResponse> result) {
@@ -1045,6 +1070,7 @@ TEST_F(LorgnetteManagerClientTest, EmptyResponseToListScanners) {
 
   base::RunLoop run_loop;
   GetClient()->ListScanners(
+      kClientId,
       /*local_only=*/false,
       base::BindLambdaForTesting(
           [&](absl::optional<lorgnette::ListScannersResponse> result) {

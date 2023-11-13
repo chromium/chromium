@@ -46,6 +46,7 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
 
   // Gets a list of scanners from the lorgnette manager.
   virtual void ListScanners(
+      const std::string& client_id,
       bool local_only,
       chromeos::DBusMethodCallback<lorgnette::ListScannersResponse>
           callback) = 0;

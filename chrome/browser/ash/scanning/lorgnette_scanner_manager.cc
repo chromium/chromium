@@ -33,6 +33,9 @@ namespace ash {
 
 namespace {
 
+// Used as the client ID when calling ListScanners to retrieve scanner names.
+constexpr char kListScannersDiscoveryClientId[] = "GetScannerNames";
+
 // A list of Epson models that do not rotate alternating ADF scanned pages
 // to be excluded in IsRotateAlternate().
 constexpr char kEpsonNoFlipModels[] =
@@ -176,18 +179,20 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   void GetScannerNames(GetScannerNamesCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     GetLorgnetteManagerClient()->ListScanners(
+        kListScannersDiscoveryClientId,
         /*local_only=*/false,
         base::BindOnce(&LorgnetteScannerManagerImpl::OnListScannerNamesResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   // LorgnetteScannerManager:
-  void GetScannerInfoList(LocalScannerFilter local_only,
+  void GetScannerInfoList(const std::string& client_id,
+                          LocalScannerFilter local_only,
                           SecureScannerFilter secure_only,
                           GetScannerInfoListCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     GetLorgnetteManagerClient()->ListScanners(
-        (local_only == LocalScannerFilter::kLocalScannersOnly),
+        client_id, (local_only == LocalScannerFilter::kLocalScannersOnly),
         base::BindOnce(&LorgnetteScannerManagerImpl::OnListScannerInfoResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        local_only, secure_only));

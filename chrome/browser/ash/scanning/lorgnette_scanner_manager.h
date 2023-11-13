@@ -73,7 +73,8 @@ class LorgnetteScannerManager : public KeyedService {
 
   // Returns ScannerInfo objects for all of the available lorgnette scanners and
   // zeroconf scanners, filtered by |local_only| and |secure_only|.
-  virtual void GetScannerInfoList(LocalScannerFilter local_only,
+  virtual void GetScannerInfoList(const std::string& client_id,
+                                  LocalScannerFilter local_only,
                                   SecureScannerFilter secure_only,
                                   GetScannerInfoListCallback callback) = 0;
 

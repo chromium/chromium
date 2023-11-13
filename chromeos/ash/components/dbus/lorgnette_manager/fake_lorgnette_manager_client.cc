@@ -19,6 +19,7 @@ FakeLorgnetteManagerClient::~FakeLorgnetteManagerClient() = default;
 void FakeLorgnetteManagerClient::Init(dbus::Bus* bus) {}
 
 void FakeLorgnetteManagerClient::ListScanners(
+    const std::string& client_id,
     bool local_only,
     chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
