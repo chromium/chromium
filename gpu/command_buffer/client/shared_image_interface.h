@@ -356,6 +356,11 @@ class GPU_EXPORT SharedImageInterface {
   virtual std::unique_ptr<SharedImageInterface::ScopedMapping> MapSharedImage(
       const Mailbox& mailbox);
 
+  // Same behavior as the above, except that this version takes
+  // a |client_shared_image| parameter (which holds a mailbox).
+  virtual std::unique_ptr<SharedImageInterface::ScopedMapping> MapSharedImage(
+      const scoped_refptr<ClientSharedImage>& client_shared_image);
+
   virtual const SharedImageCapabilities& GetCapabilities() = 0;
 };
 

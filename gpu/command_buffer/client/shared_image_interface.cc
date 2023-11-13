@@ -111,6 +111,13 @@ SharedImageInterface::MapSharedImage(const Mailbox& mailbox) {
   return nullptr;
 }
 
+std::unique_ptr<SharedImageInterface::ScopedMapping>
+SharedImageInterface::MapSharedImage(
+    const scoped_refptr<ClientSharedImage>& client_shared_image) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 // static
 std::unique_ptr<gfx::GpuMemoryBuffer>
 SharedImageInterface::CreateGpuMemoryBufferForUseByScopedMapping(

@@ -447,6 +447,12 @@ SharedImageInterfaceInProcess::MapSharedImage(const Mailbox& mailbox) {
   return scoped_mapping;
 }
 
+std::unique_ptr<gpu::SharedImageInterface::ScopedMapping>
+SharedImageInterfaceInProcess::MapSharedImage(
+    const scoped_refptr<gpu::ClientSharedImage>& client_shared_image) {
+  return MapSharedImage(client_shared_image->mailbox());
+}
+
 void SharedImageInterfaceInProcess::GetGpuMemoryBufferHandleInfoOnGpuThread(
     const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle* handle,

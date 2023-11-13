@@ -97,6 +97,9 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
       gfx::BufferUsage buffer_usage) override;
   std::unique_ptr<SharedImageInterface::ScopedMapping> MapSharedImage(
       const Mailbox& mailbox) override;
+  std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> MapSharedImage(
+      const scoped_refptr<gpu::ClientSharedImage>& client_shared_image)
+      override;
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       viz::SharedImageFormat format,
       const gfx::Size& size,

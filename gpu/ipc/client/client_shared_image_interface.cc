@@ -246,6 +246,12 @@ ClientSharedImageInterface::MapSharedImage(const Mailbox& mailbox) {
   return scoped_mapping;
 }
 
+std::unique_ptr<gpu::SharedImageInterface::ScopedMapping>
+ClientSharedImageInterface::MapSharedImage(
+    const scoped_refptr<gpu::ClientSharedImage>& client_shared_image) {
+  return MapSharedImage(client_shared_image->mailbox());
+}
+
 uint32_t ClientSharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
   return proxy_->UsageForMailbox(mailbox);
 }

@@ -357,6 +357,12 @@ TestSharedImageInterface::MapSharedImage(const gpu::Mailbox& mailbox) {
   return SharedImageInterface::ScopedMapping::Create(gmb);
 }
 
+std::unique_ptr<gpu::SharedImageInterface::ScopedMapping>
+TestSharedImageInterface::MapSharedImage(
+    const scoped_refptr<gpu::ClientSharedImage>& client_shared_image) {
+  return MapSharedImage(client_shared_image->mailbox());
+}
+
 bool TestSharedImageInterface::CheckSharedImageExists(
     const gpu::Mailbox& mailbox) const {
   base::AutoLock locked(lock_);
