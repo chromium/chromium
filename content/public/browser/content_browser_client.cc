@@ -158,14 +158,6 @@ bool ContentBrowserClient::IsExplicitNavigation(ui::PageTransition transition) {
   return transition & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR;
 }
 
-bool ContentBrowserClient::ShouldUseMobileFlingCurve() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  return true;
-#else
-  return false;
-#endif
-}
-
 bool ContentBrowserClient::ShouldUseProcessPerSite(
     BrowserContext* browser_context,
     const GURL& site_url) {

@@ -26,6 +26,10 @@
 #include "ui/events/blink/blink_features.h"
 #include "ui/gfx/geometry/point_f.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/display/test/test_screen.h"
+#endif
+
 using blink::WebGestureDevice;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -249,6 +253,11 @@ class GestureEventQueueTest : public testing::Test,
   std::unique_ptr<WebGestureEvent> sync_followup_event_;
   base::test::ScopedFeatureList feature_list_;
   blink::mojom::ScrollResultDataPtr last_acked_event_scroll_result_data_;
+#if BUILDFLAG(IS_CHROMEOS)
+  // This is necessary on ChromeOS to access tablet mode info.
+  display::test::TestScreen test_screen_{/*create_dispay=*/true,
+                                         /*register_screen=*/true};
+#endif
 };
 
 class GestureEventQueueWithCompositorEventQueueTest

@@ -2006,16 +2006,6 @@ bool ChromeContentBrowserClient::
 #endif
 }
 
-bool ChromeContentBrowserClient::ShouldUseMobileFlingCurve() {
-#if BUILDFLAG(IS_ANDROID)
-  return true;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::TabletMode::IsInTabletMode();
-#else
-  return false;
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
 bool ChromeContentBrowserClient::ShouldUseProcessPerSite(
     content::BrowserContext* browser_context,
     const GURL& site_url) {

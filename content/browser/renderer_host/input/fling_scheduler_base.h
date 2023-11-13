@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_FLING_SCHEDULER_BASE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_FLING_SCHEDULER_BASE_H_
 
-#include "content/browser/renderer_host/input/fling_controller.h"
+#include "content/common/input/fling_controller.h"
 
 namespace content {
 

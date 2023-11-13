@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_FLING_CONTROLLER_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_FLING_CONTROLLER_H_
+#ifndef CONTENT_COMMON_INPUT_FLING_CONTROLLER_H_
+#define CONTENT_COMMON_INPUT_FLING_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -202,4 +202,4 @@ class CONTENT_EXPORT FlingController {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_FLING_CONTROLLER_H_
+#endif  // CONTENT_COMMON_INPUT_FLING_CONTROLLER_H_

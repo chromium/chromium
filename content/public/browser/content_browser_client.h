@@ -404,10 +404,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // debug URLs.
   virtual bool IsExplicitNavigation(ui::PageTransition transition);
 
-  // Returns whether gesture fling events should use the mobile-behavior gesture
-  // curve for scrolling.
-  virtual bool ShouldUseMobileFlingCurve();
-
   // Returns whether all instances of the specified site URL should be
   // rendered by the same process, rather than using process-per-site-instance.
   virtual bool ShouldUseProcessPerSite(BrowserContext* browser_context,

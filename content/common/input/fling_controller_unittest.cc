@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/fling_controller.h"
+#include "content/common/input/fling_controller.h"
 
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -11,7 +11,6 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "content/browser/renderer_host/input/gesture_event_queue.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
@@ -20,6 +19,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/display/win/test/scoped_screen_win.h"
+#elif BUILDFLAG(IS_CHROMEOS)
+#include "ui/display/test/test_screen.h"
 #endif
 
 using blink::WebGestureEvent;
@@ -218,6 +219,10 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
 #if BUILDFLAG(IS_WIN)
   // This is necessary for static methods of `display::ScreenWin`.
   display::win::test::ScopedScreenWin scoped_screen_win_;
+#elif BUILDFLAG(IS_CHROMEOS)
+  // This is necessary on ChromeOS as it needs to access tablet mode info.
+  display::test::TestScreen test_screen_{/*create_dispay=*/true,
+                                         /*register_screen=*/true};
 #endif
 
  private:

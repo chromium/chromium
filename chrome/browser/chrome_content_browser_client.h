@@ -172,7 +172,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool is_outermost_main_frame,
       const GURL& candidate_url,
       const GURL& destination_url) override;
-  bool ShouldUseMobileFlingCurve() override;
   bool ShouldUseProcessPerSite(content::BrowserContext* browser_context,
                                const GURL& site_url) override;
   bool ShouldUseSpareRenderProcessHost(content::BrowserContext* browser_context,

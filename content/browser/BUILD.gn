@@ -1697,8 +1697,6 @@ source_set("browser") {
     "renderer_host/http_error_navigation_throttle.h",
     "renderer_host/indexed_db_client_state_checker_factory.cc",
     "renderer_host/indexed_db_client_state_checker_factory.h",
-    "renderer_host/input/fling_controller.cc",
-    "renderer_host/input/fling_controller.h",
     "renderer_host/input/fling_scheduler.cc",
     "renderer_host/input/fling_scheduler.h",
     "renderer_host/input/fling_scheduler_base.h",

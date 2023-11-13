@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/fling_controller.h"
+#include "content/common/input/fling_controller.h"
 
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
-#include "content/browser/renderer_host/input/gesture_event_queue.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gestures/blink/web_gesture_curve_impl.h"
 
@@ -34,6 +34,20 @@ constexpr base::TimeDelta kMaxMicrosecondsFromFlingTimestampToFirstProgress =
 const float kMinInertialScrollDelta = 0.1f;
 
 const char* kFlingTraceName = "FlingController::HandlingGestureFling";
+
+bool ShouldUseMobileFlingCurve() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return true;
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  CHECK(display::Screen::GetScreen());
+  auto tablet_state = display::Screen::GetScreen()->GetTabletState();
+  return (tablet_state == display::TabletState::kInTabletMode ||
+          tablet_state == display::TabletState::kEnteringTabletMode);
+#else
+  return false;
+#endif
+}
+
 }  // namespace
 
 namespace content {
@@ -431,9 +445,8 @@ bool FlingController::UpdateCurrentFlingState(
           current_fling_parameters_.source_device,
           current_fling_parameters_.velocity,
           gfx::Vector2dF() /*initial_offset*/, false /*on_main_thread*/,
-          GetContentClient()->browser()->ShouldUseMobileFlingCurve(),
-          current_fling_parameters_.global_point, boost_multiplier,
-          root_widget_viewport_size));
+          ShouldUseMobileFlingCurve(), current_fling_parameters_.global_point,
+          boost_multiplier, root_widget_viewport_size));
   return true;
 }
 

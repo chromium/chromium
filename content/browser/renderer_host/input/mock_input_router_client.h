@@ -10,9 +10,9 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "content/browser/renderer_host/input/fling_controller.h"
 #include "content/browser/renderer_host/input/input_router_client.h"
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
+#include "content/common/input/fling_controller.h"
 #include "ui/events/blink/did_overscroll_params.h"
 
 namespace content {

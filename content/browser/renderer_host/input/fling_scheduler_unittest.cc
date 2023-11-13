@@ -17,6 +17,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/display/win/test/scoped_screen_win.h"
+#elif BUILDFLAG(IS_CHROMEOS)
+#include "ui/display/test/test_screen.h"
 #endif
 
 namespace content {
@@ -149,6 +151,10 @@ class FlingSchedulerTest : public testing::Test,
 #if BUILDFLAG(IS_WIN)
   // This is necessary for static methods of `display::ScreenWin`.
   display::win::test::ScopedScreenWin scoped_screen_win_;
+#elif BUILDFLAG(IS_CHROMEOS)
+  // This is necessary on ChromeOS as it needs to access tablet mode info.
+  display::test::TestScreen test_screen_{/*create_dispay=*/true,
+                                         /*register_screen=*/true};
 #endif
 };
 
