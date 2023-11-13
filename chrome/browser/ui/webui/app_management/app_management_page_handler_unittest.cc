@@ -70,7 +70,7 @@ class AppManagementPageHandlerTestBase
   void SetUp() override {
     WebAppTest::SetUp();
 
-    delegate_ = std::unique_ptr<TestDelegate>();
+    delegate_ = std::make_unique<TestDelegate>();
 
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
@@ -78,7 +78,7 @@ class AppManagementPageHandlerTestBase
     mojo::Remote<app_management::mojom::PageHandler> handler;
     handler_ = std::make_unique<AppManagementPageHandler>(
         handler.BindNewPipeAndPassReceiver(),
-        page.InitWithNewPipeAndPassRemote(), profile(), *delegate_.get());
+        page.InitWithNewPipeAndPassRemote(), profile(), *delegate_);
 #if !BUILDFLAG(IS_CHROMEOS)
     auto features_and_params = apps::test::GetFeaturesToEnableLinkCapturingUX(
         /*override_captures_by_default=*/GetParam());
