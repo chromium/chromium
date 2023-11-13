@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_visits_recorder.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -153,10 +154,8 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
   // export.
   UIAlertController* _preparingPasswordsAlert;
 
-  // Whether the metric counting visits to the page was already recorded.
-  // Used to avoid over-recording the metric after each successful
-  // authentication.
-  BOOL _visitRecorded;
+  // For recording visits after successful authentication.
+  IOSPasswordManagerVisitsRecorder* _visitsRecorder;
 }
 
 #pragma mark - ChromeCoordinator
@@ -201,10 +200,14 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
   _mediator.consumer = _passwordSettingsViewController;
   _passwordSettingsViewController.delegate = _mediator;
 
+  _visitsRecorder = [[IOSPasswordManagerVisitsRecorder alloc]
+      initWithPasswordManagerSurface:password_manager::PasswordManagerSurface::
+                                         kPasswordSettings];
+
   // Only record visit if no auth is required, otherwise wait for successful
   // auth.
   if (_skipAuthenticationOnStart) {
-    [self maybeRecordVisitMetric];
+    [_visitsRecorder maybeRecordVisitMetric];
   }
 
   [self startReauthCoordinatorWithAuthOnStart:!_skipAuthenticationOnStart];
@@ -552,7 +555,7 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 
 - (void)successfulReauthenticationWithCoordinator:
     (ReauthenticationCoordinator*)coordinator {
-  [self maybeRecordVisitMetric];
+  [_visitsRecorder maybeRecordVisitMetric];
 }
 
 - (void)willPushReauthenticationViewController {
@@ -701,18 +704,6 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 // Cancels the password export flow.
 - (void)onExportFlowCancelled {
   [_mediator exportFlowCanceled];
-}
-
-// Logs a Password Settings visit. Only logs the first time it is invoked, no-op
-// after that.
-- (void)maybeRecordVisitMetric {
-  if (_visitRecorded) {
-    return;
-  }
-
-  _visitRecorded = YES;
-  password_manager::LogPasswordManagerSurfaceVisit(
-      password_manager::PasswordManagerSurface::kPasswordSettings);
 }
 
 @end

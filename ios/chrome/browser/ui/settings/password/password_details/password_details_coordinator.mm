@@ -18,6 +18,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_visits_recorder.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -100,10 +101,8 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   // The context in which the password details are accessed.
   DetailsContext _context;
 
-  // Whether the metric counting visits to the page was already recorded.
-  // Used to avoid over-recording the metric after each successful
-  // authentication.
-  BOOL _visitRecorded;
+  // For recording visits after successful authentication.
+  IOSPasswordManagerVisitsRecorder* _visitsRecorder;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -192,9 +191,13 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:!requireAuth];
 
+  _visitsRecorder = [[IOSPasswordManagerVisitsRecorder alloc]
+      initWithPasswordManagerSurface:password_manager::PasswordManagerSurface::
+                                         kPasswordDetails];
+
   // Wait for authentication to pass before logging a page visit.
   if (!requireAuth) {
-    [self maybeRecordVisitMetric];
+    [_visitsRecorder maybeRecordVisitMetric];
   }
 
   if (IsAuthOnEntryV2Enabled()) {
@@ -438,7 +441,7 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 
 - (void)successfulReauthenticationWithCoordinator:
     (ReauthenticationCoordinator*)coordinator {
-  [self maybeRecordVisitMetric];
+  [_visitsRecorder maybeRecordVisitMetric];
 }
 
 - (void)willPushReauthenticationViewController {
@@ -569,17 +572,6 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   password_manager::PasswordManagerClient* passwordManagerClient =
       PasswordTabHelper::FromWebState(webState)->GetPasswordManagerClient();
   passwordManagerClient->UpdateFormManagers();
-}
-
-// Records a visit to Password Details. Records once during the lifetime of the
-// coordinator.
-- (void)maybeRecordVisitMetric {
-  if (_visitRecorded) {
-    return;
-  }
-  _visitRecorded = YES;
-  password_manager::LogPasswordManagerSurfaceVisit(
-      password_manager::PasswordManagerSurface::kPasswordDetails);
 }
 
 @end

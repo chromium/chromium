@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_visits_recorder.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -106,13 +107,12 @@ using password_manager::WarningType;
 @property(nonatomic, strong)
     WidgetPromoInstructionsCoordinator* widgetPromoInstructionsCoordinator;
 
-// Indicates that a password manager visit metric has been recorded.
-// Used to only record the metric the first time authentication is passed.
-@property(nonatomic) BOOL recordedPasswordManagerVisit;
-
 @end
 
-@implementation PasswordsCoordinator
+@implementation PasswordsCoordinator {
+  // For recording visits after successful authentication.
+  IOSPasswordManagerVisitsRecorder* _visitsRecorder;
+}
 
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -126,7 +126,6 @@ using password_manager::WarningType;
     _dispatcher = static_cast<
         id<BrowserCommands, ApplicationCommands, BrowsingDataCommands>>(
         browser->GetCommandDispatcher());
-    _recordedPasswordManagerVisit = NO;
   }
   return self;
 }
@@ -199,10 +198,14 @@ using password_manager::WarningType;
   [self.baseNavigationController pushViewController:self.passwordsViewController
                                            animated:!startBlockedForReauth];
 
+  _visitsRecorder = [[IOSPasswordManagerVisitsRecorder alloc]
+      initWithPasswordManagerSurface:password_manager::PasswordManagerSurface::
+                                         kPasswordList];
+
   if (startBlockedForReauth) {
     [self startReauthCoordinatorWithAuthOnStart:YES];
   } else {
-    [self recordPasswordManagerVisitIfNeeded];
+    [_visitsRecorder maybeRecordVisitMetric];
   }
 
   // Start a password check.
@@ -479,7 +482,7 @@ using password_manager::WarningType;
     (ReauthenticationCoordinator*)coordinator {
   DCHECK_EQ(_reauthCoordinator, coordinator);
 
-  [self recordPasswordManagerVisitIfNeeded];
+  [_visitsRecorder maybeRecordVisitMetric];
 
   [self.mediator askFETToShowPasswordManagerWidgetPromo];
 
@@ -561,19 +564,6 @@ using password_manager::WarningType;
   if (password_manager::features::IsAuthOnEntryV2Enabled()) {
     [self startReauthCoordinatorWithAuthOnStart:NO];
   }
-}
-
-// Records password manager visit metric.
-// Only records the first time it is called during the lifetime of self, no-op
-// after that.
-- (void)recordPasswordManagerVisitIfNeeded {
-  if (_recordedPasswordManagerVisit) {
-    return;
-  }
-  // Record only once during the lifetime of self.
-  _recordedPasswordManagerVisit = YES;
-  password_manager::LogPasswordManagerSurfaceVisit(
-      password_manager::PasswordManagerSurface::kPasswordList);
 }
 
 - (void)dismissActionSheetCoordinator {
