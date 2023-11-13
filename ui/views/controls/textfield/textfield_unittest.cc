@@ -131,7 +131,7 @@ class TextfieldFocuser : public View {
   METADATA_HEADER(TextfieldFocuser, View)
 
  public:
-  explicit TextfieldFocuser(Textfield* textfield) : textfield_(textfield) {
+  explicit TextfieldFocuser(Textfield* textfield) : textfield_(*textfield) {
     SetFocusBehavior(FocusBehavior::ALWAYS);
   }
 
@@ -148,7 +148,7 @@ class TextfieldFocuser : public View {
 
  private:
   bool consume_ = true;
-  raw_ptr<Textfield, DanglingUntriaged> textfield_;
+  const raw_ref<Textfield> textfield_;
 };
 
 BEGIN_METADATA(TextfieldFocuser)
@@ -4761,8 +4761,8 @@ TEST_F(TextfieldTest, TextfieldInitialization) {
 // command only results when the event is not consumed.
 TEST_F(TextfieldTest, SwitchFocusInKeyDown) {
   InitTextfield();
-  TextfieldFocuser* focuser = new TextfieldFocuser(textfield_);
-  widget_->GetContentsView()->AddChildView(focuser);
+  TextfieldFocuser* focuser = widget_->GetContentsView()->AddChildView(
+      std::make_unique<TextfieldFocuser>(textfield_));
 
   focuser->RequestFocus();
   EXPECT_EQ(focuser, GetFocusedView());
@@ -4776,6 +4776,8 @@ TEST_F(TextfieldTest, SwitchFocusInKeyDown) {
   SendKeyPress(ui::VKEY_SPACE, 0);
   EXPECT_EQ(textfield_, GetFocusedView());
   EXPECT_EQ(u" ", textfield_->GetText());
+  // Remove to ensure that the pointer in the focuser does not become dangling.
+  widget_->GetContentsView()->RemoveChildViewT(std::exchange(focuser, nullptr));
 }
 
 TEST_F(TextfieldTest, SendingDeletePreservesShiftFlag) {
