@@ -446,7 +446,7 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
       use_oop_rasterization_(is_accelerated &&
                              context_provider_wrapper_->ContextProvider()
                                  ->GetCapabilities()
-                                 .supports_oop_raster),
+                                 .gpu_rasterization),
       sii_(base::FeatureList::IsEnabled(kAlwaysUseMappableSIForSoftwareCanvas)
                ? context_provider_wrapper_->ContextProvider()
                      ->SharedImageInterface()
@@ -1225,7 +1225,7 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
       size_(info.width(), info.height()),
       use_oop_rasterization_(context_provider_wrapper_->ContextProvider()
                                  ->GetCapabilities()
-                                 .supports_oop_raster) {
+                                 .gpu_rasterization) {
   if (!context_provider_wrapper_)
     return;
 

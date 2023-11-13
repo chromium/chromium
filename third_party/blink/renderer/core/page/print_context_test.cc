@@ -1031,7 +1031,7 @@ class PrintContextOOPRCanvasTest : public PrintContextTest {
         std::make_unique<ScopedAccelerated2dCanvasForTest>(true);
     std::unique_ptr<viz::TestGLES2Interface> gl_context =
         std::make_unique<viz::TestGLES2Interface>();
-    gl_context->set_supports_oop_raster(true);
+    gl_context->set_gpu_rasterization(true);
     std::unique_ptr<viz::TestContextSupport> context_support =
         std::make_unique<viz::TestContextSupport>();
     std::unique_ptr<viz::TestRasterInterface> raster_interface =

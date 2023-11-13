@@ -142,12 +142,10 @@ void LayerTreePixelTest::DrawLayersOnThread(LayerTreeHostImpl* host_impl) {
         host_impl->layer_tree_frame_sink()->worker_context_provider();
     viz::RasterContextProvider::ScopedRasterContextLock lock(
         worker_context_provider);
-    EXPECT_EQ(
-        use_accelerated_raster(),
-        worker_context_provider->ContextCapabilities().supports_oop_raster);
-    EXPECT_EQ(
-        raster_type() == TestRasterType::kGpu,
-        worker_context_provider->ContextCapabilities().supports_oop_raster);
+    EXPECT_EQ(use_accelerated_raster(),
+              worker_context_provider->ContextCapabilities().gpu_rasterization);
+    EXPECT_EQ(raster_type() == TestRasterType::kGpu,
+              worker_context_provider->ContextCapabilities().gpu_rasterization);
   } else {
     EXPECT_EQ(TestRasterType::kBitmap, raster_type());
   }

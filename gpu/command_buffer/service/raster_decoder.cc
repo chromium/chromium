@@ -1233,7 +1233,6 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   // TODO(enne): reconcile this with gles2_cmd_decoder's capability settings.
   Capabilities caps;
   caps.gpu_rasterization = use_gpu_raster_;
-  caps.supports_oop_raster = use_gpu_raster_;
   caps.gpu_memory_buffer_formats =
       feature_info()->feature_flags().gpu_memory_buffer_formats;
   caps.texture_target_exception_list =

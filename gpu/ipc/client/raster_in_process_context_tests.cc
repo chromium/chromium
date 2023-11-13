@@ -82,7 +82,7 @@ TEST_F(RasterInProcessCommandBufferTest, AllowedBetweenBeginEndRasterCHROMIUM) {
   }
 
   // Check for GPU and driver support
-  if (!context_->GetCapabilities().supports_oop_raster) {
+  if (!context_->GetCapabilities().gpu_rasterization) {
     GTEST_SKIP();
   }
 

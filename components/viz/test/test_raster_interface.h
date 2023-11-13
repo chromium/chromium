@@ -40,7 +40,6 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
   // Capability setters below here.
   void set_gpu_rasterization(bool gpu_rasterization) {
     caps_.gpu_rasterization = gpu_rasterization;
-    caps_.supports_oop_raster = gpu_rasterization;
   }
   void set_msaa_is_slow(bool msaa_is_slow) {
     caps_.msaa_is_slow = msaa_is_slow;

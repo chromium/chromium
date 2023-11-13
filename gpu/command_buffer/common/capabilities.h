@@ -60,8 +60,6 @@ struct GPU_EXPORT Capabilities {
 
   bool disable_2d_canvas_copy_on_write = false;
 
-  bool supports_oop_raster = false;
-
   bool supports_yuv_rgb_conversion = false;
   bool supports_yuv_readback = false;
 
