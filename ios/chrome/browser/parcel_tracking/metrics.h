@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_PARCEL_TRACKING_METRICS_H_
 #define IOS_CHROME_BROWSER_PARCEL_TRACKING_METRICS_H_
 
+#import "ios/chrome/browser/parcel_tracking/tracking_source.h"
+
 namespace parcel_tracking {
 
 // Name of the histogram that records the action taken by the user after the
@@ -24,6 +26,16 @@ enum class OptInPromptActionType {
   kSwipeToDismiss = 3,
   kMaxValue = kSwipeToDismiss,
 };
+
+// Logs number of parcels tracked to the histogram corresponding to
+// `tracking_source`.
+void RecordParcelsTracked(TrackingSource tracking_source,
+                          int number_of_parcels);
+
+// Logs number of parcels untracked to the histogram corresponding to
+// `tracking_source`.
+void RecordParcelsUntracked(TrackingSource tracking_source,
+                            int number_of_parcels);
 
 }  // namespace parcel_tracking
 
