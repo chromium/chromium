@@ -345,6 +345,12 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
   // from gfx::Image to SkBitmap before passing to the barrier callback because
   // of some issues with const gfx::Image& and base::BarrierCallback.
   for (auto& image : response->images()) {
+    if (log_entry_) {
+      auto* quality = log_entry_->quality_data<
+          optimization_guide::WallpaperSearchFeatureTypeMap>();
+      auto* image_quality = quality->add_images_quality();
+      image_quality->set_image_id(image.image_id());
+    }
     image_decoder_->DecodeImage(
         image.encoded_image(), gfx::Size(), nullptr,
         base::BindOnce(

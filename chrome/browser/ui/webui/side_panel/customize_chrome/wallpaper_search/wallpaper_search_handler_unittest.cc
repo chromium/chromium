@@ -429,8 +429,9 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
   std::vector<unsigned char> encoded1;
   gfx::PNGCodec::EncodeBGRASkBitmap(bitmap1, /*discard_transparency=*/false,
                                     &encoded1);
-  response.add_images()->set_encoded_image(
-      std::string(encoded1.begin(), encoded1.end()));
+  auto* image1 = response.add_images();
+  image1->set_encoded_image(std::string(encoded1.begin(), encoded1.end()));
+  image1->set_image_id(111);
 
   // Create test bitmap 2 and add it to response.
   SkBitmap bitmap2;
@@ -439,8 +440,9 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
   std::vector<unsigned char> encoded2;
   gfx::PNGCodec::EncodeBGRASkBitmap(bitmap2, /*discard_transparency=*/false,
                                     &encoded2);
-  response.add_images()->set_encoded_image(
-      std::string(encoded2.begin(), encoded2.end()));
+  auto* image2 = response.add_images();
+  image2->set_encoded_image(std::string(encoded2.begin(), encoded2.end()));
+  image2->set_image_id(222);
 
   // Serialize and set result to later send to done_callback.
   std::string serialized_metadata;
@@ -492,6 +494,9 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
   EXPECT_EQ(0, quality.index());
   EXPECT_TRUE(quality.final_request_in_session());
   EXPECT_EQ(321, quality.request_latency_ms());
+  ASSERT_EQ(2, quality.images_quality_size());
+  EXPECT_EQ(111, quality.images_quality(0).image_id());
+  EXPECT_EQ(222, quality.images_quality(1).image_id());
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
@@ -606,11 +611,13 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
   EXPECT_EQ(0, quality1.index());
   EXPECT_FALSE(quality1.final_request_in_session());
   EXPECT_EQ(321, quality1.request_latency_ms());
+  EXPECT_EQ(0, quality1.images_quality_size());
   // Second request.
   EXPECT_EQ(123, quality2.session_id());
   EXPECT_EQ(1, quality2.index());
   EXPECT_TRUE(quality2.final_request_in_session());
   EXPECT_EQ(456, quality2.request_latency_ms());
+  EXPECT_EQ(0, quality2.images_quality_size());
 }
 
 TEST_F(WallpaperSearchHandlerTest,
@@ -732,6 +739,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoResponse) {
   EXPECT_EQ(0, quality.index());
   EXPECT_TRUE(quality.final_request_in_session());
   EXPECT_EQ(321, quality.request_latency_ms());
+  EXPECT_EQ(0, quality.images_quality_size());
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
@@ -791,6 +799,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
   EXPECT_EQ(0, quality.index());
   EXPECT_TRUE(quality.final_request_in_session());
   EXPECT_EQ(321, quality.request_latency_ms());
+  EXPECT_EQ(0, quality.images_quality_size());
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_RequestThrottled) {
@@ -850,6 +859,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_RequestThrottled) {
   EXPECT_EQ(0, quality.index());
   EXPECT_TRUE(quality.final_request_in_session());
   EXPECT_EQ(321, quality.request_latency_ms());
+  EXPECT_EQ(0, quality.images_quality_size());
 }
 
 TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
@@ -906,8 +916,9 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   std::vector<unsigned char> encoded1;
   gfx::PNGCodec::EncodeBGRASkBitmap(bitmap1, /*discard_transparency=*/false,
                                     &encoded1);
-  response.add_images()->set_encoded_image(
-      std::string(encoded1.begin(), encoded1.end()));
+  auto* image1 = response.add_images();
+  image1->set_encoded_image(std::string(encoded1.begin(), encoded1.end()));
+  image1->set_image_id(111);
 
   // Create test bitmap 2 and add it to response.
   SkBitmap bitmap2;
@@ -916,8 +927,9 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   std::vector<unsigned char> encoded2;
   gfx::PNGCodec::EncodeBGRASkBitmap(bitmap2, /*discard_transparency=*/false,
                                     &encoded2);
-  response.add_images()->set_encoded_image(
-      std::string(encoded2.begin(), encoded2.end()));
+  auto* image2 = response.add_images();
+  image2->set_encoded_image(std::string(encoded2.begin(), encoded2.end()));
+  image2->set_image_id(222);
 
   // Serialize and set result to later send to done_callback.
   std::string serialized_metadata;
@@ -960,4 +972,7 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   EXPECT_EQ(0, quality.index());
   EXPECT_TRUE(quality.final_request_in_session());
   EXPECT_EQ(321, quality.request_latency_ms());
+  ASSERT_EQ(2, quality.images_quality_size());
+  EXPECT_EQ(111, quality.images_quality(0).image_id());
+  EXPECT_EQ(222, quality.images_quality(1).image_id());
 }
