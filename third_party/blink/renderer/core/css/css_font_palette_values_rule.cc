@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -84,8 +85,23 @@ String CSSFontPaletteValuesRule::overrideColors() const {
   return String();
 }
 
+StyleRuleFontPaletteValues* CSSFontPaletteValuesRule::FontPaletteValues()
+    const {
+  return font_palette_values_rule_.Get();
+}
+
+CSSStyleDeclaration* CSSFontPaletteValuesRule::Style() {
+  if (!font_palette_values_cssom_wrapper_) {
+    font_palette_values_cssom_wrapper_ =
+        MakeGarbageCollected<StyleRuleCSSStyleDeclaration>(
+            font_palette_values_rule_->MutableProperties(), this);
+  }
+  return font_palette_values_cssom_wrapper_.Get();
+}
+
 void CSSFontPaletteValuesRule::Trace(Visitor* visitor) const {
   visitor->Trace(font_palette_values_rule_);
+  visitor->Trace(font_palette_values_cssom_wrapper_);
   CSSRule::Trace(visitor);
 }
 

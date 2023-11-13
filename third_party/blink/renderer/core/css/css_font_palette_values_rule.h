@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
+#include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -28,6 +29,8 @@ class CSSFontPaletteValuesRule final : public CSSRule {
   String fontFamily() const;
   String basePalette() const;
   String overrideColors() const;
+  StyleRuleFontPaletteValues* FontPaletteValues() const;
+  CSSStyleDeclaration* Style();
 
   void Trace(Visitor*) const override;
 
@@ -35,6 +38,7 @@ class CSSFontPaletteValuesRule final : public CSSRule {
   CSSRule::Type GetType() const override { return kFontPaletteValuesRule; }
 
   Member<StyleRuleFontPaletteValues> font_palette_values_rule_;
+  Member<StyleRuleCSSStyleDeclaration> font_palette_values_cssom_wrapper_;
 };
 
 template <>

@@ -125,6 +125,8 @@ StyleRule::RuleType RuleTypeForMutableDeclaration(
       return StyleRule::kKeyframe;
     case kCSSPropertyRuleMode:
       return StyleRule::kProperty;
+    case kCSSFontPaletteValuesRuleMode:
+      return StyleRule::kFontPaletteValues;
     default:
       return StyleRule::kStyle;
   }
@@ -1637,7 +1639,8 @@ StyleRuleFontPaletteValues* CSSParserImpl::ConsumeFontPaletteValuesRule(
                          /*parent_rule_for_nesting=*/nullptr,
                          /*child_rules=*/nullptr);
   return MakeGarbageCollected<StyleRuleFontPaletteValues>(
-      name, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
+      name, CreateCSSPropertyValueSet(parsed_properties_,
+                                      kCSSFontPaletteValuesRuleMode));
 }
 
 StyleRuleBase* CSSParserImpl::ConsumeScopeRule(
@@ -2429,7 +2432,8 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
 
   if (observer_ &&
       (rule_type == StyleRule::kStyle || rule_type == StyleRule::kKeyframe ||
-       rule_type == StyleRule::kProperty || rule_type == StyleRule::kTry)) {
+       rule_type == StyleRule::kProperty || rule_type == StyleRule::kTry ||
+       rule_type == StyleRule::kFontPaletteValues)) {
     if (!id) {
       // If we skipped the main call to ConsumeValue due to an invalid
       // property/descriptor, the inspector still needs to know the offset

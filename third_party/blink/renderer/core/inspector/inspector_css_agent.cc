@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_font_face.h"
 #include "third_party/blink/renderer/core/css/css_font_face_source.h"
+#include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
@@ -74,6 +75,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
 #include "third_party/blink/renderer/core/css/style_sheet.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css/style_sheet_list.h"
@@ -443,6 +445,11 @@ class InspectorCSSAgent::ModifyRuleAction final
     }
     if (auto* property_rule = DynamicTo<CSSPropertyRule>(rule)) {
       return style_sheet_->BuildObjectForStyle(property_rule->Style());
+    }
+    if (auto* font_palette_values_rule =
+            DynamicTo<CSSFontPaletteValuesRule>(rule)) {
+      return style_sheet_->BuildObjectForStyle(
+          font_palette_values_rule->Style());
     }
     return nullptr;
   }
@@ -1010,6 +1017,8 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
     Maybe<protocol::Array<protocol::CSS::CSSPropertyRule>>* css_property_rules,
     Maybe<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*
         css_property_registrations,
+    Maybe<protocol::CSS::CSSFontPaletteValuesRule>*
+        css_font_palette_values_rule,
     Maybe<int>* parentLayoutNodeId) {
   protocol::Response response = AssertEnabled();
   if (!response.IsSuccess())
@@ -1133,6 +1142,10 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
   std::tie(*css_property_rules, *css_property_registrations) =
       CustomPropertiesForNode(element);
   *css_position_fallback_rules = PositionFallbackRulesForNode(element);
+
+  if (auto rule = FontPalettesForNode(*element)) {
+    *css_font_palette_values_rule = std::move(rule);
+  }
 
   auto* parentLayoutNode = LayoutTreeBuilderTraversal::LayoutParent(*element);
   if (parentLayoutNode) {
@@ -1356,6 +1369,64 @@ InspectorCSSAgent::CustomPropertiesForNode(Element* element) {
   }
 
   return result;
+}
+
+template <class CSSRuleCollection>
+static CSSFontPaletteValuesRule* FindFontPaletteValuesRule(
+    CSSRuleCollection* css_rules,
+    StyleRuleFontPaletteValues* values_rule) {
+  if (!css_rules) {
+    return nullptr;
+  }
+
+  CSSFontPaletteValuesRule* result = nullptr;
+  for (unsigned j = 0; j < css_rules->length() && !result; ++j) {
+    CSSRule* css_rule = css_rules->item(j);
+    if (auto* css_style_rule = DynamicTo<CSSFontPaletteValuesRule>(css_rule)) {
+      if (css_style_rule->FontPaletteValues() == values_rule)
+        result = css_style_rule;
+    } else if (auto* css_import_rule = DynamicTo<CSSImportRule>(css_rule)) {
+      result =
+          FindFontPaletteValuesRule(css_import_rule->styleSheet(), values_rule);
+    } else {
+      result = FindFontPaletteValuesRule(css_rule->cssRules(), values_rule);
+    }
+  }
+  return result;
+}
+
+std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>
+InspectorCSSAgent::FontPalettesForNode(Element& element) {
+  const ComputedStyle* style = element.EnsureComputedStyle();
+  const FontPalette* palette = style ? style->FontPalette() : nullptr;
+  if (!palette || !palette->IsCustomPalette()) {
+    LOG(ERROR) << "No palette";
+    return {};
+  }
+  Document& document = element.GetDocument();
+  StyleRuleFontPaletteValues* rule =
+      document.GetStyleEngine().FontPaletteValuesForNameAndFamily(
+          palette->GetPaletteValuesName(),
+          style->GetFontDescription().Family().FamilyName());
+  if (!rule) {
+    LOG(ERROR) << "No rule: " << palette->GetPaletteValuesName() << ", "
+               << style->GetFontDescription().Family().FamilyName();
+    return {};
+  }
+
+  // Find CSSOM wrapper.
+  CSSFontPaletteValuesRule* values_rule = nullptr;
+  for (CSSStyleSheet* style_sheet :
+       *document_to_css_style_sheets_.at(&document)) {
+    values_rule = FindFontPaletteValuesRule(style_sheet, rule);
+    if (values_rule)
+      break;
+  }
+
+  InspectorStyleSheet* inspector_style_sheet =
+      BindStyleSheet(values_rule->parentStyleSheet());
+  return inspector_style_sheet->BuildObjectForFontPaletteValuesRule(
+      values_rule);
 }
 
 CSSKeyframesRule*

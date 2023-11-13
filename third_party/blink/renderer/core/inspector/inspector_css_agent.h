@@ -167,6 +167,8 @@ class CORE_EXPORT InspectorCSSAgent final
       protocol::Maybe<protocol::Array<protocol::CSS::CSSPositionFallbackRule>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSPropertyRule>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*,
+      protocol::Maybe<protocol::CSS::CSSFontPaletteValuesRule>*
+          out_cssFontPaletteValuesRule,
       protocol::Maybe<int>*) override;
   protocol::Response getInlineStylesForNode(
       int node_id,
@@ -343,6 +345,8 @@ class CORE_EXPORT InspectorCSSAgent final
       std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRule>>,
       std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRegistration>>>
   CustomPropertiesForNode(Element* element);
+  std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule> FontPalettesForNode(
+      Element& element);
 
   // If the |animating_element| is a pseudo element, then |element| is a
   // reference to its originating DOM element.

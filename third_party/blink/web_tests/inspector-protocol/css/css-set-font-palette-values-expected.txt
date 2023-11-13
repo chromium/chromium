@@ -1,0 +1,70 @@
+Test that properties of font-palette-value rules are editable
+Edit:
+{
+    range : {
+        endColumn : 2
+        endLine : 9
+        startColumn : 34
+        startLine : 6
+    }
+    styleSheetId : <string>
+    text :      font-family: Bixa;     override-colors: 0 purple; 
+}
+Edit result:
+{
+    id : <number>
+    result : {
+        styles : [
+            [0] : {
+                cssProperties : [
+                    [0] : {
+                        disabled : false
+                        implicit : false
+                        name : font-family
+                        range : {
+                            endColumn : 22
+                            endLine : 7
+                            startColumn : 4
+                            startLine : 7
+                        }
+                        text : font-family: Bixa;
+                        value : Bixa
+                    }
+                    [1] : {
+                        disabled : false
+                        implicit : false
+                        name : override-colors
+                        range : {
+                            endColumn : 30
+                            endLine : 8
+                            startColumn : 4
+                            startLine : 8
+                        }
+                        text : override-colors: 0 purple;
+                        value : 0 purple
+                    }
+                    [2] : {
+                        name : font-family
+                        value : Bixa
+                    }
+                    [3] : {
+                        name : override-colors
+                        value : 0 purple
+                    }
+                ]
+                cssText :      font-family: Bixa;     override-colors: 0 purple; 
+                range : {
+                    endColumn : 0
+                    endLine : 9
+                    startColumn : 34
+                    startLine : 6
+                }
+                shorthandEntries : [
+                ]
+                styleSheetId : <string>
+            }
+        ]
+    }
+    sessionId : <string>
+}
+
