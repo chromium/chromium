@@ -27,7 +27,6 @@
 namespace {
 
 using base::test::ios::kWaitForActionTimeout;
-using chrome_test_util::ButtonWithAccessibilityLabel;
 using password_manager_test_utils::kScrollAmount;
 using password_manager_test_utils::OpenPasswordManager;
 using password_manager_test_utils::SavePasswordForm;
@@ -245,6 +244,8 @@ void SignInAndEnableSync() {
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kFamilyStatus + "=3");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
   SignInAndEnableSync();
   [self saveExamplePasswordAndOpenDetails];
@@ -255,12 +256,16 @@ void SignInAndEnableSync() {
 
   // Check that the family promo view was displayed.
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_TITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+                 grey_allOf(grey_accessibilityID(
+                                kConfirmationAlertTitleAccessibilityIdentifier),
+                            grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_TITLE)),
+                            nil)] assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Click the "Got It" button.
   [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_BUTTON))]
+                 grey_accessibilityID(
+                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.
@@ -269,14 +274,15 @@ void SignInAndEnableSync() {
       assertWithMatcher:grey_notNil()];
 }
 
-// Disabled due to https://crbug.com/1496889
-- (void)DISABLED_testTappingGotItInFamilyPromoInviteMembersView {
+- (void)testTappingGotItInFamilyPromoInviteMembersView {
   // Override family status with
   // `FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kFamilyStatus + "=5");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
   SignInAndEnableSync();
   [self saveExamplePasswordAndOpenDetails];
@@ -288,14 +294,17 @@ void SignInAndEnableSync() {
   // Check that the family promo view was displayed.
   [[EarlGrey
       selectElementWithMatcher:
-          grey_accessibilityLabel(l10n_util::GetNSString(
-              IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_INVITE_MEMBERS_TITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+          grey_allOf(
+              grey_accessibilityID(
+                  kConfirmationAlertTitleAccessibilityIdentifier),
+              grey_accessibilityLabel(l10n_util::GetNSString(
+                  IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_INVITE_MEMBERS_TITLE)),
+              nil)] assertWithMatcher:grey_sufficientlyVisible()];
 
   // Click the "Got It" button.
   [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_BUTTON))]
+                 grey_accessibilityID(
+                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.
@@ -310,6 +319,8 @@ void SignInAndEnableSync() {
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kFamilyStatus + "=0");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
   SignInAndEnableSync();
   [self saveExamplePasswordAndOpenDetails];
