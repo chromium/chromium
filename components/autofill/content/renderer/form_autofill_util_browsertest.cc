@@ -2062,6 +2062,7 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableSuccess) {
               class=my-class
               autocomplete=given-name
               contenteditable>
+            This is the <code>textContent</code>!
          </div>
          </body>)");
   WebElement content_editable =
@@ -2078,8 +2079,7 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableSuccess) {
   EXPECT_EQ(field.id_attribute, u"my-id");
   EXPECT_EQ(field.name_attribute, u"my-name");
   EXPECT_EQ(field.css_classes, u"my-class");
-  // TODO(crbug.com/1490372): Extract the value.
-  EXPECT_EQ(field.value, u"");
+  EXPECT_EQ(field.value, u"\n            This is the textContent!\n         ");
 }
 
 TEST_F(FormAutofillUtilsTest, FindFormForContentEditableFailures) {

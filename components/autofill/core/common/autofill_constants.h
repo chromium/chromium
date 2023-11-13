@@ -44,6 +44,8 @@ inline constexpr size_t kMaxExtractableChildFrames = 20;
 
 // The maximum string length supported by Autofill. In particular, this is used
 // for the length of field values.
+// Truncating strings is to prevent a malicious site from DOS'ing the browser
+// (crbug.com/49332).
 // This limit prevents sending overly large strings via IPC to the browser
 // process.
 // This is `unsigned` because blink::WebFormControlElement uses `unsigned` for

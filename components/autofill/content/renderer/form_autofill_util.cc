@@ -2121,8 +2121,6 @@ void WebFormControlElementToFormField(
     }
   }
 
-  // Constrain the maximum data length to prevent a malicious site from DOS'ing
-  // the browser: http://crbug.com/49332
   field->value = std::move(value).substr(0, kMaxStringLength);
   field->selection_start = std::min(element.SelectionStart(), kMaxStringLength);
   field->selection_end = std::min(element.SelectionEnd(), kMaxStringLength);
@@ -2342,7 +2340,13 @@ std::optional<FormData> FindFormForContentEditable(
   }
   field.aria_label = GetAriaLabel(document, content_editable);
   field.aria_description = GetAriaDescription(document, content_editable);
-  // TODO(crbug.com/1490372): Extract the value.
+  // TextContent() includes hidden elements and does not add linebreaks. If this
+  // is not sufficient in the future, consider calling HTMLElement::innerText(),
+  // which returns the text "as rendered" (i.e., it inserts whitespace at the
+  // right places and it ignores "display:none" subtrees), but is significantly
+  // more expensive because it triggers a layout.
+  field.value =
+      content_editable.TextContent().Utf16().substr(0, kMaxStringLength);
   return form;
 }
 

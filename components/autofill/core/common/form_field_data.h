@@ -261,7 +261,13 @@ struct FormFieldData {
   std::u16string id_attribute;
   std::u16string name_attribute;
   std::u16string label;
+
+  // The form control element's value or the contenteditable's text content,
+  // depending on the `form_control_type`.
+  // Truncated at `kMaxStringLength`.
+  // TODO(crbug.com/1501362): Extract the value of contenteditables on iOS.
   std::u16string value;
+
   // The range within `value` that is selected. `selection_start` points at the
   // first selected character, `selection_end` points after the last selected
   // character. That is, if nothing is selected, `selection_start` and
