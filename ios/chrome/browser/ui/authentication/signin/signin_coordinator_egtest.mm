@@ -212,9 +212,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
     config.features_disabled.push_back(syncer::kEnableBookmarksAccountStorage);
   }
 
-  if ([self isRunningTest:@selector
-            (testOpenManageSyncSettingsFromNTPWhenSyncDisabledByPolicy)] ||
-      [self
+  if ([self
           isRunningTest:@selector(testSignOutWithClearDataForSupervisedUser)] ||
       [self isRunningTest:@selector
             (testSignInSwitchAccountsAndKeepDataSeparate)] ||
@@ -259,6 +257,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   if ([self isRunningTest:@selector(testOpenSignInFromNTP)] ||
       [self isRunningTest:@selector
             (testOpenSigninSheetFromNTPIfHasDeviceAccount)] ||
+      [self isRunningTest:@selector
+            (testOpenManageAddAccountFromNTPWhenSyncDisabledByPolicy)] ||
       [self isRunningTest:@selector
             (testOpenAuthActivityFromNTPIfNoDeviceAccount)] ||
       [self isRunningTest:@selector
@@ -1036,7 +1036,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 }
 
 // Tests that a signed-in user can open "Settings" screen from the NTP.
-- (void)testOpenManageSyncSettingsFromNTPWhenSyncDisabledByPolicy {
+- (void)testOpenManageAddAccountFromNTPWhenSyncDisabledByPolicy {
   // Disable sync by policy.
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
   [[EarlGrey
@@ -1051,9 +1051,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
       performAction:grey_tap()];
 
-  // Ensure the Settings menu is displayed.
-  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Ensure the fake add-account menu is displayed. The existence of the "add
+  // account" accessibility button on screen verifies that the screen
+  // was shown.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthAddAccountButtonIdentifier)]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests that a signed-out user can open "Sign in and sync" screen from the NTP.
