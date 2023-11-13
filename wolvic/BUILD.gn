@@ -228,7 +228,7 @@ android_library("wolvic_java") {
     "java/org/chromium/wolvic/VRManager.java",
     "java/org/chromium/wolvic/WVRSurfaceTexture.java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  srcjar_deps = [ ":jni_headers" ]
   deps = [
     "//base:base_java",
     "//base:jni_java",
@@ -303,6 +303,7 @@ dist_aar("content_aar") {
     "org/chromium/services/*.class",
     "org/chromium/url/*.class",
     "org/chromium/wolvic/*.class",
+    "org/jni_zero/GEN_JNI.class",
   ]
   resource_included_patterns = [ "*/content/public/*" ]
   jar_excluded_patterns = [
