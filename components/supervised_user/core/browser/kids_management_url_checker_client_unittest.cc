@@ -61,10 +61,13 @@ class KidsManagementURLCheckerClientTest
  public:
   KidsManagementURLCheckerClientTest() {
     if (UseProtoFetcher()) {
-      proto_api_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{supervised_user::kEnableProtoApiForClassifyUrl},
-          /*disabled_features=*/{});
+      proto_api_feature_list_.InitAndEnableFeature(
+          supervised_user::kEnableProtoApiForClassifyUrl);
+    } else {
+      proto_api_feature_list_.InitAndDisableFeature(
+          supervised_user::kEnableProtoApiForClassifyUrl);
     }
+
     shadow_call_feature_list_.InitWithFeatures(
         /*enabled_features=*/{supervised_user::kShadowKidsApiWithSafeSites},
         /*disabled_features=*/{});
@@ -369,11 +372,7 @@ TEST_P(KidsManagementURLCheckerClientTest,
 // Instead of /0, /1... print human-readable description of the test.
 std::string PrettyPrintTestCaseName(
     const ::testing::TestParamInfo<UseProtoFetcher>& info) {
-  if (info.param) {
-    return "ProtoFetcher";
-  } else {
-    return "JsonFetcher";
-  }
+  return info.param ? "ProtoFetcher" : "JsonFetcher";
 }
 
 // TODO(b/276898959): Remove ::testing::Bool() == false once migrated.
