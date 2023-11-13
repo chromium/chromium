@@ -47,8 +47,6 @@ class WolvicContentBrowserClient : public ContentBrowserClient {
 #if BUILDFLAG(ENABLE_VR)
   XrIntegrationClient* GetXrIntegrationClient() override;
 #endif
-  void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
-                                      int child_process_id) override;
   std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
   WillCreateURLLoaderRequestInterceptors(
       content::NavigationUIData* navigation_ui_data,
