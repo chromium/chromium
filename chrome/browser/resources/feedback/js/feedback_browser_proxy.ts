@@ -2,9 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+declare global {
+  type GetUserMediaError = Error&{constraintName: string};
+
+  interface Navigator {
+    webkitGetUserMedia(
+        params: any, callback: (stream?: MediaStream) => void,
+        errorCallback: (error: GetUserMediaError) => void): void;
+  }
+}
+
 export interface FeedbackBrowserProxy {
   getSystemInformation(): Promise<chrome.feedbackPrivate.LogsMapEntry[]>;
   getUserEmail(): Promise<string>;
+  getDialogArguments(): string;
+  getUserMedia(params: any): Promise<MediaStream|undefined>;
 
   sendFeedback(
       feedback: chrome.feedbackPrivate.FeedbackInfo, loadSystemInfo?: boolean,
@@ -35,6 +47,17 @@ export class FeedbackBrowserProxyImpl implements FeedbackBrowserProxy {
 
   getUserEmail(): Promise<string> {
     return new Promise(resolve => chrome.feedbackPrivate.getUserEmail(resolve));
+  }
+
+  getDialogArguments() {
+    return chrome.getVariableValue('dialogArguments');
+  }
+
+  getUserMedia(params: any): Promise<MediaStream|undefined> {
+    return new Promise(function(resolve, reject) {
+      navigator.webkitGetUserMedia(
+          params, stream => resolve(stream), error => reject(error));
+    });
   }
 
   sendFeedback(

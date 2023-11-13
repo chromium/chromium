@@ -2,25 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-declare global {
-  type GetUserMediaError = Error&{constraintName: string};
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
-  interface Navigator {
-    webkitGetUserMedia(
-        params: any, callback: (stream?: MediaStream) => void,
-        errorCallback: (error: GetUserMediaError) => void): void;
-  }
-}
+import {FeedbackBrowserProxyImpl} from './feedback_browser_proxy.js';
 
 /**
  * Function to take the screenshot of the current screen.
- * @param {function(?HTMLCanvasElement)} callback Callback for returning the
- *     canvas with the screenshot. Called with null if the screenshot failed.
+ * @return A Promise holidng the canvas with the screenshot or null if the
+ *     screenshot failed.
  */
-export function takeScreenshot(
-    callback: (canvas: HTMLCanvasElement|null) => void) {
+export function takeScreenshot(): Promise<HTMLCanvasElement|null> {
   let screenshotStream: MediaStream|null = null;
   const video = document.createElement('video');
+
+  const resolver = new PromiseResolver<HTMLCanvasElement|null>();
 
   video.addEventListener('canplay', function() {
     if (screenshotStream) {
@@ -36,28 +31,34 @@ export function takeScreenshot(
       screenshotStream.getVideoTracks()[0]!.stop();
       screenshotStream = null;
 
-      callback(canvas);
+      resolver.resolve(canvas);
     }
   }, false);
 
-  navigator.webkitGetUserMedia(
-      {
+  FeedbackBrowserProxyImpl.getInstance()
+      .getUserMedia({
         video: {
           mandatory:
               {chromeMediaSource: 'screen', maxWidth: 4096, maxHeight: 2560},
         },
-      },
-      function(stream) {
-        if (stream) {
-          screenshotStream = stream;
-          video.srcObject = screenshotStream;
-          video.play();
-        }
-      },
-      function(err) {
-        console.error(
-            'takeScreenshot failed: ' + err.name + '; ' + err.message + '; ' +
-            err.constraintName);
-        callback(null);
-      });
+      })
+      .then(
+          function(stream) {
+            if (stream) {
+              screenshotStream = stream;
+              video.srcObject = screenshotStream;
+              video.play();
+            } else {
+              // Dummy codepath to satisfy tests where no MediaStream exists.
+              resolver.resolve(document.createElement('canvas'));
+            }
+          },
+          function(err) {
+            console.error(
+                'takeScreenshot failed: ' + err.name + '; ' + err.message +
+                '; ' + err.constraintName);
+            resolver.resolve(null);
+          });
+
+  return resolver.promise;
 }

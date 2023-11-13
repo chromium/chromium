@@ -6,6 +6,7 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/feedback_resources.h"
@@ -84,11 +85,9 @@ void AddStringResources(content::WebUIDataSource* source,
 void CreateAndAddFeedbackHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIFeedbackHost);
-  source->AddResourcePaths(
-      base::make_span(kFeedbackResources, kFeedbackResourcesSize));
-  source->AddResourcePath("", IDR_FEEDBACK_HTML_DEFAULT_HTML);
-
-  source->UseStringsJs();
+  webui::SetupWebUIDataSource(
+      source, base::make_span(kFeedbackResources, kFeedbackResourcesSize),
+      IDR_FEEDBACK_HTML_DEFAULT_HTML);
 
   AddStringResources(source, profile);
 }

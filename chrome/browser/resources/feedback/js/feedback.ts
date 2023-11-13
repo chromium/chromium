@@ -15,9 +15,13 @@ import {FEEDBACK_LANDING_PAGE, FEEDBACK_LANDING_PAGE_TECHSTOP, FEEDBACK_LEGAL_HE
 import {domainQuestions, questionnaireBegin, questionnaireNotification} from './questionnaire.js';
 import {takeScreenshot} from './take_screenshot.js';
 
-const formOpenTime: number = new Date().getTime();
+declare global {
+  interface Window {
+    whenTestSetupDoneResolver?: {promise: Promise<void>};
+  }
+}
 
-const dialogArgs: string = chrome.getVariableValue('dialogArguments');
+const formOpenTime: number = new Date().getTime();
 
 /**
  * The object will be manipulated by sendReport().
@@ -66,8 +70,7 @@ async function sendFeedbackReport(useSystemInfo: boolean) {
   scheduleWindowClose();
 }
 
-const browserProxy: FeedbackBrowserProxy =
-    FeedbackBrowserProxyImpl.getInstance();
+let browserProxy: FeedbackBrowserProxy;
 
 const MAX_ATTACH_FILE_SIZE: number = 3 * 1024 * 1024;
 
@@ -576,8 +579,12 @@ function scheduleWindowClose() {
  * .) Screenshot taken         -> . Show Feedback window.
  */
 function initialize() {
-  // apply received feedback info object.
-  function applyData(feedbackInfo: chrome.feedbackPrivate.FeedbackInfo) {
+  /**
+   * Apply updates based on the received `FeedbackInfo` object.
+   * @return A promise signaling that all UI updates have finished.
+   */
+  function applyData(feedbackInfo: chrome.feedbackPrivate.FeedbackInfo):
+      Promise<void> {
     if (feedbackInfo.includeBluetoothLogs) {
       assert(
           feedbackInfo.flow ===
@@ -619,7 +626,8 @@ function initialize() {
           feedbackInfo.pageUrl;
     }
 
-    takeScreenshot(function(screenshotCanvas) {
+    const whenScreenshotUpdated = takeScreenshot().then(function(
+        screenshotCanvas) {
       // We've taken our screenshot, show the feedback page without any
       // further delay.
       window.requestAnimationFrame(function() {
@@ -634,22 +642,26 @@ function initialize() {
             getRequiredElement<HTMLInputElement>('screenshot-checkbox');
         checkbox.disabled = true;
         checkbox.checked = false;
-        return;
+        return Promise.resolve();
       }
 
-      screenshotCanvas.toBlob(function(blob) {
-        const image = getRequiredElement<HTMLImageElement>('screenshot-image');
-        image.src = URL.createObjectURL(blob!);
-        // Only set the alt text when the src url is available, otherwise we'd
-        // get a broken image picture instead. crbug.com/773985.
-        image.alt = 'screenshot';
-        image.classList.toggle(
-            'wide-screen', image.width > MAX_SCREENSHOT_WIDTH);
-        feedbackInfo.screenshot = blob!;
+      return new Promise<void>(function(resolve) {
+        screenshotCanvas.toBlob(function(blob) {
+          const image =
+              getRequiredElement<HTMLImageElement>('screenshot-image');
+          image.src = URL.createObjectURL(blob!);
+          // Only set the alt text when the src url is available, otherwise we'd
+          // get a broken image picture instead. crbug.com/773985.
+          image.alt = 'screenshot';
+          image.classList.toggle(
+              'wide-screen', image.width > MAX_SCREENSHOT_WIDTH);
+          feedbackInfo.screenshot = blob!;
+          resolve();
+        });
       });
     });
 
-    browserProxy.getUserEmail().then(function(email) {
+    const whenEmailUpdated = browserProxy.getUserEmail().then(function(email) {
       // Never add an empty option.
       if (!email) {
         return;
@@ -795,13 +807,27 @@ function initialize() {
 
     // Make sure our focus starts on the description field.
     getRequiredElement('description-text').focus();
+
+    return Promise.all([whenScreenshotUpdated, whenEmailUpdated])
+        .then(() => {});
   }
 
-  window.addEventListener('DOMContentLoaded', function() {
+  window.addEventListener('DOMContentLoaded', async function() {
+    if (window.whenTestSetupDoneResolver) {
+      // Hook for tests to perform setup steps before any other code runs.
+      await window.whenTestSetupDoneResolver.promise;
+    }
+
+    // Initialize `browserProxy` only after tests had a chance to do setup
+    // steps, one of which is to replace the prod proxy with a test version.
+    browserProxy = FeedbackBrowserProxyImpl.getInstance();
+
+    const dialogArgs = browserProxy.getDialogArguments();
     if (dialogArgs) {
       feedbackInfo = JSON.parse(dialogArgs);
     }
-    applyData(feedbackInfo);
+
+    await applyData(feedbackInfo);
 
     // Setup our event handlers.
     getRequiredElement('attach-file').addEventListener(
@@ -815,6 +841,10 @@ function initialize() {
     getRequiredElement('performance-info-checkbox')
         .addEventListener('change', performanceFeedbackChanged);
     // </if>
+
+    // Dispatch event used by tests.
+    document.documentElement.dispatchEvent(
+        new CustomEvent('ready-for-testing'));
   });
 }
 
