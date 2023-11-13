@@ -49,7 +49,7 @@ class CORE_EXPORT NGHighlightOverlay {
     const AtomicString& PseudoArgument() const;
 
     int8_t ComparePaintOrder(const HighlightLayer&,
-                             const HighlightRegistry&) const;
+                             const HighlightRegistry*) const;
     bool operator==(const HighlightLayer&) const;
     bool operator!=(const HighlightLayer&) const;
 
@@ -94,7 +94,7 @@ class CORE_EXPORT NGHighlightOverlay {
     // ComputeParts requires “end” edges first in case two ranges of the same
     // highlight are immediately adjacent. The opposite would be required for
     // empty highlight ranges, but they’re illegal as per DocumentMarker ctor.
-    bool LessThan(const HighlightEdge&, const HighlightRegistry&) const;
+    bool LessThan(const HighlightEdge&, const HighlightRegistry*) const;
     bool operator==(const HighlightEdge&) const;
     bool operator!=(const HighlightEdge&) const;
 
