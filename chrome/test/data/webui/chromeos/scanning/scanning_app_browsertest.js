@@ -27,8 +27,7 @@ const tests = [
   ['MultiPageScan', 'multi_page_scan_test.js'],
   ['PageSizeSelect', 'page_size_select_test.js'],
   ['ResolutionSelect', 'resolution_select_test.js'],
-  // TODO(https://crbug.com/1499761): Re-enable after fixing flaky test.
-  ['ScanApp', 'scanning_app_test.js', 'DISABLED_All'],
+  ['ScanApp', 'scanning_app_test.js'],
   ['ScanDoneSection', 'scan_done_section_test.js'],
   ['ScannerSelect', 'scanner_select_test.js'],
   ['ScanPreview', 'scan_preview_test.js'],
