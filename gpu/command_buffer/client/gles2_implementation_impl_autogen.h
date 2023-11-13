@@ -430,8 +430,7 @@ void GLES2Implementation::CopyTexSubImage3D(GLenum target,
 
 GLuint GLES2Implementation::CreateProgram() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCreateProgram("
-                     << ")");
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCreateProgram(" << ")");
   GLuint client_id;
   GetIdHandler(SharedIdNamespaces::kProgramsAndShaders)
       ->MakeIds(this, 0, 1, &client_id);
@@ -1179,8 +1178,8 @@ void GLES2Implementation::GetProgramInfoLog(GLuint program,
                                             char* infolog) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_VALIDATE_DESTINATION_OPTIONAL_INITALIZATION(GLsizei, length);
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glGetProgramInfoLog"
-                     << "(" << program << ", " << bufsize << ", "
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glGetProgramInfoLog" << "("
+                     << program << ", " << bufsize << ", "
                      << static_cast<void*>(length) << ", "
                      << static_cast<void*>(infolog) << ")");
   helper_->SetBucketSize(kResultBucketId, 0);
@@ -1323,8 +1322,8 @@ void GLES2Implementation::GetShaderInfoLog(GLuint shader,
                                            char* infolog) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_VALIDATE_DESTINATION_OPTIONAL_INITALIZATION(GLsizei, length);
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glGetShaderInfoLog"
-                     << "(" << shader << ", " << bufsize << ", "
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glGetShaderInfoLog" << "("
+                     << shader << ", " << bufsize << ", "
                      << static_cast<void*>(length) << ", "
                      << static_cast<void*>(infolog) << ")");
   helper_->SetBucketSize(kResultBucketId, 0);
@@ -1350,10 +1349,9 @@ void GLES2Implementation::GetShaderSource(GLuint shader,
                                           char* source) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_VALIDATE_DESTINATION_OPTIONAL_INITALIZATION(GLsizei, length);
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glGetShaderSource"
-                     << "(" << shader << ", " << bufsize << ", "
-                     << static_cast<void*>(length) << ", "
-                     << static_cast<void*>(source) << ")");
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glGetShaderSource" << "(" << shader
+                     << ", " << bufsize << ", " << static_cast<void*>(length)
+                     << ", " << static_cast<void*>(source) << ")");
   helper_->SetBucketSize(kResultBucketId, 0);
   helper_->GetShaderSource(shader, kResultBucketId);
   std::string str;
@@ -1707,8 +1705,7 @@ void GLES2Implementation::LineWidth(GLfloat width) {
 
 void GLES2Implementation::PauseTransformFeedback() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glPauseTransformFeedback("
-                     << ")");
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glPauseTransformFeedback(" << ")");
   helper_->PauseTransformFeedback();
   CheckGLError();
 }
@@ -1731,8 +1728,7 @@ void GLES2Implementation::ReadBuffer(GLenum src) {
 
 void GLES2Implementation::ReleaseShaderCompiler() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glReleaseShaderCompiler("
-                     << ")");
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glReleaseShaderCompiler(" << ")");
   helper_->ReleaseShaderCompiler();
   CheckGLError();
 }
@@ -3036,8 +3032,7 @@ void GLES2Implementation::BeginTransformFeedback(GLenum primitivemode) {
 
 void GLES2Implementation::EndTransformFeedback() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glEndTransformFeedback("
-                     << ")");
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glEndTransformFeedback(" << ")");
   helper_->EndTransformFeedback();
   CheckGLError();
 }
@@ -3412,8 +3407,7 @@ void GLES2Implementation::ContextVisibilityHintCHROMIUM(GLboolean visibility) {
 
 void GLES2Implementation::BlendBarrierKHR() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glBlendBarrierKHR("
-                     << ")");
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glBlendBarrierKHR(" << ")");
   helper_->BlendBarrierKHR();
   CheckGLError();
 }
@@ -3882,8 +3876,7 @@ void GLES2Implementation::FramebufferPixelLocalStorageInterruptANGLE() {
 void GLES2Implementation::FramebufferPixelLocalStorageRestoreANGLE() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix()
-                     << "] glFramebufferPixelLocalStorageRestoreANGLE("
-                     << ")");
+                     << "] glFramebufferPixelLocalStorageRestoreANGLE(" << ")");
   helper_->FramebufferPixelLocalStorageRestoreANGLE();
   CheckGLError();
 }
