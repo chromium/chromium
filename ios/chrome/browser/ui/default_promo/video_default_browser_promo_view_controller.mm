@@ -79,7 +79,7 @@ NSString* const kChromeSettingsKeypath = @"IDS_CHROME_SETTINGS";
       (self.showRemindMeLater)
           ? l10n_util::GetNSString(
                 IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TERTIARY_BUTTON_TEXT)
-          : @"";
+          : nil;
   [self
       createConfirmationAlertScreen:
           l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TITLE_TEXT)
