@@ -219,7 +219,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       [self isRunningTest:@selector(testSignInSwitchAccountsAndImportData)] ||
       [self isRunningTest:@selector(testSignInCancelIdentityPicker)] ||
       [self isRunningTest:@selector(testSignInCancelAuthenticationFlow)] ||
-      [self isRunningTest:@selector(testSignInCancelFromBookmarks)] ||
       [self isRunningTest:@selector
             (testDismissAdvancedSigninSettingsFromAdvancedSigninSettings)] ||
       [self isRunningTest:@selector
@@ -256,6 +255,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   if ([self isRunningTest:@selector(testOpenSignInFromNTP)] ||
       [self isRunningTest:@selector
             (testOpenSigninSheetFromNTPIfHasDeviceAccount)] ||
+      [self isRunningTest:@selector(testSignInCancelFromBookmarks)] ||
       [self isRunningTest:@selector
             (testOpenManageAddAccountFromNTPWhenSyncDisabledByPolicy)] ||
       [self isRunningTest:@selector
@@ -580,9 +580,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // done. Ensures that the sign in screen is correctly dismissed.
 // Regression test for crbug.com/596029.
 // kEnableBookmarksAccountStorage is disabled.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-// TODO(crbug.com/1477295): Evaluate if the test is relevant with
-// kReplaceSyncPromosWithSignInPromos enabled.
+// kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testSignInCancelFromBookmarks {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
