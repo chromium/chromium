@@ -1167,7 +1167,7 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
 
   if (had_end_of_test_event) {
     ui::AXEvent end_of_test(root.AxID(), ax::mojom::Event::kEndOfTest);
-    if (!WebAXObject::IsDirty(document)) {
+    if (!WebAXObject::IsDirty(document) && GetMainDocument().IsLoaded()) {
       events.emplace_back(end_of_test);
     } else {
       DLOG(ERROR) << "Had end of test event, but document is still dirty. "
