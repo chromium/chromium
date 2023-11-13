@@ -587,7 +587,7 @@ absl::optional<int> BrowserTabStripController::GetCustomBackgroundId(
 std::u16string BrowserTabStripController::GetAccessibleTabName(
     const Tab* tab) const {
   return browser_view_->GetAccessibleTabLabel(
-      tabstrip_->GetModelIndexOf(tab).value());
+      tabstrip_->GetModelIndexOf(tab).value(), /*is_for_tab=*/true);
 }
 
 Profile* BrowserTabStripController::GetProfile() const {
