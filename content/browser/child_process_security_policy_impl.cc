@@ -484,14 +484,21 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     if (CanCommitOrigin(url::Origin::Create(url)))
       return true;
 
+    // TODO(alexmos): This check is moving to CanRequestURL() below, and this
+    // old location is kept for kill switch purposes only. Remove this once
+    // kRequestFileSetCheckedInCanRequestURL is verified not to cause problems.
+    //
     // file:// URLs may sometimes be more granular, e.g. dragging and dropping a
     // file from the local filesystem. The child itself may not have been
     // granted access to the entire file:// scheme, but it should still be
     // allowed to request the dragged and dropped file.
-    if (url.SchemeIs(url::kFileScheme)) {
+    if (!base::FeatureList::IsEnabled(
+            features::kRequestFileSetCheckedInCanRequestURL) &&
+        url.SchemeIs(url::kFileScheme)) {
       base::FilePath path;
-      if (net::FileURLToFilePath(url, &path))
+      if (net::FileURLToFilePath(url, &path)) {
         return base::Contains(request_file_set_, path);
+      }
     }
 
     return false;  // Unmentioned schemes are disallowed.
@@ -507,6 +514,19 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
 
     if (CanRequestOrigin(url::Origin::Create(url)))
       return true;
+
+    // file:// URLs may sometimes be more granular, e.g. dragging and dropping a
+    // file from the local filesystem. The child itself may not have been
+    // granted access to the entire file:// scheme, but it should still be
+    // allowed to request the dragged and dropped file.
+    if (base::FeatureList::IsEnabled(
+            features::kRequestFileSetCheckedInCanRequestURL) &&
+        url.SchemeIs(url::kFileScheme)) {
+      base::FilePath path;
+      if (net::FileURLToFilePath(url, &path)) {
+        return base::Contains(request_file_set_, path);
+      }
+    }
 
     // Otherwise, delegate to CanCommitURL. Unmentioned schemes are disallowed.
     // TODO(dcheng): It would be nice to avoid constructing the origin twice.
