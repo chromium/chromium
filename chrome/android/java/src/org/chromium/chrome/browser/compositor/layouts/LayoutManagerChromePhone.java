@@ -90,8 +90,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     @Override
     public void onTabsAllClosing(boolean incognito) {
         if (getActiveLayout() == mStaticLayout && !incognito) {
-            startShowing(mTabSwitcherLayout != null ? mTabSwitcherLayout : mOverviewLayout,
-                    /* animate= */ false);
+            showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
         }
         super.onTabsAllClosing(incognito);
     }
