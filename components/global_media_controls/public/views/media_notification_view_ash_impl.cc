@@ -75,7 +75,11 @@ class MediaButton : public views::ImageButton {
                        : kControlsIconSize),
         foreground_disabled_color_id_(foreground_disabled_color_id) {
     views::ConfigureVectorImageButton(this);
-    SetFlipCanvasOnPaintForRTLUI(false);
+
+    bool enable_flip_canvas =
+        (button_id == static_cast<int>(MediaSessionAction::kPreviousTrack) ||
+         button_id == static_cast<int>(MediaSessionAction::kNextTrack));
+    SetFlipCanvasOnPaintForRTLUI(enable_flip_canvas);
 
     auto button_size = (button_id == static_cast<int>(MediaSessionAction::kPlay)
                             ? kPlayPauseButtonSize
@@ -219,6 +223,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
             media_message_center::kChevronRightIcon,
             theme_.secondary_foreground_color_id, kChevronIconSize)));
+    chevron_icon_->SetFlipCanvasOnPaintForRTLUI(true);
   }
 
   // Create the media artist label.

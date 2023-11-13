@@ -398,16 +398,18 @@ void MediaSquigglyProgressView::HandleSeeking(double location) {
   double view_width = GetContentsBounds().width() - kWidthInset * 2;
   double seek_to_progress =
       std::min(view_width, std::max(0.0, location - kWidthInset)) / view_width;
+  if (base::i18n::IsRTL()) {
+    seek_to_progress = 1.0 - seek_to_progress;
+  }
   seek_callback_.Run(seek_to_progress);
 }
 
 double MediaSquigglyProgressView::CalculateNewValue(
     base::TimeDelta new_position) {
   double new_value = 0.0;
-  if (new_position >= media_duration_) {
+  if (new_position >= media_duration_ || is_live_) {
     new_value = 1.0;
-  } else if (!is_live_ && media_duration_.is_positive() &&
-             new_position.is_positive()) {
+  } else if (media_duration_.is_positive() && new_position.is_positive()) {
     new_value = new_position / media_duration_;
   }
   return new_value;

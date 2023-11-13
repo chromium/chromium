@@ -4,6 +4,7 @@
 
 #include "components/media_message_center/media_squiggly_progress_view.h"
 
+#include "base/i18n/rtl.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -13,6 +14,12 @@
 #include "ui/views/test/views_test_base.h"
 
 namespace media_message_center {
+
+namespace {
+
+constexpr int kWidthInset = 8;
+
+}  // namespace
 
 class MediaSquigglyProgressViewTest : public views::ViewsTestBase {
  public:
@@ -39,11 +46,13 @@ class MediaSquigglyProgressViewTest : public views::ViewsTestBase {
 
     widget_->SetBounds(gfx::Rect(500, 500));
     widget_->Show();
+    default_locale_ = base::i18n::GetConfiguredLocale();
   }
 
   void TearDown() override {
     view_ = nullptr;
     widget_.reset();
+    base::i18n::SetICUDefaultLocale(default_locale_);
     ViewsTestBase::TearDown();
   }
 
@@ -55,6 +64,7 @@ class MediaSquigglyProgressViewTest : public views::ViewsTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<MediaSquigglyProgressView> view_ = nullptr;
+  std::string default_locale_;
 };
 
 TEST_F(MediaSquigglyProgressViewTest, MediaPlaying) {
@@ -114,6 +124,31 @@ TEST_F(MediaSquigglyProgressViewTest, MouseEventSeekTo) {
   EXPECT_CALL(*this, OnProgressDragging(testing::_)).Times(0);
   view()->OnMousePressed(pressed_event);
   EXPECT_TRUE(view()->is_live_for_testing());
+}
+
+TEST_F(MediaSquigglyProgressViewTest, MouseEventSeekToForRTL) {
+  base::i18n::SetICUDefaultLocale("he");
+
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(100), /*end_of_media=*/false);
+  view()->UpdateProgress(media_position);
+
+  // Simulate mouse click and release events and SeekTo() should be called.
+  gfx::Point point(view()->width() / 4 + kWidthInset / 2, view()->height() / 2);
+  ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, point, point,
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(*this, SeekTo(testing::DoubleNear(0.75, 0.01)));
+  EXPECT_CALL(*this, OnProgressDragging(true));
+  view()->OnMousePressed(pressed_event);
+
+  ui::MouseEvent released_event =
+      ui::MouseEvent(ui::ET_MOUSE_RELEASED, point, point, ui::EventTimeForNow(),
+                     ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(*this, SeekTo(testing::DoubleNear(0.75, 0.01)));
+  EXPECT_CALL(*this, OnProgressDragging(false));
+  view()->OnMouseReleased(released_event);
 }
 
 TEST_F(MediaSquigglyProgressViewTest, GestureEventSeekTo) {
