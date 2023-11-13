@@ -64,7 +64,6 @@ class AutotestAmbientApiTest : public AmbientAshTestBase {
         delay);
   }
 
-  data_decoder::test::InProcessDataDecoder data_decoder_;
   base::test::TestFuture<void> completion_;
   base::test::TestFuture<void> timeout_;
   base::test::TestFuture<std::string> error_;

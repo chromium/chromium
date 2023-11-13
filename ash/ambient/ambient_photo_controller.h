@@ -27,6 +27,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
+#include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -192,6 +193,11 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
 
   void FetchBackupImagesForTesting();
 
+  void set_image_codec_for_testing(
+      data_decoder::mojom::ImageCodec image_codec) {
+    image_codec_ = image_codec;
+  }
+
   // Kicks off preparation of the next topic.
   void StartPreparingNextTopic();
 
@@ -251,6 +257,9 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
   // variables like |cache_entry_|, |image_|, etc and result in unpredictable
   // behavior.
   bool is_actively_preparing_topic_ = false;
+
+  data_decoder::mojom::ImageCodec image_codec_ =
+      data_decoder::mojom::ImageCodec::kDefault;
 
   base::ScopedObservation<AmbientViewDelegate, AmbientViewDelegateObserver>
       scoped_view_delegate_observation_{this};

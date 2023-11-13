@@ -104,7 +104,10 @@ class AmbientSlideshowPixelTest
     GetSessionControllerClient()->set_show_lock_screen_views(true);
     DarkLightModeController::Get()->SetDarkModeEnabledForTest(
         IsDarkMode(GetParam()));
-    SetDecodedPhotoColor(SK_ColorGREEN);
+    // Required for decoded image parameters below to exactly reflect what the
+    // ambient photo pipeline produces.
+    UseLosslessPhotoCompression(true);
+    SetNextDecodedPhotoColor(SK_ColorGREEN);
     gfx::Size display_size = GetPrimaryDisplay().size();
     // Simplifies rendering to be consistent for pixel testing.
     SetDecodedPhotoSize(display_size.width(), display_size.height());

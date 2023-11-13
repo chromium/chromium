@@ -17,6 +17,7 @@
 #include "ash/ambient/ui/ambient_info_view.h"
 #include "ash/ambient/ui/photo_view.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
+#include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
@@ -136,11 +137,16 @@ class AmbientAshTestBase : public AshTestBase {
   void SimulateMediaPlaybackStateChanged(
       media_session::mojom::MediaPlaybackState state);
 
-  // Set the size of the next image that will be loaded.
+  // Set the size all subsequent images that will be loaded.
   void SetDecodedPhotoSize(int width, int height);
 
-  // Set the color of the next image that will be loaded.
-  void SetDecodedPhotoColor(SkColor color);
+  // Set the color of the next image that will be loaded. Afterwards, the color
+  // will be randomly generated.
+  void SetNextDecodedPhotoColor(SkColor color);
+
+  // Useful if the decoded ambient images must be deterministic (ex: writing
+  // test expectations on the images' pixel content).
+  void UseLosslessPhotoCompression(bool use_lossless_photo_compression);
 
   void SetPhotoOrientation(bool portrait);
 
@@ -256,8 +262,6 @@ class AmbientAshTestBase : public AshTestBase {
 
   void ClearBackupDownloadPhotoData();
 
-  void SetDecodePhotoImage(const gfx::ImageSkia& image);
-
   void SetPhotoDownloadDelay(base::TimeDelta delay);
 
   void CreateTestImageJpegFile(base::FilePath path,
@@ -280,6 +284,7 @@ class AmbientAshTestBase : public AshTestBase {
   void SpinWaitForAmbientViewAvailable(
       const base::RepeatingClosure& quit_closure);
 
+  InProcessDataDecoder decoder_;
   TestAshWebViewFactory web_view_factory_;
   std::unique_ptr<views::Widget> widget_;
   power_manager::PowerSupplyProperties proto_;

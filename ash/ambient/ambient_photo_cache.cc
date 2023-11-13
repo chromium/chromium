@@ -23,12 +23,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "services/data_decoder/public/cpp/decode_image.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
@@ -58,19 +56,6 @@ constexpr net::NetworkTrafficAnnotationTag kAmbientPhotoCacheNetworkTag =
            "This feature is set by user settings.ambient_mode.enabled pref. "
            "The user setting is per device and cannot be overriden by admin."
         })");
-
-void ToImageSkia(base::OnceCallback<void(const gfx::ImageSkia&)> callback,
-                 const SkBitmap& image) {
-  if (image.isNull()) {
-    std::move(callback).Run(gfx::ImageSkia());
-    return;
-  }
-
-  gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(image);
-  image_skia.MakeThreadSafe();
-
-  std::move(callback).Run(image_skia);
-}
 
 // Helper function to extract response code from |SimpleURLLoader|.
 int GetResponseCode(network::SimpleURLLoader* simple_loader) {
@@ -239,17 +224,6 @@ class AmbientPhotoCacheImpl : public AmbientPhotoCache {
             },
             root_directory_),
         std::move(download_callback));
-  }
-
-  void DecodePhoto(
-      const std::string& data,
-      base::OnceCallback<void(const gfx::ImageSkia&)> callback) override {
-    data_decoder::DecodeImageIsolated(
-        base::as_bytes(base::make_span(data)),
-        data_decoder::mojom::ImageCodec::kDefault,
-        /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes,
-        /*desired_image_frame_size=*/gfx::Size(),
-        base::BindOnce(&ToImageSkia, std::move(callback)));
   }
 
   void WritePhotoCache(int cache_index,

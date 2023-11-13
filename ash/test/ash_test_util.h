@@ -9,6 +9,7 @@
 
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
+#include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
@@ -59,12 +60,17 @@ bool IsSystemTrayForRootWindowVisible(size_t root_window_index);
 gfx::ImageSkia CreateSolidColorTestImage(const gfx::Size& image_size,
                                          SkColor color);
 
-// Creates a solid color image with the given `size`, and returns its encoded
-// representation. `image_out` is filled with the raw decoded image if provided.
+// Creates a solid color image with the given `size` and `color`, and returns
+// its encoded representation. `image_out` is filled with the raw decoded image
+// if provided.
 //
 // This function can never fail.
-std::string CreateEncodedImageForTesting(const gfx::Size& size,
-                                         gfx::ImageSkia* image_out = nullptr);
+std::string CreateEncodedImageForTesting(
+    const gfx::Size& size,
+    SkColor color = SK_ColorBLACK,
+    data_decoder::mojom::ImageCodec codec =
+        data_decoder::mojom::ImageCodec::kDefault,
+    gfx::ImageSkia* image_out = nullptr);
 
 // Configures `window` with the specified title and color.
 void DecorateWindow(aura::Window* window,

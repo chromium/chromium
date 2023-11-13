@@ -24,6 +24,7 @@
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/shell.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/barrier_closure.h"
 #include "base/base_paths.h"
@@ -118,13 +119,13 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
   }
 
   void WriteCacheDataBlocking(int cache_index,
-                              const std::string* image = nullptr,
+                              std::string image,
                               const std::string* details = nullptr,
                               const std::string* related_image = nullptr,
                               const std::string* related_details = nullptr,
                               bool is_portrait = false) {
     ::ambient::PhotoCacheEntry cache_entry;
-    cache_entry.mutable_primary_photo()->set_image(*image);
+    cache_entry.mutable_primary_photo()->set_image(std::move(image));
 
     if (details)
       cache_entry.mutable_primary_photo()->set_details(*details);
@@ -428,8 +429,8 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenNoMoreTopics) {
   EXPECT_TRUE(image.IsNull());
 
   // Save a file to check if it gets read for display.
-  std::string data("cached image");
-  WriteCacheDataBlocking(/*cache_index=*/0, &data);
+  WriteCacheDataBlocking(/*cache_index=*/0,
+                         CreateEncodedImageForTesting(gfx::Size(10, 10)));
 
   // Reset variables in photo controller.
   Init();
@@ -456,8 +457,8 @@ TEST_F(AmbientPhotoControllerTest,
 
   // The initial file name to be read is 0. Save a file with index 99 to check
   // if it gets read for display.
-  std::string data("cached image");
-  WriteCacheDataBlocking(/*cache_index=*/99, &data);
+  WriteCacheDataBlocking(/*cache_index=*/99,
+                         CreateEncodedImageForTesting(gfx::Size(10, 10)));
 
   // Reset variables in photo controller.
   Init();
@@ -484,8 +485,8 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDownloadingFailed) {
   EXPECT_TRUE(image.IsNull());
 
   // Save a file to check if it gets read for display.
-  std::string data("cached image");
-  WriteCacheDataBlocking(/*cache_index=*/0, &data);
+  WriteCacheDataBlocking(/*cache_index=*/0,
+                         CreateEncodedImageForTesting(gfx::Size(10, 10)));
 
   // Reset variables in photo controller.
   Init();
@@ -512,9 +513,10 @@ TEST_F(AmbientPhotoControllerTest, ShouldPopulateDetailsWhenReadFromCache) {
   EXPECT_TRUE(image.IsNull());
 
   // Save a file to check if it gets read for display.
-  std::string data("cached image");
   std::string details("image details");
-  WriteCacheDataBlocking(/*cache_index=*/0, &data, &details);
+  WriteCacheDataBlocking(/*cache_index=*/0,
+                         CreateEncodedImageForTesting(gfx::Size(10, 10)),
+                         &details);
 
   // Reset variables in photo controller.
   Init();
@@ -530,12 +532,15 @@ TEST_F(AmbientPhotoControllerTest, ShouldPopulateDetailsWhenReadFromCache) {
 // Test that image is read from disk when image decoding failed.
 TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDecodingFailed) {
   Init();
-  SetDecodePhotoImage(gfx::ImageSkia());
+
+  WriteCacheDataBlocking(/*cache_index=*/0,
+                         CreateEncodedImageForTesting(gfx::Size(10, 10)));
+  WriteCacheDataBlocking(/*cache_index=*/1,
+                         CreateEncodedImageForTesting(gfx::Size(20, 20)));
+
+  SetDownloadPhotoData("invalid-image-data");
   FetchTopics();
-  // Forward a little bit time. FetchTopics() will succeed.
-  // Downloading succeed and save the data to disk.
-  // First decoding should fail. Will read from cache, and then succeed.
-  task_environment()->FastForwardBy(0.2 * kTopicFetchInterval);
+  RunUntilNextTopicsAdded(/*num_expected_topics=*/2);
   PhotoWithDetails image;
   photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
       /*current_image=*/nullptr,
@@ -673,25 +678,27 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotLoadDuplicateImages) {
   scoped_observation.Observe(photo_controller()->ambient_backend_model());
 
   // All images downloaded will be identical.
-  SetDownloadPhotoData("image data");
+  std::string image_data = CreateEncodedImageForTesting(gfx::Size(10, 10));
+  SetDownloadPhotoData(image_data);
 
   photo_controller()->StartScreenUpdate();
   RunUntilNextTopicsAdded(/*num_expected_topics=*/1);
 
   // Should contain hash of downloaded data.
   EXPECT_TRUE(photo_controller()->ambient_backend_model()->IsHashDuplicate(
-      base::SHA1HashString("image data")));
+      base::SHA1HashString(image_data)));
   // Only one image should have been loaded.
   EXPECT_FALSE(photo_controller()->ambient_backend_model()->ImagesReady());
 
   // Now expect a call because second image is loaded.
   EXPECT_CALL(mock_backend_observer, OnImagesReady).Times(1);
-  SetDownloadPhotoData("image data 2");
+  std::string image_data_2 = CreateEncodedImageForTesting(gfx::Size(20, 20));
+  SetDownloadPhotoData(image_data_2);
   RunUntilImagesReady();
 
   // Second image should have been loaded.
   EXPECT_TRUE(photo_controller()->ambient_backend_model()->IsHashDuplicate(
-      base::SHA1HashString("image data 2")));
+      base::SHA1HashString(image_data_2)));
   EXPECT_TRUE(photo_controller()->ambient_backend_model()->ImagesReady());
 }
 

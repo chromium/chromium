@@ -28,6 +28,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -206,15 +207,25 @@ gfx::ImageSkia CreateSolidColorTestImage(const gfx::Size& image_size,
 }
 
 std::string CreateEncodedImageForTesting(const gfx::Size& size,
+                                         SkColor color,
+                                         data_decoder::mojom::ImageCodec codec,
                                          gfx::ImageSkia* image_out) {
-  gfx::ImageSkia test_image = CreateSolidColorTestImage(size, SK_ColorGREEN);
+  gfx::ImageSkia test_image = CreateSolidColorTestImage(size, color);
   CHECK(!test_image.isNull());
   if (image_out) {
     *image_out = test_image;
   }
   std::vector<unsigned char> encoded_image;
-  CHECK(gfx::JPEG1xEncodedDataFromImage(gfx::Image(test_image), 100,
-                                        &encoded_image));
+  switch (codec) {
+    case data_decoder::mojom::ImageCodec::kDefault:
+      CHECK(gfx::JPEG1xEncodedDataFromImage(gfx::Image(test_image), 100,
+                                            &encoded_image));
+      break;
+    case data_decoder::mojom::ImageCodec::kPng:
+      CHECK(gfx::PNGCodec::EncodeBGRASkBitmap(
+          *test_image.bitmap(), /*discard_transparency=*/true, &encoded_image));
+      break;
+  }
   return std::string(reinterpret_cast<const char*>(encoded_image.data()),
                      encoded_image.size());
 }
