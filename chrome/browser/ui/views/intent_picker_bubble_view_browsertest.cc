@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerIconBrowserTest,
 // Test that error pages do not show the intent picker icon.
 #if BUILDFLAG(IS_MAC)
 // TODO(https://crbug.com/1478654): Fix the test.
-#define MAYBE_DoNotShowIconOnErrorPages Disabled_DoNotShowIconOnErrorPages
+#define MAYBE_DoNotShowIconOnErrorPages DISABLED_DoNotShowIconOnErrorPages
 #else
 #define MAYBE_DoNotShowIconOnErrorPages DoNotShowIconOnErrorPages
 #endif  // BUILDFLAG(IS_MAC)
