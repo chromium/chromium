@@ -22,6 +22,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.BasePageStation;
 import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
 import org.chromium.chrome.test.transit.HubStation;
+import org.chromium.chrome.test.transit.PageStation;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /** Public transit instrumentation/integration test of Hub. */
@@ -45,5 +46,17 @@ public class HubLayoutPublicTransitTest {
         HubStation hubStation = page.openHub();
 
         assertFinalDestination(hubStation);
+    }
+
+    @Test
+    @LargeTest
+    public void testEnterAndExitHub() {
+        BasePageStation page = mTransitEntryPoints.startOnBlankPage();
+
+        HubStation hubStation = page.openHub();
+
+        PageStation previousTab = hubStation.leaveHubToPreviousTabViaBack();
+
+        assertFinalDestination(previousTab);
     }
 }

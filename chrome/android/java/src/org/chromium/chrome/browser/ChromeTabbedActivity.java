@@ -1843,14 +1843,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mDseNewTabUrlManager = new DseNewTabUrlManager(mTabModelProfileSupplier);
         }
         if (HubFieldTrial.isHubEnabled()) {
-            // TODO(crbug/1499464): Replace the ObservableSupplierImpl<Tab> with a real
-            // implementation.
             mHubProvider =
                     new HubProvider(
                             this,
                             new DefaultPaneOrderController(),
                             mBackPressManager,
-                            new ObservableSupplierImpl<Tab>());
+                            getTabModelSelectorSupplier());
         }
     }
 

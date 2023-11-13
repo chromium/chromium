@@ -8,10 +8,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import android.view.View;
 
+import androidx.test.espresso.Espresso;
+
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.TransitStation;
+import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.R;
@@ -44,6 +47,23 @@ public class HubStation extends TransitStation {
         elements.declareEnterCondition(new HubIsEnabled());
         elements.declareEnterCondition(new HubLayoutShowing());
         elements.declareExitCondition(new HubLayoutNotShowing());
+    }
+
+    /**
+     * Returns to the previous tab via the back button.
+     *
+     * @return the {@link PageStation} that Hub returned to.
+     */
+    public PageStation leaveHubToPreviousTabViaBack() {
+        // TODO(crbug/1498446): This logic gets exponentially more complicated if there is
+        // additional back state e.g. in-pane navigations, between pane navigations, etc. Figure out
+        // a solution that better handles the complexity.
+        PageStation destination =
+                new PageStation(
+                        mChromeTabbedActivityTestRule,
+                        /* incognito= */ false,
+                        /* isOpeningTab= */ false);
+        return Trip.goSync(this, destination, (t) -> Espresso.pressBack());
     }
 
     private class HubIsEnabled extends UiThreadCondition {

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
@@ -27,6 +28,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link HubProvider}. */
@@ -38,6 +40,7 @@ public class HubProviderUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
+    @Mock private TabModelSelector mTabModelSelector;
     @Mock private Pane mMockPane;
     @Mock private BackPressManager mBackPressManagerMock;
     @Mock private ObservableSupplier<Tab> mTabSupplierMock;
@@ -46,6 +49,7 @@ public class HubProviderUnitTest {
 
     @Before
     public void setUp() {
+        when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mTabSupplierMock);
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 
@@ -61,7 +65,7 @@ public class HubProviderUnitTest {
                         mActivity,
                         new DefaultPaneOrderController(),
                         mBackPressManagerMock,
-                        mTabSupplierMock);
+                        () -> mTabModelSelector);
 
         PaneListBuilder builder = provider.getPaneListBuilder();
 

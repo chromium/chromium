@@ -15,6 +15,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -47,6 +48,7 @@ public abstract class TabModelSelectorBase
     private final TabModelFilterFactory mTabModelFilterFactory;
     private final ObservableSupplierImpl<TabModel> mTabModelSupplier =
             new ObservableSupplierImpl<>();
+    private final TransitiveObservableSupplier<TabModel, Tab> mCurrentTabSupplier;
 
     private final ObserverList<TabModelSelectorObserver> mObservers = new ObserverList<>();
     private final ObserverList<IncognitoTabModelObserver> mIncognitoObservers =
@@ -75,6 +77,9 @@ public abstract class TabModelSelectorBase
                     }
                 };
         mTabModelSupplier.addObserver(mIncognitoReauthDialogDelegateCallback);
+        mCurrentTabSupplier =
+                new TransitiveObservableSupplier<>(
+                        mTabModelSupplier, p -> p.getCurrentTabSupplier());
     }
 
     protected final void initialize(TabModel normalModel, IncognitoTabModel incognitoModel) {
@@ -162,6 +167,8 @@ public abstract class TabModelSelectorBase
 
     @Override
     public Tab getCurrentTab() {
+        // TODO(crbug/1499464): Migrate this to use mCurrentTabSupplier.get(). Presently, a large
+        // number of tests depend on using this from a non-UI thread.
         return TabModelUtils.getCurrentTab(getCurrentModel());
     }
 
@@ -191,6 +198,11 @@ public abstract class TabModelSelectorBase
     @Override
     public @NonNull ObservableSupplier<TabModel> getCurrentTabModelSupplier() {
         return mTabModelSupplier;
+    }
+
+    @Override
+    public @NonNull ObservableSupplier<Tab> getCurrentTabSupplier() {
+        return mCurrentTabSupplier;
     }
 
     @Override

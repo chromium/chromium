@@ -75,6 +75,10 @@ public interface TabModelSelector {
      */
     int getCurrentTabId();
 
+    /** Returns a supplier for the current tab in the current model. */
+    @NonNull
+    ObservableSupplier<Tab> getCurrentTabSupplier();
+
     /**
      * Convenience function to get the {@link TabModel} for a {@link Tab} specified by
      * {@code id}.
