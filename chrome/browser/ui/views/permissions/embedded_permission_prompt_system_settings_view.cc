@@ -52,9 +52,16 @@ EmbeddedPermissionPromptSystemSettingsView::GetRequestLinesConfiguration()
 std::vector<EmbeddedPermissionPromptSystemSettingsView::ButtonConfiguration>
 EmbeddedPermissionPromptSystemSettingsView::GetButtonsConfiguration() const {
   std::u16string operating_system_name;
+
 #if BUILDFLAG(IS_MAC)
   operating_system_name = l10n_util::GetStringUTF16(IDS_MACOS_NAME_FRAGMENT);
 #endif
+
+  // Do not show buttons if the OS is not supported.
+  if (operating_system_name.empty()) {
+    return std::vector<ButtonConfiguration>();
+  }
+
   return {{l10n_util::GetStringFUTF16(IDS_EMBEDDED_PROMPT_OPEN_SYSTEM_SETTINGS,
                                       operating_system_name),
            ButtonType::kSystemSettings, ui::ButtonStyle::kTonal}};
