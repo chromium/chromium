@@ -5,12 +5,11 @@
 #include "ash/wm/splitview/split_view_divider_handler_view.h"
 
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/style/ash_color_id.h"
+#include "ash/shell.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -118,10 +117,7 @@ SplitViewDividerHandlerView::SplitViewDividerHandlerView()
     : selection_animation_(std::make_unique<SelectionAnimation>(this)) {
   SetPaintToLayer();
   SetBackground(views::CreateThemedRoundedRectBackground(
-      chromeos::features::IsJellyrollEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-          : kColorAshIconColorPrimary,
-      kSplitviewWhiteBarCornerRadius));
+      cros_tokens::kCrosSysOnSurface, kSplitviewWhiteBarCornerRadius));
 }
 
 SplitViewDividerHandlerView::~SplitViewDividerHandlerView() = default;

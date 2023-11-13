@@ -9,7 +9,6 @@
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_mini_view.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -32,8 +31,7 @@ namespace {
 constexpr int kLabelFontDelta = 2;
 
 // Padding between header items.
-constexpr int kHeaderPaddingDp = 12;
-constexpr int kHeaderPaddingDpCrOSNext = 8;
+constexpr int kHeaderPaddingDp = 8;
 
 // The corner radius for the top corners for the header.
 constexpr int kHeaderTopCornerRadius = 16;
@@ -62,14 +60,10 @@ WindowMiniViewHeaderView::WindowMiniViewHeaderView(
     : window_mini_view_(window_mini_view) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
 
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-
   icon_label_view_ = AddChildView(std::make_unique<views::BoxLayoutView>());
   icon_label_view_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-  icon_label_view_->SetInsideBorderInsets(is_jellyroll_enabled ? kHeaderInsets
-                                                               : gfx::Insets());
-  icon_label_view_->SetBetweenChildSpacing(
-      is_jellyroll_enabled ? kHeaderPaddingDpCrOSNext : kHeaderPaddingDp);
+  icon_label_view_->SetInsideBorderInsets(kHeaderInsets);
+  icon_label_view_->SetBetweenChildSpacing(kHeaderPaddingDp);
 
   title_label_ = icon_label_view_->AddChildView(std::make_unique<views::Label>(
       GetWindowTitle(window_mini_view_->source_window())));
@@ -78,19 +72,14 @@ WindowMiniViewHeaderView::WindowMiniViewHeaderView(
   title_label_->SetSubpixelRenderingEnabled(false);
   title_label_->SetFontList(gfx::FontList().Derive(
       kLabelFontDelta, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
-  title_label_->SetEnabledColorId(
-      is_jellyroll_enabled
-          ? cros_tokens::kCrosSysPrimary
-          : static_cast<ui::ColorId>(kColorAshTextColorPrimary));
+  title_label_->SetEnabledColorId(cros_tokens::kCrosSysPrimary);
   icon_label_view_->SetFlexForView(title_label_, 1);
 
-  if (is_jellyroll_enabled) {
-    RefreshHeaderViewRoundedCorners();
+  RefreshHeaderViewRoundedCorners();
 
-    views::Separator* separator =
-        AddChildView(std::make_unique<views::Separator>());
-    separator->SetColorId(kColorAshWindowHeaderStrokeColor);
-  }
+  views::Separator* separator =
+      AddChildView(std::make_unique<views::Separator>());
+  separator->SetColorId(kColorAshWindowHeaderStrokeColor);
 
   SetFlexForView(icon_label_view_, 1);
 }
@@ -121,14 +110,10 @@ void WindowMiniViewHeaderView::UpdateTitleLabel(aura::Window* window) {
 }
 
 void WindowMiniViewHeaderView::RefreshHeaderViewRoundedCorners() {
-  if (chromeos::features::IsJellyrollEnabled()) {
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        chromeos::features::IsJellyrollEnabled()
-            ? cros_tokens::kCrosSysHeader
-            : static_cast<ui::ColorId>(kColorAshShieldAndBase80),
-        GetHeaderRoundedCorners(window_mini_view_->source_window()),
-        /*for_border_thickness=*/0));
-  }
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysHeader,
+      GetHeaderRoundedCorners(window_mini_view_->source_window()),
+      /*for_border_thickness=*/0));
 }
 
 void WindowMiniViewHeaderView::SetHeaderViewRoundedCornerRadius(

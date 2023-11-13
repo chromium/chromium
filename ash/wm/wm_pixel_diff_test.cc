@@ -19,8 +19,6 @@
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
 #include "ash/wm/window_state.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
@@ -34,16 +32,11 @@ namespace ash {
 // dark/light mode, tablet mode, etc.
 class WmPixelDiffTest : public AshTestBase {
  public:
-  WmPixelDiffTest() : scoped_features_(chromeos::features::kJelly) {}
-
   // AshTestBase:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 // A basic overview pixel test that shows three overview windows and the virtual

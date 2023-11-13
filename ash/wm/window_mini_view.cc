@@ -7,18 +7,17 @@
 #include <memory>
 
 #include "ash/shell.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/window_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -26,15 +25,11 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_utils.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
 namespace {
-
-// Values of the backdrop.
-constexpr int kBackdropBorderRoundingDp = 4;
 
 constexpr int kFocusRingCornerRadius = 20;
 
@@ -51,12 +46,6 @@ gfx::RoundedCornersF GetRoundedCornersForPreviewView(
     absl::optional<gfx::RoundedCornersF> preview_view_rounded_corners) {
   if (!show) {
     return gfx::RoundedCornersF();
-  }
-
-  if (!chromeos::features::IsJellyrollEnabled()) {
-    const float rounding = views::LayoutProvider::Get()->GetCornerRadiusMetric(
-        views::Emphasis::kLow);
-    return gfx::RoundedCornersF(rounding / scale);
   }
 
   if (!window_util::ShouldRoundThumbnailWindow(
@@ -121,22 +110,13 @@ void WindowMiniView::SetBackdropVisibility(bool visible) {
     // Always put the backdrop view under other children.
     backdrop_view_ = AddChildViewAt(std::make_unique<views::View>(), 0);
     backdrop_view_->SetPaintToLayer();
-    backdrop_view_->SetBackground(views::CreateThemedSolidBackground(
-        chromeos::features::IsJellyrollEnabled()
-            ? cros_tokens::kCrosSysScrim
-            : static_cast<ui::ColorId>(
-                  kColorAshControlBackgroundColorInactive)));
+    backdrop_view_->SetBackground(
+        views::CreateThemedSolidBackground(cros_tokens::kCrosSysScrim));
 
     ui::Layer* layer = backdrop_view_->layer();
     layer->SetFillsBoundsOpaquely(false);
-
-    const gfx::RoundedCornersF rounded_corder_radius =
-        chromeos::features::IsJellyrollEnabled()
-            ? gfx::RoundedCornersF(0, 0, kWindowMiniViewCornerRadius,
-                                   kWindowMiniViewCornerRadius)
-            : gfx::RoundedCornersF(kBackdropBorderRoundingDp);
-
-    layer->SetRoundedCornerRadius(rounded_corder_radius);
+    layer->SetRoundedCornerRadius(gfx::RoundedCornersF(
+        0.f, 0.f, kWindowMiniViewCornerRadius, kWindowMiniViewCornerRadius));
     layer->SetIsFastRoundedCorner(true);
     backdrop_view_->SetCanProcessEventsWithinSubtree(false);
     Layout();
@@ -315,8 +295,6 @@ void WindowMiniView::OnWindowTitleChanged(aura::Window* window) {
 }
 
 void WindowMiniView::InstallFocusRing() {
-  // In order to show the focus ring on the content view, `border_inset`
-  // needs to be counted when setting the insets for the focus ring.
   RefreshFocusRingVisuals();
   views::FocusRing::Install(this);
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
