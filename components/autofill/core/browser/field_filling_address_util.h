@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_FILLING_ADDRESS_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_FILLING_ADDRESS_UTIL_H_
 
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 
