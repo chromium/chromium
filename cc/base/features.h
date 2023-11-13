@@ -141,6 +141,11 @@ CC_BASE_EXPORT extern const base::FeatureParam<int> kReclaimDelayInSeconds;
 // Kill switch for using MapRect() to compute filter pixel movement.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseMapRectForPixelMovement);
 
+// When enabled, we will not schedule drawing for viz::Surfaces that have been
+// evicted. Instead waiting for an ActiveTree that is defining a newer
+// viz::Surface.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kEvictionThrottlesDraw);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

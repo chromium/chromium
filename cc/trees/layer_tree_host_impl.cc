@@ -974,6 +974,17 @@ bool LayerTreeHostImpl::CanDraw() const {
   if (resourceless_software_draw_)
     return true;
 
+  // Do not draw while evicted. Await the activation of a tree containing a
+  // newer viz::Surface
+  if (base::FeatureList::IsEnabled(features::kEvictionThrottlesDraw) &&
+      evicted_local_surface_id_.is_valid()) {
+    TRACE_EVENT_INSTANT0(
+        "cc",
+        "LayerTreeHostImpl::CanDraw viz::Surface evicted and not recreated",
+        TRACE_EVENT_SCOPE_THREAD);
+    return false;
+  }
+
   if (active_tree_->GetDeviceViewport().IsEmpty()) {
     TRACE_EVENT_INSTANT0("cc", "LayerTreeHostImpl::CanDraw empty viewport",
                          TRACE_EVENT_SCOPE_THREAD);
@@ -2264,11 +2275,13 @@ void LayerTreeHostImpl::OnSurfaceEvicted(
     const viz::LocalSurfaceId& local_surface_id) {
   // Don't evict if the host has given us a newer viz::SurfaceId. Instead handle
   // resource returns as normal, and begin producing from the new tree.
-  if (target_local_surface_id_.IsNewerThan(local_surface_id)) {
+  if (target_local_surface_id_.IsNewerThanOrEmbeddingChanged(
+          local_surface_id)) {
     return;
   }
   evicted_local_surface_id_ = local_surface_id;
   resource_provider_.SetEvicted(true);
+  client_->OnCanDrawStateChanged(CanDraw());
 }
 
 void LayerTreeHostImpl::ReportEventLatency(
@@ -2613,10 +2626,6 @@ std::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
   if (settings_.enable_compositing_based_throttling &&
       throttle_decider_.HasThrottlingChanged()) {
     client_->FrameSinksToThrottleUpdated(throttle_decider_.ids());
-  }
-  if (evicted_local_surface_id_.is_valid()) {
-    evicted_local_surface_id_ = viz::LocalSurfaceId();
-    resource_provider_.SetEvicted(false);
   }
 
   return SubmitInfo{submit_time, std::move(events_metrics)};
@@ -3440,6 +3449,24 @@ void LayerTreeHostImpl::ActivateSyncTree() {
   if (!active_tree_->picture_layers().empty())
     DidModifyTilePriorities();
 
+  // Update the child's LocalSurfaceId.
+  if (active_tree()->local_surface_id_from_parent().is_valid()) {
+    child_local_surface_id_allocator_.UpdateFromParent(
+        active_tree()->local_surface_id_from_parent());
+    if (active_tree()->TakeNewLocalSurfaceIdRequest()) {
+      AllocateLocalSurfaceId();
+    }
+
+    // We have a newer surface than the evicted one, or the embedding has
+    // changed, clear eviction state resume drawing.
+    if (evicted_local_surface_id_.is_valid() &&
+        child_local_surface_id_allocator_.GetCurrentLocalSurfaceId()
+            .IsNewerThanOrEmbeddingChanged(evicted_local_surface_id_)) {
+      evicted_local_surface_id_ = viz::LocalSurfaceId();
+      resource_provider_.SetEvicted(false);
+    }
+  }
+
   client_->OnCanDrawStateChanged(CanDraw());
   client_->DidActivateSyncTree();
   if (!tree_activation_callback_.is_null())
@@ -3456,14 +3483,6 @@ void LayerTreeHostImpl::ActivateSyncTree() {
 
   if (input_delegate_)
     input_delegate_->DidActivatePendingTree();
-
-  // Update the child's LocalSurfaceId.
-  if (active_tree()->local_surface_id_from_parent().is_valid()) {
-    child_local_surface_id_allocator_.UpdateFromParent(
-        active_tree()->local_surface_id_from_parent());
-    if (active_tree()->TakeNewLocalSurfaceIdRequest())
-      AllocateLocalSurfaceId();
-  }
 
   // Dump property trees and layers if VerboseLogEnabled().
   VERBOSE_LOG() << "After activating sync tree, the active tree:"

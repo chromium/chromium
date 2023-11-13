@@ -53,6 +53,11 @@ bool LocalSurfaceId::IsNewerThan(const LocalSurfaceId& other) const {
           parent_sequence_number_ != other.parent_sequence_number_);
 }
 
+bool LocalSurfaceId::IsNewerThanOrEmbeddingChanged(
+    const LocalSurfaceId& other) const {
+  return IsNewerThan(other) || embed_token_ != other.embed_token_;
+}
+
 bool LocalSurfaceId::IsSameOrNewerThan(const LocalSurfaceId& other) const {
   return IsNewerThan(other) || *this == other;
 }

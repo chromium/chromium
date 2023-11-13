@@ -165,4 +165,8 @@ BASE_FEATURE(kUseMapRectForPixelMovement,
              "UseMapRectForPixelMovement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEvictionThrottlesDraw,
+             "EvictionThrottlesDraw",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
