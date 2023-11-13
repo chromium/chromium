@@ -81,7 +81,8 @@ class FakeWebContentsManager : public WebContentsManager {
     GURL manifest_url;
     bool valid_manifest_for_web_app = false;
     blink::mojom::ManifestPtr opt_manifest;
-    webapps::InstallableStatusCode error_code;
+    webapps::InstallableStatusCode error_code =
+        webapps::InstallableStatusCode::NO_ERROR_DETECTED;
     GURL favicon_url;
     std::vector<SkBitmap> favicon;
   };
