@@ -49,17 +49,26 @@ class PreviewTab::PreviewWidget final : public views::Widget {
   // views::Widet implementation:
   void OnMouseEvent(ui::MouseEvent* event) override {
     auto rect = GetClientAreaBoundsInScreen();
-    // Tentative trigger for open-in-new-tab: Middle click on preview.
-    if (event->type() == ui::ET_MOUSE_RELEASED &&
-        event->IsMiddleMouseButton() &&
-        // Check the event occurred on this widget.
-        // Note that `event->location()` is relative to the origin of widget.
+    // Check the event occurred on this widget.
+    // Note that `event->location()` is relative to the origin of widget.
+    bool is_event_for_preview_window =
         0 <= event->location().x() &&
         event->location().x() <= rect.size().width() &&
         0 <= event->location().y() &&
-        event->location().y() <= rect.size().height()) {
+        event->location().y() <= rect.size().height();
+
+    // Tentative trigger for open-in-new-tab: Middle click on preview.
+    if (is_event_for_preview_window && event->type() == ui::ET_MOUSE_RELEASED &&
+        event->IsMiddleMouseButton()) {
       event->SetHandled();
       preview_manager_->PromoteToNewTab();
+      return;
+    }
+
+    if (!is_event_for_preview_window &&
+        event->type() == ui::ET_MOUSE_RELEASED) {
+      event->SetHandled();
+      preview_manager_->Cancel();
       return;
     }
 
