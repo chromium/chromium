@@ -1574,8 +1574,8 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 - (void)configureCell:(GridCell*)cell
              withItem:(TabSwitcherItem*)item
               atIndex:(NSUInteger)index {
-  DCHECK(cell);
-  DCHECK(item);
+  CHECK(cell);
+  CHECK(item);
   cell.delegate = self;
   cell.theme = self.theme;
   cell.itemIdentifier = item.identifier;
