@@ -13,6 +13,12 @@
     ],
   "breakages": [
     {
+      "bad_change_id": "Ibd48557709ccf80d380eb2ae21cfac97d237ddb4",
+      "good_change_id": "Ie310ca912bab58eb196ef3c6e751fba685fcada9",
+      "bug": "crbug/1456762",
+      "comment": "jni_zero proguard crash"
+    },
+    {
       "bad_change_id": "I9e28d3a0617e27614451e3b2d8e4cf3e2e6d3145",
       "good_change_id": "Icc888cec884c77a12f47f4cd2b0fcdb3046a02b2",
       "bug": "crbug/1449478",
