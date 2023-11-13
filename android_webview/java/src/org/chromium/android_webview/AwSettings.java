@@ -22,7 +22,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.AwIntegrityApiStatusConfig.ApiStatus;
-import org.chromium.android_webview.autofill.ChromeAutocompleteSafeModeAction;
 import org.chromium.android_webview.client_hints.AwUserAgentMetadata;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
@@ -683,10 +682,6 @@ public class AwSettings {
     @CalledByNative
     private boolean getSaveFormDataLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
-        if (ChromeAutocompleteSafeModeAction.isChromeAutocompleteDisabled()) {
-            Log.i(TAG, "Chrome autocomplete is disabled by SafeMode");
-            return false;
-        }
         return mAutoCompleteEnabled;
     }
 

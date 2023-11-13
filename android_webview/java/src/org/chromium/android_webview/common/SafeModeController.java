@@ -69,7 +69,6 @@ public class SafeModeController {
         SafeModeActionName.FAST_VARIATIONS_SEED,
         SafeModeActionName.NOOP,
         SafeModeActionName.DISABLE_ANDROID_AUTOFILL,
-        SafeModeActionName.DISABLE_CHROME_AUTOCOMPLETE,
         SafeModeActionName.DISABLE_ORIGIN_TRIALS,
         SafeModeActionName.DISABLE_SAFE_BROWSING,
         SafeModeActionName.RESET_COMPONENT_UPDATER
@@ -79,7 +78,7 @@ public class SafeModeController {
         int FAST_VARIATIONS_SEED = 1;
         int NOOP = 2;
         int DISABLE_ANDROID_AUTOFILL = 3;
-        int DISABLE_CHROME_AUTOCOMPLETE = 4;
+        // int DISABLE_CHROME_AUTOCOMPLETE = 4;  // Autofill replaced Autocomplete since Android O.
         int DISABLE_ORIGIN_TRIALS = 5;
         int DISABLE_SAFE_BROWSING = 6;
         int RESET_COMPONENT_UPDATER = 7;
@@ -100,9 +99,6 @@ public class SafeModeController {
         map.put(
                 SafeModeActionIds.DISABLE_ANDROID_AUTOFILL,
                 SafeModeActionName.DISABLE_ANDROID_AUTOFILL);
-        map.put(
-                SafeModeActionIds.DISABLE_CHROME_AUTOCOMPLETE,
-                SafeModeActionName.DISABLE_CHROME_AUTOCOMPLETE);
         map.put(SafeModeActionIds.DISABLE_ORIGIN_TRIALS, SafeModeActionName.DISABLE_ORIGIN_TRIALS);
         map.put(
                 SafeModeActionIds.DISABLE_AW_SAFE_BROWSING,
