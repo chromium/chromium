@@ -6,6 +6,7 @@
 
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
@@ -44,30 +45,20 @@ WolvicPermissionManager::WolvicPermissionManager(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {}
 
-void WolvicPermissionManager::RequestPermission(
-    blink::PermissionType permission,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool user_gesture,
-    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
-  std::move(callback).Run(GrantOrDenyPermission(permission));
-}
-
 void WolvicPermissionManager::RequestPermissions(
-    const std::vector<blink::PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool user_gesture,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+    const content::PermissionRequestDescription& request_description,
+    base::OnceCallback<void(const std::vector<content::PermissionStatus>&)>
         callback) {
   if (render_frame_host->IsNestedWithinFencedFrame()) {
     std::move(callback).Run(std::vector<blink::mojom::PermissionStatus>(
-        permissions.size(), blink::mojom::PermissionStatus::DENIED));
+        request_description.permissions.size(),
+        blink::mojom::PermissionStatus::DENIED));
     return;
   }
 
   std::vector<blink::mojom::PermissionStatus> result;
-  for (const auto& permission : permissions) {
+  for (const auto& permission : request_description.permissions) {
     result.push_back(GrantOrDenyPermission(permission));
   }
 
@@ -79,12 +70,11 @@ void WolvicPermissionManager::ResetPermission(blink::PermissionType permission,
                                               const GURL& embedding_origin) {}
 
 void WolvicPermissionManager::RequestPermissionsFromCurrentDocument(
-    const std::vector<blink::PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
-    bool user_gesture,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+    const content::PermissionRequestDescription& request_description,
+    base::OnceCallback<void(const std::vector<content::PermissionStatus>&)>
         callback) {
-  RequestPermissions(permissions, render_frame_host, GURL(), user_gesture,
+  RequestPermissions(render_frame_host, request_description,
                      std::move(callback));
 }
 
@@ -98,9 +88,10 @@ blink::mojom::PermissionStatus WolvicPermissionManager::GetPermissionStatus(
 content::PermissionResult
 WolvicPermissionManager::GetPermissionResultForOriginWithoutContext(
     blink::PermissionType permission,
-    const url::Origin& origin) {
-  blink::mojom::PermissionStatus status =
-      GetPermissionStatus(permission, origin.GetURL(), origin.GetURL());
+    const url::Origin& requesting_origin,
+    const url::Origin& embedding_origin) {
+  blink::mojom::PermissionStatus status = GetPermissionStatus(
+      permission, requesting_origin.GetURL(), embedding_origin.GetURL());
 
   return content::PermissionResult(
       status, content::PermissionStatusSource::UNSPECIFIED);
