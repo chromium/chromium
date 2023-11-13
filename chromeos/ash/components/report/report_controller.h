@@ -102,8 +102,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ReportController
 
  private:
   // Grant friend access for comprehensive testing of private/protected members.
-  friend class ReportControllerBase;
-  friend class ReportControllerSimpleFlow;
+  friend class ReportControllerTestBase;
+  friend class ReportControllerSimpleFlowTest;
 
   // Wrapper method for the PostTaskAndReplyWithResult, which is used to spawn
   // a worker thread to check oobe completed file time delta.

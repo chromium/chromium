@@ -441,6 +441,9 @@ void ReportController::OnSystemClockSyncResult(bool system_clock_synchronized) {
 }
 
 void ReportController::StartReport() {
+  DCHECK(local_state_);
+  DCHECK(psm_client_manager_.get());
+
   // Get new adjusted timestamp from GMT to Pacific Time.
   active_ts_ = utils::ConvertGmtToPt(clock_);
 
