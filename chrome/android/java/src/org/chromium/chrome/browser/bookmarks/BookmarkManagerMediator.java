@@ -134,8 +134,7 @@ class BookmarkManagerMediator
                     BookmarkId id = node.getId();
                     if (getCurrentUiMode() == BookmarkUiMode.FOLDER) {
                         // If the folder is removed in folder mode, show the parent folder or falls
-                        // back to
-                        // all bookmarks mode.
+                        // back to all bookmarks mode.
                         if (Objects.equals(id, getCurrentFolderId())) {
                             if (mBookmarkModel.getTopLevelFolderIds().contains(id)) {
                                 openFolder(mBookmarkModel.getDefaultFolderViewLocation());
@@ -144,13 +143,10 @@ class BookmarkManagerMediator
                             }
                         } else {
                             // Needs to remove the current node, and update any transitive parents
-                            // that may
-                            // be showing child counts. Just refresh() for now.
-                            // refresh();
+                            // that may be showing child counts. Just refresh() for now.
                             int position = getPositionForBookmark(id);
                             // If the position couldn't be found, then do a full refresh. Otherwise
-                            // be
-                            // smart and remove only the index of the removed bookmark.
+                            // be smart and remove only the index of the removed bookmark.
                             if (position == -1) {
                                 mPendingRefresh.post();
                             } else {
@@ -204,8 +200,7 @@ class BookmarkManagerMediator
                 @Override
                 public BookmarkUiState push(BookmarkUiState item) {
                     // The back press state depends on the size of stack. So push/pop item first in
-                    // order
-                    // to keep the size update-to-date.
+                    // order to keep the size update-to-date.
                     var state = super.push(item);
                     onBackPressStateChanged();
                     return state;
