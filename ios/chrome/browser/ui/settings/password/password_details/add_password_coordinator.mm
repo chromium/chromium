@@ -11,6 +11,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_visits_recorder.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -58,7 +60,10 @@
 
 @end
 
-@implementation AddPasswordCoordinator
+@implementation AddPasswordCoordinator {
+  // For recording visits to the page.
+  IOSPasswordManagerVisitsRecorder* _visitsRecorder;
+}
 
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -104,6 +109,11 @@
   [self.baseViewController presentViewController:navigationController
                                         animated:YES
                                       completion:nil];
+
+  _visitsRecorder = [[IOSPasswordManagerVisitsRecorder alloc]
+      initWithPasswordManagerSurface:password_manager::PasswordManagerSurface::
+                                         kAddPassword];
+  [_visitsRecorder maybeRecordVisitMetric];
 
   if (password_manager::features::IsAuthOnEntryV2Enabled()) {
     [self startReauthCoordinator];
