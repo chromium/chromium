@@ -6529,7 +6529,6 @@
           'ipc_tests',
           'media_unittests',
           'mojo_unittests',
-          'nacl_loader_unittests',
           'net_unittests',
           'pdf_unittests',
           'pdfium_test',
