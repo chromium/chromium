@@ -279,6 +279,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDefaultViewportIsDeviceWidth);
 
 // If enabled, async script execution will be delayed than usual.
 // See https://crbug.com/1340837.
+//
+// As of 2023/11, this experiment enables kLCPCriticalPathPredictor.
+// See third_party/blink/common/loader/lcp_critical_path_predictor_util.cc
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelayAsyncScriptExecution);
 enum class DelayAsyncScriptDelayType {
   kFinishedParsing,
