@@ -1451,6 +1451,15 @@
         "timeout_sec": 7200,
         "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
+      },
+      {
+        "autotest_name": "chromium",
+        "cros_board": "jacuzzi",
+        "name": "chromeos_integration_tests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
+        "test": "chromeos_integration_tests",
+        "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "use_lkgm": true,
+        "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
       }
     ]
   },
@@ -1614,6 +1623,15 @@
         "test_id_prefix": "ninja://chromeos:chrome_disabled_tast_tests/",
         "test_level_retries": 1,
         "timeout_sec": 7200,
+        "use_lkgm": true,
+        "variant_id": "VOLTEER_RELEASE_LKGM"
+      },
+      {
+        "autotest_name": "chromium",
+        "cros_board": "volteer",
+        "name": "chromeos_integration_tests VOLTEER_RELEASE_LKGM",
+        "test": "chromeos_integration_tests",
+        "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "use_lkgm": true,
         "variant_id": "VOLTEER_RELEASE_LKGM"
       }

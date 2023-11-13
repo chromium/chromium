@@ -6756,6 +6756,11 @@
           'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM',
         ],
       },
+      'chromeos_integration_tests': {
+        'variants': [
+          'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM',
+        ],
+      },
     },
 
     'chromeos_octopus_skylab_tests': {
@@ -6768,6 +6773,11 @@
 
     'chromeos_trogdor_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
+        'variants': [
+          'CROS_TROGDOR_RELEASE_ASH_LKGM',
+        ],
+      },
+      'chromeos_integration_tests': {
         'variants': [
           'CROS_TROGDOR_RELEASE_ASH_LKGM',
         ],
@@ -6786,6 +6796,11 @@
         ],
       },
       'chromeos_chrome_disabled_tast_tests': {
+        'variants': [
+          'CROS_VOLTEER_RELEASE_ASH_LKGM',
+        ],
+      },
+      'chromeos_integration_tests': {
         'variants': [
           'CROS_VOLTEER_RELEASE_ASH_LKGM',
         ],

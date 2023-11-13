@@ -1226,6 +1226,15 @@
         "timeout_sec": 7200,
         "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
+      },
+      {
+        "autotest_name": "chromium",
+        "cros_board": "jacuzzi",
+        "name": "chromeos_integration_tests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
+        "test": "chromeos_integration_tests",
+        "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "use_lkgm": true,
+        "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
       }
     ]
   },
@@ -1270,6 +1279,15 @@
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 21600,
+        "use_lkgm": true,
+        "variant_id": "TROGDOR_RELEASE_LKGM"
+      },
+      {
+        "autotest_name": "chromium",
+        "cros_board": "trogdor",
+        "name": "chromeos_integration_tests TROGDOR_RELEASE_LKGM",
+        "test": "chromeos_integration_tests",
+        "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "use_lkgm": true,
         "variant_id": "TROGDOR_RELEASE_LKGM"
       }
