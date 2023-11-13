@@ -237,16 +237,11 @@ This builder shadows android-arm64-rel builder to compare between Siso builds an
 This builder should be removed after migrating android-arm64-rel from Ninja to Siso. b/277863839
 """,
     mirrors = builder_config.copy_from("try/android-arm64-rel"),
-    try_settings = builder_config.try_settings(
-        # TODO: b/294287964 - waiting test devices to be allocated to handle
-        # extra traffic.
-        is_compile_only = True,
-    ),
     compilator = "android-arm64-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     tryjob = try_.job(
-        experiment_percentage = 10,
+        experiment_percentage = 5,
     ),
     use_clang_coverage = True,
 )
