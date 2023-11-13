@@ -15,3 +15,7 @@ ownership_rules:
       path: "replay_build_scripts/**"
     - name: More Replay build scripts
       path: "replay-scripts/**"
+    - name: BUCK files
+      path: "**/BUCK"
+    - name: Root BUCK file
+      path: "BUCK"

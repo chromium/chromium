@@ -18,4 +18,6 @@ allowlist:
   - DEPS
   - replay_build_scripts/**
   - replay-scripts/**
+  - "**/BUCK"
+  - BUCK
 blocklist:
