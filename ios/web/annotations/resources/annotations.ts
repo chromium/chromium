@@ -432,6 +432,10 @@ function enumerateTextNodes(
       if (NON_TEXT_NODE_NAMES.has(node.nodeName)) {
         continue;
       }
+      // Reject editable nodes.
+      if (node instanceof Element && node.getAttribute('contenteditable')) {
+        continue;
+      }
       if (node.nodeName === 'BR') {
         if (isPreviousSpace)
           continue;

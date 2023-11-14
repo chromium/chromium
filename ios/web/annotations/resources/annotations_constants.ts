@@ -4,8 +4,34 @@
 
 // Tags that should not be visited.
 const NON_TEXT_NODE_NAMES = new Set([
-  'SCRIPT', 'NOSCRIPT', 'STYLE', 'EMBED', 'OBJECT', 'TEXTAREA', 'IFRAME',
-  'INPUT'
+  'A',
+  'APP',
+  'APPLET',
+  'AREA',
+  'AUDIO',
+  'BUTTON',
+  'CANVAS',
+  'CHROME_ANNOTATION',
+  'EMBED',
+  'FRAME',
+  'FRAMESET',
+  'HEAD',
+  'IFRAME',
+  'IMG',
+  'INPUT',
+  'KEYGEN',
+  'LABEL',
+  'MAP',
+  'NOSCRIPT',
+  'OBJECT',
+  'OPTGROUP',
+  'OPTION',
+  'PROGRESS',
+  'SCRIPT',
+  'SELECT',
+  'STYLE',
+  'TEXTAREA',
+  'VIDEO',
 ]);
 
 // Tags that should not be decorated.
