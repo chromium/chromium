@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
@@ -32,6 +33,7 @@
 #include "cc/trees/effect_node.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -2470,6 +2472,10 @@ TEST_F(DrawPropertiesTest, ClipExpanderWithUninvertibleTransform) {
 
 // Needs layer tree mode: mask layer.
 TEST_F(DrawPropertiesTestWithLayerTree, OcclusionBySiblingOfTarget) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAllowUndamagedNonrootRenderPassToSkip);
+
   auto root = Layer::Create();
   auto child = Layer::Create();
   FakeContentLayerClient client;
@@ -2527,6 +2533,72 @@ TEST_F(DrawPropertiesTestWithLayerTree, OcclusionBySiblingOfTarget) {
       gfx::Transform(), SimpleEnclosedRegion(gfx::Rect(-20, -20, 200, 200)),
       SimpleEnclosedRegion());
   EXPECT_TRUE(expected_occlusion.IsEqual(actual_occlusion));
+}
+
+// Occlusion immune with kAllowUndamagedNonrootRenderPassToSkip enabled.
+TEST_F(DrawPropertiesTestWithLayerTree, OcclusionImmuneForSiblingOfTarget) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAllowUndamagedNonrootRenderPassToSkip);
+
+  auto root = Layer::Create();
+  auto child = Layer::Create();
+  FakeContentLayerClient client;
+  auto surface = PictureLayer::Create(&client);
+  auto surface_child = PictureLayer::Create(&client);
+  auto surface_sibling = PictureLayer::Create(&client);
+  auto surface_child_mask = PictureLayer::Create(&client);
+
+  surface->SetIsDrawable(true);
+  surface_child->SetIsDrawable(true);
+  surface_sibling->SetIsDrawable(true);
+  surface_child_mask->SetIsDrawable(true);
+  surface->SetContentsOpaque(true);
+  surface_child->SetContentsOpaque(true);
+  surface_sibling->SetContentsOpaque(true);
+  surface_child_mask->SetContentsOpaque(true);
+
+  gfx::Transform translate;
+  translate.Translate(20.f, 20.f);
+
+  root->SetBounds(gfx::Size(1000, 1000));
+  child->SetBounds(gfx::Size(300, 300));
+  surface->SetTransform(translate);
+  surface->SetBounds(gfx::Size(300, 300));
+  surface->SetForceRenderSurfaceForTesting(true);
+  surface_child->SetBounds(gfx::Size(300, 300));
+  surface_child->SetForceRenderSurfaceForTesting(true);
+  surface_sibling->SetBounds(gfx::Size(200, 200));
+  surface_child_mask->SetBounds(gfx::Size(300, 300));
+
+  surface_child->SetMaskLayer(surface_child_mask);
+  surface->AddChild(surface_child);
+  child->AddChild(surface);
+  child->AddChild(surface_sibling);
+  root->AddChild(child);
+  host()->SetRootLayer(root);
+
+  CommitAndActivate();
+
+  EXPECT_TRANSFORM_EQ(GetRenderSurfaceImpl(surface)->draw_transform(),
+                      translate);
+  // surface_sibling draws into the root render surface
+  Occlusion actual_occlusion =
+      GetRenderSurfaceImpl(surface_child)->occlusion_in_content_space();
+  Occlusion expected_occlusion(translate, SimpleEnclosedRegion(),
+                               SimpleEnclosedRegion(gfx::Rect(200, 200)));
+  // With occlusion immune, it will not occlude surface_child's contents.
+  EXPECT_FALSE(expected_occlusion.IsEqual(actual_occlusion));
+
+  // Mask layer's occlusion is different because we create transform and render
+  // surface for it in layer tree mode.
+  actual_occlusion =
+      ImplOf(surface_child_mask)->draw_properties().occlusion_in_content_space;
+  expected_occlusion = Occlusion(
+      gfx::Transform(), SimpleEnclosedRegion(gfx::Rect(-20, -20, 200, 200)),
+      SimpleEnclosedRegion());
+  // With occlusion immune, it will not occlude surface_child's contents.
+  EXPECT_FALSE(expected_occlusion.IsEqual(actual_occlusion));
 }
 
 TEST_F(DrawPropertiesTest, OcclusionForLayerWithUninvertibleDrawTransform) {

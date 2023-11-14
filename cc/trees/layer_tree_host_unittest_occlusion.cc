@@ -4,12 +4,14 @@
 
 #include "cc/trees/layer_tree_host.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "components/viz/common/features.h"
 
 namespace cc {
 namespace {
@@ -22,8 +24,13 @@ namespace {
 class LayerTreeHostOcclusionTest : public LayerTreeTest {
  protected:
   void InitializeSettings(LayerTreeSettings* settings) override {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kAllowUndamagedNonrootRenderPassToSkip);
+
     settings->minimum_occlusion_tracking_size = gfx::Size();
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verify occlusion is set on the layer draw properties.
