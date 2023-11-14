@@ -1103,7 +1103,7 @@ bool HttpUtil::ParseAcceptEncoding(const std::string& accept_encoding,
     if (qvalue.empty())
       return false;
     if (qvalue[0] == '1') {
-      if (base::StartsWith("1.000", qvalue)) {
+      if (std::string_view("1.000").starts_with(qvalue)) {
         allowed_encodings->insert(base::ToLowerASCII(encoding));
         continue;
       }

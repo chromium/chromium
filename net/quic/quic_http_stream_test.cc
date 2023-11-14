@@ -143,7 +143,7 @@ bool CheckHeader(const base::Value::Dict& params,
     if (!header) {
       return false;
     }
-    if (base::StartsWith(*header, header_prefix)) {
+    if (header->starts_with(header_prefix)) {
       if (header_found) {
         return false;
       }

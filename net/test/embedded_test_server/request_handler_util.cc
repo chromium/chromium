@@ -84,9 +84,7 @@ bool ShouldHandle(const HttpRequest& request, const std::string& path_prefix) {
   }
 
   GURL url = request.GetURL();
-  return url.path() == path_prefix ||
-         base::StartsWith(url.path(), path_prefix + "/",
-                          base::CompareCase::SENSITIVE);
+  return url.path() == path_prefix || url.path().starts_with(path_prefix + "/");
 }
 
 std::unique_ptr<HttpResponse> HandlePrefixedRequest(
@@ -168,9 +166,8 @@ std::unique_ptr<HttpResponse> HandleFileRequest(
   GURL request_url = request.GetURL();
   std::string relative_path(request_url.path());
 
-  std::string post_prefix("/post/");
-  if (base::StartsWith(relative_path, post_prefix,
-                       base::CompareCase::SENSITIVE)) {
+  std::string_view post_prefix("/post/");
+  if (relative_path.starts_with(post_prefix)) {
     if (request.method != METHOD_POST)
       return nullptr;
     relative_path = relative_path.substr(post_prefix.size() - 1);
@@ -202,7 +199,7 @@ std::unique_ptr<HttpResponse> HandleFileRequest(
   }
 
   // Trim the first byte ('/').
-  DCHECK(base::StartsWith(relative_path, "/", base::CompareCase::SENSITIVE));
+  DCHECK(relative_path.starts_with("/"));
   std::string request_path = relative_path.substr(1);
   base::FilePath file_path(server_root.AppendASCII(request_path));
   std::string file_contents;

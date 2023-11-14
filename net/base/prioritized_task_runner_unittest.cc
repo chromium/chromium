@@ -49,8 +49,9 @@ class PrioritizedTaskRunnerTest : public testing::Test {
   std::vector<std::string> TaskOrder() {
     std::vector<std::string> out;
     for (const std::string& name : callback_names_) {
-      if (base::StartsWith(name, "Task", base::CompareCase::SENSITIVE))
+      if (name.starts_with("Task")) {
         out.push_back(name);
+      }
     }
     return out;
   }
@@ -58,8 +59,9 @@ class PrioritizedTaskRunnerTest : public testing::Test {
   std::vector<std::string> ReplyOrder() {
     std::vector<std::string> out;
     for (const std::string& name : callback_names_) {
-      if (base::StartsWith(name, "Reply", base::CompareCase::SENSITIVE))
+      if (name.starts_with("Reply")) {
         out.push_back(name);
+      }
     }
     return out;
   }

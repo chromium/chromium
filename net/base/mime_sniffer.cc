@@ -648,8 +648,9 @@ static bool SniffCRX(std::string_view content,
       MAGIC_NUMBER("application/x-chrome-extension", "Cr24\x03\x00\x00\x00")};
 
   // Only consider files that have the extension ".crx".
-  if (!base::EndsWith(url.path_piece(), ".crx", base::CompareCase::SENSITIVE))
+  if (!url.path_piece().ends_with(".crx")) {
     return false;
+  }
 
   *have_enough_content &= TruncateStringPiece(kBytesRequiredForMagic, &content);
   return CheckForMagicNumbers(content, kCRXMagicNumbers, result);

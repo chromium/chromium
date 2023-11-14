@@ -90,7 +90,7 @@ SchemeHostPortMatcherRule::FromUntrimmedRawString(
   // Special-case hostnames that begin with a period.
   // For example, we remap ".google.com" --> "*.google.com".
   std::string hostname_pattern;
-  if (base::StartsWith(raw, ".", base::CompareCase::SENSITIVE)) {
+  if (raw.starts_with(".")) {
     hostname_pattern = base::StrCat({"*", raw});
   } else {
     hostname_pattern = std::string(raw);
@@ -157,7 +157,7 @@ bool SchemeHostPortMatcherHostnamePatternRule::IsHostnamePatternRule() const {
 
 std::unique_ptr<SchemeHostPortMatcherHostnamePatternRule>
 SchemeHostPortMatcherHostnamePatternRule::GenerateSuffixMatchingRule() const {
-  if (!base::StartsWith(hostname_pattern_, "*", base::CompareCase::SENSITIVE)) {
+  if (!hostname_pattern_.starts_with("*")) {
     return std::make_unique<SchemeHostPortMatcherHostnamePatternRule>(
         optional_scheme_, "*" + hostname_pattern_, optional_port_);
   }

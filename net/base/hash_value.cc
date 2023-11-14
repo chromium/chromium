@@ -47,7 +47,7 @@ HashValue::HashValue(const SHA256HashValue& hash)
 }
 
 bool HashValue::FromString(std::string_view value) {
-  if (!base::StartsWith(value, kSha256Slash)) {
+  if (!value.starts_with(kSha256Slash)) {
     return false;
   }
 

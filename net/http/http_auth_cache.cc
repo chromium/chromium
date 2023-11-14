@@ -36,8 +36,7 @@ std::string GetParentDirectory(const std::string& path) {
 bool IsEnclosingPath(const std::string& container, const std::string& path) {
   DCHECK(container.empty() || *(container.end() - 1) == '/');
   return ((container.empty() && path.empty()) ||
-          (!container.empty() &&
-           base::StartsWith(path, container, base::CompareCase::SENSITIVE)));
+          (!container.empty() && path.starts_with(container)));
 }
 
 #if DCHECK_IS_ON()

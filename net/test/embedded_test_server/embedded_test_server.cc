@@ -85,8 +85,7 @@ std::unique_ptr<HttpResponse> ServeResponseForSubPaths(
     const std::string& content,
     const HttpRequest& request) {
   if (request.GetURL().path() != expected_path &&
-      !base::StartsWith(request.GetURL().path(), expected_path + "/",
-                        base::CompareCase::SENSITIVE)) {
+      !request.GetURL().path().starts_with(expected_path + "/")) {
     return nullptr;
   }
 
@@ -697,8 +696,7 @@ void EmbeddedTestServer::HandleRequest(
 
 GURL EmbeddedTestServer::GetURL(base::StringPiece relative_url) const {
   DCHECK(Started()) << "You must start the server first.";
-  DCHECK(base::StartsWith(relative_url, "/", base::CompareCase::SENSITIVE))
-      << relative_url;
+  DCHECK(relative_url.starts_with("/")) << relative_url;
   return base_url_.Resolve(relative_url);
 }
 

@@ -235,7 +235,7 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
     // See https://crbug.com/1240237 for more context.
     bool use_alternative_getifaddrs =
         std::string_view(build_info->brand()) == "samsung" &&
-        base::StartsWith(build_info->hardware(), "mt");
+        std::string_view(build_info->hardware()).starts_with("mt");
     bool ret = internal::GetNetworkListUsingGetifaddrs(
         networks, policy, use_alternative_getifaddrs);
     // Use GetInterfaceConnectionType() to sharpen up interface types.

@@ -3668,8 +3668,7 @@ void HttpCache::Transaction::RecordHistograms() {
         CACHE_STATUS_HISTOGRAMS(".CSSThirdParty");
       }
       CACHE_STATUS_HISTOGRAMS(".CSS");
-    } else if (base::StartsWith(mime_type, "image/",
-                                base::CompareCase::SENSITIVE)) {
+    } else if (mime_type.starts_with("image/")) {
       int64_t content_length = response_headers->GetContentLength();
       if (content_length >= 0 && content_length < 100) {
         CACHE_STATUS_HISTOGRAMS(".TinyImage");
@@ -3677,10 +3676,8 @@ void HttpCache::Transaction::RecordHistograms() {
         CACHE_STATUS_HISTOGRAMS(".NonTinyImage");
       }
       CACHE_STATUS_HISTOGRAMS(".Image");
-    } else if (base::EndsWith(mime_type, "javascript",
-                              base::CompareCase::SENSITIVE) ||
-               base::EndsWith(mime_type, "ecmascript",
-                              base::CompareCase::SENSITIVE)) {
+    } else if (mime_type.ends_with("javascript") ||
+               mime_type.ends_with("ecmascript")) {
       if (is_third_party) {
         CACHE_STATUS_HISTOGRAMS(".JavaScriptThirdParty");
       }
@@ -3690,11 +3687,9 @@ void HttpCache::Transaction::RecordHistograms() {
         CACHE_STATUS_HISTOGRAMS(".FontThirdParty");
       }
       CACHE_STATUS_HISTOGRAMS(".Font");
-    } else if (base::StartsWith(mime_type, "audio/",
-                                base::CompareCase::SENSITIVE)) {
+    } else if (mime_type.starts_with("audio/")) {
       CACHE_STATUS_HISTOGRAMS(".Audio");
-    } else if (base::StartsWith(mime_type, "video/",
-                                base::CompareCase::SENSITIVE)) {
+    } else if (mime_type.starts_with("video/")) {
       CACHE_STATUS_HISTOGRAMS(".Video");
     }
   }

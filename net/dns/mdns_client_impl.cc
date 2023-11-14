@@ -68,11 +68,11 @@ void RecordQueryMetric(mdnsQueryType query_type, std::string_view host) {
       "_uscan._tcp.local",
   });
 
-  if (base::EndsWith(host, "_googlecast._tcp.local")) {
+  if (host.ends_with("_googlecast._tcp.local")) {
     base::UmaHistogramEnumeration("Network.Mdns.Googlecast", query_type);
   } else if (base::ranges::any_of(kPrintScanServices,
                                   [&host](std::string_view service) {
-                                    return base::EndsWith(host, service);
+                                    return host.ends_with(service);
                                   })) {
     base::UmaHistogramEnumeration("Network.Mdns.PrintScan", query_type);
   } else {

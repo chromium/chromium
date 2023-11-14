@@ -309,8 +309,9 @@ bool IsSubdomainOf(std::string_view subdomain, std::string_view superdomain) {
 
   // Superdomain must be suffix of subdomain, and the last character not
   // included in the matching substring must be a dot.
-  if (!base::EndsWith(subdomain, superdomain))
+  if (!subdomain.ends_with(superdomain)) {
     return false;
+  }
   subdomain.remove_suffix(superdomain.length());
   return subdomain.back() == '.';
 }
@@ -508,8 +509,9 @@ bool IsGoogleHost(std::string_view host) {
     // Here it's possible to get away with faster case-sensitive comparisons
     // because the list above is all lowercase, and a GURL's host name will
     // always be canonicalized to lowercase as well.
-    if (base::EndsWith(host, suffix))
+    if (host.ends_with(suffix)) {
       return true;
+    }
   }
   return false;
 }

@@ -4,8 +4,9 @@
 
 #include "net/spdy/spdy_session_test_util.h"
 
+#include <string_view>
+
 #include "base/location.h"
-#include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
 
 namespace net {
@@ -27,10 +28,10 @@ void SpdySessionTestTaskObserver::WillProcessTask(
 
 void SpdySessionTestTaskObserver::DidProcessTask(
     const base::PendingTask& pending_task) {
-  if (base::EndsWith(pending_task.posted_from.file_name(), file_name_,
-                     base::CompareCase::SENSITIVE) &&
-      base::EndsWith(pending_task.posted_from.function_name(), function_name_,
-                     base::CompareCase::SENSITIVE)) {
+  if (std::string_view(pending_task.posted_from.file_name())
+          .ends_with(file_name_) &&
+      std::string_view(pending_task.posted_from.function_name())
+          .ends_with(function_name_)) {
     ++executed_count_;
   }
 }

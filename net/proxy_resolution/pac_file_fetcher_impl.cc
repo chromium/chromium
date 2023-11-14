@@ -81,7 +81,7 @@ void ConvertResponseToUTF16(const std::string& charset,
     // Guess the charset by looking at the BOM.
     base::StringPiece bytes_str(bytes);
     for (const auto& bom : kBomMappings) {
-      if (base::StartsWith(bytes_str, bom.prefix)) {
+      if (bytes_str.starts_with(bom.prefix)) {
         return ConvertResponseToUTF16(
             bom.charset,
             // Strip the BOM in the converted response.

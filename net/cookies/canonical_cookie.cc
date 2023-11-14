@@ -706,7 +706,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   // Check for "__" prefixed names, excluding the cookie prefixes.
   bool name_prefixed_with_underscores =
       (prefix_case_insensitive == CanonicalCookie::COOKIE_PREFIX_NONE) &&
-      base::StartsWith(parsed_cookie.Name(), "__");
+      parsed_cookie.Name().starts_with("__");
 
   UMA_HISTOGRAM_BOOLEAN("Cookie.DoubleUnderscorePrefixedName",
                         name_prefixed_with_underscores);

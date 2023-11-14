@@ -187,8 +187,7 @@ bool ContainsIcannNameCollisionIp(const std::vector<IPEndPoint>& endpoints) {
 
 // True if |hostname| ends with either ".local" or ".local.".
 bool ResemblesMulticastDNSName(base::StringPiece hostname) {
-  return base::EndsWith(hostname, ".local") ||
-         base::EndsWith(hostname, ".local.");
+  return hostname.ends_with(".local") || hostname.ends_with(".local.");
 }
 
 bool ConfigureAsyncDnsNoFallbackFieldTrial() {
