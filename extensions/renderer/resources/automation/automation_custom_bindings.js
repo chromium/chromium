@@ -100,7 +100,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     }
     const tree = AutomationRootNode.getOrCreate(focusedNodeInfo.treeId);
     if (tree) {
-      callback(privates(tree).impl.get(focusedNodeInfo.nodeId));
+      callback(tree.get(focusedNodeInfo.nodeId));
       return;
     }
   });
@@ -113,7 +113,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     }
     const tree = AutomationRootNode.getOrCreate(focusedNodeInfo.treeId);
     if (tree) {
-      callback(privates(tree).impl.get(focusedNodeInfo.nodeId));
+      callback(tree.get(focusedNodeInfo.nodeId));
     }
   });
 
@@ -142,23 +142,23 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   });
 
   apiFunctions.setHandleRequest('setDocumentSelection', function(params) {
-    const anchorNodeImpl = privates(params.anchorObject).impl;
-    const focusNodeImpl = privates(params.focusObject).impl;
-    if (anchorNodeImpl.treeID !== focusNodeImpl.treeID) {
+    const anchorNode = params.anchorObject;
+    const focusNode = params.focusObject;
+    if (anchorNode.treeID !== focusNode.treeID) {
       throw new Error('Selection anchor and focus must be in the same tree.');
     }
-    if (anchorNodeImpl.treeID === desktopId) {
+    if (anchorNode.treeID === desktopId) {
       throw new Error('Use AutomationNode.setSelection to set the selection ' +
           'in the desktop tree.');
     }
     automationInternal.performAction(
         {
-          treeID: anchorNodeImpl.treeID,
-          automationNodeID: anchorNodeImpl.id,
+          treeID: anchorNode.treeID,
+          automationNodeID: anchorNode.id,
           actionType: 'setSelection',
         },
         {
-          focusNodeID: focusNodeImpl.id,
+          focusNodeID: focusNode.id,
           anchorOffset: params.anchorOffset,
           focusOffset: params.focusOffset,
         });
@@ -180,10 +180,9 @@ automationInternal.onChildTreeID.addListener(function(childTreeId) {
   // browser process and set up a callback when it loads to attach that
   // tree as a child of this node and fire appropriate events.
   automationUtil.storeTreeCallback(childTreeId, function(root) {
-    const rootImpl = privates(root).impl;
-    rootImpl.dispatchEvent('loadComplete', 'page');
-    if (rootImpl.parent) {
-      privates(rootImpl.parent).impl.dispatchEvent('childrenChanged');
+    root.dispatchEvent('loadComplete', 'page');
+    if (root.parent) {
+      root.parent.dispatchEvent('childrenChanged');
     }
   }, true);
 
@@ -197,7 +196,7 @@ automationInternal.onTreeChange.addListener(function(
     return;
   }
 
-  const node = privates(tree).impl.get(nodeID);
+  const node = tree.get(nodeID);
   if (!node) {
     return;
   }
@@ -222,7 +221,7 @@ automationInternal.onNodesRemoved.addListener(function(treeID, nodeIDs) {
   }
 
   for (let i = 0; i < nodeIDs.length; i++) {
-    privates(tree).impl.remove(nodeIDs[i]);
+    tree.remove(nodeIDs[i]);
   }
 });
 
@@ -249,10 +248,10 @@ automationInternal.onAccessibilityEvent.addListener(function(eventParams) {
   if (eventParams.eventType == 'mediaStartedPlaying' ||
       eventParams.eventType == 'mediaStoppedPlaying') {
     // These events are global to the tree.
-    eventParams.targetID = privates(targetTree).impl.id;
+    eventParams.targetID = targetTree.id;
   }
 
-  privates(targetTree).impl.onAccessibilityEvent(eventParams);
+  targetTree.onAccessibilityEvent(eventParams);
 
   // If we're not waiting on a callback, we can early out here.
   if (!(id in idToCallback)) {
@@ -280,7 +279,7 @@ automationInternal.onAccessibilityTreeDestroyed.addListener(function(id) {
   // Destroy the AutomationRootNode.
   const targetTree = AutomationRootNode.get(id);
   if (targetTree) {
-    privates(targetTree).impl.destroy();
+    targetTree.destroy();
     AutomationRootNode.destroy(id);
   } else {
     logging.WARNING('no targetTree to destroy');
@@ -302,7 +301,7 @@ automationInternal.onActionResult.addListener(function(
     return;
   }
 
-  privates(targetTree).impl.onActionResult(requestID, result);
+  targetTree.onActionResult(requestID, result);
 });
 
 automationInternal.onGetTextLocationResult.addListener(function(
@@ -311,5 +310,5 @@ automationInternal.onGetTextLocationResult.addListener(function(
   if (!targetTree) {
     return;
   }
-  privates(targetTree).impl.onGetTextLocationResult(textLocationParams);
+  targetTree.onGetTextLocationResult(textLocationParams);
 });
