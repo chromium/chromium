@@ -41,6 +41,9 @@ class ArcResizeLockManager : public KeyedService,
   ArcResizeLockManager& operator=(const ArcResizeLockManager&) = delete;
   ~ArcResizeLockManager() override;
 
+  // KeyedService:
+  void Shutdown() override;
+
   // aura::EnvObserver:
   void OnWindowInitialized(aura::Window* new_window) override;
 
@@ -54,9 +57,10 @@ class ArcResizeLockManager : public KeyedService,
                              ui::PropertyChangeReason reason) override;
   void OnWindowDestroying(aura::Window* window) override;
 
-  void SetPrefDelegate(ArcResizeLockPrefDelegate* delegate) {
-    pref_delegate_ = delegate;
-  }
+  // Sets `pref_delegate_` to `delegate`, ensuring that it was not already set.
+  // Also, calls `compat_mode_button_controller_->SetPrefDelegate()` with
+  // `delegate`.
+  void SetPrefDelegate(ArcResizeLockPrefDelegate* delegate);
 
   static void EnsureFactoryBuilt();
 
@@ -72,6 +76,8 @@ class ArcResizeLockManager : public KeyedService,
   virtual void ShowSplashScreenDialog(aura::Window* window,
                                       bool is_fully_locked);
 
+  // TODO(b/310695064): Resolve DanglingUntriaged by separating
+  // ArcAppListPrefsDelegate from ArcAppListPrefs.
   raw_ptr<ArcResizeLockPrefDelegate, DanglingUntriaged | ExperimentalAsh>
       pref_delegate_{nullptr};
 

@@ -6,8 +6,10 @@
 #define ASH_COMPONENTS_ARC_COMPAT_MODE_COMPAT_MODE_BUTTON_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/components/arc/compat_mode/resize_toggle_menu.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace ash {
@@ -28,6 +30,19 @@ class ArcResizeLockPrefDelegate;
 
 class CompatModeButtonController {
  public:
+  // Struct that represents the state for the `CompatModeButton` or a similar
+  // view.
+  struct ButtonState {
+    ButtonState();
+    explicit ButtonState(bool enable);
+    ButtonState(bool enable, const std::u16string& tooltip_text);
+    ButtonState(const ButtonState& other);
+    ~ButtonState();
+
+    bool enable;  // Whether to enable the button.
+    absl::optional<std::u16string> tooltip_text;  // The button's tooltip text.
+  };
+
   CompatModeButtonController();
   CompatModeButtonController(const CompatModeButtonController&) = delete;
   CompatModeButtonController& operator=(const CompatModeButtonController&) =
@@ -35,11 +50,23 @@ class CompatModeButtonController {
   virtual ~CompatModeButtonController();
 
   // virtual for unittest.
-  virtual void Update(ArcResizeLockPrefDelegate* pref_delegate,
-                      aura::Window* window);
+  virtual void Update(aura::Window* window);
 
   // virtual for unittest.
   virtual void OnButtonPressed();
+
+  // Clears the `pref_delegate_`. Called when `ArcResizeLockManager` keyed
+  // service is shutting down, so the delegate isn't being freed with invalid
+  // memory.
+  void ClearPrefDelegate();
+
+  // Sets `pref_delegate_` to `delegate`, ensuring that it was not already set.
+  void SetPrefDelegate(ArcResizeLockPrefDelegate* pref_delegate);
+
+  // Using the `window`'s `ash::kArcResizeLockTypeKey` window property, returns
+  // the updated `ButtonState` for the `CompatModeButton`, or a similar view. If
+  // the button should not be updated, then it returns `std::nullopt`.
+  std::optional<ButtonState> GetButtonState(aura::Window* window);
 
   void UpdateArrowIcon(aura::Window* window, bool widget_visibility);
 
@@ -49,13 +76,13 @@ class CompatModeButtonController {
   // virtual for unittest.
   virtual chromeos::FrameHeader* GetFrameHeader(aura::Window* window);
 
-  void UpdateAshAccelerator(ArcResizeLockPrefDelegate* pref_delegate,
-                            aura::Window* window);
+  void UpdateAshAccelerator(aura::Window* window);
 
-  void ToggleResizeToggleMenu(aura::Window* window,
-                              ArcResizeLockPrefDelegate* pref_delegate);
+  void ToggleResizeToggleMenu(aura::Window* window);
 
   std::unique_ptr<ResizeToggleMenu> resize_toggle_menu_;
+
+  raw_ptr<ArcResizeLockPrefDelegate, ExperimentalAsh> pref_delegate_;
 
   bool visible_when_button_pressed_{false};
 

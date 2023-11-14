@@ -66,8 +66,7 @@ class TestCompatModeButtonController : public CompatModeButtonController {
   }
 
   // CompatModeButtonController:
-  void Update(ArcResizeLockPrefDelegate* pref_delegate,
-              aura::Window* window) override {
+  void Update(aura::Window* window) override {
     update_compat_mode_button_called.insert(window);
   }
 
