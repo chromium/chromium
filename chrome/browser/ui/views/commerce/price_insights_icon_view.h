@@ -79,10 +79,6 @@ class PriceInsightsIconView : public PageActionIconView {
   // Boolean that tracks whether we should extend the duration for which the
   // label is shown when it animates in.
   bool should_extend_label_shown_duration_ = false;
-
-  // Last shown label type.
-  PriceInsightsIconView::PriceInsightsIconLabelType last_shown_label_type_ =
-      PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_INSIGHTS_ICON_VIEW_H_

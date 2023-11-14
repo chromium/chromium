@@ -157,6 +157,8 @@ void ShoppingListUiTabHelper::DidFinishNavigation(
   is_first_load_for_nav_finished_ = false;
   price_insights_info_.reset();
   icon_use_recorded_for_page_ = false;
+  price_insights_label_type_ =
+      PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
 
   MakeShoppingInsightsSidePanelUnavailable();
 
@@ -434,6 +436,11 @@ void ShoppingListUiTabHelper::MaybeComputePageActionToExpand() {
 
   is_page_action_expansion_computed_for_page_ = true;
 
+  if (ShouldShowPriceInsightsIconView()) {
+    base::UmaHistogramEnumeration("Commerce.PriceInsights.OmniboxIconShown",
+                                  price_insights_label_type_);
+  }
+
   UpdatePriceTrackingIconView();
   UpdatePriceInsightsIconView();
 }
@@ -494,6 +501,8 @@ void ShoppingListUiTabHelper::OnPriceInsightsIconClicked() {
   } else {
     side_panel_ui->Show(SidePanelEntryId::kShoppingInsights);
     if (price_insights_info_.has_value()) {
+      base::UmaHistogramEnumeration("Commerce.PriceInsights.OmniboxIconClicked",
+                                    price_insights_label_type_);
       base::UmaHistogramBoolean(
           "Commerce.PriceInsights.SidePanelOpenWithMultipleCatalogs",
           price_insights_info_->has_multiple_catalogs);
@@ -687,13 +696,8 @@ void ShoppingListUiTabHelper::ComputePageActionToExpand() {
       tracker->Dismissed(
           feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature);
       page_action_to_expand_ = PageActionIconType::kPriceInsights;
-      base::UmaHistogramEnumeration(
-          "Commerce.PriceInsights.OmniboxIconShownLabel", label_type);
+      price_insights_label_type_ = label_type;
       return;
-    } else {
-      base::UmaHistogramEnumeration(
-          "Commerce.PriceInsights.OmniboxIconShownLabel",
-          PriceInsightsIconView::PriceInsightsIconLabelType::kNone);
     }
   }
 
