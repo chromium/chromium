@@ -33,4 +33,4 @@ void OverrideFieldTrialParamsForTesting();
 
 }  // namespace compose
 
-#endif  // COMPONENTS_FEED_CORE_V2_CONFIG_H_
+#endif  // COMPONENTS_COMPOSE_CORE_BROWSER_CONFIG_H_
