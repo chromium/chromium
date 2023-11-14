@@ -266,8 +266,6 @@ bool IsDeviceBlocked(const std::string& name) {
     if (base::StartsWith(name, kBlockedCameraNames[i],
                          base::CompareCase::INSENSITIVE_ASCII)) {
       DVLOG(1) << "Enumerated blocked device: " << name;
-      UMA_HISTOGRAM_ENUMERATION("Media.VideoCapture.BlacklistedDevice", i,
-                                BLOCKED_CAMERA_MAX + 1);
       return true;
     }
   }
