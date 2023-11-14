@@ -5475,6 +5475,7 @@
                         "ShortcutBoostNonTopHitThreshold": "2",
                         "ShortcutBoostSearchScore": "1414",
                         "ShortcutBoostUrlScore": "1414",
+                        "omnibox_history_cluster_provider_inherit_search_match_score": "true",
                         "omnibox_history_cluster_provider_score": "1414"
                     },
                     "enable_features": [
