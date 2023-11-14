@@ -1986,7 +1986,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/eche_app/app',
-        'version': 'i58yHfqcc04Op-UZnR16jEzJWjLKKic5rbQeWf3unA4C',
+        'version': 'j21Q20N2fPKKIGhlZfSSFdsX_oevxknaW6qiXYZl8QQC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
