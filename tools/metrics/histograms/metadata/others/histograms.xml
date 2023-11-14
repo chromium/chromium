@@ -3544,17 +3544,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DefaultBrowser.Win10ChooserInvoked" enum="BooleanSuccess"
-    expires_after="M85">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    When changing the default browser on Windows 10, records whether the browser
-    chooser is successfully invoked when opening the settings page. This
-    histogram is only recorded when the Win10AcceleratedDefaultBrowserFlow
-    experiment is enabled.
-  </summary>
-</histogram>
-
 <histogram name="DefaultProtocolClient.SetDefaultResult2"
     enum="DefaultWebClientState" expires_after="M77">
   <owner>pmonette@chromium.org</owner>
