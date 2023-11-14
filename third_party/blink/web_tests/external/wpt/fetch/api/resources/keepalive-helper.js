@@ -112,3 +112,67 @@ function assertStashedTokenAsync(
         }));
   }, testName);
 }
+
+/**
+ * In an iframe, and in `load` event handler, test to fetch a keepalive URL that
+ * involves in redirect to another URL.
+ *
+ * `unloadIframe` to unload the iframe before verifying stashed token to
+ * simulate the situation that unloads after fetching. Note that this test is
+ * different from `keepaliveRedirectInUnloadTest()` in that the the latter
+ * performs fetch() call directly in `unload` event handler, while this test
+ * does it in `load`.
+ */
+function keepaliveRedirectTest(desc, {
+  origin1 = '',
+  origin2 = '',
+  withPreflight = false,
+  unloadIframe = false,
+  expectFetchSucceed = true,
+} = {}) {
+  desc = `[keepalive][iframe][load] ${desc}` +
+      (unloadIframe ? ' [unload at end]' : '');
+  promise_test(async (test) => {
+    const tokenToStash = token();
+    const iframe = document.createElement('iframe');
+    iframe.src = getKeepAliveAndRedirectIframeUrl(
+        tokenToStash, origin1, origin2, withPreflight);
+    document.body.appendChild(iframe);
+    await iframeLoaded(iframe);
+    assert_equals(await getTokenFromMessage(), tokenToStash);
+    if (unloadIframe) {
+      iframe.remove();
+    }
+
+    assertStashedTokenAsync(
+        desc, tokenToStash, {expectTokenExist: expectFetchSucceed});
+  }, `${desc}; setting up`);
+}
+
+/**
+ * Opens a different site window, and in `unload` event handler, test to fetch
+ * a keepalive URL that involves in redirect to another URL.
+ */
+function keepaliveRedirectInUnloadTest(desc, {
+  origin1 = '',
+  origin2 = '',
+  url2 = '',
+  withPreflight = false,
+  expectFetchSucceed = true
+} = {}) {
+  desc = `[keepalive][new window][unload] ${desc}`;
+
+  promise_test(async (test) => {
+    const targetUrl =
+        `${HTTP_NOTSAMESITE_ORIGIN}/fetch/api/resources/keepalive-redirect-window.html?` +
+        `origin1=${origin1}&` +
+        `origin2=${origin2}&` +
+        `url2=${url2}&` + (withPreflight ? `with-headers` : ``);
+    const w = window.open(targetUrl);
+    const token = await getTokenFromMessage();
+    w.close();
+
+    assertStashedTokenAsync(
+        desc, token, {expectTokenExist: expectFetchSucceed});
+  }, `${desc}; setting up`);
+}

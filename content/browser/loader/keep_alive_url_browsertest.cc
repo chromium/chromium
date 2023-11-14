@@ -297,6 +297,27 @@ class KeepAliveURLBrowserTest
     keepalive_request_handler->Done();
   }
 
+  // Navigates to a page specified by `keepalive_page_url`, which must fire a
+  // fetch keepalive request.
+  // This method ensure request handling happens. After that, `response` will be
+  // sent back.
+  // `keepalive_request_handler` must handle the fetch keepalive request.
+  void LoadPageWithKeepAliveRequestAndSendResponse(
+      const GURL& keepalive_page_url,
+      net::test_server::ControllableHttpResponse* keepalive_request_handler,
+      const std::string& response) {
+    ASSERT_TRUE(NavigateToURL(web_contents(), keepalive_page_url));
+    RenderFrameHostImplWrapper rfh_1(current_frame_host());
+    // Ensure the keepalive request is sent.
+    keepalive_request_handler->WaitForRequest();
+    ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
+    ASSERT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
+
+    // Send back response to terminate in-browser request handling.
+    keepalive_request_handler->Send(response);
+    keepalive_request_handler->Done();
+  }
+
   GURL GetKeepAlivePageURL(
       const std::string& method,
       size_t num_requests = 1,
@@ -686,6 +707,89 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   // The redirect doesn't match CSP source from the 1st page, so the loader is
   // terminated.
   loaders_observer().WaitForTotalOnCompleteProcessed({net::ERR_BLOCKED_BY_CSP});
+  EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+}
+
+// Verifies a redirect to mixed content target URL is not loaded.
+IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest, ReceiveMixedContentRedirect) {
+  SetUseHttps();
+  const std::string method = GetParam();
+  auto request_handler =
+      std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
+  ASSERT_TRUE(server()->Start());
+  // Sets up a target URL that only has different scheme.
+  // https://a.test:<port>/beacon-redirected
+  std::string same_content_target =
+      server()->GetURL(kPrimaryHost, "/beacon-redirected").spec();
+  // http://a.test:<port>/beacon-redirected
+  std::string mixed_content_target = same_content_target;
+  base::ReplaceSubstringsAfterOffset(&mixed_content_target, 0, "https", "http");
+
+  // Sets up redirects according to the following redirect chain:
+  // fetch("https://a.test:<port>/beacon", keepalive: true)
+  // --> http://a.test:<port>/beacon-redirected  => blocked by mixed content
+  // Although it's also a CORS request, it will be blocked by mixed content
+  // before reaching network service.
+  LoadPageWithKeepAliveRequestAndSendResponse(
+      GetKeepAlivePageURL(method), request_handler.get(),
+      base::StringPrintf(k301Response, mixed_content_target.c_str()));
+
+  // The redirect is mixed content, so the redirect is aborted.
+  loaders_observer().WaitForTotalOnReceiveRedirectForwarded(1);
+  loaders_observer().WaitForTotalOnReceiveResponseProcessed(0);
+  // Note that the renderer terminates without waiting for error forwarded from
+  // browser as it also calculates the error by itself.
+  loaders_observer().WaitForTotalOnCompleteForwarded({});
+  // The loader in browser is only terminated after renderer terminates its
+  // loader. There is no way to wait for such disconnection mojo message
+  // forwarded to browser at this moment.
+}
+
+// Verifies a redirect to mixed content target URL is allowed by
+// KeepAliveURLLoader if the page making the fetch keepalive request has been
+// unloaded, the same as pre-migration approach https://crrev.com/c/518743.
+//
+// Note that the current implementation in Blink & content cannot handle mixed
+// content checking without the RFHI of the page that loads the request.
+IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
+                       ReceiveMixedContentRedirectAfterUnload) {
+  SetUseHttps();
+  const std::string method = GetParam();
+  auto request_handler =
+      std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
+  auto redirected_request_handler =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          embedded_test_server(), "/beacon-redirected");
+  ASSERT_TRUE(server()->Start());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Sets up a mixed content target URL that only has different scheme.
+  // http://a.test:<port>/beacon-redirected
+  std::string mixed_content_target =
+      embedded_test_server()->GetURL(kPrimaryHost, "/beacon-redirected").spec();
+
+  // Sets up redirects according to the following redirect chain:
+  // fetch("https://a.test:<port>/beacon", keepalive: true)
+  // --> http://a.test:<port>/beacon-redirected
+  LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
+      GetKeepAlivePageURL(method), request_handler.get(),
+      base::StringPrintf(k301Response, mixed_content_target.c_str()));
+
+  redirected_request_handler->WaitForRequest();
+  redirected_request_handler->Send(
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/html; charset=utf-8\r\n"
+      // Necessary as this is a response to cross-origin request.
+      "Access-Control-Allow-Origin: *\r\n"
+      "\r\n"
+      "Acked!");
+  redirected_request_handler->Done();
+
+  // The in-browser logic should process the redirect & response, as there is no
+  // mixed content checking after unload.
+  // TODO(crbug.com/1500989): Revisit the checks after the bug is fixed.
+  loaders_observer().WaitForTotalOnReceiveRedirectProcessed(1);
+  loaders_observer().WaitForTotalOnReceiveResponseProcessed(1);
+  EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
 }
 

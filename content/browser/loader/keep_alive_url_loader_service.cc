@@ -152,8 +152,8 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
         // `context` can be destroyed right at the end of this method if the
         // caller renderer is already unloaded, meaning `loader` also needs to
         // hold another refptr to ensure `PolicyContainerHost` alive.
-        context->policy_container_host, service_->browser_context_,
-        CreateThrottles(resource_request),
+        context->policy_container_host, context->weak_document_ptr,
+        service_->browser_context_, CreateThrottles(resource_request),
         base::PassKey<KeepAliveURLLoaderService>());
     // Adds a new loader receiver to the set held by `this`, binding the pending
     // `receiver` from a renderer to `raw_loader` with `loader` as its context.
