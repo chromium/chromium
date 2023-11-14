@@ -14,12 +14,12 @@ This is a testharness.js-based test.
 [PASS] .grid 13
 [PASS] .grid 14
 [PASS] .grid 15
-[FAIL] .grid 16
-  assert_equals: \n<div class="grid border border-box pad-percent" style="width: min-content; height: min-content;" data-expected-width="300" data-expected-height="160">\n    <div class="item" data-offset-x="130" data-offset-y="80" data-expected-width="100" data-expected-height="50"></div>\n  </div>\nwidth expected 300 but got 260
+[FAIL] .grid 16: Percentage padding, min-content
+  assert_equals: \n<div class="grid border border-box pad-percent" style="width: min-content; height: min-content;" data-expected-width="300" data-expected-height="160" title="Percentage padding, min-content">\n    <div class="item" data-offset-x="130" data-offset-y="80" data-expected-width="100" data-expected-height="50"></div>\n  </div>\nwidth expected 300 but got 260
 [PASS] .grid 17
 [PASS] .grid 18
-[FAIL] .grid 19
-  assert_equals: \n<div class="grid border border-box pad-percent" style="width: max-content; height: max-content;" data-expected-width="300" data-expected-height="160">\n    <div class="item" data-offset-x="130" data-offset-y="80" data-expected-width="100" data-expected-height="50"></div>\n  </div>\nwidth expected 300 but got 260
+[FAIL] .grid 19: Percentage padding, max-content
+  assert_equals: \n<div class="grid border border-box pad-percent" style="width: max-content; height: max-content;" data-expected-width="300" data-expected-height="160" title="Percentage padding, max-content">\n    <div class="item" data-offset-x="130" data-offset-y="80" data-expected-width="100" data-expected-height="50"></div>\n  </div>\nwidth expected 300 but got 260
 [PASS] .grid 20
 Harness: the test ran to completion.
 
