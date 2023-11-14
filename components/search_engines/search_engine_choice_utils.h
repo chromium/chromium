@@ -68,7 +68,14 @@ enum class SearchEngineChoiceScreenEvents {
   kLearnMoreWasDisplayed = 5,
   // The "Learn more" screen was displayed on the FRE-specific screen.
   kFreLearnMoreWasDisplayed = 6,
-  kMaxValue = kFreLearnMoreWasDisplayed,
+  // The profile creation specific flavor of the screen was displayed.
+  kProfileCreationChoiceScreenWasDisplayed = 7,
+  // The user clicked `Set as default` on the profile creation specific screen.
+  kProfileCreationDefaultWasSet = 8,
+  // The "Learn more" screen was displayed on the profile creation specific
+  // screen.
+  kProfileCreationLearnMoreDisplayed = 9,
+  kMaxValue = kProfileCreationLearnMoreDisplayed,
 };
 
 // Profile properties that need to be passed to

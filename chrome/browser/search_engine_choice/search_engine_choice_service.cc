@@ -112,8 +112,7 @@ void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id,
   browsers_with_open_dialogs_.clear();
 
   // Log the view entry point in which the choice was made.
-  search_engines::SearchEngineChoiceScreenEvents event =
-      search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet;
+  search_engines::SearchEngineChoiceScreenEvents event;
   switch (entry_point) {
     case EntryPoint::kDialog:
       event = search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet;
@@ -123,6 +122,8 @@ void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id,
       choice_made_in_profile_picker_ = true;
       break;
     case EntryPoint::kProfileCreation:
+      event = search_engines::SearchEngineChoiceScreenEvents::
+          kProfileCreationDefaultWasSet;
       choice_made_in_profile_picker_ = true;
       break;
   }
@@ -281,8 +282,7 @@ bool SearchEngineChoiceService::IsUrlSuitableForDialog(GURL url) {
 
 void SearchEngineChoiceService::NotifyLearnMoreLinkClicked(
     EntryPoint entry_point) {
-  search_engines::SearchEngineChoiceScreenEvents event =
-      search_engines::SearchEngineChoiceScreenEvents::kLearnMoreWasDisplayed;
+  search_engines::SearchEngineChoiceScreenEvents event;
 
   switch (entry_point) {
     case EntryPoint::kDialog:
@@ -294,6 +294,8 @@ void SearchEngineChoiceService::NotifyLearnMoreLinkClicked(
           kFreLearnMoreWasDisplayed;
       break;
     case EntryPoint::kProfileCreation:
+      event = search_engines::SearchEngineChoiceScreenEvents::
+          kProfileCreationLearnMoreDisplayed;
       break;
   }
   RecordChoiceScreenEvent(event);

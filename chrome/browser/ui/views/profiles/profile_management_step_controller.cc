@@ -331,12 +331,15 @@ class SearchEngineChoiceStepController
               .Then(std::move(navigation_finished_closure));
     }
 
+    search_engines::SearchEngineChoiceScreenEvents choice_screen_event =
+        search_engines::SearchEngineChoiceScreenEvents::
+            kProfileCreationChoiceScreenWasDisplayed;
     if (entry_point_ ==
         SearchEngineChoiceService::EntryPoint::kFirstRunExperience) {
-      search_engines::RecordChoiceScreenEvent(
-          search_engines::SearchEngineChoiceScreenEvents::
-              kFreChoiceScreenWasDisplayed);
+      choice_screen_event = search_engines::SearchEngineChoiceScreenEvents::
+          kFreChoiceScreenWasDisplayed;
     }
+    search_engines::RecordChoiceScreenEvent(choice_screen_event);
 
     host()->ShowScreen(web_contents_,
                        GURL(chrome::kChromeUISearchEngineChoiceURL),
