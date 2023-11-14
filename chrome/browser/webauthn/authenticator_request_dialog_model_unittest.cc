@@ -161,6 +161,7 @@ enum class TransportAvailabilityParam {
   kTwoRecognizedCreds,
   kOnePhoneRecognizedCred,
   kTwoPhoneRecognizedCred,
+  kOneTouchIDRecognizedCred,
   kEmptyAllowList,
   kOnlyInternal,
   kOnlyHybridOrInternal,
@@ -178,6 +179,7 @@ enum class TransportAvailabilityParam {
   kHasICloudKeychainCreds,
   kCreateInICloudKeychain,
   kNoTouchId,
+  kUVRequired,
 };
 
 base::StringPiece TransportAvailabilityParamToString(
@@ -195,6 +197,8 @@ base::StringPiece TransportAvailabilityParamToString(
       return "kOnePhoneRecognizedCred";
     case TransportAvailabilityParam::kTwoPhoneRecognizedCred:
       return "kTwoPhoneRecognizedCred";
+    case TransportAvailabilityParam::kOneTouchIDRecognizedCred:
+      return "kOneTouchIDRecognizedCred";
     case TransportAvailabilityParam::kEmptyAllowList:
       return "kEmptyAllowList";
     case TransportAvailabilityParam::kOnlyInternal:
@@ -229,6 +233,8 @@ base::StringPiece TransportAvailabilityParamToString(
       return "kCreateInICloudKeychain";
     case TransportAvailabilityParam::kNoTouchId:
       return "kNoTouchId";
+    case TransportAvailabilityParam::kUVRequired:
+      return "kUVRequired";
   }
 }
 
@@ -281,6 +287,8 @@ const device::DiscoverableCredentialMetadata
     kWinCred1(device::AuthenticatorType::kWinNative, "rp.com", {0}, kUser1);
 const device::DiscoverableCredentialMetadata
     kWinCred2(device::AuthenticatorType::kWinNative, "rp.com", {1}, kUser2);
+const device::DiscoverableCredentialMetadata
+    kTouchIDCred1(device::AuthenticatorType::kTouchID, "rp.com", {4}, kUser1);
 
 AuthenticatorRequestDialogModel::Mechanism::CredentialInfo CredentialInfoFrom(
     const device::DiscoverableCredentialMetadata& metadata) {
@@ -323,6 +331,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto ickc_cred1 = CredentialInfoFrom(kCred1FromICloudKeychain);
   const auto wincred1 = CredentialInfoFrom(kWinCred1);
   const auto wincred2 = CredentialInfoFrom(kWinCred2);
+  [[maybe_unused]] const auto touchid_cred1 = CredentialInfoFrom(kTouchIDCred1);
   const auto v1 = TransportAvailabilityParam::kHasCableV1Extension;
   const auto v2 = TransportAvailabilityParam::kHasCableV2Extension;
   const auto has_winapi =
@@ -333,6 +342,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto maybe_plat =
       TransportAvailabilityParam::kMaybeHasPlatformCredential;
   const auto one_cred = TransportAvailabilityParam::kOneRecognizedCred;
+  [[maybe_unused]] const auto one_touchid_cred =
+      TransportAvailabilityParam::kOneTouchIDRecognizedCred;
   const auto two_cred = TransportAvailabilityParam::kTwoRecognizedCreds;
   const auto one_phone_cred =
       TransportAvailabilityParam::kOnePhoneRecognizedCred;
@@ -356,6 +367,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       TransportAvailabilityParam::kNoTouchId;
   [[maybe_unused]] const auto ickc_creds =
       TransportAvailabilityParam::kHasICloudKeychainCreds;
+  [[maybe_unused]] const auto uv_req = TransportAvailabilityParam::kUVRequired;
   using c = AuthenticatorRequestDialogModel::Mechanism::Credential;
   using t = AuthenticatorRequestDialogModel::Mechanism::Transport;
   using p = AuthenticatorRequestDialogModel::Mechanism::Phone;
@@ -431,6 +443,19 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        // prompt.
       {L, ga, {usb, internal}, {has_plat, one_cred, no_touchid}, {},
        {c(cred1), t(usb)}, use_pk},
+      // When a single profile credential is available with uv!=required and no
+      // Touch ID, the UI must show the confirmation because, otherwise,
+      // there'll be no UI at all.
+      {L, ga, {internal}, {has_plat, one_touchid_cred, no_touchid}, {},
+       {c(touchid_cred1)}, hero},
+      // When TouchID is present, we can jump directly to the platform UI, which
+      // will be a Touch ID prompt.
+      {L, ga, {internal}, {has_plat, one_touchid_cred}, {}, {c(touchid_cred1)},
+       plat_ui},
+      // Or if uv=required, plat_ui is also ok because it'll be a password
+      // prompt.
+      {L, ga, {internal}, {has_plat, one_touchid_cred, uv_req, no_touchid}, {},
+       {c(touchid_cred1)}, plat_ui},
 #endif
       // Even with an empty allow list.
       {L,
@@ -1145,6 +1170,10 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
         test.params, TransportAvailabilityParam::kBleAccessDenied);
     transports_info.request_type = test.request_type;
     transports_info.available_transports = test.transports;
+    transports_info.user_verification_requirement =
+        base::Contains(test.params, TransportAvailabilityParam::kUVRequired)
+            ? device::UserVerificationRequirement::kRequired
+            : device::UserVerificationRequirement::kDiscouraged;
 
     if (base::Contains(test.params,
                        TransportAvailabilityParam::kHasPlatformCredential)) {
@@ -1172,6 +1201,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       cred1 = kCred1;
       cred2 = kCred2;
     }
+    device::DiscoverableCredentialMetadata touchid_cred1 = kTouchIDCred1;
     if (base::Contains(test.params,
                        TransportAvailabilityParam::kHasICloudKeychainCreds)) {
       transports_info.has_icloud_keychain_credential =
@@ -1193,7 +1223,12 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
                    TransportAvailabilityParam::kTwoRecognizedCreds)) {
       transports_info.recognized_credentials = {std::move(cred1),
                                                 std::move(cred2)};
+    } else if (base::Contains(
+                   test.params,
+                   TransportAvailabilityParam::kOneTouchIDRecognizedCred)) {
+      transports_info.recognized_credentials = {std::move(touchid_cred1)};
     }
+
     if (base::Contains(test.params,
                        TransportAvailabilityParam::kOnePhoneRecognizedCred)) {
       transports_info.recognized_credentials.emplace_back(kPhoneCred1);
