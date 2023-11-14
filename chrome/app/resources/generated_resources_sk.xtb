@@ -6734,7 +6734,7 @@ Na tento účet sa môžu vzťahovať povolenia, ktoré ste už udelili webom a�
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> a 1 ďalšia karta}few{<ph name="PAGE_TITLE" /> a # ďalšie karty}many{<ph name="PAGE_TITLE" /> and # other tabs}other{<ph name="PAGE_TITLE" /> a # ďalších kariet}}</translation>
 <translation id="6451689256222386810">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchronizáciu<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Odmietnuť</translation>
-<translation id="6452251728599530347">Dokončené na <ph name="PERCENT" /> %</translation>
+<translation id="6452251728599530347">Dokončené na <ph name="PERCENT" /></translation>
 <translation id="645286928527869380">Nápady na recepty</translation>
 <translation id="6452961788130242735">Problém siete alebo nesprávna oblasť</translation>
 <translation id="6453191633103419909">Kvalita projekcie karty alebo obrazovky</translation>
