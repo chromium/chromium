@@ -156,14 +156,6 @@ export class Oobe extends DisplayManager {
   }  // loginForTesting
 
   /**
-   * Begin enterprise enrollment for telemetry.
-   */
-  static switchToEnterpriseEnrollmentForTesting() {
-    // TODO(crbug.com/1100910): migrate logic to dedicated test api.
-    chrome.send('OobeTestApi.advanceToScreen', ['enterprise-enrollment']);
-  }
-
-  /**
    * Finish enterprise enrollment for telemetry.
    */
   static enterpriseEnrollmentDone() {
