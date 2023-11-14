@@ -724,7 +724,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceRasterSharedImage::Bitmap() {
       // non-owning thread in order to avoid modifying the mailbox on non
       // owning thread by mistake.
       CHECK(sii_);
-      mapping = sii_->MapSharedImage(client_shared_image()->mailbox());
+      mapping = sii_->MapSharedImage(client_shared_image());
       if (!mapping) {
         LOG(ERROR) << "MapSharedImage Failed.";
         return nullptr;
@@ -812,7 +812,7 @@ void CanvasResourceRasterSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
   void* memory = nullptr;
   size_t stride = 0;
   if (base::FeatureList::IsEnabled(kAlwaysUseMappableSIForSoftwareCanvas)) {
-    mapping = sii->MapSharedImage(client_shared_image()->mailbox());
+    mapping = sii->MapSharedImage(client_shared_image());
     if (!mapping) {
       LOG(ERROR) << "MapSharedImage failed.";
       return;
