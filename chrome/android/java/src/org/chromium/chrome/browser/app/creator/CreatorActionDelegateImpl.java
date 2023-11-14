@@ -81,11 +81,17 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
         // TODO(crbug/1399617) Eliminate code duplication with
         //     FeedActionDelegateImpl
         BookmarkModel bookmarkModel = BookmarkModel.getForProfile(mProfile);
-        bookmarkModel.finishLoadingBookmarkModel(() -> {
-            assert ThreadUtils.runningOnUiThread();
-            BookmarkUtils.addToReadingList(
-                    new GURL(url), title, mSnackbarManager, bookmarkModel, mActivityContext);
-        });
+        bookmarkModel.finishLoadingBookmarkModel(
+                () -> {
+                    assert ThreadUtils.runningOnUiThread();
+                    BookmarkUtils.addToReadingList(
+                            new GURL(url),
+                            title,
+                            mSnackbarManager,
+                            bookmarkModel,
+                            mActivityContext,
+                            mProfile);
+                });
     }
 
     @Override

@@ -130,7 +130,8 @@ public class BookmarkUtils {
                 fromExplicitTrackUi,
                 newBookmarkId,
                 /* wasBookmarkMoved= */ false,
-                /* isNewBookmark= */ true);
+                /* isNewBookmark= */ true,
+                tab.getProfile());
         callback.onResult(newBookmarkId);
     }
 
@@ -143,6 +144,7 @@ public class BookmarkUtils {
      * @param bookmarkId The BookmarkId to show the save flow for. Can be null in some cases.
      * @param wasBookmarkMoved Whether the save flow is shown as a reslult of a moved bookmark.
      * @param isNewBookmark Whether the bookmark is newly created.
+     * @param profile The profile currently used.
      */
     public static void showSaveFlow(
             @NonNull Activity activity,
@@ -150,13 +152,13 @@ public class BookmarkUtils {
             boolean fromExplicitTrackUi,
             @Nullable BookmarkId bookmarkId,
             boolean wasBookmarkMoved,
-            boolean isNewBookmark) {
+            boolean isNewBookmark,
+            @NonNull Profile profile) {
         if (bookmarkId == null) {
             Log.e(TAG, "Null bookmark found when showing the save flow, aborting.");
             return;
         }
 
-        Profile profile = Profile.getLastUsedRegularProfile();
         ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(profile);
 
         BookmarkSaveFlowCoordinator bookmarkSaveFlowCoordinator =
@@ -180,7 +182,12 @@ public class BookmarkUtils {
             @BookmarkType int bookmarkType) {
         if (bookmarkType == BookmarkType.READING_LIST) {
             return addToReadingList(
-                    tab.getOriginalUrl(), tab.getTitle(), snackbarManager, bookmarkModel, activity);
+                    tab.getOriginalUrl(),
+                    tab.getTitle(),
+                    snackbarManager,
+                    bookmarkModel,
+                    activity,
+                    tab.getProfile());
         }
         BookmarkId bookmarkId =
                 addBookmarkInternal(
@@ -265,13 +272,15 @@ public class BookmarkUtils {
      * @param bookmarkBridge The bookmark bridge that talks to the bookmark backend.
      * @param context The associated context.
      * @return The bookmark ID created after saving the article to the reading list.
+     * @param profile The profile currently used.
      */
     public static BookmarkId addToReadingList(
             GURL url,
             String title,
             SnackbarManager snackbarManager,
             BookmarkBridge bookmarkBridge,
-            Context context) {
+            Context context,
+            @NonNull Profile profile) {
         assert bookmarkBridge.isBookmarkModelLoaded();
         BookmarkId bookmarkId = bookmarkBridge.addToReadingList(title, url);
 
@@ -284,7 +293,7 @@ public class BookmarkUtils {
                             Snackbar.UMA_READING_LIST_BOOKMARK_ADDED);
             snackbarManager.showSnackbar(snackbar);
 
-            TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+            TrackerFactory.getTrackerForProfile(profile)
                     .notifyEvent(EventConstants.READ_LATER_ARTICLE_SAVED);
         }
         return bookmarkId;

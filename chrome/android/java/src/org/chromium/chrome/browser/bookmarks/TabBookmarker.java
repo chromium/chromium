@@ -88,13 +88,15 @@ public class TabBookmarker {
         } else {
             // In the case where the bookmark exists, re-show the save flow with price-tracking
             // enabled.
+            assert currentTab != null : "currentTab cannot be null";
             BookmarkUtils.showSaveFlow(
                     mActivity,
                     mBottomSheetControllerSupplier.get(),
                     /* fromExplicitTrackUi= */ true,
                     bookmarkId,
                     /* wasBookmarkMoved= */ false,
-                    /* isNewBookmark= */ false);
+                    /* isNewBookmark= */ false,
+                    currentTab.getProfile());
         }
     }
 
@@ -128,7 +130,8 @@ public class TabBookmarker {
                             mBottomSheetControllerSupplier.get(),
                             bookmarkModel,
                             bookmarkId,
-                            bookmarkType)) {
+                            bookmarkType,
+                            tabToBookmark.getProfile())) {
                         return;
                     }
 

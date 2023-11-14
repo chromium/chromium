@@ -55,6 +55,7 @@ public class ExploreSurfaceCoordinator {
     private final FeedSurfaceCoordinator mFeedSurfaceCoordinator;
     private final ExploreSurfaceNavigationDelegate mExploreSurfaceNavigationDelegate;
     private final boolean mIsPlaceholderShownInitially;
+    private final Profile mProfile;
 
     private long mContentFirstAvailableTimeMs;
     // Whether missing a histogram record when onOverviewShownAtLaunch() is called. It is possible
@@ -76,6 +77,7 @@ public class ExploreSurfaceCoordinator {
         mJankTracker = jankTracker;
         mExploreSurfaceNavigationDelegate = new ExploreSurfaceNavigationDelegate(parentTabSupplier);
         mIsPlaceholderShownInitially = isPlaceholderShown;
+        mProfile = profile;
 
         mFeedSurfaceCoordinator = new FeedSurfaceCoordinator(mActivity, snackbarManager,
                 windowAndroid, mJankTracker, /*snapScrollHelper=*/null, /*ntpHeader=*/null,
@@ -142,8 +144,14 @@ public class ExploreSurfaceCoordinator {
     private class ExploreSurfaceActionDelegate extends FeedActionDelegateImpl {
         ExploreSurfaceActionDelegate(SnackbarManager snackbarManager, BookmarkModel bookmarkModel,
                 TabModelSelector tabModelSelector) {
-            super(mActivity, snackbarManager, mExploreSurfaceNavigationDelegate, bookmarkModel,
-                    BrowserUiUtils.HostSurface.START_SURFACE, tabModelSelector);
+            super(
+                    mActivity,
+                    snackbarManager,
+                    mExploreSurfaceNavigationDelegate,
+                    bookmarkModel,
+                    BrowserUiUtils.HostSurface.START_SURFACE,
+                    tabModelSelector,
+                    mProfile);
         }
 
         @Override

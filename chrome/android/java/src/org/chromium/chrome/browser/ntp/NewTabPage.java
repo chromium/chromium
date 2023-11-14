@@ -543,15 +543,21 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         LayoutInflater inflater = LayoutInflater.from(activity);
         mNewTabPageLayout = (NewTabPageLayout) inflater.inflate(R.layout.new_tab_page_layout, null);
 
-        FeedActionDelegate actionDelegate = new FeedActionDelegateImpl(activity, snackbarManager,
-                mNewTabPageManager.getNavigationDelegate(), BookmarkModel.getForProfile(profile),
-                BrowserUiUtils.HostSurface.NEW_TAB_PAGE, mTabModelSelector) {
-            @Override
-            public void openHelpPage() {
-                NewTabPageUma.recordAction(NewTabPageUma.ACTION_CLICKED_LEARN_MORE);
-                super.openHelpPage();
-            }
-        };
+        FeedActionDelegate actionDelegate =
+                new FeedActionDelegateImpl(
+                        activity,
+                        snackbarManager,
+                        mNewTabPageManager.getNavigationDelegate(),
+                        BookmarkModel.getForProfile(profile),
+                        BrowserUiUtils.HostSurface.NEW_TAB_PAGE,
+                        mTabModelSelector,
+                        profile) {
+                    @Override
+                    public void openHelpPage() {
+                        NewTabPageUma.recordAction(NewTabPageUma.ACTION_CLICKED_LEARN_MORE);
+                        super.openHelpPage();
+                    }
+                };
 
         FeedSurfaceCoordinator feedSurfaceCoordinator = new FeedSurfaceCoordinator(activity,
                 snackbarManager, windowAndroid, mJankTracker,

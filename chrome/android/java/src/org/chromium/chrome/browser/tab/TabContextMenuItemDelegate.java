@@ -276,7 +276,12 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 () -> {
                     // Add to reading list.
                     BookmarkUtils.addToReadingList(
-                            url, title, mSnackbarManager.get(), bookmarkModel, mTab.getContext());
+                            url,
+                            title,
+                            mSnackbarManager.get(),
+                            bookmarkModel,
+                            mTab.getContext(),
+                            profile);
                     TrackerFactory.getTrackerForProfile(profile)
                             .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
 

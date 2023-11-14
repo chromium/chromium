@@ -49,19 +49,26 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     private final Context mActivityContext;
     private final SnackbarManager mSnackbarManager;
     private final TabModelSelector mTabModelSelector;
+    private final Profile mProfile;
 
     @BrowserUiUtils.HostSurface
     private int mHostSurface;
 
-    public FeedActionDelegateImpl(Context activityContext, SnackbarManager snackbarManager,
-            NativePageNavigationDelegate navigationDelegate, BookmarkModel bookmarkModel,
-            @BrowserUiUtils.HostSurface int hostSurface, TabModelSelector tabModelSelector) {
+    public FeedActionDelegateImpl(
+            Context activityContext,
+            SnackbarManager snackbarManager,
+            NativePageNavigationDelegate navigationDelegate,
+            BookmarkModel bookmarkModel,
+            @BrowserUiUtils.HostSurface int hostSurface,
+            TabModelSelector tabModelSelector,
+            Profile profile) {
         mActivityContext = activityContext;
         mNavigationDelegate = navigationDelegate;
         mBookmarkModel = bookmarkModel;
         mSnackbarManager = snackbarManager;
         mHostSurface = hostSurface;
         mTabModelSelector = tabModelSelector;
+        mProfile = profile;
     }
     @Override
     public void downloadPage(String url) {
@@ -115,11 +122,17 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
 
     @Override
     public void addToReadingList(String title, String url) {
-        mBookmarkModel.finishLoadingBookmarkModel(() -> {
-            assert ThreadUtils.runningOnUiThread();
-            BookmarkUtils.addToReadingList(
-                    new GURL(url), title, mSnackbarManager, mBookmarkModel, mActivityContext);
-        });
+        mBookmarkModel.finishLoadingBookmarkModel(
+                () -> {
+                    assert ThreadUtils.runningOnUiThread();
+                    BookmarkUtils.addToReadingList(
+                            new GURL(url),
+                            title,
+                            mSnackbarManager,
+                            mBookmarkModel,
+                            mActivityContext,
+                            mProfile);
+                });
     }
 
     @Override

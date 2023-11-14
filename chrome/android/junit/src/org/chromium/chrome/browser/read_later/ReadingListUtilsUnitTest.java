@@ -24,6 +24,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -130,7 +131,8 @@ public class ReadingListUtilsUnitTest {
                         Mockito.mock(BottomSheetController.class),
                         Mockito.mock(BookmarkModel.class),
                         /* bookmarkId= */ null,
-                        BookmarkType.READING_LIST));
+                        BookmarkType.READING_LIST,
+                        Mockito.mock(Profile.class)));
 
         doReturn(BookmarkType.READING_LIST).when(bookmarkId).getType();
         Assert.assertFalse(
@@ -139,7 +141,8 @@ public class ReadingListUtilsUnitTest {
                         Mockito.mock(BottomSheetController.class),
                         Mockito.mock(BookmarkModel.class),
                         bookmarkId,
-                        BookmarkType.READING_LIST));
+                        BookmarkType.READING_LIST,
+                        Mockito.mock(Profile.class)));
 
         doReturn(BookmarkType.NORMAL).when(bookmarkId).getType();
         Assert.assertFalse(
@@ -148,7 +151,8 @@ public class ReadingListUtilsUnitTest {
                         Mockito.mock(BottomSheetController.class),
                         Mockito.mock(BookmarkModel.class),
                         bookmarkId,
-                        BookmarkType.NORMAL));
+                        BookmarkType.NORMAL,
+                        Mockito.mock(Profile.class)));
     }
 
     @Test
