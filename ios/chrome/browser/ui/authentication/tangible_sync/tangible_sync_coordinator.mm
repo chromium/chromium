@@ -7,7 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
-#import "ios/chrome/browser/first_run/first_run_metrics.h"
+#import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"

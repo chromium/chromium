@@ -53,7 +53,7 @@
 #import "ios/chrome/browser/application_context/model/application_context_impl.h"
 #import "ios/chrome/browser/browser_state/model/browser_state_keyed_service_factories.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
-#import "ios/chrome/browser/first_run/first_run.h"
+#import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/flags/about_flags.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/metrics/ios_expired_histograms_array.h"

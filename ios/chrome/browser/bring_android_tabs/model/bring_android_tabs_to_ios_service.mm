@@ -22,7 +22,7 @@
 #import "components/sync_device_info/device_info.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "ios/chrome/browser/bring_android_tabs/model/metrics.h"
-#import "ios/chrome/browser/first_run/first_run.h"
+#import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"

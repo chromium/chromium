@@ -10,7 +10,7 @@
 #import "components/prefs/pref_value_store.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/first_run/first_run.h"
+#import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/web/public/test/web_task_environment.h"

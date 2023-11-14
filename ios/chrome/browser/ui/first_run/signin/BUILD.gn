@@ -14,7 +14,7 @@ source_set("signin") {
     "//components/metrics",
     "//components/prefs",
     "//components/web_resource",
-    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/shared/model/application_context",

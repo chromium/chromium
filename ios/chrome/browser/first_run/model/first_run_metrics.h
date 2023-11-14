@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FIRST_RUN_FIRST_RUN_METRICS_H_
-#define IOS_CHROME_BROWSER_FIRST_RUN_FIRST_RUN_METRICS_H_
+#ifndef IOS_CHROME_BROWSER_FIRST_RUN_MODEL_FIRST_RUN_METRICS_H_
+#define IOS_CHROME_BROWSER_FIRST_RUN_MODEL_FIRST_RUN_METRICS_H_
 
 @protocol FirstRunMetricsDelegate
 // A callback function to whichever object is keeping track of whether
@@ -128,4 +128,4 @@ enum FirstRunStage {
 
 }  // namespace first_run
 
-#endif  // IOS_CHROME_BROWSER_FIRST_RUN_FIRST_RUN_METRICS_H_
+#endif  // IOS_CHROME_BROWSER_FIRST_RUN_MODEL_FIRST_RUN_METRICS_H_

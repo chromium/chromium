@@ -13,7 +13,7 @@ source_set("default_browser") {
     "//components/feature_engagement/public",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
@@ -28,7 +28,7 @@ source_set("default_browser_ui") {
   ]
   deps = [
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/first_run/resources:default_browser_screen_banner",

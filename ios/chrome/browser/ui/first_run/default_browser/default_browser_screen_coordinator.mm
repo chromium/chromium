@@ -8,7 +8,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/first_run/first_run_metrics.h"
+#import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"

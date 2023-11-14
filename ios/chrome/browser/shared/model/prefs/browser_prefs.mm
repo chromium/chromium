@@ -74,7 +74,7 @@
 #import "components/variations/service/variations_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/app/variations_app_state_agent.h"
-#import "ios/chrome/browser/first_run/first_run.h"
+#import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/memory/model/memory_debugger_manager.h"
 #import "ios/chrome/browser/metrics/constants.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_client.h"

@@ -75,7 +75,7 @@ source_set("utils") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/ntp:set_up_list_prefs",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/first_run:utils",

@@ -339,7 +339,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/default_browser/model:test_support",
     "//ios/chrome/browser/favicon",
-    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ntp:set_up_list_item_type",
     "//ios/chrome/browser/ntp:set_up_list_prefs",

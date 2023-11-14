@@ -4,8 +4,8 @@
 
 // This file contains the iOS equivalent of FirstRun.
 
-#ifndef IOS_CHROME_BROWSER_FIRST_RUN_FIRST_RUN_H_
-#define IOS_CHROME_BROWSER_FIRST_RUN_FIRST_RUN_H_
+#ifndef IOS_CHROME_BROWSER_FIRST_RUN_MODEL_FIRST_RUN_H_
+#define IOS_CHROME_BROWSER_FIRST_RUN_MODEL_FIRST_RUN_H_
 
 #include <optional>
 
@@ -81,4 +81,4 @@ class FirstRun {
   static FirstRunState first_run_;
 };
 
-#endif  // IOS_CHROME_BROWSER_FIRST_RUN_FIRST_RUN_H_
+#endif  // IOS_CHROME_BROWSER_FIRST_RUN_MODEL_FIRST_RUN_H_

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 
-#import "ios/chrome/browser/first_run/first_run.h"
+#import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 
 BOOL IsFirstRun() {

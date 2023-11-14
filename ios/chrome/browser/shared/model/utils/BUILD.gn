@@ -16,7 +16,7 @@ source_set("utils") {
   deps = [
     ":zip_extraction",
     "//base",
-    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/shared/public/features:system_flags",
   ]
 

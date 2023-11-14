@@ -9,7 +9,7 @@
 
 #include <optional>
 
-#include "ios/chrome/browser/first_run/first_run_metrics.h"
+#include "ios/chrome/browser/first_run/model/first_run_metrics.h"
 
 namespace base {
 class Time;
