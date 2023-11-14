@@ -338,12 +338,13 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
     AddUnsafeResource(unsafe_url, resource);
   }
 
-  // `showed_interstitial` is set to false for subresources since this
-  // cancellation doesn't correspond to the navigation that triggers the error
-  // page (the call to LoadPostCommitErrorPage creates another navigation).
+  // `showed_interstitial` is only set to true if the top-document navigation
+  // has not yet committed. For other cases, the cancellation doesn't correspond
+  // to the navigation that triggers the error page (the call to
+  // LoadPostCommitErrorPage creates another navigation).
   resource.DispatchCallback(
       FROM_HERE, false /* proceed */,
-      resource.IsMainPageLoadBlocked() /* showed_interstitial */);
+      !load_post_commit_error_page /* showed_interstitial */);
 
   if (!base::FeatureList::IsEnabled(safe_browsing::kDelayedWarnings)) {
     DCHECK(!resource.is_delayed_warning);
