@@ -550,23 +550,33 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 #pragma mark - Control actions
 
 - (void)closeAllButtonTapped:(id)sender {
-  [self.buttonsDelegate closeAllButtonTapped:sender];
+  if (_closeAllOrUndoButton.enabled) {
+    [self.buttonsDelegate closeAllButtonTapped:sender];
+  }
 }
 
 - (void)doneButtonTapped:(id)sender {
-  [self.buttonsDelegate doneButtonTapped:sender];
+  if (_doneButton.enabled) {
+    [self.buttonsDelegate doneButtonTapped:sender];
+  }
 }
 
 - (void)selectAllButtonTapped:(id)sender {
-  [self.buttonsDelegate selectAllButtonTapped:sender];
+  if (_selectAllButton.enabled) {
+    [self.buttonsDelegate selectAllButtonTapped:sender];
+  }
 }
 
 - (void)searchButtonTapped:(id)sender {
-  [self.buttonsDelegate searchButtonTapped:sender];
+  if (_searchButton.enabled) {
+    [self.buttonsDelegate searchButtonTapped:sender];
+  }
 }
 
 - (void)cancelSearchButtonTapped:(id)sender {
-  [self.buttonsDelegate cancelSearchButtonTapped:sender];
+  if (_cancelSearchButton.enabled) {
+    [self.buttonsDelegate cancelSearchButtonTapped:sender];
+  }
 }
 
 @end

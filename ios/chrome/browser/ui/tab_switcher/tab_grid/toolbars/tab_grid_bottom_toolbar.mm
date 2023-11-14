@@ -502,23 +502,33 @@
 #pragma mark - Control actions
 
 - (void)closeAllButtonTapped:(id)sender {
-  [self.buttonsDelegate closeAllButtonTapped:sender];
+  if (_closeAllOrUndoButton.enabled) {
+    [self.buttonsDelegate closeAllButtonTapped:sender];
+  }
 }
 
 - (void)doneButtonTapped:(id)sender {
-  [self.buttonsDelegate doneButtonTapped:sender];
+  if (_doneButton.enabled) {
+    [self.buttonsDelegate doneButtonTapped:sender];
+  }
 }
 
 - (void)newTabButtonTapped:(id)sender {
-  [self.buttonsDelegate newTabButtonTapped:sender];
+  if (_largeNewTabButton.enabled || _smallNewTabButton.enabled) {
+    [self.buttonsDelegate newTabButtonTapped:sender];
+  }
 }
 
 - (void)closeSelectedTabs:(id)sender {
-  [self.buttonsDelegate closeSelectedTabs:sender];
+  if (_closeTabsButton.enabled) {
+    [self.buttonsDelegate closeSelectedTabs:sender];
+  }
 }
 
 - (void)shareSelectedTabs:(id)sender {
-  [self.buttonsDelegate shareSelectedTabs:sender];
+  if (_shareButton.enabled) {
+    [self.buttonsDelegate shareSelectedTabs:sender];
+  }
 }
 
 @end
