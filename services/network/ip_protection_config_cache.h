@@ -24,7 +24,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
  public:
   virtual ~IpProtectionConfigCache() = default;
 
-  // Initializes the proxy list and token managers for the cache.
+  // Initializes the proxy chain list and token managers for the cache.
   virtual void SetUp() = 0;
 
   // Check whether tokens are available in all token caches.
@@ -55,20 +55,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
   GetIpProtectionTokenCacheManagerForTesting(
       network::mojom::IpProtectionProxyLayer proxy_layer) = 0;
 
-  // Set the proxy list manager for the cache.
+  // Set the proxy chain list manager for the cache.
   virtual void SetIpProtectionProxyListManagerForTesting(
       std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager) = 0;
 
-  // Check whether a proxy list is available.
+  // Check whether a proxy chain list is available.
   virtual bool IsProxyListAvailable() = 0;
 
-  // Return the currently cached proxy list. This contains a list of proxy
-  // hostnames. This list may be empty even if `IsProxyListAvailable()` returned
-  // true.
-  virtual const std::vector<std::string>& GetProxyList() = 0;
+  // Return the currently cached proxy chain lists. This contains the lists of
+  // hostnames corresponding to each proxy chain that should be used. This
+  // may be empty even if `IsProxyListAvailable()` returned true.
+  virtual std::vector<net::ProxyChain> GetProxyChainList() = 0;
 
-  // Request a refresh of the proxy list. Call this when it's likely that the
-  // proxy list is out of date.
+  // Request a refresh of the proxy chain list. Call this when it's likely that
+  // the proxy chain list is out of date.
   virtual void RequestRefreshProxyList() = 0;
 };
 

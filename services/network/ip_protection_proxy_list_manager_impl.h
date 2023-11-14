@@ -28,7 +28,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
 
   // IpProtectionProxyListManager implementation.
   bool IsProxyListAvailable() override;
-  const std::vector<std::string>& ProxyList() override;
+  const std::vector<std::vector<std::string>>& ProxyList() override;
   void RequestRefreshProxyList() override;
 
   // Set a callback to occur when the proxy list has been refreshed.
@@ -45,10 +45,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
 
  private:
   void RefreshProxyList();
-  void OnGotProxyList(const absl::optional<std::vector<std::string>>&);
+  void OnGotProxyList(
+      const absl::optional<std::vector<std::vector<std::string>>>&);
 
   // Latest fetched proxy list.
-  std::vector<std::string> proxy_list_;
+  std::vector<std::vector<std::string>> proxy_list_;
 
   // True if an invocation of `config_getter_.GetProxyList()` is
   // outstanding.

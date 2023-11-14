@@ -114,9 +114,16 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
           std::move(callback).Run(absl::nullopt);
           return;
         }
-        std::vector<std::string> proxy_list(
-            response->first_hop_hostnames().begin(),
-            response->first_hop_hostnames().end());
+        std::vector<std::vector<std::string>> proxy_list;
+        for (const auto& proxy_chain : response->proxy_chain()) {
+          std::vector<std::string> proxies = {proxy_chain.proxy_a()};
+          // TODO(crbug.com/1491092): Remove check once proxy_b is populated by
+          // Phosphor.
+          if (!proxy_chain.proxy_b().empty()) {
+            proxies.emplace_back(proxy_chain.proxy_b());
+          }
+          proxy_list.push_back(std::move(proxies));
+        }
         VLOG(2) << "IPATP::GetProxyList got proxy list of length "
                 << proxy_list.size();
         std::move(callback).Run(std::move(proxy_list));

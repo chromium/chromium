@@ -44,7 +44,9 @@ class MockIpProtectionProxyListManager : public IpProtectionProxyListManager {
  public:
   bool IsProxyListAvailable() override { return proxy_list_.has_value(); }
 
-  const std::vector<std::string>& ProxyList() override { return *proxy_list_; }
+  const std::vector<std::vector<std::string>>& ProxyList() override {
+    return *proxy_list_;
+  }
 
   void RequestRefreshProxyList() override {
     if (on_force_refresh_proxy_list_) {
@@ -53,7 +55,7 @@ class MockIpProtectionProxyListManager : public IpProtectionProxyListManager {
   }
 
   // Set the proxy list returned from `ProxyList()`.
-  void SetProxyList(std::vector<std::string> proxy_list) {
+  void SetProxyList(std::vector<std::vector<std::string>> proxy_list) {
     proxy_list_ = std::move(proxy_list);
   }
 
@@ -63,7 +65,7 @@ class MockIpProtectionProxyListManager : public IpProtectionProxyListManager {
   }
 
  private:
-  absl::optional<std::vector<std::string>> proxy_list_;
+  absl::optional<std::vector<std::vector<std::string>>> proxy_list_;
   base::OnceClosure on_force_refresh_proxy_list_;
 };
 
@@ -122,15 +124,18 @@ TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManagerForProxyB) {
 
 // Proxy list manager returns currently cached proxy hostnames.
 TEST_F(IpProtectionConfigCacheImplTest, GetProxyListFromManager) {
-  std::vector<std::string> exp_proxy_list = {"a-proxy"};
+  std::string proxy = "a-proxy";
+  const std::vector<net::ProxyChain> proxy_chain_list = {
+      net::ProxyChain(net::ProxyServer::FromSchemeHostAndPort(
+          net::ProxyServer::SCHEME_HTTPS, proxy, absl::nullopt))};
   auto ipp_proxy_list_manager_ =
       std::make_unique<MockIpProtectionProxyListManager>();
-  ipp_proxy_list_manager_->SetProxyList(exp_proxy_list);
+  ipp_proxy_list_manager_->SetProxyList({{proxy}});
   ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
       std::move(ipp_proxy_list_manager_));
 
   ASSERT_TRUE(ipp_config_cache_->IsProxyListAvailable());
-  EXPECT_EQ(ipp_config_cache_->GetProxyList(), exp_proxy_list);
+  EXPECT_EQ(ipp_config_cache_->GetProxyChainList(), proxy_chain_list);
 }
 
 }  // namespace network

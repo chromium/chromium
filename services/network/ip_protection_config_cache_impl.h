@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
       std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager)
       override;
   bool IsProxyListAvailable() override;
-  const std::vector<std::string>& GetProxyList() override;
+  std::vector<net::ProxyChain> GetProxyChainList() override;
   void RequestRefreshProxyList() override;
 
  private:

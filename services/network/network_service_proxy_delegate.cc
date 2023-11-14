@@ -173,13 +173,14 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
 
     net::ProxyList proxy_list;
     if (!net::features::kIpPrivacyDirectOnly.Get()) {
-      for (auto& proxy_hostname : ipp_config_cache_->GetProxyList()) {
-        proxy_list.AddProxyServer(net::ProxyServer::FromSchemeHostAndPort(
-            net::ProxyServer::SCHEME_HTTPS, proxy_hostname, absl::nullopt));
+      const std::vector<net::ProxyChain>& proxy_chain_list =
+          ipp_config_cache_->GetProxyChainList();
+      for (const auto& proxy_chain : proxy_chain_list) {
+        proxy_list.AddProxyChain(std::move(proxy_chain));
       }
     }
     // Final fallback is to DIRECT.
-    proxy_list.AddProxyServer(net::ProxyServer::Direct());
+    proxy_list.AddProxyChain(net::ProxyChain::Direct());
 
     if (VLOG_IS_ON(3)) {
       dvlog(base::StrCat({"setting proxy list (before deprioritization) to ",
@@ -229,8 +230,6 @@ void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
     const net::ProxyChain& proxy_chain,
     size_t chain_index,
     net::HttpRequestHeaders* extra_headers) {
-  // TODO(crbug.com/1491092): Handle proxy chains.
-  CHECK(chain_index == 0);
 
   auto vlog = [](std::string message) {
     VLOG(2) << "NSPD::OnBeforeTunnelRequest() - " << message;
@@ -341,14 +340,7 @@ bool NetworkServiceProxyDelegate::IsProxyForIpProtection(
   if (!ipp_config_cache_) {
     return false;
   }
-
-  // This list will typically be quite short (2-3), so linear search is
-  // adequate.
-  // TODO(https://crbug.com/1491092): Update to support nested proxies.
-  CHECK(proxy_chain.is_single_proxy());
-  std::string proxy_server_host =
-      proxy_chain.GetProxyServer(/*chain_index=*/0).GetHost();
-  return base::Contains(ipp_config_cache_->GetProxyList(), proxy_server_host);
+  return base::Contains(ipp_config_cache_->GetProxyChainList(), proxy_chain);
 }
 
 bool NetworkServiceProxyDelegate::EligibleForProxy(

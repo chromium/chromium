@@ -39,7 +39,8 @@ class MockIpProtectionConfigGetter
 
   // Register an expectation of a call to `GetIpProtectionProxyList()`,
   // returning the given proxy list manager.
-  void ExpectGetProxyListCall(std::vector<std::string> proxy_list) {
+  void ExpectGetProxyListCall(
+      std::vector<std::vector<std::string>> proxy_list) {
     expected_get_proxy_list_calls_.push_back(std::move(proxy_list));
   }
 
@@ -71,7 +72,7 @@ class MockIpProtectionConfigGetter
   }
 
  protected:
-  std::deque<absl::optional<std::vector<std::string>>>
+  std::deque<absl::optional<std::vector<std::vector<std::string>>>>
       expected_get_proxy_list_calls_;
 };
 
@@ -110,7 +111,7 @@ class IpProtectionProxyListManagerImplTest : public testing::Test {
 
 // The manager gets the proxy list on startup and once again on schedule.
 TEST_F(IpProtectionProxyListManagerImplTest, ProxyListOnStartup) {
-  std::vector<std::string> exp_proxy_list = {"a-proxy"};
+  std::vector<std::vector<std::string>> exp_proxy_list = {{"a-proxy"}};
   mock_.ExpectGetProxyListCall(exp_proxy_list);
   ipp_proxy_list_->EnableProxyListRefreshingForTesting();
   WaitForProxyListRefresh();
@@ -119,27 +120,27 @@ TEST_F(IpProtectionProxyListManagerImplTest, ProxyListOnStartup) {
   EXPECT_EQ(ipp_proxy_list_->ProxyList(), exp_proxy_list);
 
   base::Time start = base::Time::Now();
-  mock_.ExpectGetProxyListCall({"b-proxy"});
+  mock_.ExpectGetProxyListCall({{"b-proxy"}});
   WaitForProxyListRefresh();
   base::TimeDelta delay = net::features::kIpPrivacyProxyListFetchInterval.Get();
   EXPECT_EQ(base::Time::Now() - start, delay);
 
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
-  exp_proxy_list = {"b-proxy"};
+  exp_proxy_list = {{"b-proxy"}};
   EXPECT_EQ(ipp_proxy_list_->ProxyList(), exp_proxy_list);
 }
 
 // The manager refreshes the proxy list on demand, but only once even if
 // `RequestRefreshProxyList()` is called repeatedly.
 TEST_F(IpProtectionProxyListManagerImplTest, ProxyListRefresh) {
-  mock_.ExpectGetProxyListCall({"a-proxy"});
+  mock_.ExpectGetProxyListCall({{"a-proxy"}});
   ipp_proxy_list_->RequestRefreshProxyList();
   ipp_proxy_list_->RequestRefreshProxyList();
   WaitForProxyListRefresh();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
-  std::vector<std::string> exp_proxy_list = {"a-proxy"};
+  std::vector<std::vector<std::string>> exp_proxy_list = {{"a-proxy"}};
   EXPECT_EQ(ipp_proxy_list_->ProxyList(), exp_proxy_list);
 }
 
@@ -154,7 +155,7 @@ TEST_F(IpProtectionProxyListManagerImplTest, IsProxyListAvailableEvenIfEmpty) {
 
 // The manager keeps its existing proxy list if it fails to fetch a new one.
 TEST_F(IpProtectionProxyListManagerImplTest, ProxyListKeptAfterFailure) {
-  std::vector<std::string> exp_proxy_list = {"a-proxy"};
+  std::vector<std::vector<std::string>> exp_proxy_list = {{"a-proxy"}};
   mock_.ExpectGetProxyListCall(exp_proxy_list);
   ipp_proxy_list_->RequestRefreshProxyList();
   WaitForProxyListRefresh();

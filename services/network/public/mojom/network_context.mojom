@@ -922,13 +922,14 @@ interface IpProtectionConfigGetter {
     (array<BlindSignedAuthToken>? bsa_tokens,
      mojo_base.mojom.Time? try_again_after);
 
-  // Get the list of IP Protection proxies. The list contains proxy hostnames,
-  // in order of preference. Callers should prefer the first proxy, falling
-  // back to later proxies in the list. All proxies are implicitly HTTPS.
+  // Get the list of IP Protection proxy chains. The list contains lists of
+  // proxy chain hostnames, in order of preference. Callers should prefer
+  // the first proxy, falling back to later proxies in the list. All proxies
+  // are implicitly HTTPS.
   //
   // This method will return an up-to-date list, possibly fetching that list
   // remotely before returning it.
-  GetProxyList() => (array<string>? proxy_list);
+  GetProxyList() => (array<array<string>>? proxy_list);
 };
 
 // Represents a distinct context for making network requests, with its own
