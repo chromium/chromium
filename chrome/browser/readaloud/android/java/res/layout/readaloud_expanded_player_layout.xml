@@ -102,7 +102,8 @@ found in the LICENSE file.
             android:maxHeight="@dimen/readaloud_expanded_player_seek_bar_height"
             android:progressDrawable="@drawable/seekbar_style"
             android:thumb="@drawable/scrubber_select_handle"
-            android:splitTrack="false"/>
+            android:splitTrack="false"
+            android:contentDescription="@string/readaloud_seek_bar"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

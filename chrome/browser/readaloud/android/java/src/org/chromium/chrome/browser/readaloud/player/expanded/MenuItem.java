@@ -64,7 +64,8 @@ class MenuItem extends FrameLayout {
             int itemId,
             int iconId,
             String label,
-            @Action int action) {
+            @Action int action,
+            String contentDescription) {
         super(context, attrs);
         mMenu = parentMenu;
         mId = itemId;
@@ -85,6 +86,7 @@ class MenuItem extends FrameLayout {
         }
 
         ((TextView) layout.findViewById(R.id.item_label)).setText(label);
+        layout.setContentDescription(contentDescription);
 
         switch (mActionType) {
             case Action.EXPAND:

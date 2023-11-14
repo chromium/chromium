@@ -94,9 +94,9 @@ public class ExpandedPlayerSheetContentUnitTest {
     @Test
     public void verifyInitialA11yStrings() {
         assertEquals("1x", mSpeedView.getText());
-        assertEquals("Playback speed: 1. Click to change.", mSpeedView.getContentDescription());
-        assertEquals("Back 10 seconds", mBackButton.getContentDescription());
-        assertEquals("Forward 30 seconds", mForwardButton.getContentDescription());
+        assertEquals("1x increase/decrease speed.", mSpeedView.getContentDescription());
+        assertEquals("Go back 10 seconds", mBackButton.getContentDescription());
+        assertEquals("Fast forward 30 seconds", mForwardButton.getContentDescription());
     }
 
     @Test
@@ -162,11 +162,11 @@ public class ExpandedPlayerSheetContentUnitTest {
     public void testSetSpeed() {
         mContent.setSpeed(0.5f);
         assertEquals("0.5x", mSpeedView.getText().toString());
-        assertEquals("Playback speed: 0.5. Click to change.", mSpeedView.getContentDescription());
+        assertEquals("0.5x increase/decrease speed.", mSpeedView.getContentDescription());
 
         mContent.setSpeed(2f);
         assertEquals("2x", mSpeedView.getText());
-        assertEquals("Playback speed: 2. Click to change.", mSpeedView.getContentDescription());
+        assertEquals("2x increase/decrease speed.", mSpeedView.getContentDescription());
     }
 
     @Test

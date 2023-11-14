@@ -57,7 +57,9 @@ class SpeedMenuSheetContent extends MenuSheetContent {
                             0,
                             mContext.getResources()
                                     .getString(R.string.readaloud_speed, speedString),
-                            MenuItem.Action.RADIO);
+                            MenuItem.Action.RADIO,
+                            mContext.getResources()
+                                    .getString(R.string.readaloud_speed, speedString));
             if (mSpeeds[i] == currentSpeed && item != null) {
                 item.setValue(true);
             }
