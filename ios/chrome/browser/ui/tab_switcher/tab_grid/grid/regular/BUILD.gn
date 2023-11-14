@@ -73,6 +73,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:test_fixture",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test:fakes",
     "//ios/chrome/browser/ui/tab_switcher/test:fakes",
     "//ios/web/public/test/fakes",
   ]

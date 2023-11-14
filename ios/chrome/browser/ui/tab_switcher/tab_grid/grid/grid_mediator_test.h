@@ -21,6 +21,7 @@ class AuthenticationService;
 class Browser;
 class BrowserList;
 @class FakeTabCollectionConsumer;
+@class FakeTabGridToolbarsMediator;
 class GURL;
 class IOSChromeScopedTestingLocalState;
 class PlatformTest;
@@ -64,6 +65,7 @@ class GridMediatorTestClass : public PlatformTest {
   BrowserList* browser_list_;
   base::UserActionTester user_action_tester_;
   AuthenticationService* auth_service_;
+  FakeTabGridToolbarsMediator* fake_toolbars_mediator_;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_MEDIATOR_TEST_H_

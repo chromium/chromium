@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_test.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test/fake_tab_grid_toolbars_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -53,6 +55,7 @@ class BaseGridMediatorTest
     }
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();
+    mediator_.toolbarsMutator = fake_toolbars_mediator_;
   }
 
   void TearDown() override {
@@ -356,6 +359,27 @@ TEST_P(BaseGridMediatorTest, TestSelectItemWithPriceDropExperimentOff) {
   [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()];
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
+}
+
+// Ensures that when there is web states in normal mode, the toolbar
+// configuration is correct.
+TEST_P(BaseGridMediatorTest, TestToolbarsNormalModeWithWebstates) {
+  EXPECT_EQ(3UL, consumer_.items.size());
+  // Force the toolbar configuration by setting the view as currently selected.
+  [mediator_ currentlySelectedGrid:YES];
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.closeAllButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.doneButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.newTabButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.searchButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectTabsButton);
+
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.undoButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.deselectAllButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.selectAllButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.addToButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeSelectedTabsButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.shareButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.cancelSearchButton);
 }
 
 INSTANTIATE_TEST_SUITE_P(

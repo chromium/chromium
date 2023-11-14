@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test/fake_tab_grid_toolbars_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
@@ -145,6 +146,7 @@ void GridMediatorTestClass::SetUp() {
   original_selected_identifier_ =
       browser_->GetWebStateList()->GetWebStateAt(1)->GetUniqueIdentifier();
   consumer_ = [[FakeTabCollectionConsumer alloc] init];
+  fake_toolbars_mediator_ = [[FakeTabGridToolbarsMediator alloc] init];
 }
 
 std::unique_ptr<web::FakeWebState>
