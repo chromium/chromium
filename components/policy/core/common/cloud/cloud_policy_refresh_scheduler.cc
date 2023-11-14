@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
@@ -99,8 +98,7 @@ CloudPolicyRefreshScheduler::CloudPolicyRefreshScheduler(
       refresh_delay_ms_(kDefaultRefreshDelayMs),
       refresh_delay_salt_ms_(static_cast<int64_t>(
           base::RandGenerator(kRandomSaltDelayMaxValueMs))),
-      invalidations_available_(false),
-      creation_time_(GetClock()->Now()) {
+      invalidations_available_(false) {
   client_->AddObserver(this);
   store_->AddObserver(this);
   network_connection_tracker_->AddNetworkConnectionObserver(this);
@@ -149,13 +147,6 @@ void CloudPolicyRefreshScheduler::RefreshSoon(PolicyFetchReason reason) {
 
 void CloudPolicyRefreshScheduler::SetInvalidationServiceAvailability(
     bool is_available) {
-  if (!creation_time_.is_null()) {
-    base::TimeDelta elapsed = GetClock()->Now() - creation_time_;
-    UMA_HISTOGRAM_MEDIUM_TIMES("Enterprise.PolicyInvalidationsStartupTime",
-                               elapsed);
-    creation_time_ = base::Time();
-  }
-
   if (is_available == invalidations_available_) {
     // No change in state.
     return;

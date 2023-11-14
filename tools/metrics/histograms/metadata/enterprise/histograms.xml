@@ -2463,15 +2463,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.PolicyInvalidationsStartupTime" units="ms"
-    expires_after="M77">
-  <owner>mnissler@chromium.org</owner>
-  <summary>
-    Time since startup of the cloud policy code until the policy invalidation
-    service first reported its online status.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.PolicyLoadStatus" enum="EnterprisePolicyLoadStatus"
     expires_after="M82">
   <owner>mnissler@chromium.org</owner>

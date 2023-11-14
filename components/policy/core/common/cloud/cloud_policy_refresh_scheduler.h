@@ -212,10 +212,6 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
   // of policy updates.
   bool invalidations_available_;
 
-  // Used to measure how long it took for the invalidations service to report
-  // its initial status.
-  base::Time creation_time_;
-
   base::ObserverList<CloudPolicyRefreshSchedulerObserver, true> observers_;
 };
 
