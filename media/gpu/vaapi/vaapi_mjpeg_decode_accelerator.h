@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
@@ -76,7 +77,7 @@ class MEDIA_GPU_EXPORT VaapiMjpegDecodeAccelerator
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   // The client of this class.
-  chromeos_camera::MjpegDecodeAccelerator::Client* client_;
+  raw_ptr<chromeos_camera::MjpegDecodeAccelerator::Client> client_ = nullptr;
 
   std::unique_ptr<Decoder> decoder_;
 
