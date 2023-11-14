@@ -198,10 +198,10 @@ void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
                   << " with ModelSource is "
                   << proto::ModelSource_Name(segment_info.model_source());
           // Observation is reached for the current training data.
-          OnObservationTrigger(
-              absl::nullopt,
+          PostObservationTask(
               TrainingRequestId::FromUnsafeValue(training_data.request_id()),
-              segment_info, base::DoNothing());
+              segment_info, base::TimeDelta(),
+              stats::TrainingDataCollectionEvent::kDelayedTaskPosted);
         }
       }
     }
