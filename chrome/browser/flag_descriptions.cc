@@ -5954,15 +5954,6 @@ const char kCrostiniUseLxd5Description[] =
     "Uses LXD version 5 instead of the default version. WARNING: Once this is "
     "set you can't unset it without deleting your entire container";
 
-const char kBruschettaName[] = "Enable the third party VMs feature";
-const char kBruschettaDescription[] =
-    "Enables UI support for third party/generic VMs";
-
-const char kBruschettaAlphaMigrateName[] = "Migration for Bruschetta Alpha";
-const char kBruschettaAlphaMigrateDescription[] =
-    "Enable this flag to migrate a Bruschetta installed during the alpha. "
-    "Requires the bruschetta flag to be enabled.";
-
 const char kDisableBufferBWCompressionName[] =
     "Disable buffer bandwidth compression";
 const char kDisableBufferBWCompressionDescription[] =

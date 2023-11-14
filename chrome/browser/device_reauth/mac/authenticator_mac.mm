@@ -15,9 +15,9 @@ AuthenticatorMac::~AuthenticatorMac() = default;
 
 bool AuthenticatorMac::CheckIfBiometricsAvailable() {
   LAContext* context = [[LAContext alloc] init];
-  return
-      [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
-                           error:nil];
+  return [context
+      canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometricsOrWatch
+                  error:nil];
 }
 
 bool AuthenticatorMac::CheckIfBiometricsOrScreenLockAvailable() {

@@ -25,7 +25,6 @@ source_set("safety_check") {
   deps = [
     ":constants",
     "//components/password_manager/core/browser",
-    "//components/password_manager/core/common:features",
     "//components/prefs",
     "//components/version_info",
     "//components/version_info",

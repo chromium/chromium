@@ -11,7 +11,6 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/credential_utils.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
@@ -113,15 +112,13 @@ void IOSChromePasswordCheckManager::StartPasswordCheck() {
     bulk_leak_check_service_adapter_.StartBulkLeakCheck(kPasswordCheckDataKey,
                                                         &data);
 
-    if (password_manager::features::IsPasswordCheckupEnabled()) {
-      insecure_credentials_manager_.StartWeakCheck(base::BindOnce(
-          &IOSChromePasswordCheckManager::OnWeakOrReuseCheckFinished,
-          weak_ptr_factory_.GetWeakPtr()));
+    insecure_credentials_manager_.StartWeakCheck(base::BindOnce(
+        &IOSChromePasswordCheckManager::OnWeakOrReuseCheckFinished,
+        weak_ptr_factory_.GetWeakPtr()));
 
-      insecure_credentials_manager_.StartReuseCheck(base::BindOnce(
-          &IOSChromePasswordCheckManager::OnWeakOrReuseCheckFinished,
-          weak_ptr_factory_.GetWeakPtr()));
-    }
+    insecure_credentials_manager_.StartReuseCheck(base::BindOnce(
+        &IOSChromePasswordCheckManager::OnWeakOrReuseCheckFinished,
+        weak_ptr_factory_.GetWeakPtr()));
 
     is_check_running_ = true;
     start_time_ = base::Time::Now();

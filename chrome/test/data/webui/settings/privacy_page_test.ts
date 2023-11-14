@@ -228,7 +228,7 @@ suite('PrivacyPage', function() {
   });
 });
 
-suite(`PrivacySandbox4Enabled`, function() {
+suite(`PrivacySandbox`, function() {
   let page: SettingsPrivacyPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
@@ -307,6 +307,30 @@ suite(`PrivacySandbox4Enabled`, function() {
     assertEquals(
         routes.PRIVACY_SANDBOX, Router.getInstance().getCurrentRoute());
   });
+});
+
+suite(`CookiesSubpage`, function() {
+  let page: SettingsPrivacyPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+      // This test covers the pre-3PCD subpage.
+      is3pcdCookieSettingsRedesignEnabled: false,
+    });
+
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-privacy-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    return flushTasks();
+  });
 
   test('cookiesSubpageAttributes', async function() {
     // The subpage is only in the DOM if the corresponding route is open.
@@ -323,6 +347,47 @@ suite(`PrivacySandbox4Enabled`, function() {
     const associatedControl = cookiesSubpage.get('associatedControl');
     assertTrue(!!associatedControl);
     assertEquals('thirdPartyCookiesLinkRow', associatedControl.id);
+  });
+});
+
+suite(`TrackingProtectionSubpage`, function() {
+  let page: SettingsPrivacyPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+      is3pcdCookieSettingsRedesignEnabled: true,
+    });
+
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-privacy-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  test('trackingProtectionSubpageAttributes', async function() {
+    // The subpage is only in the DOM if the corresponding route is open.
+    page.shadowRoot!
+        .querySelector<CrLinkRowElement>('#trackingProtectionLinkRow')!.click();
+    await flushTasks();
+
+    const trackingProtectionSubpage =
+        page.shadowRoot!.querySelector<PolymerElement>('#trackingProtection');
+    assertTrue(!!trackingProtectionSubpage);
+    assertEquals(
+        page.i18n('trackingProtectionPageTitle'),
+        trackingProtectionSubpage.getAttribute('page-title'));
+    const associatedControl =
+        trackingProtectionSubpage.get('associatedControl');
+    assertTrue(!!associatedControl);
+    assertEquals('trackingProtectionLinkRow', associatedControl.id);
   });
 });
 

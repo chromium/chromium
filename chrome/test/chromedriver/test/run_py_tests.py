@@ -196,6 +196,8 @@ _BROWSER_SPECIFIC_FILTER['chrome-headless-shell'] = [
     'ChromeDriverTest.testShouldHandleNewWindowLoadingProperly',
     # chrome-headless-shell does not support Page.setRPHRegistrationMode
     'ChromeDriverTest.testSetRPHResgistrationMode',
+    # The test is only intended for the headless mode of Chrome.
+    'ChromeDriverTest.testBrowserNameHeadlessMode',
 ]
 
 _BROWSER_AND_PLATFORM_SPECIFIC_FILTER = {
@@ -206,17 +208,15 @@ _BROWSER_AND_PLATFORM_SPECIFIC_FILTER['chrome-headless-shell']['mac'] = [
     # Unable to run chrome-headless-shell with logging enabled on Mac. See
     # crbug.com/1011000.
     'ChromeLogPathCapabilityTest.testChromeLogPath',
-    # TODO: Each test in this list must have an explanation why it is expected
-    # to fail. If the test is not expected to fail a corresponding issue must
-    # be created and referred to in the comment above the excluded test.
-    # See crbug.com/chromedriver/4358.
+    # https://crbug.com/chromedriver/4631
+    # chrome-headless-shell does not set the window rect as requested.
     'ChromeDriverTest.testWindowMinimize',
     'ChromeDriverTest.testWindowPosition',
     'ChromeDriverTest.testWindowRect',
     'ChromeDriverTest.testWindowSize',
+    # https://crbug.com/chromedriver/4632
+    # chrome-headless-shell ignores the selected range while inserting the text
     'ChromeDriverW3cTest.testSendKeysToElementDoesNotAppend',
-    'CustomBidiMapperTest.testInvalidCustomBidiMapperPath',
-    'CustomBidiMapperTest.testValidCustomBidiMapperPath',
     # https://crbug.com/chromedriver/4629
     # The following four tests fail on Mac Arm64
     'ChromeDriverSecureContextTest.testCreateVirtualSensorWithMaximumFrequency',
@@ -3866,11 +3866,41 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     test_merge_browserName Web Platform Test.
     """
     browser_name = self._driver.capabilities['browserName']
+    self.assertEqual(browser_name, _BROWSER_NAME)
     # The 'browserName' capability must always present in accordance with the
     # standard: https://w3c.github.io/webdriver/#capabilities
     self.assertIsNotNone(browser_name)
-    driver = self.CreateDriver(browser_name=browser_name)
+    # As product name is communicated differently under WebSockets and pipes
+    # there is need to test both of these communication modes.
+    # Test the detected browserName with remote-debugging-pipe.
+    driver = self.CreateDriver(browser_name=browser_name,
+                               chrome_switches=['--remote-debugging-pipe'])
     self.assertEqual(browser_name, driver.capabilities['browserName'])
+    driver.Quit()
+    # Test the detected browserName with remote-debugging-port.
+    driver = self.CreateDriver(browser_name=browser_name,
+                               chrome_switches=['--remote-debugging-port=0'])
+    self.assertEqual(_BROWSER_NAME, driver.capabilities['browserName'])
+    driver.Quit()
+
+  def testBrowserNameHeadlessMode(self):
+    """Verifies that the returned browserName capability for headless Chrome
+    (not chrome-headless-shell) is 'chrome'.
+    """
+    # As product name is communicated differently under WebSockets and pipes
+    # there is need to test both of these communication modes.
+    # Test the detected browserName with remote-debugging-pipe.
+    driver = self.CreateDriver(browser_name=browser_name,
+                               chrome_switches=['--headless=new',
+                                                '--remote-debugging-pipe'])
+    self.assertEqual(_BROWSER_NAME, driver.capabilities['browserName'])
+    driver.Quit()
+    # Test the detected browserName with remote-debugging-port.
+    driver = self.CreateDriver(browser_name=browser_name,
+                               chrome_switches=['--headless=new',
+                                                '--remote-debugging-port=0'])
+    self.assertEqual(_BROWSER_NAME, driver.capabilities['browserName'])
+    driver.Quit()
 
   def testHeadlessWithUserDataDirStarts(self):
     """Tests that ChromeDriver can launch Chrome in headless mode
@@ -7430,14 +7460,19 @@ class CustomBidiMapperTest(ChromeDriverBaseTest):
   """Base class for testing chromedriver with a custom bidi mapper path."""
 
   def CreateDriver(self, bidi_mapper_path=None, **kwargs):
+    log_path = os.path.join(_MINIDUMP_PATH, self.id() + '.chromedriver.log')
+
     chromedriver_server = server.Server(
-        _CHROMEDRIVER_BINARY, bidi_mapper_path=bidi_mapper_path)
+        _CHROMEDRIVER_BINARY,
+        log_path=log_path,
+        bidi_mapper_path=bidi_mapper_path)
 
     driver = chromedriver.ChromeDriver(server_url=chromedriver_server.GetUrl(),
                                      server_pid=chromedriver_server.GetPid(),
                                      chrome_binary=_CHROME_BINARY,
                                      test_name=self.id(),
                                      web_socket_url=True,
+                                     browser_name=_BROWSER_NAME,
                                      **kwargs)
     self._drivers += [driver]
     return driver

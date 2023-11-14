@@ -36,9 +36,6 @@
 
 namespace {
 
-// Value taken from Desktop Chrome.
-constexpr base::TimeDelta kSaveDelay = base::Seconds(2.5);
-
 // Callback invoked to request saving session at path using factory.
 using SaveSessionCallback =
     base::RepeatingCallback<void(NSString*, SessionWindowIOSFactory*)>;
@@ -218,26 +215,7 @@ using SaveSessionCallback =
   SaveSessionRequestQueue* _pendingRequests;
 }
 
-#pragma mark - NSObject overrides
-
-- (instancetype)init {
-  scoped_refptr<base::SequencedTaskRunner> taskRunner =
-      base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-          base::SingleThreadTaskRunnerThreadMode::DEDICATED);
-  return [self initWithSaveDelay:kSaveDelay taskRunner:taskRunner];
-}
-
 #pragma mark - Public interface
-
-+ (SessionServiceIOS*)sharedService {
-  static SessionServiceIOS* singleton = nil;
-  if (!singleton) {
-    singleton = [[[self class] alloc] init];
-  }
-  return singleton;
-}
 
 - (instancetype)initWithSaveDelay:(base::TimeDelta)saveDelay
                        taskRunner:

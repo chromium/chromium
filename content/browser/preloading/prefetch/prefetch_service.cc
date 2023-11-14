@@ -1429,7 +1429,16 @@ std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
               case no_vary_search::MatchType::kOther:
                 if (const auto& nvs_expected =
                         prefetch_container->GetNoVarySearchHint()) {
-                  if (nvs_expected->AreEquivalent(
+                  // We cannot match based on the NVS hint once we have the
+                  // response headers. If we have matching NVS header,
+                  // the entry would have matched with kNoVarySearch above.
+                  // We only match based on the hint if we have not yet
+                  // received the headers.
+                  if (prefetch_container->GetServableState(
+                          PrefetchCacheableDuration()) ==
+                          PrefetchContainer::ServableState::
+                              kShouldBlockUntilHeadReceived &&
+                      nvs_expected->AreEquivalent(
                           key.prefetch_url(), prefetch_container->GetURL())) {
                     hint_matches->push_back(prefetch_container.get());
                   }

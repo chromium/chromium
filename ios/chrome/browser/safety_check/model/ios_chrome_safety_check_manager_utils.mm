@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_utils.h"
 
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
@@ -45,31 +44,14 @@ PasswordSafetyCheckState CalculatePasswordSafetyCheckState(
     case PasswordCheckState::kNoPasswords:
       return PasswordSafetyCheckState::kDisabled;
     case PasswordCheckState::kSignedOut:
-      if (!password_manager::features::IsPasswordCheckupEnabled() &&
-          !insecure_credentials.empty()) {
-        return PasswordSafetyCheckState::kUnmutedCompromisedPasswords;
-      }
       return PasswordSafetyCheckState::kSignedOut;
     case PasswordCheckState::kOffline:
     case PasswordCheckState::kQuotaLimit:
     case PasswordCheckState::kOther:
-      if (!password_manager::features::IsPasswordCheckupEnabled() &&
-          !insecure_credentials.empty()) {
-        return PasswordSafetyCheckState::kUnmutedCompromisedPasswords;
-      }
       return PasswordSafetyCheckState::kError;
     case PasswordCheckState::kCanceled:
-      if (!password_manager::features::IsPasswordCheckupEnabled() &&
-          !insecure_credentials.empty()) {
-        return PasswordSafetyCheckState::kUnmutedCompromisedPasswords;
-      }
       return PasswordSafetyCheckState::kDefault;
     case PasswordCheckState::kIdle:
-      if (!password_manager::features::IsPasswordCheckupEnabled() &&
-          !insecure_credentials.empty()) {
-        return PasswordSafetyCheckState::kUnmutedCompromisedPasswords;
-      }
-
       if (previous_check_state == PasswordSafetyCheckState::kRunning &&
           !insecure_credentials.empty()) {
         return PasswordSafetyCheckStateForHighestPriorityWarningType(

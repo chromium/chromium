@@ -25,7 +25,6 @@ BASE_DECLARE_FEATURE(kForceInitialSyncWhenDecryptionFails);
 BASE_DECLARE_FEATURE(kForgotPasswordFormSupport);
 #if BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kIOSPasswordUISplit);
-BASE_DECLARE_FEATURE(kIOSPasswordCheckup);
 BASE_DECLARE_FEATURE(kIOSPasswordBottomSheet);
 BASE_DECLARE_FEATURE(kIOSPasswordSettingsBulkUploadLocalPasswords);
 #endif  // IS_IOS
@@ -76,9 +75,6 @@ extern const char kTouchToFillPasswordSubmissionWithConservativeHeuristics[];
 #endif  // IS_ANDROID
 
 #if BUILDFLAG(IS_IOS)
-// Returns true if the Password Checkup feature flag is enabled.
-bool IsPasswordCheckupEnabled();
-
 // Helper function returning the status of
 // `kIOSPasswordSettingsBulkUploadLocalPasswords`.
 bool IsBulkUploadLocalPasswordsEnabled();

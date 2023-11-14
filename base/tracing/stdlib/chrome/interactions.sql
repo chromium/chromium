@@ -28,7 +28,7 @@ CREATE PERFETTO TABLE chrome_interactions(
   dur INT
 ) AS
 SELECT
-  navigation_id AS scoped_id,
+  id AS scoped_id,
   'chrome_page_loads' AS type,
   'PageLoad' AS name,
   navigation_start_ts AS ts,

@@ -43,6 +43,8 @@
 
 <script>
 promise_test (async t => {
+  await waitForCompositorCommit();
+
   const scrollDelta = 10;
   const isPreciseDelta = false;
   const xPos = 50;
