@@ -58,11 +58,11 @@ class PrefetchKeyTraits<PrefetchContainer::Key> {
   static PrefetchContainer::Key KeyWithNewURL(
       const PrefetchContainer::Key& old_key,
       const GURL& new_url) {
-    return PrefetchContainer::Key(old_key.referring_document_token(), new_url);
+    return old_key.WithNewUrl(new_url);
   }
   static bool NonUrlPartIsSame(const PrefetchContainer::Key& key1,
                                const PrefetchContainer::Key& key2) {
-    return key1.referring_document_token() == key2.referring_document_token();
+    return key1.NonUrlPartIsSame(key2);
   }
 };
 

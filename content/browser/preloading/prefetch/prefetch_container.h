@@ -118,16 +118,21 @@ class CONTENT_EXPORT PrefetchContainer {
 
     bool operator==(const Key& rhs) const = default;
     bool operator<(const Key& rhs) const {
-      if (referring_document_token_ != rhs.referring_document_token()) {
+      if (referring_document_token_ != rhs.referring_document_token_) {
         return referring_document_token_ < rhs.referring_document_token_;
       }
       return prefetch_url_ < rhs.prefetch_url_;
     }
 
-    const blink::DocumentToken& referring_document_token() const {
-      return referring_document_token_;
-    }
     const GURL& prefetch_url() const { return prefetch_url_; }
+
+    Key WithNewUrl(const GURL& new_url) const {
+      return Key(referring_document_token_, new_url);
+    }
+
+    bool NonUrlPartIsSame(const Key& other) const {
+      return referring_document_token_ == other.referring_document_token_;
+    }
 
    private:
     friend CONTENT_EXPORT std::ostream& operator<<(std::ostream& ostream,
