@@ -971,7 +971,7 @@ void AutocompleteController::UpdateResult(
       }
 
       if (omnibox_feature_configs::ForceAllowedToBeDefault::Get().enabled)
-        match->allowed_to_be_default_match = true;
+        match->SetAllowedToBeDefault(input_);
     }
 
     internal_result_.MergeSuggestionGroupsMap(
