@@ -29,14 +29,13 @@ namespace content_settings {
 namespace {
 using StorageType = mojom::ContentSettingsManager::StorageType;
 
-void OnStorageAccessed(int process_id,
-                       int frame_id,
+void OnStorageAccessed(const content::GlobalRenderFrameHostToken& frame_token,
                        const GURL& origin_url,
                        const GURL& top_origin_url,
                        bool blocked_by_policy,
                        page_load_metrics::StorageType storage_type) {
   content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(process_id, frame_id);
+      content::RenderFrameHost::FromFrameToken(frame_token);
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   if (!web_contents)
@@ -52,8 +51,7 @@ void OnStorageAccessed(int process_id,
   }
 }
 
-void NotifyStorageAccess(int render_process_id,
-                         int32_t render_frame_id,
+void NotifyStorageAccess(const content::GlobalRenderFrameHostToken& frame_token,
                          StorageType storage_type,
                          const url::Origin& top_frame_origin,
                          bool allowed) {
@@ -73,8 +71,7 @@ void NotifyStorageAccess(int render_process_id,
     }
   })();
 
-  auto* rfh =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  auto* rfh = content::RenderFrameHost::FromFrameToken(frame_token);
 
   if (!rfh) {
     return;
@@ -101,23 +98,21 @@ void NotifyStorageAccess(int render_process_id,
 
   if (should_notify_pscs) {
     PageSpecificContentSettings::StorageAccessed(
-        storage_type, render_process_id, render_frame_id, rfh->GetStorageKey(),
-        !allowed);
+        storage_type, frame_token, rfh->GetStorageKey(), !allowed);
   }
 
   if (metrics_type) {
-    OnStorageAccessed(render_process_id, render_frame_id,
-                      rfh->GetLastCommittedURL(), top_frame_origin.GetURL(),
-                      !allowed, metrics_type.value());
+    OnStorageAccessed(frame_token, rfh->GetLastCommittedURL(),
+                      top_frame_origin.GetURL(), !allowed,
+                      metrics_type.value());
   }
 }
 
-void OnContentBlockedOnUI(int render_process_id,
-                          int32_t render_frame_id,
-                          ContentSettingsType type) {
+void OnContentBlockedOnUI(
+    const content::GlobalRenderFrameHostToken& frame_token,
+    ContentSettingsType type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  PageSpecificContentSettings::ContentBlocked(render_process_id,
-                                              render_frame_id, type);
+  PageSpecificContentSettings::ContentBlocked(frame_token, type);
 }
 
 }  // namespace
@@ -152,7 +147,7 @@ void ContentSettingsManagerImpl::Clone(
 }
 
 void ContentSettingsManagerImpl::AllowStorageAccess(
-    int32_t render_frame_id,
+    const blink::LocalFrameToken& frame_token,
     StorageType storage_type,
     const url::Origin& origin,
     const net::SiteForCookies& site_for_cookies,
@@ -189,26 +184,31 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
   if (!allowed && net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
     allowed = true;
   }
-  if (delegate_->AllowStorageAccess(render_process_id_, render_frame_id,
-                                    storage_type, url, allowed, &callback)) {
+  if (delegate_->AllowStorageAccess(
+          content::GlobalRenderFrameHostToken(render_process_id_, frame_token),
+          storage_type, url, allowed, &callback)) {
     DCHECK(!callback);
     return;
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&NotifyStorageAccess, render_process_id_, render_frame_id,
-                     storage_type, top_frame_origin, allowed));
+      FROM_HERE, base::BindOnce(&NotifyStorageAccess,
+                                content::GlobalRenderFrameHostToken(
+                                    render_process_id_, frame_token),
+                                storage_type, top_frame_origin, allowed));
 
   std::move(callback).Run(allowed);
 }
 
-void ContentSettingsManagerImpl::OnContentBlocked(int32_t render_frame_id,
-                                                  ContentSettingsType type) {
+void ContentSettingsManagerImpl::OnContentBlocked(
+    const blink::LocalFrameToken& frame_token,
+    ContentSettingsType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&OnContentBlockedOnUI, render_process_id_,
-                                render_frame_id, type));
+      FROM_HERE, base::BindOnce(&OnContentBlockedOnUI,
+                                content::GlobalRenderFrameHostToken(
+                                    render_process_id_, frame_token),
+                                type));
 }
 
 ContentSettingsManagerImpl::ContentSettingsManagerImpl(

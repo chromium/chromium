@@ -70,7 +70,7 @@ class MockContentSettingsManagerImpl : public mojom::ContentSettingsManager {
       mojo::PendingReceiver<mojom::ContentSettingsManager> receiver) override {
     ADD_FAILURE() << "Not reached";
   }
-  void AllowStorageAccess(int32_t render_frame_id,
+  void AllowStorageAccess(const blink::LocalFrameToken& frame_token,
                           StorageType storage_type,
                           const url::Origin& origin,
                           const net::SiteForCookies& site_for_cookies,
@@ -79,7 +79,7 @@ class MockContentSettingsManagerImpl : public mojom::ContentSettingsManager {
     ++log_->allow_storage_access_count;
     std::move(callback).Run(true);
   }
-  void OnContentBlocked(int32_t render_frame_id,
+  void OnContentBlocked(const blink::LocalFrameToken& frame_token,
                         ContentSettingsType type) override {
     ++log_->on_content_blocked_count;
     log_->on_content_blocked_type = type;

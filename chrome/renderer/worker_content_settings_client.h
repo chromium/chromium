@@ -8,6 +8,7 @@
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/site_for_cookies.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -52,7 +53,7 @@ class WorkerContentSettingsClient : public blink::WebContentSettingsClient {
   net::SiteForCookies site_for_cookies_;
   url::Origin top_frame_origin_;
   bool allow_running_insecure_content_;
-  const int32_t render_frame_id_;
+  const blink::LocalFrameToken frame_token_;
   std::unique_ptr<RendererContentSettingRules> content_setting_rules_;
 
   // Because instances of this class are created on the parent's thread (i.e,

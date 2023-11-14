@@ -1165,11 +1165,10 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, RendererUpdateWhilePendingCommit) {
   content::CommitMessageDelayer delayer(
       web_contents, second_url,
       base::BindOnce([](content::RenderFrameHost* rfh) {
-        auto global_id = rfh->GetGlobalId();
+        auto global_frame_token = rfh->GetGlobalFrameToken();
         // Call ContentBlocked while the RFH is pending commit.
         PageSpecificContentSettings::ContentBlocked(
-            global_id.child_id, global_id.frame_routing_id,
-            ContentSettingsType::JAVASCRIPT);
+            global_frame_token, ContentSettingsType::JAVASCRIPT);
       }));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), second_url, WindowOpenDisposition::CURRENT_TAB,

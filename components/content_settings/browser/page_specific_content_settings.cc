@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/functional/overloaded.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
@@ -667,16 +668,25 @@ PageSpecificContentSettings::GetDelegateForWebContents(
 // static
 void PageSpecificContentSettings::StorageAccessed(
     StorageType storage_type,
-    int render_process_id,
-    int render_frame_id,
+    absl::variant<content::GlobalRenderFrameHostToken,
+                  content::GlobalRenderFrameHostId> frame_id,
     const blink::StorageKey& storage_key,
     bool blocked_by_policy) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  content::RenderFrameHost* rfh = absl::visit(
+      base::Overloaded{
+          [](const content::GlobalRenderFrameHostToken& frame_token) {
+            return content::RenderFrameHost::FromFrameToken(frame_token);
+          },
+          [](const content::GlobalRenderFrameHostId& id) {
+            return content::RenderFrameHost::FromID(id);
+          },
+      },
+      frame_id);
+
   if (DelayUntilCommitIfNecessary(
           rfh, &PageSpecificContentSettings::StorageAccessed, storage_type,
-          render_process_id, render_frame_id, storage_key, blocked_by_policy)) {
+          frame_id, storage_key, blocked_by_policy)) {
     return;
   }
   PageSpecificContentSettings* settings = GetForFrame(rfh);
@@ -735,14 +745,14 @@ void PageSpecificContentSettings::BrowsingDataAccessed(
 }
 
 // static
-void PageSpecificContentSettings::ContentBlocked(int render_process_id,
-                                                 int render_frame_id,
-                                                 ContentSettingsType type) {
+void PageSpecificContentSettings::ContentBlocked(
+    const content::GlobalRenderFrameHostToken& frame_token,
+    ContentSettingsType type) {
   content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+      content::RenderFrameHost::FromFrameToken(frame_token);
   if (DelayUntilCommitIfNecessary(rfh,
                                   &PageSpecificContentSettings::ContentBlocked,
-                                  render_process_id, render_frame_id, type)) {
+                                  frame_token, type)) {
     return;
   }
   PageSpecificContentSettings* settings = GetForFrame(rfh);

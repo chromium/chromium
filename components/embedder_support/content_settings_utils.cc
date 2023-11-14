@@ -71,8 +71,7 @@ bool AllowWorkerStorageAccess(
       continue;
     }
     content_settings::PageSpecificContentSettings::StorageAccessed(
-        storage_type, it.child_id, it.frame_routing_id, rfh->GetStorageKey(),
-        !allow);
+        storage_type, it, rfh->GetStorageKey(), !allow);
   }
 
   return allow;

@@ -118,7 +118,8 @@ void ContentSettingsAgentImpl::DidBlockContentType(
     ContentSettingsType settings_type) {
   bool newly_blocked = content_blocked_.insert(settings_type).second;
   if (newly_blocked)
-    GetContentSettingsManager().OnContentBlocked(routing_id(), settings_type);
+    GetContentSettingsManager().OnContentBlocked(
+        render_frame()->GetWebFrame()->GetLocalFrameToken(), settings_type);
 }
 
 namespace {
@@ -255,7 +256,7 @@ void ContentSettingsAgentImpl::AllowStorageAccess(
       std::move(callback), key, std::ref(cached_storage_permissions_));
 
   GetContentSettingsManager().AllowStorageAccess(
-      routing_id(), ConvertToMojoStorageType(storage_type),
+      frame->GetLocalFrameToken(), ConvertToMojoStorageType(storage_type),
       frame->GetSecurityOrigin(), frame->GetDocument().SiteForCookies(),
       frame->GetDocument().TopFrameOrigin(), std::move(new_cb));
 }
@@ -275,7 +276,7 @@ bool ContentSettingsAgentImpl::AllowStorageAccessSync(
   SCOPED_UMA_HISTOGRAM_TIMER("ContentSettings.AllowStorageAccessSync");
   bool result = false;
   GetContentSettingsManager().AllowStorageAccess(
-      routing_id(), ConvertToMojoStorageType(storage_type),
+      frame->GetLocalFrameToken(), ConvertToMojoStorageType(storage_type),
       frame->GetSecurityOrigin(), frame->GetDocument().SiteForCookies(),
       frame->GetDocument().TopFrameOrigin(), &result);
   cached_storage_permissions_[key] = result;

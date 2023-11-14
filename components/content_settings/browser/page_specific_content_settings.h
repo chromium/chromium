@@ -34,6 +34,7 @@
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -250,8 +251,8 @@ class PageSpecificContentSettings
 
   static void StorageAccessed(
       mojom::ContentSettingsManager::StorageType storage_type,
-      int render_process_id,
-      int render_frame_id,
+      absl::variant<content::GlobalRenderFrameHostToken,
+                    content::GlobalRenderFrameHostId> frame_id,
       const blink::StorageKey& storage_key,
       bool blocked_by_policy);
 
@@ -261,9 +262,9 @@ class PageSpecificContentSettings
                                    bool blocked);
 
   // Called when content access is blocked in the renderer process.
-  static void ContentBlocked(int render_process_id,
-                             int render_frame_id,
-                             ContentSettingsType type);
+  static void ContentBlocked(
+      const content::GlobalRenderFrameHostToken& frame_token,
+      ContentSettingsType type);
 
   // Called when a specific Shared Worker was accessed.
   static void SharedWorkerAccessed(int render_process_id,
