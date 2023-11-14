@@ -367,7 +367,8 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
      */
     static void tryUploadCrashDumpNow(File minidumpFile) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                && !ApplicationStatus.hasVisibleActivities()) {
+                && !(ApplicationStatus.isInitialized()
+                        && ApplicationStatus.hasVisibleActivities())) {
             // If we are on API 31+, Android does not allow us to start services from the
             // background. If we are in the background, then go through the JobScheduler path
             // instead. See crbug.com/1433529 for more details.
