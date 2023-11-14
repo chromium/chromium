@@ -902,6 +902,16 @@ TEST_F(
    'os_privacy_page/privacy_hub_app_permission_row_test.js'
  ],
  [
+   'OsPrivacyPagePrivacyHubCameraSubpage',
+   'os_privacy_page/privacy_hub_camera_subpage_test.js',
+   {
+     enabled: [
+       'ash::features::kCrosPrivacyHubV0',
+       'ash::features::kCrosPrivacyHubAppPermissions'
+     ]
+   },
+ ],
+ [
    'OsPrivacyPagePrivacyHubMicrophoneSubpage',
    'os_privacy_page/privacy_hub_microphone_subpage_test.js',
    {

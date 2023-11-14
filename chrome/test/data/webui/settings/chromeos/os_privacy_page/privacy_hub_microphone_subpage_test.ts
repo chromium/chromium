@@ -89,7 +89,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
         '#microphoneListSection'));
   }
 
-  function getNoMicrophoneText(): HTMLDivElement|null {
+  function getNoMicrophoneTextElement(): HTMLDivElement|null {
     return privacyHubMicrophoneSubpage.shadowRoot!.querySelector(
         '#noMicrophoneText');
   }
@@ -135,7 +135,9 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
                 .value);
         assertEquals(
             privacyHubMicrophoneSubpage.i18n('deviceOff'), getOnOffText());
-        assertEquals('Blocked for all', getOnOffSubtext());
+        assertEquals(
+            privacyHubMicrophoneSubpage.i18n('blockedForAllText'),
+            getOnOffSubtext());
         assertFalse(isMicrophoneListSectionVisible());
       });
 
@@ -159,10 +161,10 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
 
   test('No microphone connected by default', () => {
     assertNull(getMicrophoneList());
-    assertTrue(!!getNoMicrophoneText());
+    assertTrue(!!getNoMicrophoneTextElement());
     assertEquals(
         privacyHubMicrophoneSubpage.i18n('noMicrophoneConnectedText'),
-        getNoMicrophoneText()!.textContent!.trim());
+        getNoMicrophoneTextElement()!.textContent!.trim());
   });
 
   test(
@@ -181,7 +183,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
 
         assertFalse(getMicrophoneCrToggle()!.disabled);
         assertTrue(getMicrophoneTooltip()!.hidden);
-        assertNull(getNoMicrophoneText());
+        assertNull(getNoMicrophoneTextElement());
       });
 
   test(
