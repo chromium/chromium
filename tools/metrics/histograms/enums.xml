@@ -110718,6 +110718,20 @@ Full version information for the fingerprint enum values:
   <int value="7" label="Error unsupported protocol"/>
 </enum>
 
+<enum name="UpdateClientBackgroundDownloaderMacStartDownloadOutcome">
+  <int value="0" label="Immediate error"/>
+  <int value="1" label="Download recovered from cache"/>
+  <int value="2" label="Session has ongoing download"/>
+  <int value="3" label="New download task created"/>
+</enum>
+
+<enum name="UpdateClientCanUpdateResult">
+  <int value="0" label="Updates Disabled"/>
+  <int value="1" label="Canceled"/>
+  <int value="2" label="Check for Updates Only"/>
+  <int value="3" label="Can Update"/>
+</enum>
+
 <enum name="UpdateClientErrors">
   <int value="0" label="(No Error)"/>
   <int value="1" label="Update in progress"/>
@@ -110727,6 +110741,13 @@ Full version information for the fingerprint enum values:
   <int value="5" label="Update-check error"/>
   <int value="6" label="CRX not found"/>
   <int value="7" label="Invalid argument"/>
+</enum>
+
+<enum name="UpdateClientUpdateCheckResult">
+  <int value="0" label="Error"/>
+  <int value="1" label="Canceled"/>
+  <int value="2" label="Has Update"/>
+  <int value="3" label="No Update"/>
 </enum>
 
 <enum name="UpdateDynamicRulesStatus">

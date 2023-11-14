@@ -16,6 +16,7 @@
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -32,14 +33,16 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/task_traits.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/update_client_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -60,6 +63,9 @@ base::FilePath URLToFilename(const GURL& url) {
   return base::FilePath::FromASCII(
       base::HexEncode(reinterpret_cast<uint8_t*>(&hash), sizeof(hash)));
 }
+
+// The age at which unclaimed downloads should be evicted from the cache.
+constexpr base::TimeDelta kMaxCachedDownloadAge = base::Days(2);
 
 // These methods have been copied from //net/base/mac/url_conversions.h to
 // avoid introducing a dependancy on //net.
@@ -100,6 +106,18 @@ GURL GURLWithNSURL(NSURL* url) {
     return GURL(url.absoluteString.UTF8String);
   }
   return GURL();
+}
+
+// Detects and removes old files from the download cache.
+void CleanDownloadCache(const base::FilePath& download_cache) {
+  base::FileEnumerator(download_cache, false, base::FileEnumerator::FILES)
+      .ForEach([](const base::FilePath& download) {
+        base::File::Info info;
+        if (base::GetFileInfo(download, &info) &&
+            base::Time::Now() - info.creation_time > kMaxCachedDownloadAge) {
+          base::DeleteFile(download);
+        }
+      });
 }
 
 }  // namespace
@@ -204,31 +222,37 @@ GURL GURLWithNSURL(NSURL* url) {
 
 namespace update_client {
 
-class BackgroundDownloaderSharedSessionImpl
-    : public BackgroundDownloaderSharedSession {
+class BackgroundDownloaderSharedSessionImpl {
  public:
-  // Safe to call from the main sequence. All other method calls should occur on
-  // a MayBlock background sequence.
-  BackgroundDownloaderSharedSessionImpl(
-      scoped_refptr<base::SequencedTaskRunner> callback_sequence,
-      const base::FilePath& download_cache)
-      : callback_sequence_(callback_sequence), download_cache_(download_cache) {
-    DETACH_FROM_SEQUENCE(sequence_checker_);
-  }
-
-  void Initialize(const std::string& session_identifier) {
+  BackgroundDownloaderSharedSessionImpl(const base::FilePath& download_cache,
+                                        const std::string& session_identifier)
+      : download_cache_(download_cache) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     DownloadDelegate* delegate = [[DownloadDelegate alloc]
            initWithDownloadCache:download_cache_
         downloadCompleteCallback:
             base::BindRepeating(
-                &BackgroundDownloaderSharedSessionImpl::OnDownloadComplete,
-                base::WrapRefCounted(this))
+                [](base::WeakPtr<BackgroundDownloaderSharedSessionImpl>
+                       weak_this,
+                   const GURL& url, const base::FilePath& location, int error,
+                   int64_t downloaded_bytes, int64_t total_bytes) {
+                  if (weak_this) {
+                    weak_this->OnDownloadComplete(
+                        url, location, error, downloaded_bytes, total_bytes);
+                  }
+                },
+                weak_factory_.GetWeakPtr())
         metricsCollectedCallback:
             base::BindRepeating(
-                &BackgroundDownloaderSharedSessionImpl::OnMetricsCollected,
-                base::WrapRefCounted(this))];
+                [](base::WeakPtr<BackgroundDownloaderSharedSessionImpl>
+                       weak_this,
+                   const GURL& url, uint64_t download_time_ms) {
+                  if (weak_this) {
+                    weak_this->OnMetricsCollected(url, download_time_ms);
+                  }
+                },
+                weak_factory_.GetWeakPtr())];
 
     NSURLSessionConfiguration* config = [NSURLSessionConfiguration
         backgroundSessionConfigurationWithIdentifier:base::SysUTF8ToNSString(
@@ -238,15 +262,23 @@ class BackgroundDownloaderSharedSessionImpl
                                         delegateQueue:nil];
   }
 
-  // Overrides for BackgroundDownloaderSharedSession.
-  void DoStartDownload(const GURL& url,
-                       OnDownloadCompleteCallback callback) override {
+  ~BackgroundDownloaderSharedSessionImpl() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+  void DoStartDownload(const GURL& url, OnDownloadCompleteCallback callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindRepeating(&CleanDownloadCache, download_cache_),
+        base::Minutes(10));
 
     if (!session_) {
       CrxDownloader::DownloadMetrics metrics = GetDefaultMetrics(url);
       metrics.error =
           static_cast<int>(CrxDownloaderError::MAC_BG_SESSION_INVALIDATED);
+      metrics::RecordBDMStartDownloadOutcome(
+          metrics::BDMStartDownloadOutcome::kImmediateError);
       callback.Run(false, {metrics.error, base::FilePath()}, metrics);
       return;
     }
@@ -255,27 +287,39 @@ class BackgroundDownloaderSharedSessionImpl
       CrxDownloader::DownloadMetrics metrics = GetDefaultMetrics(url);
       metrics.error =
           static_cast<int>(CrxDownloaderError::MAC_BG_DUPLICATE_DOWNLOAD);
+      metrics::RecordBDMStartDownloadOutcome(
+          metrics::BDMStartDownloadOutcome::kImmediateError);
       callback.Run(false, {metrics.error, base::FilePath()}, metrics);
       return;
     }
 
     if (HandleDownloadFromCache(url, callback)) {
+      metrics::RecordBDMStartDownloadOutcome(
+          metrics::BDMStartDownloadOutcome::kDownloadRecoveredFromCache);
       return;
     }
 
     downloads_.emplace(url, callback);
     HasOngoingDownload(
         url, base::BindOnce(
-                 [](scoped_refptr<BackgroundDownloaderSharedSessionImpl> impl,
+                 [](base::WeakPtr<BackgroundDownloaderSharedSessionImpl> impl,
                     const GURL& url, bool has_download) {
+                   if (!impl) {
+                     return;
+                   }
+                   metrics::RecordBDMStartDownloadOutcome(
+                       has_download ? metrics::BDMStartDownloadOutcome::
+                                          kSessionHasOngoingDownload
+                                    : metrics::BDMStartDownloadOutcome::
+                                          kNewDownloadTaskCreated);
                    if (!has_download) {
                      impl->CreateAndResumeDownloadTask(url);
                    }
                  },
-                 base::WrapRefCounted(this), url));
+                 weak_factory_.GetWeakPtr(), url));
   }
 
-  void InvalidateAndCancel() override {
+  void InvalidateAndCancel() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (session_) {
       [session_ invalidateAndCancel];
@@ -429,17 +473,16 @@ class BackgroundDownloaderSharedSessionImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(results_.contains(url));
 
-    if (downloads_.contains(url)) {
+    bool requestor_known = downloads_.contains(url);
+    metrics::RecordBDMResultRequestorKnown(requestor_known);
+    if (requestor_known) {
       DownloadResult result = results_.at(url);
-      callback_sequence_->PostTask(
-          FROM_HERE, base::BindOnce(downloads_.at(url), result.is_handled,
-                                    result.result, result.download_metrics));
+      downloads_.at(url).Run(result.is_handled, result.result,
+                             result.download_metrics);
       results_.erase(url);
       downloads_.erase(url);
     }
   }
-
-  ~BackgroundDownloaderSharedSessionImpl() override = default;
 
   // Returns a `CrxDownloader::DownloadMetrics` with url and downloader set.
   static CrxDownloader::DownloadMetrics GetDefaultMetrics(const GURL& url) {
@@ -451,7 +494,6 @@ class BackgroundDownloaderSharedSessionImpl
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
-  scoped_refptr<base::SequencedTaskRunner> callback_sequence_;
   const base::FilePath download_cache_;
   NSURLSession* session_ GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -465,6 +507,8 @@ class BackgroundDownloaderSharedSessionImpl
   // were started by a previous BackgroundDownloaderSharedSessionImpl.
   base::flat_map<GURL, OnDownloadCompleteCallback> downloads_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  base::WeakPtrFactory<BackgroundDownloaderSharedSessionImpl> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 BackgroundDownloader::BackgroundDownloader(
@@ -480,8 +524,10 @@ BackgroundDownloader::~BackgroundDownloader() = default;
 base::OnceClosure BackgroundDownloader::DoStartDownload(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return DoStartDownload(
-      url, base::BindRepeating(&BackgroundDownloader::OnDownloadComplete,
-                               base::WrapRefCounted(this)));
+      url, base::BindPostTaskToCurrentDefault(
+               base::BindRepeating(&BackgroundDownloader::OnDownloadComplete,
+                                   base::WrapRefCounted(this)),
+               FROM_HERE));
 }
 
 base::OnceClosure BackgroundDownloader::DoStartDownload(
@@ -495,19 +541,42 @@ base::OnceClosure BackgroundDownloader::DoStartDownload(
   return base::DoNothing();
 }
 
+// BackgroundDownloaderSharedSessionProxy manages an implementation bound to a
+// background sequence.
+class BackgroundDownloaderSharedSessionProxy
+    : public BackgroundDownloaderSharedSession {
+ public:
+  BackgroundDownloaderSharedSessionProxy(
+      scoped_refptr<base::SequencedTaskRunner> background_sequence,
+      const base::FilePath& download_cache,
+      const std::string& session_identifier)
+      : impl_(background_sequence, download_cache, session_identifier) {}
+
+  void DoStartDownload(
+      const GURL& url,
+      OnDownloadCompleteCallback on_download_complete_callback) override {
+    impl_.AsyncCall(&BackgroundDownloaderSharedSessionImpl::DoStartDownload)
+        .WithArgs(url, std::move(on_download_complete_callback));
+  }
+
+  void InvalidateAndCancel() override {
+    impl_.AsyncCall(
+        &BackgroundDownloaderSharedSessionImpl::InvalidateAndCancel);
+  }
+
+ private:
+  ~BackgroundDownloaderSharedSessionProxy() override = default;
+
+  base::SequenceBound<BackgroundDownloaderSharedSessionImpl> impl_;
+};
+
 scoped_refptr<BackgroundDownloaderSharedSession>
 MakeBackgroundDownloaderSharedSession(
     scoped_refptr<base::SequencedTaskRunner> background_sequence,
     const base::FilePath& download_cache,
     const std::string& session_identifier) {
-  scoped_refptr<BackgroundDownloaderSharedSessionImpl> shared_session =
-      base::MakeRefCounted<BackgroundDownloaderSharedSessionImpl>(
-          base::SequencedTaskRunner::GetCurrentDefault(), download_cache);
-  background_sequence->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BackgroundDownloaderSharedSessionImpl::Initialize,
-                     shared_session, session_identifier));
-  return shared_session;
+  return base::MakeRefCounted<BackgroundDownloaderSharedSessionProxy>(
+      background_sequence, download_cache, session_identifier);
 }
 
 }  // namespace update_client

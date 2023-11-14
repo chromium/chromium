@@ -29,6 +29,7 @@
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
 #include "chrome/browser/component_updater/masked_domain_list_component_installer.h"
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
+#include "chrome/browser/component_updater/network_quality_observer.h"
 #include "chrome/browser/component_updater/payload_test_component_installer.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/component_updater/pnacl_component_installer.h"
@@ -228,6 +229,8 @@ void RegisterComponentsForUpdate() {
   if (base::FeatureList::IsEnabled(features::kPayloadTestComponent)) {
     RegisterPayloadTestComponent(cus);
   }
+  // TODO(crbug.com/1499359): Remove once the experiment has concluded.
+  EnsureNetworkQualityObserver();
 #endif
 }
 
