@@ -21,6 +21,10 @@
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && BUILDFLAG(IS_WIN)
+#include "components/tracing/common/etw_export_win.h"
+#endif
+
 namespace tracing {
 namespace {
 
@@ -187,6 +191,8 @@ void InitTracingPostThreadPoolStartAndFeatureList(bool enable_consumer) {
                          ->ConnectToSystemService();
                    }));
   }
+#elif BUILDFLAG(IS_WIN)  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  tracing::EnableETWExport();
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 

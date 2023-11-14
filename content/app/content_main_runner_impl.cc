@@ -923,7 +923,9 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
     tracing::EnableStartupTracingIfNeeded();
 
 #if BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   base::trace_event::TraceEventETWExport::EnableETWExport();
+#endif
 #endif  // BUILDFLAG(IS_WIN)
 
   // Android tracing started at the beginning of the method.
