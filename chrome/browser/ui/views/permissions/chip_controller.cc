@@ -435,13 +435,7 @@ void ChipController::HandleConfirmation(
 
 void ChipController::AnnouncePermissionRequestForAccessibility(
     const std::u16string& text) {
-#if BUILDFLAG(IS_MAC)
-  chip_->GetViewAccessibility().OverrideName(text);
-  chip_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-#else
-
   chip_->GetViewAccessibility().AnnounceText(text);
-#endif
 }
 
 void ChipController::CollapsePrompt(bool allow_restart) {

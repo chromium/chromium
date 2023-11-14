@@ -579,8 +579,7 @@ void IconLabelBubbleView::AnimateIn(absl::optional<int> string_id) {
       // A valid role must be set prior to setting the name.
       // TODO(crbug.com/1361281): Consider using AnnounceText instead of a
       // virtual view.
-      alert_virtual_view_->GetCustomData().role =
-          ax::mojom::Role::kGenericContainer;
+      alert_virtual_view_->GetCustomData().role = ax::mojom::Role::kAlert;
       alert_virtual_view_->GetCustomData().SetNameChecked(label);
       alert_virtual_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert);
     }

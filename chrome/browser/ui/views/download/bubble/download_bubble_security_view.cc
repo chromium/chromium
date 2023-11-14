@@ -876,13 +876,7 @@ void DownloadBubbleSecurityView::UpdateAccessibilityTextAndFocus() {
   }
   // Announce that the subpage was opened to inform the user about the changes
   // in the UI.
-#if BUILDFLAG(IS_MAC)
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlert);
-  GetViewAccessibility().OverrideName(ui_info_.warning_summary);
-  NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-#else
   GetViewAccessibility().AnnounceText(ui_info_.warning_summary);
-#endif
 
   // Focus the back button by default to ensure that focus is set when new
   // content is displayed.

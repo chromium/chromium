@@ -1056,6 +1056,9 @@ void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {
   // Log time from bubble dialog delegate creation to bubble becoming
   // visible.
   if (visible) {
+    if (GetWidget()->IsClosed()) {
+      return;
+    }
     if (bubble_created_time_.has_value()) {
       GetWidget()
           ->GetCompositor()
@@ -1089,6 +1092,7 @@ void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {
   // the bubble in its entirety rather than just its title and initially focused
   // view.  See http://crbug.com/474622 for details.
   if (visible && ui::IsAlert(GetAccessibleWindowRole())) {
+    GetWidget()->GetRootView()->SetAccessibleRole(GetAccessibleWindowRole());
     GetWidget()->GetRootView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kAlert, true);
   }

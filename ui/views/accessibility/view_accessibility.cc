@@ -563,6 +563,10 @@ gfx::NativeViewAccessible ViewAccessibility::GetNativeObject() const {
 }
 
 void ViewAccessibility::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
+  Widget* const widget = view_->GetWidget();
+  if (!widget || widget->IsClosed()) {
+    return;
+  }
   // Used for unit testing.
   if (accessibility_events_callback_)
     accessibility_events_callback_.Run(nullptr, event_type);

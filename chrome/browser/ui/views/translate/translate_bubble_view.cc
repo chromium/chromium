@@ -1009,15 +1009,7 @@ void TranslateBubbleView::SwitchView(
 
 void TranslateBubbleView::AnnounceTextToScreenReader(
     const std::u16string& announcement_text) {
-#if BUILDFLAG(IS_MAC)
-  // TODO(https://crbug.com/1377831): Remove this Mac workaround once
-  // AnnounceText() works as expected on Mac.
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlertDialog);
-  GetViewAccessibility().OverrideName(announcement_text);
-  NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-#else
   GetViewAccessibility().AnnounceText(announcement_text);
-#endif
 }
 
 void TranslateBubbleView::SwitchTabForViewState(

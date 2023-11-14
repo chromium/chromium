@@ -359,14 +359,7 @@ void SendAccessibilityEvent(views::Widget* widget,
     return;
 
   views::View* const root_view = widget->GetRootView();
-#if BUILDFLAG(IS_MAC)
-  if (!announcement.empty())
-    root_view->GetViewAccessibility().OverrideName(announcement);
-  root_view->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-#else
-  if (!announcement.empty())
-    root_view->GetViewAccessibility().AnnounceText(announcement);
-#endif
+  root_view->GetViewAccessibility().AnnounceText(announcement);
 }
 
 // Selects string for disclosure text based on passed-in `privacy_policy_url`

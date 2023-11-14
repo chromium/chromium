@@ -4013,7 +4013,6 @@ void AXPlatformNodeAuraLinux::OnAriaCurrentChanged() {
 }
 
 void AXPlatformNodeAuraLinux::OnAlertShown() {
-  DCHECK(ui::IsAlert(GetRole()));
   atk_object_notify_state_change(ATK_OBJECT(GetOrCreateAtkObject()),
                                  ATK_STATE_SHOWING, TRUE);
 }

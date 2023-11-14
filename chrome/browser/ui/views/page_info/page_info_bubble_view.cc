@@ -311,13 +311,7 @@ void PageInfoBubbleView::ChildPreferredSizeChanged(views::View* child) {
 void PageInfoBubbleView::AnnouncePageOpened(std::u16string announcement) {
   // Announce that the subpage was opened to inform the user about the changes
   // in the UI.
-#if BUILDFLAG(IS_MAC)
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlert);
-  GetViewAccessibility().OverrideName(announcement);
-  NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-#else
   GetViewAccessibility().AnnounceText(announcement);
-#endif
 
   // Focus the back button by default to ensure that focus is set when new
   // content is displayed.

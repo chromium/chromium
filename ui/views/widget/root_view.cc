@@ -339,6 +339,9 @@ AnnounceTextView* RootView::GetOrCreateAnnounceView() {
 void RootView::AnnounceTextAs(
     const std::u16string& text,
     ui::AXPlatformNode::AnnouncementType announcement_type) {
+  if (text.empty()) {
+    return;
+  }
 #if BUILDFLAG(IS_MAC)
   gfx::NativeViewAccessible native = GetViewAccessibility().GetNativeObject();
   if (auto* ax_node = ui::AXPlatformNode::FromNativeViewAccessible(native)) {
