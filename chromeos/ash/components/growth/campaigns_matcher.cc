@@ -11,6 +11,7 @@
 #include "base/version.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "chromeos/ash/components/growth/growth_metrics.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 
@@ -21,8 +22,9 @@ bool MatchPref(const base::Value::List* criterias,
                base::StringPiece pref_path,
                const PrefService* pref_service) {
   if (!pref_service) {
-    // TODO(b/299305911): This is unexpected. Add metrics to track this case.
     LOG(ERROR) << "Matching pref before pref service is available";
+    RecordCampaignsManagerError(
+        CampaignsManagerError::kUserPrefUnavailableAtMatching);
     return false;
   }
 
@@ -97,6 +99,7 @@ const Campaign* CampaignsMatcher::GetCampaignBySlot(Slot slot) const {
     const auto* campaign = campaign_value.GetIfDict();
     if (!campaign) {
       LOG(ERROR) << "Invalid campaign.";
+      RecordCampaignsManagerError(CampaignsManagerError::kInvalidCampaign);
       continue;
     }
 
@@ -226,8 +229,8 @@ bool CampaignsMatcher::Matched(const Targetings* targetings) const {
   const auto* targeting = targetings->front().GetIfDict();
   if (!targeting) {
     // Targeting is invalid. Skip the current campaign.
-    // TODO(b/299305911): Add metrics to track when a targeting is invalid.
     LOG(ERROR) << "Invalid targeting.";
+    RecordCampaignsManagerError(CampaignsManagerError::kInvalidTargeting);
     return false;
   }
 

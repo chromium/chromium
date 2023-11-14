@@ -14,6 +14,8 @@ component("growth") {
     "campaigns_matcher.h",
     "campaigns_model.cc",
     "campaigns_model.h",
+    "growth_metrics.cc",
+    "growth_metrics.h",
   ]
 
   deps = [

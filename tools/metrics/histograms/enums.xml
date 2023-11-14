@@ -8230,6 +8230,15 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="Dismissed"/>
 </enum>
 
+<enum name="CampaignsManagerError">
+  <int value="0" label="Loading campaigns component failed"/>
+  <int value="1" label="Loading campaigns file failed"/>
+  <int value="2" label="Parsing campaigns file failed"/>
+  <int value="3" label="User pref is not available at campaigns matching"/>
+  <int value="4" label="Invalid campaign"/>
+  <int value="5" label="Invalid targeting"/>
+</enum>
+
 <enum name="CanaryCheckLookupResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failure"/>

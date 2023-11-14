@@ -11,10 +11,12 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "chromeos/ash/components/growth/growth_metrics.h"
 #include "chromeos/ash/components/growth/mock_campaigns_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -74,6 +76,9 @@ constexpr char kValidDemoModeTargeting[] = R"(
 )";
 
 constexpr char kCampaignsFileName[] = "campaigns.json";
+
+inline constexpr char kCampaignsManagerErrorHistogramName[] =
+    "Ash.Growth.CampaignsManager.Error";
 
 // testing::InvokeArgument<N> does not work with base::OnceCallback. Use this
 // gmock action template to invoke base::OnceCallback. `k` is the k-th argument
@@ -225,6 +230,8 @@ class CampaignsManagerTest : public testing::Test {
 };
 
 TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaign) {
+  base::HistogramTester histogram_tester;
+
   LoadComponentAndVerifyLoadComplete(
       base::StringPrintf(kValidCampaignsFileTemplate, kValidDemoModeTargeting));
 
@@ -238,6 +245,14 @@ TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaign) {
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+
+  histogram_tester.ExpectBucketCount(kCampaignsManagerErrorHistogramName,
+                                     CampaignsManagerError::kInvalidTargeting,
+                                     /*count=*/1);
+
+  histogram_tester.ExpectBucketCount(kCampaignsManagerErrorHistogramName,
+                                     CampaignsManagerError::kInvalidCampaign,
+                                     /*count=*/1);
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignNoTargeting) {
@@ -560,6 +575,7 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignAppVersionInvalidAppVersion) {
 }
 
 TEST_F(CampaignsManagerTest, LoadCampaignsFailed) {
+  base::HistogramTester histogram_tester;
   TestCampaignsManagerObserver observer;
   campaigns_manager_->AddObserver(&observer);
 
@@ -575,9 +591,39 @@ TEST_F(CampaignsManagerTest, LoadCampaignsFailed) {
   ASSERT_TRUE(observer.load_completed());
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+
+  histogram_tester.ExpectBucketCount(
+      kCampaignsManagerErrorHistogramName,
+      CampaignsManagerError::kCampaignsComponentLoadFail,
+      /*count=*/1);
+}
+
+TEST_F(CampaignsManagerTest, LoadCampaignsNoFile) {
+  base::HistogramTester histogram_tester;
+  TestCampaignsManagerObserver observer;
+  campaigns_manager_->AddObserver(&observer);
+
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+  EXPECT_CALL(mock_client_, LoadCampaignsComponent(_))
+      .WillOnce(InvokeCallbackArgument<0, CampaignComponentLoadedCallback>(
+          temp_dir_.GetPath()));
+
+  campaigns_manager_->LoadCampaigns();
+  observer.Wait();
+
+  ASSERT_TRUE(observer.load_completed());
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+
+  histogram_tester.ExpectBucketCount(
+      kCampaignsManagerErrorHistogramName,
+      CampaignsManagerError::kCampaignsFileLoadFail,
+      /*count=*/1);
 }
 
 TEST_F(CampaignsManagerTest, LoadCampaignsInvalidFile) {
+  base::HistogramTester histogram_tester;
   TestCampaignsManagerObserver observer;
   campaigns_manager_->AddObserver(&observer);
 
@@ -596,6 +642,11 @@ TEST_F(CampaignsManagerTest, LoadCampaignsInvalidFile) {
   ASSERT_TRUE(observer.load_completed());
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+
+  histogram_tester.ExpectBucketCount(
+      kCampaignsManagerErrorHistogramName,
+      CampaignsManagerError::kCampaignsParsingFail,
+      /*count=*/1);
 }
 
 TEST_F(CampaignsManagerTest, LoadCampaignsEmptyFile) {
@@ -714,7 +765,7 @@ TEST_F(CampaignsManagerTest, GetCampaignApplicationLocaleMismatch) {
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
-TEST_F(CampaignsManagerTest, GetSchedulingCampiagn) {
+TEST_F(CampaignsManagerTest, GetSchedulingCampaign) {
   const auto now = base::Time::Now();
   auto start = now;
   auto end = now + base::Seconds(5);
@@ -726,7 +777,7 @@ TEST_F(CampaignsManagerTest, GetSchedulingCampiagn) {
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
-TEST_F(CampaignsManagerTest, GetSchedulingCampiagnMultipleSchedulings) {
+TEST_F(CampaignsManagerTest, GetSchedulingCampaignMultipleSchedulings) {
   const auto now = base::Time::Now();
   // First scheduling start and end before now.
   auto start = now - base::Seconds(10);
@@ -754,7 +805,7 @@ TEST_F(CampaignsManagerTest, GetSchedulingCampiagnMultipleSchedulings) {
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
-TEST_F(CampaignsManagerTest, GetSchedulingCampiagnMismatch) {
+TEST_F(CampaignsManagerTest, GetSchedulingCampaignMismatch) {
   const auto now = base::Time::Now();
   auto start = now + base::Seconds(5);
   auto end = now + base::Seconds(10);
@@ -765,7 +816,7 @@ TEST_F(CampaignsManagerTest, GetSchedulingCampiagnMismatch) {
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
-TEST_F(CampaignsManagerTest, GetSchedulingCampiagnStartOnly) {
+TEST_F(CampaignsManagerTest, GetSchedulingCampaignStartOnly) {
   const auto now = base::Time::Now();
   LoadComponentWithScheduling(
       base::StringPrintf(R"([{"start": %f}])", now.InSecondsFSinceUnixEpoch()));
@@ -774,7 +825,7 @@ TEST_F(CampaignsManagerTest, GetSchedulingCampiagnStartOnly) {
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
-TEST_F(CampaignsManagerTest, GetSchedulingCampiagnStartOnlyMismatch) {
+TEST_F(CampaignsManagerTest, GetSchedulingCampaignStartOnlyMismatch) {
   const auto now = base::Time::Now();
   auto start = now + base::Seconds(5);
   LoadComponentWithScheduling(base::StringPrintf(
@@ -783,7 +834,7 @@ TEST_F(CampaignsManagerTest, GetSchedulingCampiagnStartOnlyMismatch) {
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
-TEST_F(CampaignsManagerTest, GetSchedulingCampiagnEndOnly) {
+TEST_F(CampaignsManagerTest, GetSchedulingCampaignEndOnly) {
   const auto now = base::Time::Now();
   auto end = now + base::Seconds(5);
   LoadComponentWithScheduling(
@@ -793,7 +844,7 @@ TEST_F(CampaignsManagerTest, GetSchedulingCampiagnEndOnly) {
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
-TEST_F(CampaignsManagerTest, GetSchedulingCampiagnEndOnlyMismatch) {
+TEST_F(CampaignsManagerTest, GetSchedulingCampaignEndOnlyMismatch) {
   const auto now = base::Time::Now();
   auto end = now - base::Seconds(10);
   LoadComponentWithScheduling(
@@ -802,7 +853,7 @@ TEST_F(CampaignsManagerTest, GetSchedulingCampiagnEndOnlyMismatch) {
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
-TEST_F(CampaignsManagerTest, GetSchedulingCampiagnInvalidTargeting) {
+TEST_F(CampaignsManagerTest, GetSchedulingCampaignInvalidTargeting) {
   LoadComponentWithScheduling("test");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));

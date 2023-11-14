@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
+#include "chromeos/ash/components/growth/growth_metrics.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -28,13 +29,14 @@ absl::optional<base::Value::Dict> ReadCampaignsFile(
           campaigns_component_path.Append(kCampaignFileName),
           &campaigns_data)) {
     LOG(ERROR) << "Failed to read campaigns file from disk.";
+    RecordCampaignsManagerError(CampaignsManagerError::kCampaignsFileLoadFail);
     return absl::nullopt;
   }
 
   absl::optional<base::Value> value(base::JSONReader::Read(campaigns_data));
   if (!value || !value->is_dict()) {
-    // TODO(b/299305911): Add metrics to track fail parsing campaign file.
     LOG(ERROR) << "Failed to parse campaigns file: " << campaigns_data;
+    RecordCampaignsManagerError(CampaignsManagerError::kCampaignsParsingFail);
     return absl::nullopt;
   }
   return std::move(value->GetDict());
@@ -91,7 +93,8 @@ void CampaignsManager::OnCampaignsComponentLoaded(
     const absl::optional<const base::FilePath>& path) {
   if (!path.has_value()) {
     LOG(ERROR) << "Failed to load campaign component.";
-    // TODO(b/299305911): Add metrics to track fail loading campaigns component.
+    RecordCampaignsManagerError(
+        CampaignsManagerError::kCampaignsComponentLoadFail);
     OnCampaignsLoaded(/*campaigns=*/absl::nullopt);
     return;
   }
