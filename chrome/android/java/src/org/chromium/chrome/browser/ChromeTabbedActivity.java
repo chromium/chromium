@@ -2311,47 +2311,56 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void logIntentInfo(Intent intent, int windowId) {
+        boolean willUseNewInstance = MultiWindowUtils.willUseNewInstance();
+        boolean isFromOs =
+                getReferrer() != null
+                        && getReferrer().toString().equals(SOURCE_ACTIVITY_REFERRER_OS);
+        boolean isFromChrome = IntentHandler.wasIntentSenderChrome(intent);
+
         var logMessage =
-                "Intent info:\nAction: "
+                "Intent action: "
                         + intent.getAction()
-                        + "\nContains LAUNCHER category: "
+                        + "\nIntent routed via ChromeLauncherActivity: "
+                        + IntentUtils.safeGetBooleanExtra(
+                                intent,
+                                IntentHandler.EXTRA_LAUNCHED_VIA_CHROME_LAUNCHER_ACTIVITY,
+                                false)
+                        + "\nIntent contains LAUNCHER category: "
                         + intent.hasCategory(Intent.CATEGORY_LAUNCHER)
-                        + "\nContains FLAG_ACTIVITY_MULTIPLE_TASK: "
+                        + "\nIntent contains FLAG_ACTIVITY_MULTIPLE_TASK: "
                         + ((intent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) != 0)
-                        + "\nContains FLAG_ACTIVITY_NEW_TASK: "
+                        + "\nIntent contains FLAG_ACTIVITY_NEW_TASK: "
                         + ((intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0)
-                        + "\nComponent class name: "
+                        + "\nIntent component: "
                         + (intent.getComponent() == null
                                 ? "N/A"
                                 : intent.getComponent().getClassName())
-                        + "\nIs from self: "
-                        + IntentUtils.isTrustedIntentFromSelf(intent)
+                        + "\nIntent sent by OS: "
+                        + isFromOs
                         + "\n@ExternalAppId of intent source: "
-                        + IntentHandler.determineExternalIntentSource(intent);
+                        + IntentHandler.determineExternalIntentSource(intent)
+                        + "\nIs new instanceId allocated: "
+                        + willUseNewInstance;
         Log.i(TAG_MULTI_INSTANCE, logMessage);
         // Only crash-report if a valid window ID is allocated to launch the intent.
         if (windowId == INVALID_WINDOW_ID) return;
 
-        boolean willUseNewInstance = MultiWindowUtils.willUseNewInstance();
         // Report an exception iff all the following conditions are satisfied:
-        // 1. The intent is a VIEW or MAIN action intent.
-        // 2. The intent will be launched in a new instance of Chrome.
-        // 3. The intent is not sourced from Chrome or the OS.
-        // 4. The intent is not a CATEGORY_LAUNCHER intent.
-        // 5. The device is a phone.
-        if ((Intent.ACTION_VIEW.equals(intent.getAction())
-                        || Intent.ACTION_MAIN.equals(intent.getAction()))
-                && willUseNewInstance
-                && (!IntentUtils.isTrustedIntentFromSelf(intent)
-                        && (getReferrer() == null
-                                || !getReferrer().toString().equals(SOURCE_ACTIVITY_REFERRER_OS)))
-                && !intent.hasCategory(Intent.CATEGORY_LAUNCHER)
-                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)) {
+        // 1. The intent will be launched in a new instance of Chrome.
+        // 2. The device is a phone.
+        // 3. The intent is a VIEW intent with a non-Chrome source, OR, a MAIN intent with a
+        // non-Chrome / non-OS source.
+        boolean isViewIntent = Intent.ACTION_VIEW.equals(intent.getAction()) && !isFromChrome;
+        boolean isMainIntent =
+                Intent.ACTION_MAIN.equals(intent.getAction()) && !isFromChrome && !isFromOs;
+
+        if (willUseNewInstance
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)
+                && (isViewIntent || isMainIntent)) {
             logMessage =
                     "This is not a crash. Logging info for intent received in ChromeTabbedActivity"
                             + " dispatched via AsyncInitializationActivity#onCreate() that could"
-                            + " potentially create a new Chrome instance, for investigation of"
-                            + " crbug.com/1484026.\n"
+                            + " potentially create a new Chrome instance.\n"
                             + logMessage;
             ChromePureJavaExceptionReporter.reportJavaException(new Throwable(logMessage));
         }

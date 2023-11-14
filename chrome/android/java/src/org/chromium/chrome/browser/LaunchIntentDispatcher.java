@@ -429,6 +429,10 @@ public class LaunchIntentDispatcher {
                     "Android.Intent.HasNonSpoofablePackageName", hasNonSpoofablePackageName());
         }
 
+        if (mActivity instanceof ChromeLauncherActivity) {
+            newIntent.putExtra(IntentHandler.EXTRA_LAUNCHED_VIA_CHROME_LAUNCHER_ACTIVITY, true);
+        }
+
         Uri extraReferrer = mActivity.getReferrer();
         if (extraReferrer != null) {
             newIntent.putExtra(IntentHandler.EXTRA_ACTIVITY_REFERRER, extraReferrer.toString());

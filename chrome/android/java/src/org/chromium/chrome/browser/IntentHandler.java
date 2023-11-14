@@ -258,6 +258,10 @@ public class IntentHandler {
      */
     public static final String EXTRA_TAB_INDEX = "com.android.chrome.tab_index";
 
+    /** A boolean to indicate whether an intent was launched via ChromeLauncherActivity. */
+    public static final String EXTRA_LAUNCHED_VIA_CHROME_LAUNCHER_ACTIVITY =
+            "org.chromium.chrome.browser.launched_via_chrome_launcher_activity";
+
     private static Pair<Integer, String> sPendingReferrer;
     private static int sReferrerId;
     private static String sPendingIncognitoUrl;
