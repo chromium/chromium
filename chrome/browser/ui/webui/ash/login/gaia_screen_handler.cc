@@ -227,19 +227,6 @@ void UpdateAuthParams(base::Value::Dict& params) {
     params.Set("flow", "nosignup");
 }
 
-bool ShouldCheckUserTypeBeforeAllowing() {
-  if (!features::IsFamilyLinkOnSchoolDeviceEnabled()) {
-    return false;
-  }
-
-  CrosSettings* cros_settings = CrosSettings::Get();
-  bool family_link_allowed = false;
-  cros_settings->GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed,
-                            &family_link_allowed);
-
-  return family_link_allowed;
-}
-
 // TODO(https://crbug.com/1364455)
 // Make this function fallible when version_loader::GetVersion()
 // returns an optional that is empty
@@ -834,7 +821,7 @@ void GaiaScreenHandler::CompleteAuthentication(
           ? login::GetUsertypeFromServicesString(
                 signin_artifacts.services_list.value())
           : user_manager::UserManager::Get()->GetUserType(account_id);
-  if (ShouldCheckUserTypeBeforeAllowing() &&
+  if (login::IsFamilyLinkAllowed() &&
       !LoginDisplayHost::default_host()->IsUserAllowlisted(account_id,
                                                            user_type)) {
     ShowAllowlistCheckFailedError();
@@ -1653,7 +1640,7 @@ void GaiaScreenHandler::SAMLConfirmPassword(
 void GaiaScreenHandler::CheckIfAllowlisted(const std::string& user_email) {
   // We cannot tell a user type from the identifier, so we delay checking if
   // the account should be allowed.
-  if (ShouldCheckUserTypeBeforeAllowing()) {
+  if (login::IsFamilyLinkAllowed()) {
     return;
   }
 

@@ -137,6 +137,9 @@ AccountId GetAccountId(const std::string& authenticated_email,
                        const std::string& gaia_id,
                        const AccountType& account_type);
 
+// Common utility for checking whether family link is allowed.
+bool IsFamilyLinkAllowed();
+
 }  // namespace login
 
 // GaiaCookieRetriever is used for retrieving the cookies that are set by Gaia
