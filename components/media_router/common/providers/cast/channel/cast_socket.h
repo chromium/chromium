@@ -21,6 +21,7 @@
 #include "base/timer/timer.h"
 #include "components/media_router/common/providers/cast/channel/cast_auth_util.h"
 #include "components/media_router/common/providers/cast/channel/cast_channel_enum.h"
+#include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "components/media_router/common/providers/cast/channel/cast_transport.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -44,17 +45,6 @@ using ::cast::channel::CastMessage;
 class Logger;
 class MojoDataPump;
 struct LastError;
-
-// Cast device capabilities.
-enum CastDeviceCapability : int {
-  NONE = 0,
-  VIDEO_OUT = 1 << 0,
-  VIDEO_IN = 1 << 1,
-  AUDIO_OUT = 1 << 2,
-  AUDIO_IN = 1 << 3,
-  DEV_MODE = 1 << 4,
-  MULTIZONE_GROUP = 1 << 5
-};
 
 // Public interface of the CastSocket class.
 class CastSocket {
@@ -168,10 +158,8 @@ struct CastSocketOpenParams {
   // for |liveness_timeout|.
   base::TimeDelta ping_interval;
 
-  // A bit vector representing the capabilities of the sink. The values are
-  // defined in
-  // components/media_router/common/providers/cast/channel/cast_socket.h.
-  uint64_t device_capabilities;
+  // An EnumSet representing the capabilities of the sink.
+  CastDeviceCapabilitySet device_capabilities;
 
   CastSocketOpenParams(const net::IPEndPoint& ip_endpoint,
                        base::TimeDelta connect_timeout);
@@ -179,7 +167,7 @@ struct CastSocketOpenParams {
                        base::TimeDelta connect_timeout,
                        base::TimeDelta liveness_timeout,
                        base::TimeDelta ping_interval,
-                       uint64_t device_capabilities);
+                       CastDeviceCapabilitySet device_capabilities);
 };
 
 // This class implements a channel between Chrome and a Cast device using a TCP

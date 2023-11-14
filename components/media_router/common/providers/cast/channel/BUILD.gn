@@ -7,6 +7,11 @@ import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/openscreen/src/build/config/data_headers_template.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+source_set("capability") {
+  public = [ "cast_device_capability.h" ]
+  deps = [ "//base" ]
+}
+
 static_library("channel") {
   sources = [
     "cast_auth_util.cc",
@@ -39,6 +44,7 @@ static_library("channel") {
     "mojo_data_pump.h",
   ]
   deps = [
+    ":capability",
     "//base",
     "//build:chromeos_buildflags",
     "//components/keyed_service/content",

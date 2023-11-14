@@ -80,7 +80,7 @@ TEST_F(MediaRouterStructTraitsTest, CastMediaSink) {
   CastSinkExtraData extra_data;
   extra_data.ip_endpoint = net::IPEndPoint(net::IPAddress(192, 168, 1, 2), 0);
   extra_data.model_name = model_name;
-  extra_data.capabilities = 2;
+  extra_data.capabilities = {cast_channel::CastDeviceCapability::kVideoOut};
   extra_data.cast_channel_id = 3;
 
   MediaSinkInternal cast_sink(sink, extra_data);

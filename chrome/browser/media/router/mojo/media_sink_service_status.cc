@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/mojo/media_sink_service_status.h"
 
 #include "base/json/json_string_value_serializer.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -72,7 +73,8 @@ base::Value::Dict ToValue(const MediaSinkInternal& sink_internal) {
     CastSinkExtraData extra_data = sink_internal.cast_data();
     dict.Set("ip_endpoint", base::Value(extra_data.ip_endpoint.ToString()));
     dict.Set("model_name", base::Value(extra_data.model_name));
-    dict.Set("capabilities", base::Value(extra_data.capabilities));
+    dict.Set("capabilities", base::Value(base::checked_cast<int>(
+                                 extra_data.capabilities.ToEnumBitmask())));
     dict.Set("channel_id", base::Value(extra_data.cast_channel_id));
     dict.Set("discovered_by_dial", base::Value(extra_data.discovery_type ==
                                                CastDiscoveryType::kDial));

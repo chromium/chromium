@@ -31,6 +31,7 @@
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
+#include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
 #include "components/media_router/common/route_request_result.h"
@@ -1046,9 +1047,7 @@ CastActivityManager::GetSinkForMirroringActivity(int frame_tree_node_id) const {
 std::string CastActivityManager::ChooseAppId(
     const CastMediaSource& source,
     const MediaSinkInternal& sink) const {
-  const auto sink_capabilities =
-      BitwiseOr<cast_channel::CastDeviceCapability>::FromBits(
-          sink.cast_data().capabilities);
+  const auto& sink_capabilities = sink.cast_data().capabilities;
   for (const auto& info : source.app_infos()) {
     if (sink_capabilities.HasAll(info.required_capabilities))
       return info.app_id;

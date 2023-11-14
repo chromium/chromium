@@ -109,9 +109,9 @@ struct StructTraits<media_router::mojom::CastMediaSinkDataView,
     return extra_data.ip_endpoint;
   }
 
-  static uint8_t capabilities(
+  static uint64_t capabilities(
       const media_router::CastSinkExtraData& extra_data) {
-    return extra_data.capabilities;
+    return extra_data.capabilities.ToEnumBitmask();
   }
 
   static int32_t cast_channel_id(

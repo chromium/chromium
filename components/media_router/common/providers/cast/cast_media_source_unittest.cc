@@ -10,6 +10,7 @@
 #include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 
 using cast_channel::CastDeviceCapability;
+using cast_channel::CastDeviceCapabilitySet;
 using cast_channel::ReceiverAppType;
 
 namespace media_router {
@@ -34,7 +35,7 @@ TEST(CastMediaSourceTest, FromCastURLWithDefaults) {
   ASSERT_EQ(1u, source->app_infos().size());
   const CastAppInfo& app_info = source->app_infos()[0];
   EXPECT_EQ("ABCDEFAB", app_info.app_id);
-  EXPECT_TRUE(app_info.required_capabilities.empty());
+  EXPECT_TRUE(app_info.required_capabilities.Empty());
   EXPECT_EQ(absl::nullopt, source->target_playout_delay());
   EXPECT_EQ(true, source->site_requested_audio_capture());
   EXPECT_EQ(cast_channel::VirtualConnectionType::kStrong,
@@ -61,8 +62,8 @@ TEST(CastMediaSourceTest, FromCastURL) {
   ASSERT_EQ(1u, source->app_infos().size());
   const CastAppInfo& app_info = source->app_infos()[0];
   EXPECT_EQ("ABCDEFAB", app_info.app_id);
-  EXPECT_EQ((BitwiseOr<CastDeviceCapability>{CastDeviceCapability::VIDEO_OUT,
-                                             CastDeviceCapability::AUDIO_OUT}),
+  EXPECT_EQ((CastDeviceCapabilitySet{CastDeviceCapability::kVideoOut,
+                                     CastDeviceCapability::kAudioOut}),
             app_info.required_capabilities);
   EXPECT_EQ("12345", source->client_id());
   EXPECT_EQ(base::Milliseconds(30000), source->launch_timeout());
@@ -93,8 +94,8 @@ TEST(CastMediaSourceTest, FromLegacyCastURL) {
   ASSERT_EQ(2u, source->app_infos().size());
   const CastAppInfo& app_info = source->app_infos()[0];
   EXPECT_EQ("ABCDEFAB", app_info.app_id);
-  EXPECT_EQ((BitwiseOr<CastDeviceCapability>{CastDeviceCapability::VIDEO_OUT,
-                                             CastDeviceCapability::AUDIO_OUT}),
+  EXPECT_EQ((CastDeviceCapabilitySet{CastDeviceCapability::kVideoOut,
+                                     CastDeviceCapability::kAudioOut}),
             app_info.required_capabilities);
   EXPECT_EQ("otherAppId", source->app_infos()[1].app_id);
   EXPECT_EQ("12345", source->client_id());

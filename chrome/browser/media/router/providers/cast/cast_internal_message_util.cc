@@ -15,8 +15,11 @@
 #include "base/strings/string_piece.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
-#include "components/media_router/common/providers/cast/channel/cast_socket.h"
+#include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
+
+using cast_channel::CastDeviceCapability;
+using cast_channel::CastDeviceCapabilitySet;
 
 namespace cast_util {
 
@@ -119,18 +122,24 @@ std::string CastInternalMessageTypeToString(CastInternalMessage::Type type) {
 constexpr char kReceiverActionTypeCast[] = "cast";
 constexpr char kReceiverActionTypeStop[] = "stop";
 
-base::Value::List CapabilitiesToListValue(uint8_t capabilities) {
+base::Value::List CapabilitiesToListValue(
+    CastDeviceCapabilitySet capabilities) {
   base::Value::List value;
-  if (capabilities & cast_channel::VIDEO_OUT)
+  if (capabilities.Has(CastDeviceCapability::kVideoOut)) {
     value.Append("video_out");
-  if (capabilities & cast_channel::VIDEO_IN)
+  }
+  if (capabilities.Has(CastDeviceCapability::kVideoIn)) {
     value.Append("video_in");
-  if (capabilities & cast_channel::AUDIO_OUT)
+  }
+  if (capabilities.Has(CastDeviceCapability::kAudioOut)) {
     value.Append("audio_out");
-  if (capabilities & cast_channel::AUDIO_IN)
+  }
+  if (capabilities.Has(CastDeviceCapability::kAudioIn)) {
     value.Append("audio_in");
-  if (capabilities & cast_channel::MULTIZONE_GROUP)
+  }
+  if (capabilities.Has(CastDeviceCapability::kMultizoneGroup)) {
     value.Append("multizone_group");
+  }
   return value;
 }
 

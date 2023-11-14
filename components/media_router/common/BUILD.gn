@@ -35,6 +35,7 @@ static_library("common") {
   deps = [
     "mojom:media_route_provider_id",
     "mojom:route_request_result_code",
+    "//components/media_router/common/providers/cast/channel:capability",
     "//third_party/blink/public:blink_headers",
   ]
 

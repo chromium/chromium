@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "components/media_router/common/media_sink.h"
+#include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "url/gurl.h"
@@ -52,9 +53,9 @@ struct CastSinkExtraData {
   // Model name of the sink.
   std::string model_name;
 
-  // A bit vector representing the capabilities of the sink. The values are
-  // defined in media_router.mojom.
-  uint8_t capabilities = 0;
+  // An enum set representing the capabilities of the sink. The enum values are
+  // defined in cast_device_capability.h.
+  cast_channel::CastDeviceCapabilitySet capabilities;
 
   // ID of Cast channel opened for the sink. The caller must set this value to a
   // valid cast_channel_id. The cast_channel_id may change over time as the
