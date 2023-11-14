@@ -14,8 +14,8 @@
 # limitations under the License.
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_TIMESTAMP, get_tree, goto_url, read_JSON_message,
-                          send_JSON_command, subscribe)
+from test_helpers import (ANY_TIMESTAMP, AnyExtending, get_tree, goto_url,
+                          read_JSON_message, send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -381,3 +381,40 @@ async def test_browsingContext_navigationStartedEvent_viaCommand(
             "url": ANY_STR,
         }
     }
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavigationEnded_navigationFailed(
+        websocket, context_id, read_sorted_messages, hang_url):
+    navigate_command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "context": context_id,
+                "url": hang_url,
+                "wait": "complete",
+            }
+        })
+
+    close_command_id = await send_JSON_command(websocket, {
+        "method": "browsingContext.close",
+        "params": {
+            "context": context_id
+        }
+    })
+
+    # Command result order is not guaranteed.
+    [navigation_command_result,
+     close_command_result] = await read_sorted_messages(2)
+
+    assert navigation_command_result == AnyExtending({
+        'id': navigate_command_id,
+        'type': 'error',
+        'error': 'unknown error',
+        'message': 'navigation canceled',
+    })
+
+    assert close_command_result == AnyExtending({
+        'id': close_command_id,
+        'type': 'success',
+    })

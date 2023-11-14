@@ -160,6 +160,9 @@ export class BrowsingContextImpl {
       this.parent!.#children.delete(this.id);
     }
 
+    // Fail all ongoing navigations.
+    this.#failDeferredsIfNotFinished();
+
     this.#eventManager.registerEvent(
       {
         type: 'event',
@@ -588,6 +591,20 @@ export class BrowsingContextImpl {
       this.#logger?.(
         BrowsingContextImpl.LOGGER_PREFIX,
         'Document changed (load)'
+      );
+    }
+  }
+
+  #failDeferredsIfNotFinished() {
+    if (!this.#deferreds.Page.lifecycleEvent.DOMContentLoaded.isFinished) {
+      this.#deferreds.Page.lifecycleEvent.DOMContentLoaded.reject(
+        new UnknownErrorException('navigation canceled')
+      );
+    }
+
+    if (!this.#deferreds.Page.lifecycleEvent.load.isFinished) {
+      this.#deferreds.Page.lifecycleEvent.load.reject(
+        new UnknownErrorException('navigation canceled')
       );
     }
   }
