@@ -91,11 +91,6 @@ PasswordReuseManager* StubPasswordManagerClient::GetPasswordReuseManager()
   return nullptr;
 }
 
-MockPasswordChangeSuccessTracker*
-StubPasswordManagerClient::GetPasswordChangeSuccessTracker() {
-  return &password_change_success_tracker_;
-}
-
 const GURL& StubPasswordManagerClient::GetLastCommittedURL() const {
   return GURL::EmptyGURL();
 }

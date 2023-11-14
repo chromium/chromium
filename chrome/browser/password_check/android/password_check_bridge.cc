@@ -17,8 +17,6 @@
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "url/android/gurl_android.h"
 
-using password_manager::PasswordChangeSuccessTracker;
-
 namespace {
 
 password_manager::CredentialUIEntry ConvertJavaObjectToCredential(

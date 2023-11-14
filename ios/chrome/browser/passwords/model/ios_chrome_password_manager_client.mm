@@ -205,12 +205,6 @@ IOSChromePasswordManagerClient::GetPasswordReuseManager() const {
       bridge_.browserState);
 }
 
-password_manager::PasswordChangeSuccessTracker*
-IOSChromePasswordManagerClient::GetPasswordChangeSuccessTracker() {
-  return IOSChromePasswordChangeSuccessTrackerFactory::GetForBrowserState(
-      bridge_.browserState);
-}
-
 void IOSChromePasswordManagerClient::NotifyUserAutoSignin(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
     const url::Origin& origin) {
