@@ -2791,6 +2791,15 @@ class CONTENT_EXPORT NavigationRequest
   // advertising porpoises.
   bool is_ad_tagged_ = false;
 
+  // This is the origin to commit value calculated at request time for data: URL
+  // navigations. It is stored so that the opaque origin nonce can be maintained
+  // across a navigation. This value is used when a speculative SiteInstance
+  // is created so the site URL of the navigation can match the initiator
+  // origin. We store the tentative origin to commit value, since we need it
+  // before ready to commit time, which is when the regular origin to commit
+  // value is available.
+  absl::optional<url::Origin> tentative_data_origin_to_commit_;
+
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };
 

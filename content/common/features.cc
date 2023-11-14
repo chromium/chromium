@@ -124,6 +124,14 @@ BASE_FEATURE(kCriticalClientHint,
              "CriticalClientHint",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables setting the nonce of the data: opaque origin early in the navigation
+// so the nonce remains stable throughout a navigation.
+// TODO(crbug.com/1447896, yangsharon): Remove this once we're confident that
+// this change isn't causing issues in the wild.
+BASE_FEATURE(kDataUrlsHaveStableNonce,
+             "DataUrlsHaveStableNonce",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable changing source dynamically for desktop capture.
 BASE_FEATURE(kDesktopCaptureChangeSource,
              "DesktopCaptureChangeSource",

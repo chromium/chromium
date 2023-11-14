@@ -3118,6 +3118,9 @@ void NavigationRequest::OnRequestRedirected(
   // for the redirected one.
   commit_params_->not_restored_reasons = nullptr;
 
+  // Reset the tentative origin_to_commit, as the redirected one is different.
+  tentative_data_origin_to_commit_ = absl::nullopt;
+
   // A request was made. Record it before we decide to block this response for
   // a reason or another.
   RecordAddressSpaceFeature();
@@ -3870,6 +3873,24 @@ UrlInfo NavigationRequest::GetUrlInfo() {
     // narrow cases which are handled explicitly above.  Please think very
     // carefully about any new cases that need to do this.
     DCHECK(!url_info_init.origin().has_value());
+  }
+
+  // Propagate the tentative origin to commit value (for data: URLs that will be
+  // rendered) to the UrlInfo, to make sure the nonce remains the same
+  // throughout the navigation.
+  if (GetURL().SchemeIs(url::kDataScheme) &&
+      base::FeatureList::IsEnabled(features::kDataUrlsHaveStableNonce)) {
+    // The function for computing the request's origin depends on the stage of
+    // the request, but the same opaque nonce value is preserved across both
+    // functions for data: URLs.
+    if (state_ < WILL_PROCESS_RESPONSE) {
+      url_info_init.WithOrigin(GetTentativeOriginAtRequestTime());
+    } else if (response_should_be_rendered_) {
+      // The origin to commit is nullopt for cases that are not rendered (e.g.,
+      // downloads), but the UrlInfo does not need the origin for data: URLs in
+      // such cases.
+      url_info_init.WithOrigin(GetOriginToCommit().value());
+    }
   }
 
   // Determine if the request is for a sandboxed frame or not, and if so whether
@@ -9906,6 +9927,17 @@ NavigationRequest::GetOriginForURLLoaderFactoryUncheckedWithDebugInfo() {
         "load_data_with_base_url");
   }
 
+  // Use the cached tentative data origin to commit in the data: URL case. When
+  // there are multiple data: URLs in the same SiteInstanceGroup, we can rely on
+  // the nonce from the origin and that of the site URL to match, which will let
+  // us uniquely identify the correct data: SiteInstance.
+  if (common_params().url.SchemeIs(url::kDataScheme) &&
+      tentative_data_origin_to_commit_.has_value() &&
+      base::FeatureList::IsEnabled(features::kDataUrlsHaveStableNonce)) {
+    return std::make_pair(tentative_data_origin_to_commit_.value(),
+                          "data: URL");
+  }
+
   // Srcdoc subframes need to inherit their origin from their parent frame.
   if (GetURL().IsAboutSrcdoc()) {
     RenderFrameHostImpl* parent = frame_tree_node()->parent();
@@ -9922,11 +9954,17 @@ NavigationRequest::GetOriginForURLLoaderFactoryUncheckedWithDebugInfo() {
 
   // In cases not covered above, URLLoaderFactory should be associated with the
   // origin of |common_params.url| and/or |common_params.initiator_origin|.
-  return std::make_pair(
-      url::Origin::Resolve(
-          common_params().url,
-          common_params().initiator_origin.value_or(url::Origin())),
-      "url_or_initiator");
+  url::Origin resolved_origin = url::Origin::Resolve(
+      common_params().url,
+      common_params().initiator_origin.value_or(url::Origin()));
+
+  if (common_params().url.SchemeIs(url::kDataScheme) &&
+      base::FeatureList::IsEnabled(features::kDataUrlsHaveStableNonce)) {
+    // Cache the origin for data: URLs, so that its nonce remains stable.
+    tentative_data_origin_to_commit_ = resolved_origin;
+  }
+
+  return std::make_pair(resolved_origin, "url_or_initiator");
 }
 
 url::Origin NavigationRequest::GetOriginForURLLoaderFactoryUnchecked() {
