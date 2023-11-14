@@ -1232,6 +1232,20 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
     ),
     BanRule(
+      r'/\[\[(\w*::)?no_unique_address\]\]',
+      (
+        '[[no_unique_address]] does not work as expected on Windows ',
+        '(https://crbug.com/1414621). Use NO_UNIQUE_ADDRESS instead.',
+      ),
+      True,
+      [
+        # NO_UNIQUE_ADDRESS provides canonical access.
+        r'^base/compiler_specific.h',
+        # Not an error in third_party folders.
+        _THIRD_PARTY_EXCEPT_BLINK,
+      ],
+    ),
+    BanRule(
       r'/#include <format>',
       (
         '<format> is not yet allowed. Use base::StringPrintf() instead.',

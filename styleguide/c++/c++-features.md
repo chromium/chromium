@@ -671,7 +671,7 @@ This feature forces omitting type names. Its use should follow
 
 **Notes:**
 *** promo
-See similar attribute macros in base/compiler_specific.h.
+See similar attribute macros in `base/compiler_specific.h`.
 ***
 
 ## C++17 Allowed Library Features {#library-allowlist-17}
@@ -1762,26 +1762,6 @@ implementation of a particular language feature.
 None
 ***
 
-### [[no_unique_address]] <sup>[allowed]</sup>
-
-```c++
-struct Empty {};
-struct X {
-  int i;
-  [[no_unique_address]] Empty e;
-};
-```
-
-**Description:** Allows a data member to be overlapped with other members.
-
-**Documentation:**
-[C++ attribute: `no_unique_address`](https://en.cppreference.com/w/cpp/language/attributes/no_unique_address)
-
-**Notes:**
-*** promo
-[Migration bug](https://crbug.com/1414621)
-***
-
 ### Range-for statements with initializer <sup>[allowed]</sup>
 
 ```c++
@@ -2142,6 +2122,31 @@ like "include what you use".
 *** promo
 Not yet sufficiently supported in Clang and GN. Re-evaluate when support
 improves.
+***
+
+### [[no_unique_address]] <sup>[banned]</sup>
+
+```c++
+struct Empty {};
+struct X {
+  int i;
+  [[no_unique_address]] Empty e;
+};
+```
+
+**Description:** Allows a data member to be overlapped with other members.
+
+**Documentation:**
+[C++ attribute: `no_unique_address`](https://en.cppreference.com/w/cpp/language/attributes/no_unique_address)
+
+**Notes:**
+*** promo
+Has no effect on Windows, for compatibility with Microsoft's ABI. Use
+`NO_UNIQUE_ADDRESS` from `base/compiler_specific.h` instead. Do not use (either
+form) on members of unions due to
+[potential memory safety problems](https://github.com/llvm/llvm-project/issues/60711).
+
+[Migration bug](https://crbug.com/1414621)
 ***
 
 ## C++20 Banned Library Features {#library-blocklist-20}
