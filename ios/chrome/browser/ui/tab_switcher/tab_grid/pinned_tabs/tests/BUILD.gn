@@ -26,7 +26,10 @@ source_set("eg2_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "pinned_tabs_mediator_unittest.mm" ]
+  sources = [
+    "pinned_tabs_mediator_unittest.mm",
+    "pinned_tabs_view_controller_unittest.mm",
+  ]
   deps = [
     "//base",
     "//base/test:test_support",
@@ -35,7 +38,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs:pinned_tabs_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions",
     "//ios/chrome/browser/ui/tab_switcher/test:fakes",
     "//ios/web/public/test/fakes",
     "//third_party/ocmock",
