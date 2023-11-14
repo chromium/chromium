@@ -78,8 +78,12 @@ SigninUIError CanOfferSignin(Profile* profile,
           // profiles, and fix the code that switches to the other syncing
           // profile so that the profile creation flow window gets activated for
           // profiles being created (instead of opening a new window).
-          if (!entry->IsAuthenticated() || entry->IsOmitted())
+          if (entry->IsOmitted() || entry->GetPath() == profile->GetPath()) {
             continue;
+          }
+          if (!entry->IsAuthenticated() && !entry->CanBeManaged()) {
+            continue;
+          }
 
           // For backward compatibility, need to check also the username of the
           // profile, since the GAIA ID may not have been set yet in the
