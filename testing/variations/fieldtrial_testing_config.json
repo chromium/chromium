@@ -11077,6 +11077,209 @@
             ]
         }
     ],
+    "OmniboxCompanyEntityIconAdjustmentAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_LeastAggressive",
+                    "params": {
+                        "OmniboxCompanyEntityAdjustmentGroup": "least-aggressive"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                },
+                {
+                    "name": "Enabled_Moderate",
+                    "params": {
+                        "OmniboxCompanyEntityAdjustmentGroup": "moderate"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                },
+                {
+                    "name": "Enabled_MostAggressive",
+                    "params": {
+                        "OmniboxCompanyEntityAdjustmentGroup": "most-aggressive"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                },
+                {
+                    "name": "Enabled_LeastAggressive_Counterfactual",
+                    "params": {
+                        "CompanyEntityIconAdjustmentCounterfactual": "true",
+                        "OmniboxCompanyEntityAdjustmentGroup": "least-aggressive"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                },
+                {
+                    "name": "Enabled_Moderate_Counterfactual",
+                    "params": {
+                        "CompanyEntityIconAdjustmentCounterfactual": "true",
+                        "OmniboxCompanyEntityAdjustmentGroup": "moderate"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                },
+                {
+                    "name": "Enabled_MostAggressive_Counterfactual",
+                    "params": {
+                        "CompanyEntityIconAdjustmentCounterfactual": "true",
+                        "OmniboxCompanyEntityAdjustmentGroup": "most-aggressive"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OmniboxCompanyEntityIconAdjustmentDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_LeastAggressive",
+                    "params": {
+                        "OmniboxCompanyEntityAdjustmentGroup": "least-aggressive"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                },
+                {
+                    "name": "Enabled_Moderate",
+                    "params": {
+                        "OmniboxCompanyEntityAdjustmentGroup": "moderate"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                },
+                {
+                    "name": "Enabled_MostAggressive",
+                    "params": {
+                        "OmniboxCompanyEntityAdjustmentGroup": "most-aggressive"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                },
+                {
+                    "name": "Enabled_LeastAggressive_Counterfactual",
+                    "params": {
+                        "CompanyEntityIconAdjustmentCounterfactual": "true",
+                        "OmniboxCompanyEntityAdjustmentGroup": "least-aggressive"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                },
+                {
+                    "name": "Enabled_Moderate_Counterfactual",
+                    "params": {
+                        "CompanyEntityIconAdjustmentCounterfactual": "true",
+                        "OmniboxCompanyEntityAdjustmentGroup": "moderate"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                },
+                {
+                    "name": "Enabled_MostAggressive_Counterfactual",
+                    "params": {
+                        "CompanyEntityIconAdjustmentCounterfactual": "true",
+                        "OmniboxCompanyEntityAdjustmentGroup": "most-aggressive"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OmniboxCompanyEntityIconAdjustmentIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_LeastAggressive",
+                    "params": {
+                        "OmniboxCompanyEntityAdjustmentGroup": "least-aggressive"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                },
+                {
+                    "name": "Enabled_Moderate",
+                    "params": {
+                        "OmniboxCompanyEntityAdjustmentGroup": "moderate"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                },
+                {
+                    "name": "Enabled_MostAggressive",
+                    "params": {
+                        "OmniboxCompanyEntityAdjustmentGroup": "most-aggressive"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                },
+                {
+                    "name": "Enabled_LeastAggressive_Counterfactual",
+                    "params": {
+                        "CompanyEntityIconAdjustmentCounterfactual": "true",
+                        "OmniboxCompanyEntityAdjustmentGroup": "least-aggressive"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                },
+                {
+                    "name": "Enabled_Moderate_Counterfactual",
+                    "params": {
+                        "CompanyEntityIconAdjustmentCounterfactual": "true",
+                        "OmniboxCompanyEntityAdjustmentGroup": "moderate"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                },
+                {
+                    "name": "Enabled_MostAggressive_Counterfactual",
+                    "params": {
+                        "CompanyEntityIconAdjustmentCounterfactual": "true",
+                        "OmniboxCompanyEntityAdjustmentGroup": "most-aggressive"
+                    },
+                    "enable_features": [
+                        "CompanyEntityIconAdjustment"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxConsumesImeInsets": [
         {
             "platforms": [
