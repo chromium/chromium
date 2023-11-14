@@ -330,6 +330,19 @@
       "use_remoteexec": true
     }
   },
+  "linux-chromeos-compile-siso-dbg": {
+    "gn_args": {
+      "ffmpeg_branding": "ChromeOS",
+      "is_component_build": true,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "target_os": "chromeos",
+      "use_cups": true,
+      "use_dummy_lastchange": true,
+      "use_remoteexec": true
+    }
+  },
   "linux-chromeos-dbg": {
     "gn_args": {
       "ffmpeg_branding": "ChromeOS",
