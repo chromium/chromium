@@ -8,13 +8,6 @@
 
 namespace network {
 
-bool operator==(const TriggerVerification&& a, const TriggerVerification&& b) {
-  auto tie = [](const TriggerVerification& t) {
-    return std::make_tuple(t.token(), t.aggregatable_report_id());
-  };
-  return tie(a) == tie(b);
-}
-
 std::ostream& operator<<(std::ostream& out,
                          const TriggerVerification& verification) {
   return out << "{token=" << verification.token() << ",aggregatable_report_id="
