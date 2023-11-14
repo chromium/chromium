@@ -682,7 +682,14 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, MAYBE_SessionNewTabSameURL) {
   ExpectScores(1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, SessionNewTabSameOrigin) {
+#if BUILDFLAG(IS_MAC)
+// https://crbug.com/1222896
+#define MAYBE_SessionNewTabSameOrigin DISABLED_SessionNewTabSameOrigin
+#else
+#define MAYBE_SessionNewTabSameOrigin SessionNewTabSameOrigin
+#endif
+IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
+                       MAYBE_SessionNewTabSameOrigin) {
   const GURL& url = http_server().GetURL("/engagement_test.html");
   const GURL& other_url = http_server().GetURL("/engagement_test_audio.html");
 
