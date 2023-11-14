@@ -40,7 +40,7 @@ def _CheckForExtraPlatformBaselines(input_api, output_api):
     port_factory = Host().port_factory
     all_ports = [
         port_factory.get(port_name)
-        for port_name in port_factory.all_port_names()
+        for port_name in port_factory.all_port_names() + ['ios']
     ]
     known_platforms = set([
         fallback_path for port in all_ports
