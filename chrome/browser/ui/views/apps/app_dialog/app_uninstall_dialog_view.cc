@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/barrier_callback.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/message_formatter.h"
@@ -13,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -171,13 +173,15 @@ void ResizeWidgetToContents(views::Widget* widget) {
 }  // namespace
 
 struct SubApp {
-  explicit SubApp(std::u16string app_name) : app_name(std::move(app_name)) {}
+  explicit SubApp(std::u16string app_name, apps::IconValuePtr icon)
+      : app_name(std::move(app_name)), icon(std::move(icon)) {}
   SubApp(SubApp&& sub_app) = default;
   SubApp& operator=(SubApp&& sub_app) = default;
   SubApp(const SubApp&) = delete;
   SubApp& operator=(const SubApp&) = delete;
 
   std::u16string app_name;
+  apps::IconValuePtr icon;
 };
 
 // static
@@ -420,10 +424,19 @@ void AppUninstallDialogView::InitializeSubAppList(
     auto* sub_app_label =
         box->AddChildView(std::make_unique<views::Label>(sub_app.app_name));
 
-    sub_app_label->SetGroup(static_cast<int>(DialogViewID::SUB_APP_LABEL));
+    sub_app_label->SetGroup(base::to_underlying(DialogViewID::SUB_APP_LABEL));
 
     sub_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     sub_app_label->SetMultiLine(true);
+
+    auto* sub_app_icon =
+        box->AddChildView(std::make_unique<views::ImageView>());
+    sub_app_icon->SetImage(sub_app.icon->uncompressed);
+    sub_app_icon->SetGroup(base::to_underlying(DialogViewID::SUB_APP_ICON));
+
+    box->SetBetweenChildSpacing(
+        provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL));
+
     sub_apps_container->AddChildView(std::move(box));
   }
 
@@ -481,15 +494,32 @@ void AppUninstallDialogView::LoadSubAppIds(const std::string& short_app_name,
 void AppUninstallDialogView::GetSubAppsInfo(
     const std::string& short_app_name,
     const std::vector<std::string>& sub_app_ids) {
-  std::vector<SubApp> sub_apps;
+  apps::AppServiceProxy* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile_);
+
+  const auto sub_app_info_collector = base::BarrierCallback<SubApp>(
+      sub_app_ids.size(),
+      base::BindOnce(&AppUninstallDialogView::InitializeSubAppList,
+                     weak_ptr_factory_.GetWeakPtr(), short_app_name));
+
   for (const std::string& sub_app_id : sub_app_ids) {
-    apps::AppServiceProxyFactory::GetForProfile(profile_)
-        ->AppRegistryCache()
-        .ForOneApp(sub_app_id, [&sub_apps](const apps::AppUpdate& update) {
-          sub_apps.emplace_back(base::UTF8ToUTF16(update.Name()));
+    std::u16string sub_app_name;
+    app_service_proxy->AppRegistryCache().ForOneApp(
+        sub_app_id, [&sub_app_name](const apps::AppUpdate& update) {
+          sub_app_name = base::UTF8ToUTF16(update.Name());
         });
+
+    app_service_proxy->LoadIcon(
+        apps::AppType::kWeb, sub_app_id, apps::IconType::kUncompressed,
+        web_app::kWebAppIconSmall,
+        /*allow_placeholder_icon=*/false,
+        base::BindOnce(
+            [](std::u16string sub_app_name, apps::IconValuePtr icon_value_ptr) {
+              return SubApp(sub_app_name, std::move(icon_value_ptr));
+            },
+            sub_app_name)
+            .Then(sub_app_info_collector));
   }
-  InitializeSubAppList(short_app_name, sub_apps);
 }
 
 void AppUninstallDialogView::InitializeViewForWebApp(

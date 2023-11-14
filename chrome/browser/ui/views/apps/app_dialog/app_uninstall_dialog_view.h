@@ -55,6 +55,7 @@ class AppUninstallDialogView : public ProfileObserver,
   enum class DialogViewID : int {
     VIEW_ID_NONE = 0,
     SUB_APP_LABEL,
+    SUB_APP_ICON
   };
 
  private:

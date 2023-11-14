@@ -14,6 +14,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon.h"
@@ -389,17 +391,31 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsUninstallDialogViewBrowserTest,
     run_loop.Run();
   }
 
-  // Wait for sub apps to load in the uninstall dialog view.
-  base::RunLoop().RunUntilIdle();
-
-  std::unordered_set<std::u16string> sub_apps_actual;
   views::View* view = ActiveView()->GetWidget()->GetContentsView();
   std::vector<views::View*> views_group;
-  view->GetViewsInGroup(
-      static_cast<int>(AppUninstallDialogView::DialogViewID::SUB_APP_LABEL),
-      &views_group);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    views_group.clear();
+    view->GetViewsInGroup(
+        base::to_underlying(
+            AppUninstallDialogView::DialogViewID::SUB_APP_LABEL),
+        &views_group);
+    return views_group.size() == 3u;
+  }));
+
+  std::unordered_set<std::u16string> sub_apps_actual;
   for (auto* label : views_group) {
     sub_apps_actual.emplace(static_cast<views::Label*>(label)->GetText());
   }
   EXPECT_EQ(sub_apps_actual, sub_apps_expected);
+
+  std::vector<views::View*> sub_app_icons;
+  view->GetViewsInGroup(
+      base::to_underlying(AppUninstallDialogView::DialogViewID::SUB_APP_ICON),
+      &sub_app_icons);
+  EXPECT_EQ(sub_app_icons.size(), 3u);
+  views::ImageView* icon_view =
+      static_cast<views::ImageView*>(sub_app_icons[0]);
+  EXPECT_FALSE(icon_view->GetImageModel().IsEmpty());
+  EXPECT_EQ(icon_view->GetVisibleBounds().size(), gfx::Size(32, 32));
 }
