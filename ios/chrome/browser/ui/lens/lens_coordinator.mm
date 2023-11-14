@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -407,10 +408,20 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 - (void)openWebLoadParams:(const web::NavigationManager::WebLoadParams&)params {
   if (!self.browser)
     return;
-  UrlLoadParams loadParams = UrlLoadParams::InNewTab(params);
-  loadParams.SetInBackground(NO);
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  UrlLoadParams loadParams;
+
+  // Open in the current tab if the current tab is a NTP.
+  if (webState && IsUrlNtp(webState->GetLastCommittedURL())) {
+    loadParams = UrlLoadParams::InCurrentTab(params);
+    self.loadingWebState = webState;
+  } else {
+    loadParams = UrlLoadParams::InNewTab(params);
+    loadParams.append_to = OpenPosition::kCurrentTab;
+    loadParams.SetInBackground(NO);
+  }
   loadParams.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
-  loadParams.append_to = OpenPosition::kCurrentTab;
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(loadParams);
 }
 
