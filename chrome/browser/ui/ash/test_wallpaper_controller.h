@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_drivefs_delegate.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
@@ -61,6 +62,7 @@ class TestWallpaperController : public ash::WallpaperController {
     return update_daily_refresh_wallpaper_count_;
   }
   int get_one_shot_wallpaper_count() const { return one_shot_wallpaper_count_; }
+  int get_sea_pen_wallpaper_count() const { return sea_pen_wallpaper_count_; }
   int show_override_wallpaper_count() const {
     return show_override_wallpaper_count(/*always_on_top=*/false) +
            show_override_wallpaper_count(/*always_on_top=*/true);
@@ -151,6 +153,9 @@ class TestWallpaperController : public ash::WallpaperController {
                               const std::string& file_name,
                               ash::WallpaperLayout layout,
                               const gfx::ImageSkia& image) override;
+  void SetSeaPenWallpaper(const AccountId& account_id,
+                          const ash::SeaPenImage& sea_pen_image,
+                          SetWallpaperCallback callback) override;
   void ConfirmPreviewWallpaper() override;
   void CancelPreviewWallpaper() override;
   void UpdateCurrentWallpaperLayout(const AccountId& account_id,
@@ -203,6 +208,7 @@ class TestWallpaperController : public ash::WallpaperController {
   int third_party_wallpaper_count_ = 0;
   int update_daily_refresh_wallpaper_count_ = 0;
   int one_shot_wallpaper_count_ = 0;
+  int sea_pen_wallpaper_count_ = 0;
   absl::optional<ash::WallpaperInfo> wallpaper_info_;
   int update_current_wallpaper_layout_count_ = 0;
   absl::optional<ash::WallpaperLayout> update_current_wallpaper_layout_layout_;

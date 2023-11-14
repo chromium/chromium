@@ -46,6 +46,7 @@ void TestWallpaperController::ClearCounts() {
   update_current_wallpaper_layout_layout_ = absl::nullopt;
   update_daily_refresh_wallpaper_count_ = 0;
   one_shot_wallpaper_count_ = 0;
+  sea_pen_wallpaper_count_ = 0;
 }
 
 void TestWallpaperController::SetClient(
@@ -210,6 +211,16 @@ bool TestWallpaperController::SetThirdPartyWallpaper(
   ShowWallpaperImage(image);
   ++third_party_wallpaper_count_;
   return true;
+}
+
+void TestWallpaperController::SetSeaPenWallpaper(
+    const AccountId& account_id,
+    const ash::SeaPenImage& sea_pen_image,
+    SetWallpaperCallback callback) {
+  ++sea_pen_wallpaper_count_;
+  wallpaper_info_ = ash::WallpaperInfo();
+  wallpaper_info_->type = ash::WallpaperType::kSeaPen;
+  std::move(callback).Run(/*success=*/true);
 }
 
 void TestWallpaperController::ConfirmPreviewWallpaper() {

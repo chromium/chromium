@@ -11,6 +11,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/containers/lru_cache.h"
@@ -223,6 +224,15 @@ class ASH_PUBLIC_EXPORT WallpaperController {
                                       const std::string& file_name,
                                       WallpaperLayout layout,
                                       const gfx::ImageSkia& image) = 0;
+
+  // Sets `sea_pen_image` received from the Manta API as system wallpaper for
+  // user with `account_id`.
+  // @see //components/manta
+  // Calls `callback` with boolean success. Can fail if `account_id` is not
+  // allowed to set wallpaper, or the image failed to decode.
+  virtual void SetSeaPenWallpaper(const AccountId& account_id,
+                                  const SeaPenImage& sea_pen_image,
+                                  SetWallpaperCallback callback) = 0;
 
   // Confirms the wallpaper being previewed to be set as the actual user
   // wallpaper. Must be called in preview mode.

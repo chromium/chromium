@@ -52,6 +52,7 @@ constexpr bool IsAllowedInPrefs(WallpaperType type) {
     case WallpaperType::kPolicy:
     case WallpaperType::kDailyGooglePhotos:
     case WallpaperType::kOnceGooglePhotos:
+    case WallpaperType::kSeaPen:
       return true;
   }
 }
@@ -70,6 +71,7 @@ constexpr bool IsWallpaperTypeSyncable(WallpaperType type) {
     case WallpaperType::kDevice:
     case WallpaperType::kOneShot:
     case WallpaperType::kOobe:
+    case WallpaperType::kSeaPen:
     case WallpaperType::kCount:
       return false;
   }

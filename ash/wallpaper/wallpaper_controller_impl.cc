@@ -56,6 +56,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -1082,6 +1083,27 @@ bool WallpaperControllerImpl::SetThirdPartyWallpaper(
   return allowed_to_set_wallpaper && allowed_to_show_wallpaper;
 }
 
+void WallpaperControllerImpl::SetSeaPenWallpaper(
+    const AccountId& account_id,
+    const SeaPenImage& sea_pen_image,
+    SetWallpaperCallback callback) {
+  CHECK(features::IsSeaPenEnabled());
+  DCHECK(callback);
+  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
+  DVLOG(1) << __func__ << " sea_pen_image.id=" << sea_pen_image.id;
+  if (!CanSetUserWallpaper(account_id)) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kSeaPen, SetWallpaperResult::kPermissionDenied);
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+  sea_pen_wallpaper_manager_.DecodeSeaPenImage(
+      sea_pen_image,
+      base::BindOnce(&WallpaperControllerImpl::OnSeaPenWallpaperDecoded,
+                     set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
+                     std::move(callback)));
+}
+
 void WallpaperControllerImpl::ConfirmPreviewWallpaper() {
   if (!confirm_preview_wallpaper_callback_) {
     DCHECK(!reload_preview_wallpaper_callback_);
@@ -1184,6 +1206,12 @@ void WallpaperControllerImpl::ShowUserWallpaper(
     wallpaper_cache_map_.erase(account_id);
     SetDefaultWallpaperImpl(user_type, /*show_wallpaper=*/true,
                             base::DoNothing());
+    return;
+  }
+
+  if (info.type == WallpaperType::kSeaPen) {
+    // TODO(b/308185349) load SeaPen wallpaper from disk.
+    SetDefaultWallpaper(account_id, /*show_wallpaper=*/true, base::DoNothing());
     return;
   }
 
@@ -2289,6 +2317,33 @@ void WallpaperControllerImpl::OnDefaultWallpaperDecoded(
   }
 }
 
+void WallpaperControllerImpl::OnSeaPenWallpaperDecoded(
+    const AccountId& account_id,
+    SetWallpaperCallback callback,
+    uint32_t sea_pen_image_id,
+    const gfx::ImageSkia& image_skia) {
+  if (image_skia.isNull()) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kSeaPen, SetWallpaperResult::kDecodingError);
+    std::move(callback).Run(false);
+    return;
+  }
+
+  wallpaper_metrics_manager_->LogWallpaperResult(WallpaperType::kSeaPen,
+                                                 SetWallpaperResult::kSuccess);
+  for (auto& observer : observers_) {
+    observer.OnUserSetWallpaper(account_id);
+  }
+  std::move(callback).Run(true);
+
+  // TODO(b/307591556) set location and user_file_path.
+  WallpaperInfo wallpaper_info(std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
+                               WallpaperType::kSeaPen, base::Time::Now());
+
+  SetWallpaperImpl(account_id, wallpaper_info, image_skia,
+                   /*show_wallpaper=*/IsActiveUser(account_id));
+}
+
 void WallpaperControllerImpl::SaveAndSetWallpaper(const AccountId& account_id,
                                                   bool is_ephemeral,
                                                   const std::string& file_name,
@@ -2624,6 +2679,7 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
     case WallpaperType::kDevice:
     case WallpaperType::kOneShot:
     case WallpaperType::kOobe:
+    case WallpaperType::kSeaPen:
     case WallpaperType::kCount:
       DCHECK(false) << "Synced in an unsyncable wallpaper type";
       break;

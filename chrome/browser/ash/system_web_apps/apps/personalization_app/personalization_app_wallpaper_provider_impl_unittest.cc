@@ -42,6 +42,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/manta/proto/manta.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -373,6 +374,22 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest,
   EXPECT_EQ(ash::WallpaperType::kOnline, current->type);
   EXPECT_EQ(ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
             current->layout);
+}
+
+TEST_F(PersonalizationAppWallpaperProviderImplTest, SendsSeaPenWallpaper) {
+  SetWallpaperObserver();
+
+  test_wallpaper_controller()->SetSeaPenWallpaper(
+      GetTestAccountId(),
+      {/*jpg_bytes=*/std::string(), /*id=*/111, /*query=*/std::string(),
+       manta::proto::RESOLUTION_64},
+      base::DoNothing());
+
+  ash::personalization_app::mojom::CurrentWallpaper* current =
+      current_wallpaper();
+  EXPECT_EQ(ash::WallpaperType::kSeaPen, current->type);
+  EXPECT_EQ(std::string(), current->description_content);
+  EXPECT_EQ(std::string(), current->description_title);
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplTest, SetCurrentWallpaperLayout) {

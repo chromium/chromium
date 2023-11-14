@@ -7237,6 +7237,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Online"/>
     <variant name="Oobe"/>
     <variant name="Policy"/>
+    <variant name="SeaPen"/>
     <variant name="ThirdParty"/>
   </token>
 </histogram>

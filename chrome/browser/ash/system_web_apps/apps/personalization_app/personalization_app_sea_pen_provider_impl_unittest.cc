@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/test/test_image_decoder.h"
 #include "ash/webui/personalization_app/mojom/sea_pen.mojom-forward.h"
 #include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
 #include "base/strings/utf_string_conversions.h"
@@ -32,13 +31,9 @@
 #include "content/public/test/test_web_ui.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash::personalization_app {
 
@@ -88,18 +83,6 @@ MatchesSeaPenImage(const std::string_view expected_jpg_bytes,
           &ash::personalization_app::mojom::SeaPenThumbnail::id, expected_id)));
 }
 
-std::vector<data_decoder::mojom::AnimationFramePtr>
-TestDecodeAnimationCallback() {
-  return {};
-}
-
-SkBitmap TestDecodeImageCallback() {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(4, 4);
-  bitmap.eraseColor(SK_ColorMAGENTA);
-  return bitmap;
-}
-
 class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
  public:
   PersonalizationAppSeaPenProviderImplTest()
@@ -120,10 +103,6 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     testing::Test::SetUp();
-
-    test_image_decoder_ = std::make_unique<::ash::TestImageDecoder>(
-        base::BindRepeating(&TestDecodeAnimationCallback),
-        base::BindRepeating(&TestDecodeImageCallback));
 
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);
@@ -153,7 +132,6 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<::ash::TestImageDecoder> test_image_decoder_;
   TestWallpaperController test_wallpaper_controller_;
   content::TestWebUI web_ui_;
   user_manager::ScopedUserManager scoped_user_manager_;
@@ -212,7 +190,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, MaxLengthQuery) {
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
-       SelectThumbnailSetsOneShotWallpaper) {
+       SelectThumbnailSetsSeaPenWallpaper) {
   // Store some test images in the provider so that one can be selected.
   base::test::TestFuture<absl::optional<
       std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr>>>
@@ -220,7 +198,8 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   sea_pen_provider_remote()->SearchWallpaper(
       "search_query", search_wallpaper_future.GetCallback());
 
-  ASSERT_EQ(0, test_wallpaper_controller()->get_one_shot_wallpaper_count());
+  ASSERT_EQ(0, test_wallpaper_controller()->get_sea_pen_wallpaper_count());
+  ASSERT_FALSE(test_wallpaper_controller()->wallpaper_info().has_value());
 
   // Select the first returned thumbnail.
   base::test::TestFuture<bool> select_wallpaper_future;
@@ -229,10 +208,9 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
       select_wallpaper_future.GetCallback());
 
   ASSERT_TRUE(select_wallpaper_future.Take());
-  EXPECT_EQ(1, test_wallpaper_controller()->get_one_shot_wallpaper_count());
-  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      TestDecodeImageCallback(),
-      *test_wallpaper_controller()->GetWallpaperImage().bitmap()));
+  EXPECT_EQ(1, test_wallpaper_controller()->get_sea_pen_wallpaper_count());
+  EXPECT_EQ(WallpaperType::kSeaPen,
+            test_wallpaper_controller()->wallpaper_info()->type);
 }
 
 }  // namespace

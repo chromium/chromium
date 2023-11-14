@@ -17,6 +17,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
+#include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
@@ -40,6 +41,7 @@
 #include "ash/wallpaper/wallpaper_blur_manager.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_daily_refresh_scheduler.h"
+#include "ash/wallpaper/wallpaper_metrics_manager.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wallpaper/wallpaper_time_of_day_scheduler.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
@@ -78,6 +80,7 @@
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -91,6 +94,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/color_analysis.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/view_tracker.h"
@@ -896,6 +900,7 @@ class WallpaperControllerTest
         enabled_features = personalization_app::GetTimeOfDayEnabledFeatures();
         break;
     }
+    enabled_features.push_back(features::kSeaPen);
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
@@ -2017,6 +2022,41 @@ TEST_P(WallpaperControllerTest, SetThirdPartyWallpaper_PolicyWallpaper) {
                                       WallpaperType::kPolicy,
                                       base::Time::Now().LocalMidnight());
   EXPECT_TRUE(wallpaper_info.MatchesSelection(policy_wallpaper_info));
+}
+
+TEST_P(WallpaperControllerTest, SetSeaPenWallpaper) {
+  SimulateUserLogin(kAccountId1);
+  TestWallpaperControllerObserver observer(controller_);
+
+  WallpaperInfo wallpaper_info;
+  ASSERT_FALSE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
+
+  gfx::ImageSkia expected_image;
+  std::string jpg_bytes = CreateEncodedImageForTesting(
+      {1, 1}, SK_ColorGREEN, data_decoder::mojom::ImageCodec::kDefault,
+      &expected_image);
+  ASSERT_TRUE(!jpg_bytes.empty());
+
+  base::test::TestFuture<bool> set_wallpaper_future;
+  controller_->SetSeaPenWallpaper(
+      kAccountId1,
+      {std::move(jpg_bytes), /*id=*/5, /*query=*/std::string(),
+       manta::proto::RESOLUTION_64},
+      set_wallpaper_future.GetCallback());
+
+  EXPECT_TRUE(set_wallpaper_future.Take());
+  EXPECT_TRUE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
+  EXPECT_EQ(WallpaperType::kSeaPen, wallpaper_info.type);
+  EXPECT_EQ(1, observer.wallpaper_changed_count());
+  histogram_tester().ExpectUniqueSample("Ash.Wallpaper.SeaPen.Result2",
+                                        SetWallpaperResult::kSuccess, 1);
+  // Use `AreBitmapsClose` because jpg encoding/decoding can alter the color
+  // channels +- 1.
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      *expected_image.bitmap(), *controller_->GetWallpaperImage().bitmap(),
+      /*max_deviation=*/1));
 }
 
 TEST_P(WallpaperControllerTest, SetDefaultWallpaperForRegularAccount) {

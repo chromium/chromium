@@ -422,6 +422,16 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
               std::vector<std::string>(), key));
       return;
     }
+    case ash::WallpaperType::kSeaPen: {
+      // TODO(b/307757290) send a unique key and set description content.
+      const std::string key = base::UnguessableToken::Create().ToString();
+      NotifyWallpaperChanged(
+          ash::personalization_app::mojom::CurrentWallpaper::New(
+              info->layout, info->type, key,
+              /*description_title=*/std::string(),
+              /*description_content=*/std::string()));
+      return;
+    }
     case ash::WallpaperType::kCount:
       break;
   }

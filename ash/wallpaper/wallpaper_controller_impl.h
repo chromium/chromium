@@ -29,6 +29,7 @@
 #include "ash/wallpaper/google_photos_wallpaper_manager.h"
 #include "ash/wallpaper/online_wallpaper_manager.h"
 #include "ash/wallpaper/online_wallpaper_variant_info_fetcher.h"
+#include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/wallpaper/wallpaper_blur_manager.h"
 #include "ash/wallpaper/wallpaper_file_manager.h"
 #include "ash/wallpaper/wallpaper_time_of_day_scheduler.h"
@@ -291,6 +292,9 @@ class ASH_EXPORT WallpaperControllerImpl
                               const std::string& file_name,
                               WallpaperLayout layout,
                               const gfx::ImageSkia& image) override;
+  void SetSeaPenWallpaper(const AccountId& account_id,
+                          const SeaPenImage& sea_pen_image,
+                          SetWallpaperCallback callback) override;
   void ConfirmPreviewWallpaper() override;
   void CancelPreviewWallpaper() override;
   void UpdateCurrentWallpaperLayout(const AccountId& account_id,
@@ -548,6 +552,13 @@ class ASH_EXPORT WallpaperControllerImpl
                                  bool show_wallpaper,
                                  SetWallpaperCallback callback,
                                  const gfx::ImageSkia& image);
+
+  // Used as the callback of SeaPen wallpaper decoding. Shows the wallpaper
+  // immediately if `account_id` is for the active user.
+  void OnSeaPenWallpaperDecoded(const AccountId& account_id,
+                                SetWallpaperCallback callback,
+                                uint32_t sea_pen_image_id,
+                                const gfx::ImageSkia& image_skia);
 
   // Saves |image| to disk if the user's data is not ephemeral, or if it is a
   // policy wallpaper for public accounts. Shows the wallpaper immediately if
@@ -824,6 +835,10 @@ class ASH_EXPORT WallpaperControllerImpl
   // which include downloading and saving wallpapers to disk, or loading the
   // wallpapers from disk.
   GooglePhotosWallpaperManager google_photos_wallpaper_manager_;
+
+  // A utility class that handles file operations and decoding for SeaPen
+  // wallpapers.
+  SeaPenWallpaperManager sea_pen_wallpaper_manager_;
 
   // Provides signals to trigger wallpaper daily refresh.
   std::unique_ptr<WallpaperDailyRefreshScheduler> daily_refresh_scheduler_;

@@ -41,6 +41,8 @@ std::string ToResultHistogram(WallpaperType type) {
       return "Ash.Wallpaper.Device.Result2";
     case WallpaperType::kOobe:
       return "Ash.Wallpaper.Oobe.Result2";
+    case WallpaperType::kSeaPen:
+      return "Ash.Wallpaper.SeaPen.Result2";
     case WallpaperType::kOneShot:
     case WallpaperType::kCount:
       NOTREACHED();

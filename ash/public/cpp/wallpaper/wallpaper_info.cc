@@ -82,6 +82,7 @@ bool WallpaperInfo::MatchesSelection(const WallpaperInfo& other) const {
       // enough.
       return type == other.type && layout == other.layout &&
              user_file_path == other.user_file_path;
+    case WallpaperType::kSeaPen:
     case WallpaperType::kDefault:
     case WallpaperType::kPolicy:
     case WallpaperType::kThirdParty:
@@ -111,6 +112,7 @@ bool WallpaperInfo::MatchesAsset(const WallpaperInfo& other) const {
     case WallpaperType::kDevice:
     case WallpaperType::kOneShot:
     case WallpaperType::kOobe:
+    case WallpaperType::kSeaPen:
     case WallpaperType::kCount:
       return true;
   }
