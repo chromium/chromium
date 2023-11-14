@@ -11,6 +11,11 @@ namespace extensions_features {
 // API Features
 ///////////////////////////////////////////////////////////////////////////////
 
+// Controls the availability of contentSettings.clipboard.
+BASE_FEATURE(kApiContentSettingsClipboard,
+             "ApiContentSettingsClipboard",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls the availability of the enterprise.kioskInput API.
 BASE_FEATURE(kApiEnterpriseKioskInput,
              "ApiEnterpriseKioskInput",

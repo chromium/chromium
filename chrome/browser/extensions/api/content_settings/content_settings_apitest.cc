@@ -27,10 +27,8 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
@@ -39,6 +37,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/extension_features.h"
 #include "net/base/schemeful_site.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -131,6 +130,10 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     EXPECT_EQ(CONTENT_SETTING_BLOCK,
               map->GetContentSetting(example_url, example_url,
                                      ContentSettingsType::ANTI_ABUSE));
+    EXPECT_EQ(
+        CONTENT_SETTING_ASK,
+        map->GetContentSetting(example_url, example_url,
+                               ContentSettingsType::CLIPBOARD_READ_WRITE));
 
     // Check content settings for www.google.com
     GURL url("http://www.google.com");
@@ -164,6 +167,12 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     EXPECT_EQ(
         CONTENT_SETTING_BLOCK,
         map->GetContentSetting(url, url, ContentSettingsType::ANTI_ABUSE));
+    EXPECT_EQ(base::FeatureList::IsEnabled(
+                  extensions_features::kApiContentSettingsClipboard)
+                  ? CONTENT_SETTING_BLOCK
+                  : CONTENT_SETTING_ASK,
+              map->GetContentSetting(
+                  url, url, ContentSettingsType::CLIPBOARD_READ_WRITE));
   }
 
   void CheckContentSettingsDefault() {
@@ -205,6 +214,9 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     EXPECT_EQ(
         CONTENT_SETTING_ALLOW,
         map->GetContentSetting(url, url, ContentSettingsType::ANTI_ABUSE));
+    EXPECT_EQ(CONTENT_SETTING_ASK,
+              map->GetContentSetting(
+                  url, url, ContentSettingsType::CLIPBOARD_READ_WRITE));
   }
 
   // Returns a snapshot of content settings for a given URL.
@@ -238,6 +250,8 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
         url, url, ContentSettingsType::AUTOMATIC_DOWNLOADS));
     content_settings.push_back(
         map->GetContentSetting(url, url, ContentSettingsType::AUTOPLAY));
+    content_settings.push_back(map->GetContentSetting(
+        url, url, ContentSettingsType::CLIPBOARD_READ_WRITE));
     return content_settings;
   }
 
@@ -246,6 +260,29 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 };
+
+class ExtensionContentSettingsApiTestWithClipboard
+    : public ExtensionContentSettingsApiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExtensionContentSettingsApiTestWithClipboard()
+      : ExtensionContentSettingsApiTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        extensions_features::kApiContentSettingsClipboard, GetParam());
+  }
+  ~ExtensionContentSettingsApiTestWithClipboard() override = default;
+  ExtensionContentSettingsApiTestWithClipboard(
+      const ExtensionContentSettingsApiTestWithClipboard&) = delete;
+  ExtensionContentSettingsApiTestWithClipboard& operator=(
+      const ExtensionContentSettingsApiTestWithClipboard&) = delete;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExtensionContentSettingsApiTestWithClipboard,
+                         ::testing::Bool());
 
 class ExtensionContentSettingsApiTestWithContextType
     : public ExtensionContentSettingsApiTest,
@@ -267,7 +304,7 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionContentSettingsApiTestWithContextType,
                          ::testing::Values(ContextType::kServiceWorker));
 
-IN_PROC_BROWSER_TEST_F(ExtensionContentSettingsApiTest, Standard) {
+IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithClipboard, Standard) {
   CheckContentSettingsDefault();
 
   static constexpr char kExtensionPath[] = "content_settings/standard";

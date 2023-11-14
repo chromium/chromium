@@ -275,6 +275,9 @@
     "dependencies": ["permission:contentSettings"],
     "contexts": ["blessed_extension"]
   },
+  "contentSettings.clipboard": {
+    "feature_flag": "ApiContentSettingsClipboard"
+  },
   "contextMenus": {
     "dependencies": ["permission:contextMenus"],
     "contexts": ["blessed_extension"]
