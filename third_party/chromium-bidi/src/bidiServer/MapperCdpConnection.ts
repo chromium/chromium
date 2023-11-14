@@ -146,7 +146,7 @@ export class MapperCdpConnection {
     mapperTabSource: string,
     verbose: boolean
   ): Promise<CdpClient> {
-    debugInternal('Connection opened.');
+    debugInternal('Initializing Mapper.');
 
     const browserClient = await cdpConnection.createBrowserSession();
 
@@ -192,7 +192,7 @@ export class MapperCdpConnection {
       awaitPromise: true,
     });
 
-    debugInternal('Launched!');
+    debugInternal('Mapper is launched!');
     return mapperCdpClient;
   }
 }

@@ -21,6 +21,7 @@ import debug from 'debug';
 import * as websocket from 'websocket';
 
 import {ErrorCode} from '../protocol/webdriver-bidi.js';
+import {Deferred} from '../utils/Deferred.js';
 
 import {BrowserInstance} from './BrowserInstance.js';
 
@@ -129,21 +130,39 @@ export class WebSocketServer {
         jsonBody?.capabilities?.alwaysMatch?.['goog:chromeOptions'];
       debugInternal('new WS request received:', request.resourceURL.path);
 
-      const browserInstance = await BrowserInstance.run(
-        channel,
-        headless,
-        verbose,
-        chromeOptions?.args
-      );
-
-      // Forward messages from BiDi Mapper to the client unconditionally.
-      browserInstance.bidiSession().on('message', (message) => {
-        void this.#sendClientMessageString(message, connection);
-      });
-
       const connection = request.accept();
 
+      const browserInstanceDeferred = new Deferred<BrowserInstance>();
+
+      // Schedule browser instance creation, but don't wait for it.
+      void (async () => {
+        try {
+          debugInfo('Scheduling browser launch...');
+          const browserInstance = await BrowserInstance.run(
+            channel,
+            headless,
+            verbose,
+            chromeOptions?.args
+          );
+
+          // Forward messages from BiDi Mapper to the client unconditionally.
+          browserInstance.bidiSession().on('message', (message) => {
+            void this.#sendClientMessageString(message, connection);
+          });
+
+          debugInfo('Browser is launched!');
+          browserInstanceDeferred.resolve(browserInstance);
+        } catch (e) {
+          debugInfo('Error while creating browser instance', e);
+          connection.close(500, 'Error while creating browser instance');
+          return;
+        }
+      })();
+
       connection.on('message', async (message) => {
+        // Wait for browser instance to be created.
+        const browserInstance = await browserInstanceDeferred;
+
         // If |type| is not text, return a error.
         if (message.type !== 'utf8') {
           this.#respondWithError(
@@ -203,6 +222,10 @@ export class WebSocketServer {
             connection.remoteAddress
           } disconnected.`
         );
+
+        // Wait for browser instance to be created.
+        const browserInstance = await browserInstanceDeferred;
+
         // TODO: handle reconnection which is used in WPT. Until then, close the
         //  browser after each WS connection is closed.
         await browserInstance.close();
