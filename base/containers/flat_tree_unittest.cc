@@ -186,20 +186,6 @@ template <typename T>
 class FlatTreeTest : public testing::Test {};
 TYPED_TEST_SUITE_P(FlatTreeTest);
 
-TEST(FlatTree, IsMultipass) {
-  static_assert(!is_multipass<std::istream_iterator<int>>(),
-                "InputIterator is not multipass");
-  static_assert(!is_multipass<std::ostream_iterator<int>>(),
-                "OutputIterator is not multipass");
-
-  static_assert(is_multipass<std::forward_list<int>::iterator>(),
-                "ForwardIterator is multipass");
-  static_assert(is_multipass<std::list<int>::iterator>(),
-                "BidirectionalIterator is multipass");
-  static_assert(is_multipass<std::vector<int>::iterator>(),
-                "RandomAccessIterator is multipass");
-}
-
 // Tests that the compiler generated move operators propagrate noexcept
 // specifiers.
 TEST(FlatTree, NoExcept) {
