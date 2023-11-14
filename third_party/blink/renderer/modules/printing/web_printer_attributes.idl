@@ -13,6 +13,18 @@ dictionary WebPrintingResolution {
   WebPrintingResolutionUnits units;
 };
 
+dictionary WebPrintDocumentDescription {
+  required Blob data;
+};
+
+dictionary WebPrintJobTemplateAttributes {
+  unsigned long copies;
+
+  WebPrintingMultipleDocumentHandling multipleDocumentHandling;
+  WebPrintQuality printQuality;
+  WebPrintingSides sides;
+};
+
 dictionary WebPrinterAttributes {
   DOMString printerName;
 

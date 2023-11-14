@@ -1260,6 +1260,7 @@ if (target_os != "android") {
     "//third_party/blink/renderer/modules/printing/web_printer_attributes.idl",
     "//third_party/blink/renderer/modules/printing/web_printing_enums.idl",
     "//third_party/blink/renderer/modules/printing/web_printing_manager.idl",
+    "//third_party/blink/renderer/modules/printing/web_print_job.idl",
   ]
 }
 

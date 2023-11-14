@@ -14,5 +14,9 @@ interface WebPrinter {
   [CallWith=ScriptState, RaisesException]
   Promise<WebPrinterAttributes> fetchAttributes();
 
-  // TODO(b/302505962): Add remaining methods.
+  [CallWith=ScriptState, RaisesException]
+  Promise<WebPrintJob> printJob(
+    DOMString job_name,
+    WebPrintDocumentDescription document,
+    WebPrintJobTemplateAttributes attributes);
 };
