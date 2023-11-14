@@ -37,7 +37,7 @@ _COMMON_SCHEMAS_PATH = os.path.join(_TEMPLATES_PATH, 'common_schemas.yaml')
 _POLICIES_DEFINITIONS_PATH = os.path.join(_TEMPLATES_PATH, 'policy_definitions')
 _POLICIES_YAML_PATH = os.path.join(_TEMPLATES_PATH, 'policies.yaml')
 _HISTOGRAMS_PATH = os.path.join(
-      'tools', 'metrics', 'histograms', 'enums.xml')
+      'tools', 'metrics', 'histograms', 'metadata', 'enterprise', 'enums.xml')
 _DEVICE_POLICY_PROTO_PATH = os.path.join(
       _COMPONENTS_POLICY_PATH, 'proto', 'chrome_device_policy.proto')
 _DEVICE_POLICY_PROTO_MAP_PATH = os.path.join(
