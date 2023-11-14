@@ -21,10 +21,6 @@ namespace content {
 GinJavaBridgeDispatcher::GinJavaBridgeDispatcher(RenderFrame* render_frame)
     : RenderFrameObserver(render_frame),
       enable_mojo_(base::FeatureList::IsEnabled(features::kGinJavaBridgeMojo)) {
-  if (enable_mojo_) {
-    render_frame->GetBrowserInterfaceBroker()->GetInterface(
-        remote_.BindNewPipeAndPassReceiver());
-  }
 }
 
 GinJavaBridgeDispatcher::~GinJavaBridgeDispatcher() = default;
@@ -64,7 +60,7 @@ void GinJavaBridgeDispatcher::DidClearWindowObject() {
     if (object) {
       objects_.AddWithID(object, iter->second);
     } else if (enable_mojo_) {
-      remote_->ObjectWrapperDeleted(iter->second);
+      GetRemoteObjectHost()->ObjectWrapperDeleted(iter->second);
     } else {
       // Inform the host about wrapper creation failure.
       render_frame()->Send(new GinJavaBridgeHostMsg_ObjectWrapperDeleted(
@@ -137,7 +133,7 @@ void GinJavaBridgeDispatcher::OnGinJavaBridgeObjectDeleted(
   objects_.Remove(object_id);
 
   if (enable_mojo_) {
-    remote_->ObjectWrapperDeleted(object_id);
+    GetRemoteObjectHost()->ObjectWrapperDeleted(object_id);
   } else {
     render_frame()->Send(
         new GinJavaBridgeHostMsg_ObjectWrapperDeleted(routing_id(), object_id));
@@ -153,6 +149,12 @@ void GinJavaBridgeDispatcher::OnDestruct() {
 }
 
 mojom::GinJavaBridgeHost* GinJavaBridgeDispatcher::GetRemoteObjectHost() {
+  if (!remote_) {
+    render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+        remote_.BindNewPipeAndPassReceiver());
+    remote_.reset_on_disconnect();
+  }
+
   return remote_.get();
 }
 

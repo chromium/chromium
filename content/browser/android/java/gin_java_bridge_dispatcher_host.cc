@@ -84,6 +84,7 @@ mojom::GinJavaBridge* GinJavaBridgeDispatcherHost::GetJavaBridge(
     if (!should_create) {
       return nullptr;
     }
+    CHECK(frame_host->IsRenderFrameLive());
     auto& bound_host = remotes_[routing_id];
     frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
         bound_host.BindNewEndpointAndPassReceiver());
@@ -317,6 +318,9 @@ void GinJavaBridgeDispatcherHost::AddNamedObject(
         ->GetPrimaryMainFrame()
         ->ForEachRenderFrameHostIncludingSpeculative(
             [&name, object_id, this](RenderFrameHostImpl* render_frame_host) {
+              if (!render_frame_host->IsRenderFrameLive()) {
+                return;
+              }
               GetJavaBridge(render_frame_host, /*should_create=*/true)
                   ->AddNamedObject(name, object_id);
             });
@@ -360,6 +364,10 @@ void GinJavaBridgeDispatcherHost::RemoveNamedObject(
         ->GetPrimaryMainFrame()
         ->ForEachRenderFrameHostIncludingSpeculative(
             [&copied_name, this](RenderFrameHostImpl* render_frame_host) {
+              if (!render_frame_host->IsRenderFrameLive()) {
+                return;
+              }
+
               auto* bridge =
                   GetJavaBridge(render_frame_host, /*should_create=*/false);
               if (!bridge) {
