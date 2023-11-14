@@ -771,7 +771,8 @@ void AppPlatformMetrics::RecordAppLaunchUkm(AppType app_type,
     observer.OnAppLaunched(app_id, app_type, launch_source);
   }
 
-  if (app_type == AppType::kUnknown || !ShouldRecordUkm(profile_)) {
+  if (app_type == AppType::kUnknown || !ShouldRecordUkm(profile_) ||
+      !ShouldRecordUkmForAppId(app_id, app_registry_cache_.get())) {
     return;
   }
 
@@ -800,6 +801,9 @@ void AppPlatformMetrics::RecordAppUninstallUkm(
   // and restrictions with something appropriate before using this data.
   for (auto& observer : observers_) {
     observer.OnAppUninstalled(app_id, app_type, uninstall_source);
+  }
+  if (!ShouldRecordUkmForAppId(app_id, app_registry_cache_.get())) {
+    return;
   }
 
   AppTypeName app_type_name = GetAppTypeName(
@@ -858,7 +862,8 @@ void AppPlatformMetrics::OnAppUpdate(const apps::AppUpdate& update) {
                             install_time);
   }
 
-  if (!ShouldRecordUkm(profile_)) {
+  if (!ShouldRecordUkm(profile_) ||
+      !ShouldRecordUkmForAppId(update.AppId(), app_registry_cache_.get())) {
     return;
   }
 
@@ -1106,7 +1111,9 @@ void AppPlatformMetrics::ClearRunningDuration() {
 
 void AppPlatformMetrics::ReadInstalledApps() {
   app_registry_cache_->ForEachApp([this](const apps::AppUpdate& update) {
-    RecordAppsInstallUkm(update, InstallTime::kInit);
+    if (ShouldRecordUkmForAppId(update.AppId(), app_registry_cache_.get())) {
+      RecordAppsInstallUkm(update, InstallTime::kInit);
+    }
   });
 }
 
@@ -1230,22 +1237,26 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
     ukm::SourceId source_id = it.second.source_id;
     DCHECK_NE(source_id, ukm::kInvalidSourceId);
     if (!it.second.running_time.is_zero()) {
-      auto new_source_id = GetSourceId(profile_, it.second.app_id);
-      if (new_source_id != ukm::kInvalidSourceId) {
-        ukm::builders::ChromeOSApp_UsageTime builder(new_source_id);
-        builder.SetAppType((int)it.second.app_type_name)
+      if (ShouldRecordUkmForAppId(it.second.app_id,
+                                  app_registry_cache_.get())) {
+        auto new_source_id = GetSourceId(profile_, it.second.app_id);
+        if (new_source_id != ukm::kInvalidSourceId) {
+          ukm::builders::ChromeOSApp_UsageTime builder(new_source_id);
+          builder.SetAppType((int)it.second.app_type_name)
+              .SetDuration(it.second.running_time.InMilliseconds())
+              .SetUserDeviceMatrix(user_type_by_device_type_)
+              .Record(ukm::UkmRecorder::Get());
+          RemoveSourceId(new_source_id);
+        }
+
+        // Preserve a copy of UsageTime UKM to investigate the null app id
+        // issue.
+        ukm::builders::ChromeOSApp_UsageTimeReusedSourceId builder(source_id);
+        builder.SetAppType((int)app_type_name)
             .SetDuration(it.second.running_time.InMilliseconds())
             .SetUserDeviceMatrix(user_type_by_device_type_)
             .Record(ukm::UkmRecorder::Get());
-        RemoveSourceId(new_source_id);
       }
-
-      // Preserve a copy of UsageTime UKM to investigate the null app id issue.
-      ukm::builders::ChromeOSApp_UsageTimeReusedSourceId builder(source_id);
-      builder.SetAppType((int)app_type_name)
-          .SetDuration(it.second.running_time.InMilliseconds())
-          .SetUserDeviceMatrix(user_type_by_device_type_)
-          .Record(ukm::UkmRecorder::Get());
 
       // Also reset time in the pref store now that we have reported this data.
       ClearAppsUsageTimeForInstance(it.first.ToString());
@@ -1366,29 +1377,31 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkmFromPref() {
   }
 
   for (auto& it : usage_times_from_pref_) {
-    auto source_id = GetSourceId(profile_, it->app_id);
-    if (source_id != ukm::kInvalidSourceId) {
-      ukm::builders::ChromeOSApp_UsageTime builder(source_id);
-      builder.SetAppType((int)it->app_type_name)
-          .SetDuration(it->running_time.InMilliseconds())
-          .SetUserDeviceMatrix(user_type_by_device_type_)
-          .Record(ukm::UkmRecorder::Get());
-      RemoveSourceId(source_id);
-    }
+    if (ShouldRecordUkmForAppId(it->app_id, app_registry_cache_.get())) {
+      auto source_id = GetSourceId(profile_, it->app_id);
+      if (source_id != ukm::kInvalidSourceId) {
+        ukm::builders::ChromeOSApp_UsageTime builder(source_id);
+        builder.SetAppType((int)it->app_type_name)
+            .SetDuration(it->running_time.InMilliseconds())
+            .SetUserDeviceMatrix(user_type_by_device_type_)
+            .Record(ukm::UkmRecorder::Get());
+        RemoveSourceId(source_id);
+      }
 
-    // All windows read from the user pref have been closed before login, so
-    // create a new source id here, since we don't have previous source ids for
-    // them. This UKM record should not have the null app id issue. Still
-    // preserve a copy of UsageTime UKM to investigate the null app id issue for
-    // consistency.
-    source_id = GetSourceId(profile_, it->app_id);
-    if (source_id != ukm::kInvalidSourceId) {
-      ukm::builders::ChromeOSApp_UsageTimeReusedSourceId builder(source_id);
-      builder.SetAppType((int)it->app_type_name)
-          .SetDuration(it->running_time.InMilliseconds())
-          .SetUserDeviceMatrix(user_type_by_device_type_)
-          .Record(ukm::UkmRecorder::Get());
-      RemoveSourceId(source_id);
+      // All windows read from the user pref have been closed before login, so
+      // create a new source id here, since we don't have previous source ids
+      // for them. This UKM record should not have the null app id issue. Still
+      // preserve a copy of UsageTime UKM to investigate the null app id issue
+      // for consistency.
+      source_id = GetSourceId(profile_, it->app_id);
+      if (source_id != ukm::kInvalidSourceId) {
+        ukm::builders::ChromeOSApp_UsageTimeReusedSourceId builder(source_id);
+        builder.SetAppType((int)it->app_type_name)
+            .SetDuration(it->running_time.InMilliseconds())
+            .SetUserDeviceMatrix(user_type_by_device_type_)
+            .Record(ukm::UkmRecorder::Get());
+        RemoveSourceId(source_id);
+      }
     }
 
     // Clear app UKM usage from the pref store now that we have reported this

@@ -8,6 +8,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
+#include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
@@ -27,9 +28,12 @@ namespace cros_events = metrics::structured::events::v2::cr_os_events;
 
 AppDiscoveryMetrics::AppDiscoveryMetrics(
     Profile* profile,
+    const apps::AppRegistryCache& app_registry_cache,
     InstanceRegistry& instance_registry,
     AppPlatformMetrics* app_platform_metrics)
-    : profile_(profile), app_platform_metrics_(app_platform_metrics) {
+    : profile_(profile),
+      app_registry_cache_(app_registry_cache),
+      app_platform_metrics_(app_platform_metrics) {
   DCHECK(app_platform_metrics);
 
   instance_registry_observation_.Observe(&instance_registry);
@@ -48,7 +52,7 @@ void AppDiscoveryMetrics::OnAppInstalled(const std::string& app_id,
                                          InstallReason app_install_reason,
                                          InstallTime app_install_time) {
   // Do not record if app-sync is disabled.
-  if (!IsAppSyncEnabled()) {
+  if (!ShouldRecordUkmForAppId(app_id)) {
     return;
   }
 
@@ -64,7 +68,7 @@ void AppDiscoveryMetrics::OnAppLaunched(const std::string& app_id,
                                         AppType app_type,
                                         LaunchSource launch_source) {
   // Do not record if app-sync is disabled.
-  if (!IsAppSyncEnabled()) {
+  if (!ShouldRecordUkmForAppId(app_id)) {
     return;
   }
 
@@ -80,7 +84,7 @@ void AppDiscoveryMetrics::OnAppUninstalled(
     AppType app_type,
     UninstallSource app_uninstall_source) {
   // Do not record if app-sync is disabled.
-  if (!IsAppSyncEnabled()) {
+  if (!ShouldRecordUkmForAppId(app_id)) {
     return;
   }
 
@@ -104,7 +108,7 @@ void AppDiscoveryMetrics::OnInstanceUpdate(
 
   // Only record if app-sync is enabled. Recording is done before internal model
   // update to check for previous state.
-  if (IsAppSyncEnabled()) {
+  if (ShouldRecordUkmForAppId(instance_update.AppId())) {
     RecordAppState(instance_update);
   }
 
@@ -143,8 +147,9 @@ void AppDiscoveryMetrics::OnInstanceRegistryWillBeDestroyed(
   instance_registry_observation_.Reset();
 }
 
-bool AppDiscoveryMetrics::IsAppSyncEnabled() {
-  return ShouldRecordUkm(profile_);
+bool AppDiscoveryMetrics::ShouldRecordUkmForAppId(const std::string& app_id) {
+  return ShouldRecordUkm(profile_) &&
+         ::apps::ShouldRecordUkmForAppId(app_id, app_registry_cache_.get());
 }
 
 bool AppDiscoveryMetrics::IsAnyAppInstanceActive(

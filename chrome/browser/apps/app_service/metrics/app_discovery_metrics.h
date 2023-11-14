@@ -35,6 +35,7 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
                             InstanceRegistry::Observer {
  public:
   AppDiscoveryMetrics(Profile* profile,
+                      const apps::AppRegistryCache& app_registry_cache,
                       InstanceRegistry& instance_registry,
                       AppPlatformMetrics* app_platform_metrics);
   ~AppDiscoveryMetrics() override;
@@ -58,8 +59,9 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
   void OnInstanceRegistryWillBeDestroyed(InstanceRegistry* cache) override;
 
  private:
-  // Returns whether app sync is enabled for |profile_|.
-  bool IsAppSyncEnabled();
+  // Returns whether app sync is enabled for |profile_| and it's allowed to
+  // record UKM for |app_id|.
+  bool ShouldRecordUkmForAppId(const std::string& app_id);
 
   // Returns true if there is an active instance of an app other than
   // |exclude_instance_id|. If |exclude_instance_id| is nullopt, then all
@@ -110,6 +112,8 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
 
   // Profile for which apps discovery metrics are being recorded for.
   raw_ptr<Profile, ExperimentalAsh> profile_;
+
+  const raw_ref<const AppRegistryCache> app_registry_cache_;
 
   // Instance of AppPlatformMetrics |this| is observing.
   raw_ptr<AppPlatformMetrics, ExperimentalAsh> app_platform_metrics_ = nullptr;

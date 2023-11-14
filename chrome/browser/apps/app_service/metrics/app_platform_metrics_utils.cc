@@ -31,6 +31,7 @@
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
 #include "components/sync/base/model_type.h"
@@ -115,6 +116,21 @@ apps::AppTypeName GetWebAppTypeName() {
   return web_app::IsWebAppsCrosapiEnabled()
              ? apps::AppTypeName::kStandaloneBrowserWebApp
              : apps::AppTypeName::kWeb;
+}
+
+bool UkmReportingIsAllowedForAppInManagedGuestSession(
+    const std::string& app_id,
+    const apps::AppRegistryCache& cache) {
+  CHECK(chromeos::IsManagedGuestSession());
+
+  bool is_allowed = false;
+  cache.ForOneApp(app_id, [&is_allowed](const apps::AppUpdate& app) {
+    is_allowed = app.InstallReason() == apps::InstallReason::kSystem ||
+                 app.InstallReason() == apps::InstallReason::kPolicy ||
+                 app.InstallReason() == apps::InstallReason::kOem ||
+                 app.InstallReason() == apps::InstallReason::kDefault;
+  });
+  return is_allowed;
 }
 
 }  // namespace
@@ -392,6 +408,15 @@ bool ShouldRecordUkm(Profile* profile) {
     case syncer::UploadState::ACTIVE:
       return true;
   }
+}
+
+bool ShouldRecordUkmForAppId(const std::string& app_id,
+                             const apps::AppRegistryCache& cache) {
+  if (chromeos::IsManagedGuestSession() &&
+      !UkmReportingIsAllowedForAppInManagedGuestSession(app_id, cache)) {
+    return false;
+  }
+  return true;
 }
 
 bool ShouldRecordUkmForAppTypeName(AppType app_type) {

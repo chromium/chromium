@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
+#include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -138,8 +139,9 @@ constexpr char kAppInputEventsKey[] = "app_platform_metrics.app_input_events";
 
 AppPlatformInputMetrics::AppPlatformInputMetrics(
     Profile* profile,
+    const apps::AppRegistryCache& app_registry_cache,
     InstanceRegistry& instance_registry)
-    : profile_(profile) {
+    : profile_(profile), app_registry_cache_(app_registry_cache) {
   instance_registry_observation_.Observe(&instance_registry);
   if (ash::Shell::HasInstance()) {
     ash::Shell::Get()->AddPreTargetHandler(this);
@@ -189,6 +191,9 @@ void AppPlatformInputMetrics::OnTwoHours() {
   }
 
   for (const auto& event_counts : app_id_to_event_count_per_two_hours_) {
+    if (!ShouldRecordUkmForApp(event_counts.first)) {
+      continue;
+    }
     // `event_counts.second` is the map from InputEventSource to the event
     // counts.
     RecordInputEventsUkm(event_counts.first, event_counts.second);
@@ -314,7 +319,7 @@ void AppPlatformInputMetrics::RecordEventCount(InputEventSource event_source,
     return;
   }
 
-  if (!ShouldRecordUkmForAppTypeName(GetAppType(profile_, it->second.app_id))) {
+  if (!ShouldRecordUkmForApp(it->second.app_id)) {
     return;
   }
 
@@ -364,7 +369,7 @@ void AppPlatformInputMetrics::RecordInputEventsUkmFromPref() {
                                            kAppInputEventsKey);
 
   for (const auto [app_id, events] : *input_events_update) {
-    if (!ShouldRecordUkmForAppTypeName(GetAppType(profile_, app_id))) {
+    if (!ShouldRecordUkmForApp(app_id)) {
       continue;
     }
 
@@ -377,6 +382,11 @@ void AppPlatformInputMetrics::RecordInputEventsUkmFromPref() {
         ConvertDictValueToEventCounts(*events_dict);
     RecordInputEventsUkm(app_id, event_counts);
   }
+}
+
+bool AppPlatformInputMetrics::ShouldRecordUkmForApp(const std::string& app_id) {
+  return ShouldRecordUkmForAppId(app_id, app_registry_cache_.get()) &&
+         ShouldRecordUkmForAppTypeName(GetAppType(profile_, app_id));
 }
 
 }  // namespace apps

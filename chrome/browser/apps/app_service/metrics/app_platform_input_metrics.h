@@ -48,6 +48,7 @@ class AppPlatformInputMetrics : public ui::EventHandler,
   using EventSourceToCounts = base::flat_map<InputEventSource, CountPerAppType>;
 
   AppPlatformInputMetrics(Profile* profile,
+                          const apps::AppRegistryCache& app_registry_cache,
                           InstanceRegistry& instance_registry);
 
   AppPlatformInputMetrics(const AppPlatformInputMetrics&) = delete;
@@ -109,7 +110,12 @@ class AppPlatformInputMetrics : public ui::EventHandler,
   // Records the input events UKM saved in the user pref.
   void RecordInputEventsUkmFromPref();
 
+  // Returns true if recording is allowed for this app.
+  bool ShouldRecordUkmForApp(const std::string& app_id);
+
   raw_ptr<Profile, ExperimentalAsh> profile_;
+
+  const raw_ref<const AppRegistryCache> app_registry_cache_;
 
   BrowserToTabList browser_to_tab_list_;
 
