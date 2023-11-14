@@ -2534,6 +2534,27 @@
     ]
   },
   {
+    "prefix": "delay-async-when-lcp-in-html",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "http/tests/delay-async-when-lcp-in-html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=LCPCriticalPathPredictor:lcpp_recorded_lcp_element_types/all",
+      "--enable-features=DelayAsyncScriptExecution:delay_async_exec_delay_type/till_first_lcp_candidate/delay_async_exec_when_lcp_found_in_html/true"
+    ],
+    "expires": "Sep 10, 2024",
+    "owners": [
+      "alexnj@chromium.org",
+      "chikamune@chromium.org"
+    ]
+  },
+  {
     "prefix": "deprecated-css-appearance-values-enabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
