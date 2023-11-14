@@ -6,18 +6,15 @@
 
 #include <memory>
 
-#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/async_destroy_video_decoder.h"
@@ -87,82 +84,21 @@ size_t EstimateRequiredRendererPipelineBuffers(bool low_delay) {
     return kExpectedNonLatencyPipelineDepth;
 }
 
-enum class DecoderTaskRunnerType {
-  kOneThreadPoolSequenceSharedByAllDecoders,
-  kOneThreadPoolThreadSharedByAllDecoders,
-  kOneDedicatedThreadSharedByAllDecoders,
-  kOneThreadPoolThreadPerDecoder,
-  kDefault = kOneThreadPoolThreadPerDecoder,
-};
-
-DecoderTaskRunnerType GetDecoderTaskRunnerType() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kChromeOSVideoDecoderTaskRunner)) {
-    return DecoderTaskRunnerType::kDefault;
-  }
-
-  const std::string task_runner_type = command_line->GetSwitchValueASCII(
-      switches::kChromeOSVideoDecoderTaskRunner);
-  if (task_runner_type.empty()) {
-    LOG(ERROR) << "Failed to read the value of "
-               << switches::kChromeOSVideoDecoderTaskRunner;
-    return DecoderTaskRunnerType::kDefault;
-  }
-
-  if (task_runner_type == "OneThreadPoolSequenceSharedByAllDecoders") {
-    return DecoderTaskRunnerType::kOneThreadPoolSequenceSharedByAllDecoders;
-  }
-  if (task_runner_type == "OneThreadPoolThreadSharedByAllDecoders") {
-    return DecoderTaskRunnerType::kOneThreadPoolThreadSharedByAllDecoders;
-  }
-  if (task_runner_type == "OneDedicatedThreadSharedByAllDecoders") {
-    return DecoderTaskRunnerType::kOneDedicatedThreadSharedByAllDecoders;
-  }
-  if (task_runner_type == "OneThreadPoolThreadPerDecoder") {
-    return DecoderTaskRunnerType::kOneThreadPoolThreadPerDecoder;
-  }
-  return DecoderTaskRunnerType::kDefault;
-}
-
-scoped_refptr<base::SequencedTaskRunner> GetDecoderTaskRunner() {
-  const static DecoderTaskRunnerType type = GetDecoderTaskRunnerType();
+scoped_refptr<base::SequencedTaskRunner> GetDecoderTaskRunner(
+    bool in_video_decoder_process) {
   // Note that the decoder thread is created with base::MayBlock(). This is
   // because the underlying |decoder_| may need to allocate a dummy buffer
   // to discover the most native modifier accepted by the hardware video
   // decoder; this in turn may need to open the render node, and this is the
   // operation that may block.
-  switch (type) {
-    case DecoderTaskRunnerType::kOneThreadPoolSequenceSharedByAllDecoders:
-      return base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskPriority::USER_VISIBLE, base::MayBlock()});
-    case DecoderTaskRunnerType::kOneThreadPoolThreadSharedByAllDecoders:
-      return base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::TaskPriority::USER_VISIBLE, base::MayBlock()});
-    case DecoderTaskRunnerType::kOneDedicatedThreadSharedByAllDecoders: {
-      class DecoderThread {
-       public:
-        DecoderThread() : thread_("VDecThread") {
-          if (!thread_.Start()) {
-            LOG(FATAL) << "Failed to start the decoder thread";
-          }
-        }
-        scoped_refptr<base::SequencedTaskRunner> task_runner() const {
-          return thread_.task_runner();
-        }
-
-       private:
-        base::Thread thread_;
-      };
-
-      static base::NoDestructor<DecoderThread> decoder_thread;
-      return decoder_thread->task_runner();
-    }
-    case DecoderTaskRunnerType::kOneThreadPoolThreadPerDecoder:
-      return base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::WithBaseSyncPrimitives(), base::TaskPriority::USER_VISIBLE,
-           base::MayBlock()},
-          base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+  if (in_video_decoder_process) {
+    return base::ThreadPool::CreateSequencedTaskRunner(
+        {base::TaskPriority::USER_VISIBLE, base::MayBlock()});
   }
+  return base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::WithBaseSyncPrimitives(), base::TaskPriority::USER_VISIBLE,
+       base::MayBlock()},
+      base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 }
 }  //  namespace
 
@@ -207,7 +143,8 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
     std::unique_ptr<MailboxVideoFrameConverter> frame_converter,
     std::vector<Fourcc> renderable_fourccs,
     std::unique_ptr<MediaLog> media_log,
-    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder) {
+    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
+    bool in_video_decoder_process) {
   DCHECK(client_task_runner);
   DCHECK(frame_pool);
   DCHECK(!renderable_fourccs.empty());
@@ -240,7 +177,7 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
       workarounds, std::move(client_task_runner), std::move(frame_pool),
       std::move(frame_converter), std::move(renderable_fourccs),
       std::move(media_log), std::move(create_decoder_function_cb),
-      uses_oop_video_decoder);
+      uses_oop_video_decoder, in_video_decoder_process);
   return std::make_unique<AsyncDestroyVideoDecoder<VideoDecoderPipeline>>(
       base::WrapUnique(pipeline));
 }
@@ -271,7 +208,8 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForTesting(
       /*frame_converter=*/nullptr,
       VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
       std::move(media_log), std::move(create_decoder_function_cb),
-      /*uses_oop_video_decoder=*/false);
+      /*uses_oop_video_decoder=*/false,
+      /*in_video_decoder_process=*/true);
 
   if (ignore_resolution_changes_to_smaller_for_testing)
     pipeline->ignore_resolution_changes_to_smaller_for_testing_ = true;
@@ -383,11 +321,14 @@ VideoDecoderPipeline::VideoDecoderPipeline(
     std::vector<Fourcc> renderable_fourccs,
     std::unique_ptr<MediaLog> media_log,
     CreateDecoderFunctionCB create_decoder_function_cb,
-    bool uses_oop_video_decoder)
+    bool uses_oop_video_decoder,
+    bool in_video_decoder_process)
     : gpu_workarounds_(gpu_workarounds),
       client_task_runner_(std::move(client_task_runner)),
-      decoder_task_runner_(uses_oop_video_decoder ? client_task_runner_
-                                                  : GetDecoderTaskRunner()),
+      decoder_task_runner_(
+          uses_oop_video_decoder
+              ? client_task_runner_
+              : GetDecoderTaskRunner(in_video_decoder_process)),
       main_frame_pool_(std::move(frame_pool)),
       frame_converter_(std::move(frame_converter)),
       renderable_fourccs_(std::move(renderable_fourccs)),

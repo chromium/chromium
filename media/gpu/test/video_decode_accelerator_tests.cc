@@ -221,7 +221,8 @@ class VideoDecoderTest : public ::testing::Test {
         /*frame_converter=*/nullptr,
         VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
         std::make_unique<NullMediaLog>(),
-        /*oop_video_decoder=*/{});
+        /*oop_video_decoder=*/{},
+        /*in_video_decoder_process=*/true);
 
     bool init_result = false;
     VideoDecoder::InitCB init_cb = base::BindLambdaForTesting(

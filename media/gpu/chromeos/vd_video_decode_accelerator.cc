@@ -261,7 +261,9 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
         std::move(frame_pool), /*frame_converter=*/nullptr,
         VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
         std::make_unique<NullMediaLog>(),
-        /*oop_video_decoder=*/{});
+        /*oop_video_decoder=*/{},
+        // TODO(b/195769334): Set this properly once OOP-VD is enabled for ARC.
+        /*in_video_decoder_process=*/false);
     if (!vd_)
       return false;
 

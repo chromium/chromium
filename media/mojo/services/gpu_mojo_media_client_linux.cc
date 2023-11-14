@@ -139,7 +139,8 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
           *traits.gpu_workarounds, traits.task_runner, std::move(frame_pool),
           std::move(frame_converter),
           GetPreferredRenderableFourccs(traits.gpu_preferences),
-          traits.media_log->Clone(), std::move(traits.oop_video_decoder));
+          traits.media_log->Clone(), std::move(traits.oop_video_decoder),
+          /*in_video_decoder_process=*/false);
     }
     case VideoDecoderType::kVaapi:
     case VideoDecoderType::kV4L2: {
@@ -150,7 +151,8 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
           *traits.gpu_workarounds, traits.task_runner, std::move(frame_pool),
           std::move(frame_converter),
           GetPreferredRenderableFourccs(traits.gpu_preferences),
-          traits.media_log->Clone(), /*oop_video_decoder=*/{});
+          traits.media_log->Clone(), /*oop_video_decoder=*/{},
+          /*in_video_decoder_process=*/false);
     }
     default:
       return nullptr;

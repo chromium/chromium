@@ -111,7 +111,9 @@ void GpuArcVideoDecoder::Initialize(
       /*frame_converter=*/nullptr,
       media::VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
       std::make_unique<media::NullMediaLog>(),
-      /*oop_video_decoder=*/{});
+      /*oop_video_decoder=*/{},
+      // TODO(b/195769334): Set this to true once OOP-VD is enabled for ARC.
+      /*in_video_decoder_process=*/false);
 
   if (!decoder_) {
     VLOGF(1) << "Failed to create video decoder";
