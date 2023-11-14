@@ -34,6 +34,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -365,6 +366,8 @@ SearchResultInlineIconView* SetupChildInlineIconView(
 // An ImageView that optionally masks the image into a circle or rectangle with
 // rounded corners.
 class MaskedImageView : public views::ImageView {
+  METADATA_HEADER(MaskedImageView, views::ImageView)
+
  public:
   MaskedImageView() = default;
 
@@ -411,6 +414,9 @@ class MaskedImageView : public views::ImageView {
  private:
   SearchResult::IconShape shape_;
 };
+
+BEGIN_METADATA(MaskedImageView)
+END_METADATA
 
 SearchResultView::LabelAndTag::LabelAndTag(views::Label* label,
                                            SearchResult::Tags tags)

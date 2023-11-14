@@ -24,6 +24,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class MenuItemView;
@@ -48,6 +49,8 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
                                  public SearchBoxModelObserver,
                                  public LauncherSearchIphView::Delegate,
                                  public AssistantViewDelegateObserver {
+  METADATA_HEADER(SearchBoxView, SearchBoxViewBase)
+
  public:
   enum class PlaceholderTextType {
     kShortcuts = 0,
@@ -106,7 +109,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnPaintBorder(gfx::Canvas* canvas) override;
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void AddedToWidget() override;

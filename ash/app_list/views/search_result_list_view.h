@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -34,6 +35,8 @@ class SearchResultPageDialogController;
 // SearchResultListView displays SearchResultList with a list of
 // SearchResultView.
 class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
+  METADATA_HEADER(SearchResultListView, SearchResultContainerView)
+
  public:
   enum class SearchResultListType {
     // kAnswerCard list view contains a single result that has an extremely high
@@ -93,7 +96,6 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
 
   // Overridden from views::View:
   gfx::Size CalculatePreferredSize() const override;
-  const char* GetClassName() const override;
 
   // Overridden from SearchResultContainerView:
   SearchResultView* GetResultViewAt(size_t index) override;

@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/view.h"
 
@@ -21,6 +22,8 @@ namespace ash {
 
 // Displays a rounded rect bubble containing styled text xor a vector icon.
 class ASH_EXPORT SearchResultInlineIconView : public views::View {
+  METADATA_HEADER(SearchResultInlineIconView, views::View)
+
  public:
   explicit SearchResultInlineIconView(bool use_modified_styling);
   SearchResultInlineIconView(const SearchResultInlineIconView&) = delete;

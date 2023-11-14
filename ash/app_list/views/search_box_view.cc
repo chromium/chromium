@@ -54,6 +54,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -264,6 +266,8 @@ ui::ColorId GetFocusColorId(bool use_jelly_colors) {
 }  // namespace
 
 class CheckBoxMenuItemView : public views::MenuItemView {
+  METADATA_HEADER(CheckBoxMenuItemView, views::MenuItemView)
+
  public:
   CheckBoxMenuItemView(views::MenuItemView* parent,
                        int command,
@@ -292,6 +296,9 @@ class CheckBoxMenuItemView : public views::MenuItemView {
  private:
   raw_ptr<AppListViewDelegate> view_delegate_ = nullptr;
 };
+
+BEGIN_METADATA(CheckBoxMenuItemView)
+END_METADATA
 
 class FilterMenuAdapter : public views::MenuModelAdapter {
  public:
@@ -750,10 +757,6 @@ void SearchBoxView::OnPaintBorder(gfx::Canvas* canvas) {
             ? views::HighlightBorder::Type::kHighlightBorderNoShadow
             : views::HighlightBorder::Type::kHighlightBorder1);
   }
-}
-
-const char* SearchBoxView::GetClassName() const {
-  return "SearchBoxView";
 }
 
 void SearchBoxView::OnThemeChanged() {
@@ -1730,5 +1733,8 @@ std::vector<AppListSearchControlCategory>
 SearchBoxView::GetToggleableCategories() {
   return view_delegate_->GetToggleableCategories();
 }
+
+BEGIN_METADATA(SearchBoxView)
+END_METADATA
 
 }  // namespace ash

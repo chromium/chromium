@@ -12,6 +12,7 @@
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_provider.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -131,5 +132,8 @@ void SearchResultInlineIconView::OnPaint(gfx::Canvas* canvas) {
   bounds.Inset(gfx::Insets(kBorderThickness));
   canvas->DrawRoundRect(bounds, kFocusRingCornerRadius, paint_flags);
 }
+
+BEGIN_METADATA(SearchResultInlineIconView)
+END_METADATA
 
 }  // namespace ash

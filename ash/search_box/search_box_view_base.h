@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
@@ -43,6 +44,8 @@ class SearchIconImageView;
 // provides common functions for the search box view across Chrome OS.
 class SearchBoxViewBase : public views::View,
                           public views::TextfieldController {
+  METADATA_HEADER(SearchBoxViewBase, views::View)
+
  public:
   SearchBoxViewBase();
 
@@ -123,7 +126,6 @@ class SearchBoxViewBase : public views::View,
 
   // Overridden from views::View:
   gfx::Size CalculatePreferredSize() const override;
-  const char* GetClassName() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnThemeChanged() override;
