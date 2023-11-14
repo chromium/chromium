@@ -39,37 +39,33 @@ public abstract class DisplayUtil {
 
     /**
      * Retrieves the UI scaling factor on automotive devices.
+     * TODO: Remove this method and replace usages with getUiDensityForAutomotive.
      */
+    @Deprecated
     public static float getUiScalingFactorForAutomotive() {
         return sUiScalingFactorForAutomotive;
     }
 
-    static int getUiDensityForAutomotive(int baseDensity) {
+    public static int getUiDensityForAutomotive(int baseDensity) {
         int rawScaledDensity = (int) (baseDensity * sUiScalingFactorForAutomotive);
         // Round up to the nearest 20 to align with DisplayMetrics defined densities.
         return ((int) Math.ceil(rawScaledDensity / 20.0f)) * 20;
     }
 
-    /**
-     * @return The smaller of getDisplayWidth(), getDisplayHeight().
-     */
+    /** Returns the smaller of getDisplayWidth(), getDisplayHeight(). */
     public static int getSmallestWidth(DisplayAndroid display) {
         int width = display.getDisplayWidth();
         int height = display.getDisplayHeight();
         return width < height ? width : height;
     }
 
-    /**
-     * @return The given value converted from px to dp.
-     */
+    /** Returns the given value converted from px to dp. */
     public static int pxToDp(DisplayAndroid display, int value) {
         // Adding .5 is what Android does when doing this conversion.
         return (int) (value / display.getDipScale() + 0.5f);
     }
 
-    /**
-     * @return The given value converted from dp to px.
-     */
+    /** Returns the given value converted from dp to px. */
     public static int dpToPx(DisplayAndroid display, int value) {
         // Adding .5 is what Android does when doing this conversion.
         return (int) (value * display.getDipScale() + 0.5f);

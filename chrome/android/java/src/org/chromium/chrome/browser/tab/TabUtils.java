@@ -26,6 +26,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.automotive.AutomotiveUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
@@ -267,14 +268,18 @@ public class TabUtils {
         if (context.getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE) {
             assert browserControlsStateProvider != null;
-            int toolbarHeightDp = (browserControlsStateProvider == null)
-                    ? 0
-                    : Math.round((float) browserControlsStateProvider.getTopControlsHeight()
-                            / context.getResources().getDisplayMetrics().density);
+            int browserControlsHeightDp =
+                    (browserControlsStateProvider == null)
+                            ? 0
+                            : Math.round(
+                                    (float) browserControlsStateProvider.getTopControlsHeight()
+                                            / context.getResources().getDisplayMetrics().density);
+            int automotiveToolbarHeightDp = AutomotiveUtils.getAutomotiveToolbarHeightDp(context);
             // This should match the aspect ratio of a Tab's content area.
             return (context.getResources().getConfiguration().screenWidthDp * 1.f)
                     / (context.getResources().getConfiguration().screenHeightDp * 1.f
-                            - toolbarHeightDp);
+                            - browserControlsHeightDp
+                            - automotiveToolbarHeightDp);
         }
         // This is an experimentally determined value.
         return PORTRAIT_THUMBNAIL_ASPECT_RATIO;
@@ -317,11 +322,10 @@ public class TabUtils {
      */
     public static void setBitmapAndUpdateImageMatrix(
             ImageView view, Bitmap bitmap, Size destinationSize) {
-        view.setImageBitmap(bitmap);
         if (BuildInfo.getInstance().isAutomotive) {
-            bitmap.setDensity(
-                    (int) (bitmap.getDensity() * DisplayUtil.getUiScalingFactorForAutomotive()));
+            bitmap.setDensity(DisplayUtil.getUiDensityForAutomotive(bitmap.getDensity()));
         }
+        view.setImageBitmap(bitmap);
         int newWidth = destinationSize == null ? 0 : destinationSize.getWidth();
         int newHeight = destinationSize == null ? 0 : destinationSize.getHeight();
         if (newWidth <= 0 || newHeight <= 0

@@ -15,6 +15,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 /** Tests logic in the {@link DisplayUtil} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DisplayUtilTest {
+
     @Test
     public void testGetUiDensityForAutomotive() {
         assertEquals(

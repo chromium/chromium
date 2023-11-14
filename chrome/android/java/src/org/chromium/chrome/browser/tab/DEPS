@@ -19,6 +19,7 @@ include_rules = [
   "+chrome/browser/bluetooth/android/java/src/org/chromium/chrome/browser/bluetooth/BluetoothNotificationManager.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/app/usb/UsbNotificationService.java",
   "+chrome/browser/usb/android/java/src/org/chromium/chrome/browser/usb/UsbNotificationManager.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/automotive/AutomotiveUtils.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/media/MediaCaptureNotificationServiceImpl.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/metrics/UkmRecorder.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java",
