@@ -138,7 +138,10 @@ public class AutofillProviderTest {
 
         FormData formData =
                 new FormData(
-                        null, null, Arrays.asList(field1Builder.build(), field2Builder.build()));
+                        /* sessionId= */ 123,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Arrays.asList(field1Builder.build(), field2Builder.build()));
         mAutofillProvider.transformFormFieldToContainViewCoordinates(formData);
         RectF result = formData.mFields.get(0).getBoundsInContainerViewCoordinates();
         assertEquals(10 * EXPECTED_DIP_SCALE + SCROLL_X, result.left, 0);
@@ -178,8 +181,9 @@ public class AutofillProviderTest {
         field3Builder.mIsAutofilled = false;
         FormData formData =
                 new FormData(
-                        null,
-                        null,
+                        /* sessionId= */ 123,
+                        /* name= */ null,
+                        /* host= */ null,
                         Arrays.asList(
                                 field1Builder.build(),
                                 field2Builder.build(),

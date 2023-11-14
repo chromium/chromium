@@ -12,7 +12,6 @@ import android.view.ViewStructure;
 import android.view.autofill.AutofillValue;
 
 import org.chromium.base.Log;
-import org.chromium.base.ThreadUtils;
 import org.chromium.components.autofill_public.ViewType;
 
 import java.util.ArrayList;
@@ -40,13 +39,9 @@ public class AutofillRequest {
     }
 
     private static final String TAG = "AutofillRequest";
-    // The id cannot be 0 in Android.
-    private static final int INIT_ID = 1;
     // Every node must have an Autofill id. We (arbitrarily, but consistently) choose the
     // maximum value for the form node.
     private static final short FORM_NODE_ID = Short.MAX_VALUE;
-    private static int sSessionId = INIT_ID;
-    public final int sessionId;
     private FormData mFormData;
     private FocusField mFocusField;
     private AutofillHintsService mAutofillHintsService;
@@ -57,7 +52,6 @@ public class AutofillRequest {
      * @param hasServerPrediction whether the server type of formData is valid.
      */
     public AutofillRequest(FormData formData, FocusField focus, boolean hasServerPrediction) {
-        sessionId = getNextClientId();
         mFormData = formData;
         mFocusField = focus;
         // Don't need to create binder object if server prediction is already available.
@@ -77,7 +71,7 @@ public class AutofillRequest {
             ViewStructure rootStructure = structure;
             structure = rootStructure.newChild(rootStructure.addChildCount(1));
             structure.setAutofillId(
-                    rootStructure.getAutofillId(), toVirtualId(sessionId, FORM_NODE_ID));
+                    rootStructure.getAutofillId(), toVirtualId(mFormData.mSessionId, FORM_NODE_ID));
         }
         structure.setWebDomain(mFormData.mHost);
         structure.setHtmlInfo(
@@ -86,7 +80,7 @@ public class AutofillRequest {
         short fieldIndex = 0;
         for (FormFieldData field : mFormData.mFields) {
             ViewStructure child = structure.newChild(index++);
-            int virtualId = toVirtualId(sessionId, fieldIndex++);
+            int virtualId = toVirtualId(mFormData.mSessionId, fieldIndex++);
             child.setAutofillId(structure.getAutofillId(), virtualId);
             field.setAutofillId(child.getAutofillId());
             if (field.mAutocompleteAttr != null && !field.mAutocompleteAttr.isEmpty()) {
@@ -164,7 +158,7 @@ public class AutofillRequest {
     public boolean autofill(final SparseArray<AutofillValue> values) {
         for (int i = 0; i < values.size(); ++i) {
             int id = values.keyAt(i);
-            if (toSessionId(id) != sessionId) return false;
+            if (toSessionId(id) != mFormData.mSessionId) return false;
             AutofillValue value = values.get(id);
             if (value == null) continue;
             short index = toIndex(id);
@@ -228,7 +222,7 @@ public class AutofillRequest {
     }
 
     public int getVirtualId(short index) {
-        return toVirtualId(sessionId, index);
+        return toVirtualId(mFormData.mSessionId, index);
     }
 
     public FormData getForm() {
@@ -248,12 +242,6 @@ public class AutofillRequest {
         return -1;
     }
 
-    private static int getNextClientId() {
-        ThreadUtils.assertOnUiThread();
-        if (sSessionId == 0xffff) sSessionId = INIT_ID;
-        return sSessionId++;
-    }
-
     private static int toSessionId(int virtualId) {
         return (virtualId & 0xffff0000) >> 16;
     }
@@ -262,8 +250,8 @@ public class AutofillRequest {
         return (short) (virtualId & 0xffff);
     }
 
-    private static int toVirtualId(int clientId, short index) {
-        return (clientId << 16) | index;
+    private static int toVirtualId(int sessionId, short index) {
+        return (sessionId << 16) | index;
     }
 
     public AutofillHintsService getAutofillHintsService() {

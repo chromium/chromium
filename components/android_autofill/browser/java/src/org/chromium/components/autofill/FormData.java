@@ -4,6 +4,8 @@
 
 package org.chromium.components.autofill;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
@@ -15,16 +17,20 @@ import java.util.List;
  */
 @JNINamespace("autofill")
 public class FormData {
+    public final int mSessionId;
     public final String mName;
     public final String mHost;
     public final List<FormFieldData> mFields;
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
-    private static FormData createFormData(String name, String origin, FormFieldData[] fields) {
-        return new FormData(name, origin, Arrays.asList(fields));
+    static FormData createFormData(
+            int sessionId, String name, String origin, FormFieldData[] fields) {
+        return new FormData(sessionId, name, origin, Arrays.asList(fields));
     }
 
-    public FormData(String name, String host, List<FormFieldData> fields) {
+    public FormData(int sessionId, String name, String host, List<FormFieldData> fields) {
+        mSessionId = sessionId;
         mName = name;
         mHost = host;
         mFields = fields;

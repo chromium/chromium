@@ -52,9 +52,8 @@ FormDataAndroidBridgeImpl::GetOrCreateJavaPeer(
     android_objects.push_back(field->GetJavaPeer());
   }
 
-  // TODO(crbug.com/1501800): Use the `SessionId` on the Java side.
   ScopedJavaLocalRef<jobject> obj = Java_FormData_createFormData(
-      env, ConvertUTF16ToJavaString(env, form.name),
+      env, session_id.value(), ConvertUTF16ToJavaString(env, form.name),
       /*origin=*/
       ConvertUTF8ToJavaString(env, form.url.DeprecatedGetOriginAsURL().spec()),
       ToJavaArrayOfObjects(env, GetClass(env, kFormFieldDataAndroidClassname),
