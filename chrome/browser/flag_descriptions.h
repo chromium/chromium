@@ -2263,6 +2263,9 @@ extern const char kBackGestureRefactorActivityAndroidDescription[];
 extern const char kBackGestureRefactorAndroidName[];
 extern const char kBackGestureRefactorAndroidDescription[];
 
+extern const char kBoardingPassDetectorName[];
+extern const char kBoardingPassDetectorDescription[];
+
 extern const char kCCTBrandTransparencyName[];
 extern const char kCCTBrandTransparencyDescription[];
 

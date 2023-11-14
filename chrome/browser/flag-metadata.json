@@ -870,6 +870,11 @@
     "expiry_milestone": 111
   },
   {
+    "name": "boarding-pass-detector",
+    "owners": ["hanfeng@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "bookmarks-improved-save-flow",
     "owners": ["wylieb@chromium.org", "fgorski@chromium.org", "mdjones@chromium.org"],
     "expiry_milestone": 115

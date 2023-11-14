@@ -11325,6 +11325,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"boarding-pass-detector", flag_descriptions::kBoardingPassDetectorName,
+     flag_descriptions::kBoardingPassDetectorDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kBoardingPassDetector)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

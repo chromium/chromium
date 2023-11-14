@@ -3902,6 +3902,9 @@ const char kBackGestureRefactorAndroidName[] = "Back Gesture Refactor";
 const char kBackGestureRefactorAndroidDescription[] =
     "Enable Back Gesture Refactor.";
 
+const char kBoardingPassDetectorName[] = "Boarding Pass Detector";
+const char kBoardingPassDetectorDescription[] = "Enable Boarding Pass Detector";
+
 const char kCCTBrandTransparencyName[] =
     "Chrome Custom Tabs Brand Transparency";
 const char kCCTBrandTransparencyDescription[] =

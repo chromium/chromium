@@ -37312,6 +37312,7 @@ from previous Chrome versions.
   <int value="-1371239786" label="EnablePasswordsAccountStorage:enabled"/>
   <int value="-1370883795" label="TerminalTmuxIntegration:disabled"/>
   <int value="-1370532920" label="AppServiceAsh:enabled"/>
+  <int value="-1369939420" label="BoardingPassDetector:disabled"/>
   <int value="-1369613781" label="FileHandlingIcons:disabled"/>
   <int value="-1369413945" label="PwaUpdateDialogForIcon:enabled"/>
   <int value="-1369089674" label="ArcTouchModeMouse:enabled"/>
@@ -43415,6 +43416,7 @@ from previous Chrome versions.
   <int value="1577651674" label="SafetyHub:enabled"/>
   <int value="1579084737" label="TemporaryUnexpireFlagsM80:disabled"/>
   <int value="1579461102" label="MemoryCoordinator:disabled"/>
+  <int value="1579627455" label="BoardingPassDetector:enabled"/>
   <int value="1580340993" label="EnableTabMuting:enabled"/>
   <int value="1580365114" label="ThirdPartyProfileManagement:disabled"/>
   <int value="1581002467" label="enable-explicit-dma-fences"/>
