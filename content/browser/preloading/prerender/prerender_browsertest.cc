@@ -859,6 +859,22 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
 class PrerenderTargetAgnosticBrowserTest
     : public PrerenderBrowserTest,
       public testing::WithParamInterface<std::string> {
+ public:
+  // Activates a prerendered page for `url` hosted on `prerender_web_contents`.
+  void ActivatePrerenderedPage(WebContents& prerender_web_contents,
+                               const GURL& url) {
+    test::PrerenderHostObserver prerender_observer(prerender_web_contents, url);
+    if (GetTargetHint() == "_blank") {
+      TestNavigationObserver observer(&prerender_web_contents);
+      std::string script = R"(window.open($1, "_blank", "noopener");)";
+      EXPECT_TRUE(ExecJs(web_contents(), JsReplace(script, url.spec())));
+      observer.WaitForNavigationFinished();
+    } else {
+      test::PrerenderTestHelper::NavigatePrimaryPage(*web_contents(), url);
+    }
+    ASSERT_TRUE(prerender_observer.was_activated());
+  }
+
  protected:
   std::string GetTargetHint() { return GetParam(); }
 };
@@ -4826,7 +4842,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, FeatureRestriction_WindowOpen) {
   EXPECT_EQ(GetHostForUrl(kPrerenderingUrl), host_id);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
+IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
+                       RenderFrameHostLifecycleState) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
 
@@ -4836,10 +4853,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
             LifecycleStateImpl::kActive);
 
   // Start a prerender.
-  int host_id = AddPrerender(kPrerenderingUrl);
+  int host_id = prerender_helper()->AddPrerender(
+      kPrerenderingUrl, /*eagerness=*/absl::nullopt, GetTargetHint());
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
 
   // Open an iframe in the prerendered page.
-  RenderFrameHostImpl* rfh_a = GetPrerenderedMainFrameHost(host_id);
+  auto* rfh_a = static_cast<RenderFrameHostImpl*>(
+      test::PrerenderTestHelper::GetPrerenderedMainFrameHost(
+          *prerender_web_contents, host_id));
   EXPECT_TRUE(AddTestUtilJS(rfh_a));
   EXPECT_EQ("LOADED",
             EvalJs(rfh_a, JsReplace("add_iframe($1)",
@@ -4853,7 +4874,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
   EXPECT_FALSE(rfh_b->IsInPrimaryMainFrame());
 
   // Activate the prerendered page.
-  NavigatePrimaryPage(kPrerenderingUrl);
+  ActivatePrerenderedPage(*prerender_web_contents, kPrerenderingUrl);
 
   // Both rfh_a and rfh_b lifecycle state's should be kActive after activation.
   EXPECT_EQ(LifecycleStateImpl::kActive, rfh_a->lifecycle_state());
