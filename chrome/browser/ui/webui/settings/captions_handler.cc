@@ -35,13 +35,21 @@ namespace {
 constexpr char kCodeKey[] = "code";
 constexpr char kDisplayNameKey[] = "displayName";
 constexpr char kNativeDisplayNameKey[] = "nativeDisplayName";
+const constexpr char* const kDefaultEnabledLanguages[] = {"fr-FR", "it-IT",
+                                                          "de-DE"};
 
-// Gets a list of locales enabled by the Finch flag.
+// Gets a list of available locales for Live Caption.
 std::vector<std::string> GetEnabledLanguages() {
-  return base::SplitString(
-      base::GetFieldTrialParamValueByFeature(media::kLiveCaptionMultiLanguage,
-                                             "available_languages"),
+  std::vector<std::string> enabled_languages = base::SplitString(
+      base::GetFieldTrialParamValueByFeature(
+          media::kLiveCaptionExperimentalLanguages, "available_languages"),
       ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+
+  for (const char* const enabled_language : kDefaultEnabledLanguages) {
+    enabled_languages.push_back(enabled_language);
+  }
+
+  return enabled_languages;
 }
 
 base::Value::List SortByDisplayName(

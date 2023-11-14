@@ -964,6 +964,16 @@ BASE_FEATURE(kLiveCaptionUseWaitK,
 // Live Caption can be used in multiple languages, as opposed to just English.
 BASE_FEATURE(kLiveCaptionMultiLanguage,
              "LiveCaptionMultiLanguage",
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+// Enable experimental Live Caption languages.
+BASE_FEATURE(kLiveCaptionExperimentalLanguages,
+             "LiveCaptionExperimentalLanguages",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable or disable Live Caption from the right click menu.
