@@ -35,6 +35,7 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   void error(ScriptState*, ScriptValue);
 
   // API attributes.
+  bool active() { return active_; }
   AbortSignal* signal() { return signal_.Get(); }
 
   void Trace(Visitor*) const override;
@@ -48,6 +49,12 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   Member<V8ObserverCallback> next_;
   Member<V8ObserverCompleteCallback> complete_;
   Member<V8ObserverCallback> error_;
+
+  // This starts out true, and becomes false only once `Subscriber::{complete(),
+  // error()}` are called (just before the corresponding `Observer` callbacks
+  // are invoked) or once the subscriber unsubscribes by aborting the
+  // `AbortSignal` that it passed into `Observable::subscribe()`.
+  bool active_ = true;
 
   // This is never null. It is exposed via the `signal` WebIDL attribute, and
   // represents whether or not the current subscription has been aborted or not.

@@ -9,6 +9,8 @@ interface Subscriber {
   void next(any result);
   void complete();
   [CallWith=ScriptState] void error(any error);
+
+  readonly attribute boolean active;
   readonly attribute AbortSignal signal;
 };
 

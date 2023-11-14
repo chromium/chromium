@@ -39,7 +39,7 @@ void Subscriber::next(ScriptValue value) {
 }
 
 void Subscriber::complete() {
-  Member<V8ObserverCompleteCallback> complete = complete_;
+  V8ObserverCompleteCallback* complete = complete_;
   CloseSubscription();
 
   if (complete) {
@@ -48,7 +48,7 @@ void Subscriber::complete() {
 }
 
 void Subscriber::error(ScriptState* script_state, ScriptValue error_value) {
-  Member<V8ObserverCallback> error = error_;
+  V8ObserverCallback* error = error_;
   CloseSubscription();
 
   if (error) {
@@ -60,7 +60,7 @@ void Subscriber::error(ScriptState* script_state, ScriptValue error_value) {
     //      it is optional)
     //   2. The subscription is already closed (in which case
     //      `CloseSubscription()` manually clears `error_`)
-    // In both of these cases, if the observer is still producing errors, we
+    // In both of these cases, if the observable is still producing errors, we
     // must surface them to the global via "report the exception":
     // https://html.spec.whatwg.org/C#report-the-exception.
     //
@@ -78,6 +78,8 @@ void Subscriber::error(ScriptState* script_state, ScriptValue error_value) {
 }
 
 void Subscriber::CloseSubscription() {
+  active_ = false;
+
   // Reset all handlers, making it impossible to signal any more values to the
   // subscriber.
   next_ = nullptr;

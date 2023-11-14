@@ -101,27 +101,38 @@ test(() => {
   const error = new Error("error");
   const results = [];
   let errorReported = null;
+  let innerSubscriber = null;
+  let subscriptionActivityInFinallyAfterThrow;
+  let subscriptionActivityInErrorHandlerAfterThrow;
 
   self.addEventListener("error", e => errorReported = e, {once: true});
 
   const source = new Observable((subscriber) => {
+    innerSubscriber = subscriber;
     subscriber.next(1);
-    throw error;
-    // TODO(https://github.com/WICG/observable/issues/76): If we add the
-    // `subscriber.closed` attribute, consider a try-finally block to assert
-    // that `subscriber.closed` is true after throwing. Also TODO: ensure that
-    // that would even be the right behavior.
+    try {
+      throw error;
+    } finally {
+      subscriptionActivityInFinallyAfterThrow = subscriber.active;
+    }
   });
 
   source.subscribe({
     next: (x) => results.push(x),
-    error: (e) => results.push(e),
+    error: (e) => {
+      subscriptionActivityInErrorHandlerAfterThrow = innerSubscriber.active;
+      results.push(e);
+    },
     complete: () => assert_unreached("complete should not be called"),
   });
 
   assert_equals(errorReported, null, "The global error handler should not be " +
       "invoked when the subscribe callback throws an error and the " +
       "subscriber has given an error handler");
+  assert_true(subscriptionActivityInFinallyAfterThrow, "Subscriber is " +
+      "considered active in finally block before error handler is invoked");
+  assert_false(subscriptionActivityInErrorHandlerAfterThrow, "Subscriber is " +
+      "considered inactive in error handler block after thrown error");
   assert_array_equals(
     results,
     [1, error],
@@ -129,10 +140,53 @@ test(() => {
   );
 }, "Observable should error if initializer throws");
 
-// TODO(https://github.com/WICG/observable/issues/76): If we decide the
-// `subscriber.closed` attribute is needed, re-visit these two tests that were
-// originally included:
-// https://github.com/web-platform-tests/wpt/blob/0246526ca46ef4e5eae8b8e4a87dd905c40f5326/dom/observable/tentative/observable-ctor.any.js#L123-L137.
+test(t => {
+  let innerSubscriber = null;
+  let activeAfterComplete = false;
+  let activeDuringComplete = false;
+
+  const source = new Observable((subscriber) => {
+    innerSubscriber = subscriber;
+
+    subscriber.complete();
+    activeAfterComplete = subscriber.active;
+  });
+
+  source.subscribe({complete: () => activeDuringComplete = innerSubscriber.active});
+  assert_false(activeDuringComplete, "Subscription is not active during complete");
+  assert_false(activeAfterComplete, "Subscription is not active after complete");
+}, "Subscription is inactive after complete()");
+
+test(t => {
+  let innerSubscriber = null;
+  let activeAfterError = false;
+  let activeDuringError = false;
+
+  const error = new Error("error");
+  const source = new Observable((subscriber) => {
+    innerSubscriber = subscriber;
+
+    subscriber.error(error);
+    activeAfterError = subscriber.active;
+  });
+
+  source.subscribe({error: () => activeDuringError = innerSubscriber.active});
+  assert_false(activeDuringError, "Subscription is not active during error");
+  assert_false(activeAfterError, "Subscription is not active after error");
+}, "Subscription is inactive after error()");
+
+test(t => {
+  let initialActivity;
+
+  const source = new Observable((subscriber) => {
+    initialActivity = subscriber.active;
+  });
+
+  const ac = new AbortController();
+  ac.abort();
+  source.subscribe({signal: ac.signal});
+  assert_false(initialActivity);
+}, "Subscription is inactive when aborted signal is passed in");
 
 test(() => {
   let outerSubscriber = null;

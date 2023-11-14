@@ -9496,6 +9496,7 @@ interface SubmitEvent : Event
     method constructor
 interface Subscriber
     attribute @@toStringTag
+    getter active
     getter signal
     method complete
     method constructor
