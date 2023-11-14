@@ -44,10 +44,16 @@ compose::mojom::ComposeStatus ComposeStatusFromOptimizationGuideResult(
     case ModelExecutionError::kUnknown:
     case ModelExecutionError::kRequestThrottled:
     case ModelExecutionError::kGenericFailure:
+    case ModelExecutionError::kRetryableError:
       return compose::mojom::ComposeStatus::kTryAgainLater;
     case ModelExecutionError::kInvalidRequest:
       return compose::mojom::ComposeStatus::kNotSuccessful;
     case ModelExecutionError::kPermissionDenied:
       return compose::mojom::ComposeStatus::kPermissionDenied;
+    case ModelExecutionError::kNonRetryableError:
+    case ModelExecutionError::kUnsupportedLanguage:
+    case ModelExecutionError::kFiltered:
+    case ModelExecutionError::kDisabled:
+      return compose::mojom::ComposeStatus::kNotSuccessful;
   }
 }

@@ -234,9 +234,14 @@ void ModelExecutionManager::OnModelExecuteResponse(
     return;
   }
 
-  if (execute_response->has_error_message()) {
-    scoped_logger.set_message(base::StringPrintf(
-        "Error: %s", execute_response->error_message().c_str()));
+  if (execute_response->has_error_response()) {
+    scoped_logger.set_message("Error: No Response Metadata");
+    std::move(callback).Run(
+        base::unexpected(
+            OptimizationGuideModelExecutionError::FromModelExecutionServerError(
+                execute_response->error_response())),
+        nullptr);
+    return;
   }
 
   if (!execute_response->has_response_metadata()) {

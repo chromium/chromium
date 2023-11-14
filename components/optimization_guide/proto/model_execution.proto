@@ -21,15 +21,32 @@ message ExecuteRequest {
 }
 
 message ExecuteResponse {
+  reserved 3;
+
   optional int64 model_version = 1;
 
   oneof response {
     // The metadata for the response returned for the feature.
     Any response_metadata = 2;
-    string error_message = 3;
+    ErrorResponse error_response = 5;
   }
 
   optional string server_execution_id = 4;
+}
+
+message ErrorResponse {
+  optional ErrorState error_state = 1;
+}
+
+// Possible failure modes of the service
+enum ErrorState {
+  ERROR_STATE_UNSPECIFIED = 0;
+  ERROR_STATE_INTERNAL_SERVER_ERROR_RETRY = 1;
+  ERROR_STATE_INTERNAL_SERVER_ERROR_NO_RETRY = 2;
+  ERROR_STATE_UNSUPPORTED_LANGUAGE = 3;
+  ERROR_STATE_FILTERED = 4;
+  ERROR_STATE_REQUEST_THROTTLED = 5;
+  ERROR_STATE_DISABLED = 6;
 }
 
 enum ModelExecutionFeature {
