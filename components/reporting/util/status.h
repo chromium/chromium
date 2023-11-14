@@ -55,10 +55,15 @@ class [[nodiscard]] Status {
   Status& operator=(Status&&);
   virtual ~Status();
 
-  // Create a status in the canonical error space with the specified
-  // code, and error message.  If "code == 0", error_message is
-  // ignored and a Status object identical to Status::OK is
-  // constructed.
+  // Create a status in the canonical error space with the specified code, and
+  // error message. If "code == 0", error_message is ignored and a Status object
+  // identical to Status::OK is constructed.
+  //
+  // If a string literal is passed in, it will be copied to construct a
+  // `std::string` object. While it is possible to create a constructor tag or
+  // factory function to construct a `Status` object from a string literal
+  // that does not copy, we think that its cost to code maintainability
+  // outweighs the performance benefit it brings.
   Status(error::Code error_code, std::string error_message);
 
   // Pre-defined Status object
