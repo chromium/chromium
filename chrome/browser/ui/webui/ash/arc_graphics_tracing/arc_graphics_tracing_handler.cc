@@ -272,10 +272,6 @@ ArcGraphicsTracingHandler::ArcGraphicsTracingHandler()
 ArcGraphicsTracingHandler::~ArcGraphicsTracingHandler() {
   wm_helper_->RemoveActivationObserver(this);
   DiscardActiveArcWindow();
-
-  if (active_trace_) {
-    StopTracing();
-  }
 }
 
 void ArcGraphicsTracingHandler::RegisterMessages() {
@@ -292,7 +288,7 @@ void ArcGraphicsTracingHandler::RegisterMessages() {
 void ArcGraphicsTracingHandler::OnWindowActivated(ActivationReason reason,
                                                   aura::Window* gained_active,
                                                   aura::Window* lost_active) {
-  // Handle ARC current active window if any.
+  // Handle ARC current active window if any. This stops any ongoing trace.
   DiscardActiveArcWindow();
 
   if (!gained_active)
@@ -305,11 +301,6 @@ void ArcGraphicsTracingHandler::OnWindowActivated(ActivationReason reason,
   arc_active_window_ = gained_active;
   arc_active_window_->AddObserver(this);
   arc_active_window_->AddPreTargetHandler(this);
-
-  // Limit tracing by newly activated window.
-  if (active_trace_) {
-    active_trace_->time_min = SystemTicksNow();
-  }
 
   exo::Surface* const surface = exo::GetShellRootSurface(arc_active_window_);
   CHECK(surface);
