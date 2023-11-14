@@ -24,8 +24,8 @@ namespace {
 NSString* const kOptInIcon = @"parcel_tracking_icon_new";
 // Radius size of the table view.
 CGFloat const kTableViewCornerRadius = 10;
-// Margin for the options view.
-CGFloat const kOptionsViewMargin = 17;
+// Horizontal margin for the view.
+CGFloat const kHorizontalMargin = 24;
 // Spacing before the image.
 CGFloat const kSpacingBeforeImage = 23;
 // Size of the radio buttons.
@@ -69,9 +69,9 @@ CGFloat const kRadioButtonSize = 20;
   // the top view.
   [NSLayoutConstraint activateConstraints:@[
     [optionsView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
-                                              constant:kOptionsViewMargin],
+                                              constant:kHorizontalMargin],
     [optionsView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
-                                               constant:-kOptionsViewMargin],
+                                               constant:-kHorizontalMargin],
   ]];
   [self updateButtonForState:UIControlStateDisabled];
 }
@@ -79,6 +79,8 @@ CGFloat const kRadioButtonSize = 20;
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
   [self updateOptionsViewHeightConstraint];
+  self.view.directionalLayoutMargins =
+      NSDirectionalEdgeInsetsMake(0, kHorizontalMargin, 0, kHorizontalMargin);
 }
 
 #pragma mark - ConfirmationAlertViewController
