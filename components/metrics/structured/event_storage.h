@@ -26,16 +26,22 @@ class EventStorage {
   EventStorage(const EventStorage&) = delete;
   EventStorage& operator=(const EventStorage&) = delete;
 
-  virtual bool IsReady() = 0;
+  virtual bool IsReady();
 
   // A callback to be run when the storage is ready.
-  virtual void OnReady() = 0;
+  virtual void OnReady() {}
 
   // Add a new StructuredEventProto to be stored.
   virtual void AddEvent(StructuredEventProto&& event) = 0;
 
   // Events are moved to UMA proto to be uploaded.
   virtual void MoveEvents(ChromeUserMetricsExtension& uma_proto) = 0;
+
+  // The number of events that have been recorded.
+  virtual int RecordedEventsCount() const = 0;
+
+  // Checks if events have been stored.
+  bool HasEvents() const { return RecordedEventsCount() > 0; }
 
   // Delete all events.
   virtual void Purge() = 0;

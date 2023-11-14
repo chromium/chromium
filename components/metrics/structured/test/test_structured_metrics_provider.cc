@@ -5,8 +5,10 @@
 #include "components/metrics/structured/test/test_structured_metrics_provider.h"
 
 #include "base/files/file_path.h"
+#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "components/metrics/structured/test/test_event_storage.h"
 #include "components/metrics/structured/test/test_key_data_provider.h"
 
 namespace metrics::structured {
@@ -14,16 +16,17 @@ namespace metrics::structured {
 TestStructuredMetricsProvider::TestStructuredMetricsProvider() {
   if (temp_dir_.CreateUniqueTempDir()) {
     system_profile_provider_ = std::make_unique<MetricsProvider>();
-    structured_metrics_recorder_ = std::unique_ptr<StructuredMetricsRecorder>(
-        new StructuredMetricsRecorder(
-            /*write_delay=*/base::Seconds(0), system_profile_provider_.get()));
+    structured_metrics_recorder_ = std::make_unique<StructuredMetricsRecorder>(
+        system_profile_provider_.get());
     structured_metrics_recorder_->InitializeKeyDataProvider(
         std::make_unique<TestKeyDataProvider>(
             temp_dir_.GetPath()
                 .Append(FILE_PATH_LITERAL("structured_metrics"))
                 .Append(FILE_PATH_LITERAL("device_keys"))));
-    structured_metrics_provider_ = std::unique_ptr<StructuredMetricsProvider>(
-        new StructuredMetricsProvider(
+    structured_metrics_recorder_->InitializeEventStorage(
+        std::make_unique<TestEventStorage>());
+    structured_metrics_provider_ =
+        base::WrapUnique(new StructuredMetricsProvider(
             /*write_delay=*/base::Seconds(0),
             structured_metrics_recorder_.get()));
     Recorder::GetInstance()->AddObserver(this);
@@ -53,8 +56,10 @@ void TestStructuredMetricsProvider::DisableRecording() {
   structured_metrics_provider_->OnRecordingDisabled();
 }
 
-const EventsProto& TestStructuredMetricsProvider::ReadEvents() {
-  return *structured_metrics_provider_->recorder().events();
+const EventsProto& TestStructuredMetricsProvider::ReadEvents() const {
+  return *static_cast<const TestEventStorage*>(
+              structured_metrics_provider_->recorder().event_storage())
+              ->events();
 }
 
 absl::optional<const StructuredEventProto*>

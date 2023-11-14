@@ -198,8 +198,7 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   // There shouldn't be any staged or un-staged logs and no in-memory events.
   EXPECT_FALSE(HasUnsentLogs());
   EXPECT_FALSE(HasStagedLog());
-  EXPECT_EQ(sm_service->recorder()->events()->non_uma_events_size(), 0);
-  EXPECT_EQ(sm_service->recorder()->events()->uma_events_size(), 0);
+  EXPECT_EQ(sm_service->recorder()->event_storage()->RecordedEventsCount(), 0);
 }
 
 // TODO(crbug.com/1482059): Re-enable this test
@@ -253,8 +252,7 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   // There shouldn't be any staged or un-staged logs and no in-memory events.
   EXPECT_FALSE(HasUnsentLogs());
   EXPECT_FALSE(HasStagedLog());
-  EXPECT_EQ(sm_service->recorder()->events()->non_uma_events_size(), 0);
-  EXPECT_EQ(sm_service->recorder()->events()->uma_events_size(), 0);
+  EXPECT_EQ(sm_service->recorder()->event_storage()->RecordedEventsCount(), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, SystemProfilePopulated) {

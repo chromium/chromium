@@ -22,6 +22,9 @@ namespace metrics::structured {
 // Events are stored in an in-memory vector until then.
 class AshEventStorage : public EventStorage {
  public:
+  // The delay period for the PersistentProto.
+  constexpr static base::TimeDelta kSaveDelay = base::Seconds(1);
+
   explicit AshEventStorage(base::TimeDelta write_delay);
 
   ~AshEventStorage() override;
@@ -31,6 +34,7 @@ class AshEventStorage : public EventStorage {
   void OnReady() override;
   void AddEvent(StructuredEventProto&& event) override;
   void MoveEvents(ChromeUserMetricsExtension& uma_proto) override;
+  int RecordedEventsCount() const override;
   void Purge() override;
   void OnProfileAdded(const base::FilePath& path) override;
   void AddBatchEvents(

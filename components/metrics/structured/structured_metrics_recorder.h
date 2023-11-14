@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/structured/event.h"
+#include "components/metrics/structured/event_storage.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/metrics/structured/external_metrics.h"
 #endif
@@ -84,26 +85,19 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   void InitializeKeyDataProvider(
       std::unique_ptr<KeyDataProvider> key_data_provider);
 
+  void InitializeEventStorage(std::unique_ptr<EventStorage> event_storage);
+
   // Returns true if ready to provide metrics via ProvideEventMetrics.
   bool CanProvideMetrics();
 
   // KeyDataProvider::Observer:
   void OnKeyReady() override;
 
-  // Returns pointer to in-memory events.
-  EventsProto* events() { return events_->get(); }
+  EventStorage* event_storage() { return event_storage_.get(); }
 
  protected:
   friend class TestStructuredMetricsProvider;
   friend class StructuredMetricsMixin;
-
-  // Should only be used for tests.
-  //
-  // TODO(crbug/1350322): Use this ctor to replace existing ctor.
-  StructuredMetricsRecorder(base::TimeDelta write_delay,
-                            metrics::MetricsProvider* system_profile_provider);
-
-  PersistentProto<EventsProto>& proto() { return *events_.get(); }
 
  private:
   friend class Recorder;
@@ -120,8 +114,6 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
     kUninitialized,
     // Set once OnKeyReady has been called once.
     kKeyDataInitialized,
-    // Set once events storage have been read once.
-    kEventStorageInitialized,
     // Set once OnProfileAdded has been called once.
     kProfileAdded,
     // Set once the profile key data has been initialized.
@@ -137,8 +129,6 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   using InitState =
       base::EnumSet<State, State::kUninitialized, State::kMaxValue>;
 
-  void OnRead(ReadStatus status);
-  void OnWrite(WriteStatus status);
   void OnExternalMetricsCollected(const EventsProto& events);
 
   // Recorder::RecorderImpl:
@@ -147,7 +137,6 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   void OnReportingStateChanged(bool enabled) override;
   void OnSystemProfileInitialized() override;
 
-  void WriteNowForTest();
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetExternalMetricsDirForTest(const base::FilePath& dir);
 #endif
@@ -163,6 +152,24 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
 
   // Records |event| to persistent disk to be eventually sent.
   void RecordEvent(const Event& event);
+
+  // Sets the event and project fields and the identification fields.
+  void InitializeEventProto(StructuredEventProto* proto,
+                            const Event& event,
+                            const ProjectValidator& project_validator,
+                            const EventValidator& event_validator);
+
+  // Adds sequence metadata to the event.
+  void AddSequenceMetadata(StructuredEventProto* proto,
+                           const Event& event,
+                           const ProjectValidator& project_validator,
+                           const KeyData& key_data);
+
+  // Processes the events metric to proto format.
+  void AddMetricsToProto(StructuredEventProto* proto,
+                         const Event& event,
+                         const ProjectValidator& project_validator,
+                         const EventValidator& validator);
 
   // Populates system profile needed for Structured Metrics.
   // Independent metric uploads will rely on a SystemProfileProvider
@@ -215,9 +222,9 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   // The metrics provider does not handle multiprofile: initialization happens
   // only once, for the first-logged-in account aka. primary user.
   //
-  // After a profile is added, three files need to be read from disk:
-  // per-profile keys, per-device keys, and unsent events. |init_count_| tracks
-  // how many of these have been read and, when it reaches 3, we set
+  // After a profile is added, two files need to be read from disk:
+  // per-profile keys and per-device keys. |init_count_| tracks
+  // how many of these have been read and, when it reaches 2, we set
   // |init_state_| to kInitialized.
   InitState init_state_;
 
@@ -240,8 +247,8 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   std::unique_ptr<ExternalMetrics> external_metrics_;
 #endif
 
-  // On-device storage within the user's cryptohome for unsent logs.
-  std::unique_ptr<PersistentProto<EventsProto>> events_;
+  // Storage for events while on device.
+  std::unique_ptr<EventStorage> event_storage_;
 
   // Key data provider that provides device and profile keys.
   std::unique_ptr<KeyDataProvider> key_data_provider_;
@@ -254,10 +261,6 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
 
   // File path where device keys will be persisted.
   const base::FilePath device_key_path_;
-
-  // Delay period for PersistentProto writes. Default value of 1000 ms used if
-  // not specified in ctor.
-  base::TimeDelta write_delay_;
 
   // Interface for providing the SystemProfile to metrics.
   // See chrome/browser/metrics/chrome_metrics_service_client.h

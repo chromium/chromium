@@ -28,7 +28,7 @@ class TestStructuredMetricsProvider : public Recorder::RecorderImpl {
   TestStructuredMetricsProvider& operator=(
       const TestStructuredMetricsProvider&) = delete;
 
-  const EventsProto& ReadEvents();
+  const EventsProto& ReadEvents() const;
 
   // Returns pointer to the first event with the hash |project_name_hash| and
   // |event_name_hash|. If no event is found, returns absl::nullopt.

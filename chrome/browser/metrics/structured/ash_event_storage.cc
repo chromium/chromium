@@ -9,6 +9,7 @@
 #include "components/metrics/structured/histogram_util.h"
 
 namespace metrics::structured {
+
 AshEventStorage::AshEventStorage(base::TimeDelta write_delay)
     : write_delay_(write_delay) {}
 
@@ -32,6 +33,7 @@ void AshEventStorage::OnReady() {
 void AshEventStorage::AddEvent(StructuredEventProto&& event) {
   if (IsReady()) {
     *events()->add_non_uma_events() = event;
+    events_->StartWrite();
   } else {
     pre_storage_events_.emplace_back(event);
   }
@@ -45,12 +47,14 @@ void AshEventStorage::MoveEvents(ChromeUserMetricsExtension& uma_proto) {
   events()->clear_non_uma_events();
 }
 
+int AshEventStorage::RecordedEventsCount() const {
+  return events_ ? events_->get()->non_uma_events_size() : 0;
+}
+
 void AshEventStorage::Purge() {
   if (IsReady()) {
     events_->Purge();
   }
-  // Make sure it is null.
-  events_.reset();
 }
 
 void AshEventStorage::OnProfileAdded(const base::FilePath& path) {
