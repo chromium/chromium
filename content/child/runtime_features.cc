@@ -219,7 +219,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableDevicePosture, raw_ref(features::kDevicePosture)},
     {wf::EnableDigitalGoods, raw_ref(features::kDigitalGoodsApi),
      kSetOnlyIfOverridden},
-    {wf::EnableDocumentPolicy, raw_ref(features::kDocumentPolicy)},
     {wf::EnableDocumentPolicyNegotiation,
      raw_ref(features::kDocumentPolicyNegotiation)},
     {wf::EnableFedCm, raw_ref(features::kFedCm), kSetOnlyIfOverridden},

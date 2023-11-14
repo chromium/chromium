@@ -17,83 +17,12 @@ namespace blink {
 
 class DocumentPolicySimTest : public SimTest {
  public:
-  DocumentPolicySimTest()
-      : scoped_document_policy_(true),
-        scoped_document_policy_negotiation_(true) {
-    ResetAvailableDocumentPolicyFeaturesForTest();
-  }
+  DocumentPolicySimTest() { ResetAvailableDocumentPolicyFeaturesForTest(); }
 
  private:
-  ScopedDocumentPolicyForTest scoped_document_policy_;
-  ScopedDocumentPolicyNegotiationForTest scoped_document_policy_negotiation_;
+  ScopedDocumentPolicyNegotiationForTest scoped_document_policy_negotiation_{
+      true};
 };
-
-// When runtime feature DocumentPolicy is not enabled, specifying
-// Document-Policy, Require-Document-Policy and policy attribute
-// should have no effect, i.e.
-// document load should not be blocked even if the required policy and incoming
-// policy are incompatible and calling
-// |Document::IsFeatureEnabled(DocumentPolicyFeature...)| should always return
-// true.
-TEST_F(DocumentPolicySimTest, DocumentPolicyNoEffectWhenFlagNotSet) {
-  ScopedDocumentPolicyForTest sdp(false);
-  ScopedDocumentPolicyNegotiationForTest sdpn(false);
-  ResetAvailableDocumentPolicyFeaturesForTest();
-
-  SimRequest::Params main_params;
-  main_params.response_http_headers = {
-      {"Require-Document-Policy", "lossless-images-max-bpp=1.0"}};
-
-  SimRequest::Params iframe_params;
-  iframe_params.response_http_headers = {
-      {"Document-Policy", "lossless-images-max-bpp=1.1"}};
-
-  SimRequest main_resource("https://example.com", "text/html", main_params);
-  SimRequest iframe_resource("https://example.com/foo.html", "text/html",
-                             iframe_params);
-
-  LoadURL("https://example.com");
-  main_resource.Complete(R"(
-    <iframe
-      src="https://example.com/foo.html"
-      policy="lossless-images-max-bpp=1.0">
-    </iframe>
-  )");
-
-  iframe_resource.Finish();
-  auto* child_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
-  auto* child_window = child_frame->GetFrame()->DomWindow();
-  auto& console_messages = static_cast<frame_test_helpers::TestWebFrameClient*>(
-                               child_frame->Client())
-                               ->ConsoleMessages();
-
-  // Should not receive a console error message caused by document policy
-  // violation blocking document load.
-  EXPECT_TRUE(console_messages.empty());
-
-  EXPECT_EQ(child_window->Url(), KURL("https://example.com/foo.html"));
-
-  EXPECT_FALSE(child_window->document()->IsUseCounted(
-      mojom::WebFeature::kDocumentPolicyCausedPageUnload));
-
-  // lossless-images-max-bpp should be set to inf in main document, i.e. allow
-  // all values.
-  EXPECT_TRUE(Window().IsFeatureEnabled(
-      mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue::CreateDecDouble(2.0)));
-  EXPECT_TRUE(Window().IsFeatureEnabled(
-      mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue::CreateDecDouble(1.0)));
-
-  // lossless-images-max-bpp should be set to inf in child document, i.e. allow
-  // all values.
-  EXPECT_TRUE(child_window->IsFeatureEnabled(
-      mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue::CreateDecDouble(2.0)));
-  EXPECT_TRUE(child_window->IsFeatureEnabled(
-      mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue::CreateDecDouble(1.0)));
-}
 
 // When runtime feature DocumentPolicyNegotiation is not enabled, specifying
 // Require-Document-Policy HTTP header and policy attribute on iframe should

@@ -308,11 +308,6 @@ BASE_FEATURE(kDisconnectExtensionMessagePortWhenPageEntersBFCache,
              "DisconnectExtensionMessagePortWhenPageEntersBFCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable document policy for configuring and restricting feature behavior.
-BASE_FEATURE(kDocumentPolicy,
-             "DocumentPolicy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable drawing under System Bars within DisplayCutout.
 BASE_FEATURE(kDrawCutoutEdgeToEdge,
              "DrawCutoutEdgeToEdge",

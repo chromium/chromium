@@ -1424,18 +1424,11 @@
         "default": "stable",
       },
     },
-    {
-      name: "DocumentPolicy",
-      public: true,
-      status: "stable",
-      base_feature: "none",
-    },
     // Enables the ability to use Document Policy header to control feature
     // DocumentDomain.
     {
       name: "DocumentPolicyDocumentDomain",
       status: "experimental",
-      depends_on: ["DocumentPolicy"],
       base_feature: "none",
     },
     {
@@ -1443,7 +1436,6 @@
       origin_trial_feature_name: "DocumentPolicyNegotiation",
       public: true,
       status: "experimental",
-      depends_on: ["DocumentPolicy"],
       base_feature: "none",
     },
     // Enables the ability to use Document Policy header to control feature
@@ -1451,7 +1443,6 @@
     {
       name: "DocumentPolicySyncXHR",
       status: "experimental",
-      depends_on: ["DocumentPolicy"],
       base_feature: "none",
     },
     {
@@ -1518,7 +1509,6 @@
     },
     {
       name: "ExperimentalPolicies",
-      depends_on: ["DocumentPolicy"],
       status: "experimental",
       base_feature: "none",
     },

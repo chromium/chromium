@@ -302,7 +302,6 @@ TEST_F(HTMLIFrameElementTest, ConstructContainerPolicyWithAllowAttributes) {
 using HTMLIFrameElementSimTest = SimTest;
 
 TEST_F(HTMLIFrameElementSimTest, PolicyAttributeParsingError) {
-  blink::ScopedDocumentPolicyForTest sdp(true);
   SimRequest main_resource("https://example.com", "text/html");
   LoadURL("https://example.com");
   main_resource.Complete(R"(

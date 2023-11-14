@@ -44,11 +44,6 @@
 namespace content {
 
 class TextFragmentAnchorBrowserTest : public ContentBrowserTest {
- public:
-  TextFragmentAnchorBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kDocumentPolicy);
-  }
-
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -98,8 +93,6 @@ class TextFragmentAnchorBrowserTest : public ContentBrowserTest {
                                           ->GetRenderViewHost()
                                           ->GetWidget());
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest, EnabledOnUserNavigation) {

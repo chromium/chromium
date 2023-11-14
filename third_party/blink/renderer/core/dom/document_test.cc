@@ -1679,7 +1679,6 @@ TEST_F(DocumentSimTest, LastModified) {
 }
 
 TEST_F(DocumentSimTest, DuplicatedDocumentPolicyViolationsAreIgnored) {
-  blink::ScopedDocumentPolicyForTest scoped_document_policy(true);
   SimRequest::Params params;
   params.response_http_headers = {
       {"Document-Policy", "lossless-images-max-bpp=1.0"}};

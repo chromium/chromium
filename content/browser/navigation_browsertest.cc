@@ -3970,15 +3970,7 @@ IN_PROC_BROWSER_TEST_F(MediaNavigationBrowserTest, FailedNavigation) {
   EXPECT_EQ(PAGE_TYPE_ERROR, entry->GetPageType());
 }
 
-class DocumentPolicyBrowserTest : public NavigationBaseBrowserTest {
- public:
-  DocumentPolicyBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kDocumentPolicy);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+using DocumentPolicyBrowserTest = NavigationBaseBrowserTest;
 
 // Test that scroll restoration can be disabled with
 // Document-Policy: force-load-at-top
