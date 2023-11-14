@@ -20,6 +20,18 @@ with the exception of a handful of targets that opt-out.
 For the rest of this document, the term “Objective-C” will be used to mean both
 pure Objective-C as well as Objective-C++.
 
+### What isn’t handled by ARC {#what-isnt}
+
+Be aware that ARC is only used for Objective-C objects (those objects that are a
+subclass of `NSObject`, declared with `@interface` or `@class`). The ownership
+of Core Foundation objects (with names often starting with `CF`, with names
+often ending with `Ref`, and declared using a `typedef` as a pointer to an
+undefined struct) is not handled by ARC, and `ScopedCFTypeRef<>` must be used to
+manage their lifetimes. For documentation on how the lifetime of Core Foundation
+objects works, and when you will need to use a scoper to manage it, see the
+[Memory Management Programming Guide for Core
+Foundation](https://developer.apple.com/library/archive/documentation/CoreFoundation/Conceptual/CFMemoryMgmt/CFMemoryMgmt.html#//apple_ref/doc/uid/10000127i).
+
 ## The basics of ARC {#basics}
 
 (This is necessarily a simplified explanation; reading ARC
@@ -50,8 +62,8 @@ objects are smart pointers, indicated by the following qualifications:
 - `__weak`: This pointer maintains a weak reference to the object which is kept
   alive by other `__strong` references. If the last of the strong references is
   released, and the object is deallocated, this pointer will be set to `nil`.
-- `__unsafe_unretained`: This is a raw pointer (as in C/C++) which maintains a
-  reference to the object but has no other automatic capabilities.
+- `__unsafe_unretained`: This is a raw pointer (as in C/C++) which has no
+  automatic capabilities.
   - Chromium usage note: Do not use this, as it is almost certainly the wrong
     choice. The `PRESUBMIT` will complain.
 
