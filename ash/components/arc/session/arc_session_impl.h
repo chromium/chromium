@@ -199,6 +199,7 @@ class ArcSessionImpl : public ArcSession,
   void TrimVmMemory(TrimVmMemoryCallback callback, int page_limit) override;
   void SetDefaultDeviceScaleFactor(float scale_factor) override;
   void SetUseVirtioBlkData(bool use_virtio_blk_data) override;
+  void SetArcSignedIn(bool arc_signed_in) override;
 
   // ash::SchedulerConfigurationManagerBase::Observer overrides:
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override;
@@ -270,6 +271,9 @@ class ArcSessionImpl : public ArcSession,
 
   // Whether ARCVM uses virtio-blk for /data.
   bool use_virtio_blk_data_ = false;
+
+  // Whether ARC is already signed in (provisioned).
+  bool arc_signed_in_ = false;
 
   // In CONNECTING_MOJO state, this is set to the write side of the pipe
   // to notify cancelling of the procedure.

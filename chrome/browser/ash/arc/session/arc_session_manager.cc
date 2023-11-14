@@ -513,6 +513,7 @@ ArcSessionManager::~ArcSessionManager() {
   }
 
   Shutdown();
+  DCHECK(arc_session_runner_);
   arc_session_runner_->RemoveObserver(this);
 
   DCHECK_EQ(this, g_arc_session_manager);
@@ -632,6 +633,7 @@ void ArcSessionManager::OnProvisioningFinished(
     // CHROME_SERVER_COMMUNICATION_ERROR case.
     UpdateOptInCancelUMA(OptInCancelReason::NETWORK_ERROR);
   } else if (!sign_in_start_time_.is_null()) {
+    DCHECK(profile_);
     arc_sign_in_timer_.Stop();
 
     UpdateProvisioningTiming(base::TimeTicks::Now() - sign_in_start_time_,
@@ -652,6 +654,8 @@ void ArcSessionManager::OnProvisioningFinished(
     }
   }
 
+  PrefService* const prefs = profile_->GetPrefs();
+  CHECK(prefs);
   if (provisioning_successful) {
     if (support_host_) {
       support_host_->Close();
@@ -662,12 +666,11 @@ void ArcSessionManager::OnProvisioningFinished(
       scoped_opt_in_tracker_.reset();
     }
 
-    PrefService* const prefs = profile_->GetPrefs();
-
     prefs->SetBoolean(prefs::kArcIsManaged,
                       policy_util::IsAccountManaged(profile_));
 
-    if (prefs->GetBoolean(prefs::kArcSignedIn)) {
+    if (prefs->HasPrefPath(prefs::kArcSignedIn) &&
+        prefs->GetBoolean(prefs::kArcSignedIn)) {
       return;
     }
 
@@ -695,8 +698,8 @@ void ArcSessionManager::OnProvisioningFinished(
   VLOG(1) << "ARC provisioning failed: " << result << ".";
 
   if (result.stop_reason()) {
-    if (profile_->GetPrefs()->HasPrefPath(prefs::kArcSignedIn)) {
-      profile_->GetPrefs()->SetBoolean(prefs::kArcSignedIn, false);
+    if (prefs->HasPrefPath(prefs::kArcSignedIn)) {
+      prefs->SetBoolean(prefs::kArcSignedIn, false);
     }
     VLOG(1) << "ARC stopped unexpectedly";
     ShutdownSession();
@@ -735,8 +738,9 @@ void ArcSessionManager::SetProfile(Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!profile_);
   DCHECK(IsArcAllowedForProfile(profile));
-  profile_ = profile;
+  DCHECK(adb_sideloading_availability_delegate_);
   adb_sideloading_availability_delegate_->SetProfile(profile);
+  profile_ = profile;
   // RequestEnable() requires |profile_| set, therefore shouldn't have been
   // called at this point.
   SetArcEnabledStateMetric(false);
@@ -744,6 +748,7 @@ void ArcSessionManager::SetProfile(Profile* profile) {
 
 void ArcSessionManager::SetUserInfo() {
   DCHECK(profile_);
+  DCHECK(arc_session_runner_);
 
   const AccountId account(multi_user_util::GetAccountIdFromProfile(profile_));
   const cryptohome::Identification cryptohome_id(account);
@@ -1064,7 +1069,7 @@ bool ArcSessionManager::RequestEnableImpl() {
   // |prefs::kArcProvisioningInitiatedFromOobe| is reset when provisioning is
   // done or ARC is opted out.
   const bool opt_in_start = IsArcOobeOptInActive();
-  const bool signed_in = prefs->GetBoolean(prefs::kArcSignedIn);
+  const bool signed_in = IsArcProvisioned(profile_);
   if (opt_in_start) {
     prefs->SetBoolean(prefs::kArcProvisioningInitiatedFromOobe, true);
   }
@@ -1277,6 +1282,10 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
     }
     is_terms_of_service_negotiation_needed = false;
   } else {
+    DCHECK(arc_session_runner_);
+    // Only set ARC signed in status here before calling StartMiniArc() since
+    // we have valid profile available with cryptohome mounted.
+    arc_session_runner_->set_arc_signed_in(IsArcProvisioned(profile_));
     // Start the mini-container (or mini-VM) here to save time starting the OS
     // if the user decides to opt-in. Unlike calling StartMiniArc() for ARCVM on
     // login screen, doing so on ToS screen is safe and desirable. The user has
@@ -1409,6 +1418,7 @@ void ArcSessionManager::StartArc() {
   MaybeStartTimer();
 
   // ARC must be started only if no pending data removal request exists.
+  DCHECK(profile_);
   DCHECK(!profile_->GetPrefs()->GetBoolean(prefs::kArcDataRemoveRequested));
 
   for (auto& observer : observer_list_) {
@@ -1434,6 +1444,7 @@ void ArcSessionManager::StartArc() {
     GetLocaleAndPreferredLanguages(profile_, &locale, &preferred_languages);
   }
 
+  DCHECK(arc_session_runner_);
   arc_session_runner_->set_default_device_scale_factor(
       exo::GetDefaultDeviceScaleFactor());
 
@@ -1462,6 +1473,7 @@ void ArcSessionManager::StartArc() {
   params.is_account_managed =
       profile_->GetProfilePolicyConnector()->IsManaged();
 
+  arc_session_runner_->set_arc_signed_in(IsArcProvisioned(profile_));
   arc_session_runner_->RequestUpgrade(std::move(params));
 }
 
@@ -1600,6 +1612,7 @@ void ArcSessionManager::OnArcVmDataMigrationNecessityChecked(
 void ArcSessionManager::MaybeReenableArc() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::STOPPED);
+  DCHECK(arc_session_runner_);
   DCHECK(profile_);
 
   // Whether to use virtio-blk for /data depends on the status of ARCVM /data
@@ -1638,6 +1651,7 @@ void ArcSessionManager::MaybeStartTimer() {
 }
 
 void ArcSessionManager::StartMiniArc() {
+  DCHECK(arc_session_runner_);
   pre_start_time_ = base::TimeTicks::Now();
   arc_session_runner_->set_default_device_scale_factor(
       exo::GetDefaultDeviceScaleFactor());
@@ -1841,6 +1855,8 @@ void ArcSessionManager::OnExpandPropertyFilesAndReadSalt(
   }
 
   if (result.second) {
+    DCHECK(arc_session_runner_);
+    arc_session_runner_->set_arc_signed_in(IsArcProvisioned(profile_));
     arc_session_runner_->ResumeRunner();
   }
   for (auto& observer : observer_list_) {
@@ -1851,6 +1867,7 @@ void ArcSessionManager::OnExpandPropertyFilesAndReadSalt(
 void ArcSessionManager::StopMiniArcIfNecessary() {
   // This method should only be called before login.
   DCHECK(!profile_);
+  DCHECK(arc_session_runner_);
   pre_start_time_ = base::TimeTicks();
   VLOG(1) << "Stopping mini-ARC instance (if any)";
   arc_session_runner_->RequestStop();

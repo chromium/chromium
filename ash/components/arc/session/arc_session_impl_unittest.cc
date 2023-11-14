@@ -934,6 +934,14 @@ TEST_F(ArcSessionImplTest, HostUreadaheadGenerationSet) {
       GetClient(arc_session.get())->last_start_params().disable_ureadahead);
 }
 
+// Test that validates arc signed in flag is not set by default.
+TEST_F(ArcSessionImplTest, NotArcSignedInByDefault) {
+  auto arc_session = CreateArcSession();
+  arc_session->StartMiniInstance();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetClient(arc_session.get())->last_start_params().arc_signed_in);
+}
+
 // Test that validates use dev caches flag is not set by default.
 TEST_F(ArcSessionImplTest, DoNotUseDevCachesByDefault) {
   auto arc_session = CreateArcSession();

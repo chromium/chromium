@@ -70,8 +70,7 @@ struct StartParams {
   bool disable_ureadahead = false;
 
   // Flag to indicate host ureadahead generation.
-  // TODO(b/264585671): Refactore this and |disable_ureadahead| to
-  // mode enum.
+  // TODO(b/264585671): Refactor this and |disable_ureadahead| to mode enum.
   bool host_ureadahead_generation = false;
 
   // Flag to indicate whether to use dev caches.
@@ -103,6 +102,9 @@ struct StartParams {
 
   // Flag to switch to KeyMint for T+.
   bool arc_switch_to_keymint = false;
+
+  // Flag that indicates whether ARC is already signed in.
+  bool arc_signed_in = false;
 };
 
 }  // namespace arc

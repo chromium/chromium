@@ -1045,6 +1045,53 @@ TEST_F(ArcSessionManagerTest, RegularToChildTransition) {
   arc_session_manager()->Shutdown();
 }
 
+TEST_F(ArcSessionManagerTest, SetArcSignedIn) {
+  PrefService* const prefs = profile()->GetPrefs();
+  ASSERT_TRUE(prefs);
+  prefs->SetBoolean(prefs::kArcTermsAccepted, true);
+  prefs->SetBoolean(prefs::kArcSignedIn, true);
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+
+  // By default ARC is not enabled.
+  EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
+
+  // When signed-in, enabling ARC results in the ACTIVE state.
+  arc_session_manager()->RequestEnable();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kArcSignedIn));
+  EXPECT_TRUE(
+      arc_session_manager()->GetArcSessionRunnerForTesting()->arc_signed_in());
+
+  // Correctly stop service.
+  arc_session_manager()->Shutdown();
+}
+
+TEST_F(ArcSessionManagerTest, ClearArcSignedIn) {
+  // Start ARC.
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+  arc_session_manager()->RequestEnable();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
+            arc_session_manager()->state());
+
+  // Disable ARC.
+  arc_session_manager()->RequestDisable();
+
+  PrefService* const prefs = profile()->GetPrefs();
+  ASSERT_TRUE(prefs);
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kArcSignedIn));
+  EXPECT_FALSE(
+      arc_session_manager()->GetArcSessionRunnerForTesting()->arc_signed_in());
+
+  // Correctly stop service.
+  arc_session_manager()->Shutdown();
+}
+
 TEST_F(ArcSessionManagerTest, ClearArcTransitionOnShutdown) {
   profile()->GetPrefs()->SetInteger(
       prefs::kArcManagementTransition,

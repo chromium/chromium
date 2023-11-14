@@ -123,10 +123,13 @@ class ArcSessionRunner : public ArcSession::Observer {
     default_device_scale_factor_ = scale_factor;
   }
 
-  bool use_virtio_blk_data() { return use_virtio_blk_data_; }
+  bool use_virtio_blk_data() const { return use_virtio_blk_data_; }
   void set_use_virtio_blk_data(bool use_virtio_blk_data) {
     use_virtio_blk_data_ = use_virtio_blk_data;
   }
+
+  bool arc_signed_in() const { return arc_signed_in_; }
+  void set_arc_signed_in(bool arc_signed_in) { arc_signed_in_ = arc_signed_in; }
 
   // Returns the current ArcSession instance for testing purpose.
   ArcSession* GetArcSessionForTesting() { return arc_session_.get(); }
@@ -196,6 +199,8 @@ class ArcSessionRunner : public ArcSession::Observer {
 
   // Whether ARCVM uses virtio-blk for /data.
   bool use_virtio_blk_data_ = false;
+
+  bool arc_signed_in_ = false;
 
   // DemoModeDelegate to be used by ArcSession.
   std::unique_ptr<ArcClientAdapter::DemoModeDelegate> demo_mode_delegate_;

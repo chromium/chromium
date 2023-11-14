@@ -2741,6 +2741,20 @@ TEST_F(ArcVmClientAdapterTest, ArcEnableNotificationRefreshTrue) {
   EXPECT_TRUE(request.mini_instance_request().enable_notifications_refresh());
 }
 
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_ArcSignedIn) {
+  StartParams start_params(GetPopulatedStartParams());
+  start_params.arc_signed_in = true;
+  StartMiniArcWithParams(true, std::move(start_params));
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(request.mini_instance_request().arc_signed_in());
+}
+
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_ArcSignedInDisabled) {
+  StartMiniArcWithParams(true, GetPopulatedStartParams());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(request.mini_instance_request().arc_signed_in());
+}
+
 TEST_F(ArcVmClientAdapterTest, ArcPriorityAppLmkDelayDisabled) {
   StartMiniArc();
   UpgradeParams upgrade_params = GetPopulatedUpgradeParams();

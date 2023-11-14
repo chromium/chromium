@@ -59,6 +59,8 @@ void FakeArcSession::SetDefaultDeviceScaleFactor(float scale_factor) {}
 
 void FakeArcSession::SetUseVirtioBlkData(bool use_virtio_blk_data) {}
 
+void FakeArcSession::SetArcSignedIn(bool arc_signed_in) {}
+
 void FakeArcSession::StopWithReason(ArcStopReason reason) {
   bool was_mojo_connected = running_;
   running_ = false;
