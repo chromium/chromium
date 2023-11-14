@@ -379,6 +379,13 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                        forForm:(FormGlobalId)form
                     fromSource:
                         (AutofillManager::Observer::FieldTypeSource)source {
+  // Heuristics predictions are not relevant to PWM because it runs its own
+  // heuristics - only server predictions are.
+  if (source ==
+      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete) {
+    return;
+  }
+
   auto& driver = static_cast<autofill::AutofillDriverIOS&>(manager.driver());
   web::WebFrame* frame = driver.web_frame();
   if (!frame) {
