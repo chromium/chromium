@@ -12,11 +12,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.content.browser.accessibility.captioning.SystemCaptioningBridge.SystemCaptioningBridgeListener;
 
+import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.HashSet;
 import java.util.Locale;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 /**
  * API level agnostic delegate for getting updates about caption styles.
@@ -42,9 +42,8 @@ public class CaptioningChangeDelegate {
     private String mTextTrackTextShadow;
     private String mTextTrackTextSize;
     // Using weak references to avoid preventing listeners from getting GC'ed.
-    // TODO(qinmin): change this to a HashSet that supports weak references.
-    private final Map<SystemCaptioningBridgeListener, Boolean> mListeners =
-            new WeakHashMap<SystemCaptioningBridgeListener, Boolean>();
+    private final HashSet<WeakReference<SystemCaptioningBridgeListener>> mListeners =
+            new HashSet<>();
 
     /**
      * @see android.view.accessibility.CaptioningManager.CaptioningChangeListener#onEnabledChanged
@@ -108,7 +107,8 @@ public class CaptioningChangeDelegate {
             switch (type) {
                 case CaptionStyle.EDGE_TYPE_OUTLINE:
                     edgeShadow =
-                            "%2$s %2$s 0 %1$s, -%2$s -%2$s 0 %1$s, %2$s -%2$s 0 %1$s, -%2$s %2$s 0 %1$s";
+                            "%2$s %2$s 0 %1$s, -%2$s -%2$s 0 %1$s, %2$s -%2$s 0 %1$s, -%2$s %2$s 0"
+                                    + " %1$s";
                     break;
                 case CaptionStyle.EDGE_TYPE_DROP_SHADOW:
                     edgeShadow = "%1$s %2$s %2$s 0.1em";
@@ -184,8 +184,11 @@ public class CaptioningChangeDelegate {
     }
 
     private void notifySettingsChanged() {
-        for (SystemCaptioningBridgeListener listener : mListeners.keySet()) {
-            notifyListener(listener);
+        for (WeakReference<SystemCaptioningBridgeListener> weakRef : mListeners) {
+            SystemCaptioningBridgeListener listener = weakRef.get();
+            if (listener != null) {
+                notifyListener(listener);
+            }
         }
     }
 
@@ -212,7 +215,7 @@ public class CaptioningChangeDelegate {
      * @param listener The SystemCaptioningBridgeListener object to add.
      */
     public void addListener(SystemCaptioningBridgeListener listener) {
-        mListeners.put(listener, null);
+        mListeners.add(new WeakReference<>(listener));
     }
 
     /**
@@ -221,7 +224,12 @@ public class CaptioningChangeDelegate {
      * @param listener The SystemCaptioningBridgeListener object to remove.
      */
     public void removeListener(SystemCaptioningBridgeListener listener) {
-        mListeners.remove(listener);
+        // Use an iterator to safely remove weak references to listeners.
+        mListeners.removeIf(
+                weakRef -> {
+                    SystemCaptioningBridgeListener target = weakRef.get();
+                    return target == null || target == listener;
+                });
     }
 
     /**
