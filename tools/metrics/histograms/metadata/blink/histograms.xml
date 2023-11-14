@@ -3247,15 +3247,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Plugin.UpdateTime" units="ms" expires_after="2022-12-18">
-  <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    Measures the time it takes to update the plugin list. This can happen, for
-    example, during Navigator.plugins.get.
-  </summary>
-</histogram>
-
 <histogram name="Blink.PreloadRequestWaitTime" units="ms"
     expires_after="2023-10-22">
   <owner>cduvall@chromium.org</owner>
