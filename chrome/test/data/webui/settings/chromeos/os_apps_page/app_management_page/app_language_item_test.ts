@@ -62,7 +62,7 @@ suite('<app-management-app-language-item>', () => {
 
         assertTrue(isVisible(appLanguageItem));
         const selectedLocaleLabel =
-            appLanguageItem.shadowRoot!.querySelector('#appLanguage')!
+            appLanguageItem.shadowRoot!.querySelector('cr-link-row')!
                 .shadowRoot!.querySelector('#labelWrapper > #subLabel');
         assertTrue(!!selectedLocaleLabel);
         assertTrue(
@@ -91,7 +91,7 @@ suite('<app-management-app-language-item>', () => {
     appLanguageItem.app = arcApp;
 
     const selectedLocaleLabel =
-        appLanguageItem.shadowRoot!.querySelector('#appLanguage')!.shadowRoot!
+        appLanguageItem.shadowRoot!.querySelector('cr-link-row')!.shadowRoot!
             .querySelector('#labelWrapper > #subLabel');
     assertTrue(!!selectedLocaleLabel);
     assertTrue(selectedLocaleLabel.textContent!.includes(displayName));

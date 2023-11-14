@@ -2,16 +2,10 @@
   :host {
     cursor: pointer;
   }
-  #appLanguage {
-    /**
-     * Remove cr-link-row default padding as .permission-card-row already
-     * provides the appropriate padding.
-     */
-    padding: 0;
-  }
 </style>
 <cr-link-row
-    id="appLanguage"
+    embedded
+    no-hover
     label="$i18n{appManagementAppLanguageLabel}"
     sub-label="[[getSelectedLocale_(app)]]">
 </cr-link-row>
