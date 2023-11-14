@@ -62,4 +62,21 @@ CreateAutofillWalletSpecificsForCreditCardCloudTokenData(
   return wallet_specifics;
 }
 
+sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForIban(
+    const std::string& client_tag) {
+  sync_pb::AutofillWalletSpecifics wallet_specifics;
+  wallet_specifics.set_type(
+      sync_pb::AutofillWalletSpecifics_WalletInfoType::
+          AutofillWalletSpecifics_WalletInfoType_MASKED_IBAN);
+
+  sync_pb::WalletMaskedIban* iban_specifics =
+      wallet_specifics.mutable_masked_iban();
+  iban_specifics->set_instrument_id(client_tag);
+  iban_specifics->set_prefix("FR76");
+  iban_specifics->set_suffix("0189");
+  iban_specifics->set_length(27);
+  iban_specifics->set_nickname("My IBAN");
+  return wallet_specifics;
+}
+
 }  // namespace autofill

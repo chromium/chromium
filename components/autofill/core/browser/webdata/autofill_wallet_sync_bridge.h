@@ -24,6 +24,7 @@ class AutofillTable;
 class AutofillWebDataBackend;
 class AutofillWebDataService;
 class CreditCard;
+class Iban;
 struct CreditCardCloudTokenData;
 struct PaymentsCustomerData;
 
@@ -103,6 +104,13 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   // `notify_webdata_backend`, it also notifies via WebDataBackend about any
   // individual entity changes.
   bool SetWalletCards(std::vector<CreditCard> wallet_cards,
+                      bool notify_webdata_backend);
+
+  // Sets `wallet_ibans` to this client and returns whether any change has been
+  // applied (i.e., whether `wallet_ibans` was different from local data). If
+  // `notify_webdata_backend` is true, it also notifies via WebDataBackend about
+  // any individual entity changes.
+  bool SetWalletIbans(std::vector<Iban> wallet_ibans,
                       bool notify_webdata_backend);
 
   // Sets |cloud_token_data| to this client and returns whether any change has

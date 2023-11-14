@@ -468,6 +468,24 @@ message PaymentInstrument {
   }
 }
 
+// Contains information of server IBAN (International Bank Account Number).
+message WalletMaskedIban {
+  // Opaque identifier for the account stored in Payments Platform.
+  optional string instrument_id = 1;
+
+  // Prefix of the full IBAN value, if available.
+  optional string prefix = 2;
+
+  // Suffix of the full IBAN value, if available.
+  optional string suffix = 3;
+
+  // Length of the full IBAN value, if available.
+  optional int32 length = 4;
+
+  // Nickname for the IBAN, if available.
+  optional string nickname = 5;
+}
+
 // Details of a bank account required to show it in the payment instrument
 // selector.
 message BankAccountDetails {
@@ -499,6 +517,7 @@ message AutofillWalletSpecifics {
     CUSTOMER_DATA = 3;
     CREDIT_CARD_CLOUD_TOKEN_DATA = 4;
     PAYMENT_INSTRUMENT = 5;
+    MASKED_IBAN = 6;
   }
 
   optional WalletInfoType type = 1;
@@ -523,6 +542,10 @@ message AutofillWalletSpecifics {
   // This field exists if and only if the "type" field equals to
   // PAYMENT_INSTRUMENT.
   optional PaymentInstrument payment_instrument = 6;
+
+  // This field exists if and only if the `type` field equals to
+  // MASKED_IBAN.
+  optional WalletMaskedIban masked_iban = 7;
 }
 
 // Wallet card usage information that can be synced.
@@ -534,13 +557,16 @@ message WalletMetadataSpecifics {
     // TODO(crbug.com/1457187): Some server-side code still relies on this.
     // To keep the protos in sync, it is kept until that code is cleaned up.
     ADDRESS = 2;
+    IBAN = 3;
   }
 
   // The type of the Wallet metadata.
   optional Type type = 1;
 
-  // Base64 encoding of the unique ID string of the corresponding Wallet data.
-  // For Wallet cards, this value is server generated and opaque to Chrome.
+  // Base64 encoding of the unique ID string of the corresponding
+  // AutofillMetadata.
+  // For Wallet cards, this value is WalletMaskedCreditCard::id.
+  // For Wallet IBANs, this value is WalletMaskedIban::instrument_id.
   optional string id = 2;
 
   // The number of times that this Wallet card or address was used.

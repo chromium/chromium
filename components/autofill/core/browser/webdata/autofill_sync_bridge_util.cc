@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -175,6 +176,18 @@ CreditCardCloudTokenData CloudTokenDataFromSpecifics(
   result.exp_year = cloud_token_data.exp_year();
   result.card_art_url = cloud_token_data.art_fife_url();
   result.instrument_token = cloud_token_data.instrument_token();
+  return result;
+}
+
+// Creates an IBAN from the specified `iban` specifics.
+Iban IbanFromSpecifics(const sync_pb::WalletMaskedIban& iban) {
+  int64_t instrument_id = 0;
+  CHECK(base::StringToInt64(iban.instrument_id(), &instrument_id));
+  Iban result{Iban::InstrumentId(instrument_id)};
+  result.set_prefix(base::UTF8ToUTF16(iban.prefix()));
+  result.set_suffix(base::UTF8ToUTF16(iban.suffix()));
+  result.set_length(iban.length());
+  result.set_nickname(base::UTF8ToUTF16(iban.nickname()));
   return result;
 }
 
@@ -336,6 +349,26 @@ void SetAutofillWalletSpecificsFromCreditCardCloudTokenData(
   mutable_cloud_token_data->set_art_fife_url(cloud_token_data.card_art_url);
   mutable_cloud_token_data->set_instrument_token(
       cloud_token_data.instrument_token);
+}
+
+void SetAutofillWalletSpecificsFromMaskedIban(
+    const Iban& iban,
+    sync_pb::AutofillWalletSpecifics* wallet_specifics,
+    bool enforce_utf8) {
+  wallet_specifics->set_type(AutofillWalletSpecifics::MASKED_IBAN);
+  sync_pb::WalletMaskedIban* wallet_iban =
+      wallet_specifics->mutable_masked_iban();
+  if (enforce_utf8) {
+    wallet_iban->set_instrument_id(
+        GetBase64EncodedId(base::NumberToString(iban.instrument_id())));
+  } else {
+    wallet_iban->set_instrument_id(base::NumberToString(iban.instrument_id()));
+  }
+
+  wallet_iban->set_prefix(base::UTF16ToUTF8(iban.prefix()));
+  wallet_iban->set_suffix(base::UTF16ToUTF8(iban.suffix()));
+  wallet_iban->set_nickname(base::UTF16ToUTF8(iban.nickname()));
+  wallet_iban->set_length(iban.length());
 }
 
 void SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(
@@ -551,6 +584,7 @@ void CopyRelevantWalletMetadataFromDisk(
 void PopulateWalletTypesFromSyncData(
     const syncer::EntityChangeList& entity_data,
     std::vector<CreditCard>* wallet_cards,
+    std::vector<Iban>& wallet_ibans,
     std::vector<PaymentsCustomerData>* customer_data,
     std::vector<CreditCardCloudTokenData>* cloud_token_data) {
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
@@ -577,6 +611,10 @@ void PopulateWalletTypesFromSyncData(
         break;
       case sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT:
         // TODO(crbug.com/1472125) Support syncing of payment instruments.
+        break;
+      case sync_pb::AutofillWalletSpecifics::MASKED_IBAN:
+        wallet_ibans.push_back(
+            IbanFromSpecifics(autofill_specifics.masked_iban()));
         break;
       case sync_pb::AutofillWalletSpecifics::UNKNOWN:
         // Just ignore new entry types that the client doesn't know about.

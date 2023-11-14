@@ -165,6 +165,17 @@ std::string WalletPaymentInstrumentAsDebugString(
   return output.str();
 }
 
+std::string WalletMaskedIbanSpecificsAsDebugString(
+    const AutofillWalletSpecifics& specifics) {
+  std::ostringstream output;
+  output << "[id: " << specifics.masked_iban().instrument_id()
+         << ", prefix: " << specifics.masked_iban().prefix()
+         << ", suffix: " << specifics.masked_iban().suffix()
+         << ", length: " << specifics.masked_iban().length()
+         << ", nickname: " << specifics.masked_iban().nickname() << "]";
+  return output.str();
+}
+
 std::string AutofillWalletSpecificsAsDebugString(
     const AutofillWalletSpecifics& specifics) {
   switch (specifics.type()) {
@@ -183,6 +194,9 @@ std::string AutofillWalletSpecificsAsDebugString(
     case sync_pb::AutofillWalletSpecifics_WalletInfoType::
         AutofillWalletSpecifics_WalletInfoType_PAYMENT_INSTRUMENT:
       return WalletPaymentInstrumentAsDebugString(specifics);
+    case sync_pb::AutofillWalletSpecifics_WalletInfoType::
+        AutofillWalletSpecifics_WalletInfoType_MASKED_IBAN:
+      return WalletMaskedIbanSpecificsAsDebugString(specifics);
     case sync_pb::AutofillWalletSpecifics_WalletInfoType::
         AutofillWalletSpecifics_WalletInfoType_UNKNOWN:
       return "Unknown";
@@ -871,6 +885,59 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SetsAllCloudTokenData) {
             cloud_token_data_vector[0]->card_art_url);
   EXPECT_EQ(cloud_token_data.instrument_token,
             cloud_token_data_vector[0]->instrument_token);
+}
+
+// Tests that all field values for an IBAN sent from the server are copied on
+// the client.
+TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SetsNewMaskedIban) {
+  Iban server_iban = test::GetServerIban();
+
+  AutofillWalletSpecifics masked_iban_specifics;
+  SetAutofillWalletSpecificsFromMaskedIban(server_iban, &masked_iban_specifics);
+
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
+  EXPECT_CALL(*backend(), NotifyOfIbanChanged(AddChange(
+                              base::NumberToString(server_iban.instrument_id()),
+                              server_iban)));
+  StartSyncing({masked_iban_specifics});
+
+  EXPECT_THAT(GetAllLocalData(),
+              UnorderedElementsAre(EqualsSpecifics(masked_iban_specifics)));
+  std::vector<std::unique_ptr<Iban>> iban_vector;
+  ASSERT_TRUE(table()->GetServerIbans(iban_vector));
+  EXPECT_THAT(iban_vector, UnorderedElementsAre(testing::Pointee(server_iban)));
+}
+
+// Tests that when there are existing IBANs, the data from the server is what
+// the client ends up with.
+TEST_F(AutofillWalletSyncBridgeTest,
+       MergeFullSyncData_UpdateAndRemoveMaskedIban) {
+  Iban server_iban1 = test::GetServerIban();
+  table()->SetServerIbans({server_iban1});
+
+  // Create a `server_iban2` which has the same data as `server_iban1` but with
+  // a different nickname.
+  Iban server_iban2 = server_iban1;
+  server_iban2.set_nickname(u"Another nickname");
+  AutofillWalletSpecifics masked_iban2_specifics;
+  SetAutofillWalletSpecificsFromMaskedIban(server_iban2,
+                                           &masked_iban2_specifics);
+
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
+  EXPECT_CALL(*backend(), NotifyOfIbanChanged(RemoveChange(base::NumberToString(
+                              server_iban1.instrument_id()))));
+  EXPECT_CALL(
+      *backend(),
+      NotifyOfIbanChanged(AddChange(
+          base::NumberToString(server_iban2.instrument_id()), server_iban2)));
+  StartSyncing({masked_iban2_specifics});
+
+  std::vector<std::unique_ptr<Iban>> iban_vector;
+  ASSERT_TRUE(table()->GetServerIbans(iban_vector));
+  EXPECT_THAT(iban_vector,
+              UnorderedElementsAre(testing::Pointee(server_iban2)));
 }
 
 TEST_F(AutofillWalletSyncBridgeTest, LoadMetadataCalled) {

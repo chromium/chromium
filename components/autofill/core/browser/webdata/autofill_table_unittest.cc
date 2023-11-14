@@ -1160,8 +1160,8 @@ TEST_F(AutofillTableTest, MaskedServerIban) {
 
   EXPECT_TRUE(table_->SetServerIbans(ibans));
 
-  std::vector<std::unique_ptr<Iban>> masked_server_ibans =
-      table_->GetServerIbans();
+  std::vector<std::unique_ptr<Iban>> masked_server_ibans;
+  EXPECT_TRUE(table_->GetServerIbans(masked_server_ibans));
   EXPECT_EQ(3U, masked_server_ibans.size());
   EXPECT_THAT(ibans, UnorderedElementsAre(*masked_server_ibans[0],
                                           *masked_server_ibans[1],
@@ -2220,7 +2220,7 @@ TEST_F(AutofillTableTest, SetGetRemoveServerIbanMetadata) {
   // Set the metadata.
   iban.set_use_count(50);
   iban.set_use_date(AutofillClock::Now());
-  EXPECT_TRUE(table_->AddOrUpdateServerIbanMetadata(iban));
+  EXPECT_TRUE(table_->AddOrUpdateServerIbanMetadata(iban.GetMetadata()));
 
   // Make sure it was added correctly.
   std::vector<AutofillMetadata> outputs = table_->GetServerIbansMetadata();
@@ -2305,14 +2305,15 @@ TEST_F(AutofillTableTest, UpdateServerIbanMetadataDoesNotChangeData) {
   std::vector<Iban> inputs = {test::GetServerIban()};
   table_->SetServerIbans(inputs);
 
-  std::vector<std::unique_ptr<Iban>> outputs = table_->GetServerIbans();
+  std::vector<std::unique_ptr<Iban>> outputs;
+  EXPECT_TRUE(table_->GetServerIbans(outputs));
   ASSERT_EQ(1U, outputs.size());
   EXPECT_EQ(inputs[0].instrument_id(), outputs[0]->instrument_id());
 
   // Update metadata in the IBAN.
   outputs[0]->set_use_count(outputs[0]->use_count() + 1);
 
-  EXPECT_TRUE(table_->AddOrUpdateServerIbanMetadata(*outputs[0]));
+  EXPECT_TRUE(table_->AddOrUpdateServerIbanMetadata(outputs[0]->GetMetadata()));
 
   // Make sure it was updated correctly.
   std::vector<AutofillMetadata> output_metadata =
@@ -2321,7 +2322,8 @@ TEST_F(AutofillTableTest, UpdateServerIbanMetadataDoesNotChangeData) {
   EXPECT_EQ(outputs[0]->GetMetadata(), output_metadata[0]);
 
   // Make sure nothing else got updated.
-  std::vector<std::unique_ptr<Iban>> outputs2 = table_->GetServerIbans();
+  std::vector<std::unique_ptr<Iban>> outputs2;
+  EXPECT_TRUE(table_->GetServerIbans(outputs2));
   ASSERT_EQ(1U, outputs2.size());
   EXPECT_EQ(0, outputs[0]->Compare(*outputs2[0]));
 }

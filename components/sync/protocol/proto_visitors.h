@@ -1560,6 +1560,14 @@ VISIT_PROTO_FIELDS(const sync_pb::WalletCreditCardCloudTokenData& proto) {
   VISIT(instrument_token);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::WalletMaskedIban& proto) {
+  VISIT(instrument_id);
+  VISIT(prefix);
+  VISIT(suffix);
+  VISIT(length);
+  VISIT(nickname);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::WebApkIconInfo& proto) {
   VISIT(size_in_px);
   VISIT(url);

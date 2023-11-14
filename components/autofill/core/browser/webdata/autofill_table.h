@@ -806,7 +806,7 @@ class AutofillTable : public WebDatabaseTable,
   bool RemoveServerCardMetadata(const std::string& id);
   bool GetServerCardsMetadata(
       std::map<std::string, AutofillMetadata>* cards_metadata) const;
-  bool AddOrUpdateServerIbanMetadata(const Iban& iban);
+  bool AddOrUpdateServerIbanMetadata(const AutofillMetadata& iban_metadata);
   bool RemoveServerIbanMetadata(const std::string& instrument_id);
   std::vector<AutofillMetadata> GetServerIbansMetadata() const;
 
@@ -821,8 +821,9 @@ class AutofillTable : public WebDatabaseTable,
       std::vector<std::unique_ptr<CreditCardCloudTokenData>>*
           credit_card_cloud_token_data);
 
-  // Gets the list of server IBANs from the database.
-  std::vector<std::unique_ptr<Iban>> GetServerIbans();
+  // Returns true if server IBANs are successfully returned via `ibans` from
+  // the database.
+  bool GetServerIbans(std::vector<std::unique_ptr<Iban>>& ibans);
   // Overwrite the IBANs in the database with the given `ibans`.
   bool SetServerIbans(const std::vector<Iban>& ibans);
 

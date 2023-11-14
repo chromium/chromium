@@ -2401,19 +2401,21 @@ bool AutofillTable::GetServerCardsMetadata(
   return s.Succeeded();
 }
 
-bool AutofillTable::AddOrUpdateServerIbanMetadata(const Iban& iban) {
-  CHECK_EQ(Iban::RecordType::kServerIban, iban.record_type());
+bool AutofillTable::AddOrUpdateServerIbanMetadata(
+    const AutofillMetadata& iban_metadata) {
   // There's no need to verify if removal succeeded, because if it's a new IBAN,
   // the removal call won't do anything.
-  RemoveServerIbanMetadata(base::NumberToString(iban.instrument_id()));
+  RemoveServerIbanMetadata(iban_metadata.id);
 
   sql::Statement s;
   InsertBuilder(db_, s, kMaskedIbansMetadataTable,
                 {kInstrumentId, kUseCount, kUseDate});
-  s.BindString(0, iban.GetMetadata().id);
-  s.BindInt64(1, iban.GetMetadata().use_count);
-  s.BindTime(2, iban.GetMetadata().use_date);
-  return s.Run();
+  s.BindString(0, iban_metadata.id);
+  s.BindInt64(1, iban_metadata.use_count);
+  s.BindTime(2, iban_metadata.use_date);
+  s.Run();
+
+  return db_->GetLastChangeCount() > 0;
 }
 
 bool AutofillTable::RemoveServerIbanMetadata(const std::string& instrument_id) {
@@ -2543,14 +2545,14 @@ bool AutofillTable::GetCreditCardCloudTokenData(
   return s.Succeeded();
 }
 
-std::vector<std::unique_ptr<Iban>> AutofillTable::GetServerIbans() {
+bool AutofillTable::GetServerIbans(std::vector<std::unique_ptr<Iban>>& ibans) {
   sql::Statement s;
   SelectBuilder(db_, s, kMaskedIbansTable,
                 {kInstrumentId, kUseCount, kUseDate, kNickname, kPrefix,
                  kSuffix, kLength},
                 "LEFT OUTER JOIN masked_ibans_metadata USING (instrument_id)");
 
-  std::vector<std::unique_ptr<Iban>> ibans;
+  ibans.clear();
   while (s.Step()) {
     int index = 0;
     int64_t instrument_id = 0;
@@ -2568,7 +2570,7 @@ std::vector<std::unique_ptr<Iban>> AutofillTable::GetServerIbans() {
     ibans.push_back(std::move(iban));
   }
 
-  return ibans;
+  return s.Succeeded();
 }
 
 bool AutofillTable::SetServerIbans(const std::vector<Iban>& ibans) {
@@ -2597,7 +2599,7 @@ bool AutofillTable::SetServerIbans(const std::vector<Iban>& ibans) {
     s.Reset(/*clear_bound_vars=*/true);
 
     // Save the use count and use date of the IBAN.
-    AddOrUpdateServerIbanMetadata(iban);
+    AddOrUpdateServerIbanMetadata(iban.GetMetadata());
   }
   return transaction.Commit();
 }

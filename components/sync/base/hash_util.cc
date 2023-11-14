@@ -50,6 +50,8 @@ std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
           {"payment_instrument:",
            base::NumberToString(
                specifics.payment_instrument().instrument_id())});
+    case sync_pb::AutofillWalletSpecifics::MASKED_IBAN:
+      return specifics.masked_iban().instrument_id();
     case sync_pb::AutofillWalletSpecifics::UNKNOWN:
       NOTREACHED();
       return std::string();

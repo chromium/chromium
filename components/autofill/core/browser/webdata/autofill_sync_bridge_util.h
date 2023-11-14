@@ -19,6 +19,7 @@ class AutofillWalletUsageData;
 class AutofillTable;
 class CreditCard;
 struct CreditCardCloudTokenData;
+class Iban;
 struct PaymentsCustomerData;
 class VirtualCardUsageData;
 
@@ -49,6 +50,13 @@ void SetAutofillWalletSpecificsFromPaymentsCustomerData(
 // |cloud_token_data|. If |enforce_utf8|, ids are encoded into UTF-8.
 void SetAutofillWalletSpecificsFromCreditCardCloudTokenData(
     const CreditCardCloudTokenData& cloud_token_data,
+    sync_pb::AutofillWalletSpecifics* wallet_specifics,
+    bool enforce_utf8 = false);
+
+// Sets the field of the `wallet_specifics` based on the specified
+// `iban`. If `enforce_utf8`, ids are encoded into UTF-8.
+void SetAutofillWalletSpecificsFromMaskedIban(
+    const Iban& iban,
     sync_pb::AutofillWalletSpecifics* wallet_specifics,
     bool enforce_utf8 = false);
 
@@ -98,9 +106,11 @@ void CopyRelevantWalletMetadataFromDisk(
     std::vector<CreditCard>* cards_from_server);
 
 // Populates the wallet datatypes from the sync data.
+// TODO(crbug.com/1500315): Refactor to take parameters as reference.
 void PopulateWalletTypesFromSyncData(
     const ::syncer::EntityChangeList& entity_data,
     std::vector<CreditCard>* wallet_cards,
+    std::vector<Iban>& wallet_ibans,
     std::vector<PaymentsCustomerData>* customer_data,
     std::vector<CreditCardCloudTokenData>* cloud_token_data);
 

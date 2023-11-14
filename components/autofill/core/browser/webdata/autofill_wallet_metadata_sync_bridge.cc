@@ -52,6 +52,7 @@ std::string GetClientTagForSpecificsId(WalletMetadataSpecifics::Type type,
       return "address-" + specifics_id;
     case WalletMetadataSpecifics::CARD:
       return "card-" + specifics_id;
+    case WalletMetadataSpecifics::IBAN:
     case WalletMetadataSpecifics::UNKNOWN:
       NOTREACHED();
       return "";
@@ -234,6 +235,7 @@ bool AddServerMetadata(AutofillTable* table,
   switch (type) {
     case WalletMetadataSpecifics::CARD:
       return table->AddServerCardMetadata(metadata);
+    case WalletMetadataSpecifics::IBAN:
     // ADDRESS metadata syncing is deprecated.
     case WalletMetadataSpecifics::ADDRESS:
     case WalletMetadataSpecifics::UNKNOWN:
@@ -248,6 +250,7 @@ bool RemoveServerMetadata(AutofillTable* table,
   switch (type) {
     case WalletMetadataSpecifics::CARD:
       return table->RemoveServerCardMetadata(id);
+    case WalletMetadataSpecifics::IBAN:
     // ADDRESS metadata syncing is deprecated.
     case WalletMetadataSpecifics::ADDRESS:
     case WalletMetadataSpecifics::UNKNOWN:
@@ -262,6 +265,7 @@ bool UpdateServerMetadata(AutofillTable* table,
   switch (type) {
     case WalletMetadataSpecifics::CARD:
       return table->UpdateServerCardMetadata(metadata);
+    case WalletMetadataSpecifics::IBAN:
     // ADDRESS metadata syncing is deprecated.
     case WalletMetadataSpecifics::ADDRESS:
     case WalletMetadataSpecifics::UNKNOWN:

@@ -72,6 +72,7 @@ class AutofillWebDataBackendImpl
   void NotifyOfAutofillProfileChanged(
       const AutofillProfileChange& change) override;
   void NotifyOfCreditCardChanged(const CreditCardChange& change) override;
+  void NotifyOfIbanChanged(const IbanChange& change) override;
   void NotifyOnAutofillChangedBySync(syncer::ModelType model_type) override;
   void CommitChanges() override;
 

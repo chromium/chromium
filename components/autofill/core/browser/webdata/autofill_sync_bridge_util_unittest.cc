@@ -81,6 +81,8 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   // Add two credit cards.
   std::string credit_card_id_1 = "credit_card_1";
   std::string credit_card_id_2 = "credit_card_2";
+  // Add one IBAN.
+  std::string iban_id = "12345678";
   // Add the first card that has its billing address id set to the address's id.
   // No nickname is set.
   sync_pb::AutofillWalletSpecifics wallet_specifics_card1 =
@@ -116,12 +118,18 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
       "https://www.example.com/card.png");
   wallet_specifics_card2.mutable_masked_card()->set_product_description(
       "fake product description");
+  sync_pb::AutofillWalletSpecifics wallet_specifics_iban =
+      CreateAutofillWalletSpecificsForIban(
+          /*client_tag=*/iban_id);
   entity_data.push_back(EntityChange::CreateAdd(
       credit_card_id_1,
       SpecificsToEntity(wallet_specifics_card1, /*client_tag=*/"card-card1")));
   entity_data.push_back(EntityChange::CreateAdd(
       credit_card_id_2,
       SpecificsToEntity(wallet_specifics_card2, /*client_tag=*/"card-card2")));
+  entity_data.push_back(EntityChange::CreateAdd(
+      iban_id,
+      SpecificsToEntity(wallet_specifics_iban, /*client_tag=*/"iban")));
   // Add payments customer data.
   entity_data.push_back(EntityChange::CreateAdd(
       "deadbeef",
@@ -136,10 +144,11 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
                    /*client_tag=*/"token-data1")));
 
   std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
   std::vector<PaymentsCustomerData> customer_data;
   std::vector<CreditCardCloudTokenData> cloud_token_data;
-  PopulateWalletTypesFromSyncData(entity_data, &wallet_cards, &customer_data,
-                                  &cloud_token_data);
+  PopulateWalletTypesFromSyncData(entity_data, &wallet_cards, wallet_ibans,
+                                  &customer_data, &cloud_token_data);
 
   ASSERT_EQ(2U, wallet_cards.size());
 
