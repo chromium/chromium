@@ -1,4 +1,4 @@
-<style include="settings-shared passwords-shared">
+<style include="settings-shared passwords-shared cr-screen-reader-only">
   .second-column {
     align-items: center;
     display: flex;
@@ -20,12 +20,18 @@
     vertical-align: middle;
   }
 </style>
-
 <div class="list-item type-column" role="row">
   <img id="ibanImage" src="chrome://settings/images/iban.svg" alt="">
-  <div class="summary-column" role="cell">
-    <div id="value" class="ellipses">[[iban.metadata.summaryLabel]]</div>
-    <div id="nickname" class="ellipses sub-label">[[iban.nickname]]</div>
+  <div class="summary-column cr-screen-reader-only-host-node" role="cell">
+    <div class="cr-screen-reader-only">
+      [[getA11yIbanDescription_(iban)]], [[iban.nickname]]
+    </div>
+    <div id="value" class="ellipses" aria-hidden="true">
+      [[iban.metadata.summaryLabel]]
+    </div>
+    <div id="nickname" class="ellipses sub-label" aria-hidden="true">
+      [[iban.nickname]]
+    </div>
   </div>
   <div role="cell" class="second-column">
     <div id="paymentsIndicator"

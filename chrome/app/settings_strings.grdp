@@ -533,7 +533,7 @@
   <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_FOR_IBAN" desc="The (accessibility) title of a button, which brings up a menu of actions that can be taken on a stored IBAN (International Bank Account Number). The IBAN is described by its nickname.">
     More actions for <ph name="IBAN_DESCRIPTION">$1<ex>My Doctor's IBAN</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_FOR_IBAN_DESCRIPTION" desc="The (accessibility) IBAN (International Bank Account Number) description from the last 4 digits of the IBAN value.">
+  <message name="IDS_SETTINGS_AUTOFILL_A11Y_IBAN_DESCRIPTION" desc="The (accessibility) IBAN (International Bank Account Number) description from the last 4 digits of the IBAN value.">
    IBAN ending in <ph name="LAST_FOUR_DIGITS">$1<ex>1234</ex></ph>
   </message>
   <message name="IDS_SETTINGS_ADD_IBAN_TITLE" desc="The title for the dialog that's shown when editing an IBAN (International Bank Account Number).">
