@@ -101,7 +101,8 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
 
   // display::DisplayManagerObserver:
   void OnWillProcessDisplayChanges() override;
-  void OnDidProcessDisplayChanges() override;
+  void OnDidProcessDisplayChanges(
+      const DisplayConfigurationChange& configuration_change) override;
 
   // Overridden from ash::TabletModeObserver:
   void OnTabletModeStarted() override;

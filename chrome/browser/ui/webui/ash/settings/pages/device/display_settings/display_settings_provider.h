@@ -41,7 +41,8 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
   void OnTabletModeEventsBlockingChanged() override;
 
   // display::DisplayManagerObserver:
-  void OnDidProcessDisplayChanges() override;
+  void OnDidProcessDisplayChanges(
+      const DisplayConfigurationChange& configuration_change) override;
 
  private:
   mojo::RemoteSet<mojom::TabletModeObserver> tablet_mode_observers_;

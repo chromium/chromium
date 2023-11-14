@@ -131,7 +131,7 @@ TEST_F(DisplaySettingsProviderTest, DisplayConfigurationObservation) {
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop().RunUntilIdle();
 
-  provider_->OnDidProcessDisplayChanges();
+  provider_->OnDidProcessDisplayChanges(/*configuration_change=*/{{}, {}, {}});
   fake_observer.WaitForDisplayConfigurationChanged();
 
   EXPECT_EQ(1u, fake_observer.num_display_configuration_changed_calls());
