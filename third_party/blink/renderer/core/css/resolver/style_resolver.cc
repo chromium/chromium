@@ -2150,8 +2150,9 @@ bool StyleResolver::CacheSuccess::InheritedVariablesChanged(
   if (!cached_matched_properties) {
     return false;
   }
-  return cached_matched_properties->computed_style->InheritedVariables() !=
-         builder.InheritedVariables();
+  return !base::ValuesEquivalent(
+      cached_matched_properties->computed_style->InheritedVariables(),
+      builder.InheritedVariables());
 }
 
 bool StyleResolver::CacheSuccess::LineHeightChanged(
