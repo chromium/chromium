@@ -128,7 +128,6 @@ suite('<settings-cups-printers-entry>', () => {
   // Verify the correct printer status icon is shown based on the printer's
   // status reason.
   test('savedPrinterCorrectPrinterStatusIcon', () => {
-    const jelly_enabled = loadTimeData.getValue('isJellyEnabled');
     initializePrinterEntryTestElement();
     const printerStatusReasonCache = new Map();
     printerStatusReasonCache.set('id1', PrinterStatusReason.NO_ERROR);
@@ -150,56 +149,35 @@ suite('<settings-cups-printers-entry>', () => {
     assertTrue(!!printerSubtext);
 
     // Start at the unknown state.
-    if (jelly_enabled) {
-      assertEquals(
-          'os-settings:printer-status-illo-grey', printerStatusIcon.icon);
-    } else {
-      assertEquals('os-settings:printer-status-grey', printerStatusIcon.icon);
-    }
+    assertEquals(
+        'os-settings:printer-status-illo-grey', printerStatusIcon.icon);
     assertEquals('', printerSubtext.textContent?.trim());
 
     // Set to an low severity error status reason.
     printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id2');
-    if (jelly_enabled) {
-      assertEquals(
-          'os-settings:printer-status-illo-orange', printerStatusIcon.icon);
-    } else {
-      assertEquals('os-settings:printer-status-orange', printerStatusIcon.icon);
-    }
+    assertEquals(
+        'os-settings:printer-status-illo-orange', printerStatusIcon.icon);
     assertEquals(
         loadTimeData.getString('printerStatusOutOfPaper'),
         printerSubtext.textContent!.trim());
 
     // Set to a good status reason.
     printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id1');
-    if (jelly_enabled) {
-      assertEquals(
-          'os-settings:printer-status-illo-green', printerStatusIcon.icon);
-    } else {
-      assertEquals('os-settings:printer-status-green', printerStatusIcon.icon);
-    }
+    assertEquals(
+        'os-settings:printer-status-illo-green', printerStatusIcon.icon);
     assertEquals('', printerSubtext.textContent?.trim());
 
     // Set to a high severity error status reason.
     printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id3');
-    if (jelly_enabled) {
-      assertEquals(
-          'os-settings:printer-status-illo-red', printerStatusIcon.icon);
-    } else {
-      assertEquals('os-settings:printer-status-red', printerStatusIcon.icon);
-    }
+    assertEquals('os-settings:printer-status-illo-red', printerStatusIcon.icon);
     assertEquals(
         loadTimeData.getString('printerStatusPrinterUnreachable'),
         printerSubtext.textContent!.trim());
 
     // Set to unknown status reason.
     printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id4');
-    if (jelly_enabled) {
-      assertEquals(
-          'os-settings:printer-status-illo-green', printerStatusIcon.icon);
-    } else {
-      assertEquals('os-settings:printer-status-green', printerStatusIcon.icon);
-    }
+    assertEquals(
+        'os-settings:printer-status-illo-green', printerStatusIcon.icon);
     assertEquals('', printerSubtext.textContent?.trim());
   });
 
