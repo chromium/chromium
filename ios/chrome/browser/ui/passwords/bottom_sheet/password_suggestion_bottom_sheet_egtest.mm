@@ -218,9 +218,10 @@ id<GREYMatcher> NavigationBarEditButton() {
   // Verify that the subtitle string appears.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SubtitleString(URL)];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::StaticTextWithAccessibilityLabel(
+                     l10n_util::GetNSString(
+                         IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
       performAction:grey_tap()];
 
   // No histogram logged because there is only 1 credential shown to the user.
@@ -262,8 +263,9 @@ id<GREYMatcher> NavigationBarEditButton() {
         waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
 
     [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityLabel(l10n_util::GetNSString(
-                       IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+                   chrome_test_util::StaticTextWithAccessibilityLabel(
+                       l10n_util::GetNSString(
+                           IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
         performAction:grey_tap()];
 
     [self verifyPasswordFieldsHaveBeenFilled:@"user"];
@@ -617,9 +619,10 @@ id<GREYMatcher> NavigationBarEditButton() {
       @"Unexpected histogram error for password bottom sheet username tapped "
       @"minimized state");
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::StaticTextWithAccessibilityLabel(
+                     l10n_util::GetNSString(
+                         IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
       performAction:grey_tap()];
 
   GREYAssertNil(
@@ -836,8 +839,9 @@ id<GREYMatcher> NavigationBarEditButton() {
 
     // Verify that the "Use Password" and "No Thanks" buttons are still visible.
     [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityLabel(l10n_util::GetNSString(
-                       IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+                   chrome_test_util::StaticTextWithAccessibilityLabel(
+                       l10n_util::GetNSString(
+                           IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
         assertWithMatcher:grey_notNil()];
 
     [[EarlGrey selectElementWithMatcher:
@@ -850,8 +854,9 @@ id<GREYMatcher> NavigationBarEditButton() {
         assertWithMatcher:grey_notNil()];
 
     [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityLabel(l10n_util::GetNSString(
-                       IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+                   chrome_test_util::StaticTextWithAccessibilityLabel(
+                       l10n_util::GetNSString(
+                           IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
         performAction:grey_tap()];
 
     [self verifyPasswordFieldsHaveBeenFilled:@"user"];
@@ -902,9 +907,10 @@ id<GREYMatcher> NavigationBarEditButton() {
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user2")];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user2")]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::StaticTextWithAccessibilityLabel(
+                     l10n_util::GetNSString(
+                         IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
       performAction:grey_tap()];
   [self verifyPasswordFieldsHaveBeenFilled:@"user2"];
 
@@ -922,9 +928,10 @@ id<GREYMatcher> NavigationBarEditButton() {
       selectElementWithMatcher:grey_allOf(titleMatcher,
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::StaticTextWithAccessibilityLabel(
+                     l10n_util::GetNSString(
+                         IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
       performAction:grey_tap()];
   [self verifyPasswordFieldsHaveBeenFilled:@"user1"];
 }
@@ -969,9 +976,10 @@ id<GREYMatcher> NavigationBarEditButton() {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user2")];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::StaticTextWithAccessibilityLabel(
+                     l10n_util::GetNSString(
+                         IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
       performAction:grey_tap()];
   [self verifyPasswordFieldsHaveBeenFilled:@"user1"];
 }
@@ -1028,9 +1036,10 @@ id<GREYMatcher> NavigationBarEditButton() {
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_nil()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::StaticTextWithAccessibilityLabel(
+                     l10n_util::GetNSString(
+                         IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
       performAction:grey_tap()];
 
   [self verifyPasswordFieldsHaveBeenFilled:@"user1"];

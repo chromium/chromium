@@ -338,18 +338,18 @@ const CGFloat kFaviconBadgeSideLength = 24;
   // Update fonts for specific content sizes.
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
-    self.primaryActionButton.titleLabel.font =
-        PreferredFontForTextStyleWithMaxCategory(
-            UIFontTextStyleHeadline,
-            self.traitCollection.preferredContentSizeCategory,
-            UIContentSizeCategoryExtraExtraExtraLarge);
+    SetConfigurationFont(self.primaryActionButton,
+                         PreferredFontForTextStyleWithMaxCategory(
+                             UIFontTextStyleHeadline,
+                             self.traitCollection.preferredContentSizeCategory,
+                             UIContentSizeCategoryExtraExtraExtraLarge));
+
+    UIFont* newFont = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     if (self.secondaryActionString) {
-      self.secondaryActionButton.titleLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+      SetConfigurationFont(self.secondaryActionButton, newFont);
     }
     if (self.tertiaryActionString) {
-      self.tertiaryActionButton.titleLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+      SetConfigurationFont(self.tertiaryActionButton, newFont);
     }
   }
 
@@ -807,11 +807,9 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [primaryActionButton addTarget:self
                           action:@selector(didTapPrimaryActionButton)
                 forControlEvents:UIControlEventTouchUpInside];
-  [primaryActionButton setTitle:self.primaryActionString
-                       forState:UIControlStateNormal];
+  SetConfigurationTitle(primaryActionButton, self.primaryActionString);
   primaryActionButton.accessibilityIdentifier =
       kConfirmationAlertPrimaryActionAccessibilityIdentifier;
-  primaryActionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
 
   return primaryActionButton;
 }

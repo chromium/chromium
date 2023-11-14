@@ -61,14 +61,13 @@ void SignInWithPromoFromAccountSettings(FakeSystemIdentity* fake_identity,
                                    fake_identity.userEmail)]
       performAction:grey_tap()];
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityLabel(
-                                       l10n_util::GetNSStringF(
-                                           IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
-                                           base::SysNSStringToUTF16(
-                                               fake_identity.userGivenName))),
-                                   grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+      selectElementWithMatcher:
+          grey_allOf(
+              chrome_test_util::StaticTextWithAccessibilityLabel(
+                  l10n_util::GetNSStringF(
+                      IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
+                      base::SysNSStringToUTF16(fake_identity.userGivenName))),
+              grey_sufficientlyVisible(), nil)] performAction:grey_tap()];
   if (expect_history_sync) {
     [[EarlGrey selectElementWithMatcher:
                    chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]

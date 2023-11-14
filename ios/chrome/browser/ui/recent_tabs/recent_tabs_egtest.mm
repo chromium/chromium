@@ -495,8 +495,9 @@ GURL TestPageURL() {
   // Set the policy and dismiss the bottom sheet that it causes.
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE))]
+      selectElementWithMatcher:
+          chrome_test_util::StaticTextWithAccessibilityLabel(
+              l10n_util::GetNSString(IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE))]
       performAction:grey_tap()];
 
   OpenRecentTabsPanel();
@@ -692,8 +693,9 @@ GURL TestPageURL() {
   // Set the policy and dismiss the bottom sheet that it causes.
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE))]
+      selectElementWithMatcher:
+          chrome_test_util::StaticTextWithAccessibilityLabel(
+              l10n_util::GetNSString(IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE))]
       performAction:grey_tap()];
 
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]

@@ -88,8 +88,8 @@ BOOL WaitForKeyboardToAppear() {
 
 // Matcher for the bottom sheet's "Continue" button.
 id<GREYMatcher> ContinueButton() {
-  return grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_CONTINUE));
+  return chrome_test_util::StaticTextWithAccessibilityLabelId(
+      IDS_IOS_PAYMENT_BOTTOM_SHEET_CONTINUE);
 }
 
 // Matcher for the bottom sheet's "Use Keyboard" button.

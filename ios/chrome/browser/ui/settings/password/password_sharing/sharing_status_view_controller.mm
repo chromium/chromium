@@ -598,9 +598,7 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   [doneButton addTarget:self
                  action:@selector(doneButtonTapped)
        forControlEvents:UIControlEventTouchUpInside];
-  [doneButton setTitle:l10n_util::GetNSString(IDS_DONE)
-              forState:UIControlStateNormal];
-  doneButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+  SetConfigurationTitle(doneButton, l10n_util::GetNSString(IDS_DONE));
   doneButton.accessibilityIdentifier = kSharingStatusDoneButtonId;
   return doneButton;
 }
