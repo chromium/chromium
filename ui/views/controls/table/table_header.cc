@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/i18n/rtl.h"
@@ -88,7 +89,8 @@ class TableHeader::HighlightPathGenerator
 
 using Columns = std::vector<TableView::VisibleColumn>;
 
-TableHeader::TableHeader(TableView* table) : table_(table) {
+TableHeader::TableHeader(base::WeakPtr<TableView> table)
+    : table_(std::move(table)) {
   HighlightPathGenerator::Install(
       this, std::make_unique<TableHeader::HighlightPathGenerator>());
   FocusRing::Install(this);
@@ -365,7 +367,7 @@ void TableHeader::ToggleSortOrder(const ui::LocatedEvent& event) {
     return;
 
   const int x = GetMirroredXInView(event.x());
-  const absl::optional<size_t> index = GetClosestVisibleColumnIndex(table_, x);
+  const absl::optional<size_t> index = GetClosestVisibleColumnIndex(*table_, x);
   if (!index.has_value())
     return;
   const TableView::VisibleColumn& column(
@@ -381,7 +383,7 @@ absl::optional<size_t> TableHeader::GetResizeColumn(int x) const {
   if (columns.empty())
     return absl::nullopt;
 
-  const absl::optional<size_t> index = GetClosestVisibleColumnIndex(table_, x);
+  const absl::optional<size_t> index = GetClosestVisibleColumnIndex(*table_, x);
   DCHECK(index.has_value());
   const TableView::VisibleColumn& column(
       table_->GetVisibleColumn(index.value()));

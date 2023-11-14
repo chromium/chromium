@@ -721,7 +721,7 @@ std::u16string TableView::GetTooltipText(const gfx::Point& p) const {
   }
 
   const int x = GetMirroredXInView(p.x());
-  const absl::optional<size_t> column = GetClosestVisibleColumnIndex(this, x);
+  const absl::optional<size_t> column = GetClosestVisibleColumnIndex(*this, x);
   if (!column.has_value() || x < visible_columns_[column.value()].x ||
       x > (visible_columns_[column.value()].x +
            visible_columns_[column.value()].width)) {
@@ -1174,7 +1174,8 @@ void TableView::CreateHeaderIfNecessary(ScrollView* scroll_view) {
   if (header_ || (columns_.size() == 1 && columns_[0].title.empty()))
     return;
 
-  header_ = scroll_view->SetHeader(std::make_unique<TableHeader>(this));
+  header_ = scroll_view->SetHeader(
+      std::make_unique<TableHeader>(weak_factory_.GetWeakPtr()));
 
   // The header accessibility view should be the first row, to match the
   // original view accessibility construction.
