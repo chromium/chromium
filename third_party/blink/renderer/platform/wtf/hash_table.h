@@ -1518,9 +1518,8 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::AllocateTable(
       "empty value cannot be zero for things with a vtable");
   static_assert(
       Allocator::kIsGarbageCollected ||
-          ((!IsDisallowNew<KeyType>::value || !IsTraceable<KeyType>::value) &&
-           (!IsDisallowNew<ValueType>::value ||
-            !IsTraceable<ValueType>::value)),
+          ((!IsDisallowNew<KeyType> || !IsTraceable<KeyType>::value) &&
+           (!IsDisallowNew<ValueType> || !IsTraceable<ValueType>::value)),
       "Cannot put DISALLOW_NEW objects that "
       "have trace methods into an off-heap HashTable");
 
@@ -1993,8 +1992,8 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::TraceTable(
     // weakly multiple times.
     Allocator::template TraceHashTableBackingWeakly<ValueType, HashTable>(
         visitor, table, &table_,
-        WeakProcessingHashTableHelper<WeakHandlingTrait<ValueType>::value, Key,
-                                      Value, Extractor, Traits, KeyTraits,
+        WeakProcessingHashTableHelper<kWeakHandlingTrait<ValueType>, Key, Value,
+                                      Extractor, Traits, KeyTraits,
                                       Allocator>::Process,
         this);
   }
