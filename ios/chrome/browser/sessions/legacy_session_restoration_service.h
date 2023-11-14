@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -29,6 +30,7 @@ class LegacySessionRestorationService final
  public:
   LegacySessionRestorationService(
       bool is_pinned_tabs_enabled,
+      const base::FilePath& storage_path,
       SessionServiceIOS* session_service_ios,
       sessions::TabRestoreService* tab_restore_service);
 
@@ -48,6 +50,8 @@ class LegacySessionRestorationService final
   std::unique_ptr<web::WebState> CreateUnrealizedWebState(
       Browser* browser,
       web::proto::WebStateStorage storage) final;
+  void DeleteDataForDiscardedSessions(const std::set<std::string>& identifiers,
+                                      base::OnceClosure closure) final;
   void InvokeClosureWhenBackgroundProcessingDone(
       base::OnceClosure closure) final;
 
@@ -67,6 +71,9 @@ class LegacySessionRestorationService final
   // allow easily testing code controlled by this boolean independently of
   // whether the feature is enabled in the application).
   const bool is_pinned_tabs_enabled_;
+
+  // Root directory in which the data should be written to or loaded from.
+  const base::FilePath storage_path_;
 
   // Service used to schedule and save the data to storage.
   __strong SessionServiceIOS* session_service_ios_ = nil;

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SESSIONS_SESSION_RESTORATION_SERVICE_H_
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -77,6 +78,13 @@ class SessionRestorationService : public KeyedService {
   virtual std::unique_ptr<web::WebState> CreateUnrealizedWebState(
       Browser* browser,
       web::proto::WebStateStorage storage) = 0;
+
+  // Deletes all data for sessions with `identifiers` and invoke `closure`
+  // on the calling sequence when the data has been deleted. Can be called
+  // at any time.
+  virtual void DeleteDataForDiscardedSessions(
+      const std::set<std::string>& identifiers,
+      base::OnceClosure closure) = 0;
 
   // Requests that `closure` is invoked when all pending background tasks
   // are complete. The `closure` may be invoked on a background sequence,

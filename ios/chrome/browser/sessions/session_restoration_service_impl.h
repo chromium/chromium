@@ -8,7 +8,7 @@
 #include <map>
 #include <set>
 
-#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
@@ -55,6 +55,8 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
   std::unique_ptr<web::WebState> CreateUnrealizedWebState(
       Browser* browser,
       web::proto::WebStateStorage storage) final;
+  void DeleteDataForDiscardedSessions(const std::set<std::string>& identifiers,
+                                      base::OnceClosure closure) final;
   void InvokeClosureWhenBackgroundProcessingDone(
       base::OnceClosure closure) final;
 

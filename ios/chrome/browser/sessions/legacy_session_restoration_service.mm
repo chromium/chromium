@@ -18,9 +18,11 @@
 
 LegacySessionRestorationService::LegacySessionRestorationService(
     bool is_pinned_tabs_enabled,
+    const base::FilePath& storage_path,
     SessionServiceIOS* session_service_ios,
     sessions::TabRestoreService* tab_restore_service)
     : is_pinned_tabs_enabled_(is_pinned_tabs_enabled),
+      storage_path_(storage_path),
       session_service_ios_(session_service_ios),
       tab_restore_service_(tab_restore_service) {
   DCHECK(session_service_ios_);
@@ -116,6 +118,19 @@ LegacySessionRestorationService::CreateUnrealizedWebState(
       [[CRWSessionStorage alloc] initWithProto:storage
                               uniqueIdentifier:web::WebStateID::NewUnique()
                               stableIdentifier:[[NSUUID UUID] UUIDString]]);
+}
+
+void LegacySessionRestorationService::DeleteDataForDiscardedSessions(
+    const std::set<std::string>& identifiers,
+    base::OnceClosure closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NSMutableArray<NSString*>* sessions = [[NSMutableArray alloc] init];
+  for (const std::string& identifier : identifiers) {
+    [sessions addObject:base::SysUTF8ToNSString(identifier)];
+  }
+  [session_service_ios_ deleteSessions:sessions
+                             directory:storage_path_
+                            completion:std::move(closure)];
 }
 
 void LegacySessionRestorationService::InvokeClosureWhenBackgroundProcessingDone(

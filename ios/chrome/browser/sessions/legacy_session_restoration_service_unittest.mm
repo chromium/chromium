@@ -289,8 +289,8 @@ class LegacySessionRestorationServiceTest : public PlatformTest {
     // the code using the `is_pinned_tabs_enabled` is tested by the
     // deserialization code and does not need to be tested again here).
     service_ = std::make_unique<LegacySessionRestorationService>(
-        /* is_pinned_tabs_enabled */ true, session_service_ios,
-        /* tab_restore_service */ nullptr);
+        /*is_pinned_tabs_enabled=*/true, browser_state_->GetStatePath(),
+        session_service_ios, /*tab_restore_service=*/nullptr);
   }
 
   ~LegacySessionRestorationServiceTest() override { service_->Shutdown(); }
@@ -587,10 +587,9 @@ TEST_F(LegacySessionRestorationServiceTest,
   // Check that session metadata storage file and the active WebState storage
   // files are eventually saved.
   WaitForSessionSaveComplete();
-  EXPECT_EQ(ModifiedFiles(),
-            ExpectedStorageFilesForWebStates(
-                storage_path(), kIdentifier0,
-                /* expect_session_metadata_storage */ true, {}));
+  EXPECT_EQ(ModifiedFiles(), ExpectedStorageFilesForWebStates(
+                                 storage_path(), kIdentifier0,
+                                 /*expect_session_metadata_storage=*/true, {}));
 
   // Disconnect the Browser before destroying it.
   service()->Disconnect(&browser);
@@ -691,10 +690,10 @@ TEST_F(LegacySessionRestorationServiceTest, AdoptUnrealizedWebStateOnMove) {
 
   FilePathSet expected_browser0 = ExpectedStorageFilesForWebStates(
       storage_path(), kIdentifier0,
-      /* expect_session_metadata_storage */ true, {});
+      /*expect_session_metadata_storage=*/true, {});
   FilePathSet expected_browser1 = ExpectedStorageFilesForWebStates(
       storage_path(), kIdentifier1,
-      /* expect_session_metadata_storage */ true, {});
+      /*expect_session_metadata_storage=*/true, {});
 
   EXPECT_EQ(ModifiedFiles(), expected_browser0 + expected_browser1);
 
@@ -744,10 +743,9 @@ TEST_F(LegacySessionRestorationServiceTest, SavePendingChangesOnDisconnect) {
   // has been written to disk (because it was scheduled when the Browser
   // was disconnected as it contained pending changes).
   EXPECT_LT(base::Time::Now() - disconnect_time, kSaveDelay);
-  EXPECT_EQ(ModifiedFiles(),
-            ExpectedStorageFilesForWebStates(
-                storage_path(), kIdentifier0,
-                /* expect_session_metadata_storage */ true, {}));
+  EXPECT_EQ(ModifiedFiles(), ExpectedStorageFilesForWebStates(
+                                 storage_path(), kIdentifier0,
+                                 /*expect_session_metadata_storage=*/true, {}));
 }
 
 // Tests that histograms are correctly recorded.
@@ -815,13 +813,13 @@ TEST_F(LegacySessionRestorationServiceTest, CreateUnrealizedWebState) {
 
   // Record the list of expected files while the pointer to the newly created
   // WebState is still valid.
-  const FilePathSet expected_files = ExpectedStorageFilesForWebStates(
-      storage_path(), kIdentifier0,
-      /* expect_session_metadata_storage */ true,
-      {WebStateReference{
-          .web_state = web_state.get(),
-          .is_native_session_available = false,
-      }});
+  const FilePathSet expected_files =
+      ExpectedStorageFilesForWebStates(storage_path(), kIdentifier0,
+                                       /*expect_session_metadata_storage=*/true,
+                                       {WebStateReference{
+                                           .web_state = web_state.get(),
+                                           .is_native_session_available = false,
+                                       }});
 
   // Insert the WebState into the Browser's WebStateList and then wait for
   // the session to be saved to storage.
@@ -993,4 +991,39 @@ TEST_F(LegacySessionRestorationServiceTest, ScheduleSaveSessions) {
 
   WaitForBackgroundTaskComplete();
   EXPECT_EQ(ModifiedFiles(), FilePathSet{});
+}
+
+// Tests that calling DeleteDataForDiscardedSessions() deletes data for
+// discarded sessions and accept inexistant sessions identifiers.
+TEST_F(LegacySessionRestorationServiceTest, DeleteDataForDiscardedSessions) {
+  TestBrowser browser = TestBrowser(
+      browser_state(), std::make_unique<TestWebStateListDelegate>());
+  service()->SetSessionID(&browser, kIdentifier0);
+
+  // Insert a few WebStage in one of the Browser and wait for the changes
+  // to automatically be saved (this is because loading the pages will
+  // take time and may cause automatically saving the session).
+  InsertTabsWithUrls(browser, base::make_span(kURLs));
+  WaitForSessionSaveComplete();
+
+  EXPECT_EQ(ModifiedFiles(), ExpectedStorageFilesForBrowser(
+                                 storage_path(), kIdentifier0, &browser));
+
+  service()->Disconnect(&browser);
+  WaitForSessionSaveComplete();
+
+  SnapshotFiles();
+
+  // Ask for deletion of session for the disconnected Browser's identifier
+  // and for a non-existent identifier.
+  base::RunLoop run_loop;
+  service()->DeleteDataForDiscardedSessions({kIdentifier0, kIdentifier1},
+                                            run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Verify that the files for Browser have been deleted, but not the web
+  // session files.
+  EXPECT_EQ(DeletedFiles(), ExpectedStorageFilesForWebStates(
+                                storage_path(), kIdentifier0,
+                                /*expect_session_metadata=*/true, {}));
 }

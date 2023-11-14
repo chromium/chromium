@@ -11,6 +11,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/ranges/algorithm.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_internal_util.h"
@@ -88,6 +89,64 @@ std::unique_ptr<web::WebState> CreateWebState(
       base::BindOnce(&LoadWebStateSession, web_state_session_path));
 
   return web_state;
+}
+
+// Delete data for discarded sessions with `identifiers` in `storage_path`
+// on a background thread.
+void DeleteDataForSessions(const base::FilePath& storage_path,
+                           const std::set<std::string>& identifiers) {
+  for (const std::string& identifier : identifiers) {
+    const base::FilePath path = storage_path.Append(identifier);
+    std::ignore = ios::sessions::DeleteRecursively(path);
+  }
+}
+
+// An output iterator that counts how many time it has been incremented.
+// Allows to check if sets has non-empty intersection without allocating.
+template <typename T1, typename T2>
+struct CountingOutputIterator {
+  CountingOutputIterator& operator++() {
+    ++count;
+    return *this;
+  }
+  CountingOutputIterator& operator++(int) {
+    ++count;
+    return *this;
+  }
+
+  CountingOutputIterator& operator*() { return *this; }
+  CountingOutputIterator& operator=(const T1&) { return *this; }
+  CountingOutputIterator& operator=(const T2&) { return *this; }
+
+  uint32_t count = 0;
+};
+
+// Override of CountingOutputIterator<T1, T2> when types are identical.
+template <typename T>
+struct CountingOutputIterator<T, T> {
+  CountingOutputIterator& operator++() {
+    ++count;
+    return *this;
+  }
+  CountingOutputIterator& operator++(int) {
+    ++count;
+    return *this;
+  }
+
+  CountingOutputIterator& operator*() { return *this; }
+  CountingOutputIterator& operator=(const T&) { return *this; }
+
+  uint32_t count = 0;
+};
+
+// Returns whether the two sets have non-empty intersection.
+template <typename Range1, typename Range2>
+constexpr bool HasIntersection(Range1&& range1, Range2&& range2) {
+  auto result = base::ranges::set_intersection(
+      std::forward<Range1>(range1), std::forward<Range2>(range2),
+      CountingOutputIterator<decltype(*range1.begin()),
+                             decltype(*range2.begin())>{});
+  return result.count != 0;
 }
 
 }  // anonymous namespace
@@ -383,6 +442,17 @@ SessionRestorationServiceImpl::CreateUnrealizedWebState(
       browser->GetBrowserState(), web_state_id, std::move(metadata),
       base::ReturnValueOnce(std::move(storage)),
       base::ReturnValueOnce<NSData*>(nil));
+}
+
+void SessionRestorationServiceImpl::DeleteDataForDiscardedSessions(
+    const std::set<std::string>& identifiers,
+    base::OnceClosure closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!HasIntersection(identifiers, identifiers_));
+  task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&DeleteDataForSessions, storage_path_, identifiers),
+      std::move(closure));
 }
 
 void SessionRestorationServiceImpl::InvokeClosureWhenBackgroundProcessingDone(

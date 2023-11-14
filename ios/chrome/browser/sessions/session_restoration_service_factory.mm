@@ -48,16 +48,18 @@ SessionRestorationServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
 
+  const base::FilePath storage_path = browser_state->GetStatePath();
+
   // If the optimised session restoration format is not enabled, create a
   // LegacySessionRestorationService instance which wraps the legacy API.
   if (!web::features::UseSessionSerializationOptimizations()) {
     return std::make_unique<LegacySessionRestorationService>(
-        IsPinnedTabsEnabled(), [SessionServiceIOS sharedService],
+        IsPinnedTabsEnabled(), storage_path, [SessionServiceIOS sharedService],
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state));
   }
 
   return std::make_unique<SessionRestorationServiceImpl>(
-      base::Seconds(5), IsPinnedTabsEnabled(), browser_state->GetStatePath(),
+      base::Seconds(5), IsPinnedTabsEnabled(), storage_path,
       base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
