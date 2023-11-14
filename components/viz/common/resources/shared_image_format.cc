@@ -132,6 +132,10 @@ const char* SubsamplingToString(SharedImageFormat::Subsampling subsampling) {
   switch (subsampling) {
     case SharedImageFormat::Subsampling::k420:
       return "420";
+    case SharedImageFormat::Subsampling::k422:
+      return "422";
+    case SharedImageFormat::Subsampling::k444:
+      return "444";
   }
 }
 
@@ -292,30 +296,30 @@ gfx::Size SharedImageFormat::GetPlaneSize(int plane_index,
     return size;
   }
 
-  switch (plane_config()) {
-    case PlaneConfig::kY_U_V:
-    case PlaneConfig::kY_V_U:
-      if (plane_index == 0) {
-        return size;
-      } else {
-        DCHECK_EQ(subsampling(), Subsampling::k420);
-        return gfx::ScaleToCeiledSize(size, 0.5);
-      }
-    case PlaneConfig::kY_UV:
-      if (plane_index == 1) {
-        DCHECK_EQ(subsampling(), Subsampling::k420);
-        return gfx::ScaleToCeiledSize(size, 0.5);
-      } else {
-        return size;
-      }
-    case PlaneConfig::kY_UV_A:
-      if (plane_index == 1) {
-        DCHECK_EQ(subsampling(), Subsampling::k420);
-        return gfx::ScaleToCeiledSize(size, 0.5);
-      } else {
-        return size;
-      }
+  // Y plane is always size
+  if (plane_index == 0) {
+    return size;
   }
+  // A plane is always size
+  if (plane_config() == PlaneConfig::kY_UV_A && plane_index == 2) {
+    return size;
+  }
+
+  // UV scales
+  float width_scale = 1.0;
+  float height_scale = 1.0;
+  switch (subsampling()) {
+    case Subsampling::k420:
+      width_scale = 0.5;
+      height_scale = 0.5;
+      break;
+    case Subsampling::k422:
+      width_scale = 0.5;
+      break;
+    case Subsampling::k444:
+      break;
+  }
+  return gfx::ScaleToCeiledSize(size, width_scale, height_scale);
 }
 
 // For multiplanar formats.

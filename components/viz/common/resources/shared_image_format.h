@@ -51,6 +51,8 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
   // and V). If alpha is present it is not subsampled.
   enum class Subsampling : uint8_t {
     k420,  // 1 set of UV values for each 2x2 block of Y values.
+    k422,  // 1 set of UV values for each 2x1 block of Y values.
+    k444,  // No subsampling. UV values for each Y.
   };
 
   // Specifies the channel format for Y plane in the YUV (and optionally A)

@@ -221,6 +221,10 @@ SkYUVAInfo::Subsampling ToSkYUVASubsampling(viz::SharedImageFormat format) {
   switch (format.subsampling()) {
     case viz::SharedImageFormat::Subsampling::k420:
       return SkYUVAInfo::Subsampling::k420;
+    case viz::SharedImageFormat::Subsampling::k422:
+      return SkYUVAInfo::Subsampling::k422;
+    case viz::SharedImageFormat::Subsampling::k444:
+      return SkYUVAInfo::Subsampling::k444;
   }
 }
 
