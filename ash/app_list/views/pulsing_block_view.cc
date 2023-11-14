@@ -13,6 +13,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/check_op.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -124,5 +125,8 @@ bool PulsingBlockView::FireAnimationTimerForTest() {
   start_delay_timer_.FireNow();
   return true;
 }
+
+BEGIN_METADATA(PulsingBlockView)
+END_METADATA
 
 }  // namespace ash

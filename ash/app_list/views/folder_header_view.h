@@ -11,6 +11,7 @@
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
@@ -24,6 +25,8 @@ class FolderHeaderViewDelegate;
 class ASH_EXPORT FolderHeaderView : public views::View,
                                     public views::TextfieldController,
                                     public AppListItemObserver {
+  METADATA_HEADER(FolderHeaderView, views::View)
+
  public:
   FolderHeaderView(FolderHeaderViewDelegate* delegate, bool tablet_mode);
 
@@ -40,7 +43,6 @@ class ASH_EXPORT FolderHeaderView : public views::View,
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  const char* GetClassName() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   views::Textfield* GetFolderNameViewForTest() const;

@@ -23,6 +23,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -79,6 +81,8 @@ SkColor GetFolderBackgroundColor(bool is_active) {
 
 class FolderHeaderView::FolderNameView : public views::Textfield,
                                          public views::ViewTargeterDelegate {
+  //  METADATA_HEADER(FolderNameView, views::Textfield)
+
  public:
   explicit FolderNameView(FolderHeaderView* folder_header_view)
       : folder_header_view_(folder_header_view) {
@@ -257,9 +261,14 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
   bool has_mouse_already_entered_ = false;
 };
 
+// BEGIN_METADATA(FolderHeaderView, FolderNameView, views::Textfield)
+// END_METADATA
+
 class FolderHeaderView::FolderNameJellyView
     : public ash::SystemTextfield,
       public views::ViewTargeterDelegate {
+  METADATA_HEADER(FolderNameJellyView, ash::SystemTextfield)
+
  public:
   explicit FolderNameJellyView(bool tablet_mode)
       : ash::SystemTextfield(ash::SystemTextfield::Type::kMedium),
@@ -329,6 +338,9 @@ class FolderHeaderView::FolderNameJellyView
   // rename metric.
   std::u16string starting_name_;
 };
+
+BEGIN_METADATA(FolderHeaderView, FolderNameJellyView, ash::SystemTextfield)
+END_METADATA
 
 class FolderHeaderView::FolderNameViewController
     : public SystemTextfieldController {
@@ -471,10 +483,6 @@ gfx::Size FolderHeaderView::CalculatePreferredSize() const {
                    folder_name_view_->GetPreferredSize().height());
 }
 
-const char* FolderHeaderView::GetClassName() const {
-  return "FolderHeaderView";
-}
-
 void FolderHeaderView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   Update();
 }
@@ -600,5 +608,8 @@ bool FolderHeaderView::HandleKeyEvent(views::Textfield* sender,
 void FolderHeaderView::ItemNameChanged() {
   Update();
 }
+
+BEGIN_METADATA(FolderHeaderView)
+END_METADATA
 
 }  // namespace ash

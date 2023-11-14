@@ -22,6 +22,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -492,10 +493,6 @@ void ContentsView::Layout() {
   search_box->layer()->SetTransform(gfx::Transform());
 }
 
-const char* ContentsView::GetClassName() const {
-  return "ContentsView";
-}
-
 void ContentsView::TotalPagesChanged(int previous_page_count,
                                      int new_page_count) {}
 
@@ -605,5 +602,8 @@ gfx::Rect ContentsView::ConvertRectToWidgetWithoutTransform(
   }
   return widget_rect;
 }
+
+BEGIN_METADATA(ContentsView)
+END_METADATA
 
 }  // namespace ash
