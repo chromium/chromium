@@ -57,6 +57,9 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   bool IsValid() const;
   bool IsValidForSourceType(mojom::SourceType) const;
 
+  friend bool operator==(const SourceRegistration&,
+                         const SourceRegistration&) = default;
+
   uint64_t source_event_id = 0;
   DestinationSet destination_set;
   // These `base::TimeDelta`s must be non-negative if set. This is verified by

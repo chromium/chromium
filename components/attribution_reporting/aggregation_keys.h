@@ -40,6 +40,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregationKeys {
 
   base::Value::Dict ToJson() const;
 
+  friend bool operator==(const AggregationKeys&,
+                         const AggregationKeys&) = default;
+
  private:
   explicit AggregationKeys(Keys keys);
 

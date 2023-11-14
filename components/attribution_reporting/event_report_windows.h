@@ -83,6 +83,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
 
   void Serialize(base::Value::Dict& dict) const;
 
+  friend bool operator==(const EventReportWindows&,
+                         const EventReportWindows&) = default;
+
  private:
   EventReportWindows(base::TimeDelta start_time,
                      base::flat_set<base::TimeDelta> end_times);

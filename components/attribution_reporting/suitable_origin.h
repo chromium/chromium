@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ATTRIBUTION_REPORTING_SUITABLE_ORIGIN_H_
 #define COMPONENTS_ATTRIBUTION_REPORTING_SUITABLE_ORIGIN_H_
 
+#include <compare>
 #include <string>
 #include <utility>
 
@@ -91,7 +92,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SuitableOrigin {
   }
 
   // Allows this type to be used as a key in a set or map.
-  bool operator<(const SuitableOrigin&) const;
+  friend std::weak_ordering operator<=>(const SuitableOrigin&,
+                                        const SuitableOrigin&) = default;
 
   std::string Serialize() const;
 

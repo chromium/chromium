@@ -64,6 +64,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
                          const FiltersDisjunction&,
                          bool negated) const;
 
+  friend bool operator==(const FilterData&, const FilterData&) = default;
+
  private:
   explicit FilterData(FilterValues);
 
@@ -96,6 +98,8 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterPair {
       base::Value::Dict&);
 
   void SerializeIfNotEmpty(base::Value::Dict&) const;
+
+  friend bool operator==(const FilterPair&, const FilterPair&) = default;
 };
 
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterConfig {
@@ -119,7 +123,10 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterConfig {
   const absl::optional<base::TimeDelta>& lookback_window() const {
     return lookback_window_;
   }
+
   const FilterValues& filter_values() const { return filter_values_; }
+
+  friend bool operator==(const FilterConfig&, const FilterConfig&) = default;
 
  private:
   explicit FilterConfig(FilterValues,

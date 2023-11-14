@@ -48,6 +48,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpec {
 
   base::Value::Dict ToJson() const;
 
+  friend bool operator==(const TriggerSpec&, const TriggerSpec&) = default;
+
  private:
   EventReportWindows event_report_windows_;
 };
@@ -178,6 +180,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
 
   const std::vector<TriggerSpec>& specs() const { return specs_; }
 
+  friend bool operator==(const TriggerSpecs&, const TriggerSpecs&) = default;
+
  private:
   TriggerSpecs(TriggerDataIndices, std::vector<TriggerSpec>);
 
@@ -221,6 +225,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerConfig {
 
   // Always serializes regardless of the above feature status.
   void SerializeForTesting(base::Value::Dict&) const;
+
+  friend bool operator==(const TriggerConfig&, const TriggerConfig&) = default;
 
  private:
   mojom::TriggerDataMatching trigger_data_matching_ =

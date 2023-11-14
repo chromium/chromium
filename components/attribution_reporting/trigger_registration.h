@@ -59,6 +59,9 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
 
   base::Value::Dict ToJson() const;
 
+  friend bool operator==(const TriggerRegistration&,
+                         const TriggerRegistration&) = default;
+
   FilterPair filters;
   absl::optional<uint64_t> debug_key;
   std::vector<AggregatableDedupKey> aggregatable_dedup_keys;
@@ -70,9 +73,6 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   attribution_reporting::mojom::SourceRegistrationTimeConfig
       source_registration_time_config =
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kExclude;
-
-  // When adding new members, the corresponding `operator==()` definition in
-  // `test_utils.h` should also be updated.
 };
 
 }  // namespace attribution_reporting

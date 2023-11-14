@@ -53,6 +53,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) DestinationSet {
 
   base::Value ToJson() const;
 
+  friend bool operator==(const DestinationSet&,
+                         const DestinationSet&) = default;
+
  private:
   explicit DestinationSet(Destinations);
 

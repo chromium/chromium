@@ -66,12 +66,6 @@ SuitableOrigin::SuitableOrigin(SuitableOrigin&&) = default;
 
 SuitableOrigin& SuitableOrigin::operator=(SuitableOrigin&&) = default;
 
-bool SuitableOrigin::operator<(const SuitableOrigin& other) const {
-  DCHECK(IsValid());
-  DCHECK(other.IsValid());
-  return origin_ < other.origin_;
-}
-
 std::string SuitableOrigin::Serialize() const {
   DCHECK(IsValid());
   return origin_.Serialize();

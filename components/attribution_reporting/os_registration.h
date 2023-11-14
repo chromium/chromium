@@ -17,6 +17,9 @@ namespace attribution_reporting {
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) OsRegistrationItem {
   GURL url;
   bool debug_reporting = false;
+
+  friend bool operator==(const OsRegistrationItem&,
+                         const OsRegistrationItem&) = default;
 };
 
 // Parses an Attribution-Reporting-OS-Source or
