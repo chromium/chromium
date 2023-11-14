@@ -297,6 +297,11 @@ BASE_FEATURE(kModelStoreUseRelativePath,
 #endif
 );
 
+// Kill switch for disabling model quality logging.
+BASE_FEATURE(kModelQualityLogging,
+             "ModelQualityLogging",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables fetching personalized metadata from Optimization Guide Service.
 BASE_FEATURE(kOptimizationGuidePersonalizedFetching,
              "OptimizationPersonalizedHintsFetching",
@@ -434,6 +439,29 @@ bool IsOptimizationTargetPredictionEnabled() {
 
 bool IsOptimizationHintsEnabled() {
   return base::FeatureList::IsEnabled(kOptimizationHints);
+}
+
+bool IsModelQualityLoggingEnabled() {
+  return base::FeatureList::IsEnabled(kModelQualityLogging);
+}
+
+bool IsModelQualityLoggingEnabledForFeature(
+    proto::ModelExecutionFeature feature_name) {
+  if (!IsModelQualityLoggingEnabled()) {
+    return false;
+  }
+
+  std::string param_name =
+      base::ToLowerASCII(proto::ModelExecutionFeature_Name(feature_name));
+  bool default_value = true;
+
+  // Disable compose feature by default.
+  if (feature_name ==
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE) {
+    default_value = false;
+  }
+  return GetFieldTrialParamByFeatureAsBool(kModelQualityLogging, param_name,
+                                           default_value);
 }
 
 bool IsRemoteFetchingEnabled() {

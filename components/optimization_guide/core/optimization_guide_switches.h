@@ -45,6 +45,11 @@ extern const char kPageContentAnnotationsValidationPageEntities[];
 extern const char kPageContentAnnotationsValidationContentVisibility[];
 extern const char kPageContentAnnotationsValidationTextEmbedding[];
 extern const char kPageContentAnnotationsValidationWriteToFile[];
+extern const char kModelQualityServiceURL[];
+extern const char kModelQualityServiceAPIKey[];
+
+// The API key for the ModelQualityLoggingService.
+std::string GetModelQualityServiceAPIKey();
 
 // Returns whether the hint component should be processed.
 // Available hint components are only processed if a proto override isn't being

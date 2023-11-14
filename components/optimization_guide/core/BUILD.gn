@@ -426,6 +426,7 @@ if (is_ios) {
     deps = [
       "//base",
       "//components/optimization_guide/proto:optimization_guide_proto",
+      "//google_apis",
       "//url",
     ]
   }

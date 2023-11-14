@@ -11,6 +11,7 @@
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "google_apis/google_api_keys.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
@@ -112,6 +113,23 @@ const char kPageContentAnnotationsValidationTextEmbedding[] =
 // Writes the output of page content annotation validations to the given file.
 const char kPageContentAnnotationsValidationWriteToFile[] =
     "page-content-annotations-validation-write-to-file";
+
+// Overrides the model quality service URL.
+const char kModelQualityServiceURL[] = "model-quality-service-url";
+
+// Overrides the ModelQuality Service API Key for remote requests to be made.
+const char kModelQualityServiceAPIKey[] = "model-quality-service-api-key";
+
+std::string GetModelQualityServiceAPIKey() {
+  // Command line override takes priority.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kModelQualityServiceAPIKey)) {
+    return command_line->GetSwitchValueASCII(
+        switches::kModelQualityServiceAPIKey);
+  }
+
+  return google_apis::GetAPIKey();
+}
 
 bool IsHintComponentProcessingDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kHintsProtoOverride);
