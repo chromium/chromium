@@ -210,7 +210,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/crash_report/model/breadcrumbs:unit_tests",
     "//ios/chrome/browser/default_browser/model:unit_tests",
     "//ios/chrome/browser/device_reauth:unit_tests",
-    "//ios/chrome/browser/device_sharing:unit_tests",
+    "//ios/chrome/browser/device_sharing/model:unit_tests",
     "//ios/chrome/browser/download/model:unit_tests",
     "//ios/chrome/browser/download/model/background_service:unit_tests",
     "//ios/chrome/browser/enterprise/model/idle:unit_tests",

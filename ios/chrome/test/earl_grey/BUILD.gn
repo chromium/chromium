@@ -85,7 +85,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/content_settings/model:model",
     "//ios/chrome/browser/default_browser/model:test_support",
     "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/device_sharing:eg_app_support+eg2",
+    "//ios/chrome/browser/device_sharing/model:eg_app_support+eg2",
     "//ios/chrome/browser/find_in_page/model",
     "//ios/chrome/browser/find_in_page/model:eg_app_support+eg2",
     "//ios/chrome/browser/first_run/model",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/device_sharing/device_sharing_manager_impl.h"
+#import "ios/chrome/browser/device_sharing/model/device_sharing_manager_impl.h"
 
 #import "components/handoff/handoff_manager.h"
 #import "components/handoff/pref_names_ios.h"

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_DEVICE_SHARING_DEVICE_SHARING_MANAGER_IMPL_H_
-#define IOS_CHROME_BROWSER_DEVICE_SHARING_DEVICE_SHARING_MANAGER_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_MANAGER_IMPL_H_
+#define IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_MANAGER_IMPL_H_
 
 #import <memory>
 
 #include "base/gtest_prod_util.h"
 #import "components/prefs/pref_change_registrar.h"
-#import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
+#import "ios/chrome/browser/device_sharing/model/device_sharing_manager.h"
 
 class Browser;
 class ChromeBrowserState;
@@ -50,4 +50,4 @@ class DeviceSharingManagerImpl : public DeviceSharingManager {
   Browser* active_browser_ = nullptr;
 };
 
-#endif  // IOS_CHROME_BROWSER_DEVICE_SHARING_DEVICE_SHARING_MANAGER_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_MANAGER_IMPL_H_

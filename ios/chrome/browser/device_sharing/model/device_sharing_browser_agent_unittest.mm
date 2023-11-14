@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/device_sharing/device_sharing_browser_agent.h"
+#import "ios/chrome/browser/device_sharing/model/device_sharing_browser_agent.h"
 
 #import <memory>
 
 #import "components/handoff/handoff_manager.h"
-#import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
-#import "ios/chrome/browser/device_sharing/device_sharing_manager_factory.h"
-#import "ios/chrome/browser/device_sharing/device_sharing_manager_impl.h"
+#import "ios/chrome/browser/device_sharing/model/device_sharing_manager.h"
+#import "ios/chrome/browser/device_sharing/model/device_sharing_manager_factory.h"
+#import "ios/chrome/browser/device_sharing/model/device_sharing_manager_impl.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"

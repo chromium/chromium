@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("device_sharing") {
+source_set("model") {
   sources = [
     "device_sharing_browser_agent.h",
     "device_sharing_browser_agent.mm",
@@ -34,7 +34,7 @@ source_set("unit_tests") {
     "device_sharing_manager_impl_unittest.mm",
   ]
   deps = [
-    ":device_sharing",
+    ":model",
     "//base",
     "//components/handoff",
     "//components/sync_preferences:test_support",
@@ -56,7 +56,7 @@ source_set("eg_app_support+eg2") {
     "handoff_manager_app_interface.mm",
   ]
   deps = [
-    ":device_sharing",
+    ":model",
     "//components/handoff",
     "//ios/chrome/test/app:test_support",
   ]

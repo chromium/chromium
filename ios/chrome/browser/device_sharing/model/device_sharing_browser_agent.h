@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_DEVICE_SHARING_DEVICE_SHARING_BROWSER_AGENT_H_
-#define IOS_CHROME_BROWSER_DEVICE_SHARING_DEVICE_SHARING_BROWSER_AGENT_H_
+#ifndef IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_BROWSER_AGENT_H_
+#define IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_BROWSER_AGENT_H_
 
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
@@ -65,4 +65,4 @@ class DeviceSharingBrowserAgent
       active_web_state_observer_;
 };
 
-#endif  // IOS_CHROME_BROWSER_DEVICE_SHARING_DEVICE_SHARING_BROWSER_AGENT_H_
+#endif  // IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_BROWSER_AGENT_H_

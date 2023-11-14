@@ -4,7 +4,7 @@
 
 #import <XCTest/XCTest.h>
 
-#import "ios/chrome/browser/device_sharing/handoff_manager_app_interface.h"
+#import "ios/chrome/browser/device_sharing/model/handoff_manager_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
