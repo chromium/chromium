@@ -194,10 +194,15 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
     uintptr_t rel_pc = elf->GetRelPc(cur_pc, map_info);
     bool is_signal_frame = false;
     bool finished = false;
+    // map_info->GetElf() may return a valid elf whose memory() is nullptr.
+    // In the case, elf->StepIfSignalHandler() and elf->Step() are not
+    // available, because the method depends on elf->memory().
+    // (Regarding Step(), EvalRegister() needs memory.)
     bool stepped =
-        elf->StepIfSignalHandler(rel_pc, regs.get(), &stack_memory) ||
-        elf->Step(rel_pc, regs.get(), &stack_memory, &finished,
-                  &is_signal_frame);
+        elf->memory() &&
+        (elf->StepIfSignalHandler(rel_pc, regs.get(), &stack_memory) ||
+         elf->Step(rel_pc, regs.get(), &stack_memory, &finished,
+                   &is_signal_frame));
     if (stepped && finished)
       return UnwindResult::kCompleted;
 
