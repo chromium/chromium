@@ -871,11 +871,6 @@ bool DlpFilesControllerAsh::IsDlpPolicyMatched(const FileDaemonInfo& file) {
   data_controls::DlpHistogramEnumeration(
       data_controls::dlp::kFilesUnknownAccessLevel, level);
 
-  MaybeReportEvent(
-      file.inode, file.crtime, file.path, src_pattern,
-      DlpFileDestination(data_controls::Component::kUnknownComponent),
-      absl::nullopt, rule_metadata, level);
-
   return restricted;
 }
 

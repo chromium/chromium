@@ -1124,31 +1124,7 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsDlpPolicyMatched) {
       .WillOnce(
           testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern4),
                          testing::SetArgPointee<3>(kRuleMetadata4),
-                         testing::Return(DlpRulesManager::Level::kAllow)))
-      .WillOnce(
-          testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern1),
-                         testing::SetArgPointee<3>(kRuleMetadata1),
-                         testing::Return(DlpRulesManager::Level::kBlock)))
-      .WillOnce(
-          testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern2),
-                         testing::SetArgPointee<3>(kRuleMetadata2),
-                         testing::Return(DlpRulesManager::Level::kReport)))
-      .WillOnce(
-          testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern3),
-                         testing::SetArgPointee<3>(kRuleMetadata3),
-                         testing::Return(DlpRulesManager::Level::kWarn)))
-      .WillOnce(
-          testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern1),
-                         testing::SetArgPointee<3>(kRuleMetadata1),
-                         testing::Return(DlpRulesManager::Level::kBlock)))
-      .WillOnce(
-          testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern2),
-                         testing::SetArgPointee<3>(kRuleMetadata2),
-                         testing::Return(DlpRulesManager::Level::kReport)))
-      .WillOnce(
-          testing::DoAll(testing::SetArgPointee<2>(kExampleSourcePattern1),
-                         testing::SetArgPointee<3>(kRuleMetadata1),
-                         testing::Return(DlpRulesManager::Level::kWarn)));
+                         testing::Return(DlpRulesManager::Level::kAllow)));
 
   EXPECT_CALL(*rules_manager_, GetReportingManager).Times(testing::AnyNumber());
 
@@ -1167,69 +1143,12 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsDlpPolicyMatched) {
       kInode4, kCrtime4, base::FilePath(kFilePath4), kExampleUrl4,
       kReferrerUrl4);
 
-  auto CreateEvent =
-      [](const std::string& src_pattern, DlpRulesManager::Level level,
-         const std::string& filename, const std::string& rule_name,
-         const std::string& rule_id) {
-        auto event_builder = data_controls::DlpPolicyEventBuilder::Event(
-            src_pattern, rule_name, rule_id,
-            DlpRulesManager::Restriction::kFiles, level);
-        event_builder->SetDestinationComponent(
-            data_controls::Component::kUnknownComponent);
-        event_builder->SetContentName(filename);
-        return event_builder->Create();
-      };
-
-  const auto event1 =
-      CreateEvent(kExampleSourcePattern1, DlpRulesManager::Level::kBlock,
-                  kFilePath1, kRuleName1, kRuleId1);
-  const auto event2 =
-      CreateEvent(kExampleSourcePattern2, DlpRulesManager::Level::kReport,
-                  kFilePath2, kRuleName2, kRuleId2);
-  const auto event3 =
-      CreateEvent(kExampleSourcePattern3, DlpRulesManager::Level::kWarn,
-                  kFilePath3, kRuleName3, kRuleId3);
-
-  base::TimeDelta cooldown_time =
-      event_storage_->GetDeduplicationCooldownForTesting();
-
-  // Report `event1`, `event2`, and `event3` after these calls.
   ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(file1));
   ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(file2));
   ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(file3));
   ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(file4));
 
-  task_runner_->FastForwardBy(cooldown_time);
-
-  // Report `event1`, `event2`, and `event3` after these calls.
-  ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(file1));
-  ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(file2));
-  ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(file3));
-
-  task_runner_->FastForwardBy(cooldown_time / 2);
-
-  // Do not report after these calls.
-  ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(file1));
-  ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(file2));
-  ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(file3));
-
-  const auto expected_events = std::vector<const DlpPolicyEvent*>(
-      {&event1, &event2, &event3, &event1, &event2, &event3});
-
-  ASSERT_EQ(events.size(), 6u);
-  for (size_t i = 0; i < events.size(); ++i) {
-    EXPECT_THAT(events[i],
-                data_controls::IsDlpPolicyEvent(*expected_events[i]));
-  }
-
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  data_controls::GetDlpHistogramPrefix() +
-                  std::string(data_controls::dlp::kFilesUnknownAccessLevel)),
-              base::BucketsAre(
-                  base::Bucket(policy::DlpRulesManager::Level::kBlock, 3),
-                  base::Bucket(policy::DlpRulesManager::Level::kReport, 3),
-                  base::Bucket(policy::DlpRulesManager::Level::kWarn, 3),
-                  base::Bucket(policy::DlpRulesManager::Level::kAllow, 1)));
+  ASSERT_EQ(events.size(), 0u);
 }
 
 TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsFilesTransferRestricted) {
