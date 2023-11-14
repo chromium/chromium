@@ -506,12 +506,14 @@ void DedicatedWorkerHost::ScriptLoadStartFailed(
     const network::URLLoaderCompletionStatus& status) {
   auto* ancestor_render_frame_host =
       RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
-  // Notify that the loading failed to DevTools. It fires
-  // `Network.onLoadingFailed` event.
-  devtools_instrumentation::OnWorkerMainScriptLoadingFailed(
-      url, WorkerDevToolsAgentHost::GetFor(this)->devtools_worker_token(),
-      FrameTreeNode::From(ancestor_render_frame_host),
-      ancestor_render_frame_host, status);
+  if (ancestor_render_frame_host) {
+    // Notify that the loading failed to DevTools. It fires
+    // `Network.onLoadingFailed` event.
+    devtools_instrumentation::OnWorkerMainScriptLoadingFailed(
+        url, WorkerDevToolsAgentHost::GetFor(this)->devtools_worker_token(),
+        FrameTreeNode::From(ancestor_render_frame_host),
+        ancestor_render_frame_host, status);
+  }
 
   client_->OnScriptLoadStartFailed();
 }
