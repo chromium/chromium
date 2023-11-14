@@ -37,9 +37,7 @@
 #include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/registry.h"
 #include "chrome/updater/win/setup/setup_util.h"
-#include "chrome/updater/win/win_constants.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace updater {
@@ -49,12 +47,6 @@ namespace {
 void RestoreComInterfaces(UpdaterScope scope, bool is_internal) {
   if (AreComInterfacesPresent(scope, is_internal)) {
     return;
-  }
-
-  // Skip `DUMP_WILL_BE_CHECK` when running tests.
-  if (!base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_DEV_KEY, KEY_READ)
-           .HasValue(kRegValueIntegrationTestMode)) {
-    DUMP_WILL_BE_CHECK(false);
   }
 
   InstallComInterfaces(scope, is_internal);
