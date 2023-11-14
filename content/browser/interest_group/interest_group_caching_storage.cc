@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
@@ -94,8 +95,12 @@ void InterestGroupCachingStorage::GetInterestGroupsForOwner(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   scoped_refptr<StorageInterestGroups>(
                                       cached_groups_it->second.get())));
+    base::UmaHistogramBoolean("Ads.InterestGroup.Auction.LoadGroupsCacheHit",
+                              true);
     return;
   }
+  base::UmaHistogramBoolean("Ads.InterestGroup.Auction.LoadGroupsCacheHit",
+                            false);
 
   // If there is no cache hit, run
   // InterestGroupStorage::GetInterestGroupsForOwner only if there are no

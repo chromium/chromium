@@ -6,6 +6,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -247,7 +248,6 @@ TEST_F(InterestGroupCachingStorageTest, DBUpdatesShouldModifyCache) {
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_EQ(loaded_igs->get()->size(), 2u);
   ASSERT_NE(loaded_igs->get(), previously_loaded_igs->get());
-
   previously_loaded_igs = loaded_igs;
 
   // Leaving an interest group updates the cached value.
@@ -266,7 +266,6 @@ TEST_F(InterestGroupCachingStorageTest, DBUpdatesShouldModifyCache) {
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_EQ(loaded_igs->get()->size(), 1u);
   ASSERT_NE(loaded_igs->get(), previously_loaded_igs->get());
-
   previously_loaded_igs = loaded_igs;
 
   InterestGroupUpdate ig_update;
@@ -551,6 +550,45 @@ TEST_F(InterestGroupCachingStorageTest, NoCachingWhenFeatureDisabled) {
   absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_again =
       GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_NE(loaded_igs->get(), loaded_igs_again->get());
+}
+
+TEST_F(InterestGroupCachingStorageTest, LoadGroupsCacheHitHistogram) {
+  std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
+      CreateCachingStorage();
+  url::Origin owner = url::Origin::Create(GURL("https://www.example.com/"));
+  auto ig = MakeInterestGroup(owner, "name");
+
+  JoinInterestGroup(caching_storage.get(), ig, GURL("https://www.test.com"));
+
+  base::HistogramTester histogram_tester;
+  GetInterestGroupsForOwner(caching_storage.get(), owner);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.LoadGroupsCacheHit", false, 1);
+
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
+      GetInterestGroupsForOwner(caching_storage.get(), owner);
+  // Not a cache hit because the previous result of GetInterestGroupsForOwner is
+  // not in memory.
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.LoadGroupsCacheHit", false, 2);
+
+  GetInterestGroupsForOwner(caching_storage.get(), owner);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.LoadGroupsCacheHit", true, 1);
+
+  GetInterestGroupsForOwner(caching_storage.get(), owner);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.LoadGroupsCacheHit", true, 2);
+
+  caching_storage->RecordInterestGroupWin(
+      blink::InterestGroupKey(owner, "name"), "");
+  loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.LoadGroupsCacheHit", false, 3);
+
+  loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.LoadGroupsCacheHit", true, 3);
 }
 
 }  // namespace content
