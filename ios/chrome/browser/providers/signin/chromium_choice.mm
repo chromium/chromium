@@ -30,7 +30,16 @@ id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler(
   NOTREACHED_NORETURN();
 }
 
+id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler() {
+  NOTREACHED_NORETURN();
+}
+
 id<SceneAgent> CreateChoiceSceneAgent(PromosManager* promosManager) {
+  NOTREACHED_NORETURN();
+}
+
+id<SceneAgent> CreateChoiceSceneAgent(PromosManager* promosManager,
+                                      ChromeBrowserState* browserState) {
   NOTREACHED_NORETURN();
 }
 
