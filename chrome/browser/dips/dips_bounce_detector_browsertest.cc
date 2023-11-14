@@ -535,8 +535,16 @@ IN_PROC_BROWSER_TEST_F(
                                       "(Write) -> d.test/title1.html")));
 }
 
+// TODO(crbug.com/1466483): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AttributeSameSiteIframesCookieServerAccessTo1P \
+  DISABLED_AttributeSameSiteIframesCookieServerAccessTo1P
+#else
+#define MAYBE_AttributeSameSiteIframesCookieServerAccessTo1P \
+  AttributeSameSiteIframesCookieServerAccessTo1P
+#endif
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
-                       AttributeSameSiteIframesCookieServerAccessTo1P) {
+                       MAYBE_AttributeSameSiteIframesCookieServerAccessTo1P) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   https_server.AddDefaultHandlers(kChromeTestDataDir);
