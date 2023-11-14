@@ -147,6 +147,12 @@ base::Value::List Screen::GetGpuExtraInfo(
 TabletState Screen::GetTabletState() const {
   return TabletState::kInClamshellMode;
 }
+
+bool Screen::InTabletMode() const {
+  TabletState state = GetTabletState();
+  return state == TabletState::kInTabletMode ||
+         state == TabletState::kEnteringTabletMode;
+}
 #endif
 
 void Screen::SetScopedDisplayForNewWindows(int64_t display_id) {

@@ -12,7 +12,15 @@
 
 namespace chromeos {
 
-// Class is a singleton and holds the tablet mode state.
+// This class is DEPRECATED. Do NOT use this in a new place.
+// Please use display::Screen::GetScreen()->GetTabletState() to get the state
+// and display::Screen::GetScreen()->InTabletMode() to check whether it's in
+// tablet mode.
+// TODO(elkurin): Remove this class.
+//
+// Singleton class providing getter methods to access the tablet mode state
+// which returns the tablet state stored in display:Screen for lacros-chrome and
+// display::DisplayManager for ash-chrome.
 //
 // TODO(crbug.com/1113900): Move the logic to display::Screen::GetTabletState()
 // and implement it for Ash and Ozone child classes.
@@ -32,22 +40,13 @@ class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState
 
   display::TabletState state() const;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Enables/disables tablet mode on client side. Not thet this does not modify
-  // server side tablet state.
-  //
-  // DO NOT use this for integration tests such as browser tests. Use this only
-  // on unit-testing.
-  // Use TestController crosapi EnterTabletMode/ExitTabletMode if Ash server is
-  // available since the test may depend on server side behavior.
-  void EnableTabletModeForTesting(bool enable);
-#endif
-
  private:
   display::ScopedDisplayObserver display_observer_{this};
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 }  // namespace chromeos

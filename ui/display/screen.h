@@ -198,8 +198,10 @@ class DISPLAY_EXPORT Screen {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns tablet state.
-  // TODO(crbug.com/1170013): Support this on ash-chrome as well.
   virtual TabletState GetTabletState() const;
+
+  // Returns true if the system is in tablet mode.
+  bool InTabletMode() const;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
