@@ -8,12 +8,12 @@
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,
-      "is_on_release_branch": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "arm",
       "target_os": "android",
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "v8_is_on_release_branch": true
     }
   },
   "android-arm64-pgo": {
@@ -25,12 +25,12 @@
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,
-      "is_on_release_branch": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "v8_is_on_release_branch": true
     }
   },
   "lacros-amd64-generic-pgo": {
@@ -43,10 +43,10 @@
       "is_chromeos_device": true,
       "is_debug": false,
       "is_official_build": true,
-      "is_on_release_branch": true,
       "symbol_level": 0,
       "target_os": "chromeos",
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "v8_is_on_release_branch": true
     }
   },
   "lacros-arm-generic-pgo": {
@@ -59,10 +59,10 @@
       "is_chromeos_device": true,
       "is_debug": false,
       "is_official_build": true,
-      "is_on_release_branch": true,
       "symbol_level": 0,
       "target_os": "chromeos",
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "v8_is_on_release_branch": true
     }
   },
   "lacros-arm64-generic-pgo": {
@@ -75,10 +75,10 @@
       "is_chromeos_device": true,
       "is_debug": false,
       "is_official_build": true,
-      "is_on_release_branch": true,
       "symbol_level": 0,
       "target_os": "chromeos",
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "v8_is_on_release_branch": true
     }
   },
   "linux-pgo": {
@@ -88,9 +88,9 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "is_official_build": true,
-      "is_on_release_branch": true,
       "symbol_level": 0,
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "v8_is_on_release_branch": true
     }
   },
   "mac-arm-pgo": {
@@ -102,10 +102,10 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "is_official_build": true,
-      "is_on_release_branch": true,
       "symbol_level": 0,
       "target_cpu": "arm64",
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "v8_is_on_release_branch": true
     }
   },
   "mac-pgo": {
@@ -117,9 +117,9 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "is_official_build": true,
-      "is_on_release_branch": true,
       "symbol_level": 0,
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "v8_is_on_release_branch": true
     }
   },
   "win-arm64-pgo": {
@@ -129,10 +129,10 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "is_official_build": true,
-      "is_on_release_branch": true,
       "symbol_level": 0,
       "target_cpu": "arm64",
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "v8_is_on_release_branch": true
     }
   },
   "win32-pgo": {
@@ -142,10 +142,10 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "is_official_build": true,
-      "is_on_release_branch": true,
       "symbol_level": 0,
       "target_cpu": "x86",
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "v8_is_on_release_branch": true
     }
   },
   "win64-pgo": {
@@ -155,10 +155,10 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "is_official_build": true,
-      "is_on_release_branch": true,
       "symbol_level": 0,
       "target_cpu": "x64",
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "v8_is_on_release_branch": true
     }
   }
 }
