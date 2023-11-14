@@ -123,10 +123,8 @@ void DeleteAccountStorageFileSynchronously(
 
 // BookmarkModel --------------------------------------------------------------
 
-BookmarkModel::BookmarkModel(std::unique_ptr<BookmarkClient> client,
-                             bool allow_folders_for_account_storage)
-    : allow_folders_for_account_storage_(allow_folders_for_account_storage),
-      owned_root_(std::make_unique<BookmarkNode>(
+BookmarkModel::BookmarkModel(std::unique_ptr<BookmarkClient> client)
+    : owned_root_(std::make_unique<BookmarkNode>(
           /*id=*/0,
           base::Uuid::ParseLowercase(kRootNodeUuid),
           GURL())),
@@ -189,21 +187,22 @@ scoped_refptr<ModelLoader> BookmarkModel::model_loader() {
 const BookmarkNode* BookmarkModel::account_bookmark_bar_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Must be null if the feature flag isn't enabled.
-  CHECK(!account_bookmark_bar_node_ || allow_folders_for_account_storage_);
+  CHECK(!account_bookmark_bar_node_ ||
+        client_->AreFoldersForAccountStorageAllowed());
   return account_bookmark_bar_node_;
 }
 
 const BookmarkNode* BookmarkModel::account_other_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Must be null if the feature flag isn't enabled.
-  CHECK(!account_other_node_ || allow_folders_for_account_storage_);
+  CHECK(!account_other_node_ || client_->AreFoldersForAccountStorageAllowed());
   return account_other_node_;
 }
 
 const BookmarkNode* BookmarkModel::account_mobile_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Must be null if the feature flag isn't enabled.
-  CHECK(!account_mobile_node_ || allow_folders_for_account_storage_);
+  CHECK(!account_mobile_node_ || client_->AreFoldersForAccountStorageAllowed());
   return account_mobile_node_;
 }
 
@@ -1074,7 +1073,7 @@ void BookmarkModel::LoadEmptyForTest() {
 
 void BookmarkModel::CreateAccountPermanentFoldersForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(allow_folders_for_account_storage_);
+  CHECK(client_->AreFoldersForAccountStorageAllowed());
 
   // Note that permanent account folders use the same UUIDs as the "regular",
   // local-or-syncable permanent folders.
@@ -1305,7 +1304,7 @@ int64_t BookmarkModel::generate_next_node_id() {
 
 void BookmarkModel::CreateAccountPermanentFolders() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(allow_folders_for_account_storage_);
+  CHECK(client_->AreFoldersForAccountStorageAllowed());
   CHECK(loaded_);
 
   // TODO(crbug.com/1494120): Implement this method.
@@ -1314,7 +1313,7 @@ void BookmarkModel::CreateAccountPermanentFolders() {
 
 void BookmarkModel::RemoveAccountPermanentFolders() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(allow_folders_for_account_storage_);
+  CHECK(client_->AreFoldersForAccountStorageAllowed());
   CHECK(loaded_);
 
   // TODO(crbug.com/1494120): Implement this method.

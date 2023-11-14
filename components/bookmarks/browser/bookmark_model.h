@@ -79,13 +79,8 @@ class BookmarkModel final : public BookmarkUndoProvider,
                             public KeyedService,
                             public base::SupportsUserData {
  public:
-  // `allow_folders_for_account_storage` controls whether this BookmarkModel is
-  // allowed to use permanent folders for account storage. If
-  // `allow_folders_for_account_storage` is false, calling
-  // `CreateAccountPermanentFolders`/`RemoveAccountPermanentFolders` will
-  // trigger a CHECK.
-  BookmarkModel(std::unique_ptr<BookmarkClient> client,
-                bool allow_folders_for_account_storage);
+  // `client` must not be null.
+  explicit BookmarkModel(std::unique_ptr<BookmarkClient> client);
 
   BookmarkModel(const BookmarkModel&) = delete;
   BookmarkModel& operator=(const BookmarkModel&) = delete;
@@ -508,8 +503,6 @@ class BookmarkModel final : public BookmarkUndoProvider,
   void ClearLastUsedTimeInRangeRecursive(BookmarkNode* node,
                                          const base::Time delete_begin,
                                          const base::Time delete_end);
-
-  const bool allow_folders_for_account_storage_;
 
   // Whether the initial set of data has been loaded.
   bool loaded_ = false;

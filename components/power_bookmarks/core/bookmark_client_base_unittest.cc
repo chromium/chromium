@@ -34,6 +34,8 @@ class TestBookmarkClientImpl : public BookmarkClientBase {
   TestBookmarkClientImpl& operator=(const TestBookmarkClientImpl&) = delete;
   ~TestBookmarkClientImpl() override = default;
 
+  bool AreFoldersForAccountStorageAllowed() override { return false; }
+
   bookmarks::LoadManagedNodeCallback GetLoadManagedNodeCallback() override {
     return bookmarks::LoadManagedNodeCallback();
   }
@@ -88,8 +90,7 @@ class BookmarkClientBaseTest : public testing::Test {
   void SetUp() override {
     auto client = std::make_unique<TestBookmarkClientImpl>();
     client_ = client.get();
-    model_ = std::make_unique<bookmarks::BookmarkModel>(
-        std::move(client), /*allow_folders_for_account_storage=*/false);
+    model_ = std::make_unique<bookmarks::BookmarkModel>(std::move(client));
     model_->LoadEmptyForTest();
   }
 

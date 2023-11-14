@@ -54,8 +54,7 @@ void BookmarkExpandedStateTrackerTest::SetUp() {
       bookmarks::prefs::kBookmarkEditorExpandedNodes);
   prefs_.registry()->RegisterListPref(bookmarks::prefs::kManagedBookmarks);
   model_ = std::make_unique<bookmarks::BookmarkModel>(
-      std::make_unique<bookmarks::TestBookmarkClient>(),
-      /*allow_folders_for_account_storage=*/false);
+      std::make_unique<bookmarks::TestBookmarkClient>());
   tracker_ = std::make_unique<BookmarkExpandedStateTracker>(&prefs_);
   tracker_->Init(model_.get());
   model_->Load(scoped_temp_dir_.GetPath(),

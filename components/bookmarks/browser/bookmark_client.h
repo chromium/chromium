@@ -47,6 +47,12 @@ class BookmarkClient {
   // Called during initialization of BookmarkModel.
   virtual void Init(BookmarkModel* model);
 
+  // Controls whether this BookmarkModel is allowed to use permanent folders for
+  // account storage. If false, calling BookmarkModel's
+  // `CreateAccountPermanentFolders`/`RemoveAccountPermanentFolders` will
+  // trigger a CHECK failure.
+  virtual bool AreFoldersForAccountStorageAllowed() = 0;
+
   // Gets a bookmark folder that the provided URL can be saved to. If nullptr is
   // returned, the bookmark is saved to the default location (usually this is
   // the last modified folder). This affords features the option to override the

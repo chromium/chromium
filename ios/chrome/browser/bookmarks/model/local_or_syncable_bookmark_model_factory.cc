@@ -33,15 +33,13 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model = std::make_unique<
-      bookmarks::BookmarkModel>(
-      std::make_unique<BookmarkClientImpl>(
-          browser_state,
-          ManagedBookmarkServiceFactory::GetForBrowserState(browser_state),
-          ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
-              browser_state),
-          ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state),
-          bookmarks::StorageType::kLocalOrSyncable),
-      /*allow_folders_for_account_storage=*/false);
+      bookmarks::BookmarkModel>(std::make_unique<BookmarkClientImpl>(
+      browser_state,
+      ManagedBookmarkServiceFactory::GetForBrowserState(browser_state),
+      ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
+          browser_state),
+      ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state),
+      bookmarks::StorageType::kLocalOrSyncable));
   bookmark_model->Load(browser_state->GetStatePath(),
                        bookmarks::StorageType::kLocalOrSyncable);
   ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)

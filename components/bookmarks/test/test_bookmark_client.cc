@@ -33,11 +33,7 @@ std::unique_ptr<BookmarkModel> TestBookmarkClient::CreateModel() {
 // static
 std::unique_ptr<BookmarkModel> TestBookmarkClient::CreateModelWithClient(
     std::unique_ptr<TestBookmarkClient> client) {
-  const bool are_folders_for_account_storage_allowed =
-      client->are_folders_for_account_storage_allowed_;
-
-  auto bookmark_model = std::make_unique<BookmarkModel>(
-      std::move(client), are_folders_for_account_storage_allowed);
+  auto bookmark_model = std::make_unique<BookmarkModel>(std::move(client));
   bookmark_model->LoadEmptyForTest();
   return bookmark_model;
 }
@@ -96,6 +92,10 @@ bool TestBookmarkClient::HasFaviconLoadTasks() const {
 void TestBookmarkClient::SetStorageStateForUma(
     metrics::StorageStateForUma storage_state) {
   storage_state_for_uma_ = storage_state;
+}
+
+bool TestBookmarkClient::AreFoldersForAccountStorageAllowed() {
+  return are_folders_for_account_storage_allowed_;
 }
 
 LoadManagedNodeCallback TestBookmarkClient::GetLoadManagedNodeCallback() {
