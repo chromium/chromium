@@ -473,7 +473,6 @@ _exempted_from_contact_builders = {
         "android-10-arm64-rel",
         "android-11-x86-rel",
         "android-12-x64-dbg",
-        "android-12-x64-dual-coverage-exp-rel",
         "android-12-x64-rel",
         "android-12-x64-rel-compilator",
         "android-12-x64-siso-rel",

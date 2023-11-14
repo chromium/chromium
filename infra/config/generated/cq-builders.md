@@ -597,16 +597,10 @@ by CQ. These are often used to test new configurations before they are added
 as required builders.
 
 ### chromium
-* [android-12-x64-dual-coverage-exp-rel](https://ci.chromium.org/p/chromium/builders/try/android-12-x64-dual-coverage-exp-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-12-x64-dual-coverage-exp-rel""))
-  * Experiment percentage: 10.0
-
 * [android-arm64-siso-rel](https://ci.chromium.org/p/chromium/builders/try/android-arm64-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-arm64-siso-rel""))
   * Experiment percentage: 5.0
 
 * [android-binary-size-siso](https://ci.chromium.org/p/chromium/builders/try/android-binary-size-siso) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-binary-size-siso""))
-  * Experiment percentage: 10.0
-
-* [android-x86-dual-coverage-exp-rel](https://ci.chromium.org/p/chromium/builders/try/android-x86-dual-coverage-exp-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-x86-dual-coverage-exp-rel""))
   * Experiment percentage: 10.0
 
 * [android_compile_siso_dbg](https://ci.chromium.org/p/chromium/builders/try/android_compile_siso_dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android_compile_siso_dbg""))

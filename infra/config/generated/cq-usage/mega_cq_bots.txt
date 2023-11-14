@@ -1,6 +1,5 @@
 chromium/try/android-10-arm64-rel
 chromium/try/android-12-x64-dbg
-chromium/try/android-12-x64-dual-coverage-exp-rel
 chromium/try/android-12-x64-rel
 chromium/try/android-12l-x64-dbg
 chromium/try/android-arm-compile-dbg
@@ -22,7 +21,6 @@ chromium/try/android-webview-13-x64-dbg
 chromium/try/android-webview-oreo-arm64-dbg
 chromium/try/android-webview-pie-arm64-dbg
 chromium/try/android-x64-cast
-chromium/try/android-x86-dual-coverage-exp-rel
 chromium/try/android-x86-rel
 chromium/try/android_arm64_dbg_recipe
 chromium/try/android_compile_dbg

@@ -77,45 +77,6 @@ try_.builder(
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
-# TODO(crbug.com/1416662): Remove the builder after the experiment.
-try_.orchestrator_builder(
-    name = "android-12-x64-dual-coverage-exp-rel",
-    description_html = """\
-This builder shadows android-12-x64-rel builder to experiment both jacoco and clang coverage enabled builds.
-""",
-    mirrors = [
-        "ci/android-12-x64-rel",
-    ],
-    compilator = "android-12-x64-dual-coverage-exp-rel-compilator",
-    coverage_test_types = ["unit", "overall"],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/android-12-x64-rel",
-            "release_try_builder",
-            "use_clang_coverage",
-            "use_java_coverage",
-            "partial_code_coverage_instrumentation",
-        ],
-    ),
-    main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 10,
-    ),
-    # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
-    # are addressed
-    # use_orchestrator_pool = True,
-    use_clang_coverage = True,
-    use_java_coverage = True,
-)
-
-# TODO(crbug.com/1416662): Remove the builder after the experiment.
-try_.compilator_builder(
-    name = "android-12-x64-dual-coverage-exp-rel-compilator",
-    contact_team_email = "clank-engprod@google.com",
-    main_list_view = "try",
-    siso_enabled = True,
-)
-
 try_.orchestrator_builder(
     name = "android-12-x64-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
@@ -653,50 +614,6 @@ try_.builder(
 try_.builder(
     name = "android-fieldtrial-rel",
     mirrors = ["ci/android-fieldtrial-rel"],
-)
-
-# TODO(crbug.com/1416662): Remove the builder after the experiment.
-try_.orchestrator_builder(
-    name = "android-x86-dual-coverage-exp-rel",
-    description_html = """\
-This builder is similar to "try/android-x86-rel", but experiment both jacoco and clang coverage enabled builds.
-""",
-    mirrors = [
-        "ci/android-oreo-x86-rel",
-    ],
-    compilator = "android-x86-dual-coverage-exp-rel-compilator",
-    contact_team_email = "clank-engprod@google.com",
-    coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium.add_one_test_shard": 10,
-    },
-    gn_args = gn_args.config(
-        configs = [
-            "ci/android-oreo-x86-rel",
-            "release_try_builder",
-            "use_clang_coverage",
-            "use_java_coverage",
-            "partial_code_coverage_instrumentation",
-        ],
-    ),
-    main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 10,
-    ),
-    # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
-    # are addressed
-    # use_orchestrator_pool = True,
-    use_clang_coverage = True,
-    use_java_coverage = True,
-)
-
-# TODO(crbug.com/1416662): Remove the builder after the experiment.
-try_.compilator_builder(
-    name = "android-x86-dual-coverage-exp-rel-compilator",
-    cores = 64,
-    contact_team_email = "clank-engprod@google.com",
-    main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(
