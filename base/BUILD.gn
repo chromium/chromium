@@ -1299,13 +1299,6 @@ component("base") {
       "debug/allocation_trace.cc",
       "debug/allocation_trace.h",
     ]
-
-    if (build_allocation_trace_recorder_full_reporting) {
-      sources += [
-        "debug/allocation_trace_reporting.cc",
-        "debug/allocation_trace_reporting.h",
-      ]
-    }
   }
 
   if (is_robolectric) {
