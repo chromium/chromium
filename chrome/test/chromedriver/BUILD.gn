@@ -484,7 +484,10 @@ python_library("chromedriver_py_tests") {
 
 python_library("chromedriver_py_tests_headless_shell") {
   testonly = true
-  deps = [ ":chromedriver_server" ]
+  deps = [
+    ":chromedriver_server",
+    "//chrome:chrome",
+  ]
 
   pydeps_file = "test/run_py_tests.pydeps"
   data = [

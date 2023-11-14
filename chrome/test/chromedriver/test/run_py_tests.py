@@ -218,11 +218,6 @@ _BROWSER_AND_PLATFORM_SPECIFIC_FILTER['chrome-headless-shell']['mac'] = [
     'CustomBidiMapperTest.testInvalidCustomBidiMapperPath',
     'CustomBidiMapperTest.testValidCustomBidiMapperPath',
 ]
-_BROWSER_AND_PLATFORM_SPECIFIC_FILTER['chrome-headless-shell']['win'] = [
-    # Temporarily disabled on Windows due to the massive tab crashes.
-    # See crbug.com/chromedriver/4358.
-    '*',
-]
 
 _DESKTOP_NEGATIVE_FILTER = [
     # Desktop doesn't support touch (without --touch-events).
