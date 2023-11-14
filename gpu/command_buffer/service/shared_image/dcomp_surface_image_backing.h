@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gl/buildflags.h"
 #include "ui/gl/scoped_make_current.h"
 
 namespace gpu {
@@ -106,12 +107,14 @@ class GPU_GLES2_EXPORT DCompSurfaceImageBacking
                                    const gfx::Rect& update_rect);
   void EndDrawGanesh();
 
+#if BUILDFLAG(USE_DAWN)
   // For DCompSurfaceDawnImageRepresentation implementation.
   friend class DCompSurfaceDawnImageRepresentation;
   wgpu::Texture BeginDrawDawn(const wgpu::Device& device,
                               const wgpu::TextureUsage usage,
                               const gfx::Rect& update_rect);
   void EndDrawDawn(const wgpu::Device& device, wgpu::Texture texture);
+#endif  // BUILDFLAG(USE_DAWN)
 
   // Used to restore the surface that was current before BeginDraw at EndDraw.
   std::optional<ui::ScopedMakeCurrent> scoped_make_current_;
@@ -137,10 +140,12 @@ class GPU_GLES2_EXPORT DCompSurfaceImageBacking
   // The update_offset returned from |dcomp_surface_|'s BeginDraw.
   gfx::Point dcomp_update_offset_;
 
+#if BUILDFLAG(USE_DAWN)
   // ExternalImageDXGI is created from |dcomp_surface_|'s draw texture between
   // |BeginDrawGraphite| and |EndDrawGraphite|. This |external_image_| wraps the
   // ComPtr<ID3D11Texture> instead of creating from a share HANDLE.
   std::unique_ptr<dawn::native::d3d::ExternalImageDXGI> external_image_;
+#endif
 
   // This is a number that increments once for every EndDraw on a surface, and
   // is used to determine when the contents have changed so Commit() needs to

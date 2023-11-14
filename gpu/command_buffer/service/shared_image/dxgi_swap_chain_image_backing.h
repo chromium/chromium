@@ -22,6 +22,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gl/buildflags.h"
 
 namespace gpu {
 
@@ -93,11 +94,13 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
   // Called by the Skia representation to indicate where it intends to draw.
   bool DidBeginWriteAccess(const gfx::Rect& swap_rect);
 
+#if BUILDFLAG(USE_DAWN)
   friend class DawnRepresentationDXGISwapChain;
   wgpu::Texture BeginAccessDawn(const wgpu::Device& device,
                                 wgpu::TextureUsage usage,
                                 const gfx::Rect& update_rect);
   void EndAccessDawn(const wgpu::Device& device, wgpu::Texture texture);
+#endif
 
   std::optional<gfx::Rect> pending_swap_rect_;
 
@@ -107,10 +110,12 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
   // Holds a gles2::TexturePassthrough and corresponding egl image.
   scoped_refptr<D3DImageBacking::GLTextureHolder> gl_texture_holder_;
 
+#if BUILDFLAG(USE_DAWN)
   // ExternalImageDXGI is created from DXGISwapChain's backbuffer texture. This
   // |external_image_| wraps the ComPtr<ID3D11Texture> instead of creating from
   // a share HANDLE.
   std::unique_ptr<dawn::native::d3d::ExternalImageDXGI> external_image_;
+#endif
 
   // Count of buffers in |dxgi_swap_chain_| that need to have their alpha
   // channels be cleared to opaque before use. If positive at the start of write

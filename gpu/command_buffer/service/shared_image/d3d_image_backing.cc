@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_utils.h"
@@ -25,6 +24,10 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/scoped_restore_texture.h"
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_context_provider.h"
+#endif
 
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 #include "gpu/command_buffer/service/shared_image/dawn_egl_image_representation.h"
@@ -683,9 +686,13 @@ D3DImageBacking::GetPendingWaitFences(
     write_fence_ = texture_device_fence;
   }
 
+#if BUILDFLAG(USE_DAWN)
   const gfx::D3DSharedFence* dawn_signaled_fence =
       wait_dawn_device ? dawn_signaled_fence_map_[wait_dawn_device.Get()].get()
                        : nullptr;
+#else
+  const gfx::D3DSharedFence* dawn_signaled_fence = nullptr;
+#endif
 
   auto should_wait_on_fence = [&](gfx::D3DSharedFence* wait_fence) -> bool {
     // Skip the wait if it's for the fence last signaled by the Dawn device, or

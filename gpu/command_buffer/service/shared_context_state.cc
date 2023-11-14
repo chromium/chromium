@@ -1029,8 +1029,10 @@ Microsoft::WRL::ComPtr<ID3D11Device> SharedContextState::GetD3D11Device()
     case GrContextType::kGL:
     case GrContextType::kVulkan:
       return gl::QueryD3D11DeviceObjectFromANGLE();
+#if BUILDFLAG(SKIA_USE_DAWN)
     case GrContextType::kGraphiteDawn:
       return dawn_context_provider_->GetD3D11Device();
+#endif
     default:
       NOTREACHED();
       return nullptr;
