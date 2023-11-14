@@ -39,14 +39,6 @@
   padding: 6px;
 }
 
-/* TODO(b/281116317) Remove once Jelly is launched */
-:host-context(body:not(.jelly-enabled)) .key-container {
-  font-family: 'Google Sans', Roboto, sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 20px;
-}
-
 #keyLabel {
   padding-inline: 6px;
 }
