@@ -91,13 +91,13 @@ constexpr char kInternalDisplayEffectiveDPIHistogram[] =
     "Ash.Display.InternalDisplay.ActiveEffectiveDPI";
 constexpr char kExternalDisplayEffectiveDPIHistogram[] =
     "Ash.Display.ExternalDisplay.ActiveEffectiveDPI";
-constexpr int kEffectiveDPIBucketSize = 5;
 // Most commonly used Chromebook internal display dpi ranges from 100 to 150. A
 // 15" 4K external display has a dpi close to 300. A 21" 8K external display's
 // dpi is around 420. Considering the display zoom factor, setting a min dpi 50
 // and max dpi 500 should cover most if not all cases.
 constexpr int kEffectiveDPIMinVal = 50;
 constexpr int kEffectiveDPIMaxVal = 500;
+constexpr int kEffectiveDPIBucketCount = 90;
 
 display::DisplayManager* GetDisplayManager() {
   return Shell::Get()->display_manager();
@@ -192,14 +192,12 @@ void RepeatingEffectiveResolutionUMA(base::RepeatingTimer* timer,
 
       // Only emit event when the dpi is valid.
       if (effective_dpi.has_value()) {
-        size_t bucket_count = (kEffectiveDPIMaxVal - kEffectiveDPIMinVal) /
-                              kEffectiveDPIBucketSize;
         base::UmaHistogramCustomCounts(
             (display::IsInternalDisplayId(display.id())
                  ? kInternalDisplayEffectiveDPIHistogram
                  : kExternalDisplayEffectiveDPIHistogram),
             effective_dpi.value(), kEffectiveDPIMinVal, kEffectiveDPIMaxVal,
-            bucket_count);
+            kEffectiveDPIBucketCount);
       }
     }
   }

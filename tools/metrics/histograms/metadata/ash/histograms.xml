@@ -2960,7 +2960,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The effective DPI of the {DisplayType} computed from active effective
     resolution and display physical size. The bucket value ranges from 50 to 500
-    with each bucket size of 5. This is emitted at regular intervals.
+    with bucket count of 90. This is emitted at regular intervals.
   </summary>
   <token key="DisplayType">
     <variant name="ExternalDisplay" summary="external display"/>
