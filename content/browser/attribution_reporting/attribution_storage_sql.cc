@@ -643,10 +643,12 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   if (attribution_logic == StoredSource::AttributionLogic::kFalsely) {
     for (const auto& fake_report : *randomized_response_data.response()) {
-      DCHECK(stored_source->trigger_specs().find(fake_report.trigger_data,
-                                                 TriggerDataMatching::kExact));
+      auto trigger_spec_it = stored_source->trigger_specs().find(
+          fake_report.trigger_data, TriggerDataMatching::kExact);
+      DCHECK(trigger_spec_it);
 
-      const EventReportWindows& windows = reg.event_report_windows;
+      const EventReportWindows& windows =
+          (*trigger_spec_it).second.event_report_windows();
       DCHECK_LT(fake_report.window_index,
                 static_cast<int>(windows.end_times().size()));
 
