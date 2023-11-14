@@ -584,6 +584,11 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // is being loaded.
   ui::ImageModel fallback_icon_image_model_;
 
+  // Whether fallback icon should be preferred even if the actual app icon has
+  // been loaded - set while the animation from a promise icon state is in
+  // progress.
+  bool prefer_fallback_icon_ = false;
+
   // The current item's drag state.
   DragState drag_state_ = DragState::kNone;
 

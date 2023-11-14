@@ -124,7 +124,7 @@ constexpr float kPromiseIconScaleInstalling = 28.0f / 36.0f;
 
 // The duration of the animation to animate an app list item view in as a
 // promise app replacement.
-constexpr base::TimeDelta kSwapPromiseIconDuration = base::Milliseconds(1000);
+constexpr base::TimeDelta kSwapPromiseIconDuration = base::Milliseconds(100);
 
 // The amount of space between the progress ring and the promise app background.
 constexpr gfx::Insets kProgressRingMargin = gfx::Insets(-2);
@@ -743,9 +743,13 @@ void AppListItemView::UpdateIconView(bool update_item_icon) {
     }
   }
 
-  const ui::ImageModel& image_model = ShouldUseFallbackIconImageModel()
-                                          ? fallback_icon_image_model_
-                                          : icon_image_model_;
+  const bool use_fallback_icon = ShouldUseFallbackIconImageModel();
+  const ui::ImageModel& image_model =
+      use_fallback_icon ? fallback_icon_image_model_ : icon_image_model_;
+  if (!use_fallback_icon && !fallback_icon_image_model_.IsEmpty()) {
+    fallback_icon_image_model_ = ui::ImageModel();
+  }
+
   gfx::ImageSkia image_icon;
   if (image_model.IsImage()) {
     image_icon = image_model.GetImage().AsImageSkia();
@@ -760,6 +764,10 @@ void AppListItemView::UpdateIconView(bool update_item_icon) {
 bool AppListItemView::ShouldUseFallbackIconImageModel() const {
   if (fallback_icon_image_model_.IsEmpty()) {
     return false;
+  }
+
+  if (prefer_fallback_icon_) {
+    return true;
   }
 
   if (!item_weak_) {
@@ -1883,6 +1891,7 @@ void AppListItemView::AnimateInFromPromiseApp(
   forced_progress_indicator_value_ = 0.999999f;
   UpdateProgressIndicatorState();
 
+  prefer_fallback_icon_ = true;
   fallback_icon_image_model_ = fallback_image;
   UpdateIconView(/*update_item_icon=*/false);
 
@@ -1933,7 +1942,12 @@ void AppListItemView::OnAnimatedInFromPromiseApp(
   // Clear background set as a result of adding progress indicator.
   SetBackground(nullptr);
 
-  fallback_icon_image_model_ = ui::ImageModel();
+  prefer_fallback_icon_ = false;
+
+  if (!ShouldUseFallbackIconImageModel()) {
+    fallback_icon_image_model_ = ui::ImageModel();
+  }
+
   GetIconView()->DestroyLayer();
   UpdateIconView(/*update_item_icon=*/true);
 
