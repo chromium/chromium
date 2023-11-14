@@ -382,4 +382,20 @@ TEST_F(InputInjectorChromeosTest, ShouldSupportUnifiedDesktop) {
             PointFWithOffset(48, 127, second_display_pixel_offset));
 }
 
+TEST_F(InputInjectorChromeosTest,
+       ShouldSupportUnifiedDesktopWithSingleDisplay) {
+  CreateSingleDisplay("3000x1500");
+
+  // Collect display offsets now because the APIs we use lose access to the
+  // real displays once unified desktop is enabled.
+  gfx::Point display_pixel_offset =
+      get_origin_in_pixel_coordinates(kFirstDisplay);
+
+  EnableUnifiedDesktop();
+
+  InjectMouseMoveEvent(48, 127);
+  EXPECT_EQ(delegate().NextCursorMove(),
+            PointFWithOffset(48, 127, display_pixel_offset));
+}
+
 }  // namespace remoting
