@@ -114,6 +114,9 @@ class ServiceWorkerHost :
       const PermissionSet& permissions,
       PermissionsManager::UpdateReason reason) override;
 
+  // Returns the mojo channel to the service worker. It may be null
+  // if the service worker doesn't have a live service worker matching
+  // the version id.
   mojom::ServiceWorker* GetServiceWorker();
 
   mojo::AssociatedReceiver<mojom::ServiceWorkerHost>& receiver_for_testing() {

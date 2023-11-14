@@ -258,6 +258,10 @@ mojom::ServiceWorker* ServiceWorkerHost::GetServiceWorker() {
         util::GetServiceWorkerContextForExtensionId(worker_id_.extension_id,
                                                     GetBrowserContext());
     CHECK(context);
+    if (!context->IsLiveRunningServiceWorker(worker_id_.version_id)) {
+      return nullptr;
+    }
+
     context->GetRemoteAssociatedInterfaces(worker_id_.version_id)
         .GetInterface(&remote_);
   }
@@ -279,12 +283,13 @@ void ServiceWorkerHost::OnExtensionPermissionsUpdated(
       util::GetServiceWorkerContextForExtensionId(worker_id_.extension_id,
                                                   browser_context);
   CHECK(context);
-  if (!context->IsLiveRunningServiceWorker(worker_id_.version_id)) {
+  auto* service_worker_remote = GetServiceWorker();
+  if (!service_worker_remote) {
     return;
   }
 
   const PermissionsData* permissions_data = extension.permissions_data();
-  GetServiceWorker()->UpdatePermissions(
+  service_worker_remote->UpdatePermissions(
       std::move(*permissions_data->active_permissions().Clone()),
       std::move(*permissions_data->withheld_permissions().Clone()));
 }

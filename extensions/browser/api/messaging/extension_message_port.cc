@@ -466,8 +466,11 @@ void ExtensionMessagePort::DispatchOnConnect(
                   worker.render_process_id,
                   PortContext::ForWorker(worker.thread_id, worker.version_id,
                                          worker.extension_id));
-
-      host->GetServiceWorker()->DispatchOnConnect(
+      auto* service_worker_remote = host->GetServiceWorker();
+      if (!service_worker_remote) {
+        continue;
+      }
+      service_worker_remote->DispatchOnConnect(
           port_id_, channel_type, channel_name, source.Clone(), info.Clone(),
           std::move(message_port), std::move(message_port_host),
           base::BindOnce(&ExtensionMessagePort::OnConnectResponse,
