@@ -55,15 +55,6 @@ public abstract class TabCreator {
      */
     public abstract Tab createFrozenTab(TabState state, int id, int index);
 
-    /*
-     * Creates a new tab which is detached from the tab model.
-     * @params type Information about where the tab was created from.
-     * @params boolean initializeRenderer whether to initialize renderer during WebContents creation
-     * or not.
-     */
-    public abstract @Nullable Tab buildDetachedSpareTab(
-            @TabLaunchType int type, boolean initializeRenderer);
-
     /**
      * Creates a new tab and loads the specified URL in it. This is a convenience method for
      * {@link #createNewTab} with the default {@link LoadUrlParams} and no parent tab.

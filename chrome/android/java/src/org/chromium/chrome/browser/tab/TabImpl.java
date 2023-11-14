@@ -136,14 +136,13 @@ public class TabImpl implements Tab {
     private boolean mIsShowingErrorPage;
 
     /**
-     * Saves how this tab was launched (from a link, external app, etc) so that
-     * we can determine the different circumstances in which it should be
-     * closed. For example, a tab opened from an external app should be closed
-     * when the back stack is empty and the user uses the back hardware key. A
-     * standard tab however should be kept open and the entire activity should
-     * be moved to the background.
+     * Saves how this tab was launched (from a link, external app, etc) so that we can determine the
+     * different circumstances in which it should be closed. For example, a tab opened from an
+     * external app should be closed when the back stack is empty and the user uses the back
+     * hardware key. A standard tab however should be kept open and the entire activity should be
+     * moved to the background.
      */
-    private final @Nullable @TabLaunchType Integer mLaunchType;
+    private @Nullable @TabLaunchType Integer mLaunchType;
 
     private @Nullable @TabCreationState Integer mCreationState;
 
@@ -1898,6 +1897,13 @@ public class TabImpl implements Tab {
                 getWebContents().getNavigationController().getUseDesktopUserAgent();
         TabUtils.switchUserAgent(this, /* switchToDesktop */ !usingDesktopUserAgent,
                 /* forcedByUser */ false, caller);
+    }
+
+    /** Sets the TabLaunchType for tabs launched with an unset launch type. */
+    @Override
+    public void setTabLaunchType(@TabLaunchType int launchType) {
+        assert mLaunchType == TabLaunchType.UNSET;
+        mLaunchType = launchType;
     }
 
     @NativeMethods

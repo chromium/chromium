@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
@@ -973,7 +974,7 @@ public class StartSurfaceTest {
         // SpareTab should be created when the start surface is shown.
         CriteriaHelper.pollUiThread(
                 () -> {
-                    WarmupManager.getInstance().hasSpareTab();
+                    WarmupManager.getInstance().hasSpareTab(Profile.getLastUsedRegularProfile());
                 });
 
         // The renderer process count should be 0 as spareTab doesn't initialize renderer by
@@ -985,7 +986,10 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.waitForCurrentTabLoaded(mActivityTestRule);
 
         // SpareTab should be used when we navigate from start surface.
-        CriteriaHelper.pollUiThread(() -> !WarmupManager.getInstance().hasSpareTab());
+        CriteriaHelper.pollUiThread(
+                () ->
+                        !WarmupManager.getInstance()
+                                .hasSpareTab(Profile.getLastUsedRegularProfile()));
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -1012,7 +1016,7 @@ public class StartSurfaceTest {
         // SpareTab should be created when the start surface is shown.
         CriteriaHelper.pollUiThread(
                 () -> {
-                    WarmupManager.getInstance().hasSpareTab();
+                    WarmupManager.getInstance().hasSpareTab(Profile.getLastUsedRegularProfile());
                 });
 
         // Navigate from StartSurface using search box.
@@ -1025,7 +1029,10 @@ public class StartSurfaceTest {
         ChromeTabUtils.waitForTabPageLoaded(cta.getActivityTab(), (String) null);
 
         // SpareTab should be used when we navigate from start surface.
-        CriteriaHelper.pollUiThread(() -> !WarmupManager.getInstance().hasSpareTab());
+        CriteriaHelper.pollUiThread(
+                () ->
+                        !WarmupManager.getInstance()
+                                .hasSpareTab(Profile.getLastUsedRegularProfile()));
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -1053,7 +1060,7 @@ public class StartSurfaceTest {
         // SpareTab should be created when the start surface is shown.
         CriteriaHelper.pollUiThread(
                 () -> {
-                    WarmupManager.getInstance().hasSpareTab();
+                    WarmupManager.getInstance().hasSpareTab(Profile.getLastUsedRegularProfile());
                 });
 
         // Navigate from StartSurface using carousel tab switcher.
@@ -1061,7 +1068,10 @@ public class StartSurfaceTest {
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
 
         // This shouldn't use spare tab and deletes spare tab once the start surface gets hidden.
-        CriteriaHelper.pollUiThread(() -> !WarmupManager.getInstance().hasSpareTab());
+        CriteriaHelper.pollUiThread(
+                () ->
+                        !WarmupManager.getInstance()
+                                .hasSpareTab(Profile.getLastUsedRegularProfile()));
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -1093,7 +1103,7 @@ public class StartSurfaceTest {
         // SpareTab should be created when the start surface is shown.
         CriteriaHelper.pollUiThread(
                 () -> {
-                    WarmupManager.getInstance().hasSpareTab();
+                    WarmupManager.getInstance().hasSpareTab(Profile.getLastUsedRegularProfile());
                 });
 
         // The renderer process count should be 1 as spareTab also initializes renderer when the
@@ -1123,19 +1133,22 @@ public class StartSurfaceTest {
         // SpareTab should be created when the start surface is shown.
         CriteriaHelper.pollUiThread(
                 () -> {
-                    WarmupManager.getInstance().hasSpareTab();
+                    WarmupManager.getInstance().hasSpareTab(Profile.getLastUsedRegularProfile());
                 });
 
         // Navigate from start surface using link
         mActivityTestRule.loadUrlInNewTab("about:blank", false, TabLaunchType.FROM_LINK);
 
-        // This shouldn't use spare tab and deletes spare tab once the start surface gets hidden.
-        CriteriaHelper.pollUiThread(() -> !WarmupManager.getInstance().hasSpareTab());
+        // This should use the spare tab.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        !WarmupManager.getInstance()
+                                .hasSpareTab(Profile.getLastUsedRegularProfile()));
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         HISTOGRAM_SPARE_TAB_FINAL_STATUS,
-                        WarmupManager.SpareTabFinalStatus.TAB_DESTROYED));
+                        WarmupManager.SpareTabFinalStatus.TAB_USED));
     }
 
     @Test

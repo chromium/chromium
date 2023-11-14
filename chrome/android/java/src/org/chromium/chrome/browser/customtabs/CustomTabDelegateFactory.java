@@ -328,7 +328,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      * Creates a basic/empty {@link TabDelegateFactory} for use when creating a hidden tab. It will
      * be replaced when the hidden Tab becomes shown.
      */
-    static CustomTabDelegateFactory createEmpty() {
+    public static CustomTabDelegateFactory createEmpty() {
         return new CustomTabDelegateFactory(null, false, false, null, DisplayMode.BROWSER, false,
                 null, null, null, null,
                 ()
@@ -386,7 +386,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     @VisibleForTesting
     TabContextMenuItemDelegate createTabContextMenuItemDelegate(Tab tab) {
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
-        final boolean isIncognito = tab.isIncognito();
         return new TabContextMenuItemDelegate(tab, tabModelSelector,
                 EphemeralTabCoordinator.isSupported() ? mEphemeralTabCoordinator::get : ()
                         -> null,

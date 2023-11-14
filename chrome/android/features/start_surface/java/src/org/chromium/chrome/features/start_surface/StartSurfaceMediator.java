@@ -662,13 +662,17 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         if (!isHomepageShown()) return;
 
         recordTimeBetweenShowAndCreate();
-        // We use UI_DEFAULT priority to not slow down high priority tasks such as user input.
-        // As this is behavior is behind a feature flag, based on the results we will deviate to
-        // lower priority if needed.
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
-                ()
-                        -> WarmupManager.getInstance().createSpareTab(
-                                tabCreator, TabLaunchType.FROM_START_SURFACE));
+
+        if (!mIsIncognito) {
+            Profile profile = mProfileSupplier.get();
+
+            // We use UI_DEFAULT priority to not slow down high priority tasks such as user input.
+            // As this is behavior is behind a feature flag, based on the results we will deviate to
+            // lower priority if needed.
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> WarmupManager.getInstance().createRegularSpareTab(profile));
+        }
     }
 
     /**

@@ -5,14 +5,11 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
@@ -43,7 +40,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabParentIntent;
 import org.chromium.chrome.browser.tab.TabResolver;
 import org.chromium.chrome.browser.tab.TabState;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -242,48 +238,6 @@ public class ChromeTabCreator extends TabCreator {
     }
 
     /**
-     * Creates an instance of a {@link Tab} that is fully detached from any activity.
-     *
-     * Also performs general tab initialization as well as detached specifics.
-     *
-     * @param type Information about how the tab is launched.
-     * @param initializeRenderer Whether to initialize renderer with WebContents creation.
-     *
-     * @return The newly created and initialized spare tab.
-     *
-     * TODO(crbug.com/1412572): Adapt this method to create other tabs.
-     */
-    @Override
-    public Tab buildDetachedSpareTab(@TabLaunchType int type, boolean initializeRenderer) {
-        try (TraceEvent e = TraceEvent.scoped("ChromeTabCreator.buildDetachedTab")) {
-            Context context = ContextUtils.getApplicationContext();
-
-            // Don't create spare tab in incognito mode.
-            if (mIncognito) return null;
-
-            TabDelegateFactory delegateFactory = createDefaultTabDelegateFactory();
-            Tab tab =
-                    TabBuilder.createLiveTab(getProfile(), true)
-                            .setWindow(mNativeWindow)
-                            .setLaunchType(type)
-                            .setDelegateFactory(delegateFactory)
-                            .setInitiallyHidden(true)
-                            .setInitializeRenderer(initializeRenderer)
-                            .build();
-
-            // Resize the webContents to avoid expensive post load resize when attaching the tab.
-            Rect bounds = TabUtils.estimateContentSize(context);
-            int width = bounds.right - bounds.left;
-            int height = bounds.bottom - bounds.top;
-            tab.getWebContents().setSize(width, height);
-
-            // Reparent the tab to detach it from the current activity.
-            ReparentingTask.from(tab).detach();
-            return tab;
-        }
-    }
-
-    /**
      * Creates a new tab and posts to UI.
      * @param loadUrlParams parameters of the url load.
      * @param type Information about how the tab was launched.
@@ -377,12 +331,15 @@ public class ChromeTabCreator extends TabCreator {
                                 .setInitiallyHidden(!openInForeground)
                                 .build();
                 creationState = TabCreationState.FROZEN_FOR_LAZY_LOAD;
-            } else if ((tab = WarmupManager.getInstance().takeSpareTab(mIncognito, type)) != null) {
+            } else if (WarmupManager.getInstance().hasSpareTab(getProfile())) {
                 // Load URL using spare tab if available. This occurs only if a spare tab has been
                 // created beforehand. The creation of a spare tab is a costly operation that should
                 // not be performed without testing. Spare tab is only used for navigations in the
                 // foreground and for high-end devices.
                 TraceEvent.end("ChromeTabCreator.loadUrlWithSpareTab");
+
+                tab = WarmupManager.getInstance().takeSpareTab(getProfile(), type);
+                assert tab != null;
 
                 // Reparent the tab to its parent, updating the DelegateFactory and NativeWindow.
                 tab.reparentTab(parent);

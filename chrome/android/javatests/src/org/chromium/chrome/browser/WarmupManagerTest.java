@@ -16,6 +16,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +49,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -76,8 +78,13 @@ import java.util.concurrent.atomic.AtomicReference;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WarmupManagerTest {
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     public enum ProfileType {
         REGULAR_PROFILE,
@@ -117,13 +124,11 @@ public class WarmupManagerTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityFromLauncher();
-
-        mTabModel = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+        mTabModel = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
 
         mTabGroupModelFilter =
                 (TabGroupModelFilter)
-                        mActivityTestRule
+                        sActivityTestRule
                                 .getActivity()
                                 .getTabModelSelector()
                                 .getTabModelFilterProvider()
@@ -148,9 +153,12 @@ public class WarmupManagerTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mWarmupManager.destroySpareWebContents());
-        TestThreadUtils.runOnUiThreadBlocking(() -> mWarmupManager.destroySpareTab());
-        WarmupManager.deInitForTesting();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mWarmupManager.destroySpareWebContents();
+                    mWarmupManager.destroySpareTab();
+                    WarmupManager.deInitForTesting();
+                });
         mWebServer.shutdown();
     }
 
@@ -173,7 +181,7 @@ public class WarmupManagerTest {
                 Tab tab =
                         ChromeTabUtils.fullyLoadUrlInNewTab(
                                 InstrumentationRegistry.getInstrumentation(),
-                                mActivityTestRule.getActivity(),
+                                sActivityTestRule.getActivity(),
                                 "about:blank",
                                 /* incognito= */ false);
                 tabs.add(tab);
@@ -199,12 +207,13 @@ public class WarmupManagerTest {
                                             ? TabLaunchType.FROM_TAB_GROUP_UI
                                             : TabLaunchType.FROM_CHROME_UI;
                             TabCreator tabCreator =
-                                    mActivityTestRule
+                                    sActivityTestRule
                                             .getActivity()
                                             .getTabCreator(/* incognito= */ false);
                             return tabCreator.createNewTab(
                                     new LoadUrlParams(url), type, parent, index);
                         });
+        ChromeTabUtils.waitForTabPageLoaded(tab, url);
         return tab;
     }
 
@@ -382,29 +391,24 @@ public class WarmupManagerTest {
         // Set the param to true allowing renderer initialization.
         WarmupManager.SPARE_TAB_INITIALIZE_RENDERER.setForTesting(true);
 
-        final AtomicBoolean isRenderFrameLive = new AtomicBoolean();
-
-        PostTask.runOrPostTask(
-                TaskTraits.UI_DEFAULT,
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mWarmupManager.createSpareTab(
-                            mActivityTestRule.getActivity().getCurrentTabCreator(),
-                            TabLaunchType.FROM_START_SURFACE);
-                    Assert.assertTrue(mWarmupManager.hasSpareTab());
-                    Tab tab = mWarmupManager.takeSpareTab(false, TabLaunchType.FROM_START_SURFACE);
+                    Profile profile = getProfile(ProfileType.REGULAR_PROFILE);
+                    mWarmupManager.createRegularSpareTab(profile);
+                    Assert.assertTrue(mWarmupManager.hasSpareTab(profile));
+                    Tab tab =
+                            mWarmupManager.takeSpareTab(profile, TabLaunchType.FROM_START_SURFACE);
                     WebContents webContents = tab.getWebContents();
                     Assert.assertNotNull(tab);
                     Assert.assertNotNull(webContents);
-                    Assert.assertFalse(mWarmupManager.hasSpareTab());
+                    Assert.assertFalse(mWarmupManager.hasSpareTab(profile));
+                    Assert.assertEquals(TabLaunchType.FROM_START_SURFACE, tab.getLaunchType());
 
                     // RenderFrame should become live synchronously during WebContents creation when
                     // SPARE_TAB_INITIALIZE_RENDERER is set.
-                    if (webContents.getMainFrame().isRenderFrameLive()) {
-                        isRenderFrameLive.set(true);
-                    }
+                    Assert.assertTrue(webContents.getMainFrame().isRenderFrameLive());
+                    tab.destroy();
                 });
-        CriteriaHelper.pollUiThread(
-                () -> isRenderFrameLive.get(), "Spare renderer is not initialized");
     }
 
     // Test to check the functionality of spare tab creation without initializing renderer.
@@ -417,27 +421,24 @@ public class WarmupManagerTest {
     public void testCreateAndTakeSpareTabWithoutInitializeRenderer() {
         WarmupManager.SPARE_TAB_INITIALIZE_RENDERER.setForTesting(false);
 
-        final AtomicBoolean isRenderFrameLive = new AtomicBoolean();
-
-        PostTask.runOrPostTask(
-                TaskTraits.UI_DEFAULT,
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mWarmupManager.createSpareTab(
-                            mActivityTestRule.getActivity().getCurrentTabCreator(),
-                            TabLaunchType.FROM_START_SURFACE);
-                    Assert.assertTrue(mWarmupManager.hasSpareTab());
-                    Tab tab = mWarmupManager.takeSpareTab(false, TabLaunchType.FROM_START_SURFACE);
+                    Profile profile = getProfile(ProfileType.REGULAR_PROFILE);
+                    mWarmupManager.createRegularSpareTab(profile);
+                    Assert.assertTrue(mWarmupManager.hasSpareTab(profile));
+                    Tab tab =
+                            mWarmupManager.takeSpareTab(profile, TabLaunchType.FROM_START_SURFACE);
                     WebContents webContents = tab.getWebContents();
                     Assert.assertNotNull(tab);
                     Assert.assertNotNull(webContents);
-                    Assert.assertFalse(mWarmupManager.hasSpareTab());
+                    Assert.assertFalse(mWarmupManager.hasSpareTab(profile));
+                    Assert.assertEquals(TabLaunchType.FROM_START_SURFACE, tab.getLaunchType());
 
                     // RenderFrame shouldn't be created when the SPARE_TAB_INITIALIZE_RENDERER is
                     // false.
                     Assert.assertFalse(webContents.getMainFrame().isRenderFrameLive());
+                    tab.destroy();
                 });
-        CriteriaHelper.pollUiThread(
-                () -> !isRenderFrameLive.get(), "Spare renderer is initialized");
     }
 
     /** Tests that taking a spare Tab makes it unavailable to subsequent callers. */
@@ -450,13 +451,14 @@ public class WarmupManagerTest {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM_SPARE_TAB_FINAL_STATUS, SpareTabFinalStatus.TAB_USED);
-        mWarmupManager.createSpareTab(
-                mActivityTestRule.getActivity().getCurrentTabCreator(),
-                TabLaunchType.FROM_START_SURFACE);
-        Tab tab = mWarmupManager.takeSpareTab(false, TabLaunchType.FROM_START_SURFACE);
+        Profile profile = getProfile(ProfileType.REGULAR_PROFILE);
+        mWarmupManager.createRegularSpareTab(profile);
+        Tab tab = mWarmupManager.takeSpareTab(profile, TabLaunchType.FROM_START_SURFACE);
         Assert.assertNotNull(tab);
-        Assert.assertFalse(mWarmupManager.hasSpareTab());
+        Assert.assertFalse(mWarmupManager.hasSpareTab(profile));
+        Assert.assertEquals(TabLaunchType.FROM_START_SURFACE, tab.getLaunchType());
         histogramWatcher.assertExpected();
+        tab.destroy();
     }
 
     /**
@@ -473,14 +475,14 @@ public class WarmupManagerTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM_SPARE_TAB_FINAL_STATUS, SpareTabFinalStatus.TAB_DESTROYED);
 
-        mWarmupManager.createSpareTab(
-                mActivityTestRule.getActivity().getCurrentTabCreator(),
-                TabLaunchType.FROM_START_SURFACE);
-        Assert.assertTrue(mWarmupManager.hasSpareTab());
+        Profile profile = getProfile(ProfileType.REGULAR_PROFILE);
+        mWarmupManager.createRegularSpareTab(profile);
+        Assert.assertTrue(mWarmupManager.hasSpareTab(profile));
+        Assert.assertFalse(mWarmupManager.hasSpareTab(getProfile(ProfileType.PRIMARY_OTR_PROFILE)));
 
         // Destroy the created spare tab.
         mWarmupManager.destroySpareTab();
-        Assert.assertFalse(mWarmupManager.hasSpareTab());
+        Assert.assertFalse(mWarmupManager.hasSpareTab(profile));
 
         histogramWatcher.assertExpected();
     }
@@ -499,16 +501,16 @@ public class WarmupManagerTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM_SPARE_TAB_FINAL_STATUS, SpareTabFinalStatus.TAB_USED);
 
-        mWarmupManager.createSpareTab(
-                mActivityTestRule.getActivity().getCurrentTabCreator(),
-                TabLaunchType.FROM_START_SURFACE);
+        Profile profile = getProfile(ProfileType.REGULAR_PROFILE);
+        mWarmupManager.createRegularSpareTab(profile);
 
         // Kill the renderer process, this shouldn't kill the associated spare tab and record
         // TAB_CREATED status.
         WebContentsUtils.simulateRendererKilled(mWarmupManager.mSpareTab.getWebContents());
-        Assert.assertNotNull(mWarmupManager.takeSpareTab(false, TabLaunchType.FROM_START_SURFACE));
-
+        Tab tab = mWarmupManager.takeSpareTab(profile, TabLaunchType.FROM_START_SURFACE);
+        Assert.assertNotNull(tab);
         histogramWatcher.assertExpected();
+        tab.destroy();
     }
 
     /** Tests that when SpareTab is disabled we don't create any spare tab. */
@@ -518,12 +520,10 @@ public class WarmupManagerTest {
     @DisableFeatures(ChromeFeatureList.SPARE_TAB)
     @UiThreadTest
     public void testTakeSpareTabWhenFeatureDisabled() {
-        Assert.assertNotNull(mActivityTestRule.getActivity().getCurrentTabCreator());
-        mWarmupManager.createSpareTab(
-                mActivityTestRule.getActivity().getCurrentTabCreator(),
-                TabLaunchType.FROM_START_SURFACE);
-        Tab tab = mWarmupManager.takeSpareTab(false, TabLaunchType.FROM_START_SURFACE);
-        Assert.assertNull(tab);
+        Assert.assertNotNull(sActivityTestRule.getActivity().getCurrentTabCreator());
+        mWarmupManager.createRegularSpareTab(getProfile(ProfileType.REGULAR_PROFILE));
+        Assert.assertFalse(mWarmupManager.hasSpareTab(getProfile(ProfileType.REGULAR_PROFILE)));
+        Assert.assertFalse(mWarmupManager.hasSpareTab(getProfile(ProfileType.PRIMARY_OTR_PROFILE)));
     }
 
     /** Tests that we are able to load url in the spare tab once it is created. */
@@ -535,20 +535,18 @@ public class WarmupManagerTest {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM_SPARE_TAB_FINAL_STATUS, SpareTabFinalStatus.TAB_USED);
-        Assert.assertNotNull(mActivityTestRule.getActivity().getCurrentTabCreator());
-
-        // Create spare tab so that it can be used for navigation from TAB_GROUP_UI.
-        PostTask.runOrPostTask(
-                TaskTraits.UI_DEFAULT,
-                () -> {
-                    mWarmupManager.createSpareTab(
-                            mActivityTestRule.getActivity().getCurrentTabCreator(),
-                            TabLaunchType.FROM_TAB_GROUP_UI);
-                    Assert.assertTrue(mWarmupManager.hasSpareTab());
-                });
+        Assert.assertNotNull(sActivityTestRule.getActivity().getCurrentTabCreator());
 
         prepareTabs(Arrays.asList(new Integer[] {3, 1}));
         List<Tab> tabs = getCurrentTabs();
+
+        Profile profile = getProfile(ProfileType.REGULAR_PROFILE);
+        // Create spare tab so that it can be used for navigation from TAB_GROUP_UI.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mWarmupManager.createRegularSpareTab(profile);
+                    Assert.assertTrue(mWarmupManager.hasSpareTab(profile));
+                });
 
         // Tab 0
         // Tab (tab added here), 1, 2, 3
@@ -557,11 +555,11 @@ public class WarmupManagerTest {
         tabs.add(1, tab);
         assertEquals(tabs, getCurrentTabs());
         assertOrderValid(true);
+        Assert.assertEquals(TabLaunchType.FROM_TAB_GROUP_UI, tab.getLaunchType());
 
-        PostTask.runOrPostTask(
-                TaskTraits.UI_DEFAULT,
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertFalse(mWarmupManager.hasSpareTab());
+                    Assert.assertFalse(mWarmupManager.hasSpareTab(profile));
                 });
         histogramWatcher.assertExpected();
     }
@@ -572,20 +570,18 @@ public class WarmupManagerTest {
     @Feature({"SpareTab"})
     @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     public void testMetricsRecordedWithSpareTab() {
-        Assert.assertNotNull(mActivityTestRule.getActivity().getCurrentTabCreator());
-
-        // Create spare tab so that it can be used for navigation from TAB_GROUP_UI.
-        PostTask.runOrPostTask(
-                TaskTraits.UI_DEFAULT,
-                () -> {
-                    mWarmupManager.createSpareTab(
-                            mActivityTestRule.getActivity().getCurrentTabCreator(),
-                            TabLaunchType.FROM_TAB_GROUP_UI);
-                    Assert.assertTrue(mWarmupManager.hasSpareTab());
-                });
+        Assert.assertNotNull(sActivityTestRule.getActivity().getCurrentTabCreator());
 
         prepareTabs(Arrays.asList(new Integer[] {1, 1}));
         List<Tab> tabs = getCurrentTabs();
+
+        Profile profile = getProfile(ProfileType.REGULAR_PROFILE);
+        // Create spare tab so that it can be used for navigation from TAB_GROUP_UI.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mWarmupManager.createRegularSpareTab(profile);
+                    Assert.assertTrue(mWarmupManager.hasSpareTab(profile));
+                });
 
         // Check that the First Paint (FP) and First Contentful Paint (FCP) metrics are recorded
         // correctly when using the SpareTab feature.
@@ -599,12 +595,12 @@ public class WarmupManagerTest {
         // Navigate and this should record PageLoadMetrics.
         Tab tab = addTabAt(/* index= */ 0, /* parent= */ tabs.get(1));
         tabs.add(1, tab);
+        Assert.assertEquals(TabLaunchType.FROM_TAB_GROUP_UI, tab.getLaunchType());
 
         // PageLoadMetrics should be recorded when SpareTab is used for navigation.
-        PostTask.runOrPostTask(
-                TaskTraits.UI_DEFAULT,
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertFalse(mWarmupManager.hasSpareTab());
+                    Assert.assertFalse(mWarmupManager.hasSpareTab(profile));
                 });
         pageLoadHistogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
@@ -622,18 +618,19 @@ public class WarmupManagerTest {
         ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER
     })
     public void testOnTabCreationWithInitializeRenderer() {
-        mWarmupManager.createSpareTab(
-                mActivityTestRule.getActivity().getCurrentTabCreator(),
-                TabLaunchType.FROM_TAB_GROUP_UI);
-        Assert.assertTrue(mWarmupManager.hasSpareTab());
+        Profile profile = getProfile(ProfileType.REGULAR_PROFILE);
+        mWarmupManager.createRegularSpareTab(profile);
+        Assert.assertTrue(mWarmupManager.hasSpareTab(profile));
 
-        Tab tab = mWarmupManager.takeSpareTab(false, TabLaunchType.FROM_TAB_GROUP_UI);
+        Tab tab = mWarmupManager.takeSpareTab(profile, TabLaunchType.FROM_TAB_GROUP_UI);
         WebContents webContents = tab.getWebContents();
         Assert.assertNotNull(tab);
         Assert.assertNotNull(webContents);
+        Assert.assertEquals(TabLaunchType.FROM_TAB_GROUP_UI, tab.getLaunchType());
 
         // RenderFrame should be created when the CREATE_NEW_TAB_INITIALIZE_RENDERER is enabled.
         Assert.assertTrue(webContents.getMainFrame().isRenderFrameLive());
+        tab.destroy();
     }
 
     @Test

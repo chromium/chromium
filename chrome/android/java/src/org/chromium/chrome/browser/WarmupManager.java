@@ -6,6 +6,7 @@ package org.chromium.chrome.browser;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.util.DisplayMetrics;
 import android.view.ContextThemeWrapper;
@@ -23,6 +24,7 @@ import androidx.asynclayoutinflater.appcompat.AsyncAppCompatFactory;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -30,21 +32,25 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
+import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabBuilder;
+import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.LayoutInflaterUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
 
 import java.lang.annotation.Retention;
@@ -77,17 +83,40 @@ public class WarmupManager {
         }
     }
 
-    /**
-     * Records stats, observes crashes, and cleans up spareTab object.
-     */
-    private TabObserver mSpareTabObserver = new EmptyTabObserver() {
+    /** Records stats, observes crashes, and cleans up spareTab object. */
+    private class HiddenTabObserver extends EmptyTabObserver {
+        // This WindowAndroid is "owned" by the Tab and should be destroyed when it is no longer
+        // needed by the Tab or when the Tab is destroyed.
+        private WindowAndroid mOwnedWindowAndroid;
+
+        public HiddenTabObserver(WindowAndroid ownedWindowAndroid) {
+            mOwnedWindowAndroid = ownedWindowAndroid;
+        }
+
         @Override
         // Invoked when tab crashes, or when the associated renderer process is killed.
         public void onCrash(Tab tab) {
             mSpareTabFinalStatus = SpareTabFinalStatus.TAB_CRASHED;
             destroySpareTabInternal();
         }
-    };
+
+        @Override
+        public void onDestroyed(Tab tab) {
+            destroyOwnedWindow(tab);
+        }
+
+        @Override
+        public void onActivityAttachmentChanged(Tab tab, WindowAndroid window) {
+            destroyOwnedWindow(tab);
+        }
+
+        private void destroyOwnedWindow(Tab tab) {
+            assert mOwnedWindowAndroid != null;
+            mOwnedWindowAndroid.destroy();
+            mOwnedWindowAndroid = null;
+            tab.removeObserver(this);
+        }
+    }
 
     @SuppressLint("StaticFieldLeak")
     private static WarmupManager sWarmupManager;
@@ -177,44 +206,33 @@ public class WarmupManager {
     }
 
     /**
-     * Creates and initializes a spare Tab of TabLaunchType type, to be used for a subsequent
+     * Creates and initializes a Regular (non-Incognito) spare Tab, to be used for a subsequent
      * navigation.
      *
-     * This creates a WebContents and initializes renderer if SPARE_TAB_INITIALIZE_RENDERER is true.
-     * It can be picked up by any tab with TabLaunchType as type. Can be called multiple times, and
-     * must be called from the UI thread.
+     * <p>This creates a WebContents and initializes renderer if SPARE_TAB_INITIALIZE_RENDERER is
+     * true. Can be called multiple times, and must be called from the UI thread.
      *
-     * @param tabCreator The {@link TabCreator} object to create spareTab.
-     * @param type The LaunchType while creating this spareTab.
-     *
+     * <p>The tab's launch type will be set when the tab is used.
      */
-    public void createSpareTab(TabCreator tabCreator, @TabLaunchType int type) {
+    public void createRegularSpareTab(Profile profile) {
+        ThreadUtils.assertOnUiThread();
+        assert !profile.isOffTheRecord();
         try (TraceEvent e = TraceEvent.scoped("WarmupManager.createSpareTab")) {
             // Return without creating spare Tab if spareTab feature isn't enabled.
             if (!isSpareTabEnabled()) return;
 
             mSpareTabFinalStatus = SpareTabFinalStatus.TAB_CREATION_IN_PROGRESS;
-            ThreadUtils.assertOnUiThread();
 
             // Ensure native is initialized before creating spareTab.
             assert LibraryLoader.getInstance().isInitialized();
 
-            if (mSpareTab != null) {
-                // If a spare Tab is already present for the launch type don't create a new one.
-                if (mSpareTab.getLaunchType() == type) return;
-
-                // Destroy the old spare tab before creating new one.
-                destroySpareTab();
-            }
-
-            // We don't handle spare tab creation if tabCreator is null.
-            if (tabCreator == null) return;
+            if (mSpareTab != null) return;
 
             // Initializes renderer with WebContents creation if enabled.
-            boolean initialize_renderer = SPARE_TAB_INITIALIZE_RENDERER.getValue();
+            boolean initializeRenderer = SPARE_TAB_INITIALIZE_RENDERER.getValue();
 
             // Build a spare detached tab.
-            Tab spareTab = tabCreator.buildDetachedSpareTab(type, initialize_renderer);
+            Tab spareTab = buildDetachedSpareTab(profile, initializeRenderer);
 
             mSpareTab = spareTab;
             assert mSpareTab != null : "Building a spare detached tab shouldn't return null.";
@@ -222,39 +240,70 @@ public class WarmupManager {
             mSpareTabFinalStatus = SpareTabFinalStatus.TAB_CREATED_BUT_NOT_USED;
         }
 
-        // Ensure that the TabObserver is set before adding it.
-        assert mSpareTabObserver != null;
         if (mSpareTab != null) {
-            mSpareTab.addObserver(mSpareTabObserver);
+            mSpareTab.addObserver(new HiddenTabObserver(mSpareTab.getWindowAndroid()));
         }
     }
 
     /**
-     * Returns a spare Tab or null, depending on the availability of one.
+     * Creates an instance of a {@link Tab} that is fully detached from any activity.
      *
-     * @param incognito whether tab is used in incognito mode or not.
-     * @param type TabLaunchType of the requested tab.
+     * <p>Also performs general tab initialization as well as detached specifics.
      *
-     * @return a Tab, or null.
+     * @param initializeRenderer Whether to initialize renderer with WebContents creation.
+     * @return The newly created and initialized spare tab.
+     *     <p>TODO(crbug.com/1412572): Adapt this method to create other tabs.
      */
-    public Tab takeSpareTab(boolean incognito, @TabLaunchType int type) {
-        try (TraceEvent e = TraceEvent.scoped("WarmupManager.takeSpareTab")) {
-            if (!canUseSpareTab(type)) return null;
+    private Tab buildDetachedSpareTab(Profile profile, boolean initializeRenderer) {
+        Context context = ContextUtils.getApplicationContext();
 
+        // These are effectively unused as they will be set when finishing reparenting.
+        TabDelegateFactory delegateFactory = CustomTabDelegateFactory.createEmpty();
+        WindowAndroid window = new WindowAndroid(context);
+
+        // TODO(crbug.com/1190971): Set isIncognito flag here if spare tabs are allowed for
+        // incognito mode.
+        Tab tab =
+                TabBuilder.createLiveTab(profile, true)
+                        .setWindow(window)
+                        .setLaunchType(TabLaunchType.UNSET)
+                        .setDelegateFactory(delegateFactory)
+                        .setInitiallyHidden(true)
+                        .setInitializeRenderer(initializeRenderer)
+                        .build();
+
+        // Resize the webContents to avoid expensive post load resize when attaching the tab.
+        Rect bounds = TabUtils.estimateContentSize(context);
+        int width = bounds.right - bounds.left;
+        int height = bounds.bottom - bounds.top;
+        tab.getWebContents().setSize(width, height);
+
+        // Reparent the tab to detach it from the current activity.
+        ReparentingTask.from(tab).detach();
+        return tab;
+    }
+
+    /**
+     * Returns the spare Tab. Must only be called when a spare tab is available for |profile|.
+     *
+     * @param profile the profile associated with the spare Tab.
+     * @param type TabLaunchType of the requested tab.
+     * @return the spare Tab.
+     */
+    public Tab takeSpareTab(Profile profile, @TabLaunchType int type) {
+        ThreadUtils.assertOnUiThread();
+        try (TraceEvent e = TraceEvent.scoped("WarmupManager.takeSpareTab")) {
             // We should only invoke this when the spare tab feature is enabled.
             assert isSpareTabEnabled();
 
-            ThreadUtils.assertOnUiThread();
-
-            // Only use spareTab for non-incognito mode.
-            if (incognito) return null;
-
-            // Remove the spareTab observer before using it.
-            mSpareTab.removeObserver(mSpareTabObserver);
+            if (mSpareTab.getProfile() != profile) {
+                throw new RuntimeException("Attempted to take the tab from another profile.");
+            }
 
             Tab spareTab = mSpareTab;
             mSpareTab = null;
 
+            spareTab.setTabLaunchType(type);
             mSpareTabFinalStatus = SpareTabFinalStatus.TAB_USED;
 
             // Record the SpareTabFinalStatus once its used.
@@ -264,10 +313,11 @@ public class WarmupManager {
     }
 
     /**
-     * @return Whether a spare tab is available.
+     * @return Whether a spare tab is available for the given profile.
      */
-    public boolean hasSpareTab() {
-        return mSpareTab != null;
+    public boolean hasSpareTab(Profile profile) {
+        if (mSpareTab == null) return false;
+        return mSpareTab.getProfile() == profile;
     }
 
     /**
@@ -280,24 +330,6 @@ public class WarmupManager {
 
         assert mSpareTab.isHidden() : "Spare tab is not hidden";
         return mSpareTab == tab;
-    }
-
-    /**
-     * Various conditions are checked to determine whether the spare tab can be used to load a URL.
-     * In order to load a URL, the tab properties must match the tab that is being used.
-     *
-     * @param type TabLaunchType of the requested tab.
-     *
-     * @return Whether a spare tab can be used for next navigation or false otherwise.
-     */
-    public boolean canUseSpareTab(@TabLaunchType int type) {
-        // If there is no spareTab return false.
-        if (!hasSpareTab()) return false;
-
-        // Ensure that TabLaunchType matches when using spareTab for navigation.
-        if (mSpareTab.getLaunchType() != type) return false;
-
-        return true;
     }
 
     /**

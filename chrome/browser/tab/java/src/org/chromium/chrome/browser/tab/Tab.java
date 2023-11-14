@@ -340,4 +340,7 @@ public interface Tab extends TabLifecycle {
     @Nullable
     @TabLaunchType
     Integer getTabLaunchTypeAtCreation();
+
+    /** Sets the TabLaunchType for tabs launched with an unset launch type. */
+    void setTabLaunchType(@TabLaunchType int launchType);
 }

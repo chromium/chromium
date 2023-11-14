@@ -75,11 +75,6 @@ public class MockTabCreator extends TabCreator {
     }
 
     @Override
-    public Tab buildDetachedSpareTab(@TabLaunchType int type, boolean initializeRenderer) {
-        return null;
-    }
-
-    @Override
     public boolean createTabWithWebContents(
             Tab parent, WebContents webContents, @TabLaunchType int type, GURL url) {
         return false;
