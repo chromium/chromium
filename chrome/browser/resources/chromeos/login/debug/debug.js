@@ -888,6 +888,26 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       kind: ScreenKind.ERROR,
     },
     {
+      id: 'factor-setup-success',
+      kind: ScreenKind.NORMAL,
+      states: [
+        {
+          id: 'local-set',
+          data: {
+            modifiedFactors: 'local',
+            changeMode: 'set',
+          },
+        },
+        {
+          id: 'local-update',
+          data: {
+            modifiedFactors: 'local',
+            changeMode: 'update',
+          },
+        },
+      ],
+    },
+    {
       id: 'saml-confirm-password',
       kind: ScreenKind.OTHER,
       suffix: 'SAML',

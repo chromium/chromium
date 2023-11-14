@@ -1,0 +1,32 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="oobe-dialog-host-styles">
+</style>
+<oobe-adaptive-dialog id="factorSetupSuccessDialog" role="dialog">
+  <iron-icon slot="icon" icon="oobe-32:lock"></iron-icon>
+  <h1 slot="title">
+    [[getTitle_(locale, factors_, changeMode_)]]
+  </h1>
+  <div slot="subtitle">
+    [[getSubtitle_(locale, factors_, changeMode_)]]
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <iron-icon icon="oobe-illos:pin-illustration-illo"
+        class="illustration-jelly">
+    </iron-icon>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="doneButton" inverse on-click="onProceed_"
+        class="focus-on-show" text-key="factorSuccessDoneButton"
+        hidden="[[hasNextStep_]]">
+    </oobe-text-button>
+    <oobe-next-button id="nextButton" inverse on-click="onProceed_"
+        class="focus-on-show"
+     hidden="[[!hasNextStep_]]" >
+    </oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>

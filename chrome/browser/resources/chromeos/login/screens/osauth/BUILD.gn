@@ -13,6 +13,7 @@ js_type_check("closure_compile") {
     ":apply_online_password",
     ":cryptohome_recovery",
     ":cryptohome_recovery_setup",
+    ":factor_setup_success",
     ":fingerprint_setup",
     ":gaia_password_changed",
     ":local_password_setup",
@@ -53,6 +54,19 @@ js_library("cryptohome_recovery_setup") {
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_loading_dialog",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("factor_setup_success") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/osauth/factor_setup_success.js" ]
+  deps = [
+    "../../components:oobe_types",
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:oobe_dialog_host_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/buttons:oobe_text_button",
+    "../../components/dialogs:oobe_adaptive_dialog",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -166,6 +180,7 @@ html_to_js("web_components") {
     "apply_online_password.js",
     "cryptohome_recovery.js",
     "cryptohome_recovery_setup.js",
+    "factor_setup_success.js",
     "fingerprint_setup.js",
     "gaia_password_changed.js",
     "local_password_setup.js",

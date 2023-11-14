@@ -85,6 +85,8 @@ class WizardContext {
     bool local_password_forced = false;
 
     AuthChangeFlow auth_setup_flow = AuthChangeFlow::kInitialSetup;
+
+    AuthFactorsSet modified_factors;
   };
 
   // Configuration for automating OOBE screen actions, e.g. during device

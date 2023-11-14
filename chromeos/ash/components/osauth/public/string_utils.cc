@@ -32,6 +32,7 @@ std::ostream& operator<<(std::ostream& out, AshAuthFactor factor) {
     PRINT(Recovery)
     PRINT(LegacyPin)
     PRINT(LegacyFingerprint)
+    PRINT(LocalPassword)
 #undef PRINT
   }
 }

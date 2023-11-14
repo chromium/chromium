@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/local_password_setup_handler.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"
@@ -24,7 +25,6 @@ namespace {
 
 constexpr const char kUserActionInputPassword[] = "inputPassword";
 constexpr const char kUserActionBack[] = "back";
-constexpr const char kUserActionDone[] = "done";
 
 }  // namespace
 
@@ -95,9 +95,6 @@ void LocalPasswordSetupScreen::OnUserAction(const base::Value::List& args) {
   } else if (action_id == kUserActionBack) {
     exit_callback_.Run(Result::kBack);
     return;
-  } else if (action_id == kUserActionDone) {
-    exit_callback_.Run(Result::kDone);
-    return;
   }
   BaseOSAuthSetupScreen::OnUserAction(args);
 }
@@ -112,7 +109,9 @@ void LocalPasswordSetupScreen::OnUpdateLocalPassword(
     crash_reporter::DumpWithoutCrashing();
     return;
   }
-  view_->ShowLocalPasswordSetupSuccess();
+  context()->knowledge_factor_setup.modified_factors.Put(
+      AshAuthFactor::kLocalPassword);
+  exit_callback_.Run(Result::kDone);
 }
 
 void LocalPasswordSetupScreen::OnSetLocalPassword(
@@ -125,7 +124,9 @@ void LocalPasswordSetupScreen::OnSetLocalPassword(
     crash_reporter::DumpWithoutCrashing();
     return;
   }
-  view_->ShowLocalPasswordSetupSuccess();
+  context()->knowledge_factor_setup.modified_factors.Put(
+      AshAuthFactor::kLocalPassword);
+  exit_callback_.Run(Result::kDone);
 }
 
 }  // namespace ash

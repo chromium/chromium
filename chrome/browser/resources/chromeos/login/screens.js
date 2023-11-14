@@ -49,6 +49,7 @@ import './screens/common/wrong_hwid.js';
 // COMMON SCREENS USED TO SET UP AUTHENTICATION
 import './screens/osauth/apply_online_password.js';
 import './screens/osauth/cryptohome_recovery_setup.js';
+import './screens/osauth/factor_setup_success.js';
 import './screens/osauth/fingerprint_setup.js';
 import './screens/osauth/local_password_setup.js';
 import './screens/osauth/osauth_error.js';
@@ -145,6 +146,7 @@ export const commonScreensList = [
   },
   {tag: 'oobe-reset-element', id: 'reset'},
   {tag: 'osauth-error-element', id: 'osauth-error'},
+  {tag: 'factor-setup-success-element', id: 'factor-setup-success'},
   {
     tag: 'os-install-element',
     id: 'os-install',

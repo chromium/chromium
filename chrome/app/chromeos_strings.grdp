@@ -1689,6 +1689,9 @@
   <message name="IDS_LOGIN_GENERIC_RETRY_BUTTON" desc="Label for the button to retry operation during login process.">
     Retry
   </message>
+  <message name="IDS_LOGIN_GENERIC_DONE_BUTTON" desc="Label for the button on the information dialogs to close the dialog and proceed as expected.">
+    Done
+  </message>
   <message name="IDS_LOGIN_SAML_NOTICE_SHORT" desc="Text message displayed above SAML portal to early indicate that the user is being redirected to another sign-in provider. This is the version of the string used in the GAIA flow.">
     Sign-in hosted by <ph name="SAML_DOMAIN">$1<ex>saml.com</ex></ph>
   </message>
@@ -1713,13 +1716,13 @@
   <message name="IDS_LOGIN_LOCAL_PASSWORD_RESET_TITLE" desc="Title for the local password reset dialog.">
     Reset <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password
   </message>
-  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_DONE_TITLE" desc="Title for the local password setup done dialog.">
+  <message name="IDS_LOGIN_FACTOR_SETUP_SUCCESS_LOCAL_PASSWORD_SET_TITLE" desc="Title for the factor setup informational dialog to show that the local password was set successfully.">
     Your password is set
   </message>
-  <message name="IDS_LOGIN_LOCAL_PASSWORD_RESET_DONE_TITLE" desc="Title for the local password reset done dialog.">
+  <message name="IDS_LOGIN_FACTOR_SETUP_SUCCESS_LOCAL_PASSWORD_UPDATED_TITLE" desc="Title for the factor setup informational dialog to show that local password was updated successfuly.">
     Your password has been updated
   </message>
-  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_DONE_SUBTITLE" desc="Subitle for the local password setup done dialog.">
+  <message name="IDS_LOGIN_FACTOR_SETUP_SUCCESS_LOCAL_PASSWORD_SUBTITLE" desc="Subtitle for the factor setup informational dialog, shown when local password was set up (to indicate that it only applies to the current device).">
     You can use this password to sign in to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
   </message>
   <message name="IDS_LOGIN_MANUAL_PASSWORD_TITLE" desc="Title for the manual password setting dialog.">

@@ -34,7 +34,6 @@ import {addSubmitListener} from '../../login_ui_tools.js';
 const LocalPasswordSetupState = {
   PASSWORD: 'password',
   PROGRESS: 'progress',
-  DONE: 'done',
 };
 
 /**
@@ -120,10 +119,6 @@ class LocalPasswordSetup extends LocalPasswordSetupBase {
     this.backButtonVisible_ = data['showBackButton'];
   }
 
-  showLocalPasswordSetupSuccess() {
-    this.setUIStep(LocalPasswordSetupState.DONE);
-  }
-
   showLocalPasswordSetupFailure() {
     // TODO(b/304963851): Show setup failed message, likely allowing user to
     // retry.
@@ -153,12 +148,6 @@ class LocalPasswordSetup extends LocalPasswordSetupBase {
   titleText_(locale, isRecoveryFlow) {
     const key =
         isRecoveryFlow ? 'localPasswordResetTitle' : 'localPasswordSetupTitle';
-    return this.i18n(key);
-  }
-
-  doneTitleText_(locale, isRecoveryFlow) {
-    const key = isRecoveryFlow ? 'localPasswordResetDoneTitle' :
-                                 'localPasswordSetupDoneTitle';
     return this.i18n(key);
   }
 }
