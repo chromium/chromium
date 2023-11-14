@@ -157,7 +157,6 @@ class HttpStreamFactory::Job
       RequestPriority priority,
       const ProxyInfo& proxy_info,
       const SSLConfig& server_ssl_config,
-      const SSLConfig& proxy_ssl_config,
       url::SchemeHostPort destination,
       GURL origin_url,
       NextProto alternative_protocol,
@@ -372,6 +371,7 @@ class HttpStreamFactory::Job
   RequestPriority priority_;
   const ProxyInfo proxy_info_;
   SSLConfig server_ssl_config_;
+  // TODO(https://crbug.com/1498285): Remove this field.
   SSLConfig base_proxy_ssl_config_;
   const NetLogWithSource net_log_;
 
@@ -505,7 +505,6 @@ class HttpStreamFactory::JobFactory {
       RequestPriority priority,
       const ProxyInfo& proxy_info,
       const SSLConfig& server_ssl_config,
-      const SSLConfig& proxy_ssl_config,
       url::SchemeHostPort destination,
       GURL origin_url,
       bool is_websocket,

@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/load_flags.h"
 #include "net/base/port_util.h"
 #include "net/base/proxy_delegate.h"
 #include "net/cert/cert_verifier.h"
@@ -111,7 +112,6 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
                             RequestPriority priority,
                             const ProxyInfo& proxy_info,
                             const SSLConfig& server_ssl_config,
-                            const SSLConfig& base_proxy_ssl_config,
                             url::SchemeHostPort destination,
                             GURL origin_url,
                             NextProto alternative_protocol,
@@ -123,7 +123,6 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
       priority_(priority),
       proxy_info_(proxy_info),
       server_ssl_config_(server_ssl_config),
-      base_proxy_ssl_config_(base_proxy_ssl_config),
       net_log_(
           NetLogWithSource::Make(net_log, NetLogSourceType::HTTP_STREAM_JOB)),
       io_callback_(
@@ -178,6 +177,16 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
   // `ProxyServer`, but the full `ProxyInfo` is passed back to
   // `HttpNetworkTransaction`, which consumes additional fields.
   DCHECK(!proxy_info_.is_empty());
+
+  // TODO(https://crbug.com/1498285):  Remove these and move
+  // `disable_cert_verification_network_fetches` handling down to the socket
+  // layer.
+  bool disable_cert_verification_network_fetches =
+      !!(request_info_.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
+  server_ssl_config_.disable_cert_verification_network_fetches =
+      disable_cert_verification_network_fetches;
+  base_proxy_ssl_config_.disable_cert_verification_network_fetches =
+      disable_cert_verification_network_fetches;
 
   // QUIC can only be spoken to servers, never to proxies.
   if (alternative_protocol == kProtoQUIC) {
@@ -1314,7 +1323,6 @@ HttpStreamFactory::JobFactory::CreateJob(
     RequestPriority priority,
     const ProxyInfo& proxy_info,
     const SSLConfig& server_ssl_config,
-    const SSLConfig& base_proxy_ssl_config,
     url::SchemeHostPort destination,
     GURL origin_url,
     bool is_websocket,
@@ -1324,9 +1332,9 @@ HttpStreamFactory::JobFactory::CreateJob(
     quic::ParsedQuicVersion quic_version) {
   return std::make_unique<HttpStreamFactory::Job>(
       delegate, job_type, session, request_info, priority, proxy_info,
-      server_ssl_config, base_proxy_ssl_config, std::move(destination),
-      origin_url, alternative_protocol, quic_version, is_websocket,
-      enable_ip_based_pooling, net_log);
+      server_ssl_config, std::move(destination), origin_url,
+      alternative_protocol, quic_version, is_websocket, enable_ip_based_pooling,
+      net_log);
 }
 
 bool HttpStreamFactory::Job::ShouldThrottleConnectForSpdy() const {

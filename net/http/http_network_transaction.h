@@ -420,7 +420,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // modifications being idempotent. Address this as part of other work to make
   // sense of SSLConfig (related to https://crbug.com/488043).
   SSLConfig server_ssl_config_;
-  SSLConfig base_proxy_ssl_config_;
 
   HttpRequestHeaders request_headers_;
 #if BUILDFLAG(ENABLE_REPORTING)
