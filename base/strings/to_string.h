@@ -116,7 +116,8 @@ struct ToStringHelper<std::tuple<T...>> {
 }  // namespace internal
 
 // Converts any type to a string, preferring defined operator<<() or ToString()
-// methods if they exist.
+// methods if they exist. If multiple `values` are given, returns the
+// concatenation of the result of applying `ToString` to each value.
 template <typename... Ts>
 std::string ToString(const Ts&... values) {
   std::ostringstream ss;
