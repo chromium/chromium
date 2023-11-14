@@ -36,20 +36,23 @@ bool GetNativeWindow(const Browser* browser, gfx::NativeWindow* native_window) {
 }  // namespace
 
 BrowserActivationWaiter::BrowserActivationWaiter(const Browser* browser)
-    : browser_(browser) {
+    : browser_(browser->AsWeakPtr()) {
   // When the active browser closes, the next "last active browser" in the
   // BrowserList might not be immediately activated. So we need to wait for the
   // "last active browser" to actually be active.
-  if (chrome::FindLastActive() == browser_ && browser_->window()->IsActive()) {
+  if (chrome::FindLastActive() == browser && browser->window()->IsActive()) {
     observed_ = true;
     return;
   }
   BrowserList::AddObserver(this);
 }
 
+BrowserActivationWaiter::~BrowserActivationWaiter() = default;
+
 void BrowserActivationWaiter::WaitForActivation() {
-  if (observed_)
+  if (observed_) {
     return;
+  }
   DCHECK(!run_loop_.running()) << "WaitForActivation() can be called at most "
                                   "once. Construct a new "
                                   "BrowserActivationWaiter instead.";
@@ -57,18 +60,20 @@ void BrowserActivationWaiter::WaitForActivation() {
 }
 
 void BrowserActivationWaiter::OnBrowserSetLastActive(Browser* browser) {
-  if (browser != browser_)
+  if (browser != browser_.get()) {
     return;
+  }
 
   observed_ = true;
   BrowserList::RemoveObserver(this);
-  if (run_loop_.running())
+  if (run_loop_.running()) {
     run_loop_.Quit();
+  }
 }
 
 BrowserDeactivationWaiter::BrowserDeactivationWaiter(const Browser* browser)
-    : browser_(browser) {
-  if (chrome::FindLastActive() != browser_ && !browser->window()->IsActive()) {
+    : browser_(browser->AsWeakPtr()) {
+  if (chrome::FindLastActive() != browser && !browser->window()->IsActive()) {
     observed_ = true;
     return;
   }
@@ -78,8 +83,9 @@ BrowserDeactivationWaiter::BrowserDeactivationWaiter(const Browser* browser)
 BrowserDeactivationWaiter::~BrowserDeactivationWaiter() = default;
 
 void BrowserDeactivationWaiter::WaitForDeactivation() {
-  if (observed_)
+  if (observed_) {
     return;
+  }
   DCHECK(!run_loop_.running()) << "WaitForDeactivation() can be called at most "
                                   "once. Construct a new "
                                   "BrowserDeactivationWaiter instead.";
@@ -87,22 +93,26 @@ void BrowserDeactivationWaiter::WaitForDeactivation() {
 }
 
 void BrowserDeactivationWaiter::OnBrowserNoLongerActive(Browser* browser) {
-  if (browser != browser_)
+  if (browser != browser_.get()) {
     return;
+  }
 
   observed_ = true;
   BrowserList::RemoveObserver(this);
-  if (run_loop_.running())
+  if (run_loop_.running()) {
     run_loop_.Quit();
+  }
 }
 
 bool BringBrowserWindowToFront(const Browser* browser) {
   gfx::NativeWindow window = gfx::NativeWindow();
-  if (!GetNativeWindow(browser, &window))
+  if (!GetNativeWindow(browser, &window)) {
     return false;
+  }
 
-  if (!ShowAndFocusNativeWindow(window))
+  if (!ShowAndFocusNativeWindow(window)) {
     return false;
+  }
 
   BrowserActivationWaiter waiter(browser);
   waiter.WaitForActivation();
@@ -117,8 +127,9 @@ bool SendKeyPressSync(const Browser* browser,
                       bool command,
                       ui_controls::KeyEventType wait_for) {
   gfx::NativeWindow window = gfx::NativeWindow();
-  if (!GetNativeWindow(browser, &window))
+  if (!GetNativeWindow(browser, &window)) {
     return false;
+  }
   return SendKeyPressToWindowSync(window, key, control, shift, alt, command,
                                   wait_for);
 }
@@ -207,8 +218,9 @@ void ClickTask(ui_controls::MouseButton button,
 
 display::Display GetSecondaryDisplay(display::Screen* screen) {
   for (const auto& iter : screen->GetAllDisplays()) {
-    if (iter.id() != screen->GetPrimaryDisplay().id())
+    if (iter.id() != screen->GetPrimaryDisplay().id()) {
       return iter;
+    }
   }
   NOTREACHED();
   return display::Display();

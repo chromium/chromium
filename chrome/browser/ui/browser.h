@@ -484,6 +484,7 @@ class Browser : public TabStripModelObserver,
   }
 
   base::WeakPtr<Browser> AsWeakPtr();
+  base::WeakPtr<const Browser> AsWeakPtr() const;
 
   // Get the FindBarController for this browser, creating it if it does not
   // yet exist.

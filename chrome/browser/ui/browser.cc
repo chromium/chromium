@@ -663,6 +663,10 @@ base::WeakPtr<Browser> Browser::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+base::WeakPtr<const Browser> Browser::AsWeakPtr() const {
+  return weak_factory_.GetWeakPtr();
+}
+
 FindBarController* Browser::GetFindBarController() {
   if (!find_bar_controller_.get()) {
     find_bar_controller_ =
