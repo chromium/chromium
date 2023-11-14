@@ -591,4 +591,23 @@ TEST_F(InterestGroupCachingStorageTest, LoadGroupsCacheHitHistogram) {
       "Ads.InterestGroup.Auction.LoadGroupsCacheHit", true, 3);
 }
 
+TEST_F(InterestGroupCachingStorageTest, DontLoadCachedInterestGroupsIfExpired) {
+  std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
+      CreateCachingStorage();
+
+  url::Origin owner = url::Origin::Create(GURL("https://www.example.com/"));
+  // Make a group with expiration 1 day from now.
+  auto ig = MakeInterestGroup(owner, "name");
+
+  JoinInterestGroup(caching_storage.get(), ig, GURL("https://www.test.com"));
+
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
+      GetInterestGroupsForOwner(caching_storage.get(), owner);
+
+  task_environment().FastForwardBy(base::Days(2));
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_again =
+      GetInterestGroupsForOwner(caching_storage.get(), owner);
+  ASSERT_NE(loaded_igs->get(), loaded_igs_again->get());
+}
+
 }  // namespace content

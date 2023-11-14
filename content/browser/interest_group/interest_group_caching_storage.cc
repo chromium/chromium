@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/interest_group/interest_group_caching_storage.h"
+#include <algorithm>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
@@ -52,7 +53,12 @@ const StorageInterestGroup& SingleStorageInterestGroup::operator*() const {
 
 StorageInterestGroups::StorageInterestGroups(
     std::vector<StorageInterestGroup>&& interest_groups)
-    : storage_interest_groups_(std::move(interest_groups)) {}
+    : storage_interest_groups_(std::move(interest_groups)) {
+  expiry_ = base::Time::Max();
+  for (const StorageInterestGroup& group : storage_interest_groups_) {
+    expiry_ = std::min(expiry_, group.interest_group.expiry);
+  }
+}
 
 StorageInterestGroups::~StorageInterestGroups() = default;
 
@@ -90,7 +96,8 @@ void InterestGroupCachingStorage::GetInterestGroupsForOwner(
   // If there is a cache hit, use the in-memory object.
   auto cached_groups_it = cached_interest_groups_.find(owner);
   if (cached_groups_it != cached_interest_groups_.end() &&
-      cached_groups_it->second.MaybeValid()) {
+      cached_groups_it->second.MaybeValid() &&
+      !cached_groups_it->second->IsExpired()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   scoped_refptr<StorageInterestGroups>(

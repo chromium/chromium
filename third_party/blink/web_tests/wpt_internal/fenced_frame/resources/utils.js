@@ -141,7 +141,11 @@ async function generateURNFromFledgeRawURL(
 // Note: this function, unlike generateURL, is asynchronous and needs to be
 // called with an await operator. @param {string} href - The base url of the
 // page being navigated to @param {string list} keylist - The list of key UUIDs
-// to be used. Note that order matters when extracting the keys
+// to be used. Note that order matters when extracting the keys.
+// Warning: tests that use this function should not be run in parallel
+// because calls to navigator.joinAdInterestGroup on interest groups with the
+// same name and owner can overwrite each other, and as a result, the tests'
+// auctions may use another test's joined interest group.
 // @param {string} href - The base url of the page being navigated to
 // @param {string list} keylist - The list of key UUIDs to be used. Note that
 //                                order matters when extracting the keys
