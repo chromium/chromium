@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/execution_context_priority/frame_capturing_video_stream_voter.h"
+#include "components/performance_manager/execution_context_priority/frame_capturing_media_stream_voter.h"
 
 #include <memory>
 
@@ -25,7 +25,7 @@ const execution_context::ExecutionContext* GetExecutionContext(
   return execution_context::ExecutionContext::From(frame_node);
 }
 
-// Both the voting channel and the FrameCapturingVideoStreamVoter are expected
+// Both the voting channel and the FrameCapturingMediaStreamVoter are expected
 // to live on the graph, without being actual GraphOwned objects. This class
 // wraps both to allow this.
 class GraphOwnedWrapper : public GraphOwned {
@@ -33,7 +33,7 @@ class GraphOwnedWrapper : public GraphOwned {
   GraphOwnedWrapper() {
     VotingChannel voting_channel = observer_.BuildVotingChannel();
     voter_id_ = voting_channel.voter_id();
-    frame_capturing_video_stream_voter_.SetVotingChannel(
+    frame_capturing_media_stream_voter_.SetVotingChannel(
         std::move(voting_channel));
   }
 
@@ -45,11 +45,11 @@ class GraphOwnedWrapper : public GraphOwned {
   // GraphOwned:
   void OnPassedToGraph(Graph* graph) override {
     graph->AddInitializingFrameNodeObserver(
-        &frame_capturing_video_stream_voter_);
+        &frame_capturing_media_stream_voter_);
   }
   void OnTakenFromGraph(Graph* graph) override {
     graph->RemoveInitializingFrameNodeObserver(
-        &frame_capturing_video_stream_voter_);
+        &frame_capturing_media_stream_voter_);
   }
 
   // Exposes the DummyVoteObserver to validate expectations.
@@ -59,23 +59,23 @@ class GraphOwnedWrapper : public GraphOwned {
 
  private:
   DummyVoteObserver observer_;
-  FrameCapturingVideoStreamVoter frame_capturing_video_stream_voter_;
+  FrameCapturingMediaStreamVoter frame_capturing_media_stream_voter_;
   VoterId voter_id_;
 };
 
 }  // namespace
 
-class FrameCapturingVideoStreamVoterTest : public GraphTestHarness {
+class FrameCapturingMediaStreamVoterTest : public GraphTestHarness {
  public:
   using Super = GraphTestHarness;
 
-  FrameCapturingVideoStreamVoterTest() = default;
-  ~FrameCapturingVideoStreamVoterTest() override = default;
+  FrameCapturingMediaStreamVoterTest() = default;
+  ~FrameCapturingMediaStreamVoterTest() override = default;
 
-  FrameCapturingVideoStreamVoterTest(
-      const FrameCapturingVideoStreamVoterTest&) = delete;
-  FrameCapturingVideoStreamVoterTest& operator=(
-      const FrameCapturingVideoStreamVoterTest&) = delete;
+  FrameCapturingMediaStreamVoterTest(
+      const FrameCapturingMediaStreamVoterTest&) = delete;
+  FrameCapturingMediaStreamVoterTest& operator=(
+      const FrameCapturingMediaStreamVoterTest&) = delete;
 
   void SetUp() override {
     GetGraphFeatures().EnableExecutionContextRegistry();
@@ -92,9 +92,9 @@ class FrameCapturingVideoStreamVoterTest : public GraphTestHarness {
   raw_ptr<GraphOwnedWrapper> wrapper_ = nullptr;
 };
 
-// Tests that the FrameCapturingVideoStreamVoter correctly casts a vote for a
-// frame depending on its capturing video stream state.
-TEST_F(FrameCapturingVideoStreamVoterTest, CapturingVideoStreamChanged) {
+// Tests that the FrameCapturingMediaStreamVoter correctly casts a vote for a
+// frame depending on its capturing media stream state.
+TEST_F(FrameCapturingMediaStreamVoterTest, CapturingMediaStreamChanged) {
   // Create a graph with a single frame page. Its initial audible state should
   // be false, resulting in a low priority.
   MockSinglePageInSingleProcessGraph mock_graph(graph());
@@ -104,16 +104,16 @@ TEST_F(FrameCapturingVideoStreamVoterTest, CapturingVideoStreamChanged) {
   EXPECT_TRUE(observer().HasVote(
       voter_id(), GetExecutionContext(frame_node.get()),
       base::TaskPriority::LOWEST,
-      FrameCapturingVideoStreamVoter::kFrameCapturingVideoStreamReason));
+      FrameCapturingMediaStreamVoter::kFrameCapturingMediaStreamReason));
 
-  // Now set the frame as capturing a video stream. This should increase the
+  // Now set the frame as capturing a media stream. This should increase the
   // priority.
-  mock_graph.frame->SetIsCapturingVideoStream(true);
+  mock_graph.frame->SetIsCapturingMediaStream(true);
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(observer().HasVote(
       voter_id(), GetExecutionContext(frame_node.get()),
       base::TaskPriority::USER_VISIBLE,
-      FrameCapturingVideoStreamVoter::kFrameCapturingVideoStreamReason));
+      FrameCapturingMediaStreamVoter::kFrameCapturingMediaStreamReason));
 
   // Deleting the frame should invalidate the vote.
   frame_node.reset();

@@ -226,8 +226,8 @@ class FrameNode : public Node {
   // Returns true if the frame is audible, false otherwise.
   virtual bool IsAudible() const = 0;
 
-  // Returns true if the frame is capturing a video stream.
-  virtual bool IsCapturingVideoStream() const = 0;
+  // Returns true if the frame is capturing a media stream (audio or video).
+  virtual bool IsCapturingMediaStream() const = 0;
 
   // Returns true if the frame intersects with the viewport. This could be false
   // if the frame is not rendered (display: none) or is scrolled out of view.
@@ -327,8 +327,8 @@ class FrameNodeObserver {
   // Invoked when the IsAudible property changes.
   virtual void OnIsAudibleChanged(const FrameNode* frame_node) = 0;
 
-  // Invoked when the IsCapturingVideoStream property changes.
-  virtual void OnIsCapturingVideoStreamChanged(const FrameNode* frame_node) = 0;
+  // Invoked when the IsCapturingMediaStream property changes.
+  virtual void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) = 0;
 
   // Invoked when a frame's intersection with the viewport changes
   virtual void OnIntersectsViewportChanged(const FrameNode* frame_node) = 0;
@@ -384,7 +384,7 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override {}
   void OnHadUserEditsChanged(const FrameNode* frame_node) override {}
   void OnIsAudibleChanged(const FrameNode* frame_node) override {}
-  void OnIsCapturingVideoStreamChanged(const FrameNode* frame_node) override {}
+  void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) override {}
   void OnIntersectsViewportChanged(const FrameNode* frame_node) override {}
   void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                 FrameNode::Visibility previous_value) override {

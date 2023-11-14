@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/execution_context_priority/frame_capturing_video_stream_voter.h"
+#include "components/performance_manager/execution_context_priority/frame_capturing_media_stream_voter.h"
 
 #include <utility>
 
@@ -18,44 +18,44 @@ const execution_context::ExecutionContext* GetExecutionContext(
 }
 
 // Returns a vote with the appropriate priority depending on if the frame is
-// capturing video.
-Vote GetVote(bool is_capturing_video_stream) {
-  base::TaskPriority priority = is_capturing_video_stream
+// capturing media.
+Vote GetVote(bool is_capturing_media_stream) {
+  base::TaskPriority priority = is_capturing_media_stream
                                     ? base::TaskPriority::USER_VISIBLE
                                     : base::TaskPriority::LOWEST;
   return Vote(priority,
-              FrameCapturingVideoStreamVoter::kFrameCapturingVideoStreamReason);
+              FrameCapturingMediaStreamVoter::kFrameCapturingMediaStreamReason);
 }
 
 }  // namespace
 
 // static
-const char FrameCapturingVideoStreamVoter::kFrameCapturingVideoStreamReason[] =
-    "Frame capturing video stream.";
+const char FrameCapturingMediaStreamVoter::kFrameCapturingMediaStreamReason[] =
+    "Frame capturing media stream.";
 
-FrameCapturingVideoStreamVoter::FrameCapturingVideoStreamVoter() = default;
+FrameCapturingMediaStreamVoter::FrameCapturingMediaStreamVoter() = default;
 
-FrameCapturingVideoStreamVoter::~FrameCapturingVideoStreamVoter() = default;
+FrameCapturingMediaStreamVoter::~FrameCapturingMediaStreamVoter() = default;
 
-void FrameCapturingVideoStreamVoter::SetVotingChannel(
+void FrameCapturingMediaStreamVoter::SetVotingChannel(
     VotingChannel voting_channel) {
   voting_channel_ = std::move(voting_channel);
 }
 
-void FrameCapturingVideoStreamVoter::OnFrameNodeInitializing(
+void FrameCapturingMediaStreamVoter::OnFrameNodeInitializing(
     const FrameNode* frame_node) {
-  const Vote vote = GetVote(frame_node->IsCapturingVideoStream());
+  const Vote vote = GetVote(frame_node->IsCapturingMediaStream());
   voting_channel_.SubmitVote(GetExecutionContext(frame_node), vote);
 }
 
-void FrameCapturingVideoStreamVoter::OnFrameNodeTearingDown(
+void FrameCapturingMediaStreamVoter::OnFrameNodeTearingDown(
     const FrameNode* frame_node) {
   voting_channel_.InvalidateVote(GetExecutionContext(frame_node));
 }
 
-void FrameCapturingVideoStreamVoter::OnIsCapturingVideoStreamChanged(
+void FrameCapturingMediaStreamVoter::OnIsCapturingMediaStreamChanged(
     const FrameNode* frame_node) {
-  const Vote new_vote = GetVote(frame_node->IsCapturingVideoStream());
+  const Vote new_vote = GetVote(frame_node->IsCapturingMediaStream());
   voting_channel_.ChangeVote(GetExecutionContext(frame_node), new_vote);
 }
 

@@ -96,7 +96,7 @@ class FrameNodeImpl
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
   bool IsAudible() const override;
-  bool IsCapturingVideoStream() const override;
+  bool IsCapturingMediaStream() const override;
   absl::optional<bool> IntersectsViewport() const override;
   Visibility GetVisibility() const override;
   const RenderFrameHostProxy& GetRenderFrameHostProxy() const override;
@@ -121,7 +121,7 @@ class FrameNodeImpl
   bool had_form_interaction() const;
   bool had_user_edits() const;
   bool is_audible() const;
-  bool is_capturing_video_stream() const;
+  bool is_capturing_media_stream() const;
   absl::optional<bool> intersects_viewport() const;
   Visibility visibility() const;
   uint64_t resident_set_kb_estimate() const;
@@ -132,7 +132,7 @@ class FrameNodeImpl
   void SetIsHoldingWebLock(bool is_holding_weblock);
   void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
   void SetIsAudible(bool is_audible);
-  void SetIsCapturingVideoStream(bool is_capturing_video_stream);
+  void SetIsCapturingMediaStream(bool is_capturing_media_stream);
   void SetIntersectsViewport(bool intersects_viewport);
   void SetInitialVisibility(Visibility visibility);
   void SetVisibility(Visibility visibility);
@@ -351,11 +351,11 @@ class FrameNodeImpl
       NotifiesOnlyOnChanges<bool, &FrameNodeObserver::OnIsAudibleChanged>
           is_audible_{false};
 
-  // Indicates if the frame is capturing a video stream.
+  // Indicates if the frame is capturing at least one media stream.
   ObservedProperty::NotifiesOnlyOnChanges<
       bool,
-      &FrameNodeObserver::OnIsCapturingVideoStreamChanged>
-      is_capturing_video_stream_{false};
+      &FrameNodeObserver::OnIsCapturingMediaStreamChanged>
+      is_capturing_media_stream_{false};
 
   // Indicates if the frame intersects with the viewport.
   //

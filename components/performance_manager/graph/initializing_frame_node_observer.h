@@ -44,7 +44,7 @@ class InitializingFrameNodeObserver {
   virtual void OnHadFormInteractionChanged(const FrameNode* frame_node) {}
   virtual void OnHadUserEditsChanged(const FrameNode* frame_node) {}
   virtual void OnIsAudibleChanged(const FrameNode* frame_node) {}
-  virtual void OnIsCapturingVideoStreamChanged(const FrameNode* frame_node) {}
+  virtual void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) {}
   virtual void OnIntersectsViewportChanged(const FrameNode* frame_node) {}
   virtual void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                         FrameNode::Visibility previous_value) {}
@@ -90,7 +90,7 @@ class InitializingFrameNodeObserverManager final : public FrameNodeObserver {
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override;
   void OnHadUserEditsChanged(const FrameNode* frame_node) override;
   void OnIsAudibleChanged(const FrameNode* frame_node) override;
-  void OnIsCapturingVideoStreamChanged(const FrameNode* frame_node) override;
+  void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) override;
   void OnIntersectsViewportChanged(const FrameNode* frame_node) override;
   void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                 FrameNode::Visibility previous_value) override;

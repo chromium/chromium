@@ -127,10 +127,10 @@ void InitializingFrameNodeObserverManager::OnIsAudibleChanged(
   }
 }
 
-void InitializingFrameNodeObserverManager::OnIsCapturingVideoStreamChanged(
+void InitializingFrameNodeObserverManager::OnIsCapturingMediaStreamChanged(
     const FrameNode* frame_node) {
   for (InitializingFrameNodeObserver& observer : observer_list_) {
-    observer.OnIsCapturingVideoStreamChanged(frame_node);
+    observer.OnIsCapturingMediaStreamChanged(frame_node);
   }
 }
 

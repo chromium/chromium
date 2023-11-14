@@ -213,9 +213,9 @@ bool FrameNodeImpl::IsAudible() const {
   return is_audible();
 }
 
-bool FrameNodeImpl::IsCapturingVideoStream() const {
+bool FrameNodeImpl::IsCapturingMediaStream() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_capturing_video_stream();
+  return is_capturing_media_stream();
 }
 
 absl::optional<bool> FrameNodeImpl::IntersectsViewport() const {
@@ -327,9 +327,9 @@ bool FrameNodeImpl::is_audible() const {
   return is_audible_.value();
 }
 
-bool FrameNodeImpl::is_capturing_video_stream() const {
+bool FrameNodeImpl::is_capturing_media_stream() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_capturing_video_stream_.value();
+  return is_capturing_media_stream_.value();
 }
 
 absl::optional<bool> FrameNodeImpl::intersects_viewport() const {
@@ -392,10 +392,10 @@ void FrameNodeImpl::SetIsAudible(bool is_audible) {
   is_audible_.SetAndMaybeNotify(this, is_audible);
 }
 
-void FrameNodeImpl::SetIsCapturingVideoStream(bool is_capturing_video_stream) {
+void FrameNodeImpl::SetIsCapturingMediaStream(bool is_capturing_media_stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(is_capturing_video_stream, is_capturing_video_stream_.value());
-  is_capturing_video_stream_.SetAndMaybeNotify(this, is_capturing_video_stream);
+  DCHECK_NE(is_capturing_media_stream, is_capturing_media_stream_.value());
+  is_capturing_media_stream_.SetAndMaybeNotify(this, is_capturing_media_stream);
 }
 
 void FrameNodeImpl::SetIntersectsViewport(bool intersects_viewport) {

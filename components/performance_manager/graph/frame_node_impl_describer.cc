@@ -84,6 +84,8 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.Set("is_current", impl->is_current_.value());
   ret.Set("priority", PriorityAndReasonToValue(impl->GetPriorityAndReason()));
   ret.Set("is_audible", impl->is_audible_.value());
+  ret.Set("is_capturing_media_stream",
+          impl->is_capturing_media_stream_.value());
   ret.Set("viewport_intersection",
           IntersectsViewportToString(impl->intersects_viewport_.value()));
   ret.Set("visibility", FrameNodeVisibilityToString(impl->visibility_.value()));
