@@ -83,10 +83,18 @@ class VariationHeaderSetter : public ChromeBrowserMainExtraParts {
   }
 };
 
-class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
+class VariationsHttpHeadersBrowserTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   VariationsHttpHeadersBrowserTest()
-      : https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {}
+      : https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {
+    if (IsPlzDedicatedWorkerEnabled()) {
+      feature_list_.InitAndEnableFeature(blink::features::kPlzDedicatedWorker);
+    } else {
+      feature_list_.InitAndDisableFeature(blink::features::kPlzDedicatedWorker);
+    }
+  }
 
   VariationsHttpHeadersBrowserTest(const VariationsHttpHeadersBrowserTest&) =
       delete;
@@ -94,6 +102,8 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
       const VariationsHttpHeadersBrowserTest&) = delete;
 
   ~VariationsHttpHeadersBrowserTest() override = default;
+
+  static bool IsPlzDedicatedWorkerEnabled() { return GetParam(); }
 
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
     InProcessBrowserTest::CreatedBrowserMainParts(parts);
@@ -368,6 +378,9 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
 
   // For waiting for requests.
   std::map<GURL, base::OnceClosure> done_callbacks_;
+
+  // To enable/disable the PlzDedicatedWorker feature during the test.
+  base::test::ScopedFeatureList feature_list_;
 };
 
 std::unique_ptr<net::test_server::HttpResponse>
@@ -493,7 +506,7 @@ void CreateFieldTrialsWithDifferentVisibilities() {
 
 // Verify in an integration test that the variations header (X-Client-Data) is
 // attached to network requests to Google but stripped on redirects.
-IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
                        TestStrippingHeadersFromResourceRequest) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleRedirectUrl1()));
 
@@ -505,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
 
 // Verify in an integration that that the variations header (X-Client-Data) is
 // correctly attached and stripped from network requests.
-IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
                        TestStrippingHeadersFromSubresourceRequest) {
   GURL url = server()->GetURL("/simple_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -517,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
   EXPECT_FALSE(HasReceivedHeader(GetExampleUrl(), "X-Client-Data"));
 }
 
-IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, Incognito) {
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest, Incognito) {
   Browser* incognito = CreateIncognitoBrowser();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito, GetGoogleUrl()));
 
@@ -528,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, Incognito) {
   EXPECT_FALSE(HasReceivedHeader(GetGoogleSubresourceUrl(), "X-Client-Data"));
 }
 
-IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserSignedIn) {
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest, UserSignedIn) {
   // Ensure GetClientDataHeader() returns different values when signed in vs
   // not signed in.
   variations::VariationID signed_in_id = 8;
@@ -578,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserSignedIn) {
   EXPECT_TRUE(base::Contains(ids_any_context, signed_in_id));
 }
 
-IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserNotSignedIn) {
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest, UserNotSignedIn) {
   // Ensure GetClientDataHeader() returns different values when signed in vs
   // not signed in.
   variations::VariationID signed_in_id = 8;
@@ -625,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserNotSignedIn) {
   EXPECT_FALSE(base::Contains(ids_any_context, signed_in_id));
 }
 
-IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
                        PRE_CheckLowEntropySourceValue) {
   // We use the PRE_ prefix mechanism to ensure that this test always runs
   // before CheckLowEntropyValue(). None of the subclasses in the
@@ -636,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
   local_state->SetInteger(metrics::prefs::kMetricsLowEntropySource, 5);
 }
 
-IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
                        CheckLowEntropySourceValue) {
   auto entropy_providers = g_browser_process->GetMetricsServicesManager()
                                ->CreateEntropyProvidersForTesting();
@@ -694,11 +707,12 @@ void VariationsHttpHeadersBrowserTest::GoogleWebVisibilityTopFrameTest(
                 variations::mojom::GoogleWebVisibility::FIRST_PARTY)
           : signed_out_headers->headers_map.at(
                 variations::mojom::GoogleWebVisibility::ANY);
-  // TODO(crbug.com/906991): Revisit this after PlzDedicatedWorker launch.
+  // TODO(crbug.com/906991): Fix this before starting the field experiment.
   // If PlzDedicatedWorker is enabled, Document's context will not be
-  // inherited for loading the worker script.
+  // inherited for loading the worker script, which is out of the metrics
+  // team expecation.
   const std::string expected_header_value_for_worker =
-      base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)
+      IsPlzDedicatedWorkerEnabled()
           ? signed_out_headers->headers_map.at(
                 variations::mojom::GoogleWebVisibility::ANY)
           : expected_header_value;
@@ -740,17 +754,17 @@ void VariationsHttpHeadersBrowserTest::GoogleWebVisibilityTopFrameTest(
             expected_header_value);
 }
 
-IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
                        TestGoogleWebVisibilityInFirstPartyContexts) {
   GoogleWebVisibilityTopFrameTest(/*top_frame_is_first_party=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
                        TestGoogleWebVisibilityInThirdPartyContexts) {
   GoogleWebVisibilityTopFrameTest(/*top_frame_is_first_party=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     VariationsHttpHeadersBrowserTest,
     TestStrippingHeadersFromRequestUsingSimpleURLLoaderWithProfileNetworkContext) {
   GURL url = GetGoogleRedirectUrl1();
@@ -782,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(HasReceivedHeader(GetExampleUrl(), "X-Client-Data"));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     VariationsHttpHeadersBrowserTest,
     TestStrippingHeadersFromRequestUsingSimpleURLLoaderWithGlobalSystemNetworkContext) {
   GURL url = GetGoogleRedirectUrl1();
@@ -817,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(
 // Verify in an integration test that the variations header (X-Client-Data) is
 // attached to service worker navigation preload requests. Regression test
 // for https://crbug.com/873061.
-IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
                        ServiceWorkerNavigationPreload) {
   // Register a service worker that uses navigation preload.
   RegisterServiceWorker("/service_worker/navigation_preload_worker.js");
@@ -833,14 +847,14 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
 
 // Verify in an integration test that the variations header (X-Client-Data) is
 // attached to requests after the service worker falls back to network.
-IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
                        ServiceWorkerNetworkFallback) {
   ServiceWorkerTest("/service_worker/network_fallback_worker.js");
 }
 
 // Verify in an integration test that the variations header (X-Client-Data) is
 // not exposed in the service worker fetch event.
-IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
                        ServiceWorkerDoesNotSeeHeader) {
   ServiceWorkerTest("/service_worker/fail_on_variations_header_worker.js");
 }
@@ -848,14 +862,14 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
 // Verify in an integration test that the variations header (X-Client-Data) is
 // attached to requests after the service worker does
 // respondWith(fetch(request)).
-IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
                        ServiceWorkerRespondWithFetch) {
   ServiceWorkerTest("/service_worker/respond_with_fetch_worker.js");
 }
 
 // Verify in an integration test that the variations header (X-Client-Data) is
 // attached to requests for service worker scripts when installing and updating.
-IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, ServiceWorkerScript) {
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest, ServiceWorkerScript) {
   // Register a service worker that imports scripts.
   GURL absolute_import = GetExampleUrlWithPath("/service_worker/empty.js");
   const std::string worker_path =
@@ -893,18 +907,22 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, ServiceWorkerScript) {
 
 // Verify in an integration test that the variations header (X-Client-Data) is
 // attached to requests for shared worker scripts.
-IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, SharedWorkerScript) {
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest, SharedWorkerScript) {
   WorkerScriptTest("/workers/create_shared_worker.html",
                    "/workers/import_scripts_shared_worker.js");
 }
 
 // Verify in an integration test that the variations header (X-Client-Data) is
 // attached to requests for dedicated worker scripts.
-IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
                        DedicatedWorkerScript) {
   WorkerScriptTest("/workers/create_dedicated_worker.html",
                    "/workers/import_scripts_dedicated_worker.js");
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         VariationsHttpHeadersBrowserTest,
+                         testing::Bool());
 
 namespace {
 
@@ -971,7 +989,7 @@ class VariationsHttpHeadersBrowserTestWithOptimizationGuide
 
 // Verify in an integration test that that the variations header (X-Client-Data)
 // is correctly attached to prefetch requests from the Loading Predictor.
-IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTestWithOptimizationGuide,
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTestWithOptimizationGuide,
                        Prefetch) {
   GURL url = server()->GetURL("test.com", "/simple_page.html");
   GURL google_url = GetGoogleSubresourceUrl();
@@ -991,3 +1009,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTestWithOptimizationGuide,
   EXPECT_TRUE(HasReceivedHeader(google_url, "X-Client-Data"));
   EXPECT_FALSE(HasReceivedHeader(non_google_url, "X-Client-Data"));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         VariationsHttpHeadersBrowserTestWithOptimizationGuide,
+                         testing::Bool());
