@@ -8,6 +8,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "reclient", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
+load("//project.star", "settings")
 
 try_.defaults.set(
     executable = try_.DEFAULT_EXECUTABLE,
@@ -107,8 +108,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "win-rel-compilator",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
-    # TODO(b/309482810): Change to 32 once bots have landed
-    cores = "16|32",
+    cores = 32 if settings.is_main else 16,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
     main_list_view = "try",
