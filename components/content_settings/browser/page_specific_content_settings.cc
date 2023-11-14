@@ -395,13 +395,13 @@ void WebContentsHandler::ReadyToCommitNavigation(
   RendererContentSettingRules rules;
   content_settings::GetRendererContentSettingRules(map_, &rules);
   delegate()->SetDefaultRendererContentSettingRules(rfh, &rules);
-  // This logic should use top frame, not parent frame.
-  // https://crbug.com/1493239.
   const GURL& primary_url =
       navigation_handle->GetParentFrameOrOuterDocument()
           ? navigation_handle->GetParentFrameOrOuterDocument()
+                ->GetOutermostMainFrame()
                 ->GetLastCommittedURL()
           : navigation_handle->GetURL();
+
   rules.FilterRulesByOutermostMainFrameURL(primary_url);
 
   mojo::AssociatedRemote<content_settings::mojom::ContentSettingsAgent> agent;
