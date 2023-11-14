@@ -24,7 +24,6 @@
 #import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -712,10 +711,6 @@ void InjectNTP(Browser* browser) {
 // `PasswordCheckupCoordinator`.
 - (void)startPasswordCheckupCoordinator:
     (password_manager::PasswordCheckReferrer)referrer {
-  if (!password_manager::features::IsPasswordCheckupEnabled()) {
-    return;
-  }
-
   Browser* browser = self.mainInterface.browser;
 
   if (!self.settingsNavigationController) {
@@ -2025,10 +2020,6 @@ void InjectNTP(Browser* browser) {
 // Shows the Password Checkup page for `referrer`.
 - (void)showPasswordCheckupPageForReferrer:
     (password_manager::PasswordCheckReferrer)referrer {
-  if (!password_manager::features::IsPasswordCheckupEnabled()) {
-    return;
-  }
-
   UIViewController* baseViewController = self.currentInterface.viewController;
 
   [self startPasswordCheckupCoordinator:referrer];
@@ -2065,10 +2056,6 @@ void InjectNTP(Browser* browser) {
     showPasswordIssuesWithWarningType:(password_manager::WarningType)warningType
                              referrer:(password_manager::PasswordCheckReferrer)
                                           referrer {
-  if (!password_manager::features::IsPasswordCheckupEnabled()) {
-    return;
-  }
-
   UIViewController* baseViewController = self.currentInterface.viewController;
 
   [self startPasswordCheckupCoordinator:referrer];

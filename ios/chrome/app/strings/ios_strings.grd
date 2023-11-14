@@ -3692,9 +3692,6 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_CONTINUE" desc="Action button for confirmation dialog which is shown when user wants to use other passwords. [iOS only]" meaning="User acknowledge warning and wants to proceed.">
         Continue
       </message>
-      <message name="IDS_IOS_LAST_COMPLETED_CHECK" desc="Footer for Password Check section which shows the timestamp of the last check." meaning="Time when passwords were checked last time.">
-        Last checked <ph name="TIME">$1<ex>10 minutes ago</ex></ph>.
-      </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP_LAST_COMPLETED_CHECK" desc="Subtitle for Password Checkup cell which shows the timestamp of the last check." meaning="Time when passwords were checked last time.">
         Checked <ph name="TIME">$1<ex>10 minutes ago</ex></ph>
       </message>

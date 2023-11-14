@@ -9,7 +9,6 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -145,10 +144,8 @@ NSString* FormatElapsedTimeSinceLastCheck(
         ui::TimeFormat::LENGTH_LONG, elapsed_time, true);
   }
 
-  return features::IsPasswordCheckupEnabled()
-             ? l10n_util::GetNSStringF(
-                   IDS_IOS_PASSWORD_CHECKUP_LAST_COMPLETED_CHECK, timestamp)
-             : l10n_util::GetNSStringF(IDS_IOS_LAST_COMPLETED_CHECK, timestamp);
+  return l10n_util::GetNSStringF(IDS_IOS_PASSWORD_CHECKUP_LAST_COMPLETED_CHECK,
+                                 timestamp);
 }
 
 std::vector<CredentialUIEntry> GetPasswordsForWarningType(

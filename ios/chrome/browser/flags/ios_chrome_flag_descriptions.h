@@ -489,11 +489,6 @@ extern const char kIOSPasswordAuthOnEntryDescription[];
 extern const char kIOSPasswordAuthOnEntryV2Name[];
 extern const char kIOSPasswordAuthOnEntryV2Description[];
 
-// Title and description for the flag to enabled displaying and managing
-// compromised, weak and reused credentials in the Password Manager.
-extern const char kIOSPasswordCheckupName[];
-extern const char kIOSPasswordCheckupDescription[];
-
 // Title and description for the flag to split password settings and password
 // management into two separate UIs.
 extern const char kIOSPasswordUISplitName[];

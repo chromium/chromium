@@ -69,7 +69,6 @@ source_set("utils") {
   deps = [
     ":constants",
     "//base",
-    "//components/password_manager/core/common:features",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
   ]
@@ -86,7 +85,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
-    "//components/password_manager/core/common:features",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common:safe_browsing_prefs",

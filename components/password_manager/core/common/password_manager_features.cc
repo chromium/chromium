@@ -39,12 +39,6 @@ BASE_FEATURE(kIOSPasswordUISplit,
              "IOSPasswordUISplit",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables displaying and managing compromised, weak and reused credentials in
-// the Password Manager.
-BASE_FEATURE(kIOSPasswordCheckup,
-             "IOSPasswordCheckup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables password bottom sheet to be displayed (on iOS) when a user is
 // signed-in and taps on a username or password field on a website that has at
 // least one credential saved in their password manager.
@@ -162,11 +156,6 @@ const char kGenerationRequirementsPrefixLength[] = "prefix_length";
 const char kGenerationRequirementsTimeout[] = "timeout";
 
 #if BUILDFLAG(IS_IOS)
-bool IsPasswordCheckupEnabled() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kIOSPasswordCheckup);
-}
-
 bool IsBulkUploadLocalPasswordsEnabled() {
   return base::FeatureList::IsEnabled(
       kIOSPasswordSettingsBulkUploadLocalPasswords);

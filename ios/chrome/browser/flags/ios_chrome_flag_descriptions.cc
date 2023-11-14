@@ -575,11 +575,6 @@ const char kIOSPasswordAuthOnEntryV2Description[] =
     "Password Manager subpages. Supersedes `Password Manager Auth on Entry` if "
     "enabled.";
 
-const char kIOSPasswordCheckupName[] = "Password Checkup";
-const char kIOSPasswordCheckupDescription[] =
-    "Enables displaying and managing compromised, weak and reused credentials "
-    "in the Password Manager.";
-
 const char kIOSPasswordUISplitName[] = "Password Manager UI Split";
 const char kIOSPasswordUISplitDescription[] =
     "Splits Password Settings and "
