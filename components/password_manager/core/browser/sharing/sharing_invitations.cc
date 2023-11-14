@@ -36,8 +36,6 @@ bool operator==(const IncomingSharingInvitation& lhs,
 std::ostream& operator<<(std::ostream& os,
                          const IncomingSharingInvitation& invitation) {
   return os << "IncomingSharingInvitation("
-            << "\nprimary_key: "
-            << invitation.primary_key.value_or(IncomingInvitationPrimaryKey(-1))
             << "\nurl: " << invitation.url
             << "\nusername_element: " << invitation.username_element
             << "\nusername_value: " << invitation.username_value

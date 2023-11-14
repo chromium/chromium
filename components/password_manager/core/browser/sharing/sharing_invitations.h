@@ -13,10 +13,6 @@
 
 namespace password_manager {
 
-// IncomingSharingInvitation primary key which is used in the database.
-using IncomingInvitationPrimaryKey =
-    base::StrongAlias<class IncomingInvitationPrimaryKeyTag, int>;
-
 // Represents a password sharing invitation received in the password manager.
 struct IncomingSharingInvitation {
   IncomingSharingInvitation();
@@ -25,10 +21,6 @@ struct IncomingSharingInvitation {
   IncomingSharingInvitation& operator=(const IncomingSharingInvitation& rhs);
   IncomingSharingInvitation& operator=(IncomingSharingInvitation&& rhs);
   ~IncomingSharingInvitation();
-
-  // The primary key of the sharing invitation record in the logins database.
-  // This is only set when the invitation has been read from the login database.
-  absl::optional<IncomingInvitationPrimaryKey> primary_key;
 
   // Those are aligned with the counterparts in the PasswordForm struct. Refer
   // to password_form.h for documentation.
