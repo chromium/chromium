@@ -102,16 +102,12 @@ void CardboardDevice::RequestSession(
     return;
   }
 
-  // Launch QR code scanner if there are no saved device parameters; but first
-  // set up the RequestSession flow to be resumed.
-  on_activity_resumed_callback_ = std::move(continue_callback);
-  activity_state_handler_ = activity_state_handler_factory_->Create(
-      render_process_id, render_frame_id);
-  activity_state_handler_->SetResumedHandler(base::BindRepeating(
-      &CardboardDevice::OnActivityResumed, weak_ptr_factory_.GetWeakPtr()));
-
   // This will suspend us and will trigger the XrActivityStateHandler on Resume.
-  cardboard_sdk_->ScanQrCodeAndSaveDeviceParams();
+  std::unique_ptr<XrActivityStateHandler> activity_state_handler =
+      activity_state_handler_factory_->Create(render_process_id,
+                                              render_frame_id);
+  cardboard_sdk_->ScanQrCodeAndSaveDeviceParams(
+      std::move(activity_state_handler), std::move(continue_callback));
 }
 
 void CardboardDevice::OnCardboardParametersAcquired(
@@ -149,15 +145,6 @@ void CardboardDevice::OnCardboardParametersAcquired(
       render_process_id, render_frame_id, *compositor_delegate_provider_.get(),
       std::move(ready_callback), std::move(touch_callback),
       std::move(destroyed_callback), std::move(xr_session_button_callback));
-}
-
-void CardboardDevice::OnActivityResumed() {
-  // Currently we only care about being called back once, so reset the activity
-  // handler here and then continue with our queued work.
-  activity_state_handler_.reset();
-  if (on_activity_resumed_callback_) {
-    std::move(on_activity_resumed_callback_).Run();
-  }
 }
 
 void CardboardDevice::OnXrSessionButtonTouched() {

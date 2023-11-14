@@ -18,6 +18,8 @@ namespace webxr {
 
 class CardboardDeviceProvider : public device::VRDeviceProvider {
  public:
+  static void set_use_cardboard_mock_for_testing(bool value);
+
   explicit CardboardDeviceProvider(
       std::unique_ptr<webxr::VrCompositorDelegateProvider>
           compositor_delegate_provider);
@@ -30,6 +32,11 @@ class CardboardDeviceProvider : public device::VRDeviceProvider {
   bool Initialized() override;
 
  private:
+  // This flag forces to use the mock implementation of the
+  // `device::CardboardSdk` interface. Meant to be used for testing purposes
+  // only.
+  static bool use_cardboard_mock_for_testing_;
+
   std::unique_ptr<device::CardboardDevice> cardboard_device_;
   std::unique_ptr<webxr::VrCompositorDelegateProvider>
       compositor_delegate_provider_;
