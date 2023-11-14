@@ -77,7 +77,7 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
 
     auto* manager = pdf_viewer_stream_manager();
     manager->AddStreamContainer(
-        embedder_host->GetFrameTreeNodeId(),
+        embedder_host->GetFrameTreeNodeId(), "internal_id",
         pdf_test_util::GenerateSampleStreamContainer(1));
     manager->ClaimStreamInfoForTesting(embedder_host);
 

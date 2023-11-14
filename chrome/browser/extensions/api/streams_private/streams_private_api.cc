@@ -34,7 +34,8 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
     bool embedded,
     int frame_tree_node_id,
     blink::mojom::TransferrableURLLoaderPtr transferrable_loader,
-    const GURL& original_url) {
+    const GURL& original_url,
+    const std::string& internal_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::WebContents* web_contents =
@@ -91,7 +92,8 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
       extension_id == extension_misc::kPdfExtensionId) {
     pdf::PdfViewerStreamManager::CreateForWebContents(web_contents);
     pdf::PdfViewerStreamManager::FromWebContents(web_contents)
-        ->AddStreamContainer(frame_tree_node_id, std::move(stream_container));
+        ->AddStreamContainer(frame_tree_node_id, internal_id,
+                             std::move(stream_container));
     return;
   }
 #endif  // BUILDFLAG(ENABLE_PDF)

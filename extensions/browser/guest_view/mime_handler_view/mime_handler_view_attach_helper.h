@@ -62,6 +62,7 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
       const GURL& resource_url,
       const std::string& mime_type,
       const std::string& stream_id,
+      const std::string& internal_id,
       base::OnceClosure resume_load = base::DoNothing());
 
   MimeHandlerViewAttachHelper(const MimeHandlerViewAttachHelper&) = delete;

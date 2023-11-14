@@ -76,6 +76,7 @@ class PdfViewerStreamManager
   // to another PDF URL before the original `StreamContainer` is claimed.
   void AddStreamContainer(
       int frame_tree_node_id,
+      const std::string& internal_id,
       std::unique_ptr<extensions::StreamContainer> stream_container);
 
   // Returns a pointer to a stream container that `embedder_host` has claimed or
@@ -103,19 +104,23 @@ class PdfViewerStreamManager
                            AddAndGetStreamContainer);
 
   // Stream container stored for a single PDF navigation.
-  // TODO(crbug.com/1445746): Add other info needed for PDFs, such as the
-  // internal id.
   struct StreamInfo {
-    explicit StreamInfo(
-        std::unique_ptr<extensions::StreamContainer> stream_container);
-
-    StreamInfo(StreamInfo&& stream_info) noexcept;
+    StreamInfo(const std::string& embed_internal_id,
+               std::unique_ptr<extensions::StreamContainer> stream_container);
 
     StreamInfo(const StreamInfo&) = delete;
     StreamInfo& operator=(const StreamInfo&) = delete;
 
     ~StreamInfo();
 
+    // A unique ID for the PDF viewer instance. Used to set up postMessage
+    // support for the full-page PDF viewer.
+    // TODO(crbug.com/1445746): Currently an unused field. Use it to set up
+    // postMessage.
+    const std::string internal_id;
+
+    // A container for the PDF stream. Holds data needed to load the PDF in the
+    // PDF viewer.
     std::unique_ptr<extensions::StreamContainer> stream;
 
     // True if the extension host has navigated to the PDF extension URL. Used

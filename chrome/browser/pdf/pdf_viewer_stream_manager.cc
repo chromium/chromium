@@ -47,12 +47,9 @@ bool PdfViewerStreamManager::EmbedderHostInfo::operator<(
 }
 
 PdfViewerStreamManager::StreamInfo::StreamInfo(
+    const std::string& embed_internal_id,
     std::unique_ptr<extensions::StreamContainer> stream_container)
-    : stream(std::move(stream_container)) {}
-
-PdfViewerStreamManager::StreamInfo::StreamInfo(
-    StreamInfo&& stream_info) noexcept
-    : stream(std::move(stream_info.stream)) {}
+    : internal_id(embed_internal_id), stream(std::move(stream_container)) {}
 
 PdfViewerStreamManager::StreamInfo::~StreamInfo() = default;
 
@@ -64,6 +61,7 @@ PdfViewerStreamManager::~PdfViewerStreamManager() = default;
 
 void PdfViewerStreamManager::AddStreamContainer(
     int frame_tree_node_id,
+    const std::string& internal_id,
     std::unique_ptr<extensions::StreamContainer> stream_container) {
   CHECK(stream_container);
 
@@ -76,7 +74,7 @@ void PdfViewerStreamManager::AddStreamContainer(
   // will be used instead.
   auto embedder_host_info = GetUnclaimedEmbedderHostInfo(frame_tree_node_id);
   stream_infos_[embedder_host_info] =
-      std::make_unique<StreamInfo>(std::move(stream_container));
+      std::make_unique<StreamInfo>(internal_id, std::move(stream_container));
 }
 
 base::WeakPtr<extensions::StreamContainer>

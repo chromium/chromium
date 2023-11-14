@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "chrome/browser/extensions/api/streams_private/streams_private_api.h"
 #include "chrome/browser/plugins/plugin_utils.h"
@@ -154,14 +155,14 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
       new_client.BindNewPipeAndPassReceiver();
 
   std::string payload;
+  const std::string internal_id = base::UnguessableToken::Create().ToString();
 #if BUILDFLAG(ENABLE_PDF)
   if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
       response_head->mime_type == "application/pdf") {
     // For the PDF viewer, set the payload without creating a MimeHandlerView.
     payload =
         extensions::MimeHandlerViewAttachHelper::CreateTemplateMimeHandlerPage(
-            response_url, response_head->mime_type,
-            /*internal_id=*/base::UnguessableToken::Create().ToString());
+            response_url, response_head->mime_type, internal_id);
     // Schedule `ResumeLoad()` for later to provide an opportunity for other UI
     // thread initializations.
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -175,7 +176,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
     payload = extensions::MimeHandlerViewAttachHelper::
         OverrideBodyForInterceptedResponse(
             frame_tree_node_id_, response_url, response_head->mime_type,
-            stream_id,
+            stream_id, internal_id,
             base::BindOnce(
                 &PluginResponseInterceptorURLLoaderThrottle::ResumeLoad,
                 weak_factory_.GetWeakPtr()));
@@ -230,7 +231,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
       base::BindOnce(
           &extensions::StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent,
           extension_id, stream_id, embedded, frame_tree_node_id_,
-          std::move(transferrable_loader), response_url));
+          std::move(transferrable_loader), response_url, internal_id));
 }
 
 void PluginResponseInterceptorURLLoaderThrottle::ResumeLoad() {

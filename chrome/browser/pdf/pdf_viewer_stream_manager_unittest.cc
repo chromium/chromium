@@ -78,7 +78,7 @@ TEST_F(PdfViewerStreamManagerTest, AddAndGetStreamContainer) {
   int frame_tree_node_id = embedder_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
-  manager->AddStreamContainer(frame_tree_node_id,
+  manager->AddStreamContainer(frame_tree_node_id, "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
   EXPECT_TRUE(manager->ContainsUnclaimedStreamInfo(frame_tree_node_id));
   manager->ClaimStreamInfoForTesting(embedder_host);
@@ -108,9 +108,9 @@ TEST_F(PdfViewerStreamManagerTest,
   int frame_tree_node_id = embedder_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
-  manager->AddStreamContainer(frame_tree_node_id,
+  manager->AddStreamContainer(frame_tree_node_id, "internal_id1",
                               pdf_test_util::GenerateSampleStreamContainer(1));
-  manager->AddStreamContainer(frame_tree_node_id,
+  manager->AddStreamContainer(frame_tree_node_id, "internal_id2",
                               pdf_test_util::GenerateSampleStreamContainer(2));
   manager->ClaimStreamInfoForTesting(embedder_host);
 
@@ -137,6 +137,7 @@ TEST_F(PdfViewerStreamManagerTest, AddAndGetStreamInvalidURL) {
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
   manager->ClaimStreamInfoForTesting(embedder_host);
 
@@ -153,8 +154,9 @@ TEST_F(PdfViewerStreamManagerTest, AddMultipleStreamContainers) {
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id1",
                               pdf_test_util::GenerateSampleStreamContainer(1));
-  manager->AddStreamContainer(child_host->GetFrameTreeNodeId(),
+  manager->AddStreamContainer(child_host->GetFrameTreeNodeId(), "internal_id2",
                               pdf_test_util::GenerateSampleStreamContainer(2));
   manager->ClaimStreamInfoForTesting(embedder_host);
   manager->ClaimStreamInfoForTesting(child_host);
@@ -197,8 +199,9 @@ TEST_F(PdfViewerStreamManagerTest, DeleteWithMultipleStreamContainers) {
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id1",
                               pdf_test_util::GenerateSampleStreamContainer(1));
-  manager->AddStreamContainer(child_host->GetFrameTreeNodeId(),
+  manager->AddStreamContainer(child_host->GetFrameTreeNodeId(), "internal_id2",
                               pdf_test_util::GenerateSampleStreamContainer(2));
   manager->ClaimStreamInfoForTesting(embedder_host);
   manager->ClaimStreamInfoForTesting(child_host);
@@ -220,7 +223,7 @@ TEST_F(PdfViewerStreamManagerTest, RenderFrameDeleted) {
   actual_host = NavigateAndCommit(actual_host, GURL(kOriginalUrl1));
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
-  manager->AddStreamContainer(actual_host->GetFrameTreeNodeId(),
+  manager->AddStreamContainer(actual_host->GetFrameTreeNodeId(), "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
   manager->ClaimStreamInfoForTesting(actual_host);
   ASSERT_TRUE(manager->GetStreamContainer(actual_host));
@@ -243,7 +246,7 @@ TEST_F(PdfViewerStreamManagerTest, RenderFrameHostChanged) {
   auto* new_host = CreateChildRenderFrameHost(old_host, "new host");
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
-  manager->AddStreamContainer(old_host->GetFrameTreeNodeId(),
+  manager->AddStreamContainer(old_host->GetFrameTreeNodeId(), "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
   manager->ClaimStreamInfoForTesting(old_host);
   ASSERT_TRUE(manager->GetStreamContainer(old_host));
@@ -271,7 +274,7 @@ TEST_F(PdfViewerStreamManagerTest, FrameDeleted) {
   int frame_tree_node_id = embedder_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
-  manager->AddStreamContainer(frame_tree_node_id,
+  manager->AddStreamContainer(frame_tree_node_id, "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
   manager->ClaimStreamInfoForTesting(embedder_host);
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
@@ -293,6 +296,7 @@ TEST_F(PdfViewerStreamManagerTest, ReadyToCommitNavigationSubresourceOverride) {
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
   manager->ClaimStreamInfoForTesting(embedder_host);
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
@@ -332,8 +336,10 @@ TEST_F(PdfViewerStreamManagerTest,
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(embedder_host1->GetFrameTreeNodeId(),
+                              "internal_id1",
                               pdf_test_util::GenerateSampleStreamContainer(1));
   manager->AddStreamContainer(embedder_host2->GetFrameTreeNodeId(),
+                              "internal_id2",
                               pdf_test_util::GenerateSampleStreamContainer(2));
   manager->ClaimStreamInfoForTesting(main_rfh());
   manager->ClaimStreamInfoForTesting(embedder_host2);
@@ -372,6 +378,7 @@ TEST_F(PdfViewerStreamManagerTest, ReadyToCommitNavigationClaimAndDelete) {
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
   EXPECT_FALSE(manager->GetStreamContainer(embedder_host));
 
