@@ -28,7 +28,6 @@ RevisitCdfContainer::RevisitCdfContainer(std::vector<Entry> entries)
 }
 
 RevisitCdfContainer::RevisitCdfContainer(const RevisitCdfContainer&) = default;
-
 RevisitCdfContainer::~RevisitCdfContainer() = default;
 
 float RevisitCdfContainer::GetProbability(uint64_t value) const {

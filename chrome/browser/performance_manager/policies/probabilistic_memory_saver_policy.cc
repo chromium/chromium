@@ -7,13 +7,16 @@
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/policies/probabilistic_memory_saver_sampler.h"
 #include "chrome/browser/performance_manager/policies/revisit_count_revisit_estimator.h"
+#include "chrome/browser/performance_manager/policies/revisit_probability_distributions.h"
 
 namespace performance_manager {
 
 ProbabilisticMemorySaverPolicy::ProbabilisticMemorySaverPolicy(
+    bool is_simulation_mode,
     ProbabilisticMemorySaverPolicy::EstimatorCreationFunc
         estimator_creation_function)
-    : estimator_creation_function_(estimator_creation_function) {}
+    : is_simulation_mode_(is_simulation_mode),
+      estimator_creation_function_(estimator_creation_function) {}
 
 ProbabilisticMemorySaverPolicy::~ProbabilisticMemorySaverPolicy() = default;
 
@@ -37,18 +40,20 @@ void ProbabilisticMemorySaverPolicy::OnTakenFromGraph(Graph* graph) {
 std::unique_ptr<ProactiveDiscardEvaluator::RevisitProbabilityEstimator>
 ProbabilisticMemorySaverPolicy::CreateDefaultEstimator(Graph* graph) {
   return std::make_unique<RevisitCountRevisitEstimator>(
-      graph, std::map<int64_t, RevisitCdfContainer>{},
-      std::map<int64_t, float>{});
+      graph, CreatePerRevisitCountTimeToRevisitCdfs(),
+      CreatePerRevisitCountRevisitProbability());
 }
 
 void ProbabilisticMemorySaverPolicy::OnShouldDiscard(
     const TabPageDecorator::TabHandle* tab_handle) {
   CHECK(graph_);
   CHECK(tab_handle);
-  policies::PageDiscardingHelper::GetFromGraph(graph_)
-      ->ImmediatelyDiscardSpecificPage(
-          tab_handle->page_node(),
-          policies::PageDiscardingHelper::DiscardReason::PROACTIVE);
+  if (!is_simulation_mode_) {
+    policies::PageDiscardingHelper::GetFromGraph(graph_)
+        ->ImmediatelyDiscardSpecificPage(
+            tab_handle->page_node(),
+            policies::PageDiscardingHelper::DiscardReason::PROACTIVE);
+  }
 }
 
 }  // namespace performance_manager

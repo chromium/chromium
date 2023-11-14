@@ -149,6 +149,10 @@ extern const base::FeatureParam<int>
 extern const base::FeatureParam<base::TimeDelta>
     kProactiveDiscardingSamplingInterval;
 
+// If true, runs the proactive discard policy in simulation mode (makes
+// discarding decisions and tracks success metrics but doesn't discard)
+extern const base::FeatureParam<bool> kProactiveDiscardingSimulationMode;
+
 // Policy that evicts the BFCache of pages that become non visible or the
 // BFCache of all pages when the system is under memory pressure.
 BASE_DECLARE_FEATURE(kBFCachePerformanceManagerPolicy);

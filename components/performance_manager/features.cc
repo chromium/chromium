@@ -149,6 +149,10 @@ const base::FeatureParam<base::TimeDelta> kProactiveDiscardingSamplingInterval{
     &kProbabilisticProactiveDiscarding,
     "proactive_discarding_sampling_interval", base::Minutes(10)};
 
+const base::FeatureParam<bool> kProactiveDiscardingSimulationMode{
+    &kProbabilisticProactiveDiscarding, "proactive_discarding_simulation_mode",
+    true};
+
 BASE_FEATURE(kBFCachePerformanceManagerPolicy,
              "BFCachePerformanceManagerPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);

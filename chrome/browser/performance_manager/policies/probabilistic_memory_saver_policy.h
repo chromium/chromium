@@ -17,7 +17,8 @@ class ProbabilisticMemorySaverPolicy : public GraphOwned {
  public:
   using EstimatorCreationFunc = base::RepeatingCallback<std::unique_ptr<
       ProactiveDiscardEvaluator::RevisitProbabilityEstimator>(Graph*)>;
-  explicit ProbabilisticMemorySaverPolicy(
+  ProbabilisticMemorySaverPolicy(
+      bool simulation_mode,
       EstimatorCreationFunc estimator_creation_function = base::BindRepeating(
           &ProbabilisticMemorySaverPolicy::CreateDefaultEstimator));
   ~ProbabilisticMemorySaverPolicy() override;
@@ -30,6 +31,10 @@ class ProbabilisticMemorySaverPolicy : public GraphOwned {
   static std::unique_ptr<ProactiveDiscardEvaluator::RevisitProbabilityEstimator>
   CreateDefaultEstimator(Graph* graph);
   void OnShouldDiscard(const TabPageDecorator::TabHandle* tab_handle);
+
+  // When true, histograms are recorded as-if tabs were discarded but the
+  // discard isn't triggered.
+  bool is_simulation_mode_ = true;
 
   std::unique_ptr<ProactiveDiscardEvaluator> evaluator_;
   raw_ptr<Graph> graph_;

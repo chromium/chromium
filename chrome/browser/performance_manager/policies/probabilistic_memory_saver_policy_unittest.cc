@@ -40,6 +40,7 @@ class ProbabilisticMemoySaverPolicyTest
             static_cast<PageNode*>(page_node())->GetBrowserContextID(), {});
 
     auto policy = std::make_unique<ProbabilisticMemorySaverPolicy>(
+        /*simulation_mode=*/false,
         base::BindRepeating(&ProbabilisticMemoySaverPolicyTest::CreateEstimator,
                             base::Unretained(this)));
     policy_ = policy.get();

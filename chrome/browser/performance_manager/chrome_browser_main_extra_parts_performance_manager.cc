@@ -72,6 +72,7 @@
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/policies/page_freezing_policy.h"
+#include "chrome/browser/performance_manager/policies/probabilistic_memory_saver_policy.h"
 #include "chrome/browser/performance_manager/policies/urgent_page_discarding_policy.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
@@ -199,6 +200,14 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   graph->PassToGraph(
       std::make_unique<
           performance_manager::policies::HighEfficiencyModePolicy>());
+
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kProbabilisticProactiveDiscarding) &&
+      performance_manager::features::kProactiveDiscardingSimulationMode.Get()) {
+    graph->PassToGraph(
+        std::make_unique<performance_manager::ProbabilisticMemorySaverPolicy>(
+            /*simulation_mode=*/true));
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   graph->PassToGraph(
