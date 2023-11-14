@@ -392,7 +392,7 @@ DisplayLockDocumentState::ScopedForceActivatableDisplayLocks::
       if (context->HasElement()) {
         context->DidForceActivatableDisplayLocks();
       } else {
-        NOTREACHED()
+        DUMP_WILL_BE_NOTREACHED_NORETURN()
             << "The DisplayLockContext's element has been garbage collected or"
             << " otherwise deleted, but the DisplayLockContext is still alive!"
             << " This shouldn't happen and could cause a crash. See"
