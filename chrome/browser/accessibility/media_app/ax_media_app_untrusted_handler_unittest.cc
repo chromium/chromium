@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/media_app/ax_media_app_handler.h"
+#include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_handler.h"
 
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
-#include "chrome/browser/accessibility/media_app/ax_media_app_handler_factory.h"
 #include "chrome/browser/accessibility/media_app/test/fake_ax_media_app.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
+#include "components/services/screen_ai/public/test/fake_screen_ai_annotator.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -40,41 +42,58 @@ class TestScreenAIInstallState : public screen_ai::ScreenAIInstallState {
 };
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-class AXMediaAppHandlerTest : public testing::Test {
+class AXMediaAppUntrustedHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
-  AXMediaAppHandlerTest() : feature_list_(features::kBacklightOcr) {}
-  AXMediaAppHandlerTest(const AXMediaAppHandlerTest&) = delete;
-  AXMediaAppHandlerTest& operator=(const AXMediaAppHandlerTest&) = delete;
-  ~AXMediaAppHandlerTest() override = default;
+  AXMediaAppUntrustedHandlerTest() : feature_list_(features::kBacklightOcr) {}
+  AXMediaAppUntrustedHandlerTest(
+      const AXMediaAppUntrustedHandlerTest&) = delete;
+  AXMediaAppUntrustedHandlerTest& operator=(
+      const AXMediaAppUntrustedHandlerTest&) = delete;
+  ~AXMediaAppUntrustedHandlerTest() override = default;
 
  protected:
   void SetUp() override {
-    testing::Test::SetUp();
+    ChromeRenderViewHostTestHarness::SetUp();
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     ASSERT_NE(nullptr, screen_ai::ScreenAIInstallState::GetInstance());
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     ASSERT_NE(nullptr, content::BrowserAccessibilityState::GetInstance());
-    ASSERT_NE(nullptr, AXMediaAppHandlerFactory::GetInstance());
-    handler_ = AXMediaAppHandlerFactory::GetInstance()->CreateAXMediaAppHandler(
-        &fake_media_app_);
+
+    mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> pageRemote;
+    // TODO(b/309860428): Delete MediaApp interface - after we implement all
+    // Mojo APIs, it should not be needed any more.
+    handler_ = std::make_unique<AXMediaAppUntrustedHandler>(
+        *web_contents()->GetBrowserContext(), std::move(pageRemote));
+
+    handler_->SetMediaAppForTesting(&fake_media_app_);
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    handler_->SetScreenAIAnnotatorForTesting(
+        fake_annotator_.BindNewPipeAndPassRemote());
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     ASSERT_NE(nullptr, handler_.get());
+  }
+
+  void TearDown() override {
+    handler_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   TestScreenAIInstallState install_state_;
+  screen_ai::test::FakeScreenAIAnnotator fake_annotator_{
+      /*create_empty_result=*/true};
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   FakeAXMediaApp fake_media_app_;
-  std::unique_ptr<AXMediaAppHandler> handler_;
+  std::unique_ptr<AXMediaAppUntrustedHandler> handler_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  content::BrowserTaskEnvironment task_environment_;
 };
 
 }  // namespace
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-TEST_F(AXMediaAppHandlerTest, IsOcrServiceEnabled) {
+TEST_F(AXMediaAppUntrustedHandlerTest, IsOcrServiceEnabled) {
   EXPECT_FALSE(handler_->IsOcrServiceEnabled());
   EXPECT_FALSE(fake_media_app_.IsOcrServiceEnabled());
 
@@ -90,7 +109,7 @@ TEST_F(AXMediaAppHandlerTest, IsOcrServiceEnabled) {
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-TEST_F(AXMediaAppHandlerTest, IsAccessibilityEnabled) {
+TEST_F(AXMediaAppUntrustedHandlerTest, IsAccessibilityEnabled) {
   EXPECT_FALSE(handler_->IsAccessibilityEnabled());
   EXPECT_FALSE(fake_media_app_.IsAccessibilityEnabled());
 

@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_MEDIA_APP_MEDIA_APP_GUEST_UI_CONFIG_H_
 
 #include "ash/webui/media_app_ui/media_app_guest_ui.h"
+#include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
+#include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_handler.h"
 #include "content/public/browser/webui_config.h"
 
 namespace content {
@@ -24,6 +26,13 @@ class ChromeMediaAppGuestUIDelegate : public ash::MediaAppGuestUIDelegate {
       const ChromeMediaAppGuestUIDelegate&) = delete;
   void PopulateLoadTimeData(content::WebUI* web_ui,
                             content::WebUIDataSource* source) override;
+  std::unique_ptr<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
+  CreateAndBindOcrHandler(
+      content::BrowserContext& context,
+      mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
+          receiver,
+      mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> page)
+      override;
 };
 
 // A webui config for the chrome-untrusted:// part of media-app.

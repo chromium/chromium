@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/media_app/ax_media_app_handler.h"
+#include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_handler.h"
 
 #include <utility>
 
@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -44,9 +45,10 @@ namespace ash {
 using screen_ai::ScreenAIInstallState;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-AXMediaAppHandler::AXMediaAppHandler(AXMediaApp* media_app)
-    : media_app_(media_app) {
-  CHECK(media_app_);
+AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
+    content::BrowserContext& context,
+    mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page)
+    : browser_context_(context), media_app_page_(std::move(page)) {
   if (features::IsBacklightOcrEnabled()) {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     CHECK(ScreenAIInstallState::GetInstance())
@@ -67,11 +69,11 @@ AXMediaAppHandler::AXMediaAppHandler(AXMediaApp* media_app)
   }
 }
 
-AXMediaAppHandler::~AXMediaAppHandler() {
+AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() {
   ui::AXPlatformNode::RemoveAXModeObserver(this);
 }
 
-bool AXMediaAppHandler::IsOcrServiceEnabled() const {
+bool AXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {
   if (!features::IsBacklightOcrEnabled()) {
     return false;
   }
@@ -98,44 +100,46 @@ bool AXMediaAppHandler::IsOcrServiceEnabled() const {
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void AXMediaAppHandler::SetScreenAIAnnotatorForTesting(
+void AXMediaAppUntrustedHandler::SetScreenAIAnnotatorForTesting(
     mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
         screen_ai_annotator) {
   screen_ai_annotator_.reset();
   screen_ai_annotator_.Bind(std::move(screen_ai_annotator));
 }
 
-void AXMediaAppHandler::FlushForTesting() {
+void AXMediaAppUntrustedHandler::FlushForTesting() {
   screen_ai_annotator_.FlushForTesting();  // IN-TEST
 }
 
-void AXMediaAppHandler::StateChanged(ScreenAIInstallState::State state) {
+void AXMediaAppUntrustedHandler::StateChanged(
+    ScreenAIInstallState::State state) {
   CHECK(features::IsBacklightOcrEnabled());
   if (screen_ai_install_state_ == state) {
     return;
   }
   screen_ai_install_state_ = state;
-  content::BrowserContext* browser_context = media_app_->GetBrowserContext();
   bool is_ocr_service_enabled = IsOcrServiceEnabled();
-  if (browser_context && is_ocr_service_enabled &&
-      !screen_ai_annotator_.is_bound()) {
+  if (is_ocr_service_enabled && !screen_ai_annotator_.is_bound()) {
     screen_ai::ScreenAIServiceRouter* service_router =
         screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
-            browser_context);
+            std::to_address(browser_context_));
     service_router->BindScreenAIAnnotator(
         screen_ai_annotator_.BindNewPipeAndPassReceiver());
     OcrNextDirtyPageIfAny();
   }
-  media_app_->OcrServiceEnabledChanged(is_ocr_service_enabled);
+  if (media_app_) {
+    media_app_->OcrServiceEnabledChanged(is_ocr_service_enabled);
+  }
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-bool AXMediaAppHandler::IsAccessibilityEnabled() const {
+bool AXMediaAppUntrustedHandler::IsAccessibilityEnabled() const {
   return features::IsBacklightOcrEnabled() &&
          accessibility_state_utils::IsScreenReaderEnabled();
 }
 
-void AXMediaAppHandler::PerformAction(const ui::AXActionData& action_data) {
+void AXMediaAppUntrustedHandler::PerformAction(
+    const ui::AXActionData& action_data) {
   switch (action_data.action) {
     case ax::mojom::Action::kBlur:
     case ax::mojom::Action::kClearAccessibilityFocus:
@@ -185,13 +189,15 @@ void AXMediaAppHandler::PerformAction(const ui::AXActionData& action_data) {
   }
 }
 
-void AXMediaAppHandler::OnAXModeAdded(ui::AXMode mode) {
+void AXMediaAppUntrustedHandler::OnAXModeAdded(ui::AXMode mode) {
   CHECK(features::IsBacklightOcrEnabled());
-  media_app_->AccessibilityEnabledChanged(
-      accessibility_state_utils::IsScreenReaderEnabled());
+  if (media_app_) {
+    media_app_->AccessibilityEnabledChanged(
+        accessibility_state_utils::IsScreenReaderEnabled());
+  }
 }
 
-void AXMediaAppHandler::DocumentUpdated(
+void AXMediaAppUntrustedHandler::DocumentUpdated(
     const std::vector<gfx::Insets>& page_locations,
     const std::vector<uint64_t>& dirty_pages) {
   // `page_locations` should contain the new locations of all pages, whilst
@@ -220,11 +226,11 @@ void AXMediaAppHandler::DocumentUpdated(
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
-void AXMediaAppHandler::ViewportUpdated(const gfx::Insets& viewport_box,
-                                        float scaleFactor) {}
+void AXMediaAppUntrustedHandler::ViewportUpdated(
+    const gfx::Insets& viewport_box, float scaleFactor) {}
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void AXMediaAppHandler::UpdatePageLocation(uint64_t page_index,
+void AXMediaAppUntrustedHandler::UpdatePageLocation(uint64_t page_index,
                                            const gfx::Insets& page_location) {
   CHECK_LT(page_index, static_cast<uint64_t>(pages_.size()));
   ui::AXTreeManager* tree_manager = pages_[page_index].get();
@@ -243,7 +249,7 @@ void AXMediaAppHandler::UpdatePageLocation(uint64_t page_index,
   CHECK(tree->Unserialize(location_update)) << tree->error();
 }
 
-void AXMediaAppHandler::OcrNextDirtyPageIfAny() {
+void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
   CHECK(features::IsBacklightOcrEnabled());
   if (!IsOcrServiceEnabled()) {
     return;
@@ -259,11 +265,11 @@ void AXMediaAppHandler::OcrNextDirtyPageIfAny() {
   SkBitmap page_bitmap = media_app_->RequestBitmap(dirty_page_index);
   screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
       page_bitmap,
-      base::BindOnce(&AXMediaAppHandler::OnPageOcred,
+      base::BindOnce(&AXMediaAppUntrustedHandler::OnPageOcred,
                      weak_ptr_factory_.GetWeakPtr(), dirty_page_index));
 }
 
-void AXMediaAppHandler::OnPageOcred(uint64_t dirty_page_index,
+void AXMediaAppUntrustedHandler::OnPageOcred(uint64_t dirty_page_index,
                                     const ui::AXTreeUpdate& tree_update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(features::IsBacklightOcrEnabled());

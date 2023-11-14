@@ -160,6 +160,7 @@ js_library("receiver") {
   deps = [
     ":app_context_test_support",
     ":message_types",
+    ":mojo_api_bootstrap_untrusted",
     ":piex_module_loader",
     "//ash/webui/system_apps/public/js:message_pipe",
     "//ash/webui/system_apps/public/js:sandboxed_load_time_data",

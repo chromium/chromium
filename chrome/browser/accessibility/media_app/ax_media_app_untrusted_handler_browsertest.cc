@@ -2,19 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/media_app/ax_media_app_handler.h"
+#include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_handler.h"
 
 #include <stdint.h>
 
 #include <memory>
 
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_handler_factory.h"
 #include "chrome/browser/accessibility/media_app/test/fake_ax_media_app.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_web_ui.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_tree.h"
@@ -33,18 +41,27 @@ namespace ash::test {
 
 namespace {
 
-class AXMediaAppHandlerTest : public InProcessBrowserTest {
+class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
  public:
-  AXMediaAppHandlerTest() : feature_list_(features::kBacklightOcr) {}
-  AXMediaAppHandlerTest(const AXMediaAppHandlerTest&) = delete;
-  AXMediaAppHandlerTest& operator=(const AXMediaAppHandlerTest&) = delete;
-  ~AXMediaAppHandlerTest() override = default;
+  AXMediaAppUntrustedHandlerTest() : feature_list_(features::kBacklightOcr) {}
+  AXMediaAppUntrustedHandlerTest(
+      const AXMediaAppUntrustedHandlerTest&) = delete;
+  AXMediaAppUntrustedHandlerTest& operator=(
+      const AXMediaAppUntrustedHandlerTest&) = delete;
+  ~AXMediaAppUntrustedHandlerTest() override = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     ASSERT_NE(nullptr, AXMediaAppHandlerFactory::GetInstance());
-    handler_ = AXMediaAppHandlerFactory::GetInstance()->CreateAXMediaAppHandler(
-        &fake_media_app_);
+    mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> pageRemote;
+    mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPage>
+        pageReceiver = pageRemote.InitWithNewPipeAndPassReceiver();
+
+    handler_ = std::make_unique<AXMediaAppUntrustedHandler>(
+        *browser()->profile(), std::move(pageRemote));
+    // TODO(b/309860428): Delete MediaApp interface - after we implement all
+    // Mojo APIs, it should not be needed any more.
+    handler_->SetMediaAppForTesting(&fake_media_app_);
     ASSERT_NE(nullptr, handler_.get());
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     handler_->SetIsOcrServiceEnabledForTesting();
@@ -67,7 +84,7 @@ class AXMediaAppHandlerTest : public InProcessBrowserTest {
   }
 
   FakeAXMediaApp fake_media_app_;
-  std::unique_ptr<AXMediaAppHandler> handler_;
+  std::unique_ptr<AXMediaAppUntrustedHandler> handler_;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   screen_ai::test::FakeScreenAIAnnotator fake_annotator_{
       /*create_empty_result=*/false};
@@ -80,7 +97,7 @@ class AXMediaAppHandlerTest : public InProcessBrowserTest {
 }  // namespace
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-IN_PROC_BROWSER_TEST_F(AXMediaAppHandlerTest, DocumentUpdated) {
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, DocumentUpdated) {
   handler_->DocumentUpdated(
       /*page_locations=*/{gfx::Insets(1u), gfx::Insets(2u), gfx::Insets(3u)},
       /*dirty_pages=*/{0u, 1u, 2u});

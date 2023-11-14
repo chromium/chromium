@@ -4,8 +4,8 @@
 
 #include "ash/webui/media_app_ui/media_app_guest_ui.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_media_app_resources.h"
-#include "ash/webui/media_app_ui/media_app_untrusted_page_handler.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/web_applications/webui_test_prod_util.h"
 #include "base/files/file_util.h"
@@ -183,16 +183,18 @@ content::WebUIDataSource* CreateAndAddMediaAppUntrustedDataSource(
 
 }  // namespace
 
-MediaAppGuestUI::MediaAppGuestUI(content::WebUI* web_ui,
-                                 MediaAppGuestUIDelegate* delegate)
+MediaAppGuestUI::MediaAppGuestUI(
+    content::WebUI* web_ui,
+    std::unique_ptr<MediaAppGuestUIDelegate> delegate)
     : UntrustedWebUIController(web_ui),
-      WebContentsObserver(web_ui->GetWebContents()) {
+      WebContentsObserver(web_ui->GetWebContents()),
+      delegate_(std::move(delegate)) {
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   content::WebUIDataSource* untrusted_source =
-      CreateAndAddMediaAppUntrustedDataSource(web_ui, delegate);
+      CreateAndAddMediaAppUntrustedDataSource(web_ui, delegate_.get());
 
   MaybeConfigureTestableDataSource(
       untrusted_source, "media_app/untrusted",
@@ -264,19 +266,24 @@ void MediaAppGuestUI::BindInterface(
 
 void MediaAppGuestUI::BindInterface(
     mojo::PendingReceiver<media_app_ui::mojom::UntrustedPageHandlerFactory>
-        factory) {
-  if (untrusted_page_factory_.is_bound()) {
-    untrusted_page_factory_.reset();
+        receiver) {
+  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr)) {
+    return;
   }
 
-  untrusted_page_factory_.Bind(std::move(factory));
+  if (untrusted_page_handler_factory_.is_bound()) {
+    untrusted_page_handler_factory_.reset();
+  }
+  untrusted_page_handler_factory_.Bind(std::move(receiver));
 }
 
-void MediaAppGuestUI::CreateUntrustedPageHandler(
-    mojo::PendingReceiver<media_app_ui::mojom::UntrustedPageHandler> receiver,
-    mojo::PendingRemote<media_app_ui::mojom::UntrustedPage> page) {
-  untrusted_page_handler_ = std::make_unique<MediaAppUntrustedPageHandler>(
-      *this, std::move(receiver), std::move(page));
+void MediaAppGuestUI::CreateOcrUntrustedPageHandler(
+    mojo::PendingReceiver<media_app_ui::mojom::OcrUntrustedPageHandler>
+        receiver,
+    mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page) {
+  ocr_handler_ = delegate_->CreateAndBindOcrHandler(
+      *web_ui()->GetWebContents()->GetBrowserContext(), std::move(receiver),
+      std::move(page));
 }
 
 MediaAppUserActions GetMediaAppUserActionsForHappinessTracking() {

@@ -23,8 +23,6 @@ static_library("media_app_ui") {
     "media_app_ui.cc",
     "media_app_ui.h",
     "media_app_ui_delegate.h",
-    "media_app_untrusted_page_handler.cc",
-    "media_app_untrusted_page_handler.h",
     "url_constants.cc",
     "url_constants.h",
   ]

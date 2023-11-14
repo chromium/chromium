@@ -4,20 +4,20 @@
 
 import './media_app_ui_untrusted.mojom-lite.js';
 
-// Used to make calls on the remote UntrustedPageHandler interface. Singleton
+// Used to make calls on the remote OcrUntrustedPageHandler interface. Singleton
 // that client modules can use directly.
-export const untrustedPageHandler =
-    new ash.mediaAppUi.mojom.UntrustedPageHandlerRemote();
+export const ocrUntrustedPageHandler =
+    new ash.mediaAppUi.mojom.OcrUntrustedPageHandlerRemote();
 
 // Use this subscribe to events e.g.
 // `callbackRouter.onEventOccurred.addListener(handleEvent)`.
 export const callbackRouter =
-    new ash.mediaAppUi.mojom.UntrustedPageHandlerCallbackRouter();
+    new ash.mediaAppUi.mojom.OcrUntrustedPageHandlerCallbackRouter();
 
 // Use UntrustedPageHandlerFactory to create a connection to
-// UntrustedPageHandler.
+// OcrUntrustedPageHandler.
 const factoryRemote =
     ash.mediaAppUi.mojom.UntrustedPageHandlerFactory.getRemote();
-factoryRemote.createUntrustedPageHandler(
-    untrustedPageHandler.$.bindNewPipeAndPassReceiver(),
+factoryRemote.createOcrUntrustedPageHandler(
+    ocrUntrustedPageHandler.$.bindNewPipeAndPassReceiver(),
     callbackRouter.$.bindNewPipeAndPassRemote());

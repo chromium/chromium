@@ -22,15 +22,20 @@ class ColorChangeHandler;
 
 namespace ash {
 
-class MediaAppUntrustedPageHandler;
-
 // A delegate used during data source creation to expose some //chrome
 // functionality to the data source
 class MediaAppGuestUIDelegate {
  public:
+  virtual ~MediaAppGuestUIDelegate() = default;
   // Takes a WebUI and WebUIDataSource, and populates its load-time data.
   virtual void PopulateLoadTimeData(content::WebUI* web_ui,
                                     content::WebUIDataSource* source) = 0;
+  virtual std::unique_ptr<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
+  CreateAndBindOcrHandler(
+      content::BrowserContext& context,
+      mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
+          receiver,
+      mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> page) = 0;
 };
 
 // The webui for chrome-untrusted://media-app.
@@ -39,7 +44,8 @@ class MediaAppGuestUI
       public content::WebContentsObserver,
       public media_app_ui::mojom::UntrustedPageHandlerFactory {
  public:
-  MediaAppGuestUI(content::WebUI* web_ui, MediaAppGuestUIDelegate* delegate);
+  MediaAppGuestUI(content::WebUI* web_ui,
+                  std::unique_ptr<MediaAppGuestUIDelegate> delegate);
   MediaAppGuestUI(const MediaAppGuestUI&) = delete;
   MediaAppGuestUI& operator=(const MediaAppGuestUI&) = delete;
   ~MediaAppGuestUI() override;
@@ -54,19 +60,20 @@ class MediaAppGuestUI
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           receiver);
 
-  // Binds an UntrustedPageHandler to the MediaAppGuestUI. This handler is used
-  // for communication between the untrusted MediaApp frame and the browser.
+  // Binds UntrustedPageHandlerFactory which is used to bind other interfaces
+  // used to communicate between the untrusted MediaApp frame and the browser.
   void BindInterface(
       mojo::PendingReceiver<media_app_ui::mojom::UntrustedPageHandlerFactory>
-          factory);
+          receiver);
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
 
   // media_app_ui::mojom::UntrustedPageHandlerFactory:
-  void CreateUntrustedPageHandler(
-      mojo::PendingReceiver<media_app_ui::mojom::UntrustedPageHandler> receiver,
-      mojo::PendingRemote<media_app_ui::mojom::UntrustedPage> page) override;
+  void CreateOcrUntrustedPageHandler(
+      mojo::PendingReceiver<media_app_ui::mojom::OcrUntrustedPageHandler>
+          receiver,
+      mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page) override;
 
   void StartFontDataRequest(
       const std::string& path,
@@ -84,8 +91,9 @@ class MediaAppGuestUI
 
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   mojo::Receiver<media_app_ui::mojom::UntrustedPageHandlerFactory>
-      untrusted_page_factory_{this};
-  std::unique_ptr<MediaAppUntrustedPageHandler> untrusted_page_handler_;
+      untrusted_page_handler_factory_{this};
+  std::unique_ptr<media_app_ui::mojom::OcrUntrustedPageHandler> ocr_handler_;
+  std::unique_ptr<MediaAppGuestUIDelegate> delegate_;
 
   base::WeakPtrFactory<MediaAppGuestUI> weak_factory_{this};
 };
