@@ -4175,15 +4175,12 @@ TEST_F(ShelfViewPromiseAppTest, PromiseIconLayers) {
   // Simulate pushing the installed app.
   model_->RemoveItemAt(index);
 
-  ui::LayerTreeOwner* promise_app_duplicate_layer =
-      test_api_->GetPendingPromiseLayerForId(promise_app_id);
-  ASSERT_TRUE(promise_app_duplicate_layer);
+  ASSERT_TRUE(test_api_->HasPendingPromiseAppRemoval(promise_app_id));
 
-  LayerAnimationWaiter animation_waiter(
-      promise_app_duplicate_layer->root()->GetAnimator());
   {
     ShelfItem installed_item;
     installed_item.id = ShelfID("foo");
+    installed_item.title = u"Test app";
     installed_item.type = TYPE_APP;
     installed_item.package_id = promise_app_id;
     ShelfModel::Get()->Add(
@@ -4192,21 +4189,22 @@ TEST_F(ShelfViewPromiseAppTest, PromiseIconLayers) {
     ShelfAppButton* installed_button = GetButtonByID(installed_item.id);
 
     ASSERT_TRUE(installed_button->layer());
-    ASSERT_TRUE(test_api_->GetPendingPromiseLayerForId(promise_app_id));
+    EXPECT_TRUE(test_api_->HasPendingPromiseAppRemoval(promise_app_id));
 
-    // Verify that the layer is still animating.
-    EXPECT_TRUE(installed_button->layer()->GetAnimator()->is_animating());
-    EXPECT_EQ(1.0f,
-              installed_button->layer()->GetAnimator()->GetTargetOpacity());
+    // Verify that the icon layer is animating.
+    EXPECT_FALSE(installed_button->layer()->GetAnimator()->is_animating());
     EXPECT_TRUE(
-        promise_app_duplicate_layer->root()->GetAnimator()->is_animating());
-    EXPECT_EQ(
-        0.0f,
-        promise_app_duplicate_layer->root()->GetAnimator()->GetTargetOpacity());
+        installed_button->icon_view()->layer()->GetAnimator()->is_animating());
+    EXPECT_EQ(gfx::Transform(), installed_button->icon_view()
+                                    ->layer()
+                                    ->GetAnimator()
+                                    ->GetTargetTransform());
+    LayerAnimationWaiter animation_waiter(
+        installed_button->icon_view()->layer()->GetAnimator());
+    animation_waiter.Wait();
   }
-  animation_waiter.Wait();
 
-  EXPECT_FALSE(test_api_->GetPendingPromiseLayerForId(promise_app_id));
+  EXPECT_FALSE(test_api_->HasPendingPromiseAppRemoval(promise_app_id));
 }
 
 }  // namespace ash

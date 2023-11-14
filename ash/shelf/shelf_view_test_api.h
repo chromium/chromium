@@ -131,8 +131,7 @@ class ShelfViewTestAPI {
   // Checks whether the separator is visible or not.
   bool IsSeparatorVisible() const;
 
-  ui::LayerTreeOwner* GetPendingPromiseLayerForId(
-      const std::string& promise_app_id);
+  bool HasPendingPromiseAppRemoval(const std::string& promise_app_id) const;
 
  private:
   raw_ptr<ShelfView, DanglingUntriaged | ExperimentalAsh> shelf_view_;

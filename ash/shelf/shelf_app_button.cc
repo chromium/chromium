@@ -533,6 +533,11 @@ void ShelfAppButton::UpdateIconImage() {
     return;
   }
 
+  if (progress_indicator_) {
+    icon_view_->SetImage(GetIconImage());
+    return;
+  }
+
   SetShadowedImage(GetIconImage());
 }
 
@@ -542,17 +547,21 @@ gfx::ImageSkia ShelfAppButton::GetImage() const {
 
 gfx::ImageSkia ShelfAppButton::GetIconImage() const {
   gfx::ImageSkia icon_image;
-  if (icon_image_model_.IsImage()) {
-    icon_image = icon_image_model_.GetImage().AsImageSkia();
-  } else if (icon_image_model_.IsVectorIcon()) {
+  const ui::ImageModel& image_model = !fallback_icon_image_model_.IsEmpty()
+                                          ? fallback_icon_image_model_
+                                          : icon_image_model_;
+
+  if (image_model.IsImage()) {
+    icon_image = image_model.GetImage().AsImageSkia();
+  } else if (image_model.IsVectorIcon()) {
     auto* color_provider = GetColorProvider();
     if (!color_provider) {
       color_provider = shelf_view_->GetColorProvider();
     }
-    icon_image = ui::ThemedVectorIcon(icon_image_model_.GetVectorIcon())
+    icon_image = ui::ThemedVectorIcon(image_model.GetVectorIcon())
                      .GetImageSkia(color_provider);
   }
-  const gfx::Size preferred_size = GetPreferredIconSize();
+  const gfx::Size preferred_size = GetPreferredIconSize(image_model);
   if (icon_image.size() == preferred_size) {
     return icon_image;
   }
@@ -580,6 +589,16 @@ void ShelfAppButton::SetMainAndMaybeHostBadgeImage(
     const gfx::ImageSkia& main_image,
     bool has_placeholder_icon,
     const gfx::ImageSkia& host_badge_image) {
+  has_icon_image_ = !main_image.isNull() && !has_placeholder_icon;
+
+  if (has_icon_image_ && !force_fallback_icon_) {
+    fallback_icon_image_model_ = ui::ImageModel();
+    if (!progress_indicator_) {
+      // Clear background set as a result of adding progress indicator.
+      SetBackground(nullptr);
+    }
+  }
+
   // `has_host_badge_` needs to be set before SetImage(), since image size is
   // set depending on the boolean logic.
   has_host_badge_ = !host_badge_image.isNull();
@@ -641,7 +660,8 @@ gfx::Rect ShelfAppButton::GetIconBounds() const {
 
 gfx::Rect ShelfAppButton::GetIdealIconBounds(const gfx::Size& button_size,
                                              float icon_scale) const {
-  return GetIconViewBounds(gfx::Rect(button_size), icon_scale);
+  return GetIconViewBounds(gfx::Rect(button_size), icon_scale,
+                           /*ignore_shadow_insets=*/false);
 }
 
 views::InkDrop* ShelfAppButton::GetInkDropForTesting() {
@@ -772,6 +792,41 @@ bool ShelfAppButton::IsIconSizeCurrent() {
   return icon_width == shelf_view_->GetButtonIconSize();
 }
 
+void ShelfAppButton::AnimateInFromPromiseApp(
+    const ui::ImageModel& fallback_icon,
+    const base::RepeatingClosure& callback) {
+  forced_progress_indicator_value_ = 0.9999f;
+  UpdateProgressRingBounds();
+
+  force_fallback_icon_ = true;
+  fallback_icon_image_model_ = fallback_icon;
+  UpdateIconImage();
+
+  gfx::Rect icon_bounds(GetIconViewBounds(GetContentsBounds(), 1.0f,
+                                          /*ignore_shadow_insets=*/false));
+  // TODO(b/297866814): Shadow insets are ignored for promise apps when
+  // calculating icon bounds - make `GetIconViewBounds()` explicitly ignore
+  // them.
+  gfx::Rect promise_icon_bounds = GetIconViewBounds(
+      GetContentsBounds(), kPromiseIconScale, /*ignore_shadow_insets=*/true);
+  icon_view_->layer()->SetTransform(gfx::TransformBetweenRects(
+      gfx::RectF(icon_bounds), gfx::RectF(promise_icon_bounds)));
+
+  // Animate the app list view out of the promise app state.
+  views::AnimationBuilder animation;
+  animation.OnEnded(base::BindOnce(&ShelfAppButton::OnAnimatedInFromPromiseApp,
+                                   weak_factory_.GetWeakPtr(), callback));
+  animation.OnAborted(
+      base::BindOnce(&ShelfAppButton::OnAnimatedInFromPromiseApp,
+                     weak_factory_.GetWeakPtr(), callback));
+  animation.Once()
+      .SetDuration(base::Milliseconds(100))
+      .SetOpacity(progress_indicator_->layer(), 0.0f,
+                  gfx::Tween::FAST_OUT_LINEAR_IN)
+      .SetTransform(icon_view_->layer(), gfx::Transform(),
+                    gfx::Tween::FAST_OUT_LINEAR_IN);
+}
+
 void ShelfAppButton::OnContextMenuModelRequestCanceled() {
   // The request for the context menu model gets canceled so reset the context
   // menu target visibility.
@@ -879,7 +934,8 @@ bool ShelfAppButton::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 gfx::Rect ShelfAppButton::GetIconViewBounds(const gfx::Rect& button_bounds,
-                                            float icon_scale) const {
+                                            float icon_scale,
+                                            bool ignore_shadow_insets) const {
   const float icon_size = shelf_view_->GetButtonIconSize() * icon_scale;
   const float icon_padding = (shelf_view_->GetButtonSize() - icon_size) / 2;
 
@@ -903,7 +959,7 @@ gfx::Rect ShelfAppButton::GetIconViewBounds(const gfx::Rect& button_bounds,
   // insets. To get a centered icon within the ring, we removed insets for
   // shadows. Consider improving the calculation on UpdateProgressRingBounds()
   // to account for the shadows as well.
-  gfx::Insets insets_shadows = is_promise_app_
+  gfx::Insets insets_shadows = (is_promise_app_ || ignore_shadow_insets)
                                    ? gfx::Insets()
                                    : gfx::ShadowValue::GetMargin(icon_shadows_);
   // Center icon with respect to the secondary axis.
@@ -978,8 +1034,8 @@ gfx::Rect ShelfAppButton::GetIdealHostBadgeContainerBounds() {
 }
 
 gfx::Rect ShelfAppButton::GetNotificationIndicatorBounds(float icon_scale) {
-  gfx::Rect scaled_icon_view_bounds =
-      GetIconViewBounds(GetContentsBounds(), icon_scale);
+  gfx::Rect scaled_icon_view_bounds = GetIconViewBounds(
+      GetContentsBounds(), icon_scale, /*ignore_shadow_bounds=*/false);
   float diameter =
       kNotificationIndicatorWidthRatio * scaled_icon_view_bounds.width();
   float padding =
@@ -997,7 +1053,8 @@ void ShelfAppButton::Layout() {
                                   GetAdjustedIconScaleForProgressRing(),
                                   shelf_view_->GetShortcutIconSize())
           : GetIconViewBounds(GetContentsBounds(),
-                              GetAdjustedIconScaleForProgressRing());
+                              GetAdjustedIconScaleForProgressRing(),
+                              /*ignore_shadow_bounds=*/false);
   const gfx::Rect button_bounds(GetContentsBounds());
   const int status_indicator_offet_from_shelf_edge =
       ShelfConfig::Get()->status_indicator_offset_from_shelf_edge();
@@ -1032,7 +1089,9 @@ void ShelfAppButton::Layout() {
   // Use 1.0 as icon scale for |indicator_midpoint|, otherwise integer rounding
   // can incorrectly move the midpoint.
   gfx::Point indicator_midpoint =
-      GetIconViewBounds(GetContentsBounds(), 1.0).CenterPoint();
+      GetIconViewBounds(GetContentsBounds(), 1.0,
+                        /*ignore_shadow_bounds=*/false)
+          .CenterPoint();
   switch (shelf->alignment()) {
     case ShelfAlignment::kBottom:
     case ShelfAlignment::kBottomLocked:
@@ -1219,21 +1278,22 @@ void ShelfAppButton::OnRippleTimer() {
 }
 
 gfx::Transform ShelfAppButton::GetScaleTransform(float icon_scale) {
-  gfx::RectF pre_scaling_bounds(
-      GetMirroredRect(GetIconViewBounds(GetContentsBounds(), 1.0f)));
-  gfx::RectF target_bounds(
-      GetMirroredRect(GetIconViewBounds(GetContentsBounds(), icon_scale)));
+  gfx::RectF pre_scaling_bounds(GetMirroredRect(GetIconViewBounds(
+      GetContentsBounds(), 1.0f, /*ignore_shadow_bounds=*/false)));
+  gfx::RectF target_bounds(GetMirroredRect(GetIconViewBounds(
+      GetContentsBounds(), icon_scale, /*ignore_shadow_bounds=*/false)));
   return gfx::TransformBetweenRects(target_bounds, pre_scaling_bounds);
 }
 
-gfx::Size ShelfAppButton::GetPreferredIconSize() const {
+gfx::Size ShelfAppButton::GetPreferredIconSize(
+    const ui::ImageModel& image_model) const {
   const int icon_size = has_host_badge_
                             ? shelf_view_->GetShortcutIconSize() *
                                   GetAdjustedIconScaleForProgressRing()
                             : shelf_view_->GetButtonIconSize() *
                                   GetAdjustedIconScaleForProgressRing();
 
-  const gfx::Size current_icon_size = icon_image_model_.Size();
+  const gfx::Size current_icon_size = image_model.Size();
 
   // Resize the image maintaining our aspect ratio.
   float aspect_ratio = static_cast<float>(current_icon_size.width()) /
@@ -1327,7 +1387,8 @@ void ShelfAppButton::MaybeHideInkDropWhenGestureEnds() {
 }
 
 void ShelfAppButton::UpdateProgressRingBounds() {
-  if (!is_promise_app_ || !features::ArePromiseIconsEnabled()) {
+  if ((!is_promise_app_ && !forced_progress_indicator_value_) ||
+      !features::ArePromiseIconsEnabled()) {
     return;
   }
 
@@ -1335,6 +1396,10 @@ void ShelfAppButton::UpdateProgressRingBounds() {
     progress_indicator_ =
         ProgressIndicator::CreateDefaultInstance(base::BindRepeating(
             [](ShelfAppButton* view) -> absl::optional<float> {
+              if (view->forced_progress_indicator_value_) {
+                return *view->forced_progress_indicator_value_;
+              }
+
               if (view->app_status() == AppStatus::kPending) {
                 return 0.0f;
               }
@@ -1369,8 +1434,8 @@ void ShelfAppButton::UpdateProgressRingBounds() {
 
   const gfx::Rect button_bounds(GetContentsBounds());
 
-  gfx::Rect progress_indicator_bounds =
-      GetIconViewBounds(button_bounds, icon_scale_);
+  gfx::Rect progress_indicator_bounds = GetIconViewBounds(
+      button_bounds, icon_scale_, /*ignore_shadow_insets=*/true);
 
   SetBackground(std::make_unique<PromiseIconBackground>(
       cros_tokens::kCrosSysSystemOnBase, progress_indicator_bounds,
@@ -1391,13 +1456,26 @@ float ShelfAppButton::GetAdjustedIconScaleForProgressRing() const {
 }
 
 ProgressIndicator* ShelfAppButton::GetProgressIndicatorForTest() const {
-  DCHECK(is_promise_app_);
   return progress_indicator_.get();
 }
 
-std::unique_ptr<ui::LayerTreeOwner> ShelfAppButton::RequestDuplicateLayer() {
-  CHECK(layer());
-  return ::wm::RecreateLayers(this);
+void ShelfAppButton::OnAnimatedInFromPromiseApp(
+    base::RepeatingClosure callback) {
+  forced_progress_indicator_value_.reset();
+  if (progress_indicator_) {
+    layer()->Remove(progress_indicator_->layer());
+  }
+  progress_indicator_.reset();
+  force_fallback_icon_ = false;
+
+  if (has_icon_image_) {
+    fallback_icon_image_model_ = ui::ImageModel();
+    // Clear background set as a result of adding progress indicator.
+    SetBackground(nullptr);
+  }
+  UpdateIconImage();
+
+  callback.Run();
 }
 
 }  // namespace ash

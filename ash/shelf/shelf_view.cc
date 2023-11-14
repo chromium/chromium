@@ -2236,8 +2236,8 @@ void ShelfView::MaybeDuplicatePromiseAppForRemoval(
     }
   }
 
-  AddPendingLayerOwnerForPromiseApp(item.id.app_id,
-                                    promise_app_view->RequestDuplicateLayer());
+  AddPendingPromiseAppRemoval(item.id.app_id,
+                              promise_app_view->icon_image_model());
 }
 
 void ShelfView::ShelfItemAdded(int model_index) {
@@ -2295,59 +2295,39 @@ void ShelfView::ShelfItemAdded(int model_index) {
   // is hidden, so it visually appears as though we are providing space for
   // it. When done we'll fade the view in.
   AnimateToIdealBounds();
-  DCHECK_LE(static_cast<size_t>(model_index), visible_views_indices_.back());
-  // TODO(crbug/1442378): Remove the check below once the bounds animator works
-  // better with zero animation duration.
-  if (!bounds_animator_->GetAnimationDuration().is_zero()) {
-    bounds_animator_->SetAnimationDelegate(
-        view, std::unique_ptr<gfx::AnimationDelegate>(
-                  new StartFadeAnimationDelegate(this, view)));
-  }
+
   // Attempt to animate the transition from a promise app into an actual app
   const std::string package_id = item.package_id;
-  PendingAppsLayersMap::iterator found =
-      pending_promise_apps_removals_.find(package_id);
+  auto found = pending_promise_apps_removals_.find(package_id);
 
   if (item.app_status == AppStatus::kReady &&
       found != pending_promise_apps_removals_.end()) {
-    AnimateTransitionForPromiseApps(
-        view, found->second->root(),
-        base::BindOnce(&ShelfView::FinishAnimationForPromiseApps,
-                       weak_factory_.GetWeakPtr(), package_id));
+    LayoutToIdealBounds();
+    static_cast<ShelfAppButton*>(view)->AnimateInFromPromiseApp(
+        found->second,
+        base::BindRepeating(&ShelfView::FinishAnimationForPromiseApps,
+                            weak_factory_.GetWeakPtr(), package_id));
+  } else {
+    DCHECK_LE(static_cast<size_t>(model_index), visible_views_indices_.back());
+    // TODO(crbug/1442378): Remove the check below once the bounds animator
+    // works better with zero animation duration.
+    if (!bounds_animator_->GetAnimationDuration().is_zero()) {
+      bounds_animator_->SetAnimationDelegate(
+          view, std::unique_ptr<gfx::AnimationDelegate>(
+                    new StartFadeAnimationDelegate(this, view)));
+    }
   }
 }
 
-void ShelfView::AddPendingLayerOwnerForPromiseApp(
+void ShelfView::AddPendingPromiseAppRemoval(
     const std::string& id,
-    std::unique_ptr<ui::LayerTreeOwner> layer_owner) {
-  if (!layer_owner) {
-    return;
-  }
-
-  pending_promise_apps_removals_.emplace(id, std::move(layer_owner));
-}
-
-void ShelfView::AnimateTransitionForPromiseApps(views::View* view,
-                                                ui::Layer* promise_app_layer,
-                                                base::OnceClosure callback) {
-  if (!view->layer()) {
-    view->SetPaintToLayer();
-    view->layer()->SetFillsBoundsOpaquely(false);
-  }
-  view->layer()->SetOpacity(0.0f);
-
-  views::AnimationBuilder animation;
-  animation.OnEnded(std::move(callback));
-  animation.Once()
-      .SetDuration(base::Milliseconds(1000))
-      .SetOpacity(view->layer(), 1.0f, gfx::Tween::FAST_OUT_LINEAR_IN)
-      .SetOpacity(promise_app_layer, 0.0f, gfx::Tween::FAST_OUT_LINEAR_IN);
+    const ui::ImageModel& promise_icon) {
+  pending_promise_apps_removals_.emplace(id, promise_icon);
 }
 
 void ShelfView::FinishAnimationForPromiseApps(
     const std::string& pending_app_id) {
-  PendingAppsLayersMap::iterator pending_app_found =
-      pending_promise_apps_removals_.find(pending_app_id);
+  auto pending_app_found = pending_promise_apps_removals_.find(pending_app_id);
 
   // Discard the pending promise app layer.
   if (pending_app_found != pending_promise_apps_removals_.end()) {

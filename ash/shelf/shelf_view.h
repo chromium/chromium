@@ -605,14 +605,16 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // `target_bounds_in_screen`.
   void AnimateDragImageLayer(const gfx::Rect& target_bounds_in_screen);
 
-  using PendingAppsLayersMap =
-      std::map<std::string, std::unique_ptr<ui::LayerTreeOwner>>;
+  using PendingPromiseAppsMap = std::map<std::string, ui::ImageModel>;
 
-  // Add a copy of a layer from an app that is pending for removal into
-  // `pending_promise_apps_removals_`.
-  void AddPendingLayerOwnerForPromiseApp(
-      const std::string& id,
-      std::unique_ptr<ui::LayerTreeOwner> layer_owner);
+  // Register the app as a promise app with pending removal. The promise app
+  // item is expected to be imminently replaced by the app item installed from
+  // the promised package.
+  // `promise_icon` - the icon image from the promise app. It will be passed to
+  // the installed app item as a fallback icon, that will be shown while the
+  // actual app icon is loading (to prevent a flash from an empty app icon).
+  void AddPendingPromiseAppRemoval(const std::string& id,
+                                   const ui::ImageModel& promise_icon);
 
   // Animate the transition of an incoming app if there was previously a promise
   // app in place.
@@ -817,9 +819,9 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Assigned before the dropping animation is scheduled.
   std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_;
 
-  // A list of pending promise app layers to be removed when the actual app is
-  // pushed into the apps grid.
-  PendingAppsLayersMap pending_promise_apps_removals_;
+  // Set of promise app items with pending removal. Maps the promise app ID to
+  // the promise app icon image.
+  PendingPromiseAppsMap pending_promise_apps_removals_;
 
   base::WeakPtrFactory<ShelfView> weak_factory_{this};
 };
