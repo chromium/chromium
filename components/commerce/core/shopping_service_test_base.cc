@@ -5,6 +5,7 @@
 #include "components/commerce/core/shopping_service_test_base.h"
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
@@ -290,8 +291,7 @@ OptimizationMetadata MockOptGuideDecider::BuildDiscountsResponse(
 
   std::vector<DiscountClusterType> checked_cluster_types;
   for (const auto& info_to_check : infos) {
-    if (std::find(checked_cluster_types.begin(), checked_cluster_types.end(),
-                  info_to_check.cluster_type) != checked_cluster_types.end()) {
+    if (base::Contains(checked_cluster_types, info_to_check.cluster_type)) {
       continue;
     }
     checked_cluster_types.push_back(info_to_check.cluster_type);
