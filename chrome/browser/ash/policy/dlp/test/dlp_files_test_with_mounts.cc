@@ -93,7 +93,7 @@ void DlpFilesTestWithMounts::SetUp() {
 
   reporting_manager_ = std::make_unique<data_controls::DlpReportingManager>();
   SetReportQueueForReportingManager(
-      reporting_manager_.get(), events,
+      reporting_manager_.get(), events_,
       base::SequencedTaskRunner::GetCurrentDefault());
   ON_CALL(*rules_manager_, GetReportingManager)
       .WillByDefault(::testing::Return(reporting_manager_.get()));

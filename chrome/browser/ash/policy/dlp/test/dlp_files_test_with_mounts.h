@@ -44,7 +44,7 @@ class DlpFilesTestWithMounts : public DlpFilesTestBase {
       fpnm_ = nullptr;
   std::unique_ptr<DlpFilesControllerAsh> files_controller_;
   std::unique_ptr<data_controls::DlpReportingManager> reporting_manager_;
-  std::vector<DlpPolicyEvent> events;
+  std::vector<DlpPolicyEvent> events_;
   raw_ptr<DlpFilesEventStorage, ExperimentalAsh> event_storage_ = nullptr;
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
