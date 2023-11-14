@@ -39,6 +39,8 @@ class BottomControlsViewBinder {
                     model.get(BottomControlsProperties.BOTTOM_CONTROLS_CONTAINER_HEIGHT_PX);
         } else if (BottomControlsProperties.Y_OFFSET == propertyKey) {
             view.sceneLayer.setYOffset(model.get(BottomControlsProperties.Y_OFFSET));
+        } else if (BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y == propertyKey) {
+            view.root.setTranslationY(model.get(BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y));
         } else if (BottomControlsProperties.ANDROID_VIEW_VISIBLE == propertyKey
                 || BottomControlsProperties.COMPOSITED_VIEW_VISIBLE == propertyKey) {
             final boolean showAndroidView =

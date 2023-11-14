@@ -48,14 +48,11 @@ public class MiniPlayerMediator {
                         int bottomOffset,
                         int bottomControlsMinHeightOffset,
                         boolean needsAnimate) {
-                    // onControlsOffsetChanged() doesn't always get called when offset == 0 when
-                    // shrinking or offset == height when growing. Instead detect if we're close
-                    // enough.
                     if (getVisibility() == VisibilityState.HIDING
-                            && bottomControlsMinHeightOffset < 2) {
+                            && bottomControlsMinHeightOffset == 0) {
                         onBottomControlsShrunk();
                     } else if (getVisibility() == VisibilityState.SHOWING
-                            && mLayoutHeightPx - bottomControlsMinHeightOffset < 2) {
+                            && mLayoutHeightPx == bottomControlsMinHeightOffset) {
                         onBottomControlsGrown();
                     }
                 }

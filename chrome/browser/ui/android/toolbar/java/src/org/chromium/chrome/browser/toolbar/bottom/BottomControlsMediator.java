@@ -123,7 +123,14 @@ class BottomControlsMediator implements BrowserControlsStateProvider.Observer,
     @Override
     public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
             int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
-        mModel.set(BottomControlsProperties.Y_OFFSET, bottomOffset);
+        int minHeight = mBrowserControlsSizer.getBottomControlsMinHeight();
+        mModel.set(BottomControlsProperties.Y_OFFSET, bottomOffset - minHeight);
+
+        // Translate Android view at the end of the bottom controls min height
+        // animation.
+        if (minHeight == bottomControlsMinHeightOffset) {
+            mModel.set(BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y, -minHeight);
+        }
         updateAndroidViewVisibility();
     }
 
@@ -159,9 +166,9 @@ class BottomControlsMediator implements BrowserControlsStateProvider.Observer,
     private void updateCompositedViewVisibility() {
         final boolean isCompositedViewVisible = isCompositedViewVisible();
         mModel.set(BottomControlsProperties.COMPOSITED_VIEW_VISIBLE, isCompositedViewVisible);
+        int minHeight = mBrowserControlsSizer.getBottomControlsMinHeight();
         mBrowserControlsSizer.setBottomControlsHeight(
-                isCompositedViewVisible ? mBottomControlsHeight : 0,
-                mBrowserControlsSizer.getBottomControlsMinHeight());
+                isCompositedViewVisible ? mBottomControlsHeight + minHeight : minHeight, minHeight);
     }
 
     boolean isCompositedViewVisible() {
