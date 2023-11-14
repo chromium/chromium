@@ -176,7 +176,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private final Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
 
     // Drag-Drop
-    @Nullable private TabDropTarget mTabDropTarget;
     @Nullable private TabDragSource mTabDragSource;
 
     private class TabStripEventHandler implements MotionEventHandler {
@@ -202,7 +201,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         @Override
         public void drag(float x, float y, float dx, float dy, float tx, float ty) {
             mModelSelectorButton.drag(x, y);
-            getActiveStripLayoutHelper().drag(time(), x, y, dx, dy, tx, ty);
+            getActiveStripLayoutHelper().drag(time(), x, y, dx);
         }
 
         @Override
@@ -436,11 +435,11 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 && TabUiFeatureUtilities.isTabDragEnabled()) {
             mTabDragSource =
                     new TabDragSource(
-                            toolbarContainerView,
+                            context,
+                            () -> getActiveStripLayoutHelper(),
                             multiInstanceManager,
                             dragDropDelegate,
                             browserControlsStateProvider);
-            mTabDropTarget = new TabDropTarget(this, multiInstanceManager, toolbarContainerView);
         }
 
         mNormalHelper =
@@ -521,7 +520,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             mTabModelSelectorTabModelObserver.destroy();
             mTabModelSelectorTabObserver.destroy();
         }
-        mTabDropTarget = null;
         mTabDragSource = null;
     }
 
@@ -717,8 +715,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
      * Returns drag listener for tab strip.
      */
     public OnDragListener getDragListener() {
-        if (mTabDragSource == null) return null;
-        return mTabDragSource.getDragListener();
+        return mTabDragSource;
     }
 
     void setModelSelectorButtonVisibleForTesting(boolean isVisible) {
@@ -1038,9 +1035,5 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
     public TabDragSource getTabDragSourceForTesting() {
         return mTabDragSource;
-    }
-
-    public TabDropTarget getTabDropTargetForTesting() {
-        return mTabDropTarget;
     }
 }

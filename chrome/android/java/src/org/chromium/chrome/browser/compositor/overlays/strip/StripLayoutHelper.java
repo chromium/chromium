@@ -38,7 +38,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -290,8 +289,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private View mToolbarContainerView;
     @Nullable private final TabDragSource mTabDragSource;
     private StripLayoutTab mActiveClickedTab;
-    private TabDropTarget mTabDropTarget;
-    private BrowserControlsStateProvider mBrowserControlStateProvider;
 
     // Tab Drag and Drop state to track if the dragged tab has been "torn" off of the tab strip.
     private boolean mDraggedTabOffStrip;
@@ -501,7 +498,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      */
     public void destroy() {
         mStripTabEventHandler.removeCallbacksAndMessages(null);
-        mTabDropTarget = null;
         if (mTabHoverCardView != null) {
             mTabHoverCardView.destroy();
             mTabHoverCardView = null;
@@ -1300,16 +1296,13 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     /**
      * Called on touch drag event.
-     * @param time   The current time of the app in ms.
-     * @param x      The y coordinate of the end of the drag event.
-     * @param y      The y coordinate of the end of the drag event.
+     *
+     * @param time The current time of the app in ms.
+     * @param x The y coordinate of the end of the drag event.
+     * @param y The y coordinate of the end of the drag event.
      * @param deltaX The number of pixels dragged in the x direction.
-     * @param deltaY The number of pixels dragged in the y direction.
-     * @param totalX The total delta x since the drag started.
-     * @param totalY The total delta y since the drag started.
      */
-    public void drag(
-            long time, float x, float y, float deltaX, float deltaY, float totalX, float totalY) {
+    public void drag(long time, float x, float y, float deltaX) {
         resetResizeTimeout(false);
 
         mLastUpdateTime = time;
@@ -3506,7 +3499,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 // causes any conflict with images drop work.
                 boolean dragStarted =
                         mTabDragSource.startTabDragAction(
-                                mToolbarContainerView, this, tabBeingDragged, dragStartPointF);
+                                mToolbarContainerView, tabBeingDragged, dragStartPointF);
                 if (dragStarted) {
                     mActiveClickedTab = clickedTab;
                     mDraggedTabOffStrip = false;
@@ -3537,7 +3530,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         assert draggedTab != null;
 
         finishAnimationsAndPushTabUpdates();
-
         mDraggedTabOffStrip = false;
         draggedTab.setOffsetX(mLastOffsetX);
         draggedTab.setOffsetY(0);

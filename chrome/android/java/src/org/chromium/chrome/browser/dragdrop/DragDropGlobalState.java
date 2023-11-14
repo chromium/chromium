@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.dragdrop;
 
-import android.graphics.PointF;
-
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -16,9 +14,6 @@ public final class DragDropGlobalState {
 
     public int dragSourceInstanceId = MultiWindowUtils.INVALID_INSTANCE_ID;
     public Tab tabBeingDragged;
-    public boolean acceptNextDrop;
-    public PointF dropLocation;
-
     public static DragDropGlobalState getInstance() {
         return sInstance;
     }
@@ -26,7 +21,5 @@ public final class DragDropGlobalState {
     public void reset() {
         dragSourceInstanceId = MultiWindowUtils.INVALID_INSTANCE_ID;
         tabBeingDragged = null;
-        acceptNextDrop = false;
-        dropLocation = null;
     }
 }

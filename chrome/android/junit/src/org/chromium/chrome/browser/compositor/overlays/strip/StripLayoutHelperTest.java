@@ -1492,7 +1492,7 @@ public class StripLayoutHelperTest {
         setTabDragSourceMock();
         onLongPress_OnTab();
         // Verify drag invoked
-        verify(mTabDragSource).startTabDragAction(any(), any(), any(), any());
+        verify(mTabDragSource).startTabDragAction(any(), any(), any());
     }
 
     private void onLongPress_OnTab() {
@@ -1899,7 +1899,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.startReorderModeAtIndexForTesting(2);
         float dragDistance = -100f;
         float startX = mStripLayoutHelper.getLastReorderXForTesting();
-        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance, 0f, 0f, 0f);
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify background tabs are dimmed, while interacting tab and hovered group are not.
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -1939,7 +1939,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.startReorderModeAtIndexForTesting(2);
         float dragDistance = -100f;
         float startX = mStripLayoutHelper.getLastReorderXForTesting();
-        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance, 0f, 0f, 0f);
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify hovered group tab containers are visible.
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -2001,7 +2001,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.startReorderModeAtIndexForTesting(2);
         float dragDistance = 100f;
         float startX = mStripLayoutHelper.getLastReorderXForTesting();
-        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance, 0f, 0f, 0f);
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Assert the tabs swapped.
         assertEquals("Third and fourth tabs should have swapped.", thirdTab, tabs[3]);
@@ -2023,7 +2023,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.startReorderModeAtIndexForTesting(3);
         float dragDistance = 60f;
         float startX = mStripLayoutHelper.getLastReorderXForTesting();
-        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance, 0f, 0f, 0f);
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify fourth tab was dragged out of group, but not reordered.
         assertEquals("Fourth tab should not have moved.", fourthTab, tabs[3]);
@@ -2045,7 +2045,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
         float dragDistance = -60f;
         float startX = mStripLayoutHelper.getLastReorderXForTesting();
-        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance, 0f, 0f, 0f);
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify first tab was dragged out of group, but not reordered.
         assertEquals("First tab should not have moved.", firstTab, tabs[0]);
@@ -2067,7 +2067,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.startReorderModeAtIndexForTesting(4);
         float dragDistance = 60f;
         float startX = mStripLayoutHelper.getLastReorderXForTesting();
-        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance, 0f, 0f, 0f);
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify fifth tab was dragged out of group, but not reordered.
         assertEquals("Fifth tab should not have moved.", fifthTab, tabs[4]);
@@ -2089,13 +2089,13 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
         float dragDistance = 300f;
         float startX = mStripLayoutHelper.getLastReorderXForTesting();
-        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance, 0f, 0f, 0f);
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
         // Verify no reordering, since we have not hovered over the tab group long enough.
         assertEquals("First tab should not have moved.", firstTab, tabs[0]);
 
         // Drag past the tab group.
         dragDistance = 650f;
-        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance, 0f, 0f, 0f);
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
         // Verify reordering, since we have dragged past the tab group.
         assertEquals("First tab should now be the fourth tab.", firstTab.getId(), tabs[3].getId());
     }
@@ -2116,7 +2116,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.startReorderModeAtIndexForTesting(2);
         float dragDistance = -200f;
         float startX = mStripLayoutHelper.getLastReorderXForTesting();
-        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance, 0f, 0f, 0f);
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify state has not yet changed.
         tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -2129,8 +2129,7 @@ public class StripLayoutHelperTest {
         dragDistance = -10;
         startX = mStripLayoutHelper.getLastReorderXForTesting();
         long timeDelta = StripLayoutHelper.DROP_INTO_GROUP_MS;
-        mStripLayoutHelper.drag(
-                TIMESTAMP + timeDelta, startX + dragDistance, 0f, dragDistance, 0f, 0f, 0f);
+        mStripLayoutHelper.drag(TIMESTAMP + timeDelta, startX + dragDistance, 0f, dragDistance);
 
         // Verify interacting tab was merged into group at the second index.
         tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -2396,8 +2395,7 @@ public class StripLayoutHelperTest {
 
         // Act: Drag and update layout.
         float dragDeltaX = -200.f;
-        float totalY = 85.f; // totalY > 50.f to cross reorder threshold.
-        mStripLayoutHelper.drag(TIMESTAMP, 374.74f, 24.276f, dragDeltaX, -0.304f, -16.078f, totalY);
+        mStripLayoutHelper.drag(TIMESTAMP, 374.74f, 24.276f, dragDeltaX);
 
         float expectedOffset = -350; // mScrollOffset + dragDeltaX = -200 - 150 = -350
         // Assert scroll offset position.
@@ -2821,7 +2819,7 @@ public class StripLayoutHelperTest {
     }
 
     private void setTabDragSourceMock() {
-        when(mTabDragSource.startTabDragAction(any(), any(), any(), any())).thenReturn(true);
+        when(mTabDragSource.startTabDragAction(any(), any(), any())).thenReturn(true);
 
         try {
             mContextForDragDrop = Mockito.spy(ContextUtils.getApplicationContext());
@@ -2857,7 +2855,7 @@ public class StripLayoutHelperTest {
         // Act and verify.
         mStripLayoutHelper.allowMovingTabOutOfStripLayout(theClickedTab, DRAG_START_POINT);
 
-        verify(mTabDragSource, times(1)).startTabDragAction(any(), any(), any(), any());
+        verify(mTabDragSource, times(1)).startTabDragAction(any(), any(), any());
         assertTrue(
                 "Tab being dragged should exist during drag action.",
                 mStripLayoutHelper.getActiveClickedTabForTesting() != null);

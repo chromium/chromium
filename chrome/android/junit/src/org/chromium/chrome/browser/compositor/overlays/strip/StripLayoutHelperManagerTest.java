@@ -637,9 +637,6 @@ public class StripLayoutHelperManagerTest {
         assertNotNull(
                 "Tab drag source should be set.",
                 mStripLayoutHelperManager.getTabDragSourceForTesting());
-        assertNotNull(
-                "Tab drop target should be set.",
-                mStripLayoutHelperManager.getTabDropTargetForTesting());
     }
 
     @Test
@@ -652,9 +649,6 @@ public class StripLayoutHelperManagerTest {
         assertNull(
                 "Tab drag source should not be set.",
                 mStripLayoutHelperManager.getTabDragSourceForTesting());
-        assertNull(
-                "Tab drop target should not be set.",
-                mStripLayoutHelperManager.getTabDropTargetForTesting());
     }
 
     @Test
@@ -668,9 +662,6 @@ public class StripLayoutHelperManagerTest {
         assertNull(
                 "Tab drag source should not be set.",
                 mStripLayoutHelperManager.getTabDragSourceForTesting());
-        assertNull(
-                "Tab drop target should not be set.",
-                mStripLayoutHelperManager.getTabDropTargetForTesting());
     }
 
     @Test
