@@ -139,8 +139,10 @@ Node::InsertionNotificationRequest HTMLFormElement::InsertedInto(
   HTMLElement::InsertedInto(insertion_point);
   LogAddElementIfIsolatedWorldAndInDocument("form", html_names::kMethodAttr,
                                             html_names::kActionAttr);
-  if (insertion_point.isConnected())
-    GetDocument().DidAddOrRemoveFormRelatedElement(this);
+  if (insertion_point.isConnected()) {
+    GetDocument().DidChangeFormRelatedElementDynamically(
+        this, WebFormRelatedChangeType::kAdd);
+  }
   return kInsertionDone;
 }
 
@@ -185,7 +187,8 @@ void HTMLFormElement::RemovedFrom(ContainerNode& insertion_point) {
   if (base::FeatureList::IsEnabled(
           blink::features::kAutofillDetectRemovedFormControls) &&
       insertion_point.isConnected()) {
-    GetDocument().DidAddOrRemoveFormRelatedElement(this);
+    GetDocument().DidChangeFormRelatedElementDynamically(
+        this, WebFormRelatedChangeType::kRemove);
   }
 }
 

@@ -28,6 +28,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
+#include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_input_element.h"
@@ -185,7 +186,13 @@ class AutofillAgent : public content::RenderFrameObserver,
 
  protected:
   // blink::WebAutofillClient:
-  void DidAddOrRemoveFormRelatedElementsDynamically() override;
+
+  // Signals from blink that a form related element changed dynamically,
+  // passing the changed element as well as the type of the change.
+  // TODO(crbug.com/1483242): Fire the signal for elements that become hidden.
+  void DidChangeFormRelatedElementDynamically(
+      const blink::WebElement&,
+      blink::WebFormRelatedChangeType) override;
 
  private:
   class DeferringAutofillDriver;

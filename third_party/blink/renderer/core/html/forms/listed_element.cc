@@ -142,8 +142,10 @@ void ListedElement::InsertedInto(ContainerNode& insertion_point) {
   }
 
   // Trigger for elements outside of forms.
-  if (!form_ && insertion_point.isConnected())
-    element.GetDocument().DidAddOrRemoveFormRelatedElement(&element);
+  if (!form_ && insertion_point.isConnected()) {
+    element.GetDocument().DidChangeFormRelatedElementDynamically(
+        &element, WebFormRelatedChangeType::kAdd);
+  }
 
   InvalidateShadowIncludingAncestorForms(insertion_point);
 }
@@ -190,7 +192,8 @@ void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
       insertion_point.isConnected()) {
     // We don't insist on form_ being non-null as the form does not take care of
     // reporting the removal.
-    element.GetDocument().DidAddOrRemoveFormRelatedElement(&element);
+    element.GetDocument().DidChangeFormRelatedElementDynamically(
+        &element, WebFormRelatedChangeType::kRemove);
   }
 }
 
@@ -257,7 +260,8 @@ void ListedElement::WillChangeForm() {
 void ListedElement::DidChangeForm() {
   if (!form_was_set_by_parser_ && form_ && form_->isConnected()) {
     auto& element = ToHTMLElement();
-    element.GetDocument().DidAddOrRemoveFormRelatedElement(&element);
+    element.GetDocument().DidChangeFormRelatedElementDynamically(
+        &element, WebFormRelatedChangeType::kReassociate);
   }
   FormOwnerSetNeedsValidityCheck();
 }

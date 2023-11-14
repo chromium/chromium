@@ -1222,7 +1222,9 @@ void AutofillAgent::HidePopup() {
   }
 }
 
-void AutofillAgent::DidAddOrRemoveFormRelatedElementsDynamically() {
+void AutofillAgent::DidChangeFormRelatedElementDynamically(
+    const WebElement& element,
+    blink::WebFormRelatedChangeType form_related_change) {
   // If the control flow is here than the document was at least loaded. The
   // whole page doesn't have to be loaded.
   ExtractForms(

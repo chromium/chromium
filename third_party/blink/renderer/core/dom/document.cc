@@ -8393,14 +8393,17 @@ Document& Document::EnsureTemplateDocument() {
   return *template_document_.Get();
 }
 
-void Document::DidAddOrRemoveFormRelatedElement(Element* element) {
+void Document::DidChangeFormRelatedElementDynamically(
+    HTMLElement* element,
+    WebFormRelatedChangeType form_related_change) {
   if (!GetFrame() || !GetFrame()->GetPage() || !HasFinishedParsing())
     return;
 
   GetFrame()
       ->GetPage()
       ->GetChromeClient()
-      .DidAddOrRemoveFormRelatedElementsAfterLoad(GetFrame());
+      .DidChangeFormRelatedElementDynamically(GetFrame(), element,
+                                              form_related_change);
 }
 
 float Document::DevicePixelRatio() const {
