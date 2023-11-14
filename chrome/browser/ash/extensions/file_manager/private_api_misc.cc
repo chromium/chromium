@@ -40,6 +40,7 @@
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/fileapi/recent_file.h"
 #include "chrome/browser/ash/fileapi/recent_model.h"
+#include "chrome/browser/ash/fileapi/recent_model_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -978,7 +979,10 @@ FileManagerPrivateInternalGetRecentFilesFunction::Run() {
       file_manager::util::GetFileSystemContextForRenderFrameHost(
           profile, render_frame_host());
 
-  ash::RecentModel* model = ash::RecentModel::GetForProfile(profile);
+  ash::RecentModel* model = ash::RecentModelFactory::GetForProfile(profile);
+  if (!model) {
+    return RespondNow(Error("Failed to get recent model"));
+  }
 
   ash::RecentModel::FileType file_type;
   if (!file_manager::util::ToRecentSourceFileType(params->file_category,

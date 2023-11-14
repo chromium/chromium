@@ -46,6 +46,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fileapi/recent_file.h"
 #include "chrome/browser/ash/fileapi/recent_model.h"
+#include "chrome/browser/ash/fileapi/recent_model_factory.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "storage/browser/file_system/file_system_context.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -186,7 +187,7 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
     const scoped_refptr<storage::FileSystemContext> file_system_context =
         file_manager::util::GetFileSystemContextForRenderFrameHost(
             profile(), contents->GetPrimaryMainFrame());
-    ash::RecentModel::GetForProfile(profile())->GetRecentFiles(
+    ash::RecentModelFactory::GetForProfile(profile())->GetRecentFiles(
         file_system_context.get(),
         /*origin=*/GURL(),
         /*query=*/"",

@@ -31,8 +31,6 @@ class FileSystemContext;
 
 namespace ash {
 
-class RecentModelFactory;
-
 // Provides a list of recently modified files.
 //
 // All member functions must be called on the UI thread.
@@ -63,13 +61,12 @@ class RecentModel : public KeyedService {
   using GetRecentFilesCallback =
       base::OnceCallback<void(const std::vector<RecentFile>& files)>;
 
+  explicit RecentModel(Profile* profile);
+  ~RecentModel() override;
+
   RecentModel(const RecentModel&) = delete;
   RecentModel& operator=(const RecentModel&) = delete;
 
-  ~RecentModel() override;
-
-  // Returns an instance for the given profile.
-  static RecentModel* GetForProfile(Profile* profile);
 
   // Creates an instance with given sources. Only for testing.
   static std::unique_ptr<RecentModel> CreateForTest(
@@ -100,9 +97,6 @@ class RecentModel : public KeyedService {
   void ClearScanTimeout();
 
  private:
-  friend class RecentModelFactory;
-
-  explicit RecentModel(Profile* profile);
   explicit RecentModel(std::vector<std::unique_ptr<RecentSource>> sources,
                        size_t max_files);
 

@@ -83,11 +83,6 @@ std::vector<std::unique_ptr<RecentSource>> CreateDefaultSources(
 }  // namespace
 
 // static
-RecentModel* RecentModel::GetForProfile(Profile* profile) {
-  return RecentModelFactory::GetForProfile(profile);
-}
-
-// static
 std::unique_ptr<RecentModel> RecentModel::CreateForTest(
     std::vector<std::unique_ptr<RecentSource>> sources,
     size_t max_files) {
