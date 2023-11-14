@@ -177,7 +177,7 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   [closeButton
       setImage:SymbolWithPalette(closeIcon,
                                  @[
-                                   [UIColor colorNamed:kTextTertiaryColor],
+                                   [UIColor colorNamed:kTextSecondaryColor],
                                    [UIColor colorNamed:kGrey200Color]
                                  ])
       forState:UIControlStateNormal];
