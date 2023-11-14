@@ -387,6 +387,10 @@ const char kDisableDemoMode[] = "disable-demo-mode";
 // If this switch is set, the device cannot be remotely disabled by its owner.
 const char kDisableDeviceDisabling[] = "disable-device-disabling";
 
+// Disables DriveFS for testing purposes, used in tast testing and only on test
+// images.
+const char kDisableDriveFsForTesting[] = "disable-drive-fs-for-testing";
+
 // Disables fine grained time zone detection.
 const char kDisableFineGrainedTimeZoneDetection[] =
     "disable-fine-grained-time-zone-detection";
