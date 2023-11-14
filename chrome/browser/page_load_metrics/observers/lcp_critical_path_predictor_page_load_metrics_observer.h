@@ -16,7 +16,29 @@ namespace internal {
 // Expose metrics for tests.
 extern const char kHistogramLCPPFirstContentfulPaint[];
 extern const char kHistogramLCPPLargestContentfulPaint[];
-extern const char kHistogramLCPPPredictSuccess[];
+extern const char kHistogramLCPPPredictResult[];
+extern const char kHistogramLCPPPredictHitIndex[];
+extern const char kHistogramLCPPActualLCPIndex[];
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class LCPPPredictResult {
+  kSuccess = 0,
+  // Prediction failed. No learned locator hit the actual LCP.
+  kFailureNoHit = 1,
+  // Below three failures are false positive cases.
+  // The actual LCP is unrecorded one.
+  kFailureActuallyUnrecordedLCP = 2,
+  // The actual LCP is one with the same locator.
+  kFailureActuallySameButLaterLCP = 3,
+  // The actual LCP is one with another leaned locator.
+  kFailureActuallySecondaryLCP = 4,
+  kMaxValue = kFailureActuallySecondaryLCP,
+};
+
+// Since histogram counts only positive numbers but the indexes origin 0,
+// add 1 for offset.
+const int kLCPIndexHistogramOffset = 1;
 }  // namespace internal
 
 // PageLoadMetricsObserver responsible for:

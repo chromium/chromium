@@ -833,6 +833,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Clients.LCPP.PaintTiming.ActualLCPIndex"
+    units="Index(1 origin)" expires_after="2024-03-31">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the actual index in learned element locators ordered by frequency up
+    to &quot;max_lcpp_histogram_buckets&quot; in LCP timing prediction. If
+    actual LCP is out of locators, that is recorded as
+    &quot;max_lcpp_histogram_buckets&quot; + 1 value. The metric is emitted only
+    for navigations that LCP Critical Path Predictor provided non-empty hint
+    data and only once when the user navigates away from the page.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.LCPP.PaintTiming.NavigationToFirstContentfulPaint"
     units="ms" expires_after="2024-03-31">
@@ -861,16 +877,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.LCPP.PaintTiming.PredictLCPSuccess"
-    enum="Boolean" expires_after="2024-03-31">
+<histogram name="PageLoad.Clients.LCPP.PaintTiming.PredictHitIndex"
+    units="Index(1 origin)" expires_after="2024-03-31">
   <owner>yoichio@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
   </owner>
   <summary>
-    Records whether the LCP timing predicor predicted the right LCP. The metric
-    is emitted only for navigations that LCP Critical Path Predictor provided
-    non-empty hint data.
+    Records the hit index in learned element locators ordered by frequency up to
+    &quot;max_lcpp_histogram_buckets&quot; when LCP timing predicor succeedded.
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only once when the user navigates away from
+    the page.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.LCPP.PaintTiming.PredictLCPResult"
+    enum="LcppPredictResult" expires_after="2024-03-31">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the result of LCP timing predicor. The metric is emitted only for
+    navigations that LCP Critical Path Predictor provided non-empty hint data
+    and only once when the user navigates away from the page.
   </summary>
 </histogram>
 

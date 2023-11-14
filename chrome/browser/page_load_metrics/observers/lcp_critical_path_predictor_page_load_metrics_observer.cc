@@ -6,6 +6,7 @@
 
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -19,8 +20,12 @@ const char kHistogramLCPPFirstContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToFirstContentfulPaint";
 const char kHistogramLCPPLargestContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToLargestContentfulPaint";
-const char kHistogramLCPPPredictSuccess[] =
-    HISTOGRAM_PREFIX "PaintTiming.PredictLCPSuccess";
+const char kHistogramLCPPPredictResult[] =
+    HISTOGRAM_PREFIX "PaintTiming.PredictLCPResult";
+const char kHistogramLCPPPredictHitIndex[] =
+    HISTOGRAM_PREFIX "PaintTiming.PredictHitIndex";
+const char kHistogramLCPPActualLCPIndex[] =
+    HISTOGRAM_PREFIX "PaintTiming.ActualLCPIndex";
 
 }  // namespace internal
 
@@ -228,20 +233,56 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
   // Then, We have a prelearn data and at least one LCP locator in current
   // load. Let's stat it.
 
-  std::set<uint32_t> valid_indexes;
-  bool false_positive = false;
-  // TODO(crbug.com/1493255): Introduce more UMA using these flags.
-  [[maybe_unused]] bool dup_index = false;
-  for (const absl::optional<uint32_t>& maybe_index : predicted_lcp_indexes_) {
-    // There is an yet another LCP after valid index LCP.
-    false_positive |= !valid_indexes.empty();
-
-    if (!maybe_index.has_value()) {
-      continue;
+  // This value existence indicates failure because predicted LCP should be the
+  // last.
+  absl::optional<uint32_t> first_valid_index_except_last = absl::nullopt;
+  for (size_t i = 0; i < predicted_lcp_indexes_.size() - 1; i++) {
+    const absl::optional<uint32_t>& maybe_index = predicted_lcp_indexes_[i];
+    if (maybe_index) {
+      first_valid_index_except_last = *maybe_index;
+      break;
     }
-    dup_index |= !valid_indexes.insert(*maybe_index).second;
+  }
+  const absl::optional<uint32_t>& last_lcp_index =
+      predicted_lcp_indexes_.back();
+
+  internal::LCPPPredictResult result;
+  const int max_lcpp_histogram_buckets =
+      base::GetFieldTrialParamByFeatureAsInt(
+          features::kLoadingPredictorTableConfig, "max_lcpp_histogram_buckets",
+          10) +
+      internal::kLCPIndexHistogramOffset;
+  if (first_valid_index_except_last) {
+    if (last_lcp_index) {
+      if (*first_valid_index_except_last == *last_lcp_index) {
+        // `predicted_lcp_indexes_` is like {1, 1}.
+        result = internal::LCPPPredictResult::kFailureActuallySameButLaterLCP;
+      } else {
+        //  `predicted_lcp_indexes_` is like {1,2} or {1,1,2}.
+        result = internal::LCPPPredictResult::kFailureActuallySecondaryLCP;
+      }
+    } else {
+      // `predicted_lcp_indexes_` is like {1, null}.
+      result = internal::LCPPPredictResult::kFailureActuallyUnrecordedLCP;
+    }
+  } else {
+    if (last_lcp_index) {
+      //  `predicted_lcp_indexes_` is like {null*, 1}.
+      result = internal::LCPPPredictResult::kSuccess;
+      base::UmaHistogramExactLinear(
+          internal::kHistogramLCPPPredictHitIndex,
+          *last_lcp_index + internal::kLCPIndexHistogramOffset,
+          max_lcpp_histogram_buckets);
+    } else {
+      // `predicted_lcp_indexes_` is like {null*}.
+      result = internal::LCPPPredictResult::kFailureNoHit;
+    }
   }
 
-  base::UmaHistogramBoolean(internal::kHistogramLCPPPredictSuccess,
-                            valid_indexes.size() == 1u && !false_positive);
+  base::UmaHistogramEnumeration(internal::kHistogramLCPPPredictResult, result);
+  base::UmaHistogramExactLinear(
+      internal::kHistogramLCPPActualLCPIndex,
+      last_lcp_index ? *last_lcp_index + internal::kLCPIndexHistogramOffset
+                     : max_lcpp_histogram_buckets,
+      max_lcpp_histogram_buckets);
 }

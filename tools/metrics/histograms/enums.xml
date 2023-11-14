@@ -36605,6 +36605,24 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="kConversionFailure"/>
 </enum>
 
+<enum name="LcppPredictResult">
+  <int value="0" label="Success">Prediction is success.</int>
+  <int value="1" label="Failure: No hit">
+    Prediction failed. No learned locator hit the actual LCP.
+  </int>
+  <int value="2" label="Failure(False positive): Unrecorded LCP">
+    Prediction failed. LCP is predicted but the actual LCP is unrecorded one.
+  </int>
+  <int value="3" label="Failure(False positive): Duplication">
+    Prediction failed. LCP is predicted but the actual LCP is one with the same
+    locator.
+  </int>
+  <int value="4" label="Failure(False positive): Another indexed LCP.">
+    Prediction failed. LCP is predicted but the actual LCP is one with another
+    leaned locator.
+  </int>
+</enum>
+
 <enum name="LensClassifyResultState">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success: shoppy image"/>
