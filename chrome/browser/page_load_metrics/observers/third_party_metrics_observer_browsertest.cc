@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/page_load_metrics/browser/observers/third_party_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -174,6 +176,11 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
     EXPECT_TRUE(ExecJs(ad_frame, no_op_script));
   }
 
+  void Enable3pcForUrl(GURL url) {
+    CookieSettingsFactory::GetForProfile(browser()->profile())
+        ->SetCookieSetting(url, CONTENT_SETTING_ALLOW);
+  }
+
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -308,6 +315,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
                        ThirdPartyCookiesReadAndWrite) {
+  Enable3pcForUrl(https_server()->GetURL("b.com", "/"));
   content::CookieChangeObserver observer(web_contents(), 2);
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");  // Same origin cookie read.
@@ -332,11 +340,12 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
                        ThirdPartyCookiesIPAddress) {
+  GURL url =
+      https_server()->GetURL("/set-cookie?thirdparty=1;SameSite=None;Secure");
+  Enable3pcForUrl(url);
   content::CookieChangeObserver observer(web_contents(), 2);
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");  // Same origin cookie read.
-  GURL url =
-      https_server()->GetURL("/set-cookie?thirdparty=1;SameSite=None;Secure");
   // Hostname is an IP address.
   ASSERT_EQ(
       "",
@@ -361,6 +370,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
                        MultipleThirdPartyCookiesReadAndWrite) {
+  Enable3pcForUrl(https_server()->GetURL("b.com", "/"));
+  Enable3pcForUrl(https_server()->GetURL("c.com", "/"));
   content::CookieChangeObserver observer(web_contents(), 4);
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");  // Same origin cookie read.
@@ -416,6 +427,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
                        ThirdPartyDocCookieReadAndWrite) {
+  Enable3pcForUrl(https_server()->GetURL("b.com", "/"));
   content::CookieChangeObserver observer(web_contents(), 2);
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");  // Same origin cookie read.
@@ -446,6 +458,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
                        ThirdPartyDocCookieReadNoWrite) {
+  Enable3pcForUrl(https_server()->GetURL("b.com", "/"));
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");  // Same origin cookie read.
   NavigateFrameTo("b.com", "/empty.html");
@@ -471,6 +484,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
                        ThirdPartyDocCookieWriteNoRead) {
+  Enable3pcForUrl(https_server()->GetURL("b.com", "/"));
   content::CookieChangeObserver observer(web_contents());
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");  // Same origin cookie read.
@@ -587,6 +601,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     ThirdPartyMetricsObserverBrowserTest,
     ThirdPartyFrameWithAccessAndActivationOnDifferentThirdParties) {
+  Enable3pcForUrl(https_server()->GetURL("b.com", "/"));
+  Enable3pcForUrl(https_server()->GetURL("c.com", "/"));
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");
   NavigateFrameTo("b.com", "/");
@@ -607,6 +623,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ThirdPartyMetricsObserverBrowserTest,
     ThirdPartyFrameWithAccessAndActivationOnSameThirdParties) {
+  Enable3pcForUrl(https_server()->GetURL("b.com", "/"));
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");
   NavigateFrameTo("b.com", "/set-cookie?thirdparty=1;SameSite=None;Secure");
