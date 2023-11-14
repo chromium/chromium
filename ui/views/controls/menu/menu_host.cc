@@ -118,11 +118,7 @@ MenuHost::MenuHost(SubmenuView* submenu) : submenu_(submenu) {
   set_auto_release_capture(false);
 }
 
-MenuHost::~MenuHost() {
-  if (owner_)
-    owner_->RemoveObserver(this);
-  CHECK(!IsInObserverList());
-}
+MenuHost::~MenuHost() = default;
 
 void MenuHost::InitMenuHost(const InitParams& init_params) {
   TRACE_EVENT0("views", "MenuHost::InitMenuHost");
@@ -187,13 +183,11 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
           menu_controller, submenu_, GetNativeView());
 #endif
 
-  DCHECK(!owner_);
-  owner_ = init_params.parent.get();
-  if (owner_)
-    owner_->AddObserver(this);
-
+  DCHECK(!GetOwner());
+  if (init_params.parent) {
+    owner_observation_.Observe(init_params.parent);
+  }
   native_view_for_gestures_ = init_params.native_view_for_gestures;
-
   SetContentsView(init_params.contents_view);
   ShowMenuHost(init_params.do_capture);
 }
@@ -217,7 +211,7 @@ void MenuHost::ShowMenuHost(bool do_capture) {
       // gesture events instead of being dropped.
       gfx::NativeView source_view = native_view_for_gestures_
                                         ? native_view_for_gestures_
-                                        : owner_->GetNativeView();
+                                        : GetOwner()->GetNativeView();
       internal::TransferGesture(GetGestureRecognizer(), source_view,
                                 GetNativeView());
     } else {
@@ -226,8 +220,9 @@ void MenuHost::ShowMenuHost(bool do_capture) {
 
     // If MenuHost has no parent widget, it needs to call Show to get focus,
     // so that it will get keyboard events.
-    if (owner_ == nullptr)
+    if (GetOwner() == nullptr) {
       Show();
+    }
     native_widget_private()->SetCapture();
   }
 }
@@ -235,11 +230,11 @@ void MenuHost::ShowMenuHost(bool do_capture) {
 void MenuHost::HideMenuHost() {
   MenuController* menu_controller =
       submenu_->GetMenuItem()->GetMenuController();
-  if (owner_ && menu_controller &&
+  if (GetOwner() && menu_controller &&
       menu_controller->send_gesture_events_to_owner()) {
     gfx::NativeView target_view = native_view_for_gestures_
                                       ? native_view_for_gestures_
-                                      : owner_->GetNativeView();
+                                      : GetOwner()->GetNativeView();
     internal::TransferGesture(GetGestureRecognizer(), GetNativeView(),
                               target_view);
   }
@@ -252,6 +247,7 @@ void MenuHost::HideMenuHost() {
 void MenuHost::DestroyMenuHost() {
   HideMenuHost();
   destroying_ = true;
+  submenu_ = nullptr;
   static_cast<MenuHostRootView*>(GetRootView())->ClearSubmenu();
 #if defined(USE_AURA)
   pre_dispatch_handler_.reset();
@@ -352,15 +348,18 @@ void MenuHost::OnDragComplete() {
 }
 
 Widget* MenuHost::GetPrimaryWindowWidget() {
-  return owner_ ? owner_->GetPrimaryWindowWidget()
-                : Widget::GetPrimaryWindowWidget();
+  return GetOwner() ? GetOwner()->GetPrimaryWindowWidget()
+                    : Widget::GetPrimaryWindowWidget();
 }
 
 void MenuHost::OnWidgetDestroying(Widget* widget) {
-  DCHECK_EQ(owner_, widget);
-  owner_->RemoveObserver(this);
-  owner_ = nullptr;
+  DCHECK_EQ(GetOwner(), widget);
+  owner_observation_.Reset();
   native_view_for_gestures_ = nullptr;
+}
+
+Widget* MenuHost::GetOwner() {
+  return owner_observation_.GetSource();
 }
 
 }  // namespace views
