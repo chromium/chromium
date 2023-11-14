@@ -429,6 +429,17 @@ class CORE_EXPORT NGFragmentBuilder {
     return should_force_same_fragmentation_flow_;
   }
 
+  // True if we need to keep some child content in the current fragmentainer
+  // before breaking (even that overflows the fragmentainer). We'll do this by
+  // refusing last-resort breaks when there's no container separation, and we'll
+  // instead overflow the fragmentainer. See MustStayInCurrentFragmentainer().
+  void SetRequiresContentBeforeBreaking(bool b) {
+    requires_content_before_breaking_ = b;
+  }
+  bool RequiresContentBeforeBreaking() const {
+    return requires_content_before_breaking_;
+  }
+
   // Downgrade the break appeal if the specified break appeal is lower than any
   // found so far.
   void ClampBreakAppeal(NGBreakAppeal appeal) {
@@ -625,6 +636,7 @@ class CORE_EXPORT NGFragmentBuilder {
   bool has_column_spanner_ = false;
   bool is_empty_spanner_parent_ = false;
   bool should_force_same_fragmentation_flow_ = false;
+  bool requires_content_before_breaking_ = false;
   bool should_add_break_tokens_manually_ = false;
   bool has_out_of_flow_fragment_child_ = false;
   bool has_out_of_flow_in_fragmentainer_subtree_ = false;

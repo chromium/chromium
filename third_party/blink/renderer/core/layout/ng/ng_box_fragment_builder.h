@@ -247,17 +247,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
     return is_known_to_fit_in_fragmentainer_;
   }
 
-  // True if we need to keep some child content in the current fragmentainer
-  // before breaking (even that overflows the fragmentainer). We'll do this by
-  // refusing last-resort breaks when there's no container separation, and we'll
-  // instead overflow the fragmentainer. See MustStayInCurrentFragmentainer().
-  void SetRequiresContentBeforeBreaking(bool b) {
-    requires_content_before_breaking_ = b;
-  }
-  bool RequiresContentBeforeBreaking() const {
-    return requires_content_before_breaking_;
-  }
-
   void SetIsBlockSizeForFragmentationClamped() {
     is_block_size_for_fragmentation_clamped_ = true;
   }
@@ -655,7 +644,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   bool is_initial_block_size_indefinite_ = false;
   bool is_inline_formatting_context_;
   bool is_known_to_fit_in_fragmentainer_ = false;
-  bool requires_content_before_breaking_ = false;
   bool is_block_size_for_fragmentation_clamped_ = false;
   bool is_monolithic_ = true;
   bool is_first_for_node_ = true;

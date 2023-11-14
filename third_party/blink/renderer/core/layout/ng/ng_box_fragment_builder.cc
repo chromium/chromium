@@ -292,6 +292,9 @@ void NGBoxFragmentBuilder::AddChild(
   PropagateFromFragment(child, child_offset, *relative_offset,
                         inline_container);
   AddChildInternal(&child, child_offset + *relative_offset);
+
+  // We have got some content, so follow normal breaking rules from now on.
+  SetRequiresContentBeforeBreaking(false);
 }
 
 void NGBoxFragmentBuilder::AddBreakToken(const NGBreakToken* token,
@@ -610,8 +613,6 @@ void NGBoxFragmentBuilder::AdjustFragmentainerDescendant(
         -previous_consumed_block_size);
     descendant.static_position.offset.block_offset +=
         previous_consumed_block_size;
-    descendant.containing_block.SetRequiresContentBeforeBreaking(
-        RequiresContentBeforeBreaking());
   }
 
   // If the fixedpos containing block is fragmented, adjust the offset to be
@@ -621,8 +622,6 @@ void NGBoxFragmentBuilder::AdjustFragmentainerDescendant(
        descendant.fixedpos_inline_container.container)) {
     descendant.fixedpos_containing_block.IncreaseBlockOffset(
         -previous_consumed_block_size);
-    descendant.fixedpos_containing_block.SetRequiresContentBeforeBreaking(
-        RequiresContentBeforeBreaking());
   }
 }
 

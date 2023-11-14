@@ -1116,22 +1116,20 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
       NGLogicalOOFNodeForFragmentation node = {
           descendant.Node(),
           static_position,
+          !!descendant.requires_content_before_breaking,
           inline_container,
           NGContainingBlock<LogicalOffset>(
               containing_block_offset, containing_block_rel_offset,
               containing_block_fragment,
               descendant.containing_block.ClippedContainerBlockOffset(),
-              descendant.containing_block.IsInsideColumnSpanner(),
-              descendant.containing_block.RequiresContentBeforeBreaking()),
+              descendant.containing_block.IsInsideColumnSpanner()),
           NGContainingBlock<LogicalOffset>(
               fixedpos_containing_block_offset,
               fixedpos_containing_block_rel_offset,
               fixedpos_containing_block_fragment,
               descendant.fixedpos_containing_block
                   .ClippedContainerBlockOffset(),
-              descendant.fixedpos_containing_block.IsInsideColumnSpanner(),
-              descendant.fixedpos_containing_block
-                  .RequiresContentBeforeBreaking()),
+              descendant.fixedpos_containing_block.IsInsideColumnSpanner()),
           fixedpos_inline_container};
       oof_nodes_to_layout.push_back(node);
     }
@@ -1568,8 +1566,6 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
   PhysicalSize container_physical_content_size = ToPhysicalSize(
       container_content_size, ConstraintSpace().GetWritingMode());
 
-  bool requires_content_before_breaking = false;
-
   // Adjust the |static_position| (which is currently relative to the default
   // container's border-box). ng_absolute_utils expects the static position to
   // be relative to the container's padding-box. Since
@@ -1581,8 +1577,6 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
     const auto& containing_block_for_fragmentation =
         To<NGLogicalOOFNodeForFragmentation>(oof_node).containing_block;
     static_position.offset += containing_block_for_fragmentation.Offset();
-    requires_content_before_breaking =
-        containing_block_for_fragmentation.RequiresContentBeforeBreaking();
   }
 
   LogicalStaticPosition oof_static_position =
@@ -1620,13 +1614,14 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
                                     .fixedpos_inline_container;
   }
 
-  return NodeInfo(
-      node, builder.ToConstraintSpace(), oof_static_position,
-      container_physical_content_size, container_info,
-      ConstraintSpace().GetWritingDirection(),
-      /* is_fragmentainer_descendant */ containing_block_fragment,
-      containing_block, fixedpos_containing_block, fixedpos_inline_container,
-      oof_node.inline_container.container, requires_content_before_breaking);
+  return NodeInfo(node, builder.ToConstraintSpace(), oof_static_position,
+                  container_physical_content_size, container_info,
+                  ConstraintSpace().GetWritingDirection(),
+                  /* is_fragmentainer_descendant */ containing_block_fragment,
+                  containing_block, fixedpos_containing_block,
+                  fixedpos_inline_container,
+                  oof_node.inline_container.container,
+                  oof_node.requires_content_before_breaking);
 }
 
 const NGLayoutResult* NGOutOfFlowLayoutPart::LayoutOOFNode(

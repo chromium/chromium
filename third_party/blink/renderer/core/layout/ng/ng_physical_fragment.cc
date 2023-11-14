@@ -401,7 +401,7 @@ NGPhysicalFragment::OutOfFlowData* NGPhysicalFragment::OutOfFlowDataFromBuilder(
       oof_data->oof_positioned_descendants.emplace_back(
           descendant.Node(),
           descendant.static_position.ConvertToPhysical(converter),
-          inline_container);
+          descendant.requires_content_before_breaking, inline_container);
     }
   }
 

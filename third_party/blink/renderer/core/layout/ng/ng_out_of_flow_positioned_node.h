@@ -33,15 +33,13 @@ class NGContainingBlock {
                     OffsetType relative_offset,
                     const NGPhysicalFragment* fragment,
                     absl::optional<LayoutUnit> clipped_container_block_offset,
-                    bool is_inside_column_spanner,
-                    bool requires_content_before_breaking)
+                    bool is_inside_column_spanner)
       : offset_(offset),
         relative_offset_(relative_offset),
         fragment_(std::move(fragment)),
         clipped_container_block_offset_(
             clipped_container_block_offset.value_or(LayoutUnit::Min())),
-        is_inside_column_spanner_(is_inside_column_spanner),
-        requires_content_before_breaking_(requires_content_before_breaking) {}
+        is_inside_column_spanner_(is_inside_column_spanner) {}
 
   OffsetType Offset() const { return offset_; }
   void IncreaseBlockOffset(LayoutUnit block_offset) {
@@ -56,13 +54,6 @@ class NGContainingBlock {
     return clipped_container_block_offset_;
   }
   bool IsInsideColumnSpanner() const { return is_inside_column_spanner_; }
-
-  void SetRequiresContentBeforeBreaking(bool b) {
-    requires_content_before_breaking_ = b;
-  }
-  bool RequiresContentBeforeBreaking() const {
-    return requires_content_before_breaking_;
-  }
 
   // True if the containing block of an OOF is inside a clipped container inside
   // a fragmentation context.
@@ -84,10 +75,6 @@ class NGContainingBlock {
   // True if there is a column spanner between the containing block and the
   // multicol container (or if the containing block is a column spanner).
   bool is_inside_column_spanner_ = false;
-  // True if we need to keep some child content in the current fragmentainer
-  // before breaking (even that overflows the fragmentainer). See
-  // NGBoxFragmentBuilder::SetRequiresContentBeforeBreaking() for more details.
-  bool requires_content_before_breaking_ = false;
 };
 
 // This holds the containing block for an out-of-flow positioned element
@@ -173,11 +160,13 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
   unsigned static_position_vertical_edge : 2;
   // Whether or not this is an NGPhysicalOOFNodeForFragmentation.
   unsigned is_for_fragmentation : 1;
+  unsigned requires_content_before_breaking : 1;
   NGInlineContainer<PhysicalOffset> inline_container;
 
   NGPhysicalOutOfFlowPositionedNode(
       NGBlockNode node,
       PhysicalStaticPosition static_position,
+      bool requires_content_before_breaking,
       NGInlineContainer<PhysicalOffset> inline_container =
           NGInlineContainer<PhysicalOffset>())
       : box(node.GetLayoutBox()),
@@ -185,6 +174,7 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
         static_position_horizontal_edge(static_position.horizontal_edge),
         static_position_vertical_edge(static_position.vertical_edge),
         is_for_fragmentation(false),
+        requires_content_before_breaking(requires_content_before_breaking),
         inline_container(inline_container) {
     DCHECK(node.IsBlock());
   }
@@ -221,15 +211,19 @@ struct CORE_EXPORT NGLogicalOutOfFlowPositionedNode {
   // Whether or not this is an NGLogicalOOFNodeForFragmentation.
   unsigned is_for_fragmentation : 1;
 
+  unsigned requires_content_before_breaking : 1;
+
   NGLogicalOutOfFlowPositionedNode(
       NGBlockNode node,
       LogicalStaticPosition static_position,
+      bool requires_content_before_breaking,
       NGInlineContainer<LogicalOffset> inline_container =
           NGInlineContainer<LogicalOffset>())
       : box(node.GetLayoutBox()),
         static_position(static_position),
         inline_container(inline_container),
-        is_for_fragmentation(false) {
+        is_for_fragmentation(false),
+        requires_content_before_breaking(requires_content_before_breaking) {
     DCHECK(node.IsBlock());
   }
 
@@ -268,6 +262,7 @@ struct CORE_EXPORT NGPhysicalOOFNodeForFragmentation final
   NGPhysicalOOFNodeForFragmentation(
       NGBlockNode node,
       PhysicalStaticPosition static_position,
+      bool requires_content_before_breaking,
       NGInlineContainer<PhysicalOffset> inline_container =
           NGInlineContainer<PhysicalOffset>(),
       NGContainingBlock<PhysicalOffset> containing_block =
@@ -278,6 +273,7 @@ struct CORE_EXPORT NGPhysicalOOFNodeForFragmentation final
           NGInlineContainer<PhysicalOffset>())
       : NGPhysicalOutOfFlowPositionedNode(node,
                                           static_position,
+                                          requires_content_before_breaking,
                                           inline_container),
         containing_block(containing_block),
         fixedpos_containing_block(fixedpos_containing_block),
@@ -306,6 +302,7 @@ struct CORE_EXPORT NGLogicalOOFNodeForFragmentation final
   NGLogicalOOFNodeForFragmentation(
       NGBlockNode node,
       LogicalStaticPosition static_position,
+      bool requires_content_before_breaking,
       NGInlineContainer<LogicalOffset> inline_container =
           NGInlineContainer<LogicalOffset>(),
       NGContainingBlock<LogicalOffset> containing_block =
@@ -316,6 +313,7 @@ struct CORE_EXPORT NGLogicalOOFNodeForFragmentation final
           NGInlineContainer<LogicalOffset>())
       : NGLogicalOutOfFlowPositionedNode(node,
                                          static_position,
+                                         requires_content_before_breaking,
                                          inline_container),
         containing_block(containing_block),
         fixedpos_containing_block(fixedpos_containing_block),
@@ -325,9 +323,11 @@ struct CORE_EXPORT NGLogicalOOFNodeForFragmentation final
 
   explicit NGLogicalOOFNodeForFragmentation(
       const NGLogicalOutOfFlowPositionedNode& oof_node)
-      : NGLogicalOutOfFlowPositionedNode(oof_node.Node(),
-                                         oof_node.static_position,
-                                         oof_node.inline_container) {
+      : NGLogicalOutOfFlowPositionedNode(
+            oof_node.Node(),
+            oof_node.static_position,
+            oof_node.requires_content_before_breaking,
+            oof_node.inline_container) {
     is_for_fragmentation = true;
   }
 

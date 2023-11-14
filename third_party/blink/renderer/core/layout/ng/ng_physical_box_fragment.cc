@@ -105,8 +105,7 @@ NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
                               builder->Style().GetWritingDirection()),
       containing_block.Fragment(),
       containing_block.ClippedContainerBlockOffset(),
-      containing_block.IsInsideColumnSpanner(),
-      containing_block.RequiresContentBeforeBreaking());
+      containing_block.IsInsideColumnSpanner());
 }
 
 NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
@@ -475,7 +474,7 @@ NGPhysicalFragment::FragmentedOutOfFlowDataFromBuilder(
         descendant.Node(),
         descendant.static_position.ConvertToPhysical(
             containing_block_converter),
-        inline_container,
+        descendant.requires_content_before_breaking, inline_container,
         PhysicalContainingBlock(builder, size, containing_block_size,
                                 descendant.containing_block),
         PhysicalContainingBlock(builder, size,

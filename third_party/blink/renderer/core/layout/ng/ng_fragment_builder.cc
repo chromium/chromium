@@ -376,7 +376,7 @@ void NGFragmentBuilder::AddOutOfFlowChildCandidate(
   DCHECK(child);
   oof_positioned_candidates_.emplace_back(
       child, LogicalStaticPosition{child_offset, inline_edge, block_edge},
-      NGInlineContainer<LogicalOffset>());
+      RequiresContentBeforeBreaking(), NGInlineContainer<LogicalOffset>());
 }
 
 void NGFragmentBuilder::AddOutOfFlowChildCandidate(
@@ -458,7 +458,9 @@ void NGFragmentBuilder::TransferOutOfFlowCandidates(
       // as a fragmentainer descendant instead.
       DCHECK(!candidate.inline_container.container);
       destination_builder->AddOutOfFlowFragmentainerDescendant(
-          {node, candidate.static_position, multicol->fixedpos_inline_container,
+          {node, candidate.static_position,
+           !!candidate.requires_content_before_breaking,
+           multicol->fixedpos_inline_container,
            multicol->fixedpos_containing_block,
            multicol->fixedpos_containing_block,
            multicol->fixedpos_inline_container});
@@ -575,9 +577,10 @@ void NGFragmentBuilder::PropagateOOFPositionedInfo(
         if (fixedpos_inline_container)
           new_fixedpos_inline_container = *fixedpos_inline_container;
         AddOutOfFlowFragmentainerDescendant(
-            {node, static_position, new_fixedpos_inline_container,
-             *fixedpos_containing_block, *fixedpos_containing_block,
-             new_fixedpos_inline_container});
+            {node, static_position,
+             !!descendant.requires_content_before_breaking,
+             new_fixedpos_inline_container, *fixedpos_containing_block,
+             *fixedpos_containing_block, new_fixedpos_inline_container});
         continue;
       }
     }
@@ -586,8 +589,9 @@ void NGFragmentBuilder::PropagateOOFPositionedInfo(
     // |oof_positioned_candidates_| should not have duplicated entries.
     DCHECK(!base::Contains(oof_positioned_candidates_, node,
                            &NGLogicalOutOfFlowPositionedNode::Node));
-    oof_positioned_candidates_.emplace_back(node, static_position,
-                                            new_inline_container);
+    oof_positioned_candidates_.emplace_back(
+        node, static_position, descendant.requires_content_before_breaking,
+        new_inline_container);
   }
 
   NGFragmentedOutOfFlowData* oof_data = fragment.FragmentedOutOfFlowData();
@@ -666,9 +670,7 @@ void NGFragmentBuilder::PropagateOOFPositionedInfo(
                   fixedpos_containing_block_rel_offset,
                   fixedpos_containing_block_fragment,
                   fixedpos_clipped_container_block_offset,
-                  is_inside_column_spanner,
-                  multicol_info->fixedpos_containing_block
-                      .RequiresContentBeforeBreaking()),
+                  is_inside_column_spanner),
               new_fixedpos_inline_container));
     }
   }
@@ -845,20 +847,18 @@ void NGFragmentBuilder::PropagateOOFFragmentainerDescendants(
           fixedpos_containing_block->RelativeOffset();
     }
     NGLogicalOOFNodeForFragmentation oof_node(
-        descendant.Node(), static_position, new_inline_container,
+        descendant.Node(), static_position,
+        descendant.requires_content_before_breaking, new_inline_container,
         NGContainingBlock<LogicalOffset>(
             containing_block_offset, containing_block_rel_offset,
             containing_block_fragment, clipped_container_block_offset,
-            container_inside_column_spanner,
-            descendant.containing_block.RequiresContentBeforeBreaking()),
+            container_inside_column_spanner),
         NGContainingBlock<LogicalOffset>(
             fixedpos_containing_block_offset,
             fixedpos_containing_block_rel_offset,
             fixedpos_containing_block_fragment,
             fixedpos_clipped_container_block_offset,
-            fixedpos_container_inside_column_spanner,
-            descendant.fixedpos_containing_block
-                .RequiresContentBeforeBreaking()),
+            fixedpos_container_inside_column_spanner),
         new_fixedpos_inline_container);
 
     if (out_list) {
