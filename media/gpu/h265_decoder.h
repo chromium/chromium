@@ -352,6 +352,10 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   int curr_sps_id_ = -1;
   int curr_pps_id_ = -1;
 
+  // If this value larger than 0, then that means the current NALU contain alpha
+  // layer.
+  int aux_alpha_layer_id_ = 0;
+
   // Current NALU and slice header being processed.
   std::unique_ptr<H265NALU> curr_nalu_;
   std::unique_ptr<H265SliceHeader> curr_slice_hdr_;

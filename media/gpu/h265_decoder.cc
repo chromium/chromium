@@ -168,6 +168,7 @@ void H265Decoder::Reset() {
   last_slice_hdr_ = nullptr;
   curr_sps_id_ = -1;
   curr_pps_id_ = -1;
+  aux_alpha_layer_id_ = 0;
 
   prev_tid0_pic_ = nullptr;
   ref_pic_list_.clear();
@@ -234,12 +235,11 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
       DVLOG(4) << "New NALU: " << static_cast<int>(curr_nalu_->nal_unit_type);
     }
 
-    // 8.1.2 We only handle nuh_layer_id of zero.
-    // As a workaround for accelerators that support alpha layers, the data is
-    // simply passed through.
-    // TODO(crbug.com/1331597): Only pass through vps->aux_alpha_layer_id.
     if (curr_nalu_->nuh_layer_id) {
-      if (accelerator_->IsAlphaLayerSupported()) {
+      // For accelerators that support alpha layers, the data is
+      // simply passed through.
+      if (aux_alpha_layer_id_ == curr_nalu_->nuh_layer_id &&
+          accelerator_->IsAlphaLayerSupported()) {
         switch (curr_nalu_->nal_unit_type) {
           case H265NALU::BLA_W_LP:
           case H265NALU::BLA_W_RADL:
@@ -314,6 +314,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
             break;
         }
       } else {
+        // 8.1.2 Otherwise only handle nuh_layer_id of zero.
         DVLOG(4) << "Skipping NALU with nuh_layer_id="
                  << curr_nalu_->nuh_layer_id;
       }
@@ -676,6 +677,13 @@ H265Decoder::H265Accelerator::Status H265Decoder::ProcessCurrentSlice() {
 
   const H265PPS* pps = parser_.GetPPS(curr_pps_id_);
   DCHECK(pps);
+
+  const H265VPS* vps = parser_.GetVPS(sps->sps_video_parameter_set_id);
+  if (!vps) {
+    return H265Accelerator::Status::kFail;
+  }
+  aux_alpha_layer_id_ = vps->aux_alpha_layer_id;
+
   return accelerator_->SubmitSlice(
       sps, pps, slice_hdr, ref_pic_list0_, ref_pic_list1_, ref_pic_set_lt_curr_,
       ref_pic_set_st_curr_after_, ref_pic_set_st_curr_before_, curr_pic_.get(),
