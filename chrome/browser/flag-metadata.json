@@ -1429,8 +1429,8 @@
   },
   {
     "name": "crostini-reset-lxd-db",
-    "owners": [ "davidmunro@google.com", "nverne@chromium.org", "sidereal@chromium.org" ],
-    "expiry_milestone": 120
+    "owners": [ "easy@google.com", "jamesye@google.com", "sidereal@google.com" ],
+    "expiry_milestone": 130
   },
   {
     "name": "crostini-use-lxd-5",
