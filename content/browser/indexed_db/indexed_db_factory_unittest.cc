@@ -729,21 +729,57 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabase) {
                        factory_remote.BindNewPipeAndPassReceiver(),
                        ToBucketInfo(bucket_locator));
 
-  // Delete db.
-  MockMojoIndexedDBFactoryClient client;
-  MockMojoIndexedDBDatabaseCallbacks database_callbacks;
-  base::RunLoop run_loop;
-  EXPECT_CALL(client, DeleteSuccess)
-      .WillOnce(
-          testing::DoAll(::base::test::RunClosure(run_loop.QuitClosure())));
-  mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
-  factory_remote->DeleteDatabase(client.CreateInterfacePtrAndBind(), u"db",
-                                 /*force_close=*/false);
-  run_loop.Run();
+  // Don't create a backing store if one doesn't exist.
+  {
+    // Delete db.
+    MockMojoIndexedDBFactoryClient client;
+    MockMojoIndexedDBDatabaseCallbacks database_callbacks;
+    base::RunLoop run_loop;
+    EXPECT_CALL(client, DeleteSuccess)
+        .WillOnce(
+            testing::DoAll(::base::test::RunClosure(run_loop.QuitClosure())));
+    mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
+    factory_remote->DeleteDatabase(client.CreateInterfacePtrAndBind(), u"db",
+                                   /*force_close=*/false);
+    run_loop.Run();
 
-  // Since there are no more references the factory should be closing.
-  EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id));
-  EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id)->IsClosing());
+    // Backing store shouldn't exist.
+    EXPECT_FALSE(factory()->GetBucketContext(bucket_locator.id));
+  }
+
+  // Now create a database and thus the backing store.
+  {
+    MockMojoIndexedDBFactoryClient client;
+    MockMojoIndexedDBDatabaseCallbacks database_callbacks;
+    base::RunLoop run_loop;
+    EXPECT_CALL(client, MockedOpenSuccess)
+        .WillOnce(::base::test::RunClosure(run_loop.QuitClosure()));
+    mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
+    factory_remote->Open(client.CreateInterfacePtrAndBind(),
+                         database_callbacks.CreateInterfacePtrAndBind(), u"db",
+                         /*version=*/0,
+                         transaction_remote.BindNewEndpointAndPassReceiver(),
+                         /*transaction_id=*/1);
+    run_loop.Run();
+  }
+
+  // Delete the database now that the backing store actually exists.
+  {
+    MockMojoIndexedDBFactoryClient client;
+    MockMojoIndexedDBDatabaseCallbacks database_callbacks;
+    base::RunLoop run_loop;
+    EXPECT_CALL(client, DeleteSuccess)
+        .WillOnce(
+            testing::DoAll(::base::test::RunClosure(run_loop.QuitClosure())));
+    mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
+    factory_remote->DeleteDatabase(client.CreateInterfacePtrAndBind(), u"db",
+                                   /*force_close=*/false);
+    run_loop.Run();
+
+    // Since there are no more references the factory should be closing.
+    ASSERT_TRUE(factory()->GetBucketContext(bucket_locator.id));
+    EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id)->IsClosing());
+  }
 }
 
 TEST_F(IndexedDBFactoryTest, GetDatabaseNames_NoFactory) {

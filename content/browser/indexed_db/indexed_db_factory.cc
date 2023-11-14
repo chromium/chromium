@@ -362,9 +362,14 @@ void IndexedDBFactory::DeleteDatabase(
   // will be lost.
   std::tie(bucket_context_handle, s, error, std::ignore, std::ignore) =
       GetOrCreateBucketContext(*bucket, context_->GetDataPath(bucket_locator),
-                               /*create_if_missing=*/true);
+                               /*create_if_missing=*/false);
   if (!bucket_context_handle.IsHeld() ||
       !bucket_context_handle.bucket_context()) {
+    if (s.IsNotFound()) {
+      factory_client->OnDeleteSuccess(/*version=*/0);
+      return;
+    }
+
     factory_client->OnError(error);
     if (s.IsCorruption()) {
       HandleBackingStoreCorruption(bucket_locator, error);
@@ -407,8 +412,7 @@ void IndexedDBFactory::DeleteDatabase(
   }
 
   if (!base::Contains(names, name)) {
-    const int64_t version = 0;
-    factory_client->OnDeleteSuccess(version);
+    factory_client->OnDeleteSuccess(/*version=*/0);
     return;
   }
 
@@ -688,6 +692,10 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
     }
     if (LIKELY(s.ok())) {
       break;
+    }
+    if (!create_if_missing && s.IsNotFound()) {
+      return {IndexedDBBucketContextHandle(), s, IndexedDBDatabaseError(),
+              data_loss_info, /*was_cold_open=*/true};
     }
     DCHECK(!backing_store);
     // If the disk is full, always exit immediately.
