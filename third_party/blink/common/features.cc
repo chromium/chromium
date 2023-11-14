@@ -2061,6 +2061,10 @@ const base::FeatureParam<base::TimeDelta>
     kVSyncDecodingHiddenOccludedTickDuration{
         &kVSyncDecoding, "occluded_tick_duration", base::Hertz(10)};
 
+BASE_FEATURE(kWebRtcUseCaptureBeginTimestamp,
+             "WebRtcUseCaptureBeginTimestamp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable borderless mode for desktop PWAs. go/borderless-mode
 BASE_FEATURE(kWebAppBorderless,
              "WebAppBorderless",

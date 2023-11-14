@@ -1382,6 +1382,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kVSyncDecoding);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kVSyncDecodingHiddenOccludedTickDuration;
 
+// Feature flag for making use of VideoFrameMetadata::capture_begin_time
+// if set, instead of relating incoming media timestamps to local time in the
+// WebRTC track source.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcUseCaptureBeginTimestamp);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppBorderless);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppEnableScopeExtensions);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppEnableUrlHandlers);
