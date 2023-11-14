@@ -125,6 +125,9 @@ namespace autofill {
 //
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
+//
+// LINT.IfChange
+// This enum set must be kept in sync with IDL enum used by JS code.
 enum ServerFieldType {
   // Server indication that it has no data for the requested field.
   NO_SERVER_DATA = 0,
@@ -444,6 +447,7 @@ enum ServerFieldType {
   // `tools/metrics/histograms/update_autofill_enums.py`.
   MAX_VALID_FIELD_TYPE = 161,
 };
+// LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 
 enum class FieldTypeGroup {
   kNoGroup,

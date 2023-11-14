@@ -12,7 +12,8 @@ namespace autofillPrivate {
     boolean isEligibleForAddressAccountStorage;
   };
 
-  // Fields used as part of an address.
+  // A copy of ServerFieldType from
+  // chrome/common/extensions/api/autofill_private.idl
   enum ServerFieldType {
     NO_SERVER_DATA,
     UNKNOWN_TYPE,
