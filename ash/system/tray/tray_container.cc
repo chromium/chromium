@@ -14,6 +14,7 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
@@ -181,5 +182,8 @@ void TrayContainer::OnThemeChanged() {
   views::View::OnThemeChanged();
   SchedulePaint();
 }
+
+BEGIN_METADATA(TrayContainer)
+END_METADATA
 
 }  // namespace ash

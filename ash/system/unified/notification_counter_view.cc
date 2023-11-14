@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
@@ -212,9 +213,8 @@ void NotificationCounterView::UpdateLabelOrImageViewColor(bool active) {
           this, count_for_display_));
 }
 
-const char* NotificationCounterView::GetClassName() const {
-  return "NotificationCounterView";
-}
+BEGIN_METADATA(NotificationCounterView)
+END_METADATA
 
 QuietModeView::QuietModeView(Shelf* shelf) : TrayItemView(shelf) {
   CreateImageView();
@@ -263,9 +263,8 @@ void QuietModeView::UpdateLabelOrImageViewColor(bool active) {
              : cros_tokens::kCrosSysOnSurface));
 }
 
-const char* QuietModeView::GetClassName() const {
-  return "QuietModeView";
-}
+BEGIN_METADATA(QuietModeView)
+END_METADATA
 
 SeparatorTrayItemView::SeparatorTrayItemView(Shelf* shelf)
     : TrayItemView(shelf) {
@@ -282,12 +281,11 @@ SeparatorTrayItemView::~SeparatorTrayItemView() = default;
 
 void SeparatorTrayItemView::HandleLocaleChange() {}
 
-const char* SeparatorTrayItemView::GetClassName() const {
-  return "SeparatorTrayItemView";
-}
-
 void SeparatorTrayItemView::UpdateColor(session_manager::SessionState state) {
   separator_->SetColorId(SeparatorIconColorId(state));
 }
+
+BEGIN_METADATA(SeparatorTrayItemView)
+END_METADATA
 
 }  // namespace ash

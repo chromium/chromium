@@ -7,6 +7,7 @@
 
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/animation/throb_animation.h"
@@ -77,5 +78,8 @@ void EcheIconLoadingIndicatorView::AnimationProgressed(
   DCHECK_EQ(animation, &animation_);
   SchedulePaint();
 }
+
+BEGIN_METADATA(EcheIconLoadingIndicatorView)
+END_METADATA
 
 }  // namespace ash

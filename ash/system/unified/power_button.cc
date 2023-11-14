@@ -28,6 +28,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/user_manager/user_type.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -373,6 +374,9 @@ void PowerButtonContainer::UpdateIconColor(bool is_active) {
       is_active ? kChevronUpSmallIcon : kChevronDownSmallIcon, icon_color_id));
 }
 
+BEGIN_METADATA(PowerButtonContainer)
+END_METADATA
+
 PowerButton::PowerButton(UnifiedSystemTrayController* tray_controller)
     : background_view_(AddChildView(std::make_unique<View>())),
       button_content_(AddChildView(std::make_unique<PowerButtonContainer>(
@@ -473,5 +477,8 @@ void PowerButton::OnButtonActivated(const ui::Event& event) {
 
   UpdateView();
 }
+
+BEGIN_METADATA(PowerButton)
+END_METADATA
 
 }  // namespace ash

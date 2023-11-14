@@ -11,6 +11,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -18,6 +19,8 @@ namespace ash {
 // Implementation of NetworkListWifiHeaderView.
 class ASH_EXPORT NetworkListWifiHeaderViewImpl
     : public NetworkListWifiHeaderView {
+  METADATA_HEADER(NetworkListWifiHeaderViewImpl, NetworkListWifiHeaderView)
+
  public:
   explicit NetworkListWifiHeaderViewImpl(
       NetworkListNetworkHeaderView::Delegate* delegate);

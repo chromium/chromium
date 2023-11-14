@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/version_info/channel.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class BoxLayout;
@@ -28,6 +29,8 @@ class Shell;
 class ASH_EXPORT ChannelIndicatorView : public TrayItemView,
                                         public SessionObserver,
                                         public ShellObserver {
+  METADATA_HEADER(ChannelIndicatorView, TrayItemView)
+
  public:
   ChannelIndicatorView(Shelf* shelf, version_info::Channel channel);
   ChannelIndicatorView(const ChannelIndicatorView&) = delete;

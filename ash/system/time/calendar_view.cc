@@ -232,6 +232,8 @@ class CalendarLabel : public views::Label {
 
 // The month view header which contains the title of each week day.
 class MonthHeaderView : public views::View {
+  METADATA_HEADER(MonthHeaderView, views::View)
+
  public:
   MonthHeaderView() {
     views::TableLayout* layout =
@@ -267,10 +269,15 @@ void ResetLayer(views::View* view) {
   view->layer()->SetTransform(gfx::Transform());
 }
 
+BEGIN_METADATA(MonthHeaderView)
+END_METADATA
+
 }  // namespace
 
 // The label for each month that's within the scroll view.
 class CalendarView::MonthHeaderLabelView : public views::View {
+  METADATA_HEADER(MonthHeaderLabelView, views::View)
+
  public:
   MonthHeaderLabelView(LabelType type,
                        CalendarViewController* calendar_view_controller)
@@ -313,6 +320,9 @@ class CalendarView::MonthHeaderLabelView : public views::View {
   // The month label in the view.
   const raw_ptr<views::Label, ExperimentalAsh> month_label_ = nullptr;
 };
+
+BEGIN_METADATA(CalendarView, MonthHeaderLabelView, views::View)
+END_METADATA
 
 CalendarView::ScrollContentsView::ScrollContentsView(
     CalendarViewController* controller)
@@ -375,6 +385,9 @@ void CalendarView::ScrollContentsView::StylusEventHandler::OnTouchEvent(
     content_view_->OnStylusEvent(*event);
   }
 }
+
+BEGIN_METADATA(CalendarView, ScrollContentsView, views::View)
+END_METADATA
 
 CalendarHeaderView::CalendarHeaderView(const std::u16string& month,
                                        const std::u16string& year)

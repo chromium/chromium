@@ -65,6 +65,8 @@ using TransformDirection = PowerButtonMenuView::TransformDirection;
 class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
     : public views::View,
       public ui::ImplicitAnimationObserver {
+  METADATA_HEADER(PowerButtonMenuBackgroundView, views::View)
+
  public:
   explicit PowerButtonMenuBackgroundView(
       base::RepeatingClosure show_animation_done)
@@ -120,6 +122,11 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
   // A callback for when the animation that shows the power menu has finished.
   base::RepeatingClosure show_animation_done_;
 };
+
+BEGIN_METADATA(PowerButtonMenuScreenView,
+               PowerButtonMenuBackgroundView,
+               views::View)
+END_METADATA
 
 PowerButtonMenuScreenView::PowerButtonMenuScreenView(
     ShutdownReason shutdown_reason,

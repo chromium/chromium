@@ -18,6 +18,7 @@
 #include "components/session_manager/session_manager_types.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image_skia.h"
@@ -74,5 +75,8 @@ void SnoopingProtectionView::OnSnoopingStatusChanged(bool snooper) {
 void SnoopingProtectionView::OnSnoopingProtectionControllerDestroyed() {
   controller_observation_.Reset();
 }
+
+BEGIN_METADATA(SnoopingProtectionView)
+END_METADATA
 
 }  // namespace ash

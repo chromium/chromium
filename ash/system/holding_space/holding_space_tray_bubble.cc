@@ -32,6 +32,7 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -241,6 +242,8 @@ class ScopedViewBoundsChangedObserver : public views::ViewObserver {
 class HoldingSpaceTrayBubble::ChildBubbleContainer
     : public views::View,
       public views::AnimationDelegateViews {
+  METADATA_HEADER(ChildBubbleContainer, views::View)
+
  public:
   ChildBubbleContainer()
       : views::AnimationDelegateViews(this),
@@ -416,6 +419,9 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
   std::map<const views::View*, ScopedViewBoundsChangedObserver>
       view_bounds_changed_observers_by_view_;
 };
+
+BEGIN_METADATA(HoldingSpaceTrayBubble, ChildBubbleContainer, views::View)
+END_METADATA
 
 // HoldingSpaceTrayBubble ------------------------------------------------------
 

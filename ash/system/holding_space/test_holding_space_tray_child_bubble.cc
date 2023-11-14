@@ -5,6 +5,7 @@
 #include "ash/system/holding_space/test_holding_space_tray_child_bubble.h"
 
 #include "ash/system/holding_space/holding_space_item_views_section.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -38,5 +39,8 @@ TestHoldingSpaceTrayChildBubble::CreatePlaceholder() {
              ? std::move(params_.create_placeholder_callback).Run()
              : nullptr;
 }
+
+BEGIN_METADATA(TestHoldingSpaceTrayChildBubble)
+END_METADATA
 
 }  // namespace ash

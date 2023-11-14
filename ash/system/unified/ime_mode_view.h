@@ -9,6 +9,7 @@
 #include "ash/system/ime/ime_observer.h"
 #include "ash/system/model/locale_model.h"
 #include "ash/system/tray/tray_item_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -17,6 +18,8 @@ class ImeModeView : public TrayItemView,
                     public IMEObserver,
                     public LocaleModel::Observer,
                     public TabletModeObserver {
+  METADATA_HEADER(ImeModeView, TrayItemView)
+
  public:
   explicit ImeModeView(Shelf* shelf);
 
@@ -37,7 +40,6 @@ class ImeModeView : public TrayItemView,
   void OnTabletModeEnded() override;
 
   // views::TrayItemView:
-  const char* GetClassName() const override;
   void HandleLocaleChange() override;
   void UpdateLabelOrImageViewColor(bool active) override;
 

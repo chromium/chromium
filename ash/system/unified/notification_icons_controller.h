@@ -13,6 +13,7 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/message_center_types.h"
@@ -34,6 +35,8 @@ class UnifiedSystemTray;
 
 // Tray item view for notification icon shown in the tray.
 class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
+  METADATA_HEADER(NotificationIconTrayItemView, TrayItemView)
+
  public:
   NotificationIconTrayItemView(Shelf* shelf,
                                NotificationIconsController* controller_);

@@ -574,6 +574,9 @@ void CalendarMonthView::UpdateIsFetchedAndRepaint(bool updated_is_fetched) {
   }
 }
 
+BEGIN_METADATA(CalendarMonthView)
+END_METADATA
+
 CalendarDateCellView* CalendarMonthView::AddDateCellToLayout(
     base::Time current_date,
     int column,

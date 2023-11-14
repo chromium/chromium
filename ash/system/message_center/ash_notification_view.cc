@@ -345,6 +345,11 @@ void AshNotificationView::GroupedNotificationsContainer::
   parent_notification_view_ = parent_notification_view;
 }
 
+BEGIN_METADATA(AshNotificationView,
+               GroupedNotificationsContainer,
+               views::BoxLayoutView)
+END_METADATA
+
 AshNotificationView::NotificationTitleRow::NotificationTitleRow(
     const std::u16string& title)
     : title_view_(AddChildView(GenerateTitleView(title))),
@@ -484,9 +489,6 @@ void AshNotificationView::NotificationTitleRow::OnThemeChanged() {
         cros_tokens::kCrosSysOnSurfaceVariant);
   }
 }
-
-// static
-const char AshNotificationView::kViewClassName[] = "AshNotificationView";
 
 AshNotificationView::AshNotificationView(
     const message_center::Notification& notification,
@@ -1144,10 +1146,6 @@ void AshNotificationView::RemoveGroupNotification(
   } else {
     on_notification_slid_out.Run();
   }
-}
-
-const char* AshNotificationView::GetClassName() const {
-  return kViewClassName;
 }
 
 void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
@@ -2322,5 +2320,8 @@ void AshNotificationView::AttachBinaryImageAsDropData(
     data->SetHtml(*html_snippet, /*base_url=*/GURL());
   }
 }
+
+BEGIN_METADATA(AshNotificationView)
+END_METADATA
 
 }  // namespace ash

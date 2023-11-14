@@ -7,12 +7,15 @@
 
 #include "ash/system/model/locale_model.h"
 #include "ash/system/tray/tray_item_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
 // The current locale view in UnifiedSystemTray button. The view shows the
 // abbreviation of the current locale (e.g. "DA").
 class CurrentLocaleView : public TrayItemView, public LocaleModel::Observer {
+  METADATA_HEADER(CurrentLocaleView, TrayItemView)
+
  public:
   explicit CurrentLocaleView(Shelf* shelf);
 

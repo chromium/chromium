@@ -18,6 +18,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -132,5 +133,8 @@ void ManagedDeviceTrayItemView::UpdateTooltipText() {
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FAMILY_LINK_LABEL));
   }
 }
+
+BEGIN_METADATA(ManagedDeviceTrayItemView)
+END_METADATA
 
 }  // namespace ash

@@ -9,6 +9,7 @@
 #include "ash/system/network/network_list_wifi_header_view.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -36,5 +37,8 @@ void NetworkListWifiHeaderViewImpl::OnToggleToggled(bool is_on) {
   // state changes.
   delegate()->OnWifiToggleClicked(is_on);
 }
+
+BEGIN_METADATA(NetworkListWifiHeaderViewImpl)
+END_METADATA
 
 }  // namespace ash

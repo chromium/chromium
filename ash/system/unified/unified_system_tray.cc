@@ -57,6 +57,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
@@ -628,5 +629,8 @@ void UnifiedSystemTray::UpdateTrayItemColor(bool is_active) {
     tray_item->UpdateLabelOrImageViewColor(is_active);
   }
 }
+
+BEGIN_METADATA(UnifiedSystemTray)
+END_METADATA
 
 }  // namespace ash

@@ -29,6 +29,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
@@ -188,10 +189,6 @@ PinnedFilesSection::PinnedFilesSection(HoldingSpaceViewDelegate* delegate)
 
 PinnedFilesSection::~PinnedFilesSection() = default;
 
-const char* PinnedFilesSection::GetClassName() const {
-  return "PinnedFilesSection";
-}
-
 gfx::Size PinnedFilesSection::GetMinimumSize() const {
   // The pinned files section is scrollable so can be laid out smaller than its
   // preferred size if there is insufficient layout space available.
@@ -298,5 +295,8 @@ void PinnedFilesSection::OnFilesAppChipPressed(const ui::Event& event) {
     delegate()->UpdateTrayVisibility();
   }
 }
+
+BEGIN_METADATA(PinnedFilesSection)
+END_METADATA
 
 }  // namespace ash

@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
 class PrefChangeRegistrar;
@@ -61,6 +62,8 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
                                public PaletteToolManager::Delegate,
                                public ui::InputDeviceEventObserver,
                                public ProjectorSessionObserver {
+  METADATA_HEADER(PaletteTray, TrayBackgroundView)
+
  public:
   explicit PaletteTray(Shelf* shelf);
 

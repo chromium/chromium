@@ -8,11 +8,14 @@
 #include <memory>
 
 #include "ash/system/holding_space/holding_space_item_views_section.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
 // Section for pinned files in the `PinnedFilesBubble`.
 class PinnedFilesSection : public HoldingSpaceItemViewsSection {
+  METADATA_HEADER(PinnedFilesSection, HoldingSpaceItemViewsSection)
+
  public:
   explicit PinnedFilesSection(HoldingSpaceViewDelegate* delegate);
   PinnedFilesSection(const PinnedFilesSection& other) = delete;
@@ -21,7 +24,6 @@ class PinnedFilesSection : public HoldingSpaceItemViewsSection {
 
  private:
   // HoldingSpaceItemViewsSection:
-  const char* GetClassName() const override;
   gfx::Size GetMinimumSize() const override;
   std::unique_ptr<views::View> CreateHeader() override;
   std::unique_ptr<views::View> CreateContainer() override;

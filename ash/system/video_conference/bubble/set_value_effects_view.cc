@@ -13,6 +13,7 @@
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_utils.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -94,6 +95,9 @@ SetValueEffectSlider::SetValueEffectSlider(const VcHostedEffect* effect)
   tab_slider_ = AddChildView(std::move(tab_slider));
 }
 
+BEGIN_METADATA(SetValueEffectSlider)
+END_METADATA
+
 SetValueEffectsView::SetValueEffectsView(
     VideoConferenceTrayController* controller) {
   SetID(BubbleViewID::kSetValueEffectsView);
@@ -118,5 +122,8 @@ SetValueEffectsView::SetValueEffectsView(
     }
   }
 }
+
+BEGIN_METADATA(SetValueEffectsView)
+END_METADATA
 
 }  // namespace ash::video_conference

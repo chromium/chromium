@@ -9,6 +9,7 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace ash {
@@ -45,8 +46,7 @@ void TrayInfoLabel::Update(int message_id) {
   label_->SetText(l10n_util::GetStringUTF16(message_id));
 }
 
-const char* TrayInfoLabel::GetClassName() const {
-  return "TrayInfoLabel";
-}
+BEGIN_METADATA(TrayInfoLabel)
+END_METADATA
 
 }  // namespace ash

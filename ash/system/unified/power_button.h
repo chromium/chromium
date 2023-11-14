@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -28,6 +29,8 @@ class UnifiedSystemTrayController;
 // The power button container which contains 2 icons: a power icon and an
 // arrow down icon.
 class PowerButtonContainer : public views::Button {
+  METADATA_HEADER(PowerButtonContainer, views::Button)
+
  public:
   explicit PowerButtonContainer(PressedCallback callback);
   PowerButtonContainer(const PowerButtonContainer&) = delete;
@@ -46,6 +49,8 @@ class PowerButtonContainer : public views::Button {
 // `background_view_` will change its corner radii and a power button
 // menu will pop up at the same time when it's active.
 class ASH_EXPORT PowerButton : public views::View {
+  METADATA_HEADER(PowerButton, views::View)
+
  public:
   explicit PowerButton(UnifiedSystemTrayController* tray_controller);
   PowerButton(const PowerButton&) = delete;

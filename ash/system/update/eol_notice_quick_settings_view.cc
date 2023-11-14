@@ -16,6 +16,7 @@
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -90,5 +91,8 @@ void EolNoticeQuickSettingsView::PaintButtonContents(gfx::Canvas* canvas) {
   canvas->DrawPath(SkPath().addRoundRect(gfx::RectFToSkRect(bounds), 16, 16),
                    flags);
 }
+
+BEGIN_METADATA(EolNoticeQuickSettingsView)
+END_METADATA
 
 }  // namespace ash

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/system/holding_space/holding_space_tray_child_bubble.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -16,6 +17,8 @@ namespace ash {
 // testing. Allows callers to pass in callbacks through `Params` to dictate what
 // sections and placeholder are created.
 class TestHoldingSpaceTrayChildBubble : public HoldingSpaceTrayChildBubble {
+  METADATA_HEADER(TestHoldingSpaceTrayChildBubble, HoldingSpaceTrayChildBubble)
+
  public:
   struct Params {
     using CreateSectionsCallback = base::OnceCallback<

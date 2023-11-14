@@ -8,6 +8,7 @@
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
@@ -18,6 +19,8 @@ class AutoclickScrollButton;
 // View for the Automatic Clicks scroll bubble, which holds the Automatic Clicks
 // scroll menu.
 class AutoclickScrollBubbleView : public TrayBubbleView {
+  METADATA_HEADER(AutoclickScrollBubbleView, TrayBubbleView)
+
  public:
   explicit AutoclickScrollBubbleView(TrayBubbleView::InitParams init_params);
 
@@ -40,14 +43,13 @@ class AutoclickScrollBubbleView : public TrayBubbleView {
 
   // TrayBubbleView:
   bool IsAnchoredToStatusArea() const override;
-
-  // views::View:
-  const char* GetClassName() const override;
 };
 
 // View for the Automatic Clicks scroll menu, which creates and manages
 // individual buttons to control Automatic Clicks scrolling.
 class AutoclickScrollView : public views::View {
+  METADATA_HEADER(AutoclickScrollView, views::View)
+
  public:
   // Used for testing. Start at 1 because a view IDs should not be 0.
   enum class ButtonId {
@@ -68,9 +70,6 @@ class AutoclickScrollView : public views::View {
   AutoclickScrollView& operator=(const AutoclickScrollView&) = delete;
 
   ~AutoclickScrollView() override = default;
-
-  // views::View:
-  const char* GetClassName() const override;
 
  private:
   // views::View:

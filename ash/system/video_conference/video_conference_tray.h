@@ -52,6 +52,8 @@ using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
 // A toggle icon button in the VC tray, which is used for toggling camera,
 // microphone, and screen sharing.
 class VideoConferenceTrayButton : public IconButton {
+  METADATA_HEADER(VideoConferenceTrayButton, IconButton)
+
  public:
   VideoConferenceTrayButton(PressedCallback callback,
                             const gfx::VectorIcon* icon,

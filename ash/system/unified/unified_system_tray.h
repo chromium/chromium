@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ui {
 class Event;
@@ -67,6 +68,8 @@ class ASH_EXPORT UnifiedSystemTray
       public UnifiedSystemTrayController::Observer,
       public TabletModeObserver,
       public message_center::MessageCenterObserver {
+  METADATA_HEADER(UnifiedSystemTray, TrayBackgroundView)
+
  public:
   class Observer : public base::CheckedObserver {
    public:

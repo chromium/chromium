@@ -144,6 +144,8 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // Content view of calendar's scroll view, used for metrics recording.
   // TODO(crbug.com/1297376): Add unit tests for metrics recording.
   class ScrollContentsView : public views::View {
+    METADATA_HEADER(ScrollContentsView, views::View)
+
    public:
     explicit ScrollContentsView(CalendarViewController* controller);
     ScrollContentsView(const ScrollContentsView& other) = delete;

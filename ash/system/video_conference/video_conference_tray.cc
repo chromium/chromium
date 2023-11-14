@@ -81,6 +81,8 @@ bool HasNonLinuxMediaApps(const MediaApps& apps) {
 
 // A customized toggle button for the VC tray's toggle bubble button.
 class ToggleBubbleButton : public IconButton {
+  METADATA_HEADER(ToggleBubbleButton, IconButton)
+
  public:
   ToggleBubbleButton(VideoConferenceTray* tray, PressedCallback callback)
       : IconButton(std::move(callback),
@@ -124,6 +126,9 @@ class ToggleBubbleButton : public IconButton {
   // Parent view of this button. Owned by the views hierarchy.
   const raw_ptr<VideoConferenceTray, ExperimentalAsh> tray_;
 };
+
+BEGIN_METADATA(ToggleBubbleButton)
+END_METADATA
 
 }  // namespace
 
@@ -241,6 +246,9 @@ void VideoConferenceTrayButton::UpdateTooltip() {
       base_string_id, l10n_util::GetStringUTF16(accessible_name_id_),
       l10n_util::GetStringUTF16(capture_state_id)));
 }
+
+BEGIN_METADATA(VideoConferenceTrayButton)
+END_METADATA
 
 VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
     : TrayBackgroundView(shelf,

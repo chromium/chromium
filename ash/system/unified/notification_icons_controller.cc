@@ -25,6 +25,7 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -194,6 +195,9 @@ void NotificationIconTrayItemView::UpdateImageViewColor() {
         message_center::kProductIcon, color_id, kUnifiedTrayIconSize));
   }
 }
+
+BEGIN_METADATA(NotificationIconTrayItemView)
+END_METADATA
 
 NotificationIconsController::NotificationIconsController(
     Shelf* shelf,

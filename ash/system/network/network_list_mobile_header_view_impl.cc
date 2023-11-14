@@ -9,6 +9,7 @@
 #include "ash/system/network/network_list_network_header_view.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -34,5 +35,8 @@ void NetworkListMobileHeaderViewImpl::SetToggleState(bool enabled,
 void NetworkListMobileHeaderViewImpl::OnToggleToggled(bool is_on) {
   delegate()->OnMobileToggleClicked(is_on);
 }
+
+BEGIN_METADATA(NetworkListMobileHeaderViewImpl)
+END_METADATA
 
 }  // namespace ash

@@ -8,6 +8,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 
@@ -22,6 +23,8 @@ class TrayBackgroundView;
 // Base class for tray containers. Sets the border and layout. The container
 // auto-resizes the widget when necessary.
 class TrayContainer : public views::View {
+  METADATA_HEADER(TrayContainer, views::View)
+
  public:
   TrayContainer(Shelf* shelf, TrayBackgroundView* tray_background_view);
 

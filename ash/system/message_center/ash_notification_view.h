@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/views/notification_input_container.h"
@@ -44,9 +45,9 @@ class ASH_EXPORT AshNotificationView
     : public message_center::NotificationViewBase,
       public message_center::MessageCenterObserver,
       public views::WidgetObserver {
- public:
-  static const char kViewClassName[];
+  METADATA_HEADER(AshNotificationView, message_center::NotificationViewBase)
 
+ public:
   // TODO(crbug/1241983): Add metadata and builder support to this view.
   explicit AshNotificationView(const message_center::Notification& notification,
                                bool shown_in_popup);
@@ -98,7 +99,6 @@ class ASH_EXPORT AshNotificationView
       const std::vector<const message_center::Notification*>& notifications)
       override;
   void RemoveGroupNotification(const std::string& notification_id) override;
-  const char* GetClassName() const override;
   // Called after `PreferredSizeChanged()`, so the current state is the target
   // state.
   base::TimeDelta GetBoundsAnimationDuration(
@@ -161,6 +161,8 @@ class ASH_EXPORT AshNotificationView
   // View containing all grouped notifications, propagates size changes
   // to the parent notification view.
   class GroupedNotificationsContainer : public views::BoxLayoutView {
+    METADATA_HEADER(GroupedNotificationsContainer, views::BoxLayoutView)
+
    public:
     GroupedNotificationsContainer() = default;
     GroupedNotificationsContainer(const GroupedNotificationsContainer&) =

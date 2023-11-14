@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/network/network_list_mobile_header_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -15,6 +16,8 @@ class NetworkListNetworkHeaderView;
 // Implementation of NetworkListMobileHeaderView.
 class ASH_EXPORT NetworkListMobileHeaderViewImpl
     : public NetworkListMobileHeaderView {
+  METADATA_HEADER(NetworkListMobileHeaderViewImpl, NetworkListMobileHeaderView)
+
  public:
   explicit NetworkListMobileHeaderViewImpl(
       NetworkListNetworkHeaderView::Delegate* delegate);

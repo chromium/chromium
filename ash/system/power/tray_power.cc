@@ -26,6 +26,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/styles/cros_styles.h"
@@ -79,10 +80,6 @@ views::View* PowerTrayView::GetTooltipHandlerForPoint(const gfx::Point& point) {
 
 std::u16string PowerTrayView::GetTooltipText(const gfx::Point& p) const {
   return tooltip_;
-}
-
-const char* PowerTrayView::GetClassName() const {
-  return "PowerTrayView";
 }
 
 void PowerTrayView::OnThemeChanged() {
@@ -173,5 +170,8 @@ void PowerTrayView::UpdateImage(bool icon_color_changed) {
   }
   UpdateLabelOrImageViewColor(is_active());
 }
+
+BEGIN_METADATA(PowerTrayView)
+END_METADATA
 
 }  // namespace ash

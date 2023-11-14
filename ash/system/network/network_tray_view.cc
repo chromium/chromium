@@ -16,6 +16,7 @@
 #include "ash/system/network/tray_network_state_model.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -33,10 +34,6 @@ NetworkTrayView::~NetworkTrayView() {
   Shell::Get()->system_tray_model()->network_state_model()->RemoveObserver(
       this);
   Shell::Get()->session_controller()->RemoveObserver(this);
-}
-
-const char* NetworkTrayView::GetClassName() const {
-  return "NetworkTrayView";
 }
 
 void NetworkTrayView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -141,5 +138,8 @@ network_icon::IconType NetworkTrayView::GetIconType() {
   }
   return network_icon::ICON_TYPE_TRAY_REGULAR;
 }
+
+BEGIN_METADATA(NetworkTrayView)
+END_METADATA
 
 }  // namespace ash

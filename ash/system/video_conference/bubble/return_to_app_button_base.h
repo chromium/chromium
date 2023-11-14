@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
 namespace base {
@@ -32,6 +33,8 @@ using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
 // the layout or padding/spacing (the overriding class needs to take care of
 // that).
 class ASH_EXPORT ReturnToAppButtonBase : public views::Button {
+  METADATA_HEADER(ReturnToAppButtonBase, views::Button)
+
  public:
   ReturnToAppButtonBase(const ReturnToAppButtonBase&) = delete;
   ReturnToAppButtonBase& operator=(const ReturnToAppButtonBase&) = delete;

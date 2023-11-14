@@ -16,6 +16,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 
@@ -60,10 +61,6 @@ void ImeModeView::OnTabletModeStarted() {
 
 void ImeModeView::OnTabletModeEnded() {
   Update();
-}
-
-const char* ImeModeView::GetClassName() const {
-  return "ImeModeView";
 }
 
 void ImeModeView::HandleLocaleChange() {
@@ -122,5 +119,8 @@ void ImeModeView::Update() {
 
   Layout();
 }
+
+BEGIN_METADATA(ImeModeView)
+END_METADATA
 
 }  // namespace ash

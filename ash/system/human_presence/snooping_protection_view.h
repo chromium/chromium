@@ -9,6 +9,7 @@
 #include "ash/system/human_presence/snooping_protection_controller.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -17,6 +18,8 @@ namespace ash {
 class ASH_EXPORT SnoopingProtectionView
     : public TrayItemView,
       public SnoopingProtectionController::Observer {
+  METADATA_HEADER(SnoopingProtectionView, TrayItemView)
+
  public:
   explicit SnoopingProtectionView(Shelf* shelf);
   SnoopingProtectionView(const SnoopingProtectionView&) = delete;
