@@ -7064,7 +7064,7 @@ crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-selectio
 
 # Gardener 2023-11-13
 crbug.com/1501802 [ Linux ] virtual/pna-permission/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Pass Failure ]
-crbug.com/1501802 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribute-change.https.html [ Pass Failure ]
+crbug.com/1501802 virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribute-change.https.html [ Pass Failure Timeout ]
 crbug.com/1501802 [ Linux ] external/wpt/idle-detection/idle-detection-allowed-by-permissions-policy.https.sub.html [ Pass Failure ]
 
 
