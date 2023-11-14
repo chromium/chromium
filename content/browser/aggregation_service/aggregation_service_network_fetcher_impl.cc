@@ -218,8 +218,6 @@ void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(
       base::BindOnce(&AggregationServiceNetworkFetcherImpl::OnJsonParse,
                      weak_factory_.GetWeakPtr(), url, std::move(callback),
                      std::move(response_time), std::move(expiry_time)));
-
-  // TODO(crbug.com/1232599): Add performance metrics for key fetching.
 }
 
 void AggregationServiceNetworkFetcherImpl::OnJsonParse(
