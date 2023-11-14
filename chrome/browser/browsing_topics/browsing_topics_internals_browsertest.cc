@@ -355,7 +355,6 @@ PrivacySandboxAdsAPIsOverride: disabled
 PrivacySandboxSettings3: disabled
 OverridePrivacySandboxSettingsLocalTesting: disabled
 BrowsingTopicsBypassIPIsPubliclyRoutableCheck: disabled
-BrowsingTopicsXHR: disabled
 BrowsingTopicsDocumentAPI: enabled
 Configuration version: 1
 BrowsingTopicsParameters: disabled
@@ -471,7 +470,6 @@ PrivacySandboxAdsAPIsOverride: enabled
 PrivacySandboxSettings3: enabled
 OverridePrivacySandboxSettingsLocalTesting: disabled
 BrowsingTopicsBypassIPIsPubliclyRoutableCheck: disabled
-BrowsingTopicsXHR: disabled
 BrowsingTopicsDocumentAPI: enabled
 Configuration version: 1
 BrowsingTopicsParameters: enabled

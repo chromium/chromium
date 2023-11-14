@@ -635,10 +635,6 @@ void XMLHttpRequest::setWithCredentials(bool value,
   with_credentials_ = value;
 }
 
-void XMLHttpRequest::setDeprecatedBrowsingTopics(bool value) {
-  deprecated_browsing_topics_ = value;
-}
-
 void XMLHttpRequest::open(const AtomicString& method,
                           const String& url_string,
                           ExceptionState& exception_state) {
@@ -1098,11 +1094,6 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
   request.SetCredentialsMode(
       with_credentials_ ? network::mojom::CredentialsMode::kInclude
                         : network::mojom::CredentialsMode::kSameOrigin);
-  request.SetBrowsingTopics(deprecated_browsing_topics_);
-  if (deprecated_browsing_topics_) {
-    UseCounter::Count(&execution_context, WebFeature::kTopicsAPIXhr);
-  }
-
   request.SetSkipServiceWorker(world_ && world_->IsIsolatedWorld());
   if (trust_token_params_)
     request.SetTrustTokenParams(*trust_token_params_);

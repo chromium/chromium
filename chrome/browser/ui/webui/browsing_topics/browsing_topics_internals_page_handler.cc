@@ -33,7 +33,6 @@ void BrowsingTopicsInternalsPageHandler::GetBrowsingTopicsConfiguration(
           privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting),
       base::FeatureList::IsEnabled(
           blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck),
-      base::FeatureList::IsEnabled(blink::features::kBrowsingTopicsXHR),
       base::FeatureList::IsEnabled(blink::features::kBrowsingTopicsDocumentAPI),
       browsing_topics::CurrentConfigVersion(),
       base::FeatureList::IsEnabled(blink::features::kBrowsingTopicsParameters),

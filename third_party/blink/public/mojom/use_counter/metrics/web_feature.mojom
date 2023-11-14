@@ -3798,7 +3798,7 @@ enum WebFeature {
   kOBSOLETE_V8RegExpUnicodeSetIncompatibilitiesWithUnicodeMode = 4458,
   kFedCmAutoReauthn = 4459,
   kTopicsAPIFetch = 4460,
-  kTopicsAPIXhr = 4461,
+  kOBSOLETE_TopicsAPIXhr = 4461,
   kParseFromString = 4462,
   kOBSOLETE_HTMLPatternRegExpUnicodeSetIncompatibilitiesWithUnicodeMode = 4463,
   kPopoverTypeAuto = 4464,

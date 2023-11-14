@@ -411,14 +411,6 @@ const base::FeatureParam<std::string> kBrowsingTopicsDisabledTopicsList{
 const base::FeatureParam<std::string> kBrowsingTopicsPrioritizedTopicsList{
     &kBrowsingTopicsParameters, "prioritized_topics_list", ""};
 
-// Enables the deprecatedBrowsingTopics XHR attribute. For this feature to take
-// effect, the main Topics feature has to be enabled first (i.e.
-// `kBrowsingTopics` is enabled, and, either a valid Origin Trial token exists
-// or `kPrivacySandboxAdsAPIsOverride` is enabled.)
-BASE_FEATURE(kBrowsingTopicsXHR,
-             "BrowsingTopicsXHR",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Suppresses console errors for CORS problems which report an associated
 // inspector issue anyway.
 BASE_FEATURE(kCORSErrorsIssueOnly,

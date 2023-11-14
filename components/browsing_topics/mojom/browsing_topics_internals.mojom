@@ -27,9 +27,6 @@ struct WebUIBrowsingTopicsConfiguration {
   // enabled.
   bool browsing_topics_bypass_ip_is_publicly_routable_check_enabled;
 
-  // Whether the deprecatedBrowsingTopics XHR attribute is allowed.
-  bool browsing_topics_xhr_enabled;
-
   // Whether document.browsingTopics() is allowed.
   bool browsing_topics_document_api_enabled;
 

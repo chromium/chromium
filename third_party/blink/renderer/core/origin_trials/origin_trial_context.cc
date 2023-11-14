@@ -562,10 +562,6 @@ OriginTrialContext::RestrictedFeaturesForTrial(const String& trial_name) {
       restricted.push_back(mojom::blink::OriginTrialFeature::kTopicsAPI);
     }
     if (!base::FeatureList::IsEnabled(features::kBrowsingTopics) ||
-        !base::FeatureList::IsEnabled(features::kBrowsingTopicsXHR)) {
-      restricted.push_back(mojom::blink::OriginTrialFeature::kTopicsXHR);
-    }
-    if (!base::FeatureList::IsEnabled(features::kBrowsingTopics) ||
         !base::FeatureList::IsEnabled(features::kBrowsingTopicsDocumentAPI)) {
       restricted.push_back(
           mojom::blink::OriginTrialFeature::kTopicsDocumentAPI);
