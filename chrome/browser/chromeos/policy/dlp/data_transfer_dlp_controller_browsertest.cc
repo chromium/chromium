@@ -374,8 +374,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
   FlushMessageLoop();
 }
 
-// TODO(b/293442668): Enable on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(b/278719678): Enable on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMEOS_DEVICE)
 #define MAYBE_WarnDestination DISABLED_WarnDestination
 #else
 #define MAYBE_WarnDestination WarnDestination

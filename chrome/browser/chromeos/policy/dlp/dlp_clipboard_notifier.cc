@@ -20,6 +20,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
+#include "ui/events/ozone/events_ozone.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/notifier_catalogs.h"
@@ -48,7 +49,6 @@ ui::DataTransferEndpoint CloneEndpoint(
   return ui::DataTransferEndpoint(*data_endpoint);
 }
 
-// TODO(b/293442668): Fix SynthesizePaste on Lacros.
 void SynthesizePaste() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* host = ash::GetWindowTreeHostForDisplay(
@@ -62,13 +62,21 @@ void SynthesizePaste() {
   ui::KeyEvent control_press(/*type=*/ui::ET_KEY_PRESSED, ui::VKEY_CONTROL,
                              /*code=*/static_cast<ui::DomCode>(0),
                              /*flags=*/0);
-
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Set a property as if this is a key event not consumed by IME.
+  // Ozone/wayland IME relies on this flag to work properly.
+  ui::SetKeyboardImeFlags(&control_press, ui::kPropertyKeyboardImeIgnoredFlag);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   host->DeliverEventToSink(&control_press);
 
   ui::KeyEvent v_press(/*type=*/ui::ET_KEY_PRESSED, ui::VKEY_V,
                        /*code=*/static_cast<ui::DomCode>(0),
                        /*flags=*/ui::EF_CONTROL_DOWN);
-
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Set a property as if this is a key event not consumed by IME.
+  // Ozone/wayland IME relies on this flag to work properly.
+  ui::SetKeyboardImeFlags(&v_press, ui::kPropertyKeyboardImeIgnoredFlag);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   host->DeliverEventToSink(&v_press);
 
   ui::KeyEvent v_release(/*type=*/ui::ET_KEY_RELEASED, ui::VKEY_V,
