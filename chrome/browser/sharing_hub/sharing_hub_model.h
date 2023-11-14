@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -28,6 +28,7 @@ struct VectorIcon;
 namespace sharing_hub {
 
 struct SharingHubAction {
+  // `icon` may not be null and must outlive the SharingHubAction.
   SharingHubAction(int command_id,
                    std::u16string title,
                    const gfx::VectorIcon* icon,
@@ -40,7 +41,7 @@ struct SharingHubAction {
   ~SharingHubAction() = default;
   int command_id;
   std::u16string title;
-  raw_ptr<const gfx::VectorIcon> icon;
+  raw_ref<const gfx::VectorIcon> icon;
   std::string feature_name_for_metrics;
   int announcement_id;
 };

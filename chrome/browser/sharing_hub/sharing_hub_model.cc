@@ -5,6 +5,7 @@
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
 
 #include "base/base64.h"
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/escape.h"
@@ -48,7 +49,7 @@ SharingHubAction::SharingHubAction(int command_id,
                                    int announcement_id)
     : command_id(command_id),
       title(title),
-      icon(icon),
+      icon(CHECK_DEREF(icon)),
       feature_name_for_metrics(feature_name_for_metrics),
       announcement_id(announcement_id) {}
 
