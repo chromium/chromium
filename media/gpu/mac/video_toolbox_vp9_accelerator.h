@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"

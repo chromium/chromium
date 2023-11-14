@@ -17,6 +17,8 @@ source_set("mac") {
   visibility = [ "//media/gpu" ]
 
   sources = [
+    "video_toolbox_av1_accelerator.cc",
+    "video_toolbox_av1_accelerator.h",
     "video_toolbox_decode_metadata.cc",
     "video_toolbox_decode_metadata.h",
     "video_toolbox_decompression_interface.cc",

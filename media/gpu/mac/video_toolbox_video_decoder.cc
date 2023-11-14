@@ -23,7 +23,9 @@
 #include "media/base/supported_types.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/accelerated_video_decoder.h"
+#include "media/gpu/av1_decoder.h"
 #include "media/gpu/h264_decoder.h"
+#include "media/gpu/mac/video_toolbox_av1_accelerator.h"
 #include "media/gpu/mac/video_toolbox_decode_metadata.h"
 #include "media/gpu/mac/video_toolbox_h264_accelerator.h"
 #include "media/gpu/mac/video_toolbox_vp9_accelerator.h"
@@ -39,12 +41,14 @@ namespace media {
 
 namespace {
 
+bool SupportsH264() {
+  return VTIsHardwareDecodeSupported(kCMVideoCodecType_H264);
+}
+
 bool InitializeVP9() {
 #if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/1449877): Enable VP9 on iOS.
   if (__builtin_available(macOS 11.0, *)) {
-    // TODO(crbug.com/1331597): Test whether it is necessary to register VP9
-    // before detecting it.
     VTRegisterSupplementalVideoDecoderIfAvailable(kCMVideoCodecType_VP9);
     return VTIsHardwareDecodeSupported(kCMVideoCodecType_VP9);
   }
@@ -55,6 +59,10 @@ bool InitializeVP9() {
 bool SupportsVP9() {
   static const bool initialized = InitializeVP9();
   return initialized;
+}
+
+bool SupportsAV1() {
+  return VTIsHardwareDecodeSupported(kCMVideoCodecType_AV1);
 }
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
@@ -188,6 +196,15 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
     case VideoCodec::kVP9:
       accelerator_ = std::make_unique<VP9Decoder>(
           std::make_unique<VideoToolboxVP9Accelerator>(
+              media_log_->Clone(), config.hdr_metadata(),
+              std::move(accelerator_decode_cb),
+              std::move(accelerator_output_cb)),
+          config.profile(), config.color_space_info());
+      break;
+
+    case VideoCodec::kAV1:
+      accelerator_ = std::make_unique<AV1Decoder>(
+          std::make_unique<VideoToolboxAV1Accelerator>(
               media_log_->Clone(), config.hdr_metadata(),
               std::move(accelerator_decode_cb),
               std::move(accelerator_output_cb)),
@@ -432,7 +449,7 @@ VideoToolboxVideoDecoder::GetSupportedVideoDecoderConfigs(
   // TODO(crbug.com/1331597): Test support for other H.264 profiles.
   // TODO(crbug.com/1331597): Exclude resolutions that are not accelerated.
   // TODO(crbug.com/1331597): Check if higher resolutions are supported.
-  if (!gpu_workarounds.disable_accelerated_h264_decode) {
+  if (!gpu_workarounds.disable_accelerated_h264_decode && SupportsH264()) {
     supported.emplace_back(
         /*profile_min=*/H264PROFILE_BASELINE,
         /*profile_max=*/H264PROFILE_HIGH,
@@ -459,6 +476,17 @@ VideoToolboxVideoDecoder::GetSupportedVideoDecoderConfigs(
           /*allow_encrypted=*/false,
           /*require_encrypted=*/false);
     }
+  }
+
+  if (base::FeatureList::IsEnabled(kVideoToolboxAv1Decoding) &&
+      !gpu_workarounds.disable_accelerated_av1_decode && SupportsAV1()) {
+    supported.emplace_back(
+        /*profile_min=*/AV1PROFILE_PROFILE_MAIN,
+        /*profile_max=*/AV1PROFILE_PROFILE_MAIN,
+        /*coded_size_min=*/gfx::Size(16, 16),
+        /*coded_size_max=*/gfx::Size(8192, 8192),
+        /*allow_encrypted=*/false,
+        /*require_encrypted=*/false);
   }
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
