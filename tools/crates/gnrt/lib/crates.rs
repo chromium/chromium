@@ -343,45 +343,23 @@ impl ThirdPartySource {
             }
 
             let crate_path = crate_dir.path();
+            let Some(crate_id) = get_vendored_crate_id(&crate_path)? else {
+                warn!(
+                    "directory name parsed as valid epoch but contained no Cargo.toml: {}",
+                    crate_path.to_string_lossy()
+                );
+                continue;
+            };
 
-            // Ensure the path has a valid name: is UTF8, has our normalized format.
-            let normalized_name = path_as_str(crate_path.file_name().unwrap())?;
-            into_io_result(NormalizedName::new(normalized_name).ok_or_else(|| {
-                format!("unnormalized crate name in path {}", crate_path.to_string_lossy())
-            }))?;
+            let mut files = CrateFiles::new();
+            recurse_crate_files(&crate_path, &mut |filepath| {
+                collect_crate_file(&mut files, CollectCrateFiles::Internal, filepath)
+            })?;
+            files.sort();
 
-            for epoch_dir in fs::read_dir(crate_dir.path())? {
-                // Look at each epoch of the crate we have checked in.
-                let epoch_dir: fs::DirEntry = epoch_dir?;
-                if !epoch_dir.file_type()?.is_dir() {
-                    continue;
-                }
+            all_crate_files.insert(crate_id.clone(), files);
 
-                // Skip it if it's not a valid epoch.
-                if epoch_dir.file_name().to_str().and_then(|s| Epoch::from_str(s).ok()).is_none() {
-                    continue;
-                }
-
-                let crate_path = epoch_dir.path().join("crate");
-
-                let Some(crate_id) = get_vendored_crate_id(&crate_path)? else {
-                    warn!(
-                        "directory name parsed as valid epoch but contained no Cargo.toml: {}",
-                        crate_path.to_string_lossy()
-                    );
-                    continue;
-                };
-
-                let mut files = CrateFiles::new();
-                recurse_crate_files(&crate_path, &mut |filepath| {
-                    collect_crate_file(&mut files, CollectCrateFiles::Internal, filepath)
-                })?;
-                files.sort();
-
-                all_crate_files.insert(crate_id.clone(), files);
-
-                crate_versions.entry(crate_id.name).or_default().push(crate_id.version);
-            }
+            crate_versions.entry(crate_id.name).or_default().push(crate_id.version);
         }
 
         Ok(ThirdPartySource { crate_versions, crate_files: all_crate_files })
@@ -411,7 +389,12 @@ impl ThirdPartySource {
                     name = c.name,
                     epoch = Epoch::from_version(&c.version)
                 ),
-                path: Self::crate_path(c),
+                path: Path::new(&format!(
+                    "chromium_crates_io/vendor/{name}-{version}",
+                    name = c.name,
+                    version = c.version
+                ))
+                .to_owned(),
             })
             .collect();
         // Give patches a stable ordering, instead of the arbitrary HashMap

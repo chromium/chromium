@@ -1,4 +1,4 @@
-#include "third_party/rust/cxx/v1/crate/include/cxx.h"
+#include "third_party/rust/cxx/v1/cxx.h"
 #include <cstdio>
 #include <cstring>
 #include <iostream>

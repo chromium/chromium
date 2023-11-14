@@ -11,33 +11,34 @@ cargo_crate("lib") {
   crate_name = "wycheproof"
   epoch = "0.4"
   crate_type = "rlib"
-  crate_root = "crate/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/lib.rs"
   sources = [
-    "//third_party/rust/wycheproof/v0_4/crate/src/aead.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/cipher.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/daead.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/dsa.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/ecdh.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/ecdsa.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/eddsa.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/hkdf.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/jwk.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/keywrap.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/lib.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/mac.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/mac_with_iv.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/primality.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/rsa_oaep.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/rsa_pkcs1_decrypt.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/rsa_pkcs1_sign.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/rsa_pkcs1_verify.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/rsa_pss_verify.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/src/xdh.rs",
-    "//third_party/rust/wycheproof/v0_4/crate/tests/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/aead.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/cipher.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/daead.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/dsa.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/ecdh.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/ecdsa.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/eddsa.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/hkdf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/jwk.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/keywrap.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/mac.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/mac_with_iv.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/primality.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/rsa_oaep.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/rsa_pkcs1_decrypt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/rsa_pkcs1_sign.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/rsa_pkcs1_verify.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/rsa_pss_verify.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/src/xdh.rs",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/tests/tests.rs",
   ]
   inputs = [
-    "//third_party/rust/wycheproof/v0_4/crate/NEWS.md",
-    "//third_party/rust/wycheproof/v0_4/crate/README.md",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/NEWS.md",
+    "//third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/README.md",
   ]
 
   # Unit tests skipped. Generate with --with-tests to include them.

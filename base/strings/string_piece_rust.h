@@ -9,7 +9,7 @@
 
 #include "base/rust_buildflags.h"
 #include "base/strings/string_piece.h"
-#include "third_party/rust/cxx/v1/crate/include/cxx.h"
+#include "third_party/rust/cxx/v1/cxx.h"
 
 #if !BUILDFLAG(BUILD_RUST_BASE_CONVERSIONS)
 #error "string_piece_rust.h included without BUILD_RUST_BASE_CONVERSIONS"

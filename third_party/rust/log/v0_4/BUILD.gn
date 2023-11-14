@@ -11,22 +11,23 @@ cargo_crate("lib") {
   crate_name = "log"
   epoch = "0.4"
   crate_type = "rlib"
-  crate_root = "crate/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/log-0.4.17/src/lib.rs"
   sources = [
-    "//third_party/rust/log/v0_4/crate/benches/value.rs",
-    "//third_party/rust/log/v0_4/crate/build.rs",
-    "//third_party/rust/log/v0_4/crate/src/kv/error.rs",
-    "//third_party/rust/log/v0_4/crate/src/kv/key.rs",
-    "//third_party/rust/log/v0_4/crate/src/kv/mod.rs",
-    "//third_party/rust/log/v0_4/crate/src/kv/source.rs",
-    "//third_party/rust/log/v0_4/crate/src/kv/value.rs",
-    "//third_party/rust/log/v0_4/crate/src/lib.rs",
-    "//third_party/rust/log/v0_4/crate/src/macros.rs",
-    "//third_party/rust/log/v0_4/crate/src/serde.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.17/benches/value.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.17/build.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.17/src/kv/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.17/src/kv/key.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.17/src/kv/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.17/src/kv/source.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.17/src/kv/value.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.17/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.17/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.17/src/serde.rs",
   ]
   inputs = [
-    "//third_party/rust/log/v0_4/crate/CHANGELOG.md",
-    "//third_party/rust/log/v0_4/crate/README.md",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.17/CHANGELOG.md",
+    "//third_party/rust/chromium_crates_io/vendor/log-0.4.17/README.md",
   ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
@@ -41,8 +42,10 @@ cargo_crate("lib") {
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//third_party/rust/cfg_if/v1:lib" ]
-  build_root = "crate/build.rs"
-  build_sources = [ "crate/build.rs" ]
+  build_root =
+      "//third_party/rust/chromium_crates_io/vendor/log-0.4.17/build.rs"
+  build_sources =
+      [ "//third_party/rust/chromium_crates_io/vendor/log-0.4.17/build.rs" ]
 
   # Only for usage from third-party crates. Add the crate to
   # third_party.toml to use it from first-party code.

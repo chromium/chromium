@@ -11,14 +11,14 @@ cargo_crate("lib") {
   crate_name = "hex_literal"
   epoch = "0.4"
   crate_type = "rlib"
-  crate_root = "crate/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/hex-literal-0.4.1/src/lib.rs"
   sources = [
-    "//third_party/rust/hex_literal/v0_4/crate/src/lib.rs",
-    "//third_party/rust/hex_literal/v0_4/crate/tests/basic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/hex-literal-0.4.1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/hex-literal-0.4.1/tests/basic.rs",
   ]
   inputs = [
-    "//third_party/rust/hex_literal/v0_4/crate/CHANGELOG.md",
-    "//third_party/rust/hex_literal/v0_4/crate/README.md",
+    "//third_party/rust/chromium_crates_io/vendor/hex-literal-0.4.1/CHANGELOG.md",
+    "//third_party/rust/chromium_crates_io/vendor/hex-literal-0.4.1/README.md",
   ]
 
   # Unit tests skipped. Generate with --with-tests to include them.

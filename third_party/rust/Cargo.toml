@@ -6,7 +6,7 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace]
-members = ["cxxbridge_cmd/v1/crate"]
+members = ["chromium_crates_io/vendor/cxxbridge-cmd-1.0.110"]
 
 [dependencies]
 anyhow = "1"
@@ -57,249 +57,249 @@ features = ["full"]
 [dependencies.unicode-linebreak]
 version = "0.1"
 [patch.crates-io.aho-corasick_v0_7]
-path = "aho_corasick/v0_7/crate"
+path = "chromium_crates_io/vendor/aho-corasick-0.7.18"
 package = "aho-corasick"
 
 [patch.crates-io.anstyle_v1]
-path = "anstyle/v1/crate"
+path = "chromium_crates_io/vendor/anstyle-1.0.4"
 package = "anstyle"
 
 [patch.crates-io.anyhow_v1]
-path = "anyhow/v1/crate"
+path = "chromium_crates_io/vendor/anyhow-1.0.70"
 package = "anyhow"
 
 [patch.crates-io.autocfg_v1]
-path = "autocfg/v1/crate"
+path = "chromium_crates_io/vendor/autocfg-1.1.0"
 package = "autocfg"
 
 [patch.crates-io.base64_v0_13]
-path = "base64/v0_13/crate"
+path = "chromium_crates_io/vendor/base64-0.13.1"
 package = "base64"
 
 [patch.crates-io.bitflags_v1]
-path = "bitflags/v1/crate"
+path = "chromium_crates_io/vendor/bitflags-1.3.2"
 package = "bitflags"
 
 [patch.crates-io.cfg-if_v1]
-path = "cfg_if/v1/crate"
+path = "chromium_crates_io/vendor/cfg-if-1.0.0"
 package = "cfg-if"
 
 [patch.crates-io.clap_builder_v4]
-path = "clap_builder/v4/crate"
+path = "chromium_crates_io/vendor/clap_builder-4.4.6"
 package = "clap_builder"
 
 [patch.crates-io.clap_lex_v0_5]
-path = "clap_lex/v0_5/crate"
+path = "chromium_crates_io/vendor/clap_lex-0.5.1"
 package = "clap_lex"
 
 [patch.crates-io.clap_v4]
-path = "clap/v4/crate"
+path = "chromium_crates_io/vendor/clap-4.4.6"
 package = "clap"
 
 [patch.crates-io.codespan-reporting_v0_11]
-path = "codespan_reporting/v0_11/crate"
+path = "chromium_crates_io/vendor/codespan-reporting-0.11.1"
 package = "codespan-reporting"
 
 [patch.crates-io.cxx_v1]
-path = "cxx/v1/crate"
+path = "chromium_crates_io/vendor/cxx-1.0.110"
 package = "cxx"
 
 [patch.crates-io.cxxbridge-cmd_v1]
-path = "cxxbridge_cmd/v1/crate"
+path = "chromium_crates_io/vendor/cxxbridge-cmd-1.0.110"
 package = "cxxbridge-cmd"
 
 [patch.crates-io.cxxbridge-macro_v1]
-path = "cxxbridge_macro/v1/crate"
+path = "chromium_crates_io/vendor/cxxbridge-macro-1.0.110"
 package = "cxxbridge-macro"
 
 [patch.crates-io.font-types_v0_4]
-path = "font_types/v0_4/crate"
+path = "chromium_crates_io/vendor/font-types-0.4.0"
 package = "font-types"
 
 [patch.crates-io.getrandom_v0_2]
-path = "getrandom/v0_2/crate"
+path = "chromium_crates_io/vendor/getrandom-0.2.9"
 package = "getrandom"
 
 [patch.crates-io.hex-literal_v0_4]
-path = "hex_literal/v0_4/crate"
+path = "chromium_crates_io/vendor/hex-literal-0.4.1"
 package = "hex-literal"
 
 [patch.crates-io.hex_v0_4]
-path = "hex/v0_4/crate"
+path = "chromium_crates_io/vendor/hex-0.4.3"
 package = "hex"
 
 [patch.crates-io.itoa_v1]
-path = "itoa/v1/crate"
+path = "chromium_crates_io/vendor/itoa-1.0.1"
 package = "itoa"
 
 [patch.crates-io.lazy_static_v1]
-path = "lazy_static/v1/crate"
+path = "chromium_crates_io/vendor/lazy_static-1.4.0"
 package = "lazy_static"
 
 [patch.crates-io.libc_v0_2]
-path = "libc/v0_2/crate"
+path = "chromium_crates_io/vendor/libc-0.2.144"
 package = "libc"
 
 [patch.crates-io.link-cplusplus_v1]
-path = "link_cplusplus/v1/crate"
+path = "chromium_crates_io/vendor/link-cplusplus-1.0.9"
 package = "link-cplusplus"
 
 [patch.crates-io.log_v0_4]
-path = "log/v0_4/crate"
+path = "chromium_crates_io/vendor/log-0.4.17"
 package = "log"
 
 [patch.crates-io.memchr_v2]
-path = "memchr/v2/crate"
+path = "chromium_crates_io/vendor/memchr-2.4.1"
 package = "memchr"
 
 [patch.crates-io.memoffset_v0_6]
-path = "memoffset/v0_6/crate"
+path = "chromium_crates_io/vendor/memoffset-0.6.5"
 package = "memoffset"
 
 [patch.crates-io.ppv-lite86_v0_2]
-path = "ppv_lite86/v0_2/crate"
+path = "chromium_crates_io/vendor/ppv-lite86-0.2.17"
 package = "ppv-lite86"
 
 [patch.crates-io.proc-macro2_v1]
-path = "proc_macro2/v1/crate"
+path = "chromium_crates_io/vendor/proc-macro2-1.0.66"
 package = "proc-macro2"
 
 [patch.crates-io.qr_code_v2]
-path = "qr_code/v2/crate"
+path = "chromium_crates_io/vendor/qr_code-2.0.0"
 package = "qr_code"
 
 [patch.crates-io.quote_v1]
-path = "quote/v1/crate"
+path = "chromium_crates_io/vendor/quote-1.0.33"
 package = "quote"
 
 [patch.crates-io.rand_chacha_v0_3]
-path = "rand_chacha/v0_3/crate"
+path = "chromium_crates_io/vendor/rand_chacha-0.3.1"
 package = "rand_chacha"
 
 [patch.crates-io.rand_core_v0_6]
-path = "rand_core/v0_6/crate"
+path = "chromium_crates_io/vendor/rand_core-0.6.4"
 package = "rand_core"
 
 [patch.crates-io.rand_pcg_v0_3]
-path = "rand_pcg/v0_3/crate"
+path = "chromium_crates_io/vendor/rand_pcg-0.3.1"
 package = "rand_pcg"
 
 [patch.crates-io.rand_v0_8]
-path = "rand/v0_8/crate"
+path = "chromium_crates_io/vendor/rand-0.8.5"
 package = "rand"
 
 [patch.crates-io.read-fonts_v0_11]
-path = "read_fonts/v0_11/crate"
+path = "chromium_crates_io/vendor/read-fonts-0.11.0"
 package = "read-fonts"
 
 [patch.crates-io.regex-syntax_v0_6]
-path = "regex_syntax/v0_6/crate"
+path = "chromium_crates_io/vendor/regex-syntax-0.6.27"
 package = "regex-syntax"
 
 [patch.crates-io.regex_v1]
-path = "regex/v1/crate"
+path = "chromium_crates_io/vendor/regex-1.6.0"
 package = "regex"
 
 [patch.crates-io.rstest_macros_v0_17]
-path = "rstest_macros/v0_17/crate"
+path = "chromium_crates_io/vendor/rstest_macros-0.17.0"
 package = "rstest_macros"
 
 [patch.crates-io.rstest_reuse_v0_5]
-path = "rstest_reuse/v0_5/crate"
+path = "chromium_crates_io/vendor/rstest_reuse-0.5.0"
 package = "rstest_reuse"
 
 [patch.crates-io.rstest_v0_17]
-path = "rstest/v0_17/crate"
+path = "chromium_crates_io/vendor/rstest-0.17.0"
 package = "rstest"
 
 [patch.crates-io.rustc-demangle-capi_v0_1]
-path = "rustc_demangle_capi/v0_1/crate"
+path = "chromium_crates_io/vendor/rustc-demangle-capi-0.1.0"
 package = "rustc-demangle-capi"
 
 [patch.crates-io.rustc-demangle_v0_1]
-path = "rustc_demangle/v0_1/crate"
+path = "chromium_crates_io/vendor/rustc-demangle-0.1.23"
 package = "rustc-demangle"
 
 [patch.crates-io.rustc_version_v0_4]
-path = "rustc_version/v0_4/crate"
+path = "chromium_crates_io/vendor/rustc_version-0.4.0"
 package = "rustc_version"
 
 [patch.crates-io.rustversion_v1]
-path = "rustversion/v1/crate"
+path = "chromium_crates_io/vendor/rustversion-1.0.6"
 package = "rustversion"
 
 [patch.crates-io.ryu_v1]
-path = "ryu/v1/crate"
+path = "chromium_crates_io/vendor/ryu-1.0.5"
 package = "ryu"
 
 [patch.crates-io.semver_v1]
-path = "semver/v1/crate"
+path = "chromium_crates_io/vendor/semver-1.0.4"
 package = "semver"
 
 [patch.crates-io.serde_derive_v1]
-path = "serde_derive/v1/crate"
+path = "chromium_crates_io/vendor/serde_derive-1.0.188"
 package = "serde_derive"
 
 [patch.crates-io.serde_json_lenient_v0_1]
-path = "serde_json_lenient/v0_1/crate"
+path = "chromium_crates_io/vendor/serde_json_lenient-0.1.8"
 package = "serde_json_lenient"
 
 [patch.crates-io.serde_json_v1]
-path = "serde_json/v1/crate"
+path = "chromium_crates_io/vendor/serde_json-1.0.78"
 package = "serde_json"
 
 [patch.crates-io.serde_v1]
-path = "serde/v1/crate"
+path = "chromium_crates_io/vendor/serde-1.0.188"
 package = "serde"
 
 [patch.crates-io.skrifa_v0_10]
-path = "skrifa/v0_10/crate"
+path = "chromium_crates_io/vendor/skrifa-0.10.0"
 package = "skrifa"
 
 [patch.crates-io.small_ctor_v0_1]
-path = "small_ctor/v0_1/crate"
+path = "chromium_crates_io/vendor/small_ctor-0.1.1"
 package = "small_ctor"
 
 [patch.crates-io.static_assertions_v1]
-path = "static_assertions/v1/crate"
+path = "chromium_crates_io/vendor/static_assertions-1.1.0"
 package = "static_assertions"
 
 [patch.crates-io.strsim_v0_10]
-path = "strsim/v0_10/crate"
+path = "chromium_crates_io/vendor/strsim-0.10.0"
 package = "strsim"
 
 [patch.crates-io.syn_v1]
-path = "syn/v1/crate"
+path = "chromium_crates_io/vendor/syn-1.0.99"
 package = "syn"
 
 [patch.crates-io.syn_v2]
-path = "syn/v2/crate"
+path = "chromium_crates_io/vendor/syn-2.0.29"
 package = "syn"
 
 [patch.crates-io.termcolor_v1]
-path = "termcolor/v1/crate"
+path = "chromium_crates_io/vendor/termcolor-1.1.2"
 package = "termcolor"
 
 [patch.crates-io.unicode-ident_v1]
-path = "unicode_ident/v1/crate"
+path = "chromium_crates_io/vendor/unicode-ident-1.0.8"
 package = "unicode-ident"
 
 [patch.crates-io.unicode-linebreak_v0_1]
-path = "unicode_linebreak/v0_1/crate"
+path = "chromium_crates_io/vendor/unicode-linebreak-0.1.2"
 package = "unicode-linebreak"
 
 [patch.crates-io.unicode-width_v0_1]
-path = "unicode_width/v0_1/crate"
+path = "chromium_crates_io/vendor/unicode-width-0.1.9"
 package = "unicode-width"
 
 [patch.crates-io.winapi-util_v0_1]
-path = "winapi_util/v0_1/crate"
+path = "chromium_crates_io/vendor/winapi-util-0.1.5"
 package = "winapi-util"
 
 [patch.crates-io.winapi_v0_3]
-path = "winapi/v0_3/crate"
+path = "chromium_crates_io/vendor/winapi-0.3.9"
 package = "winapi"
 
 [patch.crates-io.wycheproof_v0_4]
-path = "wycheproof/v0_4/crate"
+path = "chromium_crates_io/vendor/wycheproof-0.4.0"
 package = "wycheproof"

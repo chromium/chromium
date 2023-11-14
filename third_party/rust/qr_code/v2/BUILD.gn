@@ -11,29 +11,30 @@ cargo_crate("lib") {
   crate_name = "qr_code"
   epoch = "2"
   crate_type = "rlib"
-  crate_root = "crate/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/src/lib.rs"
   sources = [
-    "//third_party/rust/qr_code/v2/crate/examples/decode_bmp.rs",
-    "//third_party/rust/qr_code/v2/crate/examples/encode_bmp.rs",
-    "//third_party/rust/qr_code/v2/crate/examples/encode_string.rs",
-    "//third_party/rust/qr_code/v2/crate/src/bits.rs",
-    "//third_party/rust/qr_code/v2/crate/src/canvas.rs",
-    "//third_party/rust/qr_code/v2/crate/src/cast.rs",
-    "//third_party/rust/qr_code/v2/crate/src/decode/bmp_grid.rs",
-    "//third_party/rust/qr_code/v2/crate/src/decode/decode.rs",
-    "//third_party/rust/qr_code/v2/crate/src/decode/mod.rs",
-    "//third_party/rust/qr_code/v2/crate/src/decode/version_db.rs",
-    "//third_party/rust/qr_code/v2/crate/src/ec.rs",
-    "//third_party/rust/qr_code/v2/crate/src/fuzz.rs",
-    "//third_party/rust/qr_code/v2/crate/src/lib.rs",
-    "//third_party/rust/qr_code/v2/crate/src/optimize.rs",
-    "//third_party/rust/qr_code/v2/crate/src/render.rs",
-    "//third_party/rust/qr_code/v2/crate/src/structured.rs",
-    "//third_party/rust/qr_code/v2/crate/src/types.rs",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/examples/decode_bmp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/examples/encode_bmp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/examples/encode_string.rs",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/src/bits.rs",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/src/canvas.rs",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/src/cast.rs",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/src/decode/bmp_grid.rs",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/src/decode/decode.rs",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/src/decode/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/src/decode/version_db.rs",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/src/ec.rs",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/src/fuzz.rs",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/src/optimize.rs",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/src/render.rs",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/src/structured.rs",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/src/types.rs",
   ]
   inputs = [
-    "//third_party/rust/qr_code/v2/crate/README.md",
-    "//third_party/rust/qr_code/v2/crate/test_data/large_base64.md",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/README.md",
+    "//third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/test_data/large_base64.md",
   ]
 
   # Unit tests skipped. Generate with --with-tests to include them.

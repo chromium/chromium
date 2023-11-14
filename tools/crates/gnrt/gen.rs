@@ -35,7 +35,9 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
     // Used to generate Cargo.toml [patch] sections, and later to check against
     // `cargo metadata`'s dependency resolution to ensure we have all the crates
     // we need. We sort `crates` for a stable ordering of [patch] sections.
-    let source = crates::ThirdPartySource::new(paths.third_party)?;
+    let source = crates::ThirdPartySource::new(
+        &paths.third_party.join("chromium_crates_io").join("vendor"),
+    )?;
 
     let manifest_contents =
         String::from_utf8(fs::read(paths.third_party.join("third_party.toml")).unwrap()).unwrap();

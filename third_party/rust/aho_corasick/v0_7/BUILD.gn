@@ -11,34 +11,34 @@ cargo_crate("lib") {
   crate_name = "aho_corasick"
   epoch = "0.7"
   crate_type = "rlib"
-  crate_root = "crate/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/lib.rs"
   sources = [
-    "//third_party/rust/aho_corasick/v0_7/crate/src/ahocorasick.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/automaton.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/buffer.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/byte_frequencies.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/classes.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/dfa.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/error.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/lib.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/nfa.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/packed/api.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/packed/mod.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/packed/pattern.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/packed/rabinkarp.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/packed/teddy/compile.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/packed/teddy/mod.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/packed/teddy/runtime.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/packed/tests.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/packed/vector.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/prefilter.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/state_id.rs",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/ahocorasick.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/automaton.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/buffer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/byte_frequencies.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/classes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/dfa.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/nfa.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/packed/api.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/packed/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/packed/pattern.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/packed/rabinkarp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/packed/teddy/compile.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/packed/teddy/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/packed/teddy/runtime.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/packed/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/packed/vector.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/prefilter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/state_id.rs",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/tests.rs",
   ]
   inputs = [
-    "//third_party/rust/aho_corasick/v0_7/crate/DESIGN.md",
-    "//third_party/rust/aho_corasick/v0_7/crate/README.md",
-    "//third_party/rust/aho_corasick/v0_7/crate/src/packed/teddy/README.md",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/DESIGN.md",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/README.md",
+    "//third_party/rust/chromium_crates_io/vendor/aho-corasick-0.7.18/src/packed/teddy/README.md",
   ]
 
   # Unit tests skipped. Generate with --with-tests to include them.

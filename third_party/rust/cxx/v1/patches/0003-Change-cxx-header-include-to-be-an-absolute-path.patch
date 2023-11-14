@@ -14,7 +14,7 @@ index 2522d61aa33dc..a1cdc44ea1ba9 100644
 +++ b/third_party/rust/cxx/v1/crate/src/cxx.cc
 @@ -1,4 +1,4 @@
 -#include "../include/cxx.h"
-+#include "third_party/rust/cxx/v1/crate/include/cxx.h"
++#include "third_party/rust/cxx/v1/cxx.h"
  #include <cstdio>
  #include <cstring>
  #include <iostream>

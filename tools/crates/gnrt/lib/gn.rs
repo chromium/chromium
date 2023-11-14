@@ -308,9 +308,7 @@ fn make_build_file_for_chromium_dep(
         paths.third_party.join(ThirdPartySource::build_path(&crate_id));
     let crate_abs_path = paths.root.join(&crate_path_from_chromium_src);
 
-    let to_gn_path = |abs_path: &Path| {
-        abs_path.strip_prefix(&crate_abs_path).unwrap().to_string_lossy().into_owned()
-    };
+    let to_gn_path = |abs_path: &Path| format!("//{}", paths.to_gn_abs_path(abs_path).unwrap());
 
     let cargo_pkg_description = dep.description.as_ref().map(|s| s.trim_end().to_string());
     let cargo_pkg_authors =

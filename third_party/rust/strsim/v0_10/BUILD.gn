@@ -11,15 +11,16 @@ cargo_crate("lib") {
   crate_name = "strsim"
   epoch = "0.10"
   crate_type = "rlib"
-  crate_root = "crate/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/strsim-0.10.0/src/lib.rs"
   sources = [
-    "//third_party/rust/strsim/v0_10/crate/benches/benches.rs",
-    "//third_party/rust/strsim/v0_10/crate/src/lib.rs",
-    "//third_party/rust/strsim/v0_10/crate/tests/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strsim-0.10.0/benches/benches.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strsim-0.10.0/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strsim-0.10.0/tests/lib.rs",
   ]
   inputs = [
-    "//third_party/rust/strsim/v0_10/crate/CHANGELOG.md",
-    "//third_party/rust/strsim/v0_10/crate/README.md",
+    "//third_party/rust/chromium_crates_io/vendor/strsim-0.10.0/CHANGELOG.md",
+    "//third_party/rust/chromium_crates_io/vendor/strsim-0.10.0/README.md",
   ]
 
   # Unit tests skipped. Generate with --with-tests to include them.

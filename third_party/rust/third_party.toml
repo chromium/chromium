@@ -39,7 +39,7 @@
 # resolve its dependencies.
 [workspace]
 members = [
-    "cxxbridge_cmd/v1/crate",
+    "chromium_crates_io/vendor/cxxbridge-cmd-1.0.110"
 ]
 
 [dependencies]

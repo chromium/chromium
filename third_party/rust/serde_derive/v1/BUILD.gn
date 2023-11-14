@@ -11,29 +11,29 @@ cargo_crate("lib") {
   crate_name = "serde_derive"
   epoch = "1"
   crate_type = "proc-macro"
-  crate_root = "crate/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/lib.rs"
   sources = [
-    "//third_party/rust/serde_derive/v1/crate/src/bound.rs",
-    "//third_party/rust/serde_derive/v1/crate/src/de.rs",
-    "//third_party/rust/serde_derive/v1/crate/src/dummy.rs",
-    "//third_party/rust/serde_derive/v1/crate/src/fragment.rs",
-    "//third_party/rust/serde_derive/v1/crate/src/internals/ast.rs",
-    "//third_party/rust/serde_derive/v1/crate/src/internals/attr.rs",
-    "//third_party/rust/serde_derive/v1/crate/src/internals/case.rs",
-    "//third_party/rust/serde_derive/v1/crate/src/internals/check.rs",
-    "//third_party/rust/serde_derive/v1/crate/src/internals/ctxt.rs",
-    "//third_party/rust/serde_derive/v1/crate/src/internals/mod.rs",
-    "//third_party/rust/serde_derive/v1/crate/src/internals/receiver.rs",
-    "//third_party/rust/serde_derive/v1/crate/src/internals/respan.rs",
-    "//third_party/rust/serde_derive/v1/crate/src/internals/symbol.rs",
-    "//third_party/rust/serde_derive/v1/crate/src/lib.rs",
-    "//third_party/rust/serde_derive/v1/crate/src/pretend.rs",
-    "//third_party/rust/serde_derive/v1/crate/src/ser.rs",
-    "//third_party/rust/serde_derive/v1/crate/src/this.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/bound.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/de.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/dummy.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/fragment.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/internals/ast.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/internals/attr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/internals/case.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/internals/check.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/internals/ctxt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/internals/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/internals/receiver.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/internals/respan.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/internals/symbol.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/pretend.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/ser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/this.rs",
   ]
   inputs = [
-    "//third_party/rust/serde_derive/v1/crate/README.md",
-    "//third_party/rust/serde_derive/v1/crate/crates-io.md",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/README.md",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/crates-io.md",
   ]
 
   # Unit tests skipped. Generate with --with-tests to include them.

@@ -11,28 +11,28 @@ cargo_crate("lib") {
   crate_name = "rstest_reuse"
   epoch = "0.5"
   crate_type = "proc-macro"
-  crate_root = "crate/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/src/lib.rs"
   sources = [
-    "//third_party/rust/rstest_reuse/v0_5/crate/build.rs",
-    "//third_party/rust/rstest_reuse/v0_5/crate/src/lib.rs",
-    "//third_party/rust/rstest_reuse/v0_5/crate/tests/acceptance.rs",
-    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/copy_args_attributes_from_template.rs",
-    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/deny_docs.rs",
-    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/export_not_used.rs",
-    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/export_template.rs",
-    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/export_template_root.rs",
-    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/import_template.rs",
-    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/in_mod.rs",
-    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/no_local_macro_should_not_compile.rs",
-    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/not_used.rs",
-    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/qualify_template_use.rs",
-    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/simple_example.rs",
-    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/templates_with_same_name.rs",
-    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/use_before_define.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/build.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/tests/acceptance.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/tests/resources/copy_args_attributes_from_template.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/tests/resources/deny_docs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/tests/resources/export_not_used.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/tests/resources/export_template.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/tests/resources/export_template_root.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/tests/resources/import_template.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/tests/resources/in_mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/tests/resources/no_local_macro_should_not_compile.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/tests/resources/not_used.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/tests/resources/qualify_template_use.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/tests/resources/simple_example.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/tests/resources/templates_with_same_name.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/tests/resources/use_before_define.rs",
   ]
   inputs = [
-    "//third_party/rust/rstest_reuse/v0_5/crate/README.md",
-    "//third_party/rust/rstest_reuse/v0_5/crate/checkoutlist.md",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/README.md",
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/checkoutlist.md",
   ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
@@ -52,8 +52,11 @@ cargo_crate("lib") {
     "//third_party/rust/syn/v1:lib",
   ]
   build_deps = [ "//third_party/rust/rustc_version/v0_4:buildrs_support" ]
-  build_root = "crate/build.rs"
-  build_sources = [ "crate/build.rs" ]
+  build_root =
+      "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/build.rs"
+  build_sources = [
+    "//third_party/rust/chromium_crates_io/vendor/rstest_reuse-0.5.0/build.rs",
+  ]
 
   # Only for usage from third-party crates. Add the crate to
   # third_party.toml to use it from first-party code.
