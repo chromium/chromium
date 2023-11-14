@@ -481,7 +481,7 @@ gCrWeb.fill.inferLabelFromDivTable = function(
           !(node as HTMLLabelElement).control) {
         inferredLabel = inferenceUtil.findChildText(node);
       } else if (node.nodeType === Node.TEXT_NODE) {
-        inferredLabel = gCrWeb.fill.nodeValue(node).trim();
+        inferredLabel = inferenceUtil.nodeValue(node).trim();
       }
     } else if (inferenceUtil.isTraversableContainerElement(node)) {
       // If the element is in a non-div container, its label most likely is too.

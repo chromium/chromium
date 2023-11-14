@@ -149,7 +149,7 @@ function findChildTextInner(
   // Extract the text exactly at this node.
   let nodeText = '';
   if (!skipNode) {
-    nodeText = gCrWeb.fill.nodeValue(node);
+    nodeText = nodeValue(node);
     if (node.nodeType === Node.TEXT_NODE && !nodeText) {
       // In the C++ version, this text node would have been stripped completely.
       // Just pass the buck.
@@ -197,7 +197,7 @@ function findChildTextInner(
  */
 function findChildTextWithIgnoreList(node: Node, divsToSkip: Node[]): string {
   if (node.nodeType === Node.TEXT_NODE) {
-    return gCrWeb.fill.nodeValue(node);
+    return nodeValue(node);
   }
 
   const child = node.firstChild;
@@ -378,6 +378,18 @@ function isLabelValid(label: string): boolean {
   return label.search(/[^ *:()\u2013-]/) >= 0;
 }
 
+/**
+ * Returns the nodeValue in a way similar to the C++ version of node.nodeValue,
+ * used in src/components/autofill/content/renderer/form_autofill_util.h.
+ * Newlines and tabs are stripped.
+ *
+ * @param node A node to examine.
+ * @return The text contained in `element`.
+ */
+function nodeValue(node: Node): string {
+  return (node.nodeValue || '').replace(/[\n\t]/gm, '');
+}
+
 export {
   findChildTextWithIgnoreList,
   findChildText,
@@ -385,4 +397,5 @@ export {
   ancestorTagNames,
   isTextAreaElement,
   isLabelValid,
+  nodeValue,
 };

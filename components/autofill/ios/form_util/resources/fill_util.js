@@ -472,18 +472,6 @@ __gCrWeb.fill.getOptionStringsFromElement = function(selectElement, field) {
 };
 
 /**
- * Returns the nodeValue in a way similar to the C++ version of node.nodeValue,
- * used in src/components/autofill/content/renderer/form_autofill_util.h.
- * Newlines and tabs are stripped.
- *
- * @param {Node} node A node to examine.
- * @return {string} The text contained in |element|.
- */
-__gCrWeb.fill.nodeValue = function(node) {
-  return (node.nodeValue || '').replace(/[\n\t]/gm, '');
-};
-
-/**
  * Returns the value in a way similar to the C++ version of node.value,
  * used in src/components/autofill/content/renderer/form_autofill_util.h.
  * Newlines and tabs are stripped.
