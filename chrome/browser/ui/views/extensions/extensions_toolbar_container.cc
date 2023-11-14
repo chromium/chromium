@@ -384,30 +384,25 @@ ExtensionsToolbarContainer::GetPoppedOutActionId() const {
   return popped_out_action_;
 }
 
-void ExtensionsToolbarContainer::OnContextMenuShown(
+void ExtensionsToolbarContainer::OnContextMenuShownFromToolbar(
     const std::string& action_id) {
-  // Only update the extension's toolbar visibility if the context menu is being
-  // shown from an extension visible in the toolbar.
-  if (!IsExtensionsMenuShowing()) {
 #if BUILDFLAG(IS_MAC)
     // TODO(crbug/1065584): Remove hiding active popup here once this bug is
     // fixed.
     HideActivePopup();
 #endif
+
     extension_with_open_context_menu_id_ = action_id;
     UpdateIconVisibility(extension_with_open_context_menu_id_.value());
-  }
 }
 
-void ExtensionsToolbarContainer::OnContextMenuClosed() {
-  // |extension_with_open_context_menu_id_| does not have a value when a context
-  // menu is being shown from within the extensions menu.
-  if (extension_with_open_context_menu_id_.has_value()) {
-    absl::optional<extensions::ExtensionId> const
-        extension_with_open_context_menu = extension_with_open_context_menu_id_;
-    extension_with_open_context_menu_id_.reset();
-    UpdateIconVisibility(extension_with_open_context_menu.value());
-  }
+void ExtensionsToolbarContainer::OnContextMenuClosedFromToolbar() {
+  CHECK(extension_with_open_context_menu_id_.has_value());
+
+  extensions::ExtensionId const extension_id =
+      extension_with_open_context_menu_id_.value();
+  extension_with_open_context_menu_id_.reset();
+  UpdateIconVisibility(extension_id);
 }
 
 bool ExtensionsToolbarContainer::IsActionVisibleOnToolbar(

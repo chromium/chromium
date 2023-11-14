@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/api/commands/command_service.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/extension_view.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/extensions/extension_view_host_factory.h"
@@ -342,12 +343,20 @@ ui::MenuModel* ExtensionActionViewController::GetContextMenu(
   return context_menu_model_.get();
 }
 
-void ExtensionActionViewController::OnContextMenuShown() {
-  extensions_container_->OnContextMenuShown(GetId());
+void ExtensionActionViewController::OnContextMenuShown(
+    extensions::ExtensionContextMenuModel::ContextMenuSource source) {
+  if (source == extensions::ExtensionContextMenuModel::ContextMenuSource::
+                    kToolbarAction) {
+    extensions_container_->OnContextMenuShownFromToolbar(GetId());
+  }
 }
 
-void ExtensionActionViewController::OnContextMenuClosed() {
-  extensions_container_->OnContextMenuClosed();
+void ExtensionActionViewController::OnContextMenuClosed(
+    extensions::ExtensionContextMenuModel::ContextMenuSource source) {
+  if (source == extensions::ExtensionContextMenuModel::ContextMenuSource::
+                    kToolbarAction) {
+    extensions_container_->OnContextMenuClosedFromToolbar();
+  }
 }
 
 void ExtensionActionViewController::ExecuteUserAction(InvocationSource source) {

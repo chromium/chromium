@@ -149,8 +149,8 @@ class ExtensionsToolbarContainer
   ToolbarActionViewController* GetActionForId(
       const std::string& action_id) override;
   absl::optional<extensions::ExtensionId> GetPoppedOutActionId() const override;
-  void OnContextMenuShown(const std::string& action_id) override;
-  void OnContextMenuClosed() override;
+  void OnContextMenuShownFromToolbar(const std::string& action_id) override;
+  void OnContextMenuClosedFromToolbar() override;
   bool IsActionVisibleOnToolbar(const std::string& action_id) const override;
   void UndoPopOut() override;
   void SetPopupOwner(ToolbarActionViewController* popup_owner) override;

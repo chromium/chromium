@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "extensions/common/extension_id.h"
@@ -30,13 +31,13 @@ class ExtensionsContainer {
   virtual absl::optional<extensions::ExtensionId> GetPoppedOutActionId()
       const = 0;
 
-  // Called when a context menu is shown so the container can perform any
-  // necessary setup.
-  virtual void OnContextMenuShown(const std::string& action_id) {}
+  // Called when the context menu of a toolbar action with `action_id` is
+  // opened, so the container can perform any necessary setup.
+  virtual void OnContextMenuShownFromToolbar(const std::string& action_id) {}
 
-  // Called when a context menu is closed so the container can perform any
-  // necessary cleanup.
-  virtual void OnContextMenuClosed() {}
+  // Called when the context menu of a toolbar action is closed, so the
+  // container can perform any necessary cleanup.
+  virtual void OnContextMenuClosedFromToolbar() {}
 
   // Returns true if the action pointed by `action_id` is visible on the
   // toolbar.
