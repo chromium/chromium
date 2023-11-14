@@ -193,6 +193,8 @@ struct IframeAttributes {
   bool credentialless;
   // 'browsingtopics' attribute of the iframe.
   bool browsing_topics;
+  // 'adauctionheaders' attribute of the iframe.
+  bool ad_auction_headers;
   // 'sharedstoragewritable' attribute of the iframe.
   bool shared_storage_writable_opted_in;
   // 'id' attribute of the iframe. This can be optional because id might not be set.

@@ -7877,6 +7877,13 @@ void RenderFrameHostImpl::DidChangeIframeAttributes(
     return;
   }
 
+  if (attributes->ad_auction_headers &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kFledgeNegativeTargeting)) {
+    mojo::ReportBadMessage("Unexpected iframe.adAuctionHeaders value");
+    return;
+  }
+
   if (attributes->shared_storage_writable_opted_in &&
       (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM118))) {
     bad_message::ReceivedBadMessage(

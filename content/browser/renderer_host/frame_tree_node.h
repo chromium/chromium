@@ -283,6 +283,11 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // `Sec-Browsing-Topics` header.
   bool browsing_topics() const { return attributes_->browsing_topics; }
 
+  // Tracks iframe's 'adauctionheaders' attribute, indicating whether the
+  // navigation request on this frame should calculate and send the
+  // 'Sec-Ad-Auction-Fetch` header.
+  bool ad_auction_headers() const { return attributes_->ad_auction_headers; }
+
   // Tracks iframe's 'sharedstoragewritable' attribute, indicating what value
   // the the corresponding
   // `network::ResourceRequest::shared_storage_writable_eligible` should take

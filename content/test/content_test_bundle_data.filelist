@@ -6613,6 +6613,7 @@ data/interest_group/page_with_custom_ad_auction_result_header.html
 data/interest_group/page_with_custom_ad_auction_result_header.html.mock-http-headers
 data/interest_group/page_with_custom_ad_auction_result_header2.html
 data/interest_group/page_with_custom_ad_auction_result_header2.html.mock-http-headers
+data/interest_group/page_with_iframe_with_ad_auction_headers.html
 data/interest_group/schemaV16.sql
 data/interest_group/schemaV6.sql
 data/interest_group/trusted_bidding_signals.json

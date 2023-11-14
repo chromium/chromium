@@ -6656,6 +6656,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="307"
       label="MSDH_EXCLUDE_MONITORS_BUT_PREFERRED_MONITOR_REQUESTED"/>
   <int value="308" label="PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE"/>
+  <int value="309" label="RFH_RECEIVED_INVALID_AD_AUCTION_HEADERS_ATTRIBUTE"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
@@ -24678,7 +24679,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1964" label="GamepadAxes"/>
   <int value="1965" label="GamepadButtons"/>
   <int value="1966" label="VibrateWithoutUserGesture"/>
-  <int value="1967" label="DispatchMouseEventOnDisabledFormControl"/>
+  <int value="1967" label="OBSOLETE_DispatchMouseEventOnDisabledFormControl"/>
   <int value="1968" label="ElementNameDOMInvalidHTMLParserValid"/>
   <int value="1969" label="ElementNameDOMValidHTMLParserInvalid"/>
   <int value="1970" label="GATTServerDisconnectedEvent"/>
@@ -27630,6 +27631,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4736" label="ThirdPartyCookieDeprecation_AllowByStorageAccess"/>
   <int value="4737"
       label="ThirdPartyCookieDeprecation_AllowByTopLevelStorageAccess"/>
+  <int value="4738" label="IframeAdAuctionHeadersAttribute"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

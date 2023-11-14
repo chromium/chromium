@@ -5,7 +5,18 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_AD_AUCTION_URL_LOADER_INTERCEPTOR_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_AD_AUCTION_URL_LOADER_INTERCEPTOR_H_
 
+#include <string>
+#include <vector>
+
+#include "base/memory/raw_ref.h"
 #include "content/browser/loader/subresource_proxying_url_loader.h"
+#include "content/public/browser/weak_document_ptr.h"
+#include "net/http/http_request_headers.h"
+#include "net/url_request/redirect_info.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -60,8 +71,6 @@ class CONTENT_EXPORT AdAuctionURLLoaderInterceptor
   // Set to the desired state when a request/redirect is made. Reset to false
   // when the corresponding response is received.
   bool ad_auction_headers_eligible_ = false;
-
-  bool has_redirect_ = false;
 };
 
 }  // namespace content

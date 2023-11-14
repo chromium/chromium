@@ -59,6 +59,9 @@
     // Topics API (https://github.com/patcg-individual-drafts/topics)
     [RuntimeEnabled=TopicsAPI, SecureContext, CEReactions, Reflect] attribute boolean browsingTopics;
 
+    // Protected Audience (https://wicg.github.io/turtledove)
+    [RuntimeEnabled=FledgeNegativeTargeting, SecureContext, CEReactions, Reflect] attribute boolean adAuctionHeaders;
+
     // Iframes credentialless
     // https://github.com/WICG/anonymous-iframe
     [CEReactions, Reflect, RuntimeEnabled=AnonymousIframe] attribute boolean credentialless;

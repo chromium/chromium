@@ -50,6 +50,7 @@
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
+#include "content/browser/interest_group/ad_auction_headers_util.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/loader/cached_navigation_url_loader.h"
 #include "content/browser/loader/navigation_early_hints_manager.h"
@@ -1603,7 +1604,8 @@ NavigationRequest::NavigationRequest(
           is_embedder_initiated_fenced_frame_navigation
               ? absl::make_optional(FencedFrameProperties())
               : absl::nullopt),
-      embedder_shared_storage_context_(embedder_shared_storage_context) {
+      embedder_shared_storage_context_(embedder_shared_storage_context),
+      has_ad_auction_headers_attribute_(frame_tree_node->ad_auction_headers()) {
   CHECK(!common_params_->initiator_base_url ||
         !common_params_->initiator_base_url->is_empty());
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
@@ -1882,6 +1884,13 @@ NavigationRequest::NavigationRequest(
 
     if (topics_eligible_) {
       headers.SetHeader(kBrowsingTopicsRequestHeaderKey, *topics_header_value);
+    }
+
+    if (has_ad_auction_headers_attribute_ &&
+        IsAdAuctionHeadersEligibleForNavigation(
+            *frame_tree_node_, url::Origin::Create(common_params_->url))) {
+      ad_auction_headers_eligible_ = true;
+      headers.SetHeader(kAdAuctionRequestHeaderKey, "?1");
     }
   }
 
@@ -5199,6 +5208,12 @@ void NavigationRequest::OnRedirectChecksComplete(
                                *topics_header_value);
   }
 
+  if (ad_auction_headers_eligible_) {
+    // Redirects are ineligible for ad auction headers.
+    ad_auction_headers_eligible_ = false;
+    removed_headers.push_back(kAdAuctionRequestHeaderKey);
+  }
+
   if (shared_storage_writable_opted_in_) {
     // On a redirect, the PermissionsPolicy may change the status of this
     // request's Shared Storage eligibility, so we need to re-compute it.
@@ -5562,9 +5577,9 @@ void NavigationRequest::CommitErrorPage(
     }
   }
 
-  if (topics_eligible_) {
-    topics_eligible_ = false;
-  }
+  topics_eligible_ = false;
+
+  ad_auction_headers_eligible_ = false;
 
   base::WeakPtr<NavigationRequest> weak_self(weak_factory_.GetWeakPtr());
   ReadyToCommitNavigation(true /* is_error */);
@@ -5670,6 +5685,13 @@ void NavigationRequest::CommitNavigation() {
           *GetRenderFrameHost(),
           browsing_topics::ApiCallerSource::kIframeAttribute);
     }
+  }
+
+  if (ad_auction_headers_eligible_) {
+    ProcessAdAuctionResponseHeaders(origin, GetRenderFrameHost()->GetPage(),
+                                    *response_head_->headers);
+  } else if (has_ad_auction_headers_attribute_) {
+    RemoveAdAuctionResponseHeaders(*response_head_->headers);
   }
 
   if (!NavigationTypeUtils::IsSameDocument(common_params_->navigation_type)) {

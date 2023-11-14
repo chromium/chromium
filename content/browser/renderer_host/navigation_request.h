@@ -2622,6 +2622,22 @@ class CONTENT_EXPORT NavigationRequest
   // contain "Observe-Browsing-Topics: ?1", a topic observation will be stored.
   bool topics_eligible_ = false;
 
+  // Whether this navigation request is an iframe navigation for which the
+  // adAuctionHeaders attribute is set. Only requests with this attribute may be
+  // eligible for ad auction headerse, but not all requests with this attribute
+  // are eligible. `ad_auction_headers_eligible_`, below, indicates whether or
+  // not this request is eligible.
+  const bool has_ad_auction_headers_attribute_ = false;
+
+  // Whether the ongoing navigation resource request should have its Ad Auction
+  // response headers examined for interception. This is set before the initial
+  // request for iframe navigations that provide the `adAuctionHeaders`
+  // attribute. On redirect or error, this is always set to false. If this is
+  // set to true, the request headers will contain the "Sec-Ad-Auction-Fetch:
+  // ?1" header, and several response headers will be intercepted. See
+  // content/browser/interest_group/ad_auction_headers_util.h for more details.
+  bool ad_auction_headers_eligible_ = false;
+
   // Whether or not the original request (without considering redirects or
   // permissions policy) opted-in to write to shared storage from response
   // headers. See https://github.com/WICG/shared-storage#from-response-headers

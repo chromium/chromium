@@ -32,6 +32,17 @@ source_set("fuzzer_support") {
   testonly = true
 }
 
+fuzzer_test("ad_auction_headers_util_fuzzer") {
+  sources = [ "ad_auction_headers_util_fuzzer.cc" ]
+  deps = [
+    ":fuzzer_support",
+    "//content/browser:browser",
+    "//content/browser:for_content_tests",
+    "//content/public/browser:browser_sources",
+  ]
+  seed_corpus = "//content/test/data/fuzzer_corpus/ad_auction_headers_data/"
+}
+
 fuzzer_test("color_parser_fuzzer") {
   sources = [ "color_parser_fuzzer.cc" ]
   deps = [ ":fuzzer_support" ]

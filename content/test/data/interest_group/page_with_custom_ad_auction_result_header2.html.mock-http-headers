@@ -1,4 +1,5 @@
 HTTP/1.1 {{STATUS}}
 Access-Control-Allow-Origin: *
+Access-Control-Expose-Headers: Ad-Auction-Result,Ad-Auction-Signals,Ad-Auction-Additional-Bid
 {{AD_AUCTION_HEADERS}}
 {{REDIRECT_HEADER}}

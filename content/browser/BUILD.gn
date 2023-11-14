@@ -40,6 +40,7 @@ source_set("browser") {
     ":for_content_tests",  # See top of //content/BUILD.gn for why.
     "//content/app:*",
     "//content/public/browser:browser_sources",
+    "//content/test/fuzzer:ad_auction_headers_util_fuzzer",
     "//content/test/fuzzer:browser_accessibility_fuzzer",
     "//content/test/fuzzer:clipboard_host_mojolpm_fuzzer",
     "//content/test/fuzzer:first_party_set_parser_fuzzer_support",
@@ -1136,6 +1137,8 @@ source_set("browser") {
     "installedapp/installed_app_provider_impl.h",
     "interest_group/ad_auction_document_data.cc",
     "interest_group/ad_auction_document_data.h",
+    "interest_group/ad_auction_headers_util.cc",
+    "interest_group/ad_auction_headers_util.h",
     "interest_group/ad_auction_page_data.cc",
     "interest_group/ad_auction_page_data.h",
     "interest_group/ad_auction_result_metrics.cc",
