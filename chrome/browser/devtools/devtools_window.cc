@@ -1228,7 +1228,8 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
       }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       if (base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
-        url += "&enableAida=true";
+        url += "&enableAida=true&aidaApiKey=" +
+               features::kDevToolsConsoleInsightsApiKey.Get();
       }
 #endif
       break;
