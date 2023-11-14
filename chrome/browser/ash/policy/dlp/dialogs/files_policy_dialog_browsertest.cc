@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, AllErrorSections) {
     info_map.insert({reason, std::move(dialog_settings)});
   }
 
-  // Sensitive data and malware have theur own section only when a custom
+  // Sensitive data and malware have their own section only when a custom
   // message is defined.
   const std::u16string sensitive_data_message =
       u"Sensitive data custom message";
@@ -562,29 +562,6 @@ class DlpWarningDialogDestinationBrowserTest : public InProcessBrowserTest {
   std::vector<base::FilePath> warning_paths_;
 };
 
-// (b/273269211): This is a test for the crash that happens upon showing a
-// warning dialog when a file is moved to Google Drive.
-IN_PROC_BROWSER_TEST_F(DlpWarningDialogDestinationBrowserTest,
-                       ComponentDestination) {
-  ASSERT_TRUE(FilesPolicyDialog::CreateWarnDialog(
-      base::DoNothing(), dlp::FileAction::kMove,
-      /*modal_parent=*/nullptr,
-      FilesPolicyDialog::Info::Warn(FilesPolicyDialog::BlockReason::kDlp,
-                                    warning_paths_),
-      DlpFileDestination(data_controls::Component::kDrive)));
-}
-
-// (b/277594200): This is a test for the crash that happens upon showing a
-// warning dialog when a file is dragged to a webpage.
-IN_PROC_BROWSER_TEST_F(DlpWarningDialogDestinationBrowserTest, UrlDestination) {
-  ASSERT_TRUE(FilesPolicyDialog::CreateWarnDialog(
-      base::DoNothing(), dlp::FileAction::kCopy,
-      /*modal_parent=*/nullptr,
-      FilesPolicyDialog::Info::Warn(FilesPolicyDialog::BlockReason::kDlp,
-                                    warning_paths_),
-      DlpFileDestination(GURL("https://example.com"))));
-}
-
 // (b/281495499): This is a test for the crash that happens upon showing a
 // warning dialog for downloads.
 IN_PROC_BROWSER_TEST_F(DlpWarningDialogDestinationBrowserTest, Download) {
@@ -597,12 +574,12 @@ IN_PROC_BROWSER_TEST_F(DlpWarningDialogDestinationBrowserTest, Download) {
       DlpFileDestination(data_controls::Component::kDrive)));
 }
 
-class WarningComponentBrowserTest
+class DestinationBrowserTest
     : public DlpWarningDialogDestinationBrowserTest,
       public ::testing::WithParamInterface<
           std::tuple<dlp::FileAction, DlpFileDestination>> {};
 
-IN_PROC_BROWSER_TEST_P(WarningComponentBrowserTest, CreateDialog) {
+IN_PROC_BROWSER_TEST_P(DestinationBrowserTest, CreateDialog) {
   auto [action, destination] = GetParam();
 
   ASSERT_TRUE(FilesPolicyDialog::CreateWarnDialog(
@@ -615,10 +592,18 @@ IN_PROC_BROWSER_TEST_P(WarningComponentBrowserTest, CreateDialog) {
 
 INSTANTIATE_TEST_SUITE_P(
     FilesPolicyDialog,
-    WarningComponentBrowserTest,
+    DestinationBrowserTest,
     ::testing::Values(
+        // (b/277594200): This is a test for the crash that happens upon showing
+        // a warning dialog when a file is dragged to a webpage.
+        std::make_tuple(dlp::FileAction::kCopy,
+                        DlpFileDestination(GURL("https://example.com"))),
         std::make_tuple(dlp::FileAction::kUpload,
                         DlpFileDestination(GURL("https://example.com"))),
+        // (b/273269211): This is a test for the crash that happens upon showing
+        // a warning dialog when a file is moved to Google Drive.
+        std::make_tuple(dlp::FileAction::kMove,
+                        DlpFileDestination(data_controls::Component::kDrive)),
         std::make_tuple(dlp::FileAction::kTransfer,
                         DlpFileDestination(data_controls::Component::kArc)),
         std::make_tuple(

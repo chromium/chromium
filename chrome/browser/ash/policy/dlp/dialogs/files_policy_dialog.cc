@@ -264,6 +264,8 @@ void FilesPolicyDialog::AddConfidentialRow(const gfx::ImageSkia& icon,
 
   views::Label* title_label = AddRowTitle(title, row);
   title_label->SetID(PolicyDialogBase::kConfidentialRowTitleViewId);
+  title_label->SetMultiLine(false);
+  title_label->SetElideBehavior(gfx::ElideBehavior::FADE_TAIL);
   title_label->SetFontList(
       ash::TypographyProvider::Get()->ResolveTypographyToken(
           ash::TypographyToken::kCrosBody1));
