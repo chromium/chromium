@@ -32,7 +32,11 @@ BASE_FEATURE(kAutofillEnableAndroidNKeyForFidoAuthentication,
 // Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableCardArtImage,
              "AutofillEnableCardArtImage",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // When enabled, server will return card art images of the exact required
 // dimension.
@@ -44,7 +48,11 @@ BASE_FEATURE(kAutofillEnableCardArtServerSideStretching,
 // Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableCardProductName,
              "AutofillEnableCardProductName",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // When enabled, we will store CVC for both local and server credit cards. This
 // will also allow the users to autofill their CVCs on checkout pages.
@@ -178,11 +186,10 @@ BASE_FEATURE(kAutofillEnableStickyManualFallbackForCards,
 BASE_FEATURE(kAutofillEnableUpdateVirtualCardEnrollment,
              "AutofillEnableUpdateVirtualCardEnrollment",
 #if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #else
-             base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
-);
 
 // When enabled, the vcn enroll screen will present a loading spinner while
 // enrolling the card to the server and present a confirmation screen with the
@@ -250,7 +257,7 @@ BASE_FEATURE(kAutofillUpstreamAllowAllEmailDomains,
 // card number. (E.g., '•• 8888' rather than '•••• 8888').
 BASE_FEATURE(kAutofillUseTwoDotsForLastFourDigits,
              "AutofillUseTwoDotsForLastFourDigits",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When this and the above `kAutofillEnablePaymentsMandatoryReauth` are both
 // enabled, in use-cases where we would not have triggered any user-visible

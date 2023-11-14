@@ -8385,23 +8385,6 @@
             ]
         }
     ],
-    "IOSAutofillEnableCardArtAndCardProductName": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableCardArtImage",
-                        "AutofillEnableCardProductName",
-                        "AutofillUseTwoDotsForLastFourDigits"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSBackgroundPasteboardAccess": [
         {
             "platforms": [
