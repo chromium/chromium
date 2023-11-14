@@ -194,8 +194,9 @@ void ExpectSurveyGroupHistogramEmitted(
 class TrackingProtectionBaseNoticeBrowserTest : public InProcessBrowserTest {
  protected:
   explicit TrackingProtectionBaseNoticeBrowserTest(
-      const std::vector<base::test::FeatureRef>& enabled_features) {
-    feature_list_.InitAndEnableFeatures(enabled_features);
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features = {}) {
+    feature_list_.InitAndEnableFeatures(enabled_features, disabled_features);
   }
 
   void SetUpOnMainThread() override {
@@ -218,6 +219,7 @@ class TrackingProtectionBaseNoticeBrowserTest : public InProcessBrowserTest {
   }
 
   virtual std::vector<base::test::FeatureRef> EnabledFeatures() = 0;
+  virtual std::vector<base::test::FeatureRef> DisabledFeatures() { return {}; }
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   base::HistogramTester histogram_tester_;
@@ -230,11 +232,16 @@ class TrackingProtectionOnboardingNoticeBrowserTest
     : public TrackingProtectionBaseNoticeBrowserTest {
  protected:
   TrackingProtectionOnboardingNoticeBrowserTest()
-      : TrackingProtectionBaseNoticeBrowserTest(EnabledFeatures()) {}
+      : TrackingProtectionBaseNoticeBrowserTest(EnabledFeatures(),
+                                                DisabledFeatures()) {}
 
   std::vector<base::test::FeatureRef> EnabledFeatures() override {
     return {feature_engagement::kIPHTrackingProtectionOnboardingFeature,
             feature_engagement::kIPHTrackingProtectionOffboardingFeature};
+  }
+
+  std::vector<base::test::FeatureRef> DisabledFeatures() override {
+    return {privacy_sandbox::kTrackingProtectionOnboardingRollback};
   }
 
   bool IsOnboardingPromoActive(Browser* browser) {
