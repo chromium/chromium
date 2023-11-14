@@ -499,21 +499,10 @@ inline bool IsShadowHostWithoutCustomFocusLogic(const Element& element) {
 }
 
 inline bool IsNonKeyboardFocusableShadowHost(const Element& element) {
-  if (!IsShadowHostWithoutCustomFocusLogic(element) ||
-      element.DelegatesFocus()) {
-    return false;
-  }
-  if (!element.IsFocusable()) {
-    return true;
-  }
-  if (element.IsKeyboardFocusable()) {
-    return false;
-  }
-  // This host supports focus, but cannot be keyboard focused. For example:
-  // - Tabindex is negative
-  // - It is a scroller with focusable children
-  // When tabindex is negative, we should not visit the host.
-  return !(element.GetIntegralAttribute(html_names::kTabindexAttr, 0) < 0);
+  return IsShadowHostWithoutCustomFocusLogic(element) &&
+         !(element.GetShadowRoot()
+               ? (element.IsFocusable() || element.DelegatesFocus())
+               : element.IsKeyboardFocusable());
 }
 
 inline bool IsKeyboardFocusableShadowHost(const Element& element) {

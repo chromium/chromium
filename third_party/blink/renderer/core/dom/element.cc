@@ -6074,17 +6074,12 @@ bool Element::IsFocusableStyleAfterUpdate() const {
   return IsFocusableStyle();
 }
 
-bool Element::CanBeKeyboardFocusableScroller() const {
-  return RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() &&
-         IsScrollableNode(this);
-}
-
 // This can be slow, because it can require a tree walk. It might be
 // a good idea to cache this bit on the element to avoid having to
 // recompute it. That would require marking that bit dirty whenever
 // a node in the subtree was mutated, or when styles for the subtree
 // were recomputed.
-bool Element::IsKeyboardFocusableScroller() const {
+bool Element::IsScrollableContainerThatShouldBeKeyboardFocusable() const {
   if (!RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() ||
       !IsScrollableNode(this)) {
     return false;
@@ -6111,11 +6106,11 @@ bool Element::IsKeyboardFocusable() const {
   if (!Element::IsFocusable()) {
     return false;
   }
-  if (!HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) &&
-      CanBeKeyboardFocusableScroller()) {
-    return IsKeyboardFocusableScroller();
-  }
-  return GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0;
+  // Note that IsScrollableContainerThatShouldBeKeyboardFocusable() will get
+  // called twice, once in IsFocusable (via SupportsFocus) and the other
+  // here. Note that IsScrollableContainerThatShouldBeKeyboardFocusable is slow.
+  return GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0 ||
+         IsScrollableContainerThatShouldBeKeyboardFocusable();
 }
 
 bool Element::IsFocusableStyleNoLifecycleUpdate() const {
@@ -6143,7 +6138,8 @@ bool Element::SupportsFocus() const {
 
   return HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) ||
          IsRootEditableElementWithCounting(*this) ||
-         CanBeKeyboardFocusableScroller() || SupportsSpatialNavigationFocus();
+         IsScrollableContainerThatShouldBeKeyboardFocusable() ||
+         SupportsSpatialNavigationFocus();
 }
 
 bool Element::IsAutofocusable() const {

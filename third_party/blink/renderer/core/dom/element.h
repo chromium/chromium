@@ -834,6 +834,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // update if layout is already clean.
   virtual bool IsKeyboardFocusable() const;
 
+  // This checks whether the element is a scrollable container that should be
+  // made keyboard focusable. Note that this is slow, because it must do a tree
+  // walk to look for descendant focusable nodes.
+  bool IsScrollableContainerThatShouldBeKeyboardFocusable() const;
+
   bool IsFocusedElementInDocument() const;
   Element* AdjustedFocusedElementInTreeScope() const;
   bool IsAutofocusable() const;
@@ -1680,15 +1685,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   HighlightRecalc CalculateHighlightRecalc(const ComputedStyle* old_style,
                                            const ComputedStyle& new_style,
                                            const ComputedStyle* parent_style);
-
-  // This checks that the feature KeyboardFocusableScrollers is enabled and
-  // element is a scroller. This will call IsScrollableNode, which might update
-  // layout.
-  bool CanBeKeyboardFocusableScroller() const;
-  // This checks whether the element is a scrollable container that should be
-  // made keyboard focusable. Note that this is slow, because it must do a tree
-  // walk to look for descendant focusable nodes.
-  bool IsKeyboardFocusableScroller() const;
 
   Member<ElementData> element_data_;
 };

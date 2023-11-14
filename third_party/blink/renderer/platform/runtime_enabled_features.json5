@@ -2142,7 +2142,7 @@
     },
     {
       name: "KeyboardFocusableScrollers",
-      status: "experimental",
+      status: "test",
     },
     {
       name: "LangAttributeAwareFormControlUI",
