@@ -140,7 +140,7 @@ guestMessagePipe.registerHandler(Message.GET_UID, async () => {
 
 guestMessagePipe.registerHandler(Message.IS_ACCESSIBILITY_ENABLED, async () => {
   const result = await accessibility.isAccessibilityEnabled();
-  return result.enabled;
+  return {result: result.enabled};
 });
 
 // Add Screen Backlight state listener and send state via pipes.
@@ -174,13 +174,13 @@ accessibilityObserverRouter.enableAccessibilityTreeStreaming.addListener(
     (enabled) => {
       console.log('echeapi browser_proxy.js enableAccessibilityTreeStreaming');
       guestMessagePipe.sendMessage(
-          Message.ACCESSIBILITY_SET_TREE_STREAMING_ENABLED, enabled);
+          Message.ACCESSIBILITY_SET_TREE_STREAMING_ENABLED, {enabled});
     });
 
 accessibilityObserverRouter.enableExploreByTouch.addListener((enabled) => {
   console.log('echeapi browser_proxy.js enableExploreByTouch');
   guestMessagePipe.sendMessage(
-      Message.ACCESSIBILITY_SET_EXPLORE_BY_TOUCH_ENABLED, enabled);
+      Message.ACCESSIBILITY_SET_EXPLORE_BY_TOUCH_ENABLED, {enabled});
 });
 
 accessibilityObserverRouter.performAction.addListener((action) => {
