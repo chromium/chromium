@@ -18481,14 +18481,14 @@
                     "name": "Enabled",
                     "params": {
                         "probability": "1.0",
-                        "tracking-protection-control-delayed-probability": "1.0",
+                        "tracking-protection-control-delayed-probability": "0.25",
                         "tracking-protection-control-delayed-trigger-id": "FydWYHXps0ugnJ3q1cK0PU2EPh7v",
-                        "tracking-protection-control-immediate-probability": "1.0",
+                        "tracking-protection-control-immediate-probability": "0.25",
                         "tracking-protection-control-immediate-trigger-id": "FydWYHXps0ugnJ3q1cK0PU2EPh7v",
                         "tracking-protection-immediate-over-delayed-probability": "0.5",
-                        "tracking-protection-treatment-delayed-probability": "1.0",
+                        "tracking-protection-treatment-delayed-probability": "0.25",
                         "tracking-protection-treatment-delayed-trigger-id": "FydWYHXps0ugnJ3q1cK0PU2EPh7v",
-                        "tracking-protection-treatment-immediate-probability": "1.0",
+                        "tracking-protection-treatment-immediate-probability": "0.25",
                         "tracking-protection-treatment-immediate-trigger-id": "FydWYHXps0ugnJ3q1cK0PU2EPh7v"
                     },
                     "enable_features": [
