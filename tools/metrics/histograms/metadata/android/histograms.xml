@@ -4868,6 +4868,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.MediaIntegrity.ContentBindingSizeLog2"
+    units="log2(bytes)" expires_after="2024-11-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the ceil(log2(x)) of the size of the provided content binding on a
+    requestToken call.
+
+    Play restricts the length of the content binding to 500, but this histogram
+    is recorded before calling Play, so any values higher that 9 would likely
+    have led to a client error.
+
+    This histogram is recorded as an exact linear histogram with a max value of
+    32.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.MediaIntegrity.GetTokenCumulative"
     units="calls" expires_after="2024-11-01">
   <owner>pbirk@chromium.org</owner>
@@ -4917,6 +4934,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.MediaIntegrity.GetTokenProviderResponseTime"
+    units="ms" expires_after="2024-11-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the end-to-end time for a GetTokenProvider call to a successfull
+    response. This will be the time observed by a JavaScript client waiting for
+    a new token provider.
+
+    This includes both responses served from the cache and responses that go to
+    Play. This histogram is not logged if the call results in an error.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.MediaIntegrity.GetTokenProviderStatus"
     enum="AndroidWebViewMediaIntegrityStatus" expires_after="2024-11-01">
   <owner>pbirk@chromium.org</owner>
@@ -4945,6 +4976,16 @@ chromium-metrics-reviews@google.com.
     The error enum corresponds to the StandardIntegrityErrorCode, but introduces
     an UNKNOWN_ERROR code to catch situations where the Play client library
     introduces a new error code.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.MediaIntegrity.GetTokenTime" units="ms"
+    expires_after="2024-11-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the time from the beginning of a getToken request to a successful
+    response is returned to JavaScript.
   </summary>
 </histogram>
 
@@ -5061,6 +5102,17 @@ chromium-metrics-reviews@google.com.
     is &quot;how far did the app get&quot;. By subtracting the raw count of N+1
     from bucket N, you remove all the counts where the app continued to emit the
     next value in the sequence.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.MediaIntegrity.TokenProviderCreationTime"
+    units="ms" expires_after="2024-11-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the time from requesting a new token provider from Play to receiving
+    a successful response. This histogram is not emitted if the call results in
+    an error.
   </summary>
 </histogram>
 
