@@ -47,6 +47,7 @@ namespace {
 using Observer = TargetDeviceBootstrapController::Observer;
 using Status = TargetDeviceBootstrapController::Status;
 using Step = TargetDeviceBootstrapController::Step;
+using Payload = TargetDeviceBootstrapController::Payload;
 using ErrorCode = TargetDeviceBootstrapController::ErrorCode;
 using ConnectionClosedReason =
     TargetDeviceConnectionBroker::ConnectionClosedReason;
@@ -66,9 +67,11 @@ class FakeObserver : public Observer {
     ASSERT_NE(status.step, last_status.step);
 
     last_status = status;
+    num_on_status_changed_called++;
   }
 
   Status last_status;
+  int num_on_status_changed_called = 0;
 };
 
 constexpr char kFakeChallengeBytesBase64[] =
@@ -160,6 +163,10 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
 
   SessionContext GetSessionContext() {
     return bootstrap_controller_->session_context_;
+  }
+
+  void UpdateStatus(Step step, Payload payload) {
+    bootstrap_controller_->UpdateStatus(step, payload);
   }
 
  protected:
@@ -278,9 +285,11 @@ TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection_Pin) {
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::PIN_VERIFICATION);
-  // TODO: Test PIN payload
-  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+  EXPECT_TRUE(absl::holds_alternative<TargetDeviceBootstrapController::Pin>(
       fake_observer_->last_status.payload));
+  EXPECT_TRUE(absl::get<TargetDeviceBootstrapController::Pin>(
+                  fake_observer_->last_status.payload)
+                  .length() == 4);
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, AuthenticateConnection) {
@@ -435,7 +444,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, RequestWifiCredentials) {
                                  /*is_hidden=*/true, "password"));
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::WIFI_CREDENTIALS_RECEIVED);
-  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+  EXPECT_TRUE(absl::holds_alternative<mojom::WifiCredentials>(
       fake_observer_->last_status.payload));
   histogram_tester_.ExpectBucketCount(kWifiTransferResultHistogramName, true,
                                       1);
@@ -688,6 +697,19 @@ TEST_F(TargetDeviceBootstrapControllerTest, SessionContext) {
   EXPECT_EQ(expected_advertising_id,
             GetSessionContext().advertising_id().ToString());
   EXPECT_EQ(expected_shared_secret, GetSessionContext().shared_secret());
+}
+
+TEST_F(TargetDeviceBootstrapControllerTest,
+       ObserversAreNotNotifiedIfStatusStepIsSame) {
+  EXPECT_EQ(0, fake_observer_->num_on_status_changed_called);
+  UpdateStatus(/*step=*/Step::REQUESTING_WIFI_CREDENTIALS,
+               /*payload=*/absl::monostate());
+  EXPECT_EQ(1, fake_observer_->num_on_status_changed_called);
+
+  // Updating status again with the same step shouldn't notify observers.
+  UpdateStatus(/*step=*/Step::REQUESTING_WIFI_CREDENTIALS,
+               /*payload=*/absl::monostate());
+  EXPECT_EQ(1, fake_observer_->num_on_status_changed_called);
 }
 
 }  // namespace ash::quick_start

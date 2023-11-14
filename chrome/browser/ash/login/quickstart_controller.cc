@@ -157,6 +157,7 @@ void QuickStartController::OnStatusChanged(
     const TargetDeviceBootstrapController::Status& status) {
   using Step = TargetDeviceBootstrapController::Step;
   using ErrorCode = TargetDeviceBootstrapController::ErrorCode;
+  using Pin = TargetDeviceBootstrapController::Pin;
 
   // TODO(b/298042953): Emit ScreenOpened metrics when automatically resuming
   // after an update.
@@ -174,8 +175,9 @@ void QuickStartController::OnStatusChanged(
       QS_LOG(INFO) << "Hit screen which is not implemented. Continuing";
       return;
     case Step::PIN_VERIFICATION:
-      CHECK(status.pin.length() == 4);
-      pin_ = status.pin;
+      CHECK(absl::holds_alternative<Pin>(status.payload));
+      pin_ = absl::get<Pin>(status.payload);
+      CHECK(pin_.value().length() == 4);
       UpdateUiState(UiState::SHOWING_PIN);
       QuickStartMetrics::RecordScreenOpened(
           QuickStartMetrics::ScreenName::kSetUpAndroidPhone);
@@ -190,9 +192,12 @@ void QuickStartController::OnStatusChanged(
           QuickStartMetrics::ScreenName::kConnectingToWifi);
       return;
     case Step::WIFI_CREDENTIALS_RECEIVED:
+      CHECK(absl::holds_alternative<mojom::WifiCredentials>(status.payload));
+
       LoginDisplayHost::default_host()
           ->GetWizardContext()
-          ->quick_start_wifi_credentials = status.wifi_credentials;
+          ->quick_start_wifi_credentials =
+          absl::get<mojom::WifiCredentials>(status.payload);
       ABSL_FALLTHROUGH_INTENDED;
     case Step::EMPTY_WIFI_CREDENTIALS_RECEIVED:
       UpdateUiState(UiState::WIFI_CREDENTIALS_RECEIVED);
