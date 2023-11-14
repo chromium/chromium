@@ -294,6 +294,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_NOTE_CHARACTER_COUNT},
     {"passwordNoteCharacterCountWarning",
      IDS_PASSWORD_MANAGER_UI_NOTE_CHARACTER_COUNT_WARNING},
+    {"passwordListAriaLabel", IDS_PASSWORD_MANAGER_UI_PASSWORD_LIST_ARIA_LABEL},
     {"passwords", IDS_PASSWORD_MANAGER_UI_PASSWORDS},
     {"phishedAndLeakedPassword",
      IDS_PASSWORD_MANAGER_UI_PASSWORD_PHISHED_AND_LEAKED},
