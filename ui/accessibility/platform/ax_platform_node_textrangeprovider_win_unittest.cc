@@ -3179,6 +3179,43 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some text");
 }
 
+TEST_F(AXPlatformNodeTextRangeProviderTest, TestMoveByCharacterEmptyTextfield) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="hello"
+    ++++3 kTextField state=kEditable
+    ++++++4 kStaticText name="" state=kEditable
+    ++++5 kStaticText name="world" state=kEditable
+  )HTML"));
+
+  update.nodes[2].SetNameExplicitlyEmpty();
+
+  Init(update);
+
+  // Set up variables from the tree for testing.
+  AXNode* root_node = GetRoot();
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, root_node);
+
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"hello\n\xFFFc\nworld");
+
+  int count;
+  // Tests for TextUnit_Character.
+  ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_Start, TextUnit_Character, /*count*/ 7, &count));
+  ASSERT_EQ(7, count);
+  // Note that by design, empty objects such as empty text fields, are placed in
+  // their own paragraph for easier screen reader navigation.
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"\nworld");
+
+  ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_Start, TextUnit_Character, /*count*/ -7,
+      &count));
+  ASSERT_EQ(-7, count);
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"hello\n\xFFFc\nworld");
+}
+
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderMoveEndpointByFormat) {
   Init(BuildAXTreeForMoveByFormat());

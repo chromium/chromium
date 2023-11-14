@@ -2823,6 +2823,8 @@ class AXPosition {
   bool AllowsCharacterStopsOnGeneratedNewline() const {
     return g_ax_embedded_object_behavior ==
                AXEmbeddedObjectBehavior::kExposeCharacterForHypertext ||
+           g_ax_embedded_object_behavior ==
+               AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent ||
            !IsInUnignoredEmptyObject();
   }
 
@@ -2905,8 +2907,9 @@ class AXPosition {
       return Clone();
 
     AXPositionInstance leaf_text_position = AsLeafTextPosition();
-    if (leaf_text_position->IsFollowedByGeneratedNewline())
+    if (leaf_text_position->IsFollowedByGeneratedNewline()) {
       return leaf_text_position;
+    }
 
     AXPositionInstance text_position = AsTextPosition();
 
@@ -3038,8 +3041,9 @@ class AXPosition {
       return text_position;
     }
 
-    if (text_position->IsFollowedByGeneratedNewline())
+    if (text_position->IsFollowedByGeneratedNewline()) {
       return CreateNextPositionAtAnchorWithText();
+    }
 
     // Calling "AsLeafTextPositionBeforeCharacter" should have created a text
     // position that is either at a grapheme boundary, or a null position. If
@@ -4249,6 +4253,18 @@ class AXPosition {
     return GetAnchor() && !GetAnchor()->IsIgnored() && IsInEmptyObject();
   }
 
+  // Returns whether the position is anchored in an unignored and empty object,
+  // has an author specified name that is not empty, and it is not anchored in
+  // an image. This is because in UIA we want to expose embedded object
+  // characters for image elements, even if they have an author specified name.
+  // Only used for UIA.
+  bool EmptyObjectShouldProvideNameFromAttribute() const {
+    DCHECK(IsInUnignoredEmptyObject());
+    return GetAnchor()->GetNameFrom() == ax::mojom::NameFrom::kAttribute &&
+           !IsImage(GetAnchor()->GetRole()) &&
+           !GetAnchor()->GetNameUTF16().empty();
+  }
+
   AXNode* GetEmptyObjectAncestorNode() const {
     if (!GetAnchor())
       return nullptr;
@@ -4303,7 +4319,7 @@ class AXPosition {
   // text representation. Some platforms use an embedded object replacement
   // character that replaces the text coming from most child nodes and empty
   // objects.
-  const std::u16string& GetText(
+  const std::u16string GetText(
       const AXEmbeddedObjectBehavior embedded_object_behavior =
           g_ax_embedded_object_behavior) const {
     // Note that the use of `base::EmptyString16()` is a special case here. For
@@ -4335,7 +4351,29 @@ class AXPosition {
         // text navigation purposes. I.e. when AT's need to navigate around
         // nodes and elements which are empty and should then be exposed as
         // embedded object characters.
+        //
+        // According to the spec, we should favor author supplied names over
+        // names from content. However, trying to fulfill this in every case
+        // leads to bugs in the UIA implementation in the TextRangeProvider
+        // since we create leaf text positions, which means that they will
+        // always have name from content. As such, for now we are
+        // implementing this special case where we will only return the author
+        // specified name if NameFrom is kAttribute and the name is not empty.
+        // Even though a case like:
+        // <button aria-label="label">hello</button>
+        // Should have its name exposed as "label" according to the spec
+        // but we will expose "hello" instead.
+        // Exposing the aria label here would make us expose text that isn't on
+        // a leaf position, and throughout our UIA implementation, we always
+        // assume and expect to be on leaf positions. Exposing the label
+        // when it has text from content would effectively hide the subtree
+        // from UIA ATs
+        // https://www.w3.org/TR/accname-1.1/#mapping_additional_nd_te
+
         if (IsInUnignoredEmptyObject()) {
+          if (EmptyObjectShouldProvideNameFromAttribute()) {
+            return GetAnchor()->GetNameUTF16();
+          }
           return *embedded_character_str;
         }
         // However, for UIA, we don't want to expose the Hypertext like the
@@ -4440,7 +4478,18 @@ class AXPosition {
         // embedded object characters, and as such we need to return the length
         // of the embedded object character when calculating the `MaxTextOffset`
         // for these nodes.
+        //
+        // According to the spec, we should favor author supplied names over
+        // names from content. However, trying to fulfill this in every case
+        // leads to bugs in the UIA implementation in the TextRangeProvider
+        // since we create leaf text positions, which means that they will
+        // always have name from content. As such, for now we are
+        // implementing this special case where we will only return the author
+        // specified name if NameFrom is kAttribute and the name is not empty.
         if (IsInUnignoredEmptyObject()) {
+          if (EmptyObjectShouldProvideNameFromAttribute()) {
+            return (int)GetAnchor()->GetNameUTF16().length();
+          }
           return AXNode::kEmbeddedObjectCharacterLengthUTF16;
         }
         // However, for UIA, we don't want to expose the Hypertext like the
@@ -4767,9 +4816,16 @@ class AXPosition {
     // control has no text, no word start offsets are present in the
     // `ax::mojom::IntListAttribute::kWordStarts` attribute, so we need to
     // special case them here.
-    if (g_ax_embedded_object_behavior ==
-            AXEmbeddedObjectBehavior::kExposeCharacterForHypertext &&
-        IsInUnignoredEmptyObject()) {
+    //
+    // For the kUIAExposeCharacterForHypertext case, we only want to return a
+    // vector with {0} if the empty object does not have an author specified
+    // name that we are exposing.
+    if (IsInUnignoredEmptyObject() &&
+        (g_ax_embedded_object_behavior ==
+             AXEmbeddedObjectBehavior::kExposeCharacterForHypertext ||
+         (g_ax_embedded_object_behavior ==
+              AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent &&
+          !EmptyObjectShouldProvideNameFromAttribute()))) {
       // Using braces ensures that the vector will contain the given value, and
       // not create a vector of size 0.
       static const base::NoDestructor<std::vector<int32_t>>
@@ -4799,9 +4855,12 @@ class AXPosition {
     // is positioned at 1. Because we want to treat embedded object replacement
     // characters as ordinary characters, it wouldn't be consistent to assume
     // they have no length and return 0 instead of 1.
-    if (g_ax_embedded_object_behavior ==
-            AXEmbeddedObjectBehavior::kExposeCharacterForHypertext &&
-        IsInUnignoredEmptyObject()) {
+    if (IsInUnignoredEmptyObject() &&
+        (g_ax_embedded_object_behavior ==
+             AXEmbeddedObjectBehavior::kExposeCharacterForHypertext ||
+         (g_ax_embedded_object_behavior ==
+              AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent &&
+          !EmptyObjectShouldProvideNameFromAttribute()))) {
       // Using braces ensures that the vector will contain the given value, and
       // not create a vector of size 1.
       static const base::NoDestructor<std::vector<int32_t>> embedded_word_ends{
