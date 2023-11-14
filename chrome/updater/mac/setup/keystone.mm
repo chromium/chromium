@@ -4,6 +4,8 @@
 
 #include "chrome/updater/mac/setup/keystone.h"
 
+#import <Foundation/Foundation.h>
+
 #include <optional>
 #include <string>
 #include <vector>
@@ -178,13 +180,36 @@ bool CopyKeystoneBundle(UpdaterScope scope) {
   return true;
 }
 
-bool CreateEmptyFileInDirectory(const base::FilePath& dir,
-                                const std::string& file_name) {
+bool CreateKeystoneLaunchCtlPlistFiles(UpdaterScope scope) {
+  // If not all Keystone launchctl plist files are present, Keystone installer
+  // will proceed regardless of the bundle state. The empty launchctl files
+  // created here make legacy Keystone installer believe that a healthy newer
+  // version updater already exists and thus won't over-install.
+  if (IsSystemInstall(scope) &&
+      !CreateEmptyPlistFile(
+          GetLibraryFolderPath(scope)
+              ->Append("LaunchDaemons")
+              .AppendASCII(base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID
+                                              ".daemon.plist")))) {
+    return false;
+  }
+
+  base::FilePath launch_agent_dir =
+      GetLibraryFolderPath(scope)->Append("LaunchAgents");
+  return CreateEmptyPlistFile(launch_agent_dir.AppendASCII(
+             base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID ".agent.plist"))) &&
+         CreateEmptyPlistFile(launch_agent_dir.AppendASCII(base::ToLowerASCII(
+             LEGACY_GOOGLE_UPDATE_APPID ".xpcservice.plist")));
+}
+
+}  // namespace
+
+bool CreateEmptyPlistFile(const base::FilePath& file_path) {
   constexpr int kPermissionsMask = base::FILE_PERMISSION_READ_BY_USER |
                                    base::FILE_PERMISSION_WRITE_BY_USER |
                                    base::FILE_PERMISSION_READ_BY_GROUP |
                                    base::FILE_PERMISSION_READ_BY_OTHERS;
-
+  const base::FilePath dir = file_path.DirName();
   if (!base::PathExists(dir)) {
     base::File::Error error;
     if (!base::CreateDirectoryAndGetError(dir, &error) ||
@@ -195,20 +220,19 @@ bool CreateEmptyFileInDirectory(const base::FilePath& dir,
     }
   }
 
-  base::FilePath file_path = dir.AppendASCII(file_name);
-  int64_t file_size;
-  if (base::GetFileSize(file_path, &file_size) && file_size == 0) {
-    VLOG(1) << "Skipping creation of " << file_path << ": file already empty.";
-    return true;
+  @autoreleasepool {
+    NSURL* const url = base::apple::FilePathToNSURL(file_path);
+    if (base::PathExists(file_path) && [@{
+        } isEqualToDictionary:[NSDictionary dictionaryWithContentsOfURL:url]]) {
+      VLOG(2) << "Skipping updating " << file_path;
+      return true;
+    }
+    if (![@{} writeToURL:url atomically:YES]) {
+      LOG(ERROR) << "Failed to write " << url;
+      return false;
+    }
   }
-  base::File file(file_path,
-                  base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  file.Close();
 
-  if (!base::PathExists(file_path)) {
-    LOG(ERROR) << "Failed to create file: " << file_path.value().c_str();
-    return false;
-  }
   if (!base::SetPosixFilePermissions(file_path, kPermissionsMask)) {
     LOG(ERROR) << "Failed to set permissions: " << file_path.value().c_str();
     return false;
@@ -216,30 +240,6 @@ bool CreateEmptyFileInDirectory(const base::FilePath& dir,
 
   return true;
 }
-
-bool CreateKeystoneLaunchCtlPlistFiles(UpdaterScope scope) {
-  // If not all Keystone launchctl plist files are present, Keystone installer
-  // will proceed regardless of the bundle state. The empty launchctl files
-  // created here are used to make legacy Keystone installer believe that a
-  // healthy newer version updater already exists and thus won't over-install.
-  if (IsSystemInstall(scope) &&
-      !CreateEmptyFileInDirectory(
-          GetLibraryFolderPath(scope)->Append("LaunchDaemons"),
-          base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID ".daemon.plist"))) {
-    return false;
-  }
-
-  base::FilePath launch_agent_dir =
-      GetLibraryFolderPath(scope)->Append("LaunchAgents");
-  return CreateEmptyFileInDirectory(
-             launch_agent_dir,
-             base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID ".agent.plist")) &&
-         CreateEmptyFileInDirectory(
-             launch_agent_dir, base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID
-                                                  ".xpcservice.plist"));
-}
-
-}  // namespace
 
 bool InstallKeystone(UpdaterScope scope) {
   return CopyKeystoneBundle(scope) && CreateKeystoneLaunchCtlPlistFiles(scope);

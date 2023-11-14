@@ -16,6 +16,9 @@ namespace updater {
 
 struct RegistrationRequest;
 
+// Create a plist file with an empty dictionary.
+bool CreateEmptyPlistFile(const base::FilePath& file_path);
+
 // Installs Keystone and the necessary supporting files.
 bool InstallKeystone(UpdaterScope scope);
 

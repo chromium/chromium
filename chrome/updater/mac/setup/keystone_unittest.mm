@@ -4,13 +4,18 @@
 
 #include "chrome/updater/mac/setup/keystone.h"
 
+#import <Foundation/Foundation.h>
+
 #include <vector>
 
+#include "base/apple/foundation_util.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/registration_data.h"
@@ -44,6 +49,49 @@ class KeystoneTest : public testing::Test {
  protected:
   base::ScopedTempDir temp_keystone_dir_;
 };
+
+TEST_F(KeystoneTest, CreateEmptyPlistFile) {
+  constexpr int kPermissionsMask = base::FILE_PERMISSION_READ_BY_USER |
+                                   base::FILE_PERMISSION_WRITE_BY_USER |
+                                   base::FILE_PERMISSION_READ_BY_GROUP |
+                                   base::FILE_PERMISSION_READ_BY_OTHERS;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // Verify plist file is created if not present.
+  const base::FilePath plist_path =
+      temp_dir.GetPath().AppendASCII("empty.plist");
+  EXPECT_TRUE(CreateEmptyPlistFile(plist_path));
+  EXPECT_TRUE(base::PathExists(plist_path));
+  int mode = 0;
+  EXPECT_TRUE(base::GetPosixFilePermissions(plist_path, &mode));
+  EXPECT_EQ(mode, kPermissionsMask);
+
+  {
+    // Verify the plist is not re-created when contents didn't change.
+    base::Time previous_mtime = base::Time::Now() - base::Days(1);
+    EXPECT_TRUE(base::TouchFile(plist_path, previous_mtime, previous_mtime));
+    EXPECT_TRUE(CreateEmptyPlistFile(plist_path));
+    base::File::Info info;
+    EXPECT_TRUE(base::GetFileInfo(plist_path, &info));
+    EXPECT_EQ(info.last_modified, previous_mtime);
+  }
+
+  @autoreleasepool {
+    // Verify the plist is re-created when contents needs update.
+    NSURL* const url = base::apple::FilePathToNSURL(plist_path);
+    EXPECT_TRUE([@{@"foo": @2} writeToURL:url atomically:YES]);
+    base::Time previous_mtime = base::Time::Now() - base::Days(1);
+    EXPECT_TRUE(base::TouchFile(plist_path, previous_mtime, previous_mtime));
+    EXPECT_TRUE(CreateEmptyPlistFile(plist_path));
+    base::File::Info info;
+    EXPECT_TRUE(base::GetFileInfo(plist_path, &info));
+    EXPECT_NE(info.last_modified, previous_mtime);
+    mode = 0;
+    EXPECT_TRUE(base::GetPosixFilePermissions(plist_path, &mode));
+    EXPECT_EQ(mode, kPermissionsMask);
+  }
+}
 
 TEST_F(KeystoneTest, MigrateKeystoneApps) {
   std::vector<RegistrationRequest> registration_requests;

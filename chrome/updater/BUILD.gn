@@ -903,7 +903,7 @@ if (is_win || is_mac || is_linux) {
       sources += [
         "mac/keystone/ksadmin_unittest.cc",
         "mac/privileged_helper/privileged_helper_unittests.mm",
-        "mac/setup/keystone_unittest.cc",
+        "mac/setup/keystone_unittest.mm",
         "mac/setup/ks_tickets_unittest.mm",
         "mac/setup/setup_unittest.mm",
         "mac/setup/wake_task_unittest.mm",
