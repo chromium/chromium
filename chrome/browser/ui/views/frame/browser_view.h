@@ -779,8 +779,11 @@ class BrowserView : public BrowserWindow,
 
   // Creates an accessible tab label for screen readers that includes the tab
   // status for the given tab index. This takes the form of
-  // "Page title - Tab state".
-  std::u16string GetAccessibleTabLabel(int index) const;
+  // "Page title - Tab state". The optional parameter `is_for_tab` can be set
+  // when getting the label for a tab (instead of a window). Titles for the
+  // window don't include less important messages like memory usage.
+  std::u16string GetAccessibleTabLabel(int index,
+                                       bool is_for_tab = false) const;
 
   // Testing interface:
   views::View* GetContentsContainerForTest() { return contents_container_; }

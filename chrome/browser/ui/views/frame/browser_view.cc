@@ -3472,7 +3472,8 @@ std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
   return title;
 }
 
-std::u16string BrowserView::GetAccessibleTabLabel(int index) const {
+std::u16string BrowserView::GetAccessibleTabLabel(int index,
+                                                  bool is_for_tab) const {
   std::u16string title = browser_->GetWindowTitleForTab(index);
 
   absl::optional<tab_groups::TabGroupId> group =
@@ -3581,14 +3582,16 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index) const {
              tab_data.tab_resource_usage->memory_usage_in_bytes() > 0) {
     const uint64_t memory_used =
         tab_data.tab_resource_usage->memory_usage_in_bytes();
-    const int message_id =
+    const bool is_high_memory_usage =
         memory_used > static_cast<uint64_t>(
                           performance_manager::features::
-                              kMemoryUsageInHovercardsHighThresholdBytes.Get())
-            ? IDS_TAB_AX_HIGH_MEMORY_USAGE
-            : IDS_TAB_AX_MEMORY_USAGE;
-    title = l10n_util::GetStringFUTF16(message_id, title,
-                                       ui::FormatBytes(memory_used));
+                              kMemoryUsageInHovercardsHighThresholdBytes.Get());
+    if (is_high_memory_usage || is_for_tab) {
+      const int message_id = is_high_memory_usage ? IDS_TAB_AX_HIGH_MEMORY_USAGE
+                                                  : IDS_TAB_AX_MEMORY_USAGE;
+      title = l10n_util::GetStringFUTF16(message_id, title,
+                                         ui::FormatBytes(memory_used));
+    }
   }
 
   return title;
