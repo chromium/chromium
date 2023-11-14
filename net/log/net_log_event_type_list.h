@@ -1480,26 +1480,6 @@ EVENT_TYPE(BIDIRECTIONAL_STREAM_FAILED)
 EVENT_TYPE(BIDIRECTIONAL_STREAM_BOUND_TO_QUIC_SESSION)
 
 // ------------------------------------------------------------------------
-// SERVER_PUSH_LOOKUP_TRANSACTION
-// ------------------------------------------------------------------------
-
-// The start/end of a push lookup transaction for server push.
-//
-// The START event has the parameters:
-//   {
-//     "source_dependency": <Source identifier for the server push lookp.
-//                           It can be a QUIC_SESSION or a HTTP2_SESSION>,
-//     "pushed_url": <The url that has been pushed and looked up>,
-//   }
-//
-// If the transaction doesn't find the resource in cache, then the END phase
-// has these parameters:
-//   {
-//     "net_error": <Net error code integer>,
-//   }
-EVENT_TYPE(SERVER_PUSH_LOOKUP_TRANSACTION)
-
-// ------------------------------------------------------------------------
 // SpdySession
 // ------------------------------------------------------------------------
 
