@@ -6,6 +6,10 @@
     width: 100%;
   }
 
+  #container:hover[actionable] {
+    background-color: var(--cr-hover-background-color);
+  }
+
   #appData {
     align-items: center;
     display: flex;
@@ -24,7 +28,9 @@
     margin-inline-end: var(--cr-controlled-by-spacing);
   }
 </style>
-<div id="container" on-click="onPermissionRowClick_" actionable>
+<div id="container"
+    actionable$="[[!isPermissionManaged_]]"
+    on-click="onPermissionRowClick_">
   <div id="appData">
     <img id="appIcon" src="chrome://app-icon/[[app.id]]/64"
         alt="[[app.name]] app icon." aria-hidden="true">
