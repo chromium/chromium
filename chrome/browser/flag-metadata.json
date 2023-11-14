@@ -4653,7 +4653,7 @@
       "meacer@chromium.org",
       "trusty-transport@chromium.org"
     ],
-    "expiry_milestone": 118
+    "expiry_milestone": 130
   },
   {
     "name": "https-upgrades",
