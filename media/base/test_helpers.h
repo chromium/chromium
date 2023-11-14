@@ -108,6 +108,9 @@ class TestVideoConfig {
   static VideoDecoderConfig NormalEncrypted(VideoCodec codec,
                                             VideoCodecProfile);
   static VideoDecoderConfig NormalRotated(VideoRotation rotation);
+  static VideoDecoderConfig NormalHdr(VideoCodec codec = VideoCodec::kVP8);
+  static VideoDecoderConfig NormalHdrEncrypted(
+      VideoCodec codec = VideoCodec::kVP8);
 
   // Returns a configuration that is larger in dimensions than Normal().
   static VideoDecoderConfig Large(VideoCodec codec = VideoCodec::kVP8);

@@ -335,6 +335,11 @@ void DecryptingVideoDecoder::DeliverFrame(Decryptor::Status status,
       frame->set_color_space(config_.color_space_info().ToGfxColorSpace());
   }
 
+  // Attach the HDR metadata from the `config_` if it's not set on the `frame`.
+  if (!frame->hdr_metadata() && config_.hdr_metadata()) {
+    frame->set_hdr_metadata(config_.hdr_metadata());
+  }
+
   output_cb_.Run(std::move(frame));
 
   if (scoped_pending_buffer_to_decode->end_of_stream()) {

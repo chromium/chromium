@@ -135,7 +135,9 @@ class MojoCdmVideoFrame final : public VideoFrameImpl {
 
     // |frame| could fail to be created if the memory can't be mapped into
     // this address space.
+    // TODO(b/183748013): Set HDRMetadata once supported by the CDM interface.
     if (frame) {
+      frame->metadata().power_efficient = false;
       frame->set_color_space(MediaColorSpace().ToGfxColorSpace());
       frame->BackWithSharedMemory(&mapped_region->region);
       frame->AddDestructionObserver(base::BindOnce(

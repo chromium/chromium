@@ -84,7 +84,7 @@ class DecryptingVideoDecoderTest : public testing::Test {
   }
 
   // Initialize the |decoder_| and expects it to succeed.
-  void Initialize() {
+  void Initialize(const VideoDecoderConfig& config) {
     SetCdmType(CDM_WITH_DECRYPTOR);
     EXPECT_CALL(*decryptor_, InitializeVideoDecoder(_, _))
         .WillOnce(RunOnceCallback<1>(true));
@@ -93,8 +93,10 @@ class DecryptingVideoDecoderTest : public testing::Test {
       return std::make_unique<CallbackRegistration>();
     });
 
-    InitializeAndExpectResult(TestVideoConfig::NormalEncrypted(), true);
+    InitializeAndExpectResult(config, true);
   }
+
+  void Initialize() { Initialize(TestVideoConfig::NormalEncrypted()); }
 
   // Reinitialize the |decoder_| and expects it to succeed.
   void Reinitialize(const VideoDecoderConfig& new_config) {
@@ -561,12 +563,24 @@ TEST_F(DecryptingVideoDecoderTest, Destroy_AfterReset) {
   Destroy();
 }
 
-// Test the case where color space in the config is set in the decoded frame.
+// Test the case where ColorSpace in the config is set in the decoded frame.
 TEST_F(DecryptingVideoDecoderTest, ColorSpace) {
-  Initialize();
-  EXPECT_FALSE(decoded_video_frame_->ColorSpace().IsValid());
+  Initialize(TestVideoConfig::NormalEncrypted());
   EnterNormalDecodingState();
   EXPECT_TRUE(decoded_video_frame_->ColorSpace().IsValid());
+  EXPECT_FALSE(decoded_video_frame_->ColorSpace().IsHDR());
+  EXPECT_FALSE(decoded_video_frame_->hdr_metadata());
+}
+
+// Test the case where ColorSpace and HDRMetadata in the config are set in the
+// decoded frame.
+TEST_F(DecryptingVideoDecoderTest, HDRMetadata) {
+  Initialize(TestVideoConfig::NormalHdrEncrypted());
+  EnterNormalDecodingState();
+  EXPECT_TRUE(decoded_video_frame_->ColorSpace().IsValid());
+  EXPECT_TRUE(decoded_video_frame_->ColorSpace().IsHDR());
+  EXPECT_TRUE(decoded_video_frame_->hdr_metadata());
+  EXPECT_TRUE(decoded_video_frame_->hdr_metadata()->IsValid());
 }
 
 }  // namespace media
