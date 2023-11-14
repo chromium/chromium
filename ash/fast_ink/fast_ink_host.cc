@@ -178,13 +178,11 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
 
   if (switches::ShouldClearFastInkBuffer()) {
     if (features::ShouldUseMappableSharedImage()) {
-      // NOTE: SharedImageInterface::MapSharedImage() can CHECK if passed an
-      // empty mailbox.
-      std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> mapping =
-          client_shared_image_
-              ? context_provider_->SharedImageInterface()->MapSharedImage(
-                    client_shared_image_->mailbox())
-              : nullptr;
+      std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> mapping;
+      if (client_shared_image_) {
+        mapping = context_provider_->SharedImageInterface()->MapSharedImage(
+            client_shared_image_);
+      }
       LOG_IF(ERROR, !mapping) << "Failed to map MappableSI";
       uint8_t* memory =
           mapping ? static_cast<uint8_t*>(mapping->Memory(0)) : nullptr;
@@ -253,7 +251,7 @@ void FastInkHost::DrawBitmap(SkBitmap bitmap, const gfx::Rect& damage_rect) {
 
     if (features::ShouldUseMappableSharedImage()) {
       mapping = context_provider_->SharedImageInterface()->MapSharedImage(
-          client_shared_image_->mailbox());
+          client_shared_image_);
       if (!mapping) {
         LOG(ERROR) << "Failed to map MappableSI";
         return;

@@ -317,7 +317,8 @@ void RoundedDisplayFrameFactory::Paint(
     DCHECK(!buffer);
     gpu::SharedImageInterface* sii =
         resource->context_provider->SharedImageInterface();
-    mapping = sii->MapSharedImage(resource->mailbox());
+    CHECK(resource->client_shared_image());
+    mapping = sii->MapSharedImage(resource->client_shared_image());
     if (!mapping) {
       return;
     }

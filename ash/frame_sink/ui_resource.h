@@ -51,6 +51,10 @@ class ASH_EXPORT UiResource {
                                 : external_mailbox_;
   }
 
+  const scoped_refptr<gpu::ClientSharedImage>& client_shared_image() const {
+    return client_shared_image_;
+  }
+
   scoped_refptr<viz::RasterContextProvider> context_provider;
   gpu::SyncToken sync_token;
   viz::SharedImageFormat format;

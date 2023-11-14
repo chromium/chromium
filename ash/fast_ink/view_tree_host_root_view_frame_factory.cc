@@ -277,7 +277,8 @@ void ViewTreeHostRootViewFrameFactory::Paint(
 
     gpu::SharedImageInterface* sii =
         resource->context_provider->SharedImageInterface();
-    mapping = sii->MapSharedImage(resource->mailbox());
+    CHECK(resource->client_shared_image());
+    mapping = sii->MapSharedImage(resource->client_shared_image());
     if (!mapping) {
       TRACE_EVENT0("ui", "ViewTreeHostRootView::Paint::Map");
       LOG(ERROR) << "MapSharedImage Failed.";
