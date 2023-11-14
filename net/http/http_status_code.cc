@@ -19,7 +19,7 @@ const char* GetHttpReasonPhrase(HttpStatusCode code) {
 #undef HTTP_STATUS_ENUM_VALUE
 
     default:
-      NOTREACHED() << "unknown HTTP status code " << code;
+      DUMP_WILL_BE_NOTREACHED_NORETURN() << "unknown HTTP status code " << code;
   }
 
   return "";
