@@ -180,6 +180,10 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     on_device_model::ModelAssets assets) {
   if (!service_remote_) {
+    // Close the files on a background thread.
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        base::DoNothingWithBoundArgs(std::move(assets)));
     return;
   }
   // TODO(b/302402959): Choose max_tokens based on device.
