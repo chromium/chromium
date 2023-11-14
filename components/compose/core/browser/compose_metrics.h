@@ -12,11 +12,12 @@ class TimeDelta;
 namespace compose {
 
 // Compose histogram names.
+extern const char kComposeDialogOpenLatency[];
+extern const char kComposeDialogSelectionLength[];
 extern const char kComposeResponseDurationOk[];
 extern const char kComposeResponseDurationError[];
 extern const char kComposeResponseStatus[];
 extern const char kComposeShowStatus[];
-extern const char kComposeDialogOpenLatency[];
 
 // Enum for calculating the CTR of the Compose context menu item.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -66,6 +67,9 @@ void LogComposeSessionCloseReason(ComposeSessionCloseReason reason);
 
 // Log the time taken for the dialog to be fully shown and interactable.
 void LogComposeDialogOpenLatency(base::TimeDelta duration);
+
+// Log the character length of the selection when the dialog is opened.
+void LogComposeDialogSelectionLength(int length);
 }  // namespace compose
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_METRICS_H_

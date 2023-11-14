@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -236,8 +237,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(ChromeComposeClientTest, TestCompose) {
-  base::HistogramTester histogram_tester;
-
   ShowDialogAndBindMojo();
   EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
       .WillOnce(testing::WithArg<2>(testing::Invoke(
@@ -265,12 +264,12 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
   EXPECT_EQ("Cucumbers", result->result);
 
   // Check that a response result OK metric was emitted.
-  histogram_tester.ExpectUniqueSample(compose::kComposeResponseStatus,
-                                      compose::mojom::ComposeStatus::kOk, 1);
+  histograms().ExpectUniqueSample(compose::kComposeResponseStatus,
+                                  compose::mojom::ComposeStatus::kOk, 1);
   // Check that a response duration OK metric was emitted.
-  histogram_tester.ExpectTotalCount(compose::kComposeResponseDurationOk, 1);
+  histograms().ExpectTotalCount(compose::kComposeResponseDurationOk, 1);
   // Check that a no response duration Error metric was emitted.
-  histogram_tester.ExpectTotalCount(compose::kComposeResponseDurationError, 0);
+  histograms().ExpectTotalCount(compose::kComposeResponseDurationError, 0);
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeParams) {
@@ -335,7 +334,6 @@ TEST_F(ChromeComposeClientTest, TestComposeNoResponse) {
 // Tests that we return an error if Optimization Guide is unable to parse the
 // response. In this case the response will be absl::nullopt.
 TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
-  base::HistogramTester histogram_tester;
   ShowDialogAndBindMojo();
   EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
       .WillOnce(testing::WithArg<2>(testing::Invoke(
@@ -360,13 +358,12 @@ TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
   EXPECT_EQ(compose::mojom::ComposeStatus::kTryAgain, result->status);
 
   // Check that a response result Try-Again metric was emitted.
-  histogram_tester.ExpectUniqueSample(compose::kComposeResponseStatus,
-                                      compose::mojom::ComposeStatus::kTryAgain,
-                                      1);
+  histograms().ExpectUniqueSample(compose::kComposeResponseStatus,
+                                  compose::mojom::ComposeStatus::kTryAgain, 1);
   // Check that a response duration Error metric was emitted.
-  histogram_tester.ExpectTotalCount(compose::kComposeResponseDurationError, 1);
+  histograms().ExpectTotalCount(compose::kComposeResponseDurationError, 1);
   // Check that a no response duration OK metric was emitted.
-  histogram_tester.ExpectTotalCount(compose::kComposeResponseDurationOk, 0);
+  histograms().ExpectTotalCount(compose::kComposeResponseDurationOk, 0);
 }
 
 TEST_F(ChromeComposeClientTest, TestOptimizationGuideDisabled) {
@@ -863,8 +860,18 @@ TEST_F(ChromeComposeClientTest, TestAutoCompose) {
   EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
       .WillOnce(base::test::RunOnceClosure(execute_model_future.GetCallback()));
 
-  SetSelection(u"testing alpha bravo charlie");
+  std::u16string selected_text = u"ŧëśŧĩňĝ âľpħâ ƅřâɤō ĉħâŗľĩë";
+  std::string selected_text_utf8 = base::UTF16ToUTF8(selected_text);
+  SetSelection(selected_text);
   ShowDialogAndBindMojo();
+
+  // Check that the UTF8 byte length has zero counts.
+  histograms().ExpectBucketCount(compose::kComposeDialogSelectionLength,
+                                 base::UTF16ToUTF8(selected_text).size(), 0);
+  // Check that the number of UTF8 code points has one count.
+  histograms().ExpectBucketCount(
+      compose::kComposeDialogSelectionLength,
+      base::CountUnicodeCharacters(selected_text_utf8).value(), 1);
 
   base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
   page_handler()->RequestInitialState(open_test_future.GetCallback());
@@ -881,6 +888,9 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeTooLong) {
   words += u" b c";
   SetSelection(words);
   ShowDialogAndBindMojo();
+
+  histograms().ExpectBucketCount(compose::kComposeDialogSelectionLength,
+                                 base::UTF16ToUTF8(words).size(), 1);
 
   base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
   page_handler()->RequestInitialState(open_test_future.GetCallback());

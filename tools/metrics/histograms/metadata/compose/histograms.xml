@@ -55,6 +55,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compose.Dialog.SelectionLength" units="chars"
+    expires_after="2024-03-31">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    The length, in unicode code points (roughly characters), of the selection
+    when a new Compose session is started. Recorded once per session start.
+  </summary>
+</histogram>
+
 <histogram name="Compose.Response.Duration.Error" units="ms"
     expires_after="2024-03-31">
   <owner>perrier@chromium.org</owner>

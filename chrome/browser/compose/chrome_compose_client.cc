@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -161,11 +162,15 @@ void ChromeComposeClient::CreateOrUpdateSession(
     // Insert or replace with a new session.
     sessions_.insert_or_assign(active_compose_field_id_.value(),
                                std::move(new_session));
+
+    // Only record the selection length for new sessions.
+    auto utf8_chars = base::CountUnicodeCharacters(selected_text);
+    compose::LogComposeDialogSelectionLength(
+        utf8_chars.has_value() ? utf8_chars.value() : 0);
   } else {
     current_session = it->second.get();
     current_session->set_compose_callback(std::move(callback));
   }
-
   current_session->InitializeWithText(selected_text);
 }
 
