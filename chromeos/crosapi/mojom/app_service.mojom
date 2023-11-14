@@ -275,4 +275,15 @@ interface AppShortcutController {
   [MinVersion=1]
   LaunchShortcut@0(
     string host_app_id, string local_shortcut_id, int64 display_id) => ();
+
+  // Requests a compressed icon data for a shortcut identified by
+  // `local_shortcut_id` in the app identified by 'host_app_id` from
+  // lacros-chrome. The icon is identified by `size_in_dip` and `scale_factor`.
+  // Calls `callback` with the result.
+  [MinVersion=2]
+  GetCompressedIcon@1(
+    string host_app_id,
+    string local_shortcut_id,
+    int32 size_in_dip,
+    ResourceScaleFactor scale_factor) => (IconValue icon_value);
 };

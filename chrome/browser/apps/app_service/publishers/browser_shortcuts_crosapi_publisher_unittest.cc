@@ -35,6 +35,20 @@ class FakeAppShortcutController : public crosapi::mojom::AppShortcutController {
           local_shortcut_id(local_shortcut_id),
           display_id(display_id) {}
   };
+  struct GetCompressedIconInfo {
+    std::string host_app_id;
+    std::string local_shortcut_id;
+    int32_t size_in_dip;
+    ui::ResourceScaleFactor scale_factor;
+    GetCompressedIconInfo(const std::string& host_app_id,
+                          const std::string& local_shortcut_id,
+                          int32_t size_in_dip,
+                          ui::ResourceScaleFactor scale_factor)
+        : host_app_id(host_app_id),
+          local_shortcut_id(local_shortcut_id),
+          size_in_dip(size_in_dip),
+          scale_factor(scale_factor) {}
+  };
   // crosapi::mojom::AppController:
   void LaunchShortcut(const std::string& host_app_id,
                       const std::string& local_shortcut_id,
@@ -43,14 +57,29 @@ class FakeAppShortcutController : public crosapi::mojom::AppShortcutController {
     launch_info_.emplace_back(host_app_id, local_shortcut_id, display_id);
     std::move(callback).Run();
   }
+  void GetCompressedIcon(const std::string& host_app_id,
+                         const std::string& local_shortcut_id,
+                         int32_t size_in_dip,
+                         ui::ResourceScaleFactor scale_factor,
+                         apps::LoadIconCallback callback) override {
+    load_icon_info_.emplace_back(host_app_id, local_shortcut_id, size_in_dip,
+                                 scale_factor);
+    std::move(callback).Run(std::make_unique<apps::IconValue>());
+  }
 
   const std::vector<LaunchInfo>& get_launch_info() const {
     return launch_info_;
   }
+
+  const std::vector<GetCompressedIconInfo>& get_load_icon_info() const {
+    return load_icon_info_;
+  }
+
   mojo::Receiver<crosapi::mojom::AppShortcutController> receiver_{this};
 
  private:
   std::vector<LaunchInfo> launch_info_;
+  std::vector<GetCompressedIconInfo> load_icon_info_;
 };
 }  // namespace
 
@@ -157,6 +186,39 @@ TEST_F(BrowserShortcutsCrosapiPublisherTest, LaunchShortcut) {
             shortcut_1->local_id);
   EXPECT_EQ(fake_controller()->get_launch_info().back().display_id,
             display::kDefaultDisplayId);
+}
+
+TEST_F(BrowserShortcutsCrosapiPublisherTest, LoadIcon) {
+  std::vector<ShortcutPtr> shortcuts;
+  ShortcutPtr shortcut = std::make_unique<Shortcut>("app_id", "local_id");
+  shortcut->shortcut_source = ShortcutSource::kUser;
+  shortcut->icon_key = IconKey(0, 0);
+  shortcut->icon_key->update_version = false;
+  shortcuts.push_back(shortcut->Clone());
+  base::RunLoop runloop;
+  app_shortcut_publisher_remote_->PublishShortcuts(std::move(shortcuts),
+                                                   runloop.QuitClosure());
+  runloop.Run();
+  PublishApp(AppType::kStandaloneBrowser, "app_id");
+
+  ASSERT_EQ(fake_controller()->get_load_icon_info().size(), 0u);
+  base::test::TestFuture<IconValuePtr> future;
+  auto* shortcut_publisher =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->GetShortcutPublisherForTesting(apps::AppType::kStandaloneBrowser);
+  shortcut_publisher->GetCompressedIconData(
+      shortcut->shortcut_id.value(), /*size_hint_in_dip*/ 32,
+      ui::ResourceScaleFactor::k100Percent, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  ASSERT_EQ(fake_controller()->get_load_icon_info().size(), 1u);
+
+  EXPECT_EQ(fake_controller()->get_load_icon_info()[0].host_app_id,
+            shortcut->host_app_id);
+  EXPECT_EQ(fake_controller()->get_load_icon_info()[0].local_shortcut_id,
+            shortcut->local_id);
+  EXPECT_EQ(fake_controller()->get_load_icon_info()[0].size_in_dip, 32);
+  EXPECT_EQ(fake_controller()->get_load_icon_info()[0].scale_factor,
+            ui::ResourceScaleFactor::k100Percent);
 }
 
 }  // namespace apps

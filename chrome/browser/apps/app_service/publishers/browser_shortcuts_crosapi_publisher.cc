@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace apps {
@@ -98,6 +99,29 @@ void BrowserShortcutsCrosapiPublisher::RemoveShortcut(
     apps::UninstallSource uninstall_source) {
   // TODO(b/304661502): Implement this.
   NOTIMPLEMENTED();
+}
+
+void BrowserShortcutsCrosapiPublisher::GetCompressedIconData(
+    const std::string& shortcut_id,
+    int32_t size_in_dip,
+    ui::ResourceScaleFactor scale_factor,
+    apps::LoadIconCallback callback) {
+  if (!controller_.is_bound()) {
+    LOG(WARNING) << "Controller not connected: " << FROM_HERE.ToString();
+    return;
+  }
+
+  apps::ShortcutId strong_typed_shortcut_id = apps::ShortcutId(shortcut_id);
+
+  std::string host_app_id =
+      proxy_->ShortcutRegistryCache()->GetShortcutHostAppId(
+          strong_typed_shortcut_id);
+  std::string local_shortcut_id =
+      proxy_->ShortcutRegistryCache()->GetShortcutLocalId(
+          strong_typed_shortcut_id);
+
+  controller_->GetCompressedIcon(host_app_id, local_shortcut_id, size_in_dip,
+                                 scale_factor, std::move(callback));
 }
 
 void BrowserShortcutsCrosapiPublisher::OnCrosapiDisconnected() {

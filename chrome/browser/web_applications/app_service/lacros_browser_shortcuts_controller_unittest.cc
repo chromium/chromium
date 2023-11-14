@@ -7,10 +7,13 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_test_util.h"
+#include "chrome/browser/apps/app_service/app_icon/web_app_icon_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/app_service/web_apps_with_shortcuts_test.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
@@ -173,4 +176,39 @@ TEST_F(LacrosBrowserShortcutsControllerTest, LaunchShortcut) {
   runloop.Run();
 }
 
+TEST_F(LacrosBrowserShortcutsControllerTest, GetCompressedIcon) {
+  InitializeLacrosBrowserShortcutsController();
+
+  auto shortcut_id = CreateWebAppBasedShortcut(GURL("https://www.example.com/"),
+                                               u"shortcut name");
+  const float scale1 = 1.0;
+  const float scale2 = 2.0;
+  const int kIconSize1 = 64 * scale1;
+  const int kIconSize2 = 64 * scale2;
+  const std::vector<int> sizes_px{kIconSize1, kIconSize2};
+  const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
+  apps::WebAppIconTestHelper(profile()).WriteIcons(
+      shortcut_id, {IconPurpose::ANY}, sizes_px, colors);
+  FakeWebAppProvider* fake_provider =
+      static_cast<FakeWebAppProvider*>(WebAppProvider::GetForTest(profile()));
+  WebApp* web_app =
+      fake_provider->GetRegistrarMutable().GetAppByIdMutable(shortcut_id);
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+  ASSERT_TRUE(fake_provider->icon_manager().HasIcons(
+      shortcut_id, IconPurpose::ANY, sizes_px));
+
+  apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
+                                           {2.0, kIconSize2}};
+
+  std::vector<uint8_t> src_data =
+      apps::WebAppIconTestHelper(profile()).GenerateWebAppCompressedIcon(
+          shortcut_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
+          scale_to_size_in_px, scale1);
+  base::test::TestFuture<apps::IconValuePtr> future;
+  fake_publisher()->controller_->GetCompressedIcon(
+      app_constants::kLacrosAppId, shortcut_id, 64,
+      ui::GetSupportedResourceScaleFactor(scale1), future.GetCallback());
+  apps::IconValuePtr icon = future.Take();
+  VerifyCompressedIcon(src_data, *icon);
+}
 }  // namespace web_app

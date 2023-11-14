@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/no_destructor.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/profiles/profile.h"
 // TODO(crbug.com/1402145): Remove circular dependencies on //c/b/ui.
@@ -76,6 +77,16 @@ void LacrosBrowserShortcutsController::LaunchShortcut(
           &LacrosBrowserShortcutsController::OnOpenPrimaryProfileFirstRunExited,
           weak_ptr_factory_.GetWeakPtr(), host_app_id, local_shortcut_id,
           display_id, std::move(callback)));
+}
+
+void LacrosBrowserShortcutsController::GetCompressedIcon(
+    const std::string& host_app_id,
+    const std::string& local_shortcut_id,
+    int32_t size_in_dip,
+    ui::ResourceScaleFactor scale_factor,
+    apps::LoadIconCallback callback) {
+  apps::GetWebAppCompressedIconData(profile_, local_shortcut_id, size_in_dip,
+                                    scale_factor, std::move(callback));
 }
 
 void LacrosBrowserShortcutsController::Initialize() {
