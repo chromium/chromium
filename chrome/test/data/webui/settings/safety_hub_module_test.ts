@@ -12,6 +12,17 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
+function waitUntilVisible(element: HTMLElement, intervalMs: number = 10) {
+  return new Promise<void>((resolve) => {
+    const interval = setInterval(() => {
+      if (isVisible(element)) {
+        clearInterval(interval);
+        resolve();
+      }
+    }, intervalMs);
+  });
+}
+
 suite('SafetyHubModule', function() {
   let testElement: SettingsSafetyHubModuleElement;
 
@@ -142,11 +153,11 @@ suite('SafetyHubModule', function() {
     const button = item.querySelector('cr-icon-button');
     assertTrue(!!button);
     button.focus();
-    flush();
 
     // Check that the tooltip gets visible with the correct text.
     tooltip = testElement.shadowRoot!.querySelector('paper-tooltip');
     assertTrue(!!tooltip);
+    await waitUntilVisible(tooltip);
     assertTrue(isVisible(tooltip));
     assertEquals(text, tooltip!.textContent!.trim());
   });

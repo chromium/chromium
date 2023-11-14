@@ -302,18 +302,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SafetyCheckPage) {
   RunTest("settings/safety_check_page_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, SafetyHubCard) {
-  RunTest("settings/safety_hub_card_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsTest, SafetyHubModule) {
-  RunTest("settings/safety_hub_module_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsTest, SafetyHubPage) {
-  RunTest("settings/safety_hub_page_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsTest, Search) {
   RunTest("settings/search_settings_test.js", "mocha.run()");
 }
@@ -1093,8 +1081,20 @@ class SettingsSafetyHubTest : public SettingsBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_{features::kSafetyHub};
 };
 
+IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, SafetyHubCard) {
+  RunTest("settings/safety_hub_card_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, SafetyHubEntryPoint) {
   RunTest("settings/safety_hub_entry_point_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, SafetyHubModule) {
+  RunTest("settings/safety_hub_module_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, SafetyHubPage) {
+  RunTest("settings/safety_hub_page_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, UnusedSitePermissionsModule) {

@@ -148,6 +148,12 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler {
   void HandleUndoIgnoreOriginsForNotificationPermissionReview(
       const base::Value::List& args);
 
+  // Handles dismissing the active menu notification for Safety Hub.
+  void HandleDismissActiveMenuNotification(const base::Value::List& args);
+
+  // Handles dismissing the menu notifications for the password module.
+  void HandleDismissPasswordMenuNotification(const base::Value::List& args);
+
   // Returns the data for Safe Browsing card.
   void HandleGetSafeBrowsingCardData(const base::Value::List& args);
 
