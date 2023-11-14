@@ -11,6 +11,7 @@
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -33,6 +34,8 @@ enum class AppListToastType;
 // A container view accommodating a toast view with type `ToastType`. See
 // `ToastType` for more detail.
 class AppListToastContainerView : public views::View {
+  METADATA_HEADER(AppListToastContainerView, views::View)
+
  public:
   // The visibility state of the container.
   enum class VisibilityState {

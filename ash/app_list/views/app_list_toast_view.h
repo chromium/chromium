@@ -37,6 +37,8 @@ class AppListViewDelegate;
 // last column and the title and subtitle will share the middle column, with the
 // title over the subtitle.
 class ASH_EXPORT AppListToastView : public views::View {
+  METADATA_HEADER(AppListToastView, views::View)
+
  public:
   class Builder {
    public:

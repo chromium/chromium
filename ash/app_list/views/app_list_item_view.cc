@@ -54,6 +54,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -250,6 +251,8 @@ class PromiseIconBackground : public views::Background {
 
 // Draws a dot with no shadow.
 class DotView : public views::View {
+  METADATA_HEADER(DotView, views::View)
+
  public:
   DotView()
       : color_id_(chromeos::features::IsJellyEnabled()
@@ -285,6 +288,9 @@ class DotView : public views::View {
   const ui::ColorId color_id_;
 };
 
+BEGIN_METADATA(DotView)
+END_METADATA
+
 // Returns whether the `index` is considered on the left edge of a grid with
 // `cols` columns.
 bool IsIndexOnLeftEdge(GridIndex index, int cols) {
@@ -317,6 +323,8 @@ bool IsIndexMovingToDifferentRow(GridIndex old_index,
 
 class AppListItemView::FolderIconView : public views::View,
                                         public AppListItemListObserver {
+  METADATA_HEADER(FolderIconView, views::View)
+
  public:
   FolderIconView(AppListFolderItem* folder_item,
                  const AppListConfig* config,
@@ -535,6 +543,9 @@ class AppListItemView::FolderIconView : public views::View,
   // The id of the currently dragged app item in the folder.
   std::string dragged_item_id_;
 };
+
+BEGIN_METADATA(AppListItemView, FolderIconView, views::View)
+END_METADATA
 
 AppListItemView::AppListItemView(const AppListConfig* app_list_config,
                                  GridDelegate* grid_delegate,

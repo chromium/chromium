@@ -412,4 +412,7 @@ void AppListToastView::SetTitleLabelMaximumWidth() {
   title_label_->SetMaximumWidth(GetExpandedTitleLabelWidth());
 }
 
+BEGIN_METADATA(AppListToastView)
+END_METADATA
+
 }  // namespace ash
