@@ -139,13 +139,9 @@ gfx::Insets GetMirroredBackgroundInsets(bool is_shelf_horizontal) {
       -ash::ShelfConfig::Get()->status_area_hit_region_padding();
 
   if (is_shelf_horizontal) {
-    insets =
-        gfx::Insets::TLBR(secondary_padding, primary_padding, secondary_padding,
-                          primary_padding + ash::kTraySeparatorWidth);
+    insets = gfx::Insets::VH(secondary_padding, primary_padding);
   } else {
-    insets = gfx::Insets::TLBR(primary_padding, secondary_padding,
-                               primary_padding + ash::kTraySeparatorWidth,
-                               secondary_padding);
+    insets = gfx::Insets::VH(primary_padding, secondary_padding);
   }
   MirrorInsetsIfNecessary(&insets);
   return insets;

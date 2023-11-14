@@ -83,10 +83,6 @@ inline constexpr int kTitleRowProgressBarHeight = 2;
 // Width of lines used to separate menu items (e.g. input method menu).
 inline constexpr int kMenuSeparatorWidth = 1;
 
-// Width of lines used to separate sections of the system tray, for instance
-// in tray detailed views.
-inline constexpr int kTraySeparatorWidth = 0;
-
 // The size of the icons appearing in the material design system tray.
 inline constexpr int kTrayIconSize = 16;
 
