@@ -10,6 +10,8 @@ env:
   DEBUG_DEPTH: 10
   FORCE_COLOR: 3
   PIP_DISABLE_PIP_VERSION_CHECK: 1
+  # https://pypi.org/project/pytest-rerunfailures/
+  PYTEST_ADDOPTS: '--reruns 1'
 
 on:
   merge_group:
