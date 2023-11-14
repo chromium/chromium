@@ -2277,13 +2277,13 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_MODAL_INFOBAR_TRACK_BUTTON" desc="Text for the button in the parcel tracking infobar modal that tracks the package(s).">
         {COUNT, plural,
-        =1 {Track this package}
-        other {Track all packages}}
+        =1 {Track This Package}
+        other {Track All Packages}}
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_MODAL_INFOBAR_UNTRACK_BUTTON" desc="Text for the button in the parcel tracking infobar modal that untracks the package(s).">
         {COUNT, plural,
-        =1 {Untrack this package}
-        other {Untrack all packages}}
+        =1 {Untrack This Package}
+        other {Untrack All Packages}}
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_PRIMARY_ACTION" desc="Text for the primary action string of the parcel tracking opt-in half-sheet screen.">
         Always Track Detected Packages
