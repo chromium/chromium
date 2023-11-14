@@ -23,9 +23,15 @@ class MockSeaPenFetcher : public SeaPenFetcher {
   ~MockSeaPenFetcher() override;
 
   MOCK_METHOD(void,
-              Start,
+              FetchThumbnails,
               (const std::string& query,
-               SeaPenFetcher::OnWallpaperSearchComplete callback),
+               SeaPenFetcher::OnFetchThumbnailsComplete callback),
+              (override));
+
+  MOCK_METHOD(void,
+              FetchWallpaper,
+              (const ash::SeaPenImage& image,
+               SeaPenFetcher::OnFetchWallpaperComplete callback),
               (override));
 };
 

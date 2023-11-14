@@ -56,8 +56,11 @@ class PersonalizationAppSeaPenProviderImpl
  private:
   wallpaper_handlers::SeaPenFetcher* GetOrCreateSeaPenFetcher();
 
-  void OnSeaPenFetcherDone(SearchWallpaperCallback callback,
-                           absl::optional<std::vector<SeaPenImage>> images);
+  void OnFetchThumbnailsDone(SearchWallpaperCallback callback,
+                             absl::optional<std::vector<SeaPenImage>> images);
+
+  void OnFetchWallpaperDone(SelectSeaPenThumbnailCallback callback,
+                            absl::optional<SeaPenImage> image);
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
   const raw_ptr<Profile> profile_;
@@ -68,10 +71,10 @@ class PersonalizationAppSeaPenProviderImpl
   // A map of image id to image.
   std::map<uint32_t, const SeaPenImage> sea_pen_images_;
 
-  // Performs a network request to search available wallpapers. Constructed
-  // lazily at the time of the first request and then persists for the rest of
-  // the delegate's lifetime, unless preemptively or subsequently replaced by a
-  // mock in a test.
+  // Perform a network request to search/upscale available wallpapers.
+  // Constructed lazily at the time of the first request and then persists for
+  // the rest of the delegate's lifetime, unless preemptively or subsequently
+  // replaced by a mock in a test.
   std::unique_ptr<wallpaper_handlers::SeaPenFetcher> sea_pen_fetcher_;
 
   mojo::Receiver<mojom::SeaPenProvider> sea_pen_receiver_{this};

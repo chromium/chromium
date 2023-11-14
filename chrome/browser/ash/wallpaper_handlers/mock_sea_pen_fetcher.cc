@@ -31,13 +31,20 @@ std::vector<ash::SeaPenImage> MakeFakeImageResults(const std::string& query) {
 }  // namespace
 
 MockSeaPenFetcher::MockSeaPenFetcher() {
-  ON_CALL(*this, Start)
+  ON_CALL(*this, FetchThumbnails)
       .WillByDefault(
-          [](const std::string& text, OnWallpaperSearchComplete callback) {
+          [](const std::string& text, OnFetchThumbnailsComplete callback) {
             DVLOG(2) << __PRETTY_FUNCTION__ << " text=" << text;
             base::ThreadPool::PostTaskAndReplyWithResult(
                 FROM_HERE, base::BindOnce(&MakeFakeImageResults, text),
                 std::move(callback));
+          });
+
+  ON_CALL(*this, FetchWallpaper)
+      .WillByDefault(
+          [](const ash::SeaPenImage& image, OnFetchWallpaperComplete callback) {
+            std::move(callback).Run(ash::SeaPenImage(
+                image.jpg_bytes, image.id, image.query, image.resolution));
           });
 }
 

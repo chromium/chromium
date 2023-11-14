@@ -16,7 +16,7 @@ namespace ash {
 // for SeaPen wallpaper.
 // @see //components/manta
 struct ASH_PUBLIC_EXPORT SeaPenImage {
-  SeaPenImage(std::string&& jpg_bytes,
+  SeaPenImage(std::string jpg_bytes,
               uint32_t id,
               const std::string& query,
               manta::proto::ImageResolution resolution);

@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/manta/features.h"
+#include "components/manta/proto/manta.pb.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
@@ -53,10 +54,10 @@ void PersonalizationAppSeaPenProviderImpl::SearchWallpaper(
   }
   auto* sea_pen_fetcher = GetOrCreateSeaPenFetcher();
   CHECK(sea_pen_fetcher);
-  sea_pen_fetcher->Start(
-      text,
-      base::BindOnce(&PersonalizationAppSeaPenProviderImpl::OnSeaPenFetcherDone,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  sea_pen_fetcher->FetchThumbnails(
+      text, base::BindOnce(
+                &PersonalizationAppSeaPenProviderImpl::OnFetchThumbnailsDone,
+                weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void PersonalizationAppSeaPenProviderImpl::SelectSeaPenThumbnail(
@@ -67,9 +68,14 @@ void PersonalizationAppSeaPenProviderImpl::SelectSeaPenThumbnail(
     sea_pen_receiver_.ReportBadMessage("Unknown wallpaper image selected");
     return;
   }
-  auto* wallpaper_controller = ash::WallpaperController::Get();
-  wallpaper_controller->SetSeaPenWallpaper(GetAccountId(profile_), it->second,
-                                           std::move(callback));
+
+  auto* sea_pen_fetcher = GetOrCreateSeaPenFetcher();
+  CHECK(sea_pen_fetcher);
+  sea_pen_fetcher->FetchWallpaper(
+      it->second,
+      base::BindOnce(
+          &PersonalizationAppSeaPenProviderImpl::OnFetchWallpaperDone,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 wallpaper_handlers::SeaPenFetcher*
@@ -81,7 +87,7 @@ PersonalizationAppSeaPenProviderImpl::GetOrCreateSeaPenFetcher() {
   return sea_pen_fetcher_.get();
 }
 
-void PersonalizationAppSeaPenProviderImpl::OnSeaPenFetcherDone(
+void PersonalizationAppSeaPenProviderImpl::OnFetchThumbnailsDone(
     SearchWallpaperCallback callback,
     absl::optional<std::vector<SeaPenImage>> images) {
   if (!images) {
@@ -98,6 +104,19 @@ void PersonalizationAppSeaPenProviderImpl::OnSeaPenFetcherDone(
                         image_id);
   }
   std::move(callback).Run(std::move(result));
+}
+
+void PersonalizationAppSeaPenProviderImpl::OnFetchWallpaperDone(
+    SelectSeaPenThumbnailCallback callback,
+    absl::optional<SeaPenImage> image) {
+  if (!image) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  auto* wallpaper_controller = ash::WallpaperController::Get();
+  wallpaper_controller->SetSeaPenWallpaper(GetAccountId(profile_), *image,
+                                           std::move(callback));
 }
 
 }  // namespace ash::personalization_app

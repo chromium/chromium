@@ -11,7 +11,7 @@
 
 namespace ash {
 
-SeaPenImage::SeaPenImage(std::string&& jpg_bytes_in,
+SeaPenImage::SeaPenImage(std::string jpg_bytes_in,
                          uint32_t id_in,
                          const std::string& query_in,
                          manta::proto::ImageResolution resolution_in)
