@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 // profiles on Ash.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
-                       DialogGetsDisplayedOnlyForFirstProfile) {
+                       DialogGetsDisplayedForAllProfiles) {
   // Start a first profile that will later show the dialog.
   Profile* first_profile = browser()->profile();
   Browser* browser_with_first_profile = browser();
@@ -477,50 +477,23 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
                    search_engines::SearchEngineChoiceScreenConditions::
                        kProfileOutOfScope));
 
-  // Open a browser with the second profile, it should not have a dialog opened.
+  // Open a browser with the second profile, it should open a dialog too.
   Browser* browser_with_second_profile = CreateBrowser(second_profile);
-  EXPECT_FALSE(
-      second_profile_service->IsShowingDialog(browser_with_second_profile));
-
-  // No additional success record should have been made.
-  CheckChoiceScreenWasDisplayedRecordedOnce();
-
-  // We are allowing the bucket to contain more than 1 record because based on
-  // other tests running in the environment, if the browser was in the
-  // background we would record a check twice: once for the page load finishing,
-  // and once for the browser becoming visible.
-  EXPECT_GE(histogram_tester().GetBucketCount(
-                search_engines::
-                    kSearchEngineChoiceScreenNavigationConditionsHistogram,
-                search_engines::SearchEngineChoiceScreenConditions::
-                    kProfileOutOfScope),
-            1);
-
-  // Create a third profile.
-  Profile* third_profile = &profiles::testing::CreateProfileSync(
-      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
-  auto* third_profile_service = static_cast<MockSearchEngineChoiceService*>(
-      SearchEngineChoiceServiceFactory::GetForProfile(third_profile));
-
-  // The third profile should not even have the service, because it was created
-  // after a static condition flipped.
-  EXPECT_EQ(nullptr, third_profile_service);
-  CheckProfileInitConditionRecorded(
-      search_engines::SearchEngineChoiceScreenConditions::kProfileOutOfScope,
-      1);
-
-  // Test that the second profile will display the dialog when forced to.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kForceSearchEngineChoiceScreen);
-
-  // Navigate to a URL to display the dialog.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser_with_second_profile, GURL(chrome::kChromeUINewTabPageURL),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-
   EXPECT_TRUE(
       second_profile_service->IsShowingDialog(browser_with_second_profile));
+
+  // An additional success record should have been made.
+  histogram_tester().ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::kChoiceScreenWasDisplayed,
+      2);
+
+  // Still expect no profile-based rejection.
+  EXPECT_EQ(0, histogram_tester().GetBucketCount(
+                   search_engines::
+                       kSearchEngineChoiceScreenNavigationConditionsHistogram,
+                   search_engines::SearchEngineChoiceScreenConditions::
+                       kProfileOutOfScope));
 }
 #endif
 
