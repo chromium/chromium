@@ -163,7 +163,7 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
   // during attestation.
   // Virtual for testing.
   virtual void FetchAttestationCertificate(
-      const std::string& fido_credential_id,
+      const Base64String& fido_credential_id,
       AttestationCertificateCallback certificate_callback);
 
   // Fetches a Login Scoped OAuth Refresh Token (LST).
@@ -204,7 +204,7 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
   // Same as `FetchAttestationCertificate` except that it is called with
   // `attestation_features`.
   void FetchAttestationCertificateInternal(
-      const std::string& fido_credential_id,
+      const Base64String& fido_credential_id,
       AttestationCertificateCallback certificate_callback,
       const attestation::AttestationFeatures* attestation_features);
 
