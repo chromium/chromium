@@ -112,14 +112,21 @@ void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id,
   browsers_with_open_dialogs_.clear();
 
   // Log the view entry point in which the choice was made.
-  if (entry_point == EntryPoint::kProfilePicker) {
-    choice_made_in_profile_picker_ = true;
-    search_engines::RecordChoiceScreenEvent(
-        search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet);
-  } else {
-    search_engines::RecordChoiceScreenEvent(
-        search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet);
+  search_engines::SearchEngineChoiceScreenEvents event =
+      search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet;
+  switch (entry_point) {
+    case EntryPoint::kDialog:
+      event = search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet;
+      break;
+    case EntryPoint::kFirstRunExperience:
+      event = search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet;
+      choice_made_in_profile_picker_ = true;
+      break;
+    case EntryPoint::kProfileCreation:
+      choice_made_in_profile_picker_ = true;
+      break;
   }
+  search_engines::RecordChoiceScreenEvent(event);
 
   // `RecordChoiceMade` should always be called after setting the default
   // search engine.
@@ -274,9 +281,20 @@ bool SearchEngineChoiceService::IsUrlSuitableForDialog(GURL url) {
 
 void SearchEngineChoiceService::NotifyLearnMoreLinkClicked(
     EntryPoint entry_point) {
-  RecordChoiceScreenEvent(entry_point == EntryPoint::kDialog
-                              ? search_engines::SearchEngineChoiceScreenEvents::
-                                    kLearnMoreWasDisplayed
-                              : search_engines::SearchEngineChoiceScreenEvents::
-                                    kFreLearnMoreWasDisplayed);
+  search_engines::SearchEngineChoiceScreenEvents event =
+      search_engines::SearchEngineChoiceScreenEvents::kLearnMoreWasDisplayed;
+
+  switch (entry_point) {
+    case EntryPoint::kDialog:
+      event = search_engines::SearchEngineChoiceScreenEvents::
+          kLearnMoreWasDisplayed;
+      break;
+    case EntryPoint::kFirstRunExperience:
+      event = search_engines::SearchEngineChoiceScreenEvents::
+          kFreLearnMoreWasDisplayed;
+      break;
+    case EntryPoint::kProfileCreation:
+      break;
+  }
+  RecordChoiceScreenEvent(event);
 }

@@ -21,6 +21,7 @@
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
@@ -517,10 +518,13 @@ FirstRunFlowControllerDice::RegisterPostIdentitySteps() {
   auto search_engine_choice_step_completed =
       base::BindOnce(&FirstRunFlowControllerDice::AdvanceToNextPostIdentityStep,
                      base::Unretained(this));
+  SearchEngineChoiceService* search_engine_choice_service =
+      SearchEngineChoiceServiceFactory::GetForProfile(profile_);
   RegisterStep(
       Step::kSearchEngineChoice,
       ProfileManagementStepController::CreateForSearchEngineChoice(
-          host(), SearchEngineChoiceServiceFactory::GetForProfile(profile_),
+          host(), search_engine_choice_service, host()->GetPickerContents(),
+          SearchEngineChoiceService::EntryPoint::kFirstRunExperience,
           std::move(search_engine_choice_step_completed)));
   post_identity_steps.emplace(
       ProfileManagementFlowController::Step::kSearchEngineChoice);

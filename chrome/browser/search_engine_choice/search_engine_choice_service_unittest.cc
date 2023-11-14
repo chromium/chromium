@@ -69,7 +69,7 @@ TEST_F(SearchEngineChoiceServiceTest, HandleLearnMoreLinkClicked) {
       1);
 
   search_engine_choice_service->NotifyLearnMoreLinkClicked(
-      SearchEngineChoiceService::EntryPoint::kProfilePicker);
+      SearchEngineChoiceService::EntryPoint::kFirstRunExperience);
   histogram_tester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kFreLearnMoreWasDisplayed,

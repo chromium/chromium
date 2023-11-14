@@ -71,8 +71,12 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents) override;
 
+  // When `is_continue_callback` is true, the flow should finishing up
+  // immediately so that `post_host_cleared_callback` can be executed, without
+  // showing other steps.
   void HandleIdentityStepsCompleted(
-      PostHostClearedCallback post_host_cleared_callback);
+      PostHostClearedCallback post_host_cleared_callback,
+      bool is_continue_callback);
 
   const ProfilePicker::EntryPoint entry_point_;
 

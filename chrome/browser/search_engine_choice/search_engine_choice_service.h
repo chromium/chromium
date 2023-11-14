@@ -28,7 +28,8 @@ class SearchEngineChoiceService : public KeyedService {
  public:
   // Specifies the view in which the choice screen UI is rendered.
   enum class EntryPoint {
-    kProfilePicker = 0,
+    kProfileCreation = 0,
+    kFirstRunExperience,
     kDialog,
   };
 

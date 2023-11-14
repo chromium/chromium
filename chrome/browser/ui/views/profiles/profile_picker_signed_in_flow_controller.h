@@ -95,6 +95,8 @@ class ProfilePickerSignedInFlowController
   // screen. Returns an empty path if no such screen has been displayed.
   base::FilePath switch_profile_path() const { return switch_profile_path_; }
 
+  content::WebContents* contents() const { return contents_.get(); }
+
  protected:
   // Returns the profile color, taking into account current policies.
   absl::optional<SkColor> GetProfileColor() const;
@@ -105,7 +107,6 @@ class ProfilePickerSignedInFlowController
 
   ProfilePickerWebContentsHost* host() const { return host_; }
   Profile* profile() const { return profile_; }
-  content::WebContents* contents() const { return contents_.get(); }
   std::unique_ptr<content::WebContents> ReleaseContents();
   const CoreAccountInfo& account_info() const { return account_info_; }
 
