@@ -13933,6 +13933,86 @@ INSTANTIATE_TEST_SUITE_P(
     Range(0,
           FluentOverlayScrollbarOpacityLayerTreeHostImplTest::kParamSteps + 1));
 
+TEST_F(FluentOverlayScrollbarLayerTreeHostImplTest,
+       FluentScrollbarFlashAfterScrollUpdate) {
+  auto* root_scrollbar = CreateAndRegisterPaintedScrollbarLayer();
+  
+  // Register child scrollable area layer and scrollbar.
+  LayerImpl* root_scroll = OuterViewportScrollLayer();
+  gfx::Size child_layer_size(250, 150);
+  gfx::Size child_scrollbar_size(gfx::Size(15, child_layer_size.height()));
+  auto* child =
+      AddScrollableLayer(root_scroll, gfx::Size(100, 100), child_layer_size);
+  GetTransformNode(child)->post_translation = gfx::Vector2dF(50, 50);
+
+  auto* child_scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
+      host_impl_->active_tree(), ScrollbarOrientation::kVertical, false, true);
+  // SetupScrollbarLayerCommon will register the scrollbar, which sets the
+  // layer's opacity to 0. An effect node for the scrollbar layer object needs
+  // to be registered in the EffectTree before this happens.
+  auto& effect_node =
+      CreateEffectNode(child_scrollbar, child->effect_tree_index());
+  SetupScrollbarLayerCommon(child, child_scrollbar);
+  // SetupScrollbarLayerCommon calls CopyProperties which overrides the effect
+  // tree node registered to the scrollbar layer. We need to reset it to the
+  // one we registered above.
+  child_scrollbar->SetEffectTreeIndex(effect_node.id);
+  child_scrollbar->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
+  child_scrollbar->SetBounds(child_scrollbar_size);
+
+  auto reset_scrollbars = [root_scrollbar, child_scrollbar](
+                              LayerTreeImpl* active_tree,
+                              base::OnceClosure& animation_task) {
+    GetEffectNode(root_scrollbar)->opacity = 0;
+    GetEffectNode(child_scrollbar)->opacity = 0;
+    UpdateDrawProperties(active_tree);
+    animation_task.Reset();
+  };
+
+  reset_scrollbars(host_impl_->active_tree(), animation_task_);
+  UpdateDrawProperties(host_impl_->active_tree());
+  host_impl_->active_tree()->UpdateScrollbarGeometries();
+  host_impl_->active_tree()->DidBecomeActive();
+
+  EXPECT_EQ(root_scrollbar->Opacity(), 0);
+  EXPECT_EQ(child_scrollbar->Opacity(), 0);
+
+  // Scroll on root should only flash root.
+  GetInputHandler().RootScrollBegin(
+      BeginState(gfx::Point(20, 20), gfx::Vector2dF(0, 10),
+                 ui::ScrollInputType::kWheel)
+          .get(),
+      ui::ScrollInputType::kWheel);
+  GetInputHandler().ScrollUpdate(UpdateState(gfx::Point(20, 20),
+                                             gfx::Vector2d(0, 10),
+                                             ui::ScrollInputType::kWheel)
+                                     .get());
+  GetInputHandler().ScrollEnd();
+
+  EXPECT_EQ(root_scrollbar->Opacity(), 1.f);
+  EXPECT_EQ(child_scrollbar->Opacity(), 0);
+  EXPECT_FALSE(animation_task_.is_null());
+
+  reset_scrollbars(host_impl_->active_tree(), animation_task_);
+
+  // Scrolling on child in a direction in which it can't scroll (upwards) should
+  // flash the hit tested scrollbar and the one that ends up receiving the
+  // scroll event (the root scrollbar in this case).
+  GetInputHandler().ScrollBegin(
+      BeginState(gfx::Point(70, 70), gfx::Vector2dF(0, -100),
+                 ui::ScrollInputType::kWheel)
+          .get(),
+      ui::ScrollInputType::kWheel);
+  GetInputHandler().ScrollUpdate(
+      AnimatedUpdateState(gfx::Point(70, 70), gfx::Vector2d(0, -100)).get());
+  GetInputHandler().ScrollEnd();
+
+  EXPECT_TRUE(root_scrollbar->Opacity());
+  EXPECT_TRUE(child_scrollbar->Opacity());
+
+  EXPECT_FALSE(animation_task_.is_null());
+}
+
 // Fluent Overlay Scrollbars opacity should be set to zero when creating
 // the animation controller.
 TEST_F(FluentOverlayScrollbarLayerTreeHostImplTest,

@@ -184,6 +184,15 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
     // still need to walk up the scroll tree looking for the first node that
     // can consume delta from the scroll state.
     scrolling_node = FindNodeToLatch(scroll_state, starting_node, type);
+
+    // When using fluent overlay scrollbars and a subscroller receives a scroll
+    // event, but the scroll chains up to a different node, we want to flash the
+    // scrollbars to show that the node is scrollable.
+    if (scrolling_node &&
+        compositor_delegate_->GetSettings().enable_fluent_overlay_scrollbar &&
+        scrolling_node->element_id != starting_node->element_id) {
+      compositor_delegate_->WillScrollContent(starting_node->element_id);
+    }
   }
 
   if (!scrolling_node) {
