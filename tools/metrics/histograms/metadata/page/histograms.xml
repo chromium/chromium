@@ -276,6 +276,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-04-17">
   <owner>alexmt@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Total number of network bytes that went towards loading non-ad resources for
     a single page over its entire lifetime. This includes resources that did not
@@ -302,6 +303,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-04-17">
   <owner>alexmt@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The percentage of all bytes loaded by the page that are attributed to ad
     resources (including ad resources in the main frame) across the entire page
@@ -316,6 +318,7 @@ chromium-metrics-reviews@google.com.
   <owner>yaoxia@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The estimated average viewport ad density. Each density sample value is
     calculated as the area of (iframe and img) ads within the viewport * 100 /
@@ -329,6 +332,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanBlocked" expires_after="2024-04-17">
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Records whether the heavy ad intervention was disallowed by the blocklist on
     a frame. Only recorded when the heavy ad blocklist is enabled and available
@@ -339,7 +343,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageLoad.Clients.Ads.HeavyAds.NetworkBytesAtFrameUnload"
     units="bytes" expires_after="2024-04-17">
   <owner>johnidel@chromium.org</owner>
-  <owner>justinmiron@google.com</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Records the number of network bytes used by a heavy ad unloaded due to
     network usage by the heavy ad intervention. It is recorded at the time of
@@ -349,7 +353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.Memory.MainFrame.Max" units="KiB"
-    expires_after="2022-03-06">
+    expires_after="2024-11-10">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -362,11 +366,14 @@ chromium-metrics-reviews@google.com.
     PageLoadMetrics when the page is destroyed. An ad frame consists of the
     identified ad frame and all of its children (which may also be ads, but are
     counted as part of the ancestor ad frame).
+
+    Warning: This histogram has incomplete data. It expired in 03/2022 and was
+    unexpired in 11/2023.
   </summary>
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.Memory.UpdateCount" units="count"
-    expires_after="2022-06-12">
+    expires_after="2024-11-10">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -376,6 +383,9 @@ chromium-metrics-reviews@google.com.
     AdsPageLoadMetricsObserver per pageload. Only recorded if the page has at
     least one identified ad frame. Recorded in PageLoadMetrics when the page is
     destroyed.
+
+    Warning: This histogram has incomplete data. It expired in 06/2022 and was
+    unexpired in 11/2023.
   </summary>
 </histogram>
 
@@ -383,6 +393,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-04-17">
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Total number of network bytes that went towards loading ad resources for a
     single page over it's entire lifetime. This includes resources that did not
@@ -1621,24 +1632,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Experimental.Memory.Core.MainFrame.Max" units="KiB"
-    expires_after="2022-03-06">
+    expires_after="2024-11-10">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The maximum reported number of kilobytes of memory used by V8 by the main
     frame in this pageload.
 
     Only recorded if memory tracking is enabled. Recorded in PageLoadMetrics
     when the page is destroyed.
+
+    Warning: This histogram has incomplete data. It expired in 03/2022 and was
+    unexpired in 11/2023.
   </summary>
 </histogram>
 
 <histogram name="PageLoad.Experimental.Memory.Core.Subframe.Aggregate.Max"
-    units="KiB" expires_after="2022-03-06">
+    units="KiB" expires_after="2024-11-10">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The maximum reported aggregate number of kilobytes of memory used by V8 by
     subframes in this pageload. The value recorded is the maximum simultaneous
@@ -1646,14 +1662,18 @@ chromium-metrics-reviews@google.com.
 
     Only recorded if memory tracking is enabled. Recorded in PageLoadMetrics
     when the page is destroyed.
+
+    Warning: This histogram has incomplete data. It expired in 03/2022 and was
+    unexpired in 11/2023.
   </summary>
 </histogram>
 
 <histogram name="PageLoad.Experimental.Memory.Core.Total.Max" units="KiB"
-    expires_after="2022-03-06">
+    expires_after="2024-11-10">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The maximum reported aggregate number of kilobytes of memory used by V8 by
     all frames in this pageload. The value recorded is the maximum simultaneous
@@ -1661,6 +1681,9 @@ chromium-metrics-reviews@google.com.
 
     Only recorded if memory tracking is enabled. Recorded in PageLoadMetrics
     when the page is destroyed.
+
+    Warning: This histogram has incomplete data. It expired in 03/2022 and was
+    unexpired in 11/2023.
   </summary>
 </histogram>
 
