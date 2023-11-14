@@ -559,92 +559,96 @@ source_set("allocator_shim") {
   configs -= _remove_configs
   configs += _add_configs
 
-  if (use_allocator_shim) {
-    sources += [
-      "shim/allocator_shim.cc",
-      "shim/allocator_shim.h",
-      "shim/allocator_shim_internals.h",
+  shim_headers = []
+  shim_sources = []
+
+  shim_sources += [ "shim/allocator_shim.cc" ]
+  shim_headers += [
+    "shim/allocator_shim.h",
+    "shim/allocator_shim_internals.h",
+  ]
+  if (use_partition_alloc) {
+    shim_sources += [
+      "shim/allocator_shim_default_dispatch_to_partition_alloc.cc",
+      "shim/nonscannable_allocator.cc",
     ]
-    if (use_partition_alloc) {
-      sources += [
-        "shim/allocator_shim_default_dispatch_to_partition_alloc.cc",
-        "shim/allocator_shim_default_dispatch_to_partition_alloc.h",
-        "shim/nonscannable_allocator.cc",
-        "shim/nonscannable_allocator.h",
-      ]
-    }
-    if (is_android) {
-      sources += [
-        "shim/allocator_shim_override_cpp_symbols.h",
-        "shim/allocator_shim_override_linker_wrapped_symbols.h",
-      ]
+    shim_headers += [
+      "shim/allocator_shim_default_dispatch_to_partition_alloc.h",
+      "shim/nonscannable_allocator.h",
+    ]
+  }
+  if (is_android) {
+    shim_headers += [
+      "shim/allocator_shim_override_cpp_symbols.h",
+      "shim/allocator_shim_override_linker_wrapped_symbols.h",
+    ]
+    if (use_allocator_shim) {
       all_dependent_configs += [ ":wrap_malloc_symbols" ]
     }
-    if (is_apple) {
-      sources += [
-        "shim/allocator_shim_override_apple_default_zone.h",
-        "shim/allocator_shim_override_apple_symbols.h",
-        "shim/early_zone_registration_constants.h",
-      ]
-      configs += [ ":mac_no_default_new_delete_symbols" ]
-    }
-    if (is_chromeos || is_linux) {
-      sources += [
-        "shim/allocator_shim_override_cpp_symbols.h",
-        "shim/allocator_shim_override_glibc_weak_symbols.h",
-        "shim/allocator_shim_override_libc_symbols.h",
-      ]
-    }
-    if (is_win) {
-      sources += [
-        "shim/allocator_shim_override_ucrt_symbols_win.h",
-        "shim/winheap_stubs_win.cc",
-        "shim/winheap_stubs_win.h",
-      ]
-    }
-
-    if (!use_partition_alloc_as_malloc) {
-      if (is_android) {
-        sources += [
-          "shim/allocator_shim_default_dispatch_to_linker_wrapped_symbols.cc",
-        ]
-      }
-      if (is_apple) {
-        sources +=
-            [ "shim/allocator_shim_default_dispatch_to_apple_zoned_malloc.cc" ]
-      }
-      if (is_chromeos || is_linux) {
-        sources += [ "shim/allocator_shim_default_dispatch_to_glibc.cc" ]
-      }
-      if (is_win) {
-        sources += [ "shim/allocator_shim_default_dispatch_to_winheap.cc" ]
-      }
-    }
-
-    deps += [
-      ":allocator_base",
-      ":allocator_core",
-      ":buildflags",
-    ]
   }
-
   if (is_apple) {
-    sources += [
+    shim_headers += [
+      "shim/allocator_shim_override_apple_default_zone.h",
+      "shim/allocator_shim_override_apple_symbols.h",
+      "shim/early_zone_registration_constants.h",
       "shim/allocator_interception_apple.h",
-      "shim/allocator_interception_apple.mm",
-      "shim/malloc_zone_functions_apple.cc",
       "shim/malloc_zone_functions_apple.h",
     ]
+    shim_sources += [
+      "shim/allocator_interception_apple.mm",
+      "shim/malloc_zone_functions_apple.cc",
+    ]
+    if (use_allocator_shim) {
+      configs += [ ":mac_no_default_new_delete_symbols" ]
 
-    # Do not compile with ARC because this target has to interface with
-    # low-level Objective-C and having ARC would interfere.
-    configs -= [ "//build/config/compiler:enable_arc" ]
-    deps += [
-      ":allocator_base",
-      ":allocator_core",
-      ":buildflags",
+      # Do not compile with ARC because this target has to interface with
+      # low-level Objective-C and having ARC would interfere.
+      configs -= [ "//build/config/compiler:enable_arc" ]
+    }
+  }
+  if (is_chromeos || is_linux) {
+    shim_headers += [
+      "shim/allocator_shim_override_cpp_symbols.h",
+      "shim/allocator_shim_override_glibc_weak_symbols.h",
+      "shim/allocator_shim_override_libc_symbols.h",
     ]
   }
+  if (is_win) {
+    shim_headers += [
+      "shim/allocator_shim_override_ucrt_symbols_win.h",
+      "shim/winheap_stubs_win.h",
+    ]
+    shim_sources += [ "shim/winheap_stubs_win.cc" ]
+  }
+
+  if (!use_partition_alloc_as_malloc) {
+    if (is_android) {
+      shim_sources += [
+        "shim/allocator_shim_default_dispatch_to_linker_wrapped_symbols.cc",
+      ]
+    }
+    if (is_apple) {
+      shim_sources +=
+          [ "shim/allocator_shim_default_dispatch_to_apple_zoned_malloc.cc" ]
+    }
+    if (is_chromeos || is_linux) {
+      shim_sources += [ "shim/allocator_shim_default_dispatch_to_glibc.cc" ]
+    }
+    if (is_win) {
+      shim_sources += [ "shim/allocator_shim_default_dispatch_to_winheap.cc" ]
+    }
+  }
+
+  sources = shim_headers
+  if (use_allocator_shim) {
+    sources += shim_sources
+  }
+
+  deps += [
+    ":allocator_base",
+    ":allocator_core",
+    ":buildflags",
+  ]
 }
 
 source_set("raw_ptr") {

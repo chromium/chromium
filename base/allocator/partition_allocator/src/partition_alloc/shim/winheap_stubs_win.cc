@@ -6,7 +6,7 @@
 // allocation shim has been removed, and the generic shim has becaome the
 // default.
 
-#include "winheap_stubs_win.h"
+#include "partition_alloc/shim/winheap_stubs_win.h"
 
 #include <limits.h>
 #include <malloc.h>

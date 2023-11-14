@@ -11,6 +11,9 @@
 
 #include <stdint.h>
 
+#include "partition_alloc/partition_alloc_buildflags.h"
+
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "partition_alloc/partition_alloc_base/component_export.h"
 
 namespace allocator_shim {
@@ -42,5 +45,7 @@ void* WinHeapAlignedRealloc(void* ptr, size_t size, size_t alignment);
 PA_COMPONENT_EXPORT(PARTITION_ALLOC) void WinHeapAlignedFree(void* ptr);
 
 }  // namespace allocator_shim
+
+#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_WINHEAP_STUBS_WIN_H_
