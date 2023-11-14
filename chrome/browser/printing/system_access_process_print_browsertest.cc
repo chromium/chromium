@@ -2127,6 +2127,88 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(print_job_destruction_count(), 0);
 }
+
+// TODO(crbug.com/1501950):  Enable test for Linux and macOS once renderer
+// RunLoop behavior can be made to work with test expectations.
+IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
+                       SystemPrintAfterSystemPrintFromPrintPreview) {
+  // TODO(crbug.com/1497945):  Let test run once crash is resolved.
+  if (UseService()) {
+    GTEST_SKIP();
+  }
+
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+  PrimeForCancelInAskUserForSettings();
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  // First invoke system print from Print Preview.  Wait until the
+  // PrintPreviewUI is done before proceeding to the second part of the
+  // test.
+  SetCheckForPrintPreviewDone(/*check=*/true);
+
+  if (UseService()) {
+    // Once the transition to system print is initiated, the expected events
+    // are:
+    // 1.  Update the print settings.  This internally invokes the system
+    //     print dialog which cancels.
+    // 2.  Print Preview is done.
+    // No print job is created because of such an early cancel.
+    SetNumExpectedMessages(/*num=*/2);
+  } else {
+    // Once the transition to system print is initiated, the expected events
+    // are:
+    // 1.  Update the print settings.
+    // 2.  Print Preview is done.
+    // No print job is created because of such an early cancel.
+    SetNumExpectedMessages(/*num=*/2);
+  }
+  SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
+
+  if (UseService()) {
+    // Windows invokes system print dialog from UpdatePrintSettings().
+    EXPECT_EQ(update_print_settings_result(), mojom::ResultCode::kCanceled);
+  } else {
+    // User settings are invoked from within UpdatePrintSettings().
+    EXPECT_FALSE(did_use_default_settings());
+    EXPECT_FALSE(did_get_settings_with_ui());
+
+    // `PrintBackendService` should never be used when printing in-browser.
+    EXPECT_FALSE(print_backend_service_use_detected());
+  }
+
+  // Reset before initiating system print.
+  PrepareRunloop();
+  ResetNumReceivedMessages();
+
+  // The expected events for this are:
+  // 1.  Get the default settings.
+  // 2.  Ask the user for settings, which cancels out.  No further printing
+  // calls are made.
+  SetNumExpectedMessages(/*num=*/2);
+
+  StartBasicPrint(web_contents);
+
+  WaitUntilCallbackReceived();
+
+  if (UseService()) {
+    EXPECT_EQ(use_default_settings_result(), mojom::ResultCode::kSuccess);
+    EXPECT_EQ(ask_user_for_settings_result(), mojom::ResultCode::kCanceled);
+  } else {
+    EXPECT_TRUE(did_use_default_settings());
+    EXPECT_TRUE(did_get_settings_with_ui());
+  }
+  EXPECT_EQ(error_dialog_shown_count(), 0u);
+  EXPECT_EQ(print_job_destruction_count(), 0);
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
