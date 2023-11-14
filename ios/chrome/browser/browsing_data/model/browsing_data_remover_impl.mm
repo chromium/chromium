@@ -55,7 +55,6 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_remover_helper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
-#import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
@@ -152,10 +151,8 @@ BrowsingDataRemoverImpl::RemovalTask::RemovalTask(
 BrowsingDataRemoverImpl::RemovalTask::~RemovalTask() = default;
 
 BrowsingDataRemoverImpl::BrowsingDataRemoverImpl(
-    ChromeBrowserState* browser_state,
-    SessionServiceIOS* session_service)
+    ChromeBrowserState* browser_state)
     : browser_state_(browser_state),
-      session_service_(session_service),
       context_getter_(browser_state->GetRequestContext()),
       weak_ptr_factory_(this) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -567,16 +564,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
   UMA_HISTOGRAM_ENUMERATION(
       "History.ClearBrowsingData.UserDeletedCookieOrCache", choice,
       MAX_CHOICE_VALUE);
-}
-
-// Removes directories for sessions with `session_ids`
-void BrowsingDataRemoverImpl::RemoveSessionsData(
-    NSArray<NSString*>* session_ids) {
-  if (session_service_) {
-    [session_service_ deleteSessions:session_ids
-                           directory:browser_state_->GetStatePath()
-                          completion:base::DoNothing()];
-  }
 }
 
 // TODO(crbug.com/619783): removing data from WkWebsiteDataStore should be

@@ -9,13 +9,8 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_impl.h"
-#import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 // static
 BrowsingDataRemover* BrowsingDataRemoverFactory::GetForBrowserState(
@@ -47,14 +42,10 @@ BrowsingDataRemoverFactory::~BrowsingDataRemoverFactory() = default;
 std::unique_ptr<KeyedService>
 BrowsingDataRemoverFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  SessionServiceIOS* sessionServiceIOS = nil;
-  if (!web::features::UseSessionSerializationOptimizations()) {
-    sessionServiceIOS = [SessionServiceIOS sharedService];
-  }
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<BrowsingDataRemoverImpl>(browser_state,
-                                                   sessionServiceIOS);
+  // TODO(crbug.com/1500603): the factory should declare the services
+  // used by BrowsingDataRemoverImpl and inject them in the constructor.
+  return std::make_unique<BrowsingDataRemoverImpl>(
+      ChromeBrowserState::FromBrowserState(context));
 }
 
 web::BrowserState* BrowsingDataRemoverFactory::GetBrowserStateToUse(

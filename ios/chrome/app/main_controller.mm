@@ -88,6 +88,8 @@
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/sessions/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
@@ -142,11 +144,6 @@
 #import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
 #endif
 
-#if BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
-#import "ios/chrome/browser/sessions/session_restoration_service.h"
-#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
-#endif
-
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 #import "ios/chrome/app/dump_documents_statistics.h"
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
@@ -158,6 +155,7 @@ namespace {
 BASE_FEATURE(kFastApplicationWillTerminate,
              "FastApplicationWillTerminate",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
 
 // Returns a RepeatingClosure that will call `closure` after being called
 // exactly n time. The closure does not have to be called on a specific
@@ -172,7 +170,6 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
       },
       std::move(closure), std::make_unique<std::atomic<uint32_t>>(n));
 }
-#endif  // BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
 
 // Constants for deferring resetting the startup attempt count (to give the app
 // a little while to make sure it says alive).
@@ -1354,13 +1351,28 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       sessions_storage_util::GetDiscardedSessions();
   if (!sessionIDs)
     return;
-  BrowsingDataRemoverFactory::GetForBrowserState(
-      self.appState.mainBrowserState->GetOriginalChromeBrowserState())
-      ->RemoveSessionsData(sessionIDs);
-  BrowsingDataRemoverFactory::GetForBrowserState(
-      self.appState.mainBrowserState->GetOffTheRecordChromeBrowserState())
-      ->RemoveSessionsData(sessionIDs);
-  sessions_storage_util::ResetDiscardedSessions();
+
+  std::set<std::string> identifiers;
+  for (NSString* sessionID in sessionIDs) {
+    identifiers.insert(base::SysNSStringToUTF8(sessionID));
+    identifiers.insert(base::SysNSStringToUTF8(
+        [sessionID stringByAppendingString:@"-Inactive"]));
+  }
+
+  ChromeBrowserState* browserState = self.appState.mainBrowserState;
+  base::RepeatingClosure dataDeletedClosure = ExpectNCall(
+      browserState->HasOffTheRecordChromeBrowserState() ? 2u : 1u,
+      base::BindRepeating(&sessions_storage_util::ResetDiscardedSessions));
+
+  SessionRestorationServiceFactory::GetForBrowserState(browserState)
+      ->DeleteDataForDiscardedSessions(identifiers, dataDeletedClosure);
+
+  if (browserState->HasOffTheRecordChromeBrowserState()) {
+    ChromeBrowserState* otrBrowserState =
+        browserState->GetOffTheRecordChromeBrowserState();
+    SessionRestorationServiceFactory::GetForBrowserState(otrBrowserState)
+        ->DeleteDataForDiscardedSessions(identifiers, dataDeletedClosure);
+  }
 }
 
 #pragma mark - BrowsingDataCommands

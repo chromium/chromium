@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_H_
 #define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_H_
 
-#import <Foundation/Foundation.h>
-
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
@@ -35,9 +33,6 @@ class BrowsingDataRemover : public KeyedService {
   virtual void Remove(browsing_data::TimePeriod time_period,
                       BrowsingDataRemoveMask remove_mask,
                       base::OnceClosure callback) = 0;
-
-  // Removes all persisted data for sessions with `session_ids`.
-  virtual void RemoveSessionsData(NSArray<NSString*>* session_ids) = 0;
 
   // Adds/removes `observer` from the list of observers notified when data is
   // removed by BrowsingDataRemover.
