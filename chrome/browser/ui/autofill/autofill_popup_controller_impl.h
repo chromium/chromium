@@ -257,7 +257,8 @@ class AutofillPopupControllerImpl
   std::vector<Suggestion> suggestions_;
 
   // The trigger source of the `suggestions_`.
-  AutofillSuggestionTriggerSource trigger_source_;
+  AutofillSuggestionTriggerSource trigger_source_ =
+      AutofillSuggestionTriggerSource::kUnspecified;
 
   // If set to true, the popup will stay open regardless of external changes on
   // the machine that would normally cause the popup to be hidden.
