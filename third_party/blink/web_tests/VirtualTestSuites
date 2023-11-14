@@ -594,7 +594,7 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "plz-dedicated-worker",
+    "prefix": "plz-dedicated-worker-disabled",
     "platforms": ["Linux"],
     "bases": ["external/wpt/content-security-policy/inside-worker",
               "external/wpt/content-security-policy/worker-src",
@@ -615,9 +615,12 @@
               "http/tests/workers",
               "inspector-protocol/worker"
             ],
-    "args": ["--enable-features=PlzDedicatedWorker",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2024"
+    "args": ["--disable-features=PlzDedicatedWorker"],
+    "owners": [
+      "yyanagisawa@chromium.org",
+      "kouhei@chromium.org"
+    ],
+    "expires": "Nov 10, 2024"
   },
   {
     "prefix": "service-worker-storage-control-on-thread-pool",

@@ -1,0 +1,10 @@
+Tests fetch in worker.
+
+Fetch in worker result: Hello world
+http://127.0.0.1:8000/devtools/network/resources/fetch-worker.js
+resource.type: other
+request.failed: false
+http://127.0.0.1:8000/devtools/network/resources/resource.php
+resource.type: fetch
+request.failed: false
+

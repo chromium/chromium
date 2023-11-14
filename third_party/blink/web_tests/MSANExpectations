@@ -114,7 +114,3 @@ crbug.com/1419916 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-al
 crbug.com/1419916 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-gradient-shadow.html [ Crash ]
 
 crbug.com/1457275 [ Linux ] external/wpt/dom/ranges/Range-surroundContents.html [ Skip ]
-
-# Gardener (Sheriff) 2023-07-12
-# use-of-uninitialized-value
-crbug.com/1464214 [ Linux ] virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/dedicated-worker.https.window.html [ Skip ]

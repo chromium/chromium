@@ -2,9 +2,6 @@
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
-# No need to run Virtual test suite plz-dedicated-worker here
-virtual/plz-dedicated-worker/* [ Skip ]
-
 # Isolated-sandboxed-iframe require site isolation to be effective.
 virtual/isolate-sandboxed-iframes/* [ Skip ]
 
