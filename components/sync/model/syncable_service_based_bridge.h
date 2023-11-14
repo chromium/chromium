@@ -105,7 +105,7 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
   const raw_ptr<SyncableService> syncable_service_;
 
   std::unique_ptr<ModelTypeStore> store_;
-  bool syncable_service_started_;
+  bool syncable_service_started_ = false;
 
   // In-memory copy of |store_|, needed for remote deletions, because we need to
   // provide specifics of the deleted entity to the SyncableService.

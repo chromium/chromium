@@ -31,8 +31,8 @@ class MockNudgeHandler : public NudgeHandler {
   void ClearCounters();
 
  private:
-  int num_initial_nudges_;
-  int num_commit_nudges_;
+  int num_initial_nudges_ = 0;
+  int num_commit_nudges_ = 0;
 };
 
 }  // namespace syncer

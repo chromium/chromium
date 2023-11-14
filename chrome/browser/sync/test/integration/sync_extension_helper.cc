@@ -49,7 +49,7 @@ SyncExtensionHelper* SyncExtensionHelper::GetInstance() {
   return instance;
 }
 
-SyncExtensionHelper::SyncExtensionHelper() : setup_completed_(false) {}
+SyncExtensionHelper::SyncExtensionHelper() = default;
 
 SyncExtensionHelper::~SyncExtensionHelper() = default;
 

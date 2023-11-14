@@ -338,9 +338,7 @@ bool SamePasswordFormsChecker::IsExitConditionSatisfied(std::ostream* os) {
 SamePasswordFormsAsVerifierChecker::SamePasswordFormsAsVerifierChecker(int i)
     : SingleClientStatusChangeChecker(
           sync_datatype_helper::test()->GetSyncService(i)),
-      index_(i),
-      in_progress_(false),
-      needs_recheck_(false) {}
+      index_(i) {}
 
 // This method uses the same re-entrancy prevention trick as
 // the SamePasswordFormsChecker.
@@ -371,9 +369,7 @@ PasswordFormsChecker::PasswordFormsChecker(
     const std::vector<password_manager::PasswordForm>& expected_forms)
     : SingleClientStatusChangeChecker(
           sync_datatype_helper::test()->GetSyncService(index)),
-      index_(index),
-      in_progress_(false),
-      needs_recheck_(false) {
+      index_(index) {
   for (const password_manager::PasswordForm& password_form : expected_forms) {
     expected_forms_.push_back(
         std::make_unique<password_manager::PasswordForm>(password_form));

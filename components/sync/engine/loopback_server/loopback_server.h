@@ -232,13 +232,13 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
     observer_for_tests_ = observer;
   }
 
-  bool strong_consistency_model_enabled_;
+  bool strong_consistency_model_enabled_ = false;
 
   // This is the last version number assigned to an entity. The next entity will
   // have a version number of version_ + 1.
-  int64_t version_;
+  int64_t version_ = 0;
 
-  int64_t store_birthday_;
+  int64_t store_birthday_ = 0;
 
   ModelTypeSet throttled_types_;
 
@@ -252,7 +252,7 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
   std::vector<std::vector<uint8_t>> keystore_keys_;
 
   // The file used to store the local sync data.
-  base::FilePath persistent_file_;
+  const base::FilePath persistent_file_;
 
   // Used to limit the rate of file rewrites due to updates.
   base::ImportantFileWriter writer_;

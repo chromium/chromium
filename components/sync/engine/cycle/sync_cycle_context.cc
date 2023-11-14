@@ -21,16 +21,11 @@ SyncCycleContext::SyncCycleContext(
     base::TimeDelta poll_interval)
     : connection_manager_(connection_manager),
       extensions_activity_(extensions_activity),
-      notifications_enabled_(false),
       cache_guid_(cache_guid),
       birthday_(birthday),
       bag_of_chips_(bag_of_chips),
-      max_commit_batch_size_(kDefaultMaxCommitBatchSize),
       debug_info_getter_(debug_info_getter),
       model_type_registry_(model_type_registry),
-      cookie_jar_mismatch_(false),
-      active_devices_invalidation_info_(
-          ActiveDevicesInvalidationInfo::CreateUninitialized()),
       poll_interval_(poll_interval) {
   DCHECK(!poll_interval.is_zero());
   std::vector<SyncEngineEventListener*>::const_iterator it;

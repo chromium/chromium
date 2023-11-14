@@ -942,7 +942,8 @@ void SyncTest::SetUpOnMainThread() {
       // initialized.
       base::FilePath user_data_dir;
       base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-      fake_server_ = std::make_unique<fake_server::FakeServer>(user_data_dir);
+      fake_server_ = std::make_unique<fake_server::FakeServer>(
+          user_data_dir.AppendASCII("FakeServer"));
       fake_server_sync_invalidation_sender_ =
           std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
               fake_server_.get());

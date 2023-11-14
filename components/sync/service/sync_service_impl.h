@@ -452,7 +452,7 @@ class SyncServiceImpl : public SyncService,
   // Indicates if this is the first time sync is being configured.
   // This is set to true if last synced time is not set at the time of
   // OnEngineInitialized().
-  bool is_first_time_sync_configure_;
+  bool is_first_time_sync_configure_ = false;
 
   // Number of UIs currently configuring the Sync service. When this number
   // is decremented back to zero, Sync setup is marked no longer in progress.
@@ -461,7 +461,7 @@ class SyncServiceImpl : public SyncService,
   // Set when sync receives STOP_SYNC_FOR_DISABLED_ACCOUNT error from server.
   // Prevents SyncServiceImpl from starting engine till browser restarted
   // or user signed out.
-  bool sync_disabled_by_admin_;
+  bool sync_disabled_by_admin_ = false;
 
   // Information describing an unrecoverable error.
   absl::optional<UnrecoverableErrorReason> unrecoverable_error_reason_ =
@@ -484,7 +484,7 @@ class SyncServiceImpl : public SyncService,
   // This allows us to gracefully handle an ABORTED return code from the
   // DataTypeManager in the event that the server informed us to cease and
   // desist syncing immediately.
-  bool expect_sync_configuration_aborted_;
+  bool expect_sync_configuration_aborted_ = false;
 
   std::unique_ptr<BackendMigrator> migrator_;
 
@@ -506,14 +506,14 @@ class SyncServiceImpl : public SyncService,
   // Used for UMA to determine whether TrustedVaultErrorShownOnStartup
   // histogram needs to recorded. Set to false iff histogram was already
   // recorded or trusted vault passphrase type wasn't used on startup.
-  bool should_record_trusted_vault_error_shown_on_startup_;
+  bool should_record_trusted_vault_error_shown_on_startup_ = true;
 
   const bool sync_poll_immediately_on_every_startup_;
 
   // Whether we want to receive invalidations for the SESSIONS data type. This
   // is typically false on Android (to save network traffic), but true on all
   // other platforms.
-  bool sessions_invalidations_enabled_;
+  bool sessions_invalidations_enabled_ = !BUILDFLAG(IS_ANDROID);
 
   // Set if/when Initialize() schedules a deferred task to start the engine.
   // Cleared on the first start attempt, regardless of success and who triggered

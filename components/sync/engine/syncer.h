@@ -130,7 +130,7 @@ class Syncer {
   const raw_ptr<CancelationSignal> cancelation_signal_;
 
   // Whether the syncer is in the middle of a sync attempt.
-  bool is_syncing_;
+  bool is_syncing_ = false;
 };
 
 }  // namespace syncer

@@ -234,10 +234,7 @@ bool SortByVersion(const LoopbackServerEntity* lhs,
 }  // namespace
 
 LoopbackServer::LoopbackServer(const base::FilePath& persistent_file)
-    : strong_consistency_model_enabled_(false),
-      version_(0),
-      store_birthday_(0),
-      persistent_file_(persistent_file),
+    : persistent_file_(persistent_file),
       writer_(
           persistent_file_,
           base::ThreadPool::CreateSequencedTaskRunner(

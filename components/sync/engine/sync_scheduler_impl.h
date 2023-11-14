@@ -240,7 +240,7 @@ class SyncSchedulerImpl : public SyncScheduler {
   const std::string name_;
 
   // Set in Start(), unset in Stop().
-  bool started_;
+  bool started_ = false;
 
   // Modifiable versions of kDefaultPollIntervalSeconds which can be
   // updated by the server.
@@ -252,7 +252,7 @@ class SyncSchedulerImpl : public SyncScheduler {
   base::OneShotTimer poll_timer_;
 
   // The mode of operation.
-  Mode mode_;
+  Mode mode_ = CONFIGURATION_MODE;
 
   // Current wait state.  Null if we're not in backoff and not throttled.
   std::unique_ptr<WaitInterval> wait_interval_;
@@ -289,13 +289,13 @@ class SyncSchedulerImpl : public SyncScheduler {
   // have chance of resolving previous error (e.g. network connection change
   // after NETWORK_UNAVAILABLE error).
   // It is reset back to NORMAL_PRIORITY on every call to TrySyncCycleJobImpl.
-  JobPriority next_sync_cycle_job_priority_;
+  JobPriority next_sync_cycle_job_priority_ = NORMAL_PRIORITY;
 
   // One-shot timer for scheduling GU retry according to delay set by server.
   base::OneShotTimer retry_timer_;
 
   // Dictates if the scheduler should wait for authentication to happen or not.
-  bool ignore_auth_credentials_;
+  const bool ignore_auth_credentials_;
 
   const bool sync_poll_immediately_on_every_startup_;
 

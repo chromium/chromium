@@ -221,8 +221,7 @@ SyncableServiceBasedBridge::SyncableServiceBasedBridge(
     SyncableService* syncable_service)
     : ModelTypeSyncBridge(std::move(change_processor)),
       type_(type),
-      syncable_service_(syncable_service),
-      syncable_service_started_(false) {
+      syncable_service_(syncable_service) {
   DCHECK(syncable_service_);
 
   init_start_time_ = base::Time::Now();

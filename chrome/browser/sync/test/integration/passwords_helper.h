@@ -160,9 +160,9 @@ class SamePasswordFormsAsVerifierChecker
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  int index_;
-  bool in_progress_;
-  bool needs_recheck_;
+  const int index_;
+  bool in_progress_ = false;
+  bool needs_recheck_ = false;
 };
 
 // Checker to block until specified profile contains the given password forms.
@@ -181,8 +181,8 @@ class PasswordFormsChecker : public SingleClientStatusChangeChecker {
 
   const int index_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> expected_forms_;
-  bool in_progress_;
-  bool needs_recheck_;
+  bool in_progress_ = false;
+  bool needs_recheck_ = false;
 };
 
 // Checker to block until server has the given password forms encrypted with

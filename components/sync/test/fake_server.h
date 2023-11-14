@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -81,10 +80,12 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
     virtual void OnSuccessfulGetUpdates() {}
   };
 
+  // Persists the server state to `loopback_server_dir` (useful for PRE_ tests).
+  explicit FakeServer(const base::FilePath& loopback_server_dir);
+
+  // Convenience version of the above which uses a new temporary directory.
   FakeServer();
-  // A directory will be created under |user_data_dir| to persist sync server
-  // state. It's necessary for supporting PRE_ tests.
-  explicit FakeServer(const base::FilePath& user_data_dir);
+
   ~FakeServer() override;
 
   // Handles a /command POST (with the given |request|) to the server.
@@ -305,10 +306,10 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
 
   // Used as the error_code field of ClientToServerResponse on all commit
   // requests.
-  sync_pb::SyncEnums_ErrorType commit_error_type_;
+  sync_pb::SyncEnums_ErrorType commit_error_type_ = sync_pb::SyncEnums::SUCCESS;
 
   // Used as the error_code field of ClientToServerResponse on all responses.
-  sync_pb::SyncEnums_ErrorType error_type_;
+  sync_pb::SyncEnums_ErrorType error_type_ = sync_pb::SyncEnums::SUCCESS;
 
   // Used as the error field of ClientToServerResponse when its pointer is not
   // null.
@@ -322,12 +323,12 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // requests. Note that |request_counter_| can be reset and is not necessarily
   // indicative of the total number of requests handled during the object's
   // lifetime.
-  bool alternate_triggered_errors_;
-  int request_counter_;
+  bool alternate_triggered_errors_ = false;
+  int request_counter_ = 0;
 
   // If set to true all |this| will clear |encryption_keys| in all
   // GetUpdateResponse's.
-  bool disallow_sending_encryption_keys_;
+  bool disallow_sending_encryption_keys_ = false;
 
   // Client command to be included in every response.
   sync_pb::ClientCommand client_command_;
@@ -343,7 +344,6 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   base::ThreadChecker thread_checker_;
 
   std::unique_ptr<syncer::LoopbackServer> loopback_server_;
-  std::unique_ptr<base::ScopedTempDir> loopback_server_storage_;
 
   // The LoopbackServer does not know how to handle Wallet data properly, so
   // the FakeServer handles those itself.

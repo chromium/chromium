@@ -124,7 +124,7 @@ class SyncExtensionHelper {
   ProfileExtensionNameMap profile_extensions_;
   StringMap id_to_name_;
   TypeMap id_to_type_;
-  bool setup_completed_;
+  bool setup_completed_ = false;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_EXTENSION_HELPER_H_

@@ -205,19 +205,10 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
       crypto_(this, sync_client_->GetTrustedVaultClient()),
       url_loader_factory_(std::move(init_params.url_loader_factory)),
       network_connection_tracker_(init_params.network_connection_tracker),
-      is_first_time_sync_configure_(false),
-      sync_disabled_by_admin_(false),
-      expect_sync_configuration_aborted_(false),
       create_http_post_provider_factory_cb_(
           base::BindRepeating(&CreateHttpBridgeFactory)),
-      should_record_trusted_vault_error_shown_on_startup_(true),
       sync_poll_immediately_on_every_startup_(
-          init_params.sync_poll_immediately_on_every_startup),
-#if BUILDFLAG(IS_ANDROID)
-      sessions_invalidations_enabled_(false) {
-#else
-      sessions_invalidations_enabled_(true) {
-#endif
+          init_params.sync_poll_immediately_on_every_startup) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sync_client_);
   DCHECK(IsLocalSyncEnabled() || identity_manager_ != nullptr);

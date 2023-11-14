@@ -96,13 +96,10 @@ SyncSchedulerImpl::SyncSchedulerImpl(
     bool ignore_auth_credentials,
     bool sync_poll_immediately_on_every_startup)
     : name_(name),
-      started_(false),
       syncer_poll_interval_seconds_(context->poll_interval()),
-      mode_(CONFIGURATION_MODE),
       delay_provider_(std::move(delay_provider)),
       syncer_(std::move(syncer)),
       cycle_context_(context),
-      next_sync_cycle_job_priority_(NORMAL_PRIORITY),
       ignore_auth_credentials_(ignore_auth_credentials),
       sync_poll_immediately_on_every_startup_(
           sync_poll_immediately_on_every_startup) {}
