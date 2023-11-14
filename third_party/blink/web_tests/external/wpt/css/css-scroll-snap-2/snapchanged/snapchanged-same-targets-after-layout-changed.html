@@ -61,7 +61,7 @@
   <script>
     let unreached_func = null;
     promise_test(async (t) => {
-      checkSnapchangedSupport();
+      checkSnapEventSupport("snapchanged");
       await waitForCompositorCommit();
       unreached_func = t.unreached_func("snapchanged shouldn't fire " +
           "since the scroller is snapped to the same elements.");
@@ -82,7 +82,7 @@
     "elements");
 
     promise_test(async (t) => {
-      checkSnapchangedSupport();
+      checkSnapEventSupport("snapchanged");
       await waitForCompositorCommit();
       unreached_func = t.unreached_func("snapchanged shouldn't fire " +
           "since the scroller is snapped to the same elements.");

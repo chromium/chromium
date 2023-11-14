@@ -87,7 +87,7 @@
       const test_data = {
         scroller: scroller,
         scrolling_function: async () => {
-          await snapchanged_touch_scroll_helper(start_pos, end_pos);
+          await snap_event_touch_scroll_helper(start_pos, end_pos);
         },
         expected_snap_targets: [snap_point_2.id],
         expected_scroll_offsets: {
@@ -134,7 +134,7 @@
           // Scroll by just over half of the top box's height.
           const drag_amt = (offset_to_snap_point_2.y / 2 + 1) *
               scrollbar_to_scroller_ratio;
-          await snapchanged_scrollbar_drag_helper(scroller, scrollbar_width, drag_amt);
+          await snap_event_scrollbar_drag_helper(scroller, scrollbar_width, drag_amt);
         },
         expected_snap_targets: [snap_point_1.id, snap_point_2.id],
         expected_scroll_offsets: {
