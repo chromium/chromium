@@ -50,7 +50,8 @@ enum class ComposeShowStatus {
   kSignedOut = 4,
   kUnsupportedLanguage = 5,
   kFormFieldInCrossOriginFrame = 6,
-  kMaxValue = kFormFieldInCrossOriginFrame,
+  kPerUrlChecksFailed = 7,
+  kMaxValue = kPerUrlChecksFailed,
 };
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event);

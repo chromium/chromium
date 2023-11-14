@@ -203,6 +203,8 @@ bool ComposeEnabling::ShouldTriggerContextMenu(
       GetOptimizationGuidanceForUrl(url, profile);
   if (decision ==
       compose::ComposeHintDecision::COMPOSE_HINT_DECISION_COMPOSE_DISABLED) {
+    compose::LogComposeContextMenuShowStatus(
+        compose::ComposeShowStatus::kPerUrlChecksFailed);
     return false;
   }
 

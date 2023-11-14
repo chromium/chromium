@@ -102,7 +102,7 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
         std::make_unique<testing::NiceMock<MockTranslateManager>>(
             mock_translate_client_.get());
 
-    AddTab(browser(), GURL("http://foo/1"));
+    AddTab(browser(), GURL(kExampleURL));
     context_menu_params_.is_content_editable_for_autofill = true;
     context_menu_params_.frame_origin = GetOrigin();
   }
@@ -579,4 +579,46 @@ TEST_F(ComposeEnablingTest, GetOptimizationGuidanceNoComposeMetadataTest) {
   // Verify response from CanApplyOptimization is as we expect.
   EXPECT_EQ(compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED,
             decision);
+}
+
+TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuOutOfPolicyURLTest) {
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  // Enable everything.
+  compose_enabling.SetEnabledForTesting();
+  // Set the language to something we support.
+  SetLanguage("en");
+
+  // Set ContextMenuParams to textarea, which we support.
+  context_menu_params_.is_content_editable_for_autofill = false;
+  context_menu_params_.form_control_type =
+      blink::mojom::FormControlType::kTextArea;
+
+  base::HistogramTester histogram_tester;
+
+  // Set up a fake metadata to return from the mock.
+  optimization_guide::OptimizationMetadata test_metadata;
+  compose::ComposeHintMetadata compose_hint_metadata;
+  compose_hint_metadata.set_decision(
+      compose::ComposeHintDecision::COMPOSE_HINT_DECISION_COMPOSE_DISABLED);
+  test_metadata.SetAnyMetadataForTesting(compose_hint_metadata);
+
+  EXPECT_CALL(opt_guide(),
+              CanApplyOptimization(
+                  GURL(kExampleURL),
+                  optimization_guide::proto::OptimizationType::COMPOSE,
+                  ::testing::An<optimization_guide::OptimizationMetadata*>()))
+      .WillRepeatedly(testing::DoAll(
+          testing::SetArgPointee<2>(test_metadata),
+          testing::Return(
+              optimization_guide::OptimizationGuideDecision::kTrue)));
+  compose_enabling.SetOptimizationGuideForTest(&opt_guide());
+
+  EXPECT_FALSE(compose_enabling.ShouldTriggerContextMenu(
+      GetProfile(), mock_translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
+      context_menu_params_));
+
+  // Verify the metrics reflect the decision not to show the page.
+  histogram_tester.ExpectUniqueSample(
+      compose::kComposeShowStatus,
+      compose::ComposeShowStatus::kPerUrlChecksFailed, 1);
 }

@@ -57,7 +57,9 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Blocked for user not signed in"/>
   <int value="5" label="Blocked for user language not supported"/>
   <int value="6"
-      label="Blocked for form element appearing in cross-origin subframe."/>
+      label="Blocked for form element appearing in cross-origin subframe"/>
+  <int value="7"
+      label="Blocked by Optimization Guide Result for main frame URL"/>
 </enum>
 
 </enums>
