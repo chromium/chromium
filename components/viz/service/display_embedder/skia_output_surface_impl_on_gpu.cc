@@ -2437,6 +2437,9 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
 
   destroy_after_swap_.clear();
   context_state_->UpdateSkiaOwnedMemorySize();
+  UMA_HISTOGRAM_EXACT_LINEAR("Gpu.FenceHandle.CloneCountsPerSubmit",
+                             gfx::GpuFenceHandle::GetAndClearNumberOfClones(),
+                             200);
 }
 
 bool SkiaOutputSurfaceImplOnGpu::IsDisplayedAsOverlay() {

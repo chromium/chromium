@@ -30,14 +30,17 @@
 #endif
 
 namespace {
+std::atomic<uint32_t> g_num_clones_counter{0};
+
 bool IsEnabledUseSmartRefForGPUFenceHandle() {
   static bool is_enabled =
       base::FeatureList::IsEnabled(features::kUseSmartRefForGPUFenceHandle);
   return is_enabled;
-}
+}  // namespace
 
 gfx::GpuFenceHandle::ScopedPlatformFence PlatformDuplicate(
     const gfx::GpuFenceHandle::ScopedPlatformFence& scoped_fence) {
+  g_num_clones_counter++;
 #if BUILDFLAG(IS_POSIX)
   return base::ScopedFD(HANDLE_EINTR(dup(scoped_fence.get())));
 #elif BUILDFLAG(IS_FUCHSIA)
@@ -136,6 +139,11 @@ GpuFenceHandle::ScopedPlatformFence GpuFenceHandle::Release() {
 
   Reset();
   return return_fence;
+}
+
+// static
+uint32_t GpuFenceHandle::GetAndClearNumberOfClones() {
+  return g_num_clones_counter.exchange(0);
 }
 
 GpuFenceHandle GpuFenceHandle::Clone() const {
