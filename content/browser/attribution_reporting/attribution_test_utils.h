@@ -305,38 +305,21 @@ class ReportBuilder {
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude;
 };
 
-bool operator==(const AttributionTrigger& a, const AttributionTrigger& b);
+bool operator==(const StoredSource&, const StoredSource&);
 
-bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b);
+bool operator==(const AttributionReport::EventLevelData&,
+                const AttributionReport::EventLevelData&);
 
-bool operator==(const AttributionInfo& a, const AttributionInfo& b);
+bool operator==(const AttributionReport::CommonAggregatableData&,
+                const AttributionReport::CommonAggregatableData&);
 
-bool operator==(const FakeEventLevelReport& a, const FakeEventLevelReport& b);
+bool operator==(const AttributionReport::AggregatableAttributionData&,
+                const AttributionReport::AggregatableAttributionData&);
 
-bool operator<(const FakeEventLevelReport& a, const FakeEventLevelReport& b);
+bool operator==(const AttributionReport::NullAggregatableData&,
+                const AttributionReport::NullAggregatableData&);
 
-bool operator==(const StorableSource& a, const StorableSource& b);
-
-bool operator==(const StoredSource& a, const StoredSource& b);
-
-bool operator==(const AggregatableHistogramContribution& a,
-                const AggregatableHistogramContribution& b);
-
-bool operator==(const AttributionReport::EventLevelData& a,
-                const AttributionReport::EventLevelData& b);
-
-bool operator==(const AttributionReport::CommonAggregatableData& a,
-                const AttributionReport::CommonAggregatableData& b);
-
-bool operator==(const AttributionReport::AggregatableAttributionData& a,
-                const AttributionReport::AggregatableAttributionData& b);
-
-bool operator==(const AttributionReport::NullAggregatableData& a,
-                const AttributionReport::NullAggregatableData& b);
-
-bool operator==(const AttributionReport& a, const AttributionReport& b);
-
-bool operator==(const SendResult& a, const SendResult& b);
+bool operator==(const AttributionReport&, const AttributionReport&);
 
 std::ostream& operator<<(std::ostream& out, RateLimitResult result);
 

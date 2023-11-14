@@ -51,8 +51,7 @@ struct SendResult {
   int network_error;
   int http_response_code;
 
-  // When adding new members, the corresponding `operator==()` definition in
-  // `attribution_test_utils.h` should also be updated.
+  friend bool operator==(const SendResult&, const SendResult&) = default;
 };
 
 }  // namespace content

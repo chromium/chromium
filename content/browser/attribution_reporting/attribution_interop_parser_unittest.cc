@@ -7,7 +7,6 @@
 #include <cmath>
 #include <functional>
 #include <string>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -27,57 +26,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
-
-bool operator==(const AttributionConfig::RateLimitConfig& a,
-                const AttributionConfig::RateLimitConfig& b) {
-  const auto tie = [](const AttributionConfig::RateLimitConfig& config) {
-    return std::make_tuple(
-        config.time_window, config.max_source_registration_reporting_origins,
-        config.max_attribution_reporting_origins, config.max_attributions,
-        config.max_reporting_origins_per_source_reporting_site,
-        config.origins_per_site_window);
-  };
-  return tie(a) == tie(b);
-}
-
-bool operator==(const AttributionConfig::EventLevelLimit& a,
-                const AttributionConfig::EventLevelLimit& b) {
-  const auto tie = [](const AttributionConfig::EventLevelLimit& config) {
-    return std::make_tuple(
-        config.randomized_response_epsilon, config.max_reports_per_destination,
-        config.max_navigation_info_gain, config.max_event_info_gain);
-  };
-  return tie(a) == tie(b);
-}
-
-bool operator==(const AttributionConfig::AggregateLimit& a,
-                const AttributionConfig::AggregateLimit& b) {
-  const auto tie = [](const AttributionConfig::AggregateLimit& config) {
-    return std::make_tuple(
-        config.max_reports_per_destination, config.min_delay, config.delay_span,
-        config.null_reports_rate_include_source_registration_time,
-        config.null_reports_rate_exclude_source_registration_time,
-        config.max_aggregatable_reports_per_source);
-  };
-  return tie(a) == tie(b);
-}
-
-bool operator==(const AttributionConfig::DestinationRateLimit& a,
-                const AttributionConfig::DestinationRateLimit& b) {
-  return a.max_total == b.max_total &&
-         a.max_per_reporting_site == b.max_per_reporting_site &&
-         a.rate_limit_window == b.rate_limit_window;
-}
-
-bool operator==(const AttributionConfig& a, const AttributionConfig& b) {
-  const auto tie = [](const AttributionConfig& config) {
-    return std::make_tuple(config.max_sources_per_origin, config.rate_limit,
-                           config.event_level_limit, config.aggregate_limit,
-                           config.destination_rate_limit);
-  };
-  return tie(a) == tie(b);
-}
-
 namespace {
 
 using ::base::test::ErrorIs;

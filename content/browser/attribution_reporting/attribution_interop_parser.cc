@@ -788,20 +788,6 @@ AttributionInteropOutput::Report& AttributionInteropOutput::Report::operator=(
   return *this;
 }
 
-// TODO(apaseltiner): The payload comparison here is too brittle. Reports can
-// be logically equivalent without having exactly the same JSON structure.
-bool operator==(const AttributionInteropOutput::Report& a,
-                const AttributionInteropOutput::Report& b) {
-  return a.time == b.time &&  //
-         a.url == b.url &&    //
-         a.payload == b.payload;
-}
-
-bool operator==(const AttributionInteropOutput::UnparsableRegistration& a,
-                const AttributionInteropOutput::UnparsableRegistration& b) {
-  return a.time == b.time && a.type == b.type;
-}
-
 std::ostream& operator<<(std::ostream& out,
                          const AttributionInteropOutput::Report& report) {
   return out << report.ToJson();

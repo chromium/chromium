@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <compare>
 #include <map>
 #include <tuple>
 #include <vector>
@@ -26,6 +27,10 @@ namespace content {
 struct FakeEventLevelReport {
   uint64_t trigger_data;
   int window_index;
+
+  friend std::strong_ordering operator<=>(const FakeEventLevelReport&,
+                                          const FakeEventLevelReport&) =
+      default;
 };
 
 // Corresponds to `StoredSource::AttributionLogic` as follows:

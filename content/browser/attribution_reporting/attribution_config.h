@@ -48,8 +48,10 @@ struct CONTENT_EXPORT AttributionConfig {
     // Controls the time window for reporting origins per site limit.
     base::TimeDelta origins_per_site_window = base::Days(1);
 
-    // When adding new members, the corresponding `Validate()` definition and
-    // `operator==()` definition in `attribution_interop_parser_unittest.cc`
+    friend bool operator==(const RateLimitConfig&,
+                           const RateLimitConfig&) = default;
+
+    // When adding new members, the corresponding `Validate()` definition
     // should also be updated.
   };
 
@@ -88,8 +90,10 @@ struct CONTENT_EXPORT AttributionConfig {
     double max_navigation_info_gain = kDefaultMaxNavigationInfoGain;
     double max_event_info_gain = kDefaultMaxEventInfoGain;
 
-    // When adding new members, the corresponding `Validate()` definition and
-    // `operator==()` definition in `attribution_interop_parser_unittest.cc`
+    friend bool operator==(const EventLevelLimit&,
+                           const EventLevelLimit&) = default;
+
+    // When adding new members, the corresponding `Validate()` definition
     // should also be updated.
   };
 
@@ -117,8 +121,10 @@ struct CONTENT_EXPORT AttributionConfig {
 
     int max_aggregatable_reports_per_source = 20;
 
-    // When adding new members, the corresponding `Validate()` definition and
-    // `operator==()` definition in `attribution_interop_parser_unittest.cc`
+    friend bool operator==(const AggregateLimit&,
+                           const AggregateLimit&) = default;
+
+    // When adding new members, the corresponding `Validate()` definition
     // should also be updated.
   };
 
@@ -130,8 +136,10 @@ struct CONTENT_EXPORT AttributionConfig {
     int max_per_reporting_site = 50;
     base::TimeDelta rate_limit_window = base::Minutes(1);
 
-    // When adding new members, the corresponding `Validate()` definition and
-    // `operator==()` definition in `attribution_interop_parser_unittest.cc`
+    friend bool operator==(const DestinationRateLimit&,
+                           const DestinationRateLimit&) = default;
+
+    // When adding new members, the corresponding `Validate()` definition
     // should also be updated.
   };
 
@@ -160,8 +168,10 @@ struct CONTENT_EXPORT AttributionConfig {
   AggregateLimit aggregate_limit;
   DestinationRateLimit destination_rate_limit;
 
-  // When adding new members, the corresponding `Validate()` definition and
-  // `operator==()` definition in `attribution_interop_parser_unittest.cc`
+  friend bool operator==(const AttributionConfig&,
+                         const AttributionConfig&) = default;
+
+  // When adding new members, the corresponding `Validate()` definition
   // should also be updated.
 };
 

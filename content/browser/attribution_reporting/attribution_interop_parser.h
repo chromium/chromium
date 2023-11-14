@@ -43,10 +43,6 @@ struct AttributionSimulationEvent {
 
   AttributionSimulationEvent(AttributionSimulationEvent&&);
   AttributionSimulationEvent& operator=(AttributionSimulationEvent&&);
-
-  bool operator<(const AttributionSimulationEvent& other) const {
-    return time < other.time;
-  }
 };
 
 using AttributionSimulationEvents = std::vector<AttributionSimulationEvent>;
@@ -78,6 +74,11 @@ struct AttributionInteropOutput {
     Report& operator=(const Report&);
 
     base::Value::Dict ToJson() const;
+
+    // TODO(apaseltiner): The payload comparison here is too brittle. Reports
+    // can be logically equivalent without having exactly the same JSON
+    // structure.
+    friend bool operator==(const Report&, const Report&) = default;
   };
 
   struct UnparsableRegistration {
@@ -85,6 +86,9 @@ struct AttributionInteropOutput {
     attribution_reporting::mojom::RegistrationType type;
 
     base::Value::Dict ToJson() const;
+
+    friend bool operator==(const UnparsableRegistration&,
+                           const UnparsableRegistration&) = default;
   };
 
   std::vector<Report> reports;
@@ -104,12 +108,6 @@ struct AttributionInteropOutput {
   static base::expected<AttributionInteropOutput, std::string> Parse(
       base::Value::Dict);
 };
-
-bool operator==(const AttributionInteropOutput::Report&,
-                const AttributionInteropOutput::Report&);
-
-bool operator==(const AttributionInteropOutput::UnparsableRegistration&,
-                const AttributionInteropOutput::UnparsableRegistration&);
 
 std::ostream& operator<<(std::ostream&,
                          const AttributionInteropOutput::Report&);

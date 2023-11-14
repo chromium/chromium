@@ -410,7 +410,8 @@ RunAttributionInteropSimulation(base::Value::Dict input,
     return AttributionInteropOutput();
   }
 
-  DCHECK(base::ranges::is_sorted(events));
+  DCHECK(base::ranges::is_sorted(events, /*comp=*/{},
+                                 &AttributionSimulationEvent::time));
   DCHECK(base::ranges::adjacent_find(
              events, /*pred=*/{},
              [](const auto& event) { return event.time; }) == events.end());

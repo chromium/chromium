@@ -491,52 +491,6 @@ AttributionReport ReportBuilder::BuildNullAggregatable() const {
           source_.common_info().reporting_origin(), source_.source_time()));
 }
 
-bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
-  const auto tie = [](const AttributionTrigger& t) {
-    return std::make_tuple(t.registration(), t.destination_origin(),
-                           t.is_within_fenced_frame());
-  };
-  return tie(a) == tie(b);
-}
-
-bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b) {
-  const auto tie = [](const CommonSourceInfo& source) {
-    return std::make_tuple(source.source_origin(), source.reporting_origin(),
-                           source.source_type());
-  };
-  return tie(a) == tie(b);
-}
-
-bool operator==(const AttributionInfo& a, const AttributionInfo& b) {
-  const auto tie = [](const AttributionInfo& attribution_info) {
-    return std::make_tuple(attribution_info.debug_key,
-                           attribution_info.context_origin);
-  };
-  return tie(a) == tie(b);
-}
-
-bool operator==(const FakeEventLevelReport& a, const FakeEventLevelReport& b) {
-  const auto tie = [](const FakeEventLevelReport& r) {
-    return std::make_tuple(r.trigger_data, r.window_index);
-  };
-  return tie(a) == tie(b);
-}
-
-bool operator<(const FakeEventLevelReport& a, const FakeEventLevelReport& b) {
-  const auto tie = [](const FakeEventLevelReport& r) {
-    return std::make_tuple(r.trigger_data, r.window_index);
-  };
-  return tie(a) < tie(b);
-}
-
-bool operator==(const StorableSource& a, const StorableSource& b) {
-  const auto tie = [](const StorableSource& source) {
-    return std::make_tuple(source.registration(), source.common_info(),
-                           source.is_within_fenced_frame());
-  };
-  return tie(a) == tie(b);
-}
-
 // Does not compare source IDs, as they are set by the underlying sqlite DB and
 // should not be tested.
 bool operator==(const StoredSource& a, const StoredSource& b) {
@@ -551,14 +505,6 @@ bool operator==(const StoredSource& a, const StoredSource& b) {
         source.aggregatable_budget_consumed(), source.aggregatable_dedup_keys(),
         source.randomized_response_rate(), source.trigger_config(),
         source.debug_cookie_set());
-  };
-  return tie(a) == tie(b);
-}
-
-bool operator==(const AggregatableHistogramContribution& a,
-                const AggregatableHistogramContribution& b) {
-  const auto tie = [](const AggregatableHistogramContribution& contribution) {
-    return std::make_tuple(contribution.key(), contribution.value());
   };
   return tie(a) == tie(b);
 }
@@ -610,14 +556,6 @@ bool operator==(const AttributionReport& a, const AttributionReport& b) {
                            report.initial_report_time(),
                            report.external_report_id(),
                            report.failed_send_attempts(), report.data());
-  };
-  return tie(a) == tie(b);
-}
-
-bool operator==(const SendResult& a, const SendResult& b) {
-  const auto tie = [](const SendResult& info) {
-    return std::make_tuple(info.status, info.network_error,
-                           info.http_response_code);
   };
   return tie(a) == tie(b);
 }

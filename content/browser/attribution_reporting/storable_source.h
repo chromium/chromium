@@ -48,6 +48,9 @@ class CONTENT_EXPORT StorableSource {
 
   bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
 
+  friend bool operator==(const StorableSource&,
+                         const StorableSource&) = default;
+
  private:
   attribution_reporting::SourceRegistration registration_;
 
@@ -55,9 +58,6 @@ class CONTENT_EXPORT StorableSource {
 
   // Whether the source is registered within a fenced frame tree.
   bool is_within_fenced_frame_;
-
-  // When adding new members, the corresponding `operator==()` definition in
-  // `attribution_test_utils.h` should also be updated.
 };
 
 }  // namespace content

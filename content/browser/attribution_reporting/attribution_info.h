@@ -37,8 +37,8 @@ struct CONTENT_EXPORT AttributionInfo {
   // origin.
   attribution_reporting::SuitableOrigin context_origin;
 
-  // When adding new members, the corresponding `operator==()` definition in
-  // `attribution_test_utils.h` should also be updated.
+  friend bool operator==(const AttributionInfo&,
+                         const AttributionInfo&) = default;
 };
 
 }  // namespace content
