@@ -409,6 +409,32 @@ public class CredManHelperRobolectricTest {
 
     @Test
     @SmallTest
+    public void testStartGetRequest_noCredentials_errorHandlerCalledIfNoFallbackSet() {
+        Runnable noCredentialsFallback = Mockito.mock(Runnable.class);
+
+        int result =
+                mCredManHelper.startGetRequest(
+                        mContext,
+                        mFrameHost,
+                        mRequestOptions,
+                        mOriginString,
+                        /* isCrossOrigin= */ false,
+                        mMaybeClientDataHash,
+                        mCallback::onSignResponse,
+                        mErrorCallback,
+                        /* ignoreGpm= */ false);
+
+        assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
+
+        ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
+        GetCredentialException exception =
+                new GetCredentialException(GetCredentialException.TYPE_NO_CREDENTIAL, "Message");
+        shadowCredentialManager.getGetCredentialCallback().onError(exception);
+        verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+    }
+
+    @Test
+    @SmallTest
     public void testStartGetRequest_userCancel_notAllowedError() {
         int result =
                 mCredManHelper.startGetRequest(

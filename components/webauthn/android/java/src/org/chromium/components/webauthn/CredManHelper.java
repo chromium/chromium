@@ -384,7 +384,11 @@ public class CredManHelper {
                             assert mConditionalUiState == ConditionalUiState.NONE;
                             assert !options.isConditional;
 
-                            if (mNoCredentialsFallback != null) mNoCredentialsFallback.run();
+                            if (mNoCredentialsFallback != null) {
+                                mNoCredentialsFallback.run();
+                            } else if (mConditionalUiState == ConditionalUiState.NONE) {
+                                mErrorCallback.onResult(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                            }
                         } else {
                             // Includes:
                             //  * GetCredentialException.TYPE_UNKNOWN
