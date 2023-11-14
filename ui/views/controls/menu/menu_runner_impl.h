@@ -40,7 +40,7 @@ namespace internal {
 class VIEWS_EXPORT MenuRunnerImpl : public MenuRunnerImplInterface,
                                     public MenuControllerDelegate {
  public:
-  explicit MenuRunnerImpl(MenuItemView* menu);
+  explicit MenuRunnerImpl(std::unique_ptr<MenuItemView> menu);
 
   MenuRunnerImpl(const MenuRunnerImpl&) = delete;
   MenuRunnerImpl& operator=(const MenuRunnerImpl&) = delete;
@@ -73,9 +73,8 @@ class VIEWS_EXPORT MenuRunnerImpl : public MenuRunnerImplInterface,
   // Returns true if mnemonics should be shown in the menu.
   bool ShouldShowMnemonics(int32_t run_types);
 
-  // The menu. We own this. We don't use scoped_ptr as the destructor is
-  // protected and we're a friend.
-  raw_ptr<MenuItemView, DanglingUntriaged> menu_;
+  // The menu.
+  std::unique_ptr<MenuItemView> menu_;
 
   // Any sibling menus. Does not include |menu_|. We own these too.
   std::set<MenuItemView*> sibling_menus_;

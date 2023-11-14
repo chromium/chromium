@@ -4,9 +4,12 @@
 
 #include "ui/views/controls/menu/menu_runner.h"
 
+#include <memory>
 #include <utility>
 
+#include "base/memory/ptr_util.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"
 #include "ui/views/controls/menu/menu_runner_impl.h"
 #include "ui/views/views_delegate.h"
@@ -23,8 +26,12 @@ MenuRunner::MenuRunner(ui::MenuModel* menu_model,
           run_types,
           std::move(on_menu_closed_callback))) {}
 
-MenuRunner::MenuRunner(MenuItemView* menu_view, int32_t run_types)
-    : run_types_(run_types), impl_(new internal::MenuRunnerImpl(menu_view)) {}
+MenuRunner::MenuRunner(std::unique_ptr<MenuItemView> menu, int32_t run_types)
+    : run_types_(run_types),
+      impl_(new internal::MenuRunnerImpl(std::move(menu))) {}
+
+MenuRunner::MenuRunner(MenuItemView* menu, int32_t run_types)
+    : MenuRunner(base::WrapUnique<MenuItemView>(menu), run_types) {}
 
 MenuRunner::~MenuRunner() {
   // Release causes the deletion of the object.

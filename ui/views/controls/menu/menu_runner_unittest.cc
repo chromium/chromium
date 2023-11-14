@@ -52,26 +52,23 @@ class MenuRunnerTest : public ViewsTestBase {
 
   ~MenuRunnerTest() override = default;
 
-  // Initializes the delegates and views needed for a menu. It does not create
-  // the MenuRunner.
-  void InitMenuViews() {
-    menu_delegate_ = std::make_unique<TestMenuDelegate>();
-    menu_item_view_ = new views::TestMenuItemView(menu_delegate_.get());
-    menu_item_view_->AppendMenuItem(1, u"One");
-    menu_item_view_->AppendMenuItem(2, u"\x062f\x0648");
-
-    owner_ = std::make_unique<Widget>();
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
-    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    owner_->Init(std::move(params));
-    owner_->Show();
+  // Creates a `TestMenuItemView` and retains a raw pointer to it. Call
+  // `ResetMenuItemView` if you destroy it prior to test tear-down.
+  std::unique_ptr<MenuItemView> CreateMenuItemView() {
+    auto menu_item_view =
+        std::make_unique<TestMenuItemView>(menu_delegate_.get());
+    menu_item_view->AppendMenuItem(1, u"One");
+    menu_item_view->AppendMenuItem(2, u"\x062f\x0648");
+    menu_item_view_ = menu_item_view.get();
+    return menu_item_view;
   }
 
-  // Initializes all delegates and views needed for a menu. A MenuRunner is also
-  // created with |run_types|, it takes ownership of |menu_item_view_|.
+  void ResetMenuItemView() { menu_item_view_ = nullptr; }
+
+  // Creates a menuRunner with `run_types`.
   void InitMenuRunner(int32_t run_types) {
-    InitMenuViews();
-    menu_runner_ = std::make_unique<MenuRunner>(menu_item_view_, run_types);
+    menu_runner_ =
+        std::make_unique<MenuRunner>(CreateMenuItemView(), run_types);
   }
 
   views::TestMenuItemView* menu_item_view() { return menu_item_view_; }
@@ -79,18 +76,23 @@ class MenuRunnerTest : public ViewsTestBase {
   MenuRunner* menu_runner() { return menu_runner_.get(); }
   Widget* owner() { return owner_.get(); }
 
-#if BUILDFLAG(IS_MAC)
   void SetUp() override {
     ViewsTestBase::SetUp();
 
+#if BUILDFLAG(IS_MAC)
     // Ignore app activation notifications during tests (they make the tests
     // flaky).
     MenuCocoaWatcherMac::SetNotificationFilterForTesting(
         MacNotificationFilter::IgnoreWorkspaceNotifications);
-  }
 #endif
 
-  void ResetMenuItemView() { menu_item_view_ = nullptr; }
+    menu_delegate_ = std::make_unique<TestMenuDelegate>();
+    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    owner_ = std::make_unique<Widget>();
+    owner_->Init(std::move(params));
+    owner_->Show();
+  }
 
   // ViewsTestBase:
   void TearDown() override {
@@ -500,21 +502,14 @@ class MenuRunnerImplTest : public MenuRunnerTest {
   MenuRunnerImplTest& operator=(const MenuRunnerImplTest&) = delete;
 
   ~MenuRunnerImplTest() override = default;
-
-  void SetUp() override;
 };
-
-void MenuRunnerImplTest::SetUp() {
-  MenuRunnerTest::SetUp();
-  InitMenuViews();
-}
 
 // Tests that when nested menu runners are destroyed out of order, that
 // MenuController is not accessed after it has been destroyed. This should not
 // crash on ASAN bots.
 TEST_F(MenuRunnerImplTest, NestedMenuRunnersDestroyedOutOfOrder) {
   internal::MenuRunnerImpl* menu_runner =
-      new internal::MenuRunnerImpl(menu_item_view());
+      new internal::MenuRunnerImpl(CreateMenuItemView());
   menu_runner->RunMenuAt(owner(), nullptr, gfx::Rect(),
                          MenuAnchorPosition::kTopLeft, 0, nullptr);
 
@@ -522,8 +517,8 @@ TEST_F(MenuRunnerImplTest, NestedMenuRunnersDestroyedOutOfOrder) {
   MenuItemView* menu_item_view2 = new MenuItemView(menu_delegate2.get());
   menu_item_view2->AppendMenuItem(1, u"One");
 
-  internal::MenuRunnerImpl* menu_runner2 =
-      new internal::MenuRunnerImpl(menu_item_view2);
+  internal::MenuRunnerImpl* menu_runner2 = new internal::MenuRunnerImpl(
+      base::WrapUnique<MenuItemView>(menu_item_view2));
   menu_runner2->RunMenuAt(owner(), nullptr, gfx::Rect(),
                           MenuAnchorPosition::kTopLeft, MenuRunner::IS_NESTED,
                           nullptr);
@@ -548,7 +543,7 @@ TEST_F(MenuRunnerImplTest, NestedMenuRunnersDestroyedOutOfOrder) {
 // bots.
 TEST_F(MenuRunnerImplTest, MenuRunnerDestroyedWithNoActiveController) {
   internal::MenuRunnerImpl* menu_runner =
-      new internal::MenuRunnerImpl(menu_item_view());
+      new internal::MenuRunnerImpl(CreateMenuItemView());
   menu_runner->RunMenuAt(owner(), nullptr, gfx::Rect(),
                          MenuAnchorPosition::kTopLeft, 0, nullptr);
 
@@ -561,8 +556,8 @@ TEST_F(MenuRunnerImplTest, MenuRunnerDestroyedWithNoActiveController) {
   MenuItemView* menu_item_view2 = new MenuItemView(menu_delegate2.get());
   menu_item_view2->AppendMenuItem(1, u"One");
 
-  internal::MenuRunnerImpl* menu_runner2 =
-      new internal::MenuRunnerImpl(menu_item_view2);
+  internal::MenuRunnerImpl* menu_runner2 = new internal::MenuRunnerImpl(
+      base::WrapUnique<MenuItemView>(menu_item_view2));
   menu_runner2->RunMenuAt(owner(), nullptr, gfx::Rect(),
                           MenuAnchorPosition::kTopLeft, MenuRunner::FOR_DROP,
                           nullptr);
@@ -612,14 +607,13 @@ MenuRunnerDestructionTest::MenuRunnerAsWeakPtr(
 void MenuRunnerDestructionTest::SetUp() {
   set_views_delegate(std::make_unique<ReleaseRefTestViewsDelegate>());
   MenuRunnerTest::SetUp();
-  InitMenuViews();
 }
 
 // Tests that when ViewsDelegate is released that a nested Cancel of the
 // MenuRunner does not occur.
 TEST_F(MenuRunnerDestructionTest, MenuRunnerDestroyedDuringReleaseRef) {
   internal::MenuRunnerImpl* menu_runner =
-      new internal::MenuRunnerImpl(menu_item_view());
+      new internal::MenuRunnerImpl(CreateMenuItemView());
   menu_runner->RunMenuAt(owner(), nullptr, gfx::Rect(),
                          MenuAnchorPosition::kTopLeft, 0, nullptr);
 
@@ -644,7 +638,7 @@ TEST_F(MenuRunnerDestructionTest, MenuRunnerDestroyedDuringReleaseRef) {
 
 TEST_F(MenuRunnerImplTest, FocusOnMenuClose) {
   internal::MenuRunnerImpl* menu_runner =
-      new internal::MenuRunnerImpl(menu_item_view());
+      new internal::MenuRunnerImpl(CreateMenuItemView());
 
   // Create test button that has focus.
   auto button_managed = std::make_unique<LabelButton>();
@@ -705,7 +699,7 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuCloseDeleteAfterRun) {
   button->RequestFocus();
 
   internal::MenuRunnerImpl* menu_runner =
-      new internal::MenuRunnerImpl(menu_item_view());
+      new internal::MenuRunnerImpl(CreateMenuItemView());
   menu_runner->RunMenuAt(owner(), nullptr, gfx::Rect(),
                          MenuAnchorPosition::kTopLeft, 0, nullptr);
 
@@ -718,8 +712,8 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuCloseDeleteAfterRun) {
   MenuItemView* menu_item_view2 = new MenuItemView(menu_delegate2.get());
   menu_item_view2->AppendMenuItem(1, u"One");
 
-  internal::MenuRunnerImpl* menu_runner2 =
-      new internal::MenuRunnerImpl(menu_item_view2);
+  internal::MenuRunnerImpl* menu_runner2 = new internal::MenuRunnerImpl(
+      base::WrapUnique<MenuItemView>(menu_item_view2));
   menu_runner2->RunMenuAt(owner(), nullptr, gfx::Rect(),
                           MenuAnchorPosition::kTopLeft, MenuRunner::FOR_DROP,
                           nullptr);

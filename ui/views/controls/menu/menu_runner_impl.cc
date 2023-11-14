@@ -71,10 +71,8 @@ MenuRunnerImplInterface* MenuRunnerImplInterface::Create(
 }
 #endif
 
-MenuRunnerImpl::MenuRunnerImpl(MenuItemView* menu)
-    : menu_(menu),
-
-      controller_(nullptr) {}
+MenuRunnerImpl::MenuRunnerImpl(std::unique_ptr<MenuItemView> menu)
+    : menu_(std::move(menu)) {}
 
 bool MenuRunnerImpl::IsRunning() const {
   return running_;
@@ -188,7 +186,7 @@ void MenuRunnerImpl::RunMenuAt(
         std::move(show_menu_host_duration_histogram));
   }
 
-  controller->Run(parent, button_controller, menu_, bounds, anchor,
+  controller->Run(parent, button_controller, menu_.get(), bounds, anchor,
                   (run_types & MenuRunner::CONTEXT_MENU) != 0,
                   (run_types & MenuRunner::NESTED_DRAG) != 0,
                   native_view_for_gestures);
@@ -247,12 +245,12 @@ void MenuRunnerImpl::OnMenuClosed(NotifyType type,
 }
 
 void MenuRunnerImpl::SiblingMenuCreated(MenuItemView* menu) {
-  if (menu != menu_ && sibling_menus_.count(menu) == 0)
+  if (menu != menu_.get() && sibling_menus_.count(menu) == 0) {
     sibling_menus_.insert(menu);
+  }
 }
 
 MenuRunnerImpl::~MenuRunnerImpl() {
-  delete menu_;
   for (auto* sibling_menu : sibling_menus_)
     delete sibling_menu;
 }
