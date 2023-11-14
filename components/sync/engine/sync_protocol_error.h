@@ -75,13 +75,10 @@ enum ClientAction {
 };
 
 struct SyncProtocolError {
-  SyncProtocolErrorType error_type;
+  SyncProtocolErrorType error_type = UNKNOWN_ERROR;
   std::string error_description;
-  ClientAction action;
+  ClientAction action = UNKNOWN_ACTION;
   ModelTypeSet error_data_types;
-  SyncProtocolError();
-  SyncProtocolError(const SyncProtocolError& other);
-  ~SyncProtocolError();
 };
 
 const char* GetSyncErrorTypeString(SyncProtocolErrorType type);

@@ -538,7 +538,7 @@ void DataTypeManagerImpl::ConfigurationCompleted(
 
   if (configuration_types_queue_.empty()) {
     state_ = CONFIGURED;
-    NotifyDone(ConfigureResult(OK, preferred_types_));
+    NotifyDone({.status = OK, .requested_types = preferred_types_});
     return;
   }
 
@@ -675,8 +675,7 @@ void DataTypeManagerImpl::Stop(SyncStopMetadataFate metadata_fate) {
   state_ = STOPPED;
 
   if (need_to_notify) {
-    ConfigureResult result(ABORTED, preferred_types_);
-    NotifyDone(result);
+    NotifyDone({.status = ABORTED, .requested_types = preferred_types_});
   }
 }
 

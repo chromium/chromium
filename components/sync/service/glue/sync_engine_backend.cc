@@ -487,14 +487,14 @@ ModelTypeSet SyncEngineBackend::GetTypesWithUnsyncedData() const {
 void SyncEngineBackend::LoadAndConnectNigoriController() {
   // The controller for Nigori is not exposed to the UI thread or the
   // DataTypeManager, so we need to start it here manually.
-  ConfigureContext configure_context;
-  configure_context.authenticated_account_id = authenticated_account_id_;
-  configure_context.cache_guid = sync_manager_->cache_guid();
-  // Always use kFull mode: it is actually not relevant for Nigori and switching
-  // modes harder to detect on this level / can make first sync setup more
-  // complicated.
-  configure_context.sync_mode = SyncMode::kFull;
-  configure_context.configuration_start_time = base::Time::Now();
+  ConfigureContext configure_context = {
+      .authenticated_account_id = authenticated_account_id_,
+      .cache_guid = sync_manager_->cache_guid(),
+      // Always use kFull mode: it is actually not relevant for Nigori and
+      // switching modes harder to detect on this level / can make first sync
+      // setup more complicated.
+      .sync_mode = SyncMode::kFull,
+      .configuration_start_time = base::Time::Now()};
   nigori_controller_->LoadModels(configure_context, base::DoNothing());
   DCHECK_EQ(nigori_controller_->state(), DataTypeController::MODEL_LOADED);
   sync_manager_->GetModelTypeConnector()->ConnectDataType(

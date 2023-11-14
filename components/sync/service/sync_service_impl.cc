@@ -1485,12 +1485,12 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
   DVLOG(1) << "Started DataTypeManager configuration, reason: "
            << static_cast<int>(reason);
 
-  ConfigureContext configure_context;
-  configure_context.authenticated_account_id = GetAccountInfo().account_id;
-  configure_context.cache_guid = engine_->GetCacheGuid();
-  configure_context.sync_mode = SyncMode::kFull;
-  configure_context.reason = reason;
-  configure_context.configuration_start_time = base::Time::Now();
+  ConfigureContext configure_context = {
+      .authenticated_account_id = GetAccountInfo().account_id,
+      .cache_guid = engine_->GetCacheGuid(),
+      .sync_mode = SyncMode::kFull,
+      .reason = reason,
+      .configuration_start_time = base::Time::Now()};
 
   DCHECK(!configure_context.cache_guid.empty());
 

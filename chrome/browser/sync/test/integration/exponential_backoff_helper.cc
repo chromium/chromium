@@ -44,12 +44,10 @@ ExponentialBackoffChecker::CalculateDelayRange(base::TimeDelta current_delay) {
   const base::TimeDelta backoff = std::max(
       base::Seconds(1), current_delay * syncer::kBackoffMultiplyFactor);
 
-  DelayRange delay_range;
-  delay_range.min_delay =
-      ClampBackoffDelay(backoff - current_delay * syncer::kBackoffJitterFactor);
-  delay_range.max_delay =
-      ClampBackoffDelay(backoff + current_delay * syncer::kBackoffJitterFactor);
-  return delay_range;
+  return {.min_delay = ClampBackoffDelay(
+              backoff - current_delay * syncer::kBackoffJitterFactor),
+          .max_delay = ClampBackoffDelay(
+              backoff + current_delay * syncer::kBackoffJitterFactor)};
 }
 
 // static

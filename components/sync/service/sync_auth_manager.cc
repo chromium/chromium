@@ -68,19 +68,13 @@ SyncAccountInfo DetermineAccountToUse(
   // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
-  return SyncAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
-      /*is_sync_consented=*/identity_manager->HasPrimaryAccount(
-          signin::ConsentLevel::kSync));
+  return {.account_info = identity_manager->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin),
+          .is_sync_consented =
+              identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)};
 }
 
 }  // namespace
-
-SyncAccountInfo::SyncAccountInfo() = default;
-
-SyncAccountInfo::SyncAccountInfo(const CoreAccountInfo& account_info,
-                                 bool is_sync_consented)
-    : account_info(account_info), is_sync_consented(is_sync_consented) {}
 
 SyncAuthManager::SyncAuthManager(
     signin::IdentityManager* identity_manager,
@@ -171,13 +165,8 @@ SyncTokenStatus SyncAuthManager::GetSyncTokenStatus() const {
 }
 
 SyncCredentials SyncAuthManager::GetCredentials() const {
-  const CoreAccountInfo& account_info = sync_account_.account_info;
-
-  SyncCredentials credentials;
-  credentials.email = account_info.email;
-  credentials.access_token = access_token_;
-
-  return credentials;
+  return {.email = sync_account_.account_info.email,
+          .access_token = access_token_};
 }
 
 void SyncAuthManager::ConnectionOpened() {

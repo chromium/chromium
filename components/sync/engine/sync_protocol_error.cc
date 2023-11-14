@@ -46,11 +46,4 @@ const char* GetClientActionString(ClientAction action) {
 
 #undef ENUM_CASE
 
-SyncProtocolError::SyncProtocolError()
-    : error_type(UNKNOWN_ERROR), action(UNKNOWN_ACTION) {}
-
-SyncProtocolError::SyncProtocolError(const SyncProtocolError& other) = default;
-
-SyncProtocolError::~SyncProtocolError() = default;
-
 }  // namespace syncer
