@@ -133,4 +133,19 @@ std::unique_ptr<WebUIConfig> WebUIConfigMap::RemoveConfig(const GURL& url) {
   return webui_config;
 }
 
+std::vector<WebUIConfigInfo> WebUIConfigMap::GetWebUIConfigList(
+    BrowserContext* browser_context) {
+  std::vector<WebUIConfigInfo> origins;
+  for (auto& it : configs_map_) {
+    auto& webui_config = it.second;
+    origins.push_back({
+        .origin = it.first,
+        .enabled = browser_context == nullptr
+                       ? false
+                       : webui_config->IsWebUIEnabled(browser_context),
+    });
+  }
+  return origins;
+}
+
 }  // namespace content

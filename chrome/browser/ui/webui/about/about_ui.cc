@@ -23,6 +23,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -47,6 +48,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/webui_config_map.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/filename_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -99,68 +102,6 @@ constexpr char kStringsJsPath[] = "strings.js";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 constexpr char kTerminaCreditsPath[] = "about_os_credits.html";
-
-// APAC region name.
-constexpr char kApac[] = "apac";
-// EMEA region name.
-constexpr char kEmea[] = "emea";
-// EU region name.
-constexpr char kEu[] = "eu";
-
-// List of countries that belong to APAC.
-const char* const kApacCountries[] = {"au", "bd", "cn", "hk", "id", "in", "jp",
-                                      "kh", "la", "lk", "mm", "mn", "my", "nz",
-                                      "np", "ph", "sg", "th", "tw", "vn"};
-
-// List of countries that belong to EMEA.
-const char* const kEmeaCountries[] = {"na", "za", "am", "az", "ch", "eg", "ge",
-                                      "il", "is", "ke", "kg", "li", "mk", "no",
-                                      "rs", "ru", "tr", "tz", "ua", "ug", "za"};
-
-// List of countries that belong to EU.
-const char* const kEuCountries[] = {
-    "at", "be", "bg", "cz", "dk", "es", "fi", "fr", "gb", "gr", "hr", "hu",
-    "ie", "it", "lt", "lu", "lv", "nl", "pl", "pt", "ro", "se", "si", "sk"};
-
-// Maps country to one of 3 regions: APAC, EMEA, EU.
-typedef std::map<std::string, std::string> CountryRegionMap;
-
-// Returns country to region map with EU, EMEA and APAC countries.
-CountryRegionMap CreateCountryRegionMap() {
-  CountryRegionMap region_map;
-  for (size_t i = 0; i < std::size(kApacCountries); ++i) {
-    region_map.emplace(kApacCountries[i], kApac);
-  }
-
-  for (size_t i = 0; i < std::size(kEmeaCountries); ++i) {
-    region_map.emplace(kEmeaCountries[i], kEmea);
-  }
-
-  for (size_t i = 0; i < std::size(kEuCountries); ++i) {
-    region_map.emplace(kEuCountries[i], kEu);
-  }
-  return region_map;
-}
-
-// Reads device region from VPD. Returns "us" in case of read or parsing errors.
-std::string ReadDeviceRegionFromVpd() {
-  std::string region = "us";
-  ash::system::StatisticsProvider* provider =
-      ash::system::StatisticsProvider::GetInstance();
-  if (const absl::optional<base::StringPiece> region_statistic =
-          provider->GetMachineStatistic(ash::system::kRegionKey)) {
-    // We only need the first part of the complex region codes like ca.ansi.
-    std::vector<std::string> region_pieces =
-        base::SplitString(region_statistic.value(), ".", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
-    if (!region_pieces.empty())
-      region = region_pieces[0];
-  } else {
-    LOG(WARNING) << "Device region for Play Store ToS not found in VPD - "
-                    "defaulting to US.";
-  }
-  return base::ToLowerASCII(region);
-}
 
 // Loads bundled terms of service contents (Eula, OEM Eula, Play Store Terms).
 // The online version of terms is fetched in OOBE screen javascript. This is
@@ -225,30 +166,6 @@ class ChromeOSTermsHandler
         contents_.clear();
       }
     }
-  }
-
-  std::vector<std::string> CreateArcLocaleLookupArray() {
-    // To get Play Store asset we look for the first locale match in the
-    // following order:
-    // * language and device region combination
-    // * default region (APAC, EMEA, EU)
-    // * en-US
-    // Note: AMERICAS region defaults to en-US and to simplify it is not
-    // included in the country region map.
-    std::vector<std::string> locale_lookup_array;
-    const std::string device_region = ReadDeviceRegionFromVpd();
-    locale_lookup_array.push_back(base::StrCat(
-        {base::ToLowerASCII(language::ExtractBaseLanguage(locale_)), "-",
-         device_region}));
-
-    const CountryRegionMap country_region_map = CreateCountryRegionMap();
-    const auto region = country_region_map.find(device_region);
-    if (region != country_region_map.end()) {
-      locale_lookup_array.push_back(region->second.c_str());
-    }
-
-    locale_lookup_array.push_back("en-us");
-    return locale_lookup_array;
   }
 
   void ResponseOnUIThread() {
@@ -551,7 +468,22 @@ using about_ui::AppendFooter;
 
 namespace {
 
-std::string ChromeURLs() {
+bool CompareConfigInfos(const content::WebUIConfigInfo& config1,
+                        const content::WebUIConfigInfo& config2) {
+  // Schemes must be either chrome:// or chrome-untrusted://
+  CHECK(config1.origin.scheme() == content::kChromeUIScheme ||
+        config1.origin.scheme() == content::kChromeUIUntrustedScheme);
+  CHECK(config2.origin.scheme() == content::kChromeUIScheme ||
+        config2.origin.scheme() == content::kChromeUIUntrustedScheme);
+  // Sort chrome:// before chrome-untrusted://. If the schemes are not equal,
+  // given the check above one must be chrome:// and one chrome-untrusted://.
+  if (config1.origin.scheme() != config2.origin.scheme()) {
+    return config1.origin.scheme() == content::kChromeUIScheme;
+  }
+  return config1.origin.host() < config2.origin.host();
+}
+
+std::string ChromeURLs(content::BrowserContext* browser_context) {
   std::string html;
   AppendHeader(&html, "Chrome URLs");
   AppendBody(&html);
@@ -560,7 +492,26 @@ std::string ChromeURLs() {
   std::vector<std::string> hosts(
       chrome::kChromeHostURLs,
       chrome::kChromeHostURLs + chrome::kNumberOfChromeHostURLs);
-  std::sort(hosts.begin(), hosts.end());
+  std::vector<content::WebUIConfigInfo> infos;
+  for (const std::string& host : hosts) {
+    GURL url(base::StrCat(
+        {content::kChromeUIScheme, url::kStandardSchemeSeparator, host}));
+    infos.push_back({.origin = url::Origin::Create(url), .enabled = true});
+  }
+
+  // Add any extra hosts found in the config map
+  auto& map = content::WebUIConfigMap::GetInstance();
+  for (const content::WebUIConfigInfo& config_info :
+       map.GetWebUIConfigList(browser_context)) {
+    if (config_info.origin.scheme() == content::kChromeUIUntrustedScheme ||
+        std::find(hosts.begin(), hosts.end(), config_info.origin.host()) ==
+            hosts.end()) {
+      infos.push_back(config_info);
+    }
+  }
+
+  // Sort the URLs.
+  std::sort(infos.begin(), infos.end(), &CompareConfigInfos);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool is_lacros_primary = about_ui::isLacrosPrimaryOrCurrentBrowser();
@@ -583,9 +534,15 @@ std::string ChromeURLs() {
 #else
   {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    for (const std::string& host : hosts) {
-      html += "<li><a href='chrome://" + host + "/'>chrome://" + host +
-              "</a></li>\n";
+    for (const content::WebUIConfigInfo& info : infos) {
+      std::string host = info.origin.host();
+      std::string scheme = info.origin.scheme();
+      std::string url =
+          base::StrCat({scheme, url::kStandardSchemeSeparator, host});
+      html +=
+          info.enabled
+              ? base::StrCat({"<li><a href='", url, "/'>", url, "</a></li>\n"})
+              : base::StrCat({"<li>", url, "</li>\n"});
     }
 
     html +=
@@ -676,7 +633,7 @@ void AboutUIHTMLSource::StartDataRequest(
   std::string response;
   // Add your data source here, in alphabetical order.
   if (source_name_ == chrome::kChromeUIChromeURLsHost) {
-    response = ChromeURLs();
+    response = ChromeURLs(profile_);
   } else if (source_name_ == chrome::kChromeUICreditsHost) {
     int idr = IDR_ABOUT_UI_CREDITS_HTML;
     if (path == kCreditsJsPath)

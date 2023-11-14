@@ -8,33 +8,38 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/ash/login/ui/fake_login_display_host.h"
-#include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/scoped_browser_locale.h"
-#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
-#include "chromeos/ash/components/system/fake_statistics_provider.h"
-#include "chromeos/ash/components/system/statistics_provider.h"
+#include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/webui_config.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/file_manager/url_constants.h"
+#include "base/files/scoped_temp_dir.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
+#include "chrome/browser/ash/login/ui/fake_login_display_host.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "third_party/zlib/google/compression_utils.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -70,6 +75,7 @@ class TestDataReceiver {
 
 }  // namespace
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Base class for ChromeOS offline terms tests.
 class ChromeOSTermsTest : public testing::Test {
  public:
@@ -163,7 +169,6 @@ TEST_F(ChromeOSTermsTest, NoData) {
   EXPECT_EQ("", privacy_policy_data_receiver.data());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Base class for ChromeOS offline terms tests.
 class ChromeOSCreditsTest : public testing::Test {
  public:
@@ -255,3 +260,99 @@ TEST_F(ChromeOSCreditsTest, Neither) {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Test config class, to add to the WebUIConfigMap for testing.
+class TestWebUIConfig : public content::WebUIConfig {
+ public:
+  TestWebUIConfig(const std::string& scheme,
+                  const std::string& host,
+                  bool enabled)
+      : content::WebUIConfig(scheme, host), enabled_(enabled) {}
+
+  ~TestWebUIConfig() override = default;
+
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override {
+    return enabled_;
+  }
+
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override {
+    return nullptr;
+  }
+
+ private:
+  bool enabled_;
+};
+
+// Base class for chrome://chrome-urls test
+class ChromeURLsTest : public testing::Test {
+ public:
+  ChromeURLsTest(const ChromeURLsTest&) = delete;
+  ChromeURLsTest& operator=(const ChromeURLsTest&) = delete;
+
+ protected:
+  ChromeURLsTest() = default;
+  ~ChromeURLsTest() override = default;
+
+  void SetUp() override {
+    tested_html_source_ = std::make_unique<AboutUIHTMLSource>(
+        chrome::kChromeUIChromeURLsHost, &profile_);
+  }
+
+  // Starts data request with the |request_url|.
+  void StartRequest(const std::string& request_url,
+                    TestDataReceiver* data_receiver) {
+    content::WebContents::Getter wc_getter;
+    tested_html_source_->StartDataRequest(
+        GURL(base::StrCat(
+            {"chrome://", chrome::kChromeUIChromeURLsHost, "/", request_url})),
+        std::move(wc_getter),
+        base::BindOnce(&TestDataReceiver::OnDataReceived,
+                       base::Unretained(data_receiver)));
+    task_environment_.RunUntilIdle();
+  }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+
+  std::unique_ptr<AboutUIHTMLSource> tested_html_source_;
+  TestingProfile profile_;
+};
+
+TEST_F(ChromeURLsTest, ContainsConfigURLs) {
+  content::ScopedWebUIConfigRegistration config(
+      std::make_unique<TestWebUIConfig>(content::kChromeUIScheme, "foo", true));
+  content::ScopedWebUIConfigRegistration config_untrusted(
+      std::make_unique<TestWebUIConfig>(content::kChromeUIUntrustedScheme,
+                                        "bar", true));
+  content::ScopedWebUIConfigRegistration config_disabled(
+      std::make_unique<TestWebUIConfig>(content::kChromeUIScheme, "cats",
+                                        false));
+  content::ScopedWebUIConfigRegistration config_untrusted_disabled(
+      std::make_unique<TestWebUIConfig>(content::kChromeUIUntrustedScheme,
+                                        "dogs", false));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Redirect the files app config because it assumes an Ash Shell exists
+  // in IsWebUIEnabled(), and the shell does not exist in unit tests.
+  content::ScopedWebUIConfigRegistration replace_files_app(
+      std::make_unique<TestWebUIConfig>(
+          content::kChromeUIScheme, ash::file_manager::kChromeUIFileManagerHost,
+          true));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  TestDataReceiver chrome_urls_data_receiver;
+  StartRequest("", &chrome_urls_data_receiver);
+
+  ASSERT_TRUE(chrome_urls_data_receiver.data_received());
+  const char kFooEntry[] = "<li><a href='chrome://foo/'>chrome://foo</a></li>";
+  const char kBarEntry[] =
+      "<li><a href='chrome-untrusted://bar/'>chrome-untrusted://bar</a></li>";
+  const char kCatsEntry[] = "<li>chrome://cats</li>";
+  const char kDogsEntry[] = "<li>chrome-untrusted://dogs</li>";
+
+  EXPECT_TRUE(base::Contains(chrome_urls_data_receiver.data(), kFooEntry));
+  EXPECT_TRUE(base::Contains(chrome_urls_data_receiver.data(), kBarEntry));
+  EXPECT_TRUE(base::Contains(chrome_urls_data_receiver.data(), kCatsEntry));
+  EXPECT_TRUE(base::Contains(chrome_urls_data_receiver.data(), kDogsEntry));
+}

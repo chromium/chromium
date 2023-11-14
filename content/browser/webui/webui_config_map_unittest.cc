@@ -39,13 +39,13 @@ class TestConfig : public WebUIConfig {
 
 TEST(WebUIConfigTest, AddAndRemoveChromeUrl) {
   auto& map = WebUIConfigMap::GetInstance();
-  size_t initial_size = map.GetSizeForTesting();
+  size_t initial_size = map.GetWebUIConfigList(nullptr).size();
 
   auto chrome_config = std::make_unique<TestConfig>("chrome", "foo");
   auto* chrome_config_ptr = chrome_config.get();
   map.AddWebUIConfig(std::move(chrome_config));
 
-  EXPECT_EQ(initial_size + 1, map.GetSizeForTesting());
+  EXPECT_EQ(initial_size + 1, map.GetWebUIConfigList(nullptr).size());
 
   EXPECT_EQ(chrome_config_ptr,
             map.GetConfig(kBrowserContext, GURL(kChromeFoo)));
@@ -59,19 +59,19 @@ TEST(WebUIConfigTest, AddAndRemoveChromeUrl) {
 
   auto removed_config = map.RemoveConfig(GURL(kChromeFoo));
   EXPECT_EQ(removed_config.get(), chrome_config_ptr);
-  EXPECT_EQ(initial_size, map.GetSizeForTesting());
+  EXPECT_EQ(initial_size, map.GetWebUIConfigList(nullptr).size());
 }
 
 TEST(WebUIConfigTest, AddAndRemoteChromeUntrustedUrl) {
   auto& map = WebUIConfigMap::GetInstance();
-  size_t initial_size = map.GetSizeForTesting();
+  size_t initial_size = map.GetWebUIConfigList(nullptr).size();
 
   auto untrusted_config =
       std::make_unique<TestConfig>("chrome-untrusted", "foo");
   auto* untrusted_config_ptr = untrusted_config.get();
   map.AddUntrustedWebUIConfig(std::move(untrusted_config));
 
-  EXPECT_EQ(initial_size + 1, map.GetSizeForTesting());
+  EXPECT_EQ(initial_size + 1, map.GetWebUIConfigList(nullptr).size());
 
   EXPECT_EQ(untrusted_config_ptr,
             map.GetConfig(kBrowserContext, GURL(kChromeUntrustedFoo)));
@@ -85,7 +85,7 @@ TEST(WebUIConfigTest, AddAndRemoteChromeUntrustedUrl) {
 
   auto removed_config = map.RemoveConfig(GURL(kChromeUntrustedFoo));
   EXPECT_EQ(removed_config.get(), untrusted_config_ptr);
-  EXPECT_EQ(initial_size, map.GetSizeForTesting());
+  EXPECT_EQ(initial_size, map.GetWebUIConfigList(nullptr).size());
 }
 
 // Regression test for https://crbug.com/1464456.
