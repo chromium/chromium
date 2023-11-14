@@ -4,7 +4,7 @@
 
 import 'chrome://emoji-picker/emoji_search.js';
 
-import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
+import {EmojiPickerApp} from 'chrome://emoji-picker/app.js';
 import {EmojiSearch} from 'chrome://emoji-picker/emoji_search.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -20,7 +20,7 @@ function isCategoryButtonActive(element: HTMLElement|null|undefined) {
 }
 
 suite('emoji-picker-extension', () => {
-  let emojiPicker: EmojiPicker;
+  let emojiPicker: EmojiPickerApp;
   let findInEmojiPicker: (...path: string[]) => HTMLElement | null;
   let waitUntilFindInEmojiPicker: (...path: string[]) => Promise<HTMLElement>;
 

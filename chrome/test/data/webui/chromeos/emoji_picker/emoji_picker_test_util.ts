@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {EmojiGroupComponent} from 'chrome://emoji-picker/emoji_group.js';
-import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
+import {EmojiPickerApp} from 'chrome://emoji-picker/app.js';
 import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
 import {EMOJI_PICKER_READY} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -142,7 +142,7 @@ export function initialiseEmojiPickerForTest(
   // Set default incognito state to False.
   EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = async () =>
       ({incognito: incognito});
-  EmojiPicker.configs = () => ({
+  EmojiPickerApp.configs = () => ({
     dataUrls: {
       emoji: [
         '/emoji_test_ordering_start.json',
@@ -163,7 +163,7 @@ export function initialiseEmojiPickerForTest(
     window.localStorage.setItem(key, value);
   }
 
-  const emojiPicker = document.createElement('emoji-picker');
+  const emojiPicker = document.createElement('emoji-picker-app');
 
   const findInEmojiPicker = (...path: string[]) =>
       deepQuerySelector(emojiPicker, path);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
+import {EmojiPickerApp} from 'chrome://emoji-picker/app.js';
 import {EmojiSearch} from 'chrome://emoji-picker/emoji_search.js';
 import {EMOJI_TEXT_BUTTON_CLICK} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -11,7 +11,7 @@ import {assertEquals, assertGT} from 'chrome://webui-test/chai_assert.js';
 import {initialiseEmojiPickerForTest, waitForCondition, waitWithTimeout} from './emoji_picker_test_util.js';
 
 suite('emoji-search', () => {
-  let emojiPicker: EmojiPicker;
+  let emojiPicker: EmojiPickerApp;
   let emojiSearch: EmojiSearch;
   let findInEmojiPicker: (...path: string[]) => HTMLElement | null;
   setup(async () => {

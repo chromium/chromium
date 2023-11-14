@@ -22,7 +22,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 
 import * as constants from './constants.js';
 import {EmojiGroupComponent} from './emoji_group.js';
-import {getTemplate} from './emoji_picker.html.js';
+import {getTemplate} from './app.html.js';
 import {Feature, Status} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {EmojiSearch} from './emoji_search.js';
@@ -31,7 +31,7 @@ import {CATEGORY_METADATA, CATEGORY_TABS, EMOJI_GROUP_TABS, GIF_CATEGORY_METADAT
 import {GifNudgeHistoryStore, RecentlyUsedStore} from './store.js';
 import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, GifSubcategoryData, SubcategoryData, VisualContent} from './types.js';
 
-export interface EmojiPicker {
+export interface EmojiPickerApp {
   $: {
     'left-chevron': CrIconButtonElement,
     'list-container': HTMLDivElement,
@@ -46,9 +46,9 @@ export interface EmojiPicker {
 }
 
 
-export class EmojiPicker extends PolymerElement {
+export class EmojiPickerApp extends PolymerElement {
   static get is() {
-    return 'emoji-picker' as const;
+    return 'emoji-picker-app' as const;
   }
 
   static get template() {
@@ -205,7 +205,7 @@ export class EmojiPicker extends PolymerElement {
           `First category is ${METADATA[0]?.name} but must be 'emoji'.`);
     }
 
-    const dataUrls = EmojiPicker.configs().dataUrls;
+    const dataUrls = EmojiPickerApp.configs().dataUrls;
     // Create an ordered list of category and urls based on the order that
     // categories need to appear in the UIs.
     const categoryDataUrls =
@@ -1593,7 +1593,7 @@ export class EmojiPicker extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    [EmojiPicker.is]: EmojiPicker;
+    [EmojiPickerApp.is]: EmojiPickerApp;
   }
   interface HTMLElementEventMap {
     [events.EMOJI_PICKER_READY]: CustomEvent;
@@ -1602,4 +1602,4 @@ declare global {
 }
 
 
-customElements.define(EmojiPicker.is, EmojiPicker);
+customElements.define(EmojiPickerApp.is, EmojiPickerApp);

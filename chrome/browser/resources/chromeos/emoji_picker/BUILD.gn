@@ -22,6 +22,7 @@ build_webui("build") {
   ]
 
   web_component_files = [
+    "app.ts",
     "emoji_button.ts",
     "emoji_category_button.ts",
     "emoji_error.ts",
@@ -29,7 +30,6 @@ build_webui("build") {
     "emoji_group.ts",
     "emoji_group_button.ts",
     "emoji_image.ts",
-    "emoji_picker.ts",
     "emoji_search.ts",
     "emoji_variants.ts",
     "text_group_button.ts",
