@@ -285,19 +285,12 @@ void CheckStableMemoryMetrics(const base::HistogramTester& histogram_tester,
     CheckMemoryMetric("Memory.Extension.PrivateMemoryFootprint",
                       histogram_tester, count, ValueRestriction::ABOVE_ZERO,
                       number_of_extension_processes);
-    // Shared memory footprint can be below 1 MB, which is reported as zero.
-    CheckMemoryMetric("Memory.Extension.SharedMemoryFootprint",
-                      histogram_tester, count, ValueRestriction::NONE,
-                      number_of_extension_processes);
     CheckMemoryMetric("Memory.Extension.PrivateSwapFootprint", histogram_tester,
                       count_for_private_swap_footprint, ValueRestriction::NONE,
                       number_of_extension_processes);
   }
 
   int number_of_ns_processes = content::IsOutOfProcessNetworkService() ? 1 : 0;
-  CheckMemoryMetric("Memory.NetworkService.ResidentSet", histogram_tester,
-                    count_for_resident_set, ValueRestriction::ABOVE_ZERO,
-                    number_of_ns_processes);
   CheckMemoryMetric("Memory.NetworkService.PrivateMemoryFootprint",
                     histogram_tester, count, ValueRestriction::ABOVE_ZERO,
                     number_of_ns_processes);
