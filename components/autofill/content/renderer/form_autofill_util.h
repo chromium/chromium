@@ -128,17 +128,11 @@ bool IsDOMPredecessor(const blink::WebNode& x,
 void GetDataListSuggestions(const blink::WebInputElement& element,
                             std::vector<SelectOption>* options);
 
-// Extract FormData from the form element and return whether the
-// operation was successful.
-bool ExtractFormData(const blink::WebFormElement& form_element,
-                     const FieldDataManager& field_data_manager,
-                     FormData* data);
-
-// Returns true if at least one element from |control_elements| is visible in
-// |document|.
-bool IsSomeControlElementVisible(
-    const blink::WebDocument& document,
-    const std::set<FieldRendererId>& control_elements);
+// Extract FormData from the form element and return it or std::nullopt
+// depending on whether the operation was successful.
+std::optional<FormData> ExtractFormData(
+    const blink::WebFormElement& form_element,
+    const FieldDataManager& field_data_manager);
 
 // Helper functions to assist in getting the canonical form of the action and
 // origin. The action will properly take into account <BASE>, and both will

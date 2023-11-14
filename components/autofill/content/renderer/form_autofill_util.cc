@@ -7,6 +7,7 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -1711,38 +1712,19 @@ void GetDataListSuggestions(const WebInputElement& element,
   }
 }
 
-bool ExtractFormData(const WebFormElement& form_element,
-                     const FieldDataManager& field_data_manager,
-                     FormData* data) {
-  return WebFormElementToFormData(
+std::optional<FormData> ExtractFormData(
+    const WebFormElement& form_element,
+    const FieldDataManager& field_data_manager) {
+  FormData extracted_form;
+  // TODO(crbug.com/1007974): Make this function return std::optional too.
+  bool extraction_successful = WebFormElementToFormData(
       form_element, WebFormControlElement(), field_data_manager,
       {ExtractOption::kValue, ExtractOption::kOptionText,
        ExtractOption::kOptions},
-      data,
+      &extracted_form,
       /*field=*/nullptr);
-}
-
-bool IsSomeControlElementVisible(
-    const blink::WebDocument& document,
-    const std::set<FieldRendererId>& control_elements) {
-  // Returns true iff at least one element from |fields| is visible and there
-  // exists an element in |control_elements| with the same field renderer id.
-  // The average case time complexity is O(N log M), where N is the number of
-  // elements in |fields| and M is the number of elements in
-  // |control_elements|.
-  auto ContainsVisibleField =
-      [&](const WebVector<WebFormControlElement>& fields) {
-        return base::ranges::any_of(
-            fields, [&](const WebFormControlElement& field) {
-              return IsWebElementFocusableForAutofill(field) &&
-                     base::Contains(control_elements,
-                                    GetFieldRendererId(field));
-            });
-      };
-  return !document.IsNull() &&
-         (base::ranges::any_of(document.Forms(), ContainsVisibleField,
-                               &WebFormElement::GetFormControlElements) ||
-          ContainsVisibleField(document.UnassociatedFormControls()));
+  return extraction_successful ? std::optional(std::move(extracted_form))
+                               : std::nullopt;
 }
 
 GURL GetCanonicalActionForForm(const WebFormElement& form) {

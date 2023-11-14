@@ -294,10 +294,9 @@ class AutofillAgent : public content::RenderFrameObserver,
       const blink::WebElement& node);
 
   // Helper method which collects unowned elements (i.e., those not inside a
-  // form tag) and writes them into |output|. Returns true if the process is
-  // successful, and all conditions for firing events are true.
-  bool CollectFormlessElements(
-      FormData* output,
+  // form tag) and writes them into the returned form. Returns std::nullopt if
+  // the process is unsuccessful.
+  std::optional<FormData> CollectFormlessElements(
       DenseSet<form_util::ExtractOption> extract_options = {
           form_util::ExtractOption::kValue,
           form_util::ExtractOption::kOptions}) const;

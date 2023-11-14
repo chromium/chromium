@@ -818,16 +818,16 @@ TEST_F(FormAutocompleteTest, CollectFormlessElements) {
       "<form><input type='text' name='excluded'/></form>"
       "</html>");
 
-  FormData result;
-  autofill_agent_->CollectFormlessElements(&result);
+  std::optional<FormData> result = autofill_agent_->CollectFormlessElements();
+  ASSERT_TRUE(result);
 
   // Asserting size 4 also ensures that 'excluded' field inside <form> is not
   // collected.
-  ASSERT_EQ(4U, result.fields.size());
-  EXPECT_EQ(u"text_input", result.fields[0].name);
-  EXPECT_EQ(u"check_input", result.fields[1].name);
-  EXPECT_EQ(u"number_input", result.fields[2].name);
-  EXPECT_EQ(u"select_input", result.fields[3].name);
+  ASSERT_EQ(4U, result->fields.size());
+  EXPECT_EQ(u"text_input", result->fields[0].name);
+  EXPECT_EQ(u"check_input", result->fields[1].name);
+  EXPECT_EQ(u"number_input", result->fields[2].name);
+  EXPECT_EQ(u"select_input", result->fields[3].name);
 }
 
 // Unit test for AutofillAgent::AcceptDataListSuggestion.

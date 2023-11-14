@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <tuple>
 
 #include "base/check_deref.h"
@@ -488,11 +489,10 @@ void AutofillAgent::FireHostSubmitEvents(const WebFormElement& form,
                                          bool known_success,
                                          SubmissionSource source) {
   DCHECK(MaybeWasOwnedByFrame(form, unsafe_render_frame()));
-  FormData form_data;
-  if (!form_util::ExtractFormData(form, field_data_manager(), &form_data)) {
-    return;
+  if (std::optional<FormData> form_data =
+          form_util::ExtractFormData(form, field_data_manager())) {
+    FireHostSubmitEvents(*form_data, known_success, source);
   }
-  FireHostSubmitEvents(form_data, known_success, source);
 }
 
 void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
@@ -642,18 +642,16 @@ void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
   WebFormElement updated_form_element = form_util::FindFormByRendererId(
       unsafe_render_frame()->GetWebFrame()->GetDocument(),
       form.unique_renderer_id);
-  FormData updated_form_data;
-  if (updated_form_element.IsNull()) {
-    CollectFormlessElements(&updated_form_data);
-  } else {
-    form_util::ExtractFormData(updated_form_element, field_data_manager(),
-                               &updated_form_data);
-  }
+  std::optional<FormData> updated_form_data =
+      updated_form_element.IsNull()
+          ? CollectFormlessElements()
+          : form_util::ExtractFormData(updated_form_element,
+                                       field_data_manager());
   // Deep-compare forms, but don't take into account the fields' values.
-  if (!FormData::DeepEqual(form, updated_form_data)) {
-    if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->FormsSeen({updated_form_data}, {});
-    }
+  if (auto* autofill_driver = unsafe_autofill_driver();
+      autofill_driver && updated_form_data &&
+      !FormData::DeepEqual(form, *updated_form_data)) {
+    autofill_driver->FormsSeen({*updated_form_data}, {});
   }
 }
 
@@ -925,11 +923,10 @@ void AutofillAgent::PreviewPasswordGenerationSuggestion(
   password_generation_agent_->PreviewGenerationSuggestion(password);
 }
 
-bool AutofillAgent::CollectFormlessElements(
-    FormData* output,
+std::optional<FormData> AutofillAgent::CollectFormlessElements(
     DenseSet<ExtractOption> extract_options) const {
   if (!unsafe_render_frame()) {
-    return false;
+    return std::nullopt;
   }
   WebDocument document = unsafe_render_frame()->GetWebFrame()->GetDocument();
 
@@ -943,10 +940,15 @@ bool AutofillAgent::CollectFormlessElements(
   std::vector<WebElement> iframe_elements =
       form_util::GetUnownedIframeElements(document);
 
-  return form_util::UnownedFormElementsToFormData(
+  FormData formless_elements_form;
+  // TODO(crbug.com/1007974): Make this function return std::optional too.
+  bool extraction_successful = form_util::UnownedFormElementsToFormData(
       control_elements, iframe_elements, nullptr, document,
-      field_data_manager(), extract_options, output,
+      field_data_manager(), extract_options, &formless_elements_form,
       /*field=*/nullptr);
+  return extraction_successful
+             ? std::optional(std::move(formless_elements_form))
+             : std::nullopt;
 }
 
 void AutofillAgent::ShowSuggestions(
@@ -1137,8 +1139,8 @@ void AutofillAgent::ExtractForm(
       MaybeExtractDatalist({ExtractOption::kBounds, ExtractOption::kOptions,
                             ExtractOption::kOptionText, ExtractOption::kValue});
   if (!form_id) {
-    FormData form;
-    if (CollectFormlessElements(&form, extract_options)) {
+    if (std::optional<FormData> form =
+            CollectFormlessElements(extract_options)) {
       std::move(callback).Run(std::move(form));
       return;
     }
@@ -1492,10 +1494,8 @@ void AutofillAgent::OnProvisionallySaveForm(
       }
       formless_elements_user_edited_.insert(
           form_util::GetFieldRendererId(element));
-      provisionally_saved_form_ = absl::make_optional<FormData>();
-      if (!CollectFormlessElements(&provisionally_saved_form_.value())) {
-        provisionally_saved_form_.reset();
-      } else {
+      provisionally_saved_form_ = CollectFormlessElements();
+      if (provisionally_saved_form_) {
         last_interacted_form_.Reset();
       }
     }
@@ -1594,33 +1594,53 @@ void AutofillAgent::TrackAutofilledElement(
   form_tracker_.TrackAutofilledElement(element);
 }
 
-absl::optional<FormData> AutofillAgent::GetSubmittedForm() const {
+std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
+  // Checks whether all elements represented by `element_ids` in `document` have
+  // disappeared (removed/hidden).
+  // TODO(crbug.com/1427131): Remove document parameter after launching
+  // AutofillUseDomNodeIdForRendererId.
+  auto all_control_elements_disappeared =
+      [](const blink::WebDocument& document,
+         const std::set<FieldRendererId>& element_ids) {
+        std::vector<FieldRendererId> elements(element_ids.begin(),
+                                              element_ids.end());
+        return base::ranges::none_of(
+            form_util::FindFormControlsByRendererId(document, elements),
+            form_util::IsWebElementFocusableForAutofill);
+      };
+
+  // We check if we have a cached `last_interacted_form_`. In that case we
+  // return either the extracted form or `provisionally_saved_form_` as a
+  // fallback if extraction fails. The remaining logic deals with formless
+  // fields.
   if (!last_interacted_form_.IsNull()) {
-    FormData form;
-    if (form_util::ExtractFormData(last_interacted_form_, field_data_manager(),
-                                   &form)) {
-      return absl::make_optional(form);
-    } else if (provisionally_saved_form_.has_value()) {
-      return absl::make_optional(provisionally_saved_form_.value());
+    if (std::optional<FormData> form = form_util::ExtractFormData(
+            last_interacted_form_, field_data_manager())) {
+      return form;
     }
-  } else if (auto* render_frame = unsafe_render_frame();
-             formless_elements_were_autofilled_ ||
-             (!formless_elements_user_edited_.empty() && render_frame &&
-              !form_util::IsSomeControlElementVisible(
-                  render_frame->GetWebFrame()->GetDocument(),
-                  formless_elements_user_edited_))) {
-    // we check if all the elements the user has interacted with are gone,
-    // to decide if submission has occurred, and use the
-    // provisionally_saved_form_ saved in OnProvisionallySaveForm() if fail to
-    // construct form.
-    FormData form;
-    if (CollectFormlessElements(&form)) {
-      return absl::make_optional(form);
-    } else if (provisionally_saved_form_.has_value()) {
-      return absl::make_optional(provisionally_saved_form_.value());
-    }
+    return provisionally_saved_form_;
   }
-  return absl::nullopt;
+  // Criteria to decide on the submission of the form of formless elements,
+  // assuming submission has been inferred:
+  // - Formless elements were autofilled.
+  // - The user has edited formless elements and all those elements disappeared
+  //   (removed/hidden).
+  // TODO(crbug.com/1427131): Remove render_frame condition after launching
+  // AutofillUseDomNodeIdForRendererId.
+  if (auto* render_frame = unsafe_render_frame();
+      formless_elements_were_autofilled_ ||
+      (render_frame && !formless_elements_user_edited_.empty() &&
+       all_control_elements_disappeared(
+           render_frame->GetWebFrame()->GetDocument(),
+           formless_elements_user_edited_))) {
+    // Return the extracted form or `provisionally_saved_form_` as a fallback if
+    // extraction fails.
+    if (std::optional<FormData> form = CollectFormlessElements()) {
+      return form;
+    }
+    return provisionally_saved_form_;
+  }
+  return std::nullopt;
 }
 
 void AutofillAgent::SendPotentiallySubmittedFormToBrowser() {
@@ -1642,11 +1662,8 @@ void AutofillAgent::UpdateLastInteractedForm(
   DCHECK(MaybeWasOwnedByFrame(form, unsafe_render_frame()));
 
   last_interacted_form_ = form;
-  provisionally_saved_form_ = absl::make_optional<FormData>();
-  if (!form_util::ExtractFormData(last_interacted_form_, field_data_manager(),
-                                  &provisionally_saved_form_.value())) {
-    provisionally_saved_form_.reset();
-  }
+  provisionally_saved_form_ =
+      form_util::ExtractFormData(last_interacted_form_, field_data_manager());
 }
 
 void AutofillAgent::OnFormNoLongerSubmittable() {
