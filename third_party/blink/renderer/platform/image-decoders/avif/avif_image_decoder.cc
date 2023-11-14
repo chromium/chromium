@@ -218,7 +218,8 @@ void AvifInfoSegmentReaderSkip(void* void_stream, size_t num_bytes) {
   stream->num_read_bytes += num_bytes;
 }
 
-inline float FractionToFloat(uint32_t numerator, uint32_t denominator) {
+template <typename T>
+inline float FractionToFloat(T numerator, uint32_t denominator) {
   // First cast to double and not float because uint32_t->float conversion can
   // cause precision loss.
   return static_cast<double>(numerator) / denominator;
@@ -1237,37 +1238,57 @@ bool AVIFImageDecoder::GetGainmapInfoAndData(
   // 'tmap' box.
   if (decoder_->gainMapPresent) {
     const avifGainMapMetadata& metadata = decoder_->image->gainMap.metadata;
+    if (metadata.baseHdrHeadroomD == 0 || metadata.alternateHdrHeadroomD == 0) {
+      DVLOG(1) << "Invalid gainmap metadata: a denominator value is zero";
+      return false;
+    }
+    const float base_headroom = std::exp2(
+        FractionToFloat(metadata.baseHdrHeadroomN, metadata.baseHdrHeadroomD));
+    const float alternate_headroom = std::exp2(FractionToFloat(
+        metadata.alternateHdrHeadroomN, metadata.alternateHdrHeadroomD));
+    const bool base_is_hdr = base_headroom > alternate_headroom;
+    if (base_is_hdr != metadata.backwardDirection) {
+      // TODO(crbug.com/1451889): support gain maps computed as the ratio of SDR
+      // over HDR. Currently, SkGainmapShader expects the gain map to always be
+      // computed as the ratio of HDR over SDR.
+      DVLOG(1) << "Unsupported gain map type";
+      return false;
+    }
+    out_gainmap_info.fDisplayRatioSdr =
+        base_is_hdr ? alternate_headroom : base_headroom;
+    out_gainmap_info.fDisplayRatioHdr =
+        base_is_hdr ? base_headroom : alternate_headroom;
+    out_gainmap_info.fBaseImageType = base_is_hdr
+                                          ? SkGainmapInfo::BaseImageType::kHDR
+                                          : SkGainmapInfo::BaseImageType::kSDR;
     for (int i = 0; i < 3; ++i) {
       if (metadata.gainMapMinD[i] == 0 || metadata.gainMapMaxD[i] == 0 ||
-          metadata.gainMapGammaD[i] == 0 || metadata.offsetSdrD[i] == 0 ||
-          metadata.offsetHdrD[i] == 0) {
+          metadata.gainMapGammaD[i] == 0 || metadata.baseOffsetD[i] == 0 ||
+          metadata.alternateOffsetD[i] == 0) {
         DVLOG(1) << "Invalid gainmap metadata: a denominator value is zero";
         return false;
       }
       // Using double and not float because uint32_t->float conversion can cause
       // precision loss.
-      out_gainmap_info.fGainmapRatioMin[i] =
-          FractionToFloat(metadata.gainMapMinN[i], metadata.gainMapMinD[i]);
-      out_gainmap_info.fGainmapRatioMax[i] =
-          FractionToFloat(metadata.gainMapMaxN[i], metadata.gainMapMaxD[i]);
+      out_gainmap_info.fGainmapRatioMin[i] = std::exp2(
+          FractionToFloat(metadata.gainMapMinN[i], metadata.gainMapMinD[i]));
+      out_gainmap_info.fGainmapRatioMax[i] = std::exp2(
+          FractionToFloat(metadata.gainMapMaxN[i], metadata.gainMapMaxD[i]));
+      // Numerator and denominator intentionally swapped to get 1.0/gamma.
       out_gainmap_info.fGainmapGamma[i] =
-          FractionToFloat(metadata.gainMapGammaN[i], metadata.gainMapGammaD[i]);
+          FractionToFloat(metadata.gainMapGammaD[i], metadata.gainMapGammaN[i]);
+      const float base_offset =
+          FractionToFloat(metadata.baseOffsetN[i], metadata.baseOffsetD[i]);
+      const float alternate_offset = FractionToFloat(
+          metadata.alternateOffsetN[i], metadata.alternateOffsetD[i]);
       out_gainmap_info.fEpsilonSdr[i] =
-          FractionToFloat(metadata.offsetSdrN[i], metadata.offsetSdrD[i]);
+          base_is_hdr ? alternate_offset : base_offset;
       out_gainmap_info.fEpsilonHdr[i] =
-          FractionToFloat(metadata.offsetHdrN[i], metadata.offsetHdrD[i]);
+          base_is_hdr ? base_offset : alternate_offset;
     }
-    if (metadata.hdrCapacityMinD == 0 || metadata.hdrCapacityMaxD == 0) {
-      DVLOG(1) << "Invalid gainmap metadata: a denominator value is zero";
-      return false;
-    }
-    out_gainmap_info.fDisplayRatioSdr =
-        FractionToFloat(metadata.hdrCapacityMinN, metadata.hdrCapacityMinD);
-    out_gainmap_info.fDisplayRatioHdr =
-        FractionToFloat(metadata.hdrCapacityMaxN, metadata.hdrCapacityMaxD);
-    out_gainmap_info.fBaseImageType = metadata.baseRenditionIsHDR
-                                          ? SkGainmapInfo::BaseImageType::kHDR
-                                          : SkGainmapInfo::BaseImageType::kSDR;
+    // TODO(crbug.com/1451889): add support for 'useBaseColorSpace' which is
+    // ignored for now since SkGainmapInfo does not support it.
+
     return true;
   }
   // Otherwise, the metadata should be in the gain map image's XMP.
