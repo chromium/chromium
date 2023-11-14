@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer.h"
 
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,6 +38,7 @@ class OneDrivePrefObserver : public KeyedService {
 
   // Serves as callback for pref changes.
   void OnMicrosoftOneDriveMountPrefChanged();
+  void OnMicrosoftOneDriveAccountRestrictionsPrefChanged();
 
   raw_ptr<Profile> profile_ = nullptr;
 
@@ -64,6 +66,11 @@ void OneDrivePrefObserver::Init() {
       base::BindRepeating(
           &OneDrivePrefObserver::OnMicrosoftOneDriveMountPrefChanged,
           base::Unretained(this)));
+  pref_change_registrar_->Add(
+      prefs::kMicrosoftOneDriveAccountRestrictions,
+      base::BindRepeating(&OneDrivePrefObserver::
+                              OnMicrosoftOneDriveAccountRestrictionsPrefChanged,
+                          base::Unretained(this)));
 }
 
 void OneDrivePrefObserver::Shutdown() {
@@ -71,6 +78,11 @@ void OneDrivePrefObserver::Shutdown() {
 }
 
 void OneDrivePrefObserver::OnMicrosoftOneDriveMountPrefChanged() {
+  // TODO(b/294983416): Implement this change listener.
+  NOTREACHED();
+}
+
+void OneDrivePrefObserver::OnMicrosoftOneDriveAccountRestrictionsPrefChanged() {
   // TODO(b/294983416): Implement this change listener.
   NOTREACHED();
 }
