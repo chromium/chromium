@@ -7,16 +7,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@class PrivacyGuideWelcomeCoordinator;
-
-// Delegate for PrivacyGuideWelcomeCoordinator.
-@protocol PrivacyGuideWelcomeCoordinatorDelegate
-
-// Called when the view controller is removed from navigation controller.
-- (void)privacyGuideWelcomeCoordinatorDidRemove:
-    (PrivacyGuideWelcomeCoordinator*)coordinator;
-
-@end
+@protocol PrivacyGuideWelcomeCoordinatorDelegate;
 
 // Coordinator for the Welcome step of the Privacy Guide.
 @interface PrivacyGuideWelcomeCoordinator : ChromeCoordinator

@@ -6,7 +6,9 @@
 
 #import "base/check_op.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_welcome_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_welcome_view_controller.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_welcome_view_controller_presentation_delegate.h"
 
 @interface PrivacyGuideWelcomeCoordinator () <
     PrivacyGuideWelcomeViewControllerPresentationDelegate>

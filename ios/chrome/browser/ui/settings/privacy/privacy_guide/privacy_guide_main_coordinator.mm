@@ -8,7 +8,9 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_main_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_welcome_coordinator.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_welcome_coordinator_delegate.h"
 
 @interface PrivacyGuideMainCoordinator () <
     PrivacyGuideWelcomeCoordinatorDelegate,

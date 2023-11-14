@@ -6,8 +6,10 @@ source_set("privacy_guide") {
   sources = [
     "privacy_guide_main_coordinator.h",
     "privacy_guide_main_coordinator.mm",
+    "privacy_guide_main_coordinator_delegate.h",
     "privacy_guide_welcome_coordinator.h",
     "privacy_guide_welcome_coordinator.mm",
+    "privacy_guide_welcome_coordinator_delegate.h",
   ]
   deps = [
     ":privacy_guide_ui",
@@ -21,6 +23,7 @@ source_set("privacy_guide_ui") {
   sources = [
     "privacy_guide_welcome_view_controller.h",
     "privacy_guide_welcome_view_controller.mm",
+    "privacy_guide_welcome_view_controller_presentation_delegate.h",
   ]
   deps = [
     "//base",

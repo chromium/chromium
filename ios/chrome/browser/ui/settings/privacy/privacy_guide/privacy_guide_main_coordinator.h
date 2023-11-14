@@ -7,16 +7,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@class PrivacyGuideMainCoordinator;
-
-// Delegate for PrivacyGuideMainCoordinator.
-@protocol PrivacyGuideMainCoordinatorDelegate
-
-// Called when all view controllers are removed from navigation controller.
-- (void)privacyGuideMainCoordinatorDidRemove:
-    (PrivacyGuideMainCoordinator*)coordinator;
-
-@end
+@protocol PrivacyGuideMainCoordinatorDelegate;
 
 // The main coordinator for the Privacy Guide. Handles the coordinators for each
 // of the guide's steps.
