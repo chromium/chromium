@@ -6,6 +6,7 @@
 
 #include <sstream>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
