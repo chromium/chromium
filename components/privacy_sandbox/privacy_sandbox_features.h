@@ -150,6 +150,11 @@ extern const base::FeatureParam<bool> kPrivacySandboxFirstPartySetsUISampleSets;
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kEnforcePrivacySandboxAttestations);
 
+// Enable the Privacy Sandbox Attestations to default allow when the
+// attestations map is absent.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kDefaultAllowPrivacySandboxAttestations);
+
 // Gives a list of sites permission to use Privacy Sandbox features without
 // being officially enrolled.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)

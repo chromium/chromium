@@ -99,11 +99,12 @@ class PrivacySandboxAttestations {
       delete;
   PrivacySandboxAttestations& operator=(PrivacySandboxAttestations&&);
 
-  // Returns whether `site` is enrolled and attested for `invoking_api`.
-  // This function returns true unconditionally if
-  // 1. The `kEnforcePrivacySandboxAttestations` flag is disabled.
-  // 2. Or `is_all_apis_attested_for_testing_` is set to true by
-  // `SetAllPrivacySandboxAttestedForTesting()` for testing.
+  // Record the status returned by `IsSiteAttestedInternal` to a histogram, then
+  // return the status.
+  // TODO(crbug.com/1500636): This method will occasionally return false
+  // positives i.e. it may mark some sites as attested even when they are not.
+  // This will occur for example, if the attestations file is corrupted on-disk,
+  // or the file is otherwise unavailable.
   PrivacySandboxSettingsImpl::Status IsSiteAttested(
       const net::SchemefulSite& site,
       PrivacySandboxAttestationsGatedAPI invoking_api) const;
@@ -163,6 +164,15 @@ class PrivacySandboxAttestations {
   // The constructor is private to enforce the singleton requirement of this
   // class.
   PrivacySandboxAttestations();
+
+  // Returns whether `site` is enrolled and attested for `invoking_api`.
+  // This function returns `kAllowed` unconditionally if
+  // 1. The `kEnforcePrivacySandboxAttestations` flag is disabled.
+  // 2. Or `is_all_apis_attested_for_testing_` is set to true by
+  // `SetAllPrivacySandboxAttestedForTesting()` for testing.
+  PrivacySandboxSettingsImpl::Status IsSiteAttestedInternal(
+      const net::SchemefulSite& site,
+      PrivacySandboxAttestationsGatedAPI invoking_api) const;
 
   // Invoke the `attestations_loaded_callback_` registered by tests, if any.
   void RunLoadAttestationsDoneCallbackForTesting();
