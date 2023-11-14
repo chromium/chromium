@@ -2,6 +2,8 @@
 
 This is a list of changes to [Largest Contentful Paint](https://web.dev/lcp).
 
+* Chrome 118
+  * Implementation optimizations: [Image loading prioritizations](2023_10_image_loading_optimizations.md)
 * Chrome 117
   * Bug: [Spurious LCP entries after user interaction](2023_10_lcp.md)
 * Chrome 116
