@@ -19,6 +19,13 @@
 // TODO(crbug.com/1383087): remove once the feature is fully launched.
 #import "ios/web/common/features.h"
 
+namespace {
+
+// Value taken from Desktop Chrome.
+constexpr base::TimeDelta kSaveDelay = base::Seconds(2.5);
+
+}  // namespace
+
 // static
 SessionRestorationService* SessionRestorationServiceFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {
@@ -48,22 +55,28 @@ SessionRestorationServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
 
+  scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+          base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+
   const base::FilePath storage_path = browser_state->GetStatePath();
 
   // If the optimised session restoration format is not enabled, create a
   // LegacySessionRestorationService instance which wraps the legacy API.
   if (!web::features::UseSessionSerializationOptimizations()) {
+    SessionServiceIOS* session_service_ios =
+        [[SessionServiceIOS alloc] initWithSaveDelay:kSaveDelay
+                                          taskRunner:task_runner];
+
     return std::make_unique<LegacySessionRestorationService>(
-        IsPinnedTabsEnabled(), storage_path, [SessionServiceIOS sharedService],
+        IsPinnedTabsEnabled(), storage_path, session_service_ios,
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state));
   }
 
   return std::make_unique<SessionRestorationServiceImpl>(
-      base::Seconds(5), IsPinnedTabsEnabled(), storage_path,
-      base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-          base::SingleThreadTaskRunnerThreadMode::DEDICATED),
+      kSaveDelay, IsPinnedTabsEnabled(), storage_path, task_runner,
       IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state));
 }
 
