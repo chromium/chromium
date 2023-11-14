@@ -13,8 +13,7 @@
 #include "base/base_export.h"
 #include "base/memory/singleton.h"
 
-namespace base {
-namespace android {
+namespace base::android {
 
 // This enumeration maps to the values returned by BuildInfo::sdk_int(),
 // indicating the Android release associated with a given SDK version.
@@ -37,6 +36,7 @@ enum SdkVersion {
   SDK_VERSION_S = 31,
   SDK_VERSION_Sv2 = 32,
   SDK_VERSION_T = 33,
+  SDK_VERSION_U = 34,
 };
 
 // BuildInfo is a singleton class that stores android build and device
@@ -206,7 +206,6 @@ class BASE_EXPORT BuildInfo {
   const int32_t vulkan_deqp_level_;
 };
 
-}  // namespace android
-}  // namespace base
+}  // namespace base::android
 
 #endif  // BASE_ANDROID_BUILD_INFO_H_
