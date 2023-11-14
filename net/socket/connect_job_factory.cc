@@ -177,6 +177,17 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     if (proxy_chain.proxy_server().is_secure_http_like()) {
       DCHECK(base_ssl_config_for_proxies);
       first_proxy_server_ssl_config = *base_ssl_config_for_proxies;
+      // Disable cert verification network fetches for secure proxies, since
+      // those network requests are probably going to need to go through the
+      // proxy chain too.
+      //
+      // Any proxy-specific SSL behavior here should also be configured for QUIC
+      // proxies.
+      //
+      // TODO(https://crbug.com/1491092): Also do this for the other hops if
+      // the proxy chain is multi-hop.
+      first_proxy_server_ssl_config.disable_cert_verification_network_fetches =
+          true;
 
       HttpServerProperties* http_server_properties =
           common_connect_job_params->http_server_properties;

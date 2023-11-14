@@ -178,14 +178,12 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
   // `HttpNetworkTransaction`, which consumes additional fields.
   DCHECK(!proxy_info_.is_empty());
 
-  // TODO(https://crbug.com/1498285):  Remove these and move
+  // TODO(https://crbug.com/1498285):  Remove this and move
   // `disable_cert_verification_network_fetches` handling down to the socket
   // layer.
   bool disable_cert_verification_network_fetches =
       !!(request_info_.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
   server_ssl_config_.disable_cert_verification_network_fetches =
-      disable_cert_verification_network_fetches;
-  base_proxy_ssl_config_.disable_cert_verification_network_fetches =
       disable_cert_verification_network_fetches;
 
   // QUIC can only be spoken to servers, never to proxies.
@@ -759,11 +757,6 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
   DCHECK(proxy_info_.proxy_chain().IsValid());
   next_state_ = STATE_INIT_CONNECTION_COMPLETE;
 
-  if (proxy_info_.is_secure_http_like()) {
-    // Disable network fetches for HTTPS proxies, since the network requests
-    // are probably going to need to go through the proxy chain too.
-    base_proxy_ssl_config_.disable_cert_verification_network_fetches = true;
-  }
   if (using_ssl_) {
     // Prior to HTTP/2 and SPDY, some servers use TLS renegotiation to request
     // TLS client authentication after the HTTP request was sent. Allow
@@ -778,14 +771,15 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     server_ssl_config_.renego_allowed_for_protos.push_back(kProtoHTTP11);
   }
 
+  SSLConfig base_proxy_ssl_config;
   server_ssl_config_.alpn_protos = session_->GetAlpnProtos();
-  base_proxy_ssl_config_.alpn_protos = session_->GetAlpnProtos();
+  base_proxy_ssl_config.alpn_protos = session_->GetAlpnProtos();
   server_ssl_config_.application_settings = session_->GetApplicationSettings();
-  base_proxy_ssl_config_.application_settings =
+  base_proxy_ssl_config.application_settings =
       session_->GetApplicationSettings();
   server_ssl_config_.ignore_certificate_errors =
       session_->params().ignore_certificate_errors;
-  base_proxy_ssl_config_.ignore_certificate_errors =
+  base_proxy_ssl_config.ignore_certificate_errors =
       session_->params().ignore_certificate_errors;
 
   // TODO(https://crbug.com/964642): Also enable 0-RTT for TLS proxies.
@@ -873,7 +867,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
 
     return PreconnectSocketsForHttpRequest(
         destination_, request_info_.load_flags, priority_, session_,
-        proxy_info_, server_ssl_config_, base_proxy_ssl_config_,
+        proxy_info_, server_ssl_config_, base_proxy_ssl_config,
         request_info_.privacy_mode, request_info_.network_anonymization_key,
         request_info_.secure_dns_policy, net_log_, num_streams_,
         std::move(callback));
@@ -898,14 +892,14 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     websocket_server_ssl_config.alpn_protos = {kProtoHTTP11};
     return InitSocketHandleForWebSocketRequest(
         destination_, request_info_.load_flags, priority_, session_,
-        proxy_info_, websocket_server_ssl_config, base_proxy_ssl_config_,
+        proxy_info_, websocket_server_ssl_config, base_proxy_ssl_config,
         request_info_.privacy_mode, request_info_.network_anonymization_key,
         net_log_, connection_.get(), io_callback_, proxy_auth_callback);
   }
 
   return InitSocketHandleForHttpRequest(
       destination_, request_info_.load_flags, priority_, session_, proxy_info_,
-      server_ssl_config_, base_proxy_ssl_config_, request_info_.privacy_mode,
+      server_ssl_config_, base_proxy_ssl_config, request_info_.privacy_mode,
       request_info_.network_anonymization_key, request_info_.secure_dns_policy,
       request_info_.socket_tag, net_log_, connection_.get(), io_callback_,
       proxy_auth_callback);
@@ -913,10 +907,15 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
 
 int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
   url::SchemeHostPort destination;
-  SSLConfig* ssl_config;
   GURL url(request_info_.url);
+  int cert_verifier_flags;
   if (proxy_info_.is_quic()) {
-    ssl_config = &base_proxy_ssl_config_;
+    // Disable network fetches for QUIC proxies, since the network requests
+    // are probably going to need to go through the proxy chain too.
+    //
+    // Any proxy-specific SSL behavior here should also be configured for HTTPS
+    // proxies in ConnectJobFactory.
+    cert_verifier_flags = CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES;
     const HostPortPair& proxy_endpoint =
         proxy_info_.proxy_server().host_port_pair();
     destination = url::SchemeHostPort(url::kHttpsScheme, proxy_endpoint.host(),
@@ -925,7 +924,7 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
   } else {
     DCHECK(using_ssl_);
     destination = destination_;
-    ssl_config = &server_ssl_config_;
+    cert_verifier_flags = server_ssl_config_.GetCertVerifyFlags();
   }
   DCHECK(url.SchemeIs(url::kHttpsScheme));
   bool require_dns_https_alpn =
@@ -935,8 +934,8 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
       std::move(destination), quic_version_, request_info_.privacy_mode,
       priority_, request_info_.socket_tag,
       request_info_.network_anonymization_key, request_info_.secure_dns_policy,
-      proxy_info_.is_direct(), require_dns_https_alpn,
-      ssl_config->GetCertVerifyFlags(), url, net_log_, &net_error_details_,
+      proxy_info_.is_direct(), require_dns_https_alpn, cert_verifier_flags, url,
+      net_log_, &net_error_details_,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);
   if (rv == OK) {

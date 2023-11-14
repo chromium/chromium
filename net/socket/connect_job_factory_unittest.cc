@@ -256,6 +256,8 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJob) {
   const SSLSocketParams& params = *ssl_job_factory_->params().front();
   EXPECT_EQ(params.host_and_port(),
             HostPortPair::FromSchemeHostPort(kEndpoint));
+  EXPECT_FALSE(params.ssl_config().disable_cert_verification_network_fetches);
+  EXPECT_EQ(0, params.ssl_config().GetCertVerifyFlags());
 
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
@@ -284,6 +286,8 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJobWithoutScheme) {
   ASSERT_THAT(ssl_job_factory_->params(), testing::SizeIs(1));
   const SSLSocketParams& params = *ssl_job_factory_->params().front();
   EXPECT_EQ(params.host_and_port(), kEndpoint);
+  EXPECT_FALSE(params.ssl_config().disable_cert_verification_network_fetches);
+  EXPECT_EQ(0, params.ssl_config().GetCertVerifyFlags());
 
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
@@ -368,6 +372,8 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobForHttps) {
   const SSLSocketParams& params = *ssl_job_factory_->params().front();
   EXPECT_EQ(params.host_and_port(),
             HostPortPair::FromSchemeHostPort(kEndpoint));
+  EXPECT_FALSE(params.ssl_config().disable_cert_verification_network_fetches);
+  EXPECT_EQ(0, params.ssl_config().GetCertVerifyFlags());
 
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::HTTP_PROXY);
   const HttpProxySocketParams& proxy_params =
@@ -443,6 +449,10 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJob) {
   ASSERT_TRUE(params.ssl_params());
   const SSLSocketParams& ssl_params = *params.ssl_params();
   EXPECT_EQ(ssl_params.host_and_port(), kProxy.proxy_server().host_port_pair());
+  EXPECT_TRUE(
+      ssl_params.ssl_config().disable_cert_verification_network_fetches);
+  EXPECT_EQ(CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES,
+            ssl_params.ssl_config().GetCertVerifyFlags());
 
   ASSERT_EQ(ssl_params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
@@ -477,6 +487,10 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJobWithoutScheme) {
   ASSERT_TRUE(params.ssl_params());
   const SSLSocketParams& ssl_params = *params.ssl_params();
   EXPECT_EQ(ssl_params.host_and_port(), kProxy.proxy_server().host_port_pair());
+  EXPECT_TRUE(
+      ssl_params.ssl_config().disable_cert_verification_network_fetches);
+  EXPECT_EQ(CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES,
+            ssl_params.ssl_config().GetCertVerifyFlags());
 
   ASSERT_EQ(ssl_params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
