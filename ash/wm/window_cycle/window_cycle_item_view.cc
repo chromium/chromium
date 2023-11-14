@@ -36,7 +36,7 @@ constexpr int kMaxPreviewWidthDp =
 constexpr auto kInsideContainerBorderInset = gfx::Insets(2);
 
 // Spacing between the `WindowCycleItemView`s hosted by the container view.
-constexpr int kBetweenCycleItemsSpacing = 2;
+constexpr int kBetweenCycleItemsSpacing = 4;
 
 }  // namespace
 
