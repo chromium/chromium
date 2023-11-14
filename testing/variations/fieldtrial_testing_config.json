@@ -10602,11 +10602,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithMitigation",
                     "enable_features": [
                         "NetworkServiceFileAllowlist",
                         "NetworkServiceSandbox",
                         "NetworkServiceSyscallFilter"
+                    ],
+                    "disable_features": [
+                        "kForceDisableSpectreVariant2MitigationInNetworkService"
                     ]
                 }
             ]
