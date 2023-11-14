@@ -145,6 +145,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   // Reason that a compose session was exited, used for metrics.
   compose::ComposeSessionCloseReason close_reason_;
+  // Reason that a compose session was exited, used for quality logging.
+  optimization_guide::proto::FinalStatus final_status_;
 
   // ComposeSession is owned by WebContentsUserData, so `web_contents_` outlives
   // `this`.
@@ -159,6 +161,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   std::optional<std::string> inner_text_;
 
   base::OnceCallback<void(const std::string&)> continue_compose_;
+
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> modeling_log_entry_;
 
   base::WeakPtrFactory<ComposeSession> weak_ptr_factory_;
 };

@@ -26,6 +26,7 @@
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
@@ -87,6 +88,18 @@ ComposeSession::ComposeSession(
 
 ComposeSession::~ComposeSession() {
   LogComposeSessionCloseReason(close_reason_);
+
+  // If we have a modeling quality log entry, upload it.
+  if (modeling_log_entry_) {
+    optimization_guide::proto::ComposeQuality* quality =
+        modeling_log_entry_.get()
+            ->quality_data<optimization_guide::ComposeFeatureTypeMap>();
+    if (quality) {
+      quality->set_final_status(final_status_);
+    }
+    // Ensure that log gets uploaded on destruction.
+    modeling_log_entry_.reset();
+  }
 }
 
 void ComposeSession::Bind(
@@ -205,6 +218,11 @@ void ComposeSession::ModelExecutionCallback(
   ui_response->undo_available = !undo_states_.empty();
   if (dialog_remote_.is_bound()) {
     dialog_remote_->ResponseReceived(std::move(ui_response));
+  }
+
+  // If log entry is null don't do anything.
+  if (log_entry.get()) {
+    modeling_log_entry_ = std::move(log_entry);
   }
 }
 
@@ -328,4 +346,20 @@ void ComposeSession::RefreshInnerText() {
 void ComposeSession::SetCloseReason(
     compose::ComposeSessionCloseReason close_reason) {
   close_reason_ = close_reason;
+  switch (close_reason) {
+    case compose::ComposeSessionCloseReason::kCloseButtonPressed:
+      final_status_ = optimization_guide::proto::FinalStatus::STATUS_ABANDONED;
+      break;
+    case compose::ComposeSessionCloseReason::kEndedImplicitly:
+      final_status_ = optimization_guide::proto::FinalStatus::
+          STATUS_FINISHED_WITHOUT_INSERT;
+      break;
+    case compose::ComposeSessionCloseReason::kAcceptedSuggestion:
+      final_status_ = optimization_guide::proto::FinalStatus::STATUS_INSERTED;
+      break;
+    default:
+      final_status_ =
+          optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED;
+      break;
+  }
 }
