@@ -750,14 +750,14 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
                                      : profile;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (process_startup == chrome::startup::IsProcessStartup::kYes) {
-        auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
-            profile_to_open);
-        if (user &&
-            (ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled())) {
-          // If floating workspace is enabled, it will override full restore.
-          // Floating will trigger its own restore from the user's workspace.
+        if (ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
           ash::FloatingWorkspaceService::GetForProfile(profile_to_open);
-        } else {
+        }
+        // If floating workspace is enabled and safe mode is off, floating
+        // workspace will handle the app restore from user's workspace copy.
+        // Otherwise if safe mode is on, floating workspace will only emit
+        // notification and then delegate the actual work to full restore.
+        if (!ash::floating_workspace_util::ShouldHandleRestartRestore()) {
           // If FullRestoreService is available for the profile (i.e. the full
           // restore feature is enabled and the profile is a regular user
           // profile), defer the browser launching to FullRestoreService code.

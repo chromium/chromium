@@ -56,6 +56,7 @@ enum class FloatingWorkspaceServiceNotificationType {
   kSyncErrorOrTimeOut,
   kRestoreAfterError,
   kProgressStatus,
+  kSafeMode
 };
 
 // A keyed service to support floating workspace. Note that a periodical

@@ -64,6 +64,7 @@ constexpr char kNotificationForRestoreAfterError[] =
     "notification_restore_after_error";
 constexpr char kNotificationForProgressStatus[] =
     "notification_progress_status";
+constexpr char kSafeMode[] = "notification_safe_mode";
 // Default time without activity after which a floating workspace template is
 // considered stale and becomes a candidate for garbage collection.
 constexpr base::TimeDelta kStaleFWSThreshold = base::Days(30);
@@ -86,6 +87,9 @@ FloatingWorkspaceServiceNotificationType GetNotificationTypeById(
   }
   if (id == kNotificationForProgressStatus) {
     return FloatingWorkspaceServiceNotificationType::kProgressStatus;
+  }
+  if (id == kSafeMode) {
+    return FloatingWorkspaceServiceNotificationType::kSafeMode;
   }
   return FloatingWorkspaceServiceNotificationType::kUnknown;
 }
@@ -277,10 +281,9 @@ void FloatingWorkspaceService::Click(
   switch (GetNotificationTypeById(notification_->id())) {
     case FloatingWorkspaceServiceNotificationType::kUnknown:
       // For unknown type of notification id, do nothing and run close logic.
-      break;
     case FloatingWorkspaceServiceNotificationType::kSyncErrorOrTimeOut:
-      break;
     case FloatingWorkspaceServiceNotificationType::kProgressStatus:
+    case FloatingWorkspaceServiceNotificationType::kSafeMode:
       break;
     case FloatingWorkspaceServiceNotificationType::kNoNetworkConnection:
       if (button_index.has_value()) {
@@ -332,6 +335,12 @@ void FloatingWorkspaceService::InitForV1() {
 void FloatingWorkspaceService::InitForV2(
     syncer::SyncService* sync_service,
     desks_storage::DeskSyncService* desk_sync_service) {
+  // Disable floating workspace action in safe mode.
+  if (floating_workspace_util::IsSafeMode()) {
+    LOG(WARNING) << "Floating workspace disabled in safe mode.";
+    SendNotification(kSafeMode);
+    return;
+  }
   floating_workspace_metrics_util::
       RecordFloatingWorkspaceV2InitializedHistogram();
   SetUpServiceAndObservers(sync_service, desk_sync_service);
@@ -764,7 +773,7 @@ void FloatingWorkspaceService::SendNotification(const std::string& id) {
       notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
           IDS_FLOATING_WORKSPACE_RESTORE_FROM_ERROR_RESTORATION_BUTTON));
       break;
-    case ash::FloatingWorkspaceServiceNotificationType::kProgressStatus:
+    case FloatingWorkspaceServiceNotificationType::kProgressStatus:
       title =
           l10n_util::GetStringUTF16(IDS_FLOATING_WORKSPACE_PROGRESS_BAR_TITLE);
       notification_data.progress_status = l10n_util::GetStringUTF16(
@@ -777,6 +786,12 @@ void FloatingWorkspaceService::SendNotification(const std::string& id) {
                   kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin
                       .Get());
       is_progress_bar = true;
+      break;
+    case FloatingWorkspaceServiceNotificationType::kSafeMode:
+      title = l10n_util::GetStringUTF16(IDS_FLOATING_WORKSPACE_SAFE_MODE_TITLE);
+      message =
+          l10n_util::GetStringUTF16(IDS_FLOATING_WORKSPACE_SAFE_MODE_MESSAGE);
+      warning_level = message_center::SystemNotificationWarningLevel::WARNING;
       break;
     case FloatingWorkspaceServiceNotificationType::kUnknown:
       VLOG(2) << "Unknown notification type for floating workspace, skip "

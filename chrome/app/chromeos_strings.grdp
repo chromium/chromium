@@ -7308,6 +7308,12 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_FLOATING_WORKSPACE_NO_NETWORK_BUTTON" desc="Button to show network settings for Floating Workspace notification when is no network connection.">
     Network settings
   </message>
+ <message name="IDS_FLOATING_WORKSPACE_SAFE_MODE_TITLE" desc="Title of Floating Workspace notification when ChromeOS is in safe mode." translateable="false">
+    Floating Workspace disabled
+  </message>
+  <message name="IDS_FLOATING_WORKSPACE_SAFE_MODE_MESSAGE" desc="Message for Floating Workspace notification when ChromeOS is in safe mode." translateable="false">
+    ChromeOS in safe mode because too many consecutive crashes, Floating Workspace is disabled.
+  </message>
   <message name="IDS_FLOATING_WORKSPACE_RESTORE_FROM_ERROR_TITLE" desc="Title of Floating Workspace notification asking user to restore or not when a new remote desk arrives after an earlier restoration error occurs.">
     Resume previous session?
   </message>

@@ -33,6 +33,9 @@ ASH_EXPORT bool IsFloatingWorkspaceV2Enabled();
 
 bool IsInternetConnected();
 
+bool IsSafeMode();
+
+bool ShouldHandleRestartRestore();
 }  // namespace ash::floating_workspace_util
 
 #endif  // CHROME_BROWSER_ASH_FLOATING_WORKSPACE_FLOATING_WORKSPACE_UTIL_H_
