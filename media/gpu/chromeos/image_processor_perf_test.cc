@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <sys/mman.h>
+#include <sys/poll.h>
 
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/chromeos/vulkan_image_processor.h"
 #include "media/gpu/test/image.h"
 #include "media/gpu/test/video_test_environment.h"
 #include "media/gpu/video_frame_mapper_factory.h"
@@ -169,6 +171,18 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
   }
 
   return frame;
+}
+
+gpu::Mailbox Uint32ToMailbox(uint32_t x) {
+  gpu::Mailbox ret;
+  gpu::Mailbox::Name name = {0};
+  *reinterpret_cast<uint32_t*>(name) = x + 1;
+  ret.SetName(name);
+  return ret;
+}
+
+uint32_t MailboxToUint32(gpu::Mailbox& mailbox) {
+  return (*reinterpret_cast<uint32_t*>(mailbox.name)) - 1;
 }
 
 class ImageProcessorPerfTest : public ::testing::Test {
@@ -860,6 +874,82 @@ TEST_F(ImageProcessorPerfTest, LibYUVNV12UpscalingTest) {
   reporter.RegisterImportantMetric(".total_duration", "us");
   reporter.RegisterImportantMetric(".frames_per_second", "fps");
 
+  reporter.AddResult(".frames_decoded",
+                     static_cast<double>(kNumberOfTestCycles));
+  reporter.AddResult(".total_duration", delta_time.InMicrosecondsF());
+  reporter.AddResult(".frames_per_second", fps);
+}
+
+TEST_F(ImageProcessorPerfTest, VulkanImageProcessorPerfTest) {
+  gfx::Size test_image_size(kTestImageWidth, kTestImageHeight);
+  gfx::Size test_coded_size(
+      base::bits::AlignUp(test_image_size.width(), kMM21TileWidth),
+      base::bits::AlignUp(test_image_size.height(), kMM21TileHeight));
+  std::vector<scoped_refptr<VideoFrame>> input_frames(kNumberOfTestFrames);
+  std::vector<scoped_refptr<VideoFrame>> output_frames(kNumberOfTestFrames);
+  std::vector<absl::optional<gpu::SemaphoreHandle>> semaphores(
+      kNumberOfTestFrames);
+
+  constexpr base::TimeDelta kNullTimestamp;
+  for (size_t i = 0; i < kNumberOfTestFrames; i++) {
+    input_frames[i] =
+        CreateRandomMM21Frame(test_image_size, VideoFrame::STORAGE_DMABUFS);
+    output_frames[i] = CreateGpuMemoryBufferVideoFrame(
+        VideoPixelFormat::PIXEL_FORMAT_ARGB, test_coded_size,
+        gfx::Rect(test_image_size), test_coded_size, kNullTimestamp,
+        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+    semaphores[i] = absl::nullopt;
+  }
+
+  VulkanImageProcessor::BackingCB input_backing_cb = base::BindRepeating(
+      [](std::vector<scoped_refptr<VideoFrame>>* input_frames_,
+         gpu::Mailbox& mailbox) {
+        uint32_t frame_idx = MailboxToUint32(mailbox);
+        auto input_frame = (*input_frames_)[frame_idx];
+        return CreateGpuMemoryBufferHandle(input_frame.get());
+      },
+      &input_frames);
+  VulkanImageProcessor::BackingCB output_backing_cb = base::BindRepeating(
+      [](std::vector<scoped_refptr<VideoFrame>>* output_frames_,
+         gpu::Mailbox& mailbox) {
+        uint32_t frame_idx = MailboxToUint32(mailbox);
+        auto output_frame = (*output_frames_)[frame_idx];
+        return CreateGpuMemoryBufferHandle(output_frame.get());
+      },
+      &output_frames);
+  auto vulkan_image_processor =
+      VulkanImageProcessor::Create(input_backing_cb, output_backing_cb);
+  ASSERT_TRUE(vulkan_image_processor);
+
+  auto start_time = base::TimeTicks::Now();
+  for (int i = 0; i < kNumberOfTestCycles; i++) {
+    uint32_t frame_idx = i % kNumberOfTestFrames;
+    gpu::Mailbox mailbox = Uint32ToMailbox(frame_idx);
+    VulkanImageProcessor::ReleaseCB in_release_cb =
+        base::BindOnce([](gpu::Mailbox& mailbox) {});
+
+    semaphores[frame_idx] = vulkan_image_processor->Process(
+        mailbox, test_coded_size, test_image_size, std::move(in_release_cb),
+        mailbox, test_coded_size, test_image_size,
+        std::move(semaphores[frame_idx]));
+  }
+  for (size_t i = 0; i < semaphores.size(); i++) {
+    if (semaphores[i]) {
+      struct pollfd poll_request = {semaphores[i]->TakeHandle().get(), -0x7FFF,
+                                    0};
+      poll(&poll_request, 1, 1000);
+    }
+  }
+  auto end_time = base::TimeTicks::Now();
+
+  base::TimeDelta delta_time = end_time - start_time;
+  // Preventing integer division inaccuracies with |delta_time|.
+  const double fps = (kNumberOfTestCycles / delta_time.InSecondsF());
+  perf_test::PerfResultReporter reporter(
+      "VulkanImageProcessor", "Vulkan Detile Scale Performance Test");
+  reporter.RegisterImportantMetric(".frames_decoded", "frames");
+  reporter.RegisterImportantMetric(".total_duration", "us");
+  reporter.RegisterImportantMetric(".frames_per_second", "fps");
   reporter.AddResult(".frames_decoded",
                      static_cast<double>(kNumberOfTestCycles));
   reporter.AddResult(".total_duration", delta_time.InMicrosecondsF());
