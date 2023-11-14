@@ -37,10 +37,7 @@ AutomationEventRouter* AutomationEventRouter::GetInstance() {
       base::LeakySingletonTraits<AutomationEventRouter>>::get();
 }
 
-AutomationEventRouter::AutomationEventRouter()
-    : active_context_(ExtensionsAPIClient::Get()
-                          ->GetAutomationInternalApiDelegate()
-                          ->GetActiveUserContext()) {
+AutomationEventRouter::AutomationEventRouter() {
 #if defined(USE_AURA)
   // Not reset because |this| is leaked.
   ExtensionsAPIClient::Get()
@@ -99,8 +96,6 @@ void AutomationEventRouter::UnregisterAllListenersWithDesktopPermission() {
         std::string());
   }
   keepalive_request_uuid_for_worker_.clear();
-
-  UpdateActiveProfile();
 }
 
 void AutomationEventRouter::DispatchAccessibilityLocationChange(
@@ -132,8 +127,6 @@ void AutomationEventRouter::DispatchActionResult(
     bool result,
     content::BrowserContext* browser_context) {
   CHECK(!data.source_extension_id.empty());
-
-  browser_context = browser_context ? browser_context : active_context_.get();
 
   for (const auto& remote : automation_remote_set_) {
     remote->DispatchActionResult(data, result);
@@ -235,7 +228,6 @@ void AutomationEventRouter::Register(const ExtensionId& extension_id,
   content::RenderProcessHost* host =
       content::RenderProcessHost::FromID(listener_rph_id);
   rph_observers_.AddObservation(host);
-  UpdateActiveProfile();
   for (AutomationEventRouterObserver& observer : observers_)
     observer.ExtensionListenerAdded();
 
@@ -272,15 +264,6 @@ void AutomationEventRouter::DispatchAccessibilityEvents(
     return;
   }
 
-  content::BrowserContext* active_context =
-      ExtensionsAPIClient::Get()
-          ->GetAutomationInternalApiDelegate()
-          ->GetActiveUserContext();
-  if (active_context_ != active_context) {
-    active_context_ = active_context;
-    UpdateActiveProfile();
-  }
-
   for (const auto& remote : automation_remote_set_) {
     remote->DispatchAccessibilityEvents(tree_id, updates, mouse_location,
                                         events);
@@ -314,7 +297,6 @@ void AutomationEventRouter::RemoveAutomationListener(
 
   if (rph_observers_.IsObservingSource(host))
     rph_observers_.RemoveObservation(host);
-  UpdateActiveProfile();
 
   if (rph_observers_.GetSourcesCount() == 0) {
     for (AutomationEventRouterObserver& observer : observers_)
@@ -348,30 +330,6 @@ void AutomationEventRouter::RemoveAutomationListener(
 
 void AutomationEventRouter::TreeRemoved(ui::AXTreeID ax_tree_id) {
   DispatchTreeDestroyedEvent(ax_tree_id);
-}
-
-void AutomationEventRouter::UpdateActiveProfile() {
-  for (auto& listener : listeners_) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    int extension_id_count = 0;
-    for (const auto& listener2 : listeners_) {
-      if (listener2->extension_id == listener->extension_id)
-        extension_id_count++;
-    }
-    content::RenderProcessHost* rph =
-        content::RenderProcessHost::FromID(listener->render_process_host_id);
-
-    // The purpose of is_active_context is to ensure different instances of
-    // the same extension running in different profiles don't interfere with
-    // one another. If an automation extension is only running in one profile,
-    // always mark it as active. If it's running in two or more profiles,
-    // only mark one as active.
-    listener->is_active_context = (extension_id_count == 1 ||
-                                   rph->GetBrowserContext() == active_context_);
-#else
-    listener->is_active_context = true;
-#endif
-  }
 }
 
 AutomationEventRouter::AutomationListener*
