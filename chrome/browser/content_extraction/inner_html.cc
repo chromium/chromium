@@ -45,8 +45,9 @@ class MojoHandler {
 
   void OnGotInnerHtml(const std::string& inner_html) {
     const base::TimeDelta total_time = base::TimeTicks::Now() - start_time_;
-    base::UmaHistogramTimes("InnerHtml.Time", total_time);
-    base::UmaHistogramCounts10M("InnerHtml.Size", inner_html.size());
+    base::UmaHistogramTimes("ContentExtraction.InnerHtml.Time", total_time);
+    base::UmaHistogramCounts10M("ContentExtraction.InnerHtml.Size",
+                                inner_html.size());
     RunCallback(std::move(inner_html));
   }
 
@@ -54,7 +55,8 @@ class MojoHandler {
     if (!callback_) {
       return;
     }
-    base::UmaHistogramBoolean("InnerHtml.ValidResults", inner_html.has_value());
+    base::UmaHistogramBoolean("ContentExtraction.InnerHtml.ValidResults",
+                              inner_html.has_value());
     std::move(callback_).Run(inner_html);
   }
 
