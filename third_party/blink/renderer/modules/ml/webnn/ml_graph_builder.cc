@@ -791,6 +791,31 @@ MLActivation* MLGraphBuilder::elu(const MLEluOptions* options,
       this, MLOperator::OperatorKind::kElu, options);
 }
 
+MLOperand* MLGraphBuilder::expand(const MLOperand* input,
+                                  const Vector<uint32_t>& new_shape,
+                                  ExceptionState& exception_state) {
+  auto output_shape = BroadcastShapes(input->Dimensions(), new_shape, false);
+  if (!output_shape) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The input shape is not broadcastable to the new shape.");
+    return nullptr;
+  }
+  CHECK(output_shape.value() == new_shape);
+
+  auto* expand =
+      MakeGarbageCollected<MLOperator>(this, MLOperator::OperatorKind::kExpand);
+  auto output = MLOperand::ValidateAndCreateOutput(
+      this, input->Type(), output_shape.value(), expand);
+  if (!output.has_value()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      output.error());
+    return nullptr;
+  }
+  expand->Connect({input}, {output.value()});
+  return output.value();
+}
+
 MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
                                 const MLOperand* b,
                                 const MLGemmOptions* options,

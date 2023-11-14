@@ -1190,6 +1190,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method elu
 [Worker]     method erf
 [Worker]     method exp
+[Worker]     method expand
 [Worker]     method floor
 [Worker]     method gemm
 [Worker]     method hardSwish

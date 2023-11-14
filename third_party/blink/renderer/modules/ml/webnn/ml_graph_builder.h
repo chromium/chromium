@@ -141,6 +141,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLActivation* elu(const MLEluOptions* options,
                     ExceptionState& exception_state);
 
+  MLOperand* expand(const MLOperand* input,
+                    const Vector<uint32_t>& new_shape,
+                    ExceptionState& exception_state);
+
   MLOperand* gemm(const MLOperand* a,
                   const MLOperand* b,
                   const MLGemmOptions* options,

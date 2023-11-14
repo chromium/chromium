@@ -5628,6 +5628,7 @@ interface MLGraphBuilder
     method elu
     method erf
     method exp
+    method expand
     method floor
     method gemm
     method hardSwish

@@ -4085,6 +4085,102 @@ TEST_F(MLGraphBuilderTest, EluTest) {
   }
 }
 
+template <typename T>
+struct ExpandTester {
+  OperandInfo<T> input;
+  Vector<uint32_t> new_shape;
+
+  MLOperand* BuildExpandOperator(V8TestingScope& scope) {
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    return builder->expand(input_operand, new_shape, scope.GetExceptionState());
+  }
+
+  void Test(V8TestingScope& scope) {
+    MLOperand* output = BuildExpandOperator(scope);
+    ASSERT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), input.type);
+    EXPECT_EQ(output->Dimensions(), new_shape);
+    auto* op = output->Operator();
+    EXPECT_NE(op, nullptr);
+    EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kExpand);
+    EXPECT_EQ(op->IsConnected(), true);
+    EXPECT_EQ(op->Options(), nullptr);
+  }
+};
+
+TEST_F(MLGraphBuilderTest, ExpandTest) {
+  V8TestingScope scope;
+  // TODO(crbug.com/1273291): Expand the 0-D scalar to N-D tensor.
+  {
+    // Test building expand with the new shapes that are the same as input.
+    ExpandTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {4}},
+        .new_shape = {4}}
+        .Test(scope);
+  }
+  {
+    // Test building expand with the new shapes that are broadcastable.
+    ExpandTester<int32_t>{.input = {.type = V8MLOperandType::Enum::kInt32,
+                                    .dimensions = {3, 1, 5}},
+                          .new_shape = {3, 4, 5}}
+        .Test(scope);
+  }
+  {
+    // Test building expand with the new shapes that are broadcastable and the
+    // number of new shapes larger than input.
+    ExpandTester<int32_t>{
+        .input = {.type = V8MLOperandType::Enum::kInt32, .dimensions = {2, 5}},
+        .new_shape = {3, 2, 5}}
+        .Test(scope);
+  }
+  {
+    // Test throwing exception when the input shapes are not the same as new
+    // shape and not broadcastable.
+    MLOperand* output = ExpandTester<uint32_t>{
+        .input = {.type = V8MLOperandType::Enum::kUint32,
+                  .dimensions = {3, 6, 2}},
+        .new_shape = {4, 3,
+                      5}}.BuildExpandOperator(scope);
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input shape is not broadcastable to the new shape.");
+  }
+  {
+    // Test throwing exception when the input shapes are not broadcastable.
+    MLOperand* output = ExpandTester<uint32_t>{
+        .input = {.type = V8MLOperandType::Enum::kUint32, .dimensions = {5, 4}},
+        .new_shape = {5}}.BuildExpandOperator(scope);
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input shape is not broadcastable to the new shape.");
+  }
+  {
+    // Test throwing exception if the number of new shapes is too large.
+    // Set the dimensions that let the number of elements be 2 * SIZE_MAX.
+    MLOperand* output =
+        ExpandTester<float>{
+            .input = {.type = V8MLOperandType::Enum::kFloat32,
+                      .dimensions = {1, 2, 1, 1}},
+            .new_shape = {1, 2, kSquareRootOfSizeMax, kSquareRootOfSizeMax}}
+            .BuildExpandOperator(scope);
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Invalid output operand: The number of elements "
+              "is too large.");
+  }
+}
+
 MLOperand* BuildLeakyRelu(V8TestingScope& scope,
                           MLGraphBuilder* builder,
                           const MLOperand* input,

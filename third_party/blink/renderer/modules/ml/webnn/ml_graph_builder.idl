@@ -157,6 +157,8 @@ dictionary MLSplitOptions {
   [RaisesException] MLOperand elu(MLOperand x, optional MLEluOptions options = {});
   [RaisesException] MLActivation elu(optional MLEluOptions options = {});
 
+  [RaisesException] MLOperand expand(MLOperand input, sequence<[EnforceRange] unsigned long> newShape);
+
   [RaisesException] MLOperand gemm(MLOperand a, MLOperand b, optional MLGemmOptions options = {});
 
   [RaisesException] MLOperand hardSwish(MLOperand x);
