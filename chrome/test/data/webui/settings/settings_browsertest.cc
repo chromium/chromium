@@ -843,7 +843,7 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest,
           "runMochaSuite('CompletionFragmentPrivacySandboxRestricted')");
 }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_3pcdOff DISABLED_3pcdOff
 #else
 #define MAYBE_3pcdOff 3pcdOff
