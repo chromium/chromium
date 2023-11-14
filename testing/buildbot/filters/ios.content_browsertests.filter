@@ -283,8 +283,14 @@
 # TODO(crbug.com/1500334): Flakily fails on the platform.
 -ThirdPartyCookiesContentSecurityPolicyBrowserTest.CSPMediaThirdPartyCookieBlocking
 
+# TODO(crbug.com/1502136): Flakily fails on the platform.
+-TouchInputBrowserTest.TouchStartNoConsume
+
 # TODO(crbug.com/1501820): Consistently fails on the platform.
 -PrerenderBrowserTest.ActivateOnWindowOpen
+
+# TODO(crbug.com/1502137): Consistently fails on the platform.
+-All/PrerenderTargetAgnosticBrowserTest.RenderFrameHostLifecycleState/_blank
 
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
