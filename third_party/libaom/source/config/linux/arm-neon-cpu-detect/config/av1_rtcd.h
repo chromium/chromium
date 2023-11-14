@@ -181,9 +181,39 @@ RTCD_EXTERN void (*aom_upsampled_pred)(MACROBLOCKD* xd,
                                        int ref_stride,
                                        int subpel_search);
 
-void av1_apply_selfguided_restoration_c(const uint8_t *dat, int width, int height, int stride, int eps, const int *xqd, uint8_t *dst, int dst_stride, int32_t *tmpbuf, int bit_depth, int highbd);
-void av1_apply_selfguided_restoration_neon(const uint8_t *dat, int width, int height, int stride, int eps, const int *xqd, uint8_t *dst, int dst_stride, int32_t *tmpbuf, int bit_depth, int highbd);
-RTCD_EXTERN void (*av1_apply_selfguided_restoration)(const uint8_t *dat, int width, int height, int stride, int eps, const int *xqd, uint8_t *dst, int dst_stride, int32_t *tmpbuf, int bit_depth, int highbd);
+int av1_apply_selfguided_restoration_c(const uint8_t* dat,
+                                       int width,
+                                       int height,
+                                       int stride,
+                                       int eps,
+                                       const int* xqd,
+                                       uint8_t* dst,
+                                       int dst_stride,
+                                       int32_t* tmpbuf,
+                                       int bit_depth,
+                                       int highbd);
+int av1_apply_selfguided_restoration_neon(const uint8_t* dat,
+                                          int width,
+                                          int height,
+                                          int stride,
+                                          int eps,
+                                          const int* xqd,
+                                          uint8_t* dst,
+                                          int dst_stride,
+                                          int32_t* tmpbuf,
+                                          int bit_depth,
+                                          int highbd);
+RTCD_EXTERN int (*av1_apply_selfguided_restoration)(const uint8_t* dat,
+                                                    int width,
+                                                    int height,
+                                                    int stride,
+                                                    int eps,
+                                                    const int* xqd,
+                                                    uint8_t* dst,
+                                                    int dst_stride,
+                                                    int32_t* tmpbuf,
+                                                    int bit_depth,
+                                                    int highbd);
 
 int64_t av1_block_error_c(const tran_low_t *coeff, const tran_low_t *dqcoeff, intptr_t block_size, int64_t *ssz);
 int64_t av1_block_error_neon(const tran_low_t *coeff, const tran_low_t *dqcoeff, intptr_t block_size, int64_t *ssz);
@@ -454,9 +484,24 @@ RTCD_EXTERN void (*av1_fwht4x4)(const int16_t *input, tran_low_t *output, int st
 uint32_t av1_get_crc32c_value_c(void *crc_calculator, uint8_t *p, size_t length);
 #define av1_get_crc32c_value av1_get_crc32c_value_c
 
-void av1_get_horver_correlation_full_c( const int16_t *diff, int stride, int w, int h, float *hcorr, float *vcorr);
-void av1_get_horver_correlation_full_neon( const int16_t *diff, int stride, int w, int h, float *hcorr, float *vcorr);
-RTCD_EXTERN void (*av1_get_horver_correlation_full)( const int16_t *diff, int stride, int w, int h, float *hcorr, float *vcorr);
+void av1_get_horver_correlation_full_c(const int16_t* diff,
+                                       int stride,
+                                       int w,
+                                       int h,
+                                       float* hcorr,
+                                       float* vcorr);
+void av1_get_horver_correlation_full_neon(const int16_t* diff,
+                                          int stride,
+                                          int w,
+                                          int h,
+                                          float* hcorr,
+                                          float* vcorr);
+RTCD_EXTERN void (*av1_get_horver_correlation_full)(const int16_t* diff,
+                                                    int stride,
+                                                    int w,
+                                                    int h,
+                                                    float* hcorr,
+                                                    float* vcorr);
 
 void av1_get_nz_map_contexts_c(const uint8_t *const levels, const int16_t *const scan, const uint16_t eob, const TX_SIZE tx_size, const TX_CLASS tx_class, int8_t *const coeff_contexts);
 void av1_get_nz_map_contexts_neon(const uint8_t *const levels, const int16_t *const scan, const uint16_t eob, const TX_SIZE tx_size, const TX_CLASS tx_class, int8_t *const coeff_contexts);
@@ -623,12 +668,21 @@ void av1_lowbd_fwd_txfm_c(const int16_t *src_diff, tran_low_t *coeff, int diff_s
 void av1_lowbd_fwd_txfm_neon(const int16_t *src_diff, tran_low_t *coeff, int diff_stride, TxfmParam *txfm_param);
 RTCD_EXTERN void (*av1_lowbd_fwd_txfm)(const int16_t *src_diff, tran_low_t *coeff, int diff_stride, TxfmParam *txfm_param);
 
-void av1_nn_fast_softmax_16_c( const float *input_nodes, float *output);
+void av1_nn_fast_softmax_16_c(const float* input_nodes, float* output);
 #define av1_nn_fast_softmax_16 av1_nn_fast_softmax_16_c
 
-void av1_nn_predict_c( const float *input_nodes, const NN_CONFIG *const nn_config, int reduce_prec, float *const output);
-void av1_nn_predict_neon( const float *input_nodes, const NN_CONFIG *const nn_config, int reduce_prec, float *const output);
-RTCD_EXTERN void (*av1_nn_predict)( const float *input_nodes, const NN_CONFIG *const nn_config, int reduce_prec, float *const output);
+void av1_nn_predict_c(const float* input_nodes,
+                      const NN_CONFIG* const nn_config,
+                      int reduce_prec,
+                      float* const output);
+void av1_nn_predict_neon(const float* input_nodes,
+                         const NN_CONFIG* const nn_config,
+                         int reduce_prec,
+                         float* const output);
+RTCD_EXTERN void (*av1_nn_predict)(const float* input_nodes,
+                                   const NN_CONFIG* const nn_config,
+                                   int reduce_prec,
+                                   float* const output);
 
 void av1_quantize_b_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan, const qm_val_t * qm_ptr, const qm_val_t * iqm_ptr, int log_scale);
 #define av1_quantize_b av1_quantize_b_c
