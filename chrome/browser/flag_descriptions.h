@@ -3233,6 +3233,9 @@ extern const char kArcTouchscreenEmulationDesc[];
 extern const char kArcVmmSwapKBShortcutName[];
 extern const char kArcVmmSwapKBShortcutDesc[];
 
+extern const char kArcVmMemorySizeName[];
+extern const char kArcVmMemorySizeDesc[];
+
 extern const char kArcXdgModeName[];
 extern const char kArcXdgModeDesc[];
 

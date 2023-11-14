@@ -43550,6 +43550,7 @@ from previous Chrome versions.
   <int value="624783596" label="SamePartyCookiesConsideredFirstParty:enabled"/>
   <int value="625273056" label="disable-boot-animation"/>
   <int value="625725485" label="FilesTrash:enabled"/>
+  <int value="626349796" label="ArcVmMemorySize:disabled"/>
   <int value="628302973" label="NTPSnippets:enabled"/>
   <int value="628438173" label="AccessibilityPerformanceFiltering:enabled"/>
   <int value="628570445" label="AndroidAutofillAccessibility:enabled"/>
@@ -44907,6 +44908,7 @@ from previous Chrome versions.
   <int value="1274277775" label="SimLockPolicy:disabled"/>
   <int value="1274356506" label="LacrosSharedComponentsDir:disabled"/>
   <int value="1274717741" label="top-chrome-touch-ui"/>
+  <int value="1275454401" label="ArcVmMemorySize:enabled"/>
   <int value="1275507565" label="OfflinePagesRenovations:enabled"/>
   <int value="1276120671" label="AutofillEnableOfferNotification:enabled"/>
   <int value="1276209777" label="ntp-switch-to-existing-tab"/>

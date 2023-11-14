@@ -944,6 +944,24 @@ const FeatureEntry::FeatureVariation kRoundedWindowsRadiusVariation[] = {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const FeatureEntry::FeatureParam kArcVmMemorySizeShift_200[] = {
+    {"shift_mib", "-200"}};
+const FeatureEntry::FeatureParam kArcVmMemorySizeShift_500[] = {
+    {"shift_mib", "-500"}};
+const FeatureEntry::FeatureParam kArcVmMemorySizeShift_800[] = {
+    {"shift_mib", "-800"}};
+
+const FeatureEntry::FeatureVariation kArcVmMemorySizeVariations[] = {
+    {"shift -200MiB", kArcVmMemorySizeShift_200,
+     std::size(kArcVmMemorySizeShift_200), nullptr},
+    {"shift -500MiB", kArcVmMemorySizeShift_500,
+     std::size(kArcVmMemorySizeShift_500), nullptr},
+    {"shift -800MiB", kArcVmMemorySizeShift_800,
+     std::size(kArcVmMemorySizeShift_800), nullptr},
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kCriticalPersistedTabDataSaveAndRestore[] = {
     {"critical_persisted_tab_data_save_only", "false"},
@@ -10245,6 +10263,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcNearbyShareFuseBoxDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kEnableArcNearbyShareFuseBox)},
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"arc-vm-memory-size", flag_descriptions::kArcVmMemorySizeName,
+     flag_descriptions::kArcVmMemorySizeDesc, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(arc::kVmMemorySize,
+                                    kArcVmMemorySizeVariations,
+                                    "VmMemorySize")},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"autofill-enable-card-art-image",
      flag_descriptions::kAutofillEnableCardArtImageName,

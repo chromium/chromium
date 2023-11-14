@@ -381,6 +381,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "arc-vm-memory-size",
+    "owners": [ "yuholong@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "arc-vmm-swap-keyboard-shortcut",
     "owners": [ "sstan@chromium.org"],
     "expiry_milestone": 120

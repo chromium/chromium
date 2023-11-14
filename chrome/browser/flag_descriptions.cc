@@ -5612,6 +5612,11 @@ const char kArcTouchscreenEmulationName[] =
 const char kArcTouchscreenEmulationDesc[] =
     "Enable touchscreen emulation for compatibility on specific ARC apps.";
 
+const char kArcVmMemorySizeName[] = "Enable custom ARCVM memory size";
+const char kArcVmMemorySizeDesc[] =
+    "Enable custom ARCVM memory size, "
+    "\"shift\" controls the amount to shift system RAM when sizing ARCVM.";
+
 const char kArcVmmSwapKBShortcutName[] =
     "Keyboard shortcut trigger for ARCVM"
     " vmm swap feature";
