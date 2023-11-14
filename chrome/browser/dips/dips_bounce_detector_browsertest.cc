@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -1463,17 +1464,17 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   // Open a server-redirecting link in a new tab.
   GURL new_tab_url(embedded_test_server()->GetURL(
       "b.test", "/cross-site-with-cookie/c.test/title1.html"));
-  auto maybe_new_tab = OpenInNewTab(original_tab, new_tab_url);
-  ASSERT_TRUE(maybe_new_tab.has_value()) << maybe_new_tab.error();
+  ASSERT_OK_AND_ASSIGN(WebContents * new_tab,
+                       OpenInNewTab(original_tab, new_tab_url));
 
   // Verify the tab is different from the original and at the correct URL.
-  EXPECT_NE(*maybe_new_tab, original_tab);
-  ASSERT_EQ((*maybe_new_tab)->GetLastCommittedURL(),
+  EXPECT_NE(new_tab, original_tab);
+  ASSERT_EQ(new_tab->GetLastCommittedURL(),
             embedded_test_server()->GetURL("c.test", "/title1.html"));
 
   std::vector<std::string> redirects;
   DIPSWebContentsObserver* tab_web_contents_observer =
-      DIPSWebContentsObserver::FromWebContents(*maybe_new_tab);
+      DIPSWebContentsObserver::FromWebContents(new_tab);
   tab_web_contents_observer->SetRedirectChainHandlerForTesting(
       base::BindRepeating(&AppendRedirects, &redirects));
 
@@ -1497,23 +1498,22 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Open link in a new tab.
   GURL new_tab_url(embedded_test_server()->GetURL("b.test", "/title1.html"));
-  auto maybe_new_tab = OpenInNewTab(original_tab, new_tab_url);
-  ASSERT_TRUE(maybe_new_tab.has_value()) << maybe_new_tab.error();
+  ASSERT_OK_AND_ASSIGN(WebContents * new_tab,
+                       OpenInNewTab(original_tab, new_tab_url));
 
   // Verify the tab is different from the original and at the correct URL.
-  EXPECT_NE(original_tab, *maybe_new_tab);
-  ASSERT_EQ(new_tab_url, (*maybe_new_tab)->GetLastCommittedURL());
+  EXPECT_NE(original_tab, new_tab);
+  ASSERT_EQ(new_tab_url, new_tab->GetLastCommittedURL());
 
   std::vector<std::string> redirects;
   DIPSWebContentsObserver* tab_web_contents_observer =
-      DIPSWebContentsObserver::FromWebContents(*maybe_new_tab);
+      DIPSWebContentsObserver::FromWebContents(new_tab);
   tab_web_contents_observer->SetRedirectChainHandlerForTesting(
       base::BindRepeating(&AppendRedirects, &redirects));
 
   // Navigate without a click (i.e. by C-redirecting) to c.test.
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
-      *maybe_new_tab,
-      embedded_test_server()->GetURL("c.test", "/title1.html")));
+      new_tab, embedded_test_server()->GetURL("c.test", "/title1.html")));
   EndRedirectChain();
 
   EXPECT_THAT(
@@ -1534,17 +1534,17 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   // Open a server-redirecting link in a new tab.
   GURL new_tab_url(embedded_test_server()->GetURL(
       "b.test", "/cross-site-with-cookie/c.test/title1.html"));
-  auto maybe_new_tab = OpenInNewTab(original_tab, new_tab_url);
-  ASSERT_TRUE(maybe_new_tab.has_value()) << maybe_new_tab.error();
+  ASSERT_OK_AND_ASSIGN(WebContents * new_tab,
+                       OpenInNewTab(original_tab, new_tab_url));
 
   // Verify the tab is different from the original and at the correct URL.
-  EXPECT_NE(*maybe_new_tab, original_tab);
-  ASSERT_EQ((*maybe_new_tab)->GetLastCommittedURL(),
+  EXPECT_NE(new_tab, original_tab);
+  ASSERT_EQ(new_tab->GetLastCommittedURL(),
             embedded_test_server()->GetURL("c.test", "/title1.html"));
 
   std::vector<std::string> redirects;
   DIPSWebContentsObserver* tab_web_contents_observer =
-      DIPSWebContentsObserver::FromWebContents(*maybe_new_tab);
+      DIPSWebContentsObserver::FromWebContents(new_tab);
   tab_web_contents_observer->SetRedirectChainHandlerForTesting(
       base::BindRepeating(&AppendRedirects, &redirects));
 
