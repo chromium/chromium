@@ -2918,11 +2918,10 @@ BASE_FEATURE(kInputMethodDeadKeyFixForNoInputField,
              "InputMethodDeadKeyFixForNoInputField",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables bug fix for dead keys on the Terminal app.
-// When enabled, dead keys correctly emit the 'Dead' event on key down for the
-// Terminal.
-BASE_FEATURE(kInputMethodDeadKeyFixForTerminal,
-             "InputMethodDeadKeyFixForTerminal",
+// Enables bug fix for dead keys.
+// When enabled, dead keys correctly emit the 'Dead' event on key down.
+BASE_FEATURE(kInputMethodDeadKeyFix,
+             "InputMethodDeadKeyFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables bug fix for right alt keys for Korean input method.
