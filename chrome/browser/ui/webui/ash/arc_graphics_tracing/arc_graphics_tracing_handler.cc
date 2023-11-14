@@ -469,11 +469,9 @@ void ArcGraphicsTracingHandler::StartTracing() {
   active_trace_ = std::make_unique<ActiveTrace>();
 
   active_trace_->system_stat_collector.Start(max_tracing_time_);
-
-  // Timestamp and app information would be updated when |OnTracingStarted| is
-  // called.
   active_trace_->timestamp = Now();
   UpdateActiveArcWindowInfo();
+  active_trace_->time_min = SystemTicksNow();
 
   StartTracingOnController(
       GetTracingConfig(),
@@ -523,10 +521,6 @@ void ArcGraphicsTracingHandler::OnTracingStarted() {
     return;
   }
 
-  active_trace_->timestamp = Now();
-  UpdateActiveArcWindowInfo();
-
-  active_trace_->time_min = SystemTicksNow();
   active_trace_->stop_timer.emplace();
   active_trace_->stop_timer->Start(
       FROM_HERE, active_trace_->system_stat_collector.max_interval(),
