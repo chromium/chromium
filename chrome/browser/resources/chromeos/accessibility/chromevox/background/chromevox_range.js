@@ -71,11 +71,6 @@ export class ChromeVoxRange {
     return null;
   }
 
-  /** @return {?CursorRange} */
-  static get pageSel() {
-    return ChromeVoxRange.instance.pageSel_;
-  }
-
   /** @param {?CursorRange} newPageSel */
   static set pageSel(newPageSel) {
     ChromeVoxRange.instance.pageSel_ = newPageSel;
@@ -423,14 +418,14 @@ export class ChromeVoxRange {
    * @private
    */
   toggleSelection_() {
-    if (!ChromeVoxRange.pageSel) {
+    if (!this.pageSel_) {
       ChromeVox.earcons.playEarcon(EarconId.SELECTION);
-      ChromeVoxRange.pageSel = ChromeVoxRange.current;
+      this.pageSel_ = ChromeVoxRange.current;
       DesktopAutomationInterface.instance.ignoreDocumentSelectionFromAction(
           true);
       return true;
     } else {
-      const root = ChromeVoxRange.current.start.node.root;
+      const root = this.current_.start.node.root;
       if (root && root.selectionStartObject && root.selectionEndObject &&
           !isNaN(Number(root.selectionStartOffset)) &&
           !isNaN(Number(root.selectionEndOffset))) {
@@ -450,7 +445,7 @@ export class ChromeVoxRange {
         DesktopAutomationInterface.instance.ignoreDocumentSelectionFromAction(
             false);
       }
-      ChromeVoxRange.pageSel = null;
+      this.pageSel_ = null;
       return false;
     }
   }
