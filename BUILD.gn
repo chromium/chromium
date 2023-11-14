@@ -1094,7 +1094,10 @@ if (use_blink && !is_cronet_build) {
         "--no-show-results",
         "--zero-tests-executed-ok",
       ]
-      data = [ "//third_party/blink/web_tests/platform/linux-chrome/" ]
+      data = [
+        "//third_party/blink/web_tests/platform/linux-chrome/",
+        "//third_party/blink/web_tests/ChromeTestExpectations",
+      ]
       data_deps = [
         ":blink_web_tests_expectations",
         "//chrome:chrome",

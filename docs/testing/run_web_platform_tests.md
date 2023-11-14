@@ -55,9 +55,9 @@ increase verbosity.
 ### Test expectations and Baselines
 
 The
-[TestExpectations](../../third_party/blink/web_tests/TestExpectations) file (and related
-files) contains the list of all known web test failures. A special tag `Chrome` is
-introduced to specify chrome specific failures. See the
+[ChromeTestExpectations](../../third_party/blink/web_tests/ChromeTestExpectations) file contains the list of all known Chrome
+specific test failures, and it inherits or overrides test expectations from the default [TestExpectations](../../third_party/blink/web_tests/ChromeTestExpectations) file.
+A special tag `Chrome` is introduced to specify chrome specific failures. See the
 [Web Test Expectations documentation](./web_test_expectations.md) for more
 on this.
 

@@ -40,3 +40,20 @@ class ChromePort(linux.LinuxPort):
     FALLBACK_PATHS = {}
     FALLBACK_PATHS['chrome'] = (
         ['linux-chrome'] + linux.LinuxPort.latest_platform_fallback_path())
+
+    def default_expectations_files(self):
+        """Returns a list of paths to expectations files that apply by default.
+
+        There are other "test expectations" files that may be applied if
+        the --additional-expectations flag is passed; those aren't included
+        here.
+        """
+        return filter(None, [
+            self.path_to_generic_test_expectations_file(),
+            self._filesystem.join(self.web_tests_dir(), 'NeverFixTests'),
+            self._filesystem.join(self.web_tests_dir(),
+                                  'ChromeTestExpectations'),
+            self._filesystem.join(self.web_tests_dir(),
+                                  'StaleTestExpectations'),
+            self._filesystem.join(self.web_tests_dir(), 'SlowTests')
+        ])
