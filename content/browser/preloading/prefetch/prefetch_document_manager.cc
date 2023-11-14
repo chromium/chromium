@@ -16,6 +16,7 @@
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/preloading_data_impl.h"
+#include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -41,7 +42,9 @@ std::tuple<GURL,
            blink::mojom::SpeculationInjectionType>
 SpeculationCandidateToPrefetchUrlParams(
     const blink::mojom::SpeculationCandidatePtr& candidate) {
-  PrefetchType prefetch_type = PrefetchType(
+  PrefetchType prefetch_type(
+      PreloadingTriggerTypeFromSpeculationInjectionType(
+          candidate->injection_type),
       /*use_prefetch_proxy=*/
       candidate->requires_anonymous_client_ip_when_cross_origin,
       candidate->eagerness);

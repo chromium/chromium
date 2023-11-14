@@ -1139,7 +1139,8 @@ TEST_F(PrefetchServiceTest, SuccessCase) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1191,7 +1192,8 @@ TEST_F(PrefetchServiceTest, NoPrefetchingPreloadingDisabled) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1223,7 +1225,8 @@ TEST_F(PrefetchServiceTest, NoPrefetchingDomainNotInAllowList) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1271,7 +1274,8 @@ TEST_F(PrefetchServiceAllowAllDomainsTest, AllowAllDomains) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1320,7 +1324,8 @@ TEST_F(PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1358,7 +1363,8 @@ TEST_F(PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1396,7 +1402,8 @@ TEST_F(PrefetchServiceTest, NonProxiedPrefetchDoesNotRequireAllowList) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/false,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager),
       /*referrer=*/referrer);
   task_environment()->RunUntilIdle();
@@ -1425,7 +1432,8 @@ TEST_F(PrefetchServiceTest, NotEligibleHostnameNonUnique) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1456,7 +1464,8 @@ TEST_F(PrefetchServiceTest, NotEligibleDataSaverEnabled) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1478,7 +1487,8 @@ TEST_F(PrefetchServiceTest, NotEligibleNonHttps) {
 
   MakePrefetchOnMainFrame(
       GURL("http://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1508,7 +1518,8 @@ TEST_F(PrefetchServiceTest, NotEligiblePrefetchProxyNotAvailable) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1540,7 +1551,8 @@ TEST_F(PrefetchServiceTest,
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/false,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1571,7 +1583,8 @@ TEST_F(PrefetchServiceTest, NotEligibleOriginWithinRetryAfterWindow) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1593,7 +1606,8 @@ TEST_F(PrefetchServiceTest, EligibleNonHttpsNonProxiedPotentiallyTrustworthy) {
 
   MakePrefetchOnMainFrame(
       GURL("https://localhost"),
-      PrefetchType(/*use_prefetch_proxy=*/false,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1623,7 +1637,8 @@ TEST_F(PrefetchServiceTest, NotEligibleServiceWorkerRegistered) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1653,7 +1668,8 @@ TEST_F(PrefetchServiceTest,
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/false,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1704,7 +1720,8 @@ TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegistered) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1734,7 +1751,8 @@ TEST_F(PrefetchServiceTest,
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1790,7 +1808,8 @@ TEST_F(PrefetchServiceTest, EligibleServiceWorkerRegistered) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1823,7 +1842,8 @@ TEST_F(PrefetchServiceTest,
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/false,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1875,7 +1895,8 @@ TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegisteredAtThisPath) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com/non_sw/index.html"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1903,7 +1924,8 @@ TEST_F(PrefetchServiceTest, NotEligibleUserHasCookies) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1927,7 +1949,8 @@ TEST_F(PrefetchServiceTest, EligibleUserHasCookiesForDifferentUrl) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -1956,7 +1979,8 @@ TEST_F(PrefetchServiceTest, EligibleSameOriginPrefetchCanHaveExistingCookies) {
   referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/false,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager),
       /*referrer=*/referrer);
   task_environment()->RunUntilIdle();
@@ -1989,7 +2013,8 @@ TEST_F(PrefetchServiceTest, MAYBE_FailedCookiesChangedAfterPrefetchStarted) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2056,7 +2081,8 @@ TEST_F(PrefetchServiceTest, MAYBE_SameOriginPrefetchIgnoresProxyRequirement) {
   referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       /*referrer=*/referrer);
   task_environment()->RunUntilIdle();
@@ -2097,7 +2123,8 @@ TEST_F(PrefetchServiceTest,
   referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://other.example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       /*referrer=*/referrer);
   task_environment()->RunUntilIdle();
@@ -2129,7 +2156,8 @@ TEST_F(PrefetchServiceTest, NotEligibleExistingConnectProxy) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2161,7 +2189,8 @@ TEST_F(PrefetchServiceTest, EligibleExistingConnectProxyButSameOriginPrefetch) {
   referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/false,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager),
       /*referrer=*/referrer);
   task_environment()->RunUntilIdle();
@@ -2188,7 +2217,8 @@ TEST_F(PrefetchServiceTest, FailedNon2XXResponseCode) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2216,7 +2246,8 @@ TEST_F(PrefetchServiceTest, FailedNetError) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2248,7 +2279,8 @@ TEST_F(PrefetchServiceTest, HandleRetryAfterResponse) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2279,7 +2311,8 @@ TEST_F(PrefetchServiceTest, SuccessNonHTML) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2306,7 +2339,8 @@ TEST_F(PrefetchServiceTest, NotServeableNavigationInDifferentRenderFrameHost) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2357,7 +2391,8 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
   // number of prefetches.
   MakePrefetchOnMainFrame(
       GURL("https://example1.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2369,7 +2404,8 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example2.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2381,7 +2417,8 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example3.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2492,7 +2529,8 @@ TEST_F(PrefetchServiceWithHTMLOnlyTest, FailedNonHTMLWithHTMLOnly) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2536,7 +2574,8 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest, DecoyRequest) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2573,7 +2612,8 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest,
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2607,7 +2647,8 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest, MAYBE_RedirectDecoyRequest) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2661,7 +2702,8 @@ TEST_F(PrefetchServiceHoldbackTest, PrefetchHeldback) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2695,7 +2737,8 @@ TEST_F(PrefetchServiceIncognitoTest, OffTheRecordIneligible) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2719,7 +2762,8 @@ TEST_F(PrefetchServiceTest, NonDefaultStoragePartition) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2762,7 +2806,8 @@ TEST_F(PrefetchServiceStreamingURLLoaderTest,
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2848,7 +2893,8 @@ TEST_F(PrefetchServiceNoVarySearchTest, MAYBE_NoVarySearchSuccessCase) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com/?a=1"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       /*referrer=*/blink::mojom::Referrer(),
       /*enable_no_vary_search_header=*/true);
@@ -2881,7 +2927,8 @@ TEST_F(PrefetchServiceTest, PrefetchNotEnabled) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2942,7 +2989,8 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_PrefetchEligibleRedirect) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2999,7 +3047,8 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_IneligibleRedirectCookies) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -3063,7 +3112,8 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -3119,7 +3169,8 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_InvalidRedirect) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -3175,7 +3226,8 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/false,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager),
       /*referrer=*/referrer);
 
@@ -3238,7 +3290,8 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       /*referrer=*/referrer);
 
@@ -3301,7 +3354,8 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/false,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager),
       /*referrer=*/referrer);
   task_environment()->RunUntilIdle();
@@ -3368,7 +3422,8 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       /*referrer=*/referrer);
   task_environment()->RunUntilIdle();
@@ -3438,7 +3493,8 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://other.com"),
-      PrefetchType(/*use_prefetch_proxy=*/false,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager),
       /*referrer=*/referrer);
   task_environment()->RunUntilIdle();
@@ -3523,7 +3579,8 @@ TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
   referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/false,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager),
       /*referrer=*/referrer);
   task_environment()->RunUntilIdle();
@@ -3601,7 +3658,8 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   referrer.policy = network::mojom::ReferrerPolicy::kDefault;
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       /*referrer=*/referrer);
   task_environment()->RunUntilIdle();
@@ -3668,7 +3726,8 @@ TEST_F(PrefetchServiceNeverBlockUntilHeadTest, MAYBE_HeadNotReceived) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -3743,7 +3802,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, MAYBE_BlockUntilHeadReceived) {
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true, GetParam()));
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true, GetParam()));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(
@@ -3818,7 +3878,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
           std::vector<std::string>({"a"}));
   MakePrefetchOnMainFrame(
       GURL("https://example.com/index.html?a=5"),
-      PrefetchType(/*use_prefetch_proxy=*/true, GetParam()),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true, GetParam()),
       /* referrer */ blink::mojom::Referrer(),
       /* no_vary_search_support */ true,
       /* no_vary_search_hint */ std::move(no_vary_search_hint));
@@ -3900,7 +3961,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
           std::vector<std::string>({"a"}));
   MakePrefetchOnMainFrame(
       GURL("https://example.com/index.html?a=5"),
-      PrefetchType(/*use_prefetch_proxy=*/true, GetParam()),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true, GetParam()),
       /* referrer */ blink::mojom::Referrer(),
       /* no_vary_search_support */ true,
       /* no_vary_search_hint */ std::move(no_vary_search_hint));
@@ -3980,7 +4042,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
           std::vector<std::string>({"a"}));
   MakePrefetchOnMainFrame(
       GURL("https://example.com/index.html?a=5"),
-      PrefetchType(/*use_prefetch_proxy=*/true, GetParam()),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true, GetParam()),
       /* referrer */ blink::mojom::Referrer(),
       /* no_vary_search_support */ true,
       /* no_vary_search_hint */ std::move(no_vary_search_hint));
@@ -4052,7 +4115,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true, GetParam()));
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true, GetParam()));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(
@@ -4139,7 +4203,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true, GetParam()));
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true, GetParam()));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(
@@ -4199,7 +4264,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/false, GetParam()));
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false, GetParam()));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(
@@ -4293,7 +4359,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/false, GetParam()));
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false, GetParam()));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(
@@ -4380,7 +4447,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true, GetParam()));
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true, GetParam()));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(
@@ -4440,7 +4508,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true, GetParam()));
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true, GetParam()));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(
@@ -4501,7 +4570,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
-      PrefetchType(/*use_prefetch_proxy=*/true, GetParam()));
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true, GetParam()));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(
@@ -4576,7 +4646,8 @@ class PrefetchServiceNewLimitsTest : public PrefetchServiceTest {
       GURL url,
       blink::mojom::SpeculationEagerness eagerness) {
     MakePrefetchOnMainFrame(
-        url, PrefetchType(/*use_prefetch_proxy=*/false, eagerness));
+        url, PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                          /*use_prefetch_proxy=*/false, eagerness));
     task_environment()->RunUntilIdle();
     return CompleteExistingPrefetch(
         url, {.expected_priority = ExpectedPriorityForEagerness(eagerness)});
@@ -4617,7 +4688,8 @@ TEST_F(PrefetchServiceNewLimitsTest,
   // Note: |url_3| is not prefetched as the limit for eager prefetches has been
   // reached.
   MakePrefetchOnMainFrame(
-      url_3, PrefetchType(/*use_prefetch_proxy=*/false,
+      url_3, PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                          /*use_prefetch_proxy=*/false,
                           blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
   EXPECT_EQ(RequestCount(), 0);
@@ -5301,7 +5373,8 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
             std::vector<std::string>({"a"}));
     MakePrefetchOnMainFrame(
         GURL(kTestUrl + "?a=5"),
-        PrefetchType(/*use_prefetch_proxy=*/false, GetParam()),
+        PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                     /*use_prefetch_proxy=*/false, GetParam()),
         /* referrer */ blink::mojom::Referrer(),
         /* no_vary_search_support */ true,
         /* no_vary_search_hint */ std::move(no_vary_search_hint));
@@ -5320,7 +5393,8 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
             std::vector<std::string>({"b"}));
     MakePrefetchOnMainFrame(
         GURL(kTestUrl + "?b=3"),
-        PrefetchType(/*use_prefetch_proxy=*/false, GetParam()),
+        PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                     /*use_prefetch_proxy=*/false, GetParam()),
         /* referrer */ blink::mojom::Referrer(),
         /* no_vary_search_support */ true,
         /* no_vary_search_hint */ std::move(no_vary_search_hint));
@@ -5414,7 +5488,8 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(2));
   MakePrefetchOnMainFrame(
-      GURL(kTestUrl), PrefetchType(/*use_prefetch_proxy=*/false, GetParam()));
+      GURL(kTestUrl), PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                                   /*use_prefetch_proxy=*/false, GetParam()));
   VerifyCommonRequestState(
       GURL(kTestUrl),
       {.expected_priority = ExpectedPriorityForEagerness(GetParam())});
@@ -5431,7 +5506,8 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
             std::vector<std::string>({"a"}));
     MakePrefetchOnMainFrame(
         GURL(kTestUrl + "?a=1"),
-        PrefetchType(/*use_prefetch_proxy=*/false, GetParam()),
+        PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                     /*use_prefetch_proxy=*/false, GetParam()),
         /* referrer */ blink::mojom::Referrer(),
         /* no_vary_search_support */ true,
         /* no_vary_search_hint */ std::move(no_vary_search_hint));
@@ -5498,7 +5574,8 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(2));
   MakePrefetchOnMainFrame(
-      GURL(kTestUrl), PrefetchType(/*use_prefetch_proxy=*/false, GetParam()));
+      GURL(kTestUrl), PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                                   /*use_prefetch_proxy=*/false, GetParam()));
   VerifyCommonRequestState(
       GURL(kTestUrl),
       {.expected_priority = ExpectedPriorityForEagerness(GetParam())});
@@ -5512,7 +5589,8 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
             std::vector<std::string>({"a"}));
     MakePrefetchOnMainFrame(
         GURL(kTestUrl + "?a=1"),
-        PrefetchType(/*use_prefetch_proxy=*/false, GetParam()),
+        PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                     /*use_prefetch_proxy=*/false, GetParam()),
         /* referrer */ blink::mojom::Referrer(),
         /* no_vary_search_support */ true,
         /* no_vary_search_hint */ std::move(no_vary_search_hint));
@@ -5614,7 +5692,8 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
             std::vector<std::string>({"a"}));
     MakePrefetchOnMainFrame(
         GURL(kTestUrl + "?a=5"),
-        PrefetchType(/*use_prefetch_proxy=*/false, GetParam()),
+        PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                     /*use_prefetch_proxy=*/false, GetParam()),
         /* referrer */ blink::mojom::Referrer(),
         /* no_vary_search_support */ true,
         /* no_vary_search_hint */ std::move(no_vary_search_hint));
@@ -5633,7 +5712,8 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
             std::vector<std::string>({"b"}));
     MakePrefetchOnMainFrame(
         GURL(kTestUrl + "?b=3"),
-        PrefetchType(/*use_prefetch_proxy=*/false, GetParam()),
+        PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                     /*use_prefetch_proxy=*/false, GetParam()),
         /* referrer */ blink::mojom::Referrer(),
         /* no_vary_search_support */ true,
         /* no_vary_search_hint */ std::move(no_vary_search_hint));

@@ -99,7 +99,8 @@ class NoVarySearchHelperTester final {
     std::unique_ptr<PrefetchContainer> prefetch_container =
         std::make_unique<PrefetchContainer>(
             GlobalRenderFrameHostId(1234, 5678), document_token, url,
-            PrefetchType(/*use_prefetch_proxy=*/true,
+            PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                         /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kEager),
             blink::mojom::Referrer(),
             /*no_vary_search_expected=*/absl::nullopt,
