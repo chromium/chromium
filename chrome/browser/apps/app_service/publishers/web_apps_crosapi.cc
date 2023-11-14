@@ -24,6 +24,7 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_web_apps_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/crosapi_utils.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -178,10 +179,15 @@ void WebAppsCrosapi::GetMenuModel(
   MenuItems menu_items;
 
   if (display_mode != WindowMode::kUnknown && !is_system_web_app) {
-    CreateOpenNewSubmenu(display_mode == WindowMode::kBrowser
-                             ? IDS_APP_LIST_CONTEXT_MENU_NEW_TAB
-                             : IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW,
-                         menu_items);
+    if (chromeos::features::IsCrosShortstandEnabled()) {
+      apps::AddCommandItem(ash::LAUNCH_NEW,
+                           IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, menu_items);
+    } else {
+      CreateOpenNewSubmenu(display_mode == WindowMode::kBrowser
+                               ? IDS_APP_LIST_CONTEXT_MENU_NEW_TAB
+                               : IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW,
+                           menu_items);
+    }
   }
 
   if (menu_type == MenuType::kShelf) {
