@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureType;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -65,6 +64,7 @@ public class ToolbarButtonInProductHelpController
     private final View mSecurityIconAnchorView;
     private final AppMenuHandler mAppMenuHandler;
     private final UserEducationHelper mUserEducationHelper;
+    private final ObservableSupplier<Profile> mProfileSupplier;
     private final Supplier<Tab> mCurrentTabSupplier;
     private final Supplier<Boolean> mIsInOverviewModeSupplier;
 
@@ -72,18 +72,23 @@ public class ToolbarButtonInProductHelpController
      * @param activity {@link Activity} on which this class runs.
      * @param windowAndroid {@link WindowAndroid} for the current Activity.
      * @param appMenuCoordinator {@link AppMenuCoordinator} whose visual state is to be updated
-     *        accordingly.
+     *     accordingly.
      * @param lifecycleDispatcher {@link LifecycleDispatcher} that helps observe activity lifecycle.
+     * @param profileSupplier A supplier of the Profile associated with the current visible state.
      * @param tabSupplier An observable supplier of the current {@link Tab}.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
      * @param menuButtonAnchorView The menu button view to serve as an anchor.
      * @param securityIconAnchorView The security icon to serve as an anchor.
      */
-    public ToolbarButtonInProductHelpController(@NonNull Activity activity,
-            @NonNull WindowAndroid windowAndroid, @NonNull AppMenuCoordinator appMenuCoordinator,
+    public ToolbarButtonInProductHelpController(
+            @NonNull Activity activity,
+            @NonNull WindowAndroid windowAndroid,
+            @NonNull AppMenuCoordinator appMenuCoordinator,
             @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
+            @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull ObservableSupplier<Tab> tabSupplier,
-            @NonNull Supplier<Boolean> isInOverviewModeSupplier, @NonNull View menuButtonAnchorView,
+            @NonNull Supplier<Boolean> isInOverviewModeSupplier,
+            @NonNull View menuButtonAnchorView,
             @NonNull View securityIconAnchorView) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -96,6 +101,7 @@ public class ToolbarButtonInProductHelpController
         mScreenshotMonitor = new ScreenshotMonitorImpl(this, mActivity);
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
+        mProfileSupplier = profileSupplier;
         mCurrentTabSupplier = tabSupplier;
         mPageLoadObserver =
                 new CurrentTabObserver(
@@ -221,19 +227,24 @@ public class ToolbarButtonInProductHelpController
 
     @Override
     public void onScreenshotTaken() {
-        boolean isIncognito =
-                mCurrentTabSupplier.get() != null && mCurrentTabSupplier.get().isIncognito();
-        Profile profile = IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito);
-        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        Tab currentTab = mCurrentTabSupplier.get();
+        Profile currentProfile =
+                currentTab != null ? currentTab.getProfile() : mProfileSupplier.get();
+
+        Tracker tracker = TrackerFactory.getTrackerForProfile(currentProfile);
         tracker.notifyEvent(EventConstants.SCREENSHOT_TAKEN_CHROME_IN_FOREGROUND);
 
-        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-            showDownloadPageTextBubble(
-                    mCurrentTabSupplier.get(), FeatureConstants.DOWNLOAD_PAGE_SCREENSHOT_FEATURE);
-            ScreenshotTabObserver tabObserver =
-                    ScreenshotTabObserver.from(mCurrentTabSupplier.get());
-            if (tabObserver != null) tabObserver.onScreenshotTaken();
-        });
+        if (currentTab == null) return;
+
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    if (currentTab != mCurrentTabSupplier.get()) return;
+                    showDownloadPageTextBubble(
+                            currentTab, FeatureConstants.DOWNLOAD_PAGE_SCREENSHOT_FEATURE);
+                    ScreenshotTabObserver tabObserver = ScreenshotTabObserver.from(currentTab);
+                    if (tabObserver != null) tabObserver.onScreenshotTaken();
+                });
     }
 
     // Private methods.

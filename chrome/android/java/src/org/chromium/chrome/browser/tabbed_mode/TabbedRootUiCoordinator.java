@@ -650,10 +650,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     private void initializeIPH(boolean intentWithEffect) {
         if (mActivity == null) return;
-        mToolbarButtonInProductHelpController = new ToolbarButtonInProductHelpController(mActivity,
-                mWindowAndroid, mAppMenuCoordinator, mActivityLifecycleDispatcher,
-                mActivityTabProvider, mIsInOverviewModeSupplier,
-                mToolbarManager.getMenuButtonView(), mToolbarManager.getSecurityIconView());
+        mToolbarButtonInProductHelpController =
+                new ToolbarButtonInProductHelpController(
+                        mActivity,
+                        mWindowAndroid,
+                        mAppMenuCoordinator,
+                        mActivityLifecycleDispatcher,
+                        mProfileSupplier,
+                        mActivityTabProvider,
+                        mIsInOverviewModeSupplier,
+                        mToolbarManager.getMenuButtonView(),
+                        mToolbarManager.getSecurityIconView());
         mReadLaterIPHController = new ReadLaterIPHController(mActivity,
                 getToolbarManager().getMenuButtonView(), mAppMenuCoordinator.getAppMenuHandler());
 
