@@ -1462,6 +1462,29 @@
       },
     },
 
+    'chromium_wpt_tests_isolated_scripts': {
+      'chrome_wpt_tests': {
+        'test': 'chrome_wpt_tests',
+        'results_handler': 'layout tests',
+        'args': [
+          '--test-type',
+          'testharness',
+          'reftest',
+          'crashtest',
+          'print-reftest',
+        ],
+        'swarming': {
+          'shards': 15,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+      },
+    },
+
     'clang_tot_gtests': {
       'base_unittests': {},
     },
@@ -5565,29 +5588,6 @@
       },
     },
 
-    'wpt_web_tests': {
-      'chrome_wpt_tests': {
-        'test': 'chrome_wpt_tests',
-        'results_handler': 'layout tests',
-        'args': [
-          '--test-type',
-          'testharness',
-          'reftest',
-          'crashtest',
-          'print-reftest',
-        ],
-        'swarming': {
-          'shards': 15,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
-      },
-    },
-
     'wpt_web_tests_android': {
       'chrome_public_wpt': {
         'results_handler': 'layout tests',
@@ -5961,6 +5961,7 @@
       'vulkan_swiftshader_isolated_scripts',
       'chromium_web_tests_high_dpi_isolated_scripts',
       'chromium_web_tests_brfetch_isolated_scripts',
+      'chromium_wpt_tests_isolated_scripts',
     ],
 
     'chromium_mac_gtests': [

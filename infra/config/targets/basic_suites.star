@@ -1743,6 +1743,32 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "chromium_wpt_tests_isolated_scripts",
+    tests = {
+        "chrome_wpt_tests": targets.legacy_test_config(
+            test = "chrome_wpt_tests",
+            results_handler = "layout tests",
+            args = [
+                "--test-type",
+                "testharness",
+                "reftest",
+                "crashtest",
+                "print-reftest",
+            ],
+            swarming = targets.swarming(
+                shards = 15,
+            ),
+            merge = targets.merge(
+                script = "//third_party/blink/tools/merge_web_test_results.py",
+                args = [
+                    "--verbose",
+                ],
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "clang_tot_gtests",
     tests = {
         "base_unittests": None,
@@ -6591,32 +6617,6 @@ targets.legacy_basic_suite(
                 ],
             ),
             experiment_percentage = 100,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "wpt_web_tests",
-    tests = {
-        "chrome_wpt_tests": targets.legacy_test_config(
-            test = "chrome_wpt_tests",
-            results_handler = "layout tests",
-            args = [
-                "--test-type",
-                "testharness",
-                "reftest",
-                "crashtest",
-                "print-reftest",
-            ],
-            swarming = targets.swarming(
-                shards = 15,
-            ),
-            merge = targets.merge(
-                script = "//third_party/blink/tools/merge_web_test_results.py",
-                args = [
-                    "--verbose",
-                ],
-            ),
         ),
     },
 )

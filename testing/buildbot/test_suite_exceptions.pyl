@@ -1670,6 +1670,14 @@
       },
     },
   },
+  # TODO(weizhong): Remove this once experiment completes
+  'chrome_wpt_tests': {
+    'modifications': {
+      'Linux Tests': {
+        'experiment_percentage': 10,
+      },
+    },
+  },
   'chromedriver_py_tests': {
     'modifications': {
       'Win10 Tests x64': {

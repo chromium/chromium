@@ -3811,7 +3811,7 @@
           'linux-jammy',
         ],
         'test_suites': {
-          'isolated_scripts': 'wpt_web_tests',
+          'isolated_scripts': 'chromium_wpt_tests_isolated_scripts',
         },
       },
       'mac-fieldtrial-tester': {
