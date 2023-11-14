@@ -9887,6 +9887,26 @@
             ]
         }
     ],
+    "LiveCaptionExperimentalLanguages": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "available_languages": "en-US,fr-FR,it-IT,de-DE,hi-IN,pt-BR,ja-JP"
+                    },
+                    "enable_features": [
+                        "LiveCaptionExperimentalLanguages"
+                    ]
+                }
+            ]
+        }
+    ],
     "LiveCaptionMultiLanguageRollout": [
         {
             "platforms": [
