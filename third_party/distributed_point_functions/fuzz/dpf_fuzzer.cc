@@ -78,11 +78,20 @@ void EvaluateAndCheckLevel(
                                       evaluation_points[i], parameters);
   }
 
+  // Evaluating a key with N correction words leads to an O(2^N) malloc, which
+  // will unsurprisingly cause a fuzzer crash. See <https://crbug.com/1494260>.
+  constexpr size_t kMaxCorrectionWords = 30;
+  if (ctx0.key().correction_words().size() > kMaxCorrectionWords) {
+    return;
+  }
   absl::StatusOr<std::vector<T>> result_0 =
       dpf.EvaluateUntil<T>(hierarchy_level, prefixes, ctx0);
+  DPF_FUZZER_ASSERT(result_0.ok());
+  if (ctx1.key().correction_words().size() > kMaxCorrectionWords) {
+    return;
+  }
   absl::StatusOr<std::vector<T>> result_1 =
       dpf.EvaluateUntil<T>(hierarchy_level, prefixes, ctx1);
-  DPF_FUZZER_ASSERT(result_0.ok());
   DPF_FUZZER_ASSERT(result_1.ok());
 
   DPF_FUZZER_ASSERT(result_0->size() == result_1->size());
