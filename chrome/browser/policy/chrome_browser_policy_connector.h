@@ -202,7 +202,7 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 
   raw_ptr<ConfigurationPolicyProvider> local_test_provider_for_testing_ =
       nullptr;
-  std::unique_ptr<LocalTestPolicyProvider> local_test_provider_ = nullptr;
+  std::unique_ptr<LocalTestPolicyProvider> local_test_provider_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<DeviceSettingsLacros> device_settings_ = nullptr;
