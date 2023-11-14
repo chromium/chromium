@@ -43,7 +43,8 @@ void WebAuthnCredManDelegate::TriggerCredManUi(
   if (show_cred_man_ui_callback_.is_null()) {
     return;
   }
-  show_cred_man_ui_callback_.Run(request_passwords.value());
+  show_cred_man_ui_callback_.Run(request_passwords.value() &&
+                                 !filling_callback_.is_null());
 }
 
 WebAuthnCredManDelegate::State WebAuthnCredManDelegate::HasPasskeys() {

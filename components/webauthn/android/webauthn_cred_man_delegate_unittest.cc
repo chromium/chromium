@@ -59,4 +59,14 @@ TEST_F(WebAuthnCredManDelegateTest, RequestCompletionCallbackRun) {
   delegate()->OnCredManUiClosed(true);
 }
 
+TEST_F(WebAuthnCredManDelegateTest,
+       IfNoFillingCallbackDoesNotRequestPasswords) {
+  base::MockCallback<base::RepeatingCallback<void(bool)>> mock_cred_man_request;
+  delegate()->OnCredManConditionalRequestPending(true,
+                                                 mock_cred_man_request.Get());
+
+  EXPECT_CALL(mock_cred_man_request, Run(false)).Times(1);
+  delegate()->TriggerCredManUi(WebAuthnCredManDelegate::RequestPasswords(true));
+}
+
 }  // namespace webauthn
