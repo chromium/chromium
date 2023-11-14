@@ -177,6 +177,9 @@ bool StructTraits<
     return false;
   if (!data.ReadValue(&out->value))
     return false;
+  if (!data.ReadSelectedText(&out->selected_text)) {
+    return false;
+  }
   uint32_t max_length = out->value.length();
   out->selection_end = std::min(data.selection_end(), max_length);
   out->selection_start = std::min(data.selection_start(), out->selection_end);

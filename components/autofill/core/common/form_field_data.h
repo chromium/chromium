@@ -268,6 +268,14 @@ struct FormFieldData {
   // TODO(crbug.com/1501362): Extract the value of contenteditables on iOS.
   std::u16string value;
 
+  // The selected text, or the empty string if no text is selected.
+  // Truncated at `50 * kMaxStringLength`.
+  // This is not necessarily a substring of `value` because both strings are
+  // truncated, and because for rich-text contenteditables the selection and
+  // text content differ in whitespace.
+  // TODO(crbug.com/1501362): Extract on iOS.
+  std::u16string selected_text;
+
   // The range within `value` that is selected. `selection_start` points at the
   // first selected character, `selection_end` points after the last selected
   // character. That is, if nothing is selected, `selection_start` and

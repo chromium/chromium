@@ -52,6 +52,11 @@ inline constexpr size_t kMaxExtractableChildFrames = 20;
 // selection indices, not `size_t`.
 inline constexpr unsigned kMaxStringLength = 1024;
 
+// The maximum string length of selected text in contenteditables, textareas,
+// and text-mode inputs.
+// TODO(crbug.com/1501381): Reduce the value.
+inline constexpr size_t kMaxSelectedTextLength = 50 * kMaxStringLength;
+
 // The maximum list size supported by Autofill.
 // Allow enough space for all countries (roughly 300 distinct values) and all
 // timezones (roughly 400 distinct values), plus some extra wiggle room.

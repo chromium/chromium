@@ -174,9 +174,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   }
 
   void SetSelection(const std::u16string& selection) {
-    field_data().value = selection;
-    field_data().selection_start = 0;
-    field_data().selection_end = field_data().value.length();
+    field_data().selected_text = selection;
   }
 
  protected:
@@ -566,15 +564,14 @@ TEST_F(ChromeComposeClientTest, TestCloseUIAtChromeCompose) {
 // when the WebUI requests initial state.
 TEST_F(ChromeComposeClientTest, TestOpenDialogWithSelectedText) {
   field_data().value = u"user selected text";
-  field_data().selection_start = 0;
-  field_data().selection_end = 18;
+  SetSelection(u"selected text");
   ShowDialogAndBindMojo();
 
   base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
   page_handler()->RequestInitialState(open_test_future.GetCallback());
 
   compose::mojom::OpenMetadataPtr result = open_test_future.Take();
-  EXPECT_EQ("user selected text", result->initial_input);
+  EXPECT_EQ("selected text", result->initial_input);
 }
 
 // Tests that opening the dialog with selected text clears existing state.
@@ -583,8 +580,7 @@ TEST_F(ChromeComposeClientTest, TestClearStateWhenOpenWithSelectedText) {
   page_handler()->SaveWebUIState("web ui state");
 
   field_data().value = u"user selected text";
-  field_data().selection_start = 0;
-  field_data().selection_end = 18;
+  SetSelection(u"selected text");
   ShowDialogAndBindMojo();
 
   base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;

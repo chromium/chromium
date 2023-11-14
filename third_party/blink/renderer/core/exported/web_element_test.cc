@@ -107,6 +107,68 @@ TEST_F(WebElementTest, IsAutonomousCustomElement) {
       WebElement(To<Element>(v1autonomous)).IsAutonomousCustomElement());
 }
 
+// Tests SelectedText() and ContainsFrameSelection() with divs, including a
+// contenteditable.
+TEST_F(WebElementTest, SelectedTextOfContentEditable) {
+  InsertHTML(
+      R"(<div>Foo</div>
+         <div id=testElement contenteditable>Some <b>rich text</b> here.</div>
+         <div>Bar</div>)");
+  auto* element = GetDocument().getElementById(AtomicString("testElement"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  Selection().SelectSubString(*element, 2, 15);
+  ASSERT_EQ(Selection().SelectedText(), String("me rich text he"));
+  EXPECT_TRUE(TestElement().ContainsFrameSelection());
+  EXPECT_EQ(TestElement().SelectedText().Utf8(), "me rich text he");
+
+  Selection().SelectSubString(*element, 10, 7);
+  ASSERT_EQ(Selection().SelectedText(), String("text he"));
+  EXPECT_TRUE(TestElement().ContainsFrameSelection());
+  EXPECT_EQ(TestElement().SelectedText().Utf8(), "text he");
+
+  Selection().SelectSubString(*element->firstElementChild(), 0, 9);
+  ASSERT_EQ(Selection().SelectedText(), String("rich text"));
+  EXPECT_TRUE(TestElement().ContainsFrameSelection());
+  EXPECT_EQ(TestElement().SelectedText().Utf8(), "rich text");
+
+  Selection().SelectSubString(*element->parentElement(), 0, 8);
+  ASSERT_EQ(Selection().SelectedText(), String("Foo\nSome"));
+  EXPECT_FALSE(TestElement().ContainsFrameSelection());
+  EXPECT_EQ(TestElement().SelectedText().Utf8(), "");
+
+  Selection().SelectSubString(*element->parentElement(), 19, 9);
+  ASSERT_EQ(Selection().SelectedText(), String("here.\nBar"));
+  EXPECT_TRUE(TestElement().ContainsFrameSelection());
+  // This is not ideal behavior: it'd be preferable if SelectedText() truncated
+  // the selection at the end of `TestElement()`.
+  EXPECT_EQ(TestElement().SelectedText().Utf8(), "here.\nBar");
+}
+
+// Tests SelectedText() and ContainsFrameSelection() with a textarea.
+TEST_F(WebElementTest, SelectedTextOfTextArea) {
+  InsertHTML(
+      R"(<div>Foo</div>
+         <textarea id=testElement>Some plain text here.</textarea>
+         <div>Bar</div>)");
+  auto* element = blink::To<HTMLTextAreaElement>(
+      GetDocument().getElementById(AtomicString("testElement")));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  element->Focus();
+
+  element->SetSelectionRange(2, 18);
+  EXPECT_TRUE(TestElement().ContainsFrameSelection());
+  EXPECT_EQ(TestElement().SelectedText().Utf8(), "me plain text he");
+
+  element->SetSelectionRange(11, 18);
+  EXPECT_TRUE(TestElement().ContainsFrameSelection());
+  EXPECT_EQ(TestElement().SelectedText().Utf8(), "text he");
+
+  element->SetSelectionRange(5, 15);
+  EXPECT_TRUE(TestElement().ContainsFrameSelection());
+  EXPECT_EQ(TestElement().SelectedText().Utf8(), "plain text");
+}
+
 TEST_F(WebElementTest, PasteTextIntoContentEditable) {
   InsertHTML(
       "<div id=testElement contenteditable>Some <b>rich text</b> here.</div>"

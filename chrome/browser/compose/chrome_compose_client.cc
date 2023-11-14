@@ -151,7 +151,7 @@ void ChromeComposeClient::CreateOrUpdateSession(
     ComposeCallback callback) {
   active_compose_field_id_ =
       std::make_optional<autofill::FieldGlobalId>(trigger_field.global_id());
-  std::string selected_text = base::UTF16ToUTF8(trigger_field.GetSelection());
+  std::string selected_text = base::UTF16ToUTF8(trigger_field.selected_text);
   ComposeSession* current_session;
   auto it = sessions_.find(active_compose_field_id_.value());
   if (!selected_text.empty() || it == sessions_.end()) {

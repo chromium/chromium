@@ -136,6 +136,32 @@ bool WebElement::IsContentEditable() const {
          normalized_value == ContentEditableType::kPlaintextOnly;
 }
 
+bool WebElement::ContainsFrameSelection() const {
+  auto& e = *ConstUnwrap<Element>();
+  auto* root = e.GetDocument()
+                   .GetFrame()
+                   ->Selection()
+                   .RootEditableElementOrDocumentElement();
+  // For form controls, the selection's root editable is a contenteditable in
+  // a shadow DOM tree.
+  return (e.IsFormControlElement() ? root->OwnerShadowHost() : root) == e;
+}
+
+WebString WebElement::SelectedText() const {
+  if (!ContainsFrameSelection()) {
+    return "";
+  }
+  return ConstUnwrap<Element>()
+      ->GetDocument()
+      .GetFrame()
+      ->Selection()
+      .SelectedText(TextIteratorBehavior::Builder()
+                        .SetEntersOpenShadowRoots(true)
+                        .SetSkipsUnselectableContent(true)
+                        .SetEntersTextControls(true)
+                        .Build());
+}
+
 void WebElement::PasteText(const WebString& text, bool replace_all) {
   if (!IsEditable()) {
     return;
@@ -150,18 +176,8 @@ void WebElement::PasteText(const WebString& text, bool replace_all) {
   auto is_destroyed = [](LocalFrame& frame) {
     return frame.GetDocument()->GetFrame() != frame;
   };
-  // Returns true if text in `e` is selected.
-  auto is_selected = [](Element& e) {
-    auto* root = e.GetDocument()
-                     .GetFrame()
-                     ->Selection()
-                     .RootEditableElementOrDocumentElement();
-    // For form controls, the selection's root editable is a contenteditable in
-    // a shadow DOM tree.
-    return (e.IsFormControlElement() ? root->OwnerShadowHost() : root) == e;
-  };
 
-  if (replace_all || !is_selected(*element)) {
+  if (replace_all || !ContainsFrameSelection()) {
     // Makes sure the selection is inside `element`: if `replace_all`, selects
     // all inside `element`; otherwise, selects an empty range at the end.
     if (auto* text_control_element =
@@ -186,7 +202,7 @@ void WebElement::PasteText(const WebString& text, bool replace_all) {
           SetSelectionOptions());
     }
     // JavaScript handlers may have destroyed the frame or moved the selection.
-    if (is_destroyed(*frame) || !is_selected(*element)) {
+    if (is_destroyed(*frame) || !ContainsFrameSelection()) {
       return;
     }
   }

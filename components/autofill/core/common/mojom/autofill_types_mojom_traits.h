@@ -209,6 +209,10 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.value;
   }
 
+  static const std::u16string& selected_text(const autofill::FormFieldData& r) {
+    return r.selected_text;
+  }
+
   static uint32_t selection_start(const autofill::FormFieldData& r) {
     return r.selection_start;
   }

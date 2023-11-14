@@ -2122,6 +2122,8 @@ void WebFormControlElementToFormField(
   }
 
   field->value = std::move(value).substr(0, kMaxStringLength);
+  field->selected_text =
+      element.SelectedText().Utf16().substr(0, kMaxSelectedTextLength);
   field->selection_start = std::min(element.SelectionStart(), kMaxStringLength);
   field->selection_end = std::min(element.SelectionEnd(), kMaxStringLength);
 
@@ -2347,6 +2349,8 @@ std::optional<FormData> FindFormForContentEditable(
   // more expensive because it triggers a layout.
   field.value =
       content_editable.TextContent().Utf16().substr(0, kMaxStringLength);
+  field.selected_text =
+      content_editable.SelectedText().Utf16().substr(0, kMaxSelectedTextLength);
   return form;
 }
 
