@@ -51,17 +51,11 @@ public class Transition {
         }
     }
 
-    protected List<ConditionWaiter.ConditionWaitStatus> createTransitionConditionStatuses() {
+    protected List<Condition> getTransitionConditions() {
         if (mConditions == null) {
             return Collections.EMPTY_LIST;
+        } else {
+            return mConditions;
         }
-
-        ArrayList<ConditionWaiter.ConditionWaitStatus> statuses = new ArrayList<>();
-        for (Condition condition : mConditions) {
-            statuses.add(
-                    new ConditionWaiter.ConditionWaitStatus(
-                            condition, ConditionWaiter.ConditionOrigin.TRANSITION));
-        }
-        return statuses;
     }
 }

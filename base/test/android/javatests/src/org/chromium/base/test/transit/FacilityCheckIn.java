@@ -32,8 +32,8 @@ class FacilityCheckIn extends Transition {
     void enterSync() {
         onBeforeTransition();
         triggerTransition();
-        List<ConditionWaiter.ConditionWaitStatus> transitionConditions = createConditions();
-        waitUntilEntry(transitionConditions);
+        List<ConditionWaiter.ConditionWaitStatus> waitStatuses = createWaitStatuses();
+        waitUntilEntry(waitStatuses);
         onAfterTransition();
         PublicTransitConfig.maybePauseAfterTransition(mFacility);
     }
@@ -49,15 +49,19 @@ class FacilityCheckIn extends Transition {
         Log.i(TAG, "Triggered entry into %s", mFacility);
     }
 
-    private List<ConditionWaiter.ConditionWaitStatus> createConditions() {
-        ArrayList<ConditionWaiter.ConditionWaitStatus> transitionConditions = new ArrayList<>();
+    private List<ConditionWaiter.ConditionWaitStatus> createWaitStatuses() {
+        ArrayList<ConditionWaiter.ConditionWaitStatus> waitStatuses = new ArrayList<>();
         for (Condition condition : mFacility.getEnterConditions()) {
-            transitionConditions.add(
+            waitStatuses.add(
                     new ConditionWaiter.ConditionWaitStatus(
                             condition, ConditionWaiter.ConditionOrigin.ENTER));
         }
-        transitionConditions.addAll(createTransitionConditionStatuses());
-        return transitionConditions;
+        for (Condition condition : getTransitionConditions()) {
+            waitStatuses.add(
+                    new ConditionWaiter.ConditionWaitStatus(
+                            condition, ConditionWaiter.ConditionOrigin.TRANSITION));
+        }
+        return waitStatuses;
     }
 
     private void waitUntilEntry(List<ConditionWaiter.ConditionWaitStatus> transitionConditions) {

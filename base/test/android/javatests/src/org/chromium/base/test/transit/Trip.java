@@ -75,33 +75,37 @@ public class Trip extends Transition {
     }
 
     private void waitUntilArrival() {
-        ArrayList<ConditionWaiter.ConditionWaitStatus> transitionConditions = new ArrayList<>();
+        ArrayList<ConditionWaiter.ConditionWaitStatus> waitStatuses = new ArrayList<>();
 
         if (mOrigin != null) {
             for (Condition condition : mOrigin.getExitConditions()) {
-                transitionConditions.add(
+                waitStatuses.add(
                         new ConditionWaiter.ConditionWaitStatus(
                                 condition, ConditionWaiter.ConditionOrigin.EXIT));
             }
             for (Condition condition : mOrigin.getActiveFacilityExitConditions()) {
-                transitionConditions.add(
+                waitStatuses.add(
                         new ConditionWaiter.ConditionWaitStatus(
                                 condition, ConditionWaiter.ConditionOrigin.EXIT));
             }
         }
 
         for (Condition condition : mDestination.getEnterConditions()) {
-            transitionConditions.add(
+            waitStatuses.add(
                     new ConditionWaiter.ConditionWaitStatus(
                             condition, ConditionWaiter.ConditionOrigin.ENTER));
         }
-        transitionConditions.addAll(createTransitionConditionStatuses());
+        for (Condition condition : getTransitionConditions()) {
+            waitStatuses.add(
+                    new ConditionWaiter.ConditionWaitStatus(
+                            condition, ConditionWaiter.ConditionOrigin.TRANSITION));
+        }
 
         // Throws CriteriaNotSatisfiedException if any conditions aren't met within the timeout and
         // prints the state of all conditions. The timeout can be reduced when explicitly looking
         // for flakiness due to tight timeouts.
         try {
-            ConditionWaiter.waitFor(transitionConditions);
+            ConditionWaiter.waitFor(waitStatuses);
         } catch (AssertionError e) {
             throw new TravelException(mOrigin, mDestination, e);
         }
