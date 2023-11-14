@@ -1,0 +1,25 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "mailto_handler_service.h",
+  ]
+ public_deps = [
+   "//ios/chrome/browser/mailto_handler",
+  ]
+}
+
+# This is a separate target because the factory depends on the provider
+# and the provider depends on the declaration of the service (since it
+# provides an implementation). Using separate targets prevents circular
+# dependencies.
+source_set("mailto_handler_factory") {
+  sources = [
+    "mailto_handler_service_factory.h",
+  ]
+  public_deps = [
+    "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
+  ]
+}
