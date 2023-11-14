@@ -421,8 +421,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // Lacros-chrome is loaded and ready for launching.
     STOPPED,
 
-    // Lacros-chrome is creating a new log file to log to.
-    CREATING_LOG_FILE,
+    // Params for the lacros-chrome are parepared on a background thread, and
+    // the device owner set up is being waited.
+    PREPARING_FOR_LAUNCH,
 
     // Lacros-chrome has been pre-launched at login screen, and it's waiting to
     // be unblocked post-login.

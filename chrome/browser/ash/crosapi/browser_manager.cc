@@ -715,7 +715,7 @@ bool BrowserManager::IsRunning() const {
 
 bool BrowserManager::IsRunningOrWillRun() const {
   return state_ == State::RUNNING || state_ == State::STARTING ||
-         state_ == State::CREATING_LOG_FILE || state_ == State::TERMINATING;
+         state_ == State::PREPARING_FOR_LAUNCH || state_ == State::TERMINATING;
 }
 
 bool BrowserManager::IsInitialized() const {
@@ -845,7 +845,7 @@ bool BrowserManager::EnsureLaunch() {
       return true;
 
     case State::MOUNTING:
-    case State::CREATING_LOG_FILE:
+    case State::PREPARING_FOR_LAUNCH:
     case State::STARTING:
       LOG(WARNING)
           << "Ensuring Lacros launch: already in the process of starting";
@@ -1094,7 +1094,7 @@ void BrowserManager::Start(bool launching_at_login_screen) {
   // Always reset the |relaunch_requested_| flag when launching Lacros.
   relaunch_requested_ = false;
 
-  SetState(State::CREATING_LOG_FILE);
+  SetState(State::PREPARING_FOR_LAUNCH);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
@@ -1109,7 +1109,7 @@ void BrowserManager::Start(bool launching_at_login_screen) {
 
 void BrowserManager::StartWithLogFile(bool launching_at_login_screen,
                                       LaunchParamsFromBackground params) {
-  DCHECK_EQ(state_, State::CREATING_LOG_FILE);
+  DCHECK_EQ(state_, State::PREPARING_FOR_LAUNCH);
 
   // Shutdown() might have been called after Start() posted the StartWithLogFile
   // task, so we need to check `shutdown_requested_` again.
@@ -2040,12 +2040,19 @@ void BrowserManager::PerformOrEnqueue(std::unique_ptr<BrowserAction> action) {
       pending_actions_.PushOrCancel(std::move(action),
                                     mojom::CreationResult::kBrowserNotRunning);
       return;
+
     case State::TERMINATING:
       LOG(WARNING) << "lacros-chrome is terminating, so cannot start now";
       pending_actions_.PushOrCancel(std::move(action),
                                     mojom::CreationResult::kBrowserNotRunning);
       return;
-    case State::CREATING_LOG_FILE:
+
+    case State::PREPARING_FOR_LAUNCH:
+      LOG(WARNING) << "lacros-chrome is preparing for launching";
+      pending_actions_.PushOrCancel(std::move(action),
+                                    mojom::CreationResult::kBrowserNotRunning);
+      return;
+
     case State::PRE_LAUNCHED:
     case State::STARTING:
       LOG(WARNING) << "lacros-chrome is in the process of launching";
