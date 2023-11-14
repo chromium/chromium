@@ -209,7 +209,7 @@ void ExpectPageIsAudible(bool is_audible) {
   RunInGraph([&](GraphImpl* graph) {
     ASSERT_EQ(1u, graph->GetAllPageNodeImpls().size());
     auto* page = graph->GetAllPageNodeImpls()[0];
-    EXPECT_EQ(is_audible, page->is_audible());
+    EXPECT_EQ(is_audible, page->IsAudible());
   });
 }
 

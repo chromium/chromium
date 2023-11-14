@@ -44,7 +44,7 @@ TEST_F(FrameVisibilityDecoratorTest, IsCurrent) {
 
 TEST_F(FrameVisibilityDecoratorTest, SetPageVisible) {
   auto page_node = CreateNode<PageNodeImpl>();
-  EXPECT_FALSE(page_node->is_visible());
+  EXPECT_FALSE(page_node->IsVisible());
 
   // Create a frame node.
   auto frame_node = CreateFrameNodeAutoId(process_node(), page_node.get());
@@ -64,7 +64,7 @@ TEST_F(FrameVisibilityDecoratorTest, SetPageVisible) {
 
 TEST_F(FrameVisibilityDecoratorTest, PageIsBeingMirrored) {
   auto page_node = CreateNode<PageNodeImpl>();
-  EXPECT_FALSE(page_node->is_visible());
+  EXPECT_FALSE(page_node->IsVisible());
   auto frame_node = CreateFrameNodeAutoId(process_node(), page_node.get());
   frame_node->SetIsCurrent(true);
 
@@ -80,7 +80,7 @@ TEST_F(FrameVisibilityDecoratorTest, PageIsBeingMirrored) {
 // PageNode::IsVisible.
 TEST_F(FrameVisibilityDecoratorTest, PageUserVisible) {
   auto page_node = CreateNode<PageNodeImpl>();
-  EXPECT_FALSE(page_node->is_visible());
+  EXPECT_FALSE(page_node->IsVisible());
   auto frame_node = CreateFrameNodeAutoId(process_node(), page_node.get());
   frame_node->SetIsCurrent(true);
 
@@ -108,7 +108,7 @@ TEST_F(FrameVisibilityDecoratorTest, PageUserVisible) {
 
 TEST_F(FrameVisibilityDecoratorTest, SetPageVisibleWithChildNodes) {
   auto page_node = CreateNode<PageNodeImpl>();
-  EXPECT_FALSE(page_node->is_visible());
+  EXPECT_FALSE(page_node->IsVisible());
 
   // Create a main frame node.
   auto main_frame_node = CreateFrameNodeAutoId(process_node(), page_node.get());

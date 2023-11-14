@@ -748,7 +748,7 @@ void FrameNodeImpl::SeverPageRelationshipsAndMaybeReparent() {
 
   while (!embedded_page_nodes_.empty()) {
     auto* embedded_node = *embedded_page_nodes_.begin();
-    auto embedding_type = embedded_node->embedding_type();
+    auto embedding_type = embedded_node->GetEmbeddingType();
     if (parent_frame_node_) {
       embedded_node->SetEmbedderFrameNodeAndEmbeddingType(parent_frame_node_,
                                                           embedding_type);

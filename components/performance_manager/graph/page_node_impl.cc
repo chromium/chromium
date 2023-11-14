@@ -93,7 +93,7 @@ PageNodeImpl::~PageNodeImpl() {
 
 const std::string& PageNodeImpl::GetBrowserContextID() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return browser_context_id();
+  return browser_context_id_;
 }
 
 resource_attribution::PageContext PageNodeImpl::GetResourceContext() const {
@@ -103,43 +103,47 @@ resource_attribution::PageContext PageNodeImpl::GetResourceContext() const {
 
 PageNodeImpl::EmbeddingType PageNodeImpl::GetEmbeddingType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return embedding_type();
+  DCHECK(embedder_frame_node_ || embedding_type_ == EmbeddingType::kInvalid);
+  return embedding_type_;
 }
 
 PageType PageNodeImpl::GetType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return type();
+  return type_.value();
 }
 
 bool PageNodeImpl::IsFocused() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_focused();
+  return is_focused_.value();
 }
 
 bool PageNodeImpl::IsVisible() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_visible();
+  return is_visible_.value();
 }
 
 base::TimeDelta PageNodeImpl::GetTimeSinceLastVisibilityChange() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return TimeSinceLastVisibilityChange();
+  return base::TimeTicks::Now() - visibility_change_time_;
 }
 
 bool PageNodeImpl::IsAudible() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_audible();
+  return is_audible_.value();
 }
 
 absl::optional<base::TimeDelta> PageNodeImpl::GetTimeSinceLastAudibleChange()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return TimeSinceLastAudibleChange();
+  if (audible_change_time_.has_value()) {
+    return base::TimeTicks::Now() - audible_change_time_.value();
+  }
+  return absl::nullopt;
 }
 
 bool PageNodeImpl::HasPictureInPicture() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return has_picture_in_picture();
+  return has_picture_in_picture_.value();
 }
 
 PageNode::LoadingState PageNodeImpl::GetLoadingState() const {
@@ -179,7 +183,10 @@ const std::string& PageNodeImpl::GetContentsMimeType() const {
 
 base::TimeDelta PageNodeImpl::GetTimeSinceLastNavigation() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return TimeSinceLastNavigation();
+  if (navigation_committed_time_.is_null()) {
+    return base::TimeDelta();
+  }
+  return base::TimeTicks::Now() - navigation_committed_time_;
 }
 
 const GURL& PageNodeImpl::GetMainFrameUrl() const {
@@ -382,27 +389,6 @@ void PageNodeImpl::OnMainFrameNavigationCommitted(
     observer->OnMainFrameDocumentChanged(this);
 }
 
-base::TimeDelta PageNodeImpl::TimeSinceLastNavigation() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (navigation_committed_time_.is_null())
-    return base::TimeDelta();
-  return base::TimeTicks::Now() - navigation_committed_time_;
-}
-
-base::TimeDelta PageNodeImpl::TimeSinceLastVisibilityChange() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::TimeTicks::Now() - visibility_change_time_;
-}
-
-absl::optional<base::TimeDelta> PageNodeImpl::TimeSinceLastAudibleChange()
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (audible_change_time_.has_value()) {
-    return base::TimeTicks::Now() - audible_change_time_.value();
-  }
-  return absl::nullopt;
-}
-
 FrameNodeImpl* PageNodeImpl::GetMainFrameNodeImpl() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (main_frame_nodes_.empty())
@@ -429,37 +415,6 @@ FrameNodeImpl* PageNodeImpl::embedder_frame_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(embedder_frame_node_ || embedding_type_ == EmbeddingType::kInvalid);
   return embedder_frame_node_;
-}
-
-PageNodeImpl::EmbeddingType PageNodeImpl::embedding_type() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(embedder_frame_node_ || embedding_type_ == EmbeddingType::kInvalid);
-  return embedding_type_;
-}
-
-PageType PageNodeImpl::type() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return type_.value();
-}
-
-bool PageNodeImpl::is_focused() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_focused_.value();
-}
-
-bool PageNodeImpl::is_visible() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_visible_.value();
-}
-
-bool PageNodeImpl::is_audible() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_audible_.value();
-}
-
-bool PageNodeImpl::has_picture_in_picture() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return has_picture_in_picture_.value();
 }
 
 PageNode::LoadingState PageNodeImpl::loading_state() const {
@@ -490,11 +445,6 @@ bool PageNodeImpl::is_holding_indexeddb_lock() const {
 const base::flat_set<FrameNodeImpl*>& PageNodeImpl::main_frame_nodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return main_frame_nodes_;
-}
-
-const std::string& PageNodeImpl::browser_context_id() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return browser_context_id_;
 }
 
 const GURL& PageNodeImpl::main_frame_url() const {

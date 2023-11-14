@@ -86,7 +86,7 @@ TEST_F(ProcessHostedContentTypesAggregatorTest,
 
 TEST_F(ProcessHostedContentTypesAggregatorTest, MainFrameAndChildFrame) {
   auto page_node = CreateNode<PageNodeImpl>();
-  EXPECT_FALSE(page_node->is_visible());
+  EXPECT_FALSE(page_node->IsVisible());
 
   // Create a main frame in a first process.
   auto process_node_1 = CreateNode<ProcessNodeImpl>();

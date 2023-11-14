@@ -189,7 +189,7 @@ TEST_F(PageDiscardingHelperTest, TestCanDiscardNeverAudiblePage) {
                                                 42, kUrl, "text/html");
   new_frame_node->OnNavigationCommitted(kUrl, false);
 
-  EXPECT_FALSE(new_page_node->is_audible());
+  EXPECT_FALSE(new_page_node->IsAudible());
 
   // Use a short `minimum_time_in_background` so that the page is discardable
   // but still created inside kTabAudioProtectionTime. It should NOT be blocked
@@ -706,8 +706,8 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidates) {
   page_node2->SetIsVisible(false);
   AdvanceClock(base::Minutes(30));
   EXPECT_TRUE(CanDiscard(page_node2.get(), DiscardReason::URGENT));
-  EXPECT_GT(page_node()->TimeSinceLastVisibilityChange(),
-            page_node2->TimeSinceLastVisibilityChange());
+  EXPECT_GT(page_node()->GetTimeSinceLastVisibilityChange(),
+            page_node2->GetTimeSinceLastVisibilityChange());
 
   process_node()->set_resident_set_kb(1024);
   process_node2->set_resident_set_kb(2048);
@@ -790,8 +790,8 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesNoRSSData) {
   page_node()->SetIsVisible(false);
   AdvanceClock(base::Minutes(30));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::URGENT));
-  EXPECT_GT(page_node2->TimeSinceLastVisibilityChange(),
-            page_node()->TimeSinceLastVisibilityChange());
+  EXPECT_GT(page_node2->GetTimeSinceLastVisibilityChange(),
+            page_node()->GetTimeSinceLastVisibilityChange());
 
   // |page_node2| should be discarded as there's no RSS data for any of the
   // pages and it's the least recently visible page.
@@ -820,8 +820,8 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesNoRSSData) {
   page_node()->SetIsVisible(false);
   AdvanceClock(base::Minutes(30));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::URGENT));
-  EXPECT_GT(page_node2->TimeSinceLastVisibilityChange(),
-            page_node()->TimeSinceLastVisibilityChange());
+  EXPECT_GT(page_node2->GetTimeSinceLastVisibilityChange(),
+            page_node()->GetTimeSinceLastVisibilityChange());
 
   // |page_node2| should be discarded as there's no RSS data for any of the
   // pages and it's the least recently visible page.

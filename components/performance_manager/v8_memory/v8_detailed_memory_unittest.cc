@@ -1975,7 +1975,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, DedicatedWorkers) {
   blink::DedicatedWorkerToken worker_id = blink::DedicatedWorkerToken();
   auto worker = CreateNode<WorkerNodeImpl>(
       WorkerNode::WorkerType::kDedicated, process.get(),
-      page->browser_context_id(), worker_id);
+      page->GetBrowserContextID(), worker_id);
 
   worker->AddClientFrame(frame.get());
   {

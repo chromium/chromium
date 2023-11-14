@@ -92,50 +92,52 @@ TEST_F(PageNodeImplTest, RemoveFrame) {
   EXPECT_EQ(0u, GraphImplOperations::GetFrameNodes(page_node.get()).size());
 }
 
-TEST_F(PageNodeImplTest, TimeSinceLastVisibilityChange) {
+TEST_F(PageNodeImplTest, GetTimeSinceLastVisibilityChange) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
 
   mock_graph.page->SetIsVisible(true);
-  EXPECT_TRUE(mock_graph.page->is_visible());
+  EXPECT_TRUE(mock_graph.page->IsVisible());
   AdvanceClock(base::Seconds(42));
   EXPECT_EQ(base::Seconds(42),
-            mock_graph.page->TimeSinceLastVisibilityChange());
+            mock_graph.page->GetTimeSinceLastVisibilityChange());
 
   mock_graph.page->SetIsVisible(false);
   AdvanceClock(base::Seconds(23));
   EXPECT_EQ(base::Seconds(23),
-            mock_graph.page->TimeSinceLastVisibilityChange());
-  EXPECT_FALSE(mock_graph.page->is_visible());
+            mock_graph.page->GetTimeSinceLastVisibilityChange());
+  EXPECT_FALSE(mock_graph.page->IsVisible());
 }
 
-TEST_F(PageNodeImplTest, TimeSinceLastAudibleChange) {
+TEST_F(PageNodeImplTest, GetTimeSinceLastAudibleChange) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
-  EXPECT_FALSE(mock_graph.page->is_audible());
-  EXPECT_EQ(absl::nullopt, mock_graph.page->TimeSinceLastAudibleChange());
+  EXPECT_FALSE(mock_graph.page->IsAudible());
+  EXPECT_EQ(absl::nullopt, mock_graph.page->GetTimeSinceLastAudibleChange());
 
   mock_graph.page->SetIsAudible(true);
-  EXPECT_TRUE(mock_graph.page->is_audible());
+  EXPECT_TRUE(mock_graph.page->IsAudible());
   AdvanceClock(base::Seconds(42));
-  EXPECT_EQ(base::Seconds(42), mock_graph.page->TimeSinceLastAudibleChange());
+  EXPECT_EQ(base::Seconds(42),
+            mock_graph.page->GetTimeSinceLastAudibleChange());
 
   mock_graph.page->SetIsAudible(false);
   AdvanceClock(base::Seconds(23));
-  EXPECT_EQ(base::Seconds(23), mock_graph.page->TimeSinceLastAudibleChange());
-  EXPECT_FALSE(mock_graph.page->is_audible());
+  EXPECT_EQ(base::Seconds(23),
+            mock_graph.page->GetTimeSinceLastAudibleChange());
+  EXPECT_FALSE(mock_graph.page->IsAudible());
 
   // Test a page that's audible at creation.
   auto audible_page = CreateNode<PageNodeImpl>(
       WebContentsProxy(), /*browser_context_id=*/std::string(), GURL(),
       PagePropertyFlags{PagePropertyFlag::kIsAudible});
   AdvanceClock(base::Seconds(56));
-  EXPECT_EQ(base::Seconds(56), audible_page->TimeSinceLastAudibleChange());
-  EXPECT_TRUE(audible_page->is_audible());
+  EXPECT_EQ(base::Seconds(56), audible_page->GetTimeSinceLastAudibleChange());
+  EXPECT_TRUE(audible_page->IsAudible());
 }
 
-TEST_F(PageNodeImplTest, TimeSinceLastNavigation) {
+TEST_F(PageNodeImplTest, GetTimeSinceLastNavigation) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   // Before any commit events, timedelta should be 0.
-  EXPECT_TRUE(mock_graph.page->TimeSinceLastNavigation().is_zero());
+  EXPECT_TRUE(mock_graph.page->GetTimeSinceLastNavigation().is_zero());
 
   // 1st navigation.
   GURL url("http://www.example.org");
@@ -145,7 +147,7 @@ TEST_F(PageNodeImplTest, TimeSinceLastNavigation) {
   EXPECT_EQ(10u, mock_graph.page->navigation_id());
   EXPECT_EQ(kHtmlMimeType, mock_graph.page->contents_mime_type());
   AdvanceClock(base::Seconds(11));
-  EXPECT_EQ(base::Seconds(11), mock_graph.page->TimeSinceLastNavigation());
+  EXPECT_EQ(base::Seconds(11), mock_graph.page->GetTimeSinceLastNavigation());
 
   // 2nd navigation.
   url = GURL("http://www.example.org/bobcat");
@@ -155,7 +157,7 @@ TEST_F(PageNodeImplTest, TimeSinceLastNavigation) {
   EXPECT_EQ(20u, mock_graph.page->navigation_id());
   EXPECT_EQ(kHtmlMimeType, mock_graph.page->contents_mime_type());
   AdvanceClock(base::Seconds(17));
-  EXPECT_EQ(base::Seconds(17), mock_graph.page->TimeSinceLastNavigation());
+  EXPECT_EQ(base::Seconds(17), mock_graph.page->GetTimeSinceLastNavigation());
 
   // Test a same-document navigation.
   url = GURL("http://www.example.org/bobcat#fun");
@@ -165,7 +167,7 @@ TEST_F(PageNodeImplTest, TimeSinceLastNavigation) {
   EXPECT_EQ(30u, mock_graph.page->navigation_id());
   EXPECT_EQ(kHtmlMimeType, mock_graph.page->contents_mime_type());
   AdvanceClock(base::Seconds(17));
-  EXPECT_EQ(base::Seconds(17), mock_graph.page->TimeSinceLastNavigation());
+  EXPECT_EQ(base::Seconds(17), mock_graph.page->GetTimeSinceLastNavigation());
 
   // Test a navigation to a page with a different MIME type.
   url = GURL("http://www.example.org/document.pdf");
@@ -175,7 +177,7 @@ TEST_F(PageNodeImplTest, TimeSinceLastNavigation) {
   EXPECT_EQ(40u, mock_graph.page->navigation_id());
   EXPECT_EQ(kPdfMimeType, mock_graph.page->contents_mime_type());
   AdvanceClock(base::Seconds(17));
-  EXPECT_EQ(base::Seconds(17), mock_graph.page->TimeSinceLastNavigation());
+  EXPECT_EQ(base::Seconds(17), mock_graph.page->GetTimeSinceLastNavigation());
 }
 
 TEST_F(PageNodeImplTest, BrowserContextID) {
@@ -183,10 +185,8 @@ TEST_F(PageNodeImplTest, BrowserContextID) {
       base::UnguessableToken::Create().ToString();
   auto page_node =
       CreateNode<PageNodeImpl>(WebContentsProxy(), kTestBrowserContextId);
-  const PageNode* public_page_node = page_node.get();
 
-  EXPECT_EQ(page_node->browser_context_id(), kTestBrowserContextId);
-  EXPECT_EQ(public_page_node->GetBrowserContextID(), kTestBrowserContextId);
+  EXPECT_EQ(page_node->GetBrowserContextID(), kTestBrowserContextId);
 }
 
 TEST_F(PageNodeImplTest, LoadingState) {
@@ -403,11 +403,6 @@ TEST_F(PageNodeImplTest, PublicInterface) {
   // Simply test that the public interface impls yield the same result as their
   // private counterpart.
 
-  EXPECT_EQ(page_node->browser_context_id(),
-            public_page_node->GetBrowserContextID());
-  EXPECT_EQ(page_node->is_focused(), public_page_node->IsFocused());
-  EXPECT_EQ(page_node->is_visible(), public_page_node->IsVisible());
-  EXPECT_EQ(page_node->is_audible(), public_page_node->IsAudible());
   EXPECT_EQ(page_node->loading_state(), public_page_node->GetLoadingState());
   EXPECT_EQ(page_node->ukm_source_id(), public_page_node->GetUkmSourceID());
   EXPECT_EQ(page_node->lifecycle_state(),

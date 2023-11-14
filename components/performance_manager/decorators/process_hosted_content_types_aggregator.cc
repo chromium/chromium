@@ -63,7 +63,7 @@ void ProcessHostedContentTypesAggregator::OnFrameNodeAdded(
       frame_node_impl->IsMainFrame() ? ProcessNode::ContentType::kMainFrame
                                      : ProcessNode::ContentType::kSubframe);
 
-  if (frame_node_impl->page_node()->type() == PageType::kExtension) {
+  if (frame_node_impl->page_node()->GetType() == PageType::kExtension) {
     process_node_impl->add_hosted_content_type(
         ProcessNode::ContentType::kExtension);
   }

@@ -313,7 +313,7 @@ TEST_F(HighEfficiencyModeTest, UnknownPageNodeNeverAddedToMap) {
   policy()->OnHighEfficiencyModeChanged(true);
 
   PageNodeImpl* page_node = CreateOtherPageNode();
-  EXPECT_EQ(PageType::kUnknown, page_node->type());
+  EXPECT_EQ(PageType::kUnknown, page_node->GetType());
 
   page_node->SetIsVisible(false);
   policy()->OnBeforePageNodeRemoved(page_node);
@@ -329,7 +329,7 @@ TEST_F(HighEfficiencyModeTest, PageNodeDiscardedIfTypeChanges) {
   policy()->OnHighEfficiencyModeChanged(true);
 
   PageNodeImpl* page_node = CreateOtherPageNode();
-  EXPECT_EQ(PageType::kUnknown, page_node->type());
+  EXPECT_EQ(PageType::kUnknown, page_node->GetType());
 
   page_node->SetType(PageType::kTab);
 
