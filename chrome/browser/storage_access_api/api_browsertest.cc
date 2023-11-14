@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/strings/escape.h"
@@ -26,6 +27,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
@@ -874,6 +876,10 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
   NavigateToPageWithTwoFrames(kHostA);
   NavigateFirstFrameTo(EchoCookiesURL(kHostB));
   NavigateSecondFrameTo(EchoCookiesURL(kHostC));
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetCookieSetting(GetURL(kHostB), CONTENT_SETTING_ALLOW);
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetCookieSetting(GetURL(kHostC), CONTENT_SETTING_ALLOW);
 
   // Verify that both same-origin subresource request and cross-origin
   // subresource request can access cookies for the kHostB iframe.
@@ -886,6 +892,10 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
   ASSERT_EQ(CookiesFromFetch(GetSecondFrame(), kHostB), "cross-site=b.test");
 
   SetBlockThirdPartyCookies(true);
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->ResetCookieSetting(GetURL(kHostB));
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->ResetCookieSetting(GetURL(kHostC));
   // Navigate the first iframe to kHostB and grant Storage Access.
   NavigateFirstFrameTo(EchoCookiesURL(kHostB));
   EXPECT_EQ(ReadCookiesAndContent(GetFirstFrame(), kHostB),
@@ -1719,12 +1729,16 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest,
                        ThirdPartyIFrameStorageRequestsAccess) {
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetCookieSetting(GetURL(kHostB), CONTENT_SETTING_ALLOW);
 
   ExpectStorage(GetFrame(), false);
   SetStorage(GetFrame());
   ExpectStorage(GetFrame(), true);
 
   SetBlockThirdPartyCookies(true);
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->ResetCookieSetting(GetURL(kHostB));
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
@@ -1751,12 +1765,20 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest,
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostC, "/browsing_data/site_data.html");
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetCookieSetting(GetURL(kHostB), CONTENT_SETTING_ALLOW);
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetCookieSetting(GetURL(kHostC), CONTENT_SETTING_ALLOW);
 
   ExpectStorage(GetNestedFrame(), false);
   SetStorage(GetNestedFrame());
   ExpectStorage(GetNestedFrame(), true);
 
   SetBlockThirdPartyCookies(true);
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->ResetCookieSetting(GetURL(kHostB));
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->ResetCookieSetting(GetURL(kHostC));
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/iframe.html");
@@ -1785,6 +1807,8 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest,
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest, MultiTabTest) {
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetCookieSetting(GetURL(kHostB), CONTENT_SETTING_ALLOW);
 
   storage::test::ExpectCrossTabInfoForFrame(GetFrame(), false);
   storage::test::SetCrossTabInfoForFrame(GetFrame());
@@ -1804,6 +1828,8 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest, MultiTabTest) {
   EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   SetBlockThirdPartyCookies(true);
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->ResetCookieSetting(GetURL(kHostB));
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
@@ -2302,6 +2328,8 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIEnterprisePolicyBrowserTest,
                        PartitionedStorage) {
   // Navigate to Origin B, setup storage, and expect storage.
   NavigateToPage(kHostB, "/browsing_data/site_data.html");
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetCookieSetting(GetURL(kHostB), CONTENT_SETTING_ALLOW);
   storage::test::ExpectStorageForFrame(GetPrimaryMainFrame(),
                                        /*expected=*/false);
   storage::test::SetStorageForFrame(GetPrimaryMainFrame(),
@@ -2544,6 +2572,10 @@ class StorageAccessAPIWith3PCEnabledBrowserTest
  public:
   StorageAccessAPIWith3PCEnabledBrowserTest()
       : StorageAccessAPIBaseBrowserTest(/*is_storage_partitioned=*/false) {}
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    return {content_settings::features::kTrackingProtection3pcd};
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
