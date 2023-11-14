@@ -88,9 +88,10 @@ public class RestoreTabsFeatureHelper {
         // fulfilled, it can be assumed this will be the second time the promo shows. Note that this
         // logic only works for the 2 count max for promo showing. The hasEverTriggered call must be
         // before the shouldTriggerHelpUI call, otherwise it will always return true.
-        int showCount = tracker.hasEverTriggered(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE, true)
-                ? 2
-                : 1;
+        int showCount =
+                tracker.hasEverTriggered(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE, false)
+                        ? 2
+                        : 1;
         RestoreTabsMetricsHelper.setPromoShownCount(showCount);
 
         // The difference between wouldTriggerHelpUI and shouldTriggerHelpUI is that the latter

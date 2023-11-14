@@ -96,12 +96,14 @@ public class RestoreTabsMetricsHelper {
         switch (count) {
             case 1:
                 RecordHistogram.recordEnumeratedHistogram(
-                        "Android.RestoreTabsOnFRE.ResultActionFirstShow", action,
+                        "Android.RestoreTabsOnFRE.ResultActionFirstShow2",
+                        action,
                         RestoreTabsOnFREResultAction.NUM_ENTRIES);
                 break;
             case 2:
                 RecordHistogram.recordEnumeratedHistogram(
-                        "Android.RestoreTabsOnFRE.ResultActionSecondShow", action,
+                        "Android.RestoreTabsOnFRE.ResultActionSecondShow2",
+                        action,
                         RestoreTabsOnFREResultAction.NUM_ENTRIES);
                 break;
         }

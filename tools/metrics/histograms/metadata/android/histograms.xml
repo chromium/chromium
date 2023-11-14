@@ -3382,7 +3382,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.RestoreTabsOnFRE.ResultActionFirstShow"
+<histogram name="Android.RestoreTabsOnFRE.ResultActionFirstShow2"
     enum="RestoreTabsOnFREResultAction" expires_after="2024-03-31">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
@@ -3393,7 +3393,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.RestoreTabsOnFRE.ResultActionSecondShow"
+<histogram name="Android.RestoreTabsOnFRE.ResultActionSecondShow2"
     enum="RestoreTabsOnFREResultAction" expires_after="2024-03-31">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
