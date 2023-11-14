@@ -9,12 +9,14 @@ import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.rec
 import android.webkit.WebSettings;
 
 import org.chromium.android_webview.AwDarkMode;
+import org.chromium.android_webview.AwMediaIntegrityApiStatusConfig.ApiStatus;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.WebSettingsBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -308,5 +310,77 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
             }
             return AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER;
         }
+    }
+
+    @Override
+    public void setWebViewMediaIntegrityApiStatus(
+            @WebViewMediaIntegrityApiStatus int defaultStatus,
+            Map<String, @WebViewMediaIntegrityApiStatus Integer> permissionConfig) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                    "WebView.APICall.AndroidX.SET_WEBVIEW_MEDIA_INTEGRITY_API_STATUS")) {
+            recordApiCall(ApiCall.SET_WEBVIEW_MEDIA_INTEGRITY_API_STATUS);
+
+            Map<String, @ApiStatus Integer> permissionToApiStatus = new HashMap<>();
+            for (Map.Entry<String, @WebViewMediaIntegrityApiStatus Integer> entry :
+                    permissionConfig.entrySet()) {
+                permissionToApiStatus.put(entry.getKey(), convertToApiStatus(entry.getValue()));
+            }
+            @ApiStatus int defaultApiStatus = convertToApiStatus(defaultStatus);
+            mAwSettings.setWebViewIntegrityApiStatus(defaultApiStatus, permissionToApiStatus);
+        }
+    }
+
+    @Override
+    public @WebViewMediaIntegrityApiStatus int getWebViewMediaIntegrityApiDefaultStatus() {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                    "WebView.APICall.AndroidX.GET_WEBVIEW_MEDIA_INTEGRITY_API_DEFAULT_STATUS")) {
+            recordApiCall(ApiCall.GET_WEBVIEW_MEDIA_INTEGRITY_API_DEFAULT_STATUS);
+            return convertFromApiStatus(mAwSettings.getWebViewIntegrityApiDefaultStatus());
+        }
+    }
+
+    @Override
+    public Map<String, @WebViewMediaIntegrityApiStatus Integer>
+            getWebViewMediaIntegrityApiOverrideRules() {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.GET_WEBVIEW_MEDIA_INTEGRITY_API_OVERRIDE_RULES")) {
+            recordApiCall(ApiCall.GET_WEBVIEW_MEDIA_INTEGRITY_API_OVERRIDE_RULES);
+            Map<String, @ApiStatus Integer> overrideRules = new HashMap<>();
+            for (Map.Entry<String, @ApiStatus Integer> entry :
+                    mAwSettings.getWebViewIntegrityApiOverrideRules().entrySet()) {
+                overrideRules.put(entry.getKey(), convertFromApiStatus(entry.getValue()));
+            }
+            return overrideRules;
+        }
+    }
+
+    private @ApiStatus Integer convertToApiStatus(@WebViewMediaIntegrityApiStatus int status) {
+        switch (status) {
+            case WebViewMediaIntegrityApiStatus.DISABLED:
+                return ApiStatus.DISABLED;
+            case WebViewMediaIntegrityApiStatus.ENABLED_WITHOUT_APP_IDENTITY:
+                return ApiStatus.ENABLED_WITHOUT_APP_IDENTITY;
+            case WebViewMediaIntegrityApiStatus.ENABLED:
+                return ApiStatus.ENABLED;
+        }
+        throw new IllegalArgumentException(
+            "Invalid WebView Media Integrity API status: " + status);
+    }
+
+    private @WebViewMediaIntegrityApiStatus Integer convertFromApiStatus(@ApiStatus int status) {
+        switch (status) {
+            case ApiStatus.DISABLED:
+                return WebViewMediaIntegrityApiStatus.DISABLED;
+            case ApiStatus.ENABLED_WITHOUT_APP_IDENTITY:
+                return WebViewMediaIntegrityApiStatus.ENABLED_WITHOUT_APP_IDENTITY;
+            case ApiStatus.ENABLED:
+                return WebViewMediaIntegrityApiStatus.ENABLED;
+        }
+        // unreached
+        throw new IllegalArgumentException(
+            "Invalid WebView Media Integrity API status: " + status);
     }
 }

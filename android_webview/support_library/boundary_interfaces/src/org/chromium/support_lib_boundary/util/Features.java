@@ -266,4 +266,9 @@ public class Features {
     // WebSettingsCompat.setAttributionBehavior
     // WebSettingsCompat.getAttributionBehavior
     public static final String ATTRIBUTION_BEHAVIOR = "ATTRIBUTION_BEHAVIOR";
+
+    // WebSettingsCompat.setWebViewMediaIntegrityApiStatus
+    // WebSettingsCompat.getWebViewMediaIntegrityApiDefaultStatus
+    // WebSettingsCompat.getWebViewMediaIntegrityApiOverrideRules
+    public static final String WEBVIEW_MEDIA_INTEGRITY_API_STATUS = "WEBVIEW_INTEGRITY_API_STATUS";
 }

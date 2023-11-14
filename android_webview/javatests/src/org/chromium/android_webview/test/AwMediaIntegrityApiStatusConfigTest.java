@@ -10,18 +10,18 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.android_webview.AwIntegrityApiStatusConfig;
-import org.chromium.android_webview.AwIntegrityApiStatusConfig.ApiStatus;
+import org.chromium.android_webview.AwMediaIntegrityApiStatusConfig;
+import org.chromium.android_webview.AwMediaIntegrityApiStatusConfig.ApiStatus;
 
 import java.util.Map;
 
-/** {@link org.chromium.android_webview.AwIntegrityApiStatusConfig} tests. */
+/** {@link org.chromium.android_webview.AwMediaIntegrityApiStatusConfig} tests. */
 @RunWith(AwJUnit4ClassRunner.class)
-public class AwIntegrityApiStatusConfigTest {
+public class AwMediaIntegrityApiStatusConfigTest {
     @Test
     @SmallTest
     public void testGetApiStatus_returnsEmptyConfig_whenNotSet() throws Throwable {
-        AwIntegrityApiStatusConfig config = new AwIntegrityApiStatusConfig();
+        AwMediaIntegrityApiStatusConfig config = new AwMediaIntegrityApiStatusConfig();
 
         Assert.assertEquals(ApiStatus.ENABLED, config.getDefaultStatus());
         Assert.assertTrue(config.getOverrideRules().isEmpty());
@@ -30,7 +30,7 @@ public class AwIntegrityApiStatusConfigTest {
     @Test
     @SmallTest
     public void testGetApiStatus_returnsConfig_whenSetWithRules() throws Throwable {
-        AwIntegrityApiStatusConfig config = new AwIntegrityApiStatusConfig();
+        AwMediaIntegrityApiStatusConfig config = new AwMediaIntegrityApiStatusConfig();
         Map<String, @ApiStatus Integer> overrideRules =
                 Map.of("http://*.webview.com", ApiStatus.ENABLED_WITHOUT_APP_IDENTITY);
         @ApiStatus int defaultPermission = ApiStatus.DISABLED;

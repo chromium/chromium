@@ -93,6 +93,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     Features.USER_AGENT_METADATA,
                     Features.MULTI_PROFILE,
                     Features.ATTRIBUTION_BEHAVIOR,
+                    Features.WEBVIEW_MEDIA_INTEGRITY_API_STATUS + Features.DEV_SUFFIX,
                     // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                     // when they're initially added (this can be removed in a future CL). The final
                     // feature should have a trailing comma for cleaner diffs.
@@ -196,6 +197,9 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             ApiCall.GET_WEBVIEW_PROFILE,
             ApiCall.SET_ATTRIBUTION_BEHAVIOR,
             ApiCall.GET_ATTRIBUTION_BEHAVIOR,
+            ApiCall.GET_WEBVIEW_MEDIA_INTEGRITY_API_DEFAULT_STATUS,
+            ApiCall.GET_WEBVIEW_MEDIA_INTEGRITY_API_OVERRIDE_RULES,
+            ApiCall.SET_WEBVIEW_MEDIA_INTEGRITY_API_STATUS,
             // Add new constants above. The final constant should have a trailing comma for cleaner
             // diffs.
             ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -304,8 +308,11 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         int GET_WEBVIEW_PROFILE = 94;
         int SET_ATTRIBUTION_BEHAVIOR = 95;
         int GET_ATTRIBUTION_BEHAVIOR = 96;
+        int GET_WEBVIEW_MEDIA_INTEGRITY_API_DEFAULT_STATUS = 97;
+        int GET_WEBVIEW_MEDIA_INTEGRITY_API_OVERRIDE_RULES = 98;
+        int SET_WEBVIEW_MEDIA_INTEGRITY_API_STATUS = 99;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 97;
+        int COUNT = 100;
     }
 
     public static void recordApiCall(@ApiCall int apiCall) {

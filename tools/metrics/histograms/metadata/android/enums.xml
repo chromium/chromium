@@ -668,6 +668,15 @@ chromium-metrics-reviews@google.com.
   <int value="96" label="GET_ATTRIBUTION_BEHAVIOR">
     WebSettingsCompat.getAttributionBehavior(int)
   </int>
+  <int value="97" label="GET_WEBVIEW_MEDIA_INTEGRITY_API_DEFAULT_STATUS">
+    WebSettingsCompat#getWebViewMediaIntegrityApiStatus()
+  </int>
+  <int value="98" label="GET_WEBVIEW_MEDIA_INTEGRITY_API_OVERRIDE_RULES">
+    WebSettingsCompat#getWebViewMediaIntegrityApiStatus()
+  </int>
+  <int value="99" label="SET_WEBVIEW_MEDIA_INTEGRITY_API_STATUS">
+    WebSettingsCompat#setWebViewMediaIntegrityApiStatus(int,Map(String,Integer))
+  </int>
 </enum>
 
 <enum name="AppPackageNameAllowlistParseStatus">

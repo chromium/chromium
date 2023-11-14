@@ -19,10 +19,14 @@ import org.chromium.android_webview.common.Lifetime;
  * levels for origin sites through defaults and override rules.
  */
 @Lifetime.WebView
-public class AwIntegrityApiStatusConfig {
+public class AwMediaIntegrityApiStatusConfig {
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({ApiStatus.DISABLED, ApiStatus.ENABLED_WITHOUT_APP_IDENTITY, ApiStatus.ENABLED})
+    @IntDef({
+        ApiStatus.DISABLED,
+        ApiStatus.ENABLED_WITHOUT_APP_IDENTITY,
+        ApiStatus.ENABLED
+    })
     public @interface ApiStatus {
         int DISABLED = 0;
         int ENABLED_WITHOUT_APP_IDENTITY = 1;
@@ -32,7 +36,7 @@ public class AwIntegrityApiStatusConfig {
     private @ApiStatus int mDefaultStatus;
     private Map<String, @ApiStatus Integer> mOverrideRulesToPermission;
 
-    public AwIntegrityApiStatusConfig() {
+    public AwMediaIntegrityApiStatusConfig() {
         mDefaultStatus = ApiStatus.ENABLED;
         mOverrideRulesToPermission = Collections.emptyMap();
     }
