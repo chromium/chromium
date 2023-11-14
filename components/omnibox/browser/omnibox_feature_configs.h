@@ -132,11 +132,12 @@ struct ShortcutBoosting : Config<ShortcutBoosting> {
   bool counterfactual;
   // Shortcuts are boosted if either:
   // 1) They are the top shortcut.
-  // 2) OR they have more hits than `non_top_hit_threshold`. If this is 1, then
-  //    all shortcuts are boosted, since all have at least 1 hit. If 0
-  //    (default), then no shortcuts will be boosted through (2) - only the top
-  //    shortcut will be boosted.
+  // 2) OR they have more hits than `non_top_hit_[searches_]threshold`. If this
+  //    is 1, then all shortcuts are boosted, since all have at least 1 hit. If
+  //    0 (default), then no shortcuts will be boosted through (2) - only the
+  //    top shortcut will be boosted.
   int non_top_hit_threshold;
+  int non_top_hit_search_threshold;
   // If enabled, boosted shortcuts will be grouped with searches. Unboosted
   // shortcuts are grouped with URLs, like traditionally, regardless of
   // `group_with_searches`.

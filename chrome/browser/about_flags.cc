@@ -1442,6 +1442,7 @@ const FeatureEntry::FeatureParam kShortcutBoostMultipleUrls[] = {
 const FeatureEntry::FeatureParam kShortcutBoostMultipleSearchesAndUrls[] = {
     {"ShortcutBoostSearchScore", "1414"},
     {"ShortcutBoostNonTopHitThreshold", "2"},
+    {"ShortcutBoostNonTopHitSearchThreshold", "3"},
     {"ShortcutBoostGroupWithSearches", "true"},
 };
 

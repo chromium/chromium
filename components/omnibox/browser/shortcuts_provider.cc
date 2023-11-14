@@ -420,10 +420,15 @@ ShortcutMatch ShortcutsProvider::CreateScoredShortcutMatch(
   DCHECK_GT(shortcuts.size(), 0u);
 
   const int number_of_hits = SumNumberOfHits(shortcuts);
+  const int number_of_hits_threshold =
+      AutocompleteMatch::IsSearchType(shortcuts[0]->match_core.type)
+          ? omnibox_feature_configs::ShortcutBoosting::Get()
+                .non_top_hit_search_threshold
+          : omnibox_feature_configs::ShortcutBoosting::Get()
+                .non_top_hit_threshold;
+
   int boost_score = 0;
-  if (omnibox_feature_configs::ShortcutBoosting::Get().non_top_hit_threshold &&
-      number_of_hits >= omnibox_feature_configs::ShortcutBoosting::Get()
-                            .non_top_hit_threshold) {
+  if (number_of_hits_threshold && number_of_hits >= number_of_hits_threshold) {
     boost_score =
         AutocompleteMatch::IsSearchType(shortcuts[0]->match_core.type)
             ? omnibox_feature_configs::ShortcutBoosting::Get().search_score
