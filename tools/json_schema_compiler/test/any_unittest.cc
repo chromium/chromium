@@ -11,25 +11,25 @@
 
 TEST(JsonSchemaCompilerAnyTest, PopulateAndClone) {
   {
-    test::api::any::AnyType any_type;
     base::Value::Dict any_type_dict;
     any_type_dict.Set("any", "value");
-    EXPECT_TRUE(test::api::any::AnyType::Populate(any_type_dict, any_type));
-    base::Value::Dict any_type_to_value(any_type.ToValue());
+    auto any_type = test::api::any::AnyType::FromValue(any_type_dict);
+    ASSERT_TRUE(any_type);
+    base::Value::Dict any_type_to_value(any_type->ToValue());
     EXPECT_EQ(any_type_dict, any_type_to_value);
 
-    test::api::any::AnyType any_type_copy = any_type.Clone();
+    test::api::any::AnyType any_type_copy = any_type->Clone();
     EXPECT_EQ(any_type_dict, any_type_copy.ToValue());
   }
   {
-    test::api::any::AnyType any_type;
     base::Value::Dict any_type_dict;
     any_type_dict.Set("any", 5);
-    EXPECT_TRUE(test::api::any::AnyType::Populate(any_type_dict, any_type));
-    base::Value::Dict any_type_to_value(any_type.ToValue());
+    auto any_type = test::api::any::AnyType::FromValue(any_type_dict);
+    ASSERT_TRUE(any_type);
+    base::Value::Dict any_type_to_value(any_type->ToValue());
     EXPECT_EQ(any_type_dict, any_type_to_value);
 
-    test::api::any::AnyType any_type_copy = any_type.Clone();
+    test::api::any::AnyType any_type_copy = any_type->Clone();
     EXPECT_EQ(any_type_dict, any_type_copy.ToValue());
   }
 }

@@ -88,20 +88,17 @@ class ExtensionAlarmsTest : public ApiUnitTest {
 
   // Takes a JSON result from a function and converts it to a vector of
   // JsAlarms.
-  std::vector<std::unique_ptr<JsAlarm>> ToAlarmList(
-      const absl::optional<base::Value>& value) {
-    std::vector<std::unique_ptr<JsAlarm>> list;
+  std::vector<JsAlarm> ToAlarmList(const std::optional<base::Value>& value) {
+    std::vector<JsAlarm> list;
     if (!value)
       return list;
     for (const auto& item : value->GetList()) {
-      std::unique_ptr<JsAlarm> alarm(new JsAlarm());
-
-      if (!item.is_dict()) {
-        ADD_FAILURE() << "Expected a list of Alarm objects.";
+      auto alarm = JsAlarm::FromValue(item);
+      if (!alarm) {
+        ADD_FAILURE() << "Failed to parse JsAlarm." << item;
         return list;
       }
-      EXPECT_TRUE(JsAlarm::Populate(item.GetDict(), *alarm));
-      list.push_back(std::move(alarm));
+      list.push_back(std::move(alarm).value());
     }
     return list;
   }
@@ -352,28 +349,28 @@ TEST_F(ExtensionAlarmsTest, Get) {
 
   // Get the default one.
   {
-    JsAlarm alarm;
     absl::optional<base::Value> result =
         RunFunctionAndReturnValue(new AlarmsGetFunction(), "[null]");
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_dict());
-    EXPECT_TRUE(JsAlarm::Populate(result->GetDict(), alarm));
-    EXPECT_EQ("", alarm.name);
-    EXPECT_DOUBLE_EQ(4060, alarm.scheduled_time);
-    EXPECT_THAT(alarm.period_in_minutes, testing::Eq(0.001));
+    auto alarm = JsAlarm::FromValue(result->GetDict());
+    EXPECT_TRUE(alarm);
+    EXPECT_EQ("", alarm->name);
+    EXPECT_DOUBLE_EQ(4060, alarm->scheduled_time);
+    EXPECT_THAT(alarm->period_in_minutes, testing::Eq(0.001));
   }
 
   // Get "7".
   {
-    JsAlarm alarm;
     absl::optional<base::Value> result =
         RunFunctionAndReturnValue(new AlarmsGetFunction(), "[\"7\"]");
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_dict());
-    EXPECT_TRUE(JsAlarm::Populate(result->GetDict(), alarm));
-    EXPECT_EQ("7", alarm.name);
-    EXPECT_EQ(424000, alarm.scheduled_time);
-    EXPECT_THAT(alarm.period_in_minutes, testing::Eq(7));
+    auto alarm = JsAlarm::FromValue(result->GetDict());
+    EXPECT_TRUE(alarm);
+    EXPECT_EQ("7", alarm->name);
+    EXPECT_EQ(424000, alarm->scheduled_time);
+    EXPECT_THAT(alarm->period_in_minutes, testing::Eq(7));
   }
 
   // Get a non-existent one.
@@ -389,7 +386,7 @@ TEST_F(ExtensionAlarmsTest, GetAll) {
   {
     absl::optional<base::Value> result =
         RunFunctionAndReturnValue(new AlarmsGetAllFunction(), "[]");
-    std::vector<std::unique_ptr<JsAlarm>> alarms = ToAlarmList(result);
+    std::vector<JsAlarm> alarms = ToAlarmList(result);
     EXPECT_EQ(0u, alarms.size());
   }
 
@@ -399,13 +396,13 @@ TEST_F(ExtensionAlarmsTest, GetAll) {
   {
     absl::optional<base::Value> result =
         RunFunctionAndReturnValue(new AlarmsGetAllFunction(), "[null]");
-    std::vector<std::unique_ptr<JsAlarm>> alarms = ToAlarmList(result);
+    std::vector<JsAlarm> alarms = ToAlarmList(result);
     EXPECT_EQ(2u, alarms.size());
 
     // Test the "7" alarm.
-    JsAlarm* alarm = alarms[0].get();
+    JsAlarm* alarm = &alarms[0];
     if (alarm->name != "7")
-      alarm = alarms[1].get();
+      alarm = &alarms[1];
     EXPECT_EQ("7", alarm->name);
     EXPECT_THAT(alarm->period_in_minutes, testing::Eq(7));
   }

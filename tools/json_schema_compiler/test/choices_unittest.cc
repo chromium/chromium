@@ -131,21 +131,21 @@ TEST(JsonSchemaCompilerChoicesTest, PopulateChoiceType) {
   dict.Set("integers", 4);
   dict.Set("strings", std::move(strings_value));
 
-  choices::ChoiceType out;
+  auto out = choices::ChoiceType::FromValue(dict);
+  ASSERT_TRUE(out);
 
   static_assert(!std::is_copy_constructible_v<choices::ChoiceType>);
   static_assert(!std::is_copy_assignable_v<choices::ChoiceType>);
   static_assert(std::is_move_constructible_v<choices::ChoiceType>);
   static_assert(std::is_move_assignable_v<choices::ChoiceType>);
 
-  ASSERT_TRUE(choices::ChoiceType::Populate(dict, out));
-  ASSERT_TRUE(out.integers.as_integer);
-  EXPECT_FALSE(out.integers.as_integers);
-  EXPECT_EQ(4, *out.integers.as_integer);
+  ASSERT_TRUE(out->integers.as_integer);
+  EXPECT_FALSE(out->integers.as_integers);
+  EXPECT_EQ(4, *out->integers.as_integer);
 
-  EXPECT_FALSE(out.strings->as_string);
-  ASSERT_TRUE(out.strings->as_strings);
-  EXPECT_EQ(strings, *out.strings->as_strings);
+  EXPECT_FALSE(out->strings->as_string);
+  ASSERT_TRUE(out->strings->as_strings);
+  EXPECT_EQ(strings, *out->strings->as_strings);
 }
 
 TEST(JsonSchemaCompilerChoicesTest, ChoiceTypeToValue) {
@@ -158,10 +158,10 @@ TEST(JsonSchemaCompilerChoicesTest, ChoiceTypeToValue) {
   dict.Set("integers", 5);
   dict.Set("strings", std::move(strings_value));
 
-  choices::ChoiceType out;
-  ASSERT_TRUE(choices::ChoiceType::Populate(dict, out));
+  auto out = choices::ChoiceType::FromValue(dict);
+  ASSERT_TRUE(out);
 
-  EXPECT_EQ(dict, out.ToValue());
+  EXPECT_EQ(dict, out->ToValue());
 }
 
 TEST(JsonSchemaCompilerChoicesTest, ReturnChoices) {

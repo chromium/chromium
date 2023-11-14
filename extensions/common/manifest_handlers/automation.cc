@@ -221,10 +221,11 @@ std::unique_ptr<AutomationInfo> AutomationInfo::FromValue(
     const base::Value& value,
     std::vector<InstallWarning>* install_warnings,
     std::u16string* error) {
-  std::unique_ptr<Automation> automation =
-      Automation::FromValueDeprecated(value, error);
-  if (!automation)
+  auto automation = Automation::FromValue(value);
+  if (!automation.has_value()) {
+    *error = std::move(automation).error();
     return nullptr;
+  }
 
   if (automation->as_boolean) {
     if (*automation->as_boolean)

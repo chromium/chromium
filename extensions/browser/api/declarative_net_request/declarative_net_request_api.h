@@ -50,7 +50,7 @@ class DeclarativeNetRequestGetDynamicRulesFunction : public ExtensionFunction {
 
  private:
   void OnDynamicRulesFetched(
-      absl::optional<api::declarative_net_request::GetDynamicRules::Params>,
+      api::declarative_net_request::GetDynamicRules::Params params,
       declarative_net_request::ReadJSONRulesResult read_json_result);
 };
 

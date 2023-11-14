@@ -10,10 +10,10 @@
 #include <string>
 
 #include "base/format_macros.h"
-#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/values_test_util.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
@@ -112,14 +112,10 @@ dnr_api::URLTransform CreateUrlTransform() {
     }
   )";
 
-  absl::optional<base::Value> value = base::JSONReader::Read(transform);
-  CHECK(value);
-
-  std::u16string error;
-  auto result = dnr_api::URLTransform::FromValueDeprecated(*value, &error);
-  CHECK(result);
-  CHECK(error.empty());
-  return std::move(*result);
+  auto result =
+      dnr_api::URLTransform::FromValue(base::test::ParseJsonDict(transform));
+  CHECK(result.has_value());
+  return std::move(result).value();
 }
 
 // Helper to verify the indexed form of URlTransform created by

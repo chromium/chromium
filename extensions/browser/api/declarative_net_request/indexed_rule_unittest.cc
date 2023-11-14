@@ -9,12 +9,12 @@
 
 #include "base/containers/flat_set.h"
 #include "base/format_macros.h"
-#include "base/json/json_reader.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "extensions/common/api/declarative_net_request.h"
@@ -638,15 +638,10 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
     dnr_api::Rule rule = CreateGenericParsedRule();
     rule.action.type = dnr_api::RuleActionType::kRedirect;
 
-    absl::optional<base::Value> redirect_val =
-        base::JSONReader::Read(cases[i].redirect_dictionary_json);
-    ASSERT_TRUE(redirect_val);
-
-    std::u16string error;
-    rule.action.redirect = std::move(
-        *dnr_api::Redirect::FromValueDeprecated(*redirect_val, &error));
-    ASSERT_TRUE(rule.action.redirect);
-    ASSERT_TRUE(error.empty());
+    auto redirect = dnr_api::Redirect::FromValue(
+        base::test::ParseJsonDict(cases[i].redirect_dictionary_json));
+    ASSERT_TRUE(redirect.has_value());
+    rule.action.redirect = std::move(redirect).value();
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(

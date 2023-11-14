@@ -105,7 +105,7 @@ bool OptionsPageInfo::ShouldOpenInTab(const Extension* extension) {
 
 std::unique_ptr<OptionsPageInfo> OptionsPageInfo::Create(
     Extension* extension,
-    const base::Value* options_ui_value,
+    const base::Value::Dict* options_ui_dict,
     const std::string& options_page_string,
     std::vector<InstallWarning>* install_warnings,
     std::u16string* error) {
@@ -117,13 +117,10 @@ std::unique_ptr<OptionsPageInfo> OptionsPageInfo::Create(
   bool open_in_tab = !FeatureSwitch::embedded_extension_options()->IsEnabled();
 
   // Parse the options_ui object.
-  if (options_ui_value) {
-    std::u16string options_ui_error;
-
-    std::unique_ptr<OptionsUI> options_ui =
-        OptionsUI::FromValueDeprecated(*options_ui_value, &options_ui_error);
-    if (!options_ui) {
-      install_warnings->emplace_back(base::UTF16ToASCII(options_ui_error));
+  if (options_ui_dict) {
+    auto options_ui = OptionsUI::FromValue(*options_ui_dict);
+    if (!options_ui.has_value()) {
+      install_warnings->emplace_back(base::UTF16ToASCII(options_ui.error()));
     } else {
       std::u16string options_parse_error;
       if (!ParseOptionsUrl(extension,
@@ -182,10 +179,11 @@ bool OptionsPageManifestHandler::Parse(Extension* extension,
     options_page_string = temp->GetString();
   }
 
-  const base::Value* options_ui_value = manifest->FindPath(keys::kOptionsUI);
+  const base::Value::Dict* options_ui_dict =
+      manifest->FindDictPath(keys::kOptionsUI);
 
   std::unique_ptr<OptionsPageInfo> info =
-      OptionsPageInfo::Create(extension, options_ui_value, options_page_string,
+      OptionsPageInfo::Create(extension, options_ui_dict, options_page_string,
                               &install_warnings, error);
   if (!info)
     return false;

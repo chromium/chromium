@@ -347,6 +347,8 @@ inline constexpr char kInvalidContentCapabilitiesMatch[] =
     "Invalid content_capabilities URL pattern: *";
 inline constexpr char kInvalidContentCapabilitiesMatchOrigin[] =
     "Domain wildcards are not allowed for content_capabilities URL patterns.";
+inline constexpr char16_t kInvalidContentCapabilitiesParsedValue[] =
+    u"Invalid content_capabilities parsing value. ";
 inline constexpr char kInvalidContentCapabilitiesPermission[] =
     "Invalid content_capabilities permission: *.";
 inline constexpr char kInvalidCSPInsecureValueIgnored[] =

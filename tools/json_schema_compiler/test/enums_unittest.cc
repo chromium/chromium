@@ -17,17 +17,16 @@ using json_schema_compiler::test_util::List;
 
 TEST(JsonSchemaCompilerEnumsTest, EnumTypePopulate) {
   {
-    enums::EnumType enum_type;
     base::Value value = Dictionary("type", base::Value("one"));
-    EXPECT_TRUE(enums::EnumType::Populate(value.GetDict(), enum_type));
-    EXPECT_EQ(enums::Enumeration::kOne, enum_type.type);
-    EXPECT_EQ(value, enum_type.ToValue());
-    EXPECT_EQ(enum_type.Clone().ToValue(), enum_type.ToValue());
+    auto enum_type = enums::EnumType::FromValue(value.GetDict());
+    EXPECT_TRUE(enum_type);
+    EXPECT_EQ(enums::Enumeration::kOne, enum_type->type);
+    EXPECT_EQ(value, enum_type->ToValue());
+    EXPECT_EQ(enum_type->Clone().ToValue(), enum_type->ToValue());
   }
   {
-    enums::EnumType enum_type;
     base::Value value = Dictionary("type", base::Value("invalid"));
-    EXPECT_FALSE(enums::EnumType::Populate(value.GetDict(), enum_type));
+    EXPECT_FALSE(enums::EnumType::FromValue(value.GetDict()));
   }
 }
 
@@ -52,29 +51,32 @@ TEST(JsonSchemaCompilerEnumsTest, EnumsAsTypes) {
     EXPECT_EQ(enums::Enumeration::kNone, enumeration.optional_enumeration);
   }
   {
-    enums::HasEnumeration enumeration;
     base::Value::Dict value;
-    ASSERT_FALSE(enums::HasEnumeration::Populate(value, enumeration));
+    auto enumeration = enums::HasEnumeration::FromValue(value);
+    ASSERT_FALSE(enumeration);
 
     value.Set("enumeration", "one");
-    ASSERT_TRUE(enums::HasEnumeration::Populate(value, enumeration));
-    EXPECT_EQ(value, enumeration.ToValue());
-    EXPECT_EQ(enumeration.Clone().ToValue(), enumeration.ToValue());
+    enumeration = enums::HasEnumeration::FromValue(value);
+    ASSERT_TRUE(enumeration);
+    EXPECT_EQ(value, enumeration->ToValue());
+    EXPECT_EQ(enumeration->Clone().ToValue(), enumeration->ToValue());
 
     value.Set("optional_enumeration", "two");
-    ASSERT_TRUE(enums::HasEnumeration::Populate(value, enumeration));
-    EXPECT_EQ(value, enumeration.ToValue());
-    EXPECT_EQ(enumeration.Clone().ToValue(), enumeration.ToValue());
+    enumeration = enums::HasEnumeration::FromValue(value);
+    ASSERT_TRUE(enumeration);
+    EXPECT_EQ(value, enumeration->ToValue());
+    EXPECT_EQ(enumeration->Clone().ToValue(), enumeration->ToValue());
   }
   {
-    enums::ReferenceEnum enumeration;
     base::Value::Dict value;
-    ASSERT_FALSE(enums::ReferenceEnum::Populate(value, enumeration));
+    auto enumeration = enums::ReferenceEnum::FromValue(value);
+    ASSERT_FALSE(enumeration);
 
     value.Set("reference_enum", "one");
-    ASSERT_TRUE(enums::ReferenceEnum::Populate(value, enumeration));
-    EXPECT_EQ(value, enumeration.ToValue());
-    EXPECT_EQ(enumeration.Clone().ToValue(), enumeration.ToValue());
+    enumeration = enums::ReferenceEnum::FromValue(value);
+    ASSERT_TRUE(enumeration);
+    EXPECT_EQ(value, enumeration->ToValue());
+    EXPECT_EQ(enumeration->Clone().ToValue(), enumeration->ToValue());
   }
 }
 
@@ -127,25 +129,24 @@ TEST(JsonSchemaCompilerEnumsTest, ReturnsTwoEnumsCreate) {
 
 TEST(JsonSchemaCompilerEnumsTest, OptionalEnumTypePopulate) {
   {
-    enums::OptionalEnumType enum_type;
     base::Value value = Dictionary("type", base::Value("two"));
-    EXPECT_TRUE(enums::OptionalEnumType::Populate(value.GetDict(), enum_type));
-    EXPECT_EQ(enums::Enumeration::kTwo, enum_type.type);
-    EXPECT_EQ(value, enum_type.ToValue());
-    EXPECT_EQ(enum_type.Clone().ToValue(), enum_type.ToValue());
+    auto enum_type = enums::OptionalEnumType::FromValue(value.GetDict());
+    EXPECT_TRUE(enum_type);
+    EXPECT_EQ(enums::Enumeration::kTwo, enum_type->type);
+    EXPECT_EQ(value, enum_type->ToValue());
+    EXPECT_EQ(enum_type->Clone().ToValue(), enum_type->ToValue());
   }
   {
-    enums::OptionalEnumType enum_type;
     base::Value value(base::Value::Type::DICT);
-    EXPECT_TRUE(enums::OptionalEnumType::Populate(value.GetDict(), enum_type));
-    EXPECT_EQ(enums::Enumeration::kNone, enum_type.type);
-    EXPECT_EQ(value, enum_type.ToValue());
-    EXPECT_EQ(enum_type.Clone().ToValue(), enum_type.ToValue());
+    auto enum_type = enums::OptionalEnumType::FromValue(value.GetDict());
+    EXPECT_TRUE(enum_type);
+    EXPECT_EQ(enums::Enumeration::kNone, enum_type->type);
+    EXPECT_EQ(value, enum_type->ToValue());
+    EXPECT_EQ(enum_type->Clone().ToValue(), enum_type->ToValue());
   }
   {
-    enums::OptionalEnumType enum_type;
     base::Value value = Dictionary("type", base::Value("invalid"));
-    EXPECT_FALSE(enums::OptionalEnumType::Populate(value.GetDict(), enum_type));
+    EXPECT_FALSE(enums::OptionalEnumType::FromValue(value.GetDict()));
   }
 }
 

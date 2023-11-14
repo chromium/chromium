@@ -39,10 +39,10 @@ TEST(IdlCompiler, Basics) {
   MyType1 a;
   a.x = 5;
   a.y = std::string("foo");
-  MyType1 b;
-  EXPECT_TRUE(MyType1::Populate(a.ToValue(), b));
-  EXPECT_EQ(a.x, b.x);
-  EXPECT_EQ(a.y, b.y);
+  auto b = MyType1::FromValue(a.ToValue());
+  ASSERT_TRUE(b);
+  EXPECT_EQ(a.x, b->x);
+  EXPECT_EQ(a.y, b->y);
   EXPECT_EQ(a.Clone().ToValue(), a.ToValue());
 
   // Test Function2, which takes an integer parameter.
@@ -77,10 +77,10 @@ TEST(IdlCompiler, Basics) {
 
   base::Value::List f6_results = Function6::Results::Create(a);
   ASSERT_EQ(1u, f6_results.size());
-  MyType1 c;
-  EXPECT_TRUE(MyType1::Populate(f6_results[0], c));
-  EXPECT_EQ(a.x, c.x);
-  EXPECT_EQ(a.y, c.y);
+  auto c = MyType1::FromValue(f6_results[0]);
+  ASSERT_TRUE(c);
+  EXPECT_EQ(a.x, c->x);
+  EXPECT_EQ(a.y, c->y);
 }
 
 TEST(IdlCompiler, OptionalArguments) {
@@ -177,24 +177,23 @@ TEST(IdlCompiler, ObjectTypes) {
   // Test the FooType type.
   FooType f1;
   f1.x = 3;
-  FooType f2;
-  EXPECT_TRUE(FooType::Populate(f1.ToValue(), f2));
-  EXPECT_EQ(f1.x, f2.x);
+  auto f2 = FooType::FromValue(f1.ToValue());
+  ASSERT_TRUE(f2);
+  EXPECT_EQ(f1.x, f2->x);
 
   // Test the BarType type.
   BarType b1;
   b1.x = base::Value(7);
-  BarType b2;
-  EXPECT_TRUE(BarType::Populate(b1.ToValue(), b2));
-  ASSERT_TRUE(b2.x.is_int());
-  EXPECT_EQ(7, b2.x.GetInt());
-  EXPECT_FALSE(b2.y.has_value());
+  auto b2 = BarType::FromValue(b1.ToValue());
+  ASSERT_TRUE(b2);
+  ASSERT_TRUE(b2->x.is_int());
+  EXPECT_EQ(7, b2->x.GetInt());
+  EXPECT_FALSE(b2->y.has_value());
 
   // Test the params to the ObjectFunction1 function.
   base::Value::Dict icon_props;
   icon_props.Set("hello", "world");
-  ObjectFunction1::Params::Icon icon;
-  EXPECT_TRUE(ObjectFunction1::Params::Icon::Populate(icon_props, icon));
+  ASSERT_TRUE(ObjectFunction1::Params::Icon::FromValue(icon_props));
   base::Value::List list;
   list.Append(std::move(icon_props));
   std::optional<ObjectFunction1::Params> params =

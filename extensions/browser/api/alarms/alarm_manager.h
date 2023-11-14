@@ -24,6 +24,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/api/alarms.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -51,7 +52,7 @@ struct Alarm {
 
   ~Alarm();
 
-  std::unique_ptr<api::alarms::Alarm> js_alarm;
+  std::optional<api::alarms::Alarm> js_alarm;
   // The granularity isn't exposed to the extension's javascript, but we poll at
   // least as often as the shortest alarm's granularity.  It's initialized as
   // the relative delay requested in creation, even if creation uses an absolute

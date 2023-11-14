@@ -40,7 +40,7 @@ namespace extensions {
 
 class DeveloperPrivateApiTest : public ExtensionApiTest {
  protected:
-  std::unique_ptr<api::developer_private::ExtensionInfo> GetExtensionInfo(
+  std::optional<api::developer_private::ExtensionInfo> GetExtensionInfo(
       const Extension& extension) {
     auto get_info_function =
         base::MakeRefCounted<api::DeveloperPrivateGetExtensionInfoFunction>();
@@ -50,10 +50,10 @@ class DeveloperPrivateApiTest : public ExtensionApiTest {
             content::JsReplace(R"([$1])", extension.id()), profile());
     if (!result) {
       ADD_FAILURE() << "No result back when getting extension info";
-      return nullptr;
+      return std::nullopt;
     }
-    std::unique_ptr<api::developer_private::ExtensionInfo> info =
-        api::developer_private::ExtensionInfo::FromValueDeprecated(*result);
+    std::optional<api::developer_private::ExtensionInfo> info =
+        api::developer_private::ExtensionInfo::FromValue(*result);
     if (!info)
       ADD_FAILURE() << "Problem creating ExtensionInfo from result data";
     return info;

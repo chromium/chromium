@@ -113,9 +113,9 @@ class TestEventRouter : public extensions::EventRouter {
     ASSERT_TRUE(!event->event_args.empty());
     const base::Value& arg_value = event->event_args[0];
 
-    std::unique_ptr<extensions::api::lock_screen_data::DataItemsAvailableEvent>
+    std::optional<extensions::api::lock_screen_data::DataItemsAvailableEvent>
         event_args = extensions::api::lock_screen_data::
-            DataItemsAvailableEvent::FromValueDeprecated(arg_value);
+            DataItemsAvailableEvent::FromValue(arg_value);
     ASSERT_TRUE(event_args);
     was_locked_values_.push_back(event_args->was_locked);
   }
