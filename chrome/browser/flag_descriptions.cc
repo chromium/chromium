@@ -7030,13 +7030,6 @@ const char kContinuousOverviewScrollAnimationDescription[] =
     "the transition into Overview as the gesture is done. Allows for the user "
     "to scrub (move forward and backward) through Overview.";
 
-const char kSpeakOnMuteOptInNudgePrefsResetName[] =
-    "Reset Speak-on-mute detection opt-in nudge prefs";
-const char kSpeakOnMuteOptInNudgePrefsResetDescription[] =
-    "Resets the prefs that prevent the speak-on-mute opt-in nudge from "
-    "showing, so it can be shown again for debugging purposes. With this flag "
-    "enabled, the speak-on-mute nudge will show after every login.";
-
 const char kSpectreVariant2MitigationName[] = "Spectre variant 2 mitigation";
 const char kSpectreVariant2MitigationDescription[] =
     "Controls whether Spectre variant 2 mitigation is enabled when "

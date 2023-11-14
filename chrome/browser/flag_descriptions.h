@@ -4027,9 +4027,6 @@ extern const char kShowTouchHudDescription[];
 extern const char kSnoopingProtectionName[];
 extern const char kSnoopingProtectionDescription[];
 
-extern const char kSpeakOnMuteOptInNudgePrefsResetName[];
-extern const char kSpeakOnMuteOptInNudgePrefsResetDescription[];
-
 extern const char kContinuousOverviewScrollAnimationName[];
 extern const char kContinuousOverviewScrollAnimationDescription[];
 

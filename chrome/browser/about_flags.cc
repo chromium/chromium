@@ -10841,13 +10841,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kWindowSplitting)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"speak-on-mute-opt-in-nudge-prefs-reset",
-     flag_descriptions::kSpeakOnMuteOptInNudgePrefsResetName,
-     flag_descriptions::kSpeakOnMuteOptInNudgePrefsResetDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSpeakOnMuteOptInNudgePrefsReset)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     {"privacy-sandbox-enrollment-overrides",
      flag_descriptions::kPrivacySandboxEnrollmentOverridesName,
      flag_descriptions::kPrivacySandboxEnrollmentOverridesDescription, kOsAll,
