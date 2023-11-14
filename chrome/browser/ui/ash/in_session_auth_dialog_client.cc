@@ -35,7 +35,6 @@
 
 using ::ash::AuthenticationError;
 using ::ash::AuthStatusConsumer;
-using ::ash::ExtendedAuthenticator;
 using ::ash::Key;
 using ::ash::UserContext;
 
@@ -78,14 +77,6 @@ bool InSessionAuthDialogClient::IsFingerprintAuthAvailable(
   return legacy_fingerprint_engine_->IsFingerprintAvailable(
       ash::LegacyFingerprintEngine::Purpose::kWebAuthn,
       user_context_->GetAccountId());
-}
-
-ExtendedAuthenticator* InSessionAuthDialogClient::GetExtendedAuthenticator() {
-  // Lazily allocate |extended_authenticator_| so that tests can inject a fake.
-  if (!extended_authenticator_)
-    extended_authenticator_ = ExtendedAuthenticator::Create(this);
-
-  return extended_authenticator_.get();
 }
 
 void InSessionAuthDialogClient::StartFingerprintAuthSession(

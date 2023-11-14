@@ -18,14 +18,12 @@
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/ash/components/login/auth/fake_extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::ash::FakeExtendedAuthenticator;
 using ::ash::Key;
 using ::ash::UserContext;
 
@@ -88,12 +86,6 @@ class InSessionAuthDialogClientTest : public testing::Test {
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, nullptr);
   }
 
-  void SetExpectedContext(const UserContext& expected_user_context) {
-    fake_authenticator_ = base::MakeRefCounted<FakeExtendedAuthenticator>(
-        client_.get(), expected_user_context);
-    client_->SetExtendedAuthenticator(fake_authenticator_);
-  }
-
   void AuthenticateUserWithPasswordOrPin(
       const std::string& password,
       bool authenticated_by_pin,
@@ -129,8 +121,6 @@ class InSessionAuthDialogClientTest : public testing::Test {
   }
 
  protected:
-  // The ExtendedAuthenticator::AuthenticateToCheck task is posted to main (UI)
-  // thread.
   const content::BrowserTaskEnvironment task_environment_;
 
   raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
@@ -140,7 +130,6 @@ class InSessionAuthDialogClientTest : public testing::Test {
   std::unique_ptr<FakeInSessionAuthDialogController> fake_controller_{
       std::make_unique<FakeInSessionAuthDialogController>()};
   std::unique_ptr<InSessionAuthDialogClient> client_;
-  scoped_refptr<ash::FakeExtendedAuthenticator> fake_authenticator_;
 };
 
 TEST_F(InSessionAuthDialogClientTest, WrongPassword) {
@@ -151,7 +140,6 @@ TEST_F(InSessionAuthDialogClientTest, WrongPassword) {
   Key key(Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), kPassword);
   expected_user_context.SetKey(key);
 
-  SetExpectedContext(expected_user_context);
   ConfigureExistingUserWithPassword(user->GetAccountId(), kPassword);
   StartAuthSessionForActiveUser();
 
@@ -175,8 +163,6 @@ TEST_F(InSessionAuthDialogClientTest, PasswordAuthSuccess) {
   UserContext expected_user_context(*user);
   expected_user_context.SetKey(
       Key(Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), kPassword));
-
-  SetExpectedContext(expected_user_context);
 
   ConfigureExistingUserWithPassword(user->GetAccountId(), kPassword);
   StartAuthSessionForActiveUser();

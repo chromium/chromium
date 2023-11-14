@@ -115,8 +115,6 @@ source_set("test_support") {
     "//testing/gtest",
   ]
   sources = [
-    "fake_extended_authenticator.cc",
-    "fake_extended_authenticator.h",
     "mock_auth_performer.cc",
     "mock_auth_performer.h",
     "mock_auth_status_consumer.cc",

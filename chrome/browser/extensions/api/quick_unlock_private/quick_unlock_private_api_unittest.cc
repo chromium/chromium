@@ -44,7 +44,6 @@
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
-#include "chromeos/ash/components/login/auth/fake_extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/osauth/impl/auth_parts_impl.h"
 #include "chromeos/ash/components/osauth/impl/auth_session_storage_impl.h"

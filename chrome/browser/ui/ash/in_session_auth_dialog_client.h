@@ -19,7 +19,6 @@
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
-#include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -83,12 +82,6 @@ class InSessionAuthDialogClient
                         bool is_complete,
                         int percent_complete) override {}
 
-  // For testing:
-  void SetExtendedAuthenticator(
-      scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator) {
-    extended_authenticator_ = std::move(extended_authenticator);
-  }
-
  private:
   // State associated with a pending authentication attempt. Only for Password
   // and PIN, not for fingerprint, since the fingerprint path needs to surface
@@ -100,10 +93,6 @@ class InSessionAuthDialogClient
     // Callback that should be executed the authentication result is available.
     base::OnceCallback<void(bool)> callback;
   };
-
-  // Returns a pointer to the ExtendedAuthenticator instance if there is one.
-  // Otherwise creates one.
-  ash::ExtendedAuthenticator* GetExtendedAuthenticator();
 
   // Attempts to authenticate user in `user_context` with the given `password`.
   void AuthenticateWithPassword(std::unique_ptr<ash::UserContext> user_context,
@@ -149,9 +138,6 @@ class InSessionAuthDialogClient
       base::OnceCallback<void(bool)> callback,
       bool is_pin_auth_available,
       std::unique_ptr<ash::UserContext> user_context);
-
-  // Used to authenticate the user to unlock supervised users.
-  scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator_;
 
   // State associated with a pending authentication attempt.
   absl::optional<AuthState> pending_auth_state_;
