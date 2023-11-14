@@ -1025,9 +1025,8 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
     const WebGestureEvent& event) {
   WebInputEventResult event_result = WebInputEventResult::kNotHandled;
 
-  // Fling events are not sent to the renderer.
-  CHECK(event.GetType() != WebInputEvent::Type::kGestureFlingStart);
-  CHECK(event.GetType() != WebInputEvent::Type::kGestureFlingCancel);
+  // Fling and scroll events are not sent to the renderer main thread.
+  CHECK(!event.IsScrollEvent());
 
   WebViewImpl* web_view = View();
 
@@ -1056,21 +1055,6 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
         }
       }
       event_result = WebInputEventResult::kHandledSystem;
-      DidHandleGestureEvent(event);
-      return event_result;
-    case WebInputEvent::Type::kGestureScrollBegin:
-    case WebInputEvent::Type::kGestureScrollEnd:
-    case WebInputEvent::Type::kGestureScrollUpdate:
-      // If we are getting any scroll toss close any page popup that is open.
-      web_view->CancelPagePopup();
-
-      // Scrolling-related gesture events invoke EventHandler recursively for
-      // each frame down the chain, doing a single-frame hit-test per frame.
-      // This matches handleWheelEvent.  Perhaps we could simplify things by
-      // rewriting scroll handling to work inner frame out, and then unify with
-      // other gesture events.
-      event_result =
-          frame->GetEventHandler().HandleGestureScrollEvent(scaled_event);
       DidHandleGestureEvent(event);
       return event_result;
     default:
