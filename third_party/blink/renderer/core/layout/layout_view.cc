@@ -801,6 +801,14 @@ const LayoutBox& LayoutView::RootBox() const {
   return To<LayoutBox>(*document_element->GetLayoutObject());
 }
 
+void LayoutView::InvalidateSvgRootsWithRelativeLengthDescendents() {
+  if (GetDocument().SvgExtensions() && !ShouldUsePrintingLayout()) {
+    GetDocument()
+        .AccessSVGExtensions()
+        .InvalidateSVGRootsWithRelativeLengthDescendents();
+  }
+}
+
 void LayoutView::UpdateLayout() {
   NOT_DESTROYED();
   if (ShouldUsePrintingLayout()) {
@@ -830,17 +838,9 @@ void LayoutView::UpdateLayout() {
   bool is_resizing_initial_containing_block =
       LogicalWidth() != ViewLogicalWidthForBoxSizing() ||
       LogicalHeight() != ViewLogicalHeightForBoxSizing();
-  bool invalidate_svg_roots =
-      GetDocument().SvgExtensions() && !ShouldUsePrintingLayout() &&
-      (!GetFrameView() || is_resizing_initial_containing_block);
-  if (invalidate_svg_roots) {
-    GetDocument()
-        .AccessSVGExtensions()
-        .InvalidateSVGRootsWithRelativeLengthDescendents();
-  }
-
   DCHECK(!initial_containing_block_resize_handled_list_);
   if (is_resizing_initial_containing_block) {
+    InvalidateSvgRootsWithRelativeLengthDescendents();
     initial_containing_block_resize_handled_list_ =
         MakeGarbageCollected<HeapHashSet<Member<const LayoutObject>>>();
   }

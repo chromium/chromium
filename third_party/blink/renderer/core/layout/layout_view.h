@@ -105,6 +105,7 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
+  void InvalidateSvgRootsWithRelativeLengthDescendents();
   void UpdateLayout() final;
   LayoutUnit ComputeMinimumWidth();
 
