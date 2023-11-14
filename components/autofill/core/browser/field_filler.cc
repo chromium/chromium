@@ -21,12 +21,10 @@ std::u16string FieldFiller::GetValueForFilling(
     const AutofillField& field,
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
-    const FormFieldData* field_data,
+    const FormFieldData& field_data,
     const std::u16string& cvc,
     mojom::ActionPersistence action_persistence,
     std::string* failure_to_fill) {
-  std::u16string value;
-  CHECK(field_data);
   if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
     const CreditCard* credit_card =
         absl::get<const CreditCard*>(profile_or_credit_card);
@@ -49,7 +47,7 @@ bool FieldFiller::FillFormField(
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
     const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
-    FormFieldData* field_data,
+    FormFieldData& field_data,
     const std::u16string& cvc,
     mojom::ActionPersistence action_persistence,
     std::string* failure_to_fill) {
@@ -68,9 +66,9 @@ bool FieldFiller::FillFormField(
     }
     return false;
   }
-  field_data->value = value;
+  field_data.value = value;
   if (value_is_an_override) {
-    field_data->force_override = true;
+    field_data.force_override = true;
   }
   return true;
 }

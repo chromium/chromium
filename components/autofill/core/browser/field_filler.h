@@ -32,7 +32,7 @@ class FieldFiller {
       const AutofillField& field,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
-      const FormFieldData* field_data,
+      const FormFieldData& field_data,
       const std::u16string& cvc,
       mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);
@@ -54,7 +54,7 @@ class FieldFiller {
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
       const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
-      FormFieldData* field_data,
+      FormFieldData& field_data,
       const std::u16string& cvc,
       mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill = nullptr);

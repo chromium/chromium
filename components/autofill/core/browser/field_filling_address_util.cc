@@ -345,26 +345,26 @@ std::optional<std::u16string> GetValueForProfileForInput(
     const AutofillProfile& profile,
     const std::string& app_locale,
     const AutofillType& field_type,
-    const FormFieldData* field_data,
+    const FormFieldData& field_data,
     std::string* failure_to_fill) {
   const std::u16string value = profile.GetInfo(field_type, app_locale);
   if (field_type.group() == FieldTypeGroup::kPhone) {
-    return field_data->IsSelectOrSelectListElement() &&
+    return field_data.IsSelectOrSelectListElement() &&
                    field_type.GetStorableType() == PHONE_HOME_COUNTRY_CODE
                ? GetPhoneCountryCodeSelectControlForInput(
-                     value, field_data->options, failure_to_fill)
+                     value, field_data.options, failure_to_fill)
                : GetPhoneNumberValueForInput(
-                     field_data->max_length, value,
+                     field_data.max_length, value,
                      profile.GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale));
   }
   if (field_type.GetStorableType() == ADDRESS_HOME_STREET_ADDRESS) {
     return GetStreetAddressForInput(value, profile.language_code(),
-                                    field_data->form_control_type);
+                                    field_data.form_control_type);
   }
   if (field_type.GetStorableType() == ADDRESS_HOME_STATE) {
     return GetStateTextForInput(
         value, data_util::GetCountryCodeWithFallback(profile, app_locale),
-        field_data->max_length, failure_to_fill);
+        field_data.max_length, failure_to_fill);
   }
   return std::move(value);
 }
@@ -400,15 +400,15 @@ std::optional<std::u16string> GetValueForProfile(
     const AutofillProfile& profile,
     const std::string& app_locale,
     const AutofillType& field_type,
-    const FormFieldData* field_data,
+    const FormFieldData& field_data,
     AddressNormalizer* address_normalizer,
     std::string* failure_to_fill) {
   std::optional<std::u16string> value = GetValueForProfileForInput(
       profile, app_locale, field_type, field_data, failure_to_fill);
 
-  return value && field_data->IsSelectOrSelectListElement()
+  return value && field_data.IsSelectOrSelectListElement()
              ? GetValueForProfileSelectControl(
-                   profile, *value, app_locale, field_data->options,
+                   profile, *value, app_locale, field_data.options,
                    field_type.GetStorableType(), address_normalizer,
                    failure_to_fill)
              : value;

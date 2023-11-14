@@ -2551,8 +2551,8 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     // also returns true in such a case; however, such fields don't reach this
     // code.
     const bool is_newly_autofilled = FillFieldWithValue(
-        autofill_field, profile_or_credit_card, forced_fill_values,
-        &result.fields[i], should_notify, optional_cvc ? *optional_cvc : u"",
+        *autofill_field, profile_or_credit_card, forced_fill_values,
+        result.fields[i], should_notify, optional_cvc ? *optional_cvc : u"",
         data_util::DetermineGroups(*form_structure), action_persistence,
         &failure_to_fill);
     if (is_newly_autofilled)
@@ -2695,7 +2695,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 bool BrowserAutofillManager::ShouldPreventAutofillFromOverridingPrefilledField(
     mojom::ActionPersistence action_persistence,
     AutofillField* cached_field,
-    FormFieldData* field_data,
+    FormFieldData& field_data,
     bool is_initiating_field,
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
@@ -2716,8 +2716,8 @@ bool BrowserAutofillManager::ShouldPreventAutofillFromOverridingPrefilledField(
 
   // Some sites have empty values in the fields, for example.
   if (std::u16string sanitized_field_value =
-          RemoveWhiteSpaceAndConjugatingCharacters(field_data->value);
-      !field_data->IsSelectOrSelectListElement() &&
+          RemoveWhiteSpaceAndConjugatingCharacters(field_data.value);
+      !field_data.IsSelectOrSelectListElement() &&
       !sanitized_field_value.empty() && !is_initiating_field) {
     std::string unused_failure_to_fill;
     const std::u16string kEmptyCvc{};
@@ -3247,54 +3247,55 @@ void BrowserAutofillManager::DisambiguateNameUploadTypes(
 }
 
 bool BrowserAutofillManager::FillFieldWithValue(
-    AutofillField* autofill_field,
+    AutofillField& autofill_field,
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
     const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
-    FormFieldData* field_data,
+    FormFieldData& field_data,
     bool should_notify,
     const std::u16string& cvc,
     uint32_t profile_form_bitmask,
     mojom::ActionPersistence action_persistence,
     std::string* failure_to_fill) {
   bool filled_field = field_filler_.FillFormField(
-      *autofill_field, profile_or_credit_card, forced_fill_values, field_data,
+      autofill_field, profile_or_credit_card, forced_fill_values, field_data,
       cvc, action_persistence, failure_to_fill);
-  if (filled_field) {
-    if (failure_to_fill) {
-      *failure_to_fill = "Decided to fill";
-    }
-    if (action_persistence == mojom::ActionPersistence::kFill) {
-      // Mark the cached field as autofilled, so that we can detect when a
-      // user edits an autofilled field (for metrics).
-      autofill_field->is_autofilled = true;
-      if (const AutofillProfile** profile =
-              absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
-        autofill_field->set_autofill_source_profile_guid((*profile)->guid());
-      }
-    }
-
-    // Mark the field as autofilled when a non-empty value is assigned to
-    // it. This allows the renderer to distinguish autofilled fields from
-    // fields with non-empty values, such as select-one fields.
-    field_data->is_autofilled = true;
-    AutofillMetrics::LogUserHappinessMetric(
-        AutofillMetrics::FIELD_WAS_AUTOFILLED, autofill_field->Type().group(),
-        client().GetSecurityLevelForUmaHistograms(), profile_form_bitmask);
-
-    if (should_notify) {
-      DCHECK(absl::holds_alternative<const AutofillProfile*>(
-          profile_or_credit_card));
-      const AutofillProfile* profile =
-          absl::get<const AutofillProfile*>(profile_or_credit_card);
-      client().DidFillOrPreviewField(
-          /*autofilled_value=*/profile->GetInfo(autofill_field->Type(),
-                                                app_locale_),
-          /*profile_full_name=*/profile->GetInfo(AutofillType(NAME_FULL),
-                                                 app_locale_));
+  if (!filled_field) {
+    return false;
+  }
+  if (failure_to_fill) {
+    *failure_to_fill = "Decided to fill";
+  }
+  if (action_persistence == mojom::ActionPersistence::kFill) {
+    // Mark the cached field as autofilled, so that we can detect when a
+    // user edits an autofilled field (for metrics).
+    autofill_field.is_autofilled = true;
+    if (const AutofillProfile** profile =
+            absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
+      autofill_field.set_autofill_source_profile_guid((*profile)->guid());
     }
   }
-  return filled_field;
+
+  // Mark the field as autofilled when a non-empty value is assigned to
+  // it. This allows the renderer to distinguish autofilled fields from
+  // fields with non-empty values, such as select-one fields.
+  field_data.is_autofilled = true;
+  AutofillMetrics::LogUserHappinessMetric(
+      AutofillMetrics::FIELD_WAS_AUTOFILLED, autofill_field.Type().group(),
+      client().GetSecurityLevelForUmaHistograms(), profile_form_bitmask);
+
+  if (should_notify) {
+    DCHECK(absl::holds_alternative<const AutofillProfile*>(
+        profile_or_credit_card));
+    const AutofillProfile* profile =
+        absl::get<const AutofillProfile*>(profile_or_credit_card);
+    client().DidFillOrPreviewField(
+        /*autofilled_value=*/profile->GetInfo(autofill_field.Type(),
+                                              app_locale_),
+        /*profile_full_name=*/profile->GetInfo(AutofillType(NAME_FULL),
+                                               app_locale_));
+  }
+  return true;
 }
 
 void BrowserAutofillManager::SetFillingContext(

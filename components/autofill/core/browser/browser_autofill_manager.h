@@ -516,7 +516,7 @@ class BrowserAutofillManager : public AutofillManager,
   [[nodiscard]] bool ShouldPreventAutofillFromOverridingPrefilledField(
       mojom::ActionPersistence action_persistence,
       AutofillField* cached_field,
-      FormFieldData* field_data,
+      FormFieldData& field_data,
       bool is_initiating_field,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
@@ -604,11 +604,11 @@ class BrowserAutofillManager : public AutofillManager,
   // Returns true if the field has been filled, false otherwise. This is
   // independent of whether the field was filled or autofilled before.
   bool FillFieldWithValue(
-      AutofillField* autofill_field,
+      AutofillField& autofill_field,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
       const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
-      FormFieldData* field_data,
+      FormFieldData& field_data,
       bool should_notify,
       const std::u16string& cvc,
       uint32_t profile_form_bitmask,

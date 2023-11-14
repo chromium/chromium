@@ -24,7 +24,7 @@ std::optional<std::u16string> GetValueForProfile(
     const AutofillProfile& profile,
     const std::string& app_locale,
     const AutofillType& field_type,
-    const FormFieldData* field_data,
+    const FormFieldData& field_data,
     AddressNormalizer* address_normalizer,
     std::string* failure_to_fill = nullptr);
 
