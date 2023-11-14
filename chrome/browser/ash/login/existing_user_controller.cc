@@ -1568,9 +1568,7 @@ void ExistingUserController::DoCompleteLogin(
   std::string device_id = known_user.GetDeviceId(user_context.GetAccountId());
   if (device_id.empty()) {
     const bool is_ephemeral = ChromeUserManager::Get()->IsEphemeralAccountId(
-                                  user_context.GetAccountId()) &&
-                              user_context.GetAccountId() !=
-                                  ChromeUserManager::Get()->GetOwnerAccountId();
+        user_context.GetAccountId());
     device_id = GenerateSigninScopedDeviceId(is_ephemeral);
   }
   user_context.SetDeviceId(device_id);
