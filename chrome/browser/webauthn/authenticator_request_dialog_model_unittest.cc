@@ -2960,7 +2960,7 @@ TEST_F(ListPasskeysFromSyncTest, WindowsHelloButtonLabel_GetAssertion) {
           EXPECT_EQ(win_button_it->icon, kLaptopIcon);
           break;
         case kSk:
-          EXPECT_EQ(win_button_it->icon, vector_icons::kUsbIcon);
+          EXPECT_EQ(win_button_it->icon, kUsbSecurityKeyIcon);
           break;
         case kPhoneOrSk:
         case kPhone:
@@ -3017,7 +3017,7 @@ TEST_F(ListPasskeysFromSyncTest, WindowsHelloButtonLabel_MakeCredential) {
         EXPECT_EQ(win_button_it->icon, kLaptopIcon);
         break;
       case kSk:
-        EXPECT_EQ(win_button_it->icon, vector_icons::kUsbIcon);
+        EXPECT_EQ(win_button_it->icon, kUsbSecurityKeyIcon);
         break;
       default:
         NOTREACHED();

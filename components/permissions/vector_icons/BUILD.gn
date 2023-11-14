@@ -7,10 +7,7 @@ import("//components/vector_icons/vector_icons.gni")
 aggregate_vector_icons("permissions_vector_icons") {
   icon_directory = "."
 
-  sources = [
-    "accessibility.icon",
-    "usb_security_key.icon",
-  ]
+  sources = [ "accessibility.icon" ]
 }
 
 source_set("vector_icons") {
