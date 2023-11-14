@@ -36,11 +36,16 @@ namespace {
 
 // Text that is found when expanding details on the phishing warning page.
 const char kPhishingWarningDetails[] =
-    "Google Safe Browsing recently detected phishing";
+    "Google Safe Browsing, which recently found phishing";
 
 // Text that is found when expanding details on the malware warning page.
 const char kMalwareWarningDetails[] =
-    "Google Safe Browsing recently detected malware";
+    "Google Safe Browsing, which recently found malware";
+
+// Text that is found when expanding details on the malware warning page for an
+// iframe with malware.
+const char kIframeMalwareWarningDetails[] =
+    "Safe Browsing recently found malware";
 
 // Request handler for net::EmbeddedTestServer that returns the request URL's
 // path as the body of the response if the request URL's path starts with
@@ -98,7 +103,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(safe_browsing::kRedInterstitialFacelift);
   if ([self isRunningTest:@selector(testPageWithUnsafeIframe)] ||
       [self isRunningTest:@selector(testPageWithUnsafeIframeInIncognito)] ||
       [self isRunningTest:@selector
@@ -249,8 +253,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   // Load the phishing page and verify a warning is shown.
   [ChromeEarlGrey loadURL:_phishingURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_PHISHING_V4_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   // Tap on the "Back to safety" button and verify that the previous page's
   // contents are loaded.
@@ -267,8 +271,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   // Load the phishing page and verify a warning is shown.
   [ChromeEarlGrey loadURL:_phishingURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_PHISHING_V4_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   // Tap on the Details button and verify that warning details are shown.
   [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
@@ -283,8 +287,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // proceeded to the unsafe content in the other tab.
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:_phishingURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_PHISHING_V4_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 }
 
 // Tests expanding the details on a phishing warning, and proceeding past the
@@ -297,8 +301,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   // Load the phishing page and verify a warning is shown.
   [ChromeEarlGrey loadURL:_phishingURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_PHISHING_V4_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   // Tap on the Details button and verify that warning details are shown.
   [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
@@ -313,8 +317,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // proceeded to the unsafe content in the other tab.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:_phishingURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_PHISHING_V4_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 }
 
 // Tests that a malware page is blocked, and the "Back to safety" button on the
@@ -325,8 +329,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   // Load the malware page and verify a warning is shown.
   [ChromeEarlGrey loadURL:_malwareURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   // Tap on the "Back to safety" button and verify that the previous page's
   // contents are loaded.
@@ -342,8 +346,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   // Load the malware page and verify a warning is shown.
   [ChromeEarlGrey loadURL:_malwareURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   // Tap on the Details button and verify that warning details are shown.
   [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
@@ -387,8 +391,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   // Load the malware page and verify a warning is shown.
   [ChromeEarlGrey loadURL:_malwareURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   // Tap on the Details button and verify that warning details are shown.
   [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
@@ -439,8 +443,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGrey loadURL:_safeURL2];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
   [ChromeEarlGrey loadURL:_malwareURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 }
 
 // Tests enabling Enhanced Protection from a Standard Protection state (Default
@@ -463,8 +467,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGrey loadURL:_safeURL2];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
   [ChromeEarlGrey loadURL:_realTimePhishingURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_PHISHING_V4_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
   [ChromeEarlGrey
       waitForWebStateNotContainingElement:enhancedSafeBrowsingMessage];
 }
@@ -494,8 +498,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // Verify that a dark red box prompting to turn on Enhanced Protection is not
   // visible.
   [ChromeEarlGrey loadURL:_phishingURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_PHISHING_V4_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
   [ChromeEarlGrey
       waitForWebStateNotContainingElement:enhancedSafeBrowsingMessage];
 }
@@ -509,8 +513,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   // Load the phishing page and verify a warning is shown.
   [ChromeEarlGrey loadURL:_phishingURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_PHISHING_V4_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   // Tap on the Details button and verify that warning details are shown.
   [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
@@ -532,12 +536,10 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   // Load the a malware safe browsing error page.
   [ChromeEarlGrey loadURL:_malwareURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"The site ahead contains malware"];
+  [ChromeEarlGrey waitForWebStateContainingText:"Dangerous site"];
 
   [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
-  [ChromeEarlGrey waitForWebStateContainingText:
-                      "Google Safe Browsing recently detected malware"];
+  [ChromeEarlGrey waitForWebStateContainingText:kMalwareWarningDetails];
 
   // Verify that the proceed-link element is not found.  When the proceed link
   // is disabled, the entire second paragraph hidden.
@@ -564,8 +566,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   // Load the malware page and verify a warning is shown.
   [ChromeEarlGrey loadURL:_malwareURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   [ChromeEarlGrey loadURL:_safeURL2];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
@@ -574,8 +576,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
 
   [ChromeEarlGrey goBack];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
   // TODO(crbug.com/1153261): Adding a delay to avoid never-ending load on the
   // last navigation forward. Should be fixed in newer iOS version.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
@@ -593,15 +595,15 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   // Load the malware page and verify a warning is shown.
   [ChromeEarlGrey loadURL:_malwareURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   [ChromeEarlGrey loadURL:_safeURL2];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
 
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
@@ -618,8 +620,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   // Load the malware page and verify a warning is shown.
   [ChromeEarlGrey loadURL:_malwareURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   // Tap on the "Back to safety" button and verify that the previous page's
   // contents are loaded.
@@ -627,29 +629,29 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
 
   [ChromeEarlGrey goForward];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
   [ChromeEarlGrey loadURL:_safeURL2];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
 
   // Navigate back so that both the back list and the forward list are
   // non-empty.
   [ChromeEarlGrey goBack];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   // Do a session restoration and verify that all navigation history is
   // preserved.
   [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
 
   [ChromeEarlGrey goForward];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   [ChromeEarlGrey goForward];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
@@ -666,8 +668,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // Load a page that has an iframe with malware, and verify that a warning is
   // shown.
   [ChromeEarlGrey loadURL:_iframeWithMalwareURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   // Ensure back history is preserved. Tap on the "Back to safety" button and
   // verify that the previous page's contents are loaded.
@@ -680,8 +682,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGrey goForward];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
   [ChromeEarlGrey goForward];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 }
 
 // Tests that a page with an unsafe ifame is not blocked when subframe checks
@@ -710,8 +712,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // Load a page that has an iframe with malware, and verify that a warning is
   // shown.
   [ChromeEarlGrey loadURL:_iframeWithMalwareURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   // Ensure back history is preserved. Tap on the "Back to safety" button and
   // verify that the previous page's contents are loaded.
@@ -726,8 +728,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 }
 
 // Tests that a page with an unsafe ifame is not blocked when subframe checks
@@ -754,15 +756,15 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // Load a page that has an iframe with malware, and verify that a warning is
   // shown.
   [ChromeEarlGrey loadURL:_iframeWithMalwareURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   [ChromeEarlGrey loadURL:_safeURL2];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
 
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
@@ -780,12 +782,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // Load a page that has an iframe with malware, and verify that a warning is
   // shown.
   [ChromeEarlGrey loadURL:_iframeWithMalwareURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   // Tap on the Details button and verify that warning details are shown.
   [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
-  [ChromeEarlGrey waitForWebStateContainingText:kMalwareWarningDetails];
+  [ChromeEarlGrey waitForWebStateContainingText:kIframeMalwareWarningDetails];
 
   // Tap on the link to proceed to the unsafe page, and verify that this page is
   // loaded.
@@ -809,8 +811,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // Verify that a warning is still shown when loading the page in a new tab.
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:_iframeWithMalwareURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_MALWARE_V3_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 }
 
 // Tests that real-time lookups are not performed when opted-out of real-time
@@ -847,8 +849,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   // Load the real-time phishing page and verify that a warning page is shown.
   [ChromeEarlGrey loadURL:_realTimePhishingURL];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_PHISHING_V4_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 }
 
 // Tests that real-time lookups are not performed in incognito mode.
@@ -876,13 +878,13 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGrey loadURL:_realTimePhishingURL];
 
   // Verify that a warning is shown for the unsafe page.
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_PHISHING_V4_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   // Perform session restoration, and verify that a warning is still shown.
   [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_PHISHING_V4_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 }
 
 // Tests that when a page identified as unsafe by real-time Safe Browsing is
@@ -903,8 +905,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(phishingTitle)]
       performAction:grey_tap()];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_PHISHING_V4_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 }
 
 @end

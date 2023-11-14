@@ -4,7 +4,6 @@
 
 #import <XCTest/XCTest.h>
 
-#import "components/safe_browsing/core/common/features.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -26,12 +25,6 @@
 @end
 
 @implementation InterstitialWebUITestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_disabled.push_back(safe_browsing::kRedInterstitialFacelift);
-  return config;
-}
 
 - (void)setUp {
   [super setUp];
@@ -81,8 +74,7 @@
       kChromeInterstitialSafeBrowsingTypeMalwareValue);
   [ChromeEarlGrey loadURL:safeBrowsingURL];
 
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"The site ahead contains malware"];
+  [ChromeEarlGrey waitForWebStateContainingText:"Dangerous site"];
 }
 
 // Tests that chrome://interstitials/safe_browsing?type=phishing loads
@@ -95,7 +87,7 @@
       kChromeInterstitialSafeBrowsingTypePhishingValue);
   [ChromeEarlGrey loadURL:safeBrowsingURL];
 
-  [ChromeEarlGrey waitForWebStateContainingText:"Deceptive site ahead"];
+  [ChromeEarlGrey waitForWebStateContainingText:"Dangerous site"];
 }
 
 // Tests that chrome://interstitials/safe_browsing?type=unwanted loads
@@ -108,8 +100,7 @@
       kChromeInterstitialSafeBrowsingTypeUnwantedValue);
   [ChromeEarlGrey loadURL:safeBrowsingURL];
 
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"The site ahead contains harmful programs"];
+  [ChromeEarlGrey waitForWebStateContainingText:"Dangerous site"];
 }
 
 // Tests that chrome://interstitials/safe_browsing?type=clientside_malware loads
@@ -122,8 +113,7 @@
       kChromeInterstitialSafeBrowsingTypeClientsideMalwareValue);
   [ChromeEarlGrey loadURL:safeBrowsingURL];
 
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"The site ahead contains malware"];
+  [ChromeEarlGrey waitForWebStateContainingText:"Dangerous site"];
 }
 
 // Tests that chrome://interstitials/safe_browsing?type=clientside_phishing
@@ -136,7 +126,7 @@
       kChromeInterstitialSafeBrowsingTypeClientsidePhishingValue);
   [ChromeEarlGrey loadURL:safeBrowsingURL];
 
-  [ChromeEarlGrey waitForWebStateContainingText:"Deceptive site ahead"];
+  [ChromeEarlGrey waitForWebStateContainingText:"Dangerous site"];
 }
 
 // Tests that chrome://interstitials/safe_browsing?type=billing loads correctly.
