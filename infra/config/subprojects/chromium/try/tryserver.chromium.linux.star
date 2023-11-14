@@ -296,7 +296,7 @@ try_.compilator_builder(
     branch_selector = branches.selector.LINUX_BRANCHES,
     experiments = {
         # crbug/940930
-        "chromium.enable_cleandead": 10,
+        "chromium.enable_cleandead": 50,
     },
     main_list_view = "try",
 )
