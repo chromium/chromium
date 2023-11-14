@@ -20167,6 +20167,21 @@
             ]
         }
     ],
+    "VideoDecodeBatching": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VideoDecodeBatching"
+                    ]
+                }
+            ]
+        }
+    ],
     "VideoToolboxAv1Decoding": [
         {
             "platforms": [
