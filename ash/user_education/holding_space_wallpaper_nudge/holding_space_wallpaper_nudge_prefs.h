@@ -17,8 +17,9 @@ class Time;
 
 namespace ash::holding_space_wallpaper_nudge_prefs {
 
-// Returns the time the nudge was last shown. If the nudge has never been shown,
-// returns `absl::nullopt`.
+// Returns the time the nudge was last shown. If on the counterfactual arm, it
+// will be the last time the nudge would have been shown. If the nudge has never
+// been shown, returns `absl::nullopt`.
 ASH_EXPORT absl::optional<base::Time> GetLastTimeNudgeWasShown(
     PrefService* prefs);
 
