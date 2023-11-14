@@ -55,6 +55,10 @@ class IsolatedWebAppInstallerViewController
                            ConfirmationDialogMovesToInstallScreen);
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
                            SuccessfulInstallationMovesToSuccessScreen);
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
+                           InstallationErrorShowsErrorDialog);
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
+                           InstallationErrorRetryRestartsFlow);
 
   // Handles returning a default value if the controller has been deleted.
   static bool OnAcceptWrapper(

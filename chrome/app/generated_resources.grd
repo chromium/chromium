@@ -16447,6 +16447,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_IWA_INSTALLER_CONFIRM_CONTINUE" desc="Text of the continue button in the confirmation popup that appears immediately before Isolated Web App installation">
       Continue
     </message>
+    <message name="IDS_IWA_INSTALLER_INSTALL_FAILED_TITLE" desc="Title of the error dialog that is shown when an Isolated Web App failed to install">
+      Something went wrong
+    </message>
+    <message name="IDS_IWA_INSTALLER_INSTALL_FAILED_SUBTITLE" desc="Subtitle of the error dialog that is shown when an Isolated Web App failed to install">
+      The installation could not be completed. Please try again or close this window
+    </message>
+    <message name="IDS_IWA_INSTALLER_INSTALL_FAILED_RETRY" desc="Label of the retry button in the error dialog that is shown when an Isolated Web App failed to install">
+      Retry
+    </message>
     <message name="IDS_IWA_INSTALLER_SUCCESS_SUBTITLE" desc="Subtitle of the page shown after an Isolated Web App has successfully been installed.">
       Congrats! <ph name="APP_NAME">$1<ex>Google Maps</ex></ph> has been successfully installed on your device
     </message>

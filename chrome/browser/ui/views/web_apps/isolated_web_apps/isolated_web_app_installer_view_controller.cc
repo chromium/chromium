@@ -161,10 +161,14 @@ void IsolatedWebAppInstallerViewController::OnInstallComplete(
                    InstallIsolatedWebAppCommandError> result) {
   if (result.has_value()) {
     model_->SetStep(IsolatedWebAppInstallerModel::Step::kInstallSuccess);
-    OnModelChanged();
-    return;
+  } else {
+    model_->SetDialogContent(IsolatedWebAppInstallerModel::DialogContent(
+        /*is_error=*/true, IDS_IWA_INSTALLER_INSTALL_FAILED_TITLE,
+        IDS_IWA_INSTALLER_INSTALL_FAILED_SUBTITLE,
+        /*details_link=*/absl::nullopt,
+        IDS_IWA_INSTALLER_INSTALL_FAILED_RETRY));
   }
-  // TODO(crbug.com/1479140): Show error dialog
+  OnModelChanged();
 }
 
 void IsolatedWebAppInstallerViewController::OnConfirmInstallLearnMoreClicked() {
@@ -177,7 +181,6 @@ void IsolatedWebAppInstallerViewController::OnProfileShutdown() {
 
 void IsolatedWebAppInstallerViewController::OnBundleInvalid(
     const std::string& error) {
-  // TODO(crbug.com/1479140): Show "failed to verify" error message
   model_->SetDialogContent(IsolatedWebAppInstallerModel::DialogContent(
       /*is_error=*/true, IDS_IWA_INSTALLER_VERIFICATION_ERROR_TITLE,
       IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE));
@@ -234,7 +237,6 @@ void IsolatedWebAppInstallerViewController::OnChildDialogCanceled() {
 }
 
 void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
-  // TODO(crbug.com/1479140): Implement
   switch (model_->step()) {
     case IsolatedWebAppInstallerModel::Step::kConfirmInstall: {
       model_->SetStep(IsolatedWebAppInstallerModel::Step::kInstall);
@@ -251,6 +253,13 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
               weak_ptr_factory_.GetWeakPtr()));
       break;
     }
+
+    case IsolatedWebAppInstallerModel::Step::kInstall:
+      // A child dialog on the install screen means the installation failed.
+      // Accepting the dialog corresponds to the Retry button.
+      model_->SetDialogContent(absl::nullopt);
+      Start();
+      break;
 
     default:
       NOTREACHED();

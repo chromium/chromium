@@ -341,4 +341,60 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
       fake_provider()->registrar_unsafe().IsInstalled(url_info.app_id()));
 }
 
+TEST_F(IsolatedWebAppInstallerViewControllerTest,
+       InstallationErrorShowsErrorDialog) {
+  base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
+  IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
+  MockIconAndPageState(url_info, "1.0");
+
+  IsolatedWebAppInstallerModel model(bundle_path);
+  IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
+                                                   &model);
+  testing::StrictMock<MockView> view(&controller);
+  controller.SetViewForTesting(&view);
+
+  auto metadata = SignedWebBundleMetadata::CreateForTesting(
+      url_info, InstalledBundle(bundle_path), u"app name", base::Version("2.0"),
+      IconBitmaps());
+  model.SetSignedWebBundleMetadata(metadata);
+  model.SetStep(IsolatedWebAppInstallerModel::Step::kConfirmInstall);
+  model.SetDialogContent(CreateDummyDialog());
+
+  base::test::TestFuture<void> callback;
+  EXPECT_CALL(view, ShowInstallScreen(metadata)).Times(Exactly(2));
+  EXPECT_CALL(view,
+              ShowDialog(WithContents(
+                  /*is_error=*/true, IDS_IWA_INSTALLER_INSTALL_FAILED_TITLE,
+                  IDS_IWA_INSTALLER_INSTALL_FAILED_SUBTITLE)))
+      .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
+
+  controller.OnChildDialogAccepted();
+
+  EXPECT_TRUE(callback.Wait());
+  EXPECT_FALSE(
+      fake_provider()->registrar_unsafe().IsInstalled(url_info.app_id()));
+}
+
+TEST_F(IsolatedWebAppInstallerViewControllerTest,
+       InstallationErrorRetryRestartsFlow) {
+  IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
+  IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
+                                                   &model);
+  testing::StrictMock<MockView> view(&controller);
+  controller.SetViewForTesting(&view);
+
+  SignedWebBundleMetadata metadata = CreateMetadata(u"Test App", "0.0.1");
+  model.SetSignedWebBundleMetadata(metadata);
+  model.SetStep(IsolatedWebAppInstallerModel::Step::kInstall);
+  model.SetDialogContent(CreateDummyDialog());
+
+  base::test::TestFuture<void> callback;
+  EXPECT_CALL(view, ShowGetMetadataScreen())
+      .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
+
+  controller.OnChildDialogAccepted();
+
+  EXPECT_TRUE(callback.Wait());
+}
+
 }  // namespace web_app
