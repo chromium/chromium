@@ -98,8 +98,10 @@ SkiaGraphiteDawnImageRepresentation::CreateBackendTextures(
       SupportsMultiplanarRendering(context_state_.get());
   const bool supports_multiplanar_copy =
       SupportsMultiplanarCopy(context_state_.get());
-  if (format() == viz::MultiPlaneFormat::kNV12 ||
-      format() == viz::MultiPlaneFormat::kP010) {
+  if (format().is_multi_plane()) {
+    CHECK(format() == viz::MultiPlaneFormat::kP010 ||
+          format() == viz::MultiPlaneFormat::kNV12 ||
+          format() == viz::MultiPlaneFormat::kNV12A);
     backend_textures.reserve(format().NumberOfPlanes());
     for (int plane_index = 0; plane_index < format().NumberOfPlanes();
          plane_index++) {

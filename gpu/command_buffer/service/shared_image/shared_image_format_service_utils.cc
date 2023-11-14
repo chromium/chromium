@@ -411,8 +411,10 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
   } else if (format == viz::LegacyMultiPlaneFormat::kP010 ||
              format == viz::MultiPlaneFormat::kP010) {
     return wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm;
+  } else if (format == viz::LegacyMultiPlaneFormat::kNV12A ||
+             format == viz::MultiPlaneFormat::kNV12A) {
+    return wgpu::TextureFormat::R8BG8A8Triplanar420Unorm;
   }
-  // TODO(crbug.com/1175525): Add R8BG8A8Triplanar420Unorm format for dawn.
   NOTREACHED() << "Unsupported format: " << format.ToString();
   return wgpu::TextureFormat::Undefined;
 }
@@ -498,17 +500,21 @@ wgpu::TextureAspect GetDawnTextureAspect(viz::SharedImageFormat format,
     return wgpu::TextureAspect::All;
   }
 
-  // Dawn only supports 2 plane multiplanar formats i.e. NV12 and P010.
-  if (format.plane_config() != viz::SharedImageFormat::PlaneConfig::kY_UV) {
+  // Dawn only supports 2 or 3 plane multiplanar formats i.e. NV12, P010, and
+  // NV12A.
+  if (format.plane_config() != viz::SharedImageFormat::PlaneConfig::kY_UV &&
+      format.plane_config() != viz::SharedImageFormat::PlaneConfig::kY_UV_A) {
     return wgpu::TextureAspect::All;
   }
 
   if (plane_index == 0) {
     return wgpu::TextureAspect::Plane0Only;
+  } else if (plane_index == 1) {
+    return wgpu::TextureAspect::Plane1Only;
+  } else {
+    DCHECK_EQ(plane_index, 2);
+    return wgpu::TextureAspect::Plane2Only;
   }
-
-  DCHECK_EQ(plane_index, 1);
-  return wgpu::TextureAspect::Plane1Only;
 }
 
 skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
