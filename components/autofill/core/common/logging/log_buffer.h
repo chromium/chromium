@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_LOGGING_LOG_BUFFER_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_LOGGING_LOG_BUFFER_H_
 
+#include <concepts>
 #include <string>
-#include <type_traits>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -140,8 +140,8 @@ class LogBuffer {
 };
 
 // Enable streaming numbers of all types.
-template <typename T,
-          typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
+template <typename T>
+  requires(std::integral<T> || std::floating_point<T>)
 LogBuffer& operator<<(LogBuffer& buf, T number) {
   return buf << base::NumberToString(number);
 }
@@ -228,11 +228,8 @@ LogBuffer HighlightValue(base::StringPiece16 haystack,
 namespace internal {
 
 // Traits for LOG_AF() macro for `LogBuffer*`.
-template <typename T>
-struct LoggerTraits<
-    T,
-    typename std::enable_if_t<
-        std::is_convertible_v<decltype(std::declval<T>()), const LogBuffer*>>> {
+template <std::convertible_to<const LogBuffer*> T>
+struct LoggerTraits<T> {
   static bool active(const LogBuffer* log_buffer) {
     return log_buffer && log_buffer->active();
   }
@@ -241,11 +238,8 @@ struct LoggerTraits<
 };
 
 // Traits for LOG_AF() macro for `LogBuffer&`.
-template <typename T>
-struct LoggerTraits<
-    T,
-    typename std::enable_if_t<
-        std::is_convertible_v<decltype(std::declval<T>()), const LogBuffer&>>> {
+template <std::convertible_to<const LogBuffer&> T>
+struct LoggerTraits<T> {
   static bool active(const LogBuffer& log_buffer) {
     return log_buffer.active();
   }

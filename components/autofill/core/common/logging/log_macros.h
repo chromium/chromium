@@ -25,7 +25,7 @@ namespace autofill::internal {
 
 // Traits for targets of LOG_AF(). There are currently specializations for
 // `LogManager*` and `LogBuffer*`.
-template <typename T, typename Enable = void>
+template <typename T>
 struct LoggerTraits {
   // Returns true iff logging to should be enabled.
   static bool active(const T& logger) { return false; }
