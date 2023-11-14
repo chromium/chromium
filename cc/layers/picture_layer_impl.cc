@@ -468,11 +468,11 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
           // The raster_contents_scale_ is the best scale that the layer is
           // trying to produce, even though it may not be ideal. Since that's
           // the best the layer can promise in the future, consider those as
-          // complete. But if a tile is ideal scale, we don't want to consider
-          // it incomplete and trying to replace it with a tile at a worse
-          // scale.
+          // complete. Also consider a tile complete if it is ideal scale or
+          // better. Note that PLTS::CoverageIterator prefers the _smallest_
+          // scale that is >= ideal, which may be < raster_contents_scale_.
           if (iter->contents_scale_key() != raster_contents_scale_key() &&
-              iter->contents_scale_key() != ideal_contents_scale_key() &&
+              iter->contents_scale_key() < ideal_contents_scale_key() &&
               geometry_rect.Intersects(scaled_viewport_for_tile_priority)) {
             append_quads_data->num_incomplete_tiles++;
           }
