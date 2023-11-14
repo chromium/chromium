@@ -7,6 +7,7 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert
 import {reportPromise} from '../../../common/js/test_error_reporting.js';
 
 import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
+import {MetadataKey} from './metadata_item.js';
 import {MetadataRequest} from './metadata_request.js';
 
 const entryA: Entry = {
@@ -31,7 +32,7 @@ const entryB: Entry = {
 
 export function testFileSystemMetadataProviderBasic(callback: () => void) {
   const provider = new FileSystemMetadataProvider();
-  const names = [
+  const names: MetadataKey[] = [
     'modificationTime',
     'size',
     'contentMimeType',

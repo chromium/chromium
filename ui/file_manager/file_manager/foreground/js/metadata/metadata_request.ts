@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {MetadataKey} from './metadata_item.js';
+
 export class MetadataRequest {
   /**
    * @param names Property name list to be requested.
    */
-  constructor(public entry: Entry, public names: string[]) {}
+  constructor(public entry: Entry, public names: MetadataKey[]) {}
 }

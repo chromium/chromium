@@ -8,6 +8,8 @@ interface ImageTransformation {
   rotate90: number;
 }
 
+export type MetadataKey = keyof MetadataItem;
+
 /**
  * Metadata of a file.
  */
