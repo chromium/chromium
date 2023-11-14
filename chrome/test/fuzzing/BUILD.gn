@@ -51,6 +51,12 @@ if (!is_android) {
   in_process_proto_fuzzer("page_load_in_process_fuzzer") {
     sources = [ "page_load_in_process_fuzzer.cc" ]
     proto_source = "page_load_in_process_fuzzer.proto"
+    seed_corpus_sources = [
+      "page_load_in_process_fuzzer_seed_corpus/cross_origin.textproto",
+      "page_load_in_process_fuzzer_seed_corpus/network.textproto",
+      "page_load_in_process_fuzzer_seed_corpus/simple.textproto",
+    ]
+    testcase_proto_kind = "test.fuzzing.page_load_fuzzing.FuzzCase"
   }
   in_process_proto_fuzzer("kombucha_in_process_fuzzer") {
     sources = [
