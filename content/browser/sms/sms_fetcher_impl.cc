@@ -96,8 +96,10 @@ void SmsFetcherImpl::Unsubscribe(const OriginList& origin_list,
   auto it = remote_cancel_callbacks_.find(subscriber);
   if (it == remote_cancel_callbacks_.end())
     return;
-  std::move(it->second).Run();
+  auto cancel_callback = std::move(it->second);
   remote_cancel_callbacks_.erase(it);
+
+  std::move(cancel_callback).Run();
 }
 
 bool SmsFetcherImpl::Notify(const OriginList& origin_list,
