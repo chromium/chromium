@@ -927,11 +927,10 @@ void ScriptInjectionTracker::WillUpdateScriptsInRenderer(
     const mojom::HostID& host_id,
     content::RenderProcessHost& process) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  TRACE_EVENT("extensions",
-              "ScriptInjectionTracker::WillUpdateContentScriptsInRenderer",
-              ChromeTrackEvent::kRenderProcessHost, process,
-              ChromeTrackEvent::kChromeExtensionId,
-              ExtensionIdForTracing(host_id.id));
+  TRACE_EVENT(
+      "extensions", "ScriptInjectionTracker::WillUpdateScriptsInRenderer",
+      ChromeTrackEvent::kRenderProcessHost, process,
+      ChromeTrackEvent::kChromeExtensionId, ExtensionIdForTracing(host_id.id));
 
   scoped_refptr<const Extension> extension =
       FindExtensionByHostId(process.GetBrowserContext(), host_id);
@@ -939,33 +938,44 @@ void ScriptInjectionTracker::WillUpdateScriptsInRenderer(
     return;
   }
 
-  bool any_frame_matches_scripts = false;
-  process.ForEachRenderFrameHost(
-      [&any_frame_matches_scripts,
-       &extension](content::RenderFrameHost* frame) {
-        auto url = frame->GetLastCommittedURL();
+  bool any_frame_matches_content_scripts = false;
+  bool any_frame_matches_user_scripts = false;
+  process.ForEachRenderFrameHost([&any_frame_matches_content_scripts,
+                                  &any_frame_matches_user_scripts,
+                                  &extension](content::RenderFrameHost* frame) {
+    auto url = frame->GetLastCommittedURL();
 
-        if (extension->id() == kExtensionAffectedByBug1439642) {
-          const ExtensionRegistry* registry =
-              ExtensionRegistry::Get(frame->GetProcess()->GetBrowserContext());
-          DCHECK(registry);  // This method shouldn't be called during shutdown.
-          AddFrameDebugStringForBug1439642(*registry, "WUSIR", *frame, url);
-        }
+    if (extension->id() == kExtensionAffectedByBug1439642) {
+      const ExtensionRegistry* registry =
+          ExtensionRegistry::Get(frame->GetProcess()->GetBrowserContext());
+      DCHECK(registry);  // This method shouldn't be called during shutdown.
+      AddFrameDebugStringForBug1439642(*registry, "WUSIR", *frame, url);
+    }
 
-        if (DoWebViewScripstMatch(*extension, *frame) ||
-            DoStaticContentScriptsMatch(*extension, *frame, url) ||
-            DoDynamicContentScriptsMatch(*extension, *frame, url) ||
-            DoUserScriptsMatch(*extension, *frame, url)) {
-          any_frame_matches_scripts = true;
-        }
-      });
-  if (any_frame_matches_scripts) {
+    if (!any_frame_matches_content_scripts) {
+      any_frame_matches_content_scripts =
+          DoWebViewScripstMatch(*extension, *frame) ||
+          DoStaticContentScriptsMatch(*extension, *frame, url) ||
+          DoDynamicContentScriptsMatch(*extension, *frame, url);
+    }
+    if (!any_frame_matches_user_scripts) {
+      any_frame_matches_user_scripts =
+          DoUserScriptsMatch(*extension, *frame, url);
+    }
+  });
+
+  if (any_frame_matches_content_scripts || any_frame_matches_user_scripts) {
     auto& process_data = RenderProcessHostUserData::GetOrCreate(process);
-    process_data.AddScript(ScriptType::kContentScript, extension->id());
+    if (any_frame_matches_content_scripts) {
+      process_data.AddScript(ScriptType::kContentScript, extension->id());
+    }
+    if (any_frame_matches_user_scripts) {
+      process_data.AddScript(ScriptType::kUserScript, extension->id());
+    }
   } else {
     TRACE_EVENT_INSTANT("extensions",
                         "ScriptInjectionTracker::"
-                        "WillUpdateContentScriptsInRenderer - no matches",
+                        "WillUpdateScriptsInRenderer - no matches",
                         ChromeTrackEvent::kRenderProcessHost, process,
                         ChromeTrackEvent::kChromeExtensionId,
                         ExtensionIdForTracing(host_id.id));
