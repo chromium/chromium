@@ -163,10 +163,10 @@ class LeakDetectionDelegateTest : public testing::Test {
         .WillOnce(testing::WithArg<0>([password_forms, store, in_store](
                                           base::WeakPtr<PasswordStoreConsumer>
                                               consumer) {
-          std::vector<std::unique_ptr<PasswordForm>> results;
+          std::vector<PasswordForm> results;
           for (auto& form : password_forms) {
-            results.push_back(std::make_unique<PasswordForm>(std::move(form)));
-            results.back()->in_store = in_store;
+            results.push_back(std::move(form));
+            results.back().in_store = in_store;
           }
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,

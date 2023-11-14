@@ -30,7 +30,7 @@
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -44,11 +44,13 @@ namespace {
 
 using testing::_;
 using testing::ElementsAre;
+using testing::ElementsAreArray;
 using testing::Eq;
 using testing::NiceMock;
 using testing::Optional;
 using testing::Return;
 using testing::StrictMock;
+using testing::UnorderedElementsAre;
 using testing::VariantWith;
 using testing::WithArg;
 using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
@@ -105,8 +107,21 @@ MATCHER(ExpectLocalAccount, "") {
           absl::get<PasswordStoreOperationTarget>(arg));
 }
 
-std::vector<std::unique_ptr<PasswordForm>> CreateTestLogins() {
-  std::vector<std::unique_ptr<PasswordForm>> forms;
+PasswordForm CreateEntry(const std::string& username,
+                         const std::string& password,
+                         const GURL& origin_url,
+                         PasswordForm::MatchType match_type) {
+  PasswordForm form;
+  form.username_value = base::ASCIIToUTF16(username);
+  form.password_value = base::ASCIIToUTF16(password);
+  form.url = origin_url;
+  form.signon_realm = origin_url.GetWithEmptyPath().spec();
+  form.match_type = match_type;
+  return form;
+}
+
+std::vector<PasswordForm> CreateTestLogins() {
+  std::vector<PasswordForm> forms;
   forms.push_back(CreateEntry("Todd Tester", "S3cr3t",
                               GURL(u"https://example.com"),
                               PasswordForm::MatchType::kExact));
@@ -133,16 +148,6 @@ AndroidBackendError CreateNetworkError() {
   AndroidBackendError error{AndroidBackendErrorType::kExternalError};
   error.api_error_code = kNetworkErrorCode;
   return error;
-}
-
-std::vector<PasswordForm> UnwrapForms(
-    std::vector<std::unique_ptr<PasswordForm>> password_ptrs) {
-  std::vector<PasswordForm> forms;
-  forms.reserve(password_ptrs.size());
-  for (auto& password : password_ptrs) {
-    forms.push_back(std::move(*password));
-  }
-  return forms;
 }
 
 PasswordForm FormWithDisabledAutoSignIn(const PasswordForm& form_to_update) {
@@ -323,10 +328,10 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForLogins) {
       .WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
 
-  std::vector<std::unique_ptr<PasswordForm>> expected_logins =
-      CreateTestLogins();
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
-  consumer().OnCompleteWithLogins(kJobId, UnwrapForms(CreateTestLogins()));
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
+  consumer().OnCompleteWithLogins(kJobId, CreateTestLogins());
   RunUntilIdle();
 }
 
@@ -371,11 +376,8 @@ TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsNoPSL) {
   RunUntilIdle();
 
   // Retrieving logins for the last form should trigger the final callback.
-  LoginsResult expected_logins;
-  expected_logins.push_back(std::make_unique<PasswordForm>(matching_federated));
-  expected_logins.push_back(
-      std::make_unique<PasswordForm>(matching_signon_realm));
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(ElementsAre(
+                              matching_federated, matching_signon_realm))));
 
   task_environment_.FastForwardBy(kTestLatencyDelta);
   consumer().OnCompleteWithLogins(kSecondJobId, {matching_signon_realm});
@@ -426,11 +428,8 @@ TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsPSL) {
   RunUntilIdle();
 
   // Retrieving logins for the last form should trigger the final callback.
-  LoginsResult expected_logins;
-  expected_logins.push_back(std::make_unique<PasswordForm>(psl_matching));
-  expected_logins.push_back(
-      std::make_unique<PasswordForm>(psl_matching_federated));
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(UnorderedElementsAre(
+                              psl_matching, psl_matching_federated))));
 
   task_environment_.FastForwardBy(kTestLatencyDelta);
   consumer().OnCompleteWithLogins(kSecondJobId, {psl_matching, not_matching});
@@ -466,9 +465,8 @@ TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsGooglePSLMatch) {
                       "https://accounts.google.com/", kTestDateCreated);
 
   // Retrieving logins for the last form should trigger the final callback.
-  LoginsResult expected_logins;
-  expected_logins.push_back(std::make_unique<PasswordForm>(exact_match));
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<LoginsResult>(ElementsAre(exact_match))));
 
   consumer().OnCompleteWithLogins(kFirstJobId, {exact_match, psl_match});
   RunUntilIdle();
@@ -482,10 +480,10 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAutofillableLogins) {
   EXPECT_CALL(*bridge_helper(), GetAutofillableLogins).WillOnce(Return(kJobId));
   backend().GetAutofillableLoginsAsync(mock_reply.Get());
 
-  std::vector<std::unique_ptr<PasswordForm>> expected_logins =
-      CreateTestLogins();
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
-  consumer().OnCompleteWithLogins(kJobId, UnwrapForms(CreateTestLogins()));
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
+  consumer().OnCompleteWithLogins(kJobId, CreateTestLogins());
   RunUntilIdle();
 }
 
@@ -498,10 +496,10 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForLoginsForAccount) {
   absl::optional<std::string> account = "mytestemail@gmail.com";
   backend().GetAllLoginsForAccountAsync(account, mock_reply.Get());
 
-  std::vector<std::unique_ptr<PasswordForm>> expected_logins =
-      CreateTestLogins();
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
-  consumer().OnCompleteWithLogins(kJobId, UnwrapForms(CreateTestLogins()));
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
+  consumer().OnCompleteWithLogins(kJobId, CreateTestLogins());
   RunUntilIdle();
 }
 
@@ -946,11 +944,10 @@ TEST_F(PasswordStoreAndroidBackendTest,
   EXPECT_GE(after_retry_time - before_call_time, base::Seconds(1));
 
   // Answering the call with logins.
-  std::vector<std::unique_ptr<PasswordForm>> expected_logins =
-      CreateTestLogins();
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
-  consumer().OnCompleteWithLogins(kSucceedJobId,
-                                  UnwrapForms(CreateTestLogins()));
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
+  consumer().OnCompleteWithLogins(kSucceedJobId, CreateTestLogins());
   task_environment_.FastForwardUntilNoTasksRemain();
 
   // Per-operation retry histograms
@@ -1375,9 +1372,8 @@ TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsWithSchemeMismatch) {
   psl_match.scheme = PasswordForm::Scheme::kDigest;
 
   // Retrieving logins for the last form should trigger the final callback.
-  LoginsResult expected_logins;
-  expected_logins.push_back(std::make_unique<PasswordForm>(exact_match));
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<LoginsResult>(ElementsAre(exact_match))));
 
   consumer().OnCompleteWithLogins(kFirstJobId, {exact_match, psl_match});
   RunUntilIdle();
@@ -1424,14 +1420,16 @@ TEST_F(PasswordStoreAndroidBackendTest, GetGroupedMatchingLoginsAsync) {
 
   // Retrieving logins for the last form should trigger the final callback.
   LoginsResult expected_logins;
-  expected_logins.push_back(std::make_unique<PasswordForm>(exact_match));
-  expected_logins.back()->match_type = PasswordForm::MatchType::kExact;
-  expected_logins.push_back(std::make_unique<PasswordForm>(psl_match));
-  expected_logins.back()->match_type = PasswordForm::MatchType::kPSL;
-  expected_logins.push_back(std::make_unique<PasswordForm>(android_match));
-  expected_logins.back()->match_type = PasswordForm::MatchType::kAffiliated;
+  expected_logins.push_back(exact_match);
+  expected_logins.back().match_type = PasswordForm::MatchType::kExact;
+  expected_logins.push_back(psl_match);
+  expected_logins.back().match_type = PasswordForm::MatchType::kPSL;
+  expected_logins.push_back(android_match);
+  expected_logins.back().match_type = PasswordForm::MatchType::kAffiliated;
 
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(expected_logins))));
 
   consumer().OnCompleteWithLogins(kFirstJobId, {exact_match, psl_match});
   consumer().OnCompleteWithLogins(kSecondJobId, {android_match});
@@ -1453,7 +1451,7 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForGroupedMatchingLogins) {
       .WillOnce(Return(kJobId));
   backend().GetGroupedMatchingLoginsAsync(form_digest, mock_reply.Get());
 
-  std::vector<std::unique_ptr<PasswordForm>> returned_logins;
+  LoginsResult returned_logins;
   returned_logins.push_back(CreateEntry("Todd Tester", "S3cr3t",
                                         GURL(u"https://example.com/"),
                                         PasswordForm::MatchType::kAffiliated));
@@ -1464,7 +1462,7 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForGroupedMatchingLogins) {
       "Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
       GURL(u"https://example.org/"), PasswordForm::MatchType::kGrouped));
 
-  std::vector<std::unique_ptr<PasswordForm>> expected_logins;
+  std::vector<PasswordForm> expected_logins;
   // Exact match is defined as such even if it was marked as affiliated match
   // before.
   expected_logins.push_back(CreateEntry("Todd Tester", "S3cr3t",
@@ -1478,9 +1476,10 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForGroupedMatchingLogins) {
   // Grouped only match is filtered.
 
   base::HistogramTester histogram_tester;
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
-  consumer().OnCompleteWithLogins(kJobId,
-                                  UnwrapForms(std::move(returned_logins)));
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(expected_logins))));
+  consumer().OnCompleteWithLogins(kJobId, std::move(returned_logins));
   RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.GetLogins.GroupedMatchesStatus",
@@ -1511,13 +1510,13 @@ TEST_F(PasswordStoreAndroidBackendTest,
   PasswordForm form =
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
 
-  std::vector<std::unique_ptr<PasswordForm>> expected_results;
-  expected_results.push_back(std::make_unique<PasswordForm>(android_form));
+  std::vector<PasswordForm> expected_results;
+  expected_results.push_back(android_form);
   // Expect branding info for android credential.
-  expected_results.back()->affiliated_web_realm = kTestUrl;
-  expected_results.back()->app_display_name = kTestAndroidName;
-  expected_results.back()->app_icon_url = GURL(kTestAndroidIconURL);
-  expected_results.push_back(std::make_unique<PasswordForm>(form));
+  expected_results.back().affiliated_web_realm = kTestUrl;
+  expected_results.back().app_display_name = kTestAndroidName;
+  expected_results.back().app_icon_url = GURL(kTestAndroidIconURL);
+  expected_results.push_back(form);
 
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
 
@@ -1527,13 +1526,14 @@ TEST_F(PasswordStoreAndroidBackendTest,
   backend().GetAllLoginsWithAffiliationAndBrandingAsync(mock_reply.Get());
   RunUntilIdle();
 
-  std::vector<std::unique_ptr<PasswordForm>> returned_forms;
-  returned_forms.push_back(std::make_unique<PasswordForm>(android_form));
-  returned_forms.push_back(std::make_unique<PasswordForm>(form));
-  consumer().OnCompleteWithLogins(kJobId,
-                                  UnwrapForms(std::move(returned_forms)));
+  std::vector<PasswordForm> returned_forms;
+  returned_forms.push_back(android_form);
+  returned_forms.push_back(form);
+  consumer().OnCompleteWithLogins(kJobId, std::move(returned_forms));
 
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_results)));
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(expected_results))));
   RunUntilIdle();
 }
 
@@ -1560,17 +1560,9 @@ TEST_F(PasswordStoreAndroidBackendTest,
   PasswordForm form =
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
 
-  std::vector<std::unique_ptr<PasswordForm>> expected_results;
-  expected_results.push_back(std::make_unique<PasswordForm>(android_form));
-  expected_results.push_back(std::make_unique<PasswordForm>(form));
-
-  std::vector<std::unique_ptr<PasswordForm>> returned_forms;
-  returned_forms.push_back(std::make_unique<PasswordForm>(android_form));
-  returned_forms.push_back(std::make_unique<PasswordForm>(form));
-
-  consumer().OnCompleteWithLogins(kJobId,
-                                  UnwrapForms(std::move(returned_forms)));
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_results)));
+  consumer().OnCompleteWithLogins(kJobId, {android_form, form});
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<LoginsResult>(ElementsAre(android_form, form))));
   RunUntilIdle();
 }
 

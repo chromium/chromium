@@ -108,13 +108,8 @@ class LeakDetectionDelegateHelperTest
         .WillOnce(testing::WithArg<0>(
             [password_forms, store = store_.get()](
                 base::WeakPtr<PasswordStoreConsumer> consumer) {
-              std::vector<std::unique_ptr<PasswordForm>> results;
-              for (auto& form : password_forms) {
-                results.push_back(
-                    std::make_unique<PasswordForm>(std::move(form)));
-              }
               consumer->OnGetPasswordStoreResultsOrErrorFrom(
-                  store, std::move(results));
+                  store, std::move(password_forms));
             }));
   }
 

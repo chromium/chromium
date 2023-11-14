@@ -453,7 +453,7 @@ void PasswordStore::NotifyLoginsRetainedOnMainSequence(
   std::vector<PasswordForm> retained_logins;
   retained_logins.reserve(absl::get<LoginsResult>(result).size());
   for (auto& login : absl::get<LoginsResult>(result)) {
-    retained_logins.push_back(std::move(*login));
+    retained_logins.push_back(std::move(login));
   }
 
   for (auto& observer : observers_) {
@@ -473,9 +473,8 @@ void PasswordStore::NotifySyncEnabledOrDisabledOnMainSequence() {
   }
 }
 
-void PasswordStore::UnblocklistInternal(
-    base::OnceClosure completion,
-    std::vector<std::unique_ptr<PasswordForm>> forms) {
+void PasswordStore::UnblocklistInternal(base::OnceClosure completion,
+                                        std::vector<PasswordForm> forms) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (!backend_) {
     return;  // Once the shutdown started, ignore new requests.
@@ -484,8 +483,8 @@ void PasswordStore::UnblocklistInternal(
 
   std::vector<PasswordForm> forms_to_remove;
   for (auto& form : forms) {
-    if (form->blocked_by_user) {
-      forms_to_remove.push_back(std::move(*form));
+    if (form.blocked_by_user) {
+      forms_to_remove.push_back(std::move(form));
     }
   }
 

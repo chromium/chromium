@@ -77,17 +77,6 @@ using sync_util::GetSyncingAccount;
 using JobId = PasswordStoreAndroidBackendReceiverBridge::JobId;
 using SuccessStatus = PasswordStoreBackendMetricsRecorder::SuccessStatus;
 
-std::vector<std::unique_ptr<PasswordForm>> WrapPasswordsIntoPointers(
-    std::vector<PasswordForm> passwords) {
-  std::vector<std::unique_ptr<PasswordForm>> password_ptrs;
-  password_ptrs.reserve(passwords.size());
-  for (auto& password : passwords) {
-    password_ptrs.push_back(
-        std::make_unique<PasswordForm>(std::move(password)));
-  }
-  return password_ptrs;
-}
-
 std::string FormToSignonRealmQuery(const PasswordFormDigest& form,
                                    bool include_psl) {
   if (include_psl) {
@@ -158,20 +147,12 @@ void ValidateSignonRealm(const PasswordFormDigest& form_digest_to_match,
     std::move(callback).Run(std::move(logins_or_error));
     return;
   }
-  LoginsResult retrieved_logins =
-      std::move(absl::get<LoginsResult>(logins_or_error));
-  LoginsResult matching_logins;
-  for (auto it = retrieved_logins.begin(); it != retrieved_logins.end();) {
-    if (MatchesIncludedPSLAndFederation(*it->get(), form_digest_to_match,
-                                        include_psl)) {
-      matching_logins.push_back(std::move(*it));
-      // std::vector::erase returns the iterator for the next element.
-      it = retrieved_logins.erase(it);
-    } else {
-      it++;
-    }
-  }
-  std::move(callback).Run(std::move(matching_logins));
+  base::EraseIf(absl::get<LoginsResult>(logins_or_error),
+                [&form_digest_to_match, include_psl](const auto& form) {
+                  return !MatchesIncludedPSLAndFederation(
+                      form, form_digest_to_match, include_psl);
+                });
+  std::move(callback).Run(std::move(logins_or_error));
 }
 
 void ProcessGroupedLoginsAndReply(const PasswordFormDigest& form_digest,
@@ -182,22 +163,22 @@ void ProcessGroupedLoginsAndReply(const PasswordFormDigest& form_digest,
     return;
   }
   for (auto& form : absl::get<LoginsResult>(logins_or_error)) {
-    switch (GetMatchResult(*form, form_digest)) {
+    switch (GetMatchResult(form, form_digest)) {
       case MatchResult::NO_MATCH:
         // If it's not PSL nor exact match it has to be affiliated or grouped.
-        CHECK(form->match_type.has_value());
+        CHECK(form.match_type.has_value());
         break;
       case MatchResult::EXACT_MATCH:
       case MatchResult::FEDERATED_MATCH:
         // Rewrite match type completely for exact matches so it won't be
         // confused as other types.
-        form->match_type = PasswordForm::MatchType::kExact;
+        form.match_type = PasswordForm::MatchType::kExact;
         break;
       case MatchResult::PSL_MATCH:
       case MatchResult::FEDERATED_PSL_MATCH:
         // PSL match is only possible if form was marked as grouped match.
-        CHECK(form->match_type.has_value());
-        form->match_type |= PasswordForm::MatchType::kPSL;
+        CHECK(form.match_type.has_value());
+        form.match_type |= PasswordForm::MatchType::kPSL;
         break;
     }
   }
@@ -207,10 +188,10 @@ void ProcessGroupedLoginsAndReply(const PasswordFormDigest& form_digest,
   // Remove grouped only matches if filling across groups is disabled.
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kFillingAcrossGroupedSites)) {
-    base::EraseIf(
-        absl::get<LoginsResult>(logins_or_error), [](const auto& form) {
-          return form->match_type == PasswordForm::MatchType::kGrouped;
-        });
+    base::EraseIf(absl::get<LoginsResult>(logins_or_error),
+                  [](const auto& form) {
+                    return form.match_type == PasswordForm::MatchType::kGrouped;
+                  });
   }
 
   std::move(callback).Run(std::move(logins_or_error));
@@ -755,10 +736,10 @@ void PasswordStoreAndroidBackend::FilterAndRemoveLogins(
 
   LoginsResult logins = std::move(absl::get<LoginsResult>(result));
   std::vector<PasswordForm> logins_to_remove;
-  for (const auto& login : logins) {
-    if (login->date_created >= delete_begin &&
-        login->date_created < delete_end && url_filter.Run(login->url)) {
-      logins_to_remove.push_back(std::move(*login));
+  for (auto& login : logins) {
+    if (login.date_created >= delete_begin && login.date_created < delete_end &&
+        url_filter.Run(login.url)) {
+      logins_to_remove.push_back(std::move(login));
     }
   }
 
@@ -943,9 +924,8 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
   reply->RecordMetrics(/*error=*/absl::nullopt);
   DCHECK(reply->Holds<LoginsOrErrorReply>());
   main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(*reply).Get<LoginsOrErrorReply>(),
-                     WrapPasswordsIntoPointers(std::move(passwords))));
+      FROM_HERE, base::BindOnce(std::move(*reply).Get<LoginsOrErrorReply>(),
+                                std::move(passwords)));
 }
 
 void PasswordStoreAndroidBackend::OnLoginsChanged(JobId job_id,
@@ -1115,10 +1095,10 @@ void PasswordStoreAndroidBackend::FilterAndDisableAutoSignIn(
 
   LoginsResult logins = std::move(absl::get<LoginsResult>(result));
   std::vector<PasswordForm> logins_to_update;
-  for (std::unique_ptr<PasswordForm>& login : logins) {
+  for (auto& login : logins) {
     // Update login if it matches |origin_filer| and has autosignin enabled.
-    if (origin_filter.Run(login->url) && !login->skip_zero_click) {
-      logins_to_update.push_back(std::move(*login));
+    if (origin_filter.Run(login.url) && !login.skip_zero_click) {
+      logins_to_update.push_back(std::move(login));
       logins_to_update.back().skip_zero_click = true;
     }
   }

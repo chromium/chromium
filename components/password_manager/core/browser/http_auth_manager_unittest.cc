@@ -89,8 +89,8 @@ class MockHttpAuthObserver : public HttpAuthObserver {
 };
 
 ACTION_P(InvokeEmptyConsumerWithForms, store) {
-  arg0->OnGetPasswordStoreResultsOrErrorFrom(
-      store, std::vector<std::unique_ptr<PasswordForm>>());
+  arg0->OnGetPasswordStoreResultsOrErrorFrom(store,
+                                             std::vector<PasswordForm>());
 }
 }  // namespace
 
@@ -164,8 +164,8 @@ TEST_F(HttpAuthManagerTest, HttpAuthFilling) {
   EXPECT_CALL(observer, OnAutofillDataAvailable(std::u16string(u"user"),
                                                 std::u16string(u"1234")));
   ASSERT_TRUE(consumer);
-  std::vector<std::unique_ptr<PasswordForm>> result;
-  result.push_back(std::make_unique<PasswordForm>(stored_form));
+  std::vector<PasswordForm> result;
+  result.push_back(stored_form);
   consumer->OnGetPasswordStoreResultsOrErrorFrom(store_.get(),
                                                  std::move(result));
   testing::Mock::VerifyAndClearExpectations(&store_);
@@ -232,8 +232,8 @@ TEST_F(HttpAuthManagerTest, UpdateLastUsedTimeWhenSubmittingSavedCredentials) {
   httpauth_manager()->SetObserverAndDeliverCredentials(&observer,
                                                        observed_form);
   ASSERT_TRUE(consumer);
-  std::vector<std::unique_ptr<PasswordForm>> result;
-  result.push_back(std::make_unique<PasswordForm>(stored_form));
+  std::vector<PasswordForm> result;
+  result.push_back(stored_form);
   consumer->OnGetPasswordStoreResultsOrErrorFrom(store_.get(),
                                                  std::move(result));
 

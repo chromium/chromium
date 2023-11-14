@@ -214,7 +214,7 @@ LoginsResult FakePasswordStoreBackend::GetAllLoginsInternal() {
   LoginsResult result;
   for (const auto& elements : stored_passwords_) {
     for (const auto& stored_form : elements.second) {
-      result.push_back(std::make_unique<PasswordForm>(stored_form));
+      result.push_back(stored_form);
     }
   }
   return result;
@@ -225,7 +225,7 @@ LoginsResult FakePasswordStoreBackend::GetAutofillableLoginsInternal() {
   for (const auto& elements : stored_passwords_) {
     for (const auto& stored_form : elements.second) {
       if (!stored_form.blocked_by_user)
-        result.push_back(std::make_unique<PasswordForm>(stored_form));
+        result.push_back(stored_form);
     }
   }
   return result;
@@ -234,10 +234,9 @@ LoginsResult FakePasswordStoreBackend::GetAutofillableLoginsInternal() {
 LoginsResult FakePasswordStoreBackend::FillMatchingLoginsInternal(
     const std::vector<PasswordFormDigest>& forms,
     bool include_psl) {
-  std::vector<std::unique_ptr<PasswordForm>> results;
+  LoginsResult results;
   for (const auto& form : forms) {
-    std::vector<std::unique_ptr<PasswordForm>> matched_forms =
-        FillMatchingLoginsHelper(form, include_psl);
+    LoginsResult matched_forms = FillMatchingLoginsHelper(form, include_psl);
     results.insert(results.end(),
                    std::make_move_iterator(matched_forms.begin()),
                    std::make_move_iterator(matched_forms.end()));
@@ -249,7 +248,7 @@ LoginsResult FakePasswordStoreBackend::FillMatchingLoginsHelper(
     const PasswordFormDigest& form,
     bool include_psl) {
   // Updating all matched forms is the equivalent of FillMatchingLogins();
-  std::vector<std::unique_ptr<PasswordForm>> matched_forms;
+  LoginsResult matched_forms;
   for (const auto& elements : stored_passwords_) {
     // The code below doesn't support PSL federated credential. It's doable but
     // no tests need it so far.
@@ -267,7 +266,7 @@ LoginsResult FakePasswordStoreBackend::FillMatchingLoginsHelper(
                  form.url.DeprecatedGetOriginAsURL() &&
              password_manager::IsFederatedRealm(stored_form.signon_realm,
                                                 form.url))) {
-          matched_forms.push_back(std::make_unique<PasswordForm>(stored_form));
+          matched_forms.push_back(stored_form);
         }
       }
     }
@@ -365,12 +364,11 @@ PasswordStoreChangeList
 FakePasswordStoreBackend::RemoveLoginsCreatedBetweenInternal(
     base::Time delete_begin,
     base::Time delete_end) {
-  std::vector<std::unique_ptr<PasswordForm>> all_logins =
-      GetAllLoginsInternal();
+  std::vector<PasswordForm> all_logins = GetAllLoginsInternal();
   PasswordStoreChangeList list;
   for (const auto& form : all_logins) {
-    if (delete_begin <= form->date_created && form->date_created < delete_end) {
-      base::ranges::move(RemoveLoginInternal(*form), std::back_inserter(list));
+    if (delete_begin <= form.date_created && form.date_created < delete_end) {
+      base::ranges::move(RemoveLoginInternal(form), std::back_inserter(list));
     }
   }
   return list;

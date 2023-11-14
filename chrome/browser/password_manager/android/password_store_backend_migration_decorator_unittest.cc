@@ -358,7 +358,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
       .WillOnce(
           WithArg<1>(testing::Invoke([](LoginsOrErrorReply reply) -> void {
             LoginsResult logins;
-            logins.emplace_back(std::make_unique<PasswordForm>());
+            logins.emplace_back();
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindOnce(std::move(reply), std::move(logins)));
           })));

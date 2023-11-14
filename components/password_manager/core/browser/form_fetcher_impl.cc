@@ -35,6 +35,16 @@ namespace password_manager {
 
 namespace {
 
+std::vector<std::unique_ptr<PasswordForm>> ConvertToUniquePtr(
+    std::vector<PasswordForm> forms) {
+  std::vector<std::unique_ptr<PasswordForm>> result;
+  result.reserve(forms.size());
+  for (auto& form : forms) {
+    result.push_back(std::make_unique<PasswordForm>(std::move(form)));
+  }
+  return result;
+}
+
 // Create a vector of const PasswordForm from a vector of
 // unique_ptr<PasswordForm> by applying get() item-wise.
 std::vector<const PasswordForm*> MakeWeakCopies(
@@ -317,7 +327,7 @@ void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
     }
   }
 
-  std::vector<std::unique_ptr<PasswordForm>> results =
+  std::vector<PasswordForm> results =
       GetLoginsOrEmptyListOnFailure(std::move(results_or_error));
 
   DCHECK_EQ(State::WAITING, state_);
@@ -332,7 +342,7 @@ void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
     return;
   }
 
-  AggregatePasswordStoreResults(std::move(results));
+  AggregatePasswordStoreResults(ConvertToUniquePtr(std::move(results)));
 }
 
 void FormFetcherImpl::AggregatePasswordStoreResults(

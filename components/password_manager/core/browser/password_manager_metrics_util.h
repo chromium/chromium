@@ -858,7 +858,7 @@ void LogProcessIncomingPasswordSharingInvitationResult(
 
 // Logs GroupedPasswordFetchResult.
 void LogGroupedPasswordsResults(
-    const std::vector<std::unique_ptr<password_manager::PasswordForm>>& logins);
+    const std::vector<password_manager::PasswordForm>& logins);
 
 // Wraps |callback| into another callback that measures the elapsed time between
 // construction and actual execution of the callback. Records the result to

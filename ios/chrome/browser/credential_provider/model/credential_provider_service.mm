@@ -210,11 +210,11 @@ void CredentialProviderService::RequestSyncAllCredentials() {
 
 void CredentialProviderService::SyncAllCredentials(
     password_manager::PasswordStoreInterface* store,
-    absl::variant<std::vector<std::unique_ptr<PasswordForm>>,
-                  password_manager::PasswordStoreBackendError> forms_or_error) {
-  std::vector<std::unique_ptr<PasswordForm>> forms =
+    password_manager::LoginsResultOrError forms_or_error) {
+  std::vector<PasswordForm> forms =
       password_manager::GetLoginsOrEmptyListOnFailure(
           std::move(forms_or_error));
+
   AddCredentials(GetCredentialStore(store), std::move(forms));
   SyncStore();
 }
@@ -241,7 +241,7 @@ void CredentialProviderService::SyncStore() {
 
 void CredentialProviderService::AddCredentials(
     MemoryCredentialStore* store,
-    std::vector<std::unique_ptr<PasswordForm>> forms) {
+    std::vector<PasswordForm> forms) {
   // User is adding a password (not batch add from user login).
   const bool should_skip_max_verification = forms.size() == 1;
   const bool fallback_to_google_server = CanSendHistoryData(sync_service_);
@@ -250,19 +250,19 @@ void CredentialProviderService::AddCredentials(
     NSString* favicon_key;
     // Only fetch favicon for valid URL. FaviconLoader::FaviconForPageUrl does
     // not take Android facet URI.
-    if (form->url.is_valid()) {
-      favicon_key = GetFaviconFileKey(form->url);
+    if (form.url.is_valid()) {
+      favicon_key = GetFaviconFileKey(form.url);
       // Fetch the favicon and save it to the storage.
-      FetchFaviconForURLToPath(favicon_loader_, form->url, favicon_key,
+      FetchFaviconForURLToPath(favicon_loader_, form.url, favicon_key,
                                should_skip_max_verification,
                                fallback_to_google_server);
     }
 
     // Only store password with valid Android facet URI or valid URL.
-    if (password_manager::IsValidAndroidFacetURI(form->signon_realm) ||
-        form->url.is_valid()) {
+    if (password_manager::IsValidAndroidFacetURI(form.signon_realm) ||
+        form.url.is_valid()) {
       ArchivableCredential* credential =
-          [[ArchivableCredential alloc] initWithPasswordForm:*form
+          [[ArchivableCredential alloc] initWithPasswordForm:form
                                                      favicon:favicon_key];
       DCHECK(credential);
       [store addCredential:credential];
@@ -272,9 +272,9 @@ void CredentialProviderService::AddCredentials(
 
 void CredentialProviderService::RemoveCredentials(
     MemoryCredentialStore* store,
-    std::vector<std::unique_ptr<PasswordForm>> forms) {
+    std::vector<PasswordForm> forms) {
   for (const auto& form : forms) {
-    NSString* recordID = RecordIdentifierForPasswordForm(*form);
+    NSString* recordID = RecordIdentifierForPasswordForm(form);
     DCHECK(recordID);
     [store removeCredentialWithRecordIdentifier:recordID];
   }
@@ -302,20 +302,15 @@ void CredentialProviderService::UpdateUserEmail() {
          forKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
 }
 
-void CredentialProviderService::OnGetPasswordStoreResultsFrom(
+void CredentialProviderService::OnGetPasswordStoreResultsOrErrorFrom(
     password_manager::PasswordStoreInterface* store,
-    std::vector<std::unique_ptr<PasswordForm>> results) {
+    password_manager::LoginsResultOrError results) {
   auto callback =
       base::BindOnce(&CredentialProviderService::SyncAllCredentials,
                      weak_ptr_factory_.GetWeakPtr(), base::Unretained(store));
   affiliated_helper_->InjectAffiliationAndBrandingInformation(
-      std::move(results), std::move(callback));
-}
-
-void CredentialProviderService::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<PasswordForm>> results) {
-  // Not called because OnGetPasswordStoreResultsFrom() is overridden.
-  NOTREACHED_NORETURN();
+      password_manager::GetLoginsOrEmptyListOnFailure(std::move(results)),
+      std::move(callback));
 }
 
 void CredentialProviderService::OnPrimaryAccountChanged(
@@ -334,24 +329,21 @@ void CredentialProviderService::OnPrimaryAccountChanged(
 void CredentialProviderService::OnLoginsChanged(
     password_manager::PasswordStoreInterface* store,
     const PasswordStoreChangeList& changes) {
-  std::vector<std::unique_ptr<PasswordForm>> forms_to_add;
-  std::vector<std::unique_ptr<PasswordForm>> forms_to_remove;
+  std::vector<PasswordForm> forms_to_add, forms_to_remove;
   for (const PasswordStoreChange& change : changes) {
     if (change.form().blocked_by_user) {
       continue;
     }
     switch (change.type()) {
       case PasswordStoreChange::ADD:
-        forms_to_add.push_back(std::make_unique<PasswordForm>(change.form()));
+        forms_to_add.push_back(change.form());
         break;
       case PasswordStoreChange::UPDATE:
-        forms_to_remove.push_back(
-            std::make_unique<PasswordForm>(change.form()));
-        forms_to_add.push_back(std::make_unique<PasswordForm>(change.form()));
+        forms_to_remove.push_back(change.form());
+        forms_to_add.push_back(change.form());
         break;
       case PasswordStoreChange::REMOVE:
-        forms_to_remove.push_back(
-            std::make_unique<PasswordForm>(change.form()));
+        forms_to_remove.push_back(change.form());
         break;
       default:
         NOTREACHED();
@@ -376,12 +368,10 @@ void CredentialProviderService::OnLoginsRetained(
 
 void CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged(
     password_manager::PasswordStoreInterface* store,
-    absl::variant<std::vector<std::unique_ptr<PasswordForm>>,
-                  password_manager::PasswordStoreBackendError> forms_or_error) {
-  std::vector<std::unique_ptr<PasswordForm>> forms =
-      password_manager::GetLoginsOrEmptyListOnFailure(
-          std::move(forms_or_error));
-  AddCredentials(GetCredentialStore(store), std::move(forms));
+    password_manager::LoginsResultOrError results_or_error) {
+  AddCredentials(GetCredentialStore(store),
+                 password_manager::GetLoginsOrEmptyListOnFailure(
+                     std::move(results_or_error)));
   SyncStore();
 }
 

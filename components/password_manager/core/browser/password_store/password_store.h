@@ -181,8 +181,7 @@ class PasswordStore : public PasswordStoreInterface {
   // been modified via NotifyLoginsChangedOnMainSequence(). Note that there is
   // no guarantee that the called method will actually modify the password store
   // data.
-  void UnblocklistInternal(base::OnceClosure completion,
-                           std::vector<std::unique_ptr<PasswordForm>> forms);
+  void UnblocklistInternal(base::OnceClosure completion, LoginsResult forms);
 
   // This member is called to perform the actual interaction with the storage.
   // The backend is injected via the public constructor, this member owns the

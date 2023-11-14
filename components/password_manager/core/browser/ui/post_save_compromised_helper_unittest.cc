@@ -80,12 +80,8 @@ class PostSaveCompromisedHelperTest : public testing::Test {
         .WillOnce(testing::WithArg<0>(
             [password_forms, store = mock_profile_store_.get()](
                 base::WeakPtr<PasswordStoreConsumer> consumer) {
-              std::vector<std::unique_ptr<PasswordForm>> results;
-              for (auto& form : password_forms)
-                results.push_back(
-                    std::make_unique<PasswordForm>(std::move(form)));
-              consumer->OnGetPasswordStoreResultsOrErrorFrom(
-                  store, std::move(results));
+              consumer->OnGetPasswordStoreResultsOrErrorFrom(store,
+                                                             password_forms);
             }));
   }
 
@@ -308,30 +304,28 @@ TEST_F(PostSaveCompromisedHelperWithTwoStoreTest,
       {&compromised_profile_credential, &compromised_account_credential},
       kUsername);
   EXPECT_CALL(*profile_store(), GetAutofillableLogins)
-      .WillOnce(testing::WithArg<0>([store = profile_store()](
-                                        base::WeakPtr<PasswordStoreConsumer>
-                                            consumer) {
-        std::vector<std::unique_ptr<PasswordForm>> results;
-        results.push_back(std::make_unique<PasswordForm>(
-            CreateForm(kSignonRealm, kUsername, kPassword)));
-        results.back()->password_issues.insert(
-            {InsecureType::kLeaked, InsecurityMetadata()});
-        consumer->OnGetPasswordStoreResultsOrErrorFrom(store,
-                                                       std::move(results));
-      }));
+      .WillOnce(testing::WithArg<0>(
+          [store =
+               profile_store()](base::WeakPtr<PasswordStoreConsumer> consumer) {
+            std::vector<PasswordForm> results;
+            results.push_back(CreateForm(kSignonRealm, kUsername, kPassword));
+            results.back().password_issues.insert(
+                {InsecureType::kLeaked, InsecurityMetadata()});
+            consumer->OnGetPasswordStoreResultsOrErrorFrom(store,
+                                                           std::move(results));
+          }));
   EXPECT_CALL(*account_store(), GetAutofillableLogins)
-      .WillOnce(testing::WithArg<0>([store = account_store()](
-                                        base::WeakPtr<PasswordStoreConsumer>
-                                            consumer) {
-        std::vector<std::unique_ptr<PasswordForm>> results;
-        results.push_back(std::make_unique<PasswordForm>(
-            CreateForm(kSignonRealm, kUsername, kPassword,
-                       PasswordForm::Store::kAccountStore)));
-        results.back()->password_issues.insert(
-            {InsecureType::kLeaked, InsecurityMetadata()});
-        consumer->OnGetPasswordStoreResultsOrErrorFrom(store,
-                                                       std::move(results));
-      }));
+      .WillOnce(testing::WithArg<0>(
+          [store =
+               account_store()](base::WeakPtr<PasswordStoreConsumer> consumer) {
+            std::vector<PasswordForm> results;
+            results.push_back(CreateForm(kSignonRealm, kUsername, kPassword,
+                                         PasswordForm::Store::kAccountStore));
+            results.back().password_issues.insert(
+                {InsecureType::kLeaked, InsecurityMetadata()});
+            consumer->OnGetPasswordStoreResultsOrErrorFrom(store,
+                                                           std::move(results));
+          }));
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, _));
   helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),

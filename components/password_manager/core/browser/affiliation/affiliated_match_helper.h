@@ -60,7 +60,7 @@ class AffiliatedMatchHelper {
   // credentials in |forms|, sets |affiliated_web_realm|, |app_display_name| and
   // |app_icon_url| of forms, and invokes |result_callback|.
   virtual void InjectAffiliationAndBrandingInformation(
-      std::vector<std::unique_ptr<PasswordForm>> forms,
+      LoginsResult forms,
       base::OnceCallback<void(LoginsResultOrError)> result_callback);
 
   virtual void GetPSLExtensions(PSLExtensionCallback callback);

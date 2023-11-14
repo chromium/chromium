@@ -1626,8 +1626,8 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnBubbleHidden();
 
-  std::vector<std::unique_ptr<PasswordForm>> results;
-  results.push_back(std::make_unique<PasswordForm>(submitted_form()));
+  std::vector<PasswordForm> results;
+  results.push_back(submitted_form());
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   post_save_helper->OnGetPasswordStoreResultsOrErrorFrom(
       client().GetProfilePasswordStore(), std::move(results));
@@ -1671,16 +1671,12 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
   expected_forms.at(0).password_issues.insert(
       {InsecureType::kLeaked, InsecurityMetadata()});
   expected_forms.at(1).password_issues.clear();
-  std::vector<std::unique_ptr<PasswordForm>> results;
-  for (const auto& form : expected_forms) {
-    results.push_back(std::make_unique<PasswordForm>(form));
-  }
   // The bubble gets hidden after the user clicks on save.
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnBubbleHidden();
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   post_save_helper->OnGetPasswordStoreResultsOrErrorFrom(
-      client().GetProfilePasswordStore(), std::move(results));
+      client().GetProfilePasswordStore(), expected_forms);
   WaitForPasswordStore();
 
   EXPECT_TRUE(controller()->opened_automatic_bubble());

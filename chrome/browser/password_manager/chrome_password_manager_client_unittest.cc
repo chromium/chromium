@@ -1314,8 +1314,8 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   driver->GetPasswordManager()->OnPasswordFormsParsed(driver.get(),
                                                       {observed_form_data});
 
-  std::vector<std::unique_ptr<PasswordForm>> forms;
-  forms.push_back(MakePasswordForm());
+  std::vector<PasswordForm> forms;
+  forms.push_back(*MakePasswordForm());
   store_consumer->OnGetPasswordStoreResultsOrErrorFrom(mock_store,
                                                        std::move(forms));
 

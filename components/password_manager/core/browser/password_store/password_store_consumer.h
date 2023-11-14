@@ -19,7 +19,7 @@ struct InteractionsStats;
 struct PasswordForm;
 class PasswordStoreInterface;
 
-using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
+using LoginsResult = std::vector<PasswordForm>;
 using LoginsResultOrError =
     absl::variant<LoginsResult, PasswordStoreBackendError>;
 
@@ -60,7 +60,7 @@ class PasswordStoreConsumer {
   // TODO(crbug.com/1360343): Remove when the `FormsOrError` version is
   // implemented by all consumers.
   virtual void OnGetPasswordStoreResults(
-      LoginsResult results);
+      std::vector<std::unique_ptr<PasswordForm>> results);
 
   // Like OnGetPasswordStoreResults(), but also receives the originating
   // PasswordStoreInterface as a parameter. This is useful for consumers that
@@ -71,7 +71,7 @@ class PasswordStoreConsumer {
   // implemented by all consumers.
   virtual void OnGetPasswordStoreResultsFrom(
       PasswordStoreInterface* store,
-      LoginsResult results);
+      std::vector<std::unique_ptr<PasswordForm>> results);
 
  private:
   base::CancelableTaskTracker cancelable_task_tracker_;

@@ -2022,9 +2022,9 @@ TEST_F(SavedPasswordsPresenterMoveToAccountTest, MovesToAccount) {
   credentials.emplace_back(form_1);
   credentials.emplace_back(form_2);
 
-  std::vector<std::unique_ptr<PasswordForm>> forms;
-  forms.push_back(std::make_unique<PasswordForm>(form_1));
-  forms.push_back(std::make_unique<PasswordForm>(form_2));
+  std::vector<PasswordForm> forms;
+  forms.push_back(form_1);
+  forms.push_back(form_2);
 
   presenter().Init();
   static_cast<PasswordStoreConsumer*>(&presenter())
@@ -2054,11 +2054,11 @@ TEST_F(SavedPasswordsPresenterMoveToAccountTest,
   credentials.emplace_back(
       std::vector<PasswordForm>{form_profile, form_account});
 
-  std::vector<std::unique_ptr<PasswordForm>> forms_from_profile;
-  forms_from_profile.push_back(std::make_unique<PasswordForm>(form_profile));
+  std::vector<PasswordForm> forms_from_profile;
+  forms_from_profile.push_back(form_profile);
 
-  std::vector<std::unique_ptr<PasswordForm>> forms_from_account;
-  forms_from_account.push_back(std::make_unique<PasswordForm>(form_account));
+  std::vector<PasswordForm> forms_from_account;
+  forms_from_account.push_back(form_account);
 
   presenter().Init();
   static_cast<PasswordStoreConsumer*>(&presenter())

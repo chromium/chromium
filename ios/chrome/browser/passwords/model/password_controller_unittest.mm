@@ -185,14 +185,14 @@ PasswordForm CreatePasswordForm(const char* origin_url,
 // Invokes the password store consumer with a single copy of `form`, coming from
 // `store`.
 ACTION_P2(InvokeConsumer, store, form) {
-  std::vector<std::unique_ptr<PasswordForm>> result;
-  result.push_back(std::make_unique<PasswordForm>(form));
+  std::vector<PasswordForm> result;
+  result.push_back(form);
   arg0->OnGetPasswordStoreResultsOrErrorFrom(store, std::move(result));
 }
 
 ACTION_P(InvokeEmptyConsumerWithForms, store) {
-  arg0->OnGetPasswordStoreResultsOrErrorFrom(
-      store, std::vector<std::unique_ptr<PasswordForm>>());
+  arg0->OnGetPasswordStoreResultsOrErrorFrom(store,
+                                             std::vector<PasswordForm>());
 }
 
 struct TestPasswordFormData {

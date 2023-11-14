@@ -55,8 +55,8 @@ TEST(PasswordStoreConsumerTest, OnGetPasswordStoreResultsFromIsCalledWithData) {
                     store, std::move(forms_or_error));
           });
 
-  std::vector<std::unique_ptr<PasswordForm>> forms;
-  forms.push_back(CreateForm());
+  std::vector<PasswordForm> forms;
+  forms.push_back(*CreateForm());
   std::vector<std::unique_ptr<PasswordForm>> copy_of_forms;
   copy_of_forms.push_back(CreateForm());
 
@@ -91,8 +91,8 @@ TEST(PasswordStoreConsumerTest,
 TEST(PasswordStoreConsumerTest, OnGetPasswordStoreResultsIsCalledWithData) {
   MockPasswordStoreConsumerPartial consumer;
 
-  std::vector<std::unique_ptr<PasswordForm>> forms;
-  forms.push_back(CreateForm());
+  std::vector<PasswordForm> forms;
+  forms.push_back(*CreateForm());
   std::vector<std::unique_ptr<PasswordForm>> copy_of_forms;
   copy_of_forms.push_back(CreateForm());
 

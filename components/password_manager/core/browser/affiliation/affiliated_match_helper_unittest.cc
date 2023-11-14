@@ -320,13 +320,10 @@ TEST_F(AffiliatedMatchHelperTest, GetGroupedRealmsWhenNoMatch) {
 #endif
 
 TEST_F(AffiliatedMatchHelperTest, InjectAffiliationAndBrandingInformation) {
-  std::vector<std::unique_ptr<PasswordForm>> forms;
-  forms.push_back(std::make_unique<PasswordForm>(
-      GetTestAndroidCredentials(kTestAndroidRealmAlpha3)));
-  forms.push_back(std::make_unique<PasswordForm>(
-      GetTestAndroidCredentials(kTestAndroidRealmBeta2)));
-  forms.push_back(std::make_unique<PasswordForm>(
-      GetTestAndroidCredentials(kTestAndroidRealmGamma)));
+  std::vector<PasswordForm> forms;
+  forms.push_back(GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
+  forms.push_back(GetTestAndroidCredentials(kTestAndroidRealmBeta2));
+  forms.push_back(GetTestAndroidCredentials(kTestAndroidRealmGamma));
 
   PasswordFormDigest digest = {PasswordForm::Scheme::kHtml, kTestWebRealmBeta1,
                                GURL()};
@@ -334,7 +331,7 @@ TEST_F(AffiliatedMatchHelperTest, InjectAffiliationAndBrandingInformation) {
   web_form.scheme = digest.scheme;
   web_form.signon_realm = digest.signon_realm;
   web_form.url = digest.url;
-  forms.push_back(std::make_unique<PasswordForm>(web_form));
+  forms.push_back(web_form);
 
   size_t expected_form_count = forms.size();
 
@@ -354,31 +351,28 @@ TEST_F(AffiliatedMatchHelperTest, InjectAffiliationAndBrandingInformation) {
                   FacetURI::FromCanonicalSpec(kTestAndroidFacetURIGamma), _, _))
       .WillOnce(RunOnceCallback<2>(AffiliatedFacets(), false));
 
-  absl::variant<std::vector<std::unique_ptr<PasswordForm>>,
-                PasswordStoreBackendError>
-      result;
+  LoginsResultOrError result;
   base::MockCallback<base::OnceCallback<void(LoginsResultOrError)>> mock_reply;
-  EXPECT_CALL(mock_reply, Run).WillOnce(MoveArg(&result));
+  EXPECT_CALL(mock_reply, Run).WillOnce(testing::SaveArg<0>(&result));
   match_helper()->InjectAffiliationAndBrandingInformation(std::move(forms),
                                                           mock_reply.Get());
 
-  auto result_forms =
-      std::move(absl::get<std::vector<std::unique_ptr<PasswordForm>>>(result));
+  auto result_forms = std::move(absl::get<std::vector<PasswordForm>>(result));
 
   ASSERT_EQ(expected_form_count, result_forms.size());
-  EXPECT_THAT(result_forms[0]->affiliated_web_realm,
+  EXPECT_THAT(result_forms[0].affiliated_web_realm,
               testing::AnyOf(kTestWebRealmAlpha1, kTestWebRealmAlpha2));
-  EXPECT_EQ(kTestAndroidFacetNameAlpha3, result_forms[0]->app_display_name);
+  EXPECT_EQ(kTestAndroidFacetNameAlpha3, result_forms[0].app_display_name);
   EXPECT_EQ(kTestAndroidFacetIconURLAlpha3,
-            result_forms[0]->app_icon_url.possibly_invalid_spec());
+            result_forms[0].app_icon_url.possibly_invalid_spec());
 
-  EXPECT_THAT(result_forms[1]->affiliated_web_realm,
+  EXPECT_THAT(result_forms[1].affiliated_web_realm,
               testing::Eq(kTestWebRealmBeta1));
-  EXPECT_EQ(kTestAndroidFacetNameBeta2, result_forms[1]->app_display_name);
+  EXPECT_EQ(kTestAndroidFacetNameBeta2, result_forms[1].app_display_name);
   EXPECT_EQ(kTestAndroidFacetIconURLBeta2,
-            result_forms[1]->app_icon_url.possibly_invalid_spec());
+            result_forms[1].app_icon_url.possibly_invalid_spec());
 
-  EXPECT_THAT(result_forms[2]->affiliated_web_realm, IsEmpty());
+  EXPECT_THAT(result_forms[2].affiliated_web_realm, IsEmpty());
 }
 
 TEST_F(AffiliatedMatchHelperTest, GetPSLExtensions) {

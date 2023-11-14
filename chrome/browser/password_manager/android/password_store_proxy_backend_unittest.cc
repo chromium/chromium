@@ -35,6 +35,7 @@ namespace {
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtMost;
+using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::Optional;
@@ -69,14 +70,14 @@ PasswordForm CreateTestForm() {
   return form;
 }
 
-std::vector<std::unique_ptr<PasswordForm>> CreateTestLogins() {
-  std::vector<std::unique_ptr<PasswordForm>> forms;
-  forms.push_back(CreateEntry("Todd Tester", "S3cr3t",
-                              GURL(u"https://example.com"),
-                              PasswordForm::MatchType::kExact));
-  forms.push_back(CreateEntry("Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
-                              GURL(u"https://m.example.com"),
-                              PasswordForm::MatchType::kPSL));
+std::vector<PasswordForm> CreateTestLogins() {
+  std::vector<PasswordForm> forms;
+  forms.push_back(*CreateEntry("Todd Tester", "S3cr3t",
+                               GURL(u"https://example.com"),
+                               PasswordForm::MatchType::kExact));
+  forms.push_back(*CreateEntry("Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
+                               GURL(u"https://m.example.com"),
+                               PasswordForm::MatchType::kPSL));
   return forms;
 }
 
@@ -290,9 +291,9 @@ class PasswordStoreProxyBackendTest
 
 TEST_P(PasswordStoreProxyBackendTest, UseMainBackendToGetAllLoginsAsync) {
   base::MockCallback<LoginsOrErrorReply> mock_reply;
-  std::vector<std::unique_ptr<PasswordForm>> expected_logins =
-      CreateTestLogins();
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
 
   EXPECT_CALL(main_backend(), GetAllLoginsAsync)
       .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
@@ -306,9 +307,9 @@ TEST_P(PasswordStoreProxyBackendTest, UseMainBackendToGetAllLoginsAsync) {
 TEST_P(PasswordStoreProxyBackendTest,
        UseMainBackendToGetAutofillableLoginsAsync) {
   base::MockCallback<LoginsOrErrorReply> mock_reply;
-  std::vector<std::unique_ptr<PasswordForm>> expected_logins =
-      CreateTestLogins();
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
 
   EXPECT_CALL(main_backend(), GetAutofillableLoginsAsync)
       .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
@@ -321,9 +322,9 @@ TEST_P(PasswordStoreProxyBackendTest,
 
 TEST_P(PasswordStoreProxyBackendTest, UseMainBackendToFillMatchingLoginsAsync) {
   base::MockCallback<LoginsOrErrorReply> mock_reply;
-  std::vector<std::unique_ptr<PasswordForm>> expected_logins =
-      CreateTestLogins();
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
 
   EXPECT_CALL(main_backend(), FillMatchingLoginsAsync)
       .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
@@ -583,8 +584,6 @@ TEST_P(PasswordStoreProxyBackendTestWithErrorsForFallbacks,
   EnablePasswordSync();
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
-  std::vector<std::unique_ptr<PasswordForm>> expected_logins =
-      CreateTestLogins();
 
   EXPECT_CALL(android_backend(), FillMatchingLoginsAsync)
       .WillOnce(WithArg<0>(Invoke([&p](LoginsOrErrorReply reply) -> void {
@@ -596,7 +595,9 @@ TEST_P(PasswordStoreProxyBackendTestWithErrorsForFallbacks,
           std::move(reply).Run(CreateTestLogins());
         })));
     // Check that caller doesn't receive an error from android backend.
-    EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+    EXPECT_CALL(
+        mock_reply,
+        Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
   } else {
     EXPECT_CALL(built_in_backend(), FillMatchingLoginsAsync).Times(0);
     // Check that caller gets an error from android backend.
