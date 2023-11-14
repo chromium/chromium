@@ -589,7 +589,7 @@ LogicalOffset NGBoxFragmentBuilder::GetChildOffset(
       }
     }
   }
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED_NORETURN();
   return LogicalOffset();
 }
 
