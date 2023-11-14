@@ -4923,6 +4923,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Net.SharedDictionaryTransaction.AbortedWhileReadingDictionary.{SuccessOrFailure}"
+    units="ms" expires_after="2024-02-14">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/extras/shared_dictionary/OWNERS</owner>
+  <summary>
+    The delay to read a shared dictionary from a SharedDictionaryTransaction
+    which is already aborted. Recorded when the dictionary is read, but the
+    SharedDictionaryTransaction was aborted before the read operation was
+    completed.
+  </summary>
+  <token key="SuccessOrFailure" variants="SuccessOrFailure"/>
+</histogram>
+
+<histogram
     name="Net.SharedDictionaryTransaction.DictionaryReadLatency.{SuccessOrFailure}"
     units="ms" expires_after="2024-05-05">
   <owner>horo@chromium.org</owner>

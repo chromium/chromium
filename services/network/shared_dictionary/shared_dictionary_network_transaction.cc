@@ -194,8 +194,21 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
   if (dictionary_status_ == DictionaryStatus::kNoDictionary) {
     dictionary_status_ = DictionaryStatus::kReading;
     auto split_callback = base::SplitOnceCallback(base::BindOnce(
-        &SharedDictionaryNetworkTransaction::OnReadSharedDictionary,
+        [](base::WeakPtr<SharedDictionaryNetworkTransaction> self,
+           base::Time read_start_time, int result) {
+          if (!self) {
+            bool succeeded = result == net::OK;
+            base::UmaHistogramTimes(
+                base::StrCat({"Net.SharedDictionaryTransaction."
+                              "AbortedWhileReadingDictionary.",
+                              succeeded ? "Success" : "Failure"}),
+                base::Time::Now() - read_start_time);
+            return;
+          }
+          self->OnReadSharedDictionary(read_start_time, result);
+        },
         weak_factory_.GetWeakPtr(), /*read_start_time=*/base::Time::Now()));
+
     int read_result =
         shared_dictionary_->ReadAll(std::move(split_callback.first));
     if (read_result != net::ERR_IO_PENDING) {
