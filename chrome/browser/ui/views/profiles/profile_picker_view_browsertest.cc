@@ -771,11 +771,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // Closes the picker at the same time the new browser is created.
   class ClosePickerOnBrowserAddedObserver : public BrowserListObserver {
    public:
-    explicit ClosePickerOnBrowserAddedObserver(
-        ProfilePickerCreationFlowBrowserTest* fixture)
-        : fixture_(fixture) {
-      BrowserList::AddObserver(this);
-    }
+    ClosePickerOnBrowserAddedObserver() { BrowserList::AddObserver(this); }
 
     // This observer is registered early, before the call to
     // `OpenBrowserWindowForProfile()` in `ProfileManagementFlowController`. It
@@ -783,20 +779,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
     // `clear_host_callback_` is called
     void OnBrowserAdded(Browser* browser) override {
       BrowserList::RemoveObserver(this);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // On Lacros, using `ProfilePicker::Hide()` causes a timeout.
-      fixture_->widget()->CloseNow();
-#else
       ProfilePicker::Hide();
-#endif
-      fixture_->WaitForPickerClosed();
     }
-
-   private:
-    raw_ptr<ProfilePickerCreationFlowBrowserTest> fixture_ = nullptr;
   };
 
-  ClosePickerOnBrowserAddedObserver close_picker_on_browser_added(this);
+  ClosePickerOnBrowserAddedObserver close_picker_on_browser_added;
 
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the

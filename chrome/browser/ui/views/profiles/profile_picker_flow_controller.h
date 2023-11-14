@@ -47,6 +47,11 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 
   base::FilePath GetSwitchProfilePathOrEmpty() const;
 
+ protected:
+  // ProfileManagementFlowControllerImpl
+  base::queue<ProfileManagementFlowController::Step> RegisterPostIdentitySteps()
+      override;
+
  private:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<ProfilePickerDiceSignInProvider> CreateDiceSignInProvider()
@@ -66,6 +71,9 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents) override;
 
+  void HandleIdentityStepsCompleted(
+      PostHostClearedCallback post_host_cleared_callback);
+
   const ProfilePicker::EntryPoint entry_point_;
 
   // Color provided when a profile creation is initiated, that may be used to
@@ -81,6 +89,9 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
   // its controller is created instead of relying on static calls.
   base::WeakPtr<ProfilePickerSignedInFlowController>
       weak_signed_in_flow_controller_;
+
+  raw_ptr<Profile> created_profile_ = nullptr;
+  PostHostClearedCallback post_host_cleared_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FLOW_CONTROLLER_H_
