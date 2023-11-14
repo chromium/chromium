@@ -5677,6 +5677,7 @@ interface MLModelLoader
 interface MLOperand
     attribute @@toStringTag
     method constructor
+    method shape
 interface Magnetometer : Sensor
     attribute @@toStringTag
     getter x

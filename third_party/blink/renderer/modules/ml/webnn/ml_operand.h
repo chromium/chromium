@@ -78,6 +78,9 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   // https://www.w3.org/TR/webnn/#mloperanddescriptor-byte-length
   size_t ByteLength() const;
 
+  // IDL interface:
+  Vector<uint32_t> shape() const;
+
  private:
   Member<MLGraphBuilder> builder_;
   OperandKind kind_;

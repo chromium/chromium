@@ -192,6 +192,10 @@ size_t MLOperand::ByteLength() const {
   return byte_length.value();
 }
 
+Vector<uint32_t> MLOperand::shape() const {
+  return dimensions_;
+}
+
 void MLOperand::Trace(Visitor* visitor) const {
   visitor->Trace(builder_);
   visitor->Trace(array_buffer_view_);
