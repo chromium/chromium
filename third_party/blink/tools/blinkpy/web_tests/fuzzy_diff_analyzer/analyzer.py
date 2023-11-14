@@ -77,13 +77,14 @@ class FuzzyMatchingAnalyzer(ImageMatchingAnalyzer):
         # Total distinct image diff number does not reach the threshold, return all
         # these image diff as suggested matching.
         if len(image_diff_counts) < self._distinct_diff_num_threshold:
-            result = 'Total image diff number is %d. ' % total_image_diff_num
-            result += 'Total distinct image diff number is less '
+            result = 'Total test number that have image diff is '
+            result += '%d. ' % total_image_diff_num
+            result += 'Total distinct image diff results is less '
             result += 'than %d. Suggested ' % self._distinct_diff_num_threshold
-            result += 'make all following image diff (color_difference, '
-            result += 'pixel_difference) to match actual image result:'
+            result += 'check these image diff result (color_difference, '
+            result += 'pixel_difference) individually to fix the issue:'
             for image_diff, image_diff_number in image_diff_counts.items():
-                result = result + ' (%d, %d) with total %d' % (
+                result = result + ' (%d, %d) with total test number %d' % (
                     image_diff.color_difference, image_diff.pixel_difference,
                     image_diff_number)
             return dt.TestAnalysisResultType(True, result)
@@ -95,7 +96,8 @@ class FuzzyMatchingAnalyzer(ImageMatchingAnalyzer):
             color_diff_list += [image_diff.color_difference] * count
             pixel_diff_list += [image_diff.pixel_difference] * count
 
-        result = 'Total image diff number is %d. ' % total_image_diff_num
+        result = 'Total test number that have image diff is '
+        result += '%d. ' % total_image_diff_num
         result += 'The list of fuzzy match range suggested for this test: '
         result += '\nFor color difference:\n'
         result += self._calculate_data_percentile(color_diff_list)

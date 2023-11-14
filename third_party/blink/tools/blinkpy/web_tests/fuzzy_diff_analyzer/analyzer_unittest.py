@@ -48,11 +48,13 @@ class FuzzyMatchingAnalyzerTest(unittest.TestCase):
         }
         actual_result = fuzzy_match_analyzer.run_analyzer(
             test_data).analysis_result
-        expected_result = 'Total image diff number is 3. ' \
-                          'Total distinct image diff number is less than 4. ' \
-                          'Suggested make all following image diff ' \
-                          '(color_difference, pixel_difference) to match actual ' \
-                          'image result: (10, 40) with total 2 (15, 42) with total 1'
+        expected_result = 'Total test number that have image diff is 3. ' \
+                          'Total distinct image diff results is less than 4. ' \
+                          'Suggested check these image diff result ' \
+                          '(color_difference, pixel_difference) ' \
+                          'individually to fix the issue: (10, 40) ' \
+                          'with total test number 2 ' \
+                          '(15, 42) with total test number 1'
         self.assertEqual(actual_result, expected_result)
 
     def test_run_analyzer_in_fuzzy_match_range_in_different_platform(
@@ -78,7 +80,8 @@ class FuzzyMatchingAnalyzerTest(unittest.TestCase):
         }
         actual_result = fuzzy_match_analyzer.run_analyzer(
             test_data).analysis_result
-        expected_result = 'Total image diff number is 5. The list of fuzzy match range suggested for this ' \
+        expected_result = 'Total test number that have image diff is 5. ' \
+                          'The list of fuzzy match range suggested for this ' \
                           'test: \nFor color difference:\n15 to cover 50 percentile, 16 ' \
                           'to cover 75 percentile, 16 to cover 90 percentile, ' \
                           '16 to cover 95 percentile, 303 to cover all.\nFor ' \
@@ -101,7 +104,8 @@ class FuzzyMatchingAnalyzerTest(unittest.TestCase):
         }
         actual_result = fuzzy_match_analyzer.run_analyzer(
             test_data).analysis_result
-        expected_result = 'Total image diff number is 100. The list of fuzzy match range suggested for this ' \
+        expected_result = 'Total test number that have image diff is 100. ' \
+                          'The list of fuzzy match range suggested for this ' \
                           'test: \nFor color difference:\n50 to cover 50 percentile, 75 ' \
                           'to cover 75 percentile, 90 to cover 90 percentile, ' \
                           '95 to cover 95 percentile, 100 to cover all.\nFor ' \
@@ -124,7 +128,8 @@ class FuzzyMatchingAnalyzerTest(unittest.TestCase):
         }
         actual_result = fuzzy_match_analyzer.run_analyzer(
             test_data).analysis_result
-        expected_result = 'Total image diff number is 101. The list of fuzzy match range suggested for this ' \
+        expected_result = 'Total test number that have image diff is 101. ' \
+                          'The list of fuzzy match range suggested for this ' \
                           'test: \nFor color difference:\n51 to cover 50 percentile, 76 ' \
                           'to cover 75 percentile, 91 to cover 90 percentile, ' \
                           '96 to cover 95 percentile, 101 to cover all.\nFor ' \

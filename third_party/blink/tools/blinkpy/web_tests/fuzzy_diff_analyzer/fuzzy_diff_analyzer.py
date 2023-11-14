@@ -106,6 +106,7 @@ def main() -> int:
         bugs = {'': [args.test_path]}
 
     for bug_id, test_list in bugs.items():
+        bug_result_string = ''
         for test_path in test_list:
             query_results = (querier_instance.
                              get_failed_image_comparison_ci_tests(test_path))
@@ -116,23 +117,26 @@ def main() -> int:
                 test_analysis_result = matching_analyzer.run_analyzer(
                     test_data)
                 if test_analysis_result.is_analyzed:
-                    result_string = RESULT_TITLE
-                    if bug_id:
-                        result_string += '\nbug number: %s' % bug_id
-                    result_string += '\ntest_name: %s' % test_name
-                    result_string += '\ntest_result: %s' % \
+                    result_string = ''
+                    if bug_id and not args.attach_analysis_result:
+                        result_string += '\nBug number: %s' % bug_id
+                    result_string += '\nTest name: %s' % test_name
+                    result_string += '\nTest Result: %s' % \
                                      test_analysis_result.analysis_result
-                    result_string += '\ndashboard_link: %s\n' % \
+                    result_string += '\nDashboard link: %s\n' % \
                                      (DASHBOARD_BASE_URL +
                                       '?f=test_name_cgk78f:re:' +
                                       urllib.parse.quote(test_name, safe=''))
-                    if args.attach_analysis_result:
-                        if RESULT_TITLE not in str(
-                                monorail_api.get_comment_list(
-                                    'chromium', bug_id)):
-                            monorail_api.insert_comment(
-                                'chromium', bug_id, result_string)
-                    else:
+                    if not args.attach_analysis_result:
                         print(result_string)
+                    else:
+                        bug_result_string += result_string
+        # Attach the analysis result for this bug.
+        if bug_id and args.attach_analysis_result:
+            bug_result_string = RESULT_TITLE + bug_result_string
+            if RESULT_TITLE not in str(
+                    monorail_api.get_comment_list('chromium', bug_id)):
+                monorail_api.insert_comment('chromium', bug_id,
+                                            bug_result_string)
 
     return 0
