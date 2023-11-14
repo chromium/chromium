@@ -83,34 +83,34 @@ const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot) {
 }
 
 // Targeting Base.
-TargetingBase::TargetingBase(const Targeting& targeting_dict,
+TargetingBase::TargetingBase(const Targeting* targeting_dict,
                              const char* targeting_path)
     : targeting_(targeting_dict), targeting_path_(targeting_path) {}
 
 TargetingBase::~TargetingBase() = default;
 
 bool TargetingBase::IsValid() const {
-  return !!targeting_.FindDict(targeting_path_);
+  return !!targeting_->FindDict(targeting_path_);
 }
 
 const base::Value::List* TargetingBase::GetListCriteria(
     const char* path_suffix) const {
-  return targeting_.FindListByDottedPath(GetCriteriaPath(path_suffix));
+  return targeting_->FindListByDottedPath(GetCriteriaPath(path_suffix));
 }
 
 const absl::optional<bool> TargetingBase::GetBoolCriteria(
     const char* path_suffix) const {
-  return targeting_.FindBoolByDottedPath(GetCriteriaPath(path_suffix));
+  return targeting_->FindBoolByDottedPath(GetCriteriaPath(path_suffix));
 }
 
 const absl::optional<int> TargetingBase::GetIntCriteria(
     const char* path_suffix) const {
-  return targeting_.FindIntByDottedPath(GetCriteriaPath(path_suffix));
+  return targeting_->FindIntByDottedPath(GetCriteriaPath(path_suffix));
 }
 
 const std::string* TargetingBase::GetStringCriteria(
     const char* path_suffix) const {
-  return targeting_.FindStringByDottedPath(GetCriteriaPath(path_suffix));
+  return targeting_->FindStringByDottedPath(GetCriteriaPath(path_suffix));
 }
 
 const std::string TargetingBase::GetCriteriaPath(
@@ -119,7 +119,7 @@ const std::string TargetingBase::GetCriteriaPath(
 }
 
 // Demo Mode Targeting.
-DemoModeTargeting::DemoModeTargeting(const Targeting& targeting_dict)
+DemoModeTargeting::DemoModeTargeting(const Targeting* targeting_dict)
     : TargetingBase(targeting_dict, kDemoModeTargeting) {}
 
 DemoModeTargeting::~DemoModeTargeting() = default;
@@ -153,7 +153,7 @@ const absl::optional<bool> DemoModeTargeting::TargetFeatureAwareDevice() const {
 }
 
 // Device Targeting.
-DeviceTargeting::DeviceTargeting(const Targeting& targeting_dict)
+DeviceTargeting::DeviceTargeting(const Targeting* targeting_dict)
     : TargetingBase(targeting_dict, kDeviceTargeting) {}
 
 DeviceTargeting::~DeviceTargeting() = default;
@@ -196,7 +196,7 @@ const base::Time SchedulingTargeting::GetEndTime() const {
 }
 
 // Session Targeting.
-SessionTargeting::SessionTargeting(const Targeting& targeting_dict)
+SessionTargeting::SessionTargeting(const Targeting* targeting_dict)
     : TargetingBase(targeting_dict, kSessionTargeting) {}
 
 SessionTargeting::~SessionTargeting() = default;

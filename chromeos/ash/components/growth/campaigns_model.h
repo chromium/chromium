@@ -120,7 +120,7 @@ const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot);
 
 class TargetingBase {
  public:
-  explicit TargetingBase(const Targeting& targeting_dict,
+  explicit TargetingBase(const Targeting* targeting_dict,
                          const char* targeting_path);
   TargetingBase(const TargetingBase&) = delete;
   TargetingBase& operator=(const TargetingBase) = delete;
@@ -142,7 +142,7 @@ class TargetingBase {
 
   // The dictionary that contains targeting definition. Owned by
   // `CampaignsManager`.
-  const Targeting& targeting_;
+  raw_ptr<const Targeting, ExperimentalAsh> targeting_;
   // The targeting path.
   const char* targeting_path_;
 };
@@ -159,7 +159,7 @@ class TargetingBase {
 // }
 class DemoModeTargeting : public TargetingBase {
  public:
-  explicit DemoModeTargeting(const Targeting& targeting_dict);
+  explicit DemoModeTargeting(const Targeting* targeting_dict);
   DemoModeTargeting(const DemoModeTargeting&) = delete;
   DemoModeTargeting& operator=(const DemoModeTargeting) = delete;
   ~DemoModeTargeting();
@@ -183,7 +183,7 @@ class DemoModeTargeting : public TargetingBase {
 // }
 class DeviceTargeting : public TargetingBase {
  public:
-  explicit DeviceTargeting(const Targeting& targeting_dict);
+  explicit DeviceTargeting(const Targeting* targeting_dict);
   DeviceTargeting(const DeviceTargeting&) = delete;
   DeviceTargeting& operator=(const DeviceTargeting) = delete;
   ~DeviceTargeting();
@@ -224,7 +224,7 @@ class SchedulingTargeting {
 // }
 class SessionTargeting : public TargetingBase {
  public:
-  explicit SessionTargeting(const Targeting& targeting_dict);
+  explicit SessionTargeting(const Targeting* targeting_dict);
   SessionTargeting(const SessionTargeting&) = delete;
   SessionTargeting& operator=(const SessionTargeting) = delete;
   ~SessionTargeting();

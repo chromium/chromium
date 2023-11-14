@@ -234,9 +234,9 @@ bool CampaignsMatcher::Matched(const Targetings* targetings) const {
     return false;
   }
 
-  return MatchSessionTargeting(SessionTargeting(*targeting)) &&
-         MaybeMatchDemoModeTargeting(DemoModeTargeting(*targeting)) &&
-         MatchDeviceTargeting(DeviceTargeting(*targeting));
+  return MatchSessionTargeting(SessionTargeting(targeting)) &&
+         MaybeMatchDemoModeTargeting(DemoModeTargeting(targeting)) &&
+         MatchDeviceTargeting(DeviceTargeting(targeting));
 }
 
 }  // namespace growth
