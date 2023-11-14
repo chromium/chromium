@@ -1477,6 +1477,11 @@ BLINK_COMMON_EXPORT bool IsKeepAliveURLLoaderServiceEnabled();
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kRemoveAuthroizationOnCrossOriginRedirect);
 
+// Number of pixels to expand in root coordinates for cull rect under
+// scroll translation or other composited transform.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExpandCompositedCullRect);
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int> kPixelDistanceToExpand;
+
 }  // namespace features
 }  // namespace blink
 

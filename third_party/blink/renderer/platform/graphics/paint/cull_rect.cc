@@ -7,6 +7,7 @@
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
@@ -23,21 +24,12 @@ namespace {
 constexpr int kReasonablePixelLimit = kIntMaxForLayoutUnit;
 constexpr int kChangedEnoughMinimumDistance = 512;
 
-BASE_FEATURE(kExpandCompositedCullRect,
-             "ExpandCompositedCullRect",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Number of pixels to expand in root coordinates for cull rect under
-// composited scroll translation or other composited transform.
-constexpr base::FeatureParam<int>
-    kPixelDistanceToExpand(&kExpandCompositedCullRect, "pixels", 4000);
-
 // Returns the number of pixels to expand the cull rect for composited scroll
 // and transform.
 int LocalPixelDistanceToExpand(
     const TransformPaintPropertyNode& root_transform,
     const TransformPaintPropertyNode& local_transform) {
-  static int pixel_distance_to_expand = kPixelDistanceToExpand.Get();
+  static int pixel_distance_to_expand = features::kPixelDistanceToExpand.Get();
   float scale = GeometryMapper::SourceToDestinationApproximateMinimumScale(
       root_transform, local_transform);
   // A very big scale may be caused by non-invertable near non-invertable
