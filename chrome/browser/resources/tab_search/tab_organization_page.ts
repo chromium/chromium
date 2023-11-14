@@ -74,7 +74,7 @@ export class TabOrganizationPageElement extends PolymerElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.updateContentsHeight_();
+    this.updateContentsHeight();
     this.apiProxy_.getTabOrganizationSession().then(
         ({session}) => this.setSession_(session));
     const callbackRouter = this.apiProxy_.getCallbackRouter();
@@ -92,6 +92,29 @@ export class TabOrganizationPageElement extends PolymerElement {
       this.apiProxy_.rejectTabOrganization(
           this.sessionId_, this.organizationId_);
     }
+  }
+
+  updateContentsHeight() {
+    let contentsHeight = 0;
+    switch (this.state_) {
+      case TabOrganizationState.kNotStarted:
+        contentsHeight = this.$.notStarted.scrollHeight + TRAILING_BODY_SPACING;
+        break;
+      case TabOrganizationState.kInProgress:
+        contentsHeight = this.$.inProgress.scrollHeight + TRAILING_BODY_SPACING;
+        break;
+      case TabOrganizationState.kSuccess:
+        contentsHeight = this.$.results.scrollHeight + TRAILING_BODY_SPACING;
+        break;
+      case TabOrganizationState.kFailure:
+        contentsHeight = this.$.failure.scrollHeight + TRAILING_BODY_SPACING;
+        if (this.showFooter_()) {
+          contentsHeight +=
+              this.$.footer.scrollHeight + TRAILING_FOOTER_SPACING;
+        }
+        break;
+    }
+    this.$.contents.style.height = contentsHeight + 'px';
   }
 
   private setSession_(session: TabOrganizationSession) {
@@ -121,30 +144,7 @@ export class TabOrganizationPageElement extends PolymerElement {
     this.classList.toggle(
         'from-failure', this.state_ === TabOrganizationState.kFailure);
     this.state_ = state;
-    this.updateContentsHeight_();
-  }
-
-  private updateContentsHeight_() {
-    let contentsHeight = 0;
-    switch (this.state_) {
-      case TabOrganizationState.kNotStarted:
-        contentsHeight = this.$.notStarted.scrollHeight + TRAILING_BODY_SPACING;
-        break;
-      case TabOrganizationState.kInProgress:
-        contentsHeight = this.$.inProgress.scrollHeight + TRAILING_BODY_SPACING;
-        break;
-      case TabOrganizationState.kSuccess:
-        contentsHeight = this.$.results.scrollHeight + TRAILING_BODY_SPACING;
-        break;
-      case TabOrganizationState.kFailure:
-        contentsHeight = this.$.failure.scrollHeight + TRAILING_BODY_SPACING;
-        if (this.showFooter_()) {
-          contentsHeight +=
-              this.$.footer.scrollHeight + TRAILING_FOOTER_SPACING;
-        }
-        break;
-    }
-    this.$.contents.style.height = contentsHeight + 'px';
+    this.updateContentsHeight();
   }
 
   private isState_(state: TabOrganizationState): boolean {

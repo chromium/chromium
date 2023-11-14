@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
@@ -61,8 +61,9 @@ export class TabSearchAppElement extends PolymerElement {
   private onSelectedTabChanged_(event: CustomEvent<{value: number}>) {
     if (event.detail.value === 1) {
       const tabOrganizationPage =
-          this.shadowRoot!.querySelector('tab-organization-page');
-      tabOrganizationPage!.classList.toggle('changed-state', false);
+          this.shadowRoot!.querySelector('tab-organization-page')!;
+      tabOrganizationPage.classList.toggle('changed-state', false);
+      afterNextRender(this, () => tabOrganizationPage.updateContentsHeight());
     }
     this.apiProxy_.setTabIndex(event.detail.value);
   }
