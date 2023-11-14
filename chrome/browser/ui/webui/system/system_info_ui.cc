@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/system_info_ui.h"
+#include "chrome/browser/ui/webui/system/system_info_ui.h"
 
 #include <memory>
 #include <utility>
