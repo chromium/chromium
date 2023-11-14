@@ -169,8 +169,9 @@ void RegisterURLReplacingHandler(net::EmbeddedTestServer* test_server,
          const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
         GURL url = test_server->GetURL(request.relative_url);
-        if (url.path() != match_path)
+        if (url.path() != match_path) {
           return nullptr;
+        }
 
         std::string contents;
         CHECK(base::ReadFileToString(template_file, &contents));
@@ -648,8 +649,9 @@ class ExtensionRequestInterceptor {
 
  private:
   bool OnRequest(content::URLLoaderInterceptor::RequestParams* params) {
-    if (callback_ && callback_.Run(params))
+    if (callback_ && callback_.Run(params)) {
       return true;
+    }
     // Mock out requests to the Web Store.
     if (params->url_request.url.host() == "clients2.google.com" &&
         params->url_request.url.path() == "/service/update2/crx") {
@@ -729,7 +731,7 @@ class MockedInstallationCollectorObserver
  private:
   extensions::InstallStageTracker::Stage stage_ =
       extensions::InstallStageTracker::Stage::CREATED;
-  raw_ptr<const content::BrowserContext> context_;
+  raw_ptr<const content::BrowserContext> context_ = nullptr;
 };
 
 std::string GetUpdateManifestBody(const std::string& id,
@@ -1776,8 +1778,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelistOffline) {
     interceptor.set_interceptor_hook(base::BindLambdaForTesting(
         [&](content::URLLoaderInterceptor::RequestParams* params) {
           if (params->url_request.url.path() !=
-              "/extensions/good_v1_update_manifest.xml")
+              "/extensions/good_v1_update_manifest.xml") {
             return false;
+          }
           params->client->OnComplete(network::URLLoaderCompletionStatus(
               net::ERR_INTERNET_DISCONNECTED));
           return true;
@@ -1998,11 +2001,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionMinimumVersionRequired) {
   base::RunLoop first_update_extension_runloop;
   interceptor.set_interceptor_hook(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url.host() != "update.extension")
+        if (params->url_request.url.host() != "update.extension") {
           return false;
+        }
 
-        if (!update_extension_count.IsZero() && !update_extension_count.IsOne())
+        if (!update_extension_count.IsZero() &&
+            !update_extension_count.IsOne()) {
           return false;
+        }
 
         if (update_extension_count.IsZero()) {
           content::URLLoaderInterceptor::WriteResponse(
@@ -2012,8 +2018,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionMinimumVersionRequired) {
               "chrome/test/data/extensions/good2_update_manifest.xml",
               params->client.get());
         }
-        if (update_extension_count.IsZero())
+        if (update_extension_count.IsZero()) {
           first_update_extension_runloop.Quit();
+        }
         update_extension_count.Increment();
         return true;
       }));
@@ -2269,8 +2276,9 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyTest, StartUpInstallation) {
   web_app::WebAppTestInstallObserver install_observer(browser()->profile());
   absl::optional<webapps::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
-  if (!app_id)
+  if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
+  }
   EXPECT_EQ(policy_app_url_, registrar.GetAppStartUrl(*app_id));
 }
 
@@ -2301,8 +2309,9 @@ IN_PROC_BROWSER_TEST_F(
   web_app::WebAppTestInstallObserver install_observer(browser()->profile());
   absl::optional<webapps::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
-  if (!app_id)
+  if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
+  }
   EXPECT_EQ(policy_app_url_, registrar.GetAppStartUrl(*app_id));
 
   // We specifically don't expect the fallback name to be used for a PWA
@@ -2333,8 +2342,9 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicySAATest,
   web_app::WebAppTestInstallObserver install_observer(browser()->profile());
   absl::optional<webapps::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
-  if (!app_id)
+  if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
+  }
   EXPECT_EQ(policy_app_url_, registrar.GetAppStartUrl(*app_id));
   EXPECT_NE(fallback_app_name_, registrar.GetAppShortName(*app_id));
 }
@@ -2362,8 +2372,9 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyWithAppFallbackNameSAATest,
   web_app::WebAppTestInstallObserver install_observer(browser()->profile());
   absl::optional<webapps::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
-  if (!app_id)
+  if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
+  }
   EXPECT_EQ(policy_app_url_, registrar.GetAppStartUrl(*app_id));
   EXPECT_EQ(fallback_app_name_, registrar.GetAppShortName(*app_id));
 }
@@ -2396,8 +2407,9 @@ IN_PROC_BROWSER_TEST_F(
       browser()->profile());
   absl::optional<webapps::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
-  if (!app_id)
+  if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
+  }
   EXPECT_EQ(policy_app_url_, registrar.GetAppStartUrl(*app_id));
   EXPECT_EQ(fallback_app_name_, registrar.GetAppShortName(*app_id));
   ASSERT_TRUE(registrar
@@ -2458,6 +2470,16 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
         test_extension_cache2_.get());
     registry1_ = CreateExtensionRegistry(profile1_);
     registry2_ = CreateExtensionRegistry(profile2_);
+  }
+
+  void TearDownOnMainThread() override {
+    registry2_ = nullptr;
+    registry1_ = nullptr;
+    service2_ = nullptr;
+    service1_ = nullptr;
+    profile2_ = nullptr;
+    profile1_ = nullptr;
+    PolicyTest::TearDownOnMainThread();
   }
 
  protected:
@@ -2521,14 +2543,14 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
   std::unique_ptr<extensions::ExtensionCacheFake> test_extension_cache1_;
   std::unique_ptr<extensions::ExtensionCacheFake> test_extension_cache2_;
   extensions::ScopedIgnoreContentVerifierForTest ignore_content_verifier_;
-  raw_ptr<Profile, DanglingUntriaged> profile1_;
-  raw_ptr<Profile, DanglingUntriaged> profile2_;
+  raw_ptr<Profile> profile1_ = nullptr;
+  raw_ptr<Profile> profile2_ = nullptr;
   MockConfigurationPolicyProvider profile1_policy_;
   MockConfigurationPolicyProvider profile2_policy_;
-  raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged> registry1_;
-  raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged> registry2_;
-  raw_ptr<extensions::ExtensionService, DanglingUntriaged> service1_;
-  raw_ptr<extensions::ExtensionService, DanglingUntriaged> service2_;
+  raw_ptr<extensions::ExtensionRegistry> registry1_ = nullptr;
+  raw_ptr<extensions::ExtensionRegistry> registry2_ = nullptr;
+  raw_ptr<extensions::ExtensionService> service1_ = nullptr;
+  raw_ptr<extensions::ExtensionService> service2_ = nullptr;
 };
 
 // Verifies that default policy host block/allow settings are applied as
