@@ -953,6 +953,8 @@ class CONTENT_EXPORT RenderFrameImpl
 
   void InitializeMediaStreamDeviceObserver();
 
+  void InitializeWidgetIfNeeded();
+
   // Sends a FrameHostMsg_BeginNavigation to the browser
   void BeginNavigationInternal(std::unique_ptr<blink::WebNavigationInfo> info,
                                bool is_history_navigation_in_new_child_frame,
@@ -1583,6 +1585,10 @@ class CONTENT_EXPORT RenderFrameImpl
   // part of the IPC that created this frame) are cached until commit to lazily
   // create the WebFrameWidget.
   mojom::CreateFrameWidgetParamsPtr widget_params_for_lazy_widget_creation_;
+
+  // Set when this RenderFrame is being swapped for
+  // `provisional_frame_for_local_root_swap_`.
+  raw_ptr<RenderFrameImpl> provisional_frame_for_local_root_swap_ = nullptr;
 
   base::WeakPtrFactory<RenderFrameImpl> weak_factory_{this};
 };

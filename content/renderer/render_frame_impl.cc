@@ -2855,19 +2855,6 @@ void RenderFrameImpl::CommitNavigationWithParams(
     mojom::StorageInfoPtr storage_info,
     std::unique_ptr<DocumentState> document_state,
     std::unique_ptr<WebNavigationParams> navigation_params) {
-  // Initialize the FrameWidget at the beginning of commit because the empty
-  // Document that the frame is initialized with requires it during commit.
-  if (widget_params_for_lazy_widget_creation_) {
-    auto* previous_widget = PreviousWidgetForLazyCompositorInitialization(
-        widget_params_for_lazy_widget_creation_
-            ->previous_frame_token_for_compositor_reuse);
-    CHECK(previous_widget);
-
-    InitializeFrameWidgetForSubframe(
-        *frame_, previous_widget,
-        std::move(widget_params_for_lazy_widget_creation_));
-  }
-
   if (common_params->url.IsAboutSrcdoc()) {
     WebNavigationParams::FillStaticResponse(navigation_params.get(),
                                             "text/html", "UTF-8",
@@ -3001,19 +2988,6 @@ void RenderFrameImpl::CommitFailedNavigation(
 
   AssertNavigationCommits assert_navigation_commits(
       this, kMayReplaceInitialEmptyDocument);
-
-  // Initialize the FrameWidget at the beginning of commit because the empty
-  // Document that the frame is initialized with requires it during commit.
-  if (widget_params_for_lazy_widget_creation_) {
-    auto* previous_widget = PreviousWidgetForLazyCompositorInitialization(
-        widget_params_for_lazy_widget_creation_
-            ->previous_frame_token_for_compositor_reuse);
-    CHECK(previous_widget);
-
-    InitializeFrameWidgetForSubframe(
-        *frame_, previous_widget,
-        std::move(widget_params_for_lazy_widget_creation_));
-  }
 
   GetWebView()->SetHistoryListFromNavigation(
       commit_params->current_history_list_offset,
@@ -3699,10 +3673,33 @@ blink::WebFrame* RenderFrameImpl::FindFrame(const blink::WebString& name) {
                                                    name.Utf8());
 }
 
+void RenderFrameImpl::InitializeWidgetIfNeeded() {
+  if (!widget_params_for_lazy_widget_creation_) {
+    return;
+  }
+
+  auto* previous_widget = PreviousWidgetForLazyCompositorInitialization(
+      widget_params_for_lazy_widget_creation_
+          ->previous_frame_token_for_compositor_reuse);
+  CHECK(previous_widget);
+
+  InitializeFrameWidgetForSubframe(
+      *frame_, previous_widget,
+      std::move(widget_params_for_lazy_widget_creation_));
+}
+
 void RenderFrameImpl::WillSwap() {
   if (navigation_client_impl_ &&
       ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
     navigation_client_impl_->ResetWithoutCancelling();
+  }
+
+  // Defer initializing the new widget until the previous Document has been torn
+  // down. Script handles like unload dispatched during tear down can access
+  // the compositor.
+  if (provisional_frame_for_local_root_swap_) {
+    provisional_frame_for_local_root_swap_->InitializeWidgetIfNeeded();
+    provisional_frame_for_local_root_swap_ = nullptr;
   }
 }
 
@@ -5157,12 +5154,16 @@ bool RenderFrameImpl::SwapIn(WebFrame* previous_web_frame) {
   // Swapping out a frame can dispatch JS event handlers, causing `this` to be
   // deleted.
   bool is_main_frame = is_main_frame_;
+  if (auto* render_frame = RenderFrameImpl::FromWebFrame(previous_web_frame)) {
+    render_frame->provisional_frame_for_local_root_swap_ = this;
+  }
   if (!previous_web_frame->Swap(frame_)) {
     // Main frames should always swap successfully because there is no parent
     // frame to cause them to become detached.
     DCHECK(!is_main_frame);
     return false;
   }
+  CHECK(GetLocalRootWebFrameWidget());
 
   // `previous_web_frame` is now detached, and should no longer be referenced.
 
