@@ -602,6 +602,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".RemovedOnOfflineAvailable"
         summary="Removed on offline page available"/>
     <variant name=".RemovedOnTabDestroy" summary="Removed on tab destroy"/>
+    <variant name=".RemovedOnTabHidden" summary="Removed on tab hidden"/>
   </token>
 </histogram>
 
