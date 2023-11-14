@@ -5,16 +5,22 @@
 package org.chromium.chrome.browser.webapps;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import android.view.ViewGroup;
+import android.widget.CheckBox;
 
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +38,8 @@ import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils.DisplayStage;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.webapps.R;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Test the showing of the PWA Restore Bottom Sheet dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -42,6 +50,10 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
+
+    @ClassRule
+    public static DisableAnimationsTestRule sDisableAnimationsRule =
+            new DisableAnimationsTestRule();
 
     private static @DisplayStage int sFlagValueMissing = DisplayStage.UNKNOWN_STATUS;
 
@@ -146,6 +158,51 @@ public class PwaRestoreBottomSheetIntegrationTest {
         mActivityTestRule.startMainActivityFromLauncher();
         assertDialogShown(false);
         assertCurrentFlag(DisplayStage.PRE_EXISTING_PROFILE);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaRestrore"})
+    public void testClickForwarding() {
+        // Ensure the promo dialog shows.
+        mPreferences.writeInt(
+                ChromePreferenceKeys.PWA_RESTORE_PROMO_STAGE, DisplayStage.SHOW_PROMO);
+
+        mActivityTestRule.startMainActivityFromLauncher();
+        assertDialogShown(true);
+        onView(withId(R.id.review_button)).perform(click());
+
+        assertIsComboCheckedAtIndex(1, false);
+        onView(withText("Foo")).check(matches(isDisplayed()));
+        onView(withText("Foo")).perform(click());
+        assertIsComboCheckedAtIndex(1, true);
+    }
+
+    // A helper function to check whether a particular combo box in the PWA list ScrollView is
+    // checked.
+    private void assertIsComboCheckedAtIndex(int index, boolean checked) {
+        onView(withId(R.id.scroll_view_content))
+                .check(
+                        (view, e) -> {
+                            ViewGroup appList = (ViewGroup) view;
+                            Assert.assertTrue(appList != null);
+
+                            // The app list contains mostly appviews, but also generic views that
+                            // are separators, for example. For our purposes, we want to skip the
+                            // views that are not checkboxes.
+                            int checkboxCount = 0;
+                            for (int i = 0; i < appList.getChildCount(); ++i) {
+                                CheckBox checkBox =
+                                        appList.getChildAt(i).findViewById(R.id.checkbox);
+                                if (checkBox != null) {
+                                    if (index == checkboxCount) {
+                                        Assert.assertEquals(checked, checkBox.isChecked());
+                                        return;
+                                    }
+                                    checkboxCount += 1;
+                                }
+                            }
+                        });
     }
 
     private void assertCurrentFlag(@DisplayStage int value) {

@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -137,6 +138,16 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
 
             ((ImageView) appView.findViewById(R.id.app_icon)).setImageBitmap(placeholder);
             ((TextView) appView.findViewById(R.id.app_name)).setText(app.appName());
+
+            // Any click on an app item, that is not handled by the view itself, should be treated
+            // as an attempt to toggle the checkbox.
+            appView.setOnClickListener(
+                    new OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ((CheckBox) view.findViewById(R.id.checkbox)).toggle();
+                        }
+                    });
             scrollViewContent.addView(appView);
 
             // Add a 2pt separator view as a separate item in the ScrollView so as to not affect the
