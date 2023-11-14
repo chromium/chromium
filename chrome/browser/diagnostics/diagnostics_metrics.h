@@ -45,15 +45,6 @@ enum DiagnosticsTestId {
   DIAGNOSTICS_TEST_ID_COUNT
 };
 
-// Enumeration of metrics for UMA recording of recovery runs.
-enum RecoveryRunMetrics {
-  RECOVERY_NOT_RUN,
-  RECOVERY_CRASH_RUN,
-  RECOVERY_USER_RUN,
-  // Add new items above this line.
-  RECOVERY_RUN_METRICS_COUNT
-};
-
 // Possible enum values for individual test metrics.
 enum RunResultMetrics {
   RESULT_NOT_RUN,

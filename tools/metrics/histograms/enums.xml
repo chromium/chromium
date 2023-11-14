@@ -16814,12 +16814,6 @@ Called by update_debug_scenarios.py.-->
   <int value="1" label="Classic Script"/>
 </enum>
 
-<enum name="DiagnosticsRecoveryRun">
-  <int value="0" label="Recovery not run"/>
-  <int value="1" label="Recovery run because of crash"/>
-  <int value="2" label="Recovery run by user"/>
-</enum>
-
 <enum name="DiagnosticsResult">
   <int value="0" label="Not run (regular startup)"/>
   <int value="1" label="Success (crash startup)"/>
