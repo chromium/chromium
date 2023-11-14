@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DlpEvent_Mode, DlpEvent_Restriction, DlpEvent_UserType, EndpointType, EventDestination_Component} from './dlp_internals.mojom-webui.js';
+import {ContentRestriction, DlpEvent_Mode, DlpEvent_Restriction, DlpEvent_UserType, EndpointType, EventDestination_Component, Level, WebContentsInfo} from './dlp_internals.mojom-webui.js';
 
 export const EndpointTypeMap = {
   [EndpointType.kDefault]: 'Default',
@@ -50,3 +50,28 @@ export const EventUserTypeMap = {
   [DlpEvent_UserType.kManagedGuest]: 'Managed Guest',
   [DlpEvent_UserType.kKiosk]: 'Kiosk',
 };
+
+export const ContentRestrictionMap = {
+  [ContentRestriction.kScreenshot]: 'Screenshot',
+  [ContentRestriction.kPrivacyScreen]: 'Privacy Screen',
+  [ContentRestriction.kPrint]: 'Printing',
+  [ContentRestriction.kScreenShare]: 'Screenshare',
+};
+
+export const LevelMap = {
+  [Level.kNotSet]: 'NOT SET',
+  [Level.kReport]: 'REPORT',
+  [Level.kWarn]: 'WARN',
+  [Level.kBlock]: 'BLOCK',
+  [Level.kAllow]: 'ALLOW',
+};
+
+export class WebContentsElement {
+  private info_: WebContentsInfo;
+  private framesExpanded_: boolean = false;
+
+  constructor(webContentsInfo: WebContentsInfo) {
+    this.info_ = webContentsInfo;
+    this.framesExpanded_ = false;
+  }
+}

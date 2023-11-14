@@ -24,6 +24,12 @@
     border: 1px solid black;
     border-collapse: collapse;
     padding: 3px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+
+  li {
+    margin-top: 10px;
   }
 </style>
 
@@ -45,7 +51,64 @@
       </ul>
     </div>
 
-    <div class="tabpanel" id="oncontent"></div>
+    <div class="tabpanel" id="oncontent">
+      <ol>
+        <template is="dom-repeat" items="[[webContentsElements_]]">
+          <li>
+            <div>
+              <b>Web Content URL: </b>[[item.info_.lastCommittedUrl.url]]
+            </div>
+            <table>
+              <tr>
+                <th>Restriction</th>
+                <th>Level</th>
+                <th>URL</th>
+              </tr>
+              <template is="dom-repeat" items="[[item.info_.restrictionsInfo]]">
+                <tr>
+                  <td>[[contentRestrictionToString(item.restriction)]]</td>
+                  <td>[[levelToString(item.level)]]</td>
+                  <td>[[item.url.url]]</td>
+                </tr>
+              </template>
+            </table>
+            <cr-expand-button expanded="{{item.framesExpanded_}}">
+              <div hidden$="[[item.framesExpanded_]]">Expand Frames Info</div>
+              <div hidden$="[[!item.framesExpanded_]]">
+                Collapse Frames Info
+              </div>
+            </cr-expand-button>
+            <iron-collapse opened="[[item.framesExpanded_]]">
+              <ul>
+                <template is="dom-repeat" items="[[item.info_.framesInfo]]">
+                  <li>
+                    <div>
+                      <b>Frame URL: </b>[[item.lastCommittedUrl.url]]
+                    </div>
+                    <table>
+                      <tr>
+                        <th>Restriction</th>
+                        <th>Level</th>
+                        <th>URL</th>
+                      </tr>
+                      <template is="dom-repeat"
+                      items="[[item.restrictionsInfo]]">
+                        <tr>
+                          <td>
+                            [[contentRestrictionToString(item.restriction)]]
+                          </td>
+                          <td>[[levelToString(item.level)]]</td>
+                          <td>[[item.url.url]]</td>
+                        </tr>
+                      </template>
+                  </li>
+                </template>
+              </ul>
+            </iron-collapse>
+          </li>
+        </template>
+      </ol>
+    </div>
 
     <div class="tabpanel" id="reporting">
       <table>

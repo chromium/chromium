@@ -4,14 +4,16 @@
 
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
+import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DataTransferEndpoint, DlpEvent, DlpEvent_Mode, DlpEvent_Restriction, DlpEvent_UserType, EndpointType, EventDestination, PageHandler, PageHandlerInterface, ReportingObserverReceiver} from './dlp_internals.mojom-webui.js';
+import {ContentRestriction, DataTransferEndpoint, DlpEvent, DlpEvent_Mode, DlpEvent_Restriction, DlpEvent_UserType, EndpointType, EventDestination, Level, PageHandler, PageHandlerInterface, ReportingObserverReceiver, WebContentsInfo} from './dlp_internals.mojom-webui.js';
 import {getTemplate} from './dlp_internals_ui.html.js';
-import {DestinationComponentMap, EndpointTypeMap, EventModeMap, EventRestrictionMap, EventUserTypeMap} from './dlp_utils.js';
+import {ContentRestrictionMap, DestinationComponentMap, EndpointTypeMap, EventModeMap, EventRestrictionMap, EventUserTypeMap, LevelMap, WebContentsElement} from './dlp_utils.js';
 
 // Polymer element DLP Internals UI.
 class DlpInternalsUi extends PolymerElement {
@@ -33,6 +35,7 @@ class DlpInternalsUi extends PolymerElement {
       clipboardSourceType_: String,
       clipboardSourceUrl_: String,
       reportingEvents_: Array,
+      webContentsElements_: Array,
     };
   }
 
@@ -40,6 +43,7 @@ class DlpInternalsUi extends PolymerElement {
     super.connectedCallback();
 
     this.fetchClipboardSourceInfo();
+    this.fetchContentRestrictionsInfo();
   }
 
   // Names of the top level page tabs.
@@ -67,7 +71,11 @@ class DlpInternalsUi extends PolymerElement {
   // Clipboard source url.
   private clipboardSourceUrl_: string;
 
+  // Reporting events array.
   private reportingEvents_: DlpEvent[] = [];
+
+  // Web Contents Info.
+  private webContentsElements_: WebContentsElement[] = [];
 
   private readonly pageHandler_: PageHandlerInterface;
   private readonly reportingObserver_: ReportingObserverReceiver;
@@ -114,6 +122,33 @@ class DlpInternalsUi extends PolymerElement {
       this.clipboardSourceUrl_ = 'undefined';
     } else {
       this.clipboardSourceUrl_ = source.url.url;
+    }
+  }
+
+  private async fetchContentRestrictionsInfo(): Promise<void> {
+    this.pageHandler_.getContentRestrictionsInfo()
+        .then((value: {webContentsInfo: WebContentsInfo[]}) => {
+          this.setWebContentsInfo(value.webContentsInfo);
+        })
+        .catch((e: object) => {
+          console.warn(
+              `getContentRestrictionsInfo failed: ${JSON.stringify(e)}`);
+        });
+  }
+
+  private setWebContentsInfo(webContentsInfo: WebContentsInfo[]) {
+    this.webContentsElements_ = [];
+    for (const info of webContentsInfo) {
+      this.webContentsElements_.push(new WebContentsElement(info));
+    }
+    if (webContentsInfo.length) {
+      this.notifySplices('webContentsElements_', [{
+                           index: 0,
+                           addedCount: this.webContentsElements_.length,
+                           object: this.webContentsElements_,
+                           type: 'splice',
+                           removed: [],
+                         }]);
     }
   }
 
@@ -174,6 +209,14 @@ class DlpInternalsUi extends PolymerElement {
       return timestamp.toLocaleString();
     }
     return 'undefined';
+  }
+
+  contentRestrictionToString(restriction: ContentRestriction): string {
+    return ContentRestrictionMap[restriction];
+  }
+
+  levelToString(level: Level): string {
+    return LevelMap[level];
   }
 }
 
