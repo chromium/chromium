@@ -61,12 +61,13 @@ void DevToolsAgentCoverageObserver::CollectCoverage(
   VLOG(1) << "Collecting coverage for " << devtools_agents_.size() << " agents";
   for (auto& agent : devtools_agents_) {
     DevToolsAgentHost* host = agent.first;
-    if (agent.second->HasCoverage(host)) {
+    DevToolsListener* listener = agent.second.second.get();
+    if (listener->HasCoverage(host)) {
       VLOG(1) << host << ": Collecting coverage";
-      agent.second->GetCoverage(host, store, test_name);
+      listener->GetCoverage(host, store, test_name);
     }
     VLOG(1) << host << ": Detaching";
-    agent.second->Detach(host);
+    listener->Detach(host);
   }
 
   DevToolsAgentHost::DetachAllClients();
@@ -87,7 +88,9 @@ void DevToolsAgentCoverageObserver::DevToolsAgentHostCreated(
   }
 
   uint32_t process_id = base::GetUniqueIdForProcess().GetUnsafeValue();
-  devtools_agents_[host] = std::make_unique<DevToolsListener>(host, process_id);
+  devtools_agents_[host] =
+      std::make_pair(base::WrapRefCounted(host),
+                     std::make_unique<DevToolsListener>(host, process_id));
 }
 
 void DevToolsAgentCoverageObserver::DevToolsAgentHostAttached(
@@ -104,7 +107,7 @@ void DevToolsAgentCoverageObserver::DevToolsAgentHostNavigated(
     return;
   }
 
-  it->second->Navigated(host);
+  it->second.second->Navigated(host);
 }
 
 void DevToolsAgentCoverageObserver::DevToolsAgentHostDetached(
@@ -117,4 +120,11 @@ void DevToolsAgentCoverageObserver::DevToolsAgentHostCrashed(
     base::TerminationStatus status) {
   VLOG(1) << host << ": Crashed";
   CHECK(!base::Contains(devtools_agents_, host));
+}
+
+void DevToolsAgentCoverageObserver::DevToolsAgentHostDestroyed(
+    content::DevToolsAgentHost* host) {
+  // At this point the ID is only available the other elements in the
+  // `std::ostream` have been destroyed.
+  VLOG(1) << host->GetId() << ": Destroyed";
 }

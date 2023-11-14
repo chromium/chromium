@@ -14,7 +14,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "build/config/coverage/buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
@@ -408,8 +407,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionWebUICodeCacheJSTest, Basic) {
   RunTestsInJsModule("basic_test.js", "test.pdf");
 }
 
-// TODO(b/310521014): Re-enable these when JS coverage for ServiceWorkers works.
-#if !BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
 // Service worker tests are regression tests for
 // https://crbug.com/916514.
 class PDFExtensionServiceWorkerJSTest : public PDFExtensionJSTest {
@@ -450,4 +447,3 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionServiceWorkerJSTest, NetworkFallback) {
 IN_PROC_BROWSER_TEST_F(PDFExtensionServiceWorkerJSTest, Interception) {
   RunServiceWorkerTest("respond_with_fetch_worker.js");
 }
-#endif

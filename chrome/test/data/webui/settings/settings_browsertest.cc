@@ -4,7 +4,6 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/config/coverage/buildflags.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -576,13 +575,13 @@ class SettingsCookiesPageTest : public SettingsBrowserTest {
 };
 
 #if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !defined(NDEBUG)) || \
-    BUILDFLAG(USE_JAVASCRIPT_COVERAGE) || BUILDFLAG(IS_MAC)
+    BUILDFLAG(IS_MAC)
 #define MAYBE_CookiesPageTest DISABLED_CookiesPageTest
 #else
 #define MAYBE_CookiesPageTest CookiesPageTest
 #endif
-// TODO(crbug.com/1409653): fix flakiness on Linux and ChromeOS debug and
-// Javascript code coverage builds and re-enable.
+// TODO(crbug.com/1409653): fix flakiness on Linux and ChromeOS debug builds and
+// re-enable.
 IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, MAYBE_CookiesPageTest) {
   RunTest("settings/cookies_page_test.js", "runMochaSuite('CookiesPageTest')");
 }

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/config/coverage/buildflags.h"
 #include "chrome/browser/devtools/device/adb/adb_device_provider.h"
 #include "chrome/browser/devtools/device/adb/mock_adb_server.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
@@ -69,14 +68,7 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, InspectUIPage) {
   ASSERT_TRUE(RunTestCase("InspectUIPage"));
 }
 
-// TODO(b/280457934): Fix shared worker crash for Javascript coverage builds
-// and re-enable.
-#if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
-#define MAYBE_SharedWorker DISABLED_SharedWorker
-#else
-#define MAYBE_SharedWorker SharedWorker
-#endif
-IN_PROC_BROWSER_TEST_F(InspectUITest, MAYBE_SharedWorker) {
+IN_PROC_BROWSER_TEST_F(InspectUITest, SharedWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(kSharedWorkerTestPage);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -179,13 +171,7 @@ class InspectUISharedStorageTest : public InspectUITest {
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-// TODO(b/280457934): Fix crash for Javascript coverage build and re-enable.
-#if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
-#define MAYBE_SharedStorageWorklet DISABLED_SharedStorageWorklet
-#else
-#define MAYBE_SharedStorageWorklet SharedStorageWorklet
-#endif
-IN_PROC_BROWSER_TEST_F(InspectUISharedStorageTest, MAYBE_SharedStorageWorklet) {
+IN_PROC_BROWSER_TEST_F(InspectUISharedStorageTest, SharedStorageWorklet) {
   privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations(
       privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
   // Mark all Privacy Sandbox APIs as attested since the test case is testing
