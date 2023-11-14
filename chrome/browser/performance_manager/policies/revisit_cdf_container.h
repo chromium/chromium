@@ -27,6 +27,7 @@ class RevisitCdfContainer {
   // greater or equal to the probability value in bucket N - 1, and the
   // probability value of the last bucket is equal to 1.
   explicit RevisitCdfContainer(std::vector<Entry> entries);
+  RevisitCdfContainer(const RevisitCdfContainer&);
   ~RevisitCdfContainer();
 
   // Returns the cumulative probability of the bucket `value` belongs to, that

@@ -16,7 +16,7 @@ namespace performance_manager {
 class ProbabilisticMemorySaverPolicy : public GraphOwned {
  public:
   using EstimatorCreationFunc = base::RepeatingCallback<std::unique_ptr<
-      ProactiveDiscardEvaluator::RevisitProbabilityEstimator>(void)>;
+      ProactiveDiscardEvaluator::RevisitProbabilityEstimator>(Graph*)>;
   explicit ProbabilisticMemorySaverPolicy(
       EstimatorCreationFunc estimator_creation_function = base::BindRepeating(
           &ProbabilisticMemorySaverPolicy::CreateDefaultEstimator));
@@ -28,7 +28,7 @@ class ProbabilisticMemorySaverPolicy : public GraphOwned {
 
  private:
   static std::unique_ptr<ProactiveDiscardEvaluator::RevisitProbabilityEstimator>
-  CreateDefaultEstimator();
+  CreateDefaultEstimator(Graph* graph);
   void OnShouldDiscard(const TabPageDecorator::TabHandle* tab_handle);
 
   std::unique_ptr<ProactiveDiscardEvaluator> evaluator_;

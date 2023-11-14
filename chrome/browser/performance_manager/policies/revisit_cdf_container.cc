@@ -27,6 +27,8 @@ RevisitCdfContainer::RevisitCdfContainer(std::vector<Entry> entries)
 #endif
 }
 
+RevisitCdfContainer::RevisitCdfContainer(const RevisitCdfContainer&) = default;
+
 RevisitCdfContainer::~RevisitCdfContainer() = default;
 
 float RevisitCdfContainer::GetProbability(uint64_t value) const {
@@ -53,6 +55,7 @@ float RevisitCdfContainer::GetProbability(uint64_t value) const {
 
   // The value is in the nearest bucket that's lower than the one found by
   // lower_bound
+  // TODO(crbug.com/1469337): Consider linear interpolation between buckets
   return (it - 1)->probability;
 }
 

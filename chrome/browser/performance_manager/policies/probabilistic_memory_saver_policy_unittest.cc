@@ -65,7 +65,7 @@ class ProbabilisticMemoySaverPolicyTest
 
  private:
   std::unique_ptr<ProactiveDiscardEvaluator::RevisitProbabilityEstimator>
-  CreateEstimator() {
+  CreateEstimator(Graph* graph) {
     CHECK(!estimator_);
 
     std::unique_ptr<TestEstimator> estimator =

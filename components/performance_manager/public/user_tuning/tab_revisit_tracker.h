@@ -12,6 +12,7 @@
 #include "components/performance_manager/public/decorators/tab_connectedness_decorator.h"
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/graph/graph_registered.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
@@ -20,6 +21,7 @@ namespace performance_manager {
 // active/background/closed/discarded states and records timing information
 // about these states.
 class TabRevisitTracker : public GraphOwned,
+                          public GraphRegisteredImpl<TabRevisitTracker>,
                           public TabPageObserver,
                           public PageLiveStateObserverDefaultImpl,
                           public TabConnectednessDecorator::Observer,
@@ -29,6 +31,7 @@ class TabRevisitTracker : public GraphOwned,
       "PerformanceManager.TabRevisitTracker.TimeToRevisit2";
   static constexpr char kTimeToCloseHistogramName[] =
       "PerformanceManager.TabRevisitTracker.TimeToClose2";
+  static constexpr int64_t kMaxNumRevisit = 20;
 
   TabRevisitTracker();
   ~TabRevisitTracker() override;
@@ -59,6 +62,9 @@ class TabRevisitTracker : public GraphOwned,
     // `nullopt` if the tab was never connected to the active tab.
     absl::optional<int64_t> connectedness_to_last_switch_active_tab;
   };
+
+  virtual StateBundle GetStateForTabHandle(
+      const TabPageDecorator::TabHandle* tab_handle);
 
  private:
   friend class TabRevisitTrackerTest;

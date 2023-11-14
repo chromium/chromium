@@ -19,7 +19,6 @@ namespace {
 
 constexpr base::TimeDelta kMinTime = base::TimeDelta();
 constexpr base::TimeDelta kMaxTime = base::Hours(48);
-constexpr int64_t kMaxNumRevisit = 20;
 // Choosing a bucket spacing of 1.1 because it roughly matches the spacing of
 // the 200 buckets, capped at 48 hours close/revisit histograms.
 constexpr double kTimeBucketSpacing = 1.1;
@@ -47,8 +46,8 @@ void DoRecordUkm(TabRevisitTracker::StateBundle previous_state,
 
   builder.SetPreviousState(StateToSample(previous_state.state))
       .SetNewState(StateToSample(new_state.state))
-      .SetNumTotalRevisits(
-          GetLinearCappedBucket(new_state.num_revisits, kMaxNumRevisit))
+      .SetNumTotalRevisits(GetLinearCappedBucket(
+          new_state.num_revisits, TabRevisitTracker::kMaxNumRevisit))
       .SetTimeInPreviousState(TabRevisitTracker::ExponentiallyBucketedSeconds(
           base::TimeTicks::Now() - previous_state.last_state_change_time))
       .SetTotalTimeActive(TabRevisitTracker::ExponentiallyBucketedSeconds(
@@ -85,6 +84,13 @@ class TabRevisitTracker::UkmSourceIdReadyRecorder {
 
 TabRevisitTracker::TabRevisitTracker() = default;
 TabRevisitTracker::~TabRevisitTracker() = default;
+
+TabRevisitTracker::StateBundle TabRevisitTracker::GetStateForTabHandle(
+    const TabPageDecorator::TabHandle* tab_handle) {
+  auto it = tab_states_.find(tab_handle);
+  CHECK(it != tab_states_.end());
+  return it->second;
+}
 
 void TabRevisitTracker::RecordRevisitHistograms(
     const TabPageDecorator::TabHandle* tab_handle) {
@@ -185,9 +191,11 @@ void TabRevisitTracker::OnPassedToGraph(Graph* graph) {
   tab_connectedness_decorator->AddObserver(this);
 
   graph->AddPageNodeObserver(this);
+  graph->RegisterObject(this);
 }
 
 void TabRevisitTracker::OnTakenFromGraph(Graph* graph) {
+  graph->UnregisterObject(this);
   TabPageDecorator* tab_page_decorator =
       graph->GetRegisteredObjectAs<TabPageDecorator>();
   if (tab_page_decorator) {

@@ -22,8 +22,8 @@ void ProbabilisticMemorySaverPolicy::OnPassedToGraph(Graph* graph) {
   // Unretained is safe because this owns the evaluator for the latter's entire
   // lifetime.
   evaluator_ = std::make_unique<ProactiveDiscardEvaluator>(
-      estimator_creation_function_.Run(),
-      std::make_unique<ProbabilisticMemorySaverSampler>(graph),
+      estimator_creation_function_.Run(graph_),
+      std::make_unique<ProbabilisticMemorySaverSampler>(graph_),
       base::BindRepeating(&ProbabilisticMemorySaverPolicy::OnShouldDiscard,
                           base::Unretained(this)));
 }
@@ -35,8 +35,10 @@ void ProbabilisticMemorySaverPolicy::OnTakenFromGraph(Graph* graph) {
 
 // static
 std::unique_ptr<ProactiveDiscardEvaluator::RevisitProbabilityEstimator>
-ProbabilisticMemorySaverPolicy::CreateDefaultEstimator() {
-  return std::make_unique<RevisitCountRevisitEstimator>();
+ProbabilisticMemorySaverPolicy::CreateDefaultEstimator(Graph* graph) {
+  return std::make_unique<RevisitCountRevisitEstimator>(
+      graph, std::map<int64_t, RevisitCdfContainer>{},
+      std::map<int64_t, float>{});
 }
 
 void ProbabilisticMemorySaverPolicy::OnShouldDiscard(
