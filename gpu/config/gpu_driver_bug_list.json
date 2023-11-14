@@ -3828,6 +3828,18 @@
         "disable_accelerated_vp8_encode",
         "disable_accelerated_h264_encode"
       ]
+    },
+    {
+      "id": 423,
+      "description": "Legacy AMD GPUs can't synchronize multiple write streams on SharedImages [b/293613437]",
+      "os": {
+        "type": "chromeos"
+      },
+      "vendor_id": "0x1002",
+      "device_id": ["0x9802"],
+      "features": [
+        "disable_webgpu_shared_images"
+      ]
     }
   ]
 }

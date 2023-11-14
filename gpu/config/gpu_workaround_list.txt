@@ -62,6 +62,7 @@ disable_vp_auto_hdr
 disable_vp_scaling
 disable_vp_super_resolution
 disable_webgl_rgb_multisampling_usage
+disable_webgpu_shared_images
 disallow_large_instanced_draw
 dont_delete_source_texture_for_egl_image
 dont_initialize_uninitialized_locals

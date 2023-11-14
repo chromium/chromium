@@ -877,6 +877,8 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
       is_angle_metal || is_skia_graphite;
   shared_image_caps.disable_r8_shared_images =
       workarounds_.r8_egl_images_broken;
+  shared_image_caps.disable_webgpu_shared_images =
+      workarounds_.disable_webgpu_shared_images;
 
 #if BUILDFLAG(IS_WIN)
   shared_image_caps.shared_image_d3d =

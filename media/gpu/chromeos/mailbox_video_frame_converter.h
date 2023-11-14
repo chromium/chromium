@@ -11,10 +11,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/media_gpu_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
@@ -54,6 +56,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
     virtual ~GpuDelegate() = default;
 
     virtual bool Initialize() = 0;
+    virtual absl::optional<gpu::SharedImageCapabilities> GetCapabilities() = 0;
     virtual gpu::SharedImageStub::SharedImageDestructionCallback
     CreateSharedImage(const gpu::Mailbox& mailbox,
                       gfx::GpuMemoryBufferHandle handle,

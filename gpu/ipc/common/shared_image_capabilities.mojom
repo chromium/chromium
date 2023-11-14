@@ -10,6 +10,7 @@ struct SharedImageCapabilities {
   bool supports_luminance_shared_images;
   bool supports_r16_shared_images;
   bool disable_r8_shared_images;
+  bool disable_webgpu_shared_images;
 
   bool shared_image_d3d;
   bool shared_image_swap_chain;

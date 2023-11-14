@@ -10,12 +10,14 @@
 #include "base/task/thread_pool.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/media_switches.h"
 #include "media/base/simple_sync_token_client.h"
 #include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -38,6 +40,7 @@ namespace {
 class MockGpuDelegate : public MailboxVideoFrameConverter::GpuDelegate {
  public:
   MOCK_METHOD0(Initialize, bool());
+  MOCK_METHOD0(GetCapabilities, absl::optional<gpu::SharedImageCapabilities>());
   MOCK_METHOD9(CreateSharedImage,
                gpu::SharedImageStub::SharedImageDestructionCallback(
                    const gpu::Mailbox& mailbox,
@@ -248,6 +251,8 @@ TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
           .WillOnce(SaveArg<0>(&converted_frames[i]));
     }
 
+    EXPECT_CALL(*mock_gpu_delegate_, GetCapabilities())
+        .WillRepeatedly(Return(gpu::SharedImageCapabilities()));
     // Note: after this, the MailboxVideoFrameConverter should have full
     // ownership of the *|gmb_frame|.
     converter_->ConvertFrame(std::move(gmb_frame));
