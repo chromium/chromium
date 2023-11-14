@@ -6,11 +6,16 @@
 
 #include <memory>
 
+#include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
+#include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
+#include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/ui/webui/password_manager/promo_card.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -19,7 +24,9 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+using testing::IsEmpty;
 using ::testing::Return;
+using testing::Value;
 
 namespace password_manager {
 
@@ -27,10 +34,28 @@ namespace {
 
 const char kTestCallbackId[] = "test-callback-id";
 
-class MockPromoCard : public PromoCardInterface {
+struct PrefInfo {
+  std::string id;
+  int number_of_times_shown = 0;
+  base::Time last_time_shown;
+  bool was_dismissed = false;
+};
+
+MATCHER_P(PromoCardPrefInfo, expected, "") {
+  return Value(expected.id, *arg.GetDict().FindString("id")) &&
+         Value(expected.number_of_times_shown,
+               *arg.GetDict().FindInt("number_of_times_shown")) &&
+         Value(expected.last_time_shown,
+               base::ValueToTime(arg.GetDict().Find("last_time_shown"))
+                   .value()) &&
+         Value(expected.was_dismissed,
+               *arg.GetDict().FindBool("was_dismissed"));
+}
+
+class MockPromoCard : public PasswordPromoCardBase {
  public:
   MockPromoCard(const std::string& id, PrefService* prefs)
-      : PromoCardInterface(id, prefs), id_(id) {}
+      : PasswordPromoCardBase(id, prefs), id_(id) {}
 
   std::string GetPromoID() const override { return id_; }
 
@@ -55,9 +80,11 @@ class PromoCardsHandlerTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    profile_store_ = CreateAndUseTestPasswordStore(profile());
+
     prefs_.registry()->RegisterListPref(prefs::kPasswordManagerPromoCardsList);
 
-    std::vector<std::unique_ptr<password_manager::PromoCardInterface>> cards;
+    std::vector<std::unique_ptr<password_manager::PasswordPromoCardBase>> cards;
     cards.emplace_back(
         std::make_unique<MockPromoCard>("password_checkup_promo", &prefs_));
     card1_ = static_cast<MockPromoCard*>(cards.back().get());
@@ -65,8 +92,8 @@ class PromoCardsHandlerTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<MockPromoCard>("password_shortcut_promo", &prefs_));
     card2_ = static_cast<MockPromoCard*>(cards.back().get());
 
-    auto handler =
-        std::make_unique<PromoCardsHandler>(profile(), std::move(cards));
+    auto handler = std::make_unique<PromoCardsHandler>(
+        base::PassKey<PromoCardsHandlerTest>(), profile(), std::move(cards));
     handler_ = handler.get();
     web_ui_.AddMessageHandler(std::move(handler));
     static_cast<content::WebUIMessageHandler*>(handler_)
@@ -102,17 +129,38 @@ class PromoCardsHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
   content::TestWebUI* web_ui() { return &web_ui_; }
-
+  TestingPrefServiceSimple* pref_service() { return &prefs_; }
   MockPromoCard* first_card() { return card1_; }
   MockPromoCard* second_card() { return card2_; }
 
  private:
+  scoped_refptr<TestPasswordStore> profile_store_;
   TestingPrefServiceSimple prefs_;
   content::TestWebUI web_ui_;
   raw_ptr<PromoCardsHandler> handler_;
   raw_ptr<MockPromoCard> card1_;
   raw_ptr<MockPromoCard> card2_;
 };
+
+TEST_F(PromoCardsHandlerTest, GetAllPromoCards) {
+  pref_service()->ClearPref(prefs::kPasswordManagerPromoCardsList);
+
+  // Enforce delegate creation before retrieving promo cards.
+  scoped_refptr<extensions::PasswordsPrivateDelegate> delegate =
+      extensions::PasswordsPrivateDelegateFactory::GetForBrowserContext(
+          profile(), true);
+
+  auto promo_card_handler = PromoCardsHandler(profile());
+
+  const base::Value::List& list =
+      profile()->GetPrefs()->GetList(prefs::kPasswordManagerPromoCardsList);
+  EXPECT_THAT(list,
+              testing::UnorderedElementsAre(
+                  PromoCardPrefInfo(PrefInfo{"password_checkup_promo"}),
+                  PromoCardPrefInfo(PrefInfo{"passwords_on_web_promo"}),
+                  PromoCardPrefInfo(PrefInfo{"password_shortcut_promo"}),
+                  PromoCardPrefInfo(PrefInfo{"access_on_any_device_promo"})));
+}
 
 TEST_F(PromoCardsHandlerTest, GetAvailablePromoCard) {
   ASSERT_EQ(0, first_card()->number_of_times_shown());

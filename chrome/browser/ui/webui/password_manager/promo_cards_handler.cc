@@ -8,8 +8,15 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
+#include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/password_manager/promo_card.h"
+#include "chrome/browser/ui/webui/password_manager/promo_cards/access_on_any_device_promo.h"
+#include "chrome/browser/ui/webui/password_manager/promo_cards/password_checkup_promo.h"
+#include "chrome/browser/ui/webui/password_manager/promo_cards/password_manager_shortcut_promo.h"
+#include "chrome/browser/ui/webui/password_manager/promo_cards/web_password_manager_promo.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -20,7 +27,8 @@ namespace password_manager {
 namespace {
 
 // Returns the base::Value associated with the promo card.
-base::Value::Dict PromoCardToValueDict(const PromoCardInterface* promo_card) {
+base::Value::Dict PromoCardToValueDict(
+    const PasswordPromoCardBase* promo_card) {
   base::Value::Dict dict;
   dict.Set("id", promo_card->GetPromoID());
   dict.Set("title", promo_card->GetTitle());
@@ -31,11 +39,33 @@ base::Value::Dict PromoCardToValueDict(const PromoCardInterface* promo_card) {
   return dict;
 }
 
+std::vector<std::unique_ptr<PasswordPromoCardBase>> GetAllPromoCardsForProfile(
+    Profile* profile) {
+  std::vector<std::unique_ptr<PasswordPromoCardBase>> promo_cards;
+  promo_cards.push_back(std::make_unique<PasswordCheckupPromo>(
+      profile->GetPrefs(),
+      extensions::PasswordsPrivateDelegateFactory::GetForBrowserContext(profile,
+                                                                        false)
+          .get()));
+  promo_cards.push_back(std::make_unique<WebPasswordManagerPromo>(
+      profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile)));
+  promo_cards.push_back(
+      std::make_unique<PasswordManagerShortcutPromo>(profile));
+  promo_cards.push_back(
+      std::make_unique<AccessOnAnyDevicePromo>(profile->GetPrefs()));
+  return promo_cards;
+}
+
 }  // namespace
 
+PromoCardsHandler::PromoCardsHandler(Profile* profile) : profile_(profile) {
+  promo_cards_ = GetAllPromoCardsForProfile(profile_);
+}
+
 PromoCardsHandler::PromoCardsHandler(
+    base::PassKey<class PromoCardsHandlerTest>,
     Profile* profile,
-    std::vector<std::unique_ptr<PromoCardInterface>> promo_cards)
+    std::vector<std::unique_ptr<PasswordPromoCardBase>> promo_cards)
     : profile_(profile), promo_cards_(std::move(promo_cards)) {}
 
 PromoCardsHandler::~PromoCardsHandler() = default;
@@ -57,7 +87,7 @@ void PromoCardsHandler::HandleGetAvailablePromoCard(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  PromoCardInterface* promo_card_to_show = GetPromoToShowAndUpdatePref();
+  PasswordPromoCardBase* promo_card_to_show = GetPromoToShowAndUpdatePref();
   if (promo_card_to_show) {
     ResolveJavascriptCallback(callback_id,
                               PromoCardToValueDict(promo_card_to_show));
@@ -80,8 +110,8 @@ void PromoCardsHandler::HandleRecordPromoDismissed(
   }
 }
 
-PromoCardInterface* PromoCardsHandler::GetPromoToShowAndUpdatePref() {
-  std::vector<PromoCardInterface*> promo_card_to_show_candidates;
+PasswordPromoCardBase* PromoCardsHandler::GetPromoToShowAndUpdatePref() {
+  std::vector<PasswordPromoCardBase*> promo_card_to_show_candidates;
   for (const auto& promo_card : promo_cards_) {
     if (promo_card->ShouldShowPromo()) {
       promo_card_to_show_candidates.push_back(promo_card.get());

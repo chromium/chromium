@@ -13,30 +13,22 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
-class Profile;
-
-namespace extensions {
-class PasswordsPrivateDelegate;
-}  // namespace extensions
-
-namespace syncer {
-class SyncService;
-}
 
 namespace password_manager {
 
-// Interface for the promo cards. It has a basic implementation to read/write
-// to PrefService as well as basic properties needed for each promo card. Each
-// subclass must override GetPromoID() and the content to be displayed.
-class PromoCardInterface {
+// This is the base class for all password manager promo cards. It has a basic
+// implementation to read/write to PrefService as well as basic properties
+// needed for each promo card. Each subclass must override GetPromoID() and the
+// content to be displayed.
+class PasswordPromoCardBase {
  public:
-  static std::vector<std::unique_ptr<PromoCardInterface>>
-  GetAllPromoCardsForProfile(Profile* profile);
+  PasswordPromoCardBase(const PasswordPromoCardBase&) = delete;
+  PasswordPromoCardBase& operator=(const PasswordPromoCardBase&) = delete;
 
-  PromoCardInterface(const PromoCardInterface&) = delete;
-  PromoCardInterface& operator=(const PromoCardInterface&) = delete;
+  virtual ~PasswordPromoCardBase();
 
-  virtual ~PromoCardInterface();
+  // The upper limit on how many times Chrome will show the promo card.
+  static constexpr int kPromoDisplayLimit = 3;
 
   // Unique ID for a promo card. This is also used by the WebUI to display
   // banner image.
@@ -62,78 +54,12 @@ class PromoCardInterface {
   base::Time last_time_shown() const { return last_time_shown_; }
 
  protected:
-  PromoCardInterface(const std::string& id, PrefService* prefs);
+  PasswordPromoCardBase(const std::string& id, PrefService* prefs);
 
   int number_of_times_shown_ = 0;
   base::Time last_time_shown_;
   bool was_dismissed_ = false;
   raw_ptr<PrefService> prefs_;
-};
-
-// Password checkup promo card. Despite other promo cards this one should be
-// shown regularly but not more often than kPasswordCheckupPromoPeriod.
-class PasswordCheckupPromo : public PromoCardInterface {
- public:
-  PasswordCheckupPromo(PrefService* prefs,
-                       extensions::PasswordsPrivateDelegate* delegate);
-  ~PasswordCheckupPromo() override;
-
- private:
-  // PromoCardInterface implementation.
-  std::string GetPromoID() const override;
-  bool ShouldShowPromo() const override;
-  std::u16string GetTitle() const override;
-  std::u16string GetDescription() const override;
-  std::u16string GetActionButtonText() const override;
-
-  base::WeakPtr<extensions::PasswordsPrivateDelegate> delegate_;
-};
-
-// Promoting web version of Password Manager. Has a link to the website in the
-// description.
-class WebPasswordManagerPromo : public PromoCardInterface {
- public:
-  WebPasswordManagerPromo(PrefService* prefs,
-                          const syncer::SyncService* sync_service);
-
- private:
-  // PromoCardInterface implementation.
-  std::string GetPromoID() const override;
-  bool ShouldShowPromo() const override;
-  std::u16string GetTitle() const override;
-  std::u16string GetDescription() const override;
-
-  bool sync_enabled_ = false;
-};
-
-// Promo card to create shortcut to the Password Manager.
-class PasswordManagerShortcutPromo : public PromoCardInterface {
- public:
-  explicit PasswordManagerShortcutPromo(Profile* profile);
-
- private:
-  // PromoCardInterface implementation.
-  std::string GetPromoID() const override;
-  bool ShouldShowPromo() const override;
-  std::u16string GetTitle() const override;
-  std::u16string GetDescription() const override;
-  std::u16string GetActionButtonText() const override;
-
-  bool is_shortcut_installed_ = false;
-  raw_ptr<Profile> profile_;
-};
-
-// Promo card to communicate how to use Password Manager on Android and iOS.
-class AccessOnAnyDevicePromo : public PromoCardInterface {
- public:
-  explicit AccessOnAnyDevicePromo(PrefService* prefs);
-
- private:
-  // PromoCardInterface implementation.
-  std::string GetPromoID() const override;
-  bool ShouldShowPromo() const override;
-  std::u16string GetTitle() const override;
-  std::u16string GetDescription() const override;
 };
 
 }  // namespace password_manager

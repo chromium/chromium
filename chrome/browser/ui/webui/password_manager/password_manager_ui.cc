@@ -589,10 +589,7 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<ExtensionControlHandler>());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   web_ui->AddMessageHandler(
-      std::make_unique<password_manager::PromoCardsHandler>(
-          profile,
-          password_manager::PromoCardInterface::GetAllPromoCardsForProfile(
-              profile)));
+      std::make_unique<password_manager::PromoCardsHandler>(profile));
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   web_ui->AddMessageHandler(std::make_unique<settings::PasskeysHandler>());
