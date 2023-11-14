@@ -27,7 +27,7 @@ bool IsAllocatorInitialized() {
   // shimmed _set_new_mode() is called.
   return allocator_shim::g_is_win_shim_layer_initialized;
 #elif BUILDFLAG(IS_APPLE) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && \
-    !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_ALLOCATOR_SHIM)
   // From allocator_interception_mac.mm.
   return allocator_shim::g_replaced_default_zone;
 #else
