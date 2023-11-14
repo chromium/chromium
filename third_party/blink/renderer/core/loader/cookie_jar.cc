@@ -94,12 +94,15 @@ String CookieJar::Cookies() {
   // ipc is required.
   uint64_t new_version = last_version_;
   if (IPCNeeded()) {
+    bool is_ad_tagged =
+        document_->GetFrame() ? document_->GetFrame()->IsAdFrame() : false;
+
     if (!backend_->GetCookiesString(
             cookie_url, document_->SiteForCookies(),
             document_->TopFrameOrigin(),
             document_->GetExecutionContext()->HasStorageAccess(),
-            get_version_shared_memory, &new_version, &new_mapped_region,
-            &value)) {
+            get_version_shared_memory, is_ad_tagged, &new_version,
+            &new_mapped_region, &value)) {
       // On IPC failure invalidate cached values and return empty string since
       // there is no guarantee the client can still validly access cookies in
       // the current context. See crbug.com/1468909.

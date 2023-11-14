@@ -178,6 +178,8 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverBrowserTest,
                                      false, 0);
   histogram_tester.ExpectBucketCount(kThirdPartyCookieAccessBlockedHistogram,
                                      true, 0);
+  histogram_tester.ExpectTotalCount(
+      "PageLoad.Clients.TPCD.TPCAccess.BlockedByExperiment.IsAdOrNonAd", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverBrowserTest,
@@ -244,6 +246,9 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverBrowserTest,
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kThirdPartyCookieAccessBlockByExperiment, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieAdAccessBlockByExperiment, 0);
   histogram_tester.ExpectBucketCount(kThirdPartyCookieAccessBlockedHistogram,
                                      false, 0);
   histogram_tester.ExpectBucketCount(kThirdPartyCookieAccessBlockedHistogram,
@@ -283,6 +288,9 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverBrowserTest,
         blink::mojom::WebFeature::kThirdPartyCookieAccessBlockByExperiment, 1);
     histogram_tester.ExpectUniqueSample(kThirdPartyCookieAccessBlockedHistogram,
                                         true, 2);
+    histogram_tester.ExpectUniqueSample(
+        "PageLoad.Clients.TPCD.TPCAccess.BlockedByExperiment.IsAdOrNonAd",
+        false, 1);
   } else {
     histogram_tester.ExpectBucketCount(
         "Blink.UseCounter.Features",
@@ -508,5 +516,48 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverBrowserTest,
     histogram_tester.ExpectUniqueSample(
         "PageLoad.Clients.TPCD.TPCAccess.BlockedByExperiment.IsAdOrNonAd",
         false, 1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverBrowserTest,
+                       ThirdPartyAdJavaScriptCookieRead) {
+  SetUpThirdPartyCookieExperimentWithClientState();
+
+  content::CookieChangeObserver observer(web_contents(),
+                                         /*num_expected_calls=*/2);
+  base::HistogramTester histogram_tester;
+  NavigateToPageWithFrame("a.com");
+  NavigateFrameTo("b.com", "/empty.html?isad=1");
+  content::RenderFrameHost* frame =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+
+  // Write a third-party cookie.
+  EXPECT_TRUE(content::ExecJs(
+      frame, "document.cookie = 'foo=bar;SameSite=None;Secure';"));
+
+  // Read a third-party cookie.
+  EXPECT_TRUE(content::ExecJs(frame, "let x = document.cookie;"));
+  observer.Wait();
+  NavigateToUntrackedUrl();
+
+  if (IsRecordThirdPartyCookiesExperimentMetrics()) {
+    histogram_tester.ExpectBucketCount(
+        "Blink.UseCounter.Features",
+        blink::mojom::WebFeature::kThirdPartyCookieAdAccessBlockByExperiment,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "PageLoad.Clients.TPCD.TPCAccess.BlockedByExperiment.IsAdOrNonAd", true,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "PageLoad.Clients.TPCD.AdTPCAccess.BlockedByExperiment", true, 1);
+  } else {
+    histogram_tester.ExpectBucketCount(
+        "Blink.UseCounter.Features",
+        blink::mojom::WebFeature::kThirdPartyCookieAdAccessBlockByExperiment,
+        0);
+    histogram_tester.ExpectUniqueSample(
+        "PageLoad.Clients.TPCD.AdTPCAccess.BlockedByExperiment", false, 1);
+    histogram_tester.ExpectTotalCount(
+        "PageLoad.Clients.TPCD.TPCAccess.BlockedByExperiment.IsAdOrNonAd", 0);
   }
 }

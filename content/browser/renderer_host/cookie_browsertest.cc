@@ -454,10 +454,11 @@ class RestrictedCookieManagerInterceptor
                         const url::Origin& top_frame_origin,
                         bool has_storage_access,
                         bool get_version_shared_memory,
+                        bool is_ad_tagged,
                         GetCookiesStringCallback callback) override {
     GetForwardingInterface()->GetCookiesString(
         URLToUse(url), site_for_cookies, top_frame_origin, has_storage_access,
-        get_version_shared_memory, std::move(callback));
+        get_version_shared_memory, is_ad_tagged, std::move(callback));
   }
 
  private:
