@@ -230,6 +230,16 @@ public class MainActivity
         }
 
         @Override
+        public void onMinimized(Bundle extras) {
+            Log.w(TAG, "onMinimized");
+        }
+
+        @Override
+        public void onUnminimized(Bundle extras) {
+            Log.w(TAG, "onUnminimized");
+        }
+
+        @Override
         public void extraCallback(@NonNull String callbackName, @Nullable Bundle args) {
             if (args == null) return;
 

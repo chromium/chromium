@@ -422,7 +422,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             mActivity,
                             mActivityTabProvider,
                             mMinimizedCustomTabIPHController,
-                            closeTabRunnable);
+                            closeTabRunnable,
+                            intentDataProvider);
         }
     }
 

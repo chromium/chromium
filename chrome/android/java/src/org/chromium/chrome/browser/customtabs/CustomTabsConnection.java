@@ -21,12 +21,14 @@ import android.widget.RemoteViews;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
+import androidx.browser.customtabs.ExperimentalMinimizationCallback;
 import androidx.browser.customtabs.PostMessageServiceConnection;
 
 import org.jni_zero.CalledByNative;
@@ -1230,6 +1232,42 @@ public class CustomTabsConnection {
             return;
         }
         logCallback("onActivityResized()", "(" + height + "x" + width + ")");
+    }
+
+    /** Called when a Custom Tab is unminimized. */
+    @OptIn(markerClass = ExperimentalMinimizationCallback.class)
+    public void onUnminimized(@Nullable CustomTabsSessionToken session) {
+        Bundle args = new Bundle();
+
+        CustomTabsCallback callback = mClientManager.getCallbackForSession(session);
+        if (callback == null) return;
+        try {
+            callback.onUnminimized(args);
+        } catch (Exception e) {
+            // Catching all exceptions is really bad, but we need it here,
+            // because Android exposes us to client bugs by throwing a variety
+            // of exceptions. See crbug.com/517023.
+            return;
+        }
+        logCallback("onUnminimized()", args);
+    }
+
+    /** Called when a Custom Tab is minimized. */
+    @OptIn(markerClass = ExperimentalMinimizationCallback.class)
+    public void onMinimized(@Nullable CustomTabsSessionToken session) {
+        Bundle args = new Bundle();
+
+        CustomTabsCallback callback = mClientManager.getCallbackForSession(session);
+        if (callback == null) return;
+        try {
+            callback.onMinimized(args);
+        } catch (Exception e) {
+            // Catching all exceptions is really bad, but we need it here,
+            // because Android exposes us to client bugs by throwing a variety
+            // of exceptions. See crbug.com/517023.
+            return;
+        }
+        logCallback("onMinimized()", args);
     }
 
     /**

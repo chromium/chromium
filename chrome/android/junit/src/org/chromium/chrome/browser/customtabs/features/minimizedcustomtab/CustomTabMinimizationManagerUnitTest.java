@@ -42,7 +42,9 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -74,6 +76,8 @@ public class CustomTabMinimizationManagerUnitTest {
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private MinimizedCustomTabFeatureEngagementDelegate mFeatureEngagementDelegate;
+    @Mock private BrowserServicesIntentDataProvider mIntentData;
+    @Mock private CustomTabsConnection mConnection;
     @Mock private Runnable mCloseTabRunnable;
 
     private CustomTabMinimizationManager mManager;
@@ -82,6 +86,7 @@ public class CustomTabMinimizationManagerUnitTest {
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = spy(activity));
 
+        CustomTabsConnection.setInstanceForTesting(mConnection);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL);
         when(mTab.getTitle()).thenReturn(TITLE);
@@ -91,7 +96,11 @@ public class CustomTabMinimizationManagerUnitTest {
                 .thenReturn(true);
         mManager =
                 new CustomTabMinimizationManager(
-                        mActivity, mTabProvider, mFeatureEngagementDelegate, mCloseTabRunnable);
+                        mActivity,
+                        mTabProvider,
+                        mFeatureEngagementDelegate,
+                        mCloseTabRunnable,
+                        mIntentData);
     }
 
     @Test
@@ -107,6 +116,7 @@ public class CustomTabMinimizationManagerUnitTest {
         // Simulate Activity entering PiP.
         mManager.accept(new PictureInPictureModeChangedInfo(true));
 
+        verify(mConnection).onMinimized(any());
         verify(mTab).stopLoading();
         verify(mTab).hide(eq(TabHidingType.ACTIVITY_HIDDEN));
         verify(mWebContents).suspendAllMediaPlayers();
@@ -136,6 +146,7 @@ public class CustomTabMinimizationManagerUnitTest {
 
         verify(mTab).show(eq(FROM_USER), eq(ON_ACTIVITY_SHOWN_THEN_SHOW));
         verify(mWebContents).setAudioMuted(false);
+        verify(mConnection).onUnminimized(any());
         minimizationEventsWatcher.assertExpected(
                 "CustomTabs.MinimizedEvents.MAXIMIZE should be recorded once");
         timeElapsedWatcher.assertExpected(

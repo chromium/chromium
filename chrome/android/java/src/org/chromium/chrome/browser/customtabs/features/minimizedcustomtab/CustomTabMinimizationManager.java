@@ -29,6 +29,8 @@ import androidx.lifecycle.Lifecycle.State;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -65,6 +67,7 @@ public class CustomTabMinimizationManager
     private final AppCompatActivity mActivity;
     private final ActivityTabProvider mTabProvider;
     private final MinimizedCustomTabFeatureEngagementDelegate mFeatureEngagementDelegate;
+    private final BrowserServicesIntentDataProvider mIntentData;
     private final Runnable mCloseTabRunnable;
     private long mMinimizationSystemTime;
 
@@ -80,12 +83,14 @@ public class CustomTabMinimizationManager
             AppCompatActivity activity,
             ActivityTabProvider tabProvider,
             MinimizedCustomTabFeatureEngagementDelegate featureEngagementDelegate,
-            Runnable closeTabRunnable) {
+            Runnable closeTabRunnable,
+            BrowserServicesIntentDataProvider intentData) {
         mActivity = activity;
         mActivity.addOnPictureInPictureModeChangedListener(this);
         mTabProvider = tabProvider;
         mFeatureEngagementDelegate = featureEngagementDelegate;
         mCloseTabRunnable = closeTabRunnable;
+        mIntentData = intentData;
     }
 
     public void destroy() {
@@ -111,6 +116,7 @@ public class CustomTabMinimizationManager
         assert tab != null;
         if (pictureInPictureModeChangedInfo.isInPictureInPictureMode()) {
             updateTabForMinimization(tab);
+            CustomTabsConnection.getInstance().onMinimized(mIntentData.getSession());
             RecordHistogram.recordEnumeratedHistogram(
                     "CustomTabs.MinimizedEvents",
                     MinimizationEvents.MINIMIZE,
@@ -135,6 +141,7 @@ public class CustomTabMinimizationManager
             }
 
             updateTabForMaximization(tab);
+            CustomTabsConnection.getInstance().onUnminimized(mIntentData.getSession());
             RecordHistogram.recordEnumeratedHistogram(
                     "CustomTabs.MinimizedEvents",
                     MinimizationEvents.MAXIMIZE,

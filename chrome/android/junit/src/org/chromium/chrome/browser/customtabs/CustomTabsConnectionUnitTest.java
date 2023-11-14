@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
@@ -215,6 +216,20 @@ public class CustomTabsConnectionUnitTest {
                 mConnection.setEngagementSignalsCallback(
                         mSession, mEngagementSignalsCallback, Bundle.EMPTY));
         assertNull(mConnection.mClientManager.getEngagementSignalsCallbackForSession(mSession));
+    }
+
+    @Test
+    public void testOnMinimized() {
+        initSession();
+        mConnection.onMinimized(mSession);
+        verify(mCallback).onMinimized(any(Bundle.class));
+    }
+
+    @Test
+    public void testOnUnminimized() {
+        initSession();
+        mConnection.onUnminimized(mSession);
+        verify(mCallback).onUnminimized(any(Bundle.class));
     }
 
     private void initSession() {
