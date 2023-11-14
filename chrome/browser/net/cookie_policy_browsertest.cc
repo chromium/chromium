@@ -750,7 +750,8 @@ class ThirdPartyPartitionedStorageAccessibilityTest
     if (StoragePartitioningEnabled()) {
       return {};
     }
-    return {net::features::kThirdPartyStoragePartitioning};
+    return {net::features::kThirdPartyStoragePartitioning,
+            content_settings::features::kTrackingProtection3pcd};
   }
 
   ContextType ContextType() const { return std::get<0>(GetParam()); }
@@ -864,7 +865,8 @@ class ThirdPartyPartitionedStorageAccessibilityCanBeDisabledTest
     : public ThirdPartyPartitionedStorageAccessibilityTest {
  protected:
   std::vector<base::test::FeatureRef> DisabledFeatures() override {
-    return {net::features::kThirdPartyPartitionedStorageAllowedByDefault};
+    return {net::features::kThirdPartyPartitionedStorageAllowedByDefault,
+            content_settings::features::kTrackingProtection3pcd};
   }
 };
 
