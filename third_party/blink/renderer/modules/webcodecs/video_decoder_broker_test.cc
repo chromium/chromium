@@ -367,7 +367,7 @@ TEST_F(VideoDecoderBrokerTest, Decode_NoMojoDecoder) {
   ConstructDecoder(*v8_scope.GetExecutionContext());
   EXPECT_EQ(GetDecoderType(), media::VideoDecoderType::kBroker);
 
-  InitializeDecoder(media::TestVideoConfig::Normal());
+  InitializeDecoder(media::TestVideoConfig::Normal(media::VideoCodec::kVP8));
   EXPECT_NE(GetDecoderType(), media::VideoDecoderType::kBroker);
 
   DecodeBuffer(media::ReadTestDataFile("vp8-I-frame-320x120"));
@@ -393,7 +393,8 @@ TEST_F(VideoDecoderBrokerTest, Init_RequireAcceleration) {
 
   decoder_broker_->SetHardwarePreference(HardwarePreference::kPreferHardware);
 
-  InitializeDecoder(media::TestVideoConfig::Normal(), /*expect_success*/ false);
+  InitializeDecoder(media::TestVideoConfig::Normal(media::VideoCodec::kVP8),
+                    /*expect_success*/ false);
   EXPECT_EQ(GetDecoderType(), media::VideoDecoderType::kBroker);
 }
 
@@ -424,7 +425,7 @@ TEST_F(VideoDecoderBrokerTest, Decode_MultipleAccelerationPreferences) {
 
   // Make sure we can decode software only.
   decoder_broker_->SetHardwarePreference(HardwarePreference::kPreferSoftware);
-  InitializeDecoder(media::TestVideoConfig::Normal());
+  InitializeDecoder(media::TestVideoConfig::Normal(media::VideoCodec::kVP8));
   DecodeBuffer(media::ReadTestDataFile("vp8-I-frame-320x120"));
   DecodeBuffer(media::DecoderBuffer::CreateEOSBuffer());
   ASSERT_EQ(1U, output_frames_.size());
@@ -453,7 +454,7 @@ TEST_F(VideoDecoderBrokerTest, Decode_MultipleAccelerationPreferences) {
 
   // Use a small frame to force software decode, without changing the
   // acceleration preference.
-  InitializeDecoder(media::TestVideoConfig::Normal());
+  InitializeDecoder(media::TestVideoConfig::Normal(media::VideoCodec::kVP8));
   DecodeBuffer(media::ReadTestDataFile("vp8-I-frame-320x120"));
   DecodeBuffer(media::DecoderBuffer::CreateEOSBuffer());
   ASSERT_EQ(4U, output_frames_.size());

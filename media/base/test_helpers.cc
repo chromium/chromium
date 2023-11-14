@@ -223,7 +223,7 @@ VideoDecoderConfig TestVideoConfig::NormalEncrypted(VideoCodec codec,
 
 // static
 VideoDecoderConfig TestVideoConfig::NormalRotated(VideoRotation rotation) {
-  return GetTestConfig(VideoCodec::kVP8, MinProfile(VideoCodec::kVP8),
+  return GetTestConfig(VideoCodec::kAV1, MinProfile(VideoCodec::kAV1),
                        VideoColorSpace::JPEG(), rotation, kNormalSize, false);
 }
 
