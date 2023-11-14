@@ -14,15 +14,8 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths_lacros.h"
+#include "components/drive/file_system_core_util.h"
 #endif
-
-namespace {
-#if BUILDFLAG(IS_CHROMEOS)
-// Drive root folder relative to its mount point.
-const base::FilePath::CharType* kRootRelativeToDriveMount =
-    FILE_PATH_LITERAL("root");
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}  // namespace
 
 namespace download_dir_util {
 
@@ -57,7 +50,7 @@ bool ExpandDrivePolicyVariable(Profile* profile,
 #endif
 
   base::FilePath::StringType google_drive_root =
-      google_drive.Append(kRootRelativeToDriveMount).value();
+      google_drive.Append(drive::util::kDriveMyDriveRootDirName).value();
   std::string expanded_value = old_path.value();
   *new_path = base::FilePath(expanded_value.replace(
       position, strlen(kDriveNamePolicyVariableName), google_drive_root));

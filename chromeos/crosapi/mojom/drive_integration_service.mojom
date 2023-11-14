@@ -36,9 +36,10 @@ interface DriveFsNativeMessageHostBridge {
 // Next version: 3
 [Stable, Uuid="60fd345d-0f72-4941-a035-910b93c141fa"]
 interface DriveIntegrationService {
-  // Returns the path of the mount point for Google Drive. Returns an empty file
-  // path if the Google Drive mount is not available.
-  GetMountPointPath@0() => (mojo_base.mojom.FilePath drive_path);
+  // Deprecated: Use DriveIntegrationServiceObserver::OnMountPointPathChanged()
+  // to listen for changes to the DriveFS mount point. These changes are stashed
+  // in chrome_paths_lacros.cc/h.
+  DeprecatedGetMountPointPath@0() => (mojo_base.mojom.FilePath drive_path);
 
   // Adds an observer for changes in drive availability. The observer is fired
   // immediately with the current mount point path value or empty value in case

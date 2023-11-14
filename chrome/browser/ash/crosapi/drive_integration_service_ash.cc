@@ -27,8 +27,7 @@ drive::DriveIntegrationService* GetDriveService() {
 
 base::FilePath GetMountPoint() {
   return GetDriveService() && GetDriveService()->IsMounted()
-             ? GetDriveService()->GetMountPointPath().Append(
-                   drive::util::kDriveMyDriveRootDirName)
+             ? GetDriveService()->GetMountPointPath()
              : base::FilePath();
 }
 
@@ -42,8 +41,8 @@ void DriveIntegrationServiceAsh::BindReceiver(
   receivers_.Add(this, std::move(pending_receiver));
 }
 
-void DriveIntegrationServiceAsh::GetMountPointPath(
-    GetMountPointPathCallback callback) {
+void DriveIntegrationServiceAsh::DeprecatedGetMountPointPath(
+    DeprecatedGetMountPointPathCallback callback) {
   std::move(callback).Run(GetMountPoint());
 }
 

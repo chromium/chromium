@@ -80,8 +80,6 @@
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/test/chromeos/printing/fake_local_printer_chromeos.h"
-#include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
-#include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #endif
 
 namespace printing {
@@ -353,32 +351,6 @@ class TestLocalPrinter : public FakeLocalPrinter {
   absl::optional<crosapi::mojom::Policies> policies_;
   std::vector<mojom::PrinterType> deny_list_;
 };
-
-class FakeDriveIntegrationService
-    : public crosapi::mojom::DriveIntegrationService {
- public:
-  FakeDriveIntegrationService() = default;
-  FakeDriveIntegrationService(const FakeDriveIntegrationService&) = delete;
-  FakeDriveIntegrationService& operator=(const FakeDriveIntegrationService&) =
-      delete;
-  ~FakeDriveIntegrationService() override = default;
-
-  void GetMountPointPath(GetMountPointPathCallback callback) override {
-    std::move(callback).Run(base::FilePath("/drive/path"));
-  }
-  void AddDriveIntegrationServiceObserver(
-      mojo::PendingRemote<crosapi::mojom::DriveIntegrationServiceObserver>)
-      override {}
-  void CreateNativeHostSession(
-      drivefs::mojom::ExtensionConnectionParamsPtr params,
-      mojo::PendingReceiver<drivefs::mojom::NativeMessagingHost>
-          drivefs_receiver,
-      mojo::PendingRemote<drivefs::mojom::NativeMessagingPort> extension_remote)
-      override {}
-  void RegisterDriveFsNativeMessageHostBridge(
-      mojo::PendingRemote<crosapi::mojom::DriveFsNativeMessageHostBridge>
-          bridge) override {}
-};
 #endif
 
 class TestPrintPreviewHandler : public PrintPreviewHandler {
@@ -523,7 +495,6 @@ class PrintPreviewHandlerTest : public testing::Test {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     handler_->local_printer_ = &local_printer_;
     handler_->local_printer_version_ = crosapi::mojom::LocalPrinter::Version_;
-    handler_->drive_integration_service_ = &drive_integration_service_;
 #endif
 
     auto preview_ui = std::make_unique<FakePrintPreviewUI>(
@@ -802,7 +773,6 @@ class PrintPreviewHandlerTest : public testing::Test {
   std::unique_ptr<crosapi::CrosapiManager> manager_;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   TestLocalPrinter local_printer_;
-  FakeDriveIntegrationService drive_integration_service_;
 #endif
   TestingProfile profile_;
   std::unique_ptr<content::TestWebUI> web_ui_;
