@@ -185,14 +185,13 @@ class PageLoadMetricsObserverDelegate {
       BfcacheStrategy bfcache_strategy) const = 0;
   virtual const NormalizedCLSData& GetSoftNavigationIntervalNormalizedCLSData()
       const = 0;
-  // Returns normalized responsiveness metrics data. Currently we normalize
-  // user interaction latencies from all renderer frames in a few different
-  // ways.
-  virtual const NormalizedResponsivenessMetrics&
-  GetNormalizedResponsivenessMetrics() const = 0;
+  // Returns normalized responsiveness metrics data. Normalization explained in
+  // https://web.dev/inp.
+  virtual const ResponsivenessMetricsNormalization&
+  GetResponsivenessMetricsNormalization() const = 0;
 
-  virtual const NormalizedResponsivenessMetrics&
-  GetSoftNavigationIntervalNormalizedResponsivenessMetrics() const = 0;
+  virtual const ResponsivenessMetricsNormalization&
+  GetSoftNavigationIntervalResponsivenessMetricsNormalization() const = 0;
 
   // InputTiming data accumulated across all frames.
   virtual const mojom::InputTiming& GetPageInputTiming() const = 0;

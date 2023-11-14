@@ -689,25 +689,22 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
     }
   }
 
-  const page_load_metrics::NormalizedResponsivenessMetrics&
-      soft_nav_normalized_responsiveness_metrics =
+  const page_load_metrics::ResponsivenessMetricsNormalization&
+      soft_nav_responsiveness_metrics_normalization =
           GetDelegate()
-              .GetSoftNavigationIntervalNormalizedResponsivenessMetrics();
+              .GetSoftNavigationIntervalResponsivenessMetricsNormalization();
 
-  const auto& max_event_durations =
-      soft_nav_normalized_responsiveness_metrics.normalized_max_event_durations;
-  if (soft_nav_normalized_responsiveness_metrics.num_user_interactions) {
+  if (soft_nav_responsiveness_metrics_normalization.num_user_interactions()) {
     builder
         .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
-            page_load_metrics::ResponsivenessMetricsNormalization::
-                ApproximateHighPercentile(
-                    soft_nav_normalized_responsiveness_metrics
-                        .num_user_interactions,
-                    max_event_durations.worst_ten_latencies)
-                    .InMilliseconds());
+            soft_nav_responsiveness_metrics_normalization
+                .ApproximateHighPercentile()
+                .value()
+                .InMilliseconds());
     builder.SetInteractiveTiming_NumInteractions(
         ukm::GetExponentialBucketMinForCounts1000(
-            soft_nav_normalized_responsiveness_metrics.num_user_interactions));
+            soft_nav_responsiveness_metrics_normalization
+                .num_user_interactions()));
   }
 
   // Don't report CLS if we were never in the foreground.
@@ -727,25 +724,22 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
 void UkmPageLoadMetricsObserver::
     RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame() {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
-  const page_load_metrics::NormalizedResponsivenessMetrics&
-      normalized_responsiveness_metrics_before_soft_nav =
+  const page_load_metrics::ResponsivenessMetricsNormalization&
+      responsiveness_metrics_normalization_before_soft_nav =
           GetDelegate()
-              .GetSoftNavigationIntervalNormalizedResponsivenessMetrics();
-  auto& max_event_durations = normalized_responsiveness_metrics_before_soft_nav
-                                  .normalized_max_event_durations;
-  if (normalized_responsiveness_metrics_before_soft_nav.num_user_interactions) {
+              .GetSoftNavigationIntervalResponsivenessMetricsNormalization();
+  if (responsiveness_metrics_normalization_before_soft_nav
+          .num_user_interactions()) {
     builder
         .SetInteractiveTimingBeforeSoftNavigation_UserInteractionLatency_HighPercentile2_MaxEventDuration(
-            page_load_metrics::ResponsivenessMetricsNormalization::
-                ApproximateHighPercentile(
-                    normalized_responsiveness_metrics_before_soft_nav
-                        .num_user_interactions,
-                    max_event_durations.worst_ten_latencies)
-                    .InMilliseconds());
+            responsiveness_metrics_normalization_before_soft_nav
+                .ApproximateHighPercentile()
+                .value()
+                .InMilliseconds());
     builder.SetInteractiveTimingBeforeSoftNavigation_NumInteractions(
         ukm::GetExponentialBucketMinForCounts1000(
-            normalized_responsiveness_metrics_before_soft_nav
-                .num_user_interactions));
+            responsiveness_metrics_normalization_before_soft_nav
+                .num_user_interactions()));
   }
   builder.Record(ukm::UkmRecorder::Get());
 }
@@ -1356,28 +1350,22 @@ void UkmPageLoadMetricsObserver::ReportResponsivenessAfterFirstForeground() {
   DCHECK(!last_time_shown_.is_null());
 
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
-  const page_load_metrics::NormalizedResponsivenessMetrics&
-      normalized_responsiveness_metrics =
-          GetDelegate().GetNormalizedResponsivenessMetrics();
-  auto& max_event_durations =
-      normalized_responsiveness_metrics.normalized_max_event_durations;
-  if (normalized_responsiveness_metrics.num_user_interactions) {
+  const page_load_metrics::ResponsivenessMetricsNormalization&
+      responsiveness_metrics_normalization =
+          GetDelegate().GetResponsivenessMetricsNormalization();
+  if (responsiveness_metrics_normalization.num_user_interactions()) {
     builder
         .SetInteractiveTiming_UserInteractionLatencyAtFirstOnHidden_HighPercentile2_MaxEventDuration(
-            page_load_metrics::ResponsivenessMetricsNormalization::
-                ApproximateHighPercentile(
-                    normalized_responsiveness_metrics.num_user_interactions,
-                    max_event_durations.worst_ten_latencies)
-                    .InMilliseconds());
+            responsiveness_metrics_normalization.ApproximateHighPercentile()
+                .value()
+                .InMilliseconds());
 
     UmaHistogramCustomTimes(
         "PageLoad.InteractiveTiming.UserInteractionLatencyAtFirstOnHidden."
         "HighPercentile2."
         "MaxEventDuration",
-        page_load_metrics::ResponsivenessMetricsNormalization::
-            ApproximateHighPercentile(
-                normalized_responsiveness_metrics.num_user_interactions,
-                max_event_durations.worst_ten_latencies),
+        responsiveness_metrics_normalization.ApproximateHighPercentile()
+            .value(),
         base::Milliseconds(1), base::Seconds(60), 50);
   }
   builder.Record(ukm::UkmRecorder::Get());
@@ -1567,24 +1555,22 @@ UkmPageLoadMetricsObserver::GetThirdPartyCookieBlockingEnabled() const {
 
 void UkmPageLoadMetricsObserver::RecordResponsivenessMetrics() {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
-  const page_load_metrics::NormalizedResponsivenessMetrics&
-      normalized_responsiveness_metrics =
-          GetDelegate().GetNormalizedResponsivenessMetrics();
-  auto& max_event_durations =
-      normalized_responsiveness_metrics.normalized_max_event_durations;
-  if (normalized_responsiveness_metrics.num_user_interactions) {
+  const page_load_metrics::ResponsivenessMetricsNormalization&
+      responsiveness_metrics_normalization =
+          GetDelegate().GetResponsivenessMetricsNormalization();
+  if (responsiveness_metrics_normalization.num_user_interactions()) {
     builder.SetInteractiveTiming_WorstUserInteractionLatency_MaxEventDuration(
-        max_event_durations.worst_latency.InMilliseconds());
+        responsiveness_metrics_normalization.worst_latency()
+            .value()
+            .InMilliseconds());
     builder
         .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
-            page_load_metrics::ResponsivenessMetricsNormalization::
-                ApproximateHighPercentile(
-                    normalized_responsiveness_metrics.num_user_interactions,
-                    max_event_durations.worst_ten_latencies)
-                    .InMilliseconds());
+            responsiveness_metrics_normalization.ApproximateHighPercentile()
+                .value()
+                .InMilliseconds());
     builder.SetInteractiveTiming_NumInteractions(
         ukm::GetExponentialBucketMinForCounts1000(
-            normalized_responsiveness_metrics.num_user_interactions));
+            responsiveness_metrics_normalization.num_user_interactions()));
   }
   builder.Record(ukm::UkmRecorder::Get());
 }
