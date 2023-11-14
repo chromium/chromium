@@ -26,6 +26,7 @@ chromium/try/android-x86-dual-coverage-exp-rel
 chromium/try/android-x86-rel
 chromium/try/android_arm64_dbg_recipe
 chromium/try/android_compile_dbg
+chromium/try/android_compile_siso_dbg
 chromium/try/android_compile_x64_dbg
 chromium/try/android_compile_x86_dbg
 chromium/try/chromeos-amd64-generic-asan-rel
@@ -90,6 +91,7 @@ chromium/try/linux-bfcache-rel
 chromium/try/linux-cfm-rel
 chromium/try/linux-chromeos-asan-rel
 chromium/try/linux-chromeos-compile-dbg
+chromium/try/linux-chromeos-compile-siso-dbg
 chromium/try/linux-chromeos-dbg
 chromium/try/linux-chromeos-rel
 chromium/try/linux-clobber-rel
@@ -126,6 +128,7 @@ chromium/try/linux_chromium_chromeos_asan_rel_ng
 chromium/try/linux_chromium_chromeos_msan_rel_ng
 chromium/try/linux_chromium_compile_dbg_ng
 chromium/try/linux_chromium_compile_rel_ng
+chromium/try/linux_chromium_compile_siso_dbg_ng
 chromium/try/linux_chromium_dbg_ng
 chromium/try/linux_chromium_msan_rel_ng
 chromium/try/linux_chromium_tsan_rel_ng
