@@ -61,8 +61,8 @@ struct CrossThreadTraits {
 
   // Accept RepeatingCallback here since it's convertible to a OnceCallback.
   template <template <typename> class CallbackType>
-  using EnableIfIsCrossThreadTask =
-      std::enable_if_t<IsBaseCallback<CallbackType<void()>>>;
+  static constexpr bool IsCrossThreadTask =
+      IsBaseCallback<CallbackType<void()>>;
 };
 
 template <typename T, typename CrossThreadTraits>
