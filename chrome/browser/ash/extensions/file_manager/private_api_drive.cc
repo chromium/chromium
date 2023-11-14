@@ -671,16 +671,22 @@ void FileManagerPrivateSearchDriveFunction::OnSearchDriveFs(
     Respond(Error("No search results"));
     return;
   }
-  base::Value::Dict result;
-  result.Set("entries", std::move(*results));
+
+  api::file_manager_private::SearchDriveResponse response;
   // Search queries are capped at 100 of items anyway and pagination is
   // never actually used, so no need to fill this.
-  result.Set("nextFeed", "");
+  response.next_feed = "";
+  for (const auto& e : results.value()) {
+    auto& entry = response.entries.emplace_back();
+    api::file_manager_private::SearchDriveResponse::EntriesType::Populate(
+        e, entry);
+  }
+
   UmaEmitSearchOutcome(
       true, !is_offline_,
       FileManagerPrivateSearchDriveMetadataFunction::SearchType::kText,
       operation_start_);
-  Respond(WithArguments(std::move(result)));
+  Respond(WithArguments(response.ToValue()));
 }
 
 FileManagerPrivateSearchDriveMetadataFunction::

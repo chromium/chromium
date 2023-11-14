@@ -100,7 +100,7 @@ export class CrostiniController {
 
       return new Promise(resolve => {
         chrome.fileManagerPrivate.getCrostiniSharedPaths(
-            maybeShowToast, vmName, (entries, firstForSession) => {
+            maybeShowToast, vmName, ({entries, firstForSession}) => {
               showToast = showToast && firstForSession;
               for (const entry of entries) {
                 this.crostini_.registerSharedPath(vmName, assert(entry));

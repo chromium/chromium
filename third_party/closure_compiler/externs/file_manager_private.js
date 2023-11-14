@@ -560,6 +560,14 @@ chrome.fileManagerPrivate.MountPointSizeStats;
 
 /**
  * @typedef {{
+ *   entries: !Array<Entry>,
+ *   nextFeed: string
+ * }}
+ */
+chrome.fileManagerPrivate.SearchDriveResponse;
+
+/**
+ * @typedef {{
  *   userType: !chrome.fileManagerPrivate.UserType,
  *   usedBytes: number,
  *   totalBytes: number,
@@ -577,6 +585,15 @@ chrome.fileManagerPrivate.DriveQuotaMetadata;
  * }}
  */
 chrome.fileManagerPrivate.ProfileInfo;
+
+/**
+ * @typedef {{
+ *   profiles: !Array<!chrome.fileManagerPrivate.ProfileInfo>,
+ *   currentProfileId: string,
+ *   displayedProfileId: string
+ * }}
+ */
+chrome.fileManagerPrivate.ProfilesResponse;
 
 /**
  * @typedef {{
@@ -808,6 +825,14 @@ chrome.fileManagerPrivate.LinuxPackageInfo;
  * }}
  */
 chrome.fileManagerPrivate.CrostiniEvent;
+
+/**
+ * @typedef {{
+ *   entries: !Array<Entry>,
+ *   firstForSession: boolean
+ * }}
+ */
+chrome.fileManagerPrivate.CrostiniSharedPathResponse;
 
 /**
  * @typedef {{
@@ -1345,10 +1370,10 @@ chrome.fileManagerPrivate.setPreferences = function(changeInfo) {};
 /**
  * Performs drive content search. |searchParams| |callback|
  * @param {!chrome.fileManagerPrivate.SearchParams} searchParams
- * @param {function(!Array<Entry>, string): void} callback |entries| |nextFeed|
- *     ID of the feed that contains next chunk of the search result.     Should
- *     be sent to the next searchDrive request to perform     incremental
- *     search.
+ * @param {function(!chrome.fileManagerPrivate.SearchDriveResponse): void}
+ *     callback |entries| |nextFeed| ID of the feed that contains next chunk of
+ *     the search result.     Should be sent to the next searchDrive request to
+ *     perform     incremental search.
  */
 chrome.fileManagerPrivate.searchDrive = function(searchParams, callback) {};
 
@@ -1410,10 +1435,7 @@ chrome.fileManagerPrivate.zoom = function(operation) {};
 
 /**
  * Obtains a list of profiles that are logged-in.
- * @param {function(!Array<!chrome.fileManagerPrivate.ProfileInfo>, string, string): void}
- *     callback |profiles| List of profile information. |runningProfile| ID of
- *     the profile that runs the application instance. |showingProfile| ID of
- *     the profile that shows the application window.
+ * @param {function(!chrome.fileManagerPrivate.ProfilesResponse): void} callback
  */
 chrome.fileManagerPrivate.getProfiles = function(callback) {};
 
@@ -1490,7 +1512,9 @@ chrome.fileManagerPrivate.getDirectorySize = function(entry, callback) {};
 /**
  * Gets recently modified files across file systems. |restriction| Flag to
  * restrict sources of recent files. |fileType| Requested file type to filter
- * recent files. |callback|
+ * recent files. |query| When not empty, removes files with non-matching names.
+ * |cutoffDays| Specifies oldest modification time. |callback| Called with zero
+ * or more matched files.
  * @param {!chrome.fileManagerPrivate.SourceRestriction} restriction
  * @param {string} query
  * @param {number} cutoffDays
@@ -1499,8 +1523,7 @@ chrome.fileManagerPrivate.getDirectorySize = function(entry, callback) {};
  * @param {function(!Array<Entry>): void} callback |entries| Recently modified
  *     entries.
  */
-chrome.fileManagerPrivate.getRecentFiles = function(
-    restriction, query, cutoffDays, fileCategory, invalidateCache, callback) {};
+chrome.fileManagerPrivate.getRecentFiles = function(restriction, query, cutoffDays, fileCategory, invalidateCache, callback) {};
 
 /**
  * Requests the root directory of the volume with the ID specified in
@@ -1544,9 +1567,8 @@ chrome.fileManagerPrivate.unsharePathWithCrostini = function(vmName, entry, call
  * with observeFirstForSession true.
  * @param {boolean} observeFirstForSession
  * @param {string} vmName
- * @param {function(!Array<Entry>, boolean): void} callback |entries| Entries
- *     shared with crostini container. |firstForSession| true the first time
- *     this is called for the session.
+ * @param {function(!chrome.fileManagerPrivate.CrostiniSharedPathResponse): void}
+ *     callback
  */
 chrome.fileManagerPrivate.getCrostiniSharedPaths = function(observeFirstForSession, vmName, callback) {};
 

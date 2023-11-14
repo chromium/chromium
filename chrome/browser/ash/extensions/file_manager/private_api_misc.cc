@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -333,7 +334,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateZoomFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction FileManagerPrivateGetProfilesFunction::Run() {
-  const std::vector<ProfileInfo>& profiles = GetLoggedInProfileInfoList();
+  fmp::ProfilesResponse response;
+  response.profiles = GetLoggedInProfileInfoList();
 
   // Obtains the display profile ID.
   AppWindow* const app_window = GetCurrentAppWindow(this);
@@ -346,10 +348,12 @@ ExtensionFunction::ResponseAction FileManagerPrivateGetProfilesFunction::Run() {
                                          app_window->GetNativeWindow())
                                    : EmptyAccountId();
 
-  return RespondNow(ArgumentList(fmp::GetProfiles::Results::Create(
-      profiles, current_profile_id.GetUserEmail(),
-      display_profile_id.is_valid() ? display_profile_id.GetUserEmail()
-                                    : current_profile_id.GetUserEmail())));
+  response.current_profile_id = current_profile_id.GetUserEmail();
+  response.displayed_profile_id = display_profile_id.is_valid()
+                                      ? display_profile_id.GetUserEmail()
+                                      : current_profile_id.GetUserEmail();
+
+  return RespondNow(WithArguments(response.ToValue()));
 }
 
 ExtensionFunction::ResponseAction
@@ -770,6 +774,8 @@ FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
   auto shared_paths =
       guest_os_share_path->GetPersistedSharedPaths(params->vm_name);
   base::Value::List entries;
+  fmpi::CrostiniSharedPathResponse response;
+  response.first_for_session = first_for_session;
   for (const base::FilePath& path : shared_paths) {
     std::string mount_name;
     std::string file_system_name;
@@ -780,19 +786,19 @@ FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
                  << Redact(path);
       continue;
     }
-    base::Value::Dict entry;
-    entry.Set("fileSystemRoot", storage::GetExternalFileSystemRootURIString(
-                                    source_url(), mount_name));
-    entry.Set("fileSystemName", file_system_name);
-    entry.Set("fileFullPath", full_path);
+
+    auto& entry = response.entries.emplace_back();
+    entry.file_system_root =
+        storage::GetExternalFileSystemRootURIString(source_url(), mount_name);
+    entry.file_system_name = file_system_name;
+    entry.file_full_path = full_path;
     // All shared paths should be directories.  Even if this is not true,
     // it is fine for foreground/js/crostini.js class to think so. We
     // verify that the paths are in fact valid directories before calling
     // seneschal/9p in GuestOsSharePath::CallSeneschalSharePath().
-    entry.Set("fileIsDirectory", true);
-    entries.Append(std::move(entry));
+    entry.file_is_directory = true;
   }
-  return RespondNow(WithArguments(std::move(entries), first_for_session));
+  return RespondNow(WithArguments(response.ToValue()));
 }
 
 ExtensionFunction::ResponseAction

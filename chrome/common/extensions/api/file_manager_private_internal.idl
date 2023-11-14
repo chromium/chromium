@@ -31,6 +31,10 @@ namespace fileManagerPrivateInternal {
     double modifiedTimestamp;
     fileManagerPrivate.FileCategory category;
   };
+  dictionary CrostiniSharedPathResponse {
+    EntryDescription[] entries;
+    boolean firstForSession;
+  };
 
   callback SimpleCallback = void();
   callback ResolveIsolatedEntriesCallback = void(EntryDescription[] entries);
@@ -57,7 +61,7 @@ namespace fileManagerPrivateInternal {
   callback GetDirectorySizeCallback = void(double size);
   callback GetRecentFilesCallback = void(EntryDescription[] entries);
   callback GetCrostiniSharedPathsCallback =
-      void(EntryDescription[] entries, boolean firstForSession);
+      void(CrostiniSharedPathResponse response);
   callback GetLinuxPackageInfoCallback =
       void(fileManagerPrivate.LinuxPackageInfo linux_package_info);
   callback InstallLinuxPackageCallback =

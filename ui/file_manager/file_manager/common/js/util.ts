@@ -110,11 +110,9 @@ export function getLastVisitedURL(): string {
  */
 export function isTeleported(): Promise<boolean> {
   return new Promise(onFulfilled => {
-    chrome.fileManagerPrivate.getProfiles(
-        (_: chrome.fileManagerPrivate.ProfileInfo[], currentId: string,
-         displayedId: string) => {
-          onFulfilled(currentId !== displayedId);
-        });
+    chrome.fileManagerPrivate.getProfiles((response) => {
+      onFulfilled(response.currentProfileId !== response.displayedProfileId);
+    });
   });
 }
 
@@ -239,8 +237,9 @@ export function makeTaskID(
  *     (guest) => { if (guest) { ... in guest mode } }
  */
 export async function isInGuestMode(): Promise<boolean> {
-  const profiles: chrome.fileManagerPrivate.ProfileInfo[] =
+  const response: chrome.fileManagerPrivate.ProfilesResponse =
       await promisify(chrome.fileManagerPrivate.getProfiles);
+  const profiles = response.profiles;
   return profiles.length > 0 && profiles[0]?.profileId === '$guest';
 }
 
