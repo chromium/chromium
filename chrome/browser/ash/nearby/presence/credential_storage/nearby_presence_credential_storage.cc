@@ -182,6 +182,49 @@ void NearbyPresenceCredentialStorage::GetPrivateCredentials(
       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void NearbyPresenceCredentialStorage::UpdateLocalCredential(
+    mojom::LocalCredentialPtr local_credential,
+    UpdateLocalCredentialCallback callback) {
+  CHECK(callback);
+
+  ::nearby::internal::LocalCredential local_credential_proto =
+      proto::LocalCredentialFromMojom(local_credential.get());
+
+  // |UpdateEntriesWithRemoveFilter()| expects a unique_ptr, so we cannot
+  // create a vector with a single pair in-line using an initializer list.
+  auto credential_pair_to_update = std::make_unique<std::vector<
+      std::pair<std::string, ::nearby::internal::LocalCredential>>>();
+  credential_pair_to_update->emplace_back(std::make_pair(
+      local_credential_proto.secret_id(), local_credential_proto));
+
+  // Only match the credential being updated.
+  leveldb_proto::KeyFilter update_filter = base::BindRepeating(
+      [](const std::string& key, const std::string& target_key) {
+        return key == target_key;
+      },
+      local_credential_proto.secret_id());
+
+  private_db_->UpdateEntriesWithRemoveFilter(
+      /*entries_to_save=*/std::move(credential_pair_to_update),
+      /*delete_key_filter=*/update_filter,
+      base::BindOnce(&NearbyPresenceCredentialStorage::OnLocalCredentialUpdated,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void NearbyPresenceCredentialStorage::OnLocalCredentialUpdated(
+    UpdateLocalCredentialCallback callback,
+    bool success) {
+  CHECK(callback);
+
+  if (!success) {
+    LOG(ERROR) << __func__ << ": failed to update private credential.";
+    std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kAborted);
+    return;
+  }
+
+  std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kOk);
+}
+
 void NearbyPresenceCredentialStorage::OnPrivateCredentialsRetrieved(
     GetPrivateCredentialsCallback callback,
     bool success,

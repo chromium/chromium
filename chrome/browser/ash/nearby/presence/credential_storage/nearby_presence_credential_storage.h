@@ -65,6 +65,8 @@ class NearbyPresenceCredentialStorage
   void GetPublicCredentials(mojom::PublicCredentialType public_credential_type,
                             GetPublicCredentialsCallback callback) override;
   void GetPrivateCredentials(GetPrivateCredentialsCallback callback) override;
+  void UpdateLocalCredential(mojom::LocalCredentialPtr local_credential,
+                             UpdateLocalCredentialCallback callback) override;
 
  protected:
   NearbyPresenceCredentialStorage(
@@ -81,6 +83,8 @@ class NearbyPresenceCredentialStorage
           remote_public_db);
 
  private:
+  void OnLocalCredentialUpdated(UpdateLocalCredentialCallback callback,
+                                bool success);
   void OnPrivateCredentialsRetrieved(
       GetPrivateCredentialsCallback callback,
       bool success,

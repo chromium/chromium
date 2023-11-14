@@ -51,6 +51,9 @@ class FakeNearbyPresenceCredentialStorage
       ash::nearby::presence::mojom::PublicCredentialType public_credential_type,
       GetPublicCredentialsCallback callback) override {}
   void GetPrivateCredentials(GetPrivateCredentialsCallback callback) override {}
+  void UpdateLocalCredential(
+      ash::nearby::presence::mojom::LocalCredentialPtr local_credential,
+      UpdateLocalCredentialCallback callback) override {}
 
   int GetInitializationCallsCount() { return initialization_calls_count_; }
 

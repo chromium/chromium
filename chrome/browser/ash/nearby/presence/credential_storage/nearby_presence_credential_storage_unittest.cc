@@ -903,4 +903,94 @@ TEST_F(NearbyPresenceCredentialStorageTest, GetPrivateCredentials_Fail) {
   }
 }
 
+TEST_F(NearbyPresenceCredentialStorageTest, UpdateLocalCredential_Success) {
+  {
+    base::RunLoop run_loop;
+    FullyInitializeDatabases(run_loop);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    PrepopulateCredentials(run_loop,
+                           ash::nearby::presence::mojom::PublicCredentialType::
+                               kLocalPublicCredential);
+    run_loop.Run();
+  }
+
+  // Since the pre-population step populates credentials with each parameter
+  // to the matching number (ie, _1 values are assigned to kSecretId_Local_1),
+  // update the credential details for _1 to _2.
+  auto local_credential_to_be_updated = CreateLocalCredential(
+      kSecretId_Local_1, kKeySeed_2, kStartTimeMillis_2,
+      kMetadataEncryptionKeyV0_2, AdvertisementSigningKeyCertificateAlias_2,
+      kAdvertisementPrivateKey_2, ConnectionSigningKeyCertificateAlias_2,
+      kConnectionPrivateKey_2, mojom::IdentityType::kIdentityTypePrivate,
+      kConsumedSalts_2, kMetadataEncryptionKeyV1_2);
+
+  {
+    base::RunLoop run_loop;
+    credential_storage_->UpdateLocalCredential(
+        std::move(local_credential_to_be_updated),
+        base::BindLambdaForTesting(
+            [&run_loop](mojo_base::mojom::AbslStatusCode status) {
+              EXPECT_EQ(status, mojo_base::mojom::AbslStatusCode::kOk);
+              run_loop.Quit();
+            }));
+
+    private_db_->UpdateCallback(true);
+    run_loop.Run();
+  }
+
+  std::string secretId(kSecretId_Local_1.begin(), kSecretId_Local_1.end());
+  auto it = private_db_entries_.find(secretId);
+  ASSERT_NE(it, private_db_entries_.end());
+  auto updated_local_credential = it->second;
+
+  EXPECT_EQ(std::vector<uint8_t>(updated_local_credential.key_seed().begin(),
+                                 updated_local_credential.key_seed().end()),
+            kKeySeed_2);
+  EXPECT_EQ(std::vector<uint8_t>(
+                updated_local_credential.metadata_encryption_key_v1().begin(),
+                updated_local_credential.metadata_encryption_key_v1().end()),
+            kMetadataEncryptionKeyV1_2);
+}
+
+TEST_F(NearbyPresenceCredentialStorageTest, UpdateLocalCredential_Failure) {
+  {
+    base::RunLoop run_loop;
+    FullyInitializeDatabases(run_loop);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    PrepopulateCredentials(run_loop,
+                           ash::nearby::presence::mojom::PublicCredentialType::
+                               kLocalPublicCredential);
+    run_loop.Run();
+  }
+
+  auto local_credential_to_be_updated = CreateLocalCredential(
+      kSecretId_Local_1, kKeySeed_2, kStartTimeMillis_2,
+      kMetadataEncryptionKeyV0_2, AdvertisementSigningKeyCertificateAlias_2,
+      kAdvertisementPrivateKey_2, ConnectionSigningKeyCertificateAlias_2,
+      kConnectionPrivateKey_2, mojom::IdentityType::kIdentityTypePrivate,
+      kConsumedSalts_2, kMetadataEncryptionKeyV1_2);
+
+  {
+    base::RunLoop run_loop;
+    credential_storage_->UpdateLocalCredential(
+        std::move(local_credential_to_be_updated),
+        base::BindLambdaForTesting(
+            [&run_loop](mojo_base::mojom::AbslStatusCode status) {
+              EXPECT_EQ(status, mojo_base::mojom::AbslStatusCode::kAborted);
+              run_loop.Quit();
+            }));
+
+    private_db_->UpdateCallback(false);
+    run_loop.Run();
+  }
+}
+
 }  // namespace ash::nearby::presence

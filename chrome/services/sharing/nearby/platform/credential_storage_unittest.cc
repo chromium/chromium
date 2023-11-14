@@ -286,6 +286,13 @@ class FakeNearbyPresenceCredentialStorage
                             std::move(local_credentials));
   }
 
+  void UpdateLocalCredential(
+      ash::nearby::presence::mojom::LocalCredentialPtr local_credential,
+      UpdateLocalCredentialCallback callback) override {
+    // TODO(b/287334012): Implement this feature when CredentialStorage consumes
+    // it.
+  }
+
   void SetShouldCredentialsSuccessfullySave(bool should_succeed) {
     should_credentials_successfully_save_ = should_succeed;
   }
