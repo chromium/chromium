@@ -37,6 +37,7 @@ build_webui("build") {
 
   non_web_component_files = [
     "constants.ts",
+    "emoji_picker.ts",
     "emoji_picker_api_proxy.ts",
     "events.ts",
     "metadata_extension.ts",
