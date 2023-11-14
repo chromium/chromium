@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/field_filler.h"
+#include "components/autofill/core/browser/field_filling_address_util.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/path_service.h"
@@ -37,6 +38,8 @@ using ::i18n::addressinput::Source;
 using ::i18n::addressinput::Storage;
 using ::i18n::addressinput::TestdataSource;
 
+constexpr char kAppLocale[] = "en-US";
+
 AutofillField CreateTestSelectAutofillField(
     const std::vector<const char*>& values,
     ServerFieldType heuristic_type) {
@@ -47,39 +50,25 @@ AutofillField CreateTestSelectAutofillField(
 
 class FieldFillingAddressUtilTest : public testing::Test {
  public:
-  FieldFillingAddressUtilTest(const FieldFillingAddressUtilTest&) = delete;
-  FieldFillingAddressUtilTest& operator=(const FieldFillingAddressUtilTest&) =
-      delete;
-
- protected:
-  FieldFillingAddressUtilTest()
-      : address_(std::make_unique<AutofillProfile>(test::GetFullProfile())) {}
-
-  AutofillProfile* address() { return address_.get(); }
+  FieldFillingAddressUtilTest() = default;
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  std::unique_ptr<AutofillProfile> address_;
 };
 
-// Verify that non credit card related fields with the autocomplete attribute
-// set to off are filled on desktop when the feature to Autofill all
-// addresses is enabled (default).
+// Verify that profile fields with autocomplete attribute 'off' are filled.
 TEST_F(FieldFillingAddressUtilTest,
        FillFormField_AutocompleteOffNotRespected_AddressField) {
   AutofillField field;
   field.should_autocomplete = false;
   field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
 
-  // Non credit card related field.
-  address()->SetRawInfo(NAME_FIRST, u"Test");
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-
-  // Verify that the field is filled in all circumstances.
-  EXPECT_EQ(u"Test", field.value);
+  AutofillProfile profile;
+  profile.SetRawInfo(NAME_FIRST, u"Test");
+  std::optional<std::u16string> value_to_fill =
+      GetValueForProfile(profile, kAppLocale, AutofillType(NAME_FIRST), &field,
+                         /*address_normalizer=*/nullptr);
+  EXPECT_EQ(u"Test", value_to_fill);
 }
 
 struct FieldFillingAddressUtilTestCase {
@@ -119,14 +108,13 @@ TEST_P(PhoneNumberTest, FillPhoneNumber) {
   field.SetHtmlType(test_case.field_type, HtmlFieldMode());
   field.max_length = test_case.field_max_length;
 
-  AutofillProfile address(AddressCountryCode("US"));
-  address.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
+  AutofillProfile profile(AddressCountryCode("US"));
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
                      test_case.phone_home_whole_number_value);
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(test_case.expected_value, field.value);
+  std::optional<std::u16string> value_to_fill = GetValueForProfile(
+      profile, kAppLocale, AutofillType(test_case.field_type), &field,
+      /*address_normalizer=*/nullptr);
+  EXPECT_EQ(test_case.expected_value, value_to_fill);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -224,40 +212,38 @@ TEST_P(AutofillSelectWithStatesTest, FillSelectWithStates) {
   AutofillField field = CreateTestSelectAutofillField(test_case.select_values,
                                                       ADDRESS_HOME_STATE);
   // Without a normalizer.
-  AutofillProfile address = test::GetFullProfile();
-  address.SetRawInfo(ADDRESS_HOME_STATE, test_case.input_value);
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetRawInfo(ADDRESS_HOME_STATE, test_case.input_value);
+  std::optional<std::u16string> value_to_fill = GetValueForProfile(
+      profile, kAppLocale, AutofillType(ADDRESS_HOME_STATE), &field,
+      /*address_normalizer=*/nullptr);
   // nullptr means we expect them not to match without normalization.
   if (test_case.expected_value_without_normalization != nullptr) {
-    EXPECT_EQ(test_case.expected_value_without_normalization, field.value);
+    EXPECT_EQ(test_case.expected_value_without_normalization, value_to_fill);
   }
 
   // With a normalizer.
-  AutofillProfile canadian_address = test::GetFullCanadianProfile();
-  canadian_address.SetRawInfo(ADDRESS_HOME_STATE, test_case.input_value);
+  AutofillProfile canadian_profile = test::GetFullCanadianProfile();
+  canadian_profile.SetRawInfo(ADDRESS_HOME_STATE, test_case.input_value);
   // Fill a first time without loading the rules for the region.
-  FieldFiller canadian_filler(/*app_locale=*/"en-US", normalizer());
-  canadian_filler.FillFormField(
-      field, &canadian_address, /*forced_fill_values=*/{}, &field,
-      /*cvc=*/std::u16string(), mojom::ActionPersistence::kFill);
+  value_to_fill = GetValueForProfile(canadian_profile, kAppLocale,
+                                     AutofillType(ADDRESS_HOME_STATE), &field,
+                                     normalizer());
   // If the expectation with normalization is nullptr, this means that the same
   // result than without a normalizer is expected.
   if (test_case.expected_value_with_normalization == nullptr) {
-    EXPECT_EQ(test_case.expected_value_without_normalization, field.value);
+    EXPECT_EQ(test_case.expected_value_without_normalization, value_to_fill);
   } else {
     // We needed a normalizer with loaded rules. The first fill should have
     // failed.
-    EXPECT_NE(test_case.expected_value_with_normalization, field.value);
+    EXPECT_NE(test_case.expected_value_with_normalization, value_to_fill);
 
     // Load the rules and try again.
     normalizer()->LoadRulesForRegion("CA");
-    canadian_filler.FillFormField(
-        field, &canadian_address, /*forced_fill_values=*/{}, &field,
-        /*cvc=*/std::u16string(), mojom::ActionPersistence::kFill);
-    EXPECT_EQ(test_case.expected_value_with_normalization, field.value);
+    value_to_fill = GetValueForProfile(canadian_profile, kAppLocale,
+                                       AutofillType(ADDRESS_HOME_STATE), &field,
+                                       normalizer());
+    EXPECT_EQ(test_case.expected_value_with_normalization, value_to_fill);
   }
 }
 
@@ -316,61 +302,60 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_F(FieldFillingAddressUtilTest, FillSelectWithCountries) {
   AutofillField field = CreateTestSelectAutofillField({"Albania", "Canada"},
                                                       ADDRESS_HOME_COUNTRY);
-  AutofillProfile address = test::GetFullProfile();
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"Canada", field.value);
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
+  std::optional<std::u16string> value_to_fill = GetValueForProfile(
+      profile, kAppLocale, AutofillType(ADDRESS_HOME_COUNTRY), &field,
+      /*address_normalizer=*/nullptr);
+  EXPECT_EQ(u"Canada", value_to_fill);
 }
 
 TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextArea) {
   AutofillField field;
+  AutofillProfile profile;
   field.form_control_type = FormControlType::kTextArea;
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            ADDRESS_HOME_STREET_ADDRESS);
 
   std::u16string value = u"123 Fake St.\nApt. 42";
-  address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), value, "en-US");
-  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(value, field.value);
+  profile.SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), value, "en-US");
+  std::optional<std::u16string> value_to_fill = GetValueForProfile(
+      profile, kAppLocale, AutofillType(ADDRESS_HOME_STREET_ADDRESS), &field,
+      /*address_normalizer=*/nullptr);
+  EXPECT_EQ(value, value_to_fill);
 
   std::u16string ja_value = u"桜丘町26-1\nセルリアンタワー6階";
-  address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), ja_value,
-                     "ja-JP");
-  address()->set_language_code("ja-JP");
-  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(ja_value, field.value);
+  profile.SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), ja_value, "ja-JP");
+  profile.set_language_code("ja-JP");
+  value_to_fill =
+      GetValueForProfile(profile, /*app_locale=*/"ja-JP",
+                         AutofillType(ADDRESS_HOME_STREET_ADDRESS), &field,
+                         /*address_normalizer=*/nullptr);
+  EXPECT_EQ(ja_value, value_to_fill);
 }
 
 TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextField) {
   AutofillField field;
+  AutofillProfile profile;
   field.form_control_type = FormControlType::kInputText;
   field.set_server_predictions(
       {::autofill::test::CreateFieldPrediction(ADDRESS_HOME_STREET_ADDRESS)});
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
 
   std::u16string value = u"123 Fake St.\nApt. 42";
-  address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), value, "en-US");
-  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"123 Fake St., Apt. 42", field.value);
+  profile.SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), value, "en-US");
+  std::optional<std::u16string> value_to_fill = GetValueForProfile(
+      profile, kAppLocale, AutofillType(ADDRESS_HOME_STREET_ADDRESS), &field,
+      /*address_normalizer=*/nullptr);
+  EXPECT_EQ(u"123 Fake St., Apt. 42", value_to_fill);
 
   std::u16string ja_value = u"桜丘町26-1\nセルリアンタワー6階";
-  address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), ja_value,
-                     "ja-JP");
-  address()->set_language_code("ja-JP");
-  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"桜丘町26-1セルリアンタワー6階", field.value);
+  profile.SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), ja_value, "ja-JP");
+  profile.set_language_code("ja-JP");
+  value_to_fill =
+      GetValueForProfile(profile, /*app_locale=*/"ja-JP",
+                         AutofillType(ADDRESS_HOME_STREET_ADDRESS), &field,
+                         /*address_normalizer=*/nullptr);
+  EXPECT_EQ(u"桜丘町26-1セルリアンタワー6階", value_to_fill);
 }
 
 // Tests that text state fields are filled correctly depending on their
@@ -393,15 +378,16 @@ TEST_P(AutofillStateTextTest, FillStateText) {
   field.SetHtmlType(test_case.field_type, HtmlFieldMode());
   field.max_length = test_case.field_max_length;
 
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  AutofillProfile address = test::GetFullProfile();
-  address.SetRawInfo(ADDRESS_HOME_STATE, test_case.value_to_fill);
-  bool has_filled = filler.FillFormField(
-      field, &address, /*forced_fill_values=*/{}, &field,
-      /*cvc=*/std::u16string(), mojom::ActionPersistence::kFill);
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetRawInfo(ADDRESS_HOME_STATE, test_case.value_to_fill);
+  std::optional<std::u16string> value_to_fill = GetValueForProfile(
+      profile, kAppLocale, AutofillType(ADDRESS_HOME_STATE), &field,
+      /*address_normalizer=*/nullptr);
 
-  EXPECT_EQ(test_case.should_fill, has_filled);
-  EXPECT_EQ(test_case.expected_value, field.value);
+  EXPECT_EQ(test_case.should_fill, value_to_fill.has_value());
+  if (value_to_fill) {
+    EXPECT_EQ(test_case.expected_value, *value_to_fill);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -460,14 +446,13 @@ void DoTestFillAugmentedPhoneCountryCodeField(
       test_case.phone_country_code_selection_options, field_type));
   field.set_heuristic_type(GetActiveHeuristicSource(), PHONE_HOME_COUNTRY_CODE);
 
-  AutofillProfile address(AddressCountryCode("US"));
-  address.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
+  AutofillProfile profile(AddressCountryCode("US"));
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
                      test_case.phone_home_whole_number_value);
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(field.value, test_case.expected_value);
+  std::optional<std::u16string> value_to_fill = GetValueForProfile(
+      profile, kAppLocale, AutofillType(PHONE_HOME_COUNTRY_CODE), &field,
+      /*address_normalizer=*/nullptr);
+  EXPECT_EQ(value_to_fill, test_case.expected_value);
 }
 
 TEST_P(AutofillFillAugmentedPhoneCountryCodeTest,
@@ -533,14 +518,13 @@ TEST_F(FieldFillingAddressUtilTest, FillSelectAbbreviatedState) {
 
   AutofillField field = CreateTestSelectAutofillField({"BA", "BB", "BC", "BY"},
                                                       ADDRESS_HOME_STATE);
-  AutofillProfile address(AddressCountryCode("DE"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
+  AutofillProfile profile(AddressCountryCode("DE"));
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
 
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"BY", field.value);
+  std::optional<std::u16string> value_to_fill = GetValueForProfile(
+      profile, kAppLocale, AutofillType(ADDRESS_HOME_STATE), &field,
+      /*address_normalizer=*/nullptr);
+  EXPECT_EQ(u"BY", value_to_fill);
 }
 
 // Tests that the localized state names are selected correctly.
@@ -550,14 +534,12 @@ TEST_F(FieldFillingAddressUtilTest, FillSelectLocalizedState) {
 
   AutofillField field = CreateTestSelectAutofillField(
       {"Bayern", "Berlin", "Brandenburg", "Bremen"}, ADDRESS_HOME_STATE);
-  AutofillProfile address(AddressCountryCode("DE"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"Bayern", field.value);
+  AutofillProfile profile(AddressCountryCode("DE"));
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
+  std::optional<std::u16string> value_to_fill = GetValueForProfile(
+      profile, kAppLocale, AutofillType(ADDRESS_HOME_STATE), &field,
+      /*address_normalizer=*/nullptr);
+  EXPECT_EQ(u"Bayern", value_to_fill);
 }
 
 // Tests that the state names are selected correctly when the state name exists
@@ -568,14 +550,12 @@ TEST_F(FieldFillingAddressUtilTest, FillSelectLocalizedStateSubstring) {
 
   AutofillField field = CreateTestSelectAutofillField(
       {"Bavaria Has Munich", "Berlin has Berlin"}, ADDRESS_HOME_STATE);
-  AutofillProfile address(AddressCountryCode("DE"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"Bavaria Has Munich", field.value);
+  AutofillProfile profile(AddressCountryCode("DE"));
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
+  std::optional<std::u16string> value_to_fill = GetValueForProfile(
+      profile, kAppLocale, AutofillType(ADDRESS_HOME_STATE), &field,
+      /*address_normalizer=*/nullptr);
+  EXPECT_EQ(u"Bavaria Has Munich", value_to_fill);
 }
 
 // Tests that the state abbreviations are filled in the text field when the
@@ -589,14 +569,12 @@ TEST_F(FieldFillingAddressUtilTest, FillStateAbbreviationInTextField) {
   field.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_STATE);
   field.max_length = 4;
 
-  AutofillProfile address(AddressCountryCode("DE"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"BY", field.value);
+  AutofillProfile profile(AddressCountryCode("DE"));
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
+  std::optional<std::u16string> value_to_fill = GetValueForProfile(
+      profile, kAppLocale, AutofillType(ADDRESS_HOME_STATE), &field,
+      /*address_normalizer=*/nullptr);
+  EXPECT_EQ(u"BY", value_to_fill);
 }
 
 // Tests that the state names are selected correctly even though the state
@@ -607,14 +585,12 @@ TEST_F(FieldFillingAddressUtilTest, FillStateFieldWithSavedValueInProfile) {
 
   AutofillField field = CreateTestSelectAutofillField(
       {"Bavari", "Berlin", "Lower Saxony"}, ADDRESS_HOME_STATE);
-  AutofillProfile address(AddressCountryCode("DE"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavari");
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"Bavari", field.value);
+  AutofillProfile profile(AddressCountryCode("DE"));
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"Bavari");
+  std::optional<std::u16string> value_to_fill = GetValueForProfile(
+      profile, kAppLocale, AutofillType(ADDRESS_HOME_STATE), &field,
+      /*address_normalizer=*/nullptr);
+  EXPECT_EQ(u"Bavari", value_to_fill);
 }
 
 // Tests that Autofill does not wrongly fill the state when the appropriate
@@ -630,14 +606,12 @@ TEST_F(FieldFillingAddressUtilTest, FillStateFieldWhenStateIsNotInOptions) {
 
   AutofillField field = CreateTestSelectAutofillField(
       {"Connecticut", "California"}, ADDRESS_HOME_STATE);
-  AutofillProfile address(AddressCountryCode("US"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"", field.value);
+  AutofillProfile profile(AddressCountryCode("US"));
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
+  std::optional<std::u16string> value_to_fill = GetValueForProfile(
+      profile, kAppLocale, AutofillType(ADDRESS_HOME_STATE), &field,
+      /*address_normalizer=*/nullptr);
+  EXPECT_FALSE(value_to_fill);
 }
 
 // Tests that Autofill uses the static states data of US as a fallback mechanism
@@ -648,14 +622,12 @@ TEST_F(FieldFillingAddressUtilTest,
 
   AutofillField field = CreateTestSelectAutofillField(
       {"Colorado", "Connecticut", "California"}, ADDRESS_HOME_STATE);
-  AutofillProfile address(AddressCountryCode("US"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"Colorado", field.value);
+  AutofillProfile profile(AddressCountryCode("US"));
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
+  std::optional<std::u16string> value_to_fill = GetValueForProfile(
+      profile, kAppLocale, AutofillType(ADDRESS_HOME_STATE), &field,
+      /*address_normalizer=*/nullptr);
+  EXPECT_EQ(u"Colorado", value_to_fill);
 }
 
 // Tests that Autofill fills upper case abbreviation in the input field when
@@ -672,14 +644,12 @@ TEST_F(FieldFillingAddressUtilTest, FillUpperCaseAbbreviationInStateTextField) {
   field.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_STATE);
   field.max_length = 4;
 
-  AutofillProfile address(AddressCountryCode("DE"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"BY", field.value);
+  AutofillProfile profile(AddressCountryCode("DE"));
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
+  std::optional<std::u16string> value_to_fill = GetValueForProfile(
+      profile, kAppLocale, AutofillType(ADDRESS_HOME_STATE), &field,
+      /*address_normalizer=*/nullptr);
+  EXPECT_EQ(u"BY", value_to_fill);
 }
 
 // Tests that Autofill does not fill the state when abbreviated data is stored
@@ -690,14 +660,12 @@ TEST_F(FieldFillingAddressUtilTest,
 
   AutofillField field = CreateTestSelectAutofillField(
       {"Colombia", "Connecticut", "California"}, ADDRESS_HOME_STATE);
-  AutofillProfile address(AddressCountryCode("US"));
-  address.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
-
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"", field.value);
+  AutofillProfile profile(AddressCountryCode("US"));
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
+  std::optional<std::u16string> value_to_fill = GetValueForProfile(
+      profile, kAppLocale, AutofillType(ADDRESS_HOME_STATE), &field,
+      /*address_normalizer=*/nullptr);
+  EXPECT_FALSE(value_to_fill);
 }
 
 }  // namespace
