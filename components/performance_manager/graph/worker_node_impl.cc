@@ -74,12 +74,12 @@ const PriorityAndReason& WorkerNodeImpl::GetPriorityAndReason() const {
 
 uint64_t WorkerNodeImpl::GetResidentSetKbEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resident_set_kb_estimate();
+  return resident_set_kb_estimate_;
 }
 
 uint64_t WorkerNodeImpl::GetPrivateFootprintKbEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb_estimate();
+  return private_footprint_kb_estimate_;
 }
 
 void WorkerNodeImpl::AddClientFrame(FrameNodeImpl* frame_node) {
@@ -198,16 +198,6 @@ const base::flat_set<WorkerNodeImpl*>& WorkerNodeImpl::client_workers() const {
 const base::flat_set<WorkerNodeImpl*>& WorkerNodeImpl::child_workers() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return child_workers_;
-}
-
-uint64_t WorkerNodeImpl::resident_set_kb_estimate() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resident_set_kb_estimate_;
-}
-
-uint64_t WorkerNodeImpl::private_footprint_kb_estimate() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb_estimate_;
 }
 
 base::WeakPtr<WorkerNodeImpl> WorkerNodeImpl::GetWeakPtrOnUIThread() {

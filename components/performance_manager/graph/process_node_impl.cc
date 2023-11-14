@@ -208,12 +208,12 @@ bool ProcessNodeImpl::GetMainThreadTaskLoadIsLow() const {
 
 uint64_t ProcessNodeImpl::GetPrivateFootprintKb() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb();
+  return private_footprint_kb_;
 }
 
 uint64_t ProcessNodeImpl::GetResidentSetKb() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resident_set_kb();
+  return resident_set_kb_;
 }
 
 RenderProcessHostId ProcessNodeImpl::GetRenderProcessHostId() const {

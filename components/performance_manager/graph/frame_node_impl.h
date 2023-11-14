@@ -124,8 +124,6 @@ class FrameNodeImpl
   bool is_capturing_media_stream() const;
   absl::optional<bool> intersects_viewport() const;
   Visibility visibility() const;
-  uint64_t resident_set_kb_estimate() const;
-  uint64_t private_footprint_kb_estimate() const;
 
   // Setters are not thread safe.
   void SetIsCurrent(bool is_current);

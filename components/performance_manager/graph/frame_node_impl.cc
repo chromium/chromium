@@ -235,12 +235,12 @@ const RenderFrameHostProxy& FrameNodeImpl::GetRenderFrameHostProxy() const {
 
 uint64_t FrameNodeImpl::GetResidentSetKbEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resident_set_kb_estimate();
+  return resident_set_kb_estimate_;
 }
 
 uint64_t FrameNodeImpl::GetPrivateFootprintKbEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb_estimate();
+  return private_footprint_kb_estimate_;
 }
 
 FrameNodeImpl* FrameNodeImpl::parent_frame_node() const {
@@ -343,16 +343,6 @@ absl::optional<bool> FrameNodeImpl::intersects_viewport() const {
 FrameNode::Visibility FrameNodeImpl::visibility() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return visibility_.value();
-}
-
-uint64_t FrameNodeImpl::resident_set_kb_estimate() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resident_set_kb_estimate_;
-}
-
-uint64_t FrameNodeImpl::private_footprint_kb_estimate() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb_estimate_;
 }
 
 void FrameNodeImpl::SetIsCurrent(bool is_current) {

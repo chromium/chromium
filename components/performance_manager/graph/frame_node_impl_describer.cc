@@ -93,9 +93,9 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
 
   base::Value::Dict metrics;
   metrics.Set("resident_set",
-              base::NumberToString(impl->resident_set_kb_estimate()));
+              base::NumberToString(impl->GetResidentSetKbEstimate()));
   metrics.Set("private_footprint",
-              base::NumberToString(impl->private_footprint_kb_estimate()));
+              base::NumberToString(impl->GetPrivateFootprintKbEstimate()));
   ret.Set("metrics_estimates", std::move(metrics));
 
   return ret;

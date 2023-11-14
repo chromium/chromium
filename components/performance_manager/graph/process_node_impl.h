@@ -120,14 +120,6 @@ class ProcessNodeImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     private_footprint_kb_ = private_footprint_kb;
   }
-  uint64_t private_footprint_kb() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return private_footprint_kb_;
-  }
-  uint64_t resident_set_kb() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return resident_set_kb_;
-  }
   void set_resident_set_kb(uint64_t resident_set_kb) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     resident_set_kb_ = resident_set_kb;

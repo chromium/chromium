@@ -79,8 +79,6 @@ class WorkerNodeImpl
   const base::flat_set<FrameNodeImpl*>& client_frames() const;
   const base::flat_set<WorkerNodeImpl*>& client_workers() const;
   const base::flat_set<WorkerNodeImpl*>& child_workers() const;
-  uint64_t resident_set_kb_estimate() const;
-  uint64_t private_footprint_kb_estimate() const;
 
   base::WeakPtr<WorkerNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<WorkerNodeImpl> GetWeakPtr();

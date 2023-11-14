@@ -172,14 +172,14 @@ base::Value::Dict ProcessNodeImplDescriber::DescribeProcessNodeData(
 
   ret.Set("priority", base::TaskPriorityToString(impl->priority()));
 
-  if (impl->private_footprint_kb()) {
+  if (impl->GetPrivateFootprintKb()) {
     ret.Set("private_footprint_kb",
-            base::saturated_cast<int>(impl->private_footprint_kb()));
+            base::saturated_cast<int>(impl->GetPrivateFootprintKb()));
   }
 
-  if (impl->resident_set_kb()) {
+  if (impl->GetResidentSetKb()) {
     ret.Set("resident_set_kb",
-            base::saturated_cast<int>(impl->resident_set_kb()));
+            base::saturated_cast<int>(impl->GetResidentSetKb()));
   }
 
   // The content function returns "Tab" for renderers - whereas "Renderer" is

@@ -201,7 +201,7 @@ uint64_t PageNodeImpl::EstimateMainFramePrivateFootprintSize() const {
   if (main_frame_node) {
     performance_manager::GraphImplOperations::VisitFrameAndChildrenPreOrder(
         main_frame_node, [&total](FrameNodeImpl* frame_node) {
-          total += frame_node->private_footprint_kb_estimate();
+          total += frame_node->GetPrivateFootprintKbEstimate();
           return true;
         });
   }

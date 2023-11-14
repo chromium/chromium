@@ -147,45 +147,45 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
 
   void ExpectProcessResults(uint64_t resident_set_kb,
                             uint64_t private_footprint_kb) {
-    EXPECT_EQ(resident_set_kb, mock_graph()->process->resident_set_kb());
+    EXPECT_EQ(resident_set_kb, mock_graph()->process->GetResidentSetKb());
     EXPECT_EQ(private_footprint_kb,
-              mock_graph()->process->private_footprint_kb());
+              mock_graph()->process->GetPrivateFootprintKb());
 
     EXPECT_EQ(resident_set_kb / 3,
-              mock_graph()->frame->resident_set_kb_estimate());
+              mock_graph()->frame->GetResidentSetKbEstimate());
     EXPECT_EQ(private_footprint_kb / 3,
-              mock_graph()->frame->private_footprint_kb_estimate());
+              mock_graph()->frame->GetPrivateFootprintKbEstimate());
     EXPECT_EQ(resident_set_kb / 3,
-              mock_graph()->other_frame->resident_set_kb_estimate());
+              mock_graph()->other_frame->GetResidentSetKbEstimate());
     EXPECT_EQ(private_footprint_kb / 3,
-              mock_graph()->other_frame->private_footprint_kb_estimate());
+              mock_graph()->other_frame->GetPrivateFootprintKbEstimate());
     EXPECT_EQ(resident_set_kb / 3,
-              mock_graph()->worker->resident_set_kb_estimate());
+              mock_graph()->worker->GetResidentSetKbEstimate());
     EXPECT_EQ(private_footprint_kb / 3,
-              mock_graph()->worker->private_footprint_kb_estimate());
+              mock_graph()->worker->GetPrivateFootprintKbEstimate());
   }
 
   void ExpectOtherProcessResults(uint64_t resident_set_kb,
                                  uint64_t private_footprint_kb) {
-    EXPECT_EQ(resident_set_kb, mock_graph()->other_process->resident_set_kb());
+    EXPECT_EQ(resident_set_kb, mock_graph()->other_process->GetResidentSetKb());
     EXPECT_EQ(private_footprint_kb,
-              mock_graph()->other_process->private_footprint_kb());
+              mock_graph()->other_process->GetPrivateFootprintKb());
 
     EXPECT_EQ(resident_set_kb / 2,
-              mock_graph()->child_frame->resident_set_kb_estimate());
+              mock_graph()->child_frame->GetResidentSetKbEstimate());
     EXPECT_EQ(private_footprint_kb / 2,
-              mock_graph()->child_frame->private_footprint_kb_estimate());
+              mock_graph()->child_frame->GetPrivateFootprintKbEstimate());
     EXPECT_EQ(resident_set_kb / 2,
-              mock_graph()->other_worker->resident_set_kb_estimate());
+              mock_graph()->other_worker->GetResidentSetKbEstimate());
     EXPECT_EQ(private_footprint_kb / 2,
-              mock_graph()->other_worker->private_footprint_kb_estimate());
+              mock_graph()->other_worker->GetPrivateFootprintKbEstimate());
   }
 
   void ExpectUtilityProcessResults(uint64_t resident_set_kb,
                                    uint64_t private_footprint_kb) {
-    EXPECT_EQ(resident_set_kb, mock_utility_process_->resident_set_kb());
+    EXPECT_EQ(resident_set_kb, mock_utility_process_->GetResidentSetKb());
     EXPECT_EQ(private_footprint_kb,
-              mock_utility_process_->private_footprint_kb());
+              mock_utility_process_->GetPrivateFootprintKb());
     // No frames or workers to measure.
   }
 
