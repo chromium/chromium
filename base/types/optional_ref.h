@@ -96,13 +96,14 @@ class optional_ref {
   // Note: when constructing from a const reference, `optional_ref`'s template
   // argument must be const-qualified as well.
   // Note 2: avoiding direct use of `T` prevents implicit conversions.
-  template <typename U,
-            typename = std::enable_if_t<std::is_const_v<T> && IsCompatibleV<U>>>
+  template <typename U>
+    requires(std::is_const_v<T> && IsCompatibleV<U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr optional_ref(
       const absl::optional<U>& o ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : ptr_(o ? &*o : nullptr) {}
-  template <typename U, typename = std::enable_if_t<IsCompatibleV<U>>>
+  template <typename U>
+    requires(IsCompatibleV<U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr optional_ref(absl::optional<U>& o ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : ptr_(o ? &*o : nullptr) {}
@@ -113,7 +114,8 @@ class optional_ref {
   // Note: when constructing from a const pointer, `optional_ref`'s template
   // argument must be const-qualified as well.
   // Note 2: avoiding direct use of `T` prevents implicit conversions.
-  template <typename U, typename = std::enable_if_t<IsCompatibleV<U>>>
+  template <typename U>
+    requires(IsCompatibleV<U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr optional_ref(U* p ABSL_ATTRIBUTE_LIFETIME_BOUND) : ptr_(p) {}
 
@@ -123,11 +125,13 @@ class optional_ref {
   // Note: when constructing from a const reference, `optional_ref`'s template
   // argument must be const-qualified as well.
   // Note 2: avoiding direct use of `T` prevents implicit conversions.
-  template <typename U, typename = std::enable_if_t<IsCompatibleV<const U>>>
+  template <typename U>
+    requires(IsCompatibleV<const U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr optional_ref(const U& r ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : ptr_(std::addressof(r)) {}
-  template <typename U, typename = std::enable_if_t<IsCompatibleV<U>>>
+  template <typename U>
+    requires(IsCompatibleV<U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr optional_ref(U& r ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : ptr_(std::addressof(r)) {}
@@ -139,9 +143,9 @@ class optional_ref {
 
   // Constructs a `optional_ref<const T>` from a `optional_ref<T>`. Conversions
   // in the reverse direction are disallowed.
-  template <typename U = T, typename = std::enable_if_t<std::is_const_v<U>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(optional_ref<std::remove_const_t<U>> rhs)
+  constexpr optional_ref(optional_ref<std::remove_const_t<T>> rhs)
+    requires(std::is_const_v<T>)
       : ptr_(rhs.as_ptr()) {}
 
   // Copy construction is allowed to make it possible to pass `optional_ref`s to
@@ -178,8 +182,8 @@ class optional_ref {
   // Convenience method for turning a non-owning `optional_ref` into an owning
   // `absl::optional`. Incurs a copy; useful when saving an `optional_ref`
   // function parameter as a field, et cetera.
-  template <typename U = std::decay_t<T>,
-            typename = std::enable_if_t<std::is_constructible_v<U, T>>>
+  template <typename U = std::decay_t<T>>
+    requires(std::constructible_from<U, T>)
   constexpr absl::optional<U> CopyAsOptional() const {
     return ptr_ ? absl::optional<U>(*ptr_) : absl::nullopt;
   }
