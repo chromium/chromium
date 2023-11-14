@@ -454,7 +454,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
       // TransferRequired was kCopy or kMove.
       if (task_result.logged() &&
           task_result.value != OfficeTaskResult::kCancelledAtConfirmation) {
-        // The cloud upload flow was exited at the Move Confirmation Dialog.
+        // The cloud upload flow was not exited at the Move Confirmation Dialog.
         ExpectLogged(upload_result);
       }
       // SourceVolume should not match the CloudProvider.
