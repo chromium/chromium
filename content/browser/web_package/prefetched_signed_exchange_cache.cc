@@ -524,7 +524,7 @@ class PrefetchedNavigationLoaderInterceptor
         return;
       }
     }
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
   }
 
   absl::optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams()
