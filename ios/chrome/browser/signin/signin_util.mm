@@ -27,6 +27,7 @@ const char kAccountInfoKeyEmail[] = "email";
 const char kAccountInfoKeyFullName[] = "full_name";
 const char kAccountInfoKeyGivenName[] = "given_name";
 const char kAccountInfoKeyPictureUrl[] = "picture_url";
+const char kHistorySyncEnabled[] = "history_sync_enabled";
 
 // Copies a string value from a dictionary if the given key is present.
 void CopyStringFromDict(std::string& to,
@@ -102,7 +103,9 @@ signin::Tribool IsFirstSessionAfterDeviceRestore() {
   return is_first_session_after_device_restore;
 }
 
-void StorePreRestoreIdentity(PrefService* local_state, AccountInfo account) {
+void StorePreRestoreIdentity(PrefService* local_state,
+                             AccountInfo account,
+                             bool history_sync_enabled) {
   ScopedDictPrefUpdate update(local_state, prefs::kIosPreRestoreAccountInfo);
   update->Set(kAccountInfoKeyAccountId, account.account_id.ToString());
   update->Set(kAccountInfoKeyGaia, account.gaia);
@@ -110,6 +113,7 @@ void StorePreRestoreIdentity(PrefService* local_state, AccountInfo account) {
   update->Set(kAccountInfoKeyFullName, account.full_name);
   update->Set(kAccountInfoKeyGivenName, account.given_name);
   update->Set(kAccountInfoKeyPictureUrl, account.picture_url);
+  update->Set(kHistorySyncEnabled, history_sync_enabled);
 }
 
 void ClearPreRestoreIdentity(PrefService* local_state) {
@@ -123,4 +127,15 @@ absl::optional<AccountInfo> GetPreRestoreIdentity(PrefService* local_state) {
     return absl::optional<AccountInfo>();
   }
   return DictToAccountInfo(dict);
+}
+
+bool GetPreRestoreHistorySyncEnabled(PrefService* local_state) {
+  const base::Value::Dict& dict =
+      local_state->GetDict(prefs::kIosPreRestoreAccountInfo);
+  if (dict.empty()) {
+    return false;
+  }
+  absl::optional<bool> history_sync_enabled =
+      dict.FindBool(kHistorySyncEnabled);
+  return history_sync_enabled.value_or(false);
 }

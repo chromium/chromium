@@ -87,7 +87,8 @@ class PostRestoreAppAgentTest : public PlatformTest {
   void SetFakePreRestoreAccountInfo() {
     AccountInfo accountInfo;
     accountInfo.email = kFakePreRestoreAccountEmail;
-    StorePreRestoreIdentity(local_state_.Get(), accountInfo);
+    StorePreRestoreIdentity(local_state_.Get(), accountInfo,
+                            /*history_sync_enabled=*/false);
   }
 
   // Signs in a fake identity.
