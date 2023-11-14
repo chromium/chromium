@@ -10,6 +10,7 @@
 #include <deque>
 #include <map>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -37,6 +38,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -739,49 +741,61 @@ std::optional<FieldSuggestion> FormStructure::GetFieldSuggestion(
   // Retrieves the next prediction for |form| and |field| and pops it. Popping
   // is omitted if no other predictions for |form| and |field| are left, so that
   // any subsequent fields with the same signature will get the same prediction.
+  std::set<FormSignature> signatures_seen;
   auto get_suggestion =
-      [&fields_suggestions](
-          FormSignature form,
-          FieldSignature field) -> std::optional<FieldSuggestion> {
-    auto it = fields_suggestions.find({form, field});
-    if (it == fields_suggestions.end()) {
+      [&fields_suggestions, &signatures_seen](
+          FormSignature form_signature,
+          FieldSignature field_signature) -> std::optional<FieldSuggestion> {
+    auto it = fields_suggestions.find({form_signature, field_signature});
+    if (it == fields_suggestions.end() ||
+        !signatures_seen.insert(form_signature).second) {
       return std::nullopt;
     }
-    DCHECK(!it->second.empty());
-    auto current_field = it->second.front();
+    CHECK(!it->second.empty());
+    FieldSuggestion current_field = it->second.front();
     if (it->second.size() > 1) {
       it->second.pop_front();
     }
-    return current_field;
+    return std::move(current_field);
   };
   // Precedence rule for prediction sources is the following:
   // Manual overrides first, then server overrides, then crowdsourcing of any
   // type. Moreover, Autofill deprioritizes any crowdsourcing that only returned
   // NO_SERVER_DATA. This is not done for overrides because overriding a field
   // as not classifiable could be desirable.
-  auto get_suggestion_priority = [](std::optional<FieldSuggestion> suggestion) {
-    if (!suggestion || suggestion->predictions().empty()) {
-      return 0;
-    }
-    switch (suggestion->predictions().begin()->source()) {
-      case FieldPrediction::SOURCE_UNSPECIFIED:
-      case FieldPrediction::SOURCE_AUTOFILL_DEFAULT:
-      case FieldPrediction::SOURCE_PASSWORDS_DEFAULT:
-      case FieldPrediction::SOURCE_ALL_APPROVED_EXPERIMENTS:
-      case FieldPrediction::SOURCE_FIELD_RANKS:
-        return base::ranges::any_of(suggestion->predictions(),
-                                    [](const auto& prediction) {
-                                      return prediction.type() !=
-                                             NO_SERVER_DATA;
-                                    })
-                   ? 1
-                   : 0;
-      case FieldPrediction::SOURCE_OVERRIDE:
-        return 2;
-      case FieldPrediction::SOURCE_MANUAL_OVERRIDE:
-        return 3;
-    }
-  };
+  auto get_suggestion_priority =
+      [](base::optional_ref<const FieldSuggestion> suggestion) {
+        if (!suggestion.has_value() || suggestion->predictions().empty()) {
+          return 0;  // Lowest priority
+        }
+        switch (suggestion->predictions().begin()->source()) {
+          case FieldPrediction::SOURCE_UNSPECIFIED:
+          case FieldPrediction::SOURCE_AUTOFILL_DEFAULT:
+          case FieldPrediction::SOURCE_PASSWORDS_DEFAULT:
+          case FieldPrediction::SOURCE_ALL_APPROVED_EXPERIMENTS:
+          case FieldPrediction::SOURCE_FIELD_RANKS:
+            return base::ranges::all_of(suggestion->predictions(),
+                                        [](const auto& prediction) {
+                                          return prediction.type() ==
+                                                 NO_SERVER_DATA;
+                                        })
+                       ? 1  // Only better than empty predictions.
+                       : 2;
+          case FieldPrediction::SOURCE_OVERRIDE:
+            return 3;
+          case FieldPrediction::SOURCE_MANUAL_OVERRIDE:
+            return 4;
+        }
+      };
+  // Fetch suggestions from form signature, host form signature and alternative
+  // form signature.
+  std::optional<FieldSuggestion> main_frame_field_suggestion =
+      get_suggestion(form.form_signature(), field.GetFieldSignature());
+  std::optional<FieldSuggestion> iframe_field_suggestion =
+      get_suggestion(field.host_form_signature, field.GetFieldSignature());
+  // NOTE: Suggestions from alternative form signatures are always overrides.
+  std::optional<FieldSuggestion> alternative_field_suggestion = get_suggestion(
+      form.alternative_form_signature(), field.GetFieldSignature());
 
   // Precedence rule for form signatures is the following:
   // `form_signature` (main frame) then `host_form_signature_` (iframe) and then
@@ -793,36 +807,26 @@ std::optional<FieldSuggestion> FormStructure::GetFieldSuggestion(
   // This precedence rule is less important than the source precedence rule,
   // which means that it is only applicable for suggestions with equal source
   // priority.
-  std::vector<FormSignature> form_signatures;
-  form_signatures.push_back(form.form_signature());
-  if (field.host_form_signature &&
-      field.host_form_signature != form.form_signature()) {
-    form_signatures.push_back(field.host_form_signature);
-  }
-  // NOTE: Suggestions from alternative form signatures are always overrides.
-  form_signatures.push_back(form.alternative_form_signature());
+  base::optional_ref<FieldSuggestion> preferred_field_suggestion =
+      base::ranges::max(
+          std::vector<base::optional_ref<FieldSuggestion>>{
+              main_frame_field_suggestion, iframe_field_suggestion,
+              alternative_field_suggestion},
+          {}, get_suggestion_priority);
 
-  std::optional<FieldSuggestion> field_suggestion;
-  for (FormSignature form_signature : form_signatures) {
-    std::optional<FieldSuggestion> candidate_suggestion =
-        get_suggestion(form_signature, field.GetFieldSignature());
-    // The strict > sign guarantees that for equal source precedence, we follow
-    // the signature precedence rule, since signatures are added to the list by
-    // order of precedence.
-    if (!field_suggestion || get_suggestion_priority(candidate_suggestion) >
-                                 get_suggestion_priority(field_suggestion)) {
-      field_suggestion = candidate_suggestion;
-    } else if (field_suggestion && candidate_suggestion &&
-               form_signature == field.host_form_signature &&
-               field.host_form_signature != form.form_signature() &&
-               !HasPasswordManagerPrediction(*field_suggestion) &&
-               HasPasswordManagerPrediction(*candidate_suggestion)) {
-      // Add predictions for PasswordManager from
-      // iframe suggestions if `field_suggestion` is missing them.
-      MergePasswordManagerPredictions(*candidate_suggestion, *field_suggestion);
-    }
+  // Add predictions for PasswordManager from `iframe_field_suggestions` if
+  // `field_suggestion` is missing them. This is only relevant for
+  // crowdsourcing which is why we do not apply the same logic for
+  // `alternative_form_signature` suggestions, which are always overrides.
+  if (iframe_field_suggestion &&
+      !HasPasswordManagerPrediction(*preferred_field_suggestion) &&
+      HasPasswordManagerPrediction(*iframe_field_suggestion)) {
+    MergePasswordManagerPredictions(*iframe_field_suggestion,
+                                    *preferred_field_suggestion);
   }
-  return field_suggestion;
+  return preferred_field_suggestion.has_value()
+             ? std::optional(std::move(*preferred_field_suggestion))
+             : std::nullopt;
 }
 
 // static
