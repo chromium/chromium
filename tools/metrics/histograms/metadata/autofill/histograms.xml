@@ -2095,11 +2095,15 @@ chromium-metrics-reviews@google.com.
     Counts whether users accepted any autofill suggestion that was shown to them
     for a given form.
 
-    This metric is only recorded if a suggestion for the given form type (see
-    histogram name) was shown at least once. This is recorded once per form. If
-    the user accepts one suggestion, this is reported as &quot;User chose to
-    fill&quot; once. It does not matter if the user clears the filled values nor
-    if the user accepts a different suggestion later. {AutofillFormType}
+    This metric is only recorded if a suggestion for the {AutofillFormType} was
+    shown, accepted, and the suggestion was filled successfully. This is
+    recorded once per form. It is reported as &quot;User chose to fill&quot;
+    once. It does not matter if the user clears the filled values nor if the
+    user accepts a different suggestion later.
+
+    If the accepted suggestion is not filled (e.g., if it required
+    authentication and the user cancelled or failed that step), then this metric
+    is not recorded.
   </summary>
   <token key="AutofillFormType" variants="AutofillFormType"/>
 </histogram>
