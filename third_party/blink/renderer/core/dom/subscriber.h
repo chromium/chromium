@@ -16,9 +16,9 @@
 namespace blink {
 
 class AbortSignal;
-class ExecutionContext;
 class Observable;
 class Observer;
+class ScriptState;
 class V8ObserverCallback;
 class V8ObserverCompleteCallback;
 
@@ -27,7 +27,7 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  Subscriber(base::PassKey<Observable>, ExecutionContext*, Observer*);
+  Subscriber(base::PassKey<Observable>, ScriptState*, Observer*);
 
   // API methods.
   void next(ScriptValue);
@@ -49,8 +49,8 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   Member<V8ObserverCompleteCallback> complete_;
   Member<V8ObserverCallback> error_;
 
-  // Null if `signal` is not passed into `Observable::subscribe()` via the
-  // `Observer` dictionary.
+  // This is never null. It is exposed via the `signal` WebIDL attribute, and
+  // represents whether or not the current subscription has been aborted or not.
   Member<AbortSignal> signal_;
 };
 

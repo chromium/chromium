@@ -42,8 +42,8 @@ void Observable::subscribe(ScriptState* script_state, Observer* observer) {
 
   // Build and initialize a `Subscriber` with a dictionary of `Observer`
   // callbacks.
-  Subscriber* subscriber = MakeGarbageCollected<Subscriber>(
-      PassKey(), GetExecutionContext(), observer);
+  Subscriber* subscriber =
+      MakeGarbageCollected<Subscriber>(PassKey(), script_state, observer);
 
   DCHECK(subscribe_callback_);
   // Ordinarily we'd just invoke `subscribe_callback_` with

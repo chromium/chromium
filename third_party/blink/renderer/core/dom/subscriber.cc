@@ -16,13 +16,21 @@
 namespace blink {
 
 Subscriber::Subscriber(base::PassKey<Observable>,
-                       ExecutionContext* execution_context,
+                       ScriptState* script_state,
                        Observer* observer)
-    : ExecutionContextClient(execution_context),
+    : ExecutionContextClient(ExecutionContext::From(script_state)),
       next_(observer->hasNext() ? observer->next() : nullptr),
       complete_(observer->hasComplete() ? observer->complete() : nullptr),
-      error_(observer->hasError() ? observer->error() : nullptr),
-      signal_(observer->hasSignal() ? observer->signal() : nullptr) {}
+      error_(observer->hasError() ? observer->error() : nullptr) {
+  // Initialize `signal_` as a dependent signal on the input Observer's `signal`
+  // member, if it exists. See
+  // https://dom.spec.whatwg.org/#abortsignal-dependent-signals.
+  HeapVector<Member<AbortSignal>> signals;
+  if (observer->hasSignal()) {
+    signals.push_back(observer->signal());
+  }
+  signal_ = MakeGarbageCollected<AbortSignal>(script_state, signals);
+}
 
 void Subscriber::next(ScriptValue value) {
   if (next_) {

@@ -134,9 +134,16 @@ test(() => {
 // originally included:
 // https://github.com/web-platform-tests/wpt/blob/0246526ca46ef4e5eae8b8e4a87dd905c40f5326/dom/observable/tentative/observable-ctor.any.js#L123-L137.
 
-// TODO(domfarolino): Add a test asserting that `Subscriber#signal` != the
-// actual `AbortSignal` passed into `subscribe()`. See
-// https://github.com/web-platform-tests/wpt/pull/42219#discussion_r1361243283.
+test(() => {
+  let outerSubscriber = null;
+
+  const source = new Observable(subscriber => outerSubscriber = subscriber);
+
+  const controller = new AbortController();
+  source.subscribe({signal: controller.signal});
+
+  assert_not_equals(controller.signal, outerSubscriber.signal);
+}, "Subscriber#signal is not the same AbortSignal as the one passed into `subscribe()`");
 
 test(() => {
   const results = [];
@@ -459,3 +466,45 @@ test(() => {
     "error() can only be called once, and cannot invoke other Observer methods"
   );
 }, "Subscriber#error() cannot re-entrantly invoke itself");
+
+// TODO(domfarolino): Once `Subscriber#addTeardown()` and `Subscriber#active`
+// are implemented, add corresponding code for them here so we can assert the following order of everything:
+//   1. The passed-in `Observer#signal` is marked as `aborted`
+//   2. Abort event handlers are invoked for the that outer, passed-in signal.
+//   3. `Subscriber#closed` is true
+//   4. `Subscriber#signal` is marked as aborted
+//   5. Teardown callbacks are executed in the right order
+//   6. Abort event handlers are invoked for `Subscriber#signal`.
+// This ensures we have the "dependent signal" logic wired up correctly:
+// https://dom.spec.whatwg.org/#create-a-dependent-abort-signal.
+test(() => {
+  const results = [];
+  let innerSubscriber = null;
+
+  const source = new Observable((subscriber) => {
+    results.push('subscribe() callback');
+    innerSubscriber = subscriber;
+
+    subscriber.signal.addEventListener('abort', () => {
+      assert_true(subscriber.signal.aborted);
+      subscriber.next('inner abort handler');
+    });
+  });
+
+  const ac = new AbortController();
+  source.subscribe({
+    next: (x) => results.push(x),
+    signal: ac.signal,
+  });
+
+  ac.signal.addEventListener('abort', () => {
+    results.push('outer abort handler');
+    assert_true(ac.signal.aborted);
+    assert_false(innerSubscriber.signal.aborted);
+  });
+
+  assert_array_equals(results, ['subscribe() callback']);
+  ac.abort();
+  assert_array_equals(results, ['subscribe() callback',
+      'outer abort handler', 'inner abort handler']);
+}, "Unsubscription lifecycle");
