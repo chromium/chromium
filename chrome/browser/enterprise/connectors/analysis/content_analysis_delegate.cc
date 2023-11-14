@@ -291,23 +291,36 @@ void ContentAnalysisDelegate::CreateForWebContents(
 
   UploadDataStatus upload_data_status = delegate->UploadData();
 
-  // Only show UI if work is in progress in the background, the user must
-  // wait for a verdict.
-  // TODO(b/301996782): Add UI for kNoLocalClientFound case.
-  bool show_ui = upload_data_status == UploadDataStatus::kInProgress &&
-                 wait_for_verdict && (*UIEnabledStorage());
+  // Only show UI if one of the two conditions is met:
+  // 1. work is ongoing in the background and that the user must wait for a
+  // verdict.
+  // 2. no local client is found and fail-closed setting is on.
+  bool show_in_progress_ui =
+      upload_data_status == UploadDataStatus::kInProgress && wait_for_verdict &&
+      (*UIEnabledStorage());
+  bool show_fail_closed_ui =
+      upload_data_status == UploadDataStatus::kNoLocalClientFound &&
+      !should_allow_by_default && (*UIEnabledStorage());
+
+  DVLOG(1) << __func__ << ": show_fail_closed_ui=" << show_fail_closed_ui;
 
   // If the UI is enabled, create the modal dialog.
-  if (show_ui) {
+  if (show_in_progress_ui || show_fail_closed_ui) {
     ContentAnalysisDelegate* delegate_ptr = delegate.get();
     int files_count = delegate_ptr->data_.paths.size();
+
+    // Update the result early if fail-closed is determined, otherwise set it to
+    // the default state.
+    FinalContentAnalysisResult result =
+        show_fail_closed_ui ? FinalContentAnalysisResult::FAIL_CLOSED
+                            : FinalContentAnalysisResult::SUCCESS;
 
     // This dialog is owned by the constrained_window code.
     delegate_ptr->dialog_ = new ContentAnalysisDialog(
         std::move(delegate),
         delegate_ptr->data_.settings.cloud_or_local_settings
             .is_cloud_analysis(),
-        web_contents, access_point, files_count);
+        web_contents, access_point, files_count, result);
     return;
   }
 
@@ -790,11 +803,12 @@ void ContentAnalysisDelegate::UploadPageForDeepScanning(
 }
 
 bool ContentAnalysisDelegate::UpdateDialog() {
-  // Only show final result UI in the case of a cloud analysis.
-  // In the local case, the local agent does that.
-  return data_.settings.cloud_or_local_settings.is_cloud_analysis()
-             ? ShowFinalResultInDialog()
-             : CancelDialog();
+  // In the case of fail-closed, show the final result UI regardless of cloud or
+  // local analysis. Otherwise, only show the result for cloud analysis.
+  bool show_ui = final_result_ == FinalContentAnalysisResult::FAIL_CLOSED ||
+                 data_.settings.cloud_or_local_settings.is_cloud_analysis();
+
+  return show_ui ? ShowFinalResultInDialog() : CancelDialog();
 }
 
 void ContentAnalysisDelegate::MaybeCompleteScanRequest() {

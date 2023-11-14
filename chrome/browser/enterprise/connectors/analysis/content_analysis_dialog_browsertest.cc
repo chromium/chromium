@@ -959,6 +959,16 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestOpenInBlockState) {
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
+                       TestOpenInFailClosedState) {
+  ContentAnalysisDialog* dialog =
+      CreateContentAnalysisDialog(std::make_unique<MockDelegate>(),
+                                  FinalContentAnalysisResult::FAIL_CLOSED);
+  EXPECT_EQ(nullptr, dialog->GetSideIconSpinnerForTesting());
+  EXPECT_EQ(dialog->GetMessageForTesting()->GetText(),
+            u"Scan failed. This action is blocked by your administrator.");
+}
+
+IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestOpenInLargeFilesState) {
   ContentAnalysisDialog* dialog =
       CreateContentAnalysisDialog(std::make_unique<MockDelegate>(),

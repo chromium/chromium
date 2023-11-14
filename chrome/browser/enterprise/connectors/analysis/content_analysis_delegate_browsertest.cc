@@ -1382,6 +1382,105 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   content_analysis_run_loop.Run();
 }
 
+// This class tests if ContentAnalysisDelegate handles the settings
+// `default_action` from Connector policies correctly, specifically for cloud
+// analysis.
+class ContentAnalysisDelegateDefaultActionSettingBrowserTest
+    : public ContentAnalysisDelegateBrowserTestBase,
+      public testing::WithParamInterface<
+          std::tuple<safe_browsing::BinaryUploadService::Result, bool>> {
+ public:
+  ContentAnalysisDelegateDefaultActionSettingBrowserTest()
+      : ContentAnalysisDelegateBrowserTestBase(/*machine_scope=*/true) {}
+
+  safe_browsing::BinaryUploadService::Result upload_result() const {
+    return std::get<0>(GetParam());
+  }
+
+  bool setting_param() const { return std::get<1>(GetParam()); }
+
+  // Use a string since the setting value is inserted into a JSON policy.
+  const char* default_action_setting_value() const {
+    return setting_param() ? "block" : "allow";
+  }
+
+  bool expected_result() const { return !setting_param(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ContentAnalysisDelegateDefaultActionSettingBrowserTest,
+    testing::Combine(
+        testing::Values(
+            safe_browsing::BinaryUploadService::Result::UPLOAD_FAILURE,
+            safe_browsing::BinaryUploadService::Result::TIMEOUT,
+            safe_browsing::BinaryUploadService::Result::FAILED_TO_GET_TOKEN,
+            safe_browsing::BinaryUploadService::Result::TOO_MANY_REQUESTS,
+            safe_browsing::BinaryUploadService::Result::UNKNOWN),
+        testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateDefaultActionSettingBrowserTest,
+                       DefaultAction) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Set up delegate and upload service.
+  EnableUploadsScanningAndReporting();
+  constexpr char kDefaultActionPref[] = R"({
+    "service_provider": "google",
+    "enable": [
+      {
+        "url_list": ["*"],
+        "tags": ["dlp"]
+      }
+    ],
+    "block_until_verdict": 1,
+    "default_action": "%s"
+  })";
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->profile()->GetPrefs(), BULK_DATA_ENTRY,
+      base::StringPrintf(kDefaultActionPref, default_action_setting_value()),
+      /*machine_scope=*/true);
+
+  base::RunLoop content_analysis_run_loop;
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
+
+  FakeBinaryUploadServiceStorage()->SetAuthorized(true);
+
+  // Create test data.
+  ContentAnalysisDelegate::Data data;
+  data.text.emplace_back(text());
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
+      browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
+  ContentAnalysisResponse text_response;
+  FakeBinaryUploadServiceStorage()->SetResponseForText(upload_result(),
+                                                       text_response);
+
+  bool called = false;
+  base::RunLoop run_loop;
+  SetQuitClosure(run_loop.QuitClosure());
+
+  // Start test.
+  ContentAnalysisDelegate::CreateForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      base::BindLambdaForTesting(
+          [this, &called](const ContentAnalysisDelegate::Data& data,
+                          ContentAnalysisDelegate::Result& result) {
+            ASSERT_EQ(result.text_results[0], expected_result());
+            called = true;
+          }),
+      safe_browsing::DeepScanAccessPoint::PASTE);
+
+  FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
+
+  run_loop.Run();
+  EXPECT_TRUE(called);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
+}
+
 // This class tests that ContentAnalysisDelegate is handled correctly when the
 // requests are already unauthorized. The test parameter represents if the scan
 // is set to be blocking through policy.

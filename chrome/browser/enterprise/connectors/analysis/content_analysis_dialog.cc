@@ -488,6 +488,7 @@ void ContentAnalysisDialog::UpdateStateFromFinalResult(
   switch (final_result_) {
     case FinalContentAnalysisResult::ENCRYPTED_FILES:
     case FinalContentAnalysisResult::LARGE_FILES:
+    case FinalContentAnalysisResult::FAIL_CLOSED:
     case FinalContentAnalysisResult::FAILURE:
       dialog_state_ = State::FAILURE;
       break;
@@ -543,11 +544,15 @@ void ContentAnalysisDialog::UpdateViews() {
 void ContentAnalysisDialog::UpdateDialog() {
   if (!contents_view_) {
     // If the dialog is no longer pending, a final verdict was received before
-    // the dalog was displayed.  If the verdict is success and this is not a
-    // cloud analysis, don't bother the user at all and close the dialog.
-    // Otherwise make sure it show right away with the verdict.
+    // the dialog was displayed.  If the verdict is success or it is not fail
+    // closed for local analysis, don't bother the user at all and close the
+    // dialog. Otherwise make sure it shows right away with the verdict.
     if (!is_pending()) {
-      if (is_success() || !is_cloud_) {
+      bool display_ui_for_local =
+          !is_cloud_ &&
+          final_result_ == FinalContentAnalysisResult::FAIL_CLOSED;
+      DVLOG(1) << __func__ << ": display_ui_for_local=" << display_ui_for_local;
+      if (is_success() || !display_ui_for_local) {
         CancelDialogAndDelete();
       } else {
         ShowDialogNow();
@@ -797,6 +802,12 @@ std::u16string ContentAnalysisDialog::GetFailureMessage() const {
   // precedence over the generic ones.
   if (has_custom_message())
     return GetCustomMessage();
+
+  if (final_result_ == FinalContentAnalysisResult::FAIL_CLOSED) {
+    DVLOG(1) << __func__ << ": display fail-closed message.";
+    return l10n_util::GetStringUTF16(
+        IDS_DEEP_SCANNING_DIALOG_UPLOAD_FAIL_CLOSED_MESSAGE);
+  }
 
   if (final_result_ == FinalContentAnalysisResult::LARGE_FILES) {
     if (is_print_scan()) {

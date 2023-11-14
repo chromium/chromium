@@ -171,6 +171,9 @@ void PrintTo(const RequestHandlerResult& request_handler_result,
     case FinalContentAnalysisResult::FAILURE:
       *os << "FAILURE";
       break;
+    case FinalContentAnalysisResult::FAIL_CLOSED:
+      *os << "FAIL_CLOSED";
+      break;
     case FinalContentAnalysisResult::LARGE_FILES:
       *os << "LARGE_FILES";
       break;
