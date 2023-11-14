@@ -2506,6 +2506,41 @@ bool ComputedStyle::MarkerShouldBeInside(const Element& parent) const {
          (IsA<HTMLLIElement>(parent) && !IsInsideListElement());
 }
 
+std::optional<blink::Color> ComputedStyle::OutlineColorResolved() const {
+  const StyleColor color = OutlineColor();
+  if (color.HasColorKeyword()) {
+    if (color.GetColorKeyword() == CSSValueID::kAuto ||
+        color.GetColorKeyword() == CSSValueID::kCurrentcolor) {
+      return std::nullopt;
+    }
+  }
+  return color.Resolve(GetCurrentColor(), UsedColorScheme());
+}
+
+blink::Color ComputedStyle::OutlineColorForAutoStyle() const {
+  // https://www.w3.org/TR/css-ui-4/#propdef-outline-color
+  // says to use accent-color if outline-style is auto and outline-color is auto
+  blink::Color inner_color =
+      VisitedDependentColor(GetCSSPropertyOutlineColor());
+
+  if (OutlineStyleIsAuto()) {
+    std::optional<blink::Color> outline_color = OutlineColorResolved();
+#if !BUILDFLAG(IS_MAC)
+    if (DarkColorScheme()) {
+      inner_color = Color::kWhite;
+    }
+#endif
+
+    if (!outline_color) {
+      std::optional<blink::Color> accent_color = AccentColorResolved();
+      if (accent_color) {
+        inner_color = *accent_color;
+      }
+    }
+  }
+  return inner_color;
+}
+
 absl::optional<blink::Color> ComputedStyle::AccentColorResolved() const {
   const StyleAutoColor& auto_color = AccentColor();
   if (auto_color.IsAutoColor()) {

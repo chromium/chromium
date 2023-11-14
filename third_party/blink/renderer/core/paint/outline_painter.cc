@@ -821,11 +821,7 @@ void PaintFocusRing(GraphicsContext& context,
                     const ComputedStyle& style,
                     const FloatRoundedRect::Radii& corner_radii,
                     const LayoutObject::OutlineInfo& info) {
-  Color inner_color = style.VisitedDependentColor(GetCSSPropertyOutlineColor());
-#if !BUILDFLAG(IS_MAC)
-  if (style.DarkColorScheme())
-    inner_color = Color::kWhite;
-#endif
+  Color inner_color = style.OutlineColorForAutoStyle();
 
   const float outer_ring_width = FocusRingOuterStrokeWidth(style);
   const float inner_ring_width = FocusRingInnerStrokeWidth(style);
