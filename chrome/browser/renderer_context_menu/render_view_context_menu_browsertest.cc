@@ -78,6 +78,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/browser_message_filter.h"
@@ -603,6 +604,11 @@ class ContextMenuForSupervisedUsersBrowserTest : public ContextMenuBrowserTest {
     return SupervisedUserServiceFactory::GetForProfile(browser()->profile());
   }
 
+  supervised_user::KidsManagementApiServerMock& kids_management_api_mock() {
+    return supervision_mixin_.api_mock_setup_mixin().api_mock();
+  }
+
+ private:
   // Supervision mixin hooks kids management api (including ClassifyUrl) onto
   // given embedded test server. This server is run in separate process and is
   // responding to all requests as configured in this mixin.
@@ -662,9 +668,9 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop().RunUntilIdle();
 
   if (GetSupervisedUserService()->IsURLFilteringEnabled()) {
-    supervision_mixin_.api_mock_setup_mixin()
-        .api_mock()
-        .QueueRestrictedUrlClassification();
+    kids_management_api_mock().RestrictSubsequentClassifyUrl();
+    EXPECT_CALL(kids_management_api_mock().classify_url_mock(), ClassifyUrl)
+        .Times(1);
   }
 
   ASSERT_TRUE(embedded_test_server()->Started());
@@ -713,9 +719,9 @@ IN_PROC_BROWSER_TEST_F(
   ContextMenuWaiter menu_observer;
 
   if (GetSupervisedUserService()->IsURLFilteringEnabled()) {
-    supervision_mixin_.api_mock_setup_mixin()
-        .api_mock()
-        .QueueAllowedUrlClassification();
+    kids_management_api_mock().AllowSubsequentClassifyUrl();
+    EXPECT_CALL(kids_management_api_mock().classify_url_mock(), ClassifyUrl)
+        .Times(1);
   }
 
   base::RunLoop().RunUntilIdle();
@@ -796,9 +802,9 @@ IN_PROC_BROWSER_TEST_F(
     SaveLinkAsEntryIsDisabledForUrlsBlockedByAsyncCheckerForChild) {
   ContextMenuWaiter menu_observer;
 
-  supervision_mixin_.api_mock_setup_mixin()
-      .api_mock()
-      .QueueRestrictedUrlClassification();
+  kids_management_api_mock().RestrictSubsequentClassifyUrl();
+  EXPECT_CALL(kids_management_api_mock().classify_url_mock(), ClassifyUrl)
+      .Times(1);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(embedded_test_server()->Started());
@@ -837,9 +843,9 @@ IN_PROC_BROWSER_TEST_F(
     SaveLinkAsEntryIsEnabledForUrlsAllowedByAsyncCheckerForChild) {
   ContextMenuWaiter menu_observer;
 
-  supervision_mixin_.api_mock_setup_mixin()
-      .api_mock()
-      .QueueAllowedUrlClassification();
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+  EXPECT_CALL(kids_management_api_mock().classify_url_mock(), ClassifyUrl)
+      .Times(1);
 
   base::RunLoop().RunUntilIdle();
 

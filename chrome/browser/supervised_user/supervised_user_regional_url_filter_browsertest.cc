@@ -28,6 +28,7 @@
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -88,9 +89,7 @@ class SupervisedUserRegionalURLFilterTest
   SupervisedUserRegionalURLFilterTest() {
     // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
     // disable this feature.
-    feature_list_.InitWithFeatures(
-        GetEnabledFeatures(),
-        /*disabled_features=*/{features::kHttpsUpgrades});
+    feature_list_.InitWithFeatures(GetEnabledFeatures(), GetDisabledFeatures());
   }
   ~SupervisedUserRegionalURLFilterTest() override { feature_list_.Reset(); }
 
@@ -168,10 +167,9 @@ class SupervisedUserRegionalURLFilterTest
                                         OnWillCreateBrowserContextServices,
                                     base::Unretained(this)));
     request_monitor_subscription_ =
-        supervision_mixin_.api_mock_setup_mixin().api_mock().Subscribe(
-            base::BindRepeating(
-                &SupervisedUserRegionalURLFilterTest::ClassifyUrlRequestMonitor,
-                base::Unretained(this)));
+        kids_management_api_mock().Subscribe(base::BindRepeating(
+            &SupervisedUserRegionalURLFilterTest::ClassifyUrlRequestMonitor,
+            base::Unretained(this)));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -209,11 +207,15 @@ class SupervisedUserRegionalURLFilterTest
 #endif
   }
 
+ protected:
+  supervised_user::KidsManagementApiServerMock& kids_management_api_mock() {
+    return supervision_mixin_.api_mock_setup_mixin().api_mock();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription create_services_subscription_;
   base::CallbackListSubscription request_monitor_subscription_;
- protected:
   supervised_user::SupervisionMixin supervision_mixin_{
       mixin_host_,
       this,
@@ -245,9 +247,9 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserRegionalURLFilterTest, RegionIsAdded) {
 
   if (ProtoFetcherEnabled(GetParam())) {
     if (number_of_expected_calls > 0) {
-      supervision_mixin_.api_mock_setup_mixin()
-          .api_mock()
-          .QueueAllowedUrlClassification();
+      kids_management_api_mock().AllowSubsequentClassifyUrl();
+      EXPECT_CALL(kids_management_api_mock().classify_url_mock(), ClassifyUrl)
+          .Times(number_of_expected_calls);
     }
     // Ignore all extra calls to other methods
     EXPECT_CALL(*this, ClassifyUrlRequestMonitor(::testing::_, ::testing::_))
