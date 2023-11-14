@@ -671,14 +671,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     return view_transition_names_;
   }
 
-  StyleFetchedImage* CacheStyleImage(
-      FetchParameters& params,
-      OriginClean origin_clean,
-      bool is_ad_related,
-      const float override_image_resolution = 0.0f) {
-    return style_image_cache_.CacheStyleImage(GetDocument(), params,
-                                              origin_clean, is_ad_related,
-                                              override_image_resolution);
+  ImageResourceContent* CacheImageContent(FetchParameters& params) {
+    return style_image_cache_.CacheImageContent(GetDocument().Fetcher(),
+                                                params);
   }
 
   void AddCachedFillOrClipPathURIValue(const AtomicString& string,
@@ -1055,8 +1050,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // The @view-transitions rule currently applying to the document.
   Member<StyleRuleViewTransitions> view_transitions_rule_;
 
-  // Cache for sharing StyleFetchedImage between CSSValues referencing the same
-  // URL.
+  // Cache for sharing ImageResourceContent between CSSValues referencing the
+  // same URL.
   StyleImageCache style_image_cache_;
 
   // A cache for CSSURIValue objects for SVG element presentation attributes for

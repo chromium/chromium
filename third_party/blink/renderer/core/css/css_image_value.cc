@@ -100,9 +100,14 @@ StyleImage* CSSImageValue::CacheImage(
 
     FetchParameters params =
         PrepareFetch(document, image_request_behavior, cross_origin);
-    cached_image_ = document.GetStyleEngine().CacheStyleImage(
-        params, url_data_.GetOriginClean(), url_data_.IsAdRelated(),
-        override_image_resolution);
+    ImageResourceContent* image_content =
+        document.GetStyleEngine().CacheImageContent(params);
+    cached_image_ = MakeGarbageCollected<StyleFetchedImage>(
+        image_content, document,
+        params.GetImageRequestBehavior() ==
+            FetchParameters::ImageRequestBehavior::kDeferImageLoad,
+        url_data_.IsFromOriginCleanStyleSheet(), url_data_.IsAdRelated(),
+        params.Url(), override_image_resolution);
   }
   return cached_image_.Get();
 }

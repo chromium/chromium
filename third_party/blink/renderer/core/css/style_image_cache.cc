@@ -4,40 +4,37 @@
 
 #include "third_party/blink/renderer/core/css/style_image_cache.h"
 
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
-#include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
+#include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 
 namespace blink {
 
-StyleFetchedImage* StyleImageCache::CacheStyleImage(
-    Document& document,
-    FetchParameters& params,
-    OriginClean origin_clean,
-    bool is_ad_related,
-    const float override_image_resolution) {
-  CHECK(!params.Url().IsNull());
-  // TODO: Investigate key/val change to
-  // "URL (sans fragment) -> ImageResourceContent"
-  // see https://crbug.com/1417158
+namespace {
 
-  std::pair<String, float> key{params.Url().GetString(),
-                               override_image_resolution};
-
-  auto result = fetched_image_map_.insert(key, nullptr);
-
-  if (result.is_new_entry || !result.stored_value->value ||
-      result.stored_value->value->ErrorOccurred()) {
-    result.stored_value->value = MakeGarbageCollected<StyleFetchedImage>(
-        ImageResourceContent::Fetch(params, document.Fetcher()), document,
-        params.GetImageRequestBehavior() ==
-            FetchParameters::ImageRequestBehavior::kDeferImageLoad,
-        origin_clean == OriginClean::kTrue, is_ad_related, params.Url(),
-        override_image_resolution);
+bool CanReuseImageContent(const ImageResourceContent& image_content) {
+  if (image_content.ErrorOccurred()) {
+    return false;
   }
+  return true;
+}
 
-  return result.stored_value->value.Get();
+}  // namespace
+
+ImageResourceContent* StyleImageCache::CacheImageContent(
+    ResourceFetcher* fetcher,
+    FetchParameters& params) {
+  CHECK(!params.Url().IsNull());
+
+  const KURL url_without_fragment =
+      MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url());
+  auto& image_content =
+      fetched_image_map_.insert(url_without_fragment.GetString(), nullptr)
+          .stored_value->value;
+  if (!image_content || !CanReuseImageContent(*image_content)) {
+    image_content = ImageResourceContent::Fetch(params, fetcher);
+  }
+  return image_content.Get();
 }
 
 void StyleImageCache::Trace(Visitor* visitor) const {
