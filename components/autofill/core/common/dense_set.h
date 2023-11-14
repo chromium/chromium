@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_COMMON_DENSE_SET_H_
 
 #include <array>
+#include <bit>
 #include <climits>
 #include <cstddef>
 #include <iterator>
@@ -16,7 +17,6 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
-#include "third_party/abseil-cpp/absl/numeric/bits.h"
 
 namespace autofill {
 
@@ -28,7 +28,7 @@ static constexpr size_t kBitsPer = sizeof(T) * CHAR_BIT;
 
 // A bitset represented as `std::array<Word, kNumWords>.
 // There's a specialization further down for `kNumWords == 1`.
-template <typename Word, size_t kNumWords, typename Enable = void>
+template <typename Word, size_t kNumWords>
 class Bitset {
  public:
   constexpr Bitset() = default;
@@ -39,7 +39,7 @@ class Bitset {
     // correct.
     size_t num = 0;
     for (const auto word : words_) {
-      num += absl::popcount(word);
+      num += std::popcount(word);
     }
     return num;
   }
@@ -98,12 +98,12 @@ class Bitset {
 };
 
 // Specialization that uses a single integer instead of an std::array.
-template <typename Word, size_t kNumWords>
-class Bitset<Word, kNumWords, std::enable_if_t<kNumWords == 1>> {
+template <typename Word>
+class Bitset<Word, 1u> {
  public:
   constexpr Bitset() = default;
 
-  constexpr size_t num_set_bits() const { return absl::popcount(word_); }
+  constexpr size_t num_set_bits() const { return std::popcount(word_); }
 
   constexpr bool get_bit(size_t index) const {
     return word_ & (static_cast<Word>(1) << index);
