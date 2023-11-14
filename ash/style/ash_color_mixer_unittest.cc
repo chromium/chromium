@@ -12,6 +12,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_utils.h"
+#include "ui/color/ref_color_mixer.h"
 #include "ui/gfx/color_palette.h"
 
 namespace {
@@ -29,17 +30,23 @@ ui::ColorProviderKey MakeColorProviderKey(SkColor seed_color) {
   return key;
 }
 
-// Initializes the `color_provider` with `seed_color` and the relevant
-// ColorMixers.
-void SetUpColorProvider(ui::ColorProvider& color_provider, SkColor seed_color) {
-  auto key = MakeColorProviderKey(seed_color);
-
+// Initialize ColorProvider for a given key.
+void InitializeColorProvider(const ui::ColorProviderKey& key,
+                             ui::ColorProvider& color_provider) {
+  ui::AddRefColorMixer(&color_provider, key);
   // Roughly mimics the ColorMixer configuration for Ash.
   ash::AddCrosStylesColorMixer(&color_provider, key);
   ash::AddAshColorMixer(&color_provider, key);
 
   // Populates the color map with computed color values.
   color_provider.GenerateColorMap();
+}
+
+// Initializes the `color_provider` with `seed_color` and the relevant
+// ColorMixers.
+void SetUpColorProvider(ui::ColorProvider& color_provider, SkColor seed_color) {
+  auto key = MakeColorProviderKey(seed_color);
+  InitializeColorProvider(key, color_provider);
 }
 
 class AshColorMixerTest : public testing::TestWithParam<ColorsTestCase> {
@@ -213,5 +220,65 @@ INSTANTIATE_TEST_SUITE_P(
         {kOffRed, {cros_tokens::kCrosRefYellow40, SkColorSetRGB(130, 85, 0)}},
         {kOffRed, {cros_tokens::kCrosRefBlue40, SkColorSetRGB(63, 90, 169)}},
     }));
+
+class AshColorGamingColorsTest : public testing::Test {
+ public:
+  AshColorGamingColorsTest() = default;
+
+  void SetUp() override {
+    color_provider_ = std::make_unique<ui::ColorProvider>();
+  }
+
+  void TearDown() override { color_provider_.reset(); }
+
+  ui::ColorProvider& color_provider() { return *color_provider_; }
+
+  void SetUpColorProvider(SkColor seed_color,
+                          ui::ColorProviderKey::SchemeVariant scheme,
+                          ui::ColorProviderKey::ColorMode color_mode) {
+    ui::ColorProviderKey key;
+    key.user_color = seed_color;
+    key.color_mode = color_mode;
+    key.scheme_variant = scheme;
+
+    InitializeColorProvider(key, color_provider());
+  }
+
+ private:
+  std::unique_ptr<ui::ColorProvider> color_provider_;
+};
+
+// A random color
+constexpr SkColor kGamingTestSeed = SkColorSetRGB(17, 220, 96);
+
+TEST_F(AshColorGamingColorsTest, MatchesVibrant) {
+  SetUpColorProvider(kGamingTestSeed,
+                     ui::ColorProviderKey::SchemeVariant::kVibrant,
+                     ui::ColorProviderKey::ColorMode::kLight);
+  EXPECT_PRED_FORMAT2(
+      AssertColorsMatch,
+      color_provider().GetColor(
+          cros_tokens::kCrosSysGamingControlButtonDefault),
+      color_provider().GetColor(cros_tokens::kCrosRefPrimary40));
+  EXPECT_PRED_FORMAT2(
+      AssertColorsMatch,
+      color_provider().GetColor(cros_tokens::kCrosSysGamingControlButtonHover),
+      color_provider().GetColor(cros_tokens::kCrosRefPrimary50));
+  EXPECT_PRED_FORMAT2(
+      AssertColorsMatch,
+      color_provider().GetColor(
+          cros_tokens::kCrosSysGamingControlButtonBorderHover),
+      color_provider().GetColor(cros_tokens::kCrosRefPrimary80));
+}
+
+TEST_F(AshColorGamingColorsTest, DoesNotMatchTonal) {
+  SetUpColorProvider(kGamingTestSeed,
+                     ui::ColorProviderKey::SchemeVariant::kTonalSpot,
+                     ui::ColorProviderKey::ColorMode::kLight);
+
+  EXPECT_NE(color_provider().GetColor(
+                cros_tokens::kCrosSysGamingControlButtonDefault),
+            color_provider().GetColor(cros_tokens::kCrosRefPrimary40));
+}
 
 }  // namespace
