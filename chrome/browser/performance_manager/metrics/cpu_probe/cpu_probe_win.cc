@@ -34,7 +34,9 @@ constexpr wchar_t kProcessorCounter[] =
 
 // Helper class that performs the actual I/O. It must run on a
 // SequencedTaskRunner that is properly configured for blocking I/O
-// operations.
+// operations, and uses CONTINUE_ON_SHUTDOWN since Pdh functions can hang (see
+// https://crbug.com/1499644). This means it must not use any globals that
+// are deleted on browser shutdown.
 class CpuProbeWin::BlockingTaskRunnerHelper final {
  public:
   BlockingTaskRunnerHelper();
@@ -146,7 +148,7 @@ CpuProbeWin::CpuProbeWin() {
   helper_ = base::SequenceBound<BlockingTaskRunnerHelper>(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
 }
 
 CpuProbeWin::~CpuProbeWin() {
