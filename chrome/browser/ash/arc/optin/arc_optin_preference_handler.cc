@@ -7,6 +7,7 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/optin/arc_optin_preference_handler_observer.h"
@@ -131,13 +132,17 @@ void ArcOptInPreferenceHandler::SendLocationServicesMode() {
           : true;
 
   // We should use device location setting during optin, in case user has
-  // disabled location of device we should show the same preference during.
-  // opt-in. Default value of kUserGeolocationAllowed is true.
+  // disabled location of device we should show the same preference during
+  // opt-in. Default value of kUserGeolocationAccessLevel is
+  // `AccessLevel::kAllowed`.
   if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub) &&
-      // TODO(vsomani): Remove managed user check once kUserGeolocationAllowed
-      // is in sync with the managed policy of arcgooglelocationservicesenabled.
+      // TODO(vsomani): Remove managed user check once
+      // kUserGeolocationAccessLevel is in sync with the managed policy of
+      // arcgooglelocationservicesenabled.
       !pref_service_->IsManagedPreference(prefs::kArcLocationServiceEnabled)) {
-    enabled = pref_service_->GetBoolean(ash::prefs::kUserGeolocationAllowed);
+    enabled = ash::PrivacyHubController::CrosToArcGeolocationPermissionMapping(
+        static_cast<ash::GeolocationAccessLevel>(pref_service_->GetInteger(
+            ash::prefs::kUserGeolocationAccessLevel)));
   }
   observer_->OnLocationServicesModeChanged(
       enabled,
@@ -167,7 +172,11 @@ void ArcOptInPreferenceHandler::EnableLocationService(bool is_enabled) {
   if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
     pref_service_->SetBoolean(prefs::kArcInitialLocationSettingSyncRequired,
                               false);
-    pref_service_->SetBoolean(ash::prefs::kUserGeolocationAllowed, is_enabled);
+    pref_service_->SetInteger(
+        ash::prefs::kUserGeolocationAccessLevel,
+        static_cast<int>(
+            ash::PrivacyHubController::ArcToCrosGeolocationPermissionMapping(
+                is_enabled)));
   }
 }
 

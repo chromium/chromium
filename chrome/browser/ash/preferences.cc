@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/public/ash_interfaces.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/shell.h"
@@ -688,7 +689,7 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
                                          g_browser_process->local_state(),
                                          callback);
   pref_change_registrar_.Init(prefs);
-  pref_change_registrar_.Add(ash::prefs::kUserGeolocationAllowed, callback);
+  pref_change_registrar_.Add(ash::prefs::kUserGeolocationAccessLevel, callback);
   pref_change_registrar_.Add(::prefs::kUserTimezone, callback);
   pref_change_registrar_.Add(::prefs::kResolveTimezoneByGeolocationMethod,
                              callback);
@@ -1142,24 +1143,25 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   // TODO(b/277061508): Move this logic inside
   // GeolocationPrivacySwitchController.
   if (reason == REASON_INITIALIZATION ||
-      (pref_name == ash::prefs::kUserGeolocationAllowed &&
+      (pref_name == ash::prefs::kUserGeolocationAccessLevel &&
        reason == REASON_PREF_CHANGED)) {
-    const bool user_geolocation_permission_enabled =
-        prefs_->GetBoolean(ash::prefs::kUserGeolocationAllowed);
+    const auto user_geolocation_access_level =
+        static_cast<GeolocationAccessLevel>(
+            prefs_->GetInteger(ash::prefs::kUserGeolocationAccessLevel));
 
-    if (user_geolocation_permission_enabled) {
-      SimpleGeolocationProvider::GetInstance()->AllowGeolocationUsage();
-    } else {
-      SimpleGeolocationProvider::GetInstance()->DisallowGeolocationUsage();
-    }
+    // Notify `SimpleGeolocationProvider` of the user geolocation permission
+    // change.
+    SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+        user_geolocation_access_level);
 
     // Log-in screen follows the owner's geolocation setting.
     if (user_is_owner) {
-      PrivacyHubController::AccessLevel access_level;
-      if (user_geolocation_permission_enabled) {
-        access_level = PrivacyHubController::AccessLevel::kAllowed;
+      GeolocationAccessLevel access_level;
+      if (SimpleGeolocationProvider::GetInstance()
+              ->IsGeolocationUsageAllowedForSystem()) {
+        access_level = GeolocationAccessLevel::kAllowed;
       } else {
-        access_level = PrivacyHubController::AccessLevel::kDisallowed;
+        access_level = GeolocationAccessLevel::kDisallowed;
       }
       g_browser_process->local_state()->SetInteger(
           ash::prefs::kDeviceGeolocationAllowed,

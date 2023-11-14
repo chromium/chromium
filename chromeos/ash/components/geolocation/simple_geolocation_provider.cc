@@ -7,6 +7,7 @@
 #include <iterator>
 #include <memory>
 
+#include "ash/constants/geolocation_access_level.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -47,20 +48,17 @@ SimpleGeolocationProvider* SimpleGeolocationProvider::GetInstance() {
   return g_geolocation_provider;
 }
 
-void SimpleGeolocationProvider::AllowGeolocationUsage() {
-  bool need_to_notify = (geolocation_usage_allowed_ == false);
-  geolocation_usage_allowed_ = true;
-
-  if (need_to_notify) {
-    NotifyObservers();
-  }
+GeolocationAccessLevel SimpleGeolocationProvider::GetGeolocationAccessLevel()
+    const {
+  return geolocation_access_level_;
 }
 
-void SimpleGeolocationProvider::DisallowGeolocationUsage() {
-  bool need_to_notify = (geolocation_usage_allowed_ == true);
-  geolocation_usage_allowed_ = false;
+void SimpleGeolocationProvider::SetGeolocationAccessLevel(
+    GeolocationAccessLevel geolocation_access_level) {
+  bool system_geo_usage_allowed = IsGeolocationUsageAllowedForSystem();
+  geolocation_access_level_ = geolocation_access_level;
 
-  if (need_to_notify) {
+  if (system_geo_usage_allowed != IsGeolocationUsageAllowedForSystem()) {
     NotifyObservers();
   }
 }
@@ -84,8 +82,9 @@ void SimpleGeolocationProvider::RequestGeolocation(
     SimpleGeolocationRequest::ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // Drop request if the system geolocation permission is not granted.
-  if (!IsGeolocationUsageAllowed()) {
+  // Drop request if the system geolocation permission is not granted for
+  // system services.
+  if (!IsGeolocationUsageAllowedForSystem()) {
     return;
   }
 
@@ -143,6 +142,16 @@ void SimpleGeolocationProvider::SetGeolocationProviderUrlForTesting(
   url_for_testing_ = url;
 }
 
+bool SimpleGeolocationProvider::IsGeolocationUsageAllowedForSystem() {
+  switch (geolocation_access_level_) {
+    case GeolocationAccessLevel::kAllowed:
+    case GeolocationAccessLevel::kOnlyAllowedForSystem:
+      return true;
+    case GeolocationAccessLevel::kDisallowed:
+      return false;
+  }
+}
+
 void SimpleGeolocationProvider::OnGeolocationResponse(
     SimpleGeolocationRequest* request,
     SimpleGeolocationRequest::ResponseCallback callback,
@@ -174,7 +183,7 @@ std::string SimpleGeolocationProvider::GetGeolocationProviderUrl() const {
 
 void SimpleGeolocationProvider::NotifyObservers() {
   for (auto& obs : observer_list_) {
-    obs.OnGeolocationPermissionChanged(geolocation_usage_allowed_);
+    obs.OnGeolocationPermissionChanged(IsGeolocationUsageAllowedForSystem());
   }
 }
 

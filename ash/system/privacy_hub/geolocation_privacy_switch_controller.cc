@@ -40,7 +40,7 @@ void GeolocationPrivacySwitchController::OnActiveUserPrefServiceChanged(
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
   pref_change_registrar_->Add(
-      prefs::kUserGeolocationAllowed,
+      prefs::kUserGeolocationAccessLevel,
       base::BindRepeating(
           &GeolocationPrivacySwitchController::OnPreferenceChanged,
           base::Unretained(this)));
@@ -83,19 +83,34 @@ std::vector<std::u16string> GeolocationPrivacySwitchController::GetActiveApps(
 }
 
 void GeolocationPrivacySwitchController::OnPreferenceChanged() {
-  const bool geolocation_state = pref_change_registrar_->prefs()->GetBoolean(
-      prefs::kUserGeolocationAllowed);
-  DLOG(ERROR) << "Privacy Hub: Geolocation switch state = "
-              << geolocation_state;
+  const GeolocationAccessLevel geolocation_state =
+      static_cast<GeolocationAccessLevel>(
+          pref_change_registrar_->prefs()->GetInteger(
+              prefs::kUserGeolocationAccessLevel));
+  VLOG(1) << "Privacy Hub: Geolocation switch state = "
+          << static_cast<int>(geolocation_state);
   UpdateNotification();
+}
+
+bool GeolocationPrivacySwitchController::IsGeolocationUsageAllowedForApps() {
+  GeolocationAccessLevel geolocation_access_level =
+      static_cast<GeolocationAccessLevel>(
+          pref_change_registrar_->prefs()->GetInteger(
+              prefs::kUserGeolocationAccessLevel));
+
+  switch (geolocation_access_level) {
+    case GeolocationAccessLevel::kAllowed:
+      return true;
+    case GeolocationAccessLevel::kOnlyAllowedForSystem:
+    case GeolocationAccessLevel::kDisallowed:
+      return false;
+  }
 }
 
 void GeolocationPrivacySwitchController::UpdateNotification() {
   if (!pref_change_registrar_ || !pref_change_registrar_->prefs()) {
     return;
   }
-  const bool geolocation_allowed = pref_change_registrar_->prefs()->GetBoolean(
-      prefs::kUserGeolocationAllowed);
 
   PrivacyHubNotificationController* notification_controller =
       PrivacyHubNotificationController::Get();
@@ -103,7 +118,7 @@ void GeolocationPrivacySwitchController::UpdateNotification() {
     return;
   }
 
-  if (usage_cnt_ == 0 || geolocation_allowed) {
+  if (usage_cnt_ == 0 || IsGeolocationUsageAllowedForApps()) {
     notification_controller->RemoveSoftwareSwitchNotification(
         SensorDisabledNotificationDelegate::Sensor::kLocation);
     return;

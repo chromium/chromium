@@ -41,6 +41,10 @@ class ASH_EXPORT GeolocationPrivacySwitchController : public SessionObserver {
   void TrackGeolocationAttempted(const std::string& app_name);
   void TrackGeolocationRelinquished(const std::string& app_name);
 
+  // Returns true if there's an active user session and geolocation permission
+  // is set to "Allowed". Returns false otherwise.
+  bool IsGeolocationUsageAllowedForApps();
+
   // Returns the names of the apps that want to actively use geolocation (if
   // there is more than `max_count` of such apps, first max_count names are
   // returned ).

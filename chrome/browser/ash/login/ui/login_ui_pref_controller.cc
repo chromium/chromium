@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/ui/login_ui_pref_controller.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -71,17 +72,12 @@ void LoginUIPrefController::UpdateTapToClickEnabled() {
 }
 
 void LoginUIPrefController::UpdateGeolocationUsageAllowed() {
-  auto access_level = static_cast<PrivacyHubController::AccessLevel>(
-      g_browser_process->local_state()->GetInteger(
-          ash::prefs::kDeviceGeolocationAllowed));
-  switch (access_level) {
-    case PrivacyHubController::AccessLevel::kAllowed:
-      SimpleGeolocationProvider::GetInstance()->AllowGeolocationUsage();
-      break;
-    case PrivacyHubController::AccessLevel::kDisallowed:
-    default:
-      SimpleGeolocationProvider::GetInstance()->DisallowGeolocationUsage();
-  }
+  // Set the log-in screen geolocation access permission to the
+  // `SimpleGeolocationProvider` global instance.
+  SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+      static_cast<GeolocationAccessLevel>(
+          g_browser_process->local_state()->GetInteger(
+              ash::prefs::kDeviceGeolocationAllowed)));
 }
 
 void LoginUIPrefController::InitOwnerPreferences(bool success) {

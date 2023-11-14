@@ -1165,11 +1165,12 @@ inline constexpr char kShouldShowSpeakOnMuteOptInNudge[] =
 inline constexpr char kSpeakOnMuteOptInNudgeShownCount[] =
     "ash.user.speak_on_mute_opt_in_nudge_shown_count";
 
-// A boolean pref indicating whether the geolocation is allowed for the user.
-inline constexpr char kUserGeolocationAllowed[] =
-    "ash.user.geolocation_allowed";
+// An enum pref, indicating whether the geolocation is allowed inside user
+// session. Values are from `ash::GeolocationAccessLevel`.
+inline constexpr char kUserGeolocationAccessLevel[] =
+    "ash.user.geolocation_access_level";
 // An enum pref indicating whether the geolocation is allowed outside user
-// session. Values are from PrivacyHubController::AccessLevel.
+// session. Values are from `ash::GeolocationAccessLevel`.
 inline constexpr char kDeviceGeolocationAllowed[] =
     "ash.device.geolocation_allowed";
 

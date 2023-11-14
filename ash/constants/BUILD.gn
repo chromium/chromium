@@ -25,6 +25,7 @@ component("constants") {
     "ash_switches.h",
     "devicetype.cc",
     "devicetype.h",
+    "geolocation_access_level.h",
     "notifier_catalogs.h",
     "personalization_entry_point.h",
     "quick_settings_catalogs.h",

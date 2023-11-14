@@ -16,6 +16,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
@@ -412,7 +413,7 @@ void ArcSettingsServiceImpl::OnPrefChanged(const std::string& pref_name) const {
     SyncAccessibilityLargeMouseCursorEnabled();
   } else if (pref_name == ash::prefs::kAccessibilityVirtualKeyboardEnabled) {
     SyncAccessibilityVirtualKeyboardEnabled();
-  } else if (pref_name == ash::prefs::kUserGeolocationAllowed) {
+  } else if (pref_name == ash::prefs::kUserGeolocationAccessLevel) {
     SyncUserGeolocation();
   } else if (pref_name == ::language::prefs::kApplicationLocale ||
              pref_name == ::language::prefs::kPreferredLanguages) {
@@ -534,7 +535,7 @@ void ArcSettingsServiceImpl::StartObservingSettingsChanges() {
   AddPrefToObserve(ash::prefs::kAccessibilitySwitchAccessEnabled);
   AddPrefToObserve(ash::prefs::kAccessibilityVirtualKeyboardEnabled);
   AddPrefToObserve(ash::prefs::kDockedMagnifierEnabled);
-  AddPrefToObserve(ash::prefs::kUserGeolocationAllowed);
+  AddPrefToObserve(ash::prefs::kUserGeolocationAccessLevel);
   AddPrefToObserve(onc::prefs::kDeviceOpenNetworkConfiguration);
   AddPrefToObserve(onc::prefs::kOpenNetworkConfiguration);
   AddPrefToObserve(proxy_config::prefs::kProxy);
@@ -886,8 +887,18 @@ void ArcSettingsServiceImpl::SyncUserGeolocation() const {
   // as we sync this property from Android. We might need to sync
   // in case of disable but not in case of enable (default).
 
-  SendBoolPrefSettingsBroadcast(
-      ash::prefs::kUserGeolocationAllowed,
+  // We need to map tri-state of ChromeOS toggle to boolean ARC++ toggle.
+  const PrefService::Preference* pref = registrar_.prefs()->FindPreference(
+      ash::prefs::kUserGeolocationAccessLevel);
+  DCHECK(pref);
+  DCHECK(pref->GetValue()->is_int());
+
+  bool enabled_for_arc =
+      ash::PrivacyHubController::CrosToArcGeolocationPermissionMapping(
+          static_cast<ash::GeolocationAccessLevel>(pref->GetValue()->GetInt()));
+
+  SendBoolValueSettingsBroadcast(
+      enabled_for_arc, !pref->IsUserModifiable(),
       "org.chromium.arc.intent_helper.SET_USER_GEOLOCATION");
 }
 

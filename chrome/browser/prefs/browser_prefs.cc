@@ -953,7 +953,12 @@ const char kSupportedLinksAppPrefsKey[] = "supported_links_infobar.apps";
 constexpr char kNightLightCachedLatitude[] = "ash.night_light.cached_latitude";
 constexpr char kNightLightCachedLongitude[] =
     "ash.night_light.cached_longitude";
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 11/2023
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kUserGeolocationAllowed[] = "ash.user.geolocation_allowed";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Deprecated 11/2023.
 const char kPrivacySandboxAntiAbuseInitialized[] =
@@ -1369,6 +1374,11 @@ void RegisterProfilePrefsForMigration(
 // Deprecated 11/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kSystemTrayExpanded, true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 11/2023
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kUserGeolocationAllowed, true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -2563,6 +2573,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 11/2023.
   profile_prefs->ClearPref(kSystemTrayExpanded);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 11/2023
+  profile_prefs->ClearPref(kUserGeolocationAllowed);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

@@ -46,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests, PrefChange) {
 
   // By default, the the geolocation is allowed in ash.
   base::test::TestFuture<absl::optional<::base::Value>> future;
-  prefs->GetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
+  prefs->GetPref(crosapi::mojom::PrefPath::kUserGeolocationAccessLevel,
                  future.GetCallback());
 
   auto out_value = future.Take();
@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests, PrefChange) {
 
   // Change the value in ash.
   base::test::TestFuture<void> set_future;
-  prefs->SetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
+  prefs->SetPref(crosapi::mojom::PrefPath::kUserGeolocationAccessLevel,
                  ::base::Value(false), set_future.GetCallback());
   EXPECT_TRUE(set_future.Wait());
   set_future.Clear();
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests, PrefChange) {
   EXPECT_EQ(device::LocationSystemPermissionStatus::kDenied, status.Take());
 
   // Change the value in ash.
-  prefs->SetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
+  prefs->SetPref(crosapi::mojom::PrefPath::kUserGeolocationAccessLevel,
                  ::base::Value(true), set_future.GetCallback());
   EXPECT_TRUE(set_future.Wait());
 
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests,
       chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>();
 
   // By default, the the geolocation is allowed in ash.
-  prefs->GetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
+  prefs->GetPref(crosapi::mojom::PrefPath::kUserGeolocationAccessLevel,
                  future.GetCallback());
 
   // As we are adding the crosapi change to ash in the same commit, we may be
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests,
 
   // Change the value in ash.
   base::test::TestFuture<void> set_future;
-  prefs->SetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
+  prefs->SetPref(crosapi::mojom::PrefPath::kUserGeolocationAccessLevel,
                  ::base::Value(false), set_future.GetCallback());
   EXPECT_TRUE(set_future.Wait());
 
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests,
             observer.status_.Take());
 
   // Change the value in ash.
-  prefs->SetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
+  prefs->SetPref(crosapi::mojom::PrefPath::kUserGeolocationAccessLevel,
                  ::base::Value(true), set_future.GetCallback());
   EXPECT_TRUE(set_future.Wait());
 

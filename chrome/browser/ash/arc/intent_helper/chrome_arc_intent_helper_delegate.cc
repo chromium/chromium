@@ -8,6 +8,7 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -60,8 +61,12 @@ void ChromeArcIntentHelperDelegate::HandleUpdateAndroidSettings(
 void ChromeArcIntentHelperDelegate::UpdateLocationSettings(bool is_enabled) {
   CHECK(profile_);
   VLOG(1) << "UpdateLocation toggle called with value: " << is_enabled;
-  profile_->GetPrefs()->SetBoolean(ash::prefs::kUserGeolocationAllowed,
-                                   is_enabled);
+
+  ash::GeolocationAccessLevel access_level_for_cros =
+      ash::PrivacyHubController::ArcToCrosGeolocationPermissionMapping(
+          is_enabled);
+  profile_->GetPrefs()->SetInteger(ash::prefs::kUserGeolocationAccessLevel,
+                                   static_cast<int>(access_level_for_cros));
 }
 
 bool ChromeArcIntentHelperDelegate::IsInitialLocationSettingsSyncRequired() {

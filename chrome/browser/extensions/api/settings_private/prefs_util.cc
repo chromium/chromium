@@ -975,8 +975,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kUserSpeakOnMuteDetectionEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[ash::prefs::kUserGeolocationAllowed] =
-      settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kUserGeolocationAccessLevel] =
+      settings_api::PrefType::kNumber;
 #else
   // System settings.
   (*s_allowlist)[::prefs::kBackgroundModeEnabled] =

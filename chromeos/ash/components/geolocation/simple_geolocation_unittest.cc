@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/geolocation_access_level.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -208,11 +209,13 @@ class SimpleGeolocationTestBase {
   ~SimpleGeolocationTestBase() = default;
 
   void EnableGeolocationUsage() {
-    SimpleGeolocationProvider::GetInstance()->AllowGeolocationUsage();
+    SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+        GeolocationAccessLevel::kAllowed);
   }
 
   void DisableGeolocatioUsage() {
-    SimpleGeolocationProvider::GetInstance()->DisallowGeolocationUsage();
+    SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+        GeolocationAccessLevel::kDisallowed);
   }
 
  protected:
@@ -434,14 +437,6 @@ class SimpleGeolocationWirelessTest : public SimpleGeolocationTestBase,
     manager_test_->AddGeoNetwork(shill::kGeoCellTowersProperty,
                                  std::move(properties));
     base::RunLoop().RunUntilIdle();
-  }
-
-  void EnableGeolocationUsage() {
-    SimpleGeolocationProvider::GetInstance()->AllowGeolocationUsage();
-  }
-
-  void DisableGeolocatioUsage() {
-    SimpleGeolocationProvider::GetInstance()->DisallowGeolocationUsage();
   }
 
  protected:

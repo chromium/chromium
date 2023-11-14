@@ -11,6 +11,7 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
 #include "base/run_loop.h"
@@ -368,8 +369,9 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
       prefs::kArcBackupRestoreEnabled, std::make_unique<base::Value>(false));
   EXPECT_FALSE(fake_arc_support()->backup_and_restore_mode());
   if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
-    profile()->GetTestingPrefService()->SetBoolean(
-        ash::prefs::kUserGeolocationAllowed, false);
+    profile()->GetTestingPrefService()->SetInteger(
+        ash::prefs::kUserGeolocationAccessLevel,
+        static_cast<int>(ash::GeolocationAccessLevel::kDisallowed));
   }
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kArcLocationServiceEnabled, std::make_unique<base::Value>(false));
@@ -378,9 +380,10 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
   if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
     // Toggle kArcLocationServiceEnabled to trigger the computation again as we
     // are listening on it. Now even with kArcLocationServiceEnabled false, we
-    // should still get true as we will now honor kUserGeolocationAllowed.
-    profile()->GetTestingPrefService()->SetBoolean(
-        ash::prefs::kUserGeolocationAllowed, true);
+    // should still get true as we will now honor kUserGeolocationAccessLevel.
+    profile()->GetTestingPrefService()->SetInteger(
+        ash::prefs::kUserGeolocationAccessLevel,
+        static_cast<int>(ash::GeolocationAccessLevel::kAllowed));
     profile()->GetTestingPrefService()->SetManagedPref(
         prefs::kArcLocationServiceEnabled, std::make_unique<base::Value>(true));
     profile()->GetTestingPrefService()->SetManagedPref(
@@ -397,7 +400,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
   profile()->GetTestingPrefService()->RemoveManagedPref(
       prefs::kArcLocationServiceEnabled);
   // When CrosPrivacyHub is enabled this is true as we set
-  // kUserGeolocationAllowed to be true.
+  // `kUserGeolocationAccessLevel` to be `AccessLevel::kAllowed`.
   EXPECT_TRUE(fake_arc_support()->location_service_mode());
 
   // Make sure preference values are not yet updated.
@@ -426,8 +429,9 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithLocationDisabled) {
   if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
     profile()->GetTestingPrefService()->SetBoolean(
         prefs::kArcInitialLocationSettingSyncRequired, true);
-    profile()->GetTestingPrefService()->SetBoolean(
-        ash::prefs::kUserGeolocationAllowed, true);
+    profile()->GetTestingPrefService()->SetInteger(
+        ash::prefs::kUserGeolocationAccessLevel,
+        static_cast<int>(ash::GeolocationAccessLevel::kAllowed));
   }
 
   // Show Terms of service page.
@@ -459,8 +463,10 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithLocationDisabled) {
   if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
     EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
         prefs::kArcInitialLocationSettingSyncRequired));
-    EXPECT_FALSE(
-        profile()->GetPrefs()->GetBoolean(ash::prefs::kUserGeolocationAllowed));
+    EXPECT_EQ(ash::GeolocationAccessLevel::kDisallowed,
+              static_cast<ash::GeolocationAccessLevel>(
+                  profile()->GetPrefs()->GetInteger(
+                      ash::prefs::kUserGeolocationAccessLevel)));
   }
 }
 

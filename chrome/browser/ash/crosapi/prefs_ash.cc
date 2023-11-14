@@ -40,8 +40,8 @@ base::StringPiece GetProfilePrefNameForPref(mojom::PrefPath path) {
            ash::prefs::kAccessibilitySpokenFeedbackEnabled},
           {mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
            ::prefs::kAccessibilityPdfOcrAlwaysActive},
-          {mojom::PrefPath::kGeolocationAllowed,
-           ash::prefs::kUserGeolocationAllowed},
+          {mojom::PrefPath::kUserGeolocationAccessLevel,
+           ash::prefs::kUserGeolocationAccessLevel},
           {mojom::PrefPath::kQuickAnswersEnabled,
            quick_answers::prefs::kQuickAnswersEnabled},
           {mojom::PrefPath::kQuickAnswersConsentStatus,
@@ -277,7 +277,7 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
                    AshPrefSource::kNormal,
                    metrics::prefs::kMetricsReportingEnabled};
     case mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled:
-    case mojom::PrefPath::kGeolocationAllowed:
+    case mojom::PrefPath::kUserGeolocationAccessLevel:
     case mojom::PrefPath::kQuickAnswersEnabled:
     case mojom::PrefPath::kQuickAnswersConsentStatus:
     case mojom::PrefPath::kQuickAnswersDefinitionEnabled:

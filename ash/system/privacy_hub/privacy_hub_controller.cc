@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
@@ -77,10 +78,10 @@ PrivacyHubController* PrivacyHubController::Get() {
 void PrivacyHubController::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   // TODO(b/286526469): Sync this pref with the device owner's location
-  // permission `kUserGeolocationAllowed`.
+  // permission `kUserGeolocationAccessLevel`.
   registry->RegisterIntegerPref(
       prefs::kDeviceGeolocationAllowed,
-      static_cast<int>(PrivacyHubController::AccessLevel::kAllowed));
+      static_cast<int>(GeolocationAccessLevel::kAllowed));
 }
 
 // static
@@ -97,7 +98,9 @@ void PrivacyHubController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kSpeakOnMuteOptInNudgeShownCount, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(prefs::kUserGeolocationAllowed, true);
+  registry->RegisterIntegerPref(
+      prefs::kUserGeolocationAccessLevel,
+      static_cast<int>(GeolocationAccessLevel::kAllowed));
 }
 
 void PrivacyHubController::SetFrontend(PrivacyHubDelegate* ptr) {
@@ -153,6 +156,34 @@ bool PrivacyHubController::CheckCameraLEDFallbackDirectly() {
   CHECK(file_size_read_success);
 
   return (file_size != 0ll);
+}
+
+// static
+GeolocationAccessLevel
+PrivacyHubController::ArcToCrosGeolocationPermissionMapping(bool enabled) {
+  if (enabled) {
+    return GeolocationAccessLevel::kAllowed;
+  } else {
+    // We choose `kDisallowed` over `kOnlyAllowedForSystem` to uphold user's
+    // prior privacy preferences. This value will be used to set the initial
+    // geolocation access level when user receives the Privacy Hub geolocation
+    // feature.
+    return GeolocationAccessLevel::kDisallowed;
+  }
+}
+
+// static
+bool PrivacyHubController::CrosToArcGeolocationPermissionMapping(
+    GeolocationAccessLevel access_level) {
+  switch (access_level) {
+    case GeolocationAccessLevel::kAllowed:
+      return true;
+    case GeolocationAccessLevel::kOnlyAllowedForSystem:
+    case GeolocationAccessLevel::kDisallowed:
+      return false;
+    default:
+      NOTREACHED();
+  }
 }
 
 CameraPrivacySwitchSynchronizer*

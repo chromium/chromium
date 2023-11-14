@@ -8,8 +8,10 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -26,9 +28,9 @@ class SystemGeolocationSourceTests : public AshTestBase {
   // AshTestBase:
   void SetUp() override { AshTestBase::SetUp(); }
 
-  void SetUserPref(bool allowed) {
-    Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-        prefs::kUserGeolocationAllowed, allowed);
+  void SetUserPref(GeolocationAccessLevel access_level) {
+    Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+        prefs::kUserGeolocationAccessLevel, static_cast<int>(access_level));
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -46,12 +48,18 @@ TEST_F(SystemGeolocationSourceTests, PermissionUpdate) {
   // Initial value should be to allow.
   EXPECT_EQ(device::LocationSystemPermissionStatus::kAllowed, status.Take());
 
-  // Change user settings to deny and check that the callback is called.
-  SetUserPref(false);
+  // Change user settings to "Blocked for all" and check that the callback is
+  // called.
+  SetUserPref(GeolocationAccessLevel::kDisallowed);
   EXPECT_EQ(device::LocationSystemPermissionStatus::kDenied, status.Take());
 
-  // Change user settings to allow and check that the callback is called.
-  SetUserPref(true);
+  // Change user settings to "Only allowed for system services" and check that
+  // callback is called.
+  SetUserPref(GeolocationAccessLevel::kOnlyAllowedForSystem);
+  EXPECT_EQ(device::LocationSystemPermissionStatus::kDenied, status.Take());
+
+  // Change user settings to "Allowed" and check that the callback is called.
+  SetUserPref(GeolocationAccessLevel::kAllowed);
   EXPECT_EQ(device::LocationSystemPermissionStatus::kAllowed, status.Take());
 }
 
@@ -68,14 +76,19 @@ TEST_F(SystemGeolocationSourceTests, DisabledInV0) {
   // The value should always be kAllowed.
   EXPECT_EQ(device::LocationSystemPermissionStatus::kAllowed, status.Take());
 
-  // Change user settings to deny and check that the sent value is still
-  // kAllowed.
-  SetUserPref(false);
+  // Change user settings to "Blocked for all" and check that the sent value is
+  // still `kAllowed`.
+  SetUserPref(GeolocationAccessLevel::kDisallowed);
   EXPECT_EQ(device::LocationSystemPermissionStatus::kAllowed, status.Take());
 
-  // Change user settings to deny and check that the sent value is still
-  // kAllowed.
-  SetUserPref(true);
+  // Change user settings "Only allowed for system services" and check that the
+  // sent value is still `kAllowed`.
+  SetUserPref(GeolocationAccessLevel::kOnlyAllowedForSystem);
+  EXPECT_EQ(device::LocationSystemPermissionStatus::kAllowed, status.Take());
+
+  // Change user settings to "Allowed" and check that the sent value is still
+  // `kAllowed`.
+  SetUserPref(GeolocationAccessLevel::kAllowed);
   EXPECT_EQ(device::LocationSystemPermissionStatus::kAllowed, status.Take());
 }
 

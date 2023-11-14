@@ -84,7 +84,8 @@ void GeolocationController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 void GeolocationController::AddObserver(Observer* observer) {
   const bool is_first_observer = observers_.empty();
   observers_.AddObserver(observer);
-  if (is_first_observer && geolocation_provider_->IsGeolocationUsageAllowed()) {
+  if (is_first_observer &&
+      geolocation_provider_->IsGeolocationUsageAllowedForSystem()) {
     ScheduleNextRequest(base::Seconds(0));
   }
 }
@@ -121,14 +122,14 @@ void GeolocationController::TimezoneChanged(const icu::TimeZone& timezone) {
 
   // On timezone changes, request an immediate geoposition if the system
   // geolocation allows.
-  if (geolocation_provider_->IsGeolocationUsageAllowed()) {
+  if (geolocation_provider_->IsGeolocationUsageAllowedForSystem()) {
     ScheduleNextRequest(base::Seconds(0));
   }
 }
 
 void GeolocationController::SuspendDone(base::TimeDelta sleep_duration) {
   if (sleep_duration >= kNextRequestDelayAfterSuccess &&
-      geolocation_provider_->IsGeolocationUsageAllowed()) {
+      geolocation_provider_->IsGeolocationUsageAllowedForSystem()) {
     ScheduleNextRequest(base::Seconds(0));
   }
 }
@@ -181,7 +182,7 @@ void GeolocationController::RequestImmediateGeopositionForTesting() {
 void GeolocationController::OnGeoposition(const Geoposition& position,
                                           bool server_error,
                                           const base::TimeDelta elapsed) {
-  if (!geolocation_provider_->IsGeolocationUsageAllowed() ||
+  if (!geolocation_provider_->IsGeolocationUsageAllowedForSystem() ||
       observers_.empty()) {
     // The request might come after the user disabled the system geolocation
     // access or if all observers unsubscribed, in which case we should stop
@@ -250,7 +251,7 @@ void GeolocationController::OnGeoposition(const Geoposition& position,
 }
 
 void GeolocationController::ScheduleNextRequest(base::TimeDelta delay) {
-  CHECK(geolocation_provider_->IsGeolocationUsageAllowed());
+  CHECK(geolocation_provider_->IsGeolocationUsageAllowedForSystem());
   timer_->Start(FROM_HERE, delay, this,
                 &GeolocationController::RequestGeoposition);
 }

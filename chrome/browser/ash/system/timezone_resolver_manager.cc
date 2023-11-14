@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/check.h"
@@ -102,7 +103,7 @@ ServiceConfiguration GetServiceConfigurationFromUserPrefs(
 
 // Returns service configuration for the signin screen.
 ServiceConfiguration GetServiceConfigurationForSigninScreen() {
-  using AccessLevel = PrivacyHubController::AccessLevel;
+  using AccessLevel = GeolocationAccessLevel;
 
   const AccessLevel device_geolocation_permission =
       static_cast<AccessLevel>(g_browser_process->local_state()->GetInteger(
@@ -193,8 +194,10 @@ bool TimeZoneResolverManager::ShouldSendWiFiGeolocationData() const {
   }
 
   // User is logged in at this point.
-  // Check that System-wide location permission is granted by the primary user.
-  if (!primary_user_prefs_->GetBoolean(ash::prefs::kUserGeolocationAllowed)) {
+  // Check that user location permission is granted for system services.
+  if (static_cast<GeolocationAccessLevel>(primary_user_prefs_->GetInteger(
+          ash::prefs::kUserGeolocationAccessLevel)) ==
+      GeolocationAccessLevel::kDisallowed) {
     return false;
   }
 
@@ -233,8 +236,10 @@ bool TimeZoneResolverManager::ShouldSendCellularGeolocationData() const {
   }
 
   // User is logged in at this point.
-  // Check that System-wide location permission is granted by the primary user.
-  if (!primary_user_prefs_->GetBoolean(ash::prefs::kUserGeolocationAllowed)) {
+  // Check that user location permission is granted for system services.
+  if (static_cast<GeolocationAccessLevel>(primary_user_prefs_->GetInteger(
+          ash::prefs::kUserGeolocationAccessLevel)) ==
+      GeolocationAccessLevel::kDisallowed) {
     return false;
   }
 
@@ -306,7 +311,7 @@ bool TimeZoneResolverManager::ShouldApplyResolvedTimezone() {
 bool TimeZoneResolverManager::TimeZoneResolverShouldBeRunning() {
   // System geolocation permission is required for automatic timezone
   // resolution.
-  if (!geolocation_provider_->IsGeolocationUsageAllowed()) {
+  if (!geolocation_provider_->IsGeolocationUsageAllowedForSystem()) {
     return false;
   }
 

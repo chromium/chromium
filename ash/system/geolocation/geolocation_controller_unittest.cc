@@ -5,11 +5,13 @@
 #include "ash/system/geolocation/geolocation_controller.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/geolocation/geolocation_controller_test_util.h"
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/time/time_of_day.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/time_of_day_test_util.h"
@@ -195,12 +197,9 @@ class GeolocationControllerTest : public AshTestBase {
     factory->set_position(position_);
   }
 
-  void UpdateUserGeolocationPermission(bool enabled) {
-    if (enabled) {
-      SimpleGeolocationProvider::GetInstance()->AllowGeolocationUsage();
-    } else {
-      SimpleGeolocationProvider::GetInstance()->DisallowGeolocationUsage();
-    }
+  void UpdateUserGeolocationPermission(GeolocationAccessLevel access_level) {
+    SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+        access_level);
   }
 
  private:
@@ -333,12 +332,18 @@ TEST_F(GeolocationControllerTest, SystemGeolocationPermissionChanges) {
   EXPECT_EQ(1, observer.position_received_num());
   EXPECT_TRUE(timer_ptr()->IsRunning());
 
+  // Block geolocation usage to apps only, shouldn't affect
+  // `GeolocationController`.
+  UpdateUserGeolocationPermission(
+      GeolocationAccessLevel::kOnlyAllowedForSystem);
+  EXPECT_TRUE(timer_ptr()->IsRunning());
+
   // Disable system geo permission. Scheduling should stop.
-  UpdateUserGeolocationPermission(false);
+  UpdateUserGeolocationPermission(GeolocationAccessLevel::kDisallowed);
   EXPECT_FALSE(timer_ptr()->IsRunning());
 
   // Re-enabling the system geo permission, should resume scheduling.
-  UpdateUserGeolocationPermission(true);
+  UpdateUserGeolocationPermission(GeolocationAccessLevel::kAllowed);
   EXPECT_TRUE(timer_ptr()->IsRunning());
 }
 
@@ -348,13 +353,14 @@ TEST_F(GeolocationControllerTest, StopSchedulingWhileResponseIsComing) {
   // This will start scheduling.
   GeolocationControllerObserver observer;
   controller()->AddObserver(&observer);
+  EXPECT_TRUE(timer_ptr()->IsRunning());
 
   // Fire Geolocation request.
   timer_ptr()->FireNow();
   EXPECT_FALSE(timer_ptr()->IsRunning());
 
   // Disable user geolocation permission, this should stop scheduling.
-  UpdateUserGeolocationPermission(false);
+  UpdateUserGeolocationPermission(GeolocationAccessLevel::kDisallowed);
   EXPECT_FALSE(timer_ptr()->IsRunning());
 
   // Simulate server response and check it didn't resume scheduling.
@@ -362,7 +368,7 @@ TEST_F(GeolocationControllerTest, StopSchedulingWhileResponseIsComing) {
   EXPECT_FALSE(timer_ptr()->IsRunning());
 
   // Re-enable user geolocation permission, this should resume scheduling.
-  UpdateUserGeolocationPermission(true);
+  UpdateUserGeolocationPermission(GeolocationAccessLevel::kAllowed);
   EXPECT_TRUE(timer_ptr()->IsRunning());
 
   // Unsubscribe the observer before being destroyed.

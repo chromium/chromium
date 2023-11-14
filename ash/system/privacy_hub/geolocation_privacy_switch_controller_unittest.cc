@@ -59,15 +59,20 @@ class PrivacyHubGeolocationControllerTest : public AshTestBase {
   }
 
   void SetUserPref(bool allowed) {
-    Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-        prefs::kUserGeolocationAllowed, allowed);
+    GeolocationAccessLevel access_level;
+    if (allowed) {
+      access_level = GeolocationAccessLevel::kAllowed;
+    } else {
+      access_level = GeolocationAccessLevel::kDisallowed;
+    }
+    Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+        prefs::kUserGeolocationAccessLevel, static_cast<int>(access_level));
   }
 
-  bool GetUserPref() const {
-    return Shell::Get()
-        ->session_controller()
-        ->GetActivePrefService()
-        ->GetBoolean(prefs::kUserGeolocationAllowed);
+  GeolocationAccessLevel GetUserPref() const {
+    return static_cast<GeolocationAccessLevel>(
+        Shell::Get()->session_controller()->GetActivePrefService()->GetInteger(
+            prefs::kUserGeolocationAccessLevel));
   }
 
   raw_ptr<GeolocationPrivacySwitchController,
@@ -143,13 +148,13 @@ TEST_F(PrivacyHubGeolocationControllerTest, ClickOnNotificationTest) {
                 false),
             0);
   EXPECT_TRUE(FindNotification());
-  EXPECT_FALSE(GetUserPref());
+  EXPECT_NE(GetUserPref(), GeolocationAccessLevel::kAllowed);
 
   // Click on the notification button.
   message_center::MessageCenter::Get()->ClickOnNotificationButton(
       PrivacyHubNotificationController::kGeolocationSwitchNotificationId, 0);
   // This must change the user pref.
-  EXPECT_TRUE(GetUserPref());
+  EXPECT_EQ(GetUserPref(), GeolocationAccessLevel::kAllowed);
   // The notification should be cleared after it has been clicked on.
   EXPECT_FALSE(FindNotification());
 

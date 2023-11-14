@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/geolocation_access_level.h"
 #include "base/check_is_test.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
@@ -30,13 +31,11 @@ namespace ash {
 
 class GeolocationHandler;
 
-// This class implements Google Maps Geolocation API.
-//
-// `SimpleGeolocationProvider` must be created and used on the same thread.
-//
-// Note: this should probably be a singleton to monitor requests rate.
-// But as it is used only during ChromeOS Out-of-Box, it can be owned by
-// WizardController for now.
+// `SimpleGeolocationProvider` watches geolocation permissions and serves
+// geolocation requests to its clients by implementing Google Maps Geolocation
+// API. All system services need to use this class to get geolocation data and
+// subscribe to it for permission updates.
+// Note: Arc++ and PWAs have different pipelines for retrieving geolocation.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
     SimpleGeolocationProvider {
  public:
@@ -61,9 +60,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
     return GURL(kGeolocationProviderUrl);
   }
 
-  bool IsGeolocationUsageAllowed() const { return geolocation_usage_allowed_; }
-  void AllowGeolocationUsage();
-  void DisallowGeolocationUsage();
+  GeolocationAccessLevel GetGeolocationAccessLevel() const;
+  void SetGeolocationAccessLevel(
+      GeolocationAccessLevel geolocation_access_level);
+
+  // Convenience method for clients to read underlying `GeolocationAccessLevel`
+  // as a boolean value.
+  bool IsGeolocationUsageAllowedForSystem();
 
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
@@ -106,8 +109,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
       bool server_error,
       const base::TimeDelta elapsed);
 
-  // Returns `DefaultGeolocaitonProivdeURL()` for production. Can be overridden
-  // in tests.
+  // Returns `DefaultGeolocaitonProivdeURL()` for production. Can be
+  // overridden in tests.
   std::string GetGeolocationProviderUrl() const;
 
   void set_geolocation_handler(GeolocationHandler* geolocation_handler) {
@@ -116,18 +119,19 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
 
   void NotifyObservers();
 
-  // Source of truth whether the clients can use geolocation or not.
-  // Takes into consideration geolocation policy, log-in or in-session
-  // geolocation prefs.
-  bool geolocation_usage_allowed_ = true;
+  // Source of truth for the current geolocation access level.
+  // Takes into consideration geolocation policies, log-in and in-session
+  // geolocation prefs and is being updated on relevant events.
+  GeolocationAccessLevel geolocation_access_level_ =
+      GeolocationAccessLevel::kAllowed;
 
   base::ObserverList<Observer> observer_list_;
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   // Requests in progress.
-  // `SimpleGeolocationProvider` owns all requests, so this vector is deleted on
-  // destroy.
+  // `SimpleGeolocationProvider` owns all requests, so this vector is deleted
+  // on destroy.
   std::vector<std::unique_ptr<SimpleGeolocationRequest>> requests_;
 
   raw_ptr<GeolocationHandler, ExperimentalAsh> geolocation_handler_ = nullptr;

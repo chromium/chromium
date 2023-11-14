@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -111,18 +112,19 @@ class TimeZoneResolverManagerTestBase : public LoginManagerTest {
   }
 
   void UpdateUserGeolocationPermission(PrefService* pref_service,
-                                       bool enabled) {
-    pref_service->SetBoolean(ash::prefs::kUserGeolocationAllowed, enabled);
+                                       GeolocationAccessLevel access_level) {
+    pref_service->SetInteger(ash::prefs::kUserGeolocationAccessLevel,
+                             static_cast<int>(access_level));
   }
 
   void UpdateDeviceGeolocationPermission(bool enabled) {
     PrefService* local_state = g_browser_process->local_state();
 
-    PrivacyHubController::AccessLevel access_level;
+    GeolocationAccessLevel access_level;
     if (enabled) {
-      access_level = PrivacyHubController::AccessLevel::kAllowed;
+      access_level = GeolocationAccessLevel::kAllowed;
     } else {
-      access_level = PrivacyHubController::AccessLevel::kDisallowed;
+      access_level = GeolocationAccessLevel::kDisallowed;
     }
 
     local_state->SetInteger(ash::prefs::kDeviceGeolocationAllowed,
@@ -418,8 +420,9 @@ IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerUnenrolledDeviceTest,
       g_browser_process->profile_manager()->GetActiveUserProfile()->GetPrefs();
 
   // Check the default configuration: TZResolver should be running.
-  EXPECT_TRUE(
-      SimpleGeolocationProvider::GetInstance()->IsGeolocationUsageAllowed());
+  EXPECT_EQ(
+      SimpleGeolocationProvider::GetInstance()->GetGeolocationAccessLevel(),
+      GeolocationAccessLevel::kAllowed);
   EXPECT_TRUE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
   EXPECT_EQ(
       system::TimeZoneResolverManager::GetEffectiveUserTimeZoneResolveMethod(
@@ -427,22 +430,27 @@ IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerUnenrolledDeviceTest,
       system::TimeZoneResolverManager::TimeZoneResolveMethod::IP_ONLY);
   EXPECT_TRUE(tz_resolver->IsRunning());
 
-  UpdateUserGeolocationPermission(pref_service, false);
-  // Change of `kUserGeolocationPermission` will trigger the
+  // Disable geolocation permission.
+  UpdateUserGeolocationPermission(pref_service,
+                                  GeolocationAccessLevel::kDisallowed);
+  // Change of `kUserGeolocationAccessLevel` will trigger the
   // `OnGeolocationPermissionChanged()`, stopping the scheduler.
-  EXPECT_FALSE(
-      SimpleGeolocationProvider::GetInstance()->IsGeolocationUsageAllowed());
   EXPECT_FALSE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
   EXPECT_FALSE(tz_resolver->IsRunning());
 
-  // Re-enable geolocation permission and select automatic timezone again.
-  // Check that the resolver is working again.
-  UpdateUserGeolocationPermission(pref_service, true);
-  SetUserTimeZoneResolveMethod(
-      pref_service, system::TimeZoneResolverManager::TimeZoneResolveMethod::
-                        SEND_ALL_LOCATION_INFO);
-  EXPECT_TRUE(
-      SimpleGeolocationProvider::GetInstance()->IsGeolocationUsageAllowed());
+  // Re-enable geolocation permission and check that the resolver is working
+  // again.
+  UpdateUserGeolocationPermission(pref_service,
+                                  GeolocationAccessLevel::kAllowed);
+  EXPECT_TRUE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
+  EXPECT_TRUE(tz_resolver->IsRunning());
+
+  // Disable and re-enable geolocation permission with `kOnlyAllowedForSystem`.
+  // Check that the resolver is working.
+  UpdateUserGeolocationPermission(pref_service,
+                                  GeolocationAccessLevel::kDisallowed);
+  UpdateUserGeolocationPermission(
+      pref_service, GeolocationAccessLevel::kOnlyAllowedForSystem);
   EXPECT_TRUE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
   EXPECT_TRUE(tz_resolver->IsRunning());
 }
