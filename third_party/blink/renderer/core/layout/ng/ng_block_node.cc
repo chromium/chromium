@@ -1139,7 +1139,7 @@ LayoutUnit NGBlockNode::EmptyLineBlockSize(
 
 String NGBlockNode::ToString() const {
   return String::Format("NGBlockNode: %s",
-                        GetLayoutBox()->DebugName().Ascii().c_str());
+                        GetLayoutBox()->ToString().Ascii().c_str());
 }
 
 void NGBlockNode::CopyFragmentDataToLayoutBox(

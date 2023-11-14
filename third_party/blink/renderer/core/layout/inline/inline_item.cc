@@ -247,7 +247,7 @@ String InlineItem::ToString() const {
   if (const auto* layout_text = DynamicTo<LayoutText>(GetLayoutObject())) {
     object_info = layout_text->GetText().EncodeForDebugging();
   } else {
-    object_info = GetLayoutObject()->DebugName();
+    object_info = GetLayoutObject()->ToString();
   }
   return String::Format("InlineItem %s. %s", InlineItemTypeToString(Type()),
                         object_info.Ascii().c_str());

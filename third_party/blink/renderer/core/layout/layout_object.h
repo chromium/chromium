@@ -314,6 +314,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // state (e.g. positioning).
   String DecoratedName() const;
 
+  // Returns the decorated name, and DOM node info (tag name and style / class /
+  // id attributes, if present).
+  String ToString() const;
+
   // This is an inexact determination of whether the display of this objects is
   // altered or obscured by CSS effects.
   bool HasDistortingVisualEffects() const;

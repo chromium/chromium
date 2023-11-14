@@ -35,7 +35,7 @@ TEST_F(NGLayoutInputNodeTest, DumpBasic) {
   NGBlockNode: LayoutView #document
     NGBlockNode: LayoutNGBlockFlow HTML
       NGBlockNode: LayoutNGBlockFlow BODY
-        NGBlockNode: LayoutNGBlockFlow DIV id='block'
+        NGBlockNode: LayoutNGBlockFlow DIV id="block"
           InlineNode
             InlineItem OpenTag. LayoutInline SPAN
             InlineItem Text. "Hello world!"
@@ -61,13 +61,13 @@ TEST_F(NGLayoutInputNodeTest, DumpBlockInInline) {
   NGBlockNode: LayoutView #document
     NGBlockNode: LayoutNGBlockFlow HTML
       NGBlockNode: LayoutNGBlockFlow BODY
-        NGBlockNode: LayoutNGBlockFlow DIV id='block'
+        NGBlockNode: LayoutNGBlockFlow DIV id="block"
           InlineNode
             InlineItem OpenTag. LayoutInline SPAN
             InlineItem Text. "\n        Hello world!\n        "
             InlineItem BlockInInline. LayoutNGBlockFlow (anonymous)
-              NGBlockNode: LayoutNGBlockFlow DIV id='blockininline'
-*               NGBlockNode: LayoutNGBlockFlow DIV id='inner'
+              NGBlockNode: LayoutNGBlockFlow DIV id="blockininline"
+*               NGBlockNode: LayoutNGBlockFlow DIV id="inner"
                   InlineNode
                     InlineItem Text. "Hello trouble!"
             InlineItem CloseTag. LayoutInline SPAN
@@ -93,12 +93,12 @@ TEST_F(NGLayoutInputNodeTest, DumpInlineBlockInInline) {
   NGBlockNode: LayoutView #document
     NGBlockNode: LayoutNGBlockFlow HTML
       NGBlockNode: LayoutNGBlockFlow BODY
-        NGBlockNode: LayoutNGBlockFlow DIV id='block'
+        NGBlockNode: LayoutNGBlockFlow DIV id="block"
           InlineNode
             InlineItem OpenTag. LayoutInline SPAN
             InlineItem Text. "\n        Hello world!\n        "
-            InlineItem AtomicInline. LayoutNGBlockFlow DIV id='inlineblock'
-*             NGBlockNode: LayoutNGBlockFlow DIV id='inner'
+            InlineItem AtomicInline. LayoutNGBlockFlow DIV id="inlineblock" style="display:inline-block;"
+*             NGBlockNode: LayoutNGBlockFlow DIV id="inner"
                 InlineNode
                   InlineItem Text. "Hello Janus!"
             InlineItem Text. "\n      "
@@ -125,12 +125,12 @@ TEST_F(NGLayoutInputNodeTest, DumpFloatInInline) {
   NGBlockNode: LayoutView #document
     NGBlockNode: LayoutNGBlockFlow HTML
       NGBlockNode: LayoutNGBlockFlow BODY
-        NGBlockNode: LayoutNGBlockFlow DIV id='block'
+        NGBlockNode: LayoutNGBlockFlow DIV id="block"
           InlineNode
             InlineItem OpenTag. LayoutInline SPAN
             InlineItem Text. "\n        Hello world!\n        "
-            InlineItem Floating. LayoutNGBlockFlow (floating) DIV id='float'
-*             NGBlockNode: LayoutNGBlockFlow DIV id='inner'
+            InlineItem Floating. LayoutNGBlockFlow (floating) DIV id="float" style="float:left;"
+*             NGBlockNode: LayoutNGBlockFlow DIV id="inner"
                 InlineNode
                   InlineItem Text. "Hello Hermes!"
             InlineItem CloseTag. LayoutInline SPAN
@@ -156,16 +156,34 @@ TEST_F(NGLayoutInputNodeTest, DumpAbsposInInline) {
   NGBlockNode: LayoutView #document
     NGBlockNode: LayoutNGBlockFlow HTML
       NGBlockNode: LayoutNGBlockFlow BODY
-        NGBlockNode: LayoutNGBlockFlow DIV id='block'
+        NGBlockNode: LayoutNGBlockFlow DIV id="block"
           InlineNode
             InlineItem OpenTag. LayoutInline SPAN
             InlineItem Text. "\n        Hello world!\n        "
-            InlineItem OutOfFlowPositioned. LayoutNGBlockFlow (positioned) DIV id='abspos'
-*             NGBlockNode: LayoutNGBlockFlow DIV id='inner'
+            InlineItem OutOfFlowPositioned. LayoutNGBlockFlow (positioned) DIV id="abspos" style="position:absolute;"
+*             NGBlockNode: LayoutNGBlockFlow DIV id="inner"
                 InlineNode
                   InlineItem Text. "Hello Thor!"
             InlineItem CloseTag. LayoutInline SPAN
             InlineItem Text. "\n     "
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+TEST_F(NGLayoutInputNodeTest, DumpRelposInline) {
+  SetBodyInnerHTML(R"HTML(
+    <span style="position:relative;">Hello world!</span>
+  )HTML");
+  String dump = DumpAll();
+  String expectation = R"DUMP(.:: Layout input node tree ::.
+  NGBlockNode: LayoutView #document
+    NGBlockNode: LayoutNGBlockFlow HTML
+      NGBlockNode: LayoutNGBlockFlow BODY
+        InlineNode
+          InlineItem OpenTag. LayoutInline (relative positioned) SPAN style="position:relative;"
+          InlineItem Text. "Hello world!"
+          InlineItem CloseTag. LayoutInline (relative positioned) SPAN style="position:relative;"
+          InlineItem Text. "\n  "
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }

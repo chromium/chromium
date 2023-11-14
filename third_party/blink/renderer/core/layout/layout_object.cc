@@ -2116,6 +2116,16 @@ String LayoutObject::DecoratedName() const {
   return name.ToString();
 }
 
+String LayoutObject::ToString() const {
+  StringBuilder builder;
+  builder.Append(DecoratedName());
+  if (const Node* node = GetNode()) {
+    builder.Append(' ');
+    builder.Append(node->ToString());
+  }
+  return builder.ToString();
+}
+
 String LayoutObject::DebugName() const {
   NOT_DESTROYED();
   StringBuilder name;
