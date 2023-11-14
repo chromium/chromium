@@ -1156,24 +1156,21 @@ bool DisplayConfigurator::HasPendingFullConfiguration() const {
   if (has_pending_power_state_)
     return true;
 
-  // Schedule if there is a request to change the VRR enabled state.
-  if (ShouldConfigureVrr()) {
-    return true;
-  }
-
-  // TODO(b/221220344): Remove after seamless modesets are fixed.
-  // Schedule if the conditions for seamless configuration are met and VRR is
-  // currently enabled on the internal display.
-  if (HasPendingSeamlessConfiguration() && IsVrrEnabledOnInternalDisplay()) {
-    return true;
-  }
-
   return false;
 }
 
 bool DisplayConfigurator::HasPendingSeamlessConfiguration() const {
   // Schedule if there is a pending request to change the refresh rate.
-  return pending_refresh_rate_throttle_state_.has_value();
+  if (pending_refresh_rate_throttle_state_.has_value()) {
+    return true;
+  }
+
+  // Schedule if there is a request to change the VRR enabled state.
+  if (ShouldConfigureVrr()) {
+    return true;
+  }
+
+  return false;
 }
 
 void DisplayConfigurator::CallAndClearInProgressCallbacks(bool success) {
@@ -1239,20 +1236,6 @@ bool DisplayConfigurator::ShouldConfigureVrr() const {
   }
 
   return false;
-}
-
-bool DisplayConfigurator::IsVrrEnabledOnInternalDisplay() const {
-  const DisplaySnapshot* internal_display;
-  for (const auto* display : cached_displays_) {
-    if (display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
-      internal_display = display;
-      break;
-    }
-  }
-
-  return internal_display != nullptr &&
-         internal_display->current_mode() != nullptr &&
-         internal_display->IsVrrEnabled();
 }
 
 }  // namespace display
