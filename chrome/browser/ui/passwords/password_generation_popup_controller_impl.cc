@@ -137,7 +137,6 @@ PasswordGenerationPopupControllerImpl::PasswordGenerationPopupControllerImpl(
       controller_common_(bounds,
                          ui_data.text_direction,
                          web_contents->GetNativeView()),
-      password_selected_(false),
       state_(kOfferGeneration),
       key_press_handler_manager_(new KeyPressRegistrator(frame)) {
 #if !BUILDFLAG(IS_ANDROID)
@@ -166,10 +165,23 @@ PasswordGenerationPopupControllerImpl::GetWeakPtr() {
 
 bool PasswordGenerationPopupControllerImpl::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
+  bool edit_password_enabled = false;
+  // Password generation experiments are defined for Desktop only.
+#if !BUILDFLAG(IS_ANDROID)
+  edit_password_enabled =
+      password_manager::features::kPasswordGenerationExperimentVariationParam
+          .Get() == PasswordGenerationVariation::kEditPassword;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   switch (event.windows_key_code) {
     case ui::VKEY_UP:
     case ui::VKEY_DOWN:
-      PasswordSelected(true);
+      if (edit_password_enabled && password_selected()) {
+        SelectElement(PasswordGenerationPopupElement::kEditPassword);
+        return true;
+      }
+
+      SelectElement(PasswordGenerationPopupElement::kUseStrongPassword);
       return true;
     case ui::VKEY_ESCAPE:
       HideImpl();
@@ -178,7 +190,7 @@ bool PasswordGenerationPopupControllerImpl::HandleKeyPressEvent(
     case ui::VKEY_TAB:
       // We suppress tab if the password is selected because we will
       // automatically advance focus anyway.
-      return PossiblyAcceptPassword();
+      return PossiblyAcceptSelectedElement();
     default:
       return false;
   }
@@ -188,26 +200,32 @@ bool PasswordGenerationPopupControllerImpl::IsVisible() const {
   return view_;
 }
 
-bool PasswordGenerationPopupControllerImpl::PossiblyAcceptPassword() {
-  if (password_selected_) {
-    PasswordAccepted();  // This will delete |this|.
-    return true;
+bool PasswordGenerationPopupControllerImpl::PossiblyAcceptSelectedElement() {
+  switch (selected_element_) {
+    case PasswordGenerationPopupElement::kUseStrongPassword:
+      PasswordAccepted();
+      return true;
+    case PasswordGenerationPopupElement::kEditPassword:
+      EditPasswordClicked();
+      return true;
+    default:
+      return false;
   }
-
-  return false;
 }
 
-bool PasswordGenerationPopupControllerImpl::IsPasswordSelectable() const {
+bool PasswordGenerationPopupControllerImpl::IsSelectable() const {
   return state_ == kOfferGeneration;
 }
 
-void PasswordGenerationPopupControllerImpl::PasswordSelected(bool selected) {
-  if (!IsPasswordSelectable() || selected == password_selected_) {
+void PasswordGenerationPopupControllerImpl::SelectElement(
+    PasswordGenerationPopupElement element) {
+  if (!IsSelectable() || selected_element_ == element) {
     return;
   }
 
-  password_selected_ = selected;
+  selected_element_ = element;
   view_->PasswordSelectionUpdated();
+  view_->EditPasswordSelectionUpdated();
 }
 
 void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
@@ -319,15 +337,15 @@ void PasswordGenerationPopupControllerImpl::ViewDestroyed() {
 }
 
 void PasswordGenerationPopupControllerImpl::SelectionCleared() {
-  PasswordSelected(false);
+  SelectElement(PasswordGenerationPopupElement::kNone);
   driver_->ClearPreviewedForm();
 }
 
 void PasswordGenerationPopupControllerImpl::SetSelected() {
-  if (!IsPasswordSelectable()) {
+  if (!IsSelectable()) {
     return;
   }
-  PasswordSelected(true);
+  SelectElement(PasswordGenerationPopupElement::kUseStrongPassword);
   driver_->PreviewGenerationSuggestion(current_generated_password_);
 }
 
@@ -338,6 +356,8 @@ void PasswordGenerationPopupControllerImpl::EditPasswordClicked() {
 }
 
 void PasswordGenerationPopupControllerImpl::EditPasswordHovered(bool hovered) {
+  SelectElement(hovered ? PasswordGenerationPopupElement::kEditPassword
+                        : PasswordGenerationPopupElement::kNone);
   if (hovered) {
     driver_->PreviewGenerationSuggestion(current_generated_password_);
   } else {
@@ -408,7 +428,12 @@ PasswordGenerationPopupControllerImpl::state() const {
 }
 
 bool PasswordGenerationPopupControllerImpl::password_selected() const {
-  return password_selected_;
+  return selected_element_ ==
+         PasswordGenerationPopupElement::kUseStrongPassword;
+}
+
+bool PasswordGenerationPopupControllerImpl::edit_password_selected() const {
+  return selected_element_ == PasswordGenerationPopupElement::kEditPassword;
 }
 
 const std::u16string& PasswordGenerationPopupControllerImpl::password() const {

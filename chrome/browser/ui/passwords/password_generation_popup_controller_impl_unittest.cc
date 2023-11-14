@@ -70,6 +70,7 @@ class MockPasswordGenerationPopupView : public PasswordGenerationPopupView {
   MOCK_METHOD(void, UpdateGeneratedPasswordValue, (), (override));
   MOCK_METHOD(bool, UpdateBoundsAndRedrawPopup, (), (override));
   MOCK_METHOD(void, PasswordSelectionUpdated, (), (override));
+  MOCK_METHOD(void, EditPasswordSelectionUpdated, (), (override));
 };
 
 class PasswordGenerationPopupControllerImplTest

@@ -48,6 +48,7 @@ class PasswordGenerationPopupController
   // Accessors
   virtual GenerationUIState state() const = 0;
   virtual bool password_selected() const = 0;
+  virtual bool edit_password_selected() const = 0;
   virtual const std::u16string& password() const = 0;
 
   // Translated strings

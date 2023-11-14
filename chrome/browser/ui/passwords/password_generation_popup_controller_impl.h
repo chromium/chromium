@@ -141,6 +141,14 @@ class PasswordGenerationPopupControllerImpl
 
  private:
   class KeyPressRegistrator;
+
+  // Defines different elements of the popup that can be selected.
+  enum class PasswordGenerationPopupElement {
+    kNone = 0,
+    kUseStrongPassword = 1,
+    kEditPassword = 2,
+  };
+
   // PasswordGenerationPopupController implementation:
   void Hide(autofill::PopupHidingReason) override;
   void ViewDestroyed() override;
@@ -162,19 +170,19 @@ class PasswordGenerationPopupControllerImpl
 
   GenerationUIState state() const override;
   bool password_selected() const override;
+  bool edit_password_selected() const override;
   const std::u16string& password() const override;
   std::u16string SuggestedText() const override;
   const std::u16string& HelpText() const override;
 
   bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
 
-  // Returns whether the password is selectable. This is true iff the password
-  // has not been accepted yet.
-  bool IsPasswordSelectable() const;
-  // Set if the password is currently selected.
-  void PasswordSelected(bool selected);
-  // Accept password if it's selected.
-  bool PossiblyAcceptPassword();
+  // Whether the elements of popup are selectable (true in generation state).
+  bool IsSelectable() const;
+  // Sets currently selected popup element.
+  void SelectElement(PasswordGenerationPopupElement element);
+  // Accepts currently selected element. No-op if no element is selected.
+  bool PossiblyAcceptSelectedElement();
 
   // Handle to the popup. May be NULL if popup isn't showing.
   raw_ptr<PasswordGenerationPopupView> view_;
@@ -209,8 +217,9 @@ class PasswordGenerationPopupControllerImpl
   // be displayed in the user generation dialog.
   std::u16string current_generated_password_;
 
-  // Whether the row with the password is currently selected/highlighted.
-  bool password_selected_ = false;
+  // Currently selected / highlighted element of the popup.
+  PasswordGenerationPopupElement selected_element_ =
+      PasswordGenerationPopupElement::kNone;
 
   // The state of the generation popup.
   GenerationUIState state_;

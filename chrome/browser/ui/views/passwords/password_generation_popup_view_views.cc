@@ -174,16 +174,12 @@ class EditPasswordRow : public views::FlexLayoutView {
     if (controller_) {
       controller_->EditPasswordHovered(true);
     }
-    SetBackground(views::CreateThemedSolidBackground(
-        ui::kColorDropdownBackgroundSelected));
   }
 
   void OnMouseExited(const ui::MouseEvent& event) override {
     if (controller_) {
       controller_->EditPasswordHovered(false);
     }
-    SetBackground(
-        views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
   }
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
@@ -474,6 +470,7 @@ void PasswordGenerationPopupViewViews::Hide() {
 
 void PasswordGenerationPopupViewViews::UpdateState() {
   password_view_ = nullptr;
+  edit_password_view_ = nullptr;
   RemoveAllChildViews();
   CreateLayoutAndChildren();
 }
@@ -490,19 +487,35 @@ bool PasswordGenerationPopupViewViews::UpdateBoundsAndRedrawPopup() {
 }
 
 void PasswordGenerationPopupViewViews::PasswordSelectionUpdated() {
-  CHECK(password_view_);
-
-  if (controller_->password_selected()) {
-    DCHECK(this->password_view_);
-    NotifyAXSelection(*this->password_view_);
+  if (!GetWidget()) {
+    return;
   }
 
-  if (!GetWidget())
-    return;
+  CHECK(password_view_);
+  if (controller_->password_selected()) {
+    NotifyAXSelection(*this->password_view_);
+  }
 
   password_view_->UpdateBackground(controller_->password_selected()
                                        ? ui::kColorDropdownBackgroundSelected
                                        : ui::kColorDropdownBackground);
+  SchedulePaint();
+}
+
+void PasswordGenerationPopupViewViews::EditPasswordSelectionUpdated() {
+  if (!GetWidget() || !edit_password_view_) {
+    return;
+  }
+
+  if (controller_->edit_password_selected()) {
+    CHECK(this->edit_password_view_);
+    NotifyAXSelection(*this->edit_password_view_);
+  }
+
+  edit_password_view_->SetBackground(views::CreateThemedSolidBackground(
+      controller_->edit_password_selected()
+          ? ui::kColorDropdownBackgroundSelected
+          : ui::kColorDropdownBackground));
   SchedulePaint();
 }
 
@@ -562,7 +575,7 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
     auto edit_password_row = std::make_unique<EditPasswordRow>(controller_);
     edit_password_row->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::VH(kVerticalPadding, kHorizontalMargin)));
-    AddChildView(std::move(edit_password_row));
+    edit_password_view_ = AddChildView(std::move(edit_password_row));
   }
 
   AddChildView(views::Builder<views::Separator>()
