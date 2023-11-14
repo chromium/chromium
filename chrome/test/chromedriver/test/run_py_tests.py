@@ -196,6 +196,8 @@ _BROWSER_SPECIFIC_FILTER['chrome-headless-shell'] = [
     'ChromeDriverTest.testShouldHandleNewWindowLoadingProperly',
     # chrome-headless-shell does not support Page.setRPHRegistrationMode
     'ChromeDriverTest.testSetRPHResgistrationMode',
+    # The test is only intended for the headless mode of Chrome.
+    'ChromeDriverTest.testBrowserNameHeadlessMode',
 ]
 
 _BROWSER_AND_PLATFORM_SPECIFIC_FILTER = {
@@ -3866,11 +3868,41 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     test_merge_browserName Web Platform Test.
     """
     browser_name = self._driver.capabilities['browserName']
+    self.assertEqual(browser_name, _BROWSER_NAME)
     # The 'browserName' capability must always present in accordance with the
     # standard: https://w3c.github.io/webdriver/#capabilities
     self.assertIsNotNone(browser_name)
-    driver = self.CreateDriver(browser_name=browser_name)
+    # As product name is communicated differently under WebSockets and pipes
+    # there is need to test both of these communication modes.
+    # Test the detected browserName with remote-debugging-pipe.
+    driver = self.CreateDriver(browser_name=browser_name,
+                               chrome_switches=['--remote-debugging-pipe'])
     self.assertEqual(browser_name, driver.capabilities['browserName'])
+    driver.Quit()
+    # Test the detected browserName with remote-debugging-port.
+    driver = self.CreateDriver(browser_name=browser_name,
+                               chrome_switches=['--remote-debugging-port=0'])
+    self.assertEqual(_BROWSER_NAME, driver.capabilities['browserName'])
+    driver.Quit()
+
+  def testBrowserNameHeadlessMode(self):
+    """Verifies that the returned browserName capability for headless Chrome
+    (not chrome-headless-shell) is 'chrome'.
+    """
+    # As product name is communicated differently under WebSockets and pipes
+    # there is need to test both of these communication modes.
+    # Test the detected browserName with remote-debugging-pipe.
+    driver = self.CreateDriver(browser_name=browser_name,
+                               chrome_switches=['--headless=new',
+                                                '--remote-debugging-pipe'])
+    self.assertEqual(_BROWSER_NAME, driver.capabilities['browserName'])
+    driver.Quit()
+    # Test the detected browserName with remote-debugging-port.
+    driver = self.CreateDriver(browser_name=browser_name,
+                               chrome_switches=['--headless=new',
+                                                '--remote-debugging-port=0'])
+    self.assertEqual(_BROWSER_NAME, driver.capabilities['browserName'])
+    driver.Quit()
 
   def testHeadlessWithUserDataDirStarts(self):
     """Tests that ChromeDriver can launch Chrome in headless mode
