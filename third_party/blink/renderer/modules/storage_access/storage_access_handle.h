@@ -61,9 +61,10 @@ class MODULES_EXPORT StorageAccessHandle final
   String createObjectURL(Blob* blob, ExceptionState& exception_state) const;
   void revokeObjectURL(const String& url,
                        ExceptionState& exception_state) const;
-  BroadcastChannel* BroadcastChannel(ExecutionContext* execution_context,
-                                     const String& name,
-                                     ExceptionState& exception_state) const;
+  class BroadcastChannel* BroadcastChannel(
+      ExecutionContext* execution_context,
+      const String& name,
+      ExceptionState& exception_state) const;
 
  private:
   void InitSessionStorage();
