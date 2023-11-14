@@ -271,14 +271,22 @@ source_set("test_support") {
     "proto_util.h",
     "test_session_restoration_observer.h",
     "test_session_restoration_observer.mm",
+    "test_session_restoration_service.h",
+    "test_session_restoration_service.mm",
     "test_session_service.h",
     "test_session_service.mm",
   ]
   deps = [
     ":restoration_observer",
+    ":session_restoration_service",
     ":session_service",
     "//base",
+    "//components/keyed_service/ios",
     "//ios/chrome/browser/sessions/proto",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/web/public",
+    "//ios/web/public/session/proto",
     "//third_party/protobuf:protobuf_lite",
   ]
 }
