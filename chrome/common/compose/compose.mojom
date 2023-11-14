@@ -112,8 +112,9 @@ enum CloseReason {
 // Interface for calls from Compose dialog JS into the Browser process.
 interface ComposeSessionPageHandler {
   // Asks the Browser to compose `input` with `stye` applied. Response contains
-  // the modified output.
-  Compose(StyleModifiers style, string input);
+  // the modified output. `rewrite` indicates that the user clicked on a tone,
+  // length, or the refresh button.
+  Compose(StyleModifiers style, string input, bool rewrite);
 
   // Asks the native handler to store `webui_state` for the last field the user
   // selected compose on.

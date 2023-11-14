@@ -8,7 +8,7 @@ import {CloseReason, ComposeClientPageHandlerRemote, ComposeDialogCallbackRouter
 export interface ComposeApiProxy {
   acceptComposeResult(): Promise<boolean>;
   closeUi(reason: CloseReason): void;
-  compose(style: StyleModifiers, input: string): void;
+  compose(style: StyleModifiers, input: string, rewrite: boolean): void;
   getRouter(): ComposeDialogCallbackRouter;
   openBugReportingLink(): void;
   requestInitialState(): Promise<OpenMetadata>;
@@ -50,8 +50,8 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
     this.composeClientPageHandler.closeUI(reason);
   }
 
-  compose(style: StyleModifiers, input: string): void {
-    this.composeSessionPageHandler.compose(style, input);
+  compose(style: StyleModifiers, input: string, rewrite: boolean): void {
+    this.composeSessionPageHandler.compose(style, input, rewrite);
   }
 
   getRouter() {

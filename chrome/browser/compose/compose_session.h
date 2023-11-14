@@ -60,7 +60,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // the ComposeDialog interface rather than through a callback, as it might
   // complete after the originating WebUI has been destroyed.
   void Compose(compose::mojom::StyleModifiersPtr style,
-               const std::string& input) override;
+               const std::string& input,
+               bool rewrite) override;
 
   // Retrieves and returns (through `callback`) state information for the last
   // field the user selected compose on.
@@ -117,6 +118,7 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // ComposeWithInnerText can either be called synchronously or on a later event
   // loop
   void ComposeWithInnerText(const std::string& input,
+                            bool rewrite,
                             const std::string& inner_text);
 
   void UpdateInnerTextAndContinueComposeIfNecessary(

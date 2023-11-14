@@ -46,8 +46,8 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
     this.methodCalled('closeUi', reason);
   }
 
-  compose(style: StyleModifiers, input: string): void {
-    this.methodCalled('compose', {style, input});
+  compose(style: StyleModifiers, input: string, rewrite: boolean): void {
+    this.methodCalled('compose', {style, input, rewrite});
   }
 
   undo(): Promise<(ComposeState | null)> {
@@ -156,6 +156,7 @@ suite('ComposeApp', () => {
     assertEquals(Length.kUnset, args.style.length);
     assertEquals(Tone.kUnset, args.style.tone);
     assertEquals('Here is my input.', args.input);
+    assertFalse(args.rewrite);
 
     assertFalse(isVisible(app.$.loading));
     assertFalse(isVisible(app.$.submitButton));
@@ -197,6 +198,7 @@ suite('ComposeApp', () => {
     assertEquals(Length.kUnset, args.style.length);
     assertEquals(Tone.kUnset, args.style.tone);
     assertEquals('Input to refresh.', args.input);
+    assertTrue(args.rewrite);
 
     // // Verify UI has updated with refreshed results.
     assertFalse(isVisible(app.$.loading));

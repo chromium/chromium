@@ -101,7 +101,8 @@ void ComposeSession::Bind(
 
 // ComposeSessionPageHandler
 void ComposeSession::Compose(compose::mojom::StyleModifiersPtr style,
-                             const std::string& input) {
+                             const std::string& input,
+                             bool rewrite) {
   current_state_->has_pending_request = true;
   current_state_->style = std::move(style);
   // TODO(b/300974056): Move this to the overall feature-enabled check.
@@ -112,16 +113,18 @@ void ComposeSession::Compose(compose::mojom::StyleModifiersPtr style,
     return;
   }
   if (skip_inner_text_ || inner_text_.has_value()) {
-    ComposeWithInnerText(input, inner_text_.value_or(""));
+    ComposeWithInnerText(input, rewrite, inner_text_.value_or(""));
   } else {
     // Prepare the compose call, which will be invoked when inner text
     // extraction is completed.
-    continue_compose_ = base::BindOnce(&ComposeSession::ComposeWithInnerText,
-                                       weak_ptr_factory_.GetWeakPtr(), input);
+    continue_compose_ =
+        base::BindOnce(&ComposeSession::ComposeWithInnerText,
+                       weak_ptr_factory_.GetWeakPtr(), input, rewrite);
   }
 }
 
 void ComposeSession::ComposeWithInnerText(const std::string& input,
+                                          bool rewrite,
                                           const std::string& inner_text) {
   optimization_guide::proto::ComposePageMetadata page_metadata;
   page_metadata.set_page_url(web_contents_->GetLastCommittedURL().spec());
@@ -129,11 +132,32 @@ void ComposeSession::ComposeWithInnerText(const std::string& input,
   page_metadata.set_page_inner_text(inner_text);
 
   optimization_guide::proto::ComposeRequest request;
+  // TODO(b/310022952) Remove once backend handles new generate and rewrite
+  // params.
   request.set_user_input(input);
   request.set_tone(
       optimization_guide::proto::ComposeTone(current_state_->style->tone));
   request.set_length(
       optimization_guide::proto::ComposeLength(current_state_->style->length));
+
+  if (rewrite) {
+    optimization_guide::proto::ComposeRequest::RewriteParams rewrite_params;
+    if (current_state_->style->tone != compose::mojom::Tone::kUnset) {
+      rewrite_params.set_tone(
+          optimization_guide::proto::ComposeTone(current_state_->style->tone));
+    }
+    if (current_state_->style->length != compose::mojom::Length::kUnset) {
+      rewrite_params.set_length(optimization_guide::proto::ComposeLength(
+          current_state_->style->length));
+    }
+    rewrite_params.set_previous_response(current_state_->response->result);
+    *request.mutable_rewrite_params() = std::move(rewrite_params);
+  } else {
+    optimization_guide::proto::ComposeRequest::GenerateParams generate_params;
+    generate_params.set_user_input(input);
+    *request.mutable_generate_params() = std::move(generate_params);
+  }
+
   *request.mutable_page_metadata() = std::move(page_metadata);
   base::TimeTicks request_start = base::TimeTicks::Now();
   executor_->ExecuteModel(
@@ -264,7 +288,7 @@ void ComposeSession::InitializeWithText(const std::string& text) {
   Compose(compose::mojom::StyleModifiersPtr(absl::in_place,
                                             compose::mojom::Tone::kUnset,
                                             compose::mojom::Length::kUnset),
-          initial_input_);
+          initial_input_, /*rewrite=*/false);
 }
 
 void ComposeSession::SaveLastOKStateToUndoStack() {

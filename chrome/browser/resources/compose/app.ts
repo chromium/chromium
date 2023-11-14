@@ -263,11 +263,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private onRefresh_() {
-    assert(this.$.textarea.validate());
-    assert(this.submitted_);
     this.selectedLength_ = Length.kUnset;
     this.selectedTone_ = Tone.kUnset;
-    this.compose_();
+    this.compose_(/*rewrite=*/ true);
   }
 
   private onSubmit_() {
@@ -306,12 +304,12 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private onLengthChanged_() {
     this.selectedLength_ = Number(this.$.lengthMenu.value) as Length;
-    this.onSubmit_();
+    this.compose_(/*rewrite=*/ true);
   }
 
   private onToneChanged_() {
     this.selectedTone_ = Number(this.$.toneMenu.value) as Tone;
-    this.onSubmit_();
+    this.compose_(/*rewrite=*/ true);
   }
 
   private onFileBugClick_(e: Event) {
@@ -319,7 +317,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.apiProxy_.openBugReportingLink();
   }
 
-  private compose_() {
+  private compose_(rewrite: boolean = false) {
+    assert(this.$.textarea.validate());
+    assert(this.submitted_);
+
     this.loading_ = true;
     this.response_ = undefined;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.
@@ -328,7 +329,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
           length: this.selectedLength_,
           tone: this.selectedTone_,
         },
-        this.input_);
+        this.input_, rewrite);
   }
 
   private composeResponseReceived_(response: ComposeResponse) {
