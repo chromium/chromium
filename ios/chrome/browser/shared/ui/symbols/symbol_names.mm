@@ -140,6 +140,7 @@ NSString* const kSyncErrorSymbol =
     @"exclamationmark.arrow.triangle.2.circlepath";
 NSString* const kMenuSymbol = @"ellipsis";
 NSString* const kSortSymbol = @"arrow.up.arrow.down";
+NSString* const kExpandSymbol = @"arrow.up.left.and.arrow.down.right";
 NSString* const kBackSymbol = @"arrow.backward";
 NSString* const kForwardSymbol = @"arrow.forward";
 NSString* const kPersonFillSymbol = @"person.fill";
@@ -170,6 +171,7 @@ NSString* const kSquareOnSquareDashedSymbol = @"square.on.square.dashed";
 NSString* const kDocPlaintextSymbol = @"doc.plaintext";
 NSString* const kFlagSymbol = @"flag";
 NSString* const kKeyboardSymbol = @"keyboard";
+NSString* const kKeyboardDownSymbol = @"keyboard.chevron.compact.down";
 NSString* const kSpeedometerSymbol = @"speedometer";
 NSString* const kMovePlatterToTopPhoneSymbol =
     @"platter.filled.top.and.arrow.up.iphone";
