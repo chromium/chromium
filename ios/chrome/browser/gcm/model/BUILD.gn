@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("gcm") {
+source_set("model") {
   sources = [
     "ios_chrome_gcm_profile_service_factory.h",
     "ios_chrome_gcm_profile_service_factory.mm",

@@ -9,7 +9,7 @@ include_rules = [
   "+ios/chrome/browser/favicon",
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/voice/model",
-  "+ios/chrome/browser/gcm",
+  "+ios/chrome/browser/gcm/model",
   "+ios/chrome/browser/power_bookmarks/model",
   "+ios/chrome/browser/passwords/model",
   "+ios/chrome/browser/invalidation/model",

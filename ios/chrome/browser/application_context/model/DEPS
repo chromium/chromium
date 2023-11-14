@@ -3,7 +3,7 @@ include_rules = [
   "+ios/chrome/browser/component_updater/model",
   "+ios/chrome/browser/crash_report/model",
   "+ios/chrome/browser/default_browser/model",
-  "+ios/chrome/browser/gcm",
+  "+ios/chrome/browser/gcm/model",
   "+ios/chrome/browser/history",
   "+ios/chrome/browser/metrics",
   "+ios/chrome/browser/policy",

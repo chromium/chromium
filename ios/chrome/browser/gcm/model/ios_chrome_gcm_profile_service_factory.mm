@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
+#import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
 
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
