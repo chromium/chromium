@@ -342,6 +342,7 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
 
   new_request->shared_storage_writable_eligible =
       request_info.shared_storage_writable_eligible;
+  new_request->is_ad_tagged = request_info.is_ad_tagged;
 
   return new_request;
 }

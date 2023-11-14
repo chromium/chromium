@@ -28,6 +28,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -72,7 +73,8 @@ class ChildFrameNavigationFilteringThrottleTest
     // throttle if the parent is not activated with a valid filter.
     if (parent_filter_) {
       auto throttle = std::make_unique<ChildFrameNavigationFilteringThrottle>(
-          navigation_handle, parent_filter_.get());
+          navigation_handle, parent_filter_.get(),
+          blink::FrameAdEvidence(/*parent_is_ad=*/false));
       ASSERT_NE(nullptr, throttle->GetNameForLogging());
       navigation_handle->RegisterThrottleForTesting(std::move(throttle));
     }

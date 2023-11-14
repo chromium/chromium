@@ -35,7 +35,8 @@ NavigationRequestInfo::NavigationRequestInfo(
     const GlobalRenderFrameHostId& previous_render_frame_host_id,
     bool allow_cookies_from_browser,
     int64_t navigation_id,
-    bool shared_storage_writable_eligible)
+    bool shared_storage_writable_eligible,
+    bool is_ad_tagged)
     : common_params(std::move(common_params)),
       begin_params(std::move(begin_params)),
       sandbox_flags(sandbox_flags),
@@ -59,7 +60,8 @@ NavigationRequestInfo::NavigationRequestInfo(
       previous_render_frame_host_id(previous_render_frame_host_id),
       allow_cookies_from_browser(allow_cookies_from_browser),
       navigation_id(navigation_id),
-      shared_storage_writable_eligible(shared_storage_writable_eligible) {}
+      shared_storage_writable_eligible(shared_storage_writable_eligible),
+      is_ad_tagged(is_ad_tagged) {}
 
 NavigationRequestInfo::~NavigationRequestInfo() {}
 

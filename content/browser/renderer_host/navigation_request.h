@@ -442,6 +442,7 @@ class CONTENT_EXPORT NavigationRequest
       blink::mojom::RendererContentSettingsPtr content_settings) override;
   blink::mojom::RendererContentSettingsPtr GetContentSettingsForTesting()
       override;
+  void SetIsAdTagged() override;
   // End of NavigationHandle implementation.
 
   // mojom::NavigationRendererCancellationListener implementation:
@@ -2757,6 +2758,10 @@ class CONTENT_EXPORT NavigationRequest
 
   EarlyRenderFrameHostSwapType early_render_frame_host_swap_type_ =
       EarlyRenderFrameHostSwapType::kNone;
+
+  // Whether the embedder indicated this navigation is being used for
+  // advertising porpoises.
+  bool is_ad_tagged_ = false;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

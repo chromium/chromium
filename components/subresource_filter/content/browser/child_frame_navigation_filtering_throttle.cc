@@ -14,7 +14,9 @@
 #include "base/strings/stringprintf.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
+#include "components/subresource_filter/content/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
+#include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/time_measurements.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -36,13 +38,18 @@ namespace subresource_filter {
 
 ChildFrameNavigationFilteringThrottle::ChildFrameNavigationFilteringThrottle(
     content::NavigationHandle* handle,
-    AsyncDocumentSubresourceFilter* parent_frame_filter)
+    AsyncDocumentSubresourceFilter* parent_frame_filter,
+    blink::FrameAdEvidence ad_evidence)
     : content::NavigationThrottle(handle),
       parent_frame_filter_(parent_frame_filter),
       alias_check_enabled_(base::FeatureList::IsEnabled(
-          ::features::kSendCnameAliasesToSubresourceFilterFromBrowser)) {
+          ::features::kSendCnameAliasesToSubresourceFilterFromBrowser)),
+      ad_evidence_(std::move(ad_evidence)) {
   DCHECK(!IsInSubresourceFilterRoot(handle));
   DCHECK(parent_frame_filter_);
+  // Complete the ad evidence as it will be used to make best-effort tagging
+  // decisions by request time for ongoing subframe navs.
+  ad_evidence_.set_is_complete();
 }
 
 ChildFrameNavigationFilteringThrottle::
@@ -168,8 +175,14 @@ ChildFrameNavigationFilteringThrottle::MaybeDeferToCalculateLoadPolicy() {
   // allowed to get a response. As a result, we must defer while
   // we wait for the ruleset check to complete and pass handling the navigation
   // decision to the callback.
+  //
+  // If `kTPCDAdHeuristicSubframeRequestTagging`, we always need to defer
+  // navigation start to ensure we have the load policy calculated in order
+  // to properly tag the navigation handle as an ad before it goes to the
+  // network.
   if (parent_frame_filter_->activation_state().activation_level ==
-      mojom::ActivationLevel::kEnabled) {
+          mojom::ActivationLevel::kEnabled ||
+      base::FeatureList::IsEnabled(kTPCDAdHeuristicSubframeRequestTagging)) {
     DeferStart(DeferStage::kWillStartOrRedirectRequest);
     return DEFER;
   }
@@ -206,6 +219,16 @@ void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy(
   // If there are still pending load calculations, then don't resume.
   if (pending_load_policy_calculations_ > 0) {
     return;
+  }
+
+  if (defer_stage_ == DeferStage::kWillStartOrRedirectRequest) {
+    // Tag the navigation handle based on the current load policy + evidence
+    // before the request starts.
+    ad_evidence_.UpdateFilterListResult(
+        InterpretLoadPolicyAsEvidence(load_policy_));
+    if (ad_evidence_.IndicatesAdFrame()) {
+      navigation_handle()->SetIsAdTagged();
+    }
   }
 
   ResumeNavigation();
