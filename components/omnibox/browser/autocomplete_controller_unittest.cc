@@ -9,12 +9,17 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,6 +49,53 @@ class FakeAutocompleteScoringModelService
   }
 };
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+namespace {
+
+// Used to construct the ML input matches and ML output response.
+struct MlMatchTestData {
+  std::string name;
+  AutocompleteMatchType::Type type;
+  bool allowed_to_be_default_match;
+  bool shortcut_boosted;
+  int traditional_relevance;
+  float ml_output;
+
+  static MlMatchTestData MakeSearch(std::string name,
+                                    bool allowed_to_be_default_match,
+                                    int traditional_relevance) {
+    return {name,
+            AutocompleteMatchType::SEARCH_SUGGEST,
+            allowed_to_be_default_match,
+            false,
+            traditional_relevance,
+            -1};
+  }
+
+  static MlMatchTestData MakeHistory(std::string name,
+                                     bool allowed_to_be_default_match,
+                                     int traditional_relevance,
+                                     float ml_output) {
+    return {name,
+            AutocompleteMatchType::HISTORY_URL,
+            allowed_to_be_default_match,
+            false,
+            traditional_relevance,
+            ml_output};
+  }
+
+  static MlMatchTestData MakeShortcut(std::string name,
+                                      int traditional_relevance,
+                                      float ml_output) {
+    return {name,
+            AutocompleteMatchType::HISTORY_URL,
+            true,
+            true,
+            traditional_relevance,
+            ml_output};
+  }
+};
+}  // namespace
 
 class AutocompleteControllerTest : public testing::Test {
  public:
@@ -102,6 +154,45 @@ class AutocompleteControllerTest : public testing::Test {
 
   AutocompleteProviderClient* provider_client() {
     return controller_->autocomplete_provider_client();
+  }
+
+  std::vector<std::string> MlRank(std::vector<MlMatchTestData> datas) {
+    ACMatches matches;
+    std::vector<AutocompleteScoringModelService::Result> ml_results;
+    for (const auto& data : datas) {
+      AutocompleteMatch match{nullptr, data.traditional_relevance, false,
+                              data.type};
+      match.shortcut_boosted = data.shortcut_boosted;
+      match.allowed_to_be_default_match = data.allowed_to_be_default_match;
+      match.stripped_destination_url = GURL{"https://google.com/" + data.name};
+      match.contents = base::UTF8ToUTF16(data.name);
+      if (data.ml_output >= 0) {
+        match.scoring_signals = {{}};
+        ml_results.push_back(
+            {data.ml_output, match.stripped_destination_url.spec()});
+      }
+      matches.push_back(match);
+    }
+
+    controller_->internal_result_.Reset();
+    controller_->internal_result_.AppendMatches(matches);
+    base::RunLoop ml_rank_loop;
+    controller_->OnUrlScoringModelDone(
+        {}, base::BindLambdaForTesting([&]() {
+          AutocompleteInput input(u"text", 4, metrics::OmniboxEventProto::OTHER,
+                                  TestSchemeClassifier());
+          controller_->internal_result_.SortAndCull(
+              input, nullptr,
+              provider_client()->GetOmniboxTriggeredFeatureService());
+          ml_rank_loop.Quit();
+        }),
+        ml_results);
+    ml_rank_loop.Run();
+
+    std::vector<std::string> names;
+    for (const auto& match : controller_->internal_result_)
+      names.push_back(base::UTF16ToUTF8(match.contents));
+    return names;
   }
 
  protected:
@@ -252,3 +343,178 @@ TEST_F(AutocompleteControllerTest, RemoveCompanyEntityImage_MostAggressive) {
           ->GetFeatureTriggeredInSession(
               metrics::OmniboxEventProto_Feature_COMPANY_ENTITY_ADJUSTMENT));
 }
+
+// Android and iOS aren't ready for ML and won't pass this test because they
+// have their own grouping code.
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB) && !BUILDFLAG(IS_ANDROID) && \
+    !BUILDFLAG(IS_IOS)
+TEST_F(AutocompleteControllerTest, MlRanking) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox_feature_configs::ShortcutBoosting::kShortcutBoost,
+      {
+          {"ShortcutBoostNonTopHitThreshold", "2"},
+          {"ShortcutBoostGroupWithSearches", "true"},
+      });
+
+  EXPECT_THAT(MlRank({}), testing::ElementsAre());
+
+  // Even if ML ranks a URL 0, it should still use traditional scores.
+  EXPECT_THAT(MlRank({
+                  MlMatchTestData::MakeHistory("history", true, 1400, 0),
+                  MlMatchTestData::MakeSearch("search", true, 1300),
+              }),
+              testing::ElementsAreArray({
+                  "history",
+                  "search",
+              }));
+
+  // Simple case of redistributing ranking among only URLs.
+  EXPECT_THAT(
+      MlRank({
+          MlMatchTestData::MakeHistory("history 1350 .5", true, 1350, .5),
+          MlMatchTestData::MakeSearch("search 1400", false, 1400),
+          MlMatchTestData::MakeSearch("search 800", true, 800),
+          MlMatchTestData::MakeSearch("search 600", false, 600),
+          MlMatchTestData::MakeHistory("history 1200 .9", true, 1200, .9),
+          MlMatchTestData::MakeHistory("history 1100 .1", false, 1100, .1),
+          MlMatchTestData::MakeHistory("history 500 .2", true, 500, .2),
+      }),
+      testing::ElementsAreArray({
+          "history 1200 .9",
+          "search 1400",
+          "search 800",
+          "search 600",
+          "history 1350 .5",
+          "history 500 .2",
+          "history 1100 .1",
+      }));
+
+  // Can change the default suggestion from 1 history to another.
+  EXPECT_THAT(
+      MlRank({
+          MlMatchTestData::MakeHistory("history 1400 .5", true, 1400, .5),
+          MlMatchTestData::MakeSearch("search", true, 1300),
+          MlMatchTestData::MakeHistory("history 1200 1", true, 1200, .9),
+      }),
+      testing::ElementsAreArray({
+          "history 1200 1",
+          "search",
+          "history 1400 .5",
+      }));
+
+  // Can change the default from search to history.
+  EXPECT_THAT(
+      MlRank({
+          MlMatchTestData::MakeSearch("search 1300", true, 1300),
+          MlMatchTestData::MakeHistory("history 1400 .5", false, 1400, .5),
+          MlMatchTestData::MakeHistory("history 1200 1", true, 1200, .9),
+      }),
+      testing::ElementsAreArray({
+          "history 1200 1",
+          "search 1300",
+          "history 1400 .5",
+      }));
+
+  // Can change the default from history to search.
+  EXPECT_THAT(
+      MlRank({
+          MlMatchTestData::MakeHistory("history 1400 .5", true, 1400, .5),
+          MlMatchTestData::MakeSearch("search 1300", true, 1300),
+          MlMatchTestData::MakeHistory("history 1200 1", false, 1200, .9),
+      }),
+      testing::ElementsAreArray({
+          "search 1300",
+          "history 1200 1",
+          "history 1400 .5",
+      }));
+
+  // Can redistribute shortcut boosting to non-shortcuts.
+  EXPECT_THAT(
+      MlRank({
+          MlMatchTestData::MakeSearch("search 1300", true, 1300),
+          MlMatchTestData::MakeShortcut("shortcut 1000 .1", 1000, .1),
+          MlMatchTestData::MakeSearch("search 1200", true, 1200),
+          MlMatchTestData::MakeHistory("history 1400 .9", false, 1400, .9),
+          MlMatchTestData::MakeHistory("history 1100 .5", true, 1100, .5),
+      }),
+      testing::ElementsAreArray({
+          "search 1300",
+          "history 1400 .9",
+          "search 1200",
+          "history 1100 .5",
+          "shortcut 1000 .1",
+      }));
+
+  // Can 'consume' shortcut boosting by assigning it to a match that's becoming
+  // default anyways.
+  EXPECT_THAT(
+      MlRank({
+          MlMatchTestData::MakeSearch("search 1300", true, 1300),
+          MlMatchTestData::MakeShortcut("shortcut 1000 .1", 1000, .1),
+          MlMatchTestData::MakeSearch("search 1200", true, 1200),
+          MlMatchTestData::MakeHistory("history 1400 .5", false, 1400, .5),
+          MlMatchTestData::MakeHistory("history 1100 .9", true, 1100, .9),
+      }),
+      testing::ElementsAreArray({
+          "history 1100 .9",
+          "search 1300",
+          "search 1200",
+          "history 1400 .5",
+          "shortcut 1000 .1",
+      }));
+
+  // Can increase the number of URLs above searches.
+  EXPECT_THAT(
+      MlRank({
+          MlMatchTestData::MakeSearch("search 1300", true, 1300),
+          MlMatchTestData::MakeShortcut("shortcut 1000 .7", 1000, .7),
+          MlMatchTestData::MakeSearch("search 1200", true, 1200),
+          MlMatchTestData::MakeHistory("history 1400 .5", false, 1400, .5),
+          MlMatchTestData::MakeHistory("history 1350 .2", false, 1350, .2),
+          MlMatchTestData::MakeHistory("history 1100 .8", true, 1100, .8),
+          MlMatchTestData::MakeHistory("history 1050 .9", false, 1050, .9),
+      }),
+      testing::ElementsAreArray({
+          "history 1100 .8",
+          "history 1050 .9",
+          "search 1300",
+          "search 1200",
+          "shortcut 1000 .7",
+          "history 1400 .5",
+          "history 1350 .2",
+      }));
+
+  // Can increase the number of URLs above searches even when the default was a
+  // URL.
+  EXPECT_THAT(
+      MlRank({
+          MlMatchTestData::MakeShortcut("shortcut 1450 .7", 1450, .7),
+          MlMatchTestData::MakeSearch("search 1200", true, 1200),
+          MlMatchTestData::MakeHistory("history 1400 .9", false, 1400, .9),
+      }),
+      testing::ElementsAreArray({
+          "shortcut 1450 .7",
+          "history 1400 .9",
+          "search 1200",
+      }));
+
+  // Can decrease the number of URLs above searches.
+  EXPECT_THAT(
+      MlRank({
+          MlMatchTestData::MakeHistory("history 1400 .5", true, 1400, .5),
+          MlMatchTestData::MakeShortcut("shortcut 1000 .1", 1000, .1),
+          MlMatchTestData::MakeSearch("search 1300", true, 1300),
+          MlMatchTestData::MakeSearch("search 1200", true, 1200),
+          MlMatchTestData::MakeHistory("history 1100 .9", true, 1100, .9),
+      }),
+      testing::ElementsAreArray({
+          "history 1100 .9",
+          "search 1300",
+          "search 1200",
+          "history 1400 .5",
+          "shortcut 1000 .1",
+      }));
+}
+#endif  //  BUILDFLAG(BUILD_WITH_TFLITE_LIB) && !BUILDFLAG(IS_ANDROID) &&
+        //  !BUILDFLAG(IS_IOS)
