@@ -7,23 +7,27 @@ module blink.mojom;
 // JS Frameworks (& CMSes) are detected at load time. This helps us correlate
 // performance metrics (and other metrics) with the existence and version of
 // frameworks on the page.
+//
+// Do not change the numeric value assignments, or reuse old values. The
+// auto speculation rules feature (https://crbug.com/1472970) uses these values
+// inside Finch configs.
 enum JavaScriptFramework {
-  kNuxt,
-  kVuePress,
-  kSapper,
-  kGatsby,
-  kNext,
-  kAngular,
-  kVue,
-  kSvelte,
-  kPreact,
-  kReact,
-  kDrupal,
-  kJoomla,
-  kShopify,
-  kSquarespace,
-  kWix,
-  kWordPress,
+  kNuxt = 0,
+  kVuePress = 1,
+  kSapper = 2,
+  kGatsby = 3,
+  kNext = 4,
+  kAngular = 5,
+  kVue = 6,
+  kSvelte = 7,
+  kPreact = 8,
+  kReact = 9,
+  kDrupal = 10,
+  kJoomla = 11,
+  kShopify = 12,
+  kSquarespace = 13,
+  kWix = 14,
+  kWordPress = 15,
 };
 
 // This struct is typemapped to blink::JavaScriptFrameworkDetectionResult.
