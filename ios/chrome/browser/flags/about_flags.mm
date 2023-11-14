@@ -1636,6 +1636,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tab-groups-in-grid", flag_descriptions::kTabGroupsInGridName,
      flag_descriptions::kTabGroupsInGridDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGroupsInGrid)},
+    {"autofill-enable-payments-mandatory-reauth",
+     flag_descriptions::kAutofillEnablePaymentsMandatoryReauthName,
+     flag_descriptions::kAutofillEnablePaymentsMandatoryReauthDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnablePaymentsMandatoryReauth)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -52,6 +52,11 @@ extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[];
 extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[];
 
 // Title and description for the flag to control whether the autofill payments
+// mandatory reauth feature is enabled.
+extern const char kAutofillEnablePaymentsMandatoryReauthName[];
+extern const char kAutofillEnablePaymentsMandatoryReauthDescription[];
+
+// Title and description for the flag to control whether the autofill payments
 // mandatory reauth feature is enabled on Bling.
 extern const char kAutofillEnablePaymentsMandatoryReauthOnBlingName[];
 extern const char kAutofillEnablePaymentsMandatoryReauthOnBlingDescription[];
