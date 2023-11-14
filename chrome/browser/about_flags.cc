@@ -262,7 +262,6 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
-#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -5034,9 +5033,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"crostini-use-lxd-5", flag_descriptions::kCrostiniUseLxd5Name,
      flag_descriptions::kCrostiniUseLxd5Description, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kCrostiniUseLxd5)},
-    {"bruschetta", flag_descriptions::kBruschettaName,
-     flag_descriptions::kBruschettaDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kBruschetta)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
      BUILDFLAG(IS_ANDROID)) &&                        \

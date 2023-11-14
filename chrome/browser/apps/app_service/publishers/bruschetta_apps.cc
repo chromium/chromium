@@ -13,7 +13,6 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
-#include "chrome/browser/ash/bruschetta/bruschetta_features.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
@@ -136,7 +135,7 @@ void LaunchApplication(
 BruschettaApps::BruschettaApps(AppServiceProxy* proxy) : GuestOSApps(proxy) {}
 
 bool BruschettaApps::CouldBeAllowed() const {
-  return bruschetta::BruschettaFeatures::Get()->IsEnabled();
+  return true;
 }
 
 apps::AppType BruschettaApps::AppType() const {

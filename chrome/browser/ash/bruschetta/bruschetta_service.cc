@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "bruschetta_terminal_provider.h"
-#include "chrome/browser/ash/bruschetta/bruschetta_features.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_mount_provider.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
@@ -44,11 +43,6 @@ BruschettaService::VmRegistration& BruschettaService::VmRegistration::operator=(
 BruschettaService::VmRegistration::~VmRegistration() = default;
 
 BruschettaService::BruschettaService(Profile* profile) : profile_(profile) {
-  // Don't set up anything if the bruschetta flag isn't enabled.
-  if (!BruschettaFeatures::Get()->IsEnabled()) {
-    return;
-  }
-
   if (auto* concierge = ash::ConciergeClient::Get(); concierge) {
     concierge->AddVmObserver(this);
   }

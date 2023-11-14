@@ -3428,12 +3428,6 @@ extern const char kCrostiniVirtualKeyboardSupportDescription[];
 extern const char kCrostiniUseLxd5Name[];
 extern const char kCrostiniUseLxd5Description[];
 
-extern const char kBruschettaName[];
-extern const char kBruschettaDescription[];
-
-extern const char kBruschettaAlphaMigrateName[];
-extern const char kBruschettaAlphaMigrateDescription[];
-
 extern const char kDisableBufferBWCompressionName[];
 extern const char kDisableBufferBWCompressionDescription[];
 
