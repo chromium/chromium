@@ -118,6 +118,8 @@ const wptRunArgs = [
   TIMEOUT_MULTIPLIER,
   '--run-by-dir',
   '1',
+  '--retry-unexpected',
+  '1',
 ];
 
 if (VERBOSE === 'true') {
