@@ -112,25 +112,33 @@ function runGnGen() {
   spawnChecked(gn(), ["gen", "out/Release"], { stdio: "inherit" });
 }
 
-function updateRepo(repo, branch) {
-  log(`Updating ${repo} to branch ${branch}`);
+function updateRepo(repo, treeish) {
+  log(`Updating ${repo} to ${treeish}`);
   // delete git lock file if it exists on Windows
   if (currentPlatform() == Platform.windows) {
     maybeDeleteGitLockFile(repo);
   }
 
-  syncRepo(repo, `origin/${branch}`);
+  syncRepo(repo, treeish);
 }
 
 export function updateBackendRepo() {
   const backend = getBackendDir();
-  updateRepo(backend, "master");
+  const rev = fs.readFileSync("REPLAY_BACKEND_REV", "utf8").trim();
+  updateRepo(backend, rev);
+  // create a symlink to chromium in the backend checkout
+  const chromiumRepoPath = process.cwd();
+  const chromiumPathInBackend = path.join(backend, "chromium");
+  if (fs.existsSync(chromiumPathInBackend)) {
+    fs.unlinkSync(chromiumPathInBackend);
+  }
+  fs.symlinkSync(chromiumRepoPath, chromiumPathInBackend);
 }
 
 export function updateChromiumRepo() {
   const chromium = process.cwd();
   const branch = process.env["BUILDKITE_BRANCH"];
-  updateRepo(chromium, branch);
+  updateRepo(chromium, `origin/${branch}`);
 
   const deps = getChromiumDeps();
 
