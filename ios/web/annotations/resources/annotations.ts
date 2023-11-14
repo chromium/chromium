@@ -62,7 +62,7 @@ class Section {
  * `stopObserving`.
  */
 class MutationsDuringClickTracker {
-  mutationCount = 0;
+  hasMutations = false;
   mutationObserver: MutationObserver;
   mutationExtendId = 0;
 
@@ -71,7 +71,15 @@ class MutationsDuringClickTracker {
   constructor(private readonly initialEvent: Event) {
     this.mutationObserver =
         new MutationObserver((mutationList: MutationRecord[]) => {
-          this.mutationCount += mutationList.length;
+          if (this.hasMutations) {
+            return;
+          }
+          for (let mutation of mutationList) {
+            if (mutation.target.contains(this.initialEvent.target as Node)) {
+              this.hasMutations = true;
+              break;
+            }
+          }
         });
     this.mutationObserver.observe(
         document, {attributes: false, childList: true, subtree: true});
@@ -81,12 +89,7 @@ class MutationsDuringClickTracker {
   // or it was prevented or if any DOM mutations occurred.
   hasPreventativeActivity(event: Event): boolean {
     return event !== this.initialEvent || event.defaultPrevented ||
-        this.hasMutations();
-  }
-
-  // Returns true if DOM mutations occurred.
-  hasMutations(): boolean {
-    return this.mutationCount > 0;
+        this.hasMutations;
   }
 
   // Extends DOM observation by triggering `then` after de delay. This can be
@@ -549,21 +552,25 @@ function handleTopTap(event: Event) {
       !mutationDuringClickObserver.hasPreventativeActivity(event)) {
     const annotation = event.target;
     mutationDuringClickObserver.extendObservation(() => {
-      if (mutationDuringClickObserver &&
-          !mutationDuringClickObserver.hasMutations()) {
+      if (mutationDuringClickObserver) {
         highlightAnnotation(annotation);
-        sendWebKitMessage('annotations', {
-          command: 'annotations.onClick',
-          data: annotation.dataset['data'],
-          rect: rectFromElement(annotation),
-          text: annotation.dataset['annotation'],
-        });
-        cancelObserver();
+        onClickAnnotation(annotation, mutationDuringClickObserver.hasMutations);
       }
     });
   } else {
-    cancelObserver();
+    onClickAnnotation(event.target as HTMLElement, true);
   }
+}
+
+function onClickAnnotation(annotation: HTMLElement, cancel: boolean): void {
+  sendWebKitMessage('annotations', {
+    command: 'annotations.onClick',
+    cancel: cancel,
+    data: annotation.dataset['data'],
+    rect: rectFromElement(annotation),
+    text: annotation.dataset['annotation'],
+  });
+  cancelObserver();
 }
 
 /**

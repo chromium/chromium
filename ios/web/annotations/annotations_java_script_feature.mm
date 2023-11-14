@@ -7,6 +7,7 @@
 #import <vector>
 
 #import "base/logging.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/shared_highlighting/ios/parsing_utils.h"
@@ -160,12 +161,16 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     std::optional<CGRect> rect =
         shared_highlighting::ParseRect(dict.FindDict("rect"));
     const std::string* text = dict.FindString("text");
-    if (!data || !rect || !text) {
+    std::optional<bool> cancel = dict.FindBool("cancel");
+    if (!data || !rect || !text || !cancel) {
       return;
     }
-    manager->OnClick(
-        web_state, *text,
-        shared_highlighting::ConvertToBrowserRect(*rect, web_state), *data);
+    UMA_HISTOGRAM_BOOLEAN("IOS.Annotations.UserTap.Cancelled", *cancel);
+    if (!*cancel) {
+      manager->OnClick(
+          web_state, *text,
+          shared_highlighting::ConvertToBrowserRect(*rect, web_state), *data);
+    }
   }
 }
 
