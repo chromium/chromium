@@ -258,7 +258,7 @@ void ExtensionGarbageCollector::OnFinishCrxInstall(
   if (crx_installs_in_progress_ < 0) {
     // This can only happen if there is a mismatch in our begin/finish
     // accounting.
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
 
     // Don't let the count go negative to avoid garbage collecting when
     // an install is actually in progress.
