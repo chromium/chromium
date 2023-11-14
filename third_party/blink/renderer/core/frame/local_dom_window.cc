@@ -437,6 +437,9 @@ bool LocalDOMWindow::CanExecuteScripts(
   if (!GetFrame())
     return false;
 
+  // Detached frames should not be attempting to execute script.
+  DCHECK(!GetFrame()->IsDetached());
+
   // Normally, scripts are not allowed in sandboxed contexts that disallow them.
   // However, there is an exception for cases when the script should bypass the
   // main world's CSP (such as for privileged isolated worlds). See

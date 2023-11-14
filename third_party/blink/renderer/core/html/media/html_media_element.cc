@@ -2922,6 +2922,11 @@ void HTMLMediaElement::SetLoop(bool b) {
 }
 
 bool HTMLMediaElement::ShouldShowControls() const {
+  // If the document is not active, then we should not show controls.
+  if (!GetDocument().IsActive()) {
+    return false;
+  }
+
   Settings* settings = GetDocument().GetSettings();
   if (settings && !settings->GetMediaControlsEnabled()) {
     return false;
