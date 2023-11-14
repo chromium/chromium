@@ -111,8 +111,11 @@ class HttpServiceRequest {
         base::StringPiece(response_.data(), response_.size()),
         base::JSON_PARSE_CHROMIUM_EXTENSIONS |
             base::JSON_ALLOW_TRAILING_COMMAS);
-    if (!result || !result->is_dict()) {
-      LOGFN(ERROR) << "Failed to read json result from server response";
+    if (!result) {
+      LOGFN(ERROR) << "base::JSONReader::Read returned 0";
+      result.reset();
+    } else if (!result->is_dict()) {
+      LOGFN(ERROR) << "json result is not a dictionary";
       result.reset();
     }
 
@@ -427,16 +430,26 @@ HRESULT WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
   DCHECK(request_result);
 
   std::string request_body;
-  if (!base::JSONWriter::Write(request_dict, &request_body)) {
+  if (!request_dict.empty() &&
+      !base::JSONWriter::Write(request_dict, &request_body)) {
     LOGFN(ERROR) << "base::JSONWriter::Write failed";
+    return E_FAIL;
+  }
+  if ((request_dict.empty() && !request_body.empty()) ||
+      (!request_dict.empty() && request_body.empty())) {
+    LOGFN(ERROR) << "Mismatch between request dict and body";
     return E_FAIL;
   }
 
   for (unsigned int try_count = 0; try_count <= request_retries; ++try_count) {
     HttpServiceRequest* request = HttpServiceRequest::Create(
         request_url, access_token, headers, request_body, request_timeout);
-    if (!request)
+    if (!request) {
+      LOGFN(ERROR)
+          << "Could not create an HttpServiceRequest object. request url: "
+          << request_url.spec() << " request body: " << request_body;
       return E_FAIL;
+    }
 
     auto extracted_param =
         request->WaitForResponseFromHttpService(request_timeout);
@@ -444,6 +457,7 @@ HRESULT WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
       continue;
 
     *request_result = std::move(extracted_param);
+
     const base::Value::Dict* error_detail =
         (*request_result)->GetDict().FindDict(kErrorKeyInRequestResult);
     if (!error_detail)
@@ -460,6 +474,7 @@ HRESULT WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
     }
   }
 
+  LOGFN(ERROR) << "Unable to serve http service request";
   return E_FAIL;
 }
 
