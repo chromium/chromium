@@ -90,6 +90,21 @@ class AutofillPaymentMethodsDelegate {
     }
 
     /**
+     * Calls the native deleteSavedCvcs to delete saved CVCs.
+     *
+     * @throws IllegalStateException when called after the native delegate has been cleaned up, or
+     *     if an error occurred during initialization.
+     */
+    public void deleteSavedCvcs() {
+        if (mNativeAutofillPaymentMethodsDelegate == 0) {
+            throw new IllegalStateException(
+                    "The native delegate was cleaned up or not initialized.");
+        }
+        AutofillPaymentMethodsDelegateJni.get()
+                .deleteSavedCvcs(mNativeAutofillPaymentMethodsDelegate);
+    }
+
+    /**
      * Calls the native cleanup method for this instance.
      * This must be called when the object is no longer needed, or a memory leak will result.
      */
@@ -110,5 +125,7 @@ class AutofillPaymentMethodsDelegate {
                 Callback<Boolean> virtualCardEnrollmentUpdateResponseCallback);
         void unenrollVirtualCard(long nativeAutofillPaymentMethodsDelegate, long instrumentId,
                 Callback<Boolean> virtualCardEnrollmentUpdateResponseCallback);
+
+        void deleteSavedCvcs(long nativeAutofillPaymentMethodsDelegate);
     }
 }

@@ -97,4 +97,9 @@ void AutofillPaymentMethodsDelegate::UnenrollVirtualCard(
       instrument_id, base::BindOnce(&base::android::RunBooleanCallbackAndroid,
                                     ScopedJavaGlobalRef<jobject>(jcallback)));
 }
+
+void AutofillPaymentMethodsDelegate::DeleteSavedCvcs(JNIEnv* env) {
+  personal_data_manager_->ClearLocalCvcs();
+  personal_data_manager_->ClearServerCvcs();
+}
 }  // namespace autofill

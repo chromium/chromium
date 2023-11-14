@@ -53,6 +53,8 @@ class AutofillPaymentMethodsDelegate {
                            int64_t instrument_id,
                            const JavaParamRef<jobject>& jcallback);
 
+  void DeleteSavedCvcs(JNIEnv* env);
+
  private:
   raw_ptr<Profile> profile_;                            // weak reference
   raw_ptr<PersonalDataManager> personal_data_manager_;  // weak reference

@@ -73,6 +73,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
 
     @Nullable
     private ReauthenticatorBridge mReauthenticatorBridge;
+    @Nullable
+    private AutofillPaymentMethodsDelegate mAutofillPaymentMethodsDelegate;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -485,7 +487,11 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                                 new AppModalPresenter(getActivity()), ModalDialogType.APP),
                         deleteRequested -> {
                             if (deleteRequested) {
-                                // TODO(crbug.com/1491570): Call to the saved CVC delete interface.
+                                if (mAutofillPaymentMethodsDelegate == null) {
+                                    mAutofillPaymentMethodsDelegate =
+                                            new AutofillPaymentMethodsDelegate(getProfile());
+                                }
+                                mAutofillPaymentMethodsDelegate.deleteSavedCvcs();
                             }
                         });
         dialog.show();
