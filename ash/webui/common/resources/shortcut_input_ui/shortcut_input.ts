@@ -50,6 +50,17 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
       showSeparator: {
         type: Boolean,
       },
+
+      hasLauncherButton: {
+        type: Boolean,
+      },
+
+      // When `updateOnKeyPress` is true, always show edit-view and and updates
+      // occur on key press events rather than on key release.
+      updateOnKeyPress: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -59,6 +70,7 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
   modifiers: Modifier[] = [];
   showSeparator: boolean = false;
   isCapturing: boolean = false;
+  updateOnKeyPress: boolean = false;
   private shortcutInputObserverReceiver: ShortcutInputObserverReceiver|null =
       null;
   private eventTracker: EventTracker = new EventTracker();
@@ -183,11 +195,12 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
   }
 
   shouldShowEditView(): boolean {
-    return this.isCapturing;
+    return this.isCapturing || this.updateOnKeyPress;
   }
 
   shouldShowConfirmView(): boolean {
-    return this.pendingKeyEvent !== null && !this.isCapturing;
+    return this.pendingKeyEvent !== null && !this.isCapturing &&
+        !this.updateOnKeyPress;
   }
 
   /**

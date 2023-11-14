@@ -56,12 +56,14 @@
       </shortcut-input-key>
       <shortcut-input-key id="searchKey"
           key="meta"
-          key-state="[[getSearchState(pendingKeyEvent.*)]]">
+          key-state="[[getSearchState(pendingKeyEvent.*)]]"
+          has-launcher-button="[[hasLauncherButton]]">
       </shortcut-input-key>
       <div id="keySeparator"> + </div>
       <shortcut-input-key id="pendingKey"
           key="[[getKey(pendingKeyEvent.*)]]"
-          key-state="[[getKeyState(pendingKeyEvent.*)]]">
+          key-state="[[getKeyState(pendingKeyEvent.*)]]"
+          has-launcher-button="[[hasLauncherButton]]">
       </shortcut-input-key>
     </div>
   </template>

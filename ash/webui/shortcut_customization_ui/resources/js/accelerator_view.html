@@ -61,40 +61,8 @@
     </div>
   </template>
   <template is="dom-if" if="[[showEditView(viewState)]]">
-    <!-- TODO(longbowei): Update to use shortcut-input element -->
-    <div id="editContainer" class="flex-row">
-      <shortcut-input-key id="ctrlKey" key="ctrl"
-          key-state="[[getCtrlState(
-            pendingAcceleratorInfo.layoutProperties.standardAccelerator.accelerator.*
-            )]]">
-      </shortcut-input-key>
-      <shortcut-input-key id="altKey" key="alt"
-          key-state="[[getAltState(
-            pendingAcceleratorInfo.layoutProperties.standardAccelerator.*
-            )]]">
-      </shortcut-input-key>
-      <shortcut-input-key id="shiftKey" key="shift"
-          key-state="[[getShiftState(
-            pendingAcceleratorInfo.layoutProperties.standardAccelerator.*
-            )]]">
-      </shortcut-input-key>
-      <shortcut-input-key id="searchKey" key="meta"
-          key-state="[[getSearchState(
-            pendingAcceleratorInfo.layoutProperties.standardAccelerator.*
-            )]]"
-          has-launcher-button="[[hasLauncherButton]]">
-      </shortcut-input-key>
-      <div id="acceleratorSeparator" aria-hidden="true"> + </div>
-      <shortcut-input-key id="pendingKey"
-          key="[[getPendingKey(
-            pendingAcceleratorInfo.layoutProperties.standardAccelerator.*
-            )]]"
-          key-state=
-              "[[getPendingKeyState(
-                pendingAcceleratorInfo.layoutProperties.standardAccelerator.*
-                )]]"
-          has-launcher-button="[[hasLauncherButton]]">
-      </shortcut-input-key>
-    </div>
+    <shortcut-input id="shortcut-input" pending-key-event="[[pendingKeyEvent]]"
+        has-launcher-button="[[hasLauncherButton]]" update-on-key-press="true">
+    </shortcut-input>
   </template>
 </div>

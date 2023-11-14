@@ -5,6 +5,9 @@
 import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {VKey as ash_mojom_VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
+import {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
+import {ModifierKeyCodes} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 
@@ -119,6 +122,16 @@ export const createEmptyAccelInfoFromAccel =
 export const createEmptyAcceleratorInfo = (): StandardAcceleratorInfo => {
   return createEmptyAccelInfoFromAccel(
       {modifiers: 0, keyCode: 0, keyState: AcceleratorKeyState.PRESSED});
+};
+
+export const resetKeyEvent = (): KeyEvent => {
+  return {
+    vkey: ash_mojom_VKey.MIN_VALUE,
+    domCode: 0,
+    domKey: 0,
+    modifiers: 0,
+    keyDisplay: '',
+  };
 };
 
 export const getAcceleratorId =
@@ -332,6 +345,18 @@ export const isFunctionKey = (keycode: number): boolean => {
   return keycode >= kF11 && keycode <= kF24;
 };
 
+export const isModifierKey = (keycode: number): boolean => {
+  return ModifierKeyCodes.includes(keycode);
+};
+
+export const isValidDefaultAccelerator =
+    (accelerator: Accelerator): boolean => {
+      // A valid default accelerator is one that has modifier(s) and a key or
+      // is function key.
+      return (accelerator.modifiers > 0 && accelerator.keyCode > 0) ||
+          isFunctionKey(accelerator.keyCode);
+    };
+
 export const getSourceAndActionFromAcceleratorId =
     (uuid: AcceleratorId): {source: number, action: number} => {
       // Split '{source}-{action}` into [source][action].
@@ -401,3 +426,88 @@ export const getTextAcceleratorParts =
       assert(isTextAcceleratorInfo(textAcceleratorInfo));
       return textAcceleratorInfo.layoutProperties.textAccelerator.parts;
     };
+
+export const getModifiersFromKeyboardEvent = (e: KeyboardEvent): Modifier => {
+  let modifiers = 0;
+  if (e.metaKey) {
+    modifiers |= Modifier.COMMAND;
+  }
+  if (e.ctrlKey) {
+    modifiers |= Modifier.CONTROL;
+  }
+  if (e.altKey) {
+    modifiers |= Modifier.ALT;
+  }
+  if (e.key == 'Shift' || e.shiftKey) {
+    modifiers |= Modifier.SHIFT;
+  }
+  return modifiers;
+};
+
+export const getKeyDisplayFromKeyboardEvent = (e: KeyboardEvent): string => {
+  switch (e.code) {
+    case 'Space':  // Space key: e.key: ' ', e.code: 'Space', set keyDisplay
+      // to be 'space' text.
+      return 'space';
+    case 'ShowAllWindows':  // Overview key: e.key: 'F4', e.code:
+      // 'ShowAllWindows', set keyDisplay to be
+      // 'LaunchApplication1' and will display as
+      // 'overview' icon.
+      return 'LaunchApplication1';
+    case 'Backquote':
+      // Backquote `key` will become 'unidentified' when ctrl
+      // is pressed.
+      if (e.ctrlKey && e.key === 'Unidentified') {
+        return unidentifiedKeyCodeToKey[e.keyCode];
+      }
+      return e.key;
+    case '':
+      // If there is no `code`, check the `key`. If the `key` is
+      // `unidentified`, we need to manually lookup the key.
+      return unidentifiedKeyCodeToKey[e.keyCode] || e.key;
+    default:  // All other keys: Use the original e.key as keyDisplay.
+      return e.key;
+  }
+};
+
+/**
+ * Converts a keystroke event to an Accelerator Object.
+ */
+export const keystrokeToAccelerator = (e: KeyboardEvent): Accelerator => {
+  const output: Accelerator = {
+    modifiers: 0,
+    keyCode: 0,
+    keyState: AcceleratorKeyState.PRESSED,
+  };
+  output.modifiers = getModifiersFromKeyboardEvent(e);
+
+  // Only add non-modifier or function keys as the pending key.
+  if (!isModifierKey(e.keyCode) || isFunctionKey(e.keyCode)) {
+    output.keyCode = e.keyCode;
+  }
+
+  return output;
+};
+
+/**
+ * Converts a keystroke event to an KeyEvent Object.
+ */
+export const keystrokeToKeyEvent = (e: KeyboardEvent): KeyEvent => {
+  const output: KeyEvent = {
+    vkey: ash_mojom_VKey.MIN_VALUE,
+    domCode: 0,
+    domKey: 0,
+    modifiers: 0,
+    keyDisplay: '',
+  };
+  output.modifiers = getModifiersFromKeyboardEvent(e);
+
+  // Only add non-modifier or function keys as the pending key.
+  if (!isModifierKey(e.keyCode) || isFunctionKey(e.keyCode)) {
+    output.vkey = e.keyCode as ash_mojom_VKey;
+  }
+
+  output.keyDisplay =
+      isModifierKey(e.keyCode) ? '' : getKeyDisplayFromKeyboardEvent(e);
+  return output;
+};
