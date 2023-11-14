@@ -365,7 +365,8 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       if (!real_context) {
         real_context = gl::init::CreateGLContext(
             gl_share_group_.get(), surface_.get(),
-            GenerateGLContextAttribs(*params.attribs, context_group_.get()));
+            GenerateGLContextAttribsForDecoder(*params.attribs,
+                                               context_group_.get()));
         if (!real_context) {
           // TODO(piman): This might not be fatal, we could recurse into
           // CreateGLContext to get more info, tho it should be exceedingly
@@ -398,7 +399,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
         context_ = base::MakeRefCounted<GLContextVirtual>(
             gl_share_group_.get(), real_context.get(), decoder_->AsWeakPtr());
         if (!context_->Initialize(surface_.get(),
-                                  GenerateGLContextAttribs(
+                                  GenerateGLContextAttribsForDecoder(
                                       *params.attribs, context_group_.get()))) {
           // TODO(piman): This might not be fatal, we could recurse into
           // CreateGLContext to get more info, tho it should be exceedingly

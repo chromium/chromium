@@ -351,17 +351,19 @@ void GLManager::InitializeWithWorkaroundsImpl(
     context_ = scoped_refptr<gl::GLContext>(new gpu::GLContextVirtual(
         share_group_.get(), base_context_->get(), decoder_->AsWeakPtr()));
     ASSERT_TRUE(context_->Initialize(
-        surface.get(), GenerateGLContextAttribs(attribs, context_group)));
+        surface.get(),
+        GenerateGLContextAttribsForDecoder(attribs, context_group)));
   } else {
     if (real_gl_context) {
       context_ = scoped_refptr<gl::GLContext>(new gpu::GLContextVirtual(
           share_group_.get(), real_gl_context, decoder_->AsWeakPtr()));
       ASSERT_TRUE(context_->Initialize(
-          surface.get(), GenerateGLContextAttribs(attribs, context_group)));
+          surface.get(),
+          GenerateGLContextAttribsForDecoder(attribs, context_group)));
     } else {
       context_ = gl::init::CreateGLContext(
           share_group_.get(), surface.get(),
-          GenerateGLContextAttribs(attribs, context_group));
+          GenerateGLContextAttribsForDecoder(attribs, context_group));
       g_gpu_feature_info.ApplyToGLContext(context_.get());
     }
   }

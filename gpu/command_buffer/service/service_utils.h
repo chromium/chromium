@@ -17,12 +17,11 @@ class GpuDriverBugWorkarounds;
 namespace gles2 {
 class ContextGroup;
 
-GPU_GLES2_EXPORT gl::GLContextAttribs GenerateGLContextAttribs(
+GPU_GLES2_EXPORT gl::GLContextAttribs GenerateGLContextAttribsForDecoder(
     const ContextCreationAttribs& attribs_helper,
     const ContextGroup* context_group);
 
-GPU_GLES2_EXPORT gl::GLContextAttribs GenerateGLContextAttribs(
-    const ContextCreationAttribs& attribs_helper,
+GPU_GLES2_EXPORT gl::GLContextAttribs GenerateGLContextAttribsForCompositor(
     bool use_passthrough_cmd_decoder);
 
 // Returns true if the passthrough command decoder has been requested

@@ -80,8 +80,8 @@ void InProcessGpuThreadHolder::InitializeOnGpuThread(
   share_group_ = new gl::GLShareGroup();
   surface_ =
       gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size());
-  gl::GLContextAttribs attribs = gles2::GenerateGLContextAttribs(
-      ContextCreationAttribs(), use_passthrough_cmd_decoder);
+  gl::GLContextAttribs attribs =
+      gles2::GenerateGLContextAttribsForCompositor(use_passthrough_cmd_decoder);
   context_ =
       gl::init::CreateGLContext(share_group_.get(), surface_.get(), attribs);
   CHECK(context_->MakeCurrent(surface_.get()));
