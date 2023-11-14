@@ -230,6 +230,7 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
 try_.orchestrator_builder(
     name = "android-arm64-siso-rel",
     description_html = """\
@@ -318,6 +319,7 @@ try_.builder(
     tryjob = try_.job(),
 )
 
+# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
 try_.builder(
     name = "android-binary-size-siso",
     description_html = """\
@@ -1051,6 +1053,7 @@ try_.builder(
     tryjob = try_.job(),
 )
 
+# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
 try_.builder(
     name = "android_compile_siso_dbg",
     description_html = """\

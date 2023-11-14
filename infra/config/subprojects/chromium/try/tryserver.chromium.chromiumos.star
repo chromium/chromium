@@ -188,6 +188,7 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
 try_.orchestrator_builder(
     name = "chromeos-amd64-generic-siso-rel",
     description_html = """\
@@ -346,6 +347,7 @@ try_.builder(
     tryjob = try_.job(),
 )
 
+# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
 try_.builder(
     name = "linux-chromeos-compile-siso-dbg",
     description_html = """\

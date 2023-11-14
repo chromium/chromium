@@ -301,6 +301,7 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
 try_.orchestrator_builder(
     name = "linux-siso-rel",
     description_html = """\
@@ -501,6 +502,7 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
 try_.orchestrator_builder(
     name = "linux_chromium_asan_siso_rel_ng",
     description_html = """\
@@ -618,6 +620,7 @@ try_.builder(
     tryjob = try_.job(),
 )
 
+# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
 try_.builder(
     name = "linux_chromium_compile_siso_dbg_ng",
     description_html = """\
@@ -725,6 +728,7 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
 try_.orchestrator_builder(
     name = "linux_chromium_tsan_siso_rel_ng",
     description_html = """\

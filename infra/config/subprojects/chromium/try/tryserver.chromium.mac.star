@@ -173,6 +173,7 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
 try_.orchestrator_builder(
     name = "mac-siso-rel",
     description_html = """\
@@ -571,6 +572,7 @@ try_.compilator_builder(
     xcode = xcode.x15main,
 )
 
+# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
 try_.orchestrator_builder(
     name = "ios-simulator-siso",
     description_html = """\

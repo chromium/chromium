@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Definitions of builders in `build` bucket."""
+# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builders.
+# Note that CI builders can't use `mirrors`.
 
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "cpu", "os", "reclient", "siso")

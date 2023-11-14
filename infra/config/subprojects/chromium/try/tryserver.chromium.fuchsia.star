@@ -97,6 +97,7 @@ try_.builder(
     tryjob = try_.job(),
 )
 
+# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
 try_.builder(
     name = "fuchsia-binary-size-siso",
     description_html = """\
