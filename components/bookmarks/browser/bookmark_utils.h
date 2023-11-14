@@ -171,6 +171,8 @@ void RemoveAllBookmarks(BookmarkModel* model, const GURL& url);
 // unescaping, an input string of "a&p" would no longer match this URL.  Note
 // that the resulting unescaped URL may not be directly navigable (which is
 // why it was escaped to begin with).
+//
+// |url| must be a valid URL.
 std::u16string CleanUpUrlForMatching(
     const GURL& gurl,
     base::OffsetAdjuster::Adjustments* adjustments);

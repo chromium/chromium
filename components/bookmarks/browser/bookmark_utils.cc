@@ -563,6 +563,8 @@ void RemoveAllBookmarks(BookmarkModel* model, const GURL& url) {
 std::u16string CleanUpUrlForMatching(
     const GURL& gurl,
     base::OffsetAdjuster::Adjustments* adjustments) {
+  DCHECK(gurl.is_valid());
+
   base::OffsetAdjuster::Adjustments tmp_adjustments;
   return base::i18n::ToLower(url_formatter::FormatUrlWithAdjustments(
       GURL(TruncateUrl(gurl.spec())),

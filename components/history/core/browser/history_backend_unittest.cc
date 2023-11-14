@@ -4490,8 +4490,10 @@ TEST_F(HistoryBackendTest, UpdateClusterVisit_NoClusterAssigned) {
 
 TEST_F(HistoryBackendTest, GetRedirectChainStart) {
   auto last_visit_time = base::Time::Now();
-  const auto add_visit = [&](std::string url, VisitID referring_visit,
+  const auto add_visit = [&](std::string url_string, VisitID referring_visit,
                              VisitID opener_visit, bool is_redirect) {
+    GURL url(url_string);
+    EXPECT_TRUE(url.is_valid()) << url_string;
     // Each visit should have a unique `visit_time` to avoid deduping visits so
     // the same URL. The exact times don't matter, but we use increasing values
     // to make the test cases easy to reason about.
@@ -4503,16 +4505,16 @@ TEST_F(HistoryBackendTest, GetRedirectChainStart) {
         ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_CHAIN_END |
         (is_redirect ? ui::PageTransition::PAGE_TRANSITION_IS_REDIRECT_MASK
                      : ui::PageTransition::PAGE_TRANSITION_CHAIN_START));
-    auto ids = backend_->AddPageVisit(
-        GURL(url), last_visit_time, referring_visit,
-        /*external_referrer_url=*/GURL(), transition, false, SOURCE_BROWSED,
-        false, opener_visit, true);
+    auto ids = backend_->AddPageVisit(url, last_visit_time, referring_visit,
+                                      /*external_referrer_url=*/GURL(),
+                                      transition, false, SOURCE_BROWSED, false,
+                                      opener_visit, true);
     backend_->AddContextAnnotationsForVisit(ids.second,
                                             VisitContextAnnotations());
   };
 
-  // Navigate to 'google.com'.
-  add_visit("google.com", 0, 0, false);
+  // Navigate to 'http://google.com'.
+  add_visit("http://google.com", 0, 0, false);
   // It redirects to 'https://www.google.com'.
   add_visit("https://www.google.com", 1, 0, true);
   // Perform a search.

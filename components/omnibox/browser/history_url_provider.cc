@@ -245,7 +245,7 @@ bool CanPromoteMatchForInlineAutocomplete(const history::HistoryMatch& match) {
 
 // Given the user's `input` and a `match` created from it, reduce the match's
 // URL to just a host.  If this host still matches the user input, return it.
-// Returns the empty string on failure.
+// Returns the empty URL on failure.
 GURL ConvertToHostOnly(const history::HistoryMatch& match,
                        const std::u16string& input) {
   // See if we should try to do host-only suggestions for this URL. Nonstandard
@@ -971,7 +971,7 @@ bool HistoryURLProvider::PromoteOrCreateShorterSuggestion(
   const history::HistoryMatch& match = params->matches[0];
   GURL search_base = ConvertToHostOnly(match, params->input.text());
   bool can_add_search_base_to_matches = !params->have_what_you_typed_match;
-  if (search_base.is_empty()) {
+  if (!search_base.is_valid()) {
     // Search from what the user typed when we couldn't reduce the best match
     // to a host.  Careful: use a substring of `match` here, rather than the
     // first match in `params`, because they might have different prefixes.  If
@@ -982,8 +982,9 @@ bool HistoryURLProvider::PromoteOrCreateShorterSuggestion(
     std::string new_match = match.url_info.url().possibly_invalid_spec().substr(
         0, match.input_location + params->input.text().length());
     search_base = GURL(new_match);
-    if (search_base.is_empty())
+    if (!search_base.is_valid()) {
       return false;  // Can't construct a URL from which to start a search.
+    }
   } else if (!can_add_search_base_to_matches) {
     can_add_search_base_to_matches =
         (search_base != params->what_you_typed_match.destination_url);
