@@ -462,4 +462,20 @@ bool Iban::MatchesPrefixSuffixAndLength(const Iban& iban) const {
   return length() == iban.length();
 }
 
+std::ostream& operator<<(std::ostream& os, const Iban& iban) {
+  return os << "[id: "
+            << (iban.record_type() == Iban::RecordType::kLocalIban
+                    ? iban.guid()
+                    : base::NumberToString(iban.instrument_id()))
+            << ", record_type: "
+            << (iban.record_type() == Iban::RecordType::kLocalIban
+                    ? "Local IBAN"
+                    : "Server IBAN")
+            << ", value: " << base::UTF16ToUTF8(iban.GetRawInfo(IBAN_VALUE))
+            << ", prefix: " << base::UTF16ToUTF8(iban.prefix())
+            << ", suffix: " << base::UTF16ToUTF8(iban.suffix())
+            << ", length: " << iban.length()
+            << ", nickname: " << base::UTF16ToUTF8(iban.nickname()) << "]";
+}
+
 }  // namespace autofill

@@ -179,6 +179,8 @@ class Iban : public AutofillDataModel {
   int length_ = 0;
 };
 
+std::ostream& operator<<(std::ostream& os, const Iban& iban);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_IBAN_H_
