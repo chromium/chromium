@@ -87,6 +87,10 @@ suite('SiteSettingsPage', function() {
   });
 
   test('CookiesLinkRowSublabel', async function() {
+    // This test verifies the pre-3PCD label.
+    loadTimeData.overrideValues({
+      is3pcdCookieSettingsRedesignEnabled: false,
+    });
     setupPage();
     const cookiesLinkRow =
         page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!

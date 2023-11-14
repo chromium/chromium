@@ -36,6 +36,8 @@ suite('CookiesPageTest', function() {
   }
 
   suiteSetup(function() {
+    // This test is for the pre-3PCD cookies page.
+    loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: false});
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -174,62 +176,6 @@ suite('CookiesPageTest', function() {
     testMetricsBrowserProxy.reset();
   });
 
-  test('ExceptionsSearch', async function() {
-    await siteSettingsBrowserProxy.whenCalled('getExceptionList');
-    siteSettingsBrowserProxy.resetResolver('getExceptionList');
-
-    const exceptionPrefs = createSiteSettingsPrefs([], [
-      createContentSettingTypeToValuePair(
-          ContentSettingsTypes.COOKIES,
-          [
-            createRawSiteException(SITE_EXCEPTION_WILDCARD, {
-              embeddingOrigin: 'foo-allow.com',
-            }),
-          ]),
-    ]);
-    page.searchTerm = 'foo';
-    siteSettingsBrowserProxy.setPrefs(exceptionPrefs);
-    await siteSettingsBrowserProxy.whenCalled('getExceptionList');
-    flush();
-
-    const exceptionList = page.shadowRoot!.querySelector('site-list');
-    assertTrue(!!exceptionList);
-    assertTrue(isChildVisible(exceptionList, 'site-list-entry'));
-
-    page.searchTerm = 'unrelated.com';
-    flush();
-
-    assertFalse(isChildVisible(exceptionList, 'site-list-entry'));
-  });
-
-  test('ExceptionListReadOnly', function() {
-    // Check that the exception list is read only when the preference reports as
-    // managed.
-    page.set('prefs.generated.cookie_default_content_setting', {
-      value: ContentSetting.ALLOW,
-      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-    });
-    const exceptionList1 = page.shadowRoot!.querySelector('site-list');
-    assertTrue(!!exceptionList1);
-    assertTrue(!!exceptionList1.readOnlyList);
-
-    // Return preference to unmanaged state and check that the exception list
-    // is no longer read only.
-    page.set('prefs.generated.cookie_default_content_setting', {
-      value: ContentSetting.ALLOW,
-    });
-    const exceptionList2 = page.shadowRoot!.querySelector('site-list');
-    assertTrue(!!exceptionList2);
-    assertFalse(!!exceptionList2.readOnlyList);
-  });
-
-  test('ExceptionListHasCorrectCookieExceptionType', function() {
-    const exceptionList = page.shadowRoot!.querySelector('site-list');
-    assertTrue(!!exceptionList);
-    assertEquals(
-        'third-party', exceptionList.getAttribute('cookies-exception-type'));
-  });
-
   test('privacySandboxToast', async function() {
     assertFalse(page.$.toast.open);
 
@@ -354,13 +300,95 @@ suite('CookiesPageTest', function() {
   });
 });
 
+suite('ExceptionsList', function() {
+  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let page: SettingsCookiesPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-cookies-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    flush();
+  });
+
+  test('ExceptionsSearch', async function() {
+    await siteSettingsBrowserProxy.whenCalled('getExceptionList');
+    siteSettingsBrowserProxy.resetResolver('getExceptionList');
+
+    const exceptionPrefs = createSiteSettingsPrefs([], [
+      createContentSettingTypeToValuePair(
+          ContentSettingsTypes.COOKIES,
+          [
+            createRawSiteException(SITE_EXCEPTION_WILDCARD, {
+              embeddingOrigin: 'foo-allow.com',
+            }),
+          ]),
+    ]);
+    page.searchTerm = 'foo';
+    siteSettingsBrowserProxy.setPrefs(exceptionPrefs);
+    await siteSettingsBrowserProxy.whenCalled('getExceptionList');
+    flush();
+
+    const exceptionList = page.shadowRoot!.querySelector('site-list');
+    assertTrue(!!exceptionList);
+    assertTrue(isChildVisible(exceptionList, 'site-list-entry'));
+
+    page.searchTerm = 'unrelated.com';
+    flush();
+
+    assertFalse(isChildVisible(exceptionList, 'site-list-entry'));
+  });
+
+  test('ExceptionListReadOnly', function() {
+    // Check that the exception list is read only when the preference reports as
+    // managed.
+    page.set('prefs.generated.cookie_default_content_setting', {
+      value: ContentSetting.ALLOW,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    });
+    const exceptionList1 = page.shadowRoot!.querySelector('site-list');
+    assertTrue(!!exceptionList1);
+    assertTrue(!!exceptionList1.readOnlyList);
+
+    // Return preference to unmanaged state and check that the exception list
+    // is no longer read only.
+    page.set('prefs.generated.cookie_default_content_setting', {
+      value: ContentSetting.ALLOW,
+    });
+    const exceptionList2 = page.shadowRoot!.querySelector('site-list');
+    assertTrue(!!exceptionList2);
+    assertFalse(!!exceptionList2.readOnlyList);
+  });
+
+  test('ExceptionListHasCorrectCookieExceptionType', function() {
+    const exceptionList = page.shadowRoot!.querySelector('site-list');
+    assertTrue(!!exceptionList);
+    assertEquals(
+        'third-party', exceptionList.getAttribute('cookies-exception-type'));
+  });
+});
+
 // TODO(crbug/1349370): Remove after crbug/1349370 is launched.
 suite('FirstPartySetsUIDisabled', function() {
   let page: SettingsCookiesPageElement;
   let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({firstPartySetsUIEnabled: false});
+    loadTimeData.overrideValues({
+      firstPartySetsUIEnabled: false,
+      // FirstPartySetsUI does not exist in 3PCD.
+      is3pcdCookieSettingsRedesignEnabled: false,
+    });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -429,6 +457,7 @@ suite('TrackingProtectionSettings', function() {
   setup(function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
@@ -444,10 +473,11 @@ suite('TrackingProtectionSettings', function() {
     assertTrue(isChildVisible(page, '#blockThirdPartyToggle'));
     assertTrue(isChildVisible(page, '#doNotTrack'));
 
-    // Site Exception header
+    // Site Exception list
     assertFalse(isChildVisible(page, '#exceptionHeader'));
     assertFalse(isChildVisible(page, '#exceptionHeaderSubLabel'));
     assertTrue(isChildVisible(page, '#exceptionHeader3pcd'));
+    assertTrue(isChildVisible(page, '#allowExceptionsList'));
   });
 
   test('BlockAll3pcToggle', async function() {
@@ -479,6 +509,8 @@ suite('TrackingProtectionSettingsRollbackNotice', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       showTrackingProtectionSettingsRollbackNotice: true,
+      // This notice only shows outside of 3PCD.
+      is3pcdCookieSettingsRedesignEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;

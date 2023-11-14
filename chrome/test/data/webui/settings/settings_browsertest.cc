@@ -574,6 +574,10 @@ IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, MAYBE_CookiesPageTest) {
   RunTest("settings/cookies_page_test.js", "runMochaSuite('CookiesPageTest')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, ExceptionsList) {
+  RunTest("settings/cookies_page_test.js", "runMochaSuite('ExceptionsList')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, FirstPartySetsUIDisabled) {
   RunTest("settings/cookies_page_test.js",
           "runMochaSuite('FirstPartySetsUIDisabled')");
@@ -922,9 +926,17 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTestNoTestingConfig,
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyPage')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacySandbox4Enabled) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacySandbox) {
+  RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacySandbox')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, CookiesSubpage) {
+  RunTest("settings/privacy_page_test.js", "runMochaSuite('CookiesSubpage')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, TrackingProtectionSubpage) {
   RunTest("settings/privacy_page_test.js",
-          "runMochaSuite('PrivacySandbox4Enabled')");
+          "runMochaSuite('TrackingProtectionSubpage')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacyGuideRow) {
