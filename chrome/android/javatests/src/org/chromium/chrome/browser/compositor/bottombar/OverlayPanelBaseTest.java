@@ -31,6 +31,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -61,6 +62,7 @@ public class OverlayPanelBaseTest {
     @Mock private LayoutManagerImpl mLayoutManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private ViewGroup mCompositorViewHolder;
+    @Mock private Profile mProfile;
     @Mock private Tab mTab;
 
     Activity mActivity;
@@ -76,6 +78,7 @@ public class OverlayPanelBaseTest {
                 OverlayPanelManager manager,
                 BrowserControlsStateProvider browserControlsStateProvider,
                 WindowAndroid windowAndroid,
+                Profile profile,
                 ViewGroup compositorViewHolder,
                 Tab tab) {
             super(
@@ -84,6 +87,7 @@ public class OverlayPanelBaseTest {
                     manager,
                     browserControlsStateProvider,
                     windowAndroid,
+                    profile,
                     compositorViewHolder,
                     MOCK_TOOLBAR_HEIGHT,
                     () -> tab);
@@ -120,6 +124,7 @@ public class OverlayPanelBaseTest {
                 OverlayPanelManager manager,
                 BrowserControlsStateProvider browserControlsStateProvider,
                 WindowAndroid windowAndroid,
+                Profile profile,
                 ViewGroup compositorViewHolder,
                 Tab tab) {
             super(
@@ -128,6 +133,7 @@ public class OverlayPanelBaseTest {
                     manager,
                     browserControlsStateProvider,
                     windowAndroid,
+                    profile,
                     compositorViewHolder,
                     tab);
         }
@@ -161,6 +167,7 @@ public class OverlayPanelBaseTest {
                                     panelManager,
                                     mBrowserControlsStateProvider,
                                     mWindowAndroid,
+                                    mProfile,
                                     mCompositorViewHolder,
                                     mTab);
                     mNoExpandPanel =
@@ -170,6 +177,7 @@ public class OverlayPanelBaseTest {
                                     panelManager,
                                     mBrowserControlsStateProvider,
                                     mWindowAndroid,
+                                    mProfile,
                                     mCompositorViewHolder,
                                     mTab);
                 });

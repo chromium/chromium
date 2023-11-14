@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
@@ -59,6 +58,9 @@ public class OverlayPanelContent {
 
     /** Used for progress bar events. */
     private final WebContentsDelegateAndroid mWebContentsDelegate;
+
+    /** The Profile this OverlayPanel is associated with. */
+    private final Profile mProfile;
 
     /** The WebContents that this panel will display. */
     private WebContents mWebContents;
@@ -115,9 +117,6 @@ public class OverlayPanelContent {
     // http://crbug.com/522266 : An instance of InterceptNavigationDelegateImpl should be kept in
     // java layer. Otherwise, the instance could be garbage-collected unexpectedly.
     private InterceptNavigationDelegate mInterceptNavigationDelegate;
-
-    /** Set to {@code True} if opened for an incognito tab. */
-    private boolean mIsIncognito;
 
     /** The desired size of the {@link ContentView} associated with this panel content. */
     private int mContentViewWidth;
@@ -193,24 +192,29 @@ public class OverlayPanelContent {
 
     /**
      * @param contentDelegate An observer for events that occur on this content. If null is passed
-     *                        for this parameter, the default one will be used.
+     *     for this parameter, the default one will be used.
      * @param progressObserver An observer for progress related events.
      * @param activity The {@link Activity} that contains this object.
-     * @param isIncognito {@True} if opened for an incognito tab
+     * @param profile The Profile associated with the OverlayPanel.
      * @param barHeight The height of the bar at the top of the OverlayPanel in dp.
      * @param compositorViewHolder The {@link CompositorViewHolder} for the current activity.
      * @param windowAndroid The {@link WindowAndroid} for the current activity.
      * @param currentTabSupplier Supplies the current activity {@link Tab}.
      */
-    public OverlayPanelContent(@NonNull OverlayContentDelegate contentDelegate,
-            @NonNull OverlayContentProgressObserver progressObserver, @NonNull Activity activity,
-            boolean isIncognito, float barHeight, @NonNull ViewGroup compositorViewHolder,
-            @NonNull WindowAndroid windowAndroid, @NonNull Supplier<Tab> currentTabSupplier) {
+    public OverlayPanelContent(
+            @NonNull OverlayContentDelegate contentDelegate,
+            @NonNull OverlayContentProgressObserver progressObserver,
+            @NonNull Activity activity,
+            @NonNull Profile profile,
+            float barHeight,
+            @NonNull ViewGroup compositorViewHolder,
+            @NonNull WindowAndroid windowAndroid,
+            @NonNull Supplier<Tab> currentTabSupplier) {
         mNativeOverlayPanelContentPtr = OverlayPanelContentJni.get().init(OverlayPanelContent.this);
         mContentDelegate = contentDelegate;
         mProgressObserver = progressObserver;
         mActivity = activity;
-        mIsIncognito = isIncognito;
+        mProfile = profile;
         mBarHeightPx = (int) (barHeight * mActivity.getResources().getDisplayMetrics().density);
         mCompositorViewHolder = compositorViewHolder;
         mWindowAndroid = windowAndroid;
@@ -348,9 +352,8 @@ public class OverlayPanelContent {
             destroyWebContents();
         }
 
-        Profile profile = IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, mIsIncognito);
         // Creates an initially hidden WebContents which gets shown when the panel is opened.
-        mWebContents = WebContentsFactory.createWebContents(profile, true, false);
+        mWebContents = WebContentsFactory.createWebContents(mProfile, true, false);
 
         ContentView cv = ContentView.createContentView(
                 mActivity, null /* eventOffsetHandler */, mWebContents);

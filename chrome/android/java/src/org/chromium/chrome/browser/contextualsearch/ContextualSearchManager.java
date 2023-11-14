@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -311,20 +312,27 @@ public class ContextualSearchManager
 
     /**
      * Initializes this manager.
+     *
      * @param parentView The parent view to attach Contextual Search UX to.
+     * @param profile The Profile associated with this ContextualSearchManager.
      * @param layoutManager A means of attaching the OverlayPanel to the scene.
-     * @param bottomSheetController The {@link BottomSheetController} that is used to show
-     *                              {@link BottomSheetContent}.
+     * @param bottomSheetController The {@link BottomSheetController} that is used to show {@link
+     *     BottomSheetContent}.
      * @param compositorViewHolder The {@link CompositorViewHolder} for the current activity.
      * @param toolbarHeightDp The height of the toolbar in dp.
      * @param toolbarManager The manager of the toolbar, used to query toolbar state.
      * @param activityType The type of the current activity.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
-    public void initialize(@NonNull ViewGroup parentView, @NonNull LayoutManagerImpl layoutManager,
+    public void initialize(
+            @NonNull ViewGroup parentView,
+            @NonNull Profile profile,
+            @NonNull LayoutManagerImpl layoutManager,
             @NonNull BottomSheetController bottomSheetController,
-            @NonNull CompositorViewHolder compositorViewHolder, float toolbarHeightDp,
-            @NonNull ToolbarManager toolbarManager, @ActivityType int activityType,
+            @NonNull CompositorViewHolder compositorViewHolder,
+            float toolbarHeightDp,
+            @NonNull ToolbarManager toolbarManager,
+            @ActivityType int activityType,
             @NonNull IntentRequestTracker intentRequestTracker) {
         mNativeContextualSearchManagerPtr = ContextualSearchManagerJni.get().init(this);
 
@@ -339,10 +347,19 @@ public class ContextualSearchManager
             panel = new ContextualSearchPanelCoordinator(mActivity, mWindowAndroid,
                     bottomSheetController, this::getBasePageHeight, intentRequestTracker);
         } else {
-            panel = new ContextualSearchPanel(mActivity, mLayoutManager,
-                    mLayoutManager.getOverlayPanelManager(), mBrowserControlsStateProvider,
-                    mWindowAndroid, compositorViewHolder, toolbarHeightDp, toolbarManager,
-                    activityType, mTabSupplier);
+            panel =
+                    new ContextualSearchPanel(
+                            mActivity,
+                            mLayoutManager,
+                            mLayoutManager.getOverlayPanelManager(),
+                            mBrowserControlsStateProvider,
+                            mWindowAndroid,
+                            profile,
+                            compositorViewHolder,
+                            toolbarHeightDp,
+                            toolbarManager,
+                            activityType,
+                            mTabSupplier);
         }
 
         panel.setManagementDelegate(this);

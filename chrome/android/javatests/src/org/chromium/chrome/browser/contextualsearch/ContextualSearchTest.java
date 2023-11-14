@@ -18,6 +18,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -44,7 +45,9 @@ public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
                             new ContextualSearchPanelWrapper(
                                     activity,
                                     activity.getCompositorViewHolderForTesting().getLayoutManager(),
-                                    mPanelManager);
+                                    mPanelManager,
+                                    ProfileProvider.getOrCreateProfile(
+                                            activity.getProfileProviderSupplier().get(), false));
                     mPanel.setManagementDelegate(mContextualSearchManager);
                     mContextualSearchManager.setContextualSearchPanel(mPanel);
                     mPanelManager.setDynamicResourceLoader(new DynamicResourceLoader(0, null));

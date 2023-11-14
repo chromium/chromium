@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
@@ -126,6 +127,9 @@ public class OverlayPanel extends OverlayPanelAnimation
     /** The {@link WindowAndroid} for the current activity.  */
     private final WindowAndroid mWindowAndroid;
 
+    /** The {@link Profile} associated with this Panel. */
+    private final Profile mProfile;
+
     /**
      * The {@link CompositorViewHolder}, used as an anchor view. Also injected into other classes.
      */
@@ -186,22 +190,29 @@ public class OverlayPanel extends OverlayPanelAnimation
      * @param layoutManager A {@link LayoutManagerImpl} for observing changes in the active layout.
      * @param panelManager The {@link OverlayPanelManager} responsible for showing panels.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for measuring
-     *         controls.
+     *     controls.
      * @param windowAndroid The {@link WindowAndroid} for the current activity.
+     * @param profile The Profile this OverlayPanel is associated with.
      * @param compositorViewHolder The {@link CompositorViewHolder}
      * @param toolbarHeightDp The height of the toolbar in dp.
      * @param currentTabSupplier Supplies the current {@link Tab}.
      */
-    public OverlayPanel(@NonNull Context context, @NonNull LayoutManagerImpl layoutManager,
+    public OverlayPanel(
+            @NonNull Context context,
+            @NonNull LayoutManagerImpl layoutManager,
             @NonNull OverlayPanelManager panelManager,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull WindowAndroid windowAndroid, @NonNull ViewGroup compositorViewHolder,
-            float toolbarHeightDp, @NonNull Supplier<Tab> currentTabSupplier) {
+            @NonNull WindowAndroid windowAndroid,
+            @NonNull Profile profile,
+            @NonNull ViewGroup compositorViewHolder,
+            float toolbarHeightDp,
+            @NonNull Supplier<Tab> currentTabSupplier) {
         super(context, layoutManager, toolbarHeightDp);
         mLayoutManager = layoutManager;
         mContentFactory = this;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mWindowAndroid = windowAndroid;
+        mProfile = profile;
         mCompositorViewHolder = compositorViewHolder;
         mCurrentTabSupplier = currentTabSupplier;
 
@@ -217,6 +228,29 @@ public class OverlayPanel extends OverlayPanelAnimation
         };
 
         mLayoutManager.addSceneChangeObserver(mSceneChangeObserver);
+    }
+
+    /** Return the {@link WindowAndroid} this panel is associated with. */
+    protected WindowAndroid getWindowAndroid() {
+        return mWindowAndroid;
+    }
+
+    /** Return the {@link Profile} this panel is associated with. */
+    protected Profile getProfile() {
+        return mProfile;
+    }
+
+    /**
+     * Return the {@link ViewGroup} corresponding to the CompositorViewHolder of the Activity
+     * containing this OverlayPanel.
+     */
+    protected ViewGroup getCompositorViewHolder() {
+        return mCompositorViewHolder;
+    }
+
+    /** Return the {@link Tab} supplier for the Activity containing this OverlayPanel. */
+    protected Supplier<Tab> getCurrentTabSupplier() {
+        return mCurrentTabSupplier;
     }
 
     /**
@@ -518,9 +552,15 @@ public class OverlayPanel extends OverlayPanelAnimation
      */
     @Override
     public OverlayPanelContent createNewOverlayPanelContent() {
-        return new OverlayPanelContent(new OverlayContentDelegate(),
-                new OverlayContentProgressObserver(), mActivity, /* isIncognito= */ false,
-                getBarHeight(), mCompositorViewHolder, mWindowAndroid, mCurrentTabSupplier);
+        return new OverlayPanelContent(
+                new OverlayContentDelegate(),
+                new OverlayContentProgressObserver(),
+                mActivity,
+                mProfile,
+                getBarHeight(),
+                mCompositorViewHolder,
+                mWindowAndroid,
+                mCurrentTabSupplier);
     }
 
     /**

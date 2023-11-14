@@ -103,8 +103,20 @@ public class ContextualSearchInstrumentationBase {
         public ContextualSearchPanelWrapper(
                 Context context,
                 LayoutManagerImpl layoutManager,
-                OverlayPanelManager panelManager) {
-            super(context, layoutManager, panelManager, null, null, null, 0, null, 0, null);
+                OverlayPanelManager panelManager,
+                Profile profile) {
+            super(
+                    context,
+                    layoutManager,
+                    panelManager,
+                    null,
+                    null,
+                    profile,
+                    null,
+                    0,
+                    null,
+                    0,
+                    null);
         }
 
         @Override

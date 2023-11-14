@@ -91,22 +91,11 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     /** Used for logging state changes. */
     private final ContextualSearchPanelMetrics mPanelMetrics;
 
-    /**
-     * The {@link CompositorViewHolder}, used as an anchor view. Also injected into other classes.
-     */
-    private final CompositorViewHolder mCompositorViewHolder;
-
-    /** The {@link WindowAndroid} for the current activity.  */
-    private final WindowAndroid mWindowAndroid;
-
     /** Used to query toolbar state. */
     private final ToolbarManager mToolbarManager;
 
     /** The {@link ActivityType} for the current activity. */
     private final @ActivityType int mActivityType;
-
-    /** Supplies the current {@link Tab} for the activity. */
-    private final Supplier<Tab> mCurrentTabSupplier;
 
     /** The distance of the divider from the end of the bar, in dp. */
     private final float mEndButtonWidthDp;
@@ -148,28 +137,39 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      * @param panelManager The object managing the how different panels are shown.
      * @param browserControlsStateProvider Used to measure the browser controls.
      * @param windowAndroid The {@link WindowAndroid} for the current activity.
+     * @param profile The Profile this ContextualSearchPanel is associated with.
      * @param compositorViewHolder The {@link CompositorViewHolder} for the current activity.
      * @param toolbarHeightDp The height of the toolbar in dp.
      * @param toolbarManager The {@link ToolbarManager}, used to query for colors.
      * @param activityType The {@link ActivityType} for the current activity.
      * @param currentTabSupplier Supplies the current activity tab.
      */
-    public ContextualSearchPanel(@NonNull Context context, @NonNull LayoutManagerImpl layoutManager,
+    public ContextualSearchPanel(
+            @NonNull Context context,
+            @NonNull LayoutManagerImpl layoutManager,
             @NonNull OverlayPanelManager panelManager,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull WindowAndroid windowAndroid,
-            @NonNull CompositorViewHolder compositorViewHolder, float toolbarHeightDp,
-            @NonNull ToolbarManager toolbarManager, @ActivityType int activityType,
+            @NonNull Profile profile,
+            @NonNull CompositorViewHolder compositorViewHolder,
+            float toolbarHeightDp,
+            @NonNull ToolbarManager toolbarManager,
+            @ActivityType int activityType,
             @NonNull Supplier<Tab> currentTabSupplier) {
-        super(context, layoutManager, panelManager, browserControlsStateProvider, windowAndroid,
-                compositorViewHolder, toolbarHeightDp, currentTabSupplier);
+        super(
+                context,
+                layoutManager,
+                panelManager,
+                browserControlsStateProvider,
+                windowAndroid,
+                profile,
+                compositorViewHolder,
+                toolbarHeightDp,
+                currentTabSupplier);
         mSceneLayer = createNewContextualSearchSceneLayer();
         mPanelMetrics = new ContextualSearchPanelMetrics();
-        mCompositorViewHolder = compositorViewHolder;
-        mWindowAndroid = windowAndroid;
         mToolbarManager = toolbarManager;
         mActivityType = activityType;
-        mCurrentTabSupplier = currentTabSupplier;
 
         mEndButtonWidthDp = mContext.getResources().getDimensionPixelSize(
                                     R.dimen.contextual_search_padded_button_width)
@@ -178,9 +178,15 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     @Override
     public OverlayPanelContent createNewOverlayPanelContent() {
-        return new OverlayPanelContent(mManagementDelegate.getOverlayContentDelegate(),
-                new PanelProgressObserver(), mActivity, /* isIncognito= */ false, getBarHeight(),
-                mCompositorViewHolder, mWindowAndroid, mCurrentTabSupplier);
+        return new OverlayPanelContent(
+                mManagementDelegate.getOverlayContentDelegate(),
+                new PanelProgressObserver(),
+                mActivity,
+                getProfile(),
+                getBarHeight(),
+                getCompositorViewHolder(),
+                getWindowAndroid(),
+                getCurrentTabSupplier());
     }
 
     // ============================================================================================
@@ -326,7 +332,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         if (isPeeking()) {
             if (getSearchBarControl().getQuickActionControl().hasQuickAction()
                     && isCoordinateInsideActionTarget(x)) {
-                getSearchBarControl().getQuickActionControl().sendIntent(mCurrentTabSupplier.get());
+                getSearchBarControl()
+                        .getQuickActionControl()
+                        .sendIntent(getCurrentTabSupplier().get());
             } else {
                 // super takes care of expanding the Panel when peeking.
                 super.handleBarClick(x, y);
@@ -850,7 +858,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                         new PropertyModel.Builder(ScrimProperties.REQUIRED_KEYS)
                                 .with(ScrimProperties.TOP_MARGIN, 0)
                                 .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
-                                .with(ScrimProperties.ANCHOR_VIEW, mCompositorViewHolder)
+                                .with(ScrimProperties.ANCHOR_VIEW, getCompositorViewHolder())
                                 .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
                                 .with(ScrimProperties.VISIBILITY_CALLBACK, null)
                                 .with(ScrimProperties.CLICK_DELEGATE, null)

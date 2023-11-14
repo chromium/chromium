@@ -2067,13 +2067,45 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mActivityTabProvider.setLayoutStateProvider(layoutManager);
 
         if (mContextualSearchManagerSupplier.hasValue()) {
-            mContextualSearchManagerSupplier.get().initialize(contentContainer, layoutManager,
-                    mRootUiCoordinator.getBottomSheetController(), compositorViewHolder,
-                    getControlContainerHeightResource() == ActivityUtils.NO_RESOURCE_ID
-                            ? 0f
-                            : getResources().getDimension(getControlContainerHeightResource()),
-                    getToolbarManager(), getActivityType(), getIntentRequestTracker());
+            if (getProfileProviderSupplier().hasValue()) {
+                initializeContextualSearchManager(
+                        layoutManager,
+                        contentContainer,
+                        compositorViewHolder,
+                        getProfileProviderSupplier().get().getOriginalProfile());
+            } else {
+                getProfileProviderSupplier()
+                        .onAvailable(
+                                (profileProvider) -> {
+                                    initializeContextualSearchManager(
+                                            layoutManager,
+                                            contentContainer,
+                                            compositorViewHolder,
+                                            profileProvider.getOriginalProfile());
+                                });
+            }
         }
+    }
+
+    private void initializeContextualSearchManager(
+            LayoutManagerImpl layoutManager,
+            ViewGroup contentContainer,
+            CompositorViewHolder compositorViewHolder,
+            Profile profile) {
+        mContextualSearchManagerSupplier
+                .get()
+                .initialize(
+                        contentContainer,
+                        profile,
+                        layoutManager,
+                        mRootUiCoordinator.getBottomSheetController(),
+                        compositorViewHolder,
+                        getControlContainerHeightResource() == ActivityUtils.NO_RESOURCE_ID
+                                ? 0f
+                                : getResources().getDimension(getControlContainerHeightResource()),
+                        getToolbarManager(),
+                        getActivityType(),
+                        getIntentRequestTracker());
     }
 
     /**
