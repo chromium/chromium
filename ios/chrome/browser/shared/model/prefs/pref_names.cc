@@ -399,6 +399,9 @@ const char kNTPLensEntryPointNewBadgeShownCount[] =
 // A boolean specifying whether Web Inspector support is enabled.
 const char kWebInspectorEnabled[] = "ios.web_inspector_enabled";
 
+// The pref to enable units detection in web pages.
+const char kDetectUnitsEnabled[] = "ios.settings.detect_units_enabled";
+
 // An integer set to one of the NetworkPredictionSetting enum values indicating
 // network prediction settings.
 const char kNetworkPredictionSetting[] =

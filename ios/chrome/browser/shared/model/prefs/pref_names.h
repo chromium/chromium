@@ -102,6 +102,7 @@ extern const char kTabPickupLastDisplayedURL[];
 extern const char kTrackPricesOnTabsEnabled[];
 extern const char kLensCameraAssistedSearchPolicyAllowed[];
 extern const char kWebInspectorEnabled[];
+extern const char kDetectUnitsEnabled[];
 
 extern const char kNetworkPredictionSetting[];
 

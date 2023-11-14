@@ -660,6 +660,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(kActivityBucketLastReportedDateArrayKey);
 
   registry->RegisterBooleanPref(kSyncRequested, false);
+
+  registry->RegisterBooleanPref(prefs::kDetectUnitsEnabled, true);
 }
 
 // This method should be periodically pruned of year+ old migrations.

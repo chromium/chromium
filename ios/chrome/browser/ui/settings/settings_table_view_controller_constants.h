@@ -193,4 +193,7 @@ extern NSString* const kSettingsTabPickupCellId;
 // The accessibility identifier of the Privacy Guide settings cell.
 extern NSString* const kSettingsPrivacyGuideCellId;
 
+// The accessibility identifier of the Detect Units cell.
+extern NSString* const kSettingsDetectUnitsCellId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SETTINGS_TABLE_VIEW_CONTROLLER_CONSTANTS_H_

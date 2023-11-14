@@ -1027,6 +1027,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DETECT_ADDRESSES_SETTING_DESCRIPTION" desc="Description of the setting to enable address detection in web pages [iOS only]">
         Get directions and local info from Google Maps
       </message>
+      <message name="IDS_IOS_DETECT_UNITS_SETTING_TITLE" desc="Title of the setting to enable unit detection in web pages [iOS only]">
+        Detect Units
+      </message>
+      <message name="IDS_IOS_DETECT_UNITS_SETTING_DESCRIPTION" desc="Description of the setting to enable unit detection in web pages [iOS only]">
+        Convert measurement units found on the web
+      </message>
       <message name="IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE" desc="The title of the continue button on the disconnect dialog [Length: 20em].">
         Sign Out
       </message>

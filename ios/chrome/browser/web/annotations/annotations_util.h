@@ -29,4 +29,7 @@ bool ShouldPresentConsentIPH(PrefService* prefs);
 // is not present and default to true.
 bool IsAddressLongPressDetectionEnabled(PrefService* prefs);
 
+// Returns whether the automatic unit detection settings is enabled.
+bool IsUnitAutomaticDetectionEnabled(PrefService* prefs);
+
 #endif  // IOS_CHROME_BROWSER_WEB_ANNOTATIONS_ANNOTATIONS_UTIL_H_
