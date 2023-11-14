@@ -25,6 +25,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -158,6 +159,26 @@ constexpr char kTestShippingFormString[] = R"(
      <input type="text" id="phone"><br>
     </form>
     )";
+
+constexpr std::string_view kNumElementsMatchesNumFields =
+    "Autofill.NumElementsMatchesNumFields";
+
+// Continuously merges histograms from all subprocesses and checks if the
+// histogram `histogram_name` got observed with `expected_count` and
+// `expected_sample`. Then runs `base::HistogramTester::ExpectUniqueSample`.
+bool WaitAndExpectUniqueSample(const base::HistogramTester* histogram_tester,
+                               const std::string_view histogram_name,
+                               const bool expected_sample,
+                               const int expected_count) {
+  bool expected_count_observed = base::test::RunUntil([&]() {
+    ::metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    return histogram_tester->GetBucketCount(histogram_name, expected_sample) ==
+           expected_count;
+  });
+  histogram_tester->ExpectUniqueSample(kNumElementsMatchesNumFields,
+                                       expected_sample, expected_count);
+  return expected_count_observed;
+}
 
 // Version of `kTestShippingFormString` which uses <selectlist> instead of
 // <select>.
@@ -2575,9 +2596,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, FillLocalCreditCard) {
 
 // Test that we do not fill formless non-checkout forms when we enable the
 // formless form restrictions.
-//
-// TODO(crbug.com/1478563): Deflake this test everywhere.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_NoAutocomplete) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, NoAutocomplete) {
   CreateTestProfile();
   GURL url =
       embedded_test_server()->GetURL("/autofill/formless_no_autocomplete.html");
@@ -2585,13 +2604,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_NoAutocomplete) {
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
 
-  ::metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
   // If only some form fields are tagged with autocomplete types, then the
   // number of input elements will not match the number of fields when autofill
   // tries to preview or fill.
-  histogram_tester().ExpectUniqueSample("Autofill.NumElementsMatchesNumFields",
-                                        true, 2);
+  ASSERT_TRUE(WaitAndExpectUniqueSample(&histogram_tester(),
+                                        kNumElementsMatchesNumFields, true, 2));
 
   EXPECT_EQ("Milton", GetFieldValueById("firstname"));
   EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address"));
@@ -2607,8 +2624,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_NoAutocomplete) {
 // version of the the test in that at least one of the fields has an
 // autocomplete attribute, so autofill will always be aware of the existence
 // of the form.
-// TODO(crbug.com/1478122): Flaky.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_SomeAutocomplete) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, SomeAutocomplete) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "/autofill/formless_some_autocomplete.html");
@@ -2616,13 +2632,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_SomeAutocomplete) {
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
 
-  ::metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
   // If only some form fields are tagged with autocomplete types, then the
   // number of input elements will not match the number of fields when autofill
   // tries to preview or fill.
-  histogram_tester().ExpectUniqueSample("Autofill.NumElementsMatchesNumFields",
-                                        true, 2);
+  ASSERT_TRUE(WaitAndExpectUniqueSample(&histogram_tester(),
+                                        kNumElementsMatchesNumFields, true, 2));
 
   EXPECT_EQ("Milton", GetFieldValueById("firstname"));
   EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address"));
@@ -2635,8 +2649,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_SomeAutocomplete) {
 
 // Test that we do not fill formless non-checkout forms when we enable the
 // formless form restrictions.
-// TODO(crbug.com/1478122): Flaky.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_AllAutocomplete) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, AllAutocomplete) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "/autofill/formless_all_autocomplete.html");
@@ -2644,12 +2657,10 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_AllAutocomplete) {
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
 
-  ::metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
   // If all form fields are tagged with autocomplete types, we make them all
   // available to be filled.
-  histogram_tester().ExpectUniqueSample("Autofill.NumElementsMatchesNumFields",
-                                        true, 2);
+  ASSERT_TRUE(WaitAndExpectUniqueSample(&histogram_tester(),
+                                        kNumElementsMatchesNumFields, true, 2));
 
   EXPECT_EQ("Milton", GetFieldValueById("firstname"));
   EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address"));
