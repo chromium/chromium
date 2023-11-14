@@ -48,6 +48,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/display_switches.h"
@@ -96,6 +98,8 @@ void SynchronizeBrowserWithRenderer(content::WebContents* contents) {
 // A test view that will be added as a child to the BrowserView to verify how
 // many times it's laid out while sliding is in progress.
 class LayoutTestView : public views::View {
+  METADATA_HEADER(LayoutTestView, views::View)
+
  public:
   explicit LayoutTestView(BrowserView* parent) {
     DCHECK(parent);
@@ -120,6 +124,9 @@ class LayoutTestView : public views::View {
  private:
   int layout_count_ = 0;
 };
+
+BEGIN_METADATA(LayoutTestView)
+END_METADATA
 
 class TestControllerObserver {
  public:
