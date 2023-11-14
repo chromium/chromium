@@ -6,8 +6,11 @@ package org.chromium.components.page_info;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.text.TextPaint;
 import android.text.format.DateUtils;
 import android.text.format.Formatter;
+import android.text.style.ClickableSpan;
+import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
@@ -28,6 +31,7 @@ import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsStatus;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.util.AttrUtils;
 
 /**
  * View showing a toggle and a description for third-party cookie blocking for a site.
@@ -210,20 +214,30 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             // Hide all the 3PC controls.
             mCookieSwitch.setVisible(false);
             mThirdPartyCookiesTitle.setVisible(false);
-            mThirdPartyCookiesSummary.setVisible(false);
-            // TODO(crbug.com/1499873): Move this to the bottom section of the view.
-            Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
-            NoUnderlineClickableSpan linkSpan =
-                    new NoUnderlineClickableSpan(
-                            getContext(),
-                            (view) -> {
-                                mOnCookieSettingsLinkClicked.run();
-                            });
-            cookieSummary.setSummary(
+            findPreference(COOKIE_SUMMARY_PREFERENCE).setVisible(false);
+            ClickableSpan linkSpan =
+                    new ClickableSpan() {
+                        @Override
+                        public void onClick(View view) {
+                            mOnCookieSettingsLinkClicked.run();
+                        }
+
+                        @Override
+                        public void updateDrawState(TextPaint textPaint) {
+                            super.updateDrawState(textPaint);
+                            textPaint.setColor(
+                                    AttrUtils.resolveColor(
+                                            getContext().getTheme(),
+                                            R.attr.globalClickableSpanColor,
+                                            R.color.default_text_color_link_baseline));
+                        }
+                    };
+            mThirdPartyCookiesSummary.setSummary(
                     SpanApplier.applySpans(
                             getString(
                                     R.string.page_info_tracking_protection_site_grant_description),
                             new SpanApplier.SpanInfo("<link>", "</link>", linkSpan)));
+            mThirdPartyCookiesSummary.setDividerAllowedAbove(true);
             return;
         }
 
