@@ -779,6 +779,9 @@ public final class ProductionSupportedFlagList {
                 "PMProcessPriorityPolicy",
                 "Controls whether the priority of renderers is controlled by the performance "
                         + "manager."),
+        Flag.baseFeature(
+                BlinkFeatures.BACKGROUND_RESOURCE_FETCH,
+                "Process resource requests in a background thread inside Blink."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
