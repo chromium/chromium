@@ -23,6 +23,21 @@ class RenderFrameHost;
 
 namespace web_app {
 
+namespace {
+
+struct SubAppInstallParams {
+  webapps::ManifestId manifest_id;
+  GURL install_url;
+};
+
+struct SubAppInstallResult {
+  webapps::ManifestId manifest_id;
+  webapps::AppId app_id;
+  webapps::InstallResultCode install_result_code;
+};
+
+}  // namespace
+
 class SubAppsInstallDialogController;
 
 class SubAppsServiceImpl
@@ -62,10 +77,9 @@ class SubAppsServiceImpl
     AddResultsMojo results;
   };
 
-  void CollectInstallData(
-      int add_call_id,
-      std::vector<std::pair<webapps::ManifestId, GURL>> requested_installs,
-      webapps::ManifestId parent_manifest_id);
+  void CollectInstallData(int add_call_id,
+                          std::vector<SubAppInstallParams> requested_installs,
+                          webapps::ManifestId parent_manifest_id);
   void ProcessInstallData(
       int add_call_id,
       std::vector<std::pair<webapps::ManifestId,
@@ -73,11 +87,8 @@ class SubAppsServiceImpl
   void ScheduleSubAppInstalls(int add_call_id);
   void ProcessDialogResponse(int add_call_id, bool dialog_accepted);
   void FinishAddCallOrShowInstallDialog(int add_call_id);
-  void FinishAddCall(
-      int add_call_id,
-      std::vector<std::tuple<webapps::ManifestId,
-                             webapps::AppId,
-                             webapps::InstallResultCode>> install_results);
+  void FinishAddCall(int add_call_id,
+                     std::vector<SubAppInstallResult> install_results);
 
   void RemoveSubApp(
       const std::string& manifest_id_path,
