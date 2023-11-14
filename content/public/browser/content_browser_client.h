@@ -56,6 +56,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
+#include "services/network/public/mojom/proxy_config.mojom-forward.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
@@ -2753,6 +2754,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void PreferenceRankAudioDeviceInfos(
       BrowserContext* browser_context,
       blink::WebMediaDeviceInfoArray& infos);
+
+  // Allows the embedder to override the proxy bypass policy used for IP
+  // Protection.
+  // Even if a domain is part of the masked domain list and is
+  // eligible for IP Protection, the embedder can use a certain policy to bypass
+  // certain network requests from IP Protection.
+  // By default, there is no bypass policy used.
+  virtual network::mojom::IpProtectionProxyBypassPolicy
+  GetIpProtectionProxyBypassPolicy();
 };
 
 }  // namespace content

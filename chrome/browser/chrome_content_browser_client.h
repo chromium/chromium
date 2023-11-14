@@ -974,6 +974,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void PreferenceRankVideoDeviceInfos(
       content::BrowserContext* browser_context,
       blink::WebMediaDeviceInfoArray& infos) override;
+  network::mojom::IpProtectionProxyBypassPolicy
+  GetIpProtectionProxyBypassPolicy() override;
 
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);

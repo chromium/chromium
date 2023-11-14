@@ -1658,4 +1658,8 @@ void ContentBrowserClient::PreferenceRankVideoDeviceInfos(
     BrowserContext* browser_context,
     blink::WebMediaDeviceInfoArray& infos) {}
 
+network::mojom::IpProtectionProxyBypassPolicy
+ContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
+  return network::mojom::IpProtectionProxyBypassPolicy::kNone;
+}
 }  // namespace content

@@ -486,7 +486,8 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
       std::make_unique<FirstPartySetsManager>(params->first_party_sets_enabled);
 
   network_service_proxy_allow_list_ =
-      std::make_unique<NetworkServiceProxyAllowList>();
+      std::make_unique<NetworkServiceProxyAllowList>(
+          params->ip_protection_proxy_bypass_policy);
 
   network_service_resource_block_list_ =
       std::make_unique<NetworkServiceResourceBlockList>();

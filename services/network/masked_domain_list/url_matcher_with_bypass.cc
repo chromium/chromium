@@ -7,7 +7,9 @@
 #include <string>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
@@ -102,7 +104,7 @@ bool UrlMatcherWithBypass::IsPopulated() {
 
 UrlMatcherWithBypass::MatchResult UrlMatcherWithBypass::Matches(
     const GURL& request_url,
-    const net::SchemefulSite& top_frame_site,
+    const absl::optional<net::SchemefulSite>& top_frame_site,
     bool skip_bypass_check) {
   auto dvlog = [&](std::string_view message,
                    const UrlMatcherWithBypass::MatchResult& match_result) {
@@ -110,10 +112,15 @@ UrlMatcherWithBypass::MatchResult UrlMatcherWithBypass::Matches(
         {" - matches: ", match_result.matches ? "true" : "false",
          ", third-party: ", match_result.is_third_party ? "true" : "false"});
     DVLOG(3) << "UrlMatcherWithBypass::Matches(" << request_url << ", "
-             << top_frame_site << ") - " << message << result_message;
+             << top_frame_site.value() << ") - " << message << result_message;
   };
   // Result defaults to {matches = false, is_third_party = false}.
   MatchResult result;
+
+  if (!skip_bypass_check && !top_frame_site.has_value()) {
+    NOTREACHED_NORETURN()
+        << "top frame site has no value and skip_bypass_check is false";
+  }
 
   if (!IsPopulated()) {
     dvlog("skipped (match list not populated)", result);
@@ -137,7 +144,7 @@ UrlMatcherWithBypass::MatchResult UrlMatcherWithBypass::Matches(
       result.matches = true;
       result.is_third_party =
           skip_bypass_check ||
-          bypass_matcher.Evaluate(top_frame_site.GetURL()) ==
+          bypass_matcher.Evaluate(top_frame_site.value().GetURL()) ==
               net::SchemeHostPortMatcherResult::kNoMatch;
       break;
     }

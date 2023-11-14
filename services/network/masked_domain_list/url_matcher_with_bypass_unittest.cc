@@ -178,7 +178,8 @@ const std::vector<MatchTest> kMatchTests = {
               false,
               {.matches = true, .is_third_party = true}},
 
-    // Third-party requests for properties in the MDL should not be proxied.
+    // Third-party requests for properties in the MDL should not be proxied
+    // if bypass policy is kFirstPartyToTopLevelFrame.
     MatchTest{"3PPropInOther",
               "acme-pa.com",
               "somehost.com",
@@ -207,7 +208,8 @@ const std::vector<MatchTest> kMatchTests = {
 
     // As an exception, third-party requests for resources (including
     // subdomains) in the MDL should be not be proxied when the top-level site
-    // is a property with the same owner as the resource.
+    // is a property with the same owner as the resource if bypass policy is
+    // kFirstPartyToTopLevelFrame.
     MatchTest{"3PRsrcInPropSameOwner",
               "acme-ra.com",
               "acme-pa.com",

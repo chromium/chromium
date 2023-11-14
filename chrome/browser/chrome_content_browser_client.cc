@@ -8259,3 +8259,9 @@ void ChromeContentBrowserClient::PreferenceRankVideoDeviceInfos(
   CHECK(prefs);
   media_prefs::PreferenceRankVideoDeviceInfos(*prefs, infos);
 }
+
+network::mojom::IpProtectionProxyBypassPolicy
+ChromeContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
+  return network::mojom::IpProtectionProxyBypassPolicy::
+      kFirstPartyToTopLevelFrame;
+}

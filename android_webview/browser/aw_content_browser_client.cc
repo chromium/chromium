@@ -1346,4 +1346,9 @@ bool AwContentBrowserClient::ShouldUseOsWebTriggerAttributionReporting(
   NOTREACHED_NORETURN();
 }
 
+network::mojom::IpProtectionProxyBypassPolicy
+AwContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
+  return network::mojom::IpProtectionProxyBypassPolicy::kNone;
+}
+
 }  // namespace android_webview

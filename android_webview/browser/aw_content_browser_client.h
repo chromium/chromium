@@ -282,6 +282,8 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldUseOsWebTriggerAttributionReporting(
       content::RenderFrameHost* rfh) override;
   blink::mojom::OriginTrialsSettingsPtr GetOriginTrialsSettings() override;
+  network::mojom::IpProtectionProxyBypassPolicy
+  GetIpProtectionProxyBypassPolicy() override;
 
   AwFeatureListCreator* aw_feature_list_creator() {
     return aw_feature_list_creator_;

@@ -49,3 +49,14 @@ struct ProxyConfig {
   bool pac_mandatory;
   ProxyRules proxy_rules;
 };
+
+// The policy used for bypassing requests that are eligible for IP Protection.
+// Even if a domain is part of the masked domain list, the bypass policy can
+// be used to bypass certain network requests from IP Protection.
+enum IpProtectionProxyBypassPolicy {
+  // No bypass policy.
+  kNone = 0,
+  // Request to domains that are first party to the top level frame are
+  // bypassed.
+  kFirstPartyToTopLevelFrame = 1,
+};
