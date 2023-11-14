@@ -156,6 +156,7 @@ tflite_static_library("tflite_builtin_op_resolver") {
     "src/tensorflow/lite/kernels/stablehlo_elementwise.cc",
     "src/tensorflow/lite/kernels/stablehlo_min_max.cc",
     "src/tensorflow/lite/kernels/stablehlo_multiply.cc",
+    "src/tensorflow/lite/kernels/stablehlo_pad.cc",
     "src/tensorflow/lite/kernels/stablehlo_reduce_window.cc",
     "src/tensorflow/lite/kernels/unsorted_segment.cc",
     "src/tensorflow/lite/kernels/var_handle.cc",
