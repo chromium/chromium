@@ -654,6 +654,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void SetBounds(const gfx::Rect& bounds);
   void SetSize(const gfx::Size& size);
 
+  // Retrieves the restored size for the window.
+  gfx::Size GetSize() const;
+
   // Sizes the window to the specified size and centers it.
   void CenterWindow(const gfx::Size& size);
 

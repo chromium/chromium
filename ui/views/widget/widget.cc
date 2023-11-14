@@ -668,6 +668,10 @@ void Widget::SetSize(const gfx::Size& size) {
     native_widget_->SetSize(size);
 }
 
+gfx::Size Widget::GetSize() const {
+  return GetRestoredBounds().size();
+}
+
 void Widget::CenterWindow(const gfx::Size& size) {
   if (native_widget_)
     native_widget_->CenterWindow(size);
@@ -2263,6 +2267,7 @@ ADD_PROPERTY_METADATA(int, Width)
 ADD_PROPERTY_METADATA(int, Height)
 ADD_PROPERTY_METADATA(bool, Visible)
 ADD_PROPERTY_METADATA(ui::ZOrderLevel, ZOrderLevel)
+ADD_PROPERTY_METADATA(gfx::Size, Size)
 END_METADATA
 
 namespace internal {

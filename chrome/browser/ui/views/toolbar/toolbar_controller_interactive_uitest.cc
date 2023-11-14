@@ -16,6 +16,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -153,7 +154,12 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
   }
 
   void SetBrowserWidth(int width) {
-    browser_view_->SetSize({width, browser_view_->size().height()});
+    int widget_width = browser_view_->GetWidget()->GetSize().width();
+    int browser_width = browser_view_->size().width();
+    browser_view_->GetWidget()->SetSize(
+        {width + widget_width - browser_width,
+         browser_view_->GetWidget()->GetSize().height()});
+    views::test::RunScheduledLayout(browser_view_);
   }
 
   const views::View* FindToolbarElementWithId(ui::ElementIdentifier id) const {
