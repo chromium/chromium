@@ -1253,12 +1253,6 @@ WebContentsImpl::~WebContentsImpl() {
     }
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  // For simplicity, destroy the Java WebContents before we notify of the
-  // destruction of the WebContents.
-  ClearWebContentsAndroid();
-#endif
-
   // |save_package_| is refcounted so make sure we clear the page before
   // we toss out our reference.
   if (save_package_) {
@@ -1266,6 +1260,13 @@ WebContentsImpl::~WebContentsImpl() {
   }
 
   observers_.NotifyObservers(&WebContentsObserver::WebContentsDestroyed);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Destroy the WebContentsAndroid here, so that its observers still can access
+  // `this`.
+  ClearWebContentsAndroid();
+#endif
+
   observers_.NotifyObservers(&WebContentsObserver::ResetWebContents);
   SetDelegate(nullptr);
 }
