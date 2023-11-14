@@ -757,8 +757,8 @@ class HashTable final
 
   ValueType** GetBufferSlot() { return &table_; }
 
-  template <typename VisitorDispatcher, typename A = Allocator>
-  std::enable_if_t<A::kIsGarbageCollected> Trace(VisitorDispatcher) const;
+  void Trace(auto visitor) const
+    requires Allocator::kIsGarbageCollected;
 
 #if DCHECK_IS_ON()
   void EnterAccessForbiddenScope() {
@@ -786,10 +786,8 @@ class HashTable final
 #endif
 
  protected:
-  template <typename VisitorDispatcher, typename A = Allocator>
-  std::enable_if_t<A::kIsGarbageCollected> TraceTable(
-      VisitorDispatcher,
-      const ValueType* table) const;
+  void TraceTable(auto visitor, const ValueType* table) const
+    requires Allocator::kIsGarbageCollected;
 
  private:
   static ValueType* AllocateTable(unsigned size);
@@ -1961,10 +1959,10 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-template <typename VisitorDispatcher, typename A>
-std::enable_if_t<A::kIsGarbageCollected>
-HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Trace(
-    VisitorDispatcher visitor) const {
+void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Trace(
+    auto visitor) const
+  requires Allocator::kIsGarbageCollected
+{
   static_assert(WTF::IsWeak<ValueType>::value ||
                     IsTraceableInCollectionTrait<Traits>::value,
                 "Value should not be traced");
@@ -1977,11 +1975,11 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-template <typename VisitorDispatcher, typename A>
-std::enable_if_t<A::kIsGarbageCollected>
-HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::TraceTable(
-    VisitorDispatcher visitor,
-    const ValueType* table) const {
+void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::TraceTable(
+    auto visitor,
+    const ValueType* table) const
+  requires Allocator::kIsGarbageCollected
+{
   if (!WTF::IsWeak<ValueType>::value) {
     // Strong HashTable.
     Allocator::template TraceHashTableBackingStrongly<ValueType, HashTable>(

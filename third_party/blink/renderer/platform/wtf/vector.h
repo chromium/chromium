@@ -1405,10 +1405,11 @@ class Vector
   //
   // The implementation of Fill uses std::fill which is not yet supported for
   // garbage collected vectors.
-  template <typename A = Allocator>
-  std::enable_if_t<!A::kIsGarbageCollected> Fill(const T&, wtf_size_t);
-  template <typename A = Allocator>
-  std::enable_if_t<!A::kIsGarbageCollected> Fill(const T& val) {
+  void Fill(const T&, wtf_size_t)
+    requires(!Allocator::kIsGarbageCollected);
+  void Fill(const T& val)
+    requires(!Allocator::kIsGarbageCollected)
+  {
     Fill(val, size());
   }
 
@@ -1446,8 +1447,8 @@ class Vector
     Base::Destruct();
   }
 
-  template <typename VisitorDispatcher, typename A = Allocator>
-  std::enable_if_t<A::kIsGarbageCollected> Trace(VisitorDispatcher) const;
+  void Trace(auto visitor) const
+    requires Allocator::kIsGarbageCollected;
 
   class GCForbiddenScope {
     STACK_ALLOCATED();
@@ -1764,9 +1765,10 @@ wtf_size_t Vector<T, inlineCapacity, Allocator>::ReverseFind(
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-template <typename A>
-std::enable_if_t<!A::kIsGarbageCollected>
-Vector<T, inlineCapacity, Allocator>::Fill(const T& val, wtf_size_t new_size) {
+void Vector<T, inlineCapacity, Allocator>::Fill(const T& val,
+                                                wtf_size_t new_size)
+  requires(!Allocator::kIsGarbageCollected)
+{
   if (size() > new_size) {
     Shrink(new_size);
   } else if (new_size > capacity()) {
@@ -2268,9 +2270,9 @@ void DeferredTraceImpl(VisitorDispatcher visitor, const void* object) {
 
 // Only defined for HeapAllocator. Used when visiting vector object.
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-template <typename VisitorDispatcher, typename A>
-std::enable_if_t<A::kIsGarbageCollected>
-Vector<T, inlineCapacity, Allocator>::Trace(VisitorDispatcher visitor) const {
+void Vector<T, inlineCapacity, Allocator>::Trace(auto visitor) const
+  requires Allocator::kIsGarbageCollected
+{
   static_assert(Allocator::kIsGarbageCollected,
                 "Garbage collector must be enabled.");
 
@@ -2295,7 +2297,7 @@ Vector<T, inlineCapacity, Allocator>::Trace(VisitorDispatcher visitor) const {
     if (!VectorTraits<T>::kCanTraceConcurrently) {
       if (Allocator::DeferTraceToMutatorThreadIfConcurrent(
               visitor, buffer,
-              internal::DeferredTraceImpl<Allocator, VisitorDispatcher, T,
+              internal::DeferredTraceImpl<Allocator, decltype(visitor), T,
                                           inlineCapacity>,
               inlineCapacity * sizeof(T))) {
         return;
