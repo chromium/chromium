@@ -531,6 +531,13 @@ chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(keyEvent, useRewrit
 chrome.accessibilityPrivate.enableMouseEvents = function(enabled) {};
 
 /**
+ * Sets the cursor position on the screen in absolute screen coordinates.
+ * @param {!chrome.accessibilityPrivate.ScreenPoint} point The screen point at
+ *     which to put the cursor.
+ */
+chrome.accessibilityPrivate.setCursorPosition = function(point) {};
+
+/**
  * Sends a fabricated mouse event.
  * @param {!chrome.accessibilityPrivate.SyntheticMouseEvent} mouseEvent The
  *     event to send.

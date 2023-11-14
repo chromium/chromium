@@ -233,6 +233,11 @@ var availableTests = [
           'Fake DLC file content', new TextDecoder().decode(contents));
       chrome.test.succeed();
     });
+  },
+
+  function testSetCursorPosition() {
+    chrome.accessibilityPrivate.setCursorPosition({x: 450, y: 350});
+    chrome.test.succeed();
   }
 ];
 

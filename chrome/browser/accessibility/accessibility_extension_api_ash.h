@@ -42,6 +42,15 @@ class AccessibilityPrivateEnableMouseEventsFunction : public ExtensionFunction {
                              ACCESSIBILITY_PRIVATE_ENABLEMOUSEEVENTS)
 };
 
+// API function that sets the cursor position on the screen in absolute
+// coordinates.
+class AccessibilityPrivateSetCursorPositionFunction : public ExtensionFunction {
+  ~AccessibilityPrivateSetCursorPositionFunction() override {}
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.setCursorPosition",
+                             ACCESSIBILITY_PRIVATE_SETCURSORPOSITION)
+};
+
 // API function that requests that key events be forwarded to the Switch
 // Access extension.
 class AccessibilityPrivateForwardKeyEventsToSwitchAccessFunction

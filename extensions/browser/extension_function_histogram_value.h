@@ -1902,6 +1902,7 @@ enum HistogramValue {
   AUTOFILLPRIVATE_BULKDELETEALLCVCS = 1840,
   PDFVIEWERPRIVATE_GETSTREAMINFO = 1841,
   PDFVIEWERPRIVATE_SETPDFPLUGINATTRIBUTES = 1842,
+  ACCESSIBILITY_PRIVATE_SETCURSORPOSITION = 1843,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

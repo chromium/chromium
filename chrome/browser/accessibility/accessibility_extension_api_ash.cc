@@ -140,6 +140,29 @@ AccessibilityPrivateEnableMouseEventsFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
+AccessibilityPrivateSetCursorPositionFunction::Run() {
+  absl::optional<accessibility_private::SetCursorPosition::Params> params =
+      accessibility_private::SetCursorPosition::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  gfx::Point location_in_screen(params->point.x, params->point.y);
+  const display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestPoint(location_in_screen);
+  auto* host = ash::GetWindowTreeHostForDisplay(display.id());
+  if (!host) {
+    return RespondNow(Error("Unable to find a window tree host"));
+  }
+  aura::Window* root_window = host->window();
+  if (!root_window) {
+    return RespondNow(Error("Unable to get root window"));
+  }
+  gfx::Point location_in_window(location_in_screen);
+  ::wm::ConvertPointFromScreen(root_window, &location_in_window);
+  host->MoveCursorToLocationInDIP(location_in_window);
+
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
 AccessibilityPrivateForwardKeyEventsToSwitchAccessFunction::Run() {
   absl::optional<accessibility_private::ForwardKeyEventsToSwitchAccess::Params>
       params =
@@ -475,7 +498,7 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
 
   // Locations are assumed to be in screen coordinates.
   gfx::Point location_in_screen(mouse_data->x, mouse_data->y);
-  const display::Display& display =
+  const display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestPoint(location_in_screen);
   auto* host = ash::GetWindowTreeHostForDisplay(display.id());
   if (!host) {

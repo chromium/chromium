@@ -643,6 +643,18 @@
         ]
       },
       {
+        "name": "setCursorPosition",
+        "type": "function",
+        "description": "Sets the cursor position on the screen in absolute screen coordinates.",
+        "parameters": [
+          {
+            "name": "point",
+            "$ref": "ScreenPoint",
+            "description": "The screen point at which to put the cursor."
+          }
+        ]
+      },
+      {
         "name": "sendSyntheticMouseEvent",
         "type": "function",
         "description": "Sends a fabricated mouse event.",
