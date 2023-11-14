@@ -1134,6 +1134,7 @@ TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
   // Loads FetchLater request (which is also keepalive request) under invalid
   // configuration:
   feature_list().Reset();
+  feature_list().InitAndDisableFeature(blink::features::kFetchLaterAPI);
   renderer_loader_factory.CreateLoader(
       CreateFetchLaterResourceRequest(GURL(kTestRequestUrl)),
       /*expect_success=*/false);
