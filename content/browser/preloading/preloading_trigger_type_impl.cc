@@ -6,6 +6,20 @@
 
 namespace content {
 
+PreloadingTriggerType PreloadingTriggerTypeFromSpeculationInjectionType(
+    blink::mojom::SpeculationInjectionType injection_type) {
+  switch (injection_type) {
+    case blink::mojom::SpeculationInjectionType::kNone:
+      [[fallthrough]];
+    case blink::mojom::SpeculationInjectionType::kMainWorldScript:
+      return PreloadingTriggerType::kSpeculationRule;
+    case blink::mojom::SpeculationInjectionType::kIsolatedWorldScript:
+      return PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld;
+    case blink::mojom::SpeculationInjectionType::kAutoSpeculationRules:
+      return PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules;
+  }
+}
+
 bool IsSpeculationRuleType(PreloadingTriggerType type) {
   switch (type) {
     case PreloadingTriggerType::kSpeculationRule:

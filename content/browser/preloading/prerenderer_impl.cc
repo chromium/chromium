@@ -6,6 +6,7 @@
 
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
+#include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
@@ -18,24 +19,6 @@
 #include "content/public/browser/web_contents.h"
 
 namespace content {
-
-namespace {
-
-PreloadingTriggerType GetTriggerType(
-    blink::mojom::SpeculationInjectionType type) {
-  switch (type) {
-    case blink::mojom::SpeculationInjectionType::kNone:
-      [[fallthrough]];
-    case blink::mojom::SpeculationInjectionType::kMainWorldScript:
-      return PreloadingTriggerType::kSpeculationRule;
-    case blink::mojom::SpeculationInjectionType::kIsolatedWorldScript:
-      return PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld;
-    case blink::mojom::SpeculationInjectionType::kAutoSpeculationRules:
-      return PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules;
-  }
-}
-
-}  // namespace
 
 struct PrerendererImpl::PrerenderInfo {
   blink::mojom::SpeculationInjectionType injection_type;
@@ -224,7 +207,9 @@ bool PrerendererImpl::MaybePrerender(
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       &rfhi, blink::mojom::WebFeature::kSpeculationRulesPrerender);
   IncrementReceivedPrerendersCountForMetrics(
-      GetTriggerType(candidate->injection_type), candidate->eagerness);
+      PreloadingTriggerTypeFromSpeculationInjectionType(
+          candidate->injection_type),
+      candidate->eagerness);
 
   // TODO(crbug.com/1176054): Remove it after supporting cross-site
   // prerender.
@@ -242,7 +227,9 @@ bool PrerendererImpl::MaybePrerender(
 
   Referrer referrer(*(candidate->referrer));
   PrerenderAttributes attributes(
-      candidate->url, GetTriggerType(candidate->injection_type),
+      candidate->url,
+      PreloadingTriggerTypeFromSpeculationInjectionType(
+          candidate->injection_type),
       /*embedder_histogram_suffix=*/"",
       candidate->target_browsing_context_name_hint, referrer,
       candidate->eagerness, rfhi.GetLastCommittedOrigin(),
