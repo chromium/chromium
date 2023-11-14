@@ -169,30 +169,33 @@ _BROWSER_SPECIFIC_FILTER['chrome'] = [
     'RemoteBrowserTest.testConnectToRemoteBrowserLiteralAddressHeadless',
 ]
 _BROWSER_SPECIFIC_FILTER['chrome-headless-shell'] = [
-    # TODO: Each test in this list must have an explanation why it is expected
-    # to fail. If the test is not expected to fail a corresponding issue must
-    # be created and referred to in the comment above the excluded test.
-    # See crbug.com/chromedriver/4358.
-    'ZChromeStartRetryCountTest.testChromeStartRetryCount',
+    # Maximize and FullScreeen operations make no sense in chrome-headless-mode.
+    # The implementation just changes the window state.
+    # S/A: BrowserHandler::setWindowsBounds at
+    # //headelss/lib/browser/protocol/browser_handler.cc.
     'ChromeDriverTest.testWindowMaximize',
     'ChromeDriverTest.testWindowFullScreen',
+    # chrome-headless-shell does not support scripted print
     'ChromeDriverTest.testCanSwitchToPrintPreviewDialog',
-    'ChromeDriverSecureContextTest.*',
-    'RemoteBrowserTest.testConnectToRemoteBrowser',
     # FedCM is not supported by chrome-headless-shell.
     'FedCmSpecificTest.*',
+    # chrome-headless-shell stops handling some CDP commands until the page is
+    # fully loaded.
+    # See: https://crbug.com/chromedriver/4624
     'ChromeDriverTest.testSlowIFrame',
-    'ChromeExtensionsCapabilityTest.testCanInspectBackgroundPage',
-    'ChromeExtensionsCapabilityTest.testIFrameWithExtensionsSource',
+    # https://crbug.com/706008
+    # chrome-headless-shell does not support extensions
+    'ChromeExtensionsCapabilityTest.*',
     # chrome-headless-shell does not support chrome:about page
     'ChromeSwitchesCapabilityTest.testRemoteDebuggingPort',
     # chrome-headless-shell does not support chrome:about page
     'ChromeSwitchesCapabilityTest.testRemoteDebuggingPipe',
-    'ChromeExtensionsCapabilityTest.testIFrameWithExtensionsSource',
-    'ChromeExtensionsCapabilityTest.testCanInspectBackgroundPage',
+    # chrome-headless-shell stops handling some CDP commands until the page is
+    # fully loaded.
+    # See: https://crbug.com/chromedriver/4624
     'ChromeDriverTest.testShouldHandleNewWindowLoadingProperly',
+    # chrome-headless-shell does not support Page.setRPHRegistrationMode
     'ChromeDriverTest.testSetRPHResgistrationMode',
-    'ChromeDownloadDirTest.testDownloadDirectoryOverridesExistingPreferences',
 ]
 
 _BROWSER_AND_PLATFORM_SPECIFIC_FILTER = {
@@ -4498,6 +4501,11 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load(
         self.GetHttpsUrlForFile('/chromedriver/sensors_test.html'))
 
+    self._driver.SetPermission({
+      'descriptor': { 'name': 'accelerometer' },
+      'state': 'granted'
+    })
+
     self._driver.ExecuteScript('startSensor()')
     self.assertTrue(
         self.WaitForCondition(lambda: self._driver.ExecuteScript(
@@ -4507,11 +4515,17 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
         'return sensorErrorEvent.error.name')
     self.assertEqual('NotReadableError', error_name)
 
+
   def testCreateVirtualSensorWithMinimumFrequency(self):
     self._driver.CreateVirtualSensor('accelerometer',
                                      {'minSamplingFrequency': 6})
     self._driver.Load(
         self.GetHttpsUrlForFile('/chromedriver/sensors_test.html'))
+
+    self._driver.SetPermission({
+      'descriptor': { 'name': 'accelerometer' },
+      'state': 'granted'
+    })
 
     self._driver.ExecuteScript('startSensor()')
     self.assertTrue(
@@ -4527,6 +4541,11 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load(
         self.GetHttpsUrlForFile('/chromedriver/sensors_test.html'))
 
+    self._driver.SetPermission({
+      'descriptor': { 'name': 'accelerometer' },
+      'state': 'granted'
+    })
+
     self._driver.ExecuteScript('startSensor()')
     self.assertTrue(
         self.WaitForCondition(
@@ -4539,6 +4558,11 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self._driver.CreateVirtualSensor('accelerometer')
     self._driver.Load(
         self.GetHttpsUrlForFile('/chromedriver/sensors_test.html'))
+
+    self._driver.SetPermission({
+      'descriptor': { 'name': 'accelerometer' },
+      'state': 'granted'
+    })
 
     info = self._driver.GetVirtualSensorInformation('accelerometer')
     self.assertEqual(0.0, info['requestedSamplingFrequency'])
@@ -4557,6 +4581,11 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self._driver.CreateVirtualSensor(testedSensor)
     self._driver.Load(
         self.GetHttpsUrlForFile('/chromedriver/sensors_test.html'))
+
+    self._driver.SetPermission({
+      'descriptor': { 'name': 'accelerometer' },
+      'state': 'granted'
+    })
 
     self._driver.ExecuteScript('startSensor()')
 
