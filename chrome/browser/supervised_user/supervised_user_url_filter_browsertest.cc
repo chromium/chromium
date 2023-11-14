@@ -150,23 +150,6 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
       }};
 };
 
-// Tests the filter mode in which all sites are blocked by default.
-class SupervisedUserBlockModeTest : public SupervisedUserURLFilterTest {
- public:
-  void SetUpOnMainThread() override {
-    SupervisedUserURLFilterTest::SetUpOnMainThread();
-    Profile* profile = browser()->profile();
-    supervised_user::SupervisedUserSettingsService*
-        supervised_user_settings_service =
-            SupervisedUserSettingsServiceFactory::GetForKey(
-                profile->GetProfileKey());
-    supervised_user_settings_service->SetLocalSetting(
-        supervised_user::kContentPackDefaultFilteringBehavior,
-        base::Value(
-            static_cast<int>(supervised_user::FilteringBehavior::kBlock)));
-  }
-};
-
 class TabClosingObserver : public TabStripModelObserver {
  public:
   TabClosingObserver(TabStripModel* tab_strip, content::WebContents* contents)
@@ -212,53 +195,6 @@ class TabClosingObserver : public TabStripModelObserver {
   // Contents to wait for.
   raw_ptr<content::WebContents> contents_;
 };
-
-// Navigates to a blocked URL.
-IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest,
-                       SendAccessRequestOnBlockedURL) {
-  GURL test_url("http://www.example.com/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
-
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-
-  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
-
-  SendAccessRequest(tab);
-
-  // TODO(sergiu): Properly check that the access request was sent here.
-
-  GoBackAndWaitForNavigation(tab);
-
-  // Make sure that the tab is still there.
-  EXPECT_EQ(tab, browser()->tab_strip_model()->GetActiveWebContents());
-
-  EXPECT_FALSE(ShownPageIsInterstitial(browser()));
-}
-
-// Navigates to a blocked URL in a new tab. We expect the tab to be closed
-// automatically on pressing the "back" button on the interstitial.
-IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, OpenBlockedURLInNewTab) {
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-  WebContents* prev_tab = tab_strip->GetActiveWebContents();
-
-  // Open blocked URL in a new tab.
-  GURL test_url("http://www.example.com/simple.html");
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  // Check that we got the interstitial.
-  WebContents* tab = tab_strip->GetActiveWebContents();
-  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
-
-  // On pressing the "back" button, the new tab should be closed, and we should
-  // get back to the previous active tab.
-  TabClosingObserver observer(tab_strip, tab);
-  GoBack(tab);
-  observer.WaitForContentsClosing();
-
-  EXPECT_EQ(prev_tab, tab_strip->GetActiveWebContents());
-}
 
 // Navigates to a page in a new tab, then blocks it (which makes the
 // interstitial page behave differently from the preceding test, where the
@@ -352,87 +288,6 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, DontShowInterstitialTwice) {
   GetSupervisedUserService()->OnSiteListUpdated();
 
   EXPECT_EQ(tab, tab_strip->GetActiveWebContents());
-}
-
-// Tests that it's possible to navigate from a blocked page to another blocked
-// page.
-IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest,
-                       NavigateFromBlockedPageToBlockedPage) {
-  GURL test_url("http://www.example.com/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
-
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-
-  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
-
-  GURL test_url2("http://www.a.com/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url2));
-
-  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
-  EXPECT_EQ(test_url2, tab->GetVisibleURL());
-}
-
-// Tests whether a visit attempt adds a special history entry.
-IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, HistoryVisitRecorded) {
-  history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(browser()->profile(),
-                                           ServiceAccessType::EXPLICIT_ACCESS);
-
-  GURL allowed_url("http://www.example.com/simple.html");
-  supervised_user::SupervisedUserURLFilter* filter =
-      GetSupervisedUserService()->GetURLFilter();
-
-  // Set the host as allowed.
-  base::Value::Dict dict;
-  dict.Set(allowed_url.host(), true);
-  supervised_user::SupervisedUserSettingsService*
-      supervised_user_settings_service =
-          SupervisedUserSettingsServiceFactory::GetForKey(
-              browser()->profile()->GetProfileKey());
-  supervised_user_settings_service->SetLocalSetting(
-      supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter->GetFilteringBehaviorForURL(allowed_url));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter->GetFilteringBehaviorForURL(allowed_url.GetWithEmptyPath()));
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
-  // Navigate to it and check that we don't get an interstitial.
-  ASSERT_FALSE(ShownPageIsInterstitial(browser()));
-
-  // Query the history entry.
-  {
-    history::QueryResults results;
-    QueryHistory(history_service, &results);
-    ASSERT_EQ(1u, results.size());
-    EXPECT_EQ(allowed_url.spec(), results[0].url().spec());
-    EXPECT_FALSE(results[0].blocked_visit());
-  }
-
-  // Navigate to a blocked page and go back on the interstitial.
-  GURL blocked_url("http://www.new-example.com/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
-  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
-
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  GoBackAndWaitForNavigation(tab);
-
-  EXPECT_EQ(allowed_url.spec(), tab->GetLastCommittedURL().spec());
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter->GetFilteringBehaviorForURL(allowed_url.GetWithEmptyPath()));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kBlock,
-            filter->GetFilteringBehaviorForURL(blocked_url.GetWithEmptyPath()));
-
-  // Query the history entry.
-  {
-    history::QueryResults results;
-    QueryHistory(history_service, &results);
-    ASSERT_EQ(2u, results.size());
-    EXPECT_EQ(allowed_url.spec(), results[0].url().spec());
-    EXPECT_FALSE(results[0].blocked_visit());
-    EXPECT_EQ(blocked_url.spec(), results[1].url().spec());
-    EXPECT_TRUE(results[1].blocked_visit());
-  }
 }
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, GoBackOnDontProceed) {
@@ -553,6 +408,151 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockThenUnblock) {
   ASSERT_EQ(test_url, web_contents->GetLastCommittedURL());
 
   EXPECT_FALSE(ShownPageIsInterstitial(browser()));
+}
+
+// Tests the filter mode in which all sites are blocked by default.
+class SupervisedUserBlockModeTest : public SupervisedUserURLFilterTest {
+ public:
+  void SetUpOnMainThread() override {
+    SupervisedUserURLFilterTest::SetUpOnMainThread();
+    Profile* profile = browser()->profile();
+    supervised_user::SupervisedUserSettingsService*
+        supervised_user_settings_service =
+            SupervisedUserSettingsServiceFactory::GetForKey(
+                profile->GetProfileKey());
+    supervised_user_settings_service->SetLocalSetting(
+        supervised_user::kContentPackDefaultFilteringBehavior,
+        base::Value(
+            static_cast<int>(supervised_user::FilteringBehavior::kBlock)));
+  }
+};
+
+// Tests that it's possible to navigate from a blocked page to another blocked
+// page.
+IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest,
+                       NavigateFromBlockedPageToBlockedPage) {
+  GURL test_url("http://www.example.com/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
+
+  GURL test_url2("http://www.a.com/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url2));
+
+  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
+  EXPECT_EQ(test_url2, tab->GetVisibleURL());
+}
+
+// Tests whether a visit attempt adds a special history entry.
+IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, HistoryVisitRecorded) {
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(browser()->profile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+
+  GURL allowed_url("http://www.example.com/simple.html");
+  supervised_user::SupervisedUserURLFilter* filter =
+      GetSupervisedUserService()->GetURLFilter();
+
+  // Set the host as allowed.
+  base::Value::Dict dict;
+  dict.Set(allowed_url.host(), true);
+  supervised_user::SupervisedUserSettingsService*
+      supervised_user_settings_service =
+          SupervisedUserSettingsServiceFactory::GetForKey(
+              browser()->profile()->GetProfileKey());
+  supervised_user_settings_service->SetLocalSetting(
+      supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
+  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
+            filter->GetFilteringBehaviorForURL(allowed_url));
+  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
+            filter->GetFilteringBehaviorForURL(allowed_url.GetWithEmptyPath()));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+  // Navigate to it and check that we don't get an interstitial.
+  ASSERT_FALSE(ShownPageIsInterstitial(browser()));
+
+  // Query the history entry.
+  {
+    history::QueryResults results;
+    QueryHistory(history_service, &results);
+    ASSERT_EQ(1u, results.size());
+    EXPECT_EQ(allowed_url.spec(), results[0].url().spec());
+    EXPECT_FALSE(results[0].blocked_visit());
+  }
+
+  // Navigate to a blocked page and go back on the interstitial.
+  GURL blocked_url("http://www.new-example.com/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
+  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
+
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  GoBackAndWaitForNavigation(tab);
+
+  EXPECT_EQ(allowed_url.spec(), tab->GetLastCommittedURL().spec());
+  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
+            filter->GetFilteringBehaviorForURL(allowed_url.GetWithEmptyPath()));
+  EXPECT_EQ(supervised_user::FilteringBehavior::kBlock,
+            filter->GetFilteringBehaviorForURL(blocked_url.GetWithEmptyPath()));
+
+  // Query the history entry.
+  {
+    history::QueryResults results;
+    QueryHistory(history_service, &results);
+    ASSERT_EQ(2u, results.size());
+    EXPECT_EQ(allowed_url.spec(), results[0].url().spec());
+    EXPECT_FALSE(results[0].blocked_visit());
+    EXPECT_EQ(blocked_url.spec(), results[1].url().spec());
+    EXPECT_TRUE(results[1].blocked_visit());
+  }
+}
+
+// Navigates to a blocked URL.
+IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest,
+                       SendAccessRequestOnBlockedURL) {
+  GURL test_url("http://www.example.com/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
+
+  SendAccessRequest(tab);
+
+  // TODO(sergiu): Properly check that the access request was sent here.
+
+  GoBackAndWaitForNavigation(tab);
+
+  // Make sure that the tab is still there.
+  EXPECT_EQ(tab, browser()->tab_strip_model()->GetActiveWebContents());
+
+  EXPECT_FALSE(ShownPageIsInterstitial(browser()));
+}
+
+// Navigates to a blocked URL in a new tab. We expect the tab to be closed
+// automatically on pressing the "back" button on the interstitial.
+IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, OpenBlockedURLInNewTab) {
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  WebContents* prev_tab = tab_strip->GetActiveWebContents();
+
+  // Open blocked URL in a new tab.
+  GURL test_url("http://www.example.com/simple.html");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), test_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Check that we got the interstitial.
+  WebContents* tab = tab_strip->GetActiveWebContents();
+  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
+
+  // On pressing the "back" button, the new tab should be closed, and we should
+  // get back to the previous active tab.
+  TabClosingObserver observer(tab_strip, tab);
+  GoBack(tab);
+  observer.WaitForContentsClosing();
+
+  EXPECT_EQ(prev_tab, tab_strip->GetActiveWebContents());
 }
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, Unblock) {
