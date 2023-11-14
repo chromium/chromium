@@ -62369,14 +62369,6 @@ would be helpful to identify which type is being sent.
   <int value="7007" label="HIDDEN_to_HIDDEN"/>
 </enum>
 
-<enum name="VkPipelinePopulatedCacheEntryUsage">
-  <int value="0" label="Used"/>
-  <int value="1" label="Overwritten"/>
-  <int value="2" label="Discarded: too large"/>
-  <int value="3" label="Discarded: have newer data"/>
-  <int value="4" label="Evicted"/>
-</enum>
-
 <enum name="VkToUssMigrationStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Failed persisting to USS"/>

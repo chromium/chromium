@@ -115,7 +115,7 @@ class RASTER_EXPORT GrShaderCache
 
   Store::iterator AddToCache(CacheKey key, CacheData data);
   template <typename Iterator>
-  void EraseFromCache(Iterator it, bool overwriting);
+  void EraseFromCache(Iterator it);
 
   void WriteToDisk(const CacheKey& key, CacheData* data);
 
