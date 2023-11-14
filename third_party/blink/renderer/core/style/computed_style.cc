@@ -1980,7 +1980,6 @@ FontHeight ComputedStyle::GetFontHeight(FontBaseline baseline) const {
   if (const SimpleFontData* font_data = GetFont().PrimaryFont()) {
     return font_data->GetFontMetrics().GetFontHeight(baseline);
   }
-  NOTREACHED();
   return FontHeight();
 }
 
