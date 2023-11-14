@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -27,6 +28,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -68,6 +70,12 @@
 
 namespace policy {
 namespace {
+
+// System application URLs.
+// Please keep them updated with dlp_files_controller_ash_unittest.cc.
+constexpr char kFileManagerUrl[] = "chrome://file-manager/";
+constexpr char kImageLoaderUrl[] =
+    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/";
 
 // Timeout defining when two events having the same properties are considered
 // duplicates.
@@ -344,6 +352,15 @@ file_manager::VolumeManager* GetVolumeManager(
   }
   return volume_manager;
 }
+
+// Returns whether `url` represents the URL of a system application.
+bool IsSystemAppURL(const GURL& url) {
+  static constexpr auto kSystemURLsMap =
+      base::MakeFixedFlatSet<base::StringPiece>(
+          {kFileManagerUrl, kImageLoaderUrl});
+  return kSystemURLsMap.contains(url.spec());
+}
+
 }  // namespace
 
 // static
@@ -712,8 +729,10 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
           GURL(file.source_url), GURL(*destination.url()),
           DlpRulesManager::Restriction::kFiles, &source_pattern,
           &destination_pattern.value(), &rule_metadata);
-      MaybeReportEvent(file.inode, file.crtime, file.path, source_pattern,
-                       actual_dst, destination_pattern, rule_metadata, level);
+      if (!IsSystemAppURL(destination.url().value())) {
+        MaybeReportEvent(file.inode, file.crtime, file.path, source_pattern,
+                         actual_dst, destination_pattern, rule_metadata, level);
+      }
     }
 
     switch (level) {

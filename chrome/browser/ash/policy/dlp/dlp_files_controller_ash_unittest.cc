@@ -21,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -73,6 +74,12 @@ using testing::Mock;
 namespace policy {
 
 namespace {
+
+// System application URLs.
+// Please keep them updated with dlp_files_controller_ash.cc.
+constexpr char kFileManagerUrl[] = "chrome://file-manager/";
+constexpr char kImageLoaderUrl[] =
+    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/";
 
 constexpr char kExampleUrl1[] = "https://1.example.com/";
 constexpr char kExampleUrl2[] = "https://2.example.com/";
@@ -1407,6 +1414,43 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnMixedCalls) {
 
   ASSERT_EQ(events.size(), 1u);
   EXPECT_THAT(events[0], data_controls::IsDlpPolicyEvent(event));
+}
+
+// Test that no file event is generated for a selected list of system apps.
+// These apps may access files without a user-initiated action (e.g.,
+// thumbnails loaded when Files app is opened). We should probably not
+// report in these scenarios.
+TEST_F(DlpFilesControllerAshTest, DoNotReportOnSystemApps) {
+  const auto histogram_tester = base::HistogramTester();
+
+  const auto file = DlpFilesControllerAsh::FileDaemonInfo(
+      kInode1, kCrtime1, base::FilePath(kFilePath1), kExampleUrl1,
+      kReferrerUrl1);
+
+  EXPECT_CALL(*rules_manager_, IsRestrictedDestination(_, _, _, _, _, _))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern1),
+                         testing::SetArgPointee<4>(kFileManagerUrl),
+                         testing::SetArgPointee<5>(kRuleMetadata1),
+                         testing::Return(DlpRulesManager::Level::kBlock)))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern1),
+                         testing::SetArgPointee<4>(kImageLoaderUrl),
+                         testing::SetArgPointee<5>(kRuleMetadata1),
+                         testing::Return(DlpRulesManager::Level::kBlock)));
+
+  files_controller_->IsFilesTransferRestricted(
+      /*task_id=*/1234, {file}, DlpFileDestination(GURL(kFileManagerUrl)),
+      dlp::FileAction::kTransfer, base::DoNothing());
+
+  files_controller_->IsFilesTransferRestricted(
+      /*task_id=*/1234, {file}, DlpFileDestination(GURL(kImageLoaderUrl)),
+      dlp::FileAction::kTransfer, base::DoNothing());
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockedUMA)),
+              base::BucketsAre(base::Bucket(dlp::FileAction::kTransfer, 0)));
 }
 
 TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed_ErrorResponse) {
