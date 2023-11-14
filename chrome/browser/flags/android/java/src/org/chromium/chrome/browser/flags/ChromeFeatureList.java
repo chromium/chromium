@@ -185,6 +185,8 @@ public abstract class ChromeFeatureList {
     public static final String CCT_INTENT_FEATURE_OVERRIDES = "CCTIntentFeatureOverrides";
     public static final String CCT_NEW_DOWNLOAD_TAB = "CCTNewDownloadTab";
     public static final String CCT_PAGE_INSIGHTS_HUB = "CCTPageInsightsHub";
+    public static final String CCT_PAGE_INSIGHTS_HUB_BETTER_SCROLL =
+            "CCTPageInsightsHubBetterScroll";
     public static final String CCT_POST_MESSAGE_API = "CCTPostMessageAPI";
     public static final String CCT_PREFETCH_DELAY_SHOW_ON_START = "CCTPrefetchDelayShowOnStart";
     public static final String CCT_PREVENT_TOUCHES = "CCTPreventTouches";
