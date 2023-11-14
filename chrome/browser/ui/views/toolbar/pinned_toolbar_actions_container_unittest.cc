@@ -18,10 +18,16 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/layout/animating_layout_manager_test_util.h"
 
 class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
  public:
@@ -333,4 +339,74 @@ TEST_F(PinnedToolbarActionsContainerTest, DividerVisibleWhileButtonPoppedOut) {
   ASSERT_EQ(child_views[1]->GetProperty(views::kElementIdentifierKey),
             kPinnedToolbarActionsContainerDividerElementId);
   ASSERT_TRUE(child_views[1]->GetVisible());
+}
+
+TEST_F(PinnedToolbarActionsContainerTest, MovingActionsUpdateOrder) {
+  actions::ActionItem* browser_action_item =
+      BrowserActions::FromBrowser(browser_view()->browser())
+          ->root_action_item();
+  auto cut_action =
+      actions::ActionItem::Builder()
+          .SetText(u"Test Action")
+          .SetTooltipText(u"Test Action")
+          .SetActionId(actions::kActionCut)
+          .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodIcon))
+          .SetVisible(true)
+          .SetEnabled(true)
+          .SetInvokeActionCallback(base::DoNothing())
+          .Build();
+  auto copy_action =
+      actions::ActionItem::Builder()
+          .SetText(u"Test Action")
+          .SetTooltipText(u"Test Action")
+          .SetActionId(actions::kActionCopy)
+          .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodIcon))
+          .SetVisible(true)
+          .SetEnabled(true)
+          .SetInvokeActionCallback(base::DoNothing())
+          .Build();
+
+  browser_action_item->AddChild(std::move(cut_action));
+  browser_action_item->AddChild(std::move(copy_action));
+
+  auto* model = PinnedToolbarActionsModel::Get(profile());
+  auto* container =
+      browser_view()->toolbar()->pinned_toolbar_actions_container();
+  ASSERT_TRUE(model);
+  // Verify there are no pinned buttons.
+  auto toolbar_buttons = GetChildToolbarButtons();
+  ASSERT_EQ(toolbar_buttons.size(), 0u);
+  // Pin both and verify order matches the order they were added.
+  model->UpdatePinnedState(actions::kActionCut, true);
+  model->UpdatePinnedState(actions::kActionCopy, true);
+  toolbar_buttons = GetChildToolbarButtons();
+  ASSERT_EQ(toolbar_buttons.size(), 2u);
+  ASSERT_EQ(toolbar_buttons[0]->GetActionId(), actions::kActionCut);
+  ASSERT_EQ(toolbar_buttons[1]->GetActionId(), actions::kActionCopy);
+  // Drag to reorder the two actions.
+  auto* drag_view = toolbar_buttons[1];
+  EXPECT_TRUE(
+      container->CanStartDragForView(drag_view, gfx::Point(), gfx::Point()));
+  ui::OSExchangeData drag_data;
+  container->WriteDragDataForView(drag_view, gfx::Point(), &drag_data);
+  gfx::Point drag_location = toolbar_buttons[0]->bounds().CenterPoint();
+  ui::DropTargetEvent drop_event(drag_data, gfx::PointF(drag_location),
+                                 gfx::PointF(drag_location),
+                                 ui::DragDropTypes::DRAG_MOVE);
+  container->OnDragUpdated(drop_event);
+  auto drop_cb = container->GetDropCallback(drop_event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(drop_event, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/1045212): we avoid using animations on Mac due to the lack
+  // of support in unit tests. Therefore this is a no-op.
+#else
+  views::test::WaitForAnimatingLayoutManager(container);
+#endif
+  // Verify the order gets updated in the ui.
+  toolbar_buttons = GetChildToolbarButtons();
+  ASSERT_EQ(toolbar_buttons.size(), 2u);
+  ASSERT_EQ(toolbar_buttons[0]->GetActionId(), actions::kActionCopy);
+  ASSERT_EQ(toolbar_buttons[1]->GetActionId(), actions::kActionCut);
 }

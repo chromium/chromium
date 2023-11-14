@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_PINNED_TOOLBAR_ACTIONS_CONTAINER_H_
 
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -17,6 +18,7 @@
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/drag_controller.h"
 
 class Browser;
 class BrowserView;
@@ -27,7 +29,8 @@ class BrowserView;
 // TODO(b/299463183): Handle highlighting of pinned/popped-out buttons.
 class PinnedToolbarActionsContainer
     : public ToolbarIconContainerView,
-      public PinnedToolbarActionsModel::Observer {
+      public PinnedToolbarActionsModel::Observer,
+      public views::DragController {
   METADATA_HEADER(PinnedToolbarActionsContainer, ToolbarIconContainerView)
 
  public:
@@ -35,21 +38,27 @@ class PinnedToolbarActionsContainer
     METADATA_HEADER(PinnedActionToolbarButton, ToolbarButton)
 
    public:
-    PinnedActionToolbarButton(Browser* browser, actions::ActionId action_id);
+    PinnedActionToolbarButton(Browser* browser,
+                              actions::ActionId action_id,
+                              views::DragController* drag_controller);
     ~PinnedActionToolbarButton() override;
 
     actions::ActionId GetActionId();
 
     void ButtonPressed();
+    void AddHighlight();
+    void ResetHighlight();
+    void SetIconVisibility(bool visible);
 
     bool IsActive();
 
-    void AddHighlight();
-    void ResetHighlight();
+    // Button:
+    gfx::Size CalculatePreferredSize() const override;
 
    private:
     void ActionItemChanged();
 
+    raw_ptr<Browser> browser_;
     raw_ptr<actions::ActionItem> action_item_ = nullptr;
     base::CallbackListSubscription action_changed_subscription_;
     // Used to ensure the button remains highlighted while active.
@@ -67,6 +76,15 @@ class PinnedToolbarActionsContainer
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;
   void OnThemeChanged() override;
+  bool GetDropFormats(int* formats,
+                      std::set<ui::ClipboardFormatType>* format_types) override;
+  bool AreDropTypesRequired() override;
+  bool CanDrop(const ui::OSExchangeData& data) override;
+  void OnDragEntered(const ui::DropTargetEvent& event) override;
+  int OnDragUpdated(const ui::DropTargetEvent& event) override;
+  void OnDragExited() override;
+  views::View::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override;
 
   // PinnedToolbarActionsModel::Observer:
   void OnActionAdded(const actions::ActionId& id) override;
@@ -76,9 +94,21 @@ class PinnedToolbarActionsContainer
                      int to_index) override;
   void OnActionsChanged() override {}
 
+  // views::DragController:
+  void WriteDragDataForView(View* sender,
+                            const gfx::Point& press_pt,
+                            ui::OSExchangeData* data) override;
+  int GetDragOperationsForView(View* sender, const gfx::Point& p) override;
+  bool CanStartDragForView(View* sender,
+                           const gfx::Point& press_pt,
+                           const gfx::Point& p) override;
+
  private:
   friend class PinnedSidePanelInteractiveTest;
   friend class PinnedToolbarActionsContainerTest;
+
+  // A struct representing the position and action being dragged.
+  struct DropInfo;
 
   actions::ActionItem* GetActionItemFor(const actions::ActionId& id);
   PinnedActionToolbarButton* AddPopOutButtonFor(const actions::ActionId& id);
@@ -87,8 +117,27 @@ class PinnedToolbarActionsContainer
   void RemovePinnedActionButtonFor(const actions::ActionId& id);
   PinnedActionToolbarButton* GetPinnedButtonFor(const actions::ActionId& id);
   PinnedActionToolbarButton* GetPoppedOutButtonFor(const actions::ActionId& id);
-  void ReorderViews();
   SidePanelCoordinator* GetSidePanelCoordinator();
+
+  // Sorts child views to display them in the correct order.
+  void ReorderViews();
+
+  void SetActionButtonIconVisibility(actions::ActionId id, bool visible);
+
+  // Moves the dragged action `action_id`.
+  void MovePinnedAction(
+      const actions::ActionId& action_id,
+      size_t index,
+      base::ScopedClosureRunner cleanup,
+      const ui::DropTargetEvent& event,
+      ui::mojom::DragOperation& output_drag_op,
+      std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
+
+  // Performs clean up after dragging.
+  void DragDropCleanup(const actions::ActionId& dragged_action_id);
+
+  // Utility function for going from width to icon counts.
+  size_t WidthToIconCount(int x_offset);
 
   const raw_ptr<BrowserView> browser_view_;
 
@@ -100,6 +149,15 @@ class PinnedToolbarActionsContainer
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>
       model_observation_{this};
+
+  // The DropInfo for the current drag-and-drop operation, or a null pointer if
+  // there is none.
+  std::unique_ptr<DropInfo> drop_info_;
+
+  base::WeakPtrFactory<PinnedToolbarActionsContainer> weak_ptr_factory_{this};
+
+  base::WeakPtrFactory<PinnedToolbarActionsContainer> drop_weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_PINNED_TOOLBAR_ACTIONS_CONTAINER_H_

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -15,13 +16,23 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
+#include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
 #include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer_tree_owner.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/layout/animating_layout_manager.h"
@@ -42,25 +53,22 @@ void RecordPinnedActionsCount(int count) {
 // TODO(b/299463180): Add right click context menus with an option for pinning
 // unpinning.
 PinnedToolbarActionsContainer::PinnedActionToolbarButton::
-    PinnedActionToolbarButton(Browser* browser, actions::ActionId action_id)
+    PinnedActionToolbarButton(Browser* browser,
+                              actions::ActionId action_id,
+                              views::DragController* drag_controller)
     : ToolbarButton(
           base::BindRepeating(&PinnedActionToolbarButton::ButtonPressed,
                               base::Unretained(this)),
           nullptr,
           nullptr),
+      browser_(browser),
       action_item_(actions::ActionManager::Get().FindAction(
           action_id,
           BrowserActions::FromBrowser(browser)->root_action_item())) {
   CHECK(action_item_);
-  action_changed_subscription_ = action_item_->AddActionChangedCallback(
-      base::BindRepeating(&PinnedToolbarActionsContainer::
-                              PinnedActionToolbarButton::ActionItemChanged,
-                          base::Unretained(this)));
-  ActionItemChanged();
-  OnPropertyChanged(&action_item_, static_cast<views::PropertyEffects>(
-                                       views::kPropertyEffectsLayout |
-                                       views::kPropertyEffectsPaint));
-
+  ConfigureInkDropForToolbar(this);
+  SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  set_drag_controller(drag_controller);
   GetViewAccessibility().OverrideDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
@@ -76,6 +84,16 @@ PinnedToolbarActionsContainer::PinnedActionToolbarButton::
 
   // Do not flip the icon for RTL languages.
   SetFlipCanvasOnPaintForRTLUI(false);
+
+  action_changed_subscription_ = action_item_->AddActionChangedCallback(
+      base::BindRepeating(&PinnedToolbarActionsContainer::
+                              PinnedActionToolbarButton::ActionItemChanged,
+                          base::Unretained(this)));
+  OnPropertyChanged(&action_item_, static_cast<views::PropertyEffects>(
+                                       views::kPropertyEffectsLayout |
+                                       views::kPropertyEffectsPaint));
+
+  ActionItemChanged();
 }
 
 PinnedToolbarActionsContainer::PinnedActionToolbarButton::
@@ -112,6 +130,37 @@ void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
 }
 
 void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
+    SetIconVisibility(bool visible) {
+  if (action_item_->GetImage().IsVectorIcon()) {
+    const auto empty_icon = gfx::VectorIcon();
+    SetVectorIcon(visible
+                      ? *action_item_->GetImage().GetVectorIcon().vector_icon()
+                      : empty_icon);
+  } else {
+    SetImageModel(views::Button::STATE_NORMAL,
+                  visible ? action_item_->GetImage() : ui::ImageModel());
+  }
+}
+
+gfx::Size PinnedToolbarActionsContainer::PinnedActionToolbarButton::
+    CalculatePreferredSize() const {
+  // This makes sure the buttons are at least the toolbar button sized width.
+  // The preferred size might be smaller when the button's icon is removed
+  // during drag/drop.
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser_);
+  const gfx::Size toolbar_button_size =
+      browser_view
+          ? browser_view->toolbar_button_provider()->GetToolbarButtonSize()
+          : gfx::Size();
+  const gfx::Size preferred_size = ToolbarButton::CalculatePreferredSize();
+  return std::max(preferred_size, toolbar_button_size,
+                  [](const gfx::Size s1, const gfx::Size s2) {
+                    return s1.width() < s2.width();
+                  });
+}
+
+void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
     ActionItemChanged() {
   auto tooltip_text = action_item_->GetTooltipText().empty()
                           ? action_item_->GetText()
@@ -134,6 +183,23 @@ BEGIN_METADATA(PinnedToolbarActionsContainer,
                PinnedActionToolbarButton,
                ToolbarButton)
 END_METADATA
+
+///////////////////////////////////////////////////////////////////////////////
+// PinnedToolbarActionsContainer::DropInfo:
+
+struct PinnedToolbarActionsContainer::DropInfo {
+  explicit DropInfo(actions::ActionId action_id, size_t index);
+
+  // The id for the action being dragged.
+  actions::ActionId action_id;
+
+  // The (0-indexed) index the action will be dropped.
+  size_t index;
+};
+
+PinnedToolbarActionsContainer::DropInfo::DropInfo(actions::ActionId action_id,
+                                                  size_t index)
+    : action_id(action_id), index(index) {}
 
 ///////////////////////////////////////////////////////////////////////////////
 // PinnedToolbarActionsContainer:
@@ -160,7 +226,7 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
   GetTargetLayoutManager()
       ->SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse)
       .SetDefault(views::kFlexBehaviorKey,
-                  hide_icon_flex_specification.WithOrder(3));
+                  hide_icon_flex_specification.WithOrder(1));
   GetTargetLayoutManager()->SetCrossAxisAlignment(
       views::LayoutAlignment::kCenter);
 
@@ -225,6 +291,95 @@ void PinnedToolbarActionsContainer::OnThemeChanged() {
   ToolbarIconContainerView::OnThemeChanged();
 }
 
+bool PinnedToolbarActionsContainer::GetDropFormats(
+    int* formats,
+    std::set<ui::ClipboardFormatType>* format_types) {
+  return BrowserActionDragData::GetDropFormats(format_types);
+}
+
+bool PinnedToolbarActionsContainer::AreDropTypesRequired() {
+  return BrowserActionDragData::AreDropTypesRequired();
+}
+
+bool PinnedToolbarActionsContainer::CanDrop(const OSExchangeData& data) {
+  return BrowserActionDragData::CanDrop(data,
+                                        browser_view_->browser()->profile());
+}
+
+void PinnedToolbarActionsContainer::OnDragEntered(
+    const ui::DropTargetEvent& event) {
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+int PinnedToolbarActionsContainer::OnDragUpdated(
+    const ui::DropTargetEvent& event) {
+  BrowserActionDragData data;
+  if (!data.Read(event.data())) {
+    return ui::DragDropTypes::DRAG_NONE;
+  }
+
+  // Check if the action item for the dragged icon is pinned (e.g. an action
+  // item could be unpinned through a sync update while dragging its icon).
+  if (!model_->Contains(*actions::ActionIdMap::StringToActionId(data.id()))) {
+    return ui::DragDropTypes::DRAG_NONE;
+  }
+
+  size_t before_icon = 0;
+  // Figure out where to display the icon during dragging transition.
+
+  // First, since we want to update the dragged action's position from before
+  // an icon to after it when the event passes the midpoint between two icons.
+  // This will convert the event coordinate into the index of the icon we want
+  // to display the dragged action before. We also mirror the event.x() so
+  // that our calculations are consistent with left-to-right.
+  // Note we are not including popped-out icons here, only the pinned actions.
+  const int offset_into_icon_area = GetMirroredXInView(event.x());
+  const size_t before_icon_unclamped = WidthToIconCount(offset_into_icon_area);
+
+  const size_t visible_pinned_icons = pinned_buttons_.size();
+
+  // Because the user can drag outside the container bounds, we need to clamp
+  // to the valid range.
+  before_icon = std::min(before_icon_unclamped, visible_pinned_icons - 1);
+
+  if (!drop_info_.get() || drop_info_->index != before_icon) {
+    drop_info_ = std::make_unique<DropInfo>(
+        *actions::ActionIdMap::StringToActionId(data.id()), before_icon);
+    SetActionButtonIconVisibility(drop_info_->action_id, false);
+    ReorderViews();
+  }
+
+  return ui::DragDropTypes::DRAG_MOVE;
+}
+
+void PinnedToolbarActionsContainer::OnDragExited() {
+  if (!drop_info_) {
+    return;
+  }
+
+  const actions::ActionId dragged_action_id = drop_info_->action_id;
+  drop_info_.reset();
+  DragDropCleanup(dragged_action_id);
+}
+
+views::View::DropCallback PinnedToolbarActionsContainer::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  BrowserActionDragData data;
+  if (!data.Read(event.data())) {
+    return base::NullCallback();
+  }
+
+  auto action_id = drop_info_->action_id;
+  auto index = drop_info_->index;
+  drop_info_.reset();
+  base::ScopedClosureRunner cleanup(
+      base::BindOnce(&PinnedToolbarActionsContainer::DragDropCleanup,
+                     weak_ptr_factory_.GetWeakPtr(), action_id));
+  return base::BindOnce(&PinnedToolbarActionsContainer::MovePinnedAction,
+                        drop_weak_ptr_factory_.GetWeakPtr(), action_id, index,
+                        std::move(cleanup));
+}
+
 void PinnedToolbarActionsContainer::OnActionAdded(const actions::ActionId& id) {
   const auto iter = base::ranges::find(
       pinned_buttons_, id, [](auto* button) { return button->GetActionId(); });
@@ -234,6 +389,8 @@ void PinnedToolbarActionsContainer::OnActionAdded(const actions::ActionId& id) {
   AddPinnedActionButtonFor(id);
   GetSidePanelCoordinator()->UpdateHeaderPinButtonState();
   RecordPinnedActionsCount(model_->pinned_action_ids().size());
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void PinnedToolbarActionsContainer::OnActionRemoved(
@@ -241,12 +398,58 @@ void PinnedToolbarActionsContainer::OnActionRemoved(
   RemovePinnedActionButtonFor(id);
   GetSidePanelCoordinator()->UpdateHeaderPinButtonState();
   RecordPinnedActionsCount(model_->pinned_action_ids().size());
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void PinnedToolbarActionsContainer::OnActionMoved(const actions::ActionId& id,
                                                   int from_index,
                                                   int to_index) {
-  ReorderChildView(GetPinnedButtonFor(id), to_index);
+  ReorderViews();
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+void PinnedToolbarActionsContainer::WriteDragDataForView(
+    View* sender,
+    const gfx::Point& press_pt,
+    ui::OSExchangeData* data) {
+  DCHECK(data);
+
+  const auto iter = base::ranges::find(pinned_buttons_, sender);
+  DCHECK(iter != pinned_buttons_.end());
+  auto* button = *iter;
+
+  ui::ImageModel icon =
+      ui::ImageModel::FromImageSkia(button->GetImage(button->GetState()));
+  data->provider().SetDragImage(icon.Rasterize(GetColorProvider()),
+                                press_pt.OffsetFromOrigin());
+
+  // Fill in the remaining info.
+  size_t index = iter - pinned_buttons_.begin();
+  BrowserActionDragData drag_data(
+      *actions::ActionIdMap::ActionIdToString(button->GetActionId()), index);
+  drag_data.Write(browser_view_->GetProfile(), data);
+}
+
+int PinnedToolbarActionsContainer::GetDragOperationsForView(
+    View* sender,
+    const gfx::Point& p) {
+  return browser_view_->GetProfile()->IsOffTheRecord()
+             ? ui::DragDropTypes::DRAG_NONE
+             : ui::DragDropTypes::DRAG_MOVE;
+}
+
+bool PinnedToolbarActionsContainer::CanStartDragForView(
+    View* sender,
+    const gfx::Point& press_pt,
+    const gfx::Point& p) {
+  // We don't allow dragging buttons that aren't pinned, or if
+  // the profile is incognito (to avoid changing state from an incognito
+  // window).
+  const auto iter = base::ranges::find(pinned_buttons_, sender);
+  return iter != pinned_buttons_.end() &&
+         !browser_view_->GetProfile()->IsOffTheRecord();
 }
 
 actions::ActionItem* PinnedToolbarActionsContainer::GetActionItemFor(
@@ -259,8 +462,8 @@ actions::ActionItem* PinnedToolbarActionsContainer::GetActionItemFor(
 PinnedToolbarActionsContainer::PinnedActionToolbarButton*
 PinnedToolbarActionsContainer::AddPopOutButtonFor(const actions::ActionId& id) {
   CHECK(GetActionItemFor(id));
-  auto popped_out_button =
-      std::make_unique<PinnedActionToolbarButton>(browser_view_->browser(), id);
+  auto popped_out_button = std::make_unique<PinnedActionToolbarButton>(
+      browser_view_->browser(), id, this);
   auto* button = popped_out_button.get();
   popped_out_buttons_.push_back(AddChildView(std::move(popped_out_button)));
   ReorderViews();
@@ -298,7 +501,7 @@ void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
     popped_out_buttons_.erase(iter);
   } else {
     auto button = std::make_unique<PinnedActionToolbarButton>(
-        browser_view_->browser(), id);
+        browser_view_->browser(), id, this);
     pinned_buttons_.push_back(AddChildView(std::move(button)));
   }
   ReorderViews();
@@ -338,10 +541,20 @@ PinnedToolbarActionsContainer::GetPoppedOutButtonFor(
 
 void PinnedToolbarActionsContainer::ReorderViews() {
   size_t index = 0;
-  // Pinned buttons appear first.
-  for (auto* pinned_button : pinned_buttons_) {
-    ReorderChildView(pinned_button, index);
-    index++;
+  // Pinned buttons appear first. Use the model's ordering of pinned ActionIds
+  // because |pinned_buttons_| ordering is not updated on changes from the model
+  // or from the user dragging to reorder.
+  for (auto id : model_->pinned_action_ids()) {
+    if (auto* button = GetPinnedButtonFor(id)) {
+      ReorderChildView(button, index);
+      index++;
+    }
+  }
+
+  // Add the dragged button in its location if a drag is active.
+  if (drop_info_.get()) {
+    ReorderChildView(GetPinnedButtonFor(drop_info_->action_id),
+                     drop_info_->index);
   }
   // The divider exist and is visible after the pinned buttons if any
   // exist.
@@ -362,6 +575,49 @@ void PinnedToolbarActionsContainer::ReorderViews() {
 SidePanelCoordinator* PinnedToolbarActionsContainer::GetSidePanelCoordinator() {
   return SidePanelUtil::GetSidePanelCoordinatorForBrowser(
       browser_view_->browser());
+}
+
+void PinnedToolbarActionsContainer::SetActionButtonIconVisibility(
+    actions::ActionId id,
+    bool visible) {
+  auto* button = GetPinnedButtonFor(id);
+  if (!button) {
+    return;
+  }
+  button->SetIconVisibility(visible);
+}
+
+void PinnedToolbarActionsContainer::MovePinnedAction(
+    const actions::ActionId& action_id,
+    size_t index,
+    base::ScopedClosureRunner cleanup,
+    const ui::DropTargetEvent& event,
+    ui::mojom::DragOperation& output_drag_op,
+    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
+  model_->MovePinnedAction(action_id, index);
+
+  output_drag_op = ui::mojom::DragOperation::kMove;
+  // `cleanup` will run automatically when it goes out of scope to finish
+  // up the drag.
+}
+
+void PinnedToolbarActionsContainer::DragDropCleanup(
+    const actions::ActionId& dragged_action_id) {
+  ReorderViews();
+  GetAnimatingLayoutManager()->PostOrQueueAction(base::BindOnce(
+      &PinnedToolbarActionsContainer::SetActionButtonIconVisibility,
+      weak_ptr_factory_.GetWeakPtr(), dragged_action_id, true));
+}
+
+size_t PinnedToolbarActionsContainer::WidthToIconCount(int x_offset) {
+  const int element_padding = GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
+  size_t unclamped_count = std::max(
+      (x_offset + element_padding) / (browser_view_->toolbar_button_provider()
+                                          ->GetToolbarButtonSize()
+                                          .width() +
+                                      element_padding),
+      0);
+  return std::min(unclamped_count, pinned_buttons_.size());
 }
 
 BEGIN_METADATA(PinnedToolbarActionsContainer)
