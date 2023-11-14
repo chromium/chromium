@@ -28,8 +28,6 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
-#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
-#import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -86,20 +84,12 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/device_form_factor.h"
 
-// To get access to web::features::kEnableSessionSerializationOptimizations.
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
-
-#pragma mark -
-
-namespace {
 class BrowserViewControllerTest : public BlockCleanupTest {
  public:
  protected:
   BrowserViewControllerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS},
-        {web::features::kEnableSessionSerializationOptimizations});
+    scoped_feature_list_.InitAndEnableFeature(
+        supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
   }
 
   void SetUp() override {
@@ -155,10 +145,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     WebUsageEnablerBrowserAgent::FromBrowser(browser_.get())
         ->SetWebUsageEnabled(true);
 
-    SessionRestorationBrowserAgent::CreateForBrowser(
-        browser_.get(), [[TestSessionService alloc] init], false);
-    SessionRestorationBrowserAgent::FromBrowser(browser_.get())
-        ->SetSessionID([[NSUUID UUID] UUIDString]);
     WebStateUpdateBrowserAgent::CreateForBrowser(browser_.get());
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
@@ -577,5 +563,3 @@ TEST_F(BrowserViewControllerTest, ViewOnInsert) {
   EXPECT_OCMOCK_VERIFY(container_view_mock);
   [NTPCoordinator_ stop];
 }
-
-}  // namespace

@@ -17,8 +17,6 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
-#import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -62,18 +60,10 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-// To get access to web::features::kEnableSessionSerializationOptimizations.
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "base/test/scoped_feature_list.h"
-#import "ios/web/common/features.h"
-
 // Test fixture for BrowserCoordinator testing.
 class BrowserCoordinatorTest : public PlatformTest {
  protected:
   BrowserCoordinatorTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        web::features::kEnableSessionSerializationOptimizations);
-
     base_view_controller_ = [[UIViewController alloc] init];
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
 
@@ -118,10 +108,6 @@ class BrowserCoordinatorTest : public PlatformTest {
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
-    SessionRestorationBrowserAgent::CreateForBrowser(
-        browser_.get(), [[TestSessionService alloc] init], false);
-    SessionRestorationBrowserAgent::FromBrowser(browser_.get())
-        ->SetSessionID([[NSUUID UUID] UUIDString]);
 
     IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
         initWithReauthModule:[[ReauthenticationModule alloc] init]];
@@ -188,7 +174,6 @@ class BrowserCoordinatorTest : public PlatformTest {
     ntpHelper->PageLoaded(web_state, web::PageLoadCompletionStatus::SUCCESS);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState local_state_;
   web::WebTaskEnvironment task_environment_;
   UIViewController* base_view_controller_;
