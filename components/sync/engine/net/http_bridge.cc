@@ -68,12 +68,7 @@ scoped_refptr<HttpPostProvider> HttpBridgeFactory::Create() {
   return http;
 }
 
-HttpBridge::URLFetchState::URLFetchState()
-    : aborted(false),
-      request_completed(false),
-      request_succeeded(false),
-      http_status_code(-1),
-      net_error_code(-1) {}
+HttpBridge::URLFetchState::URLFetchState() = default;
 HttpBridge::URLFetchState::~URLFetchState() = default;
 
 HttpBridge::HttpBridge(

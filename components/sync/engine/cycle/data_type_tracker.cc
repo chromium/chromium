@@ -179,8 +179,6 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
 
 }  // namespace
 
-WaitInterval::WaitInterval() : mode(BlockingMode::kUnknown) {}
-
 WaitInterval::WaitInterval(BlockingMode mode, base::TimeDelta length)
     : mode(mode), length(length) {}
 

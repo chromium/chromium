@@ -167,9 +167,7 @@ std::string SerializeNigoriAsBootstrapToken(const Nigori& nigori) {
 
 }  // namespace
 
-SyncServiceCrypto::State::State()
-    : passphrase_key_derivation_params(KeyDerivationParams::CreateForPbkdf2()) {
-}
+SyncServiceCrypto::State::State() = default;
 
 SyncServiceCrypto::State::~State() = default;
 

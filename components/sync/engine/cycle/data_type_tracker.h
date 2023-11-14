@@ -35,7 +35,6 @@ struct WaitInterval {
     // We re retrying for exponetial backoff.
     kExponentialBackoffRetrying,
   };
-  WaitInterval();
   WaitInterval(BlockingMode mode, base::TimeDelta length);
   ~WaitInterval();
 

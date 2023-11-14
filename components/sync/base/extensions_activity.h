@@ -23,16 +23,13 @@ class ExtensionsActivity
  public:
   // A data record of activity performed by extension |extension_id|.
   struct Record {
-    Record();
-    ~Record();
-
     // The human-readable ID identifying the extension responsible
     // for the activity reported in this Record.
     std::string extension_id;
 
     // How many times the extension successfully invoked a write
     // operation through the bookmarks API since the last CommitMessage.
-    uint32_t bookmark_write_count;
+    uint32_t bookmark_write_count = 0U;
   };
 
   using Records = std::map<std::string, Record>;
