@@ -147,6 +147,11 @@ BASE_FEATURE(kOneCopyCanvasCapture,
 #endif
 );
 
+// Kill switch for not requesting continuous begin frame for low latency canvas.
+BASE_FEATURE(kLowLatencyCanvasNoBeginFrameKillSwitch,
+             "LowLatencyCanvasNoBeginFrameKillSwitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // These values come from the WhatWG spec.
 constexpr int kDefaultCanvasWidth = 300;
 constexpr int kDefaultCanvasHeight = 150;
@@ -519,9 +524,13 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
         surface_layer_bridge_->GetFrameSinkId().client_id(),
         surface_layer_bridge_->GetFrameSinkId().sink_id(),
         CanvasResourceDispatcher::kInvalidPlaceholderCanvasId, Size());
-    // We don't actually need the begin frame signal when in low latency mode,
-    // but we need to subscribe to it or else dispatching frames will not work.
-    frame_dispatcher_->SetNeedsBeginFrame(IsPageVisible());
+    if (!base::FeatureList::IsEnabled(
+            kLowLatencyCanvasNoBeginFrameKillSwitch)) {
+      // We don't actually need the begin frame signal when in low latency mode,
+      // but we need to subscribe to it or else dispatching frames will not
+      // work.
+      frame_dispatcher_->SetNeedsBeginFrame(IsPageVisible());
+    }
 
     UseCounter::Count(GetDocument(), WebFeature::kHTMLCanvasElementLowLatency);
   }
