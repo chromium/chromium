@@ -2288,7 +2288,16 @@ void StyleResolver::MaybeAddToMatchedPropertiesCache(
     const CacheSuccess& cache_success,
     const MatchResult& match_result) {
   state.LoadPendingResources();
-  if (!cache_success.cached_matched_properties && cache_success.key.IsValid() &&
+
+  // NOTE: We replace everything that isn't a full cache hit. There are cases
+  // where this would be bad (e.g., every other element we style with the same
+  // key has a different parent computed style), but it seems a much more common
+  // case, if we don't replace elements giving partial hits, is that a
+  // bad entry gets stuck into the MPC and we _never_ get full hits again
+  // from there because it's never replaced. (Or, similarly, a partial
+  // hit where we have to reapply the inherited properties, or where we trash
+  // the “partner cache” in StyleInheritedVariables.)
+  if (cache_success.key.IsValid() &&
       MatchedPropertiesCache::IsCacheable(state)) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   matched_property_cache_added, 1);
