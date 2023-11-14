@@ -459,6 +459,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(content_capture_manager_);
   visitor->Trace(system_clipboard_);
   visitor->Trace(virtual_keyboard_overlay_changed_observers_);
+  visitor->Trace(widget_creation_observers_);
   visitor->Trace(pause_handle_receivers_);
   visitor->Trace(frame_color_overlay_);
   visitor->Trace(mojo_handler_);
@@ -1011,6 +1012,26 @@ void LocalFrame::DidChangeVisibilityState() {
     GetDocument()->DidChangeVisibilityState();
 
   Frame::DidChangeVisibilityState();
+}
+
+void LocalFrame::AddWidgetCreationObserver(WidgetCreationObserver* observer) {
+  CHECK(IsLocalRoot());
+  CHECK(!GetWidgetForLocalRoot());
+
+  widget_creation_observers_.insert(observer);
+}
+
+void LocalFrame::NotifyFrameWidgetCreated() {
+  CHECK(IsLocalRoot());
+  CHECK(GetWidgetForLocalRoot());
+
+  // No need to copy `widget_creation_observers_` since we don't permit adding
+  // new observers after this point.
+  for (WidgetCreationObserver* observer : widget_creation_observers_) {
+    observer->OnLocalRootWidgetCreated();
+  }
+
+  widget_creation_observers_.clear();
 }
 
 bool LocalFrame::IsCaretBrowsingEnabled() const {

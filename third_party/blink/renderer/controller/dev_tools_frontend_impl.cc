@@ -113,8 +113,12 @@ void DevToolsFrontendImpl::SetupDevToolsFrontend(
     mojo::PendingAssociatedRemote<mojom::blink::DevToolsFrontendHost> host) {
   LocalFrame* frame = GetSupplementable();
   DCHECK(frame->IsMainFrame());
-  frame->GetWidgetForLocalRoot()->SetLayerTreeDebugState(
-      cc::LayerTreeDebugState());
+  if (frame->GetWidgetForLocalRoot()) {
+    frame->GetWidgetForLocalRoot()->SetLayerTreeDebugState(
+        cc::LayerTreeDebugState());
+  } else {
+    frame->AddWidgetCreationObserver(this);
+  }
   frame->GetPage()->GetSettings().SetForceDarkModeEnabled(false);
   api_script_ = api_script;
   host_.Bind(std::move(host),
@@ -122,6 +126,11 @@ void DevToolsFrontendImpl::SetupDevToolsFrontend(
   host_.set_disconnect_handler(WTF::BindOnce(
       &DevToolsFrontendImpl::DestroyOnHostGone, WrapWeakPersistent(this)));
   GetSupplementable()->GetPage()->SetDefaultPageScaleLimits(1.f, 1.f);
+}
+
+void DevToolsFrontendImpl::OnLocalRootWidgetCreated() {
+  GetSupplementable()->GetWidgetForLocalRoot()->SetLayerTreeDebugState(
+      cc::LayerTreeDebugState());
 }
 
 void DevToolsFrontendImpl::SetupDevToolsExtensionAPI(

@@ -2329,6 +2329,7 @@ void WebFrameWidgetImpl::InitializeCompositingInternal(
                       : nullptr);
 
   probe::DidInitializeFrameWidget(local_root_->GetFrame());
+  local_root_->GetFrame()->NotifyFrameWidgetCreated();
 
   // TODO(bokan): This seems wrong. Page may host multiple FrameWidgets so this
   // will call DidInitializeCompositing once per FrameWidget. It probably makes
