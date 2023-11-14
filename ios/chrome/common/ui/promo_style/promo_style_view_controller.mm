@@ -1080,7 +1080,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   _buttonUpdated = YES;
   HighlightButton* primaryActionButton = self.primaryActionButton;
   UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
+      primaryActionButton.configuration;
   buttonConfiguration.attributedTitle = nil;
   buttonConfiguration.title = self.primaryActionString;
   primaryActionButton.configuration = buttonConfiguration;
