@@ -320,7 +320,7 @@ const base::FeatureParam<int> kBoostImagePriorityTightMediumLimit{
 // Kill switch for the Topics API.
 BASE_FEATURE(kBrowsingTopics,
              "BrowsingTopics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the check for whether the IP address is publicly routable will be
 // bypassed when determining the eligibility for a page to be included in topics
