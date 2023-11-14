@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_PIXEL_TEST_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_PIXEL_TEST_H_
 
+#include <concepts>
 #include <string>
 #include <tuple>
-#include <type_traits>
 
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -35,13 +36,11 @@ using TestParameterType = std::tuple<bool, bool>;
 // A base class to do pixel tests for classes that derive from `PopupBaseView`.
 // By default, the test class has two parameters: Dark vs light mode and RTL vs
 // LTR for the text direction of the browser language.
-template <typename View, typename Controller>
+template <std::derived_from<PopupBaseView> View,
+          std::derived_from<AutofillPopupViewDelegate> Controller>
 class PopupPixelTest : public UiBrowserTest,
                        public testing::WithParamInterface<TestParameterType> {
  public:
-  static_assert(std::is_base_of_v<PopupBaseView, View>);
-  static_assert(std::is_base_of_v<AutofillPopupViewDelegate, Controller>);
-
   PopupPixelTest() = default;
   ~PopupPixelTest() override = default;
 
