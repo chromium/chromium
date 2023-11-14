@@ -239,12 +239,12 @@ class TRIVIAL_ABI WeakPtr {
 
   // Allow conversion from U to T provided U "is a" T. Note that this
   // is separate from the (implicit) copy and move constructors.
-  template <typename U,
-            typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
+  template <typename U>
+    requires(std::convertible_to<U*, T*>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   WeakPtr(const WeakPtr<U>& other) : ref_(other.ref_), ptr_(other.ptr_) {}
-  template <typename U,
-            typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
+  template <typename U>
+    requires(std::convertible_to<U*, T*>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   WeakPtr& operator=(const WeakPtr<U>& other) {
     ref_ = other.ref_;
@@ -252,13 +252,13 @@ class TRIVIAL_ABI WeakPtr {
     return *this;
   }
 
-  template <typename U,
-            typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
+  template <typename U>
+    requires(std::convertible_to<U*, T*>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   WeakPtr(WeakPtr<U>&& other)
       : ref_(std::move(other.ref_)), ptr_(std::move(other.ptr_)) {}
-  template <typename U,
-            typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
+  template <typename U>
+    requires(std::convertible_to<U*, T*>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   WeakPtr& operator=(WeakPtr<U>&& other) {
     ref_ = std::move(other.ref_);
@@ -384,18 +384,16 @@ class WeakPtrFactory : public internal::WeakPtrFactoryBase {
                             reinterpret_cast<const T*>(ptr_));
   }
 
-  template <int&... ExplicitArgumentBarrier,
-            typename U = T,
-            typename = std::enable_if_t<!std::is_const_v<U>>>
-  WeakPtr<T> GetWeakPtr() {
+  WeakPtr<T> GetWeakPtr()
+    requires(!std::is_const_v<T>)
+  {
     return WeakPtr<T>(weak_reference_owner_.GetRef(),
                       reinterpret_cast<T*>(ptr_));
   }
 
-  template <int&... ExplicitArgumentBarrier,
-            typename U = T,
-            typename = std::enable_if_t<!std::is_const_v<U>>>
-  WeakPtr<T> GetMutableWeakPtr() const {
+  WeakPtr<T> GetMutableWeakPtr() const
+    requires(!std::is_const_v<T>)
+  {
     return WeakPtr<T>(weak_reference_owner_.GetRef(),
                       reinterpret_cast<T*>(ptr_));
   }

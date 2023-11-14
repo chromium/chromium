@@ -108,12 +108,7 @@ void VendingMutablePtrsFromConstFactoryDisallowed() {
   {
     Unrelated unrelated;
     const WeakPtrFactory<const Unrelated> factory(&unrelated);
-    factory.GetMutableWeakPtr();  // expected-error {{no matching member function for call to 'GetMutableWeakPtr'}}
-  }
-  {
-    DerivedUnrelated derived_unrelated;
-    const WeakPtrFactory<DerivedUnrelated> factory(&derived_unrelated);
-    factory.GetMutableWeakPtr<Unrelated>();  // expected-error {{no matching member function for call to 'GetMutableWeakPtr'}}
+    factory.GetMutableWeakPtr();  // expected-error {{invalid reference to function 'GetMutableWeakPtr': constraints not satisfied}}
   }
 }
 
