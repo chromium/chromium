@@ -88,12 +88,6 @@ public class WebApkVerifySignature {
     /** Maximum file comment length permitted. */
     private static final int MAX_FILE_COMMENT_LENGTH = 0;
 
-    /**
-     * Maximum extra field length permitted.
-     * Support .so alignment and a 64 bytes bytes for any extras.
-     */
-    private static final int MAX_EXTRA_LENGTH = 4096 + 64;
-
     /** The memory buffer we are going to read the zip from. */
     private final ByteBuffer mBuffer;
 
@@ -328,9 +322,6 @@ public class WebApkVerifySignature {
             int offset = read4();
             String filename = readString(fileNameLength);
             seekDelta(extraLen + fileCommentLength);
-            if (extraLen > MAX_EXTRA_LENGTH) {
-                return Error.EXTRA_FIELD_TOO_LARGE;
-            }
             if (fileCommentLength > MAX_FILE_COMMENT_LENGTH) {
                 return Error.FILE_COMMENT_TOO_LARGE;
             }
@@ -366,9 +357,6 @@ public class WebApkVerifySignature {
             seekDelta(18);
             int fileNameLength = read2();
             int extraFieldLength = read2();
-            if (extraFieldLength > MAX_EXTRA_LENGTH) {
-                return Error.EXTRA_FIELD_TOO_LARGE;
-            }
 
             block.mHeaderSize =
                     (mBuffer.position() - block.mPosition) + fileNameLength + extraFieldLength;

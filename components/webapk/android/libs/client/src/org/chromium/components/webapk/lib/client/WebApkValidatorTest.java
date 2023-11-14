@@ -415,8 +415,6 @@ public class WebApkValidatorTest {
             "bad-sig.apk",
             "bad-utf8-fname.apk",
             "empty.apk",
-            "extra-field-too-large.apk",
-            "extra-len-too-large.apk",
             "fcomment-too-large.apk",
             "no-cd.apk",
             "no-comment.apk",
