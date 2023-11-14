@@ -3015,8 +3015,8 @@
   },
   {
     "name": "enable-media-foundation-video-capture",
-    "owners": [ "agpalak@chromium.org", "herre@chromium.org" ],
-    "expiry_milestone": 120
+    "owners": [ "agpalak@chromium.org", "herre@chromium.org", "video-cmi-apis@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "enable-merchant-wide-promotions",
