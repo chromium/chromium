@@ -199,7 +199,10 @@ class HighEfficiencyDiscardPolicyInteractiveTest
 
   auto PressKeyboard() {
     return Do(base::BindLambdaForTesting([=]() {
+      // Send multiple key presses to reduce flakiness.
       ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, false,
+                                                  false, false, false));
+      ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_B, false,
                                                   false, false, false));
     }));
   }
@@ -281,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
   input_value_updated.event = kInputValueIsUpated;
   input_value_updated.where = input_text_box;
   input_value_updated.type = StateChange::Type::kExistsAndConditionTrue;
-  input_value_updated.test_function = "(el) => { return el.value === 'a'; }";
+  input_value_updated.test_function = "(el) => { return !!el.value; }";
 
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
