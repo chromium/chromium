@@ -1400,7 +1400,6 @@ InspectorCSSAgent::FontPalettesForNode(Element& element) {
   const ComputedStyle* style = element.EnsureComputedStyle();
   const FontPalette* palette = style ? style->FontPalette() : nullptr;
   if (!palette || !palette->IsCustomPalette()) {
-    LOG(ERROR) << "No palette";
     return {};
   }
   Document& document = element.GetDocument();
@@ -1409,8 +1408,6 @@ InspectorCSSAgent::FontPalettesForNode(Element& element) {
           palette->GetPaletteValuesName(),
           style->GetFontDescription().Family().FamilyName());
   if (!rule) {
-    LOG(ERROR) << "No rule: " << palette->GetPaletteValuesName() << ", "
-               << style->GetFontDescription().Family().FamilyName();
     return {};
   }
 
