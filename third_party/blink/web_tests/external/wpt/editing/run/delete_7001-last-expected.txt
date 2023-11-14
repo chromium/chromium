@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 593 tests; 580 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 605 tests; 591 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandIndeterm("delete") after
 [PASS] [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandState("delete") after
 [PASS] [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandValue("delete") after
@@ -606,5 +606,18 @@ Found 593 tests; 580 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}": execCommand("delete", false, "") return value
 [PASS] [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}" checks for modifications to non-editable content
 [PASS] [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}" compare innerHTML
+[PASS] [["delete",""]] "<div style=\\"display:inline\\">abc</div><div style=\\"display:inline\\">[]def</div>": execCommand("delete", false, "") return value
+[PASS] [["delete",""]] "<div style=\\"display:inline\\">abc</div><div style=\\"display:inline\\">[]def</div>" checks for modifications to non-editable content
+[PASS] [["delete",""]] "<div style=\\"display:inline\\">abc</div><div style=\\"display:inline\\">[]def</div>" compare innerHTML
+[PASS] [["delete",""]] "<ul><li style=\\"display:inline\\">abc</li><li style=\\"display:inline\\">[]def</li></ul>": execCommand("delete", false, "") return value
+[PASS] [["delete",""]] "<ul><li style=\\"display:inline\\">abc</li><li style=\\"display:inline\\">[]def</li></ul>" checks for modifications to non-editable content
+[PASS] [["delete",""]] "<ul><li style=\\"display:inline\\">abc</li><li style=\\"display:inline\\">[]def</li></ul>" compare innerHTML
+[PASS] [["delete",""]] "<dl><dt style=\\"display:inline\\">abc</dt><dd style=\\"display:inline\\">[]def</dd></dl>": execCommand("delete", false, "") return value
+[PASS] [["delete",""]] "<dl><dt style=\\"display:inline\\">abc</dt><dd style=\\"display:inline\\">[]def</dd></dl>" checks for modifications to non-editable content
+[PASS] [["delete",""]] "<dl><dt style=\\"display:inline\\">abc</dt><dd style=\\"display:inline\\">[]def</dd></dl>" compare innerHTML
+[PASS] [["delete",""]] "<div><span style=\\"display:list-item\\">abc</span><span style=\\"display:list-item\\">[]def</span></div>": execCommand("delete", false, "") return value
+[PASS] [["delete",""]] "<div><span style=\\"display:list-item\\">abc</span><span style=\\"display:list-item\\">[]def</span></div>" checks for modifications to non-editable content
+[FAIL] [["delete",""]] "<div><span style=\\"display:list-item\\">abc</span><span style=\\"display:list-item\\">[]def</span></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><span style=\\"display:list-item\\">abcdef</span></div>" but got "<span style=\\"display:list-item\\">abcdef</span>"
 Harness: the test ran to completion.
 

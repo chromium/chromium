@@ -22,5 +22,8 @@ This is a testharness.js-based test.
 [PASS] Subscriber#complete() cannot re-entrantly invoke itself
 [PASS] Subscriber#error() cannot re-entrantly invoke itself
 [PASS] Unsubscription lifecycle
+[PASS] Aborting a subscription should stop emitting values
+[PASS] Calling subscribe should never throw an error synchronously, initializer throws error
+[PASS] Calling subscribe should never throw an error synchronously, subscriber pushes error
 Harness: the test ran to completion.
 

@@ -562,3 +562,86 @@ test(() => {
   assert_array_equals(results, ['subscribe() callback',
       'outer abort handler', 'inner abort handler']);
 }, "Unsubscription lifecycle");
+
+// TODO(domfarolino): If we add `subscriber.closed`, assert that its value is
+// `true` in this test. See https://github.com/WICG/observable/issues/76.
+test(t => {
+  const source = new Observable((subscriber) => {
+    let n = 0;
+    while (!subscriber.signal.aborted) {
+      subscriber.next(n++);
+      if (n > 3) {
+        assert_unreached("The subscriber should be closed by now");
+      }
+    }
+  });
+
+  const ac = new AbortController();
+  const results = [];
+
+  source.subscribe({
+    next: (x) => {
+      results.push(x);
+      if (x === 2) {
+        ac.abort();
+      }
+    },
+    error: () => results.push('error'),
+    complete: () => results.push('complete'),
+    signal: ac.signal,
+  });
+
+  assert_array_equals(
+    results,
+    [0, 1, 2],
+    "should emit values synchronously before abort"
+  );
+}, "Aborting a subscription should stop emitting values");
+
+test(() => {
+  const error = new Error("custom error");
+  let errorReported = null;
+
+  self.addEventListener("error", e => errorReported = e, { once: true });
+
+  const source = new Observable(() => {
+    throw error;
+  });
+
+  try {
+    source.subscribe();
+  } catch {
+    assert_unreached("subscriber() never throws an error");
+  }
+
+  assert_true(errorReported !== null, "Exception was reported to global");
+  assert_true(errorReported.message.includes("custom error"), "Error message matches");
+  assert_greater_than(errorReported.lineno, 0, "Error lineno is greater than 0");
+  assert_greater_than(errorReported.colno, 0, "Error lineno is greater than 0");
+  assert_equals(errorReported.error, error, "Error object is equivalent");
+}, "Calling subscribe should never throw an error synchronously, initializer throws error");
+
+test(() => {
+  const error = new Error("custom error");
+  let errorReported = null;
+
+  self.addEventListener("error", e => errorReported = e, { once: true });
+
+  const source = new Observable((subscriber) => {
+    subscriber.error(error);
+  });
+
+  try {
+    source.subscribe();
+  } catch {
+    assert_unreached("subscriber() never throws an error");
+  }
+
+  assert_true(errorReported !== null, "Exception was reported to global");
+  assert_true(errorReported.message.includes("custom error"), "Error message matches");
+  assert_greater_than(errorReported.lineno, 0, "Error lineno is greater than 0");
+  assert_greater_than(errorReported.colno, 0, "Error lineno is greater than 0");
+  assert_equals(errorReported.error, error, "Error object is equivalent");
+}, "Calling subscribe should never throw an error synchronously, subscriber pushes error");
+
+// TODO(domfarolino): Add back the teardown tests that Ben wrote.

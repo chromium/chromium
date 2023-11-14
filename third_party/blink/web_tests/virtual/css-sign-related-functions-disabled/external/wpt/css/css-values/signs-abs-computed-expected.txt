@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 197 tests; 0 PASS, 197 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 204 tests; 0 PASS, 204 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] abs(1) should be used-value-equivalent to 1
   assert_not_equals: abs(1) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 [FAIL] sign(1) should be used-value-equivalent to 1
@@ -54,6 +54,20 @@ Found 197 tests; 0 PASS, 197 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_not_equals: abs(-infinity) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 [FAIL] abs(NaN) should be used-value-equivalent to calc(NaN)
   assert_not_equals: abs(NaN) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+[FAIL] calc(20 - abs(-10)) should be used-value-equivalent to 10
+  assert_not_equals: calc(20 - abs(-10)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+[FAIL] calc(20 - abs(10)) should be used-value-equivalent to 10
+  assert_not_equals: calc(20 - abs(10)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+[FAIL] calc(10 - abs(10 - abs(-30)) should be used-value-equivalent to -10
+  assert_not_equals: calc(10 - abs(10 - abs(-30)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+[FAIL] calc(2 - sign(1)) should be used-value-equivalent to 1
+  assert_not_equals: calc(2 - sign(1)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+[FAIL] calc(2 - sign(-1)) should be used-value-equivalent to 3
+  assert_not_equals: calc(2 - sign(-1)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+[FAIL] calc(2 - sign(1 - sign(-1))) should be used-value-equivalent to 1
+  assert_not_equals: calc(2 - sign(1 - sign(-1))) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+[FAIL] calc(10 - abs(20 - sign(2 - abs(-20)))) should be used-value-equivalent to -11
+  assert_not_equals: calc(10 - abs(20 - sign(2 - abs(-20)))) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 [FAIL] sign(1px) should be used-value-equivalent to 1
   assert_not_equals: sign(1px) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 [FAIL] sign(1cm) should be used-value-equivalent to 1

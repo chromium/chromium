@@ -1,4 +1,3 @@
-import asyncio
 import pytest
 from tests.support.sync import AsyncPoll
 from webdriver.error import TimeoutException

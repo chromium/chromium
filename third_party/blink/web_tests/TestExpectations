@@ -1511,7 +1511,7 @@ crbug.com/1004760 [ Mac12 Release ] external/wpt/html/semantics/embedded-content
 crbug.com/1004760 [ Mac12-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
 crbug.com/1191547 external/wpt/html/semantics/forms/the-label-element/proxy-modifier-click-to-associated-element.tentative.html [ Timeout ]
 crbug.com/1404463 external/wpt/html/semantics/embedded-content/the-img-element/responsive-image-select-print.html [ Failure ]
-crbug.com/1401590 [ Mac ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Pass Failure Timeout ]
+crbug.com/1401590 [ Mac ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Failure Pass Timeout ]
 
 # XML nodes aren't match by .class selectors:
 crbug.com/649444 external/wpt/css/selectors/xml-class-selector.xml [ Failure ]
@@ -2630,6 +2630,13 @@ crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-delet
 crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_hevc [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-contain/content-visibility/content-visibility-095.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-writing-modes/forms/checkbox-appearance-native-vertical-lr-baseline.optional.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-writing-modes/forms/checkbox-appearance-native-vertical-rl-baseline.optional.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-writing-modes/forms/radio-appearance-native-vertical-lr-baseline.optional.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-writing-modes/forms/radio-appearance-native-vertical-rl-baseline.optional.html [ Failure ]
+crbug.com/626703 external/wpt/html/rendering/widgets/input-checkbox-switch-rtl.tentative.html [ Failure ]
+crbug.com/626703 external/wpt/svg/color-inherit-link-visited.svg [ Failure ]
 crbug.com/626703 external/wpt/html/semantics/forms/the-input-element/input-type-checkbox-switch.tentative.window.html [ Failure ]
 crbug.com/626703 external/wpt/html/semantics/selectors/pseudo-classes/input-checkbox-switch.tentative.window.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-backgrounds/background-origin/origin-border-box.html [ Failure ]
@@ -7055,13 +7062,11 @@ crbug.com/1486131 [ Debug Linux ] external/wpt/html/browsers/history/the-history
 crbug.com/1501324 [ Mac ] virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_rate_obfuscation_mitigation_triggered.tentative.https.window.html [ Failure Pass ]
 
 # Tentatively allowed to fail to roll changes in the DevTools frontend.
-crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Pass Failure ]
-crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Pass Failure ]
-crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Pass Failure ]
+crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
+crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
+crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
 
 # Gardener 2023-11-13
-crbug.com/1501802 [ Linux ] virtual/pna-permission/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Pass Failure ]
-crbug.com/1501802 virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribute-change.https.html [ Pass Failure Timeout ]
-crbug.com/1501802 [ Linux ] external/wpt/idle-detection/idle-detection-allowed-by-permissions-policy.https.sub.html [ Pass Failure ]
-
-
+crbug.com/1501802 [ Linux ] virtual/pna-permission/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Failure Pass ]
+crbug.com/1501802 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribute-change.https.html [ Failure Pass ]
+crbug.com/1501802 [ Linux ] external/wpt/idle-detection/idle-detection-allowed-by-permissions-policy.https.sub.html [ Failure Pass ]

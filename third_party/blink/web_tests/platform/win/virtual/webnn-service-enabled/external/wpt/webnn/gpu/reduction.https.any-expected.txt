@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-Found 149 tests; 135 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] reduceL1 float32 1D tensor all positive default options / async
 [PASS] reduceL1 float32 1D tensor all negative default options / async
 [PASS] reduceL1 float32 1D tensor all positive integers default options / async
@@ -46,36 +45,22 @@ Found 149 tests; 135 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] reduceLogSum float32 4D tensor options.keepDimensions=true / async
 [PASS] reduceLogSum float32 4D tensor options.axes with options.keepDimensions=false / async
 [PASS] reduceLogSum float32 4D tensor options.axes with options.keepDimensions=true / async
-[FAIL] reduceLogSumExp float32 1D tensor all positive default options / async
-  assert_true: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual Infinity should be close enough to expected 90.59076690673828 by the acceptable 66 ULP distance, but they have 1019924871 ULP distance expected true got false
+[PASS] reduceLogSumExp float32 1D tensor all positive default options / async
 [PASS] reduceLogSumExp float32 1D tensor all negative default options / async
-[FAIL] reduceLogSumExp float32 1D tensor all positive integers default options / async
-  assert_true: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual Infinity should be close enough to expected 97.69485473632812 by the acceptable 66 ULP distance, but they have 1018993724 ULP distance expected true got false
+[PASS] reduceLogSumExp float32 1D tensor all positive integers default options / async
 [PASS] reduceLogSumExp float32 1D tensor all negative integers default options / async
-[FAIL] reduceLogSumExp float32 2D tensor default options / async
-  assert_true: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual Infinity should be close enough to expected 90.59076690673828 by the acceptable 66 ULP distance, but they have 1019924871 ULP distance expected true got false
-[FAIL] reduceLogSumExp float32 3D tensor default options / async
-  assert_true: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual Infinity should be close enough to expected 90.59076690673828 by the acceptable 66 ULP distance, but they have 1019924871 ULP distance expected true got false
-[FAIL] reduceLogSumExp float32 4D tensor default options / async
-  assert_true: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual Infinity should be close enough to expected 90.59076690673828 by the acceptable 66 ULP distance, but they have 1019924871 ULP distance expected true got false
-[FAIL] reduceLogSumExp float32 5D tensor default options / async
-  assert_true: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual Infinity should be close enough to expected 90.59076690673828 by the acceptable 66 ULP distance, but they have 1019924871 ULP distance expected true got false
-[FAIL] reduceLogSumExp float32 3D tensor options.axes / async
-  assert_true: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual Infinity should be close enough to expected 90.56975555419922 by the acceptable 26 ULP distance, but they have 1019927625 ULP distance expected true got false
-[FAIL] reduceLogSumExp float32 4D tensor options.axes / async
-  assert_true: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual Infinity should be close enough to expected 90.55726623535156 by the acceptable 26 ULP distance, but they have 1019929262 ULP distance expected true got false
-[FAIL] reduceLogSumExp float32 3D tensor options.keepDimensions=false / async
-  assert_true: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual Infinity should be close enough to expected 90.59076690673828 by the acceptable 66 ULP distance, but they have 1019924871 ULP distance expected true got false
-[FAIL] reduceLogSumExp float32 3D tensor options.keepDimensions=true / async
-  assert_true: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual Infinity should be close enough to expected 90.59076690673828 by the acceptable 66 ULP distance, but they have 1019924871 ULP distance expected true got false
-[FAIL] reduceLogSumExp float32 4D tensor options.keepDimensions=false / async
-  assert_true: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual Infinity should be close enough to expected 90.59076690673828 by the acceptable 66 ULP distance, but they have 1019924871 ULP distance expected true got false
-[FAIL] reduceLogSumExp float32 4D tensor options.keepDimensions=true / async
-  assert_true: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual Infinity should be close enough to expected 90.59076690673828 by the acceptable 66 ULP distance, but they have 1019924871 ULP distance expected true got false
-[FAIL] reduceLogSumExp float32 4D tensor options.axes with options.keepDimensions=false / async
-  assert_true: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual Infinity should be close enough to expected 90.57815551757812 by the acceptable 30 ULP distance, but they have 1019926524 ULP distance expected true got false
-[FAIL] reduceLogSumExp float32 4D tensor options.axes with options.keepDimensions=true / async
-  assert_true: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual Infinity should be close enough to expected 90.57815551757812 by the acceptable 30 ULP distance, but they have 1019926524 ULP distance expected true got false
+[PASS] reduceLogSumExp float32 2D tensor default options / async
+[PASS] reduceLogSumExp float32 3D tensor default options / async
+[PASS] reduceLogSumExp float32 4D tensor default options / async
+[PASS] reduceLogSumExp float32 5D tensor default options / async
+[PASS] reduceLogSumExp float32 3D tensor options.axes / async
+[PASS] reduceLogSumExp float32 4D tensor options.axes / async
+[PASS] reduceLogSumExp float32 3D tensor options.keepDimensions=false / async
+[PASS] reduceLogSumExp float32 3D tensor options.keepDimensions=true / async
+[PASS] reduceLogSumExp float32 4D tensor options.keepDimensions=false / async
+[PASS] reduceLogSumExp float32 4D tensor options.keepDimensions=true / async
+[PASS] reduceLogSumExp float32 4D tensor options.axes with options.keepDimensions=false / async
+[PASS] reduceLogSumExp float32 4D tensor options.axes with options.keepDimensions=true / async
 [PASS] reduceMax float32 1D tensor default options / async
 [PASS] reduceMax float32 2D tensor default options / async
 [PASS] reduceMax float32 3D tensor default options / async

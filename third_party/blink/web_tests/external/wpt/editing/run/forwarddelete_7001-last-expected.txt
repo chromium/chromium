@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 260 tests; 251 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 272 tests; 262 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>": execCommand("styleWithCSS", false, "false") return value
 [PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
 [PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>": execCommand("forwarddelete", false, "") return value
@@ -266,8 +266,21 @@ Found 260 tests; 251 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["forwarddelete",""]] "<ol>\\n<li>[abc</li></ol><ul><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
 [PASS] [["forwarddelete",""]] "<ol>\\n<li>[abc</li></ol><ul><li>def]</li></ul>" checks for modifications to non-editable content
 [PASS] [["forwarddelete",""]] "<ol>\\n<li>[abc</li></ol><ul><li>def]</li></ul>" compare innerHTML
-[PASS] [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}": execCommand("delete", false, "") return value
-[PASS] [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}" checks for modifications to non-editable content
-[PASS] [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}" compare innerHTML
+[PASS] [["forwarddelete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}" compare innerHTML
+[PASS] [["forwarddelete",""]] "<div style=\\"display:inline\\">abc[]</div><div style=\\"display:inline\\">def</div>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<div style=\\"display:inline\\">abc[]</div><div style=\\"display:inline\\">def</div>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<div style=\\"display:inline\\">abc[]</div><div style=\\"display:inline\\">def</div>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ul><li style=\\"display:inline\\">abc[]</li><li style=\\"display:inline\\">def</li></ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ul><li style=\\"display:inline\\">abc[]</li><li style=\\"display:inline\\">def</li></ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ul><li style=\\"display:inline\\">abc[]</li><li style=\\"display:inline\\">def</li></ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<dl><dt style=\\"display:inline\\">abc[]</dt><dd style=\\"display:inline\\">def</dd></dl>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<dl><dt style=\\"display:inline\\">abc[]</dt><dd style=\\"display:inline\\">def</dd></dl>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<dl><dt style=\\"display:inline\\">abc[]</dt><dd style=\\"display:inline\\">def</dd></dl>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<div><span style=\\"display:list-item\\">abc[]</span><span style=\\"display:list-item\\">def</span></div>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<div><span style=\\"display:list-item\\">abc[]</span><span style=\\"display:list-item\\">def</span></div>" checks for modifications to non-editable content
+[FAIL] [["forwarddelete",""]] "<div><span style=\\"display:list-item\\">abc[]</span><span style=\\"display:list-item\\">def</span></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><span style=\\"display:list-item\\">abcdef</span></div>" but got "<span style=\\"display:list-item\\">abcdef</span>"
 Harness: the test ran to completion.
 
