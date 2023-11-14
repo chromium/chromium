@@ -3,10 +3,7 @@
 // found in the LICENSE file.
 import 'chrome://emoji-picker/app.js';
 
-import {GIF_VALIDATION_DATE, TRENDING} from 'chrome://emoji-picker/constants.js';
-import {EmojiPickerApp} from 'chrome://emoji-picker/app.js';
-import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
-import {EmojiGroupElement} from 'chrome://emoji-picker/types.js';
+import {EmojiGroupElement, EmojiPickerApiProxyImpl, EmojiPickerApp, GIF_VALIDATION_DATE, TRENDING} from 'chrome://emoji-picker/emoji_picker.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';

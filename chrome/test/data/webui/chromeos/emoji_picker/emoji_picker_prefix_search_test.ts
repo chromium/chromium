@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EmojiPrefixSearch} from 'chrome://emoji-picker/prefix_search.js';
+import {EmojiPrefixSearch} from 'chrome://emoji-picker/emoji_picker.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {assertCloseTo} from './emoji_picker_test_util.js';

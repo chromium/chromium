@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EmojiPickerApp} from 'chrome://emoji-picker/app.js';
-import {EmojiSearch} from 'chrome://emoji-picker/emoji_search.js';
-import {EMOJI_TEXT_BUTTON_CLICK} from 'chrome://emoji-picker/events.js';
+import {EMOJI_TEXT_BUTTON_CLICK, EmojiPickerApp, EmojiSearch} from 'chrome://emoji-picker/emoji_picker.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertGT} from 'chrome://webui-test/chai_assert.js';
 

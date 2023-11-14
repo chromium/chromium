@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TRENDING_GROUP_ID} from 'chrome://emoji-picker/constants.js';
-import {EmojiPickerApp} from 'chrome://emoji-picker/app.js';
-import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
-import {EMOJI_IMG_BUTTON_CLICK} from 'chrome://emoji-picker/events.js';
+import {EMOJI_IMG_BUTTON_CLICK, EmojiPickerApiProxyImpl, EmojiPickerApp, TRENDING_GROUP_ID} from 'chrome://emoji-picker/emoji_picker.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
