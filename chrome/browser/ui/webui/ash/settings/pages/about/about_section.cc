@@ -357,6 +357,8 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     {version_ui::kARC, IDS_ARC_LABEL},
     {"aboutBuildDetailsCopyTooltipLabel",
      IDS_OS_SETTINGS_ABOUT_PAGE_BUILD_DETAILS_COPY_TOOLTIP_LABEL},
+    {"aboutBuildDetailsCopiedToClipboardA11yLabel",
+     IDS_OS_SETTINGS_ABOUT_PAGE_BUILD_DETAILS_COPIED_TO_CLIPBOARD_A11Y_LABEL},
     {"aboutIsArcStatusTitle", IDS_OS_SETTINGS_ABOUT_ARC_STATUS_TITLE},
     {"aboutIsDeveloperModeTitle", IDS_OS_SETTINGS_ABOUT_DEVELOPER_MODE},
     {"isEnterpriseManagedTitle",
