@@ -190,6 +190,7 @@ ACTIVE_INTERNAL_BUILDER_SUBQUERY = """\
 KNOWN_TEST_ID_PREFIXES = [
     'ninja://:blink_web_tests/',
     'ninja://:blink_wpt_tests/',
+    'ninja://:chrome_wpt_tests/',
     'ninja://:webgpu_blink_web_tests/',
 ]
 
