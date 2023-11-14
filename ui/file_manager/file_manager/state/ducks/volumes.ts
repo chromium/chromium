@@ -277,7 +277,8 @@ function addVolumeReducer(currentState: State, payload: {
     if (sharedDriveDisplayRoot) {
       cacheEntries(currentState, [sharedDriveDisplayRoot]);
       appendChildIfNotExisted(driveFakeRoot, sharedDriveDisplayRoot);
-      driveRootFileDataChildren.push(sharedDriveDisplayRoot.toURL());
+      // Do not add Shared drives to the FileData children, as we should only
+      // show it in the navigation when it has children inside.
     }
 
     // Add "Computer" grand root into Drive. It's guaranteed to be resolved at
@@ -286,7 +287,8 @@ function addVolumeReducer(currentState: State, payload: {
     if (computersDisplayRoot) {
       cacheEntries(currentState, [computersDisplayRoot]);
       appendChildIfNotExisted(driveFakeRoot, computersDisplayRoot);
-      driveRootFileDataChildren.push(computersDisplayRoot.toURL());
+      // Do not add Computers to the FileData children, as we should only show
+      // it in the navigation when it has children inside.
     }
 
     // Add "Shared with me" into Drive.

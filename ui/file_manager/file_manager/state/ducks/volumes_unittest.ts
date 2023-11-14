@@ -226,8 +226,6 @@ export async function testAddDriveVolume(done: () => void) {
         ...convertEntryToFileData(driveFakeRootEntryList),
         children: [
           driveVolumeEntry.toURL(),
-          sharedDriveDisplayRoot.toURL(),
-          computersDisplayRoot.toURL(),
           fakeSharedWithMeEntry.toURL(),
           fakeOfflineEntry.toURL(),
         ],

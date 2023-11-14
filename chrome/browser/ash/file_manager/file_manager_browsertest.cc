@@ -1849,8 +1849,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     MyFiles, /* my_files.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        // TODO(b/307656687): enable the test
-        // TestCase("showMyFiles").NewDirectoryTree(),
+        TestCase("showMyFiles").NewDirectoryTree(),
         TestCase("directoryTreeRefresh")
             .NewDirectoryTree()
             .FeatureIds({"screenplay-02521fe6-a9c5-4cd1-ac9b-cc46df33c1a0"}),
