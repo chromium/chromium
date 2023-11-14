@@ -146,6 +146,7 @@ tools/metrics/histograms/metadata/safe_browsing/enums.xml
 tools/metrics/histograms/metadata/safe_browsing/histograms.xml
 tools/metrics/histograms/metadata/sb_client/enums.xml
 tools/metrics/histograms/metadata/sb_client/histograms.xml
+tools/metrics/histograms/metadata/scanning/enums.xml
 tools/metrics/histograms/metadata/scanning/histograms.xml
 tools/metrics/histograms/metadata/scheduler/histograms.xml
 tools/metrics/histograms/metadata/search/histograms.xml
