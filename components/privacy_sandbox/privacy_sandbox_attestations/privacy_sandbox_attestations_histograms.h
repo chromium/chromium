@@ -7,6 +7,8 @@
 
 namespace privacy_sandbox {
 
+inline constexpr char kAttestationStatusUMA[] =
+    "PrivacySandbox.Attestations.IsSiteAttested";
 inline constexpr char kAttestationsFileParsingUMA[] =
     "PrivacySandbox.Attestations.InitializationDuration.Parsing";
 inline constexpr char kAttestationsMapMemoryUsageUMA[] =
