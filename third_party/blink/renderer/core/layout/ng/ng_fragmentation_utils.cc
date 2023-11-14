@@ -762,6 +762,16 @@ NGBreakStatus FinishFragmentationForFragmentainer(
         consumed_block_size;
     builder->SetConsumedBlockSizeLegacyAdjustment(
         consumed_block_size_legacy_adjustment);
+
+    if (previous_break_token && previous_break_token->MonolithicOverflow()) {
+      // Add pages as long as there's monolithic overflow that requires it.
+      LayoutUnit remaining_overflow =
+          previous_break_token->MonolithicOverflow() -
+          FragmentainerCapacity(space);
+      if (remaining_overflow > LayoutUnit()) {
+        builder->ReserveSpaceForMonolithicOverflow(remaining_overflow);
+      }
+    }
   } else {
     LayoutUnit fragments_total_block_size = builder->FragmentsTotalBlockSize();
     // Just pass the value through. This is a fragmentainer, and fragmentainers

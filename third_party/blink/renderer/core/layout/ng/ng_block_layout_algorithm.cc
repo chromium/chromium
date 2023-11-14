@@ -2312,7 +2312,7 @@ NGInflowChildData NGBlockLayoutAlgorithm::ComputeChildData(
     }
 
     if (child_block_break_token->MonolithicOverflow() &&
-        !BreakToken()->MonolithicOverflow()) {
+        (Node().IsPaginatedRoot() || !BreakToken()->MonolithicOverflow())) {
       // Every container that needs to be pushed to steer clear of monolithic
       // overflow on a previous page will have this stored in its break token.
       // So we'll only add the additional offset here if the child is the

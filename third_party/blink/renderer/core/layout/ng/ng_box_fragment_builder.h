@@ -349,6 +349,12 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
     // next fragmentianer.
     if (last_inline_break_token_)
       return true;
+
+    // If overflowed by monolithic overflow, we need more pages.
+    if (break_token_data_ && break_token_data_->monolithic_overflow) {
+      return true;
+    }
+
     // Grid layout doesn't insert break before tokens, and instead set this bit
     // to indicate there is content after the current break.
     return has_subsequent_children_;

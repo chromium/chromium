@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_column_spanner_path.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
@@ -381,13 +382,28 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
        !child_fragment.IsFloatingOrOutOfFlowPositioned()) ||
       child_layout_result.ShouldForceSameFragmentationFlow();
 
-  if (ConstraintSpace().IsPaginated() && child_is_in_same_flow &&
-      !IsFragmentainerBoxType()) {
+  if (ConstraintSpace().IsPaginated() &&
+      ((child_is_in_same_flow && !IsFragmentainerBoxType()) ||
+       Node().IsPaginatedRoot())) {
     DCHECK(ConstraintSpace().HasKnownFragmentainerBlockSize());
-    LogicalFragment logical_fragment(
-        child_fragment.Style().GetWritingDirection(), child_fragment);
-    LayoutUnit fragment_block_end =
-        offset.block_offset + logical_fragment.BlockSize();
+    // Include overflow inside monolithic content if this is for a page
+    // fragment. Otherwise just use the fragment size.
+    LayoutUnit block_size;
+    if (Node().IsPaginatedRoot()) {
+      // The root node is guaranteed to be block-level, so there should be a
+      // child box fragment here.
+      DCHECK(child_box_fragment);
+
+      LogicalBoxFragment logical_fragment(
+          child_box_fragment->Style().GetWritingDirection(),
+          *child_box_fragment);
+      block_size = logical_fragment.BlockEndLayoutOverflow();
+    } else {
+      LogicalFragment logical_fragment(
+          child_fragment.Style().GetWritingDirection(), child_fragment);
+      block_size = logical_fragment.BlockSize();
+    }
+    LayoutUnit fragment_block_end = offset.block_offset + block_size;
     LayoutUnit fragmentainer_overflow =
         fragment_block_end - FragmentainerSpaceLeft(ConstraintSpace());
     if (fragmentainer_overflow > LayoutUnit()) {

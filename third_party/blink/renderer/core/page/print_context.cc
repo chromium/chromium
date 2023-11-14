@@ -71,30 +71,7 @@ void PrintContext::ComputePageCount() {
 
   auto* view = frame_->GetDocument()->GetLayoutView();
   const auto& fragments = view->GetPhysicalFragment(0)->Children();
-
   page_count_ = ClampTo<wtf_size_t>(fragments.size());
-
-  PhysicalRect doc_rect = view->DocumentRect();
-  WritingModeConverter converter(view->Style()->GetWritingDirection(),
-                                 doc_rect.size);
-  const NGLink& last_page = fragments.back();
-  LogicalRect last_page_rect =
-      converter.ToLogical(PhysicalRect(last_page.offset, last_page->Size()));
-
-  bool is_horizontal = view->StyleRef().IsHorizontalWritingMode();
-  LayoutUnit doc_block_size(is_horizontal ? doc_rect.size.height
-                                          : doc_rect.size.width);
-  LayoutUnit remaining_block_size =
-      doc_block_size - last_page_rect.BlockEndOffset();
-  if (remaining_block_size > LayoutUnit()) {
-    // Synthesize additional pages for monolithic overflow, and add them to the
-    // number of fragments that we've already counted.
-    int additional_pages =
-        (remaining_block_size /
-         std::max(LayoutUnit(1), last_page_rect.size.block_size))
-            .Ceil();
-    page_count_ += additional_pages;
-  }
 }
 
 gfx::Rect PrintContext::PageRect(wtf_size_t page_number) const {
@@ -112,28 +89,8 @@ gfx::Rect PrintContext::PageRect(wtf_size_t page_number) const {
   CHECK_GE(fragments.size(), 1u);
   DCHECK(fragments[0]->IsFragmentainerBox());
 
-  // Make sure that the page number is within the range of pages that were laid
-  // out. In cases of monolithic overflow (a large image sliced into multiple
-  // pages, for instance) there may be more pages than were actually laid
-  // out. In such cases we need to synthesize a page rectangle, based on the
-  // size and offset of the last page that was laid out.
-  wtf_size_t valid_page_number =
-      std::min(page_number, ClampTo<wtf_size_t>(fragments.size()) - 1);
-
-  const NGLink& page = fragments[valid_page_number];
+  const NGLink& page = fragments[page_number];
   PhysicalRect physical_rect(page.offset, page->Size());
-
-  if (page_number > valid_page_number) {
-    // Synthesize additional page rectangles for monolithic overflow.
-    wtf_size_t pages_to_synthesize = page_number - valid_page_number;
-    WritingModeConverter converter(layout_view.Style()->GetWritingDirection(),
-                                   layout_view.DocumentRect().size);
-    LogicalRect logical_rect = converter.ToLogical(physical_rect);
-    logical_rect.offset.block_offset +=
-        pages_to_synthesize * logical_rect.size.block_size;
-    physical_rect = converter.ToPhysical(logical_rect);
-  }
-
   gfx::Rect page_rect = ToEnclosingRect(physical_rect);
 
   // There's code to avoid fractional page sizes, so we shouldn't have to worry
