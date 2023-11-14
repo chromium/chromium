@@ -73,15 +73,19 @@ v8::Local<v8::Value> GinJavaFunctionInvocationHelper::Invoke(
     }
   }
 
-  mojom::GinJavaBridgeError error;
+  mojom::GinJavaBridgeError error =
+      mojom::GinJavaBridgeError::kGinJavaBridgeNoError;
 
   std::unique_ptr<base::Value> result;
   if (auto* remote = object->GetRemote()) {
     base::Value::List result_wrapper;
-    remote->InvokeMethod(method_name_, std::move(arguments), &error,
-                         &result_wrapper);
-    if (!result_wrapper.empty()) {
-      result = base::Value::ToUniquePtrValue(result_wrapper[0].Clone());
+    if (remote->InvokeMethod(method_name_, std::move(arguments), &error,
+                             &result_wrapper)) {
+      if (!result_wrapper.empty()) {
+        result = base::Value::ToUniquePtrValue(result_wrapper[0].Clone());
+      }
+    } else {
+      error = mojom::GinJavaBridgeError::kGinJavaBridgeObjectIsGone;
     }
   } else {
     result = dispatcher_->InvokeJavaMethod(object->object_id(), method_name_,
