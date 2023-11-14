@@ -55,6 +55,10 @@
     width: 6px;
   }
 
+  :host-context([expanded-state-layout-chrome-refresh]) #focus-indicator {
+    width: 7px;
+  }
+
   /* TODO(crbug.com/1430996): Add focus indicator for secondary results. */
   :host(:is(:focus-visible, [selected]:not(:focus-within)):not(
       [side-type-class_='secondary-side'])) #focus-indicator {

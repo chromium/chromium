@@ -655,6 +655,11 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddBoolean(
       "realboxLensDirectUpload",
       base::FeatureList::IsEnabled(ntp_features::kNtpLensDirectUpload));
+  source->AddBoolean(
+      "realboxCr23ExpandedStateLayout",
+      base::FeatureList::IsEnabled(
+          ntp_features::kRealboxCr23ExpandedStateLayout) ||
+          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
 }
 
 // static
