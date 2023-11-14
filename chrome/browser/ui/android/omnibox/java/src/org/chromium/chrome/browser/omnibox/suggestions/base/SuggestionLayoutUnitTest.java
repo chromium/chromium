@@ -66,7 +66,7 @@ public class SuggestionLayoutUnitTest {
                 "Bottom edge rounding does not reflect the requested state: false",
                 mLayout.mOutlineProvider.isBottomEdgeRounded());
         // No invalidate calls, because nothing has changed.
-        verify(mLayout, times(0)).invalidate();
+        verify(mLayout, times(0)).invalidateOutline();
 
         // Enable rounding of bottom corners only. Observe redraw.
         mLayout.setRoundingEdges(false, true);
@@ -76,7 +76,7 @@ public class SuggestionLayoutUnitTest {
         assertTrue(
                 "Bottom edge rounding does not reflect the requested state: true",
                 mLayout.mOutlineProvider.isBottomEdgeRounded());
-        verify(mLayout, times(1)).invalidate();
+        verify(mLayout, times(1)).invalidateOutline();
         clearInvocations(mLayout);
 
         // Apply the same configuration as previously. Observe no redraw.
@@ -87,7 +87,7 @@ public class SuggestionLayoutUnitTest {
         assertTrue(
                 "Bottom edge rounding does not reflect the requested state: true",
                 mLayout.mOutlineProvider.isBottomEdgeRounded());
-        verify(mLayout, times(0)).invalidate();
+        verify(mLayout, times(0)).invalidateOutline();
 
         // Enable rounding of all corners. Observe redraw.
         mLayout.setRoundingEdges(true, true);
@@ -97,7 +97,7 @@ public class SuggestionLayoutUnitTest {
         assertTrue(
                 "Bottom edge rounding does not reflect the requested state: true",
                 mLayout.mOutlineProvider.isBottomEdgeRounded());
-        verify(mLayout, times(1)).invalidate();
+        verify(mLayout, times(1)).invalidateOutline();
     }
 
     @Test

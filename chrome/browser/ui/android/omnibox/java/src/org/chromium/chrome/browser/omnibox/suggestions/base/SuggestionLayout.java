@@ -179,7 +179,7 @@ class SuggestionLayout extends ViewGroup {
         setClipToOutline(roundTopEdge || roundBottomEdge);
         // Make sure the view redraws. Otherwise, the on-screen visuals may not reflect our desired
         // rounding effect.
-        invalidate();
+        invalidateOutline();
     }
 
     @Override
