@@ -89,8 +89,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
                         activity,
                         profileProviderSupplier,
                         tabCreatorManager,
-                        nextTabPolicySupplier,
-                        index);
+                        nextTabPolicySupplier);
         mSelectors.set(index, selector);
         mAssignments.put(activity, selector);
 

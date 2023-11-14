@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.util.Pair;
 
@@ -65,11 +66,10 @@ public class TabWindowManagerTest {
                 new TabModelSelectorFactory() {
                     @Override
                     public TabModelSelector buildSelector(
-                            Activity activity,
+                            Context context,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
-                            NextTabPolicySupplier nextTabPolicySupplier,
-                            int selectorIndex) {
+                            NextTabPolicySupplier nextTabPolicySupplier) {
                         return new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
                     }
                 };

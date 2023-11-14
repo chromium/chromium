@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
-import android.app.Activity;
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
+
 import android.content.Context;
 
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -15,6 +16,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Glue code that decides which concrete {@link TabModelFilterFactory} should be used.
@@ -23,12 +25,12 @@ import javax.inject.Inject;
 public class ChromeTabModelFilterFactory implements TabModelFilterFactory {
     private Context mContext;
 
-    @Inject
     /**
      * @param context The activity context.
      */
-    public ChromeTabModelFilterFactory(Activity activity) {
-        mContext = activity;
+    @Inject
+    public ChromeTabModelFilterFactory(@Named(ACTIVITY_CONTEXT) Context context) {
+        mContext = context;
     }
 
     /**

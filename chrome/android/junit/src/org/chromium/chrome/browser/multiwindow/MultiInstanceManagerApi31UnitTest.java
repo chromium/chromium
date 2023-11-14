@@ -361,11 +361,10 @@ public class MultiInstanceManagerApi31UnitTest {
                 new TabModelSelectorFactory() {
                     @Override
                     public TabModelSelector buildSelector(
-                            Activity activity,
+                            Context context,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
-                            NextTabPolicySupplier nextTabPolicySupplier,
-                            int selectorIndex) {
+                            NextTabPolicySupplier nextTabPolicySupplier) {
                         return new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
                     }
                 });

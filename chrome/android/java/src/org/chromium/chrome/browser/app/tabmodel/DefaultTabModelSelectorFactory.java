@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
-import android.app.Activity;
+import android.content.Context;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -25,12 +25,11 @@ public class DefaultTabModelSelectorFactory implements TabModelSelectorFactory {
     // verification errors.
     @Override
     public TabModelSelector buildSelector(
-            Activity activity,
+            Context context,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
-            NextTabPolicySupplier nextTabPolicySupplier,
-            int selectorIndex) {
-        TabModelFilterFactory tabModelFilterFactory = new ChromeTabModelFilterFactory(activity);
+            NextTabPolicySupplier nextTabPolicySupplier) {
+        TabModelFilterFactory tabModelFilterFactory = new ChromeTabModelFilterFactory(context);
         AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
 
         return new TabModelSelectorImpl(

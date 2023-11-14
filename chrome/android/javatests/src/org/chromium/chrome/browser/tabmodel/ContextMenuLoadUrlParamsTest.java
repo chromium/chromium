@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import android.app.Activity;
+import android.content.Context;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -78,11 +78,9 @@ public class ContextMenuLoadUrlParamsTest {
         }
 
         public RecordingTabModelSelector(
-                Activity activity,
                 OneshotSupplier<ProfileProvider> profileProviderSupplier,
                 TabCreatorManager tabCreatorManager,
-                TabModelFilterFactory tabModelFilterFactory,
-                int selectorIndex) {
+                TabModelFilterFactory tabModelFilterFactory) {
             super(
                     profileProviderSupplier,
                     tabCreatorManager,
@@ -104,17 +102,14 @@ public class ContextMenuLoadUrlParamsTest {
                 new TabModelSelectorFactory() {
                     @Override
                     public TabModelSelector buildSelector(
-                            Activity activity,
+                            Context context,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
-                            NextTabPolicySupplier nextTabPolicySupplier,
-                            int selectorIndex) {
+                            NextTabPolicySupplier nextTabPolicySupplier) {
                         return new RecordingTabModelSelector(
-                                activity,
                                 profileProviderSupplier,
                                 tabCreatorManager,
-                                new ChromeTabModelFilterFactory(activity),
-                                selectorIndex);
+                                new ChromeTabModelFilterFactory(context));
                     }
                 });
     }
