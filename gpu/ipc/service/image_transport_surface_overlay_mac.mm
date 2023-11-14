@@ -171,6 +171,7 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
   num_committed_ca_layer_trees_++;
 
 #if BUILDFLAG(IS_MAC)
+  bool has_previous_vsync_callback_mac = !!vsync_callback_mac_;
   if (display_link_mac_ && !vsync_callback_mac_) {
     vsync_callback_mac_ = display_link_mac_->RegisterCallback(
         base::BindRepeating(
@@ -179,9 +180,14 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
         /*do_callback_on_register_thread=*/true);
   }
 
+  // To avoid FID (First Input Delay), delay PopulateCALayerParameters only if
+  // this is not the first frame after vsync stops.
   if (vsync_callback_mac_) {
-    // PopulateCALayerParameters will be called in OnVSyncPresentation.
-    return;
+    vsync_callback_mac_keep_alive_counter_ = kMaxKeepAliveCounter;
+    if (has_previous_vsync_callback_mac) {
+      // PopulateCALayerParameters will be called in OnVSyncPresentation.
+      return;
+    }
   }
 #endif
 
@@ -298,10 +304,16 @@ void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id) {
 
   if ((!display_link_mac_ || display_id != display_id_) &&
       display_id != display::kInvalidDisplayId) {
+    // Call PopulateCALayerParameters if there is a pending frame.
     if (vsync_callback_mac_) {
+      // Set the keep_alive_counter to the last one so vsync_callback_mac_ will
+      // be destroyed.
+      vsync_callback_mac_keep_alive_counter_ =
+          num_committed_ca_layer_trees_ ? 0 : 1;
       OnVSyncPresentation(ui::VSyncParamsMac());
       DCHECK(!vsync_callback_mac_);
     }
+
     display_link_mac_ = ui::DisplayLinkMac::GetForDisplay(display_id);
   }
 
@@ -312,10 +324,12 @@ void ImageTransportSurfaceOverlayMacEGL::OnVSyncPresentation(
     ui::VSyncParamsMac params) {
   if (num_committed_ca_layer_trees_) {
     PopulateCALayerParameters();
+  } else {
+    DCHECK(vsync_callback_mac_keep_alive_counter_ > 0);
+    vsync_callback_mac_keep_alive_counter_ -= 1;
   }
 
-  // No more pending frames. Now stop the vsync callback.
-  if (!num_committed_ca_layer_trees_) {
+  if (vsync_callback_mac_keep_alive_counter_ == 0) {
     vsync_callback_mac_ = nullptr;
   }
 }
