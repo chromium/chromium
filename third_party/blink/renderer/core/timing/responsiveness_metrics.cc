@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
 
@@ -185,6 +186,8 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
                                         total_event_duration, interaction_type),
                "frame", GetFrameIdForTracing(window->GetFrame()));
 
+  EmitInteractionToNextPaintTraceEvent(longest_event, interaction_type,
+                                       total_event_duration);
   // Emit a trace event when "interaction to next paint" is considered "slow"
   // according to RAIL guidelines (web.dev/rail).
   constexpr base::TimeDelta kSlowInteractionToNextPaintThreshold =
@@ -514,6 +517,43 @@ void ResponsivenessMetrics::Trace(Visitor* visitor) const {
   visitor->Trace(pointer_id_entry_map_);
   visitor->Trace(key_code_entry_map_);
   visitor->Trace(pointer_flush_timer_);
+}
+
+perfetto::protos::pbzero::WebContentInteraction::Type
+ResponsivenessMetrics::UserInteractionTypeToProto(
+    UserInteractionType interaction_type) const {
+  using Interaction = perfetto::protos::pbzero::WebContentInteraction;
+  switch (interaction_type) {
+    case UserInteractionType::kDrag:
+      return Interaction::INTERACTION_DRAG;
+    case UserInteractionType::kKeyboard:
+      return Interaction::INTERACTION_KEYBOARD;
+    case UserInteractionType::kTapOrClick:
+      return Interaction::INTERACTION_CLICK_TAP;
+  }
+
+  return Interaction::INTERACTION_UNSPECIFIED;
+}
+
+void ResponsivenessMetrics::EmitInteractionToNextPaintTraceEvent(
+    const ResponsivenessMetrics::EventTimestamps& event,
+    UserInteractionType interaction_type,
+    base::TimeDelta total_event_duration) {
+  const perfetto::Track track(base::trace_event::GetNextGlobalTraceId(),
+                              perfetto::ProcessTrack::Current());
+  TRACE_EVENT_BEGIN(
+      "interactions", "Web Interaction", track, event.start_time,
+      [&](perfetto::EventContext& ctx) {
+        auto* web_content_interaction =
+            ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                ->set_web_content_interaction();
+        web_content_interaction->set_type(
+            UserInteractionTypeToProto(interaction_type));
+        web_content_interaction->set_total_duration_ms(
+            total_event_duration.InMilliseconds());
+      });
+
+  TRACE_EVENT_END("interactions", track, event.end_time);
 }
 
 }  // namespace blink

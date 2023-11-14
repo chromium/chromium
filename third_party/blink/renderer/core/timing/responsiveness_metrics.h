@@ -6,12 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_RESPONSIVENESS_METRICS_H_
 
 #include "base/time/time.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/perfetto/include/perfetto/tracing/event_context.h"
 
 namespace blink {
 
@@ -127,6 +130,14 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
   uint64_t GetInteractionCount() const;
 
   void Trace(Visitor*) const;
+
+  perfetto::protos::pbzero::WebContentInteraction::Type
+  UserInteractionTypeToProto(UserInteractionType interaction_type) const;
+
+  void EmitInteractionToNextPaintTraceEvent(
+      const ResponsivenessMetrics::EventTimestamps& event,
+      UserInteractionType interaction_type,
+      base::TimeDelta total_event_duration);
 
  private:
   // Record UKM for user interaction latencies.

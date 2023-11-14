@@ -1449,6 +1449,10 @@ message ScrollPredictorMetrics {
   optional bool is_slow_scroll = 6;
 };
 
+//
+// Critical User Interaction metrics
+//
+
 message PageLoad {
   optional int64 navigation_id = 1;
   optional string url = 2;
@@ -1482,9 +1486,21 @@ message StartUp {
   optional LauchCauseType launch_cause = 2;
 }
 
+message WebContentInteraction {
+  enum Type {
+    INTERACTION_UNSPECIFIED = 0;
+    INTERACTION_KEYBOARD = 1;
+    INTERACTION_CLICK_TAP = 2;
+    INTERACTION_DRAG = 3;
+  }
+
+  optional Type type = 1;
+  optional int64 total_duration_ms = 2;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1058
+  // Next ID: 1059
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -1606,5 +1622,7 @@ message ChromeTrackEvent {
     optional PageLoad page_load = 1056;
 
     optional StartUp startup = 1057;
+
+    optional WebContentInteraction web_content_interaction = 1058;
   }
 }
