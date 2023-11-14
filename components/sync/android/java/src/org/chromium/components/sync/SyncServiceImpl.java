@@ -413,46 +413,83 @@ public class SyncServiceImpl implements SyncService {
     interface Natives {
         // Please keep all methods below in the same order as sync_service_android_bridge.h.
         void setSyncRequested(long nativeSyncServiceAndroidBridge);
+
         boolean canSyncFeatureStart(long nativeSyncServiceAndroidBridge);
+
         boolean isSyncFeatureEnabled(long nativeSyncServiceAndroidBridge);
+
         boolean isSyncFeatureActive(long nativeSyncServiceAndroidBridge);
+
         boolean isSyncDisabledByEnterprisePolicy(long nativeSyncServiceAndroidBridge);
+
         boolean isEngineInitialized(long nativeSyncServiceAndroidBridge);
+
         boolean isTransportStateActive(long nativeSyncServiceAndroidBridge);
+
         void setSetupInProgress(long nativeSyncServiceAndroidBridge, boolean inProgress);
+
         boolean isInitialSyncFeatureSetupComplete(long nativeSyncServiceAndroidBridge);
+
         void setInitialSyncFeatureSetupComplete(
                 long nativeSyncServiceAndroidBridge, int syncFirstSetupCompleteSource);
+
         int[] getActiveDataTypes(long nativeSyncServiceAndroidBridge);
+
         int[] getSelectedTypes(long nativeSyncServiceAndroidBridge);
+
         boolean isTypeManagedByPolicy(long nativeSyncServiceAndroidBridge, int type);
+
         boolean isTypeManagedByCustodian(long nativeSyncServiceAndroidBridge, int type);
+
         void setSelectedTypes(long nativeSyncServiceAndroidBridge, boolean syncEverything,
                 int[] userSelectableTypeArray);
+
         boolean isCustomPassphraseAllowed(long nativeSyncServiceAndroidBridge);
+
         boolean isEncryptEverythingEnabled(long nativeSyncServiceAndroidBridge);
+
         boolean isPassphraseRequiredForPreferredDataTypes(long nativeSyncServiceAndroidBridge);
+
         boolean isTrustedVaultKeyRequired(long nativeSyncServiceAndroidBridge);
+
         boolean isTrustedVaultKeyRequiredForPreferredDataTypes(long nativeSyncServiceAndroidBridge);
+
         boolean isTrustedVaultRecoverabilityDegraded(long nativeSyncServiceAndroidBridge);
+
         boolean isUsingExplicitPassphrase(long nativeSyncServiceAndroidBridge);
+
         int getPassphraseType(long nativeSyncServiceAndroidBridge);
+
         void setEncryptionPassphrase(long nativeSyncServiceAndroidBridge, String passphrase);
+
         boolean setDecryptionPassphrase(long nativeSyncServiceAndroidBridge, String passphrase);
+
         long getExplicitPassphraseTime(long nativeSyncServiceAndroidBridge);
+
         void getAllNodes(long nativeSyncServiceAndroidBridge, Callback<JSONArray> callback);
+
         int getAuthError(long nativeSyncServiceAndroidBridge);
+
         boolean hasUnrecoverableError(long nativeSyncServiceAndroidBridge);
+
         boolean requiresClientUpgrade(long nativeSyncServiceAndroidBridge);
+
         @Nullable
         CoreAccountInfo getAccountInfo(long nativeSyncServiceAndroidBridge);
+
         boolean hasSyncConsent(long nativeSyncServiceAndroidBridge);
+
         boolean isPassphrasePromptMutedForCurrentProductVersion(
                 long nativeSyncServiceAndroidBridge);
+
         void markPassphrasePromptMutedForCurrentProductVersion(long nativeSyncServiceAndroidBridge);
+
         boolean hasKeepEverythingSynced(long nativeSyncServiceAndroidBridge);
+
         boolean shouldOfferTrustedVaultOptIn(long nativeSyncServiceAndroidBridge);
+
         void triggerRefresh(long nativeSyncServiceAndroidBridge);
+
         long getLastSyncedTimeForDebugging(long nativeSyncServiceAndroidBridge);
     }
 }
