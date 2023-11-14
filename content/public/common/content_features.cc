@@ -1134,6 +1134,11 @@ BASE_FEATURE(kViewportSegments,
 // Enables future V8 VM features
 BASE_FEATURE(kV8VmFuture, "V8VmFuture", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables per PWA System Media Controls on Windows
+BASE_FEATURE(kWebAppSystemMediaControlsWin,
+             "WebAppSystemMediaControlsWin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable WebAssembly baseline compilation (Liftoff).
 BASE_FEATURE(kWebAssemblyBaseline,
              "WebAssemblyBaseline",

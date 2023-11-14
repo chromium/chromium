@@ -11185,7 +11185,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-web-app-system-media-controls-win",
      flag_descriptions::kWebAppSystemMediaControlsWinName,
      flag_descriptions::kWebAppSystemMediaControlsWinDescription, kOsWin,
-     FEATURE_VALUE_TYPE(webapps::features::kWebAppSystemMediaControlsWin)},
+     FEATURE_VALUE_TYPE(features::kWebAppSystemMediaControlsWin)},
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)

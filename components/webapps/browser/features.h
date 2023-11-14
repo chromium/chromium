@@ -67,8 +67,6 @@ BASE_DECLARE_FEATURE(kUniversalInstallManifest);
 BASE_DECLARE_FEATURE(kUniversalInstallIcon);
 extern const base::FeatureParam<int> kMinimumFaviconSize;
 
-BASE_DECLARE_FEATURE(kWebAppSystemMediaControlsWin);
-
 }  // namespace features
 }  // namespace webapps
 

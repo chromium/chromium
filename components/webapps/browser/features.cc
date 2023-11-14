@@ -134,11 +134,5 @@ BASE_FEATURE(kUniversalInstallIcon,
 
 extern const base::FeatureParam<int> kMinimumFaviconSize{&kUniversalInstallIcon,
                                                          "size", 48};
-
-// Enables per PWA System Media Controls on Windows
-BASE_FEATURE(kWebAppSystemMediaControlsWin,
-             "WebAppSystemMediaControlsWin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace features
 }  // namespace webapps

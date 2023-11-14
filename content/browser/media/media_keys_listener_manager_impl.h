@@ -147,6 +147,8 @@ class MediaKeysListenerManagerImpl
   bool auxiliary_services_started_ = false;
 
   bool is_media_playing_ = false;
+
+  friend class WebAppSystemMediaControlsBrowserTest;
 };
 
 }  // namespace content
