@@ -5017,8 +5017,6 @@ static_library("ui") {
       "views/commerce/price_tracking_view.h",
       "views/commerce/shopping_collection_iph_view.cc",
       "views/commerce/shopping_collection_iph_view.h",
-      "views/compose/compose_dialog_view.cc",
-      "views/compose/compose_dialog_view.h",
       "views/confirm_bubble_views.cc",
       "views/confirm_bubble_views.h",
       "views/constrained_web_dialog_delegate_views.cc",
@@ -6282,6 +6280,8 @@ static_library("ui") {
       sources += [
         "views/compose/chrome_compose_dialog_controller.cc",
         "views/compose/chrome_compose_dialog_controller.h",
+        "views/compose/compose_dialog_view.cc",
+        "views/compose/compose_dialog_view.h",
       ]
 
       deps += [ "//components/compose/core/browser" ]

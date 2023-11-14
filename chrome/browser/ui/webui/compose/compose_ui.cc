@@ -90,9 +90,12 @@ void ComposeUI::CreateComposeSessionPageHandler(
   content::WebContents* web_contents = triggering_web_contents_
                                            ? triggering_web_contents_.get()
                                            : web_ui()->GetWebContents();
-  ChromeComposeClient::FromWebContents(web_contents)
-      ->BindComposeDialog(std::move(close_handler), std::move(handler),
-                          std::move(dialog));
+  ChromeComposeClient* client =
+      ChromeComposeClient::FromWebContents(web_contents);
+  if (client) {
+    client->BindComposeDialog(std::move(close_handler), std::move(handler),
+                              std::move(dialog));
+  }
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ComposeUI)

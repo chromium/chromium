@@ -8,33 +8,25 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/bubble/bubble_border.h"
 
-namespace compose {
-
-// Default size from Figma spec. The size of the view will follow the requested
-// size of the WebUI, once these are connected.
-constexpr gfx::Size kInputDialogSize(448, 216);
-
 ComposeDialogView::~ComposeDialogView() = default;
 
-ComposeDialogView::ComposeDialogView(View* anchor_view,
-                                     views::BubbleBorder::Arrow anchor_position,
-                                     const gfx::Rect bounds,
-                                     content::WebContents* web_contents)
-    : BubbleDialogDelegateView(anchor_view, anchor_position) {
-  // For testing, a test Window widget is used. Otherwise, no |anchor_view| is
-  // given and the parent Window must be manually set.
-  if (!anchor_view) {
-    set_parent_window(web_contents->GetNativeView());
-    SetAnchorRect(bounds);
-  }
+ComposeDialogView::ComposeDialogView(
+    View* anchor_view,
+    std::unique_ptr<BubbleContentsWrapperT<ComposeUI>> bubble_wrapper,
+    const gfx::Rect& anchor_bounds,
+    views::BubbleBorder::Arrow anchor_position)
+    : WebUIBubbleDialogView(anchor_view,
+                            bubble_wrapper.get(),
+                            anchor_bounds,
+                            anchor_position),
+      bubble_wrapper_(std::move(bubble_wrapper)) {
+  set_has_parent(false);
+  set_adjust_if_offscreen(true);
+}
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
-  SetPreferredSize(kInputDialogSize);
-
-  // Empty contents, to be populated by WebUI.
+base::WeakPtr<ComposeDialogView> ComposeDialogView::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 BEGIN_METADATA(ComposeDialogView, views::View)
 END_METADATA
-
-}  // namespace compose

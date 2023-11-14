@@ -2844,7 +2844,12 @@ if (!is_android) {
     ]
 
     if (enable_compose) {
-      sources += [ "../browser/compose/compose_inner_text_browsertest.cc" ]
+      sources += [
+        "../browser/compose/compose_dialog_browsertest.cc",
+        "../browser/compose/compose_inner_text_browsertest.cc",
+      ]
+
+      deps += [ "//components/compose/core/browser:features" ]
     }
 
     if (enable_supervised_users) {

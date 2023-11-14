@@ -42,8 +42,7 @@ class ChromeComposeDialogController : public compose::ComposeDialogController {
  private:
   friend class ChromeComposeDialogControllerTest;
 
-  std::unique_ptr<BubbleContentsWrapperT<ComposeUI>> bubble_wrapper_;
-  base::WeakPtr<WebUIBubbleDialogView> bubble_;
+  base::WeakPtr<ComposeDialogView> bubble_;
   base::WeakPtr<content::WebContents> web_contents_;
 
   base::WeakPtrFactory<ChromeComposeDialogController> weak_ptr_factory_{this};
