@@ -261,6 +261,11 @@ BASE_DECLARE_FEATURE(kHistoryOptInForRestoreShortyAndReSignin);
 // enabled.
 BASE_DECLARE_FEATURE(kEnableBatchUploadFromBookmarksManager);
 
+// Enables the promo in the Bookmarks Manager or Reading Lists Manager to review
+// account settings when these types are disabled. Note: This should only be
+// used if kReplaceSyncPromosWithSignInPromos is enabled.
+BASE_DECLARE_FEATURE(kEnableReviewAccountSettingsPromo);
+
 // Engagement criteria type for a feed refresh.
 enum class FeedRefreshEngagementCriteriaType {
   // Any scroll or interaction.
