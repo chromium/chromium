@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/app_list/app_list_client.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/link.h"
@@ -16,6 +17,8 @@
 #include "ui/views/view.h"
 
 namespace ash {
+
+class ChipView;
 
 class LauncherSearchIphView : public views::View {
   METADATA_HEADER(LauncherSearchIphView, views::View)
@@ -53,17 +56,28 @@ class LauncherSearchIphView : public views::View {
       bool show_assistant_chip = true);
   ~LauncherSearchIphView() override;
 
+  // views::View:
+  void VisibilityChanged(views::View* starting_from, bool is_visible) override;
+
+  std::vector<raw_ptr<ChipView>> GetChipsForTesting();
+
  private:
   // TODO(b/272370530): Use string id for internationalization.
   void RunLauncherSearchQuery(const std::u16string& query);
 
   void OpenAssistantPage();
 
-  raw_ptr<Delegate> delegate_;
+  void CreateQueryChips(views::View* actions_container);
+
+  void ShuffleChipsQuery();
+
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   std::unique_ptr<ScopedIphSession> scoped_iph_session_;
 
   bool show_assistant_chip_ = false;
+
+  std::vector<raw_ptr<ChipView>> chips_;
 
   base::WeakPtrFactory<LauncherSearchIphView> weak_ptr_factory_{this};
 };

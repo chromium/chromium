@@ -145,22 +145,7 @@ LauncherSearchIphView::LauncherSearchIphView(
   actions_container->SetBetweenChildSpacing(
       kActionContainerBetweenChildSpacing);
 
-  // In Launcher zero state, we show 3 query chips + Assistant chip.
-  // In Assistant zero state, we show 4 query chips.
-  int num_of_chips = show_assistant_chip_
-                         ? kNumberOfQueryChipsWithAssistantChip
-                         : kNumberOfQueryChipsWithoutAssistantChip;
-  int query_chip_view_id = ViewId::kChipStart;
-  for (const std::u16string& query : GetQueryChips(num_of_chips)) {
-    ChipView* chip = actions_container->AddChildView(
-        std::make_unique<ChipView>(ChipView::Type::kLarge));
-    chip->SetText(query);
-    chip->SetCallback(
-        base::BindRepeating(&LauncherSearchIphView::RunLauncherSearchQuery,
-                            weak_ptr_factory_.GetWeakPtr(), query));
-    chip->SetID(query_chip_view_id);
-    query_chip_view_id++;
-  }
+  CreateQueryChips(actions_container);
 
   if (show_assistant_chip_) {
     views::View* spacer =
@@ -191,6 +176,17 @@ LauncherSearchIphView::LauncherSearchIphView(
 
 LauncherSearchIphView::~LauncherSearchIphView() = default;
 
+void LauncherSearchIphView::VisibilityChanged(views::View* starting_from,
+                                              bool is_visible) {
+  if (is_visible) {
+    ShuffleChipsQuery();
+  }
+}
+
+std::vector<raw_ptr<ChipView>> LauncherSearchIphView::GetChipsForTesting() {
+  return chips_;
+}
+
 void LauncherSearchIphView::RunLauncherSearchQuery(
     const std::u16string& query) {
   if (scoped_iph_session_) {
@@ -204,6 +200,41 @@ void LauncherSearchIphView::OpenAssistantPage() {
     scoped_iph_session_->NotifyEvent(kIphEventNameAssistantClick);
   }
   delegate_->OpenAssistantPage();
+}
+
+void LauncherSearchIphView::CreateQueryChips(views::View* actions_container) {
+  // In Launcher zero state, we show 3 query chips + Assistant chip.
+  // In Assistant zero state, we show 4 query chips.
+  int num_of_chips = show_assistant_chip_
+                         ? kNumberOfQueryChipsWithAssistantChip
+                         : kNumberOfQueryChipsWithoutAssistantChip;
+  int query_chip_view_id = ViewId::kChipStart;
+  for (const std::u16string& query : GetQueryChips(num_of_chips)) {
+    ChipView* chip = actions_container->AddChildView(
+        std::make_unique<ChipView>(ChipView::Type::kLarge));
+    chip->SetText(query);
+    chip->SetCallback(
+        base::BindRepeating(&LauncherSearchIphView::RunLauncherSearchQuery,
+                            weak_ptr_factory_.GetWeakPtr(), query));
+    chip->SetID(query_chip_view_id);
+    query_chip_view_id++;
+    chips_.emplace_back(chip);
+  }
+}
+
+void LauncherSearchIphView::ShuffleChipsQuery() {
+  int num_of_chips = show_assistant_chip_
+                         ? kNumberOfQueryChipsWithAssistantChip
+                         : kNumberOfQueryChipsWithoutAssistantChip;
+  size_t chip_index = 0;
+  for (const std::u16string& query : GetQueryChips(num_of_chips)) {
+    CHECK_LT(chip_index, chips_.size());
+    auto chip = chips_[chip_index++];
+    chip->SetText(query);
+    chip->SetCallback(
+        base::BindRepeating(&LauncherSearchIphView::RunLauncherSearchQuery,
+                            weak_ptr_factory_.GetWeakPtr(), query));
+  }
 }
 
 BEGIN_METADATA(LauncherSearchIphView)

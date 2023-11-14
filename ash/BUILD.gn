@@ -3190,6 +3190,7 @@ test("ash_unittests") {
     "assistant/ui/main_stage/assistant_query_view_unittest.cc",
     "assistant/ui/main_stage/assistant_text_element_view_unittest.cc",
     "assistant/ui/main_stage/assistant_zero_state_view_unittest.cc",
+    "assistant/ui/main_stage/launcher_search_iph_view_unittest.cc",
     "assistant/ui/main_stage/suggestion_chip_view_unittest.cc",
     "assistant/ui/main_stage/ui_element_container_view_unittest.cc",
     "assistant/util/deep_link_util_unittest.cc",
