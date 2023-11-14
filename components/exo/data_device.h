@@ -13,6 +13,8 @@
 #include "components/exo/seat_observer.h"
 #include "components/exo/surface.h"
 #include "components/exo/surface_observer.h"
+#include "ui/aura/client/drag_drop_client.h"
+#include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
@@ -31,9 +33,9 @@ class ScopedSurface;
 
 enum class DndAction { kNone, kCopy, kMove, kAsk };
 
-// DataDevice to start drag and drop and copy and paste oprations.
-class DataDevice : public WMHelper::DragDropObserver,
-                   public DataOfferObserver,
+// DataDevice to start drag and drop and copy and paste operations.
+class DataDevice : public DataOfferObserver,
+                   public aura::client::DragDropDelegate,
                    public ui::ClipboardObserver,
                    public SurfaceObserver,
                    public SeatObserver {
@@ -60,17 +62,19 @@ class DataDevice : public WMHelper::DragDropObserver,
   // |source| represents data comes from the client.
   void SetSelection(DataSource* source);
 
-  // Overridden from WMHelper::DragDropObserver:
+  // aura::client::DragDropDelegate:
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   aura::client::DragUpdateInfo OnDragUpdated(
       const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  WMHelper::DragDropObserver::DropCallback GetDropCallback() override;
+  aura::client::DragDropDelegate::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override;
 
   // Overridden from ui::ClipboardObserver:
   void OnClipboardDataChanged() override;
 
   // Overridden from SeatObserver:
+  void OnSurfaceCreated(Surface* surface) override;
   void OnSurfaceFocused(Surface* surface,
                         Surface* lost_focus,
                         bool has_focused_client) override;
@@ -87,8 +91,11 @@ class DataDevice : public WMHelper::DragDropObserver,
   Surface* GetEffectiveTargetForEvent(const ui::DropTargetEvent& event) const;
   void SetSelectionToCurrentClipboardData();
 
-  void PerformDropOrExitDrag(base::ScopedClosureRunner exit_drag,
-                             ui::mojom::DragOperation& output_drag_op);
+  void PerformDropOrExitDrag(
+      base::ScopedClosureRunner exit_drag,
+      std::unique_ptr<ui::OSExchangeData> data,
+      ui::mojom::DragOperation& output_drag_op,
+      std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
   const raw_ptr<DataDeviceDelegate, DanglingUntriaged | ExperimentalAsh>
       delegate_;

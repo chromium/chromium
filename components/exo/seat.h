@@ -75,6 +75,9 @@ class Seat : public aura::client::FocusChangeObserver,
     return 0 <= priority && priority <= kMaxObserverPriority;
   }
 
+  // Nontify observers when a new surface is created.
+  void NotifySurfaceCreated(Surface* surface);
+
   // Notify observers about pointer capture state changes.
   void NotifyPointerCaptureEnabled(Pointer* pointer,
                                    aura::Window* capture_window);
@@ -205,7 +208,7 @@ class Seat : public aura::client::FocusChangeObserver,
   // Max value of SeatObserver's priority. Both side are inclusive.
   static constexpr int kMaxObserverPriority = 1;
 
-  // Map from priority to a list of SeatOberver pointers.
+  // Map from priority to a list of SeatObserver pointers.
   std::array<base::ObserverList<SeatObserver>::Unchecked,
              kMaxObserverPriority + 1>
       priority_observer_list_;
@@ -219,6 +222,7 @@ class Seat : public aura::client::FocusChangeObserver,
   // Data source being used as a clipboard content.
   std::unique_ptr<ScopedDataSource> selection_source_;
 
+  // TODO(oshima): Move this to DataDevice.
   base::WeakPtr<DragDropOperation> drag_drop_operation_;
 
   // True while Seat is updating clipboard data to selection source.

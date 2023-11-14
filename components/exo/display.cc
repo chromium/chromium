@@ -75,7 +75,6 @@ void Display::Shutdown() {
 
 std::unique_ptr<Surface> Display::CreateSurface() {
   TRACE_EVENT0("exo", "Display::CreateSurface");
-
   return std::make_unique<Surface>();
 }
 
