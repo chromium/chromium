@@ -107,6 +107,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="5048795749726991615">Per obtenir fàcilment les contrasenyes desades en altres aplicacions, utilitza Chromium per a Emplenament automàtic</translation>
 <translation id="5076601183701536878">Esborra les dades de navegació a Chromium</translation>
 <translation id="5131565040785979529">La teva organització, <ph name="DOMAIN" />, gestiona el compte en què tens la sessió iniciada i com s'utilitza Chromium.</translation>
+<translation id="5146749061471423558">Afegeix adreces d'interès a Chromium</translation>
 <translation id="5171868502429358653">Inicia la sessió a Chromium</translation>
 <translation id="5213683223491576284">Obre el gestor de contrasenyes a Chromium.</translation>
 <translation id="5224391634244552924">No hi ha cap contrasenya desada. Chromium pot comprovar les teves contrasenyes quan les deses.</translation>
@@ -114,6 +115,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 
         Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sessió ara, aquestes dades se suprimiran.</translation>
 <translation id="5308226104666789935">Chromium no pot cercar actualitzacions</translation>
+<translation id="5311557153294205270">Afegeix els URL introduïts a les adreces d'interès de Chromium.</translation>
 <translation id="5396916991083608703">Vols establir Chromium com a predeterminat?</translation>
 <translation id="5453478652154926037">Chromium no pot comprovar les teves contrasenyes.</translation>
 <translation id="5521125884468363740">Per veure les pestanyes des de tots els llocs on facis servir Chromium, inicia la sessió i activa la sincronització</translation>

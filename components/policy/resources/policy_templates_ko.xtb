@@ -8391,6 +8391,19 @@ Internet Explorer의 <ph name="IEEM_SITELIST_POLICY" /> 정책(https://docs.micr
 <translation id="8102854005031553638">PDF 뷰어는 AGG 렌더기를 사용합니다.</translation>
 <translation id="8102913158860568230">기본 mediastream 설정</translation>
 <translation id="8104962233214241919">이 사이트에 대해 클라이언트 인증서를 자동으로 선택합니다.</translation>
+<translation id="8106782817348995849">이 정책은 <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> 정책이 사용 설정된 경우 관리자가 <ph name="MICROSOFT_ONE_DRIVE_NAME" />에 로그인할 수 있는 계정을 제한하도록 허용합니다.
+
+정책에 '<ph name="COMMON_NAME" />' 값이 포함된 경우 어느 계정으로든 로그인할 수 있습니다.
+
+정책에 '<ph name="ORGANIZATIONS_NAME" />' 값이 포함된 경우 직장 또는 학교 계정으로 로그인할 수 있습니다.
+
+정책에 '<ph name="CONSUMER_NAME" />' 값이 포함된 경우 개인 <ph name="MICROSOFT_NAME" /> 계정으로 로그인할 수 있습니다.
+
+이 정책에 도메인 이름 또는 테넌트 ID가 포함된 경우 이러한 도메인 이름 또는 테넌트 ID의 계정(https://learn.microsoft.com/ko-kr/azure/active-directory/develop/v2-protocols#Endpoint 참고)으로 로그인할 수 있습니다.
+
+정책을 설정하지 않거나 빈 값만 포함하면 일반 사용자에게 '<ph name="COMMON_NAME" />' 값이 지정된 것처럼 작동하며 기업 사용자에게 '<ph name="ORGANIZATIONS_NAME" />' 값이 지정된 것처럼 작동합니다.
+
+새로운 제한사항을 준수하지 않는 경우 제한사항을 변경하면 사용자가 <ph name="MICROSOFT_ONE_DRIVE_NAME" /> 계정에서 로그아웃될 수 있습니다.</translation>
 <translation id="8109762054721090517"><ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" /> 템플릿</translation>
 <translation id="8111331908123507719">잠금 화면의 화면 보호기가 표시되기까지 기기의 유휴 상태 제한 시간(초)을 구성합니다.
 

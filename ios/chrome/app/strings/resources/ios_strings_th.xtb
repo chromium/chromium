@@ -1216,6 +1216,7 @@
 <translation id="7367530036083223701">เข้าถึงรหัสผ่านได้อย่างปลอดภัยจากหน้าจอหลักด้วยวิดเจ็ตเครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="7380220816562673297">ตอนนี้คุณจะแชร์รหัสผ่านกับสมาชิกในครอบครัวได้เท่านั้น <ph name="BEGIN_LINK" />สร้างกลุ่มครอบครัว<ph name="END_LINK" />ที่มีสมาชิกได้สูงสุด 6 คน ตลอดจนใช้ประโยชน์จากผลิตภัณฑ์และการสมัครใช้บริการใน Google ได้มากขึ้น</translation>
 <translation id="7383797227493018512">เรื่องรออ่าน</translation>
+<translation id="739101637685146669">URL ใดที่คุณต้องการบุ๊กมาร์ก</translation>
 <translation id="7396331865858820922">ไม่ได้แชร์รหัสผ่าน</translation>
 <translation id="7398893703713203428">สร้างลิงก์</translation>
 <translation id="7399802613464275309">การตรวจสอบความปลอดภัย</translation>
@@ -1451,6 +1452,7 @@
 <translation id="8591976964826315682">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
 <translation id="8593565399399144771">คุณเปิดแท็บใหม่ได้ที่นี่</translation>
 <translation id="8605219856220328675">ปิดแท็บ</translation>
+<translation id="8609743333007776886">เพิ่ม ${url} ไปยังบุ๊กมาร์ก</translation>
 <translation id="8613883225817609844">ซ่อน "แท็บล่าสุด"</translation>
 <translation id="8620640915598389714">แก้ไข</translation>
 <translation id="8624447588354561276">หมายเลขพัสดุ</translation>

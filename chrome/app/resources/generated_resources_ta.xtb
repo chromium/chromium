@@ -1496,6 +1496,7 @@
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />" ஆல் அனுமதிக்கப்படாததால், "<ph name="APP_NAME" />"ஐ நிறுவ முடியவில்லை</translation>
 <translation id="2133775869826239001">அமைப்பதற்கான கூடுதல் அம்சங்களைத் தேர்ந்தெடுங்கள்</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> ஐ மீண்டும் முயலும்</translation>
+<translation id="2133939190018801302">நீங்கள் தற்போது பயன்படுத்தும் Chrome சுயவிவரத்தில் இந்த ஆப்ஸ் நிறுவப்படும். <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">சிஸ்டம் CAக்கள்</translation>
 <translation id="21354425047973905">பின்களை மறைக்கும்</translation>
 <translation id="2135456203358955318">டாக் செய்யப்பட்ட பெரிதாக்கி</translation>
@@ -2793,6 +2794,7 @@
 <translation id="3117362587799608430">டாக் முழு இணக்கத்தன்மையுடன் இல்லை</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ஐ <ph name="DEVICE_NAME" /> சாதனத்திற்கு அனுப்ப முடியவில்லை}other{<ph name="ATTACHMENTS" /> ஐ <ph name="DEVICE_NAME" /> சாதனத்திற்கு அனுப்ப முடியவில்லை}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> உதவி</translation>
+<translation id="3118748462829336648">பக்கவாட்டு பேனலைத் திற</translation>
 <translation id="3119948370277171654">என்ன உள்ளடக்கம்/URLலை அலைபரப்பினீர்கள்?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">ஒரு தரவு கோப்பகத்தை உருவாக்குவதில் தோல்வியடைந்தது</translation>
@@ -4222,6 +4224,7 @@
 <translation id="4274673989874969668">நீங்கள் தளத்தில் இருந்து வெளியேறிய பிறகும் படங்களை ஏற்றுவது, அரட்டை மெசேஜை அனுப்புவது போன்ற பணிகளை நிறைவுசெய்ய தளம் தொடர்ந்து ஒத்திசைக்கப்படும்</translation>
 <translation id="4275291496240508082">தொடக்க ஒலி</translation>
 <translation id="4275397969489577657">நிகழ்வு வரிசைப் பதிவிடலை இயக்கு</translation>
+<translation id="4275788652681621337">பக்கவாட்டு பேனலை மூடு</translation>
 <translation id="4275830172053184480">உங்கள் சாதனத்தை மீண்டும் தொடங்கவும்</translation>
 <translation id="4277434192562187284">XML உள்ளமைவு ஆதாரம்</translation>
 <translation id="4278390842282768270">அனுமதிக்கப்பட்டது</translation>
@@ -5075,6 +5078,7 @@
 <translation id="4953808748584563296">இயல்பு ஆரஞ்சுநிறத் தோற்றப்படம்</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> தெரிவுநிலை</translation>
 <translation id="4955710816792587366">பின்னைத் தேர்ந்தெடுக்கவும்</translation>
+<translation id="4958090327979461112">Chrome சுயவிவரங்களை நிர்வகியுங்கள்</translation>
 <translation id="4959262764292427323">கடவுச்சொற்களை வேறு சாதனங்களிலும் பயன்படுத்துவதற்காக, அவை உங்கள் Google கணக்கில் சேமிக்கப்பட்டுள்ளன</translation>
 <translation id="4960020053211143927">சில ஆப்ஸில் ஆதரிக்கப்படாது</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5655,6 +5659,7 @@
 <translation id="5436492226391861498">ப்ராக்ஸி டனலுக்காக காத்திருக்கிறது...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> தளத்தைத் தேடுக:</translation>
 <translation id="5436575196282187764">Google Photos நினைவுகள்</translation>
+<translation id="5440425659852470030">பக்கவாட்டு பேனலை மூடு</translation>
 <translation id="544083962418256601">குறுக்குவழிகளை உருவாக்கு...</translation>
 <translation id="5441133529460183413">Chrome உலாவியில் இருந்து இணைய ஆப்ஸ் நிறுவப்பட்டது</translation>
 <translation id="5441292787273562014">பக்கத்தை மீண்டும் ஏற்று</translation>
@@ -8066,6 +8071,7 @@
 <translation id="7384804382450832142">Microsoft OneDrive உடன் இணைத்தல்</translation>
 <translation id="7385490373498027129">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தில் உள்ள அனைத்துக் கோப்புகளும் அதில் சேமிக்கப்பட்டுள்ள அனைத்துப் பயனர்களின் தரவும் நிரந்தரமாக நீக்கப்படும்.</translation>
 <translation id="7385854874724088939">அச்சிட முயற்சித்தபோது, ஏதோ தவறு ஏற்பட்டது.  உங்கள் பிரிண்டரைச் சரிபார்த்து மீண்டும் முயற்சி செய்க.</translation>
+<translation id="7387107590792462040">நிறுவுகிறது, காத்திருக்கவும்</translation>
 <translation id="7387273928653486359">சுமாரானது</translation>
 <translation id="7387951778417998929">இயல்புத் தேடல் இன்ஜினைத் தவிர்த்து வேறொன்றைப் பயன்படுத்த, அதன் ஷார்ட்கட்டை முகவரிப் பட்டியில் டைப் செய்தபிறகு உங்களுக்கு விருப்பமான கீபோர்டு ஷார்ட்கட்டை டைப் செய்யவும். இயல்புத் தேடல் இன்ஜினையும் இங்கே மாற்றலாம்.</translation>
 <translation id="7388209873137778229">ஆதரிக்கப்படும் சாதனங்கள் மட்டும் காட்டப்படுகின்றன.</translation>
@@ -9210,6 +9216,7 @@
 <translation id="8260864402787962391">சுட்டி</translation>
 <translation id="8261378640211443080">இந்த நீட்டிப்பு <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> இல் பட்டியலிடப்படவில்லை, மேலும் அது உங்களுக்குத் தெரியாமல் சேர்க்கப்பட்டிருக்கலாம்.</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
+<translation id="8262971894813353037">WebUIக்குப் புதிய டெஸ்க்டாப் வடிவமைப்பை இயக்கும். Chrome Refresh 2023 வடிவமைப்பும் இயக்கப்பட்டிருக்க வேண்டும்.</translation>
 <translation id="8263336784344783289">இந்தக் குழுவிற்குப் பெயரிடவும்</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />, உங்கள் இடஞ்சுட்டியை முடக்கியுள்ளது.</translation>
 <translation id="8264024885325823677">உங்கள் நிர்வாகி இந்த அமைப்பை நிர்வகிக்கிறார்.</translation>
@@ -9263,6 +9270,7 @@
 <translation id="8298429963694909221">உங்கள் மொபைலுக்கு வரும் அறிவிப்புகளை இப்போது <ph name="DEVICE_TYPE" /> சாதனத்தில் பெற முடியும். <ph name="DEVICE_TYPE" /> சாதனத்தில் அறிவிப்புகளை நிராகரித்தால் அவை மொபைலிலும் நிராகரிக்கப்படும். உங்கள் மொபைல் அருகில் இருப்பதையும் அதில் புளூடூத், வைஃபை ஆகியவை இயக்கப்பட்டிருப்பதையும் உறுதிப்படுத்திக் கொள்ளவும்.</translation>
 <translation id="829923460755755423">Google Password Managerருக்கு ஷார்ட்கட்டைச் சேர்க்கலாம்</translation>
 <translation id="8299319456683969623">தற்போது ஆஃப்லைனில் உள்ளீர்கள்.</translation>
+<translation id="8299951061833867575">வைஃபை, மொபைல் டேட்டா</translation>
 <translation id="8300011035382349091">இந்தத் தாவலுக்கான புக்மார்க்கைத் திருத்தும்</translation>
 <translation id="8300374739238450534">நள்ளிரவு நீலம்</translation>
 <translation id="8301242268274839723">உங்கள் கீபோர்டின் கீழ் இடது ஓரத்தில் இருக்கும் கைரேகை சென்சாரைத் தொடவும். உங்கள் கைரேகைத் தரவு பாதுகாப்பாகச் சேமிக்கப்படுவதுடன் <ph name="DEVICE_TYPE" /> சாதனத்திலேயே இருக்கும்.</translation>
@@ -10277,6 +10285,7 @@
 <translation id="9080175821499742274">செயலில் இல்லாத பக்கங்களிலிருந்து நினைவகச் சேமிப்பு அம்சம் நினைவகத்தைக் காலியாக்குகிறது. செயலில் உள்ள பக்கங்கள் மற்றும் பிற ஆப்ஸ் இதைப் பயன்படுத்தலாம்.</translation>
 <translation id="9080971985541434310">உங்கள் ஆர்வங்களைக் கணிக்கும் - உங்கள் ஆர்வங்களை Chrome கணிக்கலாம்</translation>
 <translation id="9081543426177426948">மறைநிலைப் பயன்முறையில் நீங்கள் பார்க்கும் தளங்கள் சேமிக்கப்படாது</translation>
+<translation id="9082750838489080452">ஆப்ஸ்: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">சாளரமாகத் திற</translation>
 <translation id="9085256200913095638">தேர்வுசெய்துள்ள தாவலை நகலெடுக்கவும்</translation>
 <translation id="9085446486797400519">கேமரா அணுகல்</translation>
@@ -10445,6 +10454,7 @@
 <translation id="924818813611903184">ChromeOS அமைப்புகளில் மொழிகளை நிர்வகியுங்கள்</translation>
 <translation id="925270020047573546">டெஸ்க்டாப் ஆடியோவை இந்தச் சாதனத்தில் அலைபரப்ப முடியாது.</translation>
 <translation id="925575170771547168">இதைச் செய்தால், தளங்கள் சேமித்துள்ள <ph name="TOTAL_USAGE" /> தரவு அழிக்கப்படும்</translation>
+<translation id="930193457234051160">Chrome WebUI Refresh 2023</translation>
 <translation id="930268624053534560">விவரமான நேரமுத்திரைகள்</translation>
 <translation id="930551443325541578">பட்டனைத் தொடர்ந்து அழுத்துதல் மற்றும் உச்சரிப்புக் குறிகள்</translation>
 <translation id="930893132043726269">தற்போது ரோமிங்கில் உள்ளது</translation>

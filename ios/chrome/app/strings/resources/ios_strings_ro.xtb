@@ -1216,6 +1216,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7367530036083223701">Accesează-ți în siguranță parolele de pe ecranul de pornire, folosind widgetul Manager de parole.</translation>
 <translation id="7380220816562673297">Momentan, poți permite accesul la parole doar membrilor familiei. <ph name="BEGIN_LINK" />Creează un grup de familie<ph name="END_LINK" /> cu până la șase membri și fă mai multe cu produsele și abonamentele tale de la Google.</translation>
 <translation id="7383797227493018512">Listă de lectură</translation>
+<translation id="739101637685146669">Ce adresă URL vrei să marchezi?</translation>
 <translation id="7396331865858820922">Nu s-a permis accesul la parolă</translation>
 <translation id="7398893703713203428">Creează un link</translation>
 <translation id="7399802613464275309">Verificare de siguranță</translation>
@@ -1451,6 +1452,7 @@ Datele au fost criptate cu expresia de acces pentru <ph name="TIME" />. Introdu-
 <translation id="8591976964826315682">Blochează cookie-urile terță parte în modul incognito</translation>
 <translation id="8593565399399144771">Poți deschide o filă nouă aici.</translation>
 <translation id="8605219856220328675">Închide fila.</translation>
+<translation id="8609743333007776886">Adaugă ${url} la marcaje</translation>
 <translation id="8613883225817609844">Ascunde filele recente</translation>
 <translation id="8620640915598389714">Editează</translation>
 <translation id="8624447588354561276">Numărul coletului</translation>

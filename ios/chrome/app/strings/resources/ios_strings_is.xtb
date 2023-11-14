@@ -1216,6 +1216,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7367530036083223701">Fáðu öruggan aðgang að aðgangsorðunum þínum af heimaskjánum með aðgangsorðastjórnunargræjunni.</translation>
 <translation id="7380220816562673297">Sem stendur geturðu aðeins deilt aðgangsorðum með fjölskyldumeðlimum. <ph name="BEGIN_LINK" />Stofnaðu fjölskylduhóp<ph name="END_LINK" /> með allt að 6 fjölskyldumeðlimum til að nýta vörur og áskriftir Google sem best.</translation>
 <translation id="7383797227493018512">Leslisti</translation>
+<translation id="739101637685146669">Hvaða vefslóðir viltu setja í bókamerki?</translation>
 <translation id="7396331865858820922">Aðgangsorði var ekki deilt</translation>
 <translation id="7398893703713203428">Búa til tengil</translation>
 <translation id="7399802613464275309">Öryggisathugun</translation>
@@ -1451,6 +1452,7 @@ Gögnin þín voru dulkóðuð með aðgangsorði <ph name="TIME" />. Sláðu þ
 <translation id="8591976964826315682">Loka á fótspor þriðju aðila í huliðsstillingu</translation>
 <translation id="8593565399399144771">Þú getur opnað nýjan flipa hér.</translation>
 <translation id="8605219856220328675">Loka flipa.</translation>
+<translation id="8609743333007776886">Bæta ${url} við bókamerki</translation>
 <translation id="8613883225817609844">Fela „Nýlegir flipar“</translation>
 <translation id="8620640915598389714">Breyta</translation>
 <translation id="8624447588354561276">Pakkanúmer</translation>

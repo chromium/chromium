@@ -107,6 +107,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromi
 <translation id="5048795749726991615">Pour récupérer facilement vos mots de passe enregistrés dans vos autres applications, utilisez Chromium pour le remplissage automatique</translation>
 <translation id="5076601183701536878">Effacer les données de navigation dans Chromium</translation>
 <translation id="5131565040785979529">Votre organisation, <ph name="DOMAIN" />, gère le compte auquel vous êtes connecté et la façon dont Chromium est utilisé.</translation>
+<translation id="5146749061471423558">Ajouter des favoris dans Chromium</translation>
 <translation id="5171868502429358653">Connectez-vous à Chromium</translation>
 <translation id="5213683223491576284">Ouvrez le gestionnaire de mots de passe dans Chromium.</translation>
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
@@ -114,6 +115,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromi
 
         Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
 <translation id="5308226104666789935">Chromium ne peut pas vérifier s'il y a des mises à jour</translation>
+<translation id="5311557153294205270">Ajoute les URL entrées à vos favoris dans Chromium.</translation>
 <translation id="5396916991083608703">Définir Chromium comme navigateur par défaut?</translation>
 <translation id="5453478652154926037">Chromium ne peut pas vérifier vos mots de passe.</translation>
 <translation id="5521125884468363740">Pour voir vos onglets partout où vous utilisez Chromium, connectez-vous et activez la synchronisation</translation>

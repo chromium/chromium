@@ -1216,6 +1216,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7367530036083223701">Saugiai pasiekite slaptažodžius pagrindiniame ekrane naudodami Slaptažodžių tvarkyklės valdiklį.</translation>
 <translation id="7380220816562673297">Kol kas slaptažodžius galite bendrinti tik su šeimos grupės nariais. <ph name="BEGIN_LINK" />Sukurkite iki šešių asmenų šeimos grupę<ph name="END_LINK" /> ir išnaudokite daugiau savo produktų ir prenumeratų teikiamų galimybių sistemoje „Google“.</translation>
 <translation id="7383797227493018512">Skaitymo sąrašas</translation>
+<translation id="739101637685146669">Kokį URL norite pažymėti?</translation>
 <translation id="7396331865858820922">Slaptažodis nebuvo bendrinamas</translation>
 <translation id="7398893703713203428">Kurti nuorodą</translation>
 <translation id="7399802613464275309">Saugos patikra</translation>
@@ -1451,6 +1452,7 @@ Duomenys užšifruoti naudojant slaptafrazę <ph name="TIME" />. Įveskite ją, 
 <translation id="8591976964826315682">Blokuoti trečiųjų šalių slapukus inkognito režimu</translation>
 <translation id="8593565399399144771">Čia galite atidaryti naują skirtuką.</translation>
 <translation id="8605219856220328675">Uždaryti skirtuką.</translation>
+<translation id="8609743333007776886">Pridėti ${url} prie žymių</translation>
 <translation id="8613883225817609844">Slėpti naujausius skirtukus</translation>
 <translation id="8620640915598389714">Redaguoti</translation>
 <translation id="8624447588354561276">Siuntinio numeris</translation>

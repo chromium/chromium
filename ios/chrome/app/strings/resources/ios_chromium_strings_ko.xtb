@@ -107,6 +107,7 @@
 <translation id="5048795749726991615">저장된 비밀번호를 다른 앱에서 쉽게 입력하려면 Chromium 자동 완성 기능을 사용하세요</translation>
 <translation id="5076601183701536878">Chromium에서 인터넷 사용 기록 삭제</translation>
 <translation id="5131565040785979529">내가 로그인한 계정 및 Chromium이 사용되는 방식은 <ph name="DOMAIN" /> 조직에서 관리합니다</translation>
+<translation id="5146749061471423558">Chromium에 북마크 추가</translation>
 <translation id="5171868502429358653">Chromium에 로그인</translation>
 <translation id="5213683223491576284">Chromium에서 비밀번호 관리자를 엽니다.</translation>
 <translation id="5224391634244552924">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Chromium에서 확인할 수 있습니다.</translation>
@@ -114,6 +115,7 @@
 
         잠시 기다렸다가 로그아웃하세요. 지금 로그아웃하면 이 데이터가 삭제됩니다.</translation>
 <translation id="5308226104666789935">Chromium에서 업데이트를 확인할 수 없습니다.</translation>
+<translation id="5311557153294205270">Chromium의 북마크에 입력한 URL을 추가합니다.</translation>
 <translation id="5396916991083608703">Chromium을 기본 브라우저로 설정하시겠습니까?</translation>
 <translation id="5453478652154926037">Chromium에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="5521125884468363740">Chromium을 사용하는 어느 곳에서나 탭을 확인하려면 로그인한 후 동기화를 사용 설정하세요.</translation>

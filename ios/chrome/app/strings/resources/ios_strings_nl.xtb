@@ -1216,6 +1216,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7367530036083223701">Krijg beveiligd toegang tot je wachtwoorden vanaf het startscherm met de widget Wachtwoordmanager.</translation>
 <translation id="7380220816562673297">Voorlopig kun je alleen wachtwoorden delen met gezinsleden. <ph name="BEGIN_LINK" />Maak een gezinsgroep<ph name="END_LINK" /> met maximaal 6 leden en haal meer uit je producten en abonnementen op Google.</translation>
 <translation id="7383797227493018512">Leeslijst</translation>
+<translation id="739101637685146669">Welke URL wil je bookmarken?</translation>
 <translation id="7396331865858820922">Wachtwoord is niet gedeeld</translation>
 <translation id="7398893703713203428">Link maken</translation>
 <translation id="7399802613464275309">Veiligheidscheck</translation>
@@ -1451,6 +1452,7 @@ Je gegevens zijn op <ph name="TIME" /> versleuteld met je wachtwoordzin. Geef de
 <translation id="8591976964826315682">Cookies van derden blokkeren in incognitomodus</translation>
 <translation id="8593565399399144771">Je kunt hier een nieuw tabblad openen.</translation>
 <translation id="8605219856220328675">Tabblad sluiten</translation>
+<translation id="8609743333007776886">${url} toevoegen aan bookmarks</translation>
 <translation id="8613883225817609844">Recente tabbladen verbergen</translation>
 <translation id="8620640915598389714">Bewerken</translation>
 <translation id="8624447588354561276">Pakketnummer</translation>

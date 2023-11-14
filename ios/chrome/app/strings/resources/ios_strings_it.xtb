@@ -1216,6 +1216,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7367530036083223701">Accedi in sicurezza alle tue password dalla schermata Home con il widget Gestore delle password.</translation>
 <translation id="7380220816562673297">Al momento puoi condividere le password solo con i membri del gruppo Famiglia. <ph name="BEGIN_LINK" />Crea un gruppo Famiglia<ph name="END_LINK" /> formato da un massimo di 6 membri e usa al meglio i tuoi prodotti e abbonamenti su Google.</translation>
 <translation id="7383797227493018512">Elenco di lettura</translation>
+<translation id="739101637685146669">Quale URL vuoi aggiungere ai preferiti?</translation>
 <translation id="7396331865858820922">La password non è stata condivisa</translation>
 <translation id="7398893703713203428">Crea link</translation>
 <translation id="7399802613464275309">Controllo di sicurezza</translation>
@@ -1451,6 +1452,7 @@ I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" 
 <translation id="8591976964826315682">Blocca cookie di terze parti in modalità di navigazione in incognito</translation>
 <translation id="8593565399399144771">Puoi aprire una nuova scheda qui.</translation>
 <translation id="8605219856220328675">Chiudi la scheda.</translation>
+<translation id="8609743333007776886">Aggiungi ${url} ai preferiti</translation>
 <translation id="8613883225817609844">Nascondi schede recenti</translation>
 <translation id="8620640915598389714">Modifica</translation>
 <translation id="8624447588354561276">Numero pacchetto</translation>

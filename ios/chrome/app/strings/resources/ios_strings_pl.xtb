@@ -1216,6 +1216,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7367530036083223701">Widżet Menedżera haseł zapewnia bezpieczny dostęp do haseł na ekranie głównym.</translation>
 <translation id="7380220816562673297">Obecnie hasła możesz udostępniać tylko członkom grupy rodzinnej. <ph name="BEGIN_LINK" />Utwórz grupę rodzinną<ph name="END_LINK" /> liczącą maksymalnie 6 osób i w pełni wykorzystaj potencjał produktów, usług i subskrypcji Google.</translation>
 <translation id="7383797227493018512">Do przeczytania</translation>
+<translation id="739101637685146669">Jaki URL chcesz dodać do zakładek?</translation>
 <translation id="7396331865858820922">Hasło nie zostało udostępnione</translation>
 <translation id="7398893703713203428">Utwórz link</translation>
 <translation id="7399802613464275309">Kontrola zabezpieczeń</translation>
@@ -1451,6 +1452,7 @@ Dane zostały zaszyfrowane hasłem <ph name="TIME" />. Podaj hasło, aby korzyst
 <translation id="8591976964826315682">Blokuj pliki cookie innych firm w trybie incognito</translation>
 <translation id="8593565399399144771">Tutaj możesz otworzyć nową kartę.</translation>
 <translation id="8605219856220328675">Zamknij kartę</translation>
+<translation id="8609743333007776886">Dodaj ${url} do zakładek</translation>
 <translation id="8613883225817609844">Ukryj opcję Ostatnie karty</translation>
 <translation id="8620640915598389714">Edytuj</translation>
 <translation id="8624447588354561276">Numer przesyłki</translation>

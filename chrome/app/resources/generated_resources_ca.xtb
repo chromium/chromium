@@ -841,6 +841,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1641113438599504367">Navegació segura</translation>
 <translation id="1641496881756082050">Més accions per a <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{No s'ha importat 1 contrasenya més perquè té un format incorrecte}other{No s'han importat {NUM_PASSWORDS} contrasenyes més perquè tenen un format incorrecte}}</translation>
+<translation id="1642299742557467312">Aquest fitxer podria malmetre el dispositiu</translation>
 <translation id="1642492862748815878">Connectat a <ph name="DEVICE" /> i <ph name="NUMBER_OF_DEVICES" /> dispositius Bluetooth més.</translation>
 <translation id="1642494467033190216">Abans d'activar altres funcions de depuració, heu d'eliminar la protecció del sistema de fitxers rootfs i reiniciar el sistema.</translation>
 <translation id="1643072738649235303">Signatura d'ECDSA X9.62 amb SHA-1</translation>
@@ -4071,6 +4072,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4148195018520464922">Pots limitar l'inici de sessió a usuaris concrets. D'aquesta manera, se suprimirà l'opció Afegeix una persona de la pantalla d'inici de sessió. També pots suprimir els usuaris actuals.</translation>
 <translation id="4148957013307229264">S'està instal·lant...</translation>
 <translation id="4150201353443180367">Pantalla</translation>
+<translation id="4150417452770391330">Connecta una càmera</translation>
 <translation id="4150569944729499860">Context de la pantalla</translation>
 <translation id="4151449637210235443">Explica'ns la teva partida recent</translation>
 <translation id="4151503145138736576">No hi ha emmagatzematge sense connexió per netejar</translation>
@@ -4171,6 +4173,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4244238649050961491">Cerca més aplicacions de llapis òptic</translation>
 <translation id="4246980464509998944">Comentaris addicionals:</translation>
 <translation id="424726838611654458">Obre sempre a Adobe Reader</translation>
+<translation id="4248401726442101648">No hi ha cap càmera connectada</translation>
 <translation id="4249248555939881673">S'està esperant la connexió a la xarxa...</translation>
 <translation id="4249373718504745892">S'ha bloquejat l'accés d'aquesta pàgina a la càmera i al micròfon</translation>
 <translation id="424963718355121712">Les aplicacions s'han de distribuir des de l'amfitrió que afecten</translation>
@@ -4293,6 +4296,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4345457680916430965">&amp;Obre a <ph name="APP" /></translation>
 <translation id="4345587454538109430">Configura...</translation>
 <translation id="4345732373643853732">El servidor no coneix aquest nom d'usuari</translation>
+<translation id="4346159263667201092">Afegeix detalls opcionals</translation>
 <translation id="4348426576195894795">Si suprimeixes aquest compte, també se suprimiran els perfils de Chrome en què tinguis la sessió iniciada en aquest compte</translation>
 <translation id="4348766275249686434">Recopila els errors</translation>
 <translation id="4349828822184870497">És útil</translation>
@@ -4377,6 +4381,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4406883609789734330">Subtítols instantanis</translation>
 <translation id="4407039574263172582">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà el teu nom, la teva adreça electrònica i la teva foto de perfil amb aquest lloc web. Consulta les <ph name="BEGIN_LINK" />condicions del servei<ph name="END_LINK" /> d'aquest lloc web.</translation>
 <translation id="4408599188496843485">A&amp;juda</translation>
+<translation id="4408965460206576430">Aquest fitxer conté programari maliciós o prové d'un lloc web sospitós</translation>
 <translation id="4409271659088619928">El teu motor de cerca és <ph name="DSE" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau.</translation>
 <translation id="4409697491990005945">Marges</translation>
 <translation id="4409779593816003679">Contrasenyes i &amp;emplenament automàtic</translation>
@@ -9252,6 +9257,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="829923460755755423">Afegeix una drecera al gestor de contrasenyes de Google</translation>
 <translation id="8299319456683969623">En aquests moments no tens connexió.
 </translation>
+<translation id="8299951061833867575">Wi-Fi, dades mòbils</translation>
 <translation id="8300011035382349091">Edita l'adreça d'interès d'aquesta pestanya</translation>
 <translation id="8300374739238450534">Blau nit</translation>
 <translation id="8301242268274839723">Toca el sensor d'empremtes digitals que hi ha a l'extrem inferior esquerre del teclat. Les dades de la teva empremta digital s'emmagatzemen de manera segura i no surten mai del <ph name="DEVICE_TYPE" />.</translation>

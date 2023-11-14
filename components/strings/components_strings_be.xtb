@@ -304,6 +304,7 @@
 
       &lt;p&gt;Змяніце дату і час у раздзеле &lt;strong&gt;Агульныя&lt;/strong&gt; праграмы &lt;strong&gt;Налады&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Адміністратар перазапусціць прыладу ў <ph name="TIME" /> <ph name="DATE" /></translation>
+<translation id="1564634006476980707">Схема HTTPS, рэкамендаваная для URL-адраса пошуку: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Сеткавыя даныя, такая як адрасы, налады інтэрфейсу і якасць падключэння</translation>
 <translation id="1567040042588613346">Гэта палітыка працуе належным чынам, але замяняе аднолькавае значэнне, зададзенае з іншай крыніцы.</translation>
 <translation id="1567405528131216114">Дадаць тэму "<ph name="TOPIC" />"</translation>
@@ -733,6 +734,7 @@
 <translation id="2448295565072560657">Перыферыйныя прылады, падключаныя да прылады пры выкананым уваходзе ва ўліковы запіс</translation>
 <translation id="2450021089947420533">Шляхі карыстальніка</translation>
 <translation id="2456755709261364512">Зарад акумулятара павінен быць большым за <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2462599289530201834">Пошук: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2463739503403862330">Запоўніць</translation>
 <translation id="2465688316154986572">Скаба</translation>
 <translation id="2465914000209955735">Кіраваць файламі, якія вы спампавалі ў браўзеры Chrome</translation>
@@ -904,6 +906,7 @@
 <translation id="2814184336982254349">Гэты файл PDF недаступны. Націсніце Пошук + M, каб адкрыць кантэкстнае меню і ўключыць функцыю "Выняць тэкст з PDF".</translation>
 <translation id="2818338148457093657">Спа і салоны прыгажосці</translation>
 <translation id="2820957248982571256">Ідзе пошук...</translation>
+<translation id="2824549017793319782">Выберыце, каб увесці пошукавы запыт прама ў адрасным радку</translation>
 <translation id="2824775600643448204">Адрасны радок і панэль пошуку</translation>
 <translation id="2826760142808435982">Падключэнне зашыфравана і аўтэнтыфікавана з дапамогай <ph name="CIPHER" />, механізм абмену ключамі – <ph name="KX" />.</translation>
 <translation id="2835170189407361413">Ачысціць форму</translation>
@@ -1692,6 +1695,7 @@
 <translation id="4386413576162606861">Ролевыя гульні</translation>
 <translation id="4390472908992056574">Мяжа</translation>
 <translation id="4393632246160856858">Тавары для догляду пазногцяў</translation>
+<translation id="4397059608630092079">Заўсёды спраўджваць пры аўтазапаўненні</translation>
 <translation id="4406883609789734330">Аўтаматычныя субцітры</translation>
 <translation id="4406896451731180161">вынікі пошуку</translation>
 <translation id="4408413947728134509">Файлы cookie: <ph name="NUM_COOKIES" /></translation>
@@ -3753,6 +3757,7 @@
 <translation id="8490137692873530638">Укладчык 10</translation>
 <translation id="8493948351860045254">Вызваліць месца</translation>
 <translation id="8498891568109133222">Чаканне адказу ад <ph name="HOST_NAME" /> заняло занадта шмат часу.</translation>
+<translation id="8502972004418241366">Каб выкарыстоўваць інструмент "<ph name="PERMISSION" />" на гэтым сайце, неабходна даць доступ браўзеру Chrome</translation>
 <translation id="8503559462189395349">Паролі Chrome</translation>
 <translation id="8503813439785031346">Імя карыстальніка</translation>
 <translation id="8504928302600319133">Камп'ютарнае апаратнае забеспячэнне</translation>

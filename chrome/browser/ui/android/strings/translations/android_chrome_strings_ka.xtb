@@ -502,6 +502,7 @@
 <translation id="371230970611282515">პროგნოზირებს სახიფათო მოვლენებს და გაგაფრთხილებთ მათ შესახებ.</translation>
 <translation id="3714981814255182093">ძიების ზოლის გახსნა</translation>
 <translation id="3716182511346448902">ეს გვერდი იყენებს მეხსიერების მეტისმეტად დიდ მოცულობას, რის გამოც Chrome-მა ის დააპაუზა.</translation>
+<translation id="3720422586473670527">არა, გმადლობთ</translation>
 <translation id="3721119614952978349">თქვენ და Google</translation>
 <translation id="3737319253362202215">თარგმნის პარამეტრები</translation>
 <translation id="3737402728074743863">ამ მოწყობილობის, როგორც უსაფრთხოების გასაღების გამოსაყენებლად დააყენეთ ეკრანის დაბლოკვა</translation>
@@ -799,6 +800,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{მიმდინარეობს ფაილის ჩამოტვირთვა…}other{მიმდინარეობს # ფაილის ჩამოტვირთვა…}}</translation>
 <translation id="5210286577605176222">წინა ჩანართზე გადასვლა</translation>
 <translation id="5210365745912300556">ჩანართის დახურვა</translation>
+<translation id="5216863793077689658">თქვენი აქტივობა გვერდის ანალიზის კუთხით შეინახება თქვენს <ph name="BEGIN_LINK" />Google ანგარიშში<ph name="END_LINK" />.</translation>
 <translation id="5222676887888702881">გამოსვლა</translation>
 <translation id="5226378907213531272">მანქანის ყოველი გამოყენებისას ეკრანი უნდა განბლოკოთ</translation>
 <translation id="5227554086496586518">შეეხეთ ძიების შედეგების სანახავად</translation>

@@ -1477,6 +1477,7 @@
 <translation id="2131077480075264">“<ph name="IMPORT_NAME" />”不允许安装“<ph name="APP_NAME" />”，因为无法进行此项安装</translation>
 <translation id="2133775869826239001">选择更多功能进行设置</translation>
 <translation id="2133857665503360653">重新尝试下载“<ph name="FILE_NAME" />”文件</translation>
+<translation id="2133939190018801302">系统会将此应用安装到您当前使用的 Chrome 个人资料中。<ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">系统 CA</translation>
 <translation id="21354425047973905">隐藏 PIN 码</translation>
 <translation id="2135456203358955318">停靠的放大镜</translation>
@@ -2770,6 +2771,7 @@
 <translation id="3117362587799608430">基座不完全兼容</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{未能将 <ph name="ATTACHMENTS" />发送到“<ph name="DEVICE_NAME" />”}other{未能将 <ph name="ATTACHMENTS" />发送到“<ph name="DEVICE_NAME" />”}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" />帮助</translation>
+<translation id="3118748462829336648">打开侧边栏</translation>
 <translation id="3119948370277171654">您当时投放的是什么内容/网址？</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">无法创建数据目录</translation>
@@ -4198,6 +4200,7 @@
 <translation id="4274673989874969668">当您离开网站后，网站可保持同步以完成各项任务（例如上传照片或发送聊天消息）</translation>
 <translation id="4275291496240508082">启动音</translation>
 <translation id="4275397969489577657">启用事件流记录功能</translation>
+<translation id="4275788652681621337">关闭侧边栏</translation>
 <translation id="4275830172053184480">重启您的设备</translation>
 <translation id="4277434192562187284">XML 配置来源</translation>
 <translation id="4278390842282768270">允许</translation>
@@ -5050,6 +5053,7 @@
 <translation id="4953808748584563296">默认的橙色头像</translation>
 <translation id="4955707703665801001">“<ph name="FEATURE_NAME" />”功能的设备公开范围</translation>
 <translation id="4955710816792587366">选择 PIN 码</translation>
+<translation id="4958090327979461112">管理您的 Chrome 个人资料</translation>
 <translation id="4959262764292427323">系统会将密码保存在您的 Google 账号中，以便您在任意设备上使用密码</translation>
 <translation id="4960020053211143927">不适用于某些应用</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5630,6 +5634,7 @@
 <translation id="5436492226391861498">正在等待代理隧道的响应...</translation>
 <translation id="5436510242972373446">用 <ph name="SITE_NAME" /> 搜索：</translation>
 <translation id="5436575196282187764">Google 相册中的回忆</translation>
+<translation id="5440425659852470030">关闭侧边栏</translation>
 <translation id="544083962418256601">创建快捷方式...</translation>
 <translation id="5441133529460183413">从 Chrome 浏览器安装的 Web 应用</translation>
 <translation id="5441292787273562014">重新加载网页</translation>
@@ -8037,6 +8042,7 @@
 <translation id="7384804382450832142">连接到 Microsoft OneDrive</translation>
 <translation id="7385490373498027129">这部 <ph name="DEVICE_TYPE" /> 上所有用户的全部文件和本地数据都会被永久删除。</translation>
 <translation id="7385854874724088939">尝试打印时出现错误。请检查您的打印机，然后重试。</translation>
+<translation id="7387107590792462040">正在安装，请稍候</translation>
 <translation id="7387273928653486359">可接受</translation>
 <translation id="7387951778417998929">若要使用非默认的搜索引擎，请先在地址栏中输入相应的快捷字词，然后按您的首选键盘快捷键。您还可在此处更改默认搜索引擎。</translation>
 <translation id="7388209873137778229">系统仅会显示受支持的设备。</translation>
@@ -9181,6 +9187,7 @@
 <translation id="8260864402787962391">鼠标</translation>
 <translation id="8261378640211443080">该扩展程序未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中，并可能是在您不知情的情况下添加的。</translation>
 <translation id="8261506727792406068">删除</translation>
+<translation id="8262971894813353037">启用 WebUI 的全新桌面版设计。此外，还必须启用 Chrome Refresh 2023。</translation>
 <translation id="8263336784344783289">为此组命名</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> 已隐藏鼠标指针。</translation>
 <translation id="8264024885325823677">此设置由您的管理员管理。</translation>
@@ -9234,6 +9241,7 @@
 <translation id="8298429963694909221">您现在可在 <ph name="DEVICE_TYPE" /> 上接收手机中的通知。在 <ph name="DEVICE_TYPE" /> 上关闭通知也会在手机上关闭这些通知。请确保您的手机就在附近，且已开启蓝牙和 Wi-Fi。</translation>
 <translation id="829923460755755423">为 Google 密码管理工具添加快捷方式</translation>
 <translation id="8299319456683969623">您目前处于离线状态。</translation>
+<translation id="8299951061833867575">Wi-Fi，移动流量</translation>
 <translation id="8300011035382349091">为此标签页修改书签</translation>
 <translation id="8300374739238450534">深夜蓝</translation>
 <translation id="8301242268274839723">轻触键盘左下角的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
@@ -10248,6 +10256,7 @@
 <translation id="9080175821499742274">省内存模式会释放闲置标签页占用的内存，以供使用中的标签页和其他应用使用。</translation>
 <translation id="9080971985541434310">推测您的兴趣 - Chrome 可以推测您的兴趣</translation>
 <translation id="9081543426177426948">在无痕模式下，系统不会保存您访问过的网站</translation>
+<translation id="9082750838489080452">应用：<ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">在窗口中打开</translation>
 <translation id="9085256200913095638">复制所选标签页</translation>
 <translation id="9085446486797400519">摄像头使用权限</translation>
@@ -10416,6 +10425,7 @@
 <translation id="924818813611903184">在 Chrome 操作系统设置中管理语言</translation>
 <translation id="925270020047573546">此设备不支持投放桌面设备中的音频。</translation>
 <translation id="925575170771547168">此操作会清除由网站存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
+<translation id="930193457234051160">Chrome WebUI Refresh 2023</translation>
 <translation id="930268624053534560">详细时间戳</translation>
 <translation id="930551443325541578">重复按键和重音符号</translation>
 <translation id="930893132043726269">目前正在使用漫游服务</translation>

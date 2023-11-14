@@ -304,6 +304,7 @@
 
       &lt;p&gt;தேதி மற்றும் நேரத்தை &lt;strong&gt;அமைப்புகள்&lt;/strong&gt; ஆப்ஸின் &lt;strong&gt;பொது&lt;/strong&gt; என்கிற பகுதியில் மாற்றவும்.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">உங்கள் நிர்வாகி சாதனத்தை <ph name="DATE" /> அன்று <ph name="TIME" /> மணிக்கு மீண்டும் தொடங்குவார்</translation>
+<translation id="1564634006476980707">தேடல் URLலுக்குப் பரிந்துரைக்கப்படும் HTTPS ஸ்கீம்: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">முகவரிகள், இடைமுக உள்ளமைவு, இணைப்பின் தரம் போன்ற நெட்வொர்க்கிங் தகவல்கள்</translation>
 <translation id="1567040042588613346">இந்தக் கொள்கை எதிர்பார்த்த வகையில் வேலை செய்கிறது. ஆனால் இதே மதிப்பு வேறு எங்கோ அமைக்கப்பட்டுள்ளதோடு இந்தக் கொள்கையின் மூலம் மாற்றியமைக்கப்படுகிறது.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> தலைப்பைச் சேர்க்கும்</translation>
@@ -733,6 +734,7 @@
 <translation id="2448295565072560657">நீங்கள் உள்நுழைந்திருக்கும்போது இந்தச் சாதனத்தில் இணைக்கப்பட்டுள்ள வெளிப்புறச் சாதனங்கள்</translation>
 <translation id="2450021089947420533">குறிப்பிட்ட தேடல் விவரங்கள்</translation>
 <translation id="2456755709261364512"><ph name="REQUIRED_BATTERY_PRECENT" />% அளவைவிடக் கூடுதலாக உங்கள் சாதனம் சார்ஜ் ஆகியிருக்க வேண்டும்</translation>
+<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> ஐத் தேடு</translation>
 <translation id="2463739503403862330">நிரப்பு</translation>
 <translation id="2465688316154986572">ஸ்டேப்பில்</translation>
 <translation id="2465914000209955735">Chromeமில் நீங்கள் பதிவிறக்கிய ஃபைல்களை நிர்வகிக்கலாம்</translation>
@@ -904,6 +906,7 @@
 <translation id="2814184336982254349">இந்த PDFஐ அணுக முடியவில்லை. Search + m அழுத்தி சூழல் மெனுவைத் திறந்து, "PDF ஃபைலில் இருந்து வார்த்தைகளைப் பிரித்தெடு" என்பதை இயக்கவும்.</translation>
 <translation id="2818338148457093657">அழகுச் சேவைகள் &amp; ஸ்பாக்கள்</translation>
 <translation id="2820957248982571256">ஸ்கேன் செய்கிறது...</translation>
+<translation id="2824549017793319782">முகவரிப் பட்டியில் உங்கள் தேடலை நேரடியாக டைப் செய்ய தேர்ந்தெடுக்கவும்</translation>
 <translation id="2824775600643448204">முகவரி மற்றும் தேடல் பட்டி</translation>
 <translation id="2826760142808435982">இந்த இணைப்பு <ph name="CIPHER" /> ஐப் பயன்படுத்தி என்க்ரிப்ட் செய்யப்பட்டு அங்கீகரிக்கப்பட்டது, ஒரு முக்கிய பரிமாற்ற செயல்முறையாக <ph name="KX" /> ஐப் பயன்படுத்துகிறது.</translation>
 <translation id="2835170189407361413">படிவத்தை அழி</translation>
@@ -3749,6 +3752,7 @@
 <translation id="8490137692873530638">ஸ்டேக்கர் 10</translation>
 <translation id="8493948351860045254">இடத்தைக் காலியாக்கு</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> பதிலளிக்க நீண்ட நேரம் எடுத்துக்கொண்டது.</translation>
+<translation id="8502972004418241366">இந்தத் தளத்தில் உங்கள் <ph name="PERMISSION" /> ஐப் பயன்படுத்த Chrome உலாவிக்கு அணுகலை நீங்கள் வழங்க வேண்டும்</translation>
 <translation id="8503559462189395349">Chrome கடவுச்சொற்கள்</translation>
 <translation id="8503813439785031346">பயனர்பெயர்</translation>
 <translation id="8504928302600319133">கம்ப்யூட்டர் வன்பொருள்</translation>

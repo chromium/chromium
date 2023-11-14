@@ -844,6 +844,7 @@
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="1641496881756082050">可以對 <ph name="NETWORK_NAME" /> 執行的其他操作</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{由於另外 1 個密碼的格式不正確，因此無法匯入}other{由於另外 {NUM_PASSWORDS} 個密碼的格式不正確，因此無法匯入}}</translation>
+<translation id="1642299742557467312">此檔案可能會損害你的裝置</translation>
 <translation id="1642492862748815878">已連線至「<ph name="DEVICE" />」和另外 <ph name="NUMBER_OF_DEVICES" /> 部藍牙裝置</translation>
 <translation id="1642494467033190216">如要啟用其他偵錯功能，您必須先移除 rootfs 保護並重新啟動。</translation>
 <translation id="1643072738649235303">使用 SHA-1 的 X9.62 ECDSA 簽名</translation>
@@ -4083,6 +4084,7 @@
 <translation id="4148195018520464922">你可限制只有特定使用者才能登入。設定完成後，系統會移除登入畫面上的「新增使用者」選項。你亦可移除現有的使用者。</translation>
 <translation id="4148957013307229264">安裝中…</translation>
 <translation id="4150201353443180367">顯示屏</translation>
+<translation id="4150417452770391330">連接相機</translation>
 <translation id="4150569944729499860">畫面內容</translation>
 <translation id="4151449637210235443">與我們分享您最近的遊戲體驗</translation>
 <translation id="4151503145138736576">沒有可清理的離線儲存空間</translation>
@@ -4183,6 +4185,7 @@
 <translation id="4244238649050961491">尋找更多觸控筆應用程式</translation>
 <translation id="4246980464509998944">其他意見：</translation>
 <translation id="424726838611654458">永遠在 Adobe Reader 中開啟</translation>
+<translation id="4248401726442101648">未連接任何相機</translation>
 <translation id="4249248555939881673">正在等待網絡連線…</translation>
 <translation id="4249373718504745892">系統已封鎖這個網頁存取您的相機和麥克風。</translation>
 <translation id="424963718355121712">應用程式的安裝來源必須與受影響的主機相同</translation>
@@ -4305,6 +4308,7 @@
 <translation id="4345457680916430965">在 <ph name="APP" /> 中開啟(&amp;O)</translation>
 <translation id="4345587454538109430">設定…</translation>
 <translation id="4345732373643853732">伺服器無法辨識使用者名稱</translation>
+<translation id="4346159263667201092">新增選填詳細資料</translation>
 <translation id="4348426576195894795">移除此帳戶亦會一併刪除使用此帳戶登入的任何 Chrome 設定檔</translation>
 <translation id="4348766275249686434">收集錯誤資訊</translation>
 <translation id="4349828822184870497">有幫助</translation>
@@ -4389,6 +4393,7 @@
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4407039574263172582">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享您的姓名、電郵地址和個人檔案相片。請參閱此網站的《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
 <translation id="4408599188496843485">說明(&amp;E)</translation>
+<translation id="4408965460206576430">此檔案包含惡意軟件，或來自可疑網站</translation>
 <translation id="4409271659088619928">您的搜尋引擎是「<ph name="DSE" />」。建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="4409697491990005945">邊界</translation>
 <translation id="4409779593816003679">密碼和自動填入 (&amp;A)</translation>
@@ -9262,6 +9267,7 @@
 <translation id="8298429963694909221">您現在可在 <ph name="DEVICE_TYPE" /> 上接收手機的通知。在 <ph name="DEVICE_TYPE" /> 上關閉通知，您手機上的通知也會關閉。請確認您的手機在附近，且已開啟藍牙和 Wi-Fi。</translation>
 <translation id="829923460755755423">新增「Google 密碼管理工具」的捷徑</translation>
 <translation id="8299319456683969623">您目前處於離線狀態。</translation>
+<translation id="8299951061833867575">Wi-Fi、流動數據</translation>
 <translation id="8300011035382349091">編輯此分頁的書籤</translation>
 <translation id="8300374739238450534">午夜藍色</translation>
 <translation id="8301242268274839723">請輕觸鍵盤左下角的指紋感應器。系統會妥善地將您的指紋資料儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>

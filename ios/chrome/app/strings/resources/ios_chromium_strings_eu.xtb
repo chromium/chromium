@@ -107,6 +107,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chromium-eko dat
 <translation id="5048795749726991615">Gordetako pasahitzak beste aplikazioetan erraz lortzeko, erabili Chromium betetze automatikorako</translation>
 <translation id="5076601183701536878">Garbitu arakatze-datuak Chromium-en</translation>
 <translation id="5131565040785979529"><ph name="DOMAIN" /> erakundeak kudeatzen du saioa hasteko erabili duzun kontua eta Chromium erabiltzeko modua.</translation>
+<translation id="5146749061471423558">Gehitu laster-markak Chromium-en</translation>
 <translation id="5171868502429358653">Hasi saioa Chromium-en</translation>
 <translation id="5213683223491576284">Chromium-en Pasahitz-kudeatzailea irekitzen du.</translation>
 <translation id="5224391634244552924">Ez dago pasahitzik gordeta. Gordeta dituzun pasahitzak egiaztatu egin ditzake Chromium-ek.</translation>
@@ -114,6 +115,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chromium-eko dat
 
         Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, ezabatu egingo dira datuak.</translation>
 <translation id="5308226104666789935">Chromium-ek ezin ditu bilatu eguneratzeak</translation>
+<translation id="5311557153294205270">Idatzitako URLak Chromium-eko laster-marketan gehitzen ditu.</translation>
 <translation id="5396916991083608703">Arakatzaile lehenetsi gisa ezarri nahi duzu Chromium?</translation>
 <translation id="5453478652154926037">Chromium-ek ezin ditu egiaztatu pasahitzak.</translation>
 <translation id="5521125884468363740">Chromium erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa eta aktibatu sinkronizazioa</translation>

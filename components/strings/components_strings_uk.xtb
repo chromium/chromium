@@ -304,6 +304,7 @@
 
       &lt;p&gt;Налаштуйте дату й час у розділі &lt;strong&gt;Загальні&lt;/strong&gt; додатка &lt;strong&gt;Налаштування&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Адміністратор перезапустить пристрій <ph name="DATE" /> о <ph name="TIME" /></translation>
+<translation id="1564634006476980707">Рекомендована схема HTTPS для пошуку URL-адрес: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Інформація про мережу, наприклад адреси, конфігурацію інтерфейсу та якість з’єднання</translation>
 <translation id="1567040042588613346">Це правило працює належним чином, але в іншому місці встановлюється таке ж значення й замінюється цим правилом.</translation>
 <translation id="1567405528131216114">Додати тему "<ph name="TOPIC" />"</translation>
@@ -733,6 +734,7 @@
 <translation id="2448295565072560657">Периферійні пристрої, які підключені до цього пристрою, коли ви ввійшли в обліковий запис</translation>
 <translation id="2450021089947420533">Сеанси</translation>
 <translation id="2456755709261364512">Заряд акумулятора має становити більше <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
+<translation id="2462599289530201834">Шукати: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2463739503403862330">Заповнити</translation>
 <translation id="2465688316154986572">Скріпити</translation>
 <translation id="2465914000209955735">Керувати завантаженими файлами в Chrome</translation>
@@ -904,6 +906,7 @@
 <translation id="2814184336982254349">Цей файл PDF недоступний. Натисніть комбінацію клавіш "пошук + m", щоб відкрити контекстне меню, і ввімкніть опцію "Видобути текст із файлу PDF".</translation>
 <translation id="2818338148457093657">Косметичні процедури й спа</translation>
 <translation id="2820957248982571256">Сканування…</translation>
+<translation id="2824549017793319782">Натисніть, щоб ввести пошуковий запит безпосередньо в адресному рядку</translation>
 <translation id="2824775600643448204">Адресний і пошуковий рядок</translation>
 <translation id="2826760142808435982">З’єднання зашифровано й автентифіковано з використанням шифру <ph name="CIPHER" /> і використовує механізм обміну ключами <ph name="KX" />.</translation>
 <translation id="2835170189407361413">Очистити форму</translation>
@@ -3754,6 +3757,7 @@
 <translation id="8490137692873530638">Накопичувач 10</translation>
 <translation id="8493948351860045254">Звільнити місце</translation>
 <translation id="8498891568109133222">Хост <ph name="HOST_NAME" /> довго не відповідає.</translation>
+<translation id="8502972004418241366">Щоб використовувати відповідні функції на цьому веб-сайті, надайте веб-переглядачу Chrome такий дозвіл: <ph name="PERMISSION" /></translation>
 <translation id="8503559462189395349">Паролі Chrome</translation>
 <translation id="8503813439785031346">Ім’я користувача</translation>
 <translation id="8504928302600319133">Комп’ютерне обладнання</translation>

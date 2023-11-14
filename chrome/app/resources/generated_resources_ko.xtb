@@ -844,6 +844,7 @@
 <translation id="1641113438599504367">세이프 브라우징</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" />의 작업 메뉴 더보기</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{형식이 잘못되어 비밀번호 1개를 가져오지 못했습니다.}other{형식이 잘못되어 비밀번호 {NUM_PASSWORDS}개를 가져오지 못했습니다.}}</translation>
+<translation id="1642299742557467312">이 파일로 인해 기기가 손상될 수 있습니다.</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> 외 <ph name="NUMBER_OF_DEVICES" />개 블루투스 기기에 연결되었습니다</translation>
 <translation id="1642494467033190216">rootfs 보호를 삭제하고 다시 시작해야 다른 디버깅 기능을 사용 설정할 수 있습니다.</translation>
 <translation id="1643072738649235303">SHA-1을 포함한 X9.62 ECDSA 서명</translation>
@@ -4087,6 +4088,7 @@
 <translation id="4148195018520464922">특정 사용자만 로그인할 수 있도록 제한할 수 있습니다. 이렇게 하면 로그인 화면에서 '사용자 추가' 옵션이 삭제됩니다. 현재 사용자를 삭제할 수도 있습니다.</translation>
 <translation id="4148957013307229264">설치 중...</translation>
 <translation id="4150201353443180367">디스플레이</translation>
+<translation id="4150417452770391330">카메라를 연결하세요.</translation>
 <translation id="4150569944729499860">화면 컨텍스트</translation>
 <translation id="4151449637210235443">최근 게임플레이에 관해 알려주세요.</translation>
 <translation id="4151503145138736576">정리할 오프라인 저장용량 없음</translation>
@@ -4187,6 +4189,7 @@
 <translation id="4244238649050961491">스타일러스 앱 더보기</translation>
 <translation id="4246980464509998944">추가 의견:</translation>
 <translation id="424726838611654458">항상 Adobe Reader에서 열기</translation>
+<translation id="4248401726442101648">연결된 카메라가 없습니다.</translation>
 <translation id="4249248555939881673">네트워크 연결 대기 중...</translation>
 <translation id="4249373718504745892">카메라와 마이크 액세스가 차단된 페이지입니다.</translation>
 <translation id="424963718355121712">앱은 영향을 미치는 호스트에서 제공되어야 합니다</translation>
@@ -4309,6 +4312,7 @@
 <translation id="4345457680916430965"><ph name="APP" />에서 열기(O)</translation>
 <translation id="4345587454538109430">설정...</translation>
 <translation id="4345732373643853732">서버에 알려지지 않은 사용자 이름</translation>
+<translation id="4346159263667201092">세부정보 추가(선택사항)</translation>
 <translation id="4348426576195894795">계정을 삭제하면 이 계정으로 로그인된 Chrome 프로필도 모두 삭제됩니다.</translation>
 <translation id="4348766275249686434">오류 수집</translation>
 <translation id="4349828822184870497">유용함</translation>
@@ -4393,6 +4397,7 @@
 <translation id="4406883609789734330">실시간 자막</translation>
 <translation id="4407039574263172582">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다. 사이트의 <ph name="BEGIN_LINK" />서비스 약관<ph name="END_LINK" />을 확인하세요.</translation>
 <translation id="4408599188496843485">도움말(&amp;E)</translation>
+<translation id="4408965460206576430">멀웨어가 포함되어 있거나 의심스러운 사이트에서 가져온 파일입니다.</translation>
 <translation id="4409271659088619928">기본 검색엔진은 <ph name="DSE" />입니다. 해당 검색엔진에서 검색 기록을 삭제할 수 있는 경우 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="4409697491990005945">여백</translation>
 <translation id="4409779593816003679">비밀번호 및 자동 완성</translation>
@@ -9269,6 +9274,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8298429963694909221">이제 <ph name="DEVICE_TYPE" />에서 휴대전화 알림을 받아 볼 수 있습니다. <ph name="DEVICE_TYPE" />에서 알림을 닫으면 휴대전화에서도 알림이 닫힙니다. 휴대전화가 근처에 있고 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="829923460755755423">Google 비밀번호 관리자에 바로가기 추가</translation>
 <translation id="8299319456683969623">현재 오프라인 상태</translation>
+<translation id="8299951061833867575">Wi-Fi, 모바일 데이터</translation>
 <translation id="8300011035382349091">이 탭의 북마크 수정</translation>
 <translation id="8300374739238450534">미드나잇 블루</translation>
 <translation id="8301242268274839723">키보드 왼쪽 하단에 있는 지문 센서를 터치하세요. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>

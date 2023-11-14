@@ -1497,6 +1497,7 @@
 <translation id="2131077480075264">Не може да го инсталира „<ph name="APP_NAME" />“ бидејќи не е дозволено од „<ph name="IMPORT_NAME" />“</translation>
 <translation id="2133775869826239001">Изберете повеќе функции за поставување</translation>
 <translation id="2133857665503360653">Обиди се пак со <ph name="FILE_NAME" /></translation>
+<translation id="2133939190018801302">Апликацијава ќе се инсталира на профилот на Chrome што го користите тековно. <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">Системски сертификати CA</translation>
 <translation id="21354425047973905">Сокријте ги PIN-кодовите</translation>
 <translation id="2135456203358955318">Закотвена лупа</translation>
@@ -2794,6 +2795,7 @@
 <translation id="3117362587799608430">Приклучокот не е целосно компатибилен</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Неуспешно испраќање <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />}one{Неуспешно испраќање <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />}other{Неуспешно испраќање <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581">Помош за <ph name="PRODUCT_NAME" /></translation>
+<translation id="3118748462829336648">Отвори ја страничната табла</translation>
 <translation id="3119948370277171654">Какви содржини/URL-адреса емитувавте?</translation>
 <translation id="3122464029669770682">ЦПУ</translation>
 <translation id="3122496702278727796">Не успеа да се создаде Директориум со податоци</translation>
@@ -4223,6 +4225,7 @@
 <translation id="4274673989874969668">Откако ќе излезете од сајт, тој може да продолжи со синхронизација за да ги доврши задачите како што е прикачувањето фотографии или испраќањето порака во разговор</translation>
 <translation id="4275291496240508082">Звук за вклучување</translation>
 <translation id="4275397969489577657">Овозможи евидентирање пренос на настани</translation>
+<translation id="4275788652681621337">Затвори ја страничната табла</translation>
 <translation id="4275830172053184480">Рестартирај го уредот</translation>
 <translation id="4277434192562187284">Извор на XML-конфигурација</translation>
 <translation id="4278390842282768270">Дозволено</translation>
@@ -5076,6 +5079,7 @@
 <translation id="4953808748584563296">Стандарден портокалов аватар</translation>
 <translation id="4955707703665801001">Видливост за <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Изберете PIN</translation>
+<translation id="4958090327979461112">Управувајте со профилите на Chrome</translation>
 <translation id="4959262764292427323">Лозинките се зачувуваат во вашата сметка на Google за да може да ги користите на кој било уред</translation>
 <translation id="4960020053211143927">Не е поддржани од некои апликации</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5656,6 +5660,7 @@
 <translation id="5436492226391861498">Се чека прокси тунел…</translation>
 <translation id="5436510242972373446">Барај <ph name="SITE_NAME" />:</translation>
 <translation id="5436575196282187764">Спомени на „Фотографии на Google“</translation>
+<translation id="5440425659852470030">Затвори ја страничната табла</translation>
 <translation id="544083962418256601">Направи кратенки...</translation>
 <translation id="5441133529460183413">Веб-апликација се инсталираше преку прелистувачот Chrome</translation>
 <translation id="5441292787273562014">Вчитај ја страницата повторно</translation>
@@ -8067,6 +8072,7 @@
 <translation id="7384804382450832142">Поврзување со Microsoft OneDrive</translation>
 <translation id="7385490373498027129">Сите датотеки и локални податоци за сите корисници на овој <ph name="DEVICE_TYPE" /> трајно ќе се избришат.</translation>
 <translation id="7385854874724088939">Нешто не беше во ред при печатењето. Проверете го вашиот печатач и обидете се повторно.</translation>
+<translation id="7387107590792462040">Почекајте да заврши инсталирањето во тек</translation>
 <translation id="7387273928653486359">Прифатлив</translation>
 <translation id="7387951778417998929">За да користите некој друг пребарувач, а не стандардниот, напишете ја неговата кратенка во лентата за адреси заедно со вашата претпочитана кратенка од тастатура. Стандардниот пребарувач може да го промените и тука.</translation>
 <translation id="7388209873137778229">Прикажани се само поддржаните уреди.</translation>
@@ -9210,6 +9216,7 @@
 <translation id="8260864402787962391">Глувче</translation>
 <translation id="8261378640211443080">Оваа наставка не е наведена во <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и можеби е додадена без ваше знаење.</translation>
 <translation id="8261506727792406068">Избриши</translation>
+<translation id="8262971894813353037">Го овозможува новиот дизајн за работни површини за WebUI. Мора да се овозможи и Chrome Refresh 2023.</translation>
 <translation id="8263336784344783289">Именувајте ја групава</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> го оневозможи курсорот на глувчето.</translation>
 <translation id="8264024885325823677">Администраторот управува со поставкава.</translation>
@@ -9266,6 +9273,7 @@
 <translation id="8298429963694909221">Сега може да добивате известувања од телефонот на вашиот <ph name="DEVICE_TYPE" />. Отфрлањето на известувањата на <ph name="DEVICE_TYPE" /> ќе ги отфрли и на телефонот. Проверете дали телефонот е во близина и со вклучени Bluetooth и Wi-Fi.</translation>
 <translation id="829923460755755423">Додајте кратенка за Google Password Manager</translation>
 <translation id="8299319456683969623">Во моментов сте исклучени.</translation>
+<translation id="8299951061833867575">Wi-Fi, мобилен интернет</translation>
 <translation id="8300011035382349091">Изменете го обележувачот за картичкава</translation>
 <translation id="8300374739238450534">Тегет</translation>
 <translation id="8301242268274839723">Допрете го сензорот за отпечатоци лево долу на вашата тастатура. Податоците за отпечатокот безбедно се складираат и никогаш не го напуштаат <ph name="DEVICE_TYPE" />.</translation>
@@ -10281,6 +10289,7 @@
 <translation id="9080175821499742274">„Штедачот на меморија“ ја ослободува меморијата од неактивните картички за да може да ја користат активните картички и други апликации.</translation>
 <translation id="9080971985541434310">ги проценува вашите интереси - Chrome може да ги процени вашите интереси</translation>
 <translation id="9081543426177426948">Сајтовите што ги посетувате не се зачувуваат во режимот „Инкогнито“</translation>
+<translation id="9082750838489080452">Апликација: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Отвори како прозорец</translation>
 <translation id="9085256200913095638">Направи дупликат од избраната картичка</translation>
 <translation id="9085446486797400519">Пристап до камерата</translation>
@@ -10449,6 +10458,7 @@
 <translation id="924818813611903184">Управувајте со јазиците во поставките за Chrome OS</translation>
 <translation id="925270020047573546">Casting на аудиото на компјутерот не е поддржано на уредов.</translation>
 <translation id="925575170771547168">Ова ќе избрише податоците (<ph name="TOTAL_USAGE" />) што ги складирале сајтовите</translation>
+<translation id="930193457234051160">Chrome WebUI Refresh 2023</translation>
 <translation id="930268624053534560">Детални временски печати</translation>
 <translation id="930551443325541578">Повторливи копчиња и ознаки за акцент</translation>
 <translation id="930893132043726269">Во моментов се користи роаминг</translation>

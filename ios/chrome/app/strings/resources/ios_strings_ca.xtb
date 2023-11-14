@@ -1216,6 +1216,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7367530036083223701">Accedeix de manera segura a les teves contrasenyes des de la pantalla d'inici amb el widget del gestor de contrasenyes.</translation>
 <translation id="7380220816562673297">De moment, només pots compartir les contrasenyes amb membres de la família. <ph name="BEGIN_LINK" />Crea un grup familiar<ph name="END_LINK" /> amb un màxim de 6 membres i treu més profit dels teus productes i subscripcions a Google.</translation>
 <translation id="7383797227493018512">Llista de lectura</translation>
+<translation id="739101637685146669">Quin URL vols afegir a les adreces d'interès?</translation>
 <translation id="7396331865858820922">La contrasenya no s'ha compartit</translation>
 <translation id="7398893703713203428">Crea un enllaç</translation>
 <translation id="7399802613464275309">Comprovació de seguretat</translation>
@@ -1451,6 +1452,7 @@ Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME
 <translation id="8591976964826315682">Bloqueja les galetes de tercers en mode d'incògnit</translation>
 <translation id="8593565399399144771">Aquí pots obrir una pestanya nova.</translation>
 <translation id="8605219856220328675">Tanca la pestanya.</translation>
+<translation id="8609743333007776886">Afegeix ${url} a les adreces d'interès</translation>
 <translation id="8613883225817609844">Amaga l'opció Pestanyes recents</translation>
 <translation id="8620640915598389714">Edita</translation>
 <translation id="8624447588354561276">Número de paquet</translation>

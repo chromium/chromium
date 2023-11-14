@@ -841,6 +841,7 @@
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641496881756082050">სხვა ქმედებები „<ph name="NETWORK_NAME" />“-სთვის</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 სხვა პაროლის იმპორტირება ვერ მოხერხდა, რადგან მისი ფორმატი არასწორია}other{{NUM_PASSWORDS} სხვა პაროლის იმპორტირება ვერ მოხერხდა, რადგან მათი ფორმატი არასწორია}}</translation>
+<translation id="1642299742557467312">ამ ფაილმა, შესაძლოა, დააზიანოს თქვენი მოწყობილობა</translation>
 <translation id="1642492862748815878">დაკავშირებულია <ph name="DEVICE" />-თან და <ph name="NUMBER_OF_DEVICES" /> სხვა Bluetooth მოწყობილობასთან</translation>
 <translation id="1642494467033190216">ძირეული დაცვის მოხსნა და გადატვირთვა საჭირო მანამ, სანამ ჩართავთ სხვა გამართვის ფუნქციებს.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA ხელმოწერა SHA-1-ით</translation>
@@ -1484,6 +1485,7 @@
 <translation id="2131077480075264">„<ph name="APP_NAME" />“-ის ინსტალაცია შეუძლებელია, რადგან იგი არ არის ნებადართული „<ph name="IMPORT_NAME" />“-ის მიერ</translation>
 <translation id="2133775869826239001">აირჩიეთ მეტი ფუნქცია დასაყენებლად</translation>
 <translation id="2133857665503360653">ხელახლა ჩამოიტვირთოს <ph name="FILE_NAME" /></translation>
+<translation id="2133939190018801302">ეს აპლიკაცია დაინსტალირდება თქვენ მიერ ამჟამად გამოყენებულ Chrome პროფილში. <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">სისტემის CA-ები</translation>
 <translation id="21354425047973905">PIN-კოდების დამალვა</translation>
 <translation id="2135456203358955318">ჩამაგრებული ლუპა</translation>
@@ -2778,6 +2780,7 @@
 <translation id="3117362587799608430">სამაგრი არ არის სრულად თავსებადი</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" />-ს ვერ გაეგზავნა}other{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" />-ს ვერ გაეგზავნა}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> დახმარება</translation>
+<translation id="3118748462829336648">გვერდითი პანელის გახსნა</translation>
 <translation id="3119948370277171654">რა ტიპის კონტენტის/URL-ის ტრანსლირებას ახორციელებდით?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">მონაცემების დირექტორია ვერ შეიქმნა</translation>
@@ -4070,6 +4073,7 @@
 <translation id="4148195018520464922">ზოგიერთი მომხმარებლისთვის სისტემაში შესვლის შესაძლებლობის შეზღუდვა შეგიძლიათ. ამ შემთხვევაში, სისტემაში შესვლის ეკრანზე აღარ იქნება „პიროვნების დამატების“ ვარიანტი. სურვილისამებრ, არსებული მომხმარებლების წაშლაც შეგიძლიათ.</translation>
 <translation id="4148957013307229264">ინსტალაცია…</translation>
 <translation id="4150201353443180367">ჩვენება</translation>
+<translation id="4150417452770391330">დააკავშირეთ კამერა</translation>
 <translation id="4150569944729499860">ეკრანის კონტექსტი</translation>
 <translation id="4151449637210235443">გაგვიზიარეთ თქვენი შთაბეჭდილებები თქვენი ბოლოდროინდელი თამაშის შესახებ</translation>
 <translation id="4151503145138736576">გასასუფთავებელი ხაზგარეშე მეხსიერება არ არის</translation>
@@ -4170,6 +4174,7 @@
 <translation id="4244238649050961491">სტილუსის მეტი აპის პოვნა</translation>
 <translation id="4246980464509998944">დამატებითი კომენტარები:</translation>
 <translation id="424726838611654458">ყოველთვის გაიხსნას Adobe Reader-ში</translation>
+<translation id="4248401726442101648">კამერა დაკავშირებული არ არის</translation>
 <translation id="4249248555939881673">ქსელური კავშირის ლოდინი…</translation>
 <translation id="4249373718504745892">ამ გვერდს აღეკვეთა თქვენს კამერასთან და მიკროფონთან წვდომა.</translation>
 <translation id="424963718355121712">აპები მოწოდებული უნდა იყოს იმ საიტის მიერ, რომელზეც ისინი გავლენას ახდენს</translation>
@@ -4192,6 +4197,7 @@
 <translation id="4261429981378979799">გაფართოებების ნებართვები</translation>
 <translation id="4262004481148703251">გაფრთხილების უარყოფა</translation>
 <translation id="4263223596040212967">შეამოწმეთ თქვენი კლავიატურის განლაგება და სცადეთ ხელახლა.</translation>
+<translation id="4265301768135164545">eSIM პროფილის დაყენება <ph name="BEGIN_LINK" />ხელითაც<ph name="END_LINK" /> შეგიძლიათ</translation>
 <translation id="426564820080660648">განახლებების შესამოწმებლად გამოიყენეთ Ethernet, Wi-Fi ან მობილური მონაცემები.</translation>
 <translation id="426652736638196239">ეს IBAN შეინახება მხოლოდ ამ მოწყობილობაზე</translation>
 <translation id="4266679478228765574">საქაღალდეების ამოშლა გამოიწვევს გაზიარების შეწყვეტას, თუმცა არ წაშლის ფაილებს.</translation>
@@ -4207,6 +4213,7 @@
 <translation id="4274673989874969668">საიტებიდან გასვლის შემდეგ ზოგიერთი მათგანი მაინც აგრძელებს სინქრონიზაციას ისეთი ამოცანების დასასრულებლად, როგორიცაა ფოტოების ატვირთვა თუ ჩეთში შეტყობინების გაგზავნა</translation>
 <translation id="4275291496240508082">ჩატვირთვის ხმა</translation>
 <translation id="4275397969489577657">მოვლენათა ნაკადის ჟურნალირების ჩართვა</translation>
+<translation id="4275788652681621337">გვერდითი პანელის დახურვა</translation>
 <translation id="4275830172053184480">გადატვირთეთ თქვენი მოწყობილობა</translation>
 <translation id="4277434192562187284">XML კონფიგურაციის წყარო</translation>
 <translation id="4278390842282768270">დაშვებულია</translation>
@@ -4291,6 +4298,7 @@
 <translation id="4345457680916430965"><ph name="APP" />-ში &amp;გახსნა</translation>
 <translation id="4345587454538109430">კონფიგურაცია…</translation>
 <translation id="4345732373643853732">სერვერი ვერ ცნობს მომხმარებლის სახელს</translation>
+<translation id="4346159263667201092">არასავალდებულო დეტალების დამატება</translation>
 <translation id="4348426576195894795">ამ ანგარიშის ამოშლის შემთხვევაში, წაიშლება ის Chrome პროფილებიც, რომლებიც შესულია აღნიშნული ანგარიშით</translation>
 <translation id="4348766275249686434">შეცდომების შეგროვება</translation>
 <translation id="4349828822184870497">სასარგებლო</translation>
@@ -4375,6 +4383,7 @@
 <translation id="4406883609789734330">ავტოსუბტიტრები</translation>
 <translation id="4407039574263172582">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამ საიტს გაუზიარებს თქვენს სახელს, ელფოსტის მისამართსა და პროფილის სურათს. გაეცანით ამ საიტის <ph name="BEGIN_LINK" />მომსახურების პირობებს<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">&amp;დახმარება</translation>
+<translation id="4408965460206576430">ეს ფაილი შეიცავს მავნე პროგრამას, ან ის საეჭვო საიტიდანაა</translation>
 <translation id="4409271659088619928">თქვენი საძიებო სისტემაა <ph name="DSE" />. გაეცანით მის ინსტრუქციას იმის თაობაზე, როგორ წაშალოთ თქვენი ძიების ისტორია, თუ ეს შესაძლებელია.</translation>
 <translation id="4409697491990005945">მინდვრები</translation>
 <translation id="4409779593816003679">პაროლები და ავტომატური შევსება</translation>
@@ -5059,6 +5068,7 @@
 <translation id="4953808748584563296">ნაგულისხმევი სტაფილოსფერი ავატარი</translation>
 <translation id="4955707703665801001">ხილვადობა ფუნქციაში „<ph name="FEATURE_NAME" />“</translation>
 <translation id="4955710816792587366">აირჩიეთ PIN-კოდი</translation>
+<translation id="4958090327979461112">თქვენი Chrome პროფილების მართვა</translation>
 <translation id="4959262764292427323">პაროლები ინახება თქვენს Google ანგარიშში, რაც ნიშნავს, რომ მათი გამოყენება ნებისმიერ მოწყობილობაზე შეგიძლიათ</translation>
 <translation id="4960020053211143927">მხარდაუჭერელია ზოგიერთი აპის მიერ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> — <ph name="PROFILE_NAME" /></translation>
@@ -5639,6 +5649,7 @@
 <translation id="5436492226391861498">პროქსი გვირაბის მოლოდინი…</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" />-ის ძებნა:</translation>
 <translation id="5436575196282187764">Google Photos მოგონებები</translation>
+<translation id="5440425659852470030">გვერდითი პანელის დახურვა</translation>
 <translation id="544083962418256601">მალსახმობების შექმნა…</translation>
 <translation id="5441133529460183413">Chrome ბრაუზერიდან დაინსტალირებული ვებ-აპი</translation>
 <translation id="5441292787273562014">გვერდის გადატვირთვა</translation>
@@ -8048,6 +8059,7 @@
 <translation id="7384804382450832142">დაუკავშირდით Microsoft OneDrive-ს</translation>
 <translation id="7385490373498027129">ამ <ph name="DEVICE_TYPE" />-ზე შენახული ყველა მომხმარებლის ყველა ფაილი და ადგილობრივი მონაცემი სამუდამოდ წაიშლება.</translation>
 <translation id="7385854874724088939">ბეჭდვისას პრობლემა წარმოიქმნა. შეამოწმეთ პრინტერი და ხელახლა სცადეთ.</translation>
+<translation id="7387107590792462040">მოითმინეთ, სანამ მიმდინარეობს ინსტალაცია</translation>
 <translation id="7387273928653486359">დამაკმაყოფილებელი</translation>
 <translation id="7387951778417998929">ნაგულისხმევისგან განსხვავებული საძიებო სისტემა რომ გამოიყენოთ, მისამართთა ზოლში აკრიფეთ ჯერ მისი მალსახმობი, შემდეგ კი კლავიატურის სასურველი მალსახმობი. აქვე შეგიძლიათ ნაგულისხმევი საძიებო სისტემის შეცვლაც.</translation>
 <translation id="7388209873137778229">ნაჩვენებია მხოლოდ მხარდაჭერილი მოწყობილობები.</translation>
@@ -9190,6 +9202,7 @@
 <translation id="8260864402787962391">მაუსი</translation>
 <translation id="8261378640211443080">ეს გაფართოება არ არის <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-ის სიაში და, შესაძლოა, დამატებულია თქვენი თანხმობის გარეშე.</translation>
 <translation id="8261506727792406068">წაშლა</translation>
+<translation id="8262971894813353037">ჩართავს ახალ დესკტოპ-დიზაინს WebUI-ისთვის. Chrome-ის 2023 წლის განახლებაც ჩართული უნდა იყოს.</translation>
 <translation id="8263336784344783289">დაარქვით სახელი ამ ჯგუფს</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />-მა გამორთო მაუსის კურსორი.</translation>
 <translation id="8264024885325823677">ამ პარამეტრს მართავს თქვენი ადმინისტრატორი.</translation>
@@ -9243,6 +9256,7 @@
 <translation id="8298429963694909221">ამიერიდან შეგიძლიათ მიიღოთ შეტყობინებები თქვენი ტელეფონიდან თქვენს <ph name="DEVICE_TYPE" />-ზე. თქვენს <ph name="DEVICE_TYPE" />-ზე შეტყობინებების დახურვის შემთხვევაში, ისინი ტელეფონზეც დაიხურება. დარწმუნდით, რომ ტელეფონი ახლოს გაქვთ და მასზე ჩართულია Bluetooth/Wi-Fi.</translation>
 <translation id="829923460755755423">დაამატეთ Google პაროლების მმართველის მალსახმობი</translation>
 <translation id="8299319456683969623">თქვენ ამჟამად ოფლაინში ხართ.</translation>
+<translation id="8299951061833867575">Wi-Fi, მობილური ინტერნეტი</translation>
 <translation id="8300011035382349091">ამ ჩანართისთვის სანიშნის რედაქტირება</translation>
 <translation id="8300374739238450534">შუაღამის ლურჯი</translation>
 <translation id="8301242268274839723">შეეხეთ თითის ანაბეჭდის სენსორს, რომელიც მდებარეობს თქვენი კლავიატურის ქვედა მარცხენა კუთხეში. თქვენი თითის ანაბეჭდის მონაცემები უსაფრთხოდ შეინახება მხოლოდ და მხოლოდ თქვენს <ph name="DEVICE_TYPE" />-ზე.</translation>
@@ -9717,6 +9731,7 @@
 <translation id="8676313779986170923">გმადლობთ გამოხმაურებისთვის.</translation>
 <translation id="8676374126336081632">შეყვანილი ტექსტის გასუფთავება</translation>
 <translation id="8676770494376880701">დაბალი სიმძლავრის დამტენი დაკავშირებულია</translation>
+<translation id="8676985325915861058">გამოტოვება და ახალი პროფილის დაყენება</translation>
 <translation id="8677212948402625567">ყველას აკეცვა…</translation>
 <translation id="8678192320753081984">უზრუნველყოფს ანგარიშის დაცვის ყველაზე ძლიერ ფუნქციებს Google-ისგან მათთვის, ვინც გამიზნული თავდასხმების რისკის ქვეშაა</translation>
 <translation id="8678378565142776698">გადატვირთვა და ავტომატური განახლებების მიღება</translation>
@@ -10257,6 +10272,7 @@
 <translation id="9080175821499742274">მეხსიერების დამზოგი ათავისუფლეს მეხსიერებას არააქტიური ჩანართებიდან, რომ ის ხელმისაწვდომი იყოს აქტიური ჩანართებისა და სხვა აპებისთვის.</translation>
 <translation id="9080971985541434310">პროგნოზირებს თქვენს ინტერესებს — Chrome-ს შეუძლია თქვენი ინტერესების პროგნოზირება</translation>
 <translation id="9081543426177426948">თქვენ მიერ მონახულებული საიტები არ ინახება ინკოგნიტო რეჟიმში</translation>
+<translation id="9082750838489080452">აპლიკაცია: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">გახსნა ფანჯარაში</translation>
 <translation id="9085256200913095638">არჩეული ჩანართის დუბლირება</translation>
 <translation id="9085446486797400519">კამერაზე წვდომა</translation>
@@ -10425,6 +10441,7 @@
 <translation id="924818813611903184">ენების მართვა ChromeOS-ის პარამეტრებიდან</translation>
 <translation id="925270020047573546">დესკტოპის აუდიოს ტრანსლირება ამ მოწყობილობაზე მხარდაუჭერელია.</translation>
 <translation id="925575170771547168">ამ მოქმედებით წაიშლება საიტების მიერ შენახული მონაცემების <ph name="TOTAL_USAGE" /></translation>
+<translation id="930193457234051160">Chrome WebUI-ს 2023 წლის განახლება</translation>
 <translation id="930268624053534560">დეტალური დროის ანაბეჭდი</translation>
 <translation id="930551443325541578">კლავიშების გამეორება და მახვილის ნიშნები</translation>
 <translation id="930893132043726269">ამჟამად გამოიყენება როუმინგი</translation>
