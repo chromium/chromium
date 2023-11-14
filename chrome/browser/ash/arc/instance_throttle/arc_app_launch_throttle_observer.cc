@@ -90,7 +90,7 @@ void ArcAppLaunchThrottleObserver::OnWillDestroyWatcher() {
 }
 
 void ArcAppLaunchThrottleObserver::OnLaunchedOrRequestExpired(
-    const std::string name) {
+    const std::string& name) {
   // This request has already expired or there are outstanding requests,
   // do not deactivate the observer.
   if (!current_requests_.erase(name) || current_requests_.size())

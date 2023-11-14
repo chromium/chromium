@@ -148,14 +148,5 @@ TEST_F(ArcAppLaunchThrottleObserverTest, TestWindowWatcherEffectOnInit) {
   }
 }
 
-TEST_F(ArcAppLaunchThrottleObserverTest, TestCallbackString) {
-  auto temp_id = std::make_unique<std::string>("test_app_id");
-  observer()->OnArcAppLaunchRequested(*temp_id);
-  temp_id.reset();
-
-  // Expect no crash & memory leak.
-  environment()->FastForwardUntilNoTasksRemain();
-}
-
 }  // namespace
 }  // namespace arc

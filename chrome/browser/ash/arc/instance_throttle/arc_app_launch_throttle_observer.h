@@ -59,7 +59,7 @@ class ArcAppLaunchThrottleObserver
   void OnWillDestroyWatcher() override;
 
  private:
-  void OnLaunchedOrRequestExpired(const std::string name);
+  void OnLaunchedOrRequestExpired(const std::string& name);
 
   std::set<std::string> current_requests_;
 
