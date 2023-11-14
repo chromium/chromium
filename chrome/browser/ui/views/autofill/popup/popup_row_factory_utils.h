@@ -15,7 +15,7 @@ namespace autofill {
 class AutofillPopupController;
 
 // Creates a row view depending on the suggestion type at `line_number`.
-std::unique_ptr<PopupRowView> CreateRowView(
+std::unique_ptr<PopupRowView> CreatePopupRowView(
     base::WeakPtr<AutofillPopupController> controller,
     PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
     PopupRowView::SelectionDelegate& selection_delegate,

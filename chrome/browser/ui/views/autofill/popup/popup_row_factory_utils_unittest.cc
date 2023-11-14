@@ -65,8 +65,8 @@ class AutocompleteRowWithDeleteButtonTest : public ChromeViewsTestBase {
     // Show the button.
     controller().set_suggestions({std::move(suggestion)});
     PopupRowView* view = widget_->SetContentsView(
-        CreateRowView(controller().GetWeakPtr(), a11y_selection_delegate(),
-                      selection_delegate(), 0));
+        CreatePopupRowView(controller().GetWeakPtr(), a11y_selection_delegate(),
+                           selection_delegate(), 0));
     CHECK_EQ(view->GetClassMetaData()->type_name(), "PopupRowWithButtonView");
     view_ = static_cast<PopupRowWithButtonView*>(view);
     widget_->Show();

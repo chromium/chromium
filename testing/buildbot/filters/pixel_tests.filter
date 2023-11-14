@@ -19,6 +19,7 @@ ContentAnalysysDialogUiTest.*
 ContentSettingBubbleDialogTest.*
 CookieControlsBubbleViewPixelTest.*
 OldCookieControlsBubbleViewTest.*
+*CreatePopupRowViewTest.*
 CryptoModulePasswordDialogTest.*
 DeepScanningFailureModalDialogTest.*
 *DiceWebSigninInterceptionBubblePixelTest.InvokeUi_*

@@ -636,9 +636,10 @@ void PopupViewViews::CreateChildViews() {
         // The default section contains all selectable rows and includes
         // autocomplete, address, credit cards and passwords.
         default:
-          PopupRowView* row_view = body_container->AddChildView(
-              CreateRowView(controller(), /*a11y_selection_delegate=*/*this,
-                            /*selection_delegate=*/*this, current_line_number));
+          PopupRowView* row_view =
+              body_container->AddChildView(CreatePopupRowView(
+                  controller(), /*a11y_selection_delegate=*/*this,
+                  /*selection_delegate=*/*this, current_line_number));
           rows_.push_back(row_view);
 
           const std::string& feature_for_iph =
@@ -703,9 +704,9 @@ void PopupViewViews::CreateChildViews() {
       rows_.push_back(footer_container_->AddChildView(
           std::make_unique<PopupSeparatorView>()));
     } else {
-      rows_.push_back(footer_container_->AddChildView(
-          CreateRowView(controller(), /*a11y_selection_delegate=*/*this,
-                        /*selection_delegate=*/*this, current_line_number)));
+      rows_.push_back(footer_container_->AddChildView(CreatePopupRowView(
+          controller(), /*a11y_selection_delegate=*/*this,
+          /*selection_delegate=*/*this, current_line_number)));
     }
   }
 }
