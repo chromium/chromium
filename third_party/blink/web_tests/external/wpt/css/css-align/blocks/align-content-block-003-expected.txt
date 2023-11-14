@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[PASS] .test 1: start
+[PASS] .test 2: center
+[PASS] .test 3: end
+[PASS] .test 4: baseline
+[FAIL] .test 5: last baseline
+  assert_equals: \n<div class="test" style="align-content: last baseline" title="last baseline">\n    <div class="in-flow" data-offset-y="35"></div>\n    <div class="in-flow">\n      <span class="label">LAST BASELINE</span>\n      <span class="abspos" data-offset-y="20">ABS</span>\n      <span class="relpos" data-offset-y="20">REL</span>\n      <div class="overflow">OVERFLOW</div>\n    </div>\n  </div>\noffsetTop expected 35 but got 30
+[PASS] .test 6: flex-start
+[PASS] .test 7: flex-end
+[PASS] .test 8: unsafe start
+[FAIL] .test 9: unsafe center
+  assert_equals: \n<div class="test" style="align-content: unsafe center" title="unsafe center">\n    <div class="in-flow" data-offset-y="25"></div>\n    <div class="in-flow">\n      <span class="label">UNSAFE CENTER</span>\n      <span class="abspos" data-offset-y="10">ABS</span>\n      <span class="relpos" data-offset-y="10">REL</span>\n      <div class="overflow">OVERFLOW</div>\n    </div>\n  </div>\noffsetTop expected 25 but got 35
+[FAIL] .test 10: unsafe end
+  assert_equals: \n<div class="test" style="align-content: unsafe end" title="unsafe end">\n    <div class="in-flow" data-offset-y="15"></div>\n    <div class="in-flow">\n      <span class="label">UNSAFE END</span>\n      <span class="abspos" data-offset-y="0">ABS</span>\n      <span class="relpos" data-offset-y="0">REL</span>\n      <div class="overflow">OVERFLOW</div>\n    </div>\n  </div>\noffsetTop expected 15 but got 35
+[PASS] .test 11: safe start
+[PASS] .test 12: safe center
+[PASS] .test 13: safe end
+[PASS] .test 14: space-evently
+[PASS] .test 15: space-between
+[PASS] .test 16: space-around
+[PASS] .test 17: normal
+Harness: the test ran to completion.
+
