@@ -70,7 +70,7 @@ bool WebContentsDelegate::ShouldFocusLocationBarByDefault(WebContents* source) {
   return false;
 }
 
-bool WebContentsDelegate::ShouldFocusPageAfterCrash() {
+bool WebContentsDelegate::ShouldFocusPageAfterCrash(WebContents* source) {
   return true;
 }
 

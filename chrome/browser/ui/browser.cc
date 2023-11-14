@@ -1875,6 +1875,13 @@ bool Browser::ShouldFocusLocationBarByDefault(WebContents* source) {
   return search::NavEntryIsInstantNTP(source, entry);
 }
 
+bool Browser::ShouldFocusPageAfterCrash(WebContents* source) {
+  // Focus only the active page when reloading after a crash, otherwise
+  // return false. This is to ensure background reloads via hovercard
+  // don't end up causing a focus loss which results in its dismissal.
+  return source == tab_strip_model_->GetActiveWebContents();
+}
+
 void Browser::ShowRepostFormWarningDialog(WebContents* source) {
   TabModalConfirmDialog::Create(
       std::make_unique<RepostFormWarningController>(source), source);

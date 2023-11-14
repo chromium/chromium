@@ -235,7 +235,7 @@ bool OffscreenTab::ShouldFocusLocationBarByDefault(WebContents* source) {
   return true;
 }
 
-bool OffscreenTab::ShouldFocusPageAfterCrash() {
+bool OffscreenTab::ShouldFocusPageAfterCrash(content::WebContents* source) {
   // Never focus the page.  Not even after a crash.
   return false;
 }

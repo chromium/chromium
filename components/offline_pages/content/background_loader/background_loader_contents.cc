@@ -63,7 +63,8 @@ bool BackgroundLoaderContents::ShouldSuppressDialogs(
   return true;
 }
 
-bool BackgroundLoaderContents::ShouldFocusPageAfterCrash() {
+bool BackgroundLoaderContents::ShouldFocusPageAfterCrash(
+    content::WebContents* source) {
   // Background page should never be focused.
   return false;
 }

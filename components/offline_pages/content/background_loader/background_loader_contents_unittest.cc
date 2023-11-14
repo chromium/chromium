@@ -116,7 +116,7 @@ TEST_F(BackgroundLoaderContentsTest, SuppressDialogs) {
 }
 
 TEST_F(BackgroundLoaderContentsTest, DoesNotFocusAfterCrash) {
-  ASSERT_FALSE(contents()->ShouldFocusPageAfterCrash());
+  ASSERT_FALSE(contents()->ShouldFocusPageAfterCrash(nullptr));
 }
 
 TEST_F(BackgroundLoaderContentsTest, CannotDownloadNoDelegate) {

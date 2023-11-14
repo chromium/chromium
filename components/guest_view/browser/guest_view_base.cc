@@ -616,7 +616,7 @@ void GuestViewBase::RunFileChooser(
       render_frame_host, std::move(listener), params);
 }
 
-bool GuestViewBase::ShouldFocusPageAfterCrash() {
+bool GuestViewBase::ShouldFocusPageAfterCrash(content::WebContents* source) {
   // Focus is managed elsewhere.
   return false;
 }

@@ -44,7 +44,8 @@ bool PrerenderWebContentsDelegateImpl::ShouldSuppressDialogs(
   NOTREACHED_NORETURN();
 }
 
-bool PrerenderWebContentsDelegateImpl::ShouldFocusPageAfterCrash() {
+bool PrerenderWebContentsDelegateImpl::ShouldFocusPageAfterCrash(
+    content::WebContents* source) {
   // A prerendered page cannot be focused.
   return false;
 }
