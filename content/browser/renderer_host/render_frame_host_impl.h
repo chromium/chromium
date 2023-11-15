@@ -3049,6 +3049,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
       NavigationRequest& navigation_request,
       blink::mojom::AutomaticBeaconType event_type);
 
+  // Returns true if this RFH's compositor should be reused by a speculative
+  // RFH with the `speculative_site_instance`.
+  // Returns false if the speculative RFH should initialize a new compositor.
+  bool ShouldReuseCompositing(
+      SiteInstanceImpl& speculative_site_instance) const;
+
+  void NotifyWillCreateRenderWidgetOnCommit();
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -3407,12 +3415,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void Clone(
       mojo::PendingReceiver<network::mojom::SharedDictionaryAccessObserver>
           observer) override;
-
-  // Returns true if this RFH's compositor should be reused by a speculattive
-  // RFH with the `speculative_site_instance`.
-  // Returns false if the speculative RFH should initialize a new compositor.
-  bool ShouldReuseCompositing(
-      SiteInstanceImpl& speculative_site_instance) const;
 
   // Resets any waiting state of this RenderFrameHost that is no longer
   // relevant.

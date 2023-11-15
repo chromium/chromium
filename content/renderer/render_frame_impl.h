@@ -953,7 +953,15 @@ class CONTENT_EXPORT RenderFrameImpl
 
   void InitializeMediaStreamDeviceObserver();
 
-  void InitializeWidgetIfNeeded();
+  // Called when the RenderFrameImpl is created. This creates and initializes
+  // the WebFrameWidget unless this is a LocalFrame<->LocalFrame swap. Widget
+  // creation maybe deferred until commit for this case.
+  void MaybeInitializeWidget(mojom::CreateFrameWidgetParamsPtr widget_params);
+
+  // Called during a LocalFrame<->LocalFrame swap. This creates and initializes
+  // the WebFrameWidget if it was deferred when the RenderFrameImpl was created,
+  // see `MaybeInitializeWidget()` above.
+  void EnsureWidgetInitialized();
 
   // Sends a FrameHostMsg_BeginNavigation to the browser
   void BeginNavigationInternal(std::unique_ptr<blink::WebNavigationInfo> info,

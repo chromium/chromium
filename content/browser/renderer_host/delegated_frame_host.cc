@@ -54,10 +54,6 @@ DelegatedFrameHost::DelegatedFrameHost(const viz::FrameSinkId& frame_sink_id,
       host_frame_sink_manager_(GetHostFrameSinkManager()),
       frame_evictor_(std::make_unique<viz::FrameEvictor>(this)) {
   DCHECK(host_frame_sink_manager_);
-  host_frame_sink_manager_->RegisterFrameSinkId(
-      frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
-  host_frame_sink_manager_->SetFrameSinkDebugLabel(frame_sink_id_,
-                                                   "DelegatedFrameHost");
   frame_evictor_->SetVisible(client_->DelegatedFrameHostIsVisible());
 
   stale_content_layer_ =
@@ -70,7 +66,9 @@ DelegatedFrameHost::~DelegatedFrameHost() {
   DCHECK(!compositor_);
 
   DCHECK(host_frame_sink_manager_);
-  host_frame_sink_manager_->InvalidateFrameSinkId(frame_sink_id_, this);
+  if (owns_frame_sink_id_) {
+    host_frame_sink_manager_->InvalidateFrameSinkId(frame_sink_id_, this);
+  }
 }
 
 void DelegatedFrameHost::AddObserverForTesting(Observer* observer) {
@@ -640,6 +638,20 @@ void DelegatedFrameHost::TakeFallbackContentFrom(DelegatedFrameHost* other) {
 
   client_->DelegatedFrameHostGetLayer()->SetOldestAcceptableFallback(
       desired_fallback);
+}
+
+void DelegatedFrameHost::SetIsFrameSinkIdOwner(bool is_owner) {
+  if (is_owner == owns_frame_sink_id_) {
+    return;
+  }
+
+  owns_frame_sink_id_ = is_owner;
+  if (owns_frame_sink_id_) {
+    host_frame_sink_manager_->RegisterFrameSinkId(
+        frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
+    host_frame_sink_manager_->SetFrameSinkDebugLabel(frame_sink_id_,
+                                                     "DelegatedFrameHost");
+  }
 }
 
 }  // namespace content

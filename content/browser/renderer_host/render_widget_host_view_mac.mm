@@ -1494,6 +1494,12 @@ void RenderWidgetHostViewMac::InvalidateLocalSurfaceIdAndAllocationGroup() {
   browser_compositor_->InvalidateSurfaceAllocationGroup();
 }
 
+void RenderWidgetHostViewMac::UpdateFrameSinkIdRegistration() {
+  RenderWidgetHostViewBase::UpdateFrameSinkIdRegistration();
+  browser_compositor_->GetDelegatedFrameHost()->SetIsFrameSinkIdOwner(
+      is_frame_sink_id_owner());
+}
+
 const viz::FrameSinkId& RenderWidgetHostViewMac::GetFrameSinkId() const {
   return browser_compositor_->GetDelegatedFrameHost()->frame_sink_id();
 }

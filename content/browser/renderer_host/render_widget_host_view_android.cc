@@ -1602,6 +1602,12 @@ void RenderWidgetHostViewAndroid::ClearKeyboardTriggeredTooltip() {
   // Tooltips don't make sense on Android.
 }
 
+void RenderWidgetHostViewAndroid::UpdateFrameSinkIdRegistration() {
+  RenderWidgetHostViewBase::UpdateFrameSinkIdRegistration();
+
+  delegated_frame_host_->SetIsFrameSinkIdOwner(is_frame_sink_id_owner());
+}
+
 void RenderWidgetHostViewAndroid::UpdateBackgroundColor() {
   DCHECK(RenderWidgetHostViewBase::GetBackgroundColor());
 

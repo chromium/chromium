@@ -682,7 +682,8 @@ scoped_refptr<RenderViewHostImpl> FrameTree::CreateRenderViewHost(
     int32_t main_frame_routing_id,
     bool renderer_initiated_creation,
     scoped_refptr<BrowsingContextState> main_browsing_context_state,
-    CreateRenderViewHostCase create_case) {
+    CreateRenderViewHostCase create_case,
+    absl::optional<viz::FrameSinkId> frame_sink_id) {
   if (main_browsing_context_state) {
     DCHECK(main_browsing_context_state->is_main_frame());
   }
@@ -692,7 +693,7 @@ scoped_refptr<RenderViewHostImpl> FrameTree::CreateRenderViewHost(
           site_instance->GetStoragePartitionConfig(), render_view_delegate_,
           render_widget_delegate_, main_frame_routing_id,
           renderer_initiated_creation, std::move(main_browsing_context_state),
-          create_case));
+          create_case, frame_sink_id));
 
   if (ShouldCreateNewHostForAllFrames() &&
       create_case == CreateRenderViewHostCase::kSpeculative) {

@@ -924,6 +924,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // to its renderer side widget. If the renderer issued a FrameSink request
   // before this handoff, the request is buffered and will be issued here.
   void SetViewIsFrameSinkIdOwner(bool is_owner);
+  bool view_is_frame_sink_id_owner() const {
+    return view_is_frame_sink_id_owner_;
+  }
 
  protected:
   // |routing_id| must not be MSG_ROUTING_NONE.

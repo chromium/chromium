@@ -99,17 +99,28 @@ DelegatedFrameHostAndroid::DelegatedFrameHostAndroid(
       viz::SurfaceId(), viz::SurfaceId(), gfx::Size(),
       cc::DeadlinePolicy::UseDefaultDeadline(), is_transparent);
   view_->GetLayer()->AddChild(content_layer_);
-
-  host_frame_sink_manager_->RegisterFrameSinkId(
-      frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
-  host_frame_sink_manager_->SetFrameSinkDebugLabel(frame_sink_id_,
-                                                   "DelegatedFrameHostAndroid");
 }
 
 DelegatedFrameHostAndroid::~DelegatedFrameHostAndroid() {
   EvictDelegatedFrame(frame_evictor_->CollectSurfaceIdsForEviction());
   DetachFromCompositor();
-  host_frame_sink_manager_->InvalidateFrameSinkId(frame_sink_id_, this);
+  if (owns_frame_sink_id_) {
+    host_frame_sink_manager_->InvalidateFrameSinkId(frame_sink_id_, this);
+  }
+}
+
+void DelegatedFrameHostAndroid::SetIsFrameSinkIdOwner(bool is_owner) {
+  if (is_owner == owns_frame_sink_id_) {
+    return;
+  }
+
+  owns_frame_sink_id_ = is_owner;
+  if (owns_frame_sink_id_) {
+    host_frame_sink_manager_->RegisterFrameSinkId(
+        frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
+    host_frame_sink_manager_->SetFrameSinkDebugLabel(
+        frame_sink_id_, "DelegatedFrameHostAndroid");
+  }
 }
 
 const viz::FrameSinkId& DelegatedFrameHostAndroid::GetFrameSinkId() const {

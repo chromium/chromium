@@ -1258,28 +1258,24 @@ blink::WebFrameWidget* PreviousWidgetForLazyCompositorInitialization(
 // `previous_widget` indicates whether the compositor for the frame which
 // is being replaced by this frame should be used instead of creating a new
 // compositor instance.
-void InitializeFrameWidgetForSubframe(
+void InitializeFrameWidgetForFrame(
     WebLocalFrame& frame,
     blink::WebFrameWidget* previous_widget,
     mojom::CreateFrameWidgetParamsPtr widget_params) {
   CHECK(widget_params);
 
-  // This frame is a child local root, so we require a separate RenderWidget
-  // for it from any other frames in the frame tree. Each local root defines
-  // a separate context/coordinate space/world for compositing, painting,
-  // input, etc. And each local root has a RenderWidget which provides
-  // such services independent from other RenderWidgets.
-  // Notably, we do not attempt to reuse the main frame's RenderWidget (if the
-  // main frame in this frame tree is local) as that RenderWidget is
-  // functioning in a different local root. Because this is a child local
-  // root, it implies there is some remote frame ancestor between this frame
-  // and the main frame, thus its coordinate space etc is not known relative
-  // to the main frame.
+  bool is_for_nested_main_frame = false;
+  bool is_for_scalable_page = false;
+  bool is_main_frame = !frame.Parent();
+  if (is_main_frame) {
+    // TODO(bokan): Portals sometimes set this value on the WebFrameWidget from
+    // WebViewImpl::SetInsidePortal - can we remove that path? Even better,
+    // could the WebFrameWidget delegate to WebView/Page for this information?
+    // https://crbug.com/1316535.
+    is_for_nested_main_frame = frame.View()->IsFencedFrameRoot();
+    is_for_scalable_page = !is_for_nested_main_frame;
+  }
 
-  // Non-owning pointer that is self-referencing and destroyed by calling
-  // Close(). We use the new RenderWidget as the client for this
-  // WebFrameWidget, *not* the RenderWidget of the MainFrame, which is
-  // accessible from the RenderViewImpl.
   const auto frame_sink_id =
       previous_widget ? previous_widget->GetFrameSinkId()
                       : viz::FrameSinkId(RenderThread::Get()->GetClientId(),
@@ -1288,9 +1284,7 @@ void InitializeFrameWidgetForSubframe(
       std::move(widget_params->frame_widget_host),
       std::move(widget_params->frame_widget),
       std::move(widget_params->widget_host), std::move(widget_params->widget),
-      frame_sink_id,
-      /*is_for_nested_main_frame=*/false,
-      /*is_for_scalable_page=*/false,
+      frame_sink_id, is_for_nested_main_frame, is_for_scalable_page,
       /*hidden=*/true);
 
   if (previous_widget) {
@@ -1587,6 +1581,9 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   if (!params->is_on_initial_empty_document)
     render_frame->frame_->SetIsNotOnInitialEmptyDocument();
 
+  CHECK(!PreviousWidgetForLazyCompositorInitialization(
+      params->widget_params->previous_frame_token_for_compositor_reuse));
+
   // Non-owning pointer that is self-referencing and destroyed by calling
   // Close(). The RenderViewImpl has a RenderWidget already, but not a
   // WebFrameWidget, which is now attached here.
@@ -1792,36 +1789,7 @@ void RenderFrameImpl::CreateFrame(
     DCHECK(widget_params);
     DCHECK_NE(widget_params->routing_id, MSG_ROUTING_NONE);
 
-    // TODO(bokan): Portals sometimes set this value on the WebFrameWidget from
-    // WebViewImpl::SetInsidePortal - can we remove that path? Even better,
-    // could the WebFrameWidget delegate to WebView/Page for this information?
-    // https://crbug.com/1316535.
-    bool is_for_nested_main_frame = web_view->IsFencedFrameRoot();
-
-    // Non-owning pointer that is self-referencing and destroyed by calling
-    // Close(). The RenderViewImpl has a RenderWidget already, but not a
-    // WebFrameWidget, which is now attached here.
-    blink::WebFrameWidget* web_frame_widget = web_frame->InitializeFrameWidget(
-        std::move(widget_params->frame_widget_host),
-        std::move(widget_params->frame_widget),
-        std::move(widget_params->widget_host), std::move(widget_params->widget),
-        viz::FrameSinkId(RenderThread::Get()->GetClientId(),
-                         widget_params->routing_id),
-        is_for_nested_main_frame,
-        /*is_for_scalable_page=*/!is_for_nested_main_frame,
-        /*hidden=*/true);
-
-    web_frame_widget->InitializeCompositing(
-        widget_params->visual_properties.screen_infos,
-        /*settings=*/nullptr);
-
-    // The WebFrameWidget should start with valid VisualProperties, including a
-    // non-zero size. While WebFrameWidget would not normally receive IPCs and
-    // thus would not get VisualProperty updates while the frame is provisional,
-    // we need at least one update to them in order to meet expectations in the
-    // renderer, and that update comes as part of the CreateFrame message.
-    // TODO(crbug.com/419087): This could become part of WebFrameWidget Init.
-    web_frame_widget->ApplyVisualProperties(widget_params->visual_properties);
+    render_frame->MaybeInitializeWidget(std::move(widget_params));
 
     // Note that we do *not* call WebView's DidAttachLocalMainFrame() here yet
     // because this frame is provisional and not attached to the Page yet. We
@@ -1829,26 +1797,19 @@ void RenderFrameImpl::CreateFrame(
   } else if (widget_params) {
     DCHECK(widget_params->routing_id != MSG_ROUTING_NONE);
 
-    // Initializing the widget is deferred until commit if this RenderFrame will
-    // be replacing a previous RenderFrame. This enables reuse of the
-    // compositing setup which is expensive.
-    // This step must be deferred until commit since this RenderFrame could be
-    // speculative and the previous RenderFrame will continue to be visible and
-    // animating until commit.
+    // This frame is a child local root, so we require a separate RenderWidget
+    // for it from any other frames in the frame tree. Each local root defines
+    // a separate context/coordinate space/world for compositing, painting,
+    // input, etc. And each local root has a RenderWidget which provides
+    // such services independent from other RenderWidgets.
     //
-    // TODO(khushalsagar): Ideal would be to move the widget initialization to
-    // the commit stage for all cases. This shouldn't have any perf impact since
-    // the expensive parts of compositing (setting up a connection to the GPU
-    // process) is not done until the frame is made visible, which happens at
-    // commit.
-    if (!PreviousWidgetForLazyCompositorInitialization(
-            widget_params->previous_frame_token_for_compositor_reuse)) {
-      InitializeFrameWidgetForSubframe(*web_frame, /*previous_widget=*/nullptr,
-                                       std::move(widget_params));
-    } else {
-      render_frame->widget_params_for_lazy_widget_creation_ =
-          std::move(widget_params);
-    }
+    // Notably, we do not attempt to reuse the main frame's RenderWidget (if the
+    // main frame in this frame tree is local) as that RenderWidget is
+    // functioning in a different local root. Because this is a child local
+    // root, it implies there is some remote frame ancestor between this frame
+    // and the main frame, thus its coordinate space etc is not known relative
+    // to the main frame.
+    render_frame->MaybeInitializeWidget(std::move(widget_params));
   }
 
   if (!is_on_initial_empty_document) {
@@ -3673,8 +3634,32 @@ blink::WebFrame* RenderFrameImpl::FindFrame(const blink::WebString& name) {
                                                    name.Utf8());
 }
 
-void RenderFrameImpl::InitializeWidgetIfNeeded() {
+void RenderFrameImpl::MaybeInitializeWidget(
+    mojom::CreateFrameWidgetParamsPtr widget_params) {
+  if (!PreviousWidgetForLazyCompositorInitialization(
+          widget_params->previous_frame_token_for_compositor_reuse)) {
+    InitializeFrameWidgetForFrame(*frame_, /*previous_widget=*/nullptr,
+                                  std::move(widget_params));
+  } else {
+    // Initializing the widget is deferred until commit if this RenderFrame
+    // will be replacing a previous RenderFrame. This enables reuse of the
+    // compositing setup which is expensive.
+    // This step must be deferred until commit since this RenderFrame could be
+    // speculative and the previous RenderFrame will continue to be visible
+    // and animating until commit.
+    //
+    // TODO(khushalsagar): Ideal would be to move the widget initialization to
+    // the commit stage for all cases. This shouldn't have any perf impact
+    // since the expensive parts of compositing (setting up a connection to
+    // the GPU process) is not done until the frame is made visible, which
+    // happens at commit.
+    widget_params_for_lazy_widget_creation_ = std::move(widget_params);
+  }
+}
+
+void RenderFrameImpl::EnsureWidgetInitialized() {
   if (!widget_params_for_lazy_widget_creation_) {
+    CHECK(GetLocalRootWebFrameWidget());
     return;
   }
 
@@ -3683,7 +3668,7 @@ void RenderFrameImpl::InitializeWidgetIfNeeded() {
           ->previous_frame_token_for_compositor_reuse);
   CHECK(previous_widget);
 
-  InitializeFrameWidgetForSubframe(
+  InitializeFrameWidgetForFrame(
       *frame_, previous_widget,
       std::move(widget_params_for_lazy_widget_creation_));
 }
@@ -3698,7 +3683,7 @@ void RenderFrameImpl::WillSwap() {
   // down. Script handles like unload dispatched during tear down can access
   // the compositor.
   if (provisional_frame_for_local_root_swap_) {
-    provisional_frame_for_local_root_swap_->InitializeWidgetIfNeeded();
+    provisional_frame_for_local_root_swap_->EnsureWidgetInitialized();
     provisional_frame_for_local_root_swap_ = nullptr;
   }
 }
@@ -4711,6 +4696,11 @@ bool RenderFrameImpl::IsInFencedFrameTree() const {
 }
 
 bool RenderFrameImpl::IsHidden() {
+  CHECK(GetWebFrame()->IsProvisional() || GetLocalRootWebFrameWidget())
+      << "Only provisional frames are created with no widget";
+  if (!GetLocalRootWebFrameWidget()) {
+    return true;
+  }
   return GetLocalRootWebFrameWidget()->IsHidden();
 }
 

@@ -438,6 +438,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   }
 
   // RenderWidgetHostViewBase:
+  void UpdateFrameSinkIdRegistration() override;
   void UpdateBackgroundColor() override;
   bool HasFallbackSurface() const override;
   absl::optional<DisplayFeature> GetDisplayFeature() override;

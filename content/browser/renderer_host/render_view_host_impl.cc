@@ -514,6 +514,14 @@ bool RenderViewHostImpl::CreateRenderView(
       // RenderFrame.
       local_frame_params->previous_frame_token =
           frame_tree_node->current_frame_host()->GetFrameToken();
+
+      if (frame_tree_node->current_frame_host()->ShouldReuseCompositing(
+              *main_rfh->GetSiteInstance())) {
+        local_frame_params->widget_params
+            ->previous_frame_token_for_compositor_reuse =
+            frame_tree_node->current_frame_host()->GetFrameToken();
+        main_rfh->NotifyWillCreateRenderWidgetOnCommit();
+      }
     }
 
     params->main_frame = mojom::CreateMainFrameUnion::NewLocalParams(

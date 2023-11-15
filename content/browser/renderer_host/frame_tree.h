@@ -424,12 +424,16 @@ class CONTENT_EXPORT FrameTree {
   // `create_case` indicates whether or not the RenderViewHost being created is
   // speculative or not. It should only be registered with the FrameTree if it
   // is not speculative.
+  // `frame_sink_id` is optionally set only if we're creating a speculative
+  // RenderViewHost. If set, it implies we're reusing the compositor from the
+  // previous RenderViewHost.
   scoped_refptr<RenderViewHostImpl> CreateRenderViewHost(
       SiteInstanceImpl* site_instance,
       int32_t main_frame_routing_id,
       bool renderer_initiated_creation,
       scoped_refptr<BrowsingContextState> main_browsing_context_state,
-      CreateRenderViewHostCase create_case);
+      CreateRenderViewHostCase create_case,
+      absl::optional<viz::FrameSinkId> frame_sink_id);
 
   // Returns the existing RenderViewHost for a new RenderFrameHost.
   // There should always be such a RenderViewHost, because the main frame

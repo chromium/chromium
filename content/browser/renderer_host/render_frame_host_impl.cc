@@ -1960,6 +1960,9 @@ void RenderFrameHostImpl::DidEnterBackForwardCache() {
         ->DidEnterBackForwardCache();
   }
 
+  CHECK(GetRenderWidgetHost());
+  CHECK(GetRenderWidgetHost()->view_is_frame_sink_id_owner());
+
   DidEnterBackForwardCacheInternal();
   // Pages in the back-forward cache are automatically evicted after a certain
   // time.
@@ -3474,6 +3477,10 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   RenderFrameCreated();
 
   return true;
+}
+
+void RenderFrameHostImpl::NotifyWillCreateRenderWidgetOnCommit() {
+  waiting_for_renderer_widget_creation_after_commit_ = true;
 }
 
 void RenderFrameHostImpl::SetMojomFrameRemote(
@@ -13062,10 +13069,10 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
             *GetSiteInstance())
             ? frame_tree_node_->current_frame_host()
             : nullptr;
-    if (owned_render_widget_host_ && previous_rfh) {
-      previous_rfh->GetRenderWidgetHost()->SetViewIsFrameSinkIdOwner(false);
-      owned_render_widget_host_->SetViewIsFrameSinkIdOwner(true);
-    }
+    CHECK(previous_rfh) << "Renderer widget creation is deferred only when "
+                           "we're reusing compositing";
+    previous_rfh->GetLocalRenderWidgetHost()->SetViewIsFrameSinkIdOwner(false);
+    GetLocalRenderWidgetHost()->SetViewIsFrameSinkIdOwner(true);
   }
 
   // TODO(clamy): We should stop having a special case for same-document
@@ -16084,19 +16091,15 @@ bool RenderFrameHostImpl::ShouldReuseCompositing(
     return false;
   }
 
+  // NOTE: We can't reuse the compositor if the old RFH (and its associated
+  // widget) will be persisted in the BFCache. Since we force a proactive
+  // BrowsingInstance swap if a Document will be added to BFCache, this check
+  // ensures we don't reuse the compositor if the old RFH will be persisted.
   if (GetSiteInstance()->group() != speculative_site_instance.group()) {
     return false;
   }
 
   CHECK_EQ(GetProcess(), speculative_site_instance.GetProcess());
-
-  // TODO(khushalsagar): We'll need this for main frames as well but the
-  // code for RFH creation/init limits it to subframes for now.
-  bool is_main_frame = !GetParent();
-  if (is_main_frame) {
-    return false;
-  }
-
   return true;
 }
 

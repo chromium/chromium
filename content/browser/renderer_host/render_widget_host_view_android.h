@@ -430,6 +430,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   ~RenderWidgetHostViewAndroid() override;
 
   // RenderWidgetHostViewBase:
+  void UpdateFrameSinkIdRegistration() override;
   void UpdateBackgroundColor() override;
   bool HasFallbackSurface() const override;
   absl::optional<DisplayFeature> GetDisplayFeature() override;
