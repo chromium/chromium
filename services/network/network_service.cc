@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/environment.h"
@@ -406,14 +405,6 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
   if (!params->environment.empty()) {
     SetEnvironment(std::move(params->environment));
   }
-
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-
-  // Record this once per session, though the switch is applied on a
-  // per-NetworkContext basis.
-  UMA_HISTOGRAM_BOOLEAN(
-      "Net.Certificate.IgnoreCertificateErrorsSPKIListPresent",
-      command_line->HasSwitch(switches::kIgnoreCertificateErrorsSPKIList));
 
   if (params->system_dns_resolver) {
     SetSystemDnsResolver(std::move(params->system_dns_resolver));

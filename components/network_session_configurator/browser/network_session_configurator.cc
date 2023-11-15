@@ -776,9 +776,6 @@ void ParseCommandLineAndFieldTrials(const base::CommandLine& command_line,
   if (command_line.HasSwitch(switches::kIgnoreCertificateErrors)) {
     params->ignore_certificate_errors = true;
   }
-  UMA_HISTOGRAM_BOOLEAN(
-      "Net.Certificate.IgnoreErrors",
-      command_line.HasSwitch(switches::kIgnoreCertificateErrors));
   if (command_line.HasSwitch(switches::kTestingFixedHttpPort)) {
     params->testing_fixed_http_port =
         GetSwitchValueAsInt(command_line, switches::kTestingFixedHttpPort);

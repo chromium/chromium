@@ -505,24 +505,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Certificate.IgnoreCertificateErrorsSPKIListPresent"
-    enum="BooleanPresent" expires_after="M77">
-  <owner>martinkr@google.com</owner>
-  <summary>
-    Whether certificate validation was disabled for a set of public keys because
-    the --ignore-certificate-errors-spki-list switch was set on startup.
-  </summary>
-</histogram>
-
-<histogram name="Net.Certificate.IgnoreErrors" enum="BooleanEnabled"
-    expires_after="M77">
-  <owner>martinkr@google.com</owner>
-  <summary>
-    Whether certificate validation was disabled because the
-    --ignore-certificate-errors switch was set on startup.
-  </summary>
-</histogram>
-
 <histogram name="Net.Certificate.TLSFeatureExtensionWithPrivateRoot"
     enum="Boolean" expires_after="M77">
   <owner>estark@chromium.org</owner>
