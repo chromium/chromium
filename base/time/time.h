@@ -65,6 +65,7 @@
 #include <stdint.h>
 #include <time.h>
 
+#include <compare>
 #include <iosfwd>
 #include <limits>
 #include <ostream>
@@ -315,24 +316,8 @@ class BASE_EXPORT TimeDelta {
   }
 
   // Comparison operators.
-  constexpr bool operator==(TimeDelta other) const {
-    return delta_ == other.delta_;
-  }
-  constexpr bool operator!=(TimeDelta other) const {
-    return delta_ != other.delta_;
-  }
-  constexpr bool operator<(TimeDelta other) const {
-    return delta_ < other.delta_;
-  }
-  constexpr bool operator<=(TimeDelta other) const {
-    return delta_ <= other.delta_;
-  }
-  constexpr bool operator>(TimeDelta other) const {
-    return delta_ > other.delta_;
-  }
-  constexpr bool operator>=(TimeDelta other) const {
-    return delta_ >= other.delta_;
-  }
+  friend constexpr std::strong_ordering operator<=>(TimeDelta,
+                                                    TimeDelta) = default;
 
   // Returns this delta, ceiled/floored/rounded-away-from-zero to the nearest
   // multiple of |interval|.
@@ -482,24 +467,9 @@ class TimeBase {
   }
 
   // Comparison operators
-  constexpr bool operator==(const TimeBase<TimeClass>& other) const {
-    return us_ == other.us_;
-  }
-  constexpr bool operator!=(const TimeBase<TimeClass>& other) const {
-    return us_ != other.us_;
-  }
-  constexpr bool operator<(const TimeBase<TimeClass>& other) const {
-    return us_ < other.us_;
-  }
-  constexpr bool operator<=(const TimeBase<TimeClass>& other) const {
-    return us_ <= other.us_;
-  }
-  constexpr bool operator>(const TimeBase<TimeClass>& other) const {
-    return us_ > other.us_;
-  }
-  constexpr bool operator>=(const TimeBase<TimeClass>& other) const {
-    return us_ >= other.us_;
-  }
+  friend constexpr std::strong_ordering operator<=>(
+      const TimeBase<TimeClass>&,
+      const TimeBase<TimeClass>&) = default;
 
  protected:
   constexpr explicit TimeBase(int64_t us) : us_(us) {}
