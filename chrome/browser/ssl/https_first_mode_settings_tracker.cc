@@ -355,6 +355,7 @@ void HttpsFirstModeService::OnHttpsFirstModePrefChanged() {
       static_cast<StatefulSSLHostStateDelegate*>(
           profile_->GetSSLHostStateDelegate());
   state->ClearHttpsOnlyModeAllowlist();
+  state->ClearHttpsEnforcelist();
 
   // Since the user modified the UI pref, explicitly disable any automatic
   // HTTPS-First Mode heuristic.
@@ -477,11 +478,23 @@ bool HttpsFirstModeService::UpdateFallbackEntries(bool add_new_entry) {
 
 void HttpsFirstModeService::MaybeEnableHttpsFirstModeForEngagedSites(
     base::OnceClosure done_callback) {
+  // If HFM or the auto-enable prefs were previously set, do not modify HFM
+  // status.
+  if (profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled) ||
+      profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled)) {
+    if (!done_callback.is_null()) {
+      std::move(done_callback).Run();
+    }
+    return;
+  }
   // Ideal parameter order is kHttpsAddThreshold > kHttpsRemoveThreshold >
   // kHttpRemoveThreshold > kHttpAddThreshold.
   if (!(kHttpsAddThreshold.Get() > kHttpsRemoveThreshold.Get() &&
         kHttpsRemoveThreshold.Get() > kHttpRemoveThreshold.Get() &&
         kHttpRemoveThreshold.Get() > kHttpAddThreshold.Get())) {
+    if (!done_callback.is_null()) {
+      std::move(done_callback).Run();
+    }
     return;
   }
   base::ThreadPool::PostTaskAndReplyWithResult(

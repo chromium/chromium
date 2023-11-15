@@ -83,6 +83,50 @@ void MaybeEnableHttpsFirstModeForEngagedSitesAndWait(
   run_loop.Run();
 }
 
+// Check that changing the HFM pref clears Site Engagement heuristic's HTTPS
+// enforcelist and effectively disables the heuristic.
+TEST_F(HttpsFirstModeSettingsTrackerTest,
+       SiteEngagementHeuristic_ShouldNotEnableIfPrefIsSet) {
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kHttpsFirstModeV2ForTypicallySecureUsers);
+
+  site_engagement::SiteEngagementService* engagement_service =
+      site_engagement::SiteEngagementService::Get(profile());
+  ASSERT_TRUE(engagement_service);
+
+  StatefulSSLHostStateDelegate* state =
+      StatefulSSLHostStateDelegateFactory::GetForProfile(profile());
+  ASSERT_TRUE(state);
+
+  auto clock = std::make_unique<base::SimpleTestClock>();
+  auto* clock_ptr = clock.get();
+  state->SetClockForTesting(std::move(clock));
+  clock_ptr->SetNow(base::Time::NowFromSystemTime());
+
+  // Site Engagement heuristic should enforce HTTPS on hosts with high
+  // engagement score.
+  GURL https_url("https://example.com");
+  engagement_service->ResetBaseScoreForURL(https_url, 90);
+  MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
+  EXPECT_TRUE(state->IsHttpsEnforcedForHost(
+      "example.com", profile()->GetDefaultStoragePartition()));
+
+  // Disable HFM. This should clear the enforcelist.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+  EXPECT_FALSE(state->IsHttpsEnforcedForHost(
+      "example.com", profile()->GetDefaultStoragePartition()));
+
+  // Check again. Should remain unenforced.
+  MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
+  EXPECT_FALSE(state->IsHttpsEnforcedForHost(
+      "example.com", profile()->GetDefaultStoragePartition()));
+}
+
 TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   HttpsFirstModeService* service =
       HttpsFirstModeServiceFactory::GetForProfile(profile());

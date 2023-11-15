@@ -404,6 +404,11 @@ void StatefulSSLHostStateDelegate::ClearHttpsOnlyModeAllowlist() {
   https_only_mode_allowlist_.ClearAllowlist(base::Time(), base::Time::Max());
 }
 
+void StatefulSSLHostStateDelegate::ClearHttpsEnforcelist() {
+  https_only_mode_enforcelist_.ClearEnforcements(base::Time(),
+                                                 base::Time::Max());
+}
+
 void StatefulSSLHostStateDelegate::RevokeUserAllowExceptions(
     const std::string& host) {
   GURL url = GetSecureGURLForHost(host);

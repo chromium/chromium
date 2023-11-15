@@ -98,6 +98,8 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
 
   // Clears all entries from the HTTP allowlist.
   void ClearHttpsOnlyModeAllowlist();
+  // Clear all entries from the HTTPS enforcelist.
+  void ClearHttpsEnforcelist();
 
   // RevokeUserAllowExceptionsHard is the same as RevokeUserAllowExceptions but
   // additionally may close idle connections in the process. This should be used

@@ -779,9 +779,11 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
+    bool is_interstitial_due_to_se_heuristic =
+        IsSiteEngagementHeuristicEnabled() && !IsHttpsFirstModePrefEnabled();
     EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
         contents->GetPrimaryMainFrame(),
-        IsSiteEngagementHeuristicEnabled()
+        is_interstitial_due_to_se_heuristic
             ? "You usually connect to this site securely"
             : "You are seeing this warning because this site does not support "
               "HTTPS."));
@@ -810,6 +812,36 @@ IN_PROC_BROWSER_TEST_P(
                                       Event::kUpgradeFailed, 1);
       histograms()->ExpectBucketCount(kEventHistogramWithEngagementHeuristic,
                                       Event::kUpgradeCertError, 1);
+      // Check the heuristic state.
+      histograms()->ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 1);
+      histograms()->ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
+                                      SiteEngagementHeuristicState::kDisabled,
+                                      0);
+      histograms()->ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
+                                      SiteEngagementHeuristicState::kEnabled,
+                                      1);
+      // Check host count.
+      histograms()->ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram,
+                                     1);
+      histograms()->ExpectBucketCount(
+          kSiteEngagementHeuristicHostCountHistogram, 0,
+          /*expected_count=*/0);
+      histograms()->ExpectBucketCount(
+          kSiteEngagementHeuristicHostCountHistogram, 1,
+          /*expected_count=*/1);
+      // Check accumulated host count.
+      histograms()->ExpectTotalCount(
+          kSiteEngagementHeuristicAccumulatedHostCountHistogram, 1);
+      histograms()->ExpectBucketCount(
+          kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0,
+          /*expected_count=*/0);
+      histograms()->ExpectBucketCount(
+          kSiteEngagementHeuristicAccumulatedHostCountHistogram, 1,
+          /*expected_count=*/1);
+      // Check enforcement duration. Since the host isn't removed from HFM
+      // enforcement list, no duration should be recorded yet.
+      histograms()->ExpectTotalCount(
+          kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
     } else {
       histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 0);
     }
@@ -823,30 +855,6 @@ IN_PROC_BROWSER_TEST_P(
     histograms()->ExpectBucketCount(kEventHistogramWithEngagementHeuristic,
                                     Event::kUpgradeNotAttempted, 1);
   }
-
-  histograms()->ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 1);
-  histograms()->ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
-                                  SiteEngagementHeuristicState::kDisabled, 0);
-  histograms()->ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
-                                  SiteEngagementHeuristicState::kEnabled, 1);
-
-  // Check host count.
-  histograms()->ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 1);
-  histograms()->ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram, 0,
-                                  /*count=*/0);
-  histograms()->ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram, 1,
-                                  /*count=*/1);
-  // Check accumulated host count.
-  histograms()->ExpectTotalCount(
-      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 1);
-  histograms()->ExpectBucketCount(
-      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0, /*count=*/0);
-  histograms()->ExpectBucketCount(
-      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 1, /*count=*/1);
-  // Check enforcement duration. Since the host isn't removed from HFM
-  // enforcement list, no duration should be recorded yet.
-  histograms()->ExpectTotalCount(
-      kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
 
   // Lower HTTPS engagement score. This disables HFM on the site. Also advance
   // the clock.
@@ -913,25 +921,42 @@ IN_PROC_BROWSER_TEST_P(
     histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 1);
   }
 
-  // Check host count.
-  histograms()->ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 2);
-  histograms()->ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram, 0,
-                                  /*count=*/1);
-  histograms()->ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram, 1,
-                                  /*count=*/1);
-  // Check accumulated host count.
-  histograms()->ExpectTotalCount(
-      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 2);
-  histograms()->ExpectBucketCount(
-      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0, /*count=*/0);
-  histograms()->ExpectBucketCount(
-      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 1, /*count=*/2);
-  // Check enforcement duration. The host is now removed from HFM
-  // enforcement list, so its HFM enforcement duration should be recorded now.
-  histograms()->ExpectTotalCount(
-      kSiteEngagementHeuristicEnforcementDurationHistogram, 1);
-  histograms()->ExpectTimeBucketCount(
-      kSiteEngagementHeuristicEnforcementDurationHistogram, base::Hours(1), 1);
+  if (!IsHttpsFirstModePrefEnabled()) {
+    // Check host count.
+    histograms()->ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram,
+                                   2);
+    histograms()->ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram,
+                                    0,
+                                    /*expected_count=*/1);
+    histograms()->ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram,
+                                    1,
+                                    /*expected_count=*/1);
+    // Check accumulated host count.
+    histograms()->ExpectTotalCount(
+        kSiteEngagementHeuristicAccumulatedHostCountHistogram, 2);
+    histograms()->ExpectBucketCount(
+        kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0,
+        /*expected_count=*/0);
+    histograms()->ExpectBucketCount(
+        kSiteEngagementHeuristicAccumulatedHostCountHistogram, 1,
+        /*expected_count=*/2);
+    // Check enforcement duration. The host is now removed from HFM
+    // enforcement list, so its HFM enforcement duration should be recorded now.
+    histograms()->ExpectTotalCount(
+        kSiteEngagementHeuristicEnforcementDurationHistogram, 1);
+    histograms()->ExpectTimeBucketCount(
+        kSiteEngagementHeuristicEnforcementDurationHistogram, base::Hours(1),
+        1);
+  } else {
+    // If HFM pref was enabled, no SE metrics should be recorded because HFM
+    // won't be auto-enabled.
+    histograms()->ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram,
+                                   0);
+    histograms()->ExpectTotalCount(
+        kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0);
+    histograms()->ExpectTotalCount(
+        kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(
