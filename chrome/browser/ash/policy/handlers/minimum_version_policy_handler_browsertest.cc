@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/default_clock.h"
@@ -270,6 +271,37 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, CriticalUpdateOnLoginScreen) {
   EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
 
+IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
+                       CriticalUpdateOnLoginScreenForEolDevice) {
+  // Configure "Enforce updates" in "Auto-update settings" in Admin Console:
+  // - Choose the latest version in "if they are not running at least version"
+  // - Set "Extend this period where devices which are not receiving automatic
+  //   updates are not yet blocked to" to "No warning"
+  // - Then ensure the user is logged out of a AUE device running an older
+  //   version and can no longer log in.
+  // COM_FOUND_CUJ23_TASK5_WF2
+  base::AddTagToTestResult("feature_id",
+                           "screenplay-6267b5f4-e674-4b94-920a-d99c83f701eb");
+
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  fake_update_engine_client_->set_eol_date(
+      base::DefaultClock::GetInstance()->Now() - base::Days(1));
+
+  // Set new value for policy and check update required screen is shown on the
+  // login screen.
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kNoWarning, kNoWarning,
+          false /* unmanaged_user_restricted */));
+  ash::OobeScreenWaiter(ash::UpdateRequiredView::kScreenId).Wait();
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+
+  // Revoke policy and check update required screen is hidden.
+  SetDevicePolicyAndWaitForSettingChange(base::Value::Dict());
+  ash::OobeScreenExitWaiter(ash::UpdateRequiredView::kScreenId).Wait();
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+}
+
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, PRE_CriticalUpdateInSession) {
   // Login the user into the session and mark as managed.
   LoginManagedUser();
@@ -497,6 +529,15 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
 }
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, LastDayNotificationOnLogin) {
+  // Configure "Enforce updates" in "Auto-update settings" in Admin Console:
+  // - Choose the latest version in "if they are not running at least version"
+  // - Set "Block devices & user sessions after" to "1 week"
+  // - Then ensure that the device running an older version receives a
+  //   notification.
+  // COM_FOUND_CUJ23_TASK3_WF1
+  base::AddTagToTestResult("feature_id",
+                           "screenplay-62ab245b-b322-43df-8b01-370688e2c228");
+
   DisconectAllNetworks();
   EXPECT_FALSE(
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
@@ -540,6 +581,16 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
                        NotificationOnUnmanagedUserEnabled) {
+  // Configure "Enforce updates" in "Auto-update settings" in Admin Console:
+  // - Choose the latest version in "if they are not running at least version"
+  // - Set "Extend this period where devices which are not receiving automatic
+  //   updates are not yet blocked to" to "1 week".
+  // - Then ensure that the AUE device running an older version receives a
+  //   notification and user is not logged out.
+  // COM_FOUND_CUJ23_TASK5_WF1
+  base::AddTagToTestResult("feature_id",
+                           "screenplay-7a1101a5-03c1-4cfd-a0c9-495145151a8b");
+
   fake_update_engine_client_->set_eol_date(
       base::DefaultClock::GetInstance()->Now() - base::Days(1));
   LoginUnmanagedUser();
