@@ -2151,6 +2151,111 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
   }
 }
 
+TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
+       PolicyInstalledEntryVisibilityBasedOnSiteSettings) {
+  bool is_feature_enabled = GetParam();
+  InitializeEmptyExtensionService();
+
+  const Extension* extension =
+      AddExtensionWithHostPermission("Extension", manifest_keys::kBrowserAction,
+                                     ManifestLocation::kInternal, "<all_urls>");
+  const Extension* enterprise_extension =
+      AddExtension("Enterprise extension", manifest_keys::kBrowserAction,
+                   ManifestLocation::kExternalPolicy);
+  const Extension* enterprise_extension_host_permissions =
+      AddExtensionWithHostPermission(
+          "Enterprise extension requesting host permissions",
+          manifest_keys::kBrowserAction, ManifestLocation::kExternalPolicy,
+          "<all_urls>");
+
+  // Add a tab to the browser.
+  const GURL url("http://www.example.com/");
+  AddTab(url);
+
+  {
+    // Non-enterprise extension has no policy entry.
+    ExtensionContextMenuModel menu(extension, GetBrowser(),
+                                   /*is_pinned=*/true, nullptr, true,
+                                   ContextMenuSource::kToolbarAction);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kPolicyInstalled),
+              CommandState::kAbsent);
+    EXPECT_EQ(GetCommandState(menu, kPolicyInstalled), CommandState::kAbsent);
+  }
+
+  {
+    // By default, the site permission is set to "customize by extension".
+    // Verify "policy installed" entry is visible and disabled in the main menu
+    // when extension doesn't request host permissions.
+    ExtensionContextMenuModel menu(enterprise_extension, GetBrowser(),
+                                   /*is_pinned=*/true, nullptr, true,
+                                   ContextMenuSource::kToolbarAction);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kPolicyInstalled),
+              CommandState::kAbsent);
+    EXPECT_EQ(GetCommandState(menu, kPolicyInstalled), CommandState::kDisabled);
+
+    // Verify "policy installed" entry is visible and disabled when extension
+    // requests host permissions. Entry is in the page access submenu when the
+    // feature is enabled, otherwise is on the main menu.
+    ExtensionContextMenuModel menu_host_permissions(
+        enterprise_extension_host_permissions, GetBrowser(),
+        /*is_pinned=*/true, nullptr, true, ContextMenuSource::kToolbarAction);
+    if (is_feature_enabled) {
+      EXPECT_EQ(
+          GetPageAccessCommandState(menu_host_permissions, kPolicyInstalled),
+          CommandState::kDisabled);
+      EXPECT_EQ(GetCommandState(menu_host_permissions, kPolicyInstalled),
+                CommandState::kAbsent);
+    } else {
+      EXPECT_EQ(GetPageAccessCommandState(menu, kPolicyInstalled),
+                CommandState::kAbsent);
+      EXPECT_EQ(GetCommandState(menu, kPolicyInstalled),
+                CommandState::kDisabled);
+    }
+  }
+
+  // User site settings are only taken into account for site access computations
+  // when the feature is enabled, even if they are added by the manager.
+  // Therefore, the context menu should not take into account user site settings
+  // when the feature is disabled.
+  auto* manager = PermissionsManager::Get(profile());
+
+  {
+    // Add site as a user restricted site.
+    PermissionsManagerWaiter manager_waiter(manager);
+    manager->AddUserRestrictedSite(url::Origin::Create(url));
+    manager_waiter.WaitForUserPermissionsSettingsChange();
+
+    // Verify "policy installed" entry is visible and disabled in the main menu
+    // when extension doesn't request host permissions.
+    ExtensionContextMenuModel menu(enterprise_extension, GetBrowser(),
+                                   /*is_pinned=*/true, nullptr, true,
+                                   ContextMenuSource::kToolbarAction);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kPolicyInstalled),
+              CommandState::kAbsent);
+    EXPECT_EQ(GetCommandState(menu, kPolicyInstalled), CommandState::kDisabled);
+
+    // Verify "policy installed" entry is visible and disabled when extension
+    // requests host permissions. Entry is in the page access submenu when the
+    // feature is enabled, otherwise is on the main menu.
+    ExtensionContextMenuModel menu_host_permissions(
+        enterprise_extension_host_permissions, GetBrowser(),
+        /*is_pinned=*/true, nullptr, true, ContextMenuSource::kToolbarAction);
+
+    if (is_feature_enabled) {
+      EXPECT_EQ(
+          GetPageAccessCommandState(menu_host_permissions, kPolicyInstalled),
+          CommandState::kDisabled);
+      EXPECT_EQ(GetCommandState(menu_host_permissions, kPolicyInstalled),
+                CommandState::kAbsent);
+    } else {
+      EXPECT_EQ(
+          GetPageAccessCommandState(menu_host_permissions, kPolicyInstalled),
+          CommandState::kAbsent);
+      EXPECT_EQ(GetCommandState(menu_host_permissions, kPolicyInstalled),
+                CommandState::kDisabled);
+    }
+  }
+}
 // Test clicking on the "permissions page" item opens the correct link.
 TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
        TestClickingPageAccessPermissionsPage) {

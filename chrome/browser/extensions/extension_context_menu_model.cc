@@ -552,8 +552,9 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
   AppendExtensionItems();
 
   // Site permissions section.
-  bool policy_entry_in_subpage = false;
   bool is_required_by_policy = IsExtensionRequiredByPolicy(extension, profile_);
+  bool has_policy_entry = !is_component_ && is_required_by_policy;
+  bool policy_entry_in_subpage = false;
 
   // Show section only when the extension requests host permissions.
   auto* permissions_manager = PermissionsManager::Get(profile_);
@@ -610,13 +611,18 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
           IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_ALL_SITES_V2,
           kRadioGroup);
 
-      // When the page access submenu is visible, it holds the policy entry.
-      page_access_submenu_->AddSeparator(ui::NORMAL_SEPARATOR);
-      page_access_submenu_->AddItemWithStringIdAndIcon(
-          POLICY_INSTALLED, IDS_EXTENSIONS_INSTALLED_BY_ADMIN,
-          ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
-                                         ui::kColorIcon, 16));
-      policy_entry_in_subpage = true;
+      // We show the page access menu for force-installed extensions that
+      // modify sites other than those the user opted into all extensions
+      // modifying. In these cases, we indicate that the extension is installed
+      // by the admin through a menu entry.
+      if (has_policy_entry) {
+        page_access_submenu_->AddSeparator(ui::NORMAL_SEPARATOR);
+        page_access_submenu_->AddItemWithStringIdAndIcon(
+            POLICY_INSTALLED, IDS_EXTENSIONS_INSTALLED_BY_ADMIN,
+            ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                           ui::kColorIcon, 16));
+        policy_entry_in_subpage = true;
+      }
 
       AddSubMenuWithStringId(PAGE_ACCESS_SUBMENU,
                              IDS_EXTENSIONS_CONTEXT_MENU_SITE_PERMISSIONS,
@@ -630,8 +636,9 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
         IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_PERMISSIONS_PAGE);
   }
 
-  // Policy section.
-  if (!is_component_ && is_required_by_policy && !policy_entry_in_subpage) {
+  // If there isn't an entry for the extension being force-installed in the
+  // page access menu above, we add one to the root menu here.
+  if (has_policy_entry && !policy_entry_in_subpage) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     // TODO (kylixrd): Investigate the usage of the hard-coded color.
     AddItemWithStringIdAndIcon(
