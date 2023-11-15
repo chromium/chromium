@@ -86,7 +86,6 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
   explicit AutoEnrollmentClientImplBaseTest(AutoEnrollmentProtocol protocol)
       : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()),
         local_state_(scoped_testing_local_state_.Get()),
-        state_(AutoEnrollmentState::kPending),
         protocol_(protocol) {
     CreateClient(kPowerStart, kPowerLimit);
   }
@@ -97,7 +96,7 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
   }
 
   void CreateClient(int power_initial, int power_limit) {
-    state_ = AutoEnrollmentState::kPending;
+    state_ = absl::nullopt;
     service_ =
         std::make_unique<FakeDeviceManagementService>(&job_creation_handler_);
     service_->ScheduleInitialization(0);
@@ -398,7 +397,7 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
   testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
   std::unique_ptr<FakeDeviceManagementService> service_;
   em::DeviceManagementRequest last_request_;
-  AutoEnrollmentState state_;
+  absl::optional<AutoEnrollmentState> state_;
   DeviceManagementService::JobConfiguration::JobType failed_job_type_ =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
   DeviceManagementService::JobConfiguration::JobType last_async_job_type_ =

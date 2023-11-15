@@ -70,8 +70,8 @@ class FakeAutoEnrollmentClient : public AutoEnrollmentClient {
 
   ~FakeAutoEnrollmentClient() override;
 
+  // The methods do not fire state change until `SetState` is called.
   void Start() override;
-  // Note: |Retry| is currently a no-op in |FakeAutoEnrollmentClient|.
   void Retry() override;
 
   // Sets the state and notifies the |ProgressCallback| passed to the
@@ -80,7 +80,6 @@ class FakeAutoEnrollmentClient : public AutoEnrollmentClient {
 
  private:
   ProgressCallback progress_callback_;
-  AutoEnrollmentState state_;
 };
 
 }  // namespace policy

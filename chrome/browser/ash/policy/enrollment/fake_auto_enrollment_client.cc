@@ -49,20 +49,16 @@ FakeAutoEnrollmentClient::FactoryImpl::CreateForInitialEnrollment(
 
 FakeAutoEnrollmentClient::FakeAutoEnrollmentClient(
     const ProgressCallback& progress_callback)
-    : progress_callback_(progress_callback),
-      state_(AutoEnrollmentState::kIdle) {}
+    : progress_callback_(progress_callback) {}
 
 FakeAutoEnrollmentClient::~FakeAutoEnrollmentClient() {}
 
-void FakeAutoEnrollmentClient::Start() {
-  SetState(AutoEnrollmentState::kPending);
-}
+void FakeAutoEnrollmentClient::Start() {}
 
 void FakeAutoEnrollmentClient::Retry() {}
 
 void FakeAutoEnrollmentClient::SetState(AutoEnrollmentState target_state) {
-  state_ = target_state;
-  progress_callback_.Run(state_);
+  progress_callback_.Run(target_state);
 }
 
 }  // namespace policy

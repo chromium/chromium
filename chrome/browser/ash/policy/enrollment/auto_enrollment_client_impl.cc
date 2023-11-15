@@ -845,8 +845,6 @@ void AutoEnrollmentClientImpl::RequestServerStateAvailability() {
     return;
   }
 
-  ReportProgress(AutoEnrollmentState::kPending);
-
   server_state_availability_requester_->Start(base::BindOnce(
       &AutoEnrollmentClientImpl::OnServerStateAvailabilityCompleted,
       base::Unretained(this)));
@@ -897,8 +895,6 @@ void AutoEnrollmentClientImpl::RequestStateRetrieval() {
       server_state_availability_requester_->GetServerStateIfObtained().value());
   DCHECK(!server_state_retriever_->GetAutoEnrollmentStateIfObtained());
   state_ = State::kRequestingStateRetrieval;
-
-  ReportProgress(AutoEnrollmentState::kPending);
 
   server_state_retriever_->Start(
       base::BindOnce(&AutoEnrollmentClientImpl::OnStateRetrievalCompleted,
