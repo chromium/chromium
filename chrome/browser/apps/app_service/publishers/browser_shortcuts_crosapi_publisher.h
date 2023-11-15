@@ -43,6 +43,9 @@ class BrowserShortcutsCrosapiPublisher
   void SetLaunchShortcutCallbackForTesting(
       crosapi::mojom::AppShortcutController::LaunchShortcutCallback callback);
 
+  void SetRemoveShortcutCallbackForTesting(
+      crosapi::mojom::AppShortcutController::RemoveShortcutCallback callback);
+
  private:
   // crosapi::mojom::AppShortcutPublisher overrides.
   void PublishShortcuts(std::vector<apps::ShortcutPtr> deltas,
@@ -50,6 +53,8 @@ class BrowserShortcutsCrosapiPublisher
   void RegisterAppShortcutController(
       mojo::PendingRemote<crosapi::mojom::AppShortcutController> controller,
       RegisterAppShortcutControllerCallback callback) override;
+  void ShortcutRemoved(const std::string& shortcut_id,
+                       ShortcutRemovedCallback callback) override;
 
   // apps::ShortcutPublisher overrides.
   void LaunchShortcut(const std::string& host_app_id,
@@ -72,6 +77,8 @@ class BrowserShortcutsCrosapiPublisher
 
   crosapi::mojom::AppShortcutController::LaunchShortcutCallback
       launch_shortcut_callback_for_testing_;
+  crosapi::mojom::AppShortcutController::RemoveShortcutCallback
+      remove_shortcut_callback_for_testing_;
 
   base::WeakPtrFactory<BrowserShortcutsCrosapiPublisher> weak_factory_{this};
 };

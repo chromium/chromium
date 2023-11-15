@@ -10,6 +10,8 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
 // TODO(crbug.com/1402145): Remove circular dependencies on //c/b/ui.
 #include "chrome/browser/ui/startup/first_run_service.h"  // nogncheck
@@ -87,6 +89,32 @@ void LacrosBrowserShortcutsController::GetCompressedIcon(
     apps::LoadIconCallback callback) {
   apps::GetWebAppCompressedIconData(profile_, local_shortcut_id, size_in_dip,
                                     scale_factor, std::move(callback));
+}
+
+void LacrosBrowserShortcutsController::RemoveShortcut(
+    const std::string& host_app_id,
+    const std::string& local_shortcut_id,
+    apps::UninstallSource uninstall_source,
+    RemoveShortcutCallback callback) {
+  if (!IsAppServiceShortcut(local_shortcut_id, *provider_)) {
+    return;
+  }
+
+  const WebApp* web_app =
+      provider_->registrar_unsafe().GetAppById(local_shortcut_id);
+  if (!web_app) {
+    return;
+  }
+
+  auto origin = url::Origin::Create(web_app->start_url());
+
+  CHECK(
+      provider_->registrar_unsafe().CanUserUninstallWebApp(web_app->app_id()));
+  webapps::WebappUninstallSource webapp_uninstall_source =
+      ConvertUninstallSourceToWebAppUninstallSource(uninstall_source);
+  provider_->scheduler().UninstallWebApp(
+      web_app->app_id(), webapp_uninstall_source,
+      base::IgnoreArgs<webapps::UninstallResultCode>(std::move(callback)));
 }
 
 void LacrosBrowserShortcutsController::Initialize() {
@@ -230,6 +258,40 @@ void LacrosBrowserShortcutsController::OnWebAppInstalledWithOsHooks(
 
 void LacrosBrowserShortcutsController::OnWebAppInstallManagerDestroyed() {
   install_manager_observation_.Reset();
+}
+
+void LacrosBrowserShortcutsController::OnWebAppUninstalled(
+    const webapps::AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source) {
+  // Once a web app has been uninstalled, the WebAppRegistrar can no longer
+  // be used to determine if it is a shortcut. Here we check if we have got an
+  // app registered in AppRegistryCache that can be be uninstalled. If this is
+  // registered as an app, we do not update for shortcut.
+  bool found = apps::AppServiceProxyFactory::GetForProfile(profile_)
+                   ->AppRegistryCache()
+                   .ForOneApp(app_id, [](const apps::AppUpdate& update) {});
+  if (found) {
+    return;
+  }
+
+  auto* service = chromeos::LacrosService::Get();
+  auto* remote_publisher =
+      service->GetRemote<crosapi::mojom::AppShortcutPublisher>().get();
+
+  if (service->GetInterfaceVersion<crosapi::mojom::AppShortcutPublisher>() <
+          int{crosapi::mojom::AppShortcutPublisher::MethodMinVersions::
+                  kShortcutRemovedMinVersion} &&
+      !chromeos::BrowserParamsProxy::Get()->IsCrosapiDisabledForTesting()) {
+    LOG(WARNING)
+        << "Ash AppShortcutPublisher version "
+        << service->GetInterfaceVersion<crosapi::mojom::AppShortcutPublisher>()
+        << " does not support ShortcutRemoved().";
+    return;
+  }
+
+  remote_publisher->ShortcutRemoved(
+      apps::GenerateShortcutId(app_constants::kLacrosAppId, app_id).value(),
+      base::DoNothing());
 }
 
 }  // namespace web_app

@@ -22,6 +22,7 @@
 #include "ui/display/types/display_constants.h"
 
 namespace {
+
 class FakeAppShortcutController : public crosapi::mojom::AppShortcutController {
  public:
   struct LaunchInfo {
@@ -49,6 +50,18 @@ class FakeAppShortcutController : public crosapi::mojom::AppShortcutController {
           size_in_dip(size_in_dip),
           scale_factor(scale_factor) {}
   };
+  struct RemoveShortcutInfo {
+    std::string host_app_id;
+    std::string local_shortcut_id;
+    apps::UninstallSource uninstall_source;
+    RemoveShortcutInfo(const std::string& host_app_id,
+                       const std::string& local_shortcut_id,
+                       apps::UninstallSource uninstall_source)
+        : host_app_id(host_app_id),
+          local_shortcut_id(local_shortcut_id),
+          uninstall_source(uninstall_source) {}
+  };
+
   // crosapi::mojom::AppController:
   void LaunchShortcut(const std::string& host_app_id,
                       const std::string& local_shortcut_id,
@@ -66,6 +79,14 @@ class FakeAppShortcutController : public crosapi::mojom::AppShortcutController {
                                  scale_factor);
     std::move(callback).Run(std::make_unique<apps::IconValue>());
   }
+  void RemoveShortcut(const std::string& host_app_id,
+                      const std::string& local_shortcut_id,
+                      apps::UninstallSource uninstall_source,
+                      RemoveShortcutCallback callback) override {
+    remove_shortcut_info_.emplace_back(host_app_id, local_shortcut_id,
+                                       uninstall_source);
+    std::move(callback).Run();
+  }
 
   const std::vector<LaunchInfo>& get_launch_info() const {
     return launch_info_;
@@ -75,12 +96,18 @@ class FakeAppShortcutController : public crosapi::mojom::AppShortcutController {
     return load_icon_info_;
   }
 
+  const std::vector<RemoveShortcutInfo>& remove_shortcut_info() const {
+    return remove_shortcut_info_;
+  }
+
   mojo::Receiver<crosapi::mojom::AppShortcutController> receiver_{this};
 
  private:
   std::vector<LaunchInfo> launch_info_;
   std::vector<GetCompressedIconInfo> load_icon_info_;
+  std::vector<RemoveShortcutInfo> remove_shortcut_info_;
 };
+
 }  // namespace
 
 namespace apps {
@@ -219,6 +246,45 @@ TEST_F(BrowserShortcutsCrosapiPublisherTest, LoadIcon) {
   EXPECT_EQ(fake_controller()->get_load_icon_info()[0].size_in_dip, 32);
   EXPECT_EQ(fake_controller()->get_load_icon_info()[0].scale_factor,
             ui::ResourceScaleFactor::k100Percent);
+}
+
+TEST_F(BrowserShortcutsCrosapiPublisherTest, RemoveShortcut) {
+  std::vector<ShortcutPtr> shortcuts;
+  ShortcutPtr shortcut = std::make_unique<Shortcut>("app_id_1", "local_id_1");
+  shortcut->shortcut_source = ShortcutSource::kUser;
+  shortcuts.push_back(shortcut->Clone());
+  base::RunLoop runloop;
+  app_shortcut_publisher_remote_->PublishShortcuts(std::move(shortcuts),
+                                                   runloop.QuitClosure());
+  runloop.Run();
+  PublishApp(AppType::kStandaloneBrowser, "app_id_1");
+
+  apps::ShortcutRegistryCache* cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->ShortcutRegistryCache();
+  ASSERT_TRUE(cache->HasShortcut(shortcut->shortcut_id));
+
+  base::RunLoop remove_shortcut;
+  browser_shortcuts_crosapi_publisher_->SetRemoveShortcutCallbackForTesting(
+      remove_shortcut.QuitClosure());
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->RemoveShortcutSilently(shortcut->shortcut_id,
+                               apps::UninstallSource::kUnknown);
+  remove_shortcut.Run();
+  ASSERT_EQ(fake_controller()->remove_shortcut_info().size(), 1u);
+  EXPECT_EQ(fake_controller()->remove_shortcut_info().back().host_app_id,
+            shortcut->host_app_id);
+  EXPECT_EQ(fake_controller()->remove_shortcut_info().back().local_shortcut_id,
+            shortcut->local_id);
+  EXPECT_EQ(fake_controller()->remove_shortcut_info().back().uninstall_source,
+            apps::UninstallSource::kUnknown);
+
+  base::RunLoop removed_runloop;
+  app_shortcut_publisher_remote_->ShortcutRemoved(
+      shortcut->shortcut_id.value(), removed_runloop.QuitClosure());
+  removed_runloop.Run();
+
+  EXPECT_FALSE(cache->HasShortcut(shortcut->shortcut_id));
 }
 
 }  // namespace apps

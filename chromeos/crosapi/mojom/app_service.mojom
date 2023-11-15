@@ -258,6 +258,11 @@ interface AppShortcutPublisher {
   RegisterAppShortcutController@1(
     pending_remote<AppShortcutController> controller) =>
       (ControllerRegistrationResult result);
+
+  // Notify ash-chrome that a shortcut identified by 'shortcut_id' has been
+  // removed.
+  [MinVersion=2]
+  ShortcutRemoved@2(string shortcut_id) => ();
 };
 
 // Interacts with shortcuts that run in Lacros. Implemented in lacros-chrome
@@ -286,4 +291,15 @@ interface AppShortcutController {
     string local_shortcut_id,
     int32 size_in_dip,
     ResourceScaleFactor scale_factor) => (IconValue icon_value);
+
+  // Removes a shortcut identified by `local_shortcut_id` in the app
+  // identified by 'host_app_id` without prompting the user to confirm.
+  // Currently it is only expected to notify the caller on removal completion,
+  // regardless whether the removal is success, and we might add removal result
+  // in the callback if needed in the future.
+  [MinVersion=3]
+  RemoveShortcut@2(
+    string host_app_id,
+    string local_shortcut_id,
+    UninstallSource uninstall_source) => ();
 };

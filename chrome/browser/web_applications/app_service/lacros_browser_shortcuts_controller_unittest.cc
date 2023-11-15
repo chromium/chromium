@@ -41,6 +41,10 @@ class FakeShortcutPublisher : public crosapi::mojom::AppShortcutPublisher {
     return shortcut_deltas_;
   }
 
+  const std::vector<std::string>& get_removed_ids() const {
+    return removed_ids_;
+  }
+
   void clear_deltas() { shortcut_deltas_.clear(); }
 
   bool controller_registered() { return controller_.is_bound(); }
@@ -67,7 +71,14 @@ class FakeShortcutPublisher : public crosapi::mojom::AppShortcutPublisher {
         crosapi::mojom::ControllerRegistrationResult::kSuccess);
   }
 
+  void ShortcutRemoved(const std::string& shortcut_id,
+                       ShortcutRemovedCallback callback) override {
+    removed_ids_.push_back(shortcut_id);
+    std::move(callback).Run();
+  }
+
   std::vector<apps::ShortcutPtr> shortcut_deltas_;
+  std::vector<std::string> removed_ids_;
 };
 
 class LacrosBrowserShortcutsControllerTest : public testing::Test,
@@ -211,4 +222,21 @@ TEST_F(LacrosBrowserShortcutsControllerTest, GetCompressedIcon) {
   apps::IconValuePtr icon = future.Take();
   VerifyCompressedIcon(src_data, *icon);
 }
+
+TEST_F(LacrosBrowserShortcutsControllerTest, RemoveShortcut) {
+  InitializeLacrosBrowserShortcutsController();
+
+  auto shortcut_id = CreateWebAppBasedShortcut(GURL("https://www.example.com/"),
+                                               u"shortcut name");
+
+  base::RunLoop runloop;
+  fake_publisher()->controller_->RemoveShortcut(
+      app_constants::kLacrosAppId, shortcut_id, apps::UninstallSource::kUnknown,
+      runloop.QuitClosure());
+  runloop.Run();
+
+  ASSERT_EQ(fake_publisher()->get_removed_ids().size(), 1U);
+  EXPECT_EQ(fake_publisher()->get_removed_ids().back(), shortcut_id);
+}
+
 }  // namespace web_app

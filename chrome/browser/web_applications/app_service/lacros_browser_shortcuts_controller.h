@@ -49,6 +49,11 @@ class LacrosBrowserShortcutsController
                          int32_t size_in_dip,
                          ui::ResourceScaleFactor scale_factor,
                          apps::LoadIconCallback callback) override;
+  void RemoveShortcut(const std::string& host_app_id,
+                      const std::string& local_shortcut_id,
+                      apps::UninstallSource uninstall_source,
+                      RemoveShortcutCallback callback) override;
+
   void Initialize();
 
  private:
@@ -70,6 +75,9 @@ class LacrosBrowserShortcutsController
   void OnWebAppInstalled(const webapps::AppId& app_id) override;
   void OnWebAppInstalledWithOsHooks(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
+  void OnWebAppUninstalled(
+      const webapps::AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source) override;
 
   void OnOpenPrimaryProfileFirstRunExited(const std::string& host_app_id,
                                           const std::string& local_shortcut_id,

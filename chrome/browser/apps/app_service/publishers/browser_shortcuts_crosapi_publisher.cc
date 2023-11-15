@@ -47,6 +47,11 @@ void BrowserShortcutsCrosapiPublisher::SetLaunchShortcutCallbackForTesting(
   launch_shortcut_callback_for_testing_ = std::move(callback);
 }
 
+void BrowserShortcutsCrosapiPublisher::SetRemoveShortcutCallbackForTesting(
+    crosapi::mojom::AppShortcutController::RemoveShortcutCallback callback) {
+  remove_shortcut_callback_for_testing_ = std::move(callback);
+}
+
 void BrowserShortcutsCrosapiPublisher::PublishShortcuts(
     std::vector<apps::ShortcutPtr> deltas,
     PublishShortcutsCallback callback) {
@@ -77,6 +82,13 @@ void BrowserShortcutsCrosapiPublisher::RegisterAppShortcutController(
       crosapi::mojom::ControllerRegistrationResult::kSuccess);
 }
 
+void BrowserShortcutsCrosapiPublisher::ShortcutRemoved(
+    const std::string& shortcut_id,
+    ShortcutRemovedCallback callback) {
+  apps::ShortcutPublisher::ShortcutRemoved(apps::ShortcutId(shortcut_id));
+  std::move(callback).Run();
+}
+
 void BrowserShortcutsCrosapiPublisher::LaunchShortcut(
     const std::string& host_app_id,
     const std::string& local_shortcut_id,
@@ -86,6 +98,7 @@ void BrowserShortcutsCrosapiPublisher::LaunchShortcut(
     return;
   }
 
+  // TODO(b/308879297): Make launch shortcut async in the publisher interface.
   controller_->LaunchShortcut(
       host_app_id, local_shortcut_id, display_id,
       launch_shortcut_callback_for_testing_
@@ -97,8 +110,17 @@ void BrowserShortcutsCrosapiPublisher::RemoveShortcut(
     const std::string& host_app_id,
     const std::string& local_shortcut_id,
     apps::UninstallSource uninstall_source) {
-  // TODO(b/304661502): Implement this.
-  NOTIMPLEMENTED();
+  if (!controller_.is_bound()) {
+    LOG(WARNING) << "Controller not connected: " << FROM_HERE.ToString();
+    return;
+  }
+
+  // TODO(b/308879297): Make remove shortcut async in the publisher interface.
+  controller_->RemoveShortcut(
+      host_app_id, local_shortcut_id, uninstall_source,
+      remove_shortcut_callback_for_testing_
+          ? std::move(remove_shortcut_callback_for_testing_)
+          : base::DoNothing());
 }
 
 void BrowserShortcutsCrosapiPublisher::GetCompressedIconData(
