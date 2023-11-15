@@ -2373,6 +2373,9 @@ enum class ToolbarKind {
   commerce::ShoppingService* shoppingService =
       commerce::ShoppingServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
+  if (!shoppingService) {
+    return;
+  }
   // Filter out parcels that are already being tracked and post
   // `showParcelTrackingUIWithNewParcels` command for the new parcel list.
   FilterParcelsAndShowParcelTrackingUI(
@@ -2385,6 +2388,9 @@ enum class ToolbarKind {
   commerce::ShoppingService* shoppingService =
       commerce::ShoppingServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
+  if (!shoppingService) {
+    return;
+  }
   if (IsUserEligibleParcelTrackingOptInPrompt(
           self.browser->GetBrowserState()->GetPrefs(), shoppingService)) {
     [self showParcelTrackingOptInPromptWithParcels:parcels];
