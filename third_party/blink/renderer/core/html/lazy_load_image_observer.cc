@@ -31,29 +31,6 @@ namespace blink {
 
 namespace {
 
-int GetLazyImageLoadingViewportDistanceThresholdPx(const Document& document) {
-  const Settings* settings = document.GetSettings();
-  if (!settings)
-    return 0;
-
-  switch (GetNetworkStateNotifier().EffectiveType()) {
-    case WebEffectiveConnectionType::kTypeUnknown:
-      return settings->GetLazyImageLoadingDistanceThresholdPxUnknown();
-    case WebEffectiveConnectionType::kTypeOffline:
-      return settings->GetLazyImageLoadingDistanceThresholdPxOffline();
-    case WebEffectiveConnectionType::kTypeSlow2G:
-      return settings->GetLazyImageLoadingDistanceThresholdPxSlow2G();
-    case WebEffectiveConnectionType::kType2G:
-      return settings->GetLazyImageLoadingDistanceThresholdPx2G();
-    case WebEffectiveConnectionType::kType3G:
-      return settings->GetLazyImageLoadingDistanceThresholdPx3G();
-    case WebEffectiveConnectionType::kType4G:
-      return settings->GetLazyImageLoadingDistanceThresholdPx4G();
-  }
-  NOTREACHED();
-  return 0;
-}
-
 // Returns if the element or its ancestors are invisible, due to their style or
 // attribute or due to themselves not connected to the main document tree.
 bool IsElementInInvisibleSubTree(const Element& element) {
@@ -147,7 +124,7 @@ bool IsDescendantOrSameDocument(Document& subject, Document& root) {
 }  // namespace
 
 LazyLoadImageObserver::LazyLoadImageObserver(const Document& root_document) {
-  use_viewport_distance_threshold_ =
+  use_margin_ =
       !RuntimeEnabledFeatures::DelayOutOfViewportLazyImagesEnabled() ||
       root_document.LoadEventFinished();
 }
@@ -330,11 +307,11 @@ void LazyLoadImageObserver::DocumentOnLoadFinished(Document* root_document) {
   if (!RuntimeEnabledFeatures::DelayOutOfViewportLazyImagesEnabled()) {
     return;
   }
-  if (use_viewport_distance_threshold_) {
+  if (use_margin_) {
     return;
   }
 
-  use_viewport_distance_threshold_ = true;
+  use_margin_ = true;
 
   if (lazy_load_intersection_observer_) {
     // Intersection observer doesn't support dynamic margin changes so we just
@@ -345,15 +322,15 @@ void LazyLoadImageObserver::DocumentOnLoadFinished(Document* root_document) {
 
 void LazyLoadImageObserver::CreateLazyLoadIntersectionObserver(
     Document* root_document) {
-  int viewport_threshold =
-      use_viewport_distance_threshold_
-          ? GetLazyImageLoadingViewportDistanceThresholdPx(*root_document)
-          : 0;
+  int margin = GetLazyLoadingImageMarginPx(*root_document);
   IntersectionObserver* new_observer = IntersectionObserver::Create(
-      {Length::Fixed(viewport_threshold)}, {std::numeric_limits<float>::min()},
-      root_document,
+      /* (root) margin */ {Length::Fixed(margin)},
+      /* thresholds */ {std::numeric_limits<float>::min()},
+      /* document */ root_document,
+      /* callback */
       WTF::BindRepeating(&LazyLoadImageObserver::LoadIfNearViewport,
                          WrapWeakPersistent(this)),
+      /* ukm_metric_id */
       LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
 
   if (lazy_load_intersection_observer_) {
@@ -370,6 +347,36 @@ void LazyLoadImageObserver::CreateLazyLoadIntersectionObserver(
 void LazyLoadImageObserver::Trace(Visitor* visitor) const {
   visitor->Trace(lazy_load_intersection_observer_);
   visitor->Trace(visibility_metrics_observer_);
+}
+
+int LazyLoadImageObserver::GetLazyLoadingImageMarginPx(
+    const Document& document) {
+  if (!use_margin_) {
+    return 0;
+  }
+
+  const Settings* settings = document.GetSettings();
+  if (!settings) {
+    return 0;
+  }
+
+  switch (GetNetworkStateNotifier().EffectiveType()) {
+    case WebEffectiveConnectionType::kTypeUnknown:
+      return settings->GetLazyLoadingImageMarginPxUnknown();
+    case WebEffectiveConnectionType::kTypeOffline:
+      return settings->GetLazyLoadingImageMarginPxOffline();
+    case WebEffectiveConnectionType::kTypeSlow2G:
+      return settings->GetLazyLoadingImageMarginPxSlow2G();
+    case WebEffectiveConnectionType::kType2G:
+      return settings->GetLazyLoadingImageMarginPx2G();
+    case WebEffectiveConnectionType::kType3G:
+      return settings->GetLazyLoadingImageMarginPx3G();
+    case WebEffectiveConnectionType::kType4G:
+      return settings->GetLazyLoadingImageMarginPx4G();
+    default:
+      NOTREACHED();
+      return 0;
+  }
 }
 
 }  // namespace blink

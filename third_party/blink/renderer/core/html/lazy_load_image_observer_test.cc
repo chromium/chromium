@@ -178,19 +178,19 @@ class LazyLoadImagesParamsTest
     Settings& settings = WebView().GetPage()->GetSettings();
 
     // These should match the values that would be returned by
-    // GetLoadingDistanceThreshold().
-    settings.SetLazyImageLoadingDistanceThresholdPxUnknown(200);
-    settings.SetLazyImageLoadingDistanceThresholdPxOffline(300);
-    settings.SetLazyImageLoadingDistanceThresholdPxSlow2G(400);
-    settings.SetLazyImageLoadingDistanceThresholdPx2G(500);
-    settings.SetLazyImageLoadingDistanceThresholdPx3G(600);
-    settings.SetLazyImageLoadingDistanceThresholdPx4G(700);
+    // GetMargin().
+    settings.SetLazyLoadingImageMarginPxUnknown(200);
+    settings.SetLazyLoadingImageMarginPxOffline(300);
+    settings.SetLazyLoadingImageMarginPxSlow2G(400);
+    settings.SetLazyLoadingImageMarginPx2G(500);
+    settings.SetLazyLoadingImageMarginPx3G(600);
+    settings.SetLazyLoadingImageMarginPx4G(700);
   }
 
-  // When DelayOutOfViewportLazyImages is enabled, this returns the threshold
-  // that will be used after the document has finished loading, as a threshold
+  // When DelayOutOfViewportLazyImages is enabled, this returns the margin
+  // that will be used after the document has finished loading, as a margin
   // of zero is used during loading.
-  int GetLoadingDistanceThreshold() const {
+  int GetMargin() const {
     static constexpr int kDistanceThresholdByEffectiveConnectionType[] = {
         200, 300, 400, 500, 600, 700};
     return kDistanceThresholdByEffectiveConnectionType[static_cast<int>(
@@ -231,7 +231,7 @@ TEST_P(LazyLoadImagesParamsTest, NearViewport) {
         <img src='https://example.com/unset.png'
              onload='console.log("unset onload");' />
         </body>)HTML",
-      kViewportHeight + GetLoadingDistanceThreshold() - 100));
+      kViewportHeight + GetMargin() - 100));
 
   css_resource.Complete("img { width: 50px; height: 50px; }");
   test::RunPendingTasks();
@@ -316,7 +316,7 @@ TEST_P(LazyLoadImagesParamsTest, FarFromViewport) {
         <img src='https://example.com/unset.png'
              onload='console.log("unset onload");' />
         </body>)HTML",
-      kViewportHeight + GetLoadingDistanceThreshold() + 100));
+      kViewportHeight + GetMargin() + 100));
 
   css_resource.Complete("img { width: 50px; height: 50px; }");
   test::RunPendingTasks();
@@ -399,8 +399,7 @@ class LazyLoadImagesTest : public SimTest {
         gfx::Size(kViewportWidth, kViewportHeight));
 
     Settings& settings = WebView().GetPage()->GetSettings();
-    settings.SetLazyImageLoadingDistanceThresholdPx4G(
-        kLoadingDistanceThreshold);
+    settings.SetLazyLoadingImageMarginPx4G(kLoadingDistanceThreshold);
     settings.SetLazyFrameLoadingDistanceThresholdPx4G(
         kLoadingDistanceThreshold);
   }
@@ -1143,7 +1142,7 @@ class DelayOutOfViewportLazyImagesTest : public SimTest {
         gfx::Size(kViewportWidth, kViewportHeight));
 
     Settings& settings = WebView().GetPage()->GetSettings();
-    settings.SetLazyImageLoadingDistanceThresholdPx4G(kDistanceThresholdPx);
+    settings.SetLazyLoadingImageMarginPx4G(kDistanceThresholdPx);
   }
 
  private:

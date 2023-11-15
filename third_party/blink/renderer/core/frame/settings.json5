@@ -977,35 +977,35 @@
     },
 
     //
-    // Lazy image loading distance-from-viewport thresholds for different effective connection types.
+    // Lazy loading image margins for different effective connection types.
     //
     {
-      name: "lazyImageLoadingDistanceThresholdPxUnknown",
+      name: "lazyLoadingImageMarginPxUnknown",
       initial: 3000,
       type: "int",
     },
     {
-      name: "lazyImageLoadingDistanceThresholdPxOffline",
+      name: "lazyLoadingImageMarginPxOffline",
       initial: 8000,
       type: "int",
     },
     {
-      name: "lazyImageLoadingDistanceThresholdPxSlow2G",
+      name: "lazyLoadingImageMarginPxSlow2G",
       initial: 8000,
       type: "int",
     },
     {
-      name: "lazyImageLoadingDistanceThresholdPx2G",
+      name: "lazyLoadingImageMarginPx2G",
       initial: 6000,
       type: "int",
     },
     {
-      name: "lazyImageLoadingDistanceThresholdPx3G",
+      name: "lazyLoadingImageMarginPx3G",
       initial: 2500,
       type: "int",
     },
     {
-      name: "lazyImageLoadingDistanceThresholdPx4G",
+      name: "lazyLoadingImageMarginPx4G",
       initial: 1250,
       type: "int",
     },
