@@ -19,6 +19,34 @@ std::u16string clean(std::u16string text) {
 
 }  // namespace
 
+ACMatchClassifications ClassifyAllMatchesInString(
+    const std::u16string& find_text,
+    const std::u16string& text,
+    const bool text_is_search_query,
+    const ACMatchClassifications& original_class) {
+  DCHECK(!find_text.empty());
+
+  if (text.empty()) {
+    return original_class;
+  }
+
+  TermMatches term_matches = FindTermMatches(find_text, text);
+
+  ACMatchClassifications classifications;
+  if (text_is_search_query) {
+    classifications = ClassifyTermMatches(term_matches, text.size(),
+                                          ACMatchClassification::NONE,
+                                          ACMatchClassification::MATCH);
+  } else {
+    classifications = ClassifyTermMatches(term_matches, text.size(),
+                                          ACMatchClassification::MATCH,
+                                          ACMatchClassification::NONE);
+  }
+
+  return AutocompleteMatch::MergeClassifications(original_class,
+                                                 classifications);
+}
+
 TermMatches FindTermMatches(std::u16string find_text,
                             std::u16string text,
                             bool allow_prefix_matching,

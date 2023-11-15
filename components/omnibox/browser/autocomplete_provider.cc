@@ -106,34 +106,6 @@ const char* AutocompleteProvider::GetName() const {
   return TypeToString(type_);
 }
 
-// static
-ACMatchClassifications AutocompleteProvider::ClassifyAllMatchesInString(
-    const std::u16string& find_text,
-    const std::u16string& text,
-    const bool text_is_search_query,
-    const ACMatchClassifications& original_class) {
-  // TODO (manukh) Move this function to autocomplete_match_classification
-  DCHECK(!find_text.empty());
-
-  if (text.empty())
-    return original_class;
-
-  TermMatches term_matches = FindTermMatches(find_text, text);
-
-  ACMatchClassifications classifications;
-  if (text_is_search_query) {
-    classifications = ClassifyTermMatches(term_matches, text.size(),
-                                          ACMatchClassification::NONE,
-                                          ACMatchClassification::MATCH);
-  } else
-    classifications = ClassifyTermMatches(term_matches, text.size(),
-                                          ACMatchClassification::MATCH,
-                                          ACMatchClassification::NONE);
-
-  return AutocompleteMatch::MergeClassifications(original_class,
-                                                 classifications);
-}
-
 metrics::OmniboxEventProto_ProviderType
 AutocompleteProvider::AsOmniboxEventProviderType() const {
   switch (type_) {

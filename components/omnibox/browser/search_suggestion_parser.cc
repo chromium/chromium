@@ -311,12 +311,6 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
                         ? base::UTF8ToUTF16(entity_info_.name())
                         : match_contents;
   match_contents_ = base::CollapseWhitespace(match_contents_, false);
-  // TODO(manukh|crbug.com/1421485) Remove this DCHECK 9/14/23. It's already
-  //   checked in `AutocompleteResult::AppendMatches()`, but duplicated here to
-  //   make it easier to debug if it triggers.
-  DCHECK_EQ(AutocompleteMatch::SanitizeString(match_contents_), match_contents_)
-      << "match type: " << type_ << ", from entity info: << "
-      << !entity_info_.name().empty();
   DCHECK(!match_contents_.empty());
   ClassifyMatchContents(true, input_text);
 }
@@ -367,8 +361,8 @@ void SearchSuggestionParser::SuggestResult::ClassifyMatchContents(
   }
 
   // Note we discard our existing match_contents_class_ with this call.
-  match_contents_class_ = AutocompleteProvider::ClassifyAllMatchesInString(
-      input_text, match_contents_, true);
+  match_contents_class_ =
+      ClassifyAllMatchesInString(input_text, match_contents_, true);
 }
 
 void SearchSuggestionParser::SuggestResult::SetAnswer(

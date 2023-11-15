@@ -28,6 +28,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
@@ -323,8 +324,7 @@ ClassifyTest::ClassifyTest(const std::u16string& text,
 ClassifyTest::~ClassifyTest() = default;
 
 ACMatchClassifications ClassifyTest::RunTest(const std::u16string& find_text) {
-  return AutocompleteProvider::ClassifyAllMatchesInString(
-      find_text, text_, text_is_query_, matches_);
+  return ClassifyAllMatchesInString(find_text, text_, text_is_query_, matches_);
 }
 
 class AutocompleteProviderTest : public testing::Test {
