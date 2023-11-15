@@ -45,11 +45,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // reporting for now. This might need to be changed in the future.
   registry->RegisterTimeDeltaPref(kCloudReportingUploadFrequency,
                                   kDefaultReportFrequency);
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   registry->RegisterBooleanPref(prefs::kCloudExtensionRequestEnabled, false);
   registry->RegisterDictionaryPref(prefs::kCloudExtensionRequestIds);
   registry->RegisterDictionaryPref(kCloudExtensionRequestUploadedIds);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   registry->RegisterListPref(kCloudLegacyTechReportAllowlist);
 }

@@ -3218,7 +3218,7 @@ inline constexpr char kCryptAuthInstanceIdToken[] =
 inline constexpr char kRecoveryComponentNeedsElevation[] =
     "recovery_component.needs_elevation";
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Boolean that indicates whether Chrome enterprise extension request is enabled
 // or not.
 inline constexpr char kCloudExtensionRequestEnabled[] =
@@ -3229,9 +3229,7 @@ inline constexpr char kCloudExtensionRequestEnabled[] =
 // denied.
 inline constexpr char kCloudExtensionRequestIds[] =
     "enterprise_reporting.extension_request.ids";
-#endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Policy that indicates how to handle animated images.
 inline constexpr char kAnimationPolicy[] = "settings.a11y.animation_policy";
 
