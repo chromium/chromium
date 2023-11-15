@@ -432,6 +432,7 @@
   E_CPONLY(kColorSidePanelDivider) \
   E_CPONLY(kColorSidePanelEditFooterBorder) \
   E_CPONLY(kColorSidePanelComboboxEntryIcon) \
+  E_CPONLY(kColorSidePanelComboboxEntryTitle) \
   E_CPONLY(kColorSidePanelEntryIcon) \
   E_CPONLY(kColorSidePanelEntryDropdownIcon) \
   E_CPONLY(kColorSidePanelEntryTitle) \

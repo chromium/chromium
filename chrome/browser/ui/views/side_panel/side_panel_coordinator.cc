@@ -925,7 +925,7 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
   combobox->SetBorderColorId(ui::kColorSidePanelComboboxBorder);
   combobox->SetBackgroundColorId(ui::kColorSidePanelComboboxBackground);
   if (features::IsChromeRefresh2023()) {
-    combobox->SetForegroundColorId(kColorSidePanelEntryTitle);
+    combobox->SetForegroundColorId(kColorSidePanelComboboxEntryTitle);
     combobox->SetForegroundIconColorId(kColorSidePanelComboboxEntryIcon);
     combobox->SetForegroundTextStyle(views::style::STYLE_HEADLINE_5);
   }

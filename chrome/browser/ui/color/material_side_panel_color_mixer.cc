@@ -16,6 +16,7 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
   ui::ColorMixer& mixer = provider->AddMixer();
   mixer[kColorSidePanelContentBackground] = {ui::kColorSysBaseContainer};
   mixer[kColorSidePanelComboboxEntryIcon] = {ui::kColorSysPrimary};
+  mixer[kColorSidePanelComboboxEntryTitle] = {ui::kColorSysOnSurface};
   mixer[kColorSidePanelEntryDropdownIcon] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorSidePanelContentAreaSeparator] = {ui::kColorSysBaseContainer};
 
