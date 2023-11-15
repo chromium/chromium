@@ -86,8 +86,7 @@ class ASH_EXPORT PersistentWindowController
 
   // display::DisplayManagerObserver:
   void OnWillProcessDisplayChanges() override;
-  void OnDidProcessDisplayChanges(
-      const DisplayConfigurationChange& configuration_change) override;
+  void OnDidProcessDisplayChanges() override;
 
   // SessionObserver:
   void OnFirstSessionStarted() override;

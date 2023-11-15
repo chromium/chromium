@@ -573,8 +573,7 @@ void WaylandRemoteShell::OnWillProcessDisplayChanges() {
   in_display_update_ = true;
 }
 
-void WaylandRemoteShell::OnDidProcessDisplayChanges(
-    const DisplayConfigurationChange& configuration_change) {
+void WaylandRemoteShell::OnDidProcessDisplayChanges() {
   in_display_update_ = false;
 }
 

@@ -155,8 +155,7 @@ class ASH_EXPORT ScreenOrientationController
 
   // display::DisplayManagerObserver:
   void OnWillProcessDisplayChanges() override;
-  void OnDidProcessDisplayChanges(
-      const DisplayConfigurationChange& configuration_change) override;
+  void OnDidProcessDisplayChanges() override;
 
  private:
   friend class ScreenOrientationControllerTestApi;

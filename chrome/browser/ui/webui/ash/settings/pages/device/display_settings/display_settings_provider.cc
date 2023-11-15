@@ -57,8 +57,7 @@ void DisplaySettingsProvider::ObserveDisplayConfiguration(
   display_configuration_observers_.Add(std::move(observer));
 }
 
-void DisplaySettingsProvider::OnDidProcessDisplayChanges(
-    const DisplayConfigurationChange& configuration_change) {
+void DisplaySettingsProvider::OnDidProcessDisplayChanges() {
   for (auto& observer : display_configuration_observers_) {
     observer->OnDisplayConfigurationChanged();
   }

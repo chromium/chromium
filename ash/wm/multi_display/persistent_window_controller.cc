@@ -199,8 +199,7 @@ void PersistentWindowController::OnWillProcessDisplayChanges() {
   }
 }
 
-void PersistentWindowController::OnDidProcessDisplayChanges(
-    const DisplayConfigurationChange& configuration_change) {
+void PersistentWindowController::OnDidProcessDisplayChanges() {
   if (display_added_restore_callback_) {
     std::move(display_added_restore_callback_).Run();
   }
