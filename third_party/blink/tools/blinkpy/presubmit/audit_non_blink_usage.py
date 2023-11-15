@@ -40,6 +40,9 @@ _CONFIG = [
             'gfx::ICCProfile',
             'gfx::RadToDeg',
 
+            # For fast cos/sin functions
+            'gfx::SinCosDegrees',
+
             # absl
             'absl::MakeInt128',
             'absl::MakeUint128',

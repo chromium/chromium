@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/gfx/geometry/sin_cos_degrees.h"
 
 namespace blink {
 
@@ -201,6 +202,32 @@ static bool HasDoubleValue(CSSPrimitiveValue::UnitType type) {
 }
 
 namespace {
+
+double TanDegrees(double degrees) {
+  // Use table values for tan() if possible.
+  // We pick a pretty arbitrary limit that should be safe.
+  if (degrees > -90000000.0 && degrees < 90000000.0) {
+    // Make sure 0, 45, 90, 135, 180, 225 and 270 degrees get exact results.
+    double n45degrees = degrees / 45.0;
+    int octant = static_cast<int>(n45degrees);
+    if (octant == n45degrees) {
+      constexpr double kTanN45[] = {
+          /* 0deg */ 0.0,
+          /* 45deg */ 1.0,
+          /* 90deg */ std::numeric_limits<double>::infinity(),
+          /* 135deg */ -1.0,
+          /* 180deg */ 0.0,
+          /* 225deg */ 1.0,
+          /* 270deg */ -std::numeric_limits<double>::infinity(),
+          /* 315deg */ -1.0,
+      };
+      return kTanN45[octant & 7];
+    }
+  }
+  // Slow path for non-table cases.
+  double x = Deg2rad(degrees);
+  return std::tan(x);
+}
 
 const PixelsAndPercent CreateClampedSamePixelsAndPercent(float value) {
   return PixelsAndPercent(CSSValueClampingUtils::ClampLength(value),
@@ -1041,11 +1068,11 @@ static double ResolveAtan2(const CSSMathExpressionNode* y_node,
 }
 
 // Helper function for parsing trigonometric functions' parameter
-static double ValueAsRadian(const CSSMathExpressionNode* node, bool& error) {
+static double ValueAsDegrees(const CSSMathExpressionNode* node, bool& error) {
   if (node->Category() == kCalcAngle) {
-    return Deg2rad(node->ComputeValueInCanonicalUnit().value());
+    return node->ComputeValueInCanonicalUnit().value();
   }
-  return ValueAsNumber(node, error);
+  return Rad2deg(ValueAsNumber(node, error));
 }
 
 CSSMathExpressionNode*
@@ -1059,32 +1086,19 @@ CSSMathExpressionOperation::CreateTrigonometricFunctionSimplified(
     case CSSValueID::kSin: {
       DCHECK_EQ(operands.size(), 1u);
       unit_type = CSSPrimitiveValue::UnitType::kNumber;
-      value = std::sin(ValueAsRadian(operands[0], error));
+      value = gfx::SinCosDegrees(ValueAsDegrees(operands[0], error)).sin;
       break;
     }
     case CSSValueID::kCos: {
       DCHECK_EQ(operands.size(), 1u);
       unit_type = CSSPrimitiveValue::UnitType::kNumber;
-      value = std::cos(ValueAsRadian(operands[0], error));
+      value = gfx::SinCosDegrees(ValueAsDegrees(operands[0], error)).cos;
       break;
     }
     case CSSValueID::kTan: {
       DCHECK_EQ(operands.size(), 1u);
       unit_type = CSSPrimitiveValue::UnitType::kNumber;
-      // Conditionally resolve inf or -inf because std::tan
-      // does not produce degenerated value.
-      const double radian_value = ValueAsRadian(operands[0], error);
-      double x = std::fmod(radian_value, (M_PI * 2));
-      // std::fmod can return negative values.
-      x = x < 0 ? M_PI * 2 + x : x;
-      DCHECK(x >= 0 && x <= M_PI * 2 || std::isnan(x));
-      if (x == M_PI / 2) {
-        value = std::numeric_limits<double>::infinity();
-      } else if (x == 3 * M_PI / 2) {
-        value = -std::numeric_limits<double>::infinity();
-      } else {
-        value = std::tan(radian_value);
-      }
+      value = TanDegrees(ValueAsDegrees(operands[0], error));
       break;
     }
     case CSSValueID::kAsin: {
