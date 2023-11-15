@@ -384,7 +384,7 @@ void PrintViewManagerBase::OnPrintSettingsDone(
   // dialog is cancelled.
   if (printer_query->last_status() == mojom::ResultCode::kCanceled) {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-    if (features::ShouldPrintJobOop() && query_with_ui_client_id_.has_value()) {
+    if (features::ShouldPrintJobOop()) {
       UnregisterSystemPrintClient();
     }
 #endif
@@ -400,6 +400,11 @@ void PrintViewManagerBase::OnPrintSettingsDone(
 
   if (!printer_query->cookie() || !printer_query->settings().dpi()) {
     PRINTER_LOG(ERROR) << "Unable to update print settings";
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    if (printing::features::kEnableOopPrintDriversJobPrint.Get()) {
+      UnregisterSystemPrintClient();
+    }
+#endif
     std::move(callback).Run(base::Value("Update settings failed"));
     return;
   }
