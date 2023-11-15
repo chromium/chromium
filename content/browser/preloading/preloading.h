@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_PRELOADING_PRELOADING_H_
 
 #include "content/public/browser/preloading.h"
-#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
+#include "content/public/browser/preloading_trigger_type.h"
 
 namespace content {
 
@@ -55,8 +55,8 @@ static constexpr PreloadingPredictor kSpeculationRulesFromAutoSpeculationRules(
 
 CONTENT_EXPORT base::StringPiece PreloadingTypeToString(PreloadingType type);
 
-PreloadingPredictor GetPredictorForSpeculationRules(
-    blink::mojom::SpeculationInjectionType);
+PreloadingPredictor GetPredictorForPreloadingTriggerType(
+    PreloadingTriggerType trigger_type);
 
 }  // namespace content
 

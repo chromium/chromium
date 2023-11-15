@@ -104,7 +104,7 @@ class NoVarySearchHelperTester final {
                          blink::mojom::SpeculationEagerness::kEager),
             blink::mojom::Referrer(),
             /*no_vary_search_expected=*/absl::nullopt,
-            blink::mojom::SpeculationInjectionType::kNone,
+
             /*prefetch_document_manager=*/nullptr);
 
     MakeServableStreamingURLLoaderForTest(prefetch_container.get(),

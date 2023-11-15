@@ -240,6 +240,11 @@ bool PrerendererImpl::MaybePrerender(
       /*prerender_navigation_handle_callback=*/absl::nullopt,
       rfhi.GetDevToolsNavigationToken());
 
+  PreloadingTriggerType trigger_type =
+      PreloadingTriggerTypeFromSpeculationInjectionType(
+          candidate->injection_type);
+  PreloadingPredictor predictor =
+      GetPredictorForPreloadingTriggerType(trigger_type);
   int prerender_host_id = [&] {
     // TODO(crbug.com/1354049): Handle the case where multiple speculation rules
     // have the same URL but its `target_browsing_context_name_hint` is
@@ -251,9 +256,8 @@ bool PrerendererImpl::MaybePrerender(
                 blink::features::kPrerender2InNewTab)) {
           // For the prerender-in-new-tab, PreloadingAttempt will be managed by
           // a prerender WebContents to be created later.
-          return registry_->CreateAndStartHostForNewTab(
-              attributes,
-              GetPredictorForSpeculationRules(candidate->injection_type));
+          return registry_->CreateAndStartHostForNewTab(attributes,
+                                                        std::move(predictor));
         }
         // Handle the rule as kNoHint if the prerender-in-new-tab is not
         // enabled.
@@ -269,8 +273,8 @@ bool PrerendererImpl::MaybePrerender(
             PreloadingData::GetSameURLMatcher(candidate->url);
         auto* preloading_attempt = static_cast<PreloadingAttemptImpl*>(
             preloading_data->AddPreloadingAttempt(
-                GetPredictorForSpeculationRules(candidate->injection_type),
-                PreloadingType::kPrerender, std::move(same_url_matcher),
+                std::move(predictor), PreloadingType::kPrerender,
+                std::move(same_url_matcher),
                 web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
         preloading_attempt->SetSpeculationEagerness(candidate->eagerness);
         return registry_->CreateAndStartHost(attributes, preloading_attempt);

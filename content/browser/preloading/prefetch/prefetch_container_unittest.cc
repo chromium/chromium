@@ -150,7 +150,6 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/absl::nullopt,
-      blink::mojom::SpeculationInjectionType::kNone,
       /*prefetch_document_manager=*/nullptr);
 
   EXPECT_EQ(prefetch_container.GetReferringRenderFrameHostId(),
@@ -177,7 +176,7 @@ TEST_P(PrefetchContainerTest, PrefetchStatus) {
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/absl::nullopt,
-      blink::mojom::SpeculationInjectionType::kNone,
+
       /*prefetch_document_manager=*/nullptr);
 
   EXPECT_FALSE(prefetch_container.HasPrefetchStatus());
@@ -198,7 +197,7 @@ TEST_P(PrefetchContainerTest, IsDecoy) {
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/absl::nullopt,
-      blink::mojom::SpeculationInjectionType::kNone,
+
       /*prefetch_document_manager=*/nullptr);
 
   EXPECT_FALSE(prefetch_container.IsDecoy());
@@ -216,7 +215,7 @@ TEST_P(PrefetchContainerTest, Servable) {
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/absl::nullopt,
-      blink::mojom::SpeculationInjectionType::kNone,
+
       /*prefetch_document_manager=*/nullptr);
 
   MakeServableStreamingURLLoaderForTest(
@@ -243,7 +242,7 @@ TEST_P(PrefetchContainerTest, CookieListener) {
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/absl::nullopt,
-      blink::mojom::SpeculationInjectionType::kNone,
+
       /*prefetch_document_manager=*/nullptr);
   prefetch_container.MakeResourceRequest({});
   prefetch_container.RegisterCookieListener(cookie_manager());
@@ -320,7 +319,7 @@ TEST_P(PrefetchContainerTest, CookieCopy) {
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/absl::nullopt,
-      blink::mojom::SpeculationInjectionType::kNone,
+
       /*prefetch_document_manager=*/nullptr);
   prefetch_container.RegisterCookieListener(cookie_manager());
 
@@ -383,7 +382,7 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/absl::nullopt,
-      blink::mojom::SpeculationInjectionType::kNone,
+
       /*prefetch_document_manager=*/nullptr);
   prefetch_container.MakeResourceRequest({});
   prefetch_container.RegisterCookieListener(cookie_manager());
@@ -515,7 +514,7 @@ TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
           /*no_vary_search_expected=*/absl::nullopt,
-          blink::mojom::SpeculationInjectionType::kNone,
+
           /*prefetch_document_manager=*/nullptr);
 
   network::URLLoaderCompletionStatus completion_status;
@@ -638,7 +637,7 @@ TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm_NothingSet) {
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
           /*no_vary_search_expected=*/absl::nullopt,
-          blink::mojom::SpeculationInjectionType::kNone,
+
           /*prefetch_document_manager=*/nullptr);
   prefetch_container.reset();
 
@@ -712,7 +711,7 @@ TEST_P(PrefetchContainerTest, EligibilityCheck) {
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/absl::nullopt,
-      blink::mojom::SpeculationInjectionType::kNone,
+
       prefetch_document_manager->GetWeakPtr());
   prefetch_container.MakeResourceRequest({});
 
@@ -753,7 +752,7 @@ TEST_P(PrefetchContainerTest, IneligibleRedirect) {
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/absl::nullopt,
-      blink::mojom::SpeculationInjectionType::kNone,
+
       prefetch_document_manager->GetWeakPtr());
   prefetch_container.MakeResourceRequest({});
 
@@ -804,7 +803,7 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
                      /*use_prefetch_proxy=*/true, test_case.eagerness),
         blink::mojom::Referrer(),
         /*no_vary_search_expected=*/absl::nullopt,
-        blink::mojom::SpeculationInjectionType::kNone,
+
         /*prefetch_document_manager=*/nullptr);
 
     prefetch_container.OnGetPrefetchToServe(test_case.block_until_head);
@@ -863,7 +862,7 @@ TEST_P(PrefetchContainerTest, RecordRedirectChainSize) {
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/absl::nullopt,
-      blink::mojom::SpeculationInjectionType::kNone,
+
       /*prefetch_document_manager=*/nullptr);
   prefetch_container.MakeResourceRequest({});
 
@@ -887,7 +886,7 @@ TEST_P(PrefetchContainerTest, IsIsolatedNetworkRequired) {
                    /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       referrer, /*no_vary_search_expected=*/absl::nullopt,
-      blink::mojom::SpeculationInjectionType::kNone,
+
       /*prefetch_document_manager=*/nullptr);
   prefetch_container.MakeResourceRequest({});
 
@@ -936,7 +935,7 @@ TEST_P(PrefetchContainerTest, MultipleStreamingURLLoaders) {
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/absl::nullopt,
-      blink::mojom::SpeculationInjectionType::kNone,
+
       /*prefetch_document_manager=*/nullptr);
   prefetch_container->MakeResourceRequest({});
 
@@ -1032,7 +1031,7 @@ TEST_P(PrefetchContainerTest, CancelAndClearStreamingLoader) {
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/absl::nullopt,
-      blink::mojom::SpeculationInjectionType::kNone,
+
       /*prefetch_document_manager=*/nullptr);
   prefetch_container.MakeResourceRequest({});
 
@@ -1164,7 +1163,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/absl::nullopt,
-      blink::mojom::SpeculationInjectionType::kNone,
+
       /*prefetch_document_manager=*/nullptr);
 
   auto pending_request =

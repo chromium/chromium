@@ -370,7 +370,6 @@ PrefetchContainer::PrefetchContainer(
     const PrefetchType& prefetch_type,
     const blink::mojom::Referrer& referrer,
     absl::optional<net::HttpNoVarySearchData> no_vary_search_hint,
-    blink::mojom::SpeculationInjectionType injection_type,
     base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
     PreloadingURLMatchCallback matcher)
     : referring_render_frame_host_id_(referring_render_frame_host_id),
@@ -395,7 +394,7 @@ PrefetchContainer::PrefetchContainer(
     }
     auto* attempt = static_cast<PreloadingAttemptImpl*>(
         preloading_data->AddPreloadingAttempt(
-            GetPredictorForSpeculationRules(injection_type),
+            GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type()),
             PreloadingType::kPrefetch, std::move(matcher),
             web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
     attempt->SetSpeculationEagerness(prefetch_type.GetEagerness());

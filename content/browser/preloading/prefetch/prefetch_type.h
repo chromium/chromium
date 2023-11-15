@@ -32,6 +32,8 @@ class CONTENT_EXPORT PrefetchType {
   bool operator==(const PrefetchType& rhs) const = default;
   bool operator!=(const PrefetchType& rhs) const = default;
 
+  PreloadingTriggerType trigger_type() const { return trigger_type_; }
+
   // Whether this prefetch should bypass the proxy even though it would need to
   // be proxied for anonymity. For use in test automation only.
   bool IsProxyBypassedForTesting() const { return proxy_bypassed_for_testing_; }

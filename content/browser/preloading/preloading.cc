@@ -5,6 +5,8 @@
 #include "content/browser/preloading/preloading.h"
 
 #include "base/notreached.h"
+#include "content/public/browser/preloading.h"
+#include "content/public/browser/preloading_trigger_type.h"
 
 namespace content {
 
@@ -26,18 +28,24 @@ base::StringPiece PreloadingTypeToString(PreloadingType type) {
   NOTREACHED_NORETURN();
 }
 
-PreloadingPredictor GetPredictorForSpeculationRules(
-    blink::mojom::SpeculationInjectionType type) {
+PreloadingPredictor GetPredictorForPreloadingTriggerType(
+    PreloadingTriggerType type) {
   switch (type) {
-    case blink::mojom::SpeculationInjectionType::kNone:
-      [[fallthrough]];
-    case blink::mojom::SpeculationInjectionType::kMainWorldScript:
+    case PreloadingTriggerType::kSpeculationRule:
       return content_preloading_predictor::kSpeculationRules;
-    case blink::mojom::SpeculationInjectionType::kIsolatedWorldScript:
+    case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
       return content_preloading_predictor::kSpeculationRulesFromIsolatedWorld;
-    case blink::mojom::SpeculationInjectionType::kAutoSpeculationRules:
+    case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
       return content_preloading_predictor::
           kSpeculationRulesFromAutoSpeculationRules;
+    case PreloadingTriggerType::kEmbedder:
+      // GetPredictorForPreloadingTriggerType is currently called for
+      // speculation rules code-path only, thus NOTREACHED().
+      // However there is nothing fundamentally wrong with calling it
+      // for embedder trigger code-path (while you might want to be specific
+      // about the `PreloadingPredictor` more than just "embedder").
+      // Revisit if needed.
+      NOTREACHED();
   }
   NOTREACHED_NORETURN();
 }
