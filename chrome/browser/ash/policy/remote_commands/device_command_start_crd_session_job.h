@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_START_CRD_SESSION_JOB_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
@@ -15,19 +17,26 @@
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/start_crd_session_job_delegate.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
+
+class CrdOAuthTokenFetcher;
 
 // Remote command that would start Chrome Remote Desktop host and return auth
 // code. This command is usable only for devices running Kiosk sessions, for
 // Affiliated Users and for Managed Guest Sessions.
 class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
  public:
-  using OAuthTokenCallback = base::OnceCallback<void(const std::string&)>;
   using Delegate = StartCrdSessionJobDelegate;
 
   explicit DeviceCommandStartCrdSessionJob(Delegate& delegate);
+  // Constructor used in unit tests. By using this constructor we avoid the need
+  // for a `DeviceOAuth2TokenService` to exist.
+  // `oauth_token` will be used as the fetched OAuth token (or the fetch will
+  // fail if no value is provided).
+  DeviceCommandStartCrdSessionJob(Delegate& delegate,
+                                  std::string_view robot_account_id,
+                                  std::optional<std::string> oauth_token);
   ~DeviceCommandStartCrdSessionJob() override;
 
   DeviceCommandStartCrdSessionJob(const DeviceCommandStartCrdSessionJob&) =
@@ -35,25 +44,19 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   DeviceCommandStartCrdSessionJob& operator=(
       const DeviceCommandStartCrdSessionJob&) = delete;
 
-  // RemoteCommandJob:
+  // `RemoteCommandJob`:
   enterprise_management::RemoteCommand_Type GetType() const override;
-
-  // Set a Fake OAuth token that will be used once the next time we need to
-  // fetch an oauth token.
-  void SetOAuthTokenForTest(const std::string& token);
-
- protected:
-  // RemoteCommandJob:
   bool ParseCommandPayload(const std::string& command_payload) override;
   void RunImpl(CallbackWithResult result_callback) override;
   void TerminateImpl() override;
 
  private:
-  class OAuthTokenFetcher;
+  using OAuthTokenCallback =
+      base::OnceCallback<void(std::optional<std::string>)>;
 
   void CheckManagedNetworkASync(base::OnceClosure on_success);
-  void FetchOAuthTokenASync(OAuthTokenCallback on_success);
-  void StartCrdHostAndGetCode(const std::string& token);
+  void FetchOAuthTokenASync(OAuthTokenCallback done_callback);
+  void StartCrdHostAndGetCode(std::optional<std::string> oauth_token);
   void FinishWithSuccess(const std::string& access_code);
   // Finishes command with error code and optional message.
   void FinishWithError(ExtendedStartCrdSessionResultCode result_code,
@@ -64,7 +67,6 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   CrdSessionType GetCrdSessionType() const;
   bool IsDeviceIdle() const;
 
-  std::string GetRobotAccountUserName() const;
   bool ShouldShowConfirmationDialog() const;
   bool ShouldTerminateUponInput() const;
   bool ShouldAllowReconnections() const;
@@ -74,7 +76,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
 
   Delegate::ErrorCallback GetErrorCallback();
 
-  std::unique_ptr<OAuthTokenFetcher> oauth_token_fetcher_;
+  std::unique_ptr<CrdOAuthTokenFetcher> oauth_token_fetcher_;
 
   // The callback that will be called when the access code was successfully
   // obtained or when this command failed.
@@ -93,16 +95,18 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   bool curtain_local_user_session_ = false;
 
   // The email address of the admin user who issued the remote command.
-  absl::optional<std::string> admin_email_;
+  std::optional<std::string> admin_email_;
 
   // -- End of command parameters --
 
   // Fake OAuth token that will be used once the next time we need to fetch an
   // oauth token.
-  absl::optional<std::string> oauth_token_for_test_;
+  std::optional<std::string> oauth_token_for_test_;
 
   // The Delegate is used to interact with chrome services and CRD host.
   const raw_ref<Delegate> delegate_;
+
+  std::string robot_account_id_;
 
   base::WeakPtrFactory<DeviceCommandStartCrdSessionJob> weak_factory_{this};
 };

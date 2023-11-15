@@ -2572,6 +2572,8 @@ source_set("ash") {
     "policy/remote_commands/crd_admin_session_controller.cc",
     "policy/remote_commands/crd_admin_session_controller.h",
     "policy/remote_commands/crd_logging.h",
+    "policy/remote_commands/crd_oauth_token_fetcher.cc",
+    "policy/remote_commands/crd_oauth_token_fetcher.h",
     "policy/remote_commands/crd_remote_command_utils.cc",
     "policy/remote_commands/crd_remote_command_utils.h",
     "policy/remote_commands/crd_session_observer.h",
