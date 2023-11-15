@@ -84,10 +84,12 @@ void FormFieldTestBase::AddTextFormFieldData(std::string name,
 // |parsed| indicates if at least one field could be parsed successfully.
 // |page_language| the language to be used for parsing, default empty value
 // means the language is unknown and patterns of all languages are used.
-void FormFieldTestBase::ClassifyAndVerify(ParseResult parse_result,
-                                          const LanguageCode& page_language) {
+void FormFieldTestBase::ClassifyAndVerify(
+    ParseResult parse_result,
+    const GeoIpCountryCode& client_country,
+    const LanguageCode& page_language) {
   AutofillScanner scanner(list_);
-  field_ = Parse(&scanner, GeoIpCountryCode(""), page_language);
+  field_ = Parse(&scanner, client_country, page_language);
 
   if (parse_result == ParseResult::NOT_PARSED) {
     ASSERT_EQ(nullptr, field_.get());

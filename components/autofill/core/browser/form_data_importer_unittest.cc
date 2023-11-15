@@ -1068,15 +1068,15 @@ TEST_F(
                           FormControlType::kInputText),
       CreateTestFormField("Apartment", "apartment", "101",
                           FormControlType::kInputText),
-      CreateTestFormField("City:", "city", "Barcelona",
+      CreateTestFormField("City:", "city", "Oaxaca de Juárez",
                           FormControlType::kInputText),
-      CreateTestFormField("State:", "state", "Catalunya",
+      CreateTestFormField("State:", "state", "Oaxaca",
                           FormControlType::kInputText),
-      CreateTestFormField("Country:", "country", "ES",
+      CreateTestFormField("Country:", "country", "MX",
                           FormControlType::kInputText),
       CreateTestFormField("Zip:", "zip", "94102", FormControlType::kInputText)};
   FormStructure form_structure(form);
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode("MX"), nullptr,
                                          nullptr);
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
@@ -1087,7 +1087,7 @@ TEST_F(
   EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), u"21");
   EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_NAME), u"Laussat St");
   EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
-            u"Laussat St 21\nApt. 101");
+            u"Laussat St 21, 101");
   EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_APT_NUM), u"101");
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
             VerificationStatus::kObserved);
