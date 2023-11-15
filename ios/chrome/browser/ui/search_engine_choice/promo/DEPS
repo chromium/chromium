@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/ui/promos_manager",
+  "+ios/chrome/browser/ui/search_engine_choice",
+]
