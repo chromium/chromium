@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_service.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
@@ -41,7 +43,8 @@ void LegacyTechService::ReportEvent(const std::string& type,
       *matched_url,
       filename,
       line,
-      column};
+      column,
+      /*cookie_issue_details=*/std::nullopt};
 
   trigger_.Run(data);
 }

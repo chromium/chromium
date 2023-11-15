@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_service.h"
+
+#include <optional>
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_report_generator.h"
 
@@ -67,9 +69,14 @@ TEST_F(LegacyTechServiceTest, NoMatched) {
 
 TEST_F(LegacyTechServiceTest, MatchedAndUpload) {
   LegacyTechReportGenerator::LegacyTechData expected_data = {
-      "type",        base::Time::Now(), GURL("https://example.com"),
-      "example.com", "filename",        /*line=*/10,
-      /*column=*/42};
+      /*type=*/"type",
+      /*timestamp=*/base::Time::Now(),
+      /*url=*/GURL("https://example.com"),
+      /*matched_url=*/"example.com",
+      /*filename=*/"filename",
+      /*line=*/10,
+      /*column=*/42,
+      /*cookie_issue_details=*/std::nullopt};
 
   EXPECT_CALL(mock_trigger_, Run(expected_data)).Times(1);
   SetPolicy({"example.com"});

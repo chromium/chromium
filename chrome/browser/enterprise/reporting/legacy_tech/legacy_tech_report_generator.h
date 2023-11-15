@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_LEGACY_TECH_LEGACY_TECH_REPORT_GENERATOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,15 +20,37 @@ namespace enterprise_reporting {
 
 class LegacyTechReportGenerator {
  public:
+  struct LegacyTechCookieIssueDetails {
+    enum AccessOperation { kRead, kWrite };
+    LegacyTechCookieIssueDetails();
+    LegacyTechCookieIssueDetails(const std::string& transfer_or_script_url,
+                                 const std::string& name,
+                                 const std::string& domain,
+                                 const std::string& path,
+                                 AccessOperation access_operation);
+    LegacyTechCookieIssueDetails(const LegacyTechCookieIssueDetails& other);
+    ~LegacyTechCookieIssueDetails();
+
+    bool operator==(const LegacyTechCookieIssueDetails&) const = default;
+
+    std::string transfer_or_script_url;
+    std::string name;
+    std::string domain;
+    std::string path;
+    AccessOperation access_operation;
+  };
+
   struct LegacyTechData : public RealTimeReportGenerator::Data {
     LegacyTechData();
-    LegacyTechData(const std::string& type,
-                   const base::Time& timestamp,
-                   const GURL& url,
-                   const std::string& matched_url,
-                   const std::string& filename,
-                   uint64_t line,
-                   uint64_t column);
+    LegacyTechData(
+        const std::string& type,
+        const base::Time& timestamp,
+        const GURL& url,
+        const std::string& matched_url,
+        const std::string& filename,
+        uint64_t line,
+        uint64_t column,
+        std::optional<LegacyTechCookieIssueDetails> cookie_issue_details);
     LegacyTechData(const LegacyTechData& other);
     ~LegacyTechData();
 
@@ -40,6 +63,7 @@ class LegacyTechReportGenerator {
     std::string filename;
     uint64_t line;
     uint64_t column;
+    std::optional<LegacyTechCookieIssueDetails> cookie_issue_details;
   };
 
   LegacyTechReportGenerator();
