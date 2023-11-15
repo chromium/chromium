@@ -92,7 +92,7 @@ class NET_EXPORT_PRIVATE ProxyList {
   // Returns all proxy servers in the list. It is only valid to call this
   // if no chain in the list is multi-proxy.
   // TODO(crbug.com/1491092): Remove this method in favor of `AllChains()`.
-  const std::vector<ProxyServer>& GetAll() const;
+  std::vector<ProxyServer> GetAll() const;
 
   // Returns all proxy chains in the list.
   const std::vector<ProxyChain>& AllChains() const;
@@ -152,17 +152,8 @@ class NET_EXPORT_PRIVATE ProxyList {
                                 int net_error,
                                 const NetLogWithSource& net_log) const;
 
-  // Update `proxy_servers_` based on `proxy_chains_`.
-  void UpdateProxyServers();
-
   // List of proxy chains.
   std::vector<ProxyChain> proxy_chains_;
-
-  // List of ProxyServers, or nullopt if any chains in `proxy_chains_` are
-  // multi-proxy. This is kept in sync with `proxy_chains_`. This begins as an
-  // empty vector and becomes `nullopt` when a multi-proxy chain is added.
-  absl::optional<std::vector<ProxyServer>> proxy_servers_ =
-      std::vector<ProxyServer>();
 };
 
 }  // namespace net
