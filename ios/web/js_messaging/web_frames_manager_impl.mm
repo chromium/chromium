@@ -100,7 +100,8 @@ WebFrame* WebFramesManagerImpl::GetFrameWithId(const std::string& frame_id) {
   if (frame_id.empty()) {
     return nullptr;
   }
-  auto web_frames_it = web_frames_.find(frame_id);
+
+  auto web_frames_it = web_frames_.find(base::ToLowerASCII(frame_id));
   return web_frames_it == web_frames_.end() ? nullptr
                                             : web_frames_it->second.get();
 }
