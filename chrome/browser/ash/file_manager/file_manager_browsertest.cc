@@ -1991,8 +1991,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Search, /* search.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        // TODO(b/307656688): enable the tests
-        // TestCase("searchQueryLaunchParam").NewDirectoryTree(),
+        TestCase("searchQueryLaunchParam").NewDirectoryTree(),
         TestCase("searchWithLocationOptions").NewDirectoryTree(),
         TestCase("searchDriveWithRecencyOptions").NewDirectoryTree(),
         TestCase("searchDriveWithTypeOptions").NewDirectoryTree(),

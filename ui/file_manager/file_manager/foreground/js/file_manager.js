@@ -56,7 +56,7 @@ import {ActionsController} from './actions_controller.js';
 import {AndroidAppListModel} from './android_app_list_model.js';
 import {AppStateController} from './app_state_controller.js';
 import {BannerController} from './banner_controller.js';
-import {crossoverSearchUtils} from './crossover_search_utils.js';
+import {findQueryMatchedDirectoryEntry} from './crossover_search_utils.js';
 import {CrostiniController} from './crostini_controller.js';
 import {DialogActionController} from './dialog_action_controller.js';
 import {FileFilter} from './directory_contents.js';
@@ -1682,12 +1682,10 @@ export class FileManager extends EventTarget {
       // Show a spinner, as the crossover search function call could be slow.
       // @ts-ignore: error TS2531: Object is possibly 'null'.
       const hideSpinnerCallback = this.spinnerController_.show();
-      const queryMatchedDirEntry =
-          await crossoverSearchUtils.findQueryMatchedDirectoryEntry(
-              // @ts-ignore: error TS2345: Argument of type 'DirectoryModel |
-              // null' is not assignable to parameter of type 'DirectoryModel'.
-              this.ui_.directoryTree.dataModel_, this.directoryModel_,
-              searchQuery);
+      const queryMatchedDirEntry = await findQueryMatchedDirectoryEntry(
+          // @ts-ignore: error TS2345: Argument of type 'DirectoryModel |
+          // null' is not assignable to parameter of type 'DirectoryModel'.
+          this.volumeManager_, this.directoryModel_, searchQuery);
       if (queryMatchedDirEntry) {
         nextCurrentDirEntry = queryMatchedDirEntry;
       }
