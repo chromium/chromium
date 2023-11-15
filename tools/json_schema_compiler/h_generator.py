@@ -285,14 +285,6 @@ class _Generator(object):
           .Comment('Creates a deep copy of %s.' % classname)
           .Append('%s Clone() const;' % classname)
         )
-        if is_toplevel:
-          (c.Append()
-            .Comment('Creates a %s object from a base::Value, or NULL on '
-                     'failure.' % classname)
-            .Append('static std::unique_ptr<%s> FromValueDeprecated(%s);' % (
-                classname, self._GenerateParams(('const base::Value& value',),
-                  error_as_ptr=True)))
-          )
 
         return_type = self._type_helper.GetOptionalReturnType(
             classname, support_errors=self._generate_error_messages)
@@ -532,11 +524,10 @@ class _Generator(object):
     return c
 
   def _GenerateParams(
-        self, params, generate_error_messages=None, error_as_ptr=None):
+        self, params, generate_error_messages=None):
     """Builds the parameter list for a function, given an array of parameters.
     If |generate_error_messages| is specified, it overrides
     |self._generate_error_messages|.
-    |error_as_ptr| is used to indicate a pointer argument should be preserved.
     """
     # |error| is populated with warnings and/or errors found during parsing.
     # |error| being set does not necessarily imply failure and may be
@@ -546,11 +537,5 @@ class _Generator(object):
     if generate_error_messages is None:
       generate_error_messages = self._generate_error_messages
     if generate_error_messages:
-      if error_as_ptr:
-        # TODO(crbug.com/1415174): error_as_ptr argument should eventually be
-        # removed, once all sites making use of FromValueDeprecated get
-        # migrated, and FromValueDeprecated is removed.
-        params += ('std::u16string* error',)
-      else:
-        params += ('std::u16string& error',)
+      params += ('std::u16string& error',)
     return ', '.join(str(p) for p in params)
