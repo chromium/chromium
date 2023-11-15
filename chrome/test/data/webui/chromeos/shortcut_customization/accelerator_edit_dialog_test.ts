@@ -746,6 +746,46 @@ suite('acceleratorEditDialogTest', function() {
     assertFalse(addButtonContainer.hidden);
   });
 
+  test('showEmptyState', async () => {
+    // Create disabled accelerator info.
+    const acceleratorInfo: AcceleratorInfo =
+        createCustomStandardAcceleratorInfo(
+            Modifier.CONTROL | Modifier.SHIFT,
+            /*key=*/ 71,
+            /*keyDisplay=*/ 'g', AcceleratorState.kDisabledByUser);
+
+    viewElement!.acceleratorInfos = [acceleratorInfo];
+    viewElement!.description = 'test shortcut';
+    await flush();
+
+    // Open dialog.
+    const dialog =
+        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    assertTrue(dialog.open);
+
+    let noShortcutAssigned = viewElement!.shadowRoot!.querySelector(
+                                 '#noShortcutAssigned') as HTMLDivElement;
+
+    // Expect "No shortcut assigned" message is shown when there's no enabled
+    // accelerators in the dialog.
+    assertTrue(!!noShortcutAssigned);
+    assertEquals(
+        'No shortcut assigned', noShortcutAssigned.textContent!.trim());
+
+    // Click add button, ViewState change to ADD.
+    const addButton =
+        dialog!.querySelector('#addAcceleratorButton') as CrButtonElement;
+    assertTrue(!!addButton);
+    addButton!.click();
+    await flush();
+
+    // Expect "No shortcut assigned" message is not displayed when ViewState
+    // becomes ADD.
+    noShortcutAssigned = viewElement!.shadowRoot!.querySelector(
+                             '#noShortcutAssigned') as HTMLDivElement;
+    assertFalse(!!noShortcutAssigned);
+  });
+
   test('buttonsVisibility', async () => {
     // Set the default accelerators the same as the initialized accelerators.
     const defaultAccelerators: Accelerator[] = [{
