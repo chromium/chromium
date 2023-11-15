@@ -1227,6 +1227,11 @@ void AutofillAgent::HidePopup() {
 void AutofillAgent::DidChangeFormRelatedElementDynamically(
     const WebElement& element,
     blink::WebFormRelatedChangeType form_related_change) {
+  if (form_related_change == blink::WebFormRelatedChangeType::kRemove &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillDetectRemovedFormControls)) {
+    return;
+  }
   // If the control flow is here than the document was at least loaded. The
   // whole page doesn't have to be loaded.
   ExtractForms(

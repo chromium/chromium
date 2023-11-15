@@ -97,7 +97,7 @@ class AutofillTest : public InProcessBrowserTest {
 
   AutofillTest() {
     feature_list_.InitAndEnableFeature(
-        blink::features::kAutofillDetectRemovedFormControls);
+        features::kAutofillDetectRemovedFormControls);
   }
 
   void SetUpOnMainThread() override {

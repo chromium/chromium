@@ -914,7 +914,7 @@ class AutofillAcrossIframesTest_FullIframes
  public:
   AutofillAcrossIframesTest_FullIframes() {
     feature_list_.InitAndEnableFeature(
-        blink::features::kAutofillDetectRemovedFormControls);
+        features::kAutofillDetectRemovedFormControls);
   }
 
   [[nodiscard]] const FormStructure* LoadForm() {

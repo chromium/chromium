@@ -184,9 +184,7 @@ void HTMLFormElement::RemovedFrom(ContainerNode& insertion_point) {
   GetDocument().GetFormController().WillDeleteForm(this);
   HTMLElement::RemovedFrom(insertion_point);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAutofillDetectRemovedFormControls) &&
-      insertion_point.isConnected()) {
+  if (insertion_point.isConnected()) {
     GetDocument().DidChangeFormRelatedElementDynamically(
         this, WebFormRelatedChangeType::kRemove);
   }

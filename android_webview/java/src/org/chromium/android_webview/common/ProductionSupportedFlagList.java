@@ -242,6 +242,9 @@ public final class ProductionSupportedFlagList {
                 "Rationalizes city-and-number and city-code fields to the "
                         + "correct trunk-prefix types."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_DETECT_REMOVED_FORM_CONTROLS,
+                "Enables Autofill to detect if form controls are removed from the DOM"),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_DONT_PRESERVE_AUTOFILL_STATE,
                 "Retrieves is_autofilled state from blink instead of the cache"),
         Flag.baseFeature(
@@ -612,9 +615,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.AUTOFILL_USE_DOM_NODE_ID_FOR_RENDERER_ID,
                 "Enables Autofill to detect use DOM Node IDs for renderer IDs"),
-        Flag.baseFeature(
-                BlinkFeatures.AUTOFILL_DETECT_REMOVED_FORM_CONTROLS,
-                "Enables Autofill to detect if form controls are removed from the DOM"),
         Flag.baseFeature(
                 NetFeatures.PARTITIONED_COOKIES, "Enables the Partitioned cookie attribute"),
         Flag.baseFeature(

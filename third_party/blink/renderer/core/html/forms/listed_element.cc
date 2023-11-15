@@ -187,9 +187,7 @@ void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
 
   InvalidateShadowIncludingAncestorForms(insertion_point);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAutofillDetectRemovedFormControls) &&
-      insertion_point.isConnected()) {
+  if (insertion_point.isConnected()) {
     // We don't insist on form_ being non-null as the form does not take care of
     // reporting the removal.
     element.GetDocument().DidChangeFormRelatedElementDynamically(
