@@ -1025,8 +1025,17 @@ if (enable_java_templates && is_android) {
         deps = []
       }
       deps += [ ":$target_name$build_config_target_suffix" ]
-      metadata = {
-        target_type = [ "java_library" ]
+      if (is_cronet_build) {
+        _abs_deps = []
+        if (defined(invoker.deps)) {
+          foreach(dep, invoker.deps) {
+            _abs_deps += [ get_label_info(dep, "label_no_toolchain") ]
+          }
+        }
+        metadata = {
+          all_deps = _abs_deps
+          target_type = [ "java_library" ]
+        }
       }
     }
   }
