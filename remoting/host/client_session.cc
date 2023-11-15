@@ -453,6 +453,7 @@ void ClientSession::SelectDesktopDisplay(
   if (oldGeo != nullptr && newGeo != nullptr) {
     if (oldGeo->width == newGeo->width && oldGeo->height == newGeo->height) {
       UpdateMouseClampingFilterOffset();
+      UpdateFractionalFilterFallback();
     }
   }
 }
@@ -549,6 +550,8 @@ void ClientSession::OnConnectionAuthenticated() {
   host_capabilities_.append(protocol::kRtcLogTransferCapability);
   host_capabilities_.append(" ");
   host_capabilities_.append(protocol::kWebrtcIceSdpRestartAction);
+  host_capabilities_.append(" ");
+  host_capabilities_.append(protocol::kFractionalCoordinatesCapability);
 
   // Create the object that controls the screen resolution.
   screen_controls_ = desktop_environment_->CreateScreenControls();
@@ -608,6 +611,10 @@ void ClientSession::CreateMediaStreams() {
 }
 
 void ClientSession::CreatePerMonitorVideoStreams() {
+  // Undo any previously-set fallback. When there are multiple streams, all
+  // fractional coordinates must specify a screen_id.
+  fractional_input_filter_.set_fallback_geometry({});
+
   // Create new streams for any monitors that don't already have streams.
   for (int i = 0; i < desktop_display_info_.NumDisplays(); i++) {
     auto id = desktop_display_info_.GetDisplayInfo(i)->id;
@@ -993,6 +1000,7 @@ void ClientSession::OnVideoSizeChanged(protocol::VideoStream* video_stream,
   webrtc_capture_size_ = size;
 
   SetMouseClampingFilter(size);
+  UpdateFractionalFilterFallback();
 
   // Record default DPI in case a display reports 0 for DPI.
   default_x_dpi_ = dpi.x();
@@ -1175,6 +1183,7 @@ void ClientSession::OnDesktopDisplayChanged(
 
   // We need to update the input filters whenever the displays change.
   fractional_input_filter_.set_video_layout(*displays);
+  UpdateFractionalFilterFallback();
   DisplaySize display_size =
       DisplaySize::FromPixels(size.width(), size.height(), default_x_dpi_);
   SetMouseClampingFilter(display_size);
@@ -1323,6 +1332,47 @@ void ClientSession::OnActiveDisplayChanged(webrtc::ScreenId display) {
   protocol::ActiveDisplay active_display;
   active_display.set_screen_id(display);
   connection_->client_stub()->SetActiveDisplay(active_display);
+}
+
+void ClientSession::UpdateFractionalFilterFallback() {
+  if (!IsValidDisplayIndex(selected_display_index_)) {
+    return;
+  }
+
+  webrtc::DesktopSize new_size;
+  if (selected_display_index_ == webrtc::kFullDesktopScreenId) {
+#if BUILDFLAG(IS_APPLE)
+    // On macOS, for full-desktop capture, the capturer's current frame size
+    // should be used. This is because the capturer may revert to capturing from
+    // the default display instead of the full desktop. This could happen if all
+    // monitors had matching DPIs and full-desktop-capture was previously
+    // supported, but a monitor mode was changed such that the DPIs no longer
+    // match.
+    new_size = {webrtc_capture_size_.WidthAsDips(),
+                webrtc_capture_size_.HeightAsDips()};
+#else
+    // For other platforms, use the video-layout, as the rectangles are already
+    // in the correct units (pixels/DIPs) for input-injection.
+    webrtc::DesktopRect rect;
+    for (int i = 0; i < desktop_display_info_.NumDisplays(); i++) {
+      const DisplayGeometry* geo = desktop_display_info_.GetDisplayInfo(i);
+      rect.UnionWith(webrtc::DesktopRect::MakeXYWH(geo->x, geo->y, geo->width,
+                                                   geo->height));
+    }
+    new_size = rect.size();
+#endif  // BUILDFLAG(IS_APPLE)
+  } else {
+    const DisplayGeometry* geo =
+        desktop_display_info_.GetDisplayInfo(selected_display_index_);
+    new_size = webrtc::DesktopSize(geo->width, geo->height);
+  }
+
+  // The logic for input-injection offsets is dependent on the OS, and is
+  // implemented in DesktopDisplayInfo::CalcDisplayOffset().
+  webrtc::DesktopVector offset =
+      desktop_display_info_.CalcDisplayOffset(selected_display_index_);
+  fractional_input_filter_.set_fallback_geometry(
+      webrtc::DesktopRect::MakeOriginSize(offset, new_size));
 }
 
 }  // namespace remoting
