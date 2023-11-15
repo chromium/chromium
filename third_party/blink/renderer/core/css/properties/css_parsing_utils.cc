@@ -1837,15 +1837,13 @@ Color ResolveColor(CSSValue* value) {
 }  // namespace
 
 CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
-                               const CSSParserContext& context,
-                               bool accept_quirky_colors) {
+                               const CSSParserContext& context) {
   DCHECK_EQ(range.Peek().FunctionId(), CSSValueID::kColorContrast);
 
   CSSParserTokenRange range_copy = range;
   CSSParserTokenRange args = ConsumeFunction(range_copy);
 
-  CSSValue* background_color =
-      ConsumeColor(args, context, accept_quirky_colors);
+  CSSValue* background_color = ConsumeColor(args, context);
   if (!background_color) {
     return nullptr;
   }
@@ -1856,7 +1854,7 @@ CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
 
   VectorOf<CSSValue> colors_to_compare_against;
   do {
-    CSSValue* color = ConsumeColor(args, context, accept_quirky_colors);
+    CSSValue* color = ConsumeColor(args, context);
     if (!color) {
       return nullptr;
     }
@@ -1939,7 +1937,7 @@ CSSValue* ConsumeColor(CSSParserTokenRange& range,
                        AllowedColorKeywords allowed_keywords) {
   if (RuntimeEnabledFeatures::CSSColorContrastEnabled() &&
       range.Peek().FunctionId() == CSSValueID::kColorContrast) {
-    return ConsumeColorContrast(range, context, accept_quirky_colors);
+    return ConsumeColorContrast(range, context);
   }
 
   if (range.Peek().FunctionId() == CSSValueID::kColorMix) {
