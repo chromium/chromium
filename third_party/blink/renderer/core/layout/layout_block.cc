@@ -403,7 +403,7 @@ void LayoutBlock::RemovePositionedObjects(LayoutObject* stay_within) {
     if (!fragment.HasOutOfFlowFragmentChild()) {
       continue;
     }
-    for (const NGLink& fragment_child : fragment.Children()) {
+    for (const PhysicalFragmentLink& fragment_child : fragment.Children()) {
       if (!fragment_child->IsOutOfFlowPositioned()) {
         continue;
       }

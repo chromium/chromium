@@ -1212,7 +1212,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
     LayoutUnit additional_column_block_size;
     // Then append the new fragmentainers.
     for (wtf_size_t i = old_fragment_count; i < new_fragment_count; i++) {
-      const NGLogicalLink& child =
+      const LogicalFragmentLink& child =
           limited_multicol_container_builder.Children()[i];
       algorithm.AppendNewChildFragment(*child.fragment, child.offset);
       additional_column_block_size +=
@@ -2682,7 +2682,7 @@ void OutOfFlowLayoutPart::ReplaceFragment(
   // Replace the old fragment with the new one, if it's inside |parent|.
   auto ReplaceChild = [&new_result, &old_fragment](
                           const NGPhysicalBoxFragment& parent) -> bool {
-    for (NGLink& child_link :
+    for (PhysicalFragmentLink& child_link :
          parent.GetMutableChildrenForOutOfFlow().Children()) {
       if (child_link.fragment != &old_fragment)
         continue;
@@ -2730,7 +2730,7 @@ void OutOfFlowLayoutPart::ReplaceFragment(
     // We're currently laying out |containing_block|, and it's a multicol
     // container. Search inside fragmentainer children in the builder.
     auto& children = FragmentationContextChildren();
-    for (const NGLogicalLink& child : children) {
+    for (const LogicalFragmentLink& child : children) {
       if (ReplaceFragmentainerChild(*child.fragment))
         return;
     }

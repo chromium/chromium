@@ -47,7 +47,7 @@ void NGFrameSetPainter::PaintChildren(const PaintInfo& paint_info) {
   if (paint_info.DescendantPaintingBlocked())
     return;
 
-  for (const NGLink& link : box_fragment_.Children()) {
+  for (const PhysicalFragmentLink& link : box_fragment_.Children()) {
     const NGPhysicalFragment& child_fragment = *link;
     if (child_fragment.HasSelfPaintingLayer())
       continue;

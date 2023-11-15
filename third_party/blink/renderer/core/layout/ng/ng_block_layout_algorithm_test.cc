@@ -349,11 +349,11 @@ TEST_F(NGBlockLayoutAlgorithmTest, LayoutBlockChildren) {
   EXPECT_EQ(NGPhysicalFragment::kFragmentBox, fragment->Type());
   ASSERT_EQ(fragment->Children().size(), 2UL);
 
-  const NGLink& first_child = fragment->Children()[0];
+  const PhysicalFragmentLink& first_child = fragment->Children()[0];
   EXPECT_EQ(kHeight1, first_child->Size().height);
   EXPECT_EQ(0, first_child.Offset().top);
 
-  const NGLink& second_child = fragment->Children()[1];
+  const PhysicalFragmentLink& second_child = fragment->Children()[1];
   EXPECT_EQ(kHeight2, second_child->Size().height);
   EXPECT_EQ(kHeight1 + kMarginTop, second_child.Offset().top);
 }
@@ -387,8 +387,8 @@ TEST_F(NGBlockLayoutAlgorithmTest, LayoutBlockChildrenWithWritingMode) {
   const NGPhysicalBoxFragment* fragment =
       RunBlockLayoutAlgorithm(container, space);
 
-  const NGLink& child = fragment->Children()[0];
-  const NGLink& child2 =
+  const PhysicalFragmentLink& child = fragment->Children()[0];
+  const PhysicalFragmentLink& child2 =
       static_cast<const NGPhysicalBoxFragment*>(child.get())->Children()[0];
 
   EXPECT_EQ(kHeight, child2->Size().height);

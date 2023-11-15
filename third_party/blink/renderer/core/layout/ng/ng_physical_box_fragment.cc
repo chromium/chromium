@@ -46,7 +46,7 @@ struct SameSizeAsNGPhysicalBoxFragment : NGPhysicalFragment {
   LayoutUnit last_baseline;
   Member<void*> rare;
   NGInkOverflow ink_overflow;
-  HeapVector<NGLink> children;
+  HeapVector<PhysicalFragmentLink> children;
 };
 
 ASSERT_SIZE(NGPhysicalBoxFragment, SameSizeAsNGPhysicalBoxFragment);
@@ -237,7 +237,8 @@ NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
   AllowPostLayoutScope allow_post_layout_scope;
 #endif
 
-  for (NGLink& child : cloned_fragment->GetMutableForCloning().Children()) {
+  for (PhysicalFragmentLink& child :
+       cloned_fragment->GetMutableForCloning().Children()) {
     child.fragment = child->PostLayout();
     DCHECK(child.fragment);
 
@@ -249,7 +250,7 @@ NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
     // need to not only update its children, but also the children of the
     // children that are fragmentainers.
     auto& fragmentainer = *To<NGPhysicalBoxFragment>(child.fragment.Get());
-    for (NGLink& fragmentainer_child :
+    for (PhysicalFragmentLink& fragmentainer_child :
          fragmentainer.GetMutableForCloning().Children()) {
       auto& old_child =
           *To<NGPhysicalBoxFragment>(fragmentainer_child.fragment.Get());
@@ -1165,7 +1166,7 @@ PhysicalRect NGPhysicalBoxFragment::RecalcContentsInkOverflow() {
       return contents_rect;
   }
 
-  for (const NGLink& child : PostLayoutChildren()) {
+  for (const PhysicalFragmentLink& child : PostLayoutChildren()) {
     const auto* child_fragment = DynamicTo<NGPhysicalBoxFragment>(child.get());
     if (!child_fragment || child_fragment->HasSelfPaintingLayer())
       continue;
@@ -1203,7 +1204,7 @@ PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
   if (UNLIKELY(IsTableRow())) {
     // This is necessary because table-rows paints beyond border box if it
     // contains rowspanned cells.
-    for (const NGLink& child : PostLayoutChildren()) {
+    for (const PhysicalFragmentLink& child : PostLayoutChildren()) {
       const auto& child_fragment = To<NGPhysicalBoxFragment>(*child);
       if (!child_fragment.IsTableCell()) {
         continue;
@@ -1474,7 +1475,7 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPointByClosestChild(
         FirstPositionInOrBeforeNode(*layout_object_->GetNode()));
   }
 
-  NGLink closest_child = {nullptr};
+  PhysicalFragmentLink closest_child = {nullptr};
   LayoutUnit shortest_distance = LayoutUnit::Max();
   bool found_hit_test_candidate = false;
   const PhysicalSize pixel_size(LayoutUnit(1), LayoutUnit(1));
@@ -1489,7 +1490,7 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPointByClosestChild(
   // inline direction, block direction or reverse block direction. Multicol
   // containers progress both in the inline direction (columns) and block
   // direction (column rows and spanners).
-  for (const NGLink& child : Children()) {
+  for (const PhysicalFragmentLink& child : Children()) {
     const auto& box_fragment = To<NGPhysicalBoxFragment>(*child.fragment);
     bool is_hit_test_candidate = IsHitTestCandidate(box_fragment);
     if (!is_hit_test_candidate) {
@@ -1564,8 +1565,8 @@ NGPhysicalBoxFragment::PositionForPointInBlockFlowDirection(
 
   // Loop over block children to find a child logically below
   // |point_in_contents|.
-  const NGLink* last_candidate_box = nullptr;
-  for (const NGLink& child : Children()) {
+  const PhysicalFragmentLink* last_candidate_box = nullptr;
+  for (const PhysicalFragmentLink& child : Children()) {
     const auto& box_fragment = To<NGPhysicalBoxFragment>(*child.fragment);
     if (!IsHitTestCandidate(box_fragment))
       continue;
@@ -1791,7 +1792,7 @@ void NGPhysicalBoxFragment::CheckIntegrity() const {
   bool has_floats = false;
   bool has_list_markers = false;
 
-  for (const NGLink& child : Children()) {
+  for (const PhysicalFragmentLink& child : Children()) {
     if (child->IsFloating())
       has_floats = true;
     else if (child->IsOutOfFlowPositioned())
@@ -1855,7 +1856,7 @@ void NGPhysicalBoxFragment::AssertFragmentTreeChildren(
     }
   }
 
-  for (const NGLink& child : Children()) {
+  for (const PhysicalFragmentLink& child : Children()) {
     if (child->IsLayoutObjectDestroyedOrMoved()) {
       DCHECK(allow_destroyed_or_moved);
       continue;

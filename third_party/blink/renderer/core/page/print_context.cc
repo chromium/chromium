@@ -89,7 +89,7 @@ gfx::Rect PrintContext::PageRect(wtf_size_t page_number) const {
   CHECK_GE(fragments.size(), 1u);
   DCHECK(fragments[0]->IsFragmentainerBox());
 
-  const NGLink& page = fragments[page_number];
+  const PhysicalFragmentLink& page = fragments[page_number];
   PhysicalRect physical_rect(page.offset, page->Size());
   gfx::Rect page_rect = ToEnclosingRect(physical_rect);
 

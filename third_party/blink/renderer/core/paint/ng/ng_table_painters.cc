@@ -455,7 +455,7 @@ void NGTablePainter::PaintBoxDecorationBackground(
   // Paint <colgroup>/<col> backgrounds.
   PhysicalRect columns_paint_rect = ComputeColumnsRect(fragment_);
   columns_paint_rect.offset += paint_rect.offset;
-  for (const NGLink& child : fragment_.Children()) {
+  for (const PhysicalFragmentLink& child : fragment_.Children()) {
     if (!child.fragment->IsTableSection()) {
       continue;
     }
@@ -750,7 +750,7 @@ void NGTableSectionPainter::PaintBoxDecorationBackground(
   if (!fragment_.IsOnlyForNode())
     part_rect.offset -= OffsetInStitchedFragments(fragment_, &part_rect.size);
 
-  for (const NGLink& child : fragment_.Children()) {
+  for (const PhysicalFragmentLink& child : fragment_.Children()) {
     const auto& child_fragment = *child;
     DCHECK(child_fragment.IsBox());
     if (!child_fragment.IsTableRow()) {
@@ -772,7 +772,7 @@ void NGTableSectionPainter::PaintColumnsBackground(
     const PhysicalOffset& section_paint_offset,
     const PhysicalRect& columns_paint_rect,
     const TableFragmentData::ColumnGeometries& column_geometries) {
-  for (const NGLink& row : fragment_.Children()) {
+  for (const PhysicalFragmentLink& row : fragment_.Children()) {
     if (!row.fragment->IsTableRow()) {
       continue;
     }
@@ -813,7 +813,7 @@ void NGTableRowPainter::PaintTablePartBackgroundIntoCells(
     const LayoutBox& table_part,
     const PhysicalRect& table_part_paint_rect,
     const PhysicalOffset& row_paint_offset) {
-  for (const NGLink& child : fragment_.Children()) {
+  for (const PhysicalFragmentLink& child : fragment_.Children()) {
     DCHECK(child.fragment->IsBox());
     DCHECK(child.fragment->GetLayoutObject()->IsTableCell() ||
            child.fragment->GetLayoutObject()->IsOutOfFlowPositioned());
@@ -835,7 +835,7 @@ void NGTableRowPainter::PaintColumnsBackground(
     const TableFragmentData::ColumnGeometries& column_geometries) {
   WritingModeConverter converter(fragment_.Style().GetWritingDirection(),
                                  columns_paint_rect.size);
-  for (const NGLink& child : fragment_.Children()) {
+  for (const PhysicalFragmentLink& child : fragment_.Children()) {
     if (!child.fragment->IsTableCell()) {
       continue;
     }

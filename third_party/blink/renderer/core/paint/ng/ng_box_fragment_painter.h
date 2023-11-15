@@ -139,7 +139,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   void PaintInternal(const PaintInfo&);
   void PaintAllPhasesAtomically(const PaintInfo&);
   void PaintBlockChildren(const PaintInfo&, PhysicalOffset);
-  void PaintBlockChild(const NGLink& child,
+  void PaintBlockChild(const PhysicalFragmentLink& child,
                        const PaintInfo& paint_info,
                        const PaintInfo& paint_info_for_descendants,
                        PhysicalOffset paint_offset);

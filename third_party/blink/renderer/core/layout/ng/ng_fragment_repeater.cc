@@ -141,7 +141,8 @@ void NGFragmentRepeater::CloneChildFragments(
     }
   }
 
-  for (NGLink& child : cloned_fragment.GetMutableForCloning().Children()) {
+  for (PhysicalFragmentLink& child :
+       cloned_fragment.GetMutableForCloning().Children()) {
     if (const auto* child_box =
             DynamicTo<NGPhysicalBoxFragment>(child.fragment.Get())) {
       if (child_box->IsCSSBox()) {

@@ -2127,7 +2127,7 @@ void FlexLayoutAlgorithm::AdjustButtonBaseline(
     return;
   }
   DCHECK_EQ(children.size(), 1u);
-  const NGLogicalLink& child = children[0];
+  const LogicalFragmentLink& child = children[0];
   DCHECK(!child.fragment->IsLineBox());
   const NGConstraintSpace& space = ConstraintSpace();
   LogicalBoxFragment fragment(space.GetWritingDirection(),

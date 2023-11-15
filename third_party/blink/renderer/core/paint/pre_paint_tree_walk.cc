@@ -341,7 +341,7 @@ void PrePaintTreeWalk::CheckTreeBuilderContextState(
 #endif
 
 NGPrePaintInfo PrePaintTreeWalk::CreatePrePaintInfo(
-    const NGLink& child,
+    const PhysicalFragmentLink& child,
     const PrePaintTreeWalkContext& context) {
   const auto* fragment = To<NGPhysicalBoxFragment>(child.fragment.Get());
   return NGPrePaintInfo(fragment, child.offset,
@@ -571,7 +571,7 @@ bool PrePaintTreeWalk::CollectMissableChildren(
     PrePaintTreeWalkContext& context,
     const NGPhysicalBoxFragment& parent) {
   bool has_missable_children = false;
-  for (const NGLink& child : parent.Children()) {
+  for (const PhysicalFragmentLink& child : parent.Children()) {
     if (UNLIKELY(child->IsLayoutObjectDestroyedOrMoved()))
       continue;
     if (child->IsOutOfFlowPositioned() &&
@@ -639,7 +639,7 @@ PrePaintTreeWalk::RebuildContextForMissedDescendant(
     // origin, and has zero block-size.
     // See e.g. https://www.w3.org/TR/css-break-3/#transforms
     if (search_fragment) {
-      for (NGLink link : search_fragment->Children()) {
+      for (PhysicalFragmentLink link : search_fragment->Children()) {
         if (link->GetLayoutObject() == object) {
           box_fragment = To<NGPhysicalBoxFragment>(link.get());
           paint_offset = link.offset;
@@ -729,7 +729,7 @@ void PrePaintTreeWalk::WalkMissedChildren(
     offset_to_block_start_edge.left = fragment.Size().width;
   }
 
-  for (const NGLink& child : fragment.Children()) {
+  for (const PhysicalFragmentLink& child : fragment.Children()) {
     if (UNLIKELY(child->IsLayoutObjectDestroyedOrMoved()))
       continue;
     if (!child->IsOutOfFlowPositioned()) {
@@ -792,7 +792,7 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
 
   absl::optional<wtf_size_t> inner_fragmentainer_idx;
 
-  for (NGLink child : fragment.Children()) {
+  for (PhysicalFragmentLink child : fragment.Children()) {
     const auto* box_fragment = To<NGPhysicalBoxFragment>(child.fragment.Get());
     if (UNLIKELY(box_fragment->IsLayoutObjectDestroyedOrMoved()))
       continue;
@@ -1076,7 +1076,7 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
 
       if (search_fragment) {
         // See if we can find a fragment for the child.
-        for (NGLink link : search_fragment->Children()) {
+        for (PhysicalFragmentLink link : search_fragment->Children()) {
           if (link->GetLayoutObject() != child)
             continue;
           // We found it!

@@ -53,7 +53,7 @@ void GetFontsUsedByFragment(const NGPhysicalBoxFragment& fragment,
   }
 
   // Traverse out-of-flow children. They are not in |FragmentItems|.
-  for (const NGLink& child : fragment.Children()) {
+  for (const PhysicalFragmentLink& child : fragment.Children()) {
     if (const auto* child_layout_box =
             DynamicTo<LayoutBox>(child->GetLayoutObject()))
       GetFontsUsedByLayoutObject(*child_layout_box, result);

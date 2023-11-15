@@ -547,15 +547,16 @@ class CORE_EXPORT NGPhysicalFragment
   void Trace(Visitor*) const;
   void TraceAfterDispatch(Visitor*) const;
 
-  // Same as |base::span<const NGLink>|, except that:
-  // * Each |NGLink| has the latest generation of post-layout. See
+  // Same as |base::span<const PhysicalFragmentLink>|, except that:
+  // * Each |PhysicalFragmentLink| has the latest generation of post-layout. See
   //   |NGPhysicalFragment::PostLayout()| for more details.
   // * The iterator skips fragments for destroyed or moved |LayoutObject|.
   class PostLayoutChildLinkList {
     STACK_ALLOCATED();
 
    public:
-    PostLayoutChildLinkList(wtf_size_t count, const NGLink* buffer)
+    PostLayoutChildLinkList(wtf_size_t count,
+                            const PhysicalFragmentLink* buffer)
         : count_(count), buffer_(buffer) {}
 
     class ConstIterator {
@@ -563,18 +564,18 @@ class CORE_EXPORT NGPhysicalFragment
 
      public:
       using iterator_category = std::bidirectional_iterator_tag;
-      using value_type = NGLink;
+      using value_type = PhysicalFragmentLink;
       using difference_type = ptrdiff_t;
       using pointer = value_type*;
       using reference = value_type&;
 
-      ConstIterator(const NGLink* current, wtf_size_t size)
+      ConstIterator(const PhysicalFragmentLink* current, wtf_size_t size)
           : current_(current), end_(current + size) {
         SkipInvalidAndSetPostLayout();
       }
 
-      const NGLink& operator*() const { return post_layout_; }
-      const NGLink* operator->() const { return &post_layout_; }
+      const PhysicalFragmentLink& operator*() const { return post_layout_; }
+      const PhysicalFragmentLink* operator->() const { return &post_layout_; }
 
       ConstIterator& operator++() {
         ++current_;
@@ -607,9 +608,9 @@ class CORE_EXPORT NGPhysicalFragment
         }
       }
 
-      const NGLink* current_;
-      const NGLink* end_;
-      NGLink post_layout_;
+      const PhysicalFragmentLink* current_;
+      const PhysicalFragmentLink* end_;
+      PhysicalFragmentLink post_layout_;
     };
     using const_iterator = ConstIterator;
 
@@ -621,12 +622,12 @@ class CORE_EXPORT NGPhysicalFragment
 
    private:
     wtf_size_t count_;
-    const NGLink* buffer_;
+    const PhysicalFragmentLink* buffer_;
   };
 
   const NGBreakToken* BreakToken() const { return break_token_.Get(); }
 
-  base::span<const NGLink> Children() const;
+  base::span<const PhysicalFragmentLink> Children() const;
 
   PostLayoutChildLinkList PostLayoutChildren() const;
 
@@ -758,7 +759,7 @@ class CORE_EXPORT NGPhysicalFragment
                                 const LayoutBoxModelObject* containing_block,
                                 InlineCursor* cursor) const;
   void AddOutlineRectsForDescendant(
-      const NGLink& descendant,
+      const PhysicalFragmentLink& descendant,
       OutlineRectCollector& collector,
       const PhysicalOffset& additional_offset,
       NGOutlineType outline_type,

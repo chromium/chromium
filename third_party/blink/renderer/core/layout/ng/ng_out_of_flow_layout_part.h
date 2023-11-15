@@ -33,7 +33,6 @@ class SimplifiedOofLayoutAlgorithm;
 struct LogicalOofPositionedNode;
 template <typename OffsetType>
 struct MulticolWithPendingOofs;
-struct NGLink;
 
 // Helper class for positioning of out-of-flow blocks.
 // It should be used together with NGBoxFragmentBuilder.
@@ -132,13 +131,13 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
    public:
     // The mutable link of a multicol child.
-    NGLink* mutable_link;
+    PhysicalFragmentLink* mutable_link;
 
     // The multicol break token that stores a reference to |mutable_link|'s
     // break token in its list of child break tokens.
     Member<const NGBlockBreakToken> parent_break_token;
 
-    explicit MulticolChildInfo(NGLink* mutable_link,
+    explicit MulticolChildInfo(PhysicalFragmentLink* mutable_link,
                                NGBlockBreakToken* parent_break_token = nullptr)
         : mutable_link(mutable_link), parent_break_token(parent_break_token) {}
 

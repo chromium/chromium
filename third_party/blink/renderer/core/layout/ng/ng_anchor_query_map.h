@@ -32,7 +32,7 @@ class CORE_EXPORT NGLogicalAnchorQueryMap {
 
  public:
   NGLogicalAnchorQueryMap(const LayoutBox& root_box,
-                          const NGLogicalLinkVector& children,
+                          const LogicalFragmentLinkVector& children,
                           const FragmentItemsBuilder::ItemWithOffsetList* items,
                           const WritingModeConverter& converter);
 
@@ -40,7 +40,7 @@ class CORE_EXPORT NGLogicalAnchorQueryMap {
   // This happens when laying out OOFs in a block fragmentation context, and
   // assumes children are fragmentainers.
   NGLogicalAnchorQueryMap(const LayoutBox& root_box,
-                          const NGLogicalLinkVector& children,
+                          const LogicalFragmentLinkVector& children,
                           WritingDirectionMode writing_direction);
 
   bool IsEmpty() const { return !has_anchor_queries_; }
@@ -53,7 +53,7 @@ class CORE_EXPORT NGLogicalAnchorQueryMap {
 
   // Update |children| when their anchor queries are changed.
   void SetChildren(
-      const NGLogicalLinkVector& children,
+      const LogicalFragmentLinkVector& children,
       const FragmentItemsBuilder::ItemWithOffsetList* items = nullptr);
 
  private:
@@ -63,7 +63,7 @@ class CORE_EXPORT NGLogicalAnchorQueryMap {
       queries_;
   mutable const LayoutObject* computed_for_ = nullptr;
   const LayoutBox& root_box_;
-  const NGLogicalLinkVector* children_ = nullptr;
+  const LogicalFragmentLinkVector* children_ = nullptr;
   const FragmentItemsBuilder::ItemWithOffsetList* items_ = nullptr;
   absl::optional<const WritingModeConverter> converter_;
   WritingDirectionMode writing_direction_;

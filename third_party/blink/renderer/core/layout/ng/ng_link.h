@@ -19,7 +19,7 @@ class NGPhysicalFragment;
 // This class is stored in a C-style regular array on
 // NGPhysicalFragment. It cannot have destructors. Fragment reference
 // counting is done manually.
-struct CORE_EXPORT NGLink {
+struct CORE_EXPORT PhysicalFragmentLink {
   DISALLOW_NEW();
 
  public:
@@ -38,6 +38,6 @@ struct CORE_EXPORT NGLink {
 
 }  // namespace blink
 
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGLink)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::PhysicalFragmentLink)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LINK_H_

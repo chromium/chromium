@@ -76,7 +76,8 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   gfx::RectF viewport_;
 
   // Override of LayoutBox::frame_rect_.location_.
-  // A physical fragment for <foreignObject> doesn't have the owner NGLink.
+  // A physical fragment for <foreignObject> doesn't have the owner
+  // PhysicalFragmentLink.
   LayoutPoint overridden_location_;
 };
 

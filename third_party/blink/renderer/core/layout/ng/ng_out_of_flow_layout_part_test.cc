@@ -1530,10 +1530,11 @@ static void CheckMulticolumnPositionedObjects(const LayoutBox* multicol,
        multicol->PhysicalFragments()) {
     EXPECT_TRUE(fragmentation_root.IsFragmentationContextRoot());
     EXPECT_FALSE(fragmentation_root.HasOutOfFlowFragmentChild());
-    for (const NGLink& fragmentainer : fragmentation_root.Children()) {
+    for (const PhysicalFragmentLink& fragmentainer :
+         fragmentation_root.Children()) {
       EXPECT_TRUE(fragmentainer->IsFragmentainerBox());
       EXPECT_TRUE(fragmentainer->HasOutOfFlowFragmentChild());
-      for (const NGLink& child : fragmentainer->Children()) {
+      for (const PhysicalFragmentLink& child : fragmentainer->Children()) {
         if (child->GetLayoutObject() == abspos)
           return;
       }

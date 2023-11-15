@@ -91,7 +91,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   // Note, children in this collection maybe old generations. Items in this
   // collection are safe, but their children (grandchildren of |this|) maybe
   // from deleted nodes or LayoutObjects. Also see |PostLayoutChildren()|.
-  base::span<const NGLink> Children() const {
+  base::span<const PhysicalFragmentLink> Children() const {
     DCHECK(children_valid_);
     return base::make_span(children_);
   }
@@ -109,16 +109,18 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
    protected:
     friend class OutOfFlowLayoutPart;
-    base::span<NGLink> Children() const {
+    base::span<PhysicalFragmentLink> Children() const {
       return base::make_span(buffer_, num_children_);
     }
 
    private:
     friend class NGPhysicalBoxFragment;
-    MutableChildrenForOutOfFlow(const NGLink* buffer, wtf_size_t num_children)
-        : buffer_(const_cast<NGLink*>(buffer)), num_children_(num_children) {}
+    MutableChildrenForOutOfFlow(const PhysicalFragmentLink* buffer,
+                                wtf_size_t num_children)
+        : buffer_(const_cast<PhysicalFragmentLink*>(buffer)),
+          num_children_(num_children) {}
 
-    NGLink* buffer_;
+    PhysicalFragmentLink* buffer_;
     wtf_size_t num_children_;
   };
 
@@ -498,7 +500,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     void SetBreakToken(const NGBlockBreakToken* token) {
       fragment_.break_token_ = token;
     }
-    base::span<NGLink> Children() const {
+    base::span<PhysicalFragmentLink> Children() const {
       DCHECK(fragment_.children_valid_);
       return base::make_span(fragment_.children_);
     }
@@ -631,7 +633,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   LayoutUnit last_baseline_;
   Member<PhysicalFragmentRareData> rare_data_;
   NGInkOverflow ink_overflow_;
-  HeapVector<NGLink> children_;
+  HeapVector<PhysicalFragmentLink> children_;
   // fragment_items is after |children_| if they are not empty/initial.
 };
 

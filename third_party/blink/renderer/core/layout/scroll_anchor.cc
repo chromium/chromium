@@ -490,7 +490,7 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
         !is_block_fragmentation_context_root)
       continue;
 
-    for (const NGLink& child : fragment.Children()) {
+    for (const PhysicalFragmentLink& child : fragment.Children()) {
       if (child->IsOutOfFlowPositioned()) {
         LayoutObject* layout_object = child->GetMutableLayoutObject();
         if (layout_object && layout_object->Parent() != candidate) {
@@ -505,7 +505,7 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
         continue;
 
       // Look for OOFs inside a fragmentainer.
-      for (const NGLink& grandchild : child->Children()) {
+      for (const PhysicalFragmentLink& grandchild : child->Children()) {
         if (!grandchild->IsOutOfFlowPositioned())
           continue;
         LayoutObject* layout_object = grandchild->GetMutableLayoutObject();

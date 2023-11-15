@@ -335,7 +335,7 @@ NGSimplifiedLayoutAlgorithm::LayoutWithItemsBuilder() {
 }
 
 void NGSimplifiedLayoutAlgorithm::AddChildFragment(
-    const NGLink& old_fragment,
+    const PhysicalFragmentLink& old_fragment,
     const NGPhysicalFragment& new_fragment,
     const MarginStrut* margin_strut,
     bool is_self_collapsing) {

@@ -745,10 +745,10 @@ void NGPhysicalFragment::TraceAfterDispatch(Visitor* visitor) const {
 
 // TODO(dlibby): remove `Children` and `PostLayoutChildren` and move the
 // casting and/or branching to the callers.
-base::span<const NGLink> NGPhysicalFragment::Children() const {
+base::span<const PhysicalFragmentLink> NGPhysicalFragment::Children() const {
   if (Type() == kFragmentBox)
     return static_cast<const NGPhysicalBoxFragment*>(this)->Children();
-  return base::make_span(static_cast<NGLink*>(nullptr), 0u);
+  return base::make_span(static_cast<PhysicalFragmentLink*>(nullptr), 0u);
 }
 
 NGPhysicalFragment::PostLayoutChildLinkList
@@ -764,8 +764,8 @@ void NGPhysicalFragment::SetChildrenInvalid() const {
   if (!children_valid_)
     return;
 
-  for (const NGLink& child : Children()) {
-    const_cast<NGLink&>(child).fragment = nullptr;
+  for (const PhysicalFragmentLink& child : Children()) {
+    const_cast<PhysicalFragmentLink&>(child).fragment = nullptr;
   }
   children_valid_ = false;
 }
@@ -785,8 +785,8 @@ void NGPhysicalFragment::AddOutlineRectsForNormalChildren(
       // Don't add |Children()|. If |this| has |FragmentItems|, children are
       // either line box, which we already handled in items, or OOF, which we
       // should ignore.
-      DCHECK(
-          base::ranges::all_of(PostLayoutChildren(), [](const NGLink& child) {
+      DCHECK(base::ranges::all_of(
+          PostLayoutChildren(), [](const PhysicalFragmentLink& child) {
             return child->IsLineBox() || child->IsOutOfFlowPositioned();
           }));
       return;
@@ -961,7 +961,7 @@ void NGPhysicalFragment::AdjustScrollableOverflowForHanging(
 // additional_offset must be offset from the containing_block because
 // LocalToAncestorRect returns rects wrt containing_block.
 void NGPhysicalFragment::AddOutlineRectsForDescendant(
-    const NGLink& descendant,
+    const PhysicalFragmentLink& descendant,
     OutlineRectCollector& collector,
     const PhysicalOffset& additional_offset,
     NGOutlineType outline_type,

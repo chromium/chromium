@@ -507,7 +507,7 @@ const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
     WritingMode block_or_line_writing_mode) {
 #if DCHECK_IS_ON()
   if (ItemsBuilder()) {
-    for (const NGLogicalLink& child : Children()) {
+    for (const LogicalFragmentLink& child : Children()) {
       DCHECK(child.fragment);
       const NGPhysicalFragment& fragment = *child.fragment;
       DCHECK(fragment.IsLineBox() ||

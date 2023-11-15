@@ -164,7 +164,7 @@ struct NGStitchedAnchorQueries {
             anchored_oof_containers_and_ancestors),
         root_(root) {}
 
-  void AddChildren(base::span<const NGLogicalLink> children,
+  void AddChildren(base::span<const LogicalFragmentLink> children,
                    const FragmentItemsBuilder::ItemWithOffsetList* items,
                    const WritingModeConverter& converter) {
     const FragmentainerContext fragmentainer{{}, {}, converter};
@@ -179,7 +179,7 @@ struct NGStitchedAnchorQueries {
       }
     }
 
-    for (const NGLogicalLink& child : children) {
+    for (const LogicalFragmentLink& child : children) {
       DCHECK(!child->IsFragmentainerBox());
       DCHECK(!child->IsColumnSpanAll());
       const PhysicalOffset child_offset =
@@ -188,10 +188,10 @@ struct NGStitchedAnchorQueries {
     }
   }
 
-  void AddFragmentainerChildren(base::span<const NGLogicalLink> children,
+  void AddFragmentainerChildren(base::span<const LogicalFragmentLink> children,
                                 WritingDirectionMode writing_direction) {
     LayoutUnit fragmentainer_stitched_offset;
-    for (const NGLogicalLink& child : children) {
+    for (const LogicalFragmentLink& child : children) {
       if (child->IsFragmentainerBox()) {
         const FragmentainerContext fragmentainer{
             child.offset,
@@ -265,7 +265,7 @@ struct NGStitchedAnchorQueries {
     }
 
     // Add block children if any.
-    for (const NGLink& child : fragment.Children()) {
+    for (const PhysicalFragmentLink& child : fragment.Children()) {
       DCHECK(!child->IsFragmentainerBox());
       const auto child_offset_from_fragmentainer =
           offset_from_fragmentainer + child.offset;
@@ -279,13 +279,13 @@ struct NGStitchedAnchorQueries {
       const FragmentainerContext& fragmentainer) {
     DCHECK(fragment.IsFragmentationContextRoot());
     DCHECK(!fragment.Items());
-    HeapVector<NGLogicalLink> children;
-    for (const NGLink& child : fragment.Children()) {
+    HeapVector<LogicalFragmentLink> children;
+    for (const PhysicalFragmentLink& child : fragment.Children()) {
       const LogicalOffset child_offset =
           fragmentainer.converter.ToLogical(
               offset_from_fragmentainer + child.offset, child->Size()) +
           fragmentainer.offset;
-      children.push_back(NGLogicalLink{child.fragment, child_offset});
+      children.push_back(LogicalFragmentLink{child.fragment, child_offset});
     }
     AddFragmentainerChildren(children,
                              fragmentainer.converter.GetWritingDirection());
@@ -363,7 +363,7 @@ struct NGStitchedAnchorQueries {
 
 NGLogicalAnchorQueryMap::NGLogicalAnchorQueryMap(
     const LayoutBox& root_box,
-    const NGLogicalLinkVector& children,
+    const LogicalFragmentLinkVector& children,
     const FragmentItemsBuilder::ItemWithOffsetList* items,
     const WritingModeConverter& converter)
     : root_box_(root_box),
@@ -375,7 +375,7 @@ NGLogicalAnchorQueryMap::NGLogicalAnchorQueryMap(
 
 NGLogicalAnchorQueryMap::NGLogicalAnchorQueryMap(
     const LayoutBox& root_box,
-    const NGLogicalLinkVector& children,
+    const LogicalFragmentLinkVector& children,
     WritingDirectionMode writing_direction)
     : root_box_(root_box), writing_direction_(writing_direction) {
   DCHECK(&root_box);
@@ -383,7 +383,7 @@ NGLogicalAnchorQueryMap::NGLogicalAnchorQueryMap(
 }
 
 void NGLogicalAnchorQueryMap::SetChildren(
-    const NGLogicalLinkVector& children,
+    const LogicalFragmentLinkVector& children,
     const FragmentItemsBuilder::ItemWithOffsetList* items) {
   children_ = &children;
   items_ = items;
@@ -393,7 +393,7 @@ void NGLogicalAnchorQueryMap::SetChildren(
 
   // To allow early returns, check if any child has anchor queries.
   has_anchor_queries_ = false;
-  for (const NGLogicalLink& child : children) {
+  for (const LogicalFragmentLink& child : children) {
     if (child->HasAnchorQuery()) {
       has_anchor_queries_ = true;
       break;

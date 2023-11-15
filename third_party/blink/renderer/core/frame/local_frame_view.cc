@@ -3267,7 +3267,8 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
   // FIXME: We are assuming a shrink-to-fit printing implementation. A cropping
   // implementation should not do this!
   float overall_scale_factor = 1.0;
-  for (const NGLink& link : layout_view->GetPhysicalFragment(0)->Children()) {
+  for (const PhysicalFragmentLink& link :
+       layout_view->GetPhysicalFragment(0)->Children()) {
     const auto& page = To<NGPhysicalBoxFragment>(*link);
     // Check the inline axis overflow on each individual page, to find the
     // largest relative overflow.

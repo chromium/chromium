@@ -44,7 +44,7 @@ class CORE_EXPORT NGFragmentBuilder {
     child_break_tokens_.clear();
   }
 
-  using ChildrenVector = NGLogicalLinkVector;
+  using ChildrenVector = LogicalFragmentLinkVector;
   using MulticolCollection =
       HeapHashMap<Member<LayoutBox>,
                   Member<MulticolWithPendingOofs<LogicalOffset>>>;

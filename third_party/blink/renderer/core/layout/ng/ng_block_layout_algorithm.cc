@@ -3373,7 +3373,7 @@ LayoutUnit NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
           placeholder_baseline + border_padding_block_start;
       container_builder_.SetFirstBaseline(new_baseline);
       container_builder_.SetLastBaseline(new_baseline);
-      const NGLogicalLink& first_child =
+      const LogicalFragmentLink& first_child =
           container_builder_.Children()[kTextBlockIndex];
       LogicalOffset first_child_offset = first_child.offset;
       first_child_offset.block_offset += new_baseline - first_baseline;

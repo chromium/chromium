@@ -14,7 +14,7 @@
 
 namespace blink {
 
-struct NGLink;
+struct PhysicalFragmentLink;
 
 // This is more a copy-and-append algorithm than a layout algorithm.
 // This algorithm will only run when we are trying to add OOF-positioned
@@ -39,7 +39,7 @@ class CORE_EXPORT SimplifiedOofLayoutAlgorithm
   void AppendOutOfFlowResult(const NGLayoutResult* child);
 
  private:
-  void AddChildFragment(const NGLink& old_fragment);
+  void AddChildFragment(const PhysicalFragmentLink& old_fragment);
 
   const WritingDirectionMode writing_direction_;
   PhysicalSize previous_physical_container_size_;

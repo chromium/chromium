@@ -18,9 +18,9 @@ namespace blink {
 
 class LayoutObject;
 class LocalFrameView;
-struct NGLink;
 class NGPhysicalBoxFragment;
 class NGPhysicalFragment;
+struct PhysicalFragmentLink;
 
 // This class walks the whole layout tree, beginning from the root
 // LocalFrameView, across frame boundaries. Helper classes are called for each
@@ -142,7 +142,7 @@ class CORE_EXPORT PrePaintTreeWalk final {
   // everything except its FragmentData. We need to get a bit further inside the
   // child (WalkInternal()) before we can set up FragmentData (if we get there
   // at all).
-  NGPrePaintInfo CreatePrePaintInfo(const NGLink& child,
+  NGPrePaintInfo CreatePrePaintInfo(const PhysicalFragmentLink& child,
                                     const PrePaintTreeWalkContext& context);
 
   // Locate and/or set up a FragmentData object for the current object /

@@ -85,7 +85,8 @@ void SimplifiedOofLayoutAlgorithm::AppendOutOfFlowResult(
   container_builder_.AddResult(*result, result->OutOfFlowPositionedOffset());
 }
 
-void SimplifiedOofLayoutAlgorithm::AddChildFragment(const NGLink& child) {
+void SimplifiedOofLayoutAlgorithm::AddChildFragment(
+    const PhysicalFragmentLink& child) {
   const auto* fragment = child.get();
   // Determine the previous position in the logical coordinate system.
   LogicalOffset child_offset =

@@ -97,7 +97,7 @@ void NGFragmentBuilder::ReplaceChild(wtf_size_t index,
                                      const NGPhysicalFragment& new_child,
                                      const LogicalOffset offset) {
   DCHECK_LT(index, children_.size());
-  children_[index] = NGLogicalLink{std::move(&new_child), offset};
+  children_[index] = LogicalFragmentLink{std::move(&new_child), offset};
 }
 
 HeapVector<Member<LayoutBoxModelObject>>&
@@ -351,7 +351,7 @@ void NGFragmentBuilder::AddChildInternal(const NGPhysicalFragment* child,
   // In order to know where list-markers are within the children list (for the
   // |NGSimplifiedLayoutAlgorithm|) we always place them as the first child.
   if (child->IsListMarker()) {
-    children_.push_front(NGLogicalLink{std::move(child), child_offset});
+    children_.push_front(LogicalFragmentLink{std::move(child), child_offset});
     return;
   }
 
@@ -360,12 +360,13 @@ void NGFragmentBuilder::AddChildInternal(const NGPhysicalFragment* child,
     // ::placeholder earlier.
     const wtf_size_t size = children_.size();
     if (size > 0) {
-      children_.insert(size - 1, NGLogicalLink{std::move(child), child_offset});
+      children_.insert(size - 1,
+                       LogicalFragmentLink{std::move(child), child_offset});
       return;
     }
   }
 
-  children_.push_back(NGLogicalLink{std::move(child), child_offset});
+  children_.push_back(LogicalFragmentLink{std::move(child), child_offset});
 }
 
 void NGFragmentBuilder::AddOutOfFlowChildCandidate(

@@ -20,7 +20,7 @@
 namespace blink {
 
 FieldsetPaintInfo NGFieldsetPainter::CreateFieldsetPaintInfo() const {
-  const NGLink* legend = nullptr;
+  const PhysicalFragmentLink* legend = nullptr;
   if (!fieldset_.Children().empty()) {
     const auto& first_child = fieldset_.Children().front();
     if (first_child->IsRenderedLegend())
