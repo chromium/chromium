@@ -50,6 +50,9 @@ wtf_size_t RasterInvalidator::MatchNewChunkToOldChunk(
     if (new_chunk.Matches(GetOldChunk(i)))
       return i;
   }
+  if (RuntimeEnabledFeatures::OnePassRasterInvalidationEnabled()) {
+    return kNotFound;
+  }
   for (wtf_size_t i = 0; i < old_index; i++) {
     if (new_chunk.Matches(GetOldChunk(i)))
       return i;
@@ -216,7 +219,8 @@ void RasterInvalidator::GenerateRasterInvalidations(
         ClipByLayerBounds(old_chunk_info.bounds_in_layer);
 
     auto reason = PaintInvalidationReason::kNone;
-    if (matched_old_index < max_matched_old_index) {
+    if (!RuntimeEnabledFeatures::OnePassRasterInvalidationEnabled() &&
+        matched_old_index < max_matched_old_index) {
       reason = PaintInvalidationReason::kChunkReordered;
     } else if (ScrollbarNeedsUpdateDisplay(it)) {
       reason = PaintInvalidationReason::kScrollControl;
@@ -285,9 +289,13 @@ void RasterInvalidator::GenerateRasterInvalidations(
     }
 
     old_index = matched_old_index + 1;
-    if (old_index == old_paint_chunks_info_.size())
-      old_index = 0;
-    max_matched_old_index = std::max(max_matched_old_index, matched_old_index);
+    if (!RuntimeEnabledFeatures::OnePassRasterInvalidationEnabled()) {
+      if (old_index == old_paint_chunks_info_.size()) {
+        old_index = 0;
+      }
+      max_matched_old_index =
+          std::max(max_matched_old_index, matched_old_index);
+    }
   }
 
   // Invalidate remaining unmatched (disappeared or uncacheable) old chunks.
