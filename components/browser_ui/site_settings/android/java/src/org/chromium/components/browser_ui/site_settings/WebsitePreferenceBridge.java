@@ -381,8 +381,9 @@ public class WebsitePreferenceBridge {
             @ContentSettingsType int contentSettingType, String primaryPattern,
             String secondaryPattern, @ContentSettingValues int setting) {
         if (contentSettingType == ContentSettingsType.STORAGE_ACCESS) {
-            // StorageAccess exceptions should always specify a primary and a secondary pattern.
-            assert !primaryPattern.equals(SITE_WILDCARD) && !secondaryPattern.equals(SITE_WILDCARD);
+            // StorageAccess exceptions should always specify a primary pattern. The secondary
+            // pattern might or not be empty depending if the exception is normal or embargoed.
+            assert !primaryPattern.isEmpty() && !primaryPattern.equals(SITE_WILDCARD);
         } else if (contentSettingType == ContentSettingsType.COOKIES
                 && !secondaryPattern.equals(SITE_WILDCARD)) {
             // Currently only Cookie Settings support a non-empty, non-wildcard secondaryPattern.
