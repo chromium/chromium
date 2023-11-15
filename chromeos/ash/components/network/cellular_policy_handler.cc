@@ -294,6 +294,19 @@ void CellularPolicyHandler::AttemptInstallESim() {
     return;
   }
 
+  if (!HasNonCellularInternetConnectivity()) {
+    NET_LOG(ERROR)
+        << "Failed to install the policy eSIM profile due to missing a "
+        << "non-cellular internet connection: "
+        << GetCurrentActivationCode().ToErrorString();
+    auto current_request = std::move(remaining_install_requests_.front());
+    PopRequest();
+    ScheduleRetryAndProcessRequests(
+        std::move(current_request),
+        InstallRetryReason::kMissingNonCellularConnectivity);
+    return;
+  }
+
   if (need_refresh_profile_list_) {
     // Profile list for current EUICC may not have been refreshed, so explicitly
     // refresh profile list before processing installation requests.
@@ -321,19 +334,6 @@ void CellularPolicyHandler::PerformInstallESim(
         std::move(new_shill_properties), euicc_path, *profile_path,
         base::BindOnce(&CellularPolicyHandler::OnConfigureESimService,
                        weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
-  if (!HasNonCellularInternetConnectivity()) {
-    NET_LOG(ERROR)
-        << "Failed to install the policy eSIM profile due to missing a "
-        << "non-cellular internet connection: "
-        << GetCurrentActivationCode().ToErrorString();
-    auto current_request = std::move(remaining_install_requests_.front());
-    PopRequest();
-    ScheduleRetryAndProcessRequests(
-        std::move(current_request),
-        InstallRetryReason::kMissingNonCellularConnectivity);
     return;
   }
 
