@@ -3840,6 +3840,22 @@
       "features": [
         "disable_webgpu_shared_images"
       ]
+    },
+    {
+      "id": 424,
+      "cr_bugs": [1439689],
+      "description": "Disable SVC video encoding on AMD GPUs that can't change bitrate in SVC mode",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "driver_version": {
+        "op": "<",
+        "value": "31.0.21029.6002"
+      },
+      "features": [
+        "disable_svc_encoding"
+      ]
     }
   ]
 }

@@ -641,7 +641,7 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
                              bitrate_mode, {SVCScalabilityMode::kL1T1});
     profile.min_resolution = gfx::Size(32, 32);
 
-    if (svc_supported) {
+    if (svc_supported && !workarounds_.disable_svc_encoding) {
       profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
       profile.scalability_modes.push_back(SVCScalabilityMode::kL1T3);
     }
