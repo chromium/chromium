@@ -38,7 +38,6 @@ class PreRedirectionURLObserver
  private:
   explicit PreRedirectionURLObserver(content::WebContents* web_contents);
   friend class content::WebContentsUserData<PreRedirectionURLObserver>;
-  friend class PreRedirectionURLObserverTest;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
