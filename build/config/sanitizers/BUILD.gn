@@ -476,12 +476,16 @@ config("ubsan_flags") {
       ubsan_ignorelist_path =
           rebase_path("//tools/ubsan/ignorelist.txt", root_build_dir)
     }
+    # TODO(crbug.com/1502579): Enable all of -fsanitize=undefined. Note that
+    # both this list and Clang's defaults omit -fsanitize=float-divide-by-zero.
+    # C and C++ leave it undefined to accommodate non-IEEE floating point, but
+    # we assume the compiler implements IEEE floating point, which does define
+    # division by zero.
     cflags += [
       "-fsanitize=alignment",
       "-fsanitize=bool",
       "-fsanitize=bounds",
       "-fsanitize=builtin",
-      "-fsanitize=float-divide-by-zero",
       "-fsanitize=integer-divide-by-zero",
       "-fsanitize=null",
       "-fsanitize=nonnull-attribute",
