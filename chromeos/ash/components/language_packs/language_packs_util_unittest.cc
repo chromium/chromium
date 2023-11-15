@@ -6,12 +6,16 @@
 
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -247,6 +251,33 @@ TEST(LanguagePacksUtil, MapThenFilterStringsDisjointSet) {
                 return "something else";
               })),
       UnorderedElementsAre("something else"));
+}
+
+TEST(LanguagePacksUtil, ExtractInputMethodsFromPrefsEmpty) {
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  pref->registry()->RegisterStringPref(prefs::kLanguagePreloadEngines,
+                                       std::string());
+
+  EXPECT_THAT(ExtractInputMethodsFromPrefs(pref.get()), IsEmpty());
+}
+
+TEST(LanguagePacksUtil, ExtractInputMethodsFromPrefsOne) {
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  pref->registry()->RegisterStringPref(prefs::kLanguagePreloadEngines,
+                                       "xkb:it::ita");
+
+  EXPECT_THAT(ExtractInputMethodsFromPrefs(pref.get()),
+              UnorderedElementsAre("xkb:it::ita"));
+}
+
+TEST(LanguagePacksUtil, ExtractInputMethodsFromPrefsMultiple) {
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  pref->registry()->RegisterStringPref(prefs::kLanguagePreloadEngines,
+                                       "xkb:it::ita,xkb:fr::fra,xkb:de::ger");
+
+  EXPECT_THAT(
+      ExtractInputMethodsFromPrefs(pref.get()),
+      UnorderedElementsAre("xkb:it::ita", "xkb:fr::fra", "xkb:de::ger"));
 }
 
 }  // namespace ash::language_packs

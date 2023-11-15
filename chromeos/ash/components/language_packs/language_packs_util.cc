@@ -4,13 +4,16 @@
 
 #include "chromeos/ash/components/language_packs/language_packs_util.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "components/language/core/common/locale_util.h"
+#include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -196,6 +199,13 @@ base::flat_set<std::string> MapThenFilterStrings(
   }
 
   return output;
+}
+
+std::vector<std::string> ExtractInputMethodsFromPrefs(PrefService* prefs) {
+  const std::string& preload_engines_str =
+      prefs->GetString(prefs::kLanguagePreloadEngines);
+  return base::SplitString(preload_engines_str, ",", base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_ALL);
 }
 
 }  // namespace ash::language_packs

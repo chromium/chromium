@@ -15,6 +15,8 @@
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class PrefService;
+
 namespace ash::language_packs {
 
 // Returns the enum value of a feature ID that matches the corresponding value
@@ -60,6 +62,9 @@ base::flat_set<std::string> MapThenFilterStrings(
     base::span<const std::string> inputs,
     base::RepeatingCallback<absl::optional<std::string>(const std::string&)>
         input_mapping);
+
+// Extracts the set of input method IDs from the appropriate user Pref.
+std::vector<std::string> ExtractInputMethodsFromPrefs(PrefService* prefs);
 
 }  // namespace ash::language_packs
 
