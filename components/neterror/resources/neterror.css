@@ -33,26 +33,26 @@ a {
 .icon-generic {
   /* Can't access chrome://theme/IDR_ERROR_NETWORK_GENERIC from an untrusted
    * renderer process, so embed the resource manually. */
-  content: -webkit-image-set(
+  content: image-set(
       url(../../resources/default_100_percent/neterror/error_network_generic.png) 1x,
       url(../../resources/default_200_percent/neterror/error_network_generic.png) 2x);
 }
 
 .icon-info {
-  content: -webkit-image-set(
+  content: image-set(
       url(../../security_interstitials/core/browser/resources/images/1x/info.png) 1x,
       url(../../security_interstitials/core/browser/resources/images/2x/info.png) 2x);
 }
 
 .icon-offline {
-  content: -webkit-image-set(
+  content: image-set(
       url(images/default_100_percent/offline/100-error-offline.png) 1x,
       url(images/default_200_percent/offline/200-error-offline.png) 2x);
   position: relative;
 }
 
 .icon-disabled {
-  content: -webkit-image-set(
+  content: image-set(
       url(images/default_100_percent/offline/100-disabled.png) 1x,
       url(images/default_200_percent/offline/200-disabled.png) 2x);
   width: 112px;
@@ -661,7 +661,7 @@ html[subframe] body {
 }
 
 #download-button::before {
-  background: -webkit-image-set(
+  background: image-set(
       url(../../resources/default_100_percent/neterror/download.png) 1x,
       url(../../resources/default_200_percent/neterror/download.png) 2x)
     no-repeat;
