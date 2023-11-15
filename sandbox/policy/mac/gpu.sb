@@ -4,9 +4,6 @@
 
 ; --- The contents of common.sb implicitly included here. ---
 
-(deny default (with partial-symbolication))
-(debug deny)
-
 ; Allow cf prefs to work.
 (allow user-preference-read)
 
