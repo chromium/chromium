@@ -163,7 +163,7 @@ public class WebsitePermissionsFetcher {
      *
      * @param callback The callback to run when the fetch is complete.
      */
-    public void fetchAllPreferences(WebsitePermissionsCallback callback) {
+    public void fetchAllPreferences(@NonNull WebsitePermissionsCallback callback) {
         var fetcherInternal = new WebsitePermissionFetcherInternal();
         fetcherInternal.fetchAllPreferences(callback);
     }
@@ -175,7 +175,7 @@ public class WebsitePermissionsFetcher {
      * @param callback The callback to run when the fetch is complete.
      */
     public void fetchPreferencesForCategory(
-            SiteSettingsCategory category, WebsitePermissionsCallback callback) {
+            SiteSettingsCategory category, @NonNull WebsitePermissionsCallback callback) {
         var fetcherInternal = new WebsitePermissionFetcherInternal();
         fetcherInternal.fetchPreferencesForCategory(category, callback);
     }
@@ -189,8 +189,9 @@ public class WebsitePermissionsFetcher {
      * @param callback The callback to run when the fetch is complete.
      */
     public void fetchPreferencesForCategoryAndPopulateFpsInfo(
-            SiteSettingsDelegate siteSettingsDelegate, SiteSettingsCategory category,
-            WebsitePermissionsCallback callback) {
+            SiteSettingsDelegate siteSettingsDelegate,
+            SiteSettingsCategory category,
+            @NonNull WebsitePermissionsCallback callback) {
         var fetcherInternal = new WebsitePermissionFetcherInternal();
         fetcherInternal.fetchPreferencesForCategoryAndPopulateFpsInfo(
                 siteSettingsDelegate, category, callback);
@@ -211,7 +212,7 @@ public class WebsitePermissionsFetcher {
          *
          * @param callback The callback to run when the fetch is complete.
          */
-        public void fetchAllPreferences(WebsitePermissionsCallback callback) {
+        public void fetchAllPreferences(@NonNull WebsitePermissionsCallback callback) {
             TaskQueue queue = new TaskQueue();
 
             addAllFetchers(queue);
@@ -238,7 +239,7 @@ public class WebsitePermissionsFetcher {
          * @param callback The callback to run when the fetch is complete.
          */
         public void fetchPreferencesForCategory(
-                SiteSettingsCategory category, WebsitePermissionsCallback callback) {
+                SiteSettingsCategory category, @NonNull WebsitePermissionsCallback callback) {
             TaskQueue queue = createFetchersForCategory(category);
 
             queue.add(new PermissionsAvailableCallbackRunner(callback));
@@ -273,8 +274,9 @@ public class WebsitePermissionsFetcher {
          * @param callback The callback to run when the fetch is complete.
          */
         public void fetchPreferencesForCategoryAndPopulateFpsInfo(
-                SiteSettingsDelegate siteSettingsDelegate, SiteSettingsCategory category,
-                WebsitePermissionsCallback callback) {
+                SiteSettingsDelegate siteSettingsDelegate,
+                SiteSettingsCategory category,
+                @NonNull WebsitePermissionsCallback callback) {
             TaskQueue queue = createFetchersForCategory(category);
             queue.add(new FirstPartySetsInfoFetcher(siteSettingsDelegate));
 
@@ -393,6 +395,8 @@ public class WebsitePermissionsFetcher {
                 String embedder = exception.getSecondaryPattern();
 
                 if (isEmbeddedPermission
+                        && embedder != null
+                        && !embedder.equals(SITE_WILDCARD)
                         && mSiteSettingsCategory != null
                         && mSiteSettingsCategory.getType() == SiteSettingsCategory.Type.ALL_SITES) {
                     // AllSites should group embedded permissions by embedder.
@@ -657,9 +661,10 @@ public class WebsitePermissionsFetcher {
         }
 
         private class PermissionsAvailableCallbackRunner extends Task {
-            private final WebsitePermissionsCallback mCallback;
+            private final @NonNull WebsitePermissionsCallback mCallback;
 
-            private PermissionsAvailableCallbackRunner(WebsitePermissionsCallback callback) {
+            private PermissionsAvailableCallbackRunner(
+                    @NonNull WebsitePermissionsCallback callback) {
                 mCallback = callback;
             }
 
