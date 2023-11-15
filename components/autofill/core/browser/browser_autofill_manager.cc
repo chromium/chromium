@@ -3257,12 +3257,25 @@ bool BrowserAutofillManager::FillFieldWithValue(
     uint32_t profile_form_bitmask,
     mojom::ActionPersistence action_persistence,
     std::string* failure_to_fill) {
-  bool filled_field = field_filler_.FillFormField(
-      autofill_field, profile_or_credit_card, forced_fill_values, field_data,
-      cvc, action_persistence, failure_to_fill);
-  if (!filled_field) {
+  auto it = forced_fill_values.find(field_data.global_id());
+  bool value_is_an_override = it != forced_fill_values.end();
+  std::u16string value_to_fill =
+      value_is_an_override
+          ? it->second
+          : field_filler_.GetValueForFilling(
+                autofill_field, profile_or_credit_card, field_data, cvc,
+                action_persistence, failure_to_fill);
+
+  // Do not attempt to fill empty values as it would skew the metrics.
+  if (value_to_fill.empty()) {
+    if (failure_to_fill) {
+      *failure_to_fill += "No value to fill available. ";
+    }
     return false;
   }
+  field_data.value = value_to_fill;
+  field_data.force_override = value_is_an_override;
+
   if (failure_to_fill) {
     *failure_to_fill = "Decided to fill";
   }

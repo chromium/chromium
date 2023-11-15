@@ -42,35 +42,4 @@ std::u16string FieldFiller::GetValueForFilling(
       .value_or(u"");
 }
 
-bool FieldFiller::FillFormField(
-    const AutofillField& field,
-    absl::variant<const AutofillProfile*, const CreditCard*>
-        profile_or_credit_card,
-    const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
-    FormFieldData& field_data,
-    const std::u16string& cvc,
-    mojom::ActionPersistence action_persistence,
-    std::string* failure_to_fill) {
-  auto it = forced_fill_values.find(field.global_id());
-  bool value_is_an_override = it != forced_fill_values.end();
-  std::u16string value =
-      value_is_an_override
-          ? it->second
-          : GetValueForFilling(field, profile_or_credit_card, field_data, cvc,
-                               action_persistence, failure_to_fill);
-
-  // Do not attempt to fill empty values as it would skew the metrics.
-  if (value.empty()) {
-    if (failure_to_fill) {
-      *failure_to_fill += "No value to fill available. ";
-    }
-    return false;
-  }
-  field_data.value = value;
-  if (value_is_an_override) {
-    field_data.force_override = true;
-  }
-  return true;
-}
-
 }  // namespace autofill

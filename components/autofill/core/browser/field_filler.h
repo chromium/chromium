@@ -37,28 +37,6 @@ class FieldFiller {
       mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);
 
-  // Set |field_data|'s value to the right value in |profile_or_credit_card|.
-  // Uses |field| to determine which field type should be filled, and
-  // |app_locale_| as hint when filling exceptional cases like phone number
-  // values. If |forced_fill_values| contains a string for the field to be
-  // filled, this value will be used unconditionally.
-  // If |action| indicates that the value will be used for the
-  // autofill preview (aka. suggestion) state, the data to be filled may be
-  // obfuscated.
-  //
-  // Returns |true| if the field has been filled, false otherwise. This is
-  // independent of whether the field was filled or autofilled before. If
-  // |failure_to_fill| is not null, errors are reported to that string.
-  bool FillFormField(
-      const AutofillField& field,
-      absl::variant<const AutofillProfile*, const CreditCard*>
-          profile_or_credit_card,
-      const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
-      FormFieldData& field_data,
-      const std::u16string& cvc,
-      mojom::ActionPersistence action_persistence,
-      std::string* failure_to_fill = nullptr);
-
  private:
   const std::string app_locale_;
   // Weak, should outlive this object. May be null.
