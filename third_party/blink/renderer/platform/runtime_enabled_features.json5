@@ -245,6 +245,11 @@
       base_feature: "none",
     },
     {
+      name: "AccessibilityOSLevelBoldText",
+      status: "experimental",
+      public: true,
+    },
+    {
       name: "AccessibilityPageZoom",
       base_feature: "none",
       public: true,
