@@ -394,6 +394,7 @@ def _mixin_values(
         lacros_args = None,
         linux_args = None,
         mac_args = None,
+        win_args = None,
         win64_args = None,
         swarming = None,
         android_swarming = None,
@@ -442,6 +443,9 @@ def _mixin_values(
         mac_args: Arguments to be passed to the test when the builder is
             targeting mac. Will be appended to any existing mac_args for
             the test.
+        win_args: Arguments to be passed to the test when the builder
+            is targeting win. Will be appended to any existing
+            win_args for the test.
         win64_args: Arguments to be passed to the test when the builder
             is targeting win64. Will be appended to any existing
             win64_args for the test.
@@ -491,6 +495,7 @@ def _mixin_values(
         lacros_args = lacros_args,
         linux_args = linux_args,
         mac_args = mac_args,
+        win_args = win_args,
         win64_args = win64_args,
         swarming = swarming,
         android_swarming = android_swarming,
@@ -906,6 +911,7 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
         "lacros_args",
         "linux_args",
         "mac_args",
+        "win_args",
         "win64_args",
     ):
         if args_attr in mixin:

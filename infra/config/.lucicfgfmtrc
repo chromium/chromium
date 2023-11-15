@@ -111,6 +111,7 @@ rules {
         arg: "lacros_args"
         arg: "linux_args"
         arg: "mac_args"
+        arg: "win_args"
         arg: "win64_args"
         arg: "ci_only"
         arg: "swarming"

@@ -6873,6 +6873,7 @@
         'os_type': 'win',
       },
       'optimization_guide-win64': {
+        'browser_config': 'release_x64',
         'mixins': [
           'chrome-intelligence-swarming-pool',
           'win10',

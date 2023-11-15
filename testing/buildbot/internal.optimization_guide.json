@@ -493,6 +493,12 @@
         "variant_id": "MODEL_VALIDATION_BASE"
       },
       {
+        "args": [
+          "--chromedriver",
+          "chromedriver.exe",
+          "--binary",
+          "Chrome.exe"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -590,6 +596,12 @@
         "variant_id": "MODEL_VALIDATION_BASE"
       },
       {
+        "args": [
+          "--chromedriver",
+          "chromedriver.exe",
+          "--binary",
+          "Chrome.exe"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
