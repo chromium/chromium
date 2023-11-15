@@ -482,6 +482,11 @@ const char kAutofillEnableCardArtServerSideStretchingDescription[] =
     "images of the exact required dimensions. The client side resizing of "
     "images will not be required.";
 
+const char kAutofillEnableCardBenefitsName[] = "Enable showing card benefits";
+const char kAutofillEnableCardBenefitsDescription[] =
+    "When enabled, card benefits offered by issuers will be shown in "
+    "Payments Autofill UI.";
+
 const char kAutofillEnableCardProductNameName[] =
     "Enable showing card product name";
 const char kAutofillEnableCardProductNameDescription[] =

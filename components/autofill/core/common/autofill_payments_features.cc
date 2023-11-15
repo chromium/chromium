@@ -44,6 +44,12 @@ BASE_FEATURE(kAutofillEnableCardArtServerSideStretching,
              "AutofillEnableCardArtServerSideStretching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, card benefits offered by issuers will be shown in Payments
+// Autofill UI.
+BASE_FEATURE(kAutofillEnableCardBenefits,
+             "AutofillEnableCardBenefits",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, card product name (instead of issuer network) will be shown in
 // Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableCardProductName,

@@ -290,6 +290,9 @@ extern const char kAutofillEnableCardArtImageDescription[];
 extern const char kAutofillEnableCardArtServerSideStretchingName[];
 extern const char kAutofillEnableCardArtServerSideStretchingDescription[];
 
+extern const char kAutofillEnableCardBenefitsName[];
+extern const char kAutofillEnableCardBenefitsDescription[];
+
 extern const char kAutofillEnableCardProductNameName[];
 extern const char kAutofillEnableCardProductNameDescription[];
 

@@ -50,6 +50,11 @@ const char kAutofillEnableCardArtImageDescription[] =
     "When enabled, card product images (instead of network icons) will be "
     "shown in Payments Autofill UI.";
 
+const char kAutofillEnableCardBenefitsName[] = "Enable showing card benefits";
+const char kAutofillEnableCardBenefitsDescription[] =
+    "When enabled, card benefits offered by issuers will be shown in "
+    "Payments Autofill UI.";
+
 const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[] =
     "Enable sending merchant domain in server card unmask requests";
 const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[] =

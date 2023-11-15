@@ -16,6 +16,7 @@ namespace features {
 BASE_DECLARE_FEATURE(kAutofillEnableAndroidNKeyForFidoAuthentication);
 BASE_DECLARE_FEATURE(kAutofillEnableCardArtImage);
 BASE_DECLARE_FEATURE(kAutofillEnableCardArtServerSideStretching);
+BASE_DECLARE_FEATURE(kAutofillEnableCardBenefits);
 BASE_DECLARE_FEATURE(kAutofillEnableCardProductName);
 BASE_DECLARE_FEATURE(kAutofillEnableCvcStorageAndFilling);
 BASE_DECLARE_FEATURE(kAutofillEnableEmailOtpForVcnYellowPath);

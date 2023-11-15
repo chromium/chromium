@@ -37041,6 +37041,7 @@ from previous Chrome versions.
   <int value="-1541187160" label="UsernameFirstFlow:disabled"/>
   <int value="-1540007054" label="ArcHostVpn:disabled"/>
   <int value="-1539513973" label="ContentSettingsRedesign:disabled"/>
+  <int value="-1538921509" label="AutofillEnableCardBenefits:disabled"/>
   <int value="-1538752676" label="IncognitoBrandConsistencyForAndroid:enabled"/>
   <int value="-1538734579"
       label="AutofillEnableSendingBcnInGetUploadDetails:disabled"/>
@@ -39856,6 +39857,7 @@ from previous Chrome versions.
   <int value="-195029497" label="MediaRemoting:disabled"/>
   <int value="-192962976" label="CCTResizableAlwaysShowNavBarButtons:enabled"/>
   <int value="-192919826" label="ViewsSimplifiedFullscreenUI:enabled"/>
+  <int value="-192433738" label="AutofillEnableCardBenefits:enabled"/>
   <int value="-192389983" label="NoStatePrefetch:enabled"/>
   <int value="-190723154" label="AppLaunchAutomation:enabled"/>
   <int value="-190449995" label="CommerceLocalPDPDetection:enabled"/>
