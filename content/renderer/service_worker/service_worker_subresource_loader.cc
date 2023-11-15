@@ -4,9 +4,6 @@
 
 #include "content/renderer/service_worker/service_worker_subresource_loader.h"
 
-#include "base/atomic_sequence_num.h"
-#include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -21,7 +18,6 @@
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
 #include "content/common/service_worker/service_worker_router_evaluator.h"
 #include "content/public/common/content_features.h"
-#include "content/renderer/renderer_blink_platform_impl.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/net_errors.h"
@@ -41,9 +37,6 @@
 #include "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom.h"
-#include "third_party/blink/public/platform/web_http_body.h"
-#include "third_party/blink/public/platform/web_string.h"
-#include "ui/base/page_transition_types.h"
 
 namespace content {
 
@@ -1266,11 +1259,18 @@ ServiceWorkerSubresourceLoader::MaybeEvaluateRouterConditions() const {
   // need running status.
   // Getting recent running status sends IPC to the browser process,
   // and affection to performance is concerned.
+  absl::optional<ServiceWorkerRouterEvaluator::Result> result;
   if (router_evaluator->need_running_status()) {
-    return router_evaluator->Evaluate(
+    result = router_evaluator->Evaluate(
         resource_request_, controller_connector_->GetRecentRunningStatus());
   } else {
-    return router_evaluator->EvaluateWithoutRunningStatus(resource_request_);
+    result = router_evaluator->EvaluateWithoutRunningStatus(resource_request_);
+  }
+
+  if (result) {
+    return std::move(result->sources);
+  } else {
+    return {};
   }
 }
 

@@ -212,8 +212,8 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterSource {
 // This represents a ServiceWorker static routing API's router rule.
 // It represents each route.
 struct BLINK_COMMON_EXPORT ServiceWorkerRouterRule {
-  // A rule can have one condition object. A condition object may have several
-  // different conditions.
+  // A rule can have one condition object. A condition object should not be
+  // empty.
   ServiceWorkerRouterCondition condition;
   // There can be a list of sources, and expected to be routed from
   // front to back.
