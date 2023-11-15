@@ -65,6 +65,8 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
+#include "components/autofill/core/browser/field_filling_address_util.h"
+#include "components/autofill/core/browser/field_filling_payments_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_autofill_history.h"
@@ -561,7 +563,6 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
     : AutofillManager(driver, client),
       external_delegate_(std::make_unique<AutofillExternalDelegate>(this)),
       app_locale_(app_locale),
-      field_filler_(app_locale, client->GetAddressNormalizer()),
       single_field_form_fill_router_(client->CreateSingleFieldFormFillRouter()),
       suggestion_generator_(std::make_unique<AutofillSuggestionGenerator>(
           client,
@@ -2694,25 +2695,23 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
 bool BrowserAutofillManager::ShouldPreventAutofillFromOverridingPrefilledField(
     mojom::ActionPersistence action_persistence,
-    AutofillField* cached_field,
-    FormFieldData& field_data,
+    AutofillField& cached_field,
+    const FormFieldData& field_data,
     bool is_initiating_field,
-    absl::variant<const AutofillProfile*, const CreditCard*>
-        profile_or_credit_card,
-    const std::u16string* optional_cvc) {
+    const AutofillProfile& profile) {
   // Keeping the credit card fields out of the experiment group.
   // The default behaviour would be to override the credit card pre-filled
   // fields.
-  if (cached_field->Type().group() == FieldTypeGroup::kCreditCard)
+  if (cached_field.Type().group() == FieldTypeGroup::kCreditCard) {
     return false;
+  }
 
   if (!base::FeatureList::IsEnabled(
           features::kAutofillPreventOverridingPrefilledValues)) {
     return false;
   }
 
-  cached_field->set_value_not_autofilled_over_existing_value_hash(
-      absl::nullopt);
+  cached_field.set_value_not_autofilled_over_existing_value_hash(absl::nullopt);
 
   // Some sites have empty values in the fields, for example.
   if (std::u16string sanitized_field_value =
@@ -2721,10 +2720,10 @@ bool BrowserAutofillManager::ShouldPreventAutofillFromOverridingPrefilledField(
       !sanitized_field_value.empty() && !is_initiating_field) {
     std::string unused_failure_to_fill;
     const std::u16string kEmptyCvc{};
-    std::u16string fill_value = field_filler_.GetValueForFilling(
-        *cached_field, profile_or_credit_card, field_data,
-        optional_cvc ? *optional_cvc : kEmptyCvc, action_persistence,
-        &unused_failure_to_fill);
+    std::u16string fill_value =
+        GetValueForProfile(profile, app_locale_, cached_field.Type(),
+                           field_data, client().GetAddressNormalizer())
+            .value_or(u"");
     std::u16string sanitized_fill_value =
         RemoveWhiteSpaceAndConjugatingCharacters(fill_value);
 
@@ -2732,10 +2731,10 @@ bool BrowserAutofillManager::ShouldPreventAutofillFromOverridingPrefilledField(
         !sanitized_fill_value.empty() &&
         !base::EqualsCaseInsensitiveASCII(sanitized_field_value,
                                           sanitized_fill_value) &&
-        !cached_field->value.empty()) {
+        !cached_field.value.empty()) {
       // Save the value that was supposed to be autofilled for this
       // field if the field contained an initial value.
-      cached_field->set_value_not_autofilled_over_existing_value_hash(
+      cached_field.set_value_not_autofilled_over_existing_value_hash(
           base::FastHash(base::UTF16ToUTF8(sanitized_fill_value)));
     }
     return true;
@@ -3260,11 +3259,18 @@ bool BrowserAutofillManager::FillFieldWithValue(
   auto it = forced_fill_values.find(field_data.global_id());
   bool value_is_an_override = it != forced_fill_values.end();
   std::u16string value_to_fill =
-      value_is_an_override
-          ? it->second
-          : field_filler_.GetValueForFilling(
-                autofill_field, profile_or_credit_card, field_data, cvc,
-                action_persistence, failure_to_fill);
+      value_is_an_override ? it->second
+      : absl::holds_alternative<const AutofillProfile*>(profile_or_credit_card)
+          ? GetValueForProfile(
+                *absl::get<const AutofillProfile*>(profile_or_credit_card),
+                app_locale_, autofill_field.Type(), field_data,
+                client().GetAddressNormalizer(), failure_to_fill)
+                .value_or(u"")
+          : GetValueForCreditCard(
+                *absl::get<const CreditCard*>(profile_or_credit_card), cvc,
+                app_locale_, action_persistence, autofill_field,
+                failure_to_fill)
+                .value_or(u"");
 
   // Do not attempt to fill empty values as it would skew the metrics.
   if (value_to_fill.empty()) {

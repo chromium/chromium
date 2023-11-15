@@ -28,7 +28,6 @@
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
-#include "components/autofill/core/browser/field_filler.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_autofill_history.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -515,12 +514,10 @@ class BrowserAutofillManager : public AutofillManager,
   // case.
   [[nodiscard]] bool ShouldPreventAutofillFromOverridingPrefilledField(
       mojom::ActionPersistence action_persistence,
-      AutofillField* cached_field,
-      FormFieldData& field_data,
+      AutofillField& cached_field,
+      const FormFieldData& field_data,
       bool is_initiating_field,
-      absl::variant<const AutofillProfile*, const CreditCard*>
-          profile_or_credit_card,
-      const std::u16string* optional_cvc);
+      const AutofillProfile& profile);
 
   // Creates a FormStructure using the FormData received from the renderer. Will
   // return an empty scoped_ptr if the data should not be processed for upload
@@ -603,6 +600,7 @@ class BrowserAutofillManager : public AutofillManager,
   //
   // Returns true if the field has been filled, false otherwise. This is
   // independent of whether the field was filled or autofilled before.
+  // TODO(crbug.com/1330108): Cleanup API and logic.
   bool FillFieldWithValue(
       AutofillField& autofill_field,
       absl::variant<const AutofillProfile*, const CreditCard*>
@@ -711,9 +709,6 @@ class BrowserAutofillManager : public AutofillManager,
   std::unique_ptr<FastCheckoutDelegate> fast_checkout_delegate_;
 
   std::string app_locale_;
-
-  // Used to help fill data into fields.
-  FieldFiller field_filler_;
 
   // Container holding the history of Autofill filling operations. Used to undo
   // some of the filling operations.

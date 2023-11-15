@@ -180,8 +180,6 @@ static_library("browser") {
     "data_model/payment_instrument.h",
     "data_model/phone_number.cc",
     "data_model/phone_number.h",
-    "field_filler.cc",
-    "field_filler.h",
     "field_filling_address_util.cc",
     "field_filling_address_util.h",
     "field_filling_payments_util.cc",
