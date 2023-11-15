@@ -4755,6 +4755,11 @@ const char kReadAnythingReadAloudName[] = "Reading Mode Read Aloud";
 const char kReadAnythingReadAloudDescription[] =
     "Enables the experimental Read Aloud feature in Reading Mode.";
 
+const char kReadAnythingOmniboxIconName[] = "Reading Mode with Omnibox Icon";
+const char kReadAnythingOmniboxIconDescription[] =
+    "Show the reading mode icon in the omnibox. Click the icon to open reading "
+    "mode.";
+
 const char kEnableWebHidOnExtensionServiceWorkerName[] =
     "Enable WebHID on extension service workers";
 const char kEnableWebHidOnExtensionServiceWorkerDescription[] =
