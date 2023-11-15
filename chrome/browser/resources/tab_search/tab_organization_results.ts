@@ -70,6 +70,10 @@ export class TabOrganizationResultsElement extends PolymerElement {
   private onTabRemove_(event: DomRepeatEvent<TabData>) {
     const index = this.tabDatas_.indexOf(event.model.item);
     this.splice('tabs', index, 1);
+    this.dispatchEvent(new CustomEvent('remove-tab', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private onCreateGroupClick_() {

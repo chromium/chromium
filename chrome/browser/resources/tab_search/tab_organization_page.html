@@ -59,10 +59,8 @@
   }
 
   #footer {
-    background-color: var(--color-bubble-footer-background);
     display: flex;
     flex-direction: column;
-    padding: 16px var(--mwb-list-item-horizontal-margin);
   }
 
   #footer[shown] {
@@ -84,13 +82,18 @@
     animation: fadeOut 100ms linear forwards,
                displayOut 200ms linear forwards;
   }
+
+  .footer-container {
+    background-color: var(--color-bubble-footer-background);
+    padding: 16px var(--mwb-list-item-horizontal-margin);
+  }
 </style>
 
 <div id="contents">
   <div id="body">
     <tab-organization-not-started id="notStarted"
         shown$="[[isState_(tabOrganizationStateEnum_.kNotStarted, state_)]]"
-        on-sync-change="updateContentsHeight"
+        on-sync-change="updateContentsHeightAfterNextRender"
         on-sync-click="onSyncClick_"
         on-sign-in-click="onSignInClick_"
         on-settings-click="onSettingsClick_"
@@ -104,19 +107,22 @@
         shown$="[[isState_(tabOrganizationStateEnum_.kSuccess, state_)]]"
         name="[[name_]]"
         tabs="[[tabs_]]"
-        on-create-group-click="onCreateGroupClick_">
+        on-create-group-click="onCreateGroupClick_"
+        on-remove-tab="updateContentsHeightAfterNextRender">
     </tab-organization-results>
     <tab-organization-failure id="failure"
         shown$="[[isState_(tabOrganizationStateEnum_.kFailure, state_)]]"
         error="[[error_]]">
     </tab-organization-failure>
   </div>
-  <div id="footer" shown$="[[showFooter_(state_, showFRE_)]]">
-    <div class="tab-organization-body">
-      <b>$i18n{tipTitle}</b> $i18n{tipBody}
-    </div>
-    <div class="tab-organization-link" on-click="onTipClick_">
-      $i18n{tipAction}
+  <div class="footer-container">
+    <div id="footer" shown$="[[showFooter_(state_, showFRE_)]]">
+      <div class="tab-organization-body">
+        <b>$i18n{tipTitle}</b> $i18n{tipBody}
+      </div>
+      <div class="tab-organization-link" on-click="onTipClick_">
+        $i18n{tipAction}
+      </div>
     </div>
   </div>
 </div>

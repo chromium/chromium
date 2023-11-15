@@ -20,8 +20,8 @@ import {getTemplate} from './tab_organization_page.html.js';
 import {Tab, TabOrganization, TabOrganizationError, TabOrganizationSession, TabOrganizationState} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
-const TRAILING_BODY_SPACING: number = 20;
-const TRAILING_FOOTER_SPACING: number = 28;
+const BODY_VERTICAL_MARGIN: number = 32;
+const FOOTER_VERTICAL_PADDING: number = 32;
 
 export interface TabOrganizationPageElement {
   $: {
@@ -74,7 +74,7 @@ export class TabOrganizationPageElement extends PolymerElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.updateContentsHeight();
+    this.updateContentsHeight_();
     this.apiProxy_.getTabOrganizationSession().then(
         ({session}) => this.setSession_(session));
     const callbackRouter = this.apiProxy_.getCallbackRouter();
@@ -94,27 +94,42 @@ export class TabOrganizationPageElement extends PolymerElement {
     }
   }
 
-  updateContentsHeight() {
+  updateContentsHeightAfterNextRender() {
+    afterNextRender(this, () => this.updateContentsHeight_());
+  }
+
+  private updateContentsHeight_() {
     let contentsHeight = 0;
     switch (this.state_) {
       case TabOrganizationState.kNotStarted:
-        contentsHeight = this.$.notStarted.scrollHeight + TRAILING_BODY_SPACING;
+        // Subtract padding out here and below as this is variable during
+        // animation and should not affect contents height.
+        contentsHeight = this.$.notStarted.scrollHeight -
+            this.getPaddingTopValue_(this.$.notStarted) + BODY_VERTICAL_MARGIN;
         break;
       case TabOrganizationState.kInProgress:
-        contentsHeight = this.$.inProgress.scrollHeight + TRAILING_BODY_SPACING;
+        contentsHeight = this.$.inProgress.scrollHeight -
+            this.getPaddingTopValue_(this.$.inProgress) + BODY_VERTICAL_MARGIN;
         break;
       case TabOrganizationState.kSuccess:
-        contentsHeight = this.$.results.scrollHeight + TRAILING_BODY_SPACING;
+        contentsHeight = this.$.results.scrollHeight -
+            this.getPaddingTopValue_(this.$.results) + BODY_VERTICAL_MARGIN;
         break;
       case TabOrganizationState.kFailure:
-        contentsHeight = this.$.failure.scrollHeight + TRAILING_BODY_SPACING;
+        contentsHeight = this.$.failure.scrollHeight -
+            this.getPaddingTopValue_(this.$.failure) + BODY_VERTICAL_MARGIN;
         if (this.showFooter_()) {
           contentsHeight +=
-              this.$.footer.scrollHeight + TRAILING_FOOTER_SPACING;
+              this.$.footer.scrollHeight + FOOTER_VERTICAL_PADDING;
         }
         break;
     }
     this.$.contents.style.height = contentsHeight + 'px';
+  }
+
+  private getPaddingTopValue_(element: HTMLElement): number {
+    const pxValue = getComputedStyle(element).getPropertyValue('padding-top');
+    return Number.parseInt(pxValue.trim().slice(0, -2), 10);
   }
 
   private setSession_(session: TabOrganizationSession) {
@@ -128,9 +143,7 @@ export class TabOrganizationPageElement extends PolymerElement {
     } else {
       this.organizationId_ = -1;
     }
-    // Wait for a rendering pass so the new state's scroll height is up to date
-    // with any new data.
-    afterNextRender(this, () => this.setState_(session.state));
+    this.setState_(session.state);
   }
 
   private setState_(state: TabOrganizationState) {
@@ -144,7 +157,9 @@ export class TabOrganizationPageElement extends PolymerElement {
     this.classList.toggle(
         'from-failure', this.state_ === TabOrganizationState.kFailure);
     this.state_ = state;
-    this.updateContentsHeight();
+    // Wait for a rendering pass so the new state's scroll height is up to date
+    // with any new data.
+    this.updateContentsHeightAfterNextRender();
   }
 
   private isState_(state: TabOrganizationState): boolean {
