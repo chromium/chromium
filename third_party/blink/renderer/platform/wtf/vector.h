@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <concepts>
 #include <functional>
 #include <initializer_list>
 #include <iterator>
@@ -1082,6 +1083,20 @@ struct VectorNeedsDestructor<T, inlineCapacity, true> {
   static constexpr bool value = true;
 };
 
+namespace internal {
+
+template <typename Collection>
+concept VectorCanConstructFromCollection = requires(Collection c) {
+  // TODO(crbug.com/1502036): In theory we should be able to require that these
+  // conform to std::input_iterator, but HashTableConstIteratorAdapter actually
+  // doesn't.
+  c.begin();
+  c.end();
+  { c.size() } -> std::unsigned_integral;
+};
+
+}  // namespace internal
+
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 class Vector
     : private VectorBuffer<T, INLINE_CAPACITY, Allocator>,
@@ -1148,22 +1163,14 @@ class Vector
 
   // Creates a vector with items copied from a collection. |Collection| must
   // have size(), begin() and end() methods.
-  template <typename Collection,
-            // This prevents this constructor from being chosen for e.g.
-            // Vector(3).
-            typename = std::enable_if_t<std::disjunction_v<
-                std::is_same<value_type, typename Collection::value_type>,
-                std::is_constructible<value_type,
-                                      typename Collection::const_reference>>>>
+  template <typename Collection>
+    requires internal::VectorCanConstructFromCollection<Collection>
   explicit Vector(const Collection& collection) : Vector() {
     assign(collection);
   }
   // Replaces the vector with items copied from a collection.
-  template <typename Collection,
-            typename = std::enable_if_t<std::disjunction_v<
-                std::is_same<value_type, typename Collection::value_type>,
-                std::is_constructible<value_type,
-                                      typename Collection::const_reference>>>>
+  template <typename Collection>
+    requires internal::VectorCanConstructFromCollection<Collection>
   void assign(const Collection&);
 
   // Moving.
@@ -1657,7 +1664,8 @@ operator=(const Vector<T, otherCapacity, Allocator>& other) {
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-template <typename Collection, typename SFINAE>
+template <typename Collection>
+  requires internal::VectorCanConstructFromCollection<Collection>
 void Vector<T, inlineCapacity, Allocator>::assign(const Collection& other) {
   static_assert(
       !std::is_same_v<Vector<T, inlineCapacity, Allocator>, Collection>,
