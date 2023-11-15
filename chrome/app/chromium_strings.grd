@@ -1049,10 +1049,10 @@ Permissions you've already given to websites and apps may apply to this account.
           Another account is already signed in. To keep your browsing separate, Chromium can create your own profile for you.
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE" desc="Title of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
-          Get the most out of Chromium
+          Make Chromium your own
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE" desc="Subtitle of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
-          Sign in to get your Chromium stuff across devices
+          Sign in to get the most out of Chromium
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT" desc="Label of the Decline button of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
           Use Chromium without an account
