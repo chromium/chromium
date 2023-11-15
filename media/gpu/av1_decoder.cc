@@ -296,8 +296,8 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
             base::strict_cast<int>(current_sequence_header_->max_frame_width),
             base::strict_cast<int>(current_sequence_header_->max_frame_height));
         gfx::Rect new_visible_rect(
-            base::strict_cast<int>(current_frame_header_->render_width),
-            base::strict_cast<int>(current_frame_header_->render_height));
+            base::strict_cast<int>(current_frame_header_->width),
+            base::strict_cast<int>(current_frame_header_->height));
         DCHECK(!new_frame_size.IsEmpty());
         if (!gfx::Rect(new_frame_size).Contains(new_visible_rect)) {
           DVLOG(1) << "Render size exceeds picture size. render size: "

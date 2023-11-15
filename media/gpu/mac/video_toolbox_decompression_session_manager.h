@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_MAC_VIDEO_TOOLBOX_DECOMPRESSION_INTERFACE_H_
-#define MEDIA_GPU_MAC_VIDEO_TOOLBOX_DECOMPRESSION_INTERFACE_H_
+#ifndef MEDIA_GPU_MAC_VIDEO_TOOLBOX_DECOMPRESSION_SESSION_MANAGER_H_
+#define MEDIA_GPU_MAC_VIDEO_TOOLBOX_DECOMPRESSION_SESSION_MANAGER_H_
 
 #include <CoreMedia/CoreMedia.h>
 #include <VideoToolbox/VideoToolbox.h>
@@ -26,25 +26,25 @@ namespace media {
 
 class MediaLog;
 struct VideoToolboxDecodeMetadata;
-struct VideoToolboxSessionMetadata;
 class VideoToolboxDecompressionSession;
+struct VideoToolboxDecompressionSessionMetadata;
 
-// Wraps VideoToolboxDecompressionSession to handle reconfiguration. Callbacks
-// are never called re-entrantly or after destruction.
-class MEDIA_GPU_EXPORT VideoToolboxDecompressionInterface {
+// Handles creating VideoToolboxDecompressionSessions when reconfiguration is
+// required. Callbacks are never called re-entrantly or after destruction.
+class MEDIA_GPU_EXPORT VideoToolboxDecompressionSessionManager {
  public:
   using OutputCB = base::RepeatingCallback<void(
       base::apple::ScopedCFTypeRef<CVImageBufferRef>,
       std::unique_ptr<VideoToolboxDecodeMetadata> metadata)>;
   using ErrorCB = base::OnceCallback<void(DecoderStatus)>;
 
-  VideoToolboxDecompressionInterface(
+  VideoToolboxDecompressionSessionManager(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::unique_ptr<MediaLog> media_log,
       OutputCB output_cb,
       ErrorCB error_cb);
 
-  ~VideoToolboxDecompressionInterface();
+  ~VideoToolboxDecompressionSessionManager();
 
   // Decode |sample|, tagged with |context|.
   void Decode(base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample,
@@ -80,7 +80,7 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionInterface {
   // Create a new VideoToolbox decompression session for |format|.
   [[nodiscard]] bool CreateSession(
       CMFormatDescriptionRef format,
-      const VideoToolboxSessionMetadata& session_metadata);
+      const VideoToolboxDecompressionSessionMetadata& session_metadata);
 
   // Shut down the active session, synchronously.
   void DestroySession();
@@ -88,18 +88,25 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionInterface {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<MediaLog> media_log_;
   OutputCB output_cb_;
-  ErrorCB error_cb_;  // |!error_cb_| indicates an error state.
+  ErrorCB error_cb_;
 
-  // Decodes that have not been sent to VideoToolbox.
+  bool has_error_ = false;
+
+  // Decodes that have not been sent to VideoToolbox yet.
   base::queue<std::pair<base::apple::ScopedCFTypeRef<CMSampleBufferRef>,
                         std::unique_ptr<VideoToolboxDecodeMetadata>>>
       pending_decodes_;
 
   std::unique_ptr<VideoToolboxDecompressionSession> decompression_session_;
+
+  // The last used format description, used to check if the current format
+  // description is potentially changed.
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
+
   // Pointers to decode metadata are passed to VideoToolbox as decode context,
   // but returned pointers are always looked up in this table rather than
-  // dereferenced.
+  // dereferenced. If VideoToolbox were to output after a session is destroyed,
+  // or output the same context twice, a decode error would result.
   base::flat_map<uintptr_t, std::unique_ptr<VideoToolboxDecodeMetadata>>
       active_decodes_;
 
@@ -107,11 +114,11 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionInterface {
   // format changes.
   bool draining_ = false;
 
-  base::WeakPtr<VideoToolboxDecompressionInterface> weak_this_;
-  base::WeakPtrFactory<VideoToolboxDecompressionInterface> weak_this_factory_{
+  base::WeakPtr<VideoToolboxDecompressionSessionManager> weak_this_;
+  base::WeakPtrFactory<VideoToolboxDecompressionSessionManager> weak_this_factory_{
       this};
 };
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_MAC_VIDEO_TOOLBOX_DECOMPRESSION_INTERFACE_H_
+#endif  // MEDIA_GPU_MAC_VIDEO_TOOLBOX_DECOMPRESSION_SESSION_MANAGER_H_

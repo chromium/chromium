@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/mac/video_toolbox_decompression_interface.h"
+#include "media/gpu/mac/video_toolbox_decompression_session_manager.h"
 
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "media/base/media_log.h"
-#include "media/gpu/mac/video_toolbox_decode_metadata.h"
+#include "media/gpu/mac/video_toolbox_decompression_metadata.h"
 #include "media/gpu/mac/video_toolbox_decompression_session.h"
 
 namespace media {
 
-VideoToolboxDecompressionInterface::VideoToolboxDecompressionInterface(
+VideoToolboxDecompressionSessionManager::VideoToolboxDecompressionSessionManager(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::unique_ptr<MediaLog> media_log,
     OutputCB output_cb,
@@ -29,26 +29,26 @@ VideoToolboxDecompressionInterface::VideoToolboxDecompressionInterface(
   decompression_session_ =
       std::make_unique<VideoToolboxDecompressionSessionImpl>(
           task_runner_, media_log_->Clone(),
-          base::BindRepeating(&VideoToolboxDecompressionInterface::OnOutput,
+          base::BindRepeating(&VideoToolboxDecompressionSessionManager::OnOutput,
                               weak_this_));
 }
 
-VideoToolboxDecompressionInterface::~VideoToolboxDecompressionInterface() {
+VideoToolboxDecompressionSessionManager::~VideoToolboxDecompressionSessionManager() {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 }
 
-void VideoToolboxDecompressionInterface::Decode(
+void VideoToolboxDecompressionSessionManager::Decode(
     base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample,
     std::unique_ptr<VideoToolboxDecodeMetadata> metadata) {
   DVLOG(3) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  if (!error_cb_) {
+  if (has_error_) {
     return;
   }
 
-  pending_decodes_.push(std::make_pair(std::move(sample), std::move(metadata)));
+  pending_decodes_.emplace(std::move(sample), std::move(metadata));
 
   if (!Process()) {
     NotifyError(DecoderStatus::Codes::kPlatformDecodeFailure);
@@ -56,11 +56,11 @@ void VideoToolboxDecompressionInterface::Decode(
   }
 }
 
-void VideoToolboxDecompressionInterface::Reset() {
+void VideoToolboxDecompressionSessionManager::Reset() {
   DVLOG(2) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  if (!error_cb_) {
+  if (has_error_) {
     return;
   }
 
@@ -69,38 +69,40 @@ void VideoToolboxDecompressionInterface::Reset() {
   DestroySession();
 }
 
-size_t VideoToolboxDecompressionInterface::NumDecodes() {
+size_t VideoToolboxDecompressionSessionManager::NumDecodes() {
   DVLOG(4) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   return pending_decodes_.size() + active_decodes_.size();
 }
 
-void VideoToolboxDecompressionInterface::NotifyError(DecoderStatus status) {
+void VideoToolboxDecompressionSessionManager::NotifyError(DecoderStatus status) {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(error_cb_);
+  DCHECK(!has_error_);
 
   Reset();
+
+  has_error_ = true;
 
   // We may still be executing inside Decode() and don't want to make a
   // re-entrant call.
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&VideoToolboxDecompressionInterface::CallErrorCB,
+      base::BindOnce(&VideoToolboxDecompressionSessionManager::CallErrorCB,
                      weak_this_, std::move(error_cb_), std::move(status)));
 }
 
-void VideoToolboxDecompressionInterface::CallErrorCB(ErrorCB error_cb,
+void VideoToolboxDecompressionSessionManager::CallErrorCB(ErrorCB error_cb,
                                                      DecoderStatus status) {
   DVLOG(4) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   std::move(error_cb).Run(std::move(status));
 }
 
-bool VideoToolboxDecompressionInterface::Process() {
+bool VideoToolboxDecompressionSessionManager::Process() {
   DVLOG(4) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(error_cb_);
+  DCHECK(!has_error_);
 
   if (draining_) {
     return true;
@@ -132,7 +134,7 @@ bool VideoToolboxDecompressionInterface::Process() {
 
     // Create a new session if necessary.
     if (!decompression_session_->IsValid()) {
-      if (!CreateSession(format, metadata->session)) {
+      if (!CreateSession(format, metadata->session_metadata)) {
         return false;
       }
     }
@@ -151,9 +153,9 @@ bool VideoToolboxDecompressionInterface::Process() {
   return true;
 }
 
-bool VideoToolboxDecompressionInterface::CreateSession(
+bool VideoToolboxDecompressionSessionManager::CreateSession(
     CMFormatDescriptionRef format,
-    const VideoToolboxSessionMetadata& session_metadata) {
+    const VideoToolboxDecompressionSessionMetadata& session_metadata) {
   DVLOG(2) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!decompression_session_->IsValid());
@@ -161,7 +163,7 @@ bool VideoToolboxDecompressionInterface::CreateSession(
   // Build video decoder specification.
   base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> decoder_config(
       CFDictionaryCreateMutable(kCFAllocatorDefault,
-                                1,  // capacity
+                                /*capacity=*/1,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
   if (!decoder_config) {
@@ -182,7 +184,17 @@ bool VideoToolboxDecompressionInterface::CreateSession(
 #endif
 
   // Build destination image buffer attributes.
-  //
+  // TODO(crbug.com/1331597): Also set size using the visible rect.
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> image_config(
+      CFDictionaryCreateMutable(kCFAllocatorDefault,
+                                /*capacity=*/1,
+                                &kCFTypeDictionaryKeyCallBacks,
+                                &kCFTypeDictionaryValueCallBacks));
+  if (!image_config) {
+    MEDIA_LOG(ERROR, media_log_.get()) << "CFDictionaryCreateMutable() failed";
+    return false;
+  }
+
   // It is possible to create a decompression session with no destination image
   // buffer attributes, but then we must be able to handle any kind of pixel
   // format that VideoToolbox can produce, and there is no definitive list.
@@ -203,22 +215,12 @@ bool VideoToolboxDecompressionInterface::CreateSession(
   //
   // TODO(crbug.com/1331597): Do not create an image config for known-supported
   // formats, and add full-range versions as supported formats.
-  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> image_config(
-      CFDictionaryCreateMutable(kCFAllocatorDefault,
-                                1,  // capacity
-                                &kCFTypeDictionaryKeyCallBacks,
-                                &kCFTypeDictionaryValueCallBacks));
-  if (!image_config) {
-    MEDIA_LOG(ERROR, media_log_.get()) << "CFDictionaryCreateMutable() failed";
-    return false;
-  }
-
   FourCharCode pixel_format =
       session_metadata.has_alpha
           ? kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar
-      : session_metadata.is_hbd
-          ? kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange
-          : kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+          : (session_metadata.is_hbd
+              ? kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange
+              : kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange);
 
   base::apple::ScopedCFTypeRef<CFNumberRef> cf_pixel_format(
       CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &pixel_format));
@@ -232,12 +234,13 @@ bool VideoToolboxDecompressionInterface::CreateSession(
     return false;
   }
 
-  // Update state.
+  // Update saved state.
   active_format_.reset(format, base::scoped_policy::RETAIN);
+
   return true;
 }
 
-void VideoToolboxDecompressionInterface::DestroySession() {
+void VideoToolboxDecompressionSessionManager::DestroySession() {
   DVLOG(2) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
@@ -251,7 +254,7 @@ void VideoToolboxDecompressionInterface::DestroySession() {
   draining_ = false;
 }
 
-void VideoToolboxDecompressionInterface::OnOutput(
+void VideoToolboxDecompressionSessionManager::OnOutput(
     uintptr_t context,
     OSStatus status,
     VTDecodeInfoFlags flags,
@@ -306,7 +309,7 @@ void VideoToolboxDecompressionInterface::OnOutput(
   output_cb_.Run(std::move(image), std::move(metadata));
 }
 
-void VideoToolboxDecompressionInterface::SetDecompressionSessionForTesting(
+void VideoToolboxDecompressionSessionManager::SetDecompressionSessionForTesting(
     std::unique_ptr<VideoToolboxDecompressionSession> decompression_session) {
   decompression_session_ = std::move(decompression_session);
 }

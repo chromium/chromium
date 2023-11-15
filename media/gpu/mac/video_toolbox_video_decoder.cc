@@ -26,7 +26,7 @@
 #include "media/gpu/av1_decoder.h"
 #include "media/gpu/h264_decoder.h"
 #include "media/gpu/mac/video_toolbox_av1_accelerator.h"
-#include "media/gpu/mac/video_toolbox_decode_metadata.h"
+#include "media/gpu/mac/video_toolbox_decompression_metadata.h"
 #include "media/gpu/mac/video_toolbox_h264_accelerator.h"
 #include "media/gpu/mac/video_toolbox_vp9_accelerator.h"
 #include "media/gpu/vp9_decoder.h"
@@ -347,7 +347,7 @@ void VideoToolboxVideoDecoder::ReleaseDecodeCallbacks() {
 
 void VideoToolboxVideoDecoder::OnAcceleratorDecode(
     base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample,
-    VideoToolboxSessionMetadata session_metadata,
+    VideoToolboxDecompressionSessionMetadata session_metadata,
     scoped_refptr<CodecPicture> picture) {
   DVLOG(4) << __func__;
   DCHECK(active_decode_);
@@ -372,7 +372,7 @@ void VideoToolboxVideoDecoder::OnAcceleratorDecode(
     metadata->hdr_metadata = config_.hdr_metadata();
   }
 
-  metadata->session = session_metadata;
+  metadata->session_metadata = session_metadata;
 
   video_toolbox_.Decode(std::move(sample), std::move(metadata));
 }

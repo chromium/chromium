@@ -58,12 +58,11 @@ bool VideoToolboxDecompressionSessionImpl::Create(
                                                   static_cast<void*>(this)};
 
   OSStatus status = VTDecompressionSessionCreate(
-      kCFAllocatorDefault,
-      format,          // video_format_description
-      decoder_config,  // video_decoder_specification
-      image_config,    // destination_image_buffer_attributes
-      &callback,       // output_callback
-      session_.InitializeInto());
+      /*allocator=*/kCFAllocatorDefault,
+      /*videoFormatDescription=*/format,
+      /*videoDecoderSpecification=*/decoder_config,
+      /*destinationImageBufferAttributes=*/image_config,
+      /*outputCallback=*/&callback, session_.InitializeInto());
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "VTDecompressionSessionCreate()";

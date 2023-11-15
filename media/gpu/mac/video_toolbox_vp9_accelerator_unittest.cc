@@ -25,7 +25,7 @@ class VideoToolboxVP9AcceleratorTest : public testing::Test {
  protected:
   MOCK_METHOD3(OnDecode,
                void(base::apple::ScopedCFTypeRef<CMSampleBufferRef>,
-                    VideoToolboxSessionMetadata,
+                    VideoToolboxDecompressionSessionMetadata,
                     scoped_refptr<CodecPicture>));
   MOCK_METHOD1(OnOutput, void(scoped_refptr<CodecPicture>));
 

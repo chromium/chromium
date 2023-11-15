@@ -17,7 +17,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/gpu/av1_decoder.h"
-#include "media/gpu/mac/video_toolbox_decode_metadata.h"
+#include "media/gpu/mac/video_toolbox_decompression_metadata.h"
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
@@ -32,7 +32,7 @@ class MEDIA_GPU_EXPORT VideoToolboxAV1Accelerator
  public:
   using DecodeCB = base::RepeatingCallback<void(
       base::apple::ScopedCFTypeRef<CMSampleBufferRef>,
-      VideoToolboxSessionMetadata,
+      VideoToolboxDecompressionSessionMetadata,
       scoped_refptr<CodecPicture>)>;
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<CodecPicture>)>;
 
@@ -70,7 +70,7 @@ class MEDIA_GPU_EXPORT VideoToolboxAV1Accelerator
   gfx::Size active_coded_size_;
 
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
-  VideoToolboxSessionMetadata session_metadata_;
+  VideoToolboxDecompressionSessionMetadata session_metadata_;
 
   bool have_temporal_unit_ = false;
 

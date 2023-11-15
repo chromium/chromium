@@ -19,7 +19,7 @@
 #include "base/sequence_checker.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
-#include "media/gpu/mac/video_toolbox_decode_metadata.h"
+#include "media/gpu/mac/video_toolbox_decompression_metadata.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/vp9_decoder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,7 +39,7 @@ class MEDIA_GPU_EXPORT VideoToolboxVP9Accelerator
  public:
   using DecodeCB = base::RepeatingCallback<void(
       base::apple::ScopedCFTypeRef<CMSampleBufferRef>,
-      VideoToolboxSessionMetadata,
+      VideoToolboxDecompressionSessionMetadata,
       scoped_refptr<CodecPicture>)>;
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<CodecPicture>)>;
 
@@ -82,7 +82,7 @@ class MEDIA_GPU_EXPORT VideoToolboxVP9Accelerator
   gfx::Size active_coded_size_;
 
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
-  VideoToolboxSessionMetadata session_metadata_;
+  VideoToolboxDecompressionSessionMetadata session_metadata_;
 
   // The superframe currently being built.
   base::apple::ScopedCFTypeRef<CMBlockBufferRef> frame_data_;

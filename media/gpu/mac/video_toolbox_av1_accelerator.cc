@@ -4,6 +4,7 @@
 
 #include "media/gpu/mac/video_toolbox_av1_accelerator.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "media/base/media_log.h"
 #include "media/gpu/mac/vt_config_util.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
@@ -184,8 +185,8 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
 
   // TODO(crbug.com/1493614): Should this be the current frame size, or the
   // sequence max frame size?
-  gfx::Size coded_size(static_cast<int>(pic.frame_header.width),
-                       static_cast<int>(pic.frame_header.height));
+  gfx::Size coded_size(base::strict_cast<int>(pic.frame_header.width),
+                       base::strict_cast<int>(pic.frame_header.height));
 
   // If the parameters have changed, generate a new format.
   if (color_space != active_color_space_ || profile != active_profile_ ||
@@ -215,9 +216,11 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
     // Create the format description.
     base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> format;
     OSStatus status = CMVideoFormatDescriptionCreate(
-        kCFAllocatorDefault, kCMVideoCodecType_AV1, coded_size.width(),
-        coded_size.height(), format_config.get(),
-        active_format_.InitializeInto());
+        /*allocator=*/kCFAllocatorDefault,
+        /*codecType=*/kCMVideoCodecType_AV1,
+        /*width=*/coded_size.width(),
+        /*height=*/coded_size.height(),
+        /*extensions=*/format_config.get(), active_format_.InitializeInto());
     if (status != noErr) {
       OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
           << "CMVideoFormatDescriptionCreate()";
@@ -231,10 +234,11 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
     active_coded_size_ = coded_size;
 
     // Update session configuration.
-    session_metadata_ = VideoToolboxSessionMetadata{
+    session_metadata_ = VideoToolboxDecompressionSessionMetadata{
         /*allow_software_decoding=*/false,
         /*is_hbd=*/sequence_header.color_config.bitdepth > 8,
-    };
+        /*has_alpha=*/false,
+        /*visible_rect=*/pic.visible_rect()};
   }
 
   return true;

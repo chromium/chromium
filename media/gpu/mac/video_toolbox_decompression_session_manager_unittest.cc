@@ -11,8 +11,8 @@
 #include "base/time/time.h"
 #include "media/base/decoder_status.h"
 #include "media/base/media_util.h"
-#include "media/gpu/mac/video_toolbox_decode_metadata.h"
-#include "media/gpu/mac/video_toolbox_decompression_interface.h"
+#include "media/gpu/mac/video_toolbox_decompression_metadata.h"
+#include "media/gpu/mac/video_toolbox_decompression_session_manager.h"
 #include "media/gpu/mac/video_toolbox_decompression_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -142,14 +142,14 @@ class FakeDecompressionSession : public VideoToolboxDecompressionSession {
 
 }  // namespace
 
-class VideoToolboxDecompressionInterfaceTest : public testing::Test {
+class VideoToolboxDecompressionSessionManagerTest : public testing::Test {
  public:
-  VideoToolboxDecompressionInterfaceTest() {
+  VideoToolboxDecompressionSessionManagerTest() {
     video_toolbox_.SetDecompressionSessionForTesting(
         base::WrapUnique(decompression_session_.get()));
   }
 
-  ~VideoToolboxDecompressionInterfaceTest() override = default;
+  ~VideoToolboxDecompressionSessionManagerTest() override = default;
 
  protected:
   MOCK_METHOD1(OnError, void(DecoderStatus));
@@ -158,22 +158,22 @@ class VideoToolboxDecompressionInterfaceTest : public testing::Test {
                     std::unique_ptr<VideoToolboxDecodeMetadata>));
 
   base::test::TaskEnvironment task_environment_;
-  VideoToolboxDecompressionInterface video_toolbox_{
+  VideoToolboxDecompressionSessionManager video_toolbox_{
       task_environment_.GetMainThreadTaskRunner(),
       std::make_unique<NullMediaLog>(),
-      base::BindRepeating(&VideoToolboxDecompressionInterfaceTest::OnOutput,
+      base::BindRepeating(&VideoToolboxDecompressionSessionManagerTest::OnOutput,
                           base::Unretained(this)),
-      base::BindOnce(&VideoToolboxDecompressionInterfaceTest::OnError,
+      base::BindOnce(&VideoToolboxDecompressionSessionManagerTest::OnError,
                      base::Unretained(this))};
   raw_ptr<FakeDecompressionSession> decompression_session_{
       new FakeDecompressionSession(
-          base::BindRepeating(&VideoToolboxDecompressionInterface::OnOutput,
+          base::BindRepeating(&VideoToolboxDecompressionSessionManager::OnOutput,
                               base::Unretained(&video_toolbox_)))};
 };
 
-TEST_F(VideoToolboxDecompressionInterfaceTest, Construct) {}
+TEST_F(VideoToolboxDecompressionSessionManagerTest, Construct) {}
 
-TEST_F(VideoToolboxDecompressionInterfaceTest, Decode) {
+TEST_F(VideoToolboxDecompressionSessionManagerTest, Decode) {
   auto format = CreateFormat();
   auto sample = CreateSample(format.get());
   auto metadata = CreateMetadata(0);
@@ -194,7 +194,7 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, Decode) {
   EXPECT_EQ(decompression_session_->creations, 1ul);
 }
 
-TEST_F(VideoToolboxDecompressionInterfaceTest, CreateFailure) {
+TEST_F(VideoToolboxDecompressionSessionManagerTest, CreateFailure) {
   auto format = CreateFormat();
   auto sample = CreateSample(format.get());
   auto metadata = CreateMetadata(0);
@@ -212,7 +212,7 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, CreateFailure) {
   EXPECT_EQ(decompression_session_->creations, 1ul);
 }
 
-TEST_F(VideoToolboxDecompressionInterfaceTest, CompatibleFormatChange) {
+TEST_F(VideoToolboxDecompressionSessionManagerTest, CompatibleFormatChange) {
   auto format0 = CreateFormat();
   auto format1 = CreateFormat();
   auto sample0 = CreateSample(format0.get());
@@ -239,7 +239,7 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, CompatibleFormatChange) {
   EXPECT_EQ(decompression_session_->creations, 1ul);
 }
 
-TEST_F(VideoToolboxDecompressionInterfaceTest, IncompatibleFormatChange) {
+TEST_F(VideoToolboxDecompressionSessionManagerTest, IncompatibleFormatChange) {
   auto format0 = CreateFormat();
   auto format1 = CreateFormat();
   auto sample0 = CreateSample(format0.get());
@@ -272,7 +272,7 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, IncompatibleFormatChange) {
   EXPECT_EQ(decompression_session_->creations, 2ul);
 }
 
-TEST_F(VideoToolboxDecompressionInterfaceTest, DecodeError_Early) {
+TEST_F(VideoToolboxDecompressionSessionManagerTest, DecodeError_Early) {
   auto format = CreateFormat();
   auto sample = CreateSample(format.get());
   auto metadata = CreateMetadata(0);
@@ -290,7 +290,7 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, DecodeError_Early) {
   EXPECT_EQ(decompression_session_->creations, 1ul);
 }
 
-TEST_F(VideoToolboxDecompressionInterfaceTest, DecodeError_Late) {
+TEST_F(VideoToolboxDecompressionSessionManagerTest, DecodeError_Late) {
   auto format = CreateFormat();
   auto sample = CreateSample(format.get());
   auto metadata = CreateMetadata(0);
