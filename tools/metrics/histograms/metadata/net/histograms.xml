@@ -5259,17 +5259,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.SSLCertVerificationTime" units="ms" expires_after="M89">
-  <owner>rsleevi@chromium.org</owner>
-  <summary>Time to complete a certificate verification (success case).</summary>
-</histogram>
-
-<histogram name="Net.SSLCertVerificationTimeError" units="ms"
-    expires_after="M89">
-  <owner>rsleevi@chromium.org</owner>
-  <summary>Time to complete a certificate verification (error case).</summary>
-</histogram>
-
 <histogram name="Net.SSLClientCertSignatureAlgorithm"
     enum="SSLSignatureAlgorithm" expires_after="2024-03-17">
   <owner>davidben@chromium.org</owner>

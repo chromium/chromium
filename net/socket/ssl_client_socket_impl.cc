@@ -1156,8 +1156,6 @@ ssl_verify_result_t SSLClientSocketImpl::VerifyCert() {
     return HandleVerifyResult();
   }
 
-  start_cert_verification_time_ = base::TimeTicks::Now();
-
   base::StringPiece ech_name_override = GetECHNameOverride();
   if (!ech_name_override.empty()) {
     // If ECH was offered but not negotiated, BoringSSL will ask to verify a
@@ -1235,16 +1233,6 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
   cert_verification_result_ = kCertVerifyPending;
 
   cert_verifier_request_.reset();
-
-  if (!start_cert_verification_time_.is_null()) {
-    base::TimeDelta verify_time =
-        base::TimeTicks::Now() - start_cert_verification_time_;
-    if (result == OK) {
-      UMA_HISTOGRAM_TIMES("Net.SSLCertVerificationTime", verify_time);
-    } else {
-      UMA_HISTOGRAM_TIMES("Net.SSLCertVerificationTimeError", verify_time);
-    }
-  }
 
   // Enforce keyUsage extension for RSA leaf certificates chaining up to known
   // roots unconditionally. Enforcement for local anchors is, for now,
