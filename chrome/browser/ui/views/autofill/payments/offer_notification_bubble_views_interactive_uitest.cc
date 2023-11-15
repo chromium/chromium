@@ -1090,45 +1090,6 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(
     OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest,
-    NotShowShoppingServiceFreeListingOfferWithoutUTM) {
-  const std::string non_merchant_wide_domain_url = "www.merchantsite1.test";
-  const GURL with_non_merchant_wide_offer_url =
-      GetUrl(non_merchant_wide_domain_url, "/first");
-  const std::string detail = "Discount description detail";
-  const std::string discount_code = "freelisting-discount-code";
-  const int64_t non_merchant_wide_discount_id = 123;
-  const double expiry_time_sec =
-      (AutofillClock::Now() + base::Days(2)).InSecondsFSinceUnixEpoch();
-
-  auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
-      commerce::ShoppingServiceFactory::GetForBrowserContext(
-          browser()->profile()));
-  mock_shopping_service->SetIsDiscountEligibleToShowOnNavigation(true);
-  // Simulate FreeListingOffer for a product page on the
-  // `non_merchant_wide_domain_url`.
-  mock_shopping_service->SetResponseForGetDiscountInfoForUrls(
-      {{with_non_merchant_wide_offer_url,
-        {commerce::CreateValidDiscountInfo(
-            detail, /*terms_and_conditions=*/"",
-            /*value_in_text=*/"$10 off", discount_code,
-            non_merchant_wide_discount_id,
-            /*is_merchant_wide=*/false, expiry_time_sec)}}});
-
-  // Expect to call this at least once on every navigation, this test is
-  // navigated 1 time.
-  EXPECT_CALL(*mock_shopping_service, IsDiscountEligibleToShowOnNavigation)
-      .Times(testing::AtLeast(1));
-  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls)
-      .Times(testing::AtLeast(1));
-
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  NavigateToAndWaitForForm(with_non_merchant_wide_offer_url);
-  EXPECT_FALSE(IsIconVisible());
-  EXPECT_FALSE(GetOfferNotificationBubbleViews());
-}
-
-IN_PROC_BROWSER_TEST_P(
-    OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest,
     RecordHistoryClusterUsageRelatedMetrics) {
   const std::string non_merchant_wide_domain_url = "www.merchantsite1.test";
   const GURL with_non_merchant_wide_offer_url =

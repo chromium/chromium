@@ -771,11 +771,9 @@ bool ShoppingService::IsShoppingPageTypesApiEnabled() {
 }
 
 bool ShoppingService::IsDiscountInfoApiEnabled() {
-  return IsRegionLockedFeatureEnabled(
-             kShowDiscountOnNavigation, kShowDiscountOnNavigationRegionLaunched,
-             country_on_startup_, locale_on_startup_) ||
-         base::FeatureList::IsEnabled(
-             ntp_features::kNtpHistoryClustersModuleDiscounts);
+  return IsRegionLockedFeatureEnabled(kEnableDiscountInfoApi,
+                                      kEnableDiscountInfoApiRegionLaunched,
+                                      country_on_startup_, locale_on_startup_);
 }
 
 void ShoppingService::HandleOptGuideProductInfoResponse(
