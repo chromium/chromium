@@ -227,7 +227,7 @@ public class StripLayoutTab implements VirtualView {
     private float mContainerOpacity;
     private float mLeftInset;
     private float mRightInset;
-    private String mAccessibilityDescription;
+    private String mAccessibilityDescription = "";
 
     // Ideal intermediate parameters
     private float mIdealX;
