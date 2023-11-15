@@ -66,8 +66,6 @@ import java.util.function.BooleanSupplier;
  * Layout for the browser controls (omnibox, menu, tab strip, etc..).
  */
 public class ToolbarControlContainer extends OptimizedFrameLayout implements ControlContainer {
-    private final float mTabStripHeight;
-
     private boolean mIncognito;
 
     private Toolbar mToolbar;
@@ -86,7 +84,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
      */
     public ToolbarControlContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mTabStripHeight = context.getResources().getDimension(R.dimen.tab_strip_height);
     }
 
     @Override
@@ -329,7 +326,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
 
         @Nullable
         private Toolbar mToolbar;
-        private int mTabStripHeightPx;
         @Nullable
         private ConstraintsChecker mConstraintsObserver;
         @Nullable
@@ -376,7 +372,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                 FullscreenManager fullscreenManager) {
             assert mToolbar == null;
             mToolbar = toolbar;
-            mTabStripHeightPx = mToolbar.getTabStripHeight();
 
             // These dependencies only matter when ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES is
             // enabled. Unfortunately this method is often called before native is initialized,
@@ -507,7 +502,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
             mLocationBarRect.offset(mTempPosition[0], mTempPosition[1]);
 
             int shadowHeight =
-                    mToolbarContainer.getHeight() - mToolbar.getHeight() - mTabStripHeightPx;
+                    mToolbarContainer.getHeight()
+                            - mToolbar.getHeight()
+                            - mToolbar.getTabStripHeight();
             return ResourceFactory.createToolbarContainerResource(
                     mToolbarRect, mLocationBarRect, shadowHeight);
         }
@@ -606,7 +603,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
     }
 
     private boolean isOnTabStrip(MotionEvent e) {
-        return e.getY() <= mTabStripHeight;
+        return e.getY() <= mToolbar.getTabStripHeight();
     }
 
     /**

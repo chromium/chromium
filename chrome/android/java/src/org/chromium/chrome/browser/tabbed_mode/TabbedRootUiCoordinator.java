@@ -136,7 +136,7 @@ import java.util.function.Function;
  * A {@link RootUiCoordinator} variant that controls tabbed-mode specific UI.
  */
 public class TabbedRootUiCoordinator extends RootUiCoordinator {
-    private static boolean sDisableStatusIndicatorAnimationsForTesting;
+    private static boolean sDisableTopControlsAnimationForTesting;
     private final RootUiTabObserver mRootUiTabObserver;
     private TabbedSystemUiCoordinator mSystemUiCoordinator;
 
@@ -526,6 +526,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         PwaBottomSheetControllerFactory.attach(mWindowAndroid, mPwaBottomSheetController);
         initCommerceSubscriptionsService();
         initUndoGroupSnackbarController();
+        initTabStripTransitionCoordinator();
     }
 
     /**
@@ -829,11 +830,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
-    private void updateTopControlsHeight(boolean animate) {
+    private void updateTopControlsHeight() {
+        final boolean animate = !sDisableTopControlsAnimationForTesting;
         final BrowserControlsSizer browserControlsSizer = mBrowserControlsManager;
-        final int resourceId = mControlContainerHeightResource;
         final int topControlsNewHeight =
-                mActivity.getResources().getDimensionPixelSize(resourceId) + mStatusIndicatorHeight;
+                mToolbarManager.getToolbar().getHeight()
+                        + mToolbarManager.getToolbar().getTabStripHeight()
+                        + mStatusIndicatorHeight;
 
         browserControlsSizer.setAnimateBrowserControlsHeightChanges(animate);
         browserControlsSizer.setTopControlsHeight(topControlsNewHeight, mStatusIndicatorHeight);
@@ -866,14 +869,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mStatusBarColorController::getStatusBarColorWithoutStatusIndicator,
                 mCanAnimateBrowserControls, layoutManager::requestUpdate);
         layoutManager.addSceneOverlay(mStatusIndicatorCoordinator.getSceneLayer());
-        mStatusIndicatorObserver = new StatusIndicatorCoordinator.StatusIndicatorObserver() {
-            @Override
-            public void onStatusIndicatorHeightChanged(int indicatorHeight) {
-                mStatusIndicatorHeight = indicatorHeight;
-                boolean animate = !sDisableStatusIndicatorAnimationsForTesting;
-                updateTopControlsHeight(animate);
-            }
-        };
+        mStatusIndicatorObserver =
+                new StatusIndicatorCoordinator.StatusIndicatorObserver() {
+                    @Override
+                    public void onStatusIndicatorHeightChanged(int indicatorHeight) {
+                        mStatusIndicatorHeight = indicatorHeight;
+                        updateTopControlsHeight();
+                    }
+                };
         mStatusIndicatorCoordinator.addObserver(mStatusIndicatorObserver);
         mStatusIndicatorCoordinator.addObserver(mStatusBarColorController);
 
@@ -901,6 +904,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mToolbarManager.getOmniboxStub() != null) {
             mToolbarManager.getOmniboxStub().addUrlFocusChangeListener(mUrlFocusChangeListener);
         }
+    }
+
+    private void initTabStripTransitionCoordinator() {
+        mToolbarManager
+                .getTabStripHeightSupplier()
+                .addObserver((height) -> updateTopControlsHeight());
     }
 
     @Override
@@ -1003,8 +1012,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivity, mModalDialogManagerSupplier, () -> ApplicationLifetime.terminate(true));
     }
 
-    public static void setDisableStatusIndicatorAnimationsForTesting(boolean disable) {
-        sDisableStatusIndicatorAnimationsForTesting = disable;
-        ResettersForTesting.register(() -> sDisableStatusIndicatorAnimationsForTesting = false);
+    public static void setDisableTopControlsAnimationsForTesting(boolean disable) {
+        sDisableTopControlsAnimationForTesting = disable;
+        ResettersForTesting.register(() -> sDisableTopControlsAnimationForTesting = false);
     }
 }

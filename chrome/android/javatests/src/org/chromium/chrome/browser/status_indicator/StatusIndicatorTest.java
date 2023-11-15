@@ -73,7 +73,7 @@ public class StatusIndicatorTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        TabbedRootUiCoordinator.setDisableStatusIndicatorAnimationsForTesting(true);
+        TabbedRootUiCoordinator.setDisableTopControlsAnimationsForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
         mStatusIndicatorCoordinator =
                 ((TabbedRootUiCoordinator)
