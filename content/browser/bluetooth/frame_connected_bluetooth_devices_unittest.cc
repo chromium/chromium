@@ -27,9 +27,9 @@ typedef testing::NiceMock<device::MockBluetoothDevice> NiceMockBluetoothDevice;
 typedef testing::NiceMock<device::MockBluetoothGattConnection>
     NiceMockBluetoothGattConnection;
 
+using testing::_;
 using testing::Return;
 using testing::StrEq;
-using testing::_;
 
 namespace {
 
@@ -99,12 +99,15 @@ class FrameConnectedBluetoothDevicesTest
   }
 
   void TearDown() override {
-    service_ptr0_ = nullptr;
-    map_ptr0_ = nullptr;
-    service_ptr1_ = nullptr;
-    map_ptr1_ = nullptr;
-
+    ClearServicesAndMaps();
     RenderViewHostImplTestHarness::TearDown();
+  }
+
+  void ClearServicesAndMaps() {
+    map_ptr0_ = nullptr;
+    service_ptr0_ = nullptr;
+    map_ptr1_ = nullptr;
+    service_ptr1_ = nullptr;
   }
 
   std::unique_ptr<NiceMockBluetoothGattConnection> GetConnection(
@@ -114,25 +117,26 @@ class FrameConnectedBluetoothDevicesTest
   }
 
   void ResetService0() {
-    std::exchange(service_ptr0_, nullptr)->ResetAndDeleteThis();
     map_ptr0_ = nullptr;
+    service_ptr0_.ExtractAsDangling()->ResetAndDeleteThis();
   }
 
   void ResetService1() {
-    std::exchange(service_ptr1_, nullptr)->ResetAndDeleteThis();
     map_ptr1_ = nullptr;
+    service_ptr1_.ExtractAsDangling()->ResetAndDeleteThis();
   }
 
  protected:
-  raw_ptr<FrameConnectedBluetoothDevices, DanglingUntriaged> map_ptr0_;
-  raw_ptr<FrameConnectedBluetoothDevices, DanglingUntriaged> map_ptr1_;
+  raw_ptr<WebBluetoothServiceImpl> service_ptr0_ = nullptr;
+  raw_ptr<FrameConnectedBluetoothDevices> map_ptr0_ = nullptr;
+
+  raw_ptr<WebBluetoothServiceImpl> service_ptr1_ = nullptr;
+  raw_ptr<FrameConnectedBluetoothDevices> map_ptr1_ = nullptr;
 
  private:
   mojo::Remote<blink::mojom::WebBluetoothService> service0_;
-  raw_ptr<WebBluetoothServiceImpl, DanglingUntriaged> service_ptr0_;
 
   mojo::Remote<blink::mojom::WebBluetoothService> service1_;
-  raw_ptr<WebBluetoothServiceImpl, DanglingUntriaged> service_ptr1_;
 
   scoped_refptr<NiceMockBluetoothAdapter> adapter_;
   NiceMockBluetoothDevice device0_;
@@ -448,6 +452,10 @@ TEST_F(FrameConnectedBluetoothDevicesTest,
   // destroyed.
   map_ptr0_->Insert(kDeviceId0, GetConnection(kDeviceAddress0),
                     CreateServerClient());
+  // |DeleteContents| will destroy the Web Bluetooth services. As such we need
+  // to remove the references beforehand,  otherwise it will become dangling.
+  ClearServicesAndMaps();
+
   DeleteContents();
 }
 
