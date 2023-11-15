@@ -482,6 +482,11 @@ class AutofillProviderAndroidTestHidingLogic
     sub_frame_ = content::RenderFrameHostTester::For(main_frame())
                      ->AppendChild(std::string("child"));
     sub_frame_ = NavigateAndCommitFrame(sub_frame_, GURL("https://bar.com"));
+    // Make sure the driver (and the manager) is created as there is an early
+    // return in `ContentAutofillDriverFactory::DidFinishNavigation` before
+    // `DriverForFrame()` call.
+    ContentAutofillDriverFactory::FromWebContents(web_contents())
+        ->DriverForFrame(sub_frame_);
   }
 
   void TearDown() override {
