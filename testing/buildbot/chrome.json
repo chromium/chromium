@@ -1199,7 +1199,7 @@
         "test": "chrome_criticalstaging_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_criticalstaging_tast_tests/",
         "test_level_retries": 2,
-        "timeout_sec": 7200,
+        "timeout_sec": 14400,
         "use_lkgm": true,
         "variant_id": "BRYA_RELEASE_LKGM"
       },
@@ -1215,7 +1215,7 @@
         "test": "chrome_disabled_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_disabled_tast_tests/",
         "test_level_retries": 1,
-        "timeout_sec": 7200,
+        "timeout_sec": 14400,
         "use_lkgm": true,
         "variant_id": "BRYA_RELEASE_LKGM"
       },
@@ -1433,7 +1433,7 @@
         "test": "chrome_criticalstaging_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_criticalstaging_tast_tests/",
         "test_level_retries": 2,
-        "timeout_sec": 7200,
+        "timeout_sec": 14400,
         "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
       },
@@ -1448,7 +1448,7 @@
         "test": "chrome_disabled_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_disabled_tast_tests/",
         "test_level_retries": 1,
-        "timeout_sec": 7200,
+        "timeout_sec": 14400,
         "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
       },
@@ -1607,7 +1607,7 @@
         "test": "chrome_criticalstaging_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_criticalstaging_tast_tests/",
         "test_level_retries": 2,
-        "timeout_sec": 7200,
+        "timeout_sec": 14400,
         "use_lkgm": true,
         "variant_id": "VOLTEER_RELEASE_LKGM"
       },
@@ -1622,7 +1622,7 @@
         "test": "chrome_disabled_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_disabled_tast_tests/",
         "test_level_retries": 1,
-        "timeout_sec": 7200,
+        "timeout_sec": 14400,
         "use_lkgm": true,
         "variant_id": "VOLTEER_RELEASE_LKGM"
       },

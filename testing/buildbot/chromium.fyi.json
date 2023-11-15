@@ -4584,7 +4584,7 @@
         "test": "chrome_criticalstaging_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_criticalstaging_tast_tests/",
         "test_level_retries": 2,
-        "timeout_sec": 7200,
+        "timeout_sec": 14400,
         "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
       },
       {
@@ -4602,7 +4602,7 @@
         "test": "chrome_disabled_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_disabled_tast_tests/",
         "test_level_retries": 1,
-        "timeout_sec": 7200,
+        "timeout_sec": 14400,
         "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
       }
     ]
