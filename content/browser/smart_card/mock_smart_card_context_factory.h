@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_SMART_CARD_MOCK_SMART_CARD_CONTEXT_FACTORY_H_
 #define CONTENT_BROWSER_SMART_CARD_MOCK_SMART_CARD_CONTEXT_FACTORY_H_
 
+#include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/smart_card.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,11 +42,16 @@ class MockSmartCardContextFactory
                ConnectCallback callback),
               (override));
 
+  MOCK_METHOD(void, ContextDisconnected, ());
+
   // Expect a Connect("Fake reader", kShared, kT1) call.
   // A pending remote for the given `connection_receiver` will be passed to
   // the call result on success.
   void ExpectConnectFakeReaderSharedT1(
       mojo::Receiver<device::mojom::SmartCardConnection>& connection_receiver);
+
+  // Expect a ListReaders() call. Will return `readers`.
+  void ExpectListReaders(std::vector<std::string> readers);
 
   void ClearContextReceivers();
 

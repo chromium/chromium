@@ -160,6 +160,11 @@ void SmartCardError::MaybeReject(
           "The operation has been aborted to allow the server application to "
           "exit.");
       break;
+    // "NotAllowedError"
+    case device::mojom::blink::SmartCardError::kPermissionDenied:
+      resolver->RejectWithDOMException(DOMExceptionCode::kNotAllowedError,
+                                       "The user has denied permission.");
+      break;
     // "UnknownError"
     case device::mojom::blink::SmartCardError::kCommError:
       resolver->RejectWithDOMException(

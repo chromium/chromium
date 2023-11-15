@@ -13,3 +13,19 @@ ChromeOsSmartCardDelegate::GetSmartCardContextFactory(
   return extensions::SmartCardProviderPrivateAPI::Get(browser_context)
       .GetSmartCardContextFactory();
 }
+
+bool ChromeOsSmartCardDelegate::HasReaderPermission(
+    content::RenderFrameHost& render_frame_host,
+    const std::string& reader_name) {
+  // TODO(crbug.com/1386175): Ask permission context.
+  return true;
+}
+
+void ChromeOsSmartCardDelegate::RequestReaderPermission(
+    content::RenderFrameHost& render_frame_host,
+    const std::string& reader_name,
+    RequestReaderPermissionCallback callback) {
+  // TODO(crbug.com/1386175): Show permission prompt. Call permission context
+  // according to prompt response.
+  std::move(callback).Run(true);
+}
