@@ -415,7 +415,6 @@
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/scanning/url_constants.h"
 #include "chrome/app/chrome_crash_reporter_client.h"
-#include "chrome/browser/apps/app_service/app_install/app_install_navigation_throttle.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_backend_delegate.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_backend_delegate.h"
 #include "chrome/browser/ash/chrome_browser_main_parts_ash.h"
@@ -497,6 +496,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/debug/leak_annotations.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_navigation_throttle.h"
 #include "chrome/browser/apps/intent_helper/chromeos_disabled_apps_throttle.h"
 #include "chrome/browser/apps/link_capturing/chromeos_link_capturing_delegate.h"
 #include "chrome/browser/chromeos/enterprise/incognito_navigation_throttle.h"
@@ -5372,12 +5372,10 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
         chromeos::IncognitoNavigationThrottle::MaybeCreateThrottleFor(handle),
         &throttles);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   MaybeAddThrottle(apps::AppInstallNavigationThrottle::MaybeCreate(handle),
                    &throttles);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return throttles;
 }

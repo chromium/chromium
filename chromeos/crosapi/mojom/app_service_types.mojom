@@ -604,3 +604,25 @@ enum ControllerRegistrationResult {
   [Default] kSuccess              = 0,
   kFailed                         = 1,
 };
+
+
+// Represents parameters for installing an app.
+[Stable]
+struct InstallAppParams {
+  // Represents the origin of the installation.
+  [Stable, Extensible]
+  enum Surface {
+    [Default] kUnknown = 0,
+    kAppInstallNavigationThrottle = 1,
+  };
+  Surface surface@0;
+
+  // Represents which package_id to fetch from Almanac to be installed.
+  string? package_id@1;
+};
+
+// Represents the result of an InstallApp() request.
+// Currently empty but will be extended with fields as needed.
+[Stable]
+struct AppInstallResult {
+};

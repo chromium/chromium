@@ -150,8 +150,8 @@ interface AppController {
 // Interacts with the app service. Implemented in ash-chrome and called in
 // lacros-chrome. This interface will allow the browser to interact with
 // all types of apps installed in Chrome OS.
-// Next version: 20
-// Next method id: 8
+// Next version: 21
+// Next method id: 9
 [Stable, Uuid="a8979226-04ab-4c29-bca6-1b487ca769f7"]
 interface AppServiceProxy {
   // Lacros exposes an AppServiceSubscriber interface to Ash. This allows Ash
@@ -211,6 +211,13 @@ interface AppServiceProxy {
   // Uninstalls |app_id| without prompting the user to confirm.
   [MinVersion=18]
   UninstallSilently@6(string app_id, UninstallSource uninstall_source);
+
+  // Requests to install an app.
+  // Doc: go/cros-app-install-sketch
+  // If InstallAppParams::Surface::kUnknown is received then a version mismatch
+  // is assumed and the request will be cancelled.
+  [MinVersion=20]
+  InstallApp@8(InstallAppParams params) => (AppInstallResult result);
 };
 
 // Interacts with the app service. Implemented in lacros-chrome and called in

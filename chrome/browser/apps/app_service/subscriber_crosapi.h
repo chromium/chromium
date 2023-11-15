@@ -75,6 +75,8 @@ class SubscriberCrosapi : public KeyedService,
   void SetSupportedLinksPreference(const std::string& app_id) override;
   void UninstallSilently(const std::string& app_id,
                          UninstallSource uninstall_source) override;
+  void InstallApp(crosapi::mojom::InstallAppParamsPtr params,
+                  InstallAppCallback callback) override;
 
   void OnSubscriberDisconnected();
 
