@@ -27,11 +27,8 @@ namespace {
 
 }  // namespace
 
-class GridLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest,
-                                private ScopedLayoutNGSubgridForTest {
+class GridLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
  protected:
-  GridLayoutAlgorithmTest() : ScopedLayoutNGSubgridForTest(true) {}
-
   void SetUp() override { NGBaseLayoutAlgorithmTest::SetUp(); }
 
   void BuildGridItemsAndTrackCollections(GridLayoutAlgorithm& algorithm) {

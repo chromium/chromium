@@ -5815,7 +5815,6 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenRange& range,
   }
 
   bool is_subgrid_track_list =
-      RuntimeEnabledFeatures::LayoutNGSubgridEnabled() &&
       track_list_type == TrackListType::kGridTemplateSubgrid;
 
   CSSValueList* values = CSSValueList::CreateSpaceSeparated();

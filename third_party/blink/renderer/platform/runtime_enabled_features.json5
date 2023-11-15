@@ -2151,11 +2151,6 @@
       base_feature: "LayoutNGShapeCache",
     },
     {
-      name: "LayoutNGSubgrid",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "LazyInitializeMediaControls",
       base_feature: "none",
       public: true,
