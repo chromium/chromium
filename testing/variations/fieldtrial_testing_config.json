@@ -11981,7 +11981,7 @@
             ]
         }
     ],
-    "OrcaDogfoodEnabled": [
+    "OrcaEnabled": [
         {
             "platforms": [
                 "chromeos"
