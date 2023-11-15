@@ -905,6 +905,7 @@ TEST_F(DownloadManagerTest, BlockingShutdownCount) {
   download::MockDownloadItemImpl& item(AddItemToManager());
 
   EXPECT_CALL(item, IsInsecure()).WillRepeatedly(Return(false));
+  EXPECT_CALL(item, IsDangerous()).WillRepeatedly(Return(false));
 
   EXPECT_CALL(item, GetState())
       .WillRepeatedly(Return(download::DownloadItem::COMPLETE));
@@ -914,22 +915,9 @@ TEST_F(DownloadManagerTest, BlockingShutdownCount) {
       .WillRepeatedly(Return(download::DownloadItem::IN_PROGRESS));
   EXPECT_EQ(download_manager_->BlockingShutdownCount(), 1);
 
-  const download::DownloadDangerType kDangerTypes[] = {
-      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
-      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
-      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
-      download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
-      download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS,
-      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-      download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING};
-  for (download::DownloadDangerType danger_type : kDangerTypes) {
-    SCOPED_TRACE(testing::Message()
-                 << "Failed for danger type "
-                 << download::GetDownloadDangerTypeString(danger_type)
-                 << std::endl);
-    EXPECT_CALL(item, GetDangerType()).WillRepeatedly(Return(danger_type));
-    EXPECT_EQ(download_manager_->BlockingShutdownCount(), 0);
-  }
+  EXPECT_CALL(item, IsDangerous()).WillRepeatedly(Return(true));
+  EXPECT_EQ(download_manager_->BlockingShutdownCount(), 0);
+  EXPECT_CALL(item, IsDangerous()).WillRepeatedly(Return(false));
 
   SCOPED_TRACE(testing::Message() << "Failed for insecure" << std::endl);
   EXPECT_CALL(item, IsInsecure()).WillRepeatedly(Return(true));
