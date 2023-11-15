@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/enrollment/fake_auto_enrollment_client.h"
 
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

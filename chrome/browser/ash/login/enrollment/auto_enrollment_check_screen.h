@@ -14,8 +14,12 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
-#include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+
+namespace policy {
+class AutoEnrollmentController;
+}  // namespace policy
 
 namespace ash {
 
