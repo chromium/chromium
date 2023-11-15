@@ -94,8 +94,7 @@ class SafeBrowsingUserInteractionObserver
                               content::RenderFrameHost* new_frame) override;
   void WebContentsDestroyed() override;
   void DidFinishNavigation(content::NavigationHandle* handle) override;
-  void DidToggleFullscreenModeForTab(bool entered_fullscreen,
-                                     bool will_cause_resize) override;
+  void DidToggleFullscreenModeForTab(bool entered_fullscreen) override;
   void OnPaste() override;
 
   // permissions::PermissionRequestManager::Observer methods:

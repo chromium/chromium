@@ -539,7 +539,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool WasEverAudible() override;
   bool IsFullscreen() override;
   bool ShouldShowStaleContentOnEviction() override;
-  void ExitFullscreen(bool will_cause_resize) override;
+  void ExitFullscreen() override;
   [[nodiscard]] base::ScopedClosureRunner ForSecurityDropFullscreen(
       int64_t display_id = display::kInvalidDisplayId) override;
   void ResumeLoadingCreatedWebContents() override;
@@ -674,7 +674,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void EnterFullscreenMode(
       RenderFrameHostImpl* requesting_frame,
       const blink::mojom::FullscreenOptions& options) override;
-  void ExitFullscreenMode(bool will_cause_resize) override;
+  void ExitFullscreenMode() override;
   void FullscreenStateChanged(
       RenderFrameHostImpl* rfh,
       bool is_fullscreen,

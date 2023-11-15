@@ -422,7 +422,7 @@ void PrinterQuery::GetSettingsWithUI(uint32_t document_page_count,
   // Running a dialog causes an exit to webpage-initiated fullscreen.
   // http://crbug.com/728276
   if (web_contents && web_contents->IsFullscreen()) {
-    web_contents->ExitFullscreen(true);
+    web_contents->ExitFullscreen();
   }
 
   PRINTER_LOG(EVENT) << "Getting printer settings from user in-process";

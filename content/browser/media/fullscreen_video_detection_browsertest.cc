@@ -45,8 +45,7 @@ class FullscreenEventsRecorder : public WebContentsObserver {
                    : FullscreenTestEvent::kNotEffectivelyFullscreen);
   }
 
-  void DidToggleFullscreenModeForTab(bool entered_fullscreen,
-                                     bool will_cause_resize) override {
+  void DidToggleFullscreenModeForTab(bool entered_fullscreen) override {
     AddEvent(entered_fullscreen ? FullscreenTestEvent::kEnterFullscreen
                                 : FullscreenTestEvent::kLeaveFullscreen);
   }

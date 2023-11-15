@@ -720,8 +720,7 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
 
   // Invoked when the renderer process has toggled the tab into/out of
   // fullscreen mode.
-  virtual void DidToggleFullscreenModeForTab(bool entered_fullscreen,
-                                             bool will_cause_resize) {}
+  virtual void DidToggleFullscreenModeForTab(bool entered_fullscreen) {}
 
   // Signals that |rfh| has the current fullscreen element. This is invoked
   // when:

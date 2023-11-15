@@ -501,7 +501,7 @@ bool WebContentsAndroid::IsFullscreenForCurrentTab(JNIEnv* env) {
 }
 
 void WebContentsAndroid::ExitFullscreen(JNIEnv* env) {
-  web_contents_->ExitFullscreen(/*will_cause_resize=*/false);
+  web_contents_->ExitFullscreen();
 }
 
 void WebContentsAndroid::ScrollFocusedEditableNodeIntoView(JNIEnv* env) {

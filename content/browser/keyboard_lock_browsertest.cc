@@ -365,7 +365,7 @@ void KeyboardLockBrowserTest::EnterFullscreen(const base::Location& from_here) {
 }
 
 void KeyboardLockBrowserTest::ExitFullscreen(const base::Location& from_here) {
-  web_contents()->ExitFullscreenMode(/*should_resize=*/true);
+  web_contents()->ExitFullscreenMode();
 
   ASSERT_FALSE(web_contents()->IsFullscreen())
       << "Location: " << from_here.ToString();

@@ -253,11 +253,10 @@ void WebContentsObserverProxy::MediaEffectivelyFullscreenChanged(
 }
 
 void WebContentsObserverProxy::DidToggleFullscreenModeForTab(
-    bool entered_fullscreen,
-    bool will_cause_resize) {
+    bool entered_fullscreen) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_didToggleFullscreenModeForTab(
-      env, java_observer_, entered_fullscreen, will_cause_resize);
+      env, java_observer_, entered_fullscreen);
 }
 
 void WebContentsObserverProxy::DidFirstVisuallyNonEmptyPaint() {

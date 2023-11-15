@@ -71,8 +71,7 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
     DestroyGuestIfUnattached(&*guest_);
   }
 
-  void DidToggleFullscreenModeForTab(bool entered_fullscreen,
-                                     bool will_cause_resize) override {
+  void DidToggleFullscreenModeForTab(bool entered_fullscreen) override {
     if (!IsGuestInitialized()) {
       return;
     }

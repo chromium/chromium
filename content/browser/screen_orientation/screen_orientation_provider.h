@@ -56,8 +56,7 @@ class CONTENT_EXPORT ScreenOrientationProvider
       display::mojom::ScreenOrientation orientation);
 
   // WebContentsObserver
-  void DidToggleFullscreenModeForTab(bool entered_fullscreen,
-                                     bool will_cause_resize) override;
+  void DidToggleFullscreenModeForTab(bool entered_fullscreen) override;
   void PrimaryPageChanged(Page& page) override;
 
  private:

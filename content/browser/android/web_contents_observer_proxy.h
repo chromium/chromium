@@ -71,8 +71,7 @@ class WebContentsObserverProxy : public WebContentsObserver {
       const MediaPlayerId& id,
       WebContentsObserver::MediaStoppedReason reason) override;
   void MediaEffectivelyFullscreenChanged(bool is_fullscreen) override;
-  void DidToggleFullscreenModeForTab(bool entered_fullscreen,
-                                     bool will_cause_resize) override;
+  void DidToggleFullscreenModeForTab(bool entered_fullscreen) override;
   bool SetToBaseURLForDataURLIfNeeded(GURL* url);
   void ViewportFitChanged(blink::mojom::ViewportFit value) override;
   void VirtualKeyboardModeChanged(ui::mojom::VirtualKeyboardMode mode) override;

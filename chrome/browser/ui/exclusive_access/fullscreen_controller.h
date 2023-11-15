@@ -156,7 +156,7 @@ class FullscreenController : public ExclusiveAccessControllerBase {
 
   // Called by BrowserView::FullscreenStateChanged. This is called after
   // fullscreen mode is toggled and after the transition animation completes.
-  void FullscreenTransititionCompleted();
+  void FullscreenTransitionCompleted();
 
   // Runs the given closure unless a fullscreen transition is currently in
   // progress. If a transition is in progress, the execution of the closure is

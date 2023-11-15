@@ -225,8 +225,7 @@ void DialogOverlayImpl::WebContentsDestroyed() {
   Stop();
 }
 
-void DialogOverlayImpl::DidToggleFullscreenModeForTab(bool entered_fullscreen,
-                                                      bool will_cause_resize) {
+void DialogOverlayImpl::DidToggleFullscreenModeForTab(bool entered_fullscreen) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // If the caller doesn't care about power-efficient overlays, then don't send

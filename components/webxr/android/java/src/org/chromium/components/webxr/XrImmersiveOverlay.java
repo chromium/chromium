@@ -198,7 +198,7 @@ public class XrImmersiveOverlay
             mWebContentsObserver = new WebContentsObserver() {
                 @Override
                 public void didToggleFullscreenModeForTab(
-                        boolean enteredFullscreen, boolean willCauseResize) {
+                        boolean enteredFullscreen) {
                     if (DEBUG_LOGS) {
                         Log.i(TAG,
                                 "didToggleFullscreenModeForTab(), enteredFullscreen="

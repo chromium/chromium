@@ -397,12 +397,12 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
-    public void didToggleFullscreenModeForTab(boolean enteredFullscreen, boolean willCauseResize) {
+    public void didToggleFullscreenModeForTab(boolean enteredFullscreen) {
         handleObserverCall();
         Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
         for (; observersIterator.hasNext();) {
             observersIterator.next().didToggleFullscreenModeForTab(
-                    enteredFullscreen, willCauseResize);
+                    enteredFullscreen);
         }
         finishObserverCall();
     }
