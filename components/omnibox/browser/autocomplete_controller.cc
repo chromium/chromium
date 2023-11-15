@@ -1975,6 +1975,14 @@ void AutocompleteController::MaybeCleanSuggestionsForKeywordMode(
       // occupied the top spot while '@' was demoted below others.
       std::sort(result->begin(), result->end(),
                 AutocompleteMatch::MoreRelevant);
+      // Put first defaultable match in top position since relevance
+      // ranking alone doesn't guarantee it.
+      auto default_match = std::find_if(
+          result->begin(), result->end(),
+          [](const auto& m) { return m.allowed_to_be_default_match; });
+      if (default_match != result->begin() && default_match != result->end()) {
+        std::rotate(result->begin(), default_match, default_match + 1);
+      }
     }
 
     // Intentionally avoid actions and remove button on first suggestion
