@@ -16,6 +16,7 @@
 
 class BrowserList;
 class FaviconLoader;
+@protocol GridConsumer;
 @protocol GridToolbarsMutator;
 @protocol RecentTabsConsumer;
 @class SceneState;
@@ -53,6 +54,8 @@ class TabRestoreService;
 @property(nonatomic, strong) id<RecentTabsConsumer> consumer;
 // Mutator to handle toolbars modification.
 @property(nonatomic, weak) id<GridToolbarsMutator> toolbarsMutator;
+// Grid consumer.
+@property(nonatomic, weak) id<GridConsumer> gridConsumer;
 // Wrangler handling the TabGrid modifications.
 @property(nonatomic, weak) id<TabGridToolbarsActionWrangler>
     toolbarActionWrangler;

@@ -1138,11 +1138,13 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 }
 
 - (void)searchButtonTapped:(id)sender {
-  [self.actionWrangler searchButtonTapped:sender];
+  self.currentMode = TabGridModeSearch;
+  base::RecordAction(base::UserMetricsAction("MobileTabGridSearchTabs"));
 }
 
 - (void)cancelSearchButtonTapped:(id)sender {
-  [self.actionWrangler cancelSearchButtonTapped:sender];
+  base::RecordAction(base::UserMetricsAction("MobileTabGridCancelSearchTabs"));
+  self.currentMode = TabGridModeNormal;
 }
 
 - (void)closeSelectedTabs:(id)sender {

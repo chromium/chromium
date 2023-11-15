@@ -474,7 +474,7 @@
 }
 
 - (NSArray<UIKeyCommand*>*)keyCommands {
-  return @[ UIKeyCommand.cr_undo ];
+  return @[ UIKeyCommand.cr_undo, UIKeyCommand.cr_close ];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
@@ -483,6 +483,9 @@
   }
   if (sel_isEqual(action, @selector(keyCommand_undo))) {
     return _undoActive;
+  }
+  if (sel_isEqual(action, @selector(keyCommand_close))) {
+    return _doneButton.enabled;
   }
   return [super canPerformAction:action withSender:sender];
 }
@@ -497,6 +500,11 @@
   // This function is also responsible for handling undo.
   // TODO(crbug.com/1457146): This should be separated to avoid confusion.
   [self closeAllButtonTapped:nil];
+}
+
+- (void)keyCommand_close {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  [self doneButtonTapped:nil];
 }
 
 #pragma mark - Control actions

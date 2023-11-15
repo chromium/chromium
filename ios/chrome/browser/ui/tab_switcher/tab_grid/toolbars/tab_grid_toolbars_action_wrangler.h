@@ -16,10 +16,6 @@
 
 - (void)selectAllButtonTapped:(id)sender;
 
-- (void)searchButtonTapped:(id)sender;
-
-- (void)cancelSearchButtonTapped:(id)sender;
-
 - (void)pageControlChangedValue:(id)sender;
 
 - (void)pageControlChangedPageByDrag:(id)sender;

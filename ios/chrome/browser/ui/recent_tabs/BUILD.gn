@@ -44,6 +44,7 @@ source_set("recent_tabs") {
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_activity_observer",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_page_mutator",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_consumer",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars:toolbars_ui",

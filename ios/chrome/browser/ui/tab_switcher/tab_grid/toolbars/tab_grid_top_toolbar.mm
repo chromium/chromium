@@ -532,6 +532,12 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   if (sel_isEqual(action, @selector(keyCommand_undo))) {
     return _undoActive;
   }
+  if (sel_isEqual(action, @selector(keyCommand_close))) {
+    return _doneButton.enabled || _mode == TabGridModeSearch;
+  }
+  if (sel_isEqual(action, @selector(keyCommand_find))) {
+    return _searchButton.enabled;
+  }
   return [super canPerformAction:action withSender:sender];
 }
 
@@ -545,6 +551,20 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   // This function is also responsible for handling undo.
   // TODO(crbug.com/1457146): This should be separated to avoid confusion.
   [self closeAllButtonTapped:nil];
+}
+
+- (void)keyCommand_close {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  if (_mode == TabGridModeSearch) {
+    [self cancelSearchButtonTapped:nil];
+  } else {
+    [self doneButtonTapped:nil];
+  }
+}
+
+- (void)keyCommand_find {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandSearchTabs"));
+  [self searchButtonTapped:nil];
 }
 
 #pragma mark - Control actions

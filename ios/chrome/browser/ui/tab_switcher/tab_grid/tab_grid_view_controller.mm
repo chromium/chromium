@@ -137,8 +137,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     NSArray<NSLayoutConstraint*>* pinnedTabsConstraints;
 // The configuration for tab grid pages.
 @property(nonatomic, assign) TabGridPageConfiguration pageConfiguration;
-// If the scrim view is being presented.
-@property(nonatomic, assign) BOOL isScrimDisplayed;
 // Wether there is a search being performed in the tab grid or not.
 @property(nonatomic, assign) BOOL isPerformingSearch;
 // Pan gesture for when the search results view is scrolled during the search
@@ -1527,7 +1525,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.scrimView.translatesAutoresizingMaskIntoConstraints = NO;
   self.scrimView.accessibilityIdentifier = kTabGridScrimIdentifier;
   [self.scrimView addTarget:self
-                     action:@selector(cancelSearchButtonTapped:)
+                     action:@selector(quitSearchMode)
            forControlEvents:UIControlEventTouchUpInside];
   // Add a gesture recognizer to identify when the user interactions with the
   // search results.
@@ -1560,7 +1558,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         TabGridViewController* strongSelf = weakSelf;
         if (!strongSelf)
           return;
-        strongSelf.isScrimDisplayed = (strongSelf.scrimView.alpha > 0);
         strongSelf.currentPageViewController.accessibilityElementsHidden = YES;
       }];
 }
@@ -1582,7 +1579,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         if (!strongSelf)
           return;
         strongSelf.currentPageViewController.accessibilityElementsHidden = NO;
-        strongSelf.isScrimDisplayed = (strongSelf.scrimView.alpha > 0);
       }];
 }
 
@@ -1666,6 +1662,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 
   return [self.regularTabsViewController transitionItemForActiveCell];
+}
+
+// Quit search mode.
+- (void)quitSearchMode {
+  self.tabGridMode = TabGridModeNormal;
 }
 
 #pragma mark - UIGestureRecognizerDelegate
@@ -2104,20 +2105,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-- (void)searchButtonTapped:(id)sender {
-  self.tabGridMode = TabGridModeSearch;
-  base::RecordAction(base::UserMetricsAction("MobileTabGridSearchTabs"));
-}
-
-- (void)cancelSearchButtonTapped:(id)sender {
-  if (!self.isScrimDisplayed) {
-    // Only record search cancel event when an actual search happened.
-    base::RecordAction(
-        base::UserMetricsAction("MobileTabGridCancelSearchTabs"));
-  }
-  self.tabGridMode = TabGridModeNormal;
-}
-
 - (void)pageControlChangedValue:(id)sender {
   // Map the page control slider position (in the range 0.0-1.0) to an
   // x-offset for the scroll view.
@@ -2222,7 +2209,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // menu.
   return @[
     UIKeyCommand.cr_openNewRegularTab,
-    UIKeyCommand.cr_close,
     // TODO(crbug.com/1385469): Move it to the menu builder once we have the
     // strings.
     UIKeyCommand.cr_select2,
@@ -2241,9 +2227,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (sel_isEqual(action, @selector(keyCommand_openNewIncognitoTab))) {
     return [self
         canPerformOpenNewTabActionForDestinationPage:TabGridPageIncognitoTabs];
-  }
-  if (sel_isEqual(action, @selector(keyCommand_find))) {
-    return self.viewVisible;
   }
   return [super canPerformAction:action withSender:sender];
 }
@@ -2275,11 +2258,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self openNewIncognitoTabForKeyboardCommand];
 }
 
-- (void)keyCommand_find {
-  base::RecordAction(base::UserMetricsAction("MobileKeyCommandSearchTabs"));
-  [self searchButtonTapped:nil];
-}
-
 - (void)keyCommand_select1 {
   base::RecordAction(
       base::UserMetricsAction("MobileKeyCommandGoToIncognitoTabGrid"));
@@ -2296,15 +2274,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   base::RecordAction(
       base::UserMetricsAction("MobileKeyCommandGoToRemoteTabGrid"));
   [self setCurrentPageAndPageControl:TabGridPageRemoteTabs animated:YES];
-}
-
-- (void)keyCommand_close {
-  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
-  if (self.tabGridMode == TabGridModeSearch) {
-    [self cancelSearchButtonTapped:nil];
-  } else {
-    [self doneButtonTapped:nil];
-  }
 }
 
 // Returns `YES` if should use compact layout.
