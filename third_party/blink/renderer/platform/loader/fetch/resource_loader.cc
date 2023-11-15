@@ -395,7 +395,6 @@ void ResourceLoader::StartWith(const ResourceRequestHead& request) {
 
   SetDefersLoading(fetcher_->GetProperties().FreezeMode());
 
-  request_start_time_ = base::TimeTicks::Now();
   if (is_cache_aware_loading_activated_) {
     // Override cache policy for cache-aware loading. If this request fails, a
     // reload with original request will be triggered in DidFail().
@@ -761,18 +760,6 @@ void ResourceLoader::DidReceiveResponseInternal(
     const ResourceResponse& response,
     absl::optional<mojo_base::BigBuffer> cached_metadata) {
   const ResourceRequestHead& request = resource_->GetResourceRequest();
-
-  const auto response_arrival = response.ArrivalTimeAtRenderer();
-  const auto code_cache_arrival = code_cache_arrival_time_;
-  const auto request_start = request_start_time_;
-  if (response.WasCached() && !code_cache_arrival.is_null() &&
-      !response_arrival.is_null()) {
-    DCHECK(!request_start_time_.is_null());
-    base::UmaHistogramTimes("Blink.Loading.CodeCacheArrivalAtRenderer",
-                            code_cache_arrival - request_start);
-    base::UmaHistogramTimes("Blink.Loading.CachedResponseArrivalAtRenderer",
-                            response_arrival - request_start);
-  }
 
   AtomicString content_encoding =
       response.HttpHeaderField(http_names::kContentEncoding);

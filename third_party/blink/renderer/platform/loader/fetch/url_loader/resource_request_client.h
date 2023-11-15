@@ -53,13 +53,11 @@ class BLINK_PLATFORM_EXPORT ResourceRequestClient
       FollowRedirectCallback follow_redirect_callback) = 0;
 
   // Called when response headers are available (after all redirects have
-  // been followed). `response_arrival` represents the timing at which the
-  // response arrived at the renderer.
+  // been followed).
   virtual void OnReceivedResponse(
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata,
-      base::TimeTicks response_arrival_at_renderer) = 0;
+      absl::optional<mojo_base::BigBuffer> cached_metadata) = 0;
 
   // Called when the transfer size is updated. This method may be called
   // multiple times or not at all. The transfer size is the length of the

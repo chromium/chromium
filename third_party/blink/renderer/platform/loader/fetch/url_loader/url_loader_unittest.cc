@@ -374,8 +374,7 @@ class URLLoaderTest : public testing::Test {
 
     resource_request_client()->OnReceivedResponse(
         network::mojom::URLResponseHead::New(), std::move(handle_to_pass),
-        /*cached_metadata=*/absl::nullopt,
-        /*response_arrival_at_renderer=*/base::TimeTicks::Now());
+        /*cached_metadata=*/absl::nullopt);
     EXPECT_TRUE(client()->did_receive_response());
   }
 

@@ -2877,28 +2877,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Loading.CachedResponseArrivalAtRenderer"
-    units="Milliseconds" expires_after="2024-04-28">
-  <owner>yhirano@chromium.org</owner>
-  <owner>loadingg-dev@chromium.org</owner>
-  <summary>
-    The amount of time taken to get a cached response. Recorded when the
-    response arrives, and recorded only when both of the response and the code
-    cache were cached.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Loading.CodeCacheArrivalAtRenderer" units="Milliseconds"
-    expires_after="2024-04-28">
-  <owner>yhirano@chromium.org</owner>
-  <owner>loading-dev@chromium.org</owner>
-  <summary>
-    The amount of time taken to get a code cache. Recorded when the response
-    arrives, and recorded only when both of the response and the code cache were
-    cached.
-  </summary>
-</histogram>
-
 <histogram name="Blink.LocalFrameRoot.DidReachFirstContentfulPaint"
     units="Boolean" expires_after="2024-04-28">
   <owner>pdr@chromium.org</owner>
@@ -3293,43 +3271,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.ResourceRequest.CompletionDelay" units="ms"
-    expires_after="2023-07-19">
-  <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
+<histogram name="Blink.ResourceRequest.CompletionDelay2" units="ms"
+    expires_after="2024-04-30">
+  <owner>horo@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
   <summary>
     Measures the time from when a resource request completes to when the
-    renderer is notified. Logged for every resource request.
+    renderer is notified. Logged for every resource request if the request has
+    never been frozen.
   </summary>
 </histogram>
 
-<histogram name="Blink.ResourceRequest.RedirectDelay" units="ms"
-    expires_after="2024-03-17">
-  <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
+<histogram name="Blink.ResourceRequest.RedirectDelay2" units="ms"
+    expires_after="2024-04-30">
+  <owner>horo@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
   <summary>
     Measures the time from when a redirect from a resource request happens to
-    when the renderer is notified. Logged for every resource request redirect.
+    when the renderer is notified. Logged for every resource request if the
+    request has never been frozen.
   </summary>
 </histogram>
 
-<histogram name="Blink.ResourceRequest.ResponseDelay" units="ms"
-    expires_after="2023-07-19">
-  <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
+<histogram name="Blink.ResourceRequest.ResponseDelay2" units="ms"
+    expires_after="2024-04-30">
+  <owner>horo@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
   <summary>
     Measures the time from when a response from a resource request is started to
-    when the renderer is notified. Logged for every resource request.
+    when the renderer is notified. Logged for every resource request if the
+    request has never been frozen.
   </summary>
 </histogram>
 
-<histogram name="Blink.ResourceRequest.StartDelay" units="ms"
-    expires_after="2023-07-19">
-  <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
+<histogram name="Blink.ResourceRequest.StartDelay2" units="ms"
+    expires_after="2024-04-30">
+  <owner>horo@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
   <summary>
     Measures the time from when the renderer starts a resource request to when
-    it is actually started on the network. Logged for every resource request.
+    it is actually started on the network. Logged for every resource request if
+    the request has never been frozen.
   </summary>
 </histogram>
 

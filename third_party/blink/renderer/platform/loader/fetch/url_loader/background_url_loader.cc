@@ -288,12 +288,10 @@ class BackgroundURLLoader::Context
     void OnReceivedResponse(
         network::mojom::URLResponseHeadPtr head,
         mojo::ScopedDataPipeConsumerHandle body,
-        absl::optional<mojo_base::BigBuffer> cached_metadata,
-        base::TimeTicks response_arrival_at_renderer) override {
+        absl::optional<mojo_base::BigBuffer> cached_metadata) override {
       context_->PostTaskToMainThread(CrossThreadBindOnce(
           &Context::OnReceivedResponse, context_, std::move(head),
-          std::move(body), std::move(cached_metadata),
-          response_arrival_at_renderer));
+          std::move(body), std::move(cached_metadata)));
     }
     void OnTransferSizeUpdated(int transfer_size_diff) override {
       context_->PostTaskToMainThread(CrossThreadBindOnce(
@@ -448,12 +446,10 @@ class BackgroundURLLoader::Context
   void OnReceivedResponse(network::mojom::URLResponseHeadPtr head,
                           mojo::ScopedDataPipeConsumerHandle body,
                           absl::optional<mojo_base::BigBuffer> cached_metadata,
-                          base::TimeTicks response_arrival_at_renderer,
                           int request_id) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
     WebURLResponse response = WebURLResponse::Create(
         url_, *head, has_devtools_request_id_, request_id);
-    response.SetArrivalTimeAtRenderer(response_arrival_at_renderer);
     client_->DidReceiveResponse(response, std::move(body),
                                 std::move(cached_metadata));
   }

@@ -216,8 +216,7 @@ void SyncLoadContext::CancelRedirect() {
 void SyncLoadContext::OnReceivedResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata,
-    base::TimeTicks response_arrival_at_renderer) {
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK(!Completed());
   response_->head = std::move(head);
 

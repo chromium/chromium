@@ -293,7 +293,6 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   bool ShouldUseSourceHashForJSCodeCache() const;
 
   void SetWasFetchedViaCache(bool);
-  void SetArrivalTimeAtRenderer(base::TimeTicks arrival);
 
 #if INSIDE_BLINK
  protected:

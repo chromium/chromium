@@ -117,8 +117,7 @@ class URLLoader::Context : public ResourceRequestClient {
   void OnReceivedResponse(
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata,
-      base::TimeTicks response_arrival_at_renderer) override;
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnTransferSizeUpdated(int transfer_size_diff) override;
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;
@@ -347,8 +346,7 @@ void URLLoader::Context::OnReceivedRedirect(
 void URLLoader::Context::OnReceivedResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata,
-    base::TimeTicks response_arrival_at_renderer) {
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   if (!client_) {
     return;
   }
@@ -365,8 +363,6 @@ void URLLoader::Context::OnReceivedResponse(
 
   WebURLResponse response = WebURLResponse::Create(
       url_, *head, has_devtools_request_id_, request_id_);
-  response.SetArrivalTimeAtRenderer(response_arrival_at_renderer);
-
   client_->DidReceiveResponse(response, std::move(body),
                               std::move(cached_metadata));
 }
