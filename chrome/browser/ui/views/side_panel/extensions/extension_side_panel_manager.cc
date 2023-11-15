@@ -123,47 +123,43 @@ void ExtensionSidePanelManager::OnExtensionLoaded(
 
 void ExtensionSidePanelManager::MaybeCreateActionItemForExtension(
     const Extension* extension) {
-  if (!browser_ || !base::FeatureList::IsEnabled(features::kSidePanelPinning) ||
-      !extension->permissions_data()->HasAPIPermission(
+  if (browser_ && base::FeatureList::IsEnabled(features::kSidePanelPinning) &&
+      extension->permissions_data()->HasAPIPermission(
           mojom::APIPermissionID::kSidePanel)) {
-    return;
+    actions::ActionId extension_action_id =
+        GetOrCreateActionIdForExtension(extension);
+
+    BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);
+    actions::ActionItem* extension_action_item =
+        actions::ActionManager::Get().FindAction(
+            extension_action_id, browser_actions->root_action_item());
+
+    // Create the action item if it does not exist.
+    if (!extension_action_item) {
+      actions::ActionItem* root_action_item =
+          browser_actions->root_action_item();
+      root_action_item->AddChild(
+          actions::ActionItem::Builder(
+              base::BindRepeating(
+                  [](scoped_refptr<const Extension> extension, Browser* browser,
+                     actions::ActionItem* item,
+                     actions::ActionInvocationContext context) {
+                    const SidePanelOpenTrigger open_trigger =
+                        static_cast<SidePanelOpenTrigger>(
+                            context.GetProperty(kSidePanelOpenTriggerKey));
+                    CHECK_GE(open_trigger, SidePanelOpenTrigger::kMinValue);
+                    CHECK_LE(open_trigger, SidePanelOpenTrigger::kMaxValue);
+                    SidePanelUI::GetSidePanelUIForBrowser(browser)->Toggle(
+                        SidePanelEntry::Key(SidePanelEntry::Id::kExtension,
+                                            extension->id()),
+                        open_trigger);
+                  },
+                  base::WrapRefCounted(extension), browser_))
+              .SetText(base::UTF8ToUTF16(extension->short_name()))
+              .SetActionId(extension_action_id)
+              .Build());
+    }
   }
-
-  actions::ActionId extension_action_id =
-      GetOrCreateActionIdForExtension(extension);
-  BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);
-  actions::ActionItem* extension_action_item =
-      actions::ActionManager::Get().FindAction(
-          extension_action_id, browser_actions->root_action_item());
-
-  // Mark the action item as pinnable if it already exists.
-  if (extension_action_item) {
-    return;
-  }
-
-  // Create a new action item.
-  actions::ActionItem* root_action_item = browser_actions->root_action_item();
-  root_action_item->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](scoped_refptr<const Extension> extension, Browser* browser,
-                 actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                const SidePanelOpenTrigger open_trigger =
-                    static_cast<SidePanelOpenTrigger>(
-                        context.GetProperty(kSidePanelOpenTriggerKey));
-                CHECK_GE(open_trigger, SidePanelOpenTrigger::kMinValue);
-                CHECK_LE(open_trigger, SidePanelOpenTrigger::kMaxValue);
-                SidePanelUI::GetSidePanelUIForBrowser(browser)->Toggle(
-                    SidePanelEntry::Key(SidePanelEntry::Id::kExtension,
-                                        extension->id()),
-                    open_trigger);
-              },
-              base::WrapRefCounted(extension), browser_))
-          .SetText(base::UTF8ToUTF16(extension->short_name()))
-          .SetActionId(extension_action_id)
-          .SetProperty(actions::kActionItemPinnableKey, true)
-          .Build());
 }
 
 actions::ActionId ExtensionSidePanelManager::GetOrCreateActionIdForExtension(

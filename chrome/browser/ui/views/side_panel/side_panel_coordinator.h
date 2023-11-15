@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
@@ -55,8 +54,7 @@ class View;
 class SidePanelCoordinator final : public SidePanelRegistryObserver,
                                    public TabStripModelObserver,
                                    public views::ViewObserver,
-                                   public SidePanelUI,
-                                   public ToolbarActionsModel::Observer {
+                                   public SidePanelUI {
  public:
   explicit SidePanelCoordinator(BrowserView* browser_view);
   SidePanelCoordinator(const SidePanelCoordinator&) = delete;
@@ -247,15 +245,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
-  // ToolbarActionsModel::Observer
-  void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& id) override {}
-  void OnToolbarActionRemoved(
-      const ToolbarActionsModel::ActionId& id) override {}
-  void OnToolbarActionUpdated(
-      const ToolbarActionsModel::ActionId& id) override {}
-  void OnToolbarModelInitialized() override {}
-  void OnToolbarPinnedActionsChanged() override;
-
   // When true, prevent loading delays when switching between side panel
   // entries.
   bool no_delays_for_testing_ = false;
@@ -297,9 +286,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // Used to update the visibility of the pin header button.
   raw_ptr<views::ToggleImageButton, AcrossTasksDanglingUntriaged>
       header_pin_button_ = nullptr;
-
-  base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
-      model_observation_{this};
 
   base::ObserverList<SidePanelViewStateObserver> view_state_observers_;
 

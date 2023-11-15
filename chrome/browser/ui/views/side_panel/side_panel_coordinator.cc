@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_actions.h"
@@ -272,13 +271,6 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
     : browser_view_(browser_view) {
   if (!base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     combobox_model_ = std::make_unique<SidePanelComboboxModel>(browser_view_);
-  } else {
-    // When the SidePanelPinning feature is enabled observe changes to the
-    // pinned actions so we can update the pin button appropriately.
-    // TODO(b/310910098): Observe the PinnedToolbarActionModel instead when
-    // pinned extensions are fully merged into it.
-    model_observation_.Observe(
-        ToolbarActionsModel::Get(browser_view_->browser()->profile()));
   }
 
   auto global_registry = std::make_unique<SidePanelRegistry>();
@@ -306,10 +298,6 @@ SidePanelRegistry* SidePanelCoordinator::GetGlobalSidePanelRegistry(
     Browser* browser) {
   return static_cast<SidePanelRegistry*>(
       browser->GetUserData(kGlobalSidePanelRegistryKey));
-}
-
-void SidePanelCoordinator::OnToolbarPinnedActionsChanged() {
-  UpdateHeaderPinButtonState();
 }
 
 actions::ActionItem* SidePanelCoordinator::GetActionItem(
@@ -494,7 +482,17 @@ void SidePanelCoordinator::OpenInNewTab() {
 
 void SidePanelCoordinator::UpdatePinState() {
   Profile* const profile = browser_view_->GetProfile();
-  if (!base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    PinnedToolbarActionsModel* const actions_model =
+        PinnedToolbarActionsModel::Get(profile);
+    absl::optional<actions::ActionId> action_id =
+        GetActionItem(current_entry_->key())->GetActionId();
+    CHECK(action_id.has_value());
+    const bool updated_pin_state = !actions_model->Contains(action_id.value());
+    actions_model->UpdatePinnedState(action_id.value(), updated_pin_state);
+    SidePanelUtil::RecordPinnedButtonClicked(current_entry_->key().id(),
+                                             updated_pin_state);
+  } else {
     PrefService* const pref_service = profile->GetPrefs();
     if (pref_service) {
       const bool current_state = pref_service->GetBoolean(
@@ -507,36 +505,7 @@ void SidePanelCoordinator::UpdatePinState() {
           {"SidePanel.Companion.", !current_state ? "Pinned" : "Unpinned",
            ".BySidePanelHeaderButton"}));
     }
-
-    return;
   }
-
-  absl::optional<actions::ActionId> action_id =
-      GetActionItem(current_entry_->key())->GetActionId();
-  CHECK(action_id.has_value());
-
-  bool updated_pin_state = false;
-
-  // TODO(b/310910098): Clean condition up once/if ToolbarActionModel and
-  // PinnedToolbarActionModel are merged together.
-  if (const absl::optional<extensions::ExtensionId> extension_id =
-          current_entry_->key().extension_id();
-      extension_id.has_value()) {
-    ToolbarActionsModel* const actions_model =
-        ToolbarActionsModel::Get(profile);
-
-    updated_pin_state = !actions_model->IsActionPinned(*extension_id);
-    actions_model->SetActionVisibility(*extension_id, updated_pin_state);
-  } else {
-    PinnedToolbarActionsModel* const actions_model =
-        PinnedToolbarActionsModel::Get(profile);
-
-    updated_pin_state = !actions_model->Contains(action_id.value());
-    actions_model->UpdatePinnedState(action_id.value(), updated_pin_state);
-  }
-
-  SidePanelUtil::RecordPinnedButtonClicked(current_entry_->key().id(),
-                                           updated_pin_state);
 }
 
 absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()
@@ -1242,7 +1211,18 @@ void SidePanelCoordinator::UpdateHeaderPinButtonState() {
   }
 
   Profile* const profile = browser_view_->GetProfile();
-  if (!base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    PinnedToolbarActionsModel* const actions_model =
+        PinnedToolbarActionsModel::Get(profile);
+    actions::ActionItem* const action_item =
+        GetActionItem(current_entry_->key());
+    absl::optional<actions::ActionId> action_id = action_item->GetActionId();
+    CHECK(action_id.has_value());
+    header_pin_button_->SetToggled(actions_model->Contains(action_id.value()));
+    header_pin_button_->SetVisible(
+        !profile->IsIncognitoProfile() && !profile->IsGuestSession() &&
+        action_item->GetProperty(actions::kActionItemPinnableKey));
+  } else {
     PrefService* pref_service = profile->GetPrefs();
     if (pref_service && companion::IsCompanionFeatureEnabled()) {
       bool pinned = pref_service->GetBoolean(
@@ -1251,35 +1231,7 @@ void SidePanelCoordinator::UpdateHeaderPinButtonState() {
     }
     header_pin_button_->SetVisible(current_entry_->key().id() ==
                                    SidePanelEntry::Id::kSearchCompanion);
-    return;
   }
-
-  actions::ActionItem* const action_item = GetActionItem(current_entry_->key());
-  absl::optional<actions::ActionId> action_id = action_item->GetActionId();
-  CHECK(action_id.has_value());
-
-  bool current_pinned_state = false;
-
-  // TODO(b/310910098): Clean condition up once/if ToolbarActionModel and
-  // PinnedToolbarActionModel are merged together.
-  if (const absl::optional<extensions::ExtensionId> extension_id =
-          current_entry_->key().extension_id();
-      extension_id.has_value()) {
-    ToolbarActionsModel* const actions_model =
-        ToolbarActionsModel::Get(profile);
-
-    current_pinned_state = actions_model->IsActionPinned(*extension_id);
-  } else {
-    PinnedToolbarActionsModel* const actions_model =
-        PinnedToolbarActionsModel::Get(profile);
-
-    current_pinned_state = actions_model->Contains(action_id.value());
-  }
-
-  header_pin_button_->SetToggled(current_pinned_state);
-  header_pin_button_->SetVisible(
-      !profile->IsIncognitoProfile() && !profile->IsGuestSession() &&
-      action_item->GetProperty(actions::kActionItemPinnableKey));
 }
 
 void SidePanelCoordinator::UpdateToolbarButtonHighlight(
