@@ -35,6 +35,11 @@ template <typename Proto>
 class InProcessProtoFuzzer : public InProcessFuzzer {
  public:
   using FuzzCase = Proto;
+  // Constructor. Optionally pass options through to the InProcessFuzzer
+  // constructor.
+  // NOLINTNEXTLINE(runtime/explicit)
+  InProcessProtoFuzzer(InProcessFuzzerOptions options = {})
+      : InProcessFuzzer(options) {}
 
  protected:
   int Fuzz(const uint8_t* data, size_t size) override {

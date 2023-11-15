@@ -70,7 +70,11 @@ class PageLoadInProcessFuzzer
 REGISTER_TEXT_PROTO_IN_PROCESS_FUZZER(PageLoadInProcessFuzzer)
 
 PageLoadInProcessFuzzer::PageLoadInProcessFuzzer()
-    : http_test_server1_(net::EmbeddedTestServer::TYPE_HTTP),
+    : InProcessProtoFuzzer({
+          RunLoopTimeoutBehavior::kDeclareInfiniteLoop,
+          base::Seconds(180),
+      }),
+      http_test_server1_(net::EmbeddedTestServer::TYPE_HTTP),
       http_test_server2_(net::EmbeddedTestServer::TYPE_HTTP),
       https_test_server1_(net::EmbeddedTestServer::TYPE_HTTPS),
       https_test_server2_(net::EmbeddedTestServer::TYPE_HTTPS) {
