@@ -1,8 +1,6 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import 'chrome://emoji-picker/app.js';
-
 import {EmojiGroupElement, EmojiPickerApiProxyImpl, EmojiPickerApp, GIF_VALIDATION_DATE, TRENDING} from 'chrome://emoji-picker/emoji_picker.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
