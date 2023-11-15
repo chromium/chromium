@@ -6,6 +6,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "cc/metrics/event_metrics.h"
+#include "third_party/blink/public/common/input/web_input_event_attribution.h"
 
 namespace blink {
 
@@ -44,7 +45,16 @@ bool IsContinuousGestureEvent(WebInputEvent::Type type) {
 
 CompositorThreadEventQueue::CompositorThreadEventQueue() {}
 
-CompositorThreadEventQueue::~CompositorThreadEventQueue() {}
+CompositorThreadEventQueue::~CompositorThreadEventQueue() {
+  while (!queue_.empty()) {
+    auto event_with_callback = Pop();
+    event_with_callback->RunCallbacks(
+        InputHandlerProxy::DROP_EVENT, event_with_callback->latency_info(),
+        /*did_overscroll_params=*/nullptr,
+        /*attribution=*/WebInputEventAttribution(),
+        /*scroll_result_data=*/nullptr);
+  }
+}
 
 void CompositorThreadEventQueue::Queue(
     std::unique_ptr<EventWithCallback> new_event,
