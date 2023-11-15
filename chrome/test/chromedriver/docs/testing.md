@@ -27,7 +27,8 @@ out/Default/chromedriver_unittests
 ## Python integration tests
 
 These tests are maintained by the ChromeDriver team,
-and are intended to verify that ChromeDriver works correctly with Chrome.
+and are intended to verify that ChromeDriver works correctly with Chrome and
+chrome-headless-shell.
 They are written in Python script, in
 [`test/run_py_tests.py`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/test/run_py_tests.py).
 We run these tests on the CQ (commit queue) on all desktop platforms,
@@ -48,6 +49,18 @@ The `run_py_tests.py` script has a number of options.
 Run it with `--help` for more information.
 The only require option is `--chromedriver` to specify the location of
 the ChromeDriver binary.
+
+### chrome-headless-shell
+
+To run the tests you need to build chrome-headless-shell and ChromeDriver, and then
+invoke `run_py_tests.py`:
+
+```bash
+autoninja -C out/Default headless_shell chromedriver
+vpython3 <CHROMEDRIVER_DIR>/test/run_py_tests.py\
+         --browser-name=chrome-headless-shell\
+         --chromedriver=out/Default/chromedriver
+```
 
 ### Test filtering
 
@@ -73,8 +86,8 @@ particilar platform), explain it in a comment.
 
 ### Running in Commit Queue
 
-The Python integration tests are run in the Commit Queue (CQ) in a step
-named `chromedriver_py_tests`.
+The Python integration tests are run in the Commit Queue (CQ) in steps
+named `chromedriver_py_tests` and `chromedriver_py_tests_headless_shell`.
 
 When running inside the CQ, the `--test-type=integration` option is passed to
 the `run_py_tests.py` command line. This has the following effects:
