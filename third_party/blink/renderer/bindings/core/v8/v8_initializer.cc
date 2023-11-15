@@ -488,8 +488,10 @@ void V8Initializer::WasmAsyncResolvePromiseCallback(
     v8::Local<v8::Promise::Resolver> resolver,
     v8::Local<v8::Value> compilation_result,
     v8::WasmAsyncSuccess success) {
-  if (!IsInParallelAlgorithmRunnable(ExecutionContext::From(context),
-                                     ScriptState::From(context))) {
+  ScriptState* script_state = ScriptState::MaybeFrom(context);
+  if (!script_state ||
+      !IsInParallelAlgorithmRunnable(ExecutionContext::From(script_state),
+                                     script_state)) {
     return;
   }
   v8::MicrotasksScope microtasks_scope(
