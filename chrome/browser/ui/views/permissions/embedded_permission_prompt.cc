@@ -293,6 +293,7 @@ void EmbeddedPermissionPrompt::PrioritizeAndMergeNewVariant(
   if (CanGroupVariants(embedded_prompt_variant_, new_variant)) {
     prompt_types_.insert(new_type);
     embedded_prompt_variant_ = std::max(embedded_prompt_variant_, new_variant);
+    return;
   }
 
   // The existing variant is higher priority than the new one.

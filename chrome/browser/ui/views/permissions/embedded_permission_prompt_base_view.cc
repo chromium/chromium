@@ -18,21 +18,43 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_client_view.h"
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
+                                      kMainViewId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
+                                      kLabelViewId1);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
+                                      kLabelViewId2);
+
 namespace {
 
 constexpr int BODY_TOP_MARGIN = 10;
 constexpr int DISTANCE_BUTTON_VERTICAL = 8;
 
+void AddElementIdentifierToLabel(views::Label& label, size_t index) {
+  ui::ElementIdentifier id;
+  switch (index) {
+    case 0:
+      id = EmbeddedPermissionPromptBaseView::kLabelViewId1;
+      break;
+    case 1:
+      id = EmbeddedPermissionPromptBaseView::kLabelViewId2;
+      break;
+    default:
+      return;
+  }
+
+  label.SetProperty(views::kElementIdentifierKey, id);
+}
+
 }  // namespace
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
-                                      kMainViewId);
 
 const std::vector<permissions::PermissionRequest*>&
 EmbeddedPermissionPromptBaseView::Delegate::Requests() const {
@@ -170,6 +192,7 @@ void EmbeddedPermissionPromptBaseView::AddRequestLine(
       std::make_unique<views::Label>(line.message));
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetMultiLine(true);
+  AddElementIdentifierToLabel(*label, index);
 
   if (features::IsChromeRefresh2023()) {
     label->SetTextStyle(views::style::STYLE_BODY_3);

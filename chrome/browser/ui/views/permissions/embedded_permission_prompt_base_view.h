@@ -43,6 +43,8 @@ class Browser;
 class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainViewId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLabelViewId1);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLabelViewId2);
 
   class Delegate {
    public:
