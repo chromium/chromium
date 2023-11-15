@@ -307,12 +307,142 @@ constexpr TestKeyEvent PeriodPressed(ui::EventFlags flags = ui::EF_NONE) {
           ui::DomKey::Constant<'.'>::Character, ui::VKEY_OEM_PERIOD, flags};
 }
 
+constexpr TestKeyEvent Digit1Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::DIGIT1,
+          ui::DomKey::Constant<'1'>::Character, ui::VKEY_1, flags};
+}
+
+constexpr TestKeyEvent Digit2Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::DIGIT2,
+          ui::DomKey::Constant<'2'>::Character, ui::VKEY_2, flags};
+}
+
+constexpr TestKeyEvent Digit3Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::DIGIT3,
+          ui::DomKey::Constant<'3'>::Character, ui::VKEY_3, flags};
+}
+
+constexpr TestKeyEvent Digit4Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::DIGIT4,
+          ui::DomKey::Constant<'4'>::Character, ui::VKEY_4, flags};
+}
+
+constexpr TestKeyEvent Digit5Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::DIGIT5,
+          ui::DomKey::Constant<'5'>::Character, ui::VKEY_5, flags};
+}
+
+constexpr TestKeyEvent Digit6Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::DIGIT6,
+          ui::DomKey::Constant<'6'>::Character, ui::VKEY_6, flags};
+}
+
+constexpr TestKeyEvent Digit7Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::DIGIT7,
+          ui::DomKey::Constant<'7'>::Character, ui::VKEY_7, flags};
+}
+
+constexpr TestKeyEvent Digit8Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::DIGIT8,
+          ui::DomKey::Constant<'8'>::Character, ui::VKEY_8, flags};
+}
+
 constexpr TestKeyEvent Digit9Pressed(ui::EventFlags flags = ui::EF_NONE) {
   return {ui::ET_KEY_PRESSED, ui::DomCode::DIGIT9,
           ((flags & ui::EF_SHIFT_DOWN)
                ? ui::DomKey(ui::DomKey::Constant<'('>::Character)
                : ui::DomKey(ui::DomKey::Constant<'9'>::Character)),
           ui::VKEY_9, flags};
+}
+
+constexpr TestKeyEvent Digit0Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::DIGIT0,
+          ui::DomKey::Constant<'0'>::Character, ui::VKEY_0, flags};
+}
+
+constexpr TestKeyEvent MinusPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::MINUS,
+          ui::DomKey::Constant<'-'>::Character, ui::VKEY_OEM_MINUS, flags};
+}
+
+constexpr TestKeyEvent EqualPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::EQUAL,
+          ui::DomKey::Constant<'='>::Character, ui::VKEY_OEM_PLUS, flags};
+}
+
+constexpr TestKeyEvent F1Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::F1, ui::DomKey::F1, ui::VKEY_F1,
+          flags};
+}
+
+constexpr TestKeyEvent F2Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::F2, ui::DomKey::F2, ui::VKEY_F2,
+          flags};
+}
+
+constexpr TestKeyEvent F3Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::F3, ui::DomKey::F3, ui::VKEY_F3,
+          flags};
+}
+
+constexpr TestKeyEvent F4Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::F4, ui::DomKey::F4, ui::VKEY_F4,
+          flags};
+}
+
+constexpr TestKeyEvent F5Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::F5, ui::DomKey::F5, ui::VKEY_F5,
+          flags};
+}
+
+constexpr TestKeyEvent F6Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::F6, ui::DomKey::F6, ui::VKEY_F6,
+          flags};
+}
+
+constexpr TestKeyEvent F7Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::F7, ui::DomKey::F7, ui::VKEY_F7,
+          flags};
+}
+
+constexpr TestKeyEvent F8Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::F8, ui::DomKey::F8, ui::VKEY_F8,
+          flags};
+}
+
+constexpr TestKeyEvent F9Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::F9, ui::DomKey::F9, ui::VKEY_F9,
+          flags};
+}
+
+constexpr TestKeyEvent F10Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::F10, ui::DomKey::F10, ui::VKEY_F10,
+          flags};
+}
+
+constexpr TestKeyEvent F11Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::F11, ui::DomKey::F11, ui::VKEY_F11,
+          flags};
+}
+
+constexpr TestKeyEvent F12Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::F12, ui::DomKey::F12, ui::VKEY_F12,
+          flags};
+}
+
+constexpr TestKeyEvent F13Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::F13, ui::DomKey::F13, ui::VKEY_F13,
+          flags};
+}
+
+constexpr TestKeyEvent F14Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::F14, ui::DomKey::F14, ui::VKEY_F14,
+          flags};
+}
+
+constexpr TestKeyEvent F15Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::F15, ui::DomKey::F15, ui::VKEY_F15,
+          flags};
 }
 
 constexpr TestKeyEvent BackspacePressed(ui::EventFlags flags = ui::EF_NONE) {
@@ -368,6 +498,65 @@ constexpr TestKeyEvent ArrowLeftPressed(ui::EventFlags flags = ui::EF_NONE) {
 constexpr TestKeyEvent ArrowRightPressed(ui::EventFlags flags = ui::EF_NONE) {
   return {ui::ET_KEY_PRESSED, ui::DomCode::ARROW_RIGHT, ui::DomKey::ARROW_RIGHT,
           ui::VKEY_RIGHT, flags};
+}
+
+constexpr TestKeyEvent BrowserBackPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::BROWSER_BACK,
+          ui::DomKey::BROWSER_BACK, ui::VKEY_BROWSER_BACK, flags};
+}
+
+constexpr TestKeyEvent BrowserForwardPressed(
+    ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::BROWSER_FORWARD,
+          ui::DomKey::BROWSER_FORWARD, ui::VKEY_BROWSER_FORWARD, flags};
+}
+
+constexpr TestKeyEvent BrowserRefreshPressed(
+    ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::BROWSER_REFRESH,
+          ui::DomKey::BROWSER_REFRESH, ui::VKEY_BROWSER_REFRESH, flags};
+}
+
+constexpr TestKeyEvent ZoomTogglePressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::ZOOM_TOGGLE, ui::DomKey::ZOOM_TOGGLE,
+          ui::VKEY_ZOOM, flags};
+}
+
+constexpr TestKeyEvent SelectTaskPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::SELECT_TASK,
+          ui::DomKey::LAUNCH_MY_COMPUTER, ui::VKEY_MEDIA_LAUNCH_APP1, flags};
+}
+
+constexpr TestKeyEvent BrightnessDownPressed(
+    ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::BRIGHTNESS_DOWN,
+          ui::DomKey::BRIGHTNESS_DOWN, ui::VKEY_BRIGHTNESS_DOWN, flags};
+}
+
+constexpr TestKeyEvent BrightnessUpPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::BRIGHTNESS_UP,
+          ui::DomKey::BRIGHTNESS_UP, ui::VKEY_BRIGHTNESS_UP, flags};
+}
+
+constexpr TestKeyEvent MediaPlayPausePressed(
+    ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::MEDIA_PLAY_PAUSE,
+          ui::DomKey::MEDIA_PLAY_PAUSE, ui::VKEY_MEDIA_PLAY_PAUSE, flags};
+}
+
+constexpr TestKeyEvent VolumeMutePressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::VOLUME_MUTE,
+          ui::DomKey::AUDIO_VOLUME_MUTE, ui::VKEY_VOLUME_MUTE, flags};
+}
+
+constexpr TestKeyEvent VolumeDownPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::VOLUME_DOWN,
+          ui::DomKey::AUDIO_VOLUME_DOWN, ui::VKEY_VOLUME_DOWN, flags};
+}
+
+constexpr TestKeyEvent VolumeUpPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::VOLUME_UP,
+          ui::DomKey::AUDIO_VOLUME_UP, ui::VKEY_VOLUME_UP, flags};
 }
 
 // Hereafter, numpad key events.
@@ -647,9 +836,18 @@ constexpr TestKeyboard kChromeKeyboardVariants[] = {
     kInternalChromeKeyboard,
     kExternalChromeKeyboard,
 };
+constexpr TestKeyboard kChromeCustomKeyboardVariants[] = {
+    kInternalChromeCustomLayoutKeyboard,
+    kExternalChromeCustomLayoutKeyboard,
+};
 constexpr TestKeyboard kNonAppleKeyboardVariants[] = {
     kInternalChromeKeyboard,  kInternalChromeCustomLayoutKeyboard,
     kExternalChromeKeyboard,  kExternalChromeCustomLayoutKeyboard,
+    kExternalGenericKeyboard,
+};
+constexpr TestKeyboard kNonAppleNonCustomLayoutKeyboardVariants[] = {
+    kInternalChromeKeyboard,
+    kExternalChromeKeyboard,
     kExternalGenericKeyboard,
 };
 constexpr TestKeyboard kAllKeyboardVariants[] = {
@@ -2232,69 +2430,24 @@ TEST_F(EventRewriterTest, TestNumberRowIsNotRewritten) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   scoped_feature_list_.InitAndDisableFeature(
       features::kAltClickAndSixPackCustomization);
-  TestNonAppleNonCustomLayoutKeyboardVariants({
-      // The number row should not be rewritten without Search key.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_1, ui::DomCode::DIGIT1, ui::EF_NONE,
-        ui::DomKey::Constant<'1'>::Character},
-       {ui::VKEY_1, ui::DomCode::DIGIT1, ui::EF_NONE,
-        ui::DomKey::Constant<'1'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_2, ui::DomCode::DIGIT2, ui::EF_NONE,
-        ui::DomKey::Constant<'2'>::Character},
-       {ui::VKEY_2, ui::DomCode::DIGIT2, ui::EF_NONE,
-        ui::DomKey::Constant<'2'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_3, ui::DomCode::DIGIT3, ui::EF_NONE,
-        ui::DomKey::Constant<'3'>::Character},
-       {ui::VKEY_3, ui::DomCode::DIGIT3, ui::EF_NONE,
-        ui::DomKey::Constant<'3'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_4, ui::DomCode::DIGIT4, ui::EF_NONE,
-        ui::DomKey::Constant<'4'>::Character},
-       {ui::VKEY_4, ui::DomCode::DIGIT4, ui::EF_NONE,
-        ui::DomKey::Constant<'4'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_5, ui::DomCode::DIGIT5, ui::EF_NONE,
-        ui::DomKey::Constant<'5'>::Character},
-       {ui::VKEY_5, ui::DomCode::DIGIT5, ui::EF_NONE,
-        ui::DomKey::Constant<'5'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_6, ui::DomCode::DIGIT6, ui::EF_NONE,
-        ui::DomKey::Constant<'6'>::Character},
-       {ui::VKEY_6, ui::DomCode::DIGIT6, ui::EF_NONE,
-        ui::DomKey::Constant<'6'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_7, ui::DomCode::DIGIT7, ui::EF_NONE,
-        ui::DomKey::Constant<'7'>::Character},
-       {ui::VKEY_7, ui::DomCode::DIGIT7, ui::EF_NONE,
-        ui::DomKey::Constant<'7'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_8, ui::DomCode::DIGIT8, ui::EF_NONE,
-        ui::DomKey::Constant<'8'>::Character},
-       {ui::VKEY_8, ui::DomCode::DIGIT8, ui::EF_NONE,
-        ui::DomKey::Constant<'8'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_9, ui::DomCode::DIGIT9, ui::EF_NONE,
-        ui::DomKey::Constant<'9'>::Character},
-       {ui::VKEY_9, ui::DomCode::DIGIT9, ui::EF_NONE,
-        ui::DomKey::Constant<'9'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_0, ui::DomCode::DIGIT0, ui::EF_NONE,
-        ui::DomKey::Constant<'0'>::Character},
-       {ui::VKEY_0, ui::DomCode::DIGIT0, ui::EF_NONE,
-        ui::DomKey::Constant<'0'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_OEM_MINUS, ui::DomCode::MINUS, ui::EF_NONE,
-        ui::DomKey::Constant<'-'>::Character},
-       {ui::VKEY_OEM_MINUS, ui::DomCode::MINUS, ui::EF_NONE,
-        ui::DomKey::Constant<'-'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_OEM_PLUS, ui::DomCode::EQUAL, ui::EF_NONE,
-        ui::DomKey::Constant<'='>::Character},
-       {ui::VKEY_OEM_PLUS, ui::DomCode::EQUAL, ui::EF_NONE,
-        ui::DomKey::Constant<'='>::Character}},
-  });
+  for (const auto& keyboard : kNonAppleNonCustomLayoutKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // The number row should not be rewritten without Search key.
+    EXPECT_EQ(Digit1Pressed(), RunRewriter(Digit1Pressed()));
+    EXPECT_EQ(Digit2Pressed(), RunRewriter(Digit2Pressed()));
+    EXPECT_EQ(Digit3Pressed(), RunRewriter(Digit3Pressed()));
+    EXPECT_EQ(Digit4Pressed(), RunRewriter(Digit4Pressed()));
+    EXPECT_EQ(Digit5Pressed(), RunRewriter(Digit5Pressed()));
+    EXPECT_EQ(Digit6Pressed(), RunRewriter(Digit6Pressed()));
+    EXPECT_EQ(Digit7Pressed(), RunRewriter(Digit7Pressed()));
+    EXPECT_EQ(Digit8Pressed(), RunRewriter(Digit8Pressed()));
+    EXPECT_EQ(Digit9Pressed(), RunRewriter(Digit9Pressed()));
+    EXPECT_EQ(Digit0Pressed(), RunRewriter(Digit0Pressed()));
+    EXPECT_EQ(MinusPressed(), RunRewriter(MinusPressed()));
+    EXPECT_EQ(EqualPressed(), RunRewriter(EqualPressed()));
+  }
 }
 
 // TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
@@ -2302,170 +2455,85 @@ TEST_F(EventRewriterTest, TestRewriteSearchNumberToFunctionKeyOld) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   scoped_feature_list_.InitAndDisableFeature(
       ::features::kImprovedKeyboardShortcuts);
-  TestNonAppleNonCustomLayoutKeyboardVariants({
-      // The number row should be rewritten as the F<number> row with Search
-      // key.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_1, ui::DomCode::DIGIT1, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'1'>::Character},
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_2, ui::DomCode::DIGIT2, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'2'>::Character},
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_3, ui::DomCode::DIGIT3, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'3'>::Character},
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_4, ui::DomCode::DIGIT4, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'4'>::Character},
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_5, ui::DomCode::DIGIT5, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'5'>::Character},
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_NONE, ui::DomKey::F5}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_6, ui::DomCode::DIGIT6, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'6'>::Character},
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_NONE, ui::DomKey::F6}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_7, ui::DomCode::DIGIT7, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'7'>::Character},
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_NONE, ui::DomKey::F7}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_8, ui::DomCode::DIGIT8, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'8'>::Character},
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_NONE, ui::DomKey::F8}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_9, ui::DomCode::DIGIT9, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'9'>::Character},
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_NONE, ui::DomKey::F9}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_0, ui::DomCode::DIGIT0, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'0'>::Character},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_OEM_MINUS, ui::DomCode::MINUS, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'-'>::Character},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_OEM_PLUS, ui::DomCode::EQUAL, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'='>::Character},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-  });
+
+  for (const auto& keyboard : kNonAppleNonCustomLayoutKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // The number row should be rewritten as the F<number> row with Search
+    // key.
+    EXPECT_EQ(F1Pressed(), RunRewriter(Digit1Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F2Pressed(), RunRewriter(Digit2Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F3Pressed(), RunRewriter(Digit3Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F4Pressed(), RunRewriter(Digit4Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F5Pressed(), RunRewriter(Digit5Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F6Pressed(), RunRewriter(Digit6Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F7Pressed(), RunRewriter(Digit7Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F8Pressed(), RunRewriter(Digit8Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F9Pressed(), RunRewriter(Digit9Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F10Pressed(), RunRewriter(Digit0Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F11Pressed(), RunRewriter(MinusPressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F12Pressed(), RunRewriter(EqualPressed(ui::EF_COMMAND_DOWN)));
+  }
 }
 
 TEST_F(EventRewriterTest, TestRewriteSearchNumberToFunctionKeyNoAction) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
-  TestNonAppleNonCustomLayoutKeyboardVariants({
-      // Search+Number should now have no effect but a notification will
-      // be shown the first time F1 to F10 is pressed.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_1, ui::DomCode::DIGIT1, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'1'>::Character},
-       {ui::VKEY_1, ui::DomCode::DIGIT1, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'1'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_2, ui::DomCode::DIGIT2, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'2'>::Character},
-       {ui::VKEY_2, ui::DomCode::DIGIT2, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'2'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_3, ui::DomCode::DIGIT3, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'3'>::Character},
-       {ui::VKEY_3, ui::DomCode::DIGIT3, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'3'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_4, ui::DomCode::DIGIT4, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'4'>::Character},
-       {ui::VKEY_4, ui::DomCode::DIGIT4, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'4'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_5, ui::DomCode::DIGIT5, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'5'>::Character},
-       {ui::VKEY_5, ui::DomCode::DIGIT5, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'5'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_6, ui::DomCode::DIGIT6, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'6'>::Character},
-       {ui::VKEY_6, ui::DomCode::DIGIT6, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'6'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_7, ui::DomCode::DIGIT7, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'7'>::Character},
-       {ui::VKEY_7, ui::DomCode::DIGIT7, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'7'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_8, ui::DomCode::DIGIT8, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'8'>::Character},
-       {ui::VKEY_8, ui::DomCode::DIGIT8, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'8'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_9, ui::DomCode::DIGIT9, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'9'>::Character},
-       {ui::VKEY_9, ui::DomCode::DIGIT9, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'9'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_0, ui::DomCode::DIGIT0, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'0'>::Character},
-       {ui::VKEY_0, ui::DomCode::DIGIT0, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'0'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_OEM_MINUS, ui::DomCode::MINUS, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'-'>::Character},
-       {ui::VKEY_OEM_MINUS, ui::DomCode::MINUS, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'-'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_OEM_PLUS, ui::DomCode::EQUAL, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'='>::Character},
-       {ui::VKEY_OEM_PLUS, ui::DomCode::EQUAL, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'='>::Character}},
-  });
+
+  for (const auto& keyboard : kNonAppleNonCustomLayoutKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // Search+Number should now have no effect but a notification will
+    // be shown the first time F1 to F10 is pressed.
+    EXPECT_EQ(Digit1Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(Digit1Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(Digit2Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(Digit2Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(Digit3Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(Digit3Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(Digit4Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(Digit4Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(Digit5Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(Digit5Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(Digit6Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(Digit6Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(Digit7Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(Digit7Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(Digit8Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(Digit8Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(Digit9Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(Digit9Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(Digit0Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(Digit0Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(MinusPressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(MinusPressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(EqualPressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(EqualPressed(ui::EF_COMMAND_DOWN)));
+  }
 }
 
 TEST_F(EventRewriterTest, TestFunctionKeysNotRewrittenBySearch) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
 
-  TestNonAppleNonCustomLayoutKeyboardVariants({
-      // The function keys should not be rewritten with Search key pressed.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2},
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_COMMAND_DOWN, ui::DomKey::F3},
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_COMMAND_DOWN, ui::DomKey::F4},
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_COMMAND_DOWN, ui::DomKey::F5},
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_NONE, ui::DomKey::F5}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_COMMAND_DOWN, ui::DomKey::F6},
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_NONE, ui::DomKey::F6}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_COMMAND_DOWN, ui::DomKey::F7},
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_NONE, ui::DomKey::F7}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_COMMAND_DOWN, ui::DomKey::F8},
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_NONE, ui::DomKey::F8}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_COMMAND_DOWN, ui::DomKey::F9},
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_NONE, ui::DomKey::F9}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN, ui::DomKey::F10},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN, ui::DomKey::F12},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-  });
+  for (const auto& keyboard : kNonAppleNonCustomLayoutKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // The function keys should not be rewritten with Search key pressed.
+    EXPECT_EQ(F1Pressed(), RunRewriter(F1Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F2Pressed(), RunRewriter(F2Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F3Pressed(), RunRewriter(F3Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F4Pressed(), RunRewriter(F4Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F5Pressed(), RunRewriter(F5Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F6Pressed(), RunRewriter(F6Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F7Pressed(), RunRewriter(F7Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F8Pressed(), RunRewriter(F8Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F9Pressed(), RunRewriter(F9Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F10Pressed(), RunRewriter(F10Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F11Pressed(), RunRewriter(F11Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F12Pressed(), RunRewriter(F12Pressed(ui::EF_COMMAND_DOWN)));
+  }
 }
 
 TEST_F(EventRewriterTest, TestRewriteFunctionKeysNonCustomLayouts) {
@@ -2474,360 +2542,116 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysNonCustomLayouts) {
   // Old CrOS keyboards that do not have custom layouts send F-Keys by default
   // and are translated by default to Actions based on hardcoded mappings.
   // New CrOS keyboards are not tested here because they do not remap F-Keys.
-  TestNonAppleNonCustomLayoutKeyboardVariants({
-      // F1 -> Back
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
-       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_NONE,
-        ui::DomKey::BROWSER_BACK}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_CONTROL_DOWN, ui::DomKey::F1},
-       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_CONTROL_DOWN,
-        ui::DomKey::BROWSER_BACK}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_ALT_DOWN, ui::DomKey::F1},
-       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_ALT_DOWN,
-        ui::DomKey::BROWSER_BACK}},
-      // F2 -> Forward
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2},
-       {ui::VKEY_BROWSER_FORWARD, ui::DomCode::BROWSER_FORWARD, ui::EF_NONE,
-        ui::DomKey::BROWSER_FORWARD}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_CONTROL_DOWN, ui::DomKey::F2},
-       {ui::VKEY_BROWSER_FORWARD, ui::DomCode::BROWSER_FORWARD,
-        ui::EF_CONTROL_DOWN, ui::DomKey::BROWSER_FORWARD}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_ALT_DOWN, ui::DomKey::F2},
-       {ui::VKEY_BROWSER_FORWARD, ui::DomCode::BROWSER_FORWARD, ui::EF_ALT_DOWN,
-        ui::DomKey::BROWSER_FORWARD}},
-      // F3 -> Refresh
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3},
-       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH, ui::EF_NONE,
-        ui::DomKey::BROWSER_REFRESH}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_CONTROL_DOWN, ui::DomKey::F3},
-       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
-        ui::EF_CONTROL_DOWN, ui::DomKey::BROWSER_REFRESH}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_ALT_DOWN, ui::DomKey::F3},
-       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH, ui::EF_ALT_DOWN,
-        ui::DomKey::BROWSER_REFRESH}},
-      // F4 -> Zoom (aka Fullscreen)
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4},
-       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
-        ui::DomKey::ZOOM_TOGGLE}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_CONTROL_DOWN, ui::DomKey::F4},
-       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_CONTROL_DOWN,
-        ui::DomKey::ZOOM_TOGGLE}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_ALT_DOWN, ui::DomKey::F4},
-       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_ALT_DOWN,
-        ui::DomKey::ZOOM_TOGGLE}},
-      // F5 -> Launch App 1
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_NONE, ui::DomKey::F5},
-       {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::SELECT_TASK, ui::EF_NONE,
-        ui::DomKey::LAUNCH_MY_COMPUTER}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_CONTROL_DOWN, ui::DomKey::F5},
-       {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::SELECT_TASK,
-        ui::EF_CONTROL_DOWN, ui::DomKey::LAUNCH_MY_COMPUTER}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_ALT_DOWN, ui::DomKey::F5},
-       {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::SELECT_TASK, ui::EF_ALT_DOWN,
-        ui::DomKey::LAUNCH_MY_COMPUTER}},
-      // F6 -> Brightness down
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_NONE, ui::DomKey::F6},
-       {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN, ui::EF_NONE,
-        ui::DomKey::BRIGHTNESS_DOWN}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_CONTROL_DOWN, ui::DomKey::F6},
-       {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN,
-        ui::EF_CONTROL_DOWN, ui::DomKey::BRIGHTNESS_DOWN}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_ALT_DOWN, ui::DomKey::F6},
-       {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN, ui::EF_ALT_DOWN,
-        ui::DomKey::BRIGHTNESS_DOWN}},
-      // F7 -> Brightness up
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_NONE, ui::DomKey::F7},
-       {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_NONE,
-        ui::DomKey::BRIGHTNESS_UP}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_CONTROL_DOWN, ui::DomKey::F7},
-       {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_CONTROL_DOWN,
-        ui::DomKey::BRIGHTNESS_UP}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_ALT_DOWN, ui::DomKey::F7},
-       {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_ALT_DOWN,
-        ui::DomKey::BRIGHTNESS_UP}},
-      // F8 -> Volume Mute
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_NONE, ui::DomKey::F8},
-       {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_MUTE}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_CONTROL_DOWN, ui::DomKey::F8},
-       {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_CONTROL_DOWN,
-        ui::DomKey::AUDIO_VOLUME_MUTE}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_ALT_DOWN, ui::DomKey::F8},
-       {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_ALT_DOWN,
-        ui::DomKey::AUDIO_VOLUME_MUTE}},
-      // F9 -> Volume Down
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_NONE, ui::DomKey::F9},
-       {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_DOWN}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_CONTROL_DOWN, ui::DomKey::F9},
-       {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_CONTROL_DOWN,
-        ui::DomKey::AUDIO_VOLUME_DOWN}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_ALT_DOWN, ui::DomKey::F9},
-       {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_ALT_DOWN,
-        ui::DomKey::AUDIO_VOLUME_DOWN}},
-      // F10 -> Volume Up
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10},
-       {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_UP}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_CONTROL_DOWN, ui::DomKey::F10},
-       {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_CONTROL_DOWN,
-        ui::DomKey::AUDIO_VOLUME_UP}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_ALT_DOWN, ui::DomKey::F10},
-       {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_ALT_DOWN,
-        ui::DomKey::AUDIO_VOLUME_UP}},
-      // F11 -> F11
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_CONTROL_DOWN, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_CONTROL_DOWN, ui::DomKey::F11}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_ALT_DOWN, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_ALT_DOWN, ui::DomKey::F11}},
-      // F12 -> F12
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_CONTROL_DOWN, ui::DomKey::F12},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_CONTROL_DOWN, ui::DomKey::F12}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_ALT_DOWN, ui::DomKey::F12},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_ALT_DOWN, ui::DomKey::F12}},
-  });
+  for (const auto& keyboard : kNonAppleNonCustomLayoutKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // F1 -> Back
+    EXPECT_EQ(BrowserBackPressed(), RunRewriter(F1Pressed()));
+    EXPECT_EQ(BrowserBackPressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F1Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(BrowserBackPressed(ui::EF_ALT_DOWN),
+              RunRewriter(F1Pressed(ui::EF_ALT_DOWN)));
+
+    // F2 -> Forward
+    EXPECT_EQ(BrowserForwardPressed(), RunRewriter(F2Pressed()));
+    EXPECT_EQ(BrowserForwardPressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F2Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(BrowserForwardPressed(ui::EF_ALT_DOWN),
+              RunRewriter(F2Pressed(ui::EF_ALT_DOWN)));
+
+    // F3 -> Refresh
+    EXPECT_EQ(BrowserRefreshPressed(), RunRewriter(F3Pressed()));
+    EXPECT_EQ(BrowserRefreshPressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F3Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(BrowserRefreshPressed(ui::EF_ALT_DOWN),
+              RunRewriter(F3Pressed(ui::EF_ALT_DOWN)));
+
+    // F4 -> Zoom (aka Fullscreen)
+    EXPECT_EQ(ZoomTogglePressed(), RunRewriter(F4Pressed()));
+    EXPECT_EQ(ZoomTogglePressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F4Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(ZoomTogglePressed(ui::EF_ALT_DOWN),
+              RunRewriter(F4Pressed(ui::EF_ALT_DOWN)));
+
+    // F5 -> Launch App 1
+    EXPECT_EQ(SelectTaskPressed(), RunRewriter(F5Pressed()));
+    EXPECT_EQ(SelectTaskPressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F5Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(SelectTaskPressed(ui::EF_ALT_DOWN),
+              RunRewriter(F5Pressed(ui::EF_ALT_DOWN)));
+
+    // F6 -> Brightness down
+    EXPECT_EQ(BrightnessDownPressed(), RunRewriter(F6Pressed()));
+    EXPECT_EQ(BrightnessDownPressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F6Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(BrightnessDownPressed(ui::EF_ALT_DOWN),
+              RunRewriter(F6Pressed(ui::EF_ALT_DOWN)));
+
+    // F7 -> Brightness up
+    EXPECT_EQ(BrightnessUpPressed(), RunRewriter(F7Pressed()));
+    EXPECT_EQ(BrightnessUpPressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F7Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(BrightnessUpPressed(ui::EF_ALT_DOWN),
+              RunRewriter(F7Pressed(ui::EF_ALT_DOWN)));
+
+    // F8 -> Volume Mute
+    EXPECT_EQ(VolumeMutePressed(), RunRewriter(F8Pressed()));
+    EXPECT_EQ(VolumeMutePressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F8Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(VolumeMutePressed(ui::EF_ALT_DOWN),
+              RunRewriter(F8Pressed(ui::EF_ALT_DOWN)));
+
+    // F9 -> Volume Down
+    EXPECT_EQ(VolumeDownPressed(), RunRewriter(F9Pressed()));
+    EXPECT_EQ(VolumeDownPressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F9Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(VolumeDownPressed(ui::EF_ALT_DOWN),
+              RunRewriter(F9Pressed(ui::EF_ALT_DOWN)));
+
+    // F10 -> Volume Up
+    EXPECT_EQ(VolumeUpPressed(), RunRewriter(F10Pressed()));
+    EXPECT_EQ(VolumeUpPressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F10Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(VolumeUpPressed(ui::EF_ALT_DOWN),
+              RunRewriter(F10Pressed(ui::EF_ALT_DOWN)));
+
+    // F11 -> F11
+    EXPECT_EQ(F11Pressed(), RunRewriter(F11Pressed()));
+    EXPECT_EQ(F11Pressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F11Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(F11Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(F11Pressed(ui::EF_ALT_DOWN)));
+
+    // F12 -> F12
+    EXPECT_EQ(F12Pressed(), RunRewriter(F12Pressed()));
+    EXPECT_EQ(F12Pressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F12Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(F12Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(F12Pressed(ui::EF_ALT_DOWN)));
+  }
 }
 
 TEST_F(EventRewriterTest, TestRewriteFunctionKeysCustomLayoutsFKeyUnchanged) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   // On devices with custom layouts, the F-Keys are never remapped.
-  TestChromeCustomLayoutKeyboardVariants({
-      // F1-> F1
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_CONTROL_DOWN, ui::DomKey::F1},
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_CONTROL_DOWN, ui::DomKey::F1}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_ALT_DOWN, ui::DomKey::F1},
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_ALT_DOWN, ui::DomKey::F1}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1}},
-      // F2 -> F2
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2},
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_CONTROL_DOWN, ui::DomKey::F2},
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_CONTROL_DOWN, ui::DomKey::F2}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_ALT_DOWN, ui::DomKey::F2},
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_ALT_DOWN, ui::DomKey::F2}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2},
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2}},
-      // F3 -> F3
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3},
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_CONTROL_DOWN, ui::DomKey::F3},
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_CONTROL_DOWN, ui::DomKey::F3}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_ALT_DOWN, ui::DomKey::F3},
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_ALT_DOWN, ui::DomKey::F3}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_COMMAND_DOWN, ui::DomKey::F3},
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_COMMAND_DOWN, ui::DomKey::F3}},
-      // F4 -> F4
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4},
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_CONTROL_DOWN, ui::DomKey::F4},
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_CONTROL_DOWN, ui::DomKey::F4}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_ALT_DOWN, ui::DomKey::F4},
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_ALT_DOWN, ui::DomKey::F4}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_COMMAND_DOWN, ui::DomKey::F4},
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_COMMAND_DOWN, ui::DomKey::F4}},
-      // F5 -> F5
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_NONE, ui::DomKey::F5},
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_NONE, ui::DomKey::F5}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_CONTROL_DOWN, ui::DomKey::F5},
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_CONTROL_DOWN, ui::DomKey::F5}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_ALT_DOWN, ui::DomKey::F5},
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_ALT_DOWN, ui::DomKey::F5}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_COMMAND_DOWN, ui::DomKey::F5},
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_COMMAND_DOWN, ui::DomKey::F5}},
-      // F6 -> F6
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_NONE, ui::DomKey::F6},
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_NONE, ui::DomKey::F6}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_CONTROL_DOWN, ui::DomKey::F6},
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_CONTROL_DOWN, ui::DomKey::F6}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_ALT_DOWN, ui::DomKey::F6},
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_ALT_DOWN, ui::DomKey::F6}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_COMMAND_DOWN, ui::DomKey::F6},
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_COMMAND_DOWN, ui::DomKey::F6}},
-      // F7 -> F7
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_NONE, ui::DomKey::F7},
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_NONE, ui::DomKey::F7}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_CONTROL_DOWN, ui::DomKey::F7},
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_CONTROL_DOWN, ui::DomKey::F7}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_ALT_DOWN, ui::DomKey::F7},
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_ALT_DOWN, ui::DomKey::F7}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_COMMAND_DOWN, ui::DomKey::F7},
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_COMMAND_DOWN, ui::DomKey::F7}},
-      // F8 -> F8
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_NONE, ui::DomKey::F8},
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_NONE, ui::DomKey::F8}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_CONTROL_DOWN, ui::DomKey::F8},
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_CONTROL_DOWN, ui::DomKey::F8}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_ALT_DOWN, ui::DomKey::F8},
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_ALT_DOWN, ui::DomKey::F8}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_COMMAND_DOWN, ui::DomKey::F8},
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_COMMAND_DOWN, ui::DomKey::F8}},
-      // F9 -> F9
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_NONE, ui::DomKey::F9},
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_NONE, ui::DomKey::F9}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_CONTROL_DOWN, ui::DomKey::F9},
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_CONTROL_DOWN, ui::DomKey::F9}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_ALT_DOWN, ui::DomKey::F9},
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_ALT_DOWN, ui::DomKey::F9}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_COMMAND_DOWN, ui::DomKey::F9},
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_COMMAND_DOWN, ui::DomKey::F9}},
-      // F10 -> F10
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_CONTROL_DOWN, ui::DomKey::F10},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_CONTROL_DOWN, ui::DomKey::F10}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_ALT_DOWN, ui::DomKey::F10},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_ALT_DOWN, ui::DomKey::F10}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN, ui::DomKey::F10},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN, ui::DomKey::F10}},
-      // F11 -> F11
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_CONTROL_DOWN, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_CONTROL_DOWN, ui::DomKey::F11}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_ALT_DOWN, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_ALT_DOWN, ui::DomKey::F11}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11}},
-      // F12 -> F12
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_CONTROL_DOWN, ui::DomKey::F12},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_CONTROL_DOWN, ui::DomKey::F12}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_ALT_DOWN, ui::DomKey::F12},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_ALT_DOWN, ui::DomKey::F12}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN, ui::DomKey::F12},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN, ui::DomKey::F12}},
-      // F13 -> F13
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F13, ui::DomCode::F13, ui::EF_NONE, ui::DomKey::F13},
-       {ui::VKEY_F13, ui::DomCode::F13, ui::EF_NONE, ui::DomKey::F13}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F13, ui::DomCode::F13, ui::EF_CONTROL_DOWN, ui::DomKey::F13},
-       {ui::VKEY_F13, ui::DomCode::F13, ui::EF_CONTROL_DOWN, ui::DomKey::F13}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F13, ui::DomCode::F13, ui::EF_ALT_DOWN, ui::DomKey::F13},
-       {ui::VKEY_F13, ui::DomCode::F13, ui::EF_ALT_DOWN, ui::DomKey::F13}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F13, ui::DomCode::F13, ui::EF_COMMAND_DOWN, ui::DomKey::F13},
-       {ui::VKEY_F13, ui::DomCode::F13, ui::EF_COMMAND_DOWN, ui::DomKey::F13}},
-      // F14 -> F14
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F14, ui::DomCode::F14, ui::EF_NONE, ui::DomKey::F14},
-       {ui::VKEY_F14, ui::DomCode::F14, ui::EF_NONE, ui::DomKey::F14}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F14, ui::DomCode::F14, ui::EF_CONTROL_DOWN, ui::DomKey::F14},
-       {ui::VKEY_F14, ui::DomCode::F14, ui::EF_CONTROL_DOWN, ui::DomKey::F14}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F14, ui::DomCode::F14, ui::EF_ALT_DOWN, ui::DomKey::F14},
-       {ui::VKEY_F14, ui::DomCode::F14, ui::EF_ALT_DOWN, ui::DomKey::F14}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F14, ui::DomCode::F14, ui::EF_COMMAND_DOWN, ui::DomKey::F14},
-       {ui::VKEY_F14, ui::DomCode::F14, ui::EF_COMMAND_DOWN, ui::DomKey::F14}},
-      // F15 -> F15
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F15, ui::DomCode::F15, ui::EF_NONE, ui::DomKey::F15},
-       {ui::VKEY_F15, ui::DomCode::F15, ui::EF_NONE, ui::DomKey::F15}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F15, ui::DomCode::F15, ui::EF_CONTROL_DOWN, ui::DomKey::F15},
-       {ui::VKEY_F15, ui::DomCode::F15, ui::EF_CONTROL_DOWN, ui::DomKey::F15}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F15, ui::DomCode::F15, ui::EF_ALT_DOWN, ui::DomKey::F15},
-       {ui::VKEY_F15, ui::DomCode::F15, ui::EF_ALT_DOWN, ui::DomKey::F15}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F15, ui::DomCode::F15, ui::EF_COMMAND_DOWN, ui::DomKey::F15},
-       {ui::VKEY_F15, ui::DomCode::F15, ui::EF_COMMAND_DOWN, ui::DomKey::F15}},
-  });
+  for (const auto& keyboard : kChromeCustomKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    for (const auto pressed :
+         {F1Pressed, F2Pressed, F3Pressed, F4Pressed, F5Pressed, F6Pressed,
+          F7Pressed, F8Pressed, F9Pressed, F10Pressed, F11Pressed, F12Pressed,
+          F13Pressed, F14Pressed, F15Pressed}) {
+      EXPECT_EQ(pressed(ui::EF_NONE), RunRewriter(pressed(ui::EF_NONE)));
+      EXPECT_EQ(pressed(ui::EF_CONTROL_DOWN),
+                RunRewriter(pressed(ui::EF_CONTROL_DOWN)));
+      EXPECT_EQ(pressed(ui::EF_ALT_DOWN),
+                RunRewriter(pressed(ui::EF_ALT_DOWN)));
+      EXPECT_EQ(pressed(ui::EF_COMMAND_DOWN),
+                RunRewriter(pressed(ui::EF_COMMAND_DOWN)));
+    }
+  }
 }
 
 TEST_F(EventRewriterTest, TestRewriteFunctionKeysCustomLayoutsActionUnchanged) {
@@ -2836,26 +2660,21 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysCustomLayoutsActionUnchanged) {
   // An action key on these devices is one where the scan code matches an entry
   // in the layout map. It doesn't matter what the action is, as long the
   // search key isn't pressed it will pass through unchanged.
-  const std::string layout = "a1 a2 a3";
-  TestKeyboard("Internal Custom Layout Keyboard", layout,
-               ui::INPUT_DEVICE_INTERNAL, /*has_custom_top_row=*/true,
-               {
-                   {ui::ET_KEY_PRESSED,
-                    {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
-                     ui::EF_NONE, ui::DomKey::BROWSER_REFRESH, 0xa1},
-                    {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
-                     ui::EF_NONE, ui::DomKey::BROWSER_REFRESH, 0xa1}},
-                   {ui::ET_KEY_PRESSED,
-                    {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_NONE,
-                     ui::DomKey::AUDIO_VOLUME_UP, 0xa2},
-                    {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_NONE,
-                     ui::DomKey::AUDIO_VOLUME_UP, 0xa2}},
-                   {ui::ET_KEY_PRESSED,
-                    {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN,
-                     ui::EF_NONE, ui::DomKey::AUDIO_VOLUME_DOWN, 0xa3},
-                    {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN,
-                     ui::EF_NONE, ui::DomKey::AUDIO_VOLUME_DOWN, 0xa3}},
-               });
+  SetUpKeyboard({.name = "Internal Custom LayoutKeyboard",
+                 .layout = "a1 a2 a3",
+                 .type = ui::INPUT_DEVICE_INTERNAL,
+                 .has_custom_top_row = true});
+  auto browser_refresh = BrowserRefreshPressed();
+  browser_refresh.scan_code = 0xa1;
+  EXPECT_EQ(browser_refresh, RunRewriter(browser_refresh));
+
+  auto volume_up = VolumeUpPressed();
+  volume_up.scan_code = 0xa2;
+  EXPECT_EQ(volume_up, RunRewriter(volume_up));
+
+  auto volume_down = VolumeDownPressed();
+  volume_down.scan_code = 0xa3;
+  EXPECT_EQ(volume_down, RunRewriter(volume_down));
 }
 
 TEST_F(EventRewriterTest,
@@ -2867,26 +2686,22 @@ TEST_F(EventRewriterTest,
   // An action key on these devices is one where the scan code matches an entry
   // in the layout map. With Meta + Top Row Key rewrites being suppressed, the
   // input should be equivalent to the output for all tested keys.
-  const std::string layout = "a1 a2 a3";
-  TestKeyboard("Internal Custom Layout Keyboard", layout,
-               ui::INPUT_DEVICE_INTERNAL, /*has_custom_top_row=*/true,
-               {
-                   {ui::ET_KEY_PRESSED,
-                    {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
-                     ui::EF_COMMAND_DOWN, ui::DomKey::BROWSER_REFRESH, 0xa1},
-                    {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
-                     ui::EF_COMMAND_DOWN, ui::DomKey::BROWSER_REFRESH, 0xa1}},
-                   {ui::ET_KEY_PRESSED,
-                    {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP,
-                     ui::EF_COMMAND_DOWN, ui::DomKey::AUDIO_VOLUME_UP, 0xa2},
-                    {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP,
-                     ui::EF_COMMAND_DOWN, ui::DomKey::AUDIO_VOLUME_UP, 0xa2}},
-                   {ui::ET_KEY_PRESSED,
-                    {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN,
-                     ui::EF_COMMAND_DOWN, ui::DomKey::AUDIO_VOLUME_DOWN, 0xa3},
-                    {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN,
-                     ui::EF_COMMAND_DOWN, ui::DomKey::AUDIO_VOLUME_DOWN, 0xa3}},
-               });
+  SetUpKeyboard({.name = "Internal Custom Layout Keyboard",
+                 .layout = "a1 a2 a3",
+                 .type = ui::INPUT_DEVICE_INTERNAL,
+                 .has_custom_top_row = true});
+
+  auto browser_refresh = BrowserRefreshPressed(ui::EF_COMMAND_DOWN);
+  browser_refresh.scan_code = 0xa1;
+  EXPECT_EQ(browser_refresh, RunRewriter(browser_refresh));
+
+  auto volume_up = VolumeUpPressed(ui::EF_COMMAND_DOWN);
+  volume_up.scan_code = 0xa2;
+  EXPECT_EQ(volume_up, RunRewriter(volume_up));
+
+  auto volume_down = VolumeDownPressed(ui::EF_COMMAND_DOWN);
+  volume_down.scan_code = 0xa3;
+  EXPECT_EQ(volume_down, RunRewriter(volume_down));
 }
 
 TEST_F(EventRewriterTest,
@@ -2904,26 +2719,28 @@ TEST_F(EventRewriterTest,
   // in the layout map. With Meta + Top Row Key rewrites being suppressed, the
   // input should be remapped to F-Keys and the Search modifier should not be
   // removed.
-  const std::string layout = "a1 a2 a3";
-  TestKeyboard("Internal Custom Layout Keyboard", layout,
-               ui::INPUT_DEVICE_INTERNAL, /*has_custom_top_row=*/true,
-               {
-                   {ui::ET_KEY_PRESSED,
-                    {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
-                     ui::EF_COMMAND_DOWN, ui::DomKey::BROWSER_REFRESH, 0xa1},
-                    {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN,
-                     ui::DomKey::F1, 0xa1}},
-                   {ui::ET_KEY_PRESSED,
-                    {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP,
-                     ui::EF_COMMAND_DOWN, ui::DomKey::AUDIO_VOLUME_UP, 0xa2},
-                    {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN,
-                     ui::DomKey::F2, 0xa2}},
-                   {ui::ET_KEY_PRESSED,
-                    {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN,
-                     ui::EF_COMMAND_DOWN, ui::DomKey::AUDIO_VOLUME_DOWN, 0xa3},
-                    {ui::VKEY_F3, ui::DomCode::F3, ui::EF_COMMAND_DOWN,
-                     ui::DomKey::F3, 0xa3}},
-               });
+  SetUpKeyboard({.name = "Internal Custom Layout Keyboard",
+                 .layout = "a1 a2 a3",
+                 .type = ui::INPUT_DEVICE_INTERNAL,
+                 .has_custom_top_row = true});
+
+  auto browser_refresh = BrowserRefreshPressed(ui::EF_COMMAND_DOWN);
+  browser_refresh.scan_code = 0xa1;
+  auto f1 = F1Pressed(ui::EF_COMMAND_DOWN);
+  f1.scan_code = 0xa1;
+  EXPECT_EQ(f1, RunRewriter(browser_refresh));
+
+  auto volume_up = VolumeUpPressed(ui::EF_COMMAND_DOWN);
+  volume_up.scan_code = 0xa2;
+  auto f2 = F2Pressed(ui::EF_COMMAND_DOWN);
+  f2.scan_code = 0xa2;
+  EXPECT_EQ(f2, RunRewriter(volume_up));
+
+  auto volume_down = VolumeDownPressed(ui::EF_COMMAND_DOWN);
+  volume_down.scan_code = 0xa3;
+  auto f3 = F3Pressed(ui::EF_COMMAND_DOWN);
+  f3.scan_code = 0xa3;
+  EXPECT_EQ(f3, RunRewriter(volume_down));
 }
 
 TEST_F(EventRewriterTest, TestRewriteFunctionKeysCustomLayouts) {
@@ -2932,257 +2749,130 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysCustomLayouts) {
   // On devices with custom layouts, scan codes that match the layout
   // map get mapped to F-Keys based only on the scan code. The search
   // key also gets treated as unpressed in the remapped event.
-  const std::string layout = "a1 a2 a3 a4 a5 a6 a7 a8 a9 aa ab ac ad ae af";
-  TestKeyboard(
-      "Internal Custom Layout Keyboard", layout, ui::INPUT_DEVICE_INTERNAL,
-      /*has_custom_top_row=*/true,
-      {
-          // Action -> F1
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_COMMAND_DOWN,
-            ui::DomKey::NONE, 0xa1},
-           {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1, 0xa1}},
-          // Action -> F2
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_COMMAND_DOWN,
-            ui::DomKey::NONE, 0xa2},
-           {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2, 0xa2}},
-          // Action -> F3
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_COMMAND_DOWN,
-            ui::DomKey::NONE, 0xa3},
-           {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3, 0xa3}},
-          // Action -> F4
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_COMMAND_DOWN,
-            ui::DomKey::NONE, 0xa4},
-           {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4, 0xa4}},
-          // Action -> F5
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_COMMAND_DOWN,
-            ui::DomKey::NONE, 0xa5},
-           {ui::VKEY_F5, ui::DomCode::F5, ui::EF_NONE, ui::DomKey::F5, 0xa5}},
-          // Action -> F6
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_COMMAND_DOWN,
-            ui::DomKey::NONE, 0xa6},
-           {ui::VKEY_F6, ui::DomCode::F6, ui::EF_NONE, ui::DomKey::F6, 0xa6}},
-          // Action -> F7
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_COMMAND_DOWN,
-            ui::DomKey::NONE, 0xa7},
-           {ui::VKEY_F7, ui::DomCode::F7, ui::EF_NONE, ui::DomKey::F7, 0xa7}},
-          // Action -> F8
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_COMMAND_DOWN,
-            ui::DomKey::NONE, 0xa8},
-           {ui::VKEY_F8, ui::DomCode::F8, ui::EF_NONE, ui::DomKey::F8, 0xa8}},
-          // Action -> F9
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_COMMAND_DOWN,
-            ui::DomKey::NONE, 0xa9},
-           {ui::VKEY_F9, ui::DomCode::F9, ui::EF_NONE, ui::DomKey::F9, 0xa9}},
-          // Action -> F10
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_COMMAND_DOWN,
-            ui::DomKey::NONE, 0xaa},
-           {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10,
-            0xaa}},
-          // Action -> F11
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_COMMAND_DOWN,
-            ui::DomKey::NONE, 0xab},
-           {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11,
-            0xab}},
-          // Action -> F12
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_COMMAND_DOWN,
-            ui::DomKey::NONE, 0xac},
-           {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12,
-            0xac}},
-          // Action -> F13
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_COMMAND_DOWN,
-            ui::DomKey::NONE, 0xad},
-           {ui::VKEY_F13, ui::DomCode::F13, ui::EF_NONE, ui::DomKey::F13,
-            0xad}},
-          // Action -> F14
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_COMMAND_DOWN,
-            ui::DomKey::NONE, 0xae},
-           {ui::VKEY_F14, ui::DomCode::F14, ui::EF_NONE, ui::DomKey::F14,
-            0xae}},
-          // Action -> F15
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_COMMAND_DOWN,
-            ui::DomKey::NONE, 0xaf},
-           {ui::VKEY_F15, ui::DomCode::F15, ui::EF_NONE, ui::DomKey::F15,
-            0xaf}},
-      });
+  SetUpKeyboard({.name = "Internal Custom Layout Keyboard",
+                 .layout = "a1 a2 a3 a4 a5 a6 a7 a8 a9 aa ab ac ad ae af",
+                 .type = ui::INPUT_DEVICE_INTERNAL,
+                 .has_custom_top_row = true});
+
+  struct TestCase {
+    TestKeyEvent (*pressed)(ui::EventFlags);
+    uint32_t scan_code;
+  };
+  // Action -> F1..F15
+  for (const auto& [pressed, scan_code] :
+       std::initializer_list<TestCase>{{F1Pressed, 0xa1},
+                                       {F2Pressed, 0xa2},
+                                       {F3Pressed, 0xa3},
+                                       {F4Pressed, 0xa4},
+                                       {F5Pressed, 0xa5},
+                                       {F6Pressed, 0xa6},
+                                       {F7Pressed, 0xa7},
+                                       {F8Pressed, 0xa8},
+                                       {F9Pressed, 0xa9},
+                                       {F10Pressed, 0xaa},
+                                       {F11Pressed, 0xab},
+                                       {F12Pressed, 0xac},
+                                       {F13Pressed, 0xad},
+                                       {F14Pressed, 0xae},
+                                       {F15Pressed, 0xaf}}) {
+    auto unknown = UnknownPressed(ui::EF_COMMAND_DOWN);
+    unknown.scan_code = scan_code;
+    auto func = pressed(ui::EF_NONE);
+    func.scan_code = scan_code;
+    EXPECT_EQ(func, RunRewriter(unknown));
+  }
 }
 
 TEST_F(EventRewriterTest, TestRewriteFunctionKeysLayout2) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
-  TestKeyboard(
-      "Internal Keyboard", kKbdTopRowLayout2Tag, ui::INPUT_DEVICE_INTERNAL,
-      /*has_custom_top_row=*/false,
-      {
-          // F1 -> Back
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
-           {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_NONE,
-            ui::DomKey::BROWSER_BACK}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F1, ui::DomCode::F1, ui::EF_CONTROL_DOWN, ui::DomKey::F1},
-           {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK,
-            ui::EF_CONTROL_DOWN, ui::DomKey::BROWSER_BACK}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F1, ui::DomCode::F1, ui::EF_ALT_DOWN, ui::DomKey::F1},
-           {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_ALT_DOWN,
-            ui::DomKey::BROWSER_BACK}},
-          // F2 -> Refresh
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2},
-           {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH, ui::EF_NONE,
-            ui::DomKey::BROWSER_REFRESH}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F2, ui::DomCode::F2, ui::EF_CONTROL_DOWN, ui::DomKey::F2},
-           {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
-            ui::EF_CONTROL_DOWN, ui::DomKey::BROWSER_REFRESH}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F2, ui::DomCode::F2, ui::EF_ALT_DOWN, ui::DomKey::F2},
-           {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
-            ui::EF_ALT_DOWN, ui::DomKey::BROWSER_REFRESH}},
-          // F3 -> Zoom (aka Fullscreen)
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3},
-           {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
-            ui::DomKey::ZOOM_TOGGLE}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F3, ui::DomCode::F3, ui::EF_CONTROL_DOWN, ui::DomKey::F3},
-           {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_CONTROL_DOWN,
-            ui::DomKey::ZOOM_TOGGLE}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F3, ui::DomCode::F3, ui::EF_ALT_DOWN, ui::DomKey::F3},
-           {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_ALT_DOWN,
-            ui::DomKey::ZOOM_TOGGLE}},
-          // F4 -> Launch App 1
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4},
-           {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::SELECT_TASK, ui::EF_NONE,
-            ui::DomKey::LAUNCH_MY_COMPUTER}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F4, ui::DomCode::F4, ui::EF_CONTROL_DOWN, ui::DomKey::F4},
-           {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::SELECT_TASK,
-            ui::EF_CONTROL_DOWN, ui::DomKey::LAUNCH_MY_COMPUTER}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F4, ui::DomCode::F4, ui::EF_ALT_DOWN, ui::DomKey::F4},
-           {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::SELECT_TASK,
-            ui::EF_ALT_DOWN, ui::DomKey::LAUNCH_MY_COMPUTER}},
-          // F5 -> Brightness down
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F5, ui::DomCode::F5, ui::EF_NONE, ui::DomKey::F5},
-           {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN, ui::EF_NONE,
-            ui::DomKey::BRIGHTNESS_DOWN}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F5, ui::DomCode::F5, ui::EF_CONTROL_DOWN, ui::DomKey::F5},
-           {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN,
-            ui::EF_CONTROL_DOWN, ui::DomKey::BRIGHTNESS_DOWN}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F5, ui::DomCode::F5, ui::EF_ALT_DOWN, ui::DomKey::F5},
-           {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN,
-            ui::EF_ALT_DOWN, ui::DomKey::BRIGHTNESS_DOWN}},
-          // F6 -> Brightness up
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F6, ui::DomCode::F6, ui::EF_NONE, ui::DomKey::F6},
-           {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_NONE,
-            ui::DomKey::BRIGHTNESS_UP}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F6, ui::DomCode::F6, ui::EF_CONTROL_DOWN, ui::DomKey::F6},
-           {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP,
-            ui::EF_CONTROL_DOWN, ui::DomKey::BRIGHTNESS_UP}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F6, ui::DomCode::F6, ui::EF_ALT_DOWN, ui::DomKey::F6},
-           {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_ALT_DOWN,
-            ui::DomKey::BRIGHTNESS_UP}},
-          // F7 -> Media Play/Pause
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F7, ui::DomCode::F7, ui::EF_NONE, ui::DomKey::F7},
-           {ui::VKEY_MEDIA_PLAY_PAUSE, ui::DomCode::MEDIA_PLAY_PAUSE,
-            ui::EF_NONE, ui::DomKey::MEDIA_PLAY_PAUSE}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F7, ui::DomCode::F7, ui::EF_CONTROL_DOWN, ui::DomKey::F7},
-           {ui::VKEY_MEDIA_PLAY_PAUSE, ui::DomCode::MEDIA_PLAY_PAUSE,
-            ui::EF_CONTROL_DOWN, ui::DomKey::MEDIA_PLAY_PAUSE}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F7, ui::DomCode::F7, ui::EF_ALT_DOWN, ui::DomKey::F7},
-           {ui::VKEY_MEDIA_PLAY_PAUSE, ui::DomCode::MEDIA_PLAY_PAUSE,
-            ui::EF_ALT_DOWN, ui::DomKey::MEDIA_PLAY_PAUSE}},
-          // F8 -> Volume Mute
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F8, ui::DomCode::F8, ui::EF_NONE, ui::DomKey::F8},
-           {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_NONE,
-            ui::DomKey::AUDIO_VOLUME_MUTE}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F8, ui::DomCode::F8, ui::EF_CONTROL_DOWN, ui::DomKey::F8},
-           {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_CONTROL_DOWN,
-            ui::DomKey::AUDIO_VOLUME_MUTE}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F8, ui::DomCode::F8, ui::EF_ALT_DOWN, ui::DomKey::F8},
-           {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_ALT_DOWN,
-            ui::DomKey::AUDIO_VOLUME_MUTE}},
-          // F9 -> Volume Down
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F9, ui::DomCode::F9, ui::EF_NONE, ui::DomKey::F9},
-           {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_NONE,
-            ui::DomKey::AUDIO_VOLUME_DOWN}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F9, ui::DomCode::F9, ui::EF_CONTROL_DOWN, ui::DomKey::F9},
-           {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_CONTROL_DOWN,
-            ui::DomKey::AUDIO_VOLUME_DOWN}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F9, ui::DomCode::F9, ui::EF_ALT_DOWN, ui::DomKey::F9},
-           {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_ALT_DOWN,
-            ui::DomKey::AUDIO_VOLUME_DOWN}},
-          // F10 -> Volume Up
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10},
-           {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_NONE,
-            ui::DomKey::AUDIO_VOLUME_UP}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F10, ui::DomCode::F10, ui::EF_CONTROL_DOWN,
-            ui::DomKey::F10},
-           {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_CONTROL_DOWN,
-            ui::DomKey::AUDIO_VOLUME_UP}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F10, ui::DomCode::F10, ui::EF_ALT_DOWN, ui::DomKey::F10},
-           {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_ALT_DOWN,
-            ui::DomKey::AUDIO_VOLUME_UP}},
-          // F11 -> F11
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11},
-           {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F11, ui::DomCode::F11, ui::EF_CONTROL_DOWN,
-            ui::DomKey::F11},
-           {ui::VKEY_F11, ui::DomCode::F11, ui::EF_CONTROL_DOWN,
-            ui::DomKey::F11}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F11, ui::DomCode::F11, ui::EF_ALT_DOWN, ui::DomKey::F11},
-           {ui::VKEY_F11, ui::DomCode::F11, ui::EF_ALT_DOWN, ui::DomKey::F11}},
-          // F12 -> F12
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12},
-           {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F12, ui::DomCode::F12, ui::EF_CONTROL_DOWN,
-            ui::DomKey::F12},
-           {ui::VKEY_F12, ui::DomCode::F12, ui::EF_CONTROL_DOWN,
-            ui::DomKey::F12}},
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F12, ui::DomCode::F12, ui::EF_ALT_DOWN, ui::DomKey::F12},
-           {ui::VKEY_F12, ui::DomCode::F12, ui::EF_ALT_DOWN, ui::DomKey::F12}},
-      });
+  SetUpKeyboard({.name = "Internal Keyboard",
+                 .layout = kKbdTopRowLayout2Tag,
+                 .type = ui::INPUT_DEVICE_INTERNAL,
+                 .has_custom_top_row = false});
+
+  // F1 -> Back
+  EXPECT_EQ(BrowserBackPressed(), RunRewriter(F1Pressed()));
+  EXPECT_EQ(BrowserBackPressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(F1Pressed(ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(BrowserBackPressed(ui::EF_ALT_DOWN),
+            RunRewriter(F1Pressed(ui::EF_ALT_DOWN)));
+
+  // F2 -> Refresh
+  EXPECT_EQ(BrowserRefreshPressed(), RunRewriter(F2Pressed()));
+  EXPECT_EQ(BrowserRefreshPressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(F2Pressed(ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(BrowserRefreshPressed(ui::EF_ALT_DOWN),
+            RunRewriter(F2Pressed(ui::EF_ALT_DOWN)));
+
+  // F3 -> Zoom (aka Fullscreen)
+  EXPECT_EQ(ZoomTogglePressed(), RunRewriter(F3Pressed()));
+  EXPECT_EQ(ZoomTogglePressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(F3Pressed(ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(ZoomTogglePressed(ui::EF_ALT_DOWN),
+            RunRewriter(F3Pressed(ui::EF_ALT_DOWN)));
+
+  // F4 -> Launch App 1
+  EXPECT_EQ(SelectTaskPressed(), RunRewriter(F4Pressed()));
+  EXPECT_EQ(SelectTaskPressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(F4Pressed(ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(SelectTaskPressed(ui::EF_ALT_DOWN),
+            RunRewriter(F4Pressed(ui::EF_ALT_DOWN)));
+
+  // F5 -> Brightness down
+  EXPECT_EQ(BrightnessDownPressed(), RunRewriter(F5Pressed()));
+  EXPECT_EQ(BrightnessDownPressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(F5Pressed(ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(BrightnessDownPressed(ui::EF_ALT_DOWN),
+            RunRewriter(F5Pressed(ui::EF_ALT_DOWN)));
+
+  // F6 -> Brightness up
+  EXPECT_EQ(BrightnessUpPressed(), RunRewriter(F6Pressed()));
+  EXPECT_EQ(BrightnessUpPressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(F6Pressed(ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(BrightnessUpPressed(ui::EF_ALT_DOWN),
+            RunRewriter(F6Pressed(ui::EF_ALT_DOWN)));
+
+  // F7 -> Media Play/Pause
+  EXPECT_EQ(MediaPlayPausePressed(), RunRewriter(F7Pressed()));
+  EXPECT_EQ(MediaPlayPausePressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(F7Pressed(ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(MediaPlayPausePressed(ui::EF_ALT_DOWN),
+            RunRewriter(F7Pressed(ui::EF_ALT_DOWN)));
+
+  // F8 -> Volume Mute
+  EXPECT_EQ(VolumeMutePressed(), RunRewriter(F8Pressed()));
+  EXPECT_EQ(VolumeMutePressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(F8Pressed(ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(VolumeMutePressed(ui::EF_ALT_DOWN),
+            RunRewriter(F8Pressed(ui::EF_ALT_DOWN)));
+
+  // F9 -> Volume Down
+  EXPECT_EQ(VolumeDownPressed(), RunRewriter(F9Pressed()));
+  EXPECT_EQ(VolumeDownPressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(F9Pressed(ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(VolumeDownPressed(ui::EF_ALT_DOWN),
+            RunRewriter(F9Pressed(ui::EF_ALT_DOWN)));
+
+  // F10 -> Volume Up
+  EXPECT_EQ(VolumeUpPressed(), RunRewriter(F10Pressed()));
+  EXPECT_EQ(VolumeUpPressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(F10Pressed(ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(VolumeUpPressed(ui::EF_ALT_DOWN),
+            RunRewriter(F10Pressed(ui::EF_ALT_DOWN)));
+
+  // F11 -> F11
+  EXPECT_EQ(F11Pressed(), RunRewriter(F11Pressed()));
+  EXPECT_EQ(F11Pressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(F11Pressed(ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(F11Pressed(ui::EF_ALT_DOWN),
+            RunRewriter(F11Pressed(ui::EF_ALT_DOWN)));
+
+  // F12 -> F12
+  EXPECT_EQ(F12Pressed(), RunRewriter(F12Pressed()));
+  EXPECT_EQ(F12Pressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(F12Pressed(ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(F12Pressed(ui::EF_ALT_DOWN),
+            RunRewriter(F12Pressed(ui::EF_ALT_DOWN)));
 }
 
 TEST_F(EventRewriterTest,
@@ -3193,68 +2883,58 @@ TEST_F(EventRewriterTest,
 
   // With Meta + Top Row Key rewrites suppressed, F-Keys should be translated to
   // the equivalent action key and not lose the Search modifier.
-  TestKeyboard(
-      "Internal Keyboard", kKbdTopRowLayout2Tag, ui::INPUT_DEVICE_INTERNAL,
-      /*has_custom_top_row=*/false,
-      {// F1 -> Back
-       {ui::ET_KEY_PRESSED,
-        {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
-        {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_COMMAND_DOWN,
-         ui::DomKey::BROWSER_BACK}},
-       // F2 -> Refresh
-       {ui::ET_KEY_PRESSED,
-        {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2},
-        {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
-         ui::EF_COMMAND_DOWN, ui::DomKey::BROWSER_REFRESH}},
-       // F3 -> Zoom (aka Fullscreen)
-       {ui::ET_KEY_PRESSED,
-        {ui::VKEY_F3, ui::DomCode::F3, ui::EF_COMMAND_DOWN, ui::DomKey::F3},
-        {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_COMMAND_DOWN,
-         ui::DomKey::ZOOM_TOGGLE}},
-       // F4 -> Launch App 1
-       {ui::ET_KEY_PRESSED,
-        {ui::VKEY_F4, ui::DomCode::F4, ui::EF_COMMAND_DOWN, ui::DomKey::F4},
-        {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::SELECT_TASK,
-         ui::EF_COMMAND_DOWN, ui::DomKey::LAUNCH_MY_COMPUTER}},
-       // F5 -> Brightness down
-       {ui::ET_KEY_PRESSED,
-        {ui::VKEY_F5, ui::DomCode::F5, ui::EF_COMMAND_DOWN, ui::DomKey::F5},
-        {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN,
-         ui::EF_COMMAND_DOWN, ui::DomKey::BRIGHTNESS_DOWN}},
-       // F6 -> Brightness up
-       {ui::ET_KEY_PRESSED,
-        {ui::VKEY_F6, ui::DomCode::F6, ui::EF_COMMAND_DOWN, ui::DomKey::F6},
-        {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP,
-         ui::EF_COMMAND_DOWN, ui::DomKey::BRIGHTNESS_UP}},
-       // F7 -> Media Play/Pause
-       {ui::ET_KEY_PRESSED,
-        {ui::VKEY_F7, ui::DomCode::F7, ui::EF_COMMAND_DOWN, ui::DomKey::F7},
-        {ui::VKEY_MEDIA_PLAY_PAUSE, ui::DomCode::MEDIA_PLAY_PAUSE,
-         ui::EF_COMMAND_DOWN, ui::DomKey::MEDIA_PLAY_PAUSE}},
-       // F8 -> Volume Mute
-       {ui::ET_KEY_PRESSED,
-        {ui::VKEY_F8, ui::DomCode::F8, ui::EF_COMMAND_DOWN, ui::DomKey::F8},
-        {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_COMMAND_DOWN,
-         ui::DomKey::AUDIO_VOLUME_MUTE}},
-       // F9 -> Volume Down
-       {ui::ET_KEY_PRESSED,
-        {ui::VKEY_F9, ui::DomCode::F9, ui::EF_COMMAND_DOWN, ui::DomKey::F9},
-        {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_COMMAND_DOWN,
-         ui::DomKey::AUDIO_VOLUME_DOWN}},
-       // F10 -> Volume Up
-       {ui::ET_KEY_PRESSED,
-        {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN, ui::DomKey::F10},
-        {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_COMMAND_DOWN,
-         ui::DomKey::AUDIO_VOLUME_UP}},
-       // F11 -> F11
-       {ui::ET_KEY_PRESSED,
-        {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11},
-        {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11}},
-       // F12 -> F12
-       {ui::ET_KEY_PRESSED,
-        {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN, ui::DomKey::F12},
-        {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN,
-         ui::DomKey::F12}}});
+  SetUpKeyboard({.name = "Internal Keyboard",
+                 .layout = kKbdTopRowLayout2Tag,
+                 .type = ui::INPUT_DEVICE_INTERNAL,
+                 .has_custom_top_row = false});
+
+  // F1 -> Back
+  EXPECT_EQ(BrowserBackPressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F1Pressed(ui::EF_COMMAND_DOWN)));
+
+  // F2 -> Refresh
+  EXPECT_EQ(BrowserRefreshPressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F2Pressed(ui::EF_COMMAND_DOWN)));
+
+  // F3 -> Zoom (aka Fullscreen)
+  EXPECT_EQ(ZoomTogglePressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F3Pressed(ui::EF_COMMAND_DOWN)));
+
+  // F4 -> Launch App 1
+  EXPECT_EQ(SelectTaskPressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F4Pressed(ui::EF_COMMAND_DOWN)));
+
+  // F5 -> Brightness down
+  EXPECT_EQ(BrightnessDownPressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F5Pressed(ui::EF_COMMAND_DOWN)));
+
+  // F6 -> Brightness up
+  EXPECT_EQ(BrightnessUpPressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F6Pressed(ui::EF_COMMAND_DOWN)));
+
+  // F7 -> Media Play/Pause
+  EXPECT_EQ(MediaPlayPausePressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F7Pressed(ui::EF_COMMAND_DOWN)));
+
+  // F8 -> Volume Mute
+  EXPECT_EQ(VolumeMutePressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F8Pressed(ui::EF_COMMAND_DOWN)));
+
+  // F9 -> Volume Down
+  EXPECT_EQ(VolumeDownPressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F9Pressed(ui::EF_COMMAND_DOWN)));
+
+  // F10 -> Volume Up
+  EXPECT_EQ(VolumeUpPressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F10Pressed(ui::EF_COMMAND_DOWN)));
+
+  // F11 -> F11
+  EXPECT_EQ(F11Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F11Pressed(ui::EF_COMMAND_DOWN)));
+
+  // F12 -> F12
+  EXPECT_EQ(F12Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F12Pressed(ui::EF_COMMAND_DOWN)));
 }
 
 TEST_F(EventRewriterTest, RecordEventRemappedToRightClick) {
@@ -3288,65 +2968,35 @@ TEST_F(
 
   // With Meta + Top Row Key rewrites suppressed and TopRowAsFKeys enabled,
   // F-Keys should not be translated and search modifier should be kept.
-  TestKeyboard(
-      "Internal Keyboard", kKbdTopRowLayout2Tag, ui::INPUT_DEVICE_INTERNAL,
-      /*has_custom_top_row=*/false,
-      {
-          // F1 -> Back
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
-           {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1}},
-          // F2 -> Refresh
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2},
-           {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2}},
-          // F3 -> Zoom (aka Fullscreen)
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F3, ui::DomCode::F3, ui::EF_COMMAND_DOWN, ui::DomKey::F3},
-           {ui::VKEY_F3, ui::DomCode::F3, ui::EF_COMMAND_DOWN, ui::DomKey::F3}},
-          // F4 -> Launch App 1
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F4, ui::DomCode::F4, ui::EF_COMMAND_DOWN, ui::DomKey::F4},
-           {ui::VKEY_F4, ui::DomCode::F4, ui::EF_COMMAND_DOWN, ui::DomKey::F4}},
-          // F5 -> Brightness down
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F5, ui::DomCode::F5, ui::EF_COMMAND_DOWN, ui::DomKey::F5},
-           {ui::VKEY_F5, ui::DomCode::F5, ui::EF_COMMAND_DOWN, ui::DomKey::F5}},
-          // F6 -> Brightness up
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F6, ui::DomCode::F6, ui::EF_COMMAND_DOWN, ui::DomKey::F6},
-           {ui::VKEY_F6, ui::DomCode::F6, ui::EF_COMMAND_DOWN, ui::DomKey::F6}},
-          // F7 -> Media Play/Pause
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F7, ui::DomCode::F7, ui::EF_COMMAND_DOWN, ui::DomKey::F7},
-           {ui::VKEY_F7, ui::DomCode::F7, ui::EF_COMMAND_DOWN, ui::DomKey::F7}},
-          // F8 -> Volume Mute
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F8, ui::DomCode::F8, ui::EF_COMMAND_DOWN, ui::DomKey::F8},
-           {ui::VKEY_F8, ui::DomCode::F8, ui::EF_COMMAND_DOWN, ui::DomKey::F8}},
-          // F9 -> Volume Down
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F9, ui::DomCode::F9, ui::EF_COMMAND_DOWN, ui::DomKey::F9},
-           {ui::VKEY_F9, ui::DomCode::F9, ui::EF_COMMAND_DOWN, ui::DomKey::F9}},
-          // F10 -> Volume Up
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN,
-            ui::DomKey::F10},
-           {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN,
-            ui::DomKey::F10}},
-          // F11 -> F11
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN,
-            ui::DomKey::F11},
-           {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN,
-            ui::DomKey::F11}},
-          // F12 -> F12
-          {ui::ET_KEY_PRESSED,
-           {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN,
-            ui::DomKey::F12},
-           {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN,
-            ui::DomKey::F12}},
-      });
+  SetUpKeyboard({.name = "Internal Keyboard",
+                 .layout = kKbdTopRowLayout2Tag,
+                 .type = ui::INPUT_DEVICE_INTERNAL,
+                 .has_custom_top_row = false});
+
+  EXPECT_EQ(F1Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F1Pressed(ui::EF_COMMAND_DOWN)));
+  EXPECT_EQ(F2Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F2Pressed(ui::EF_COMMAND_DOWN)));
+  EXPECT_EQ(F3Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F3Pressed(ui::EF_COMMAND_DOWN)));
+  EXPECT_EQ(F4Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F4Pressed(ui::EF_COMMAND_DOWN)));
+  EXPECT_EQ(F5Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F5Pressed(ui::EF_COMMAND_DOWN)));
+  EXPECT_EQ(F6Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F6Pressed(ui::EF_COMMAND_DOWN)));
+  EXPECT_EQ(F7Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F7Pressed(ui::EF_COMMAND_DOWN)));
+  EXPECT_EQ(F8Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F8Pressed(ui::EF_COMMAND_DOWN)));
+  EXPECT_EQ(F9Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F9Pressed(ui::EF_COMMAND_DOWN)));
+  EXPECT_EQ(F10Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F10Pressed(ui::EF_COMMAND_DOWN)));
+  EXPECT_EQ(F11Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F11Pressed(ui::EF_COMMAND_DOWN)));
+  EXPECT_EQ(F12Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F12Pressed(ui::EF_COMMAND_DOWN)));
 }
 
 // TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
