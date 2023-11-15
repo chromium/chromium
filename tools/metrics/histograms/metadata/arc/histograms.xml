@@ -583,17 +583,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.AppShortcuts.BuildMenuTime" units="ms"
-    expires_after="2022-03-13">
-  <owner>mmourgos@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    Record the time to build ARC app shortcut items on menu model. We get the
-    needed metadata from Android and decode icons in the utility process. It is
-    an asynchronous procedure so we need to know the longest waiting time.
-  </summary>
-</histogram>
-
 <histogram name="Arc.AppShortcutSearchResult.ShortcutStatus"
     enum="ArcAppShortcutStatus" expires_after="2024-10-15">
   <owner>batoon@google.com</owner>
