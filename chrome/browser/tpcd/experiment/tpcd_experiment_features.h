@@ -54,6 +54,7 @@ extern const base::FeatureParam<bool> kExcludePwaOrTwaInstalled;
 extern const char kTpcdWritePopupCurrentInteractionHeuristicsGrantsName[];
 extern const char kTpcdWritePopupPastInteractionHeuristicsGrantsName[];
 extern const char kTpcdBackfillPopupHeuristicsGrantsName[];
+extern const char kTpcdPopupHeuristicDisableForAdTaggedPopupsName[];
 extern const char kTpcdWriteRedirectHeuristicGrantsName[];
 extern const char kTpcdRedirectHeuristicRequireABAFlowName[];
 extern const char kTpcdRedirectHeuristicRequireCurrentInteractionName[];
@@ -75,6 +76,11 @@ extern const base::FeatureParam<base::TimeDelta>
 // 3PCD. If set to zero duration, to not create backfill grants.
 extern const base::FeatureParam<base::TimeDelta>
     kTpcdBackfillPopupHeuristicsGrants;
+
+// Whether to disable writing Popup heuristic grants when the popup is opened
+// via an ad-tagged frame.
+extern const base::FeatureParam<bool>
+    kTpcdPopupHeuristicDisableForAdTaggedPopups;
 
 // The duration of the storage access grant created when observing the Redirect
 // With Current Interaction scenario. If set to zero duration, do not create a

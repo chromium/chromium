@@ -16445,6 +16445,11 @@ be describing additional metrics about the same event.
       another page before interacting with the pop-up.
     </summary>
   </metric>
+  <metric name="IsAdTaggedPopupClick" enum="Boolean">
+    <summary>
+      Whether the popup frame was opened by a click on an ad-tagged frame.
+    </summary>
+  </metric>
   <metric name="PopupId">
     <summary>
       A random integer to identify the pop-up and associate this event with
