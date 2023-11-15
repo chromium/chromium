@@ -3018,7 +3018,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySelect) {
   RunHtmlTest(FILE_PATH_LITERAL("select.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySelectInCanvas) {
+// Flaky on Android and linux-chromeos-dbg - crbug.com/1367886
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AccessibilitySelectInCanvas DISABLED_AccessibilitySelectInCanvas
+#else
+#define MAYBE_AccessibilitySelectInCanvas AccessibilitySelectInCanvas
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilitySelectInCanvas) {
   RunHtmlTest(FILE_PATH_LITERAL("select-in-canvas.html"));
 }
 
