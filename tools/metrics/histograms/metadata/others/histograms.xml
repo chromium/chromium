@@ -7783,6 +7783,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Process.Sandbox.PreloadLibraryFailed.ErrorCode"
+    enum="WinGetLastError" expires_after="2024-11-14">
+  <owner>ajgo@chromium.org</owner>
+  <owner>rhalavati@chromium.org</owner>
+  <owner>src/sandbox/policy/win/OWNERS</owner>
+  <summary>
+    Records the error result of trying to preload a library before creating a
+    sandboxed process on Windows. Only recorded if library loading failed.
+  </summary>
+</histogram>
+
 <histogram name="Process.Sandbox.StartSandboxedWin.TotalDuration"
     units="microseconds" expires_after="2024-04-28">
   <owner>ajgo@chromium.org</owner>

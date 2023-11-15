@@ -2256,6 +2256,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.LibraryAccessResultOnVerify"
+    enum="WinGetLastError" expires_after="2024-02-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the error result of trying to load chrome_screen_ai.dll after the
+    component is verified.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.LibraryAvailableOnVerify"
+    enum="BooleanSuccess" expires_after="2024-02-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records library load result for chrome_screen_ai.dll after the component is
+    verified.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.LibraryLoadDetailedResultOnWindows"
     enum="WinGetLastError" expires_after="2024-04-28">
   <owner>rhalavati@chromium.org</owner>
@@ -2263,6 +2283,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records a Screen AI library load result on Windows. The result is recorded
     after initialization of Screen AI service and loading chrome_screen_ai.dll.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.LibraryPathVerified"
+    enum="BooleanSuccess" expires_after="2024-02-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records if the library path matched the heuristics for chrome_screen_ai.dll
+    when the component is verified.
   </summary>
 </histogram>
 
