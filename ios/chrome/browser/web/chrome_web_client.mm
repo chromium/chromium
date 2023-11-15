@@ -14,9 +14,7 @@
 #import "base/no_destructor.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/common/autofill_features.cc"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
-#import "components/autofill/ios/browser/child_frame_registration_java_script_feature.h"
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/dom_distiller/core/url_constants.h"
@@ -346,11 +344,6 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(
       autofill::SuggestionControllerJavaScriptFeature::GetInstance());
   features.push_back(AutofillBottomSheetJavaScriptFeature::GetInstance());
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAcrossIframesIos)) {
-    features.push_back(
-        autofill::ChildFrameRegistrationJavaScriptFeature::GetInstance());
-  }
   features.push_back(FontSizeJavaScriptFeature::GetInstance());
   features.push_back(ImageFetchJavaScriptFeature::GetInstance());
   features.push_back(
