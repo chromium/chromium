@@ -55,20 +55,9 @@ void AddElementIdentifierToLabel(views::Label& label, size_t index) {
 
 }  // namespace
 
-
-const std::vector<permissions::PermissionRequest*>&
-EmbeddedPermissionPromptBaseView::Delegate::Requests() const {
-  if (auto permission_prompt_delegate = GetPermissionPromptDelegate()) {
-    return permission_prompt_delegate->Requests();
-  }
-  NOTREACHED();
-  static const std::vector<permissions::PermissionRequest*> empty_requests;
-  return empty_requests;
-}
-
 EmbeddedPermissionPromptBaseView::EmbeddedPermissionPromptBaseView(
     Browser* browser,
-    base::WeakPtr<Delegate> delegate)
+    base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate)
     : PermissionPromptBaseView(browser,
                                delegate->GetPermissionPromptDelegate()),
       browser_(browser),
@@ -85,9 +74,6 @@ void EmbeddedPermissionPromptBaseView::Show() {
 
 void EmbeddedPermissionPromptBaseView::CreateWidget() {
   DCHECK(browser_->window());
-
-  UpdateAnchorPosition();
-
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
 
   if (base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
@@ -111,11 +97,9 @@ void EmbeddedPermissionPromptBaseView::ShowWidget() {
   SizeToContents();
 }
 
-void EmbeddedPermissionPromptBaseView::UpdateAnchorPosition() {
-  SetAnchorView(
-      BrowserView::GetBrowserViewForBrowser(browser_)->GetContentsView());
-  set_parent_window(
-      platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
+void EmbeddedPermissionPromptBaseView::UpdateAnchor(views::Widget* widget) {
+  SetAnchorView(widget->GetContentsView());
+  set_parent_window(widget->GetNativeView());
   SetArrow(views::BubbleBorder::Arrow::FLOAT);
 }
 

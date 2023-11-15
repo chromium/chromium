@@ -21,7 +21,7 @@ class EmbeddedPermissionPromptPreviouslyDeniedView
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowThisTimeId);
   EmbeddedPermissionPromptPreviouslyDeniedView(
       Browser* browser,
-      base::WeakPtr<Delegate> delegate);
+      base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate);
   EmbeddedPermissionPromptPreviouslyDeniedView(
       const EmbeddedPermissionPromptPreviouslyDeniedView&) = delete;
   EmbeddedPermissionPromptPreviouslyDeniedView& operator=(

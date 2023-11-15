@@ -89,9 +89,10 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
   }
 
   auto PushPEPCPromptButton(ui::ElementIdentifier button_identifier) {
-    return Steps(WaitForShow(button_identifier), FlushEvents(),
-                 PressButton(button_identifier),
-                 WaitForHide(EmbeddedPermissionPromptBaseView::kMainViewId));
+    return InAnyContext(
+        Steps(WaitForShow(button_identifier), FlushEvents(),
+              PressButton(button_identifier),
+              WaitForHide(EmbeddedPermissionPromptBaseView::kMainViewId)));
   }
 
   // Checks that the next value in the queue matches the text in the label
@@ -108,11 +109,11 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
     }
 
     if (expected.empty()) {
-      return Steps(EnsureNotPresent(label_identifier));
+      return InAnyContext(Steps(EnsureNotPresent(label_identifier)));
     }
 
-    return Steps(
-        CheckViewProperty(label_identifier, &views::Label::GetText, expected));
+    return InAnyContext(Steps(
+        CheckViewProperty(label_identifier, &views::Label::GetText, expected)));
   }
 
   auto CheckContentSettingsValue(
@@ -163,7 +164,8 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
 
         // Initially the Ask view is displayed.
         ClickOnPEPCElement(element_id),
-        WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId1,
                    expected_labels1),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId2,
@@ -177,7 +179,8 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
         // The PreviouslyGranted view is displayed since the permission is
         // granted.
         ClickOnPEPCElement(element_id),
-        WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId1,
                    expected_labels1),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId2,
@@ -194,7 +197,8 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
         // The PreviouslyBlocked view is displayed since the permission is
         // blocked.
         ClickOnPEPCElement(element_id),
-        WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId1,
                    expected_labels1),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId2,
@@ -228,9 +232,11 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
         // Trigger a camera+mic prompt and check that the label has the expected
         // text.
         ClickOnPEPCElement("camera-microphone"),
-        WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId),
-        CheckViewProperty(EmbeddedPermissionPromptBaseView::kLabelViewId1,
-                          &views::Label::GetText, expected_label1),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+        InAnyContext(
+            CheckViewProperty(EmbeddedPermissionPromptBaseView::kLabelViewId1,
+                              &views::Label::GetText, expected_label1)),
 
         // Dismiss the prompt.
         FlushEvents(), Do([this]() {
@@ -254,10 +260,12 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
 #define MAYBE_BasicFlowMicrophone DISABLED_BasicFlowMicrophone
 #define MAYBE_BasicFlowCamera DISABLED_BasicFlowCamera
 #define MAYBE_BasicFlowCameraMicrophone DISABLED_BasicFlowCameraMicrophone
+#define MAYBE_TestPartialPermissionsLabels DISABLED_TestPartialPermissionsLabels
 #else
 #define MAYBE_BasicFlowMicrophone BasicFlowMicrophone
 #define MAYBE_BasicFlowCamera BasicFlowCamera
 #define MAYBE_BasicFlowCameraMicrophone BasicFlowCameraMicrophone
+#define MAYBE_TestPartialPermissionsLabels TestPartialPermissionsLabels
 #endif
 IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
                        MAYBE_BasicFlowMicrophone) {
@@ -298,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
-                       TestPartialPermissionsLabels) {
+                       MAYBE_TestPartialPermissionsLabels) {
   RunTestSequence(InstrumentTab(kWebContentsElementId),
                   NavigateWebContents(kWebContentsElementId, GetURL()));
 

@@ -18,7 +18,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
 EmbeddedPermissionPromptPreviouslyGrantedView::
     EmbeddedPermissionPromptPreviouslyGrantedView(
         Browser* browser,
-        base::WeakPtr<Delegate> delegate)
+        base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate)
     : EmbeddedPermissionPromptBaseView(browser, delegate) {}
 
 EmbeddedPermissionPromptPreviouslyGrantedView::

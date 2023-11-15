@@ -19,8 +19,9 @@ class Browser;
 class EmbeddedPermissionPromptSystemSettingsView
     : public EmbeddedPermissionPromptBaseView {
  public:
-  EmbeddedPermissionPromptSystemSettingsView(Browser* browser,
-                                             base::WeakPtr<Delegate> delegate);
+  EmbeddedPermissionPromptSystemSettingsView(
+      Browser* browser,
+      base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate);
   EmbeddedPermissionPromptSystemSettingsView(
       const EmbeddedPermissionPromptSystemSettingsView&) = delete;
   EmbeddedPermissionPromptSystemSettingsView& operator=(

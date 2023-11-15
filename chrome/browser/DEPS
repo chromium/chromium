@@ -603,6 +603,9 @@ specific_include_rules = {
   "dbus_memory_pressure_evaluator_linux(_unittest)?\.(cc|h)" : [
     "+dbus",
   ],
+  "permission_element_browsertest.cc": [
+    "+chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h",
+  ],
   "browsing_data_model_browsertest.cc" : [
     "+components/services/storage/shared_storage/shared_storage_manager.h",
   ],

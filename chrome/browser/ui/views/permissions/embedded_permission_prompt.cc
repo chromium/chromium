@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_ask_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_policy_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_denied_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_granted_view.h"
@@ -95,16 +96,6 @@ EmbeddedPermissionPrompt::EmbeddedPermissionPrompt(
 
 EmbeddedPermissionPrompt::~EmbeddedPermissionPrompt() {
   CloseView();
-}
-
-base::WeakPtr<permissions::PermissionPrompt::Delegate>
-EmbeddedPermissionPrompt::GetPermissionPromptDelegate() const {
-  return delegate_->GetWeakPtr();
-}
-
-const std::vector<permissions::PermissionRequest*>&
-EmbeddedPermissionPrompt::Requests() const {
-  return requests_;
 }
 
 // static
@@ -217,20 +208,11 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
   if (prompt_view) {
     RebuildRequests();
     prompt_view_tracker_.SetView(prompt_view);
+    content_scrim_widget_ =
+        EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
+            weak_factory_.GetWeakPtr());
+    prompt_view->UpdateAnchor(content_scrim_widget_.get());
     prompt_view->Show();
-  }
-}
-
-void EmbeddedPermissionPrompt::CloseView() {
-  if (auto* prompt_view = static_cast<EmbeddedPermissionPromptBaseView*>(
-          prompt_view_tracker_.view())) {
-    prompt_view->PrepareToClose();
-    prompt_view->GetWidget()->Close();
-    prompt_view_tracker_.SetView(nullptr);
-
-    requests_.clear();
-    prompt_types_.clear();
-    embedded_prompt_variant_ = Variant::kUninitialized;
   }
 }
 
@@ -289,6 +271,21 @@ void EmbeddedPermissionPrompt::ShowSystemSettings() {
     OpenMicSystemSettingsOnMacOS();
   }
 #endif
+}
+
+void EmbeddedPermissionPrompt::DismissScrim() {
+  CloseView();
+  Dismiss();
+}
+
+base::WeakPtr<permissions::PermissionPrompt::Delegate>
+EmbeddedPermissionPrompt::GetPermissionPromptDelegate() const {
+  return delegate_->GetWeakPtr();
+}
+
+const std::vector<permissions::PermissionRequest*>&
+EmbeddedPermissionPrompt::Requests() const {
+  return requests_;
 }
 
 void EmbeddedPermissionPrompt::PromptForOsPermission() {
@@ -390,11 +387,29 @@ void EmbeddedPermissionPrompt::PrioritizeAndMergeNewVariant(
 
 void EmbeddedPermissionPrompt::RebuildRequests() {
   if (requests_.size() != prompt_types_.size()) {
-    auto requests = EmbeddedPermissionPromptBaseView::Delegate::Requests();
+    const auto& requests = delegate()->Requests();
     for (auto* request : requests) {
       if (prompt_types_.contains(request->GetContentSettingsType())) {
         requests_.push_back(request);
       }
     }
+  }
+}
+
+void EmbeddedPermissionPrompt::CloseView() {
+  if (auto* prompt_view = static_cast<EmbeddedPermissionPromptBaseView*>(
+          prompt_view_tracker_.view())) {
+    prompt_view->PrepareToClose();
+    prompt_view->GetWidget()->Close();
+    prompt_view_tracker_.SetView(nullptr);
+
+    requests_.clear();
+    prompt_types_.clear();
+    embedded_prompt_variant_ = Variant::kUninitialized;
+  }
+
+  if (content_scrim_widget_) {
+    content_scrim_widget_->Close();
+    content_scrim_widget_.reset();
   }
 }

@@ -19,7 +19,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
 EmbeddedPermissionPromptPreviouslyDeniedView::
     EmbeddedPermissionPromptPreviouslyDeniedView(
         Browser* browser,
-        base::WeakPtr<Delegate> delegate)
+        base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate)
     : EmbeddedPermissionPromptBaseView(browser, delegate) {}
 
 EmbeddedPermissionPromptPreviouslyDeniedView::

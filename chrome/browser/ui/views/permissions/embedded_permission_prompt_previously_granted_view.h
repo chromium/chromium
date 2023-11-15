@@ -20,7 +20,7 @@ class EmbeddedPermissionPromptPreviouslyGrantedView
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kStopAllowingId);
   EmbeddedPermissionPromptPreviouslyGrantedView(
       Browser* browser,
-      base::WeakPtr<Delegate> delegate);
+      base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate);
   EmbeddedPermissionPromptPreviouslyGrantedView(
       const EmbeddedPermissionPromptPreviouslyGrantedView&) = delete;
   EmbeddedPermissionPromptPreviouslyGrantedView& operator=(

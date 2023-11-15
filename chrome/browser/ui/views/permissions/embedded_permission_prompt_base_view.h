@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_view_delegate.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 #include "components/permissions/permission_prompt.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -46,22 +47,9 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLabelViewId1);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLabelViewId2);
 
-  class Delegate {
-   public:
-    virtual void Allow() = 0;
-    virtual void AllowThisTime() = 0;
-    virtual void Dismiss() = 0;
-    virtual void Acknowledge() = 0;
-    virtual void StopAllowing() = 0;
-    virtual void ShowSystemSettings() = 0;
-    virtual base::WeakPtr<permissions::PermissionPrompt::Delegate>
-    GetPermissionPromptDelegate() const = 0;
-    virtual const std::vector<permissions::PermissionRequest*>& Requests()
-        const;
-  };
-
-  EmbeddedPermissionPromptBaseView(Browser* browser,
-                                   base::WeakPtr<Delegate> delegate);
+  EmbeddedPermissionPromptBaseView(
+      Browser* browser,
+      base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate);
   EmbeddedPermissionPromptBaseView(const EmbeddedPermissionPromptBaseView&) =
       delete;
   EmbeddedPermissionPromptBaseView& operator=(
@@ -69,8 +57,7 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
   ~EmbeddedPermissionPromptBaseView() override;
 
   void Show();
-  void UpdateAnchorPosition();
-  void ShowWidget();
+  void UpdateAnchor(views::Widget* widget);
   void ClosingPermission();
   void PrepareToClose();
 
@@ -112,17 +99,22 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
       const = 0;
   virtual std::vector<ButtonConfiguration> GetButtonsConfiguration() const = 0;
 
-  base::WeakPtr<Delegate>& delegate() { return delegate_; }
-  const base::WeakPtr<Delegate>& delegate() const { return delegate_; }
+  base::WeakPtr<EmbeddedPermissionPromptViewDelegate>& delegate() {
+    return delegate_;
+  }
+  const base::WeakPtr<EmbeddedPermissionPromptViewDelegate>& delegate() const {
+    return delegate_;
+  }
 
  private:
   void CreateWidget();
+  void ShowWidget();
   void AddRequestLine(const RequestLineConfiguration& line, std::size_t index);
   void AddButton(views::View& buttons_container,
                  const ButtonConfiguration& button);
 
   const raw_ptr<Browser> browser_;
-  base::WeakPtr<Delegate> delegate_;
+  base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_BASE_VIEW_H_

@@ -13,8 +13,9 @@
 #include "ui/base/l10n/l10n_util.h"
 
 EmbeddedPermissionPromptSystemSettingsView::
-    EmbeddedPermissionPromptSystemSettingsView(Browser* browser,
-                                               base::WeakPtr<Delegate> delegate)
+    EmbeddedPermissionPromptSystemSettingsView(
+        Browser* browser,
+        base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate)
     : EmbeddedPermissionPromptBaseView(browser, delegate) {}
 
 EmbeddedPermissionPromptSystemSettingsView::
