@@ -13,11 +13,27 @@ namespace network {
 
 namespace {
 
+using AntiFingerprintingBlockListResult = ::network::
+    NetworkServiceResourceBlockList::AntiFingerprintingBlockListResult;
+
 bool ResourceIsEligibleForBlockList(
     const masked_domain_list::Resource& resource) {
   return std::find(resource.experiments().begin(), resource.experiments().end(),
                    masked_domain_list::Resource_Experiment_EXPERIMENT_AFP) !=
          resource.experiments().end();
+}
+
+AntiFingerprintingBlockListResult GetBlocklistResult(
+    const UrlMatcherWithBypass::MatchResult& match_result) {
+  if (match_result.is_third_party) {
+    if (match_result.matches) {
+      return AntiFingerprintingBlockListResult::kThirdPartyBlocked;
+    } else {
+      return AntiFingerprintingBlockListResult::kThirdPartyAllowed;
+    }
+  } else {
+    return AntiFingerprintingBlockListResult::kFirstPartyAllowed;
+  }
 }
 
 }  // namespace
@@ -63,6 +79,11 @@ bool NetworkServiceResourceBlockList::Matches(
   UrlMatcherWithBypass::MatchResult result = url_matcher_with_bypass_.Matches(
       request_url, top_frame_site,
       isolation_info->network_anonymization_key().IsTransient());
+
+  AntiFingerprintingBlockListResult blocklist_result =
+      GetBlocklistResult(result);
+  base::UmaHistogramEnumeration("AntiFingerprintingBlockListResult",
+                                blocklist_result);
   return result.matches && result.is_third_party;
 }
 

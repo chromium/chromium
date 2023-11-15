@@ -1692,6 +1692,16 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Missing Version"/>
 </enum>
 
+<enum name="AntiFingerprintingBlockListResult">
+  <summary>
+    The possible results from checking a network resource URL against the
+    anti-fingerprinting blocklist.
+  </summary>
+  <int value="0" label="Third-party resource Blocked"/>
+  <int value="1" label="Third-party resource Allowed"/>
+  <int value="2" label="First-party resource Allowed"/>
+</enum>
+
 <enum name="ApiErrorCode">
 <!-- google_apis/common/api_error_codes.h -->
 

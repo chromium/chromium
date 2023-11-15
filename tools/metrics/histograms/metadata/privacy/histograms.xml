@@ -64,6 +64,19 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="Privacy.AFP.BlockList.CheckResult"
+    enum="AntiFingerprintingBlockListResult" expires_after="2024-04-01">
+  <owner>thesalsa@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <summary>
+    The result of checking the anti-fingerprinting blocklist for a URL and
+    deciding whether to block it. Recorded each time the blocklist is checked.
+
+    Only clients that have opted into the blocklist feature will emit this
+    metric.
+  </summary>
+</histogram>
+
 <histogram name="Privacy.ClearOnExitSyncEvent" enum="ClearOnExitSyncEvent"
     expires_after="M103">
   <owner>sauski@google.com</owner>
