@@ -19151,6 +19151,21 @@
             ]
         }
     ],
+    "UseGMSCoreForBrandingInfo": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseGMSCoreForBrandingInfo"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseGpuSchedulerDfs": [
         {
             "platforms": [
