@@ -12,10 +12,10 @@ cargo_crate("lib") {
   crate_name = "unicode_linebreak"
   epoch = "0.1"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/unicode-linebreak-0.1.5/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/unicode-linebreak-0.1.2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/unicode-linebreak-0.1.5/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/unicode-linebreak-0.1.5/src/shared.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-linebreak-0.1.2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-linebreak-0.1.2/src/shared.rs",
   ]
   inputs = []
 
@@ -31,7 +31,7 @@ cargo_crate("lib") {
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   build_deps = [ "//third_party/rust/regex/v1:buildrs_support" ]
-  build_root = "//third_party/rust/chromium_crates_io/vendor/unicode-linebreak-0.1.5/build.rs"
-  build_sources = [ "//third_party/rust/chromium_crates_io/vendor/unicode-linebreak-0.1.5/build.rs" ]
+  build_root = "//third_party/rust/chromium_crates_io/vendor/unicode-linebreak-0.1.2/build.rs"
+  build_sources = [ "//third_party/rust/chromium_crates_io/vendor/unicode-linebreak-0.1.2/build.rs" ]
   build_script_outputs = [ "tables.rs" ]
 }

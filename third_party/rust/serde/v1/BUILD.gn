@@ -13,27 +13,27 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/de/format.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/de/ignored_any.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/de/impls.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/de/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/de/seed.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/de/size_hint.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/de/value.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/integer128.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/macros.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/private/de.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/private/doc.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/private/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/private/ser.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/ser/fmt.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/ser/impls.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/ser/impossible.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/ser/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/src/std_error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/de/format.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/de/ignored_any.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/de/impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/de/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/de/seed.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/de/size_hint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/de/value.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/integer128.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/private/de.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/private/doc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/private/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/private/ser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/ser/fmt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/ser/impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/ser/impossible.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/ser/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/src/std_error.rs",
   ]
   inputs = []
 
@@ -54,7 +54,7 @@ cargo_crate("lib") {
     "std",
   ]
   build_root =
-      "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/build.rs"
+      "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/build.rs"
   build_sources =
-      [ "//third_party/rust/chromium_crates_io/vendor/serde-1.0.192/build.rs" ]
+      [ "//third_party/rust/chromium_crates_io/vendor/serde-1.0.188/build.rs" ]
 }

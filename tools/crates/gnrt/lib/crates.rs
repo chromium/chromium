@@ -540,8 +540,6 @@ pub fn collect_std_vendored_crates(vendor_path: &Path) -> io::Result<Vec<Vendore
             .and_then(|pos| Some(std_path[..pos].to_string()))
             .or(Some(std_path.to_string()))
             .unwrap();
-        // TODO(danakj): Re-enable this check after running cargo vendor in 3p.
-        /*
         if &std_path != &dir_name && &std_path_no_version != &dir_name {
             return Err(io::Error::new(
                 io::ErrorKind::Other,
@@ -550,7 +548,7 @@ pub fn collect_std_vendored_crates(vendor_path: &Path) -> io::Result<Vec<Vendore
                 ),
             ));
         }
-        */
+
         crates.push(crate_id);
     }
 
