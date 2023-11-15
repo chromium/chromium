@@ -43,9 +43,9 @@ cr-menu > :not(hr) {
 }
 
 cr-menu > hr {
-  background: -webkit-linear-gradient(left,
-                                      rgba(0, 0, 0, .10),
-                                      rgba(0, 0, 0, .02) 96%);
+  background: linear-gradient(to right,
+                              rgba(0, 0, 0, .10),
+                              rgba(0, 0, 0, .02) 96%);
   border: 0;
   height: 1px;
   margin: 8px 0;

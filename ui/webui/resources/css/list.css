@@ -61,8 +61,8 @@ grid:not([disabled]) > :hover {
 list > [selected],
 grid > [selected] {
   background-color: hsl(0, 0%, 90%);
-  background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.8),
-                                            rgba(255, 255, 255, 0));
+  background-image: linear-gradient(rgba(255, 255, 255, 0.8),
+                                    rgba(255, 255, 255, 0));
   border-color: hsl(0, 0%, 85%);
   z-index: 2;
 }
