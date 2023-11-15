@@ -45,6 +45,7 @@ class RemoveWebAppJob : public UninstallJob {
   void MaybeFinishPrimaryRemoval();
   void ProcessSubAppsPendingRemovalOrComplete();
   void CompleteAndSelfDestruct(webapps::UninstallResultCode code);
+  void OnIsolatedWebAppOwnedLocationDeleted();
 
   webapps::WebappUninstallSource uninstall_source_;
   // `this` must be owned by `profile_`.
@@ -60,10 +61,12 @@ class RemoveWebAppJob : public UninstallJob {
   bool app_data_deleted_ = false;
   bool translation_data_deleted_ = false;
   bool isolated_web_app_browsing_data_cleared_ = false;
+  bool isolated_web_app_owned_location_deleted_ = false;
   bool hooks_uninstalled_ = false;
   bool errors_ = false;
   bool has_isolated_storage_ = false;
   absl::optional<webapps::UninstallResultCode> primary_removal_result_;
+  absl::optional<IsolatedWebAppLocation> location_;
 
   std::vector<webapps::AppId> sub_apps_pending_removal_;
   std::unique_ptr<RemoveInstallSourceJob> sub_job_;

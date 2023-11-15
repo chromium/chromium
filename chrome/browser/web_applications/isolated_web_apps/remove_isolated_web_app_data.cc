@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_browsing_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -38,6 +43,34 @@ class RemovalObserver : public content::BrowsingDataRemover::Observer {
  private:
   raw_ptr<Profile> profile_ = nullptr;
   base::OnceClosure callback_;  // Owns `this`.
+};
+
+struct ClearReaderCacheVisitor {
+  ClearReaderCacheVisitor(Profile* profile, base::OnceClosure callback)
+      : profile_(profile), callback_(std::move(callback)) {}
+  void operator()(const InstalledBundle& bundle_location) {
+    CloseReaderForBundle(bundle_location.path);
+  }
+  void operator()(const DevModeBundle& dev_mode_location) {
+    CloseReaderForBundle(dev_mode_location.path);
+  }
+  void operator()(const DevModeProxy& proxy_location) {
+    // There is no reader for proxy mode.
+    std::move(callback_).Run();
+  }
+
+ private:
+  void CloseReaderForBundle(const base::FilePath& path_to_bundle) {
+    auto* reader_registry =
+        IsolatedWebAppReaderRegistryFactory::GetForProfile(profile_);
+    if (!reader_registry) {
+      std::move(callback_).Run();
+      return;
+    }
+    reader_registry->ClearCacheForPath(path_to_bundle, std::move(callback_));
+  }
+  raw_ptr<Profile> profile_;
+  base::OnceClosure callback_;
 };
 
 }  // namespace
@@ -78,6 +111,17 @@ void RemoveIsolatedWebAppBrowsingData(Profile* profile,
       /*delete_begin=*/base::Time(), /*delete_end=*/base::Time::Max(),
       removal_mask, chrome_browsing_data_remover::ALL_ORIGIN_TYPES,
       std::move(filter), new RemovalObserver(profile, std::move(callback)));
+}
+
+void CloseAndDeleteBundle(Profile* profile,
+                          const IsolatedWebAppLocation& location,
+                          base::OnceClosure callback) {
+  base::OnceClosure cleanup_location_callback =
+      base::BindOnce(CleanupLocationIfOwned, profile->GetPath(), location,
+                     std::move(callback));
+  absl::visit(
+      ClearReaderCacheVisitor(profile, std::move(cleanup_location_callback)),
+      location);
 }
 
 }  // namespace web_app
