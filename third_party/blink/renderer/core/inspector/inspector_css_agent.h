@@ -361,7 +361,7 @@ class CORE_EXPORT InspectorCSSAgent final
 
   void CollectPlatformFontsForLayoutObject(
       LayoutObject*,
-      HashCountedSet<std::pair<int, String>>*,
+      HashMap<std::pair<int, String>, std::pair<int, String>>*,
       unsigned descendants_depth);
 
   InspectorStyleSheet* BindStyleSheet(CSSStyleSheet*);

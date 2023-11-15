@@ -201,15 +201,26 @@ HeapVector<Member<CSSStyleRule>> FilterDuplicateRules(
 
 void CollectPlatformFontsFromRunFontDataList(
     const Vector<ShapeResult::RunFontData>& run_font_data_list,
-    HashCountedSet<std::pair<int, String>>* font_stats) {
+    HashMap<std::pair<int, String>, std::pair<int, String>>* font_stats) {
   for (const auto& run_font_data : run_font_data_list) {
     const auto* simple_font_data = run_font_data.font_data_;
     String family_name = simple_font_data->PlatformData().FontFamilyName();
     if (family_name.IsNull())
       family_name = "";
-    font_stats->insert(
-        std::make_pair(simple_font_data->IsCustomFont() ? 1 : 0, family_name),
-        run_font_data.glyph_count_);
+    String postscript_name =
+        simple_font_data->PlatformData().GetPostScriptName();
+    if (postscript_name.IsNull()) {
+      postscript_name = "";
+    }
+    auto font_key = std::make_pair(simple_font_data->IsCustomFont() ? 1 : 0,
+                                   postscript_name);
+    auto font_stats_it = font_stats->find(font_key);
+    if (font_stats_it == font_stats->end()) {
+      font_stats->insert(
+          font_key, std::make_pair(run_font_data.glyph_count_, family_name));
+    } else {
+      font_stats_it->value.first += run_font_data.glyph_count_;
+    }
   }
 }
 
@@ -1635,7 +1646,7 @@ protocol::Response InspectorCSSAgent::getComputedStyleForNode(
 
 void InspectorCSSAgent::CollectPlatformFontsForLayoutObject(
     LayoutObject* layout_object,
-    HashCountedSet<std::pair<int, String>>* font_stats,
+    HashMap<std::pair<int, String>, std::pair<int, String>>* font_stats,
     unsigned descendants_depth) {
   if (!layout_object->IsText()) {
     if (!descendants_depth)
@@ -1687,7 +1698,9 @@ protocol::Response InspectorCSSAgent::getPlatformFontsForNode(
   if (!response.IsSuccess())
     return response;
 
-  HashCountedSet<std::pair<int, String>> font_stats;
+  // Key: {isCustomFont, postscript_name}
+  // Value: {glyph_count (which accumulates), family_name}
+  HashMap<std::pair<int, String>, std::pair<int, String>> font_stats;
   LayoutObject* root = node->GetLayoutObject();
   if (root) {
     // Iterate upto two layers deep.
@@ -1698,13 +1711,14 @@ protocol::Response InspectorCSSAgent::getPlatformFontsForNode(
       std::make_unique<protocol::Array<protocol::CSS::PlatformFontUsage>>();
   for (auto& font : font_stats) {
     std::pair<int, String>& font_description = font.key;
+    std::pair<int, String>& font_value = font.value;
     bool is_custom_font = font_description.first == 1;
-    String font_name = font_description.second;
     (*platform_fonts)
         ->emplace_back(protocol::CSS::PlatformFontUsage::create()
-                           .setFamilyName(font_name)
+                           .setFamilyName(font_value.second)
+                           .setPostScriptName(font_description.second)
                            .setIsCustomFont(is_custom_font)
-                           .setGlyphCount(font.value)
+                           .setGlyphCount(font_value.first)
                            .build());
   }
   return protocol::Response::Success();

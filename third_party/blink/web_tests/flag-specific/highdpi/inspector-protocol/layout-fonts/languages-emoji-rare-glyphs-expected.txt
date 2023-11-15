@@ -47,8 +47,8 @@
 
 ⇦⇧⇨⇩￩￪￫￬⟀
 #text_presentation_arrows_maths:
-"DejaVu Sans" : 4,
 "Noto Sans CJK JP" : 4,
+"DejaVu Sans" : 4,
 "Tinos" : 1
 
 
