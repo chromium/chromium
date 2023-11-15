@@ -250,6 +250,11 @@ void AffiliationBackend::SetFetcherFactoryForTesting(
   fetcher_factory_ = std::move(fetcher_factory);
 }
 
+AffiliationDatabase& AffiliationBackend::GetAffiliationDatabaseForTesting() {
+  CHECK(cache_.get());
+  return *cache_.get();
+}
+
 FacetManager* AffiliationBackend::GetOrCreateFacetManager(
     const FacetURI& facet_uri) {
   std::unique_ptr<FacetManager>& facet_manager = facet_managers_[facet_uri];

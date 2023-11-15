@@ -331,11 +331,9 @@ class AffiliationBackendTest : public testing::Test {
     backend_task_runner_->FastForwardBy(delta);
   }
 
-  // Directly opens the database and returns the number of equivalence classes
-  // stored therein.
+  // Returns the number of equivalence classes in the backend's database.
   size_t GetNumOfEquivalenceClassInDatabase() {
-    AffiliationDatabase database;
-    EXPECT_TRUE(database.Init(db_path()));
+    const auto& database = backend()->GetAffiliationDatabaseForTesting();
     std::vector<AffiliatedFacetsWithUpdateTime> all_affiliations;
     database.GetAllAffiliationsAndBranding(&all_affiliations);
     return all_affiliations.size();

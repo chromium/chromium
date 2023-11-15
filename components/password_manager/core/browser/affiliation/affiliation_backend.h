@@ -116,6 +116,10 @@ class AffiliationBackend : public FacetManagerHost,
       AffiliationBackendTest,
       DiscardCachedDataIfNoLongerNeededWithEmptyAffiliation);
 
+  // Retrieves the affiliation database. This should only be called after
+  // Initialize(...).
+  AffiliationDatabase& GetAffiliationDatabaseForTesting();
+
   // Retrieves the FacetManager corresponding to |facet_uri|, creating it and
   // storing it into |facet_managers_| if it did not exist.
   FacetManager* GetOrCreateFacetManager(const FacetURI& facet_uri);
