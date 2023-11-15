@@ -132,10 +132,10 @@ AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
 void AutofillOfferManager::GetShoppingServiceOfferForUrl(
     const GURL& url,
     AsyncOfferCallback callback) {
-  if ((shopping_service_delegate_ &&
-       shopping_service_delegate_->IsDiscountEligibleToShowOnNavigation()) ||
-      (base::FeatureList::IsEnabled(
-          ntp_features::kNtpHistoryClustersModuleDiscounts))) {
+  if (shopping_service_delegate_ &&
+      (shopping_service_delegate_->IsDiscountEligibleToShowOnNavigation() ||
+       (base::FeatureList::IsEnabled(
+           ntp_features::kNtpHistoryClustersModuleDiscounts)))) {
     shopping_service_delegate_->GetDiscountInfoForUrls(
         {url}, base::BindOnce(
                    &AutofillOfferManager::HandleShoppingServiceResponse,

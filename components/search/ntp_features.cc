@@ -339,7 +339,7 @@ BASE_FEATURE(kNtpHistoryClustersModuleSuggestionChipHeader,
 // clusters module when available.
 BASE_FEATURE(kNtpHistoryClustersModuleDiscounts,
              "NtpHistoryClustersModuleDiscounts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, ChromeCart tile will show in the History clusters module when
 // available.
