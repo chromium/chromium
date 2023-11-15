@@ -117,6 +117,8 @@ constexpr PrefsForManagedContentSettingsMapEntry
          CONTENT_SETTING_ALLOW},
         {prefs::kManagedMidiBlockedForUrls, ContentSettingsType::MIDI,
          CONTENT_SETTING_BLOCK},
+        {prefs::kManagedMidiBlockedForUrls, ContentSettingsType::MIDI_SYSEX,
+         CONTENT_SETTING_BLOCK},
 };
 
 constexpr const char* kManagedPrefs[] = {
@@ -302,6 +304,7 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
         {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING,
          prefs::kManagedDefaultThirdPartyStoragePartitioningSetting},
         {ContentSettingsType::MIDI, prefs::kManagedDefaultMidi},
+        {ContentSettingsType::MIDI_SYSEX, prefs::kManagedDefaultMidi},
 };
 
 // static
