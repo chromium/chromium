@@ -113,7 +113,7 @@ $ParanoidMode CheckIntegrity
 
 def IsCipdLoggedIn():
     ps = subprocess.run(
-       ['cipd', 'auth-info'],
+        ' '.join(['cipd', 'auth-info']),
         shell=True, capture_output=True, text=True)
     logging.info(
         "log for http://b/304677840: stdout from cipd auth-info: %s",
