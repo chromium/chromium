@@ -291,7 +291,7 @@ void UntrustedSource::ServeBackgroundImage(
   replacements["url"] = url.spec();
   if (url_2x.is_valid()) {
     replacements["backgroundUrl"] =
-        base::StringPrintf("-webkit-image-set(url(%s) 1x, url(%s) 2x)",
+        base::StringPrintf("image-set(url(%s) 1x, url(%s) 2x)",
                            url.spec().c_str(), url_2x.spec().c_str());
   } else {
     replacements["backgroundUrl"] =

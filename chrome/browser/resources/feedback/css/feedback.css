@@ -287,7 +287,7 @@ html:has(body.jelly-enabled) #cancel-button:hover > #cancel-button-hover-bg {
 
 .content .remove-file-button {
   background-color: transparent;
-  background-image: -webkit-image-set(
+  background-image: image-set(
       url(../images/button_butter_bar_close.png) 1x,
       url(../images/2x/button_butter_bar_close.png) 2x);
   background-position: 50% 80%;
@@ -300,13 +300,13 @@ html:has(body.jelly-enabled) #cancel-button:hover > #cancel-button-hover-bg {
 }
 
 .content .remove-file-button:hover {
-  background-image: -webkit-image-set(
+  background-image: image-set(
       url(../images/button_butter_bar_close_hover.png) 1x,
       url(../images/2x/button_butter_bar_close_hover.png) 2x);
 }
 
 .content .remove-file-button:active {
-  background-image: -webkit-image-set(
+  background-image: image-set(
       url(../images/button_butter_bar_close_pressed.png) 1x,
       url(../images/2x/button_butter_bar_close_pressed.png) 2x);
 }

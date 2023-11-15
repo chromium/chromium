@@ -58,7 +58,8 @@
 
 namespace {
 
-const char kCSSBackgroundImageFormat[] = "-webkit-image-set("
+const char kCSSBackgroundImageFormat[] =
+    "image-set("
     "url(chrome-search://theme/IDR_THEME_NTP_BACKGROUND?%s) 1x, "
     "url(chrome-search://theme/IDR_THEME_NTP_BACKGROUND@2x?%s) 2x)";
 
@@ -73,7 +74,8 @@ const char kCSSBackgroundRepeatX[] = "repeat-x";
 const char kCSSBackgroundRepeatY[] = "repeat-y";
 const char kCSSBackgroundRepeat[] = "repeat";
 
-const char kThemeAttributionFormat[] = "-webkit-image-set("
+const char kThemeAttributionFormat[] =
+    "image-set("
     "url(chrome-search://theme/IDR_THEME_NTP_ATTRIBUTION?%s) 1x, "
     "url(chrome-search://theme/IDR_THEME_NTP_ATTRIBUTION@2x?%s) 2x)";
 
