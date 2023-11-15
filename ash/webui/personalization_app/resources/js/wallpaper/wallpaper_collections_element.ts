@@ -311,13 +311,15 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
       promotedTiles_: {
         type: Array,
         value() {
-          return [
-            {type: TileType.LOADING, id: kSeaPenId} as LoadingTile,
-            {
+          const tiles =
+              [{type: TileType.LOADING, id: kSeaPenId} as LoadingTile];
+          if (isTimeOfDayWallpaperEnabled()) {
+            tiles.push({
               type: TileType.LOADING,
               id: loadTimeData.getString('timeOfDayWallpaperCollectionId'),
-            } as LoadingTile,
-          ];
+            } as LoadingTile);
+          }
+          return tiles;
         },
       },
 
