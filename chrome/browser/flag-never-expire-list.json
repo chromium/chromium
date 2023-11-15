@@ -38,6 +38,7 @@
   "enable-autofill-credit-card-upload",
   "enable-benchmarking",
   "enable-command-line-on-non-rooted-devices",
+  "enable-component-updater-test-request",
   "enable-data-reduction-proxy-server-experiment",
   "enable-debug-for-store-billing",
   "enable-experimental-web-platform-features",

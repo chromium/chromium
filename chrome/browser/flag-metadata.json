@@ -2185,8 +2185,10 @@
   },
   {
     "name": "enable-component-updater-test-request",
-    "owners": [ "romanarora@google.com", "lacros-team@google.com" ],
-    "expiry_milestone": 130
+    "owners": [ "tluk@google.com", "lacros-team@google.com" ],
+    // This flag is used by the test team for Lacros release candidate testing
+    // when Lacros is pushed to a test cohort and must not be expired.
+    "expiry_milestone": -1
   },
   {
     "name": "enable-compression-dictionary-transport",
