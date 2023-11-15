@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.test.R;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Tests of {@link ChromeImageViewPreference}. */
@@ -95,6 +96,24 @@ public class ChromeImageViewPreferenceTest {
                                         withText(R.string.managed_by_your_organization),
                                         isDisplayed())));
         getImageViewWidget().check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testChromeImageViewPreferenceResetImage() {
+        ChromeImageViewPreference preference = new ChromeImageViewPreference(mActivity);
+        preference.setTitle(TITLE);
+        preference.setImageView(DRAWABLE_RES, CONTENT_DESCRIPTION_RES, null);
+        mPreferenceScreen.addPreference(preference);
+
+        getTitleView().check(matches(allOf(withText(TITLE), isDisplayed())));
+        getImageViewWidget().check(matches(isDisplayed()));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    preference.setImageView(0, 0, null);
+                });
+        Assert.assertNull(preference.getButton().getDrawable());
     }
 
     private ViewInteraction getTitleView() {

@@ -15,6 +15,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
@@ -116,9 +117,12 @@ public class ChromeImageViewPreference extends Preference {
 
     /**
      * Sets the Drawable resource ID, the String resource ID, and the OnClickListener for the
-     * ImageView widget's source, content description, and onClick, respectively.
+     * ImageView widget's source, content description, and onClick, respectively. Passing 0 as the
+     * Drawable resource ID will reset the image and related attributes to their default value.
      */
-    public void setImageView(@DrawableRes int imageRes, @StringRes int contentDescriptionRes,
+    public void setImageView(
+            @DrawableRes int imageRes,
+            @StringRes int contentDescriptionRes,
             @Nullable View.OnClickListener listener) {
         mImageRes = imageRes;
         mContentDescriptionRes = contentDescriptionRes;
@@ -189,7 +193,19 @@ public class ChromeImageViewPreference extends Preference {
     }
 
     private void configureImageView() {
-        if (mImageRes == 0 || mButton == null) return;
+        if (mButton == null) {
+            return;
+        }
+
+        if (mImageRes == 0) {
+            // Reset to default behavior. Especially useful for |onBindViewHolder|, so the |holder|
+            // doesn't inherit wrong recycled buttons.
+            mButton.setImageDrawable(null);
+            mButton.setPadding(0, 0, 0, 0);
+            mButton.setOnClickListener(null);
+            mButton.setContentDescription(null);
+            return;
+        }
 
         Drawable buttonImg = SettingsUtils.getTintedIcon(getContext(), mImageRes, mColorRes);
         mButton.setImageDrawable(buttonImg);
@@ -210,5 +226,10 @@ public class ChromeImageViewPreference extends Preference {
         mView.setBackgroundColor(
                 AppCompatResources.getColorStateList(getContext(), mBackgroundColorRes)
                         .getDefaultColor());
+    }
+
+    @VisibleForTesting
+    public ImageView getButton() {
+        return mButton;
     }
 }
