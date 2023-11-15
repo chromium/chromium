@@ -97,7 +97,8 @@ TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsRead) {
       /*filename=*/kFileName,
       /*line=*/kLine,
       /*column=*/kColumn,
-      /*cookie_issue_details=*/std::make_optional(cookie_issue_details)};
+      /*cookie_issue_details=*/
+      std::move(cookie_issue_details)};
   ASSERT_TRUE(base::Time::FromUTCExploded(kTestDate, &data.timestamp));
 
   LegacyTechReportGenerator generator;
@@ -132,7 +133,8 @@ TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsWrite) {
       /*filename=*/kFileName,
       /*line=*/kLine,
       /*column=*/kColumn,
-      /*cookie_issue_details=*/std::make_optional(cookie_issue_details)};
+      /*cookie_issue_details=*/
+      std::move(cookie_issue_details)};
   ASSERT_TRUE(base::Time::FromUTCExploded(kTestDate, &data.timestamp));
 
   LegacyTechReportGenerator generator;

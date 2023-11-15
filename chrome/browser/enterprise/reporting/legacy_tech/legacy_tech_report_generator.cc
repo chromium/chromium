@@ -22,10 +22,16 @@ LegacyTechReportGenerator::LegacyTechCookieIssueDetails::
       access_operation(access_operation) {}
 
 LegacyTechReportGenerator::LegacyTechCookieIssueDetails::
-    LegacyTechCookieIssueDetails(const LegacyTechCookieIssueDetails& other) =
+    LegacyTechCookieIssueDetails(LegacyTechCookieIssueDetails&& other) =
         default;
+LegacyTechReportGenerator::LegacyTechCookieIssueDetails&
+LegacyTechReportGenerator::LegacyTechCookieIssueDetails::operator=(
+    LegacyTechCookieIssueDetails&& other) = default;
 LegacyTechReportGenerator::LegacyTechCookieIssueDetails::
     ~LegacyTechCookieIssueDetails() = default;
+
+bool LegacyTechReportGenerator::LegacyTechCookieIssueDetails::operator==(
+    const LegacyTechCookieIssueDetails& other) const = default;
 
 LegacyTechReportGenerator::LegacyTechData::LegacyTechData() = default;
 LegacyTechReportGenerator::LegacyTechData::LegacyTechData(
@@ -44,11 +50,17 @@ LegacyTechReportGenerator::LegacyTechData::LegacyTechData(
       filename(filename),
       line(line),
       column(column),
-      cookie_issue_details(cookie_issue_details) {}
+      cookie_issue_details(std::move(cookie_issue_details)) {}
 
 LegacyTechReportGenerator::LegacyTechData::LegacyTechData(
-    const LegacyTechData& other) = default;
+    LegacyTechData&& other) = default;
+LegacyTechReportGenerator::LegacyTechData&
+LegacyTechReportGenerator::LegacyTechData::operator=(LegacyTechData&& other) =
+    default;
 LegacyTechReportGenerator::LegacyTechData::~LegacyTechData() = default;
+
+bool LegacyTechReportGenerator::LegacyTechData::operator==(
+    const LegacyTechData& other) const = default;
 
 LegacyTechReportGenerator::LegacyTechReportGenerator() = default;
 LegacyTechReportGenerator::~LegacyTechReportGenerator() = default;

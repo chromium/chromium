@@ -28,10 +28,15 @@ class LegacyTechReportGenerator {
                                  const std::string& domain,
                                  const std::string& path,
                                  AccessOperation access_operation);
-    LegacyTechCookieIssueDetails(const LegacyTechCookieIssueDetails& other);
+    LegacyTechCookieIssueDetails(const LegacyTechCookieIssueDetails&) = delete;
+    LegacyTechCookieIssueDetails(LegacyTechCookieIssueDetails&& other);
+    LegacyTechCookieIssueDetails& operator=(
+        const LegacyTechCookieIssueDetails&) = delete;
+    LegacyTechCookieIssueDetails& operator=(
+        LegacyTechCookieIssueDetails&& other);
     ~LegacyTechCookieIssueDetails();
 
-    bool operator==(const LegacyTechCookieIssueDetails&) const = default;
+    bool operator==(const LegacyTechCookieIssueDetails& other) const;
 
     std::string transfer_or_script_url;
     std::string name;
@@ -51,10 +56,13 @@ class LegacyTechReportGenerator {
         uint64_t line,
         uint64_t column,
         std::optional<LegacyTechCookieIssueDetails> cookie_issue_details);
-    LegacyTechData(const LegacyTechData& other);
+    LegacyTechData(const LegacyTechData&) = delete;
+    LegacyTechData(LegacyTechData&& other);
+    LegacyTechData& operator=(const LegacyTechData&) = delete;
+    LegacyTechData& operator=(LegacyTechData&& other);
     ~LegacyTechData();
 
-    bool operator==(const LegacyTechData&) const = default;
+    bool operator==(const LegacyTechData& other) const;
 
     std::string type;
     base::Time timestamp;

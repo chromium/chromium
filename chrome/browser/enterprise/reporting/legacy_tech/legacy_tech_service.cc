@@ -46,7 +46,7 @@ void LegacyTechService::ReportEvent(const std::string& type,
       column,
       /*cookie_issue_details=*/std::nullopt};
 
-  trigger_.Run(data);
+  trigger_.Run(std::move(data));
 }
 
 // static
@@ -79,19 +79,19 @@ void LegacyTechServiceFactory::SetReportTrigger(
     LegacyTechReportTrigger&& trigger) {
   trigger_ = std::move(trigger);
   for (auto& data : pending_data_) {
-    trigger_.Run(data);
+    trigger_.Run(std::move(data));
   }
   pending_data_.clear();
 }
 
 void LegacyTechServiceFactory::ReportEventImpl(
-    const LegacyTechReportGenerator::LegacyTechData& data) {
+    LegacyTechReportGenerator::LegacyTechData data) {
   if (!trigger_) {
     // CBCM initialization is async, in case a report is triggered before.
-    pending_data_.push_back(data);
+    pending_data_.push_back(std::move(data));
     return;
   }
-  trigger_.Run(data);
+  trigger_.Run(std::move(data));
 }
 
 LegacyTechServiceFactory::LegacyTechServiceFactory()

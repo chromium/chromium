@@ -27,7 +27,7 @@ class RealTimeReportControllerDesktop
   void StopWatchingExtensionRequest() override;
 
   void TriggerExtensionRequest(Profile* profile);
-  void TriggerLegacyTech(const LegacyTechReportGenerator::LegacyTechData& data);
+  void TriggerLegacyTech(LegacyTechReportGenerator::LegacyTechData data);
 
  private:
   std::unique_ptr<ExtensionRequestObserverFactory>

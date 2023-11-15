@@ -60,9 +60,9 @@ void RealTimeReportControllerDesktop::TriggerExtensionRequest(
 }
 
 void RealTimeReportControllerDesktop::TriggerLegacyTech(
-    const LegacyTechReportGenerator::LegacyTechData& data) {
+    LegacyTechReportGenerator::LegacyTechData data) {
   if (trigger_callback_) {
-    trigger_callback_.Run(RealTimeReportType::kLegacyTech, data);
+    trigger_callback_.Run(RealTimeReportType::kLegacyTech, std::move(data));
   }
 }
 
