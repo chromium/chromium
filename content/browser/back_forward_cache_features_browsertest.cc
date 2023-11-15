@@ -1259,6 +1259,76 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       tester.IsDisabledForFrameWithReason(process_id, routing_id, reason));
 }
 
+// Checks that the page is not restored from BFCache when it calls
+// mediaDevice.enumerateDevices().
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoesNotCacheIfDevicesEnumerated) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to an empty page.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostWrapper rfh(current_frame_host());
+
+  // Use the method enumerateDevices() of MediaDevices API.
+  EXPECT_EQ("success", EvalJs(rfh.get(), R"(
+    navigator.mediaDevices.enumerateDevices().then(() => {return "success"});
+  )"));
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // The page that enumerates media devices shouldn't be cached.
+  ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
+
+  // 3) Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  auto reason = BackForwardCacheDisable::DisabledReason(
+      BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
+  ExpectNotRestored({NotRestoredReason::kDisableForRenderFrameHostCalled}, {},
+                    {}, {reason}, {}, FROM_HERE);
+}
+
+// Checks that the page is not restored from BFCache when it calls
+// mediaDevice.getDisplayMedia().
+// Since mediaDevice.getDisplayMedia() is not supported in Android, this test
+// can't run on the OS.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoesNotCacheIfDisplayMediaAccessGranted) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to an empty page.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostWrapper rfh(current_frame_host());
+
+  // Request for video and audio display permission.
+  EXPECT_EQ("success", EvalJs(rfh.get(), R"(
+    navigator.mediaDevices.getDisplayMedia({audio: true, video: true})
+        .then(() => { return "success" })
+  )"));
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // The page where display media permission is requested shouldn't be cached.
+  ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
+
+  // 3) Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  auto reason = BackForwardCacheDisable::DisabledReason(
+      BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
+  ExpectNotRestored({NotRestoredReason::kWasGrantedMediaAccess,
+                     NotRestoredReason::kDisableForRenderFrameHostCalled},
+                    {}, {}, {reason}, {}, FROM_HERE);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheIfWebGL) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
