@@ -1924,6 +1924,25 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
             unattached_guest->web_contents()->GetResponsibleWebContents());
 }
 
+// Creates a guest in a unattached state, then confirms that calling
+// the various view methods return null.
+IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+                       NewWindow_UnattachedVerifyViewMethods) {
+  TestHelper("testNewWindowDeferredAttachmentIndefinitely",
+             "web_view/newwindow", NEEDS_TEST_SERVER);
+  GetGuestViewManager()->WaitForNumGuestsCreated(2);
+
+  content::WebContents* embedder = GetEmbedderWebContents();
+  auto* unattached_guest = GetGuestViewManager()->GetLastGuestViewCreated();
+  ASSERT_TRUE(unattached_guest);
+  ASSERT_EQ(embedder, unattached_guest->owner_web_contents());
+  ASSERT_FALSE(unattached_guest->attached());
+  ASSERT_FALSE(unattached_guest->embedder_web_contents());
+  ASSERT_FALSE(unattached_guest->web_contents()->GetNativeView());
+  ASSERT_FALSE(unattached_guest->web_contents()->GetContentNativeView());
+  ASSERT_FALSE(unattached_guest->web_contents()->GetTopLevelNativeWindow());
+}
+
 IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestContentLoadEvent) {
   TestHelper("testContentLoadEvent", "web_view/shim", NO_TEST_SERVER);
 }
