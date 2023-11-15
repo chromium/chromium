@@ -713,7 +713,7 @@ void ThemeService::ClearThemeData(bool clear_ntp_background) {
   ClearThemePrefs();
   if (base::FeatureList::IsEnabled(features::kCustomizeChromeSidePanel) &&
       clear_ntp_background) {
-    NtpCustomBackgroundService::ResetProfilePrefs(profile_);
+    NtpCustomBackgroundService::ResetNtpTheme(profile_);
   }
 
   // Disable extension after modifying the prefs so that unloading the extension
@@ -967,7 +967,7 @@ void ThemeService::SetThemePrefsForExtension(
     const extensions::Extension* extension) {
   ClearThemePrefs();
   if (base::FeatureList::IsEnabled(features::kCustomizeChromeSidePanel)) {
-    NtpCustomBackgroundService::ResetProfilePrefs(profile_);
+    NtpCustomBackgroundService::ResetNtpTheme(profile_);
     // Extensions are incompatible with device themes so turn them off.
     // TODO(crbug.com/1477021): Remove this if we can otherwise separate
     // extension and device themes from attempting to apply at the same time.

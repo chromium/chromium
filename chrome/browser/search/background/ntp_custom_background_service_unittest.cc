@@ -1053,6 +1053,7 @@ TEST_F(NtpCustomBackgroundServiceTest, LocalImageURLsDoNotGetVerified) {
 }
 
 TEST_F(NtpCustomBackgroundServiceTest, SetBackgroundToLocalResourceWithId) {
+  EXPECT_CALL(observer_, OnCustomBackgroundImageUpdated);
   sync_preferences::TestingPrefServiceSyncable* pref_service =
       profile().GetTestingPrefService();
 

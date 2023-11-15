@@ -61,6 +61,7 @@ class MockWallpaperSearchBackgroundManager
       : WallpaperSearchBackgroundManager(profile) {}
   MOCK_METHOD2(SelectLocalBackgroundImage,
                void(const base::Token&, const SkBitmap&));
+  MOCK_METHOD0(SaveCurrentBackgroundToHistory, void());
 };
 
 std::unique_ptr<TestingProfile> MakeTestingProfile(
@@ -128,6 +129,8 @@ class WallpaperSearchHandlerTest : public testing::Test {
             MockWallpaperSearchBackgroundManager(profile_.get())) {}
 
   void SetUp() override {
+    EXPECT_CALL(mock_wallpaper_search_background_manager(),
+                SaveCurrentBackgroundToHistory);
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{ntp_features::kCustomizeChromeWallpaperSearch,
                               optimization_guide::features::

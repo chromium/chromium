@@ -36,6 +36,7 @@ class NtpCustomBackgroundService : public KeyedService,
                                    public NtpBackgroundServiceObserver {
  public:
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  static void ResetNtpTheme(Profile* profile);
   static void ResetProfilePrefs(Profile* profile);
 
   explicit NtpCustomBackgroundService(Profile* profile);

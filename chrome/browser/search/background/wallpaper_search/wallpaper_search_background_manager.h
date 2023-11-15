@@ -9,14 +9,18 @@
 #include "base/memory/weak_ptr.h"
 #include "base/token.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
+class PrefRegistrySimple;
 class Profile;
 
 // Manages wallpaper search backgrounds in the customize chrome side panel.
 class WallpaperSearchBackgroundManager {
  public:
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  static void RemoveWallpaperSearchBackground(Profile* profile);
+  static void ResetProfilePrefs(Profile* profile);
+
   explicit WallpaperSearchBackgroundManager(Profile* profile);
   virtual ~WallpaperSearchBackgroundManager();
 
@@ -25,9 +29,13 @@ class WallpaperSearchBackgroundManager {
   virtual void SelectLocalBackgroundImage(const base::Token& id,
                                           const SkBitmap& bitmap);
 
+  // Saves a background to history.
+  virtual void SaveCurrentBackgroundToHistory();
+
  private:
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   raw_ptr<Profile> profile_;
+  raw_ptr<PrefService> pref_service_;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_BACKGROUND_WALLPAPER_SEARCH_WALLPAPER_SEARCH_BACKGROUND_MANAGER_H_

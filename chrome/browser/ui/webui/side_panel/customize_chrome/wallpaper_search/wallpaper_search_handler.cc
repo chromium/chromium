@@ -90,6 +90,7 @@ WallpaperSearchHandler::~WallpaperSearchHandler() {
             ->quality_data<optimization_guide::WallpaperSearchFeatureTypeMap>();
     quality->set_final_request_in_session(true);
   }
+  wallpaper_search_background_manager_->SaveCurrentBackgroundToHistory();
 }
 
 void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
