@@ -26,6 +26,11 @@ class ASH_EXPORT TestTasksDelegate : public TasksDelegate {
                        const std::string& task_id,
                        bool completed) override;
   void SendCompletedTasks() override;
+  void AddTask(const std::string& task_list_id,
+               const std::string& title) override;
+  void UpdateTaskTitle(const std::string& task_list_id,
+                       const std::string& task_id,
+                       const std::string& title) override;
 };
 
 }  // namespace ash::api

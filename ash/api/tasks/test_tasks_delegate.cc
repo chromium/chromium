@@ -39,4 +39,15 @@ void TestTasksDelegate::SendCompletedTasks() {
   NOTIMPLEMENTED();
 }
 
+void TestTasksDelegate::AddTask(const std::string& task_list_id,
+                                const std::string& title) {
+  NOTIMPLEMENTED();
+}
+
+void TestTasksDelegate::UpdateTaskTitle(const std::string& task_list_id,
+                                        const std::string& task_id,
+                                        const std::string& title) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace ash::api

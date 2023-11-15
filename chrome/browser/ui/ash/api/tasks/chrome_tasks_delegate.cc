@@ -9,6 +9,7 @@
 
 #include "ash/api/tasks/tasks_client.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -154,6 +155,23 @@ void ChromeTasksDelegate::SendCompletedTasks() {
   TasksClientImpl* client = GetActiveAccountClient();
   CHECK(client);
   client->OnGlanceablesBubbleClosed();
+}
+
+void ChromeTasksDelegate::AddTask(const std::string& task_list_id,
+                                  const std::string& title) {
+  CHECK(active_account_id_.is_valid());
+  TasksClientImpl* client = GetActiveAccountClient();
+  CHECK(client);
+  client->AddTask(task_list_id, title);
+}
+
+void ChromeTasksDelegate::UpdateTaskTitle(const std::string& task_list_id,
+                                          const std::string& task_id,
+                                          const std::string& title) {
+  CHECK(active_account_id_.is_valid());
+  TasksClientImpl* client = GetActiveAccountClient();
+  CHECK(client);
+  client->UpdateTask(task_list_id, task_id, title, base::DoNothing());
 }
 
 TasksClientImpl* ChromeTasksDelegate::GetActiveAccountClient() const {

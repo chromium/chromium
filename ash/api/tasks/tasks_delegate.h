@@ -42,6 +42,16 @@ class ASH_EXPORT TasksDelegate {
 
   // Sends cached tasks completion data to the Google Tasks API.
   virtual void SendCompletedTasks() = 0;
+
+  // Adds a task with the given `title` to the task list with id `task_list_id`.
+  virtual void AddTask(const std::string& task_list_id,
+                       const std::string& title) = 0;
+
+  // Updates the title of the task in the task list with id `task_list_id`
+  // with id `task_id`.
+  virtual void UpdateTaskTitle(const std::string& task_list_id,
+                               const std::string& task_id,
+                               const std::string& title) = 0;
 };
 
 }  // namespace ash::api
