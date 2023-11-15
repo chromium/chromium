@@ -1396,10 +1396,11 @@ class CopyOrMoveOperationDelegateTestHelper {
         FileSystemOperation::ERROR_BEHAVIOR_ABORT, std::move(hook_delegate),
         base::BindOnce(&AssignAndQuit, &run_loop, base::Unretained(&result)));
     if (error_url_.is_valid()) {
-      copy_or_move_operation_delegate.SetErrorUrlForTest(error_url_);
+      copy_or_move_operation_delegate.SetErrorUrlForTest(&error_url_);
     }
     copy_or_move_operation_delegate.RunRecursively();
     run_loop.Run();
+    copy_or_move_operation_delegate.SetErrorUrlForTest(nullptr);
     return result;
   }
 
@@ -1417,10 +1418,11 @@ class CopyOrMoveOperationDelegateTestHelper {
         FileSystemOperation::ERROR_BEHAVIOR_ABORT, std::move(hook_delegate),
         base::BindOnce(&AssignAndQuit, &run_loop, base::Unretained(&result)));
     if (error_url_.is_valid()) {
-      copy_or_move_operation_delegate.SetErrorUrlForTest(error_url_);
+      copy_or_move_operation_delegate.SetErrorUrlForTest(&error_url_);
     }
     copy_or_move_operation_delegate.RunRecursively();
     run_loop.Run();
+    copy_or_move_operation_delegate.SetErrorUrlForTest(nullptr);
     return result;
   }
 

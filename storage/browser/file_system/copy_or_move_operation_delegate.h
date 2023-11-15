@@ -115,13 +115,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveOperationDelegate
                         StatusCallback callback) override;
   void PostProcessDirectory(const FileSystemURL& url,
                             StatusCallback callback) override;
-  // Force a given source URL to produce an error for a copy or a
-  // cross-filesystem move.
-  void SetErrorUrlForTest(const FileSystemURL& url) {
-    error_url_for_test_ = url;
-  }
 
   void PostTask(base::OnceClosure closure);
+
+  // Force a given source URL to produce an error for a copy or a
+  // cross-filesystem move.
+  static void SetErrorUrlForTest(const FileSystemURL* url);
 
  protected:
   void OnCancel() override;
@@ -170,7 +169,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveOperationDelegate
   const ErrorBehavior error_behavior_;
   std::unique_ptr<CopyOrMoveHookDelegate> copy_or_move_hook_delegate_;
   StatusCallback callback_;
-  FileSystemURL error_url_for_test_;
 
   std::map<CopyOrMoveImpl*, std::unique_ptr<CopyOrMoveImpl>> running_copy_set_;
   base::WeakPtrFactory<CopyOrMoveOperationDelegate> weak_factory_{this};
