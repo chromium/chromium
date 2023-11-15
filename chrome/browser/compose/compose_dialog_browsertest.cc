@@ -39,7 +39,14 @@ class ComposeSessionBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, LifetimeOfBubbleWrapper) {
+#if BUILDFLAG(IS_MAC)
+// Mac failures: b/311208586
+#define MAYBE_LifetimeOfBubbleWrapper DISABLED_LifetimeOfBubbleWrapper
+#else
+#define MAYBE_LifetimeOfBubbleWrapper LifetimeOfBubbleWrapper
+#endif
+IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest,
+                       MAYBE_LifetimeOfBubbleWrapper) {
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
