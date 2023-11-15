@@ -57,6 +57,17 @@ absl_cc_library(
 
 absl_cc_library(
   NAME
+    no_destructor
+  HDRS
+    "no_destructor.h"
+  DEPS
+    absl::config
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+)
+
+absl_cc_library(
+  NAME
     nullability
   HDRS
     "nullability.h"
@@ -503,6 +514,20 @@ absl_cc_test(
     absl::base
     absl::core_headers
     absl::synchronization
+    GTest::gtest_main
+)
+
+absl_cc_test(
+  NAME
+    no_destructor_test
+  SRCS
+    "no_destructor_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::no_destructor
+    absl::config
+    absl::raw_logging_internal
     GTest::gtest_main
 )
 

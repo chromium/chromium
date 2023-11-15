@@ -2569,22 +2569,16 @@ class raw_hash_set {
     slot_type&& slot;
   };
 
-  // Helpers to enable sanitizer mode validation to protect against reentrant
-  // calls during element constructor/destructor.
+  // TODO(b/303305702): re-enable reentrant validation.
   template <typename... Args>
   inline void construct(slot_type* slot, Args&&... args) {
-    RunWithReentrancyGuard(*this, alloc_ref(), [&] {
-      PolicyTraits::construct(&alloc_ref(), slot, std::forward<Args>(args)...);
-    });
+    PolicyTraits::construct(&alloc_ref(), slot, std::forward<Args>(args)...);
   }
   inline void destroy(slot_type* slot) {
-    RunWithReentrancyGuard(*this, alloc_ref(),
-                           [&] { PolicyTraits::destroy(&alloc_ref(), slot); });
+    PolicyTraits::destroy(&alloc_ref(), slot);
   }
   inline void transfer(slot_type* to, slot_type* from) {
-    RunWithReentrancyGuard(*this, alloc_ref(), [&] {
-      PolicyTraits::transfer(&alloc_ref(), to, from);
-    });
+    PolicyTraits::transfer(&alloc_ref(), to, from);
   }
 
   inline void destroy_slots() {

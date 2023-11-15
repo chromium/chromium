@@ -36,6 +36,7 @@ absl_cc_library(
     absl::function_ref
     absl::inlined_vector
     absl::memory
+    absl::no_destructor
     absl::optional
     absl::raw_logging_internal
     absl::span

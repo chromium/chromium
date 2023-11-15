@@ -474,7 +474,8 @@ std::unique_ptr<ZoneInfoSource> AndroidZoneInfoSource::Open(
   const std::size_t pos = (name.compare(0, 5, "file:") == 0) ? 5 : 0;
 
   // See Android's libc/tzcode/bionic.cpp for additional information.
-  for (const char* tzdata : {"/data/misc/zoneinfo/current/tzdata",
+  for (const char* tzdata : {"/apex/com.android.tzdata/etc/tz/tzdata",
+                             "/data/misc/zoneinfo/current/tzdata",
                              "/system/usr/share/zoneinfo/tzdata"}) {
     auto fp = FOpen(tzdata, "rb");
     if (fp == nullptr) continue;
@@ -539,9 +540,16 @@ std::unique_ptr<ZoneInfoSource> FuchsiaZoneInfoSource::Open(
   // Prefixes where a Fuchsia component might find zoneinfo files,
   // in descending order of preference.
   const auto kTzdataPrefixes = {
+      // The tzdata from `config-data`.
       "/config/data/tzdata/",
+      // The tzdata bundled in the component's package.
       "/pkg/data/tzdata/",
+      // General data storage.
       "/data/tzdata/",
+      // The recommended path for routed-in tzdata files.
+      // See for details:
+      // https://fuchsia.dev/fuchsia-src/concepts/process/namespaces?hl=en#typical_directory_structure
+      "/config/tzdata/",
   };
   const auto kEmptyPrefix = {""};
   const bool name_absolute = (pos != name.size() && name[pos] == '/');

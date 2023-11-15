@@ -249,14 +249,6 @@ inline void SanitizerUnpoisonObject(const T* object) {
   SanitizerUnpoisonMemoryRegion(object, sizeof(T));
 }
 
-template <typename Container, typename Alloc, typename F>
-void RunWithReentrancyGuard(Container& c, Alloc& a, F f) {
-  SanitizerPoisonObject(&c);
-  if (!std::is_empty<Alloc>()) SanitizerUnpoisonObject(&a);
-  f();
-  SanitizerUnpoisonObject(&c);
-}
-
 namespace memory_internal {
 
 // If Pair is a standard-layout type, OffsetOf<Pair>::kFirst and

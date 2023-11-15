@@ -28,6 +28,11 @@ absl_source_set("log_severity") {
   ]
 }
 
+absl_source_set("no_destructor") {
+  public = [ "no_destructor.h" ]
+  deps = [ ":config" ]
+}
+
 absl_source_set("nullability") {
   sources = [ "internal/nullability_impl.h" ]
   public = [ "nullability.h" ]
@@ -281,9 +286,7 @@ absl_source_set("fast_type_id") {
 }
 
 absl_source_set("prefetch") {
-  public = [
-    "prefetch.h",
-  ]
+  public = [ "prefetch.h" ]
   deps = [
     ":config",
     ":core_headers",
@@ -300,6 +303,15 @@ absl_test("config_test") {
   deps = [
     ":config",
     "//third_party/abseil-cpp/absl/synchronization:thread_pool",
+  ]
+}
+
+absl_test("no_destructor_test") {
+  sources = [ "no_destructor_test.cc" ]
+  deps = [
+    ":config",
+    ":no_destructor",
+    ":raw_logging_internal",
   ]
 }
 

@@ -19,10 +19,10 @@
 //   - for use by Abseil internal code that Mutex itself depends on
 //   - for async signal safety (see below)
 
-// SpinLock is async signal safe.  If a spinlock is used within a signal
-// handler, all code that acquires the lock must ensure that the signal cannot
-// arrive while they are holding the lock.  Typically, this is done by blocking
-// the signal.
+// SpinLock with a base_internal::SchedulingMode::SCHEDULE_KERNEL_ONLY is async
+// signal safe. If a spinlock is used within a signal handler, all code that
+// acquires the lock must ensure that the signal cannot arrive while they are
+// holding the lock. Typically, this is done by blocking the signal.
 //
 // Threads waiting on a SpinLock may be woken in an arbitrary order.
 
