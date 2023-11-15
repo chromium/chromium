@@ -133,12 +133,26 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     gfx::BufferUsage buffer_usage) {
   DCHECK_EQ(surface_handle, kNullSurfaceHandle);
   DCHECK(gpu::IsValidClientUsage(usage)) << usage;
-  auto mailbox =
-      proxy_->CreateSharedImage(format, size, color_space, surface_origin,
-                                alpha_type, usage, debug_label, buffer_usage);
+  gfx::GpuMemoryBufferHandle buffer_handle;
+  auto mailbox = proxy_->CreateSharedImage(
+      format, size, color_space, surface_origin, alpha_type, usage, debug_label,
+      buffer_usage, &buffer_handle);
   if (mailbox.IsZero()) {
     return nullptr;
   }
+
+  CHECK(!buffer_handle.is_null());
+
+  // Create and cache a GpuMemoryBuffer for this SharedImage.
+  auto gpu_memory_buffer =
+      SharedImageInterface::CreateGpuMemoryBufferForUseByScopedMapping(
+          GpuMemoryBufferHandleInfo(std::move(buffer_handle), format, size,
+                                    buffer_usage));
+  {
+    base::AutoLock lock(lock_);
+    mailbox_to_gmb_map_[mailbox] = std::move(gpu_memory_buffer);
+  }
+
   return base::MakeRefCounted<ClientSharedImage>(AddMailbox(mailbox));
 }
 
@@ -223,6 +237,11 @@ void ClientSharedImageInterface::DestroySharedImage(const SyncToken& sync_token,
     mailboxes_.erase(it);
   }
   proxy_->DestroySharedImage(sync_token, mailbox);
+
+  {
+    base::AutoLock lock(lock_);
+    mailbox_to_gmb_map_.erase(mailbox);
+  }
 }
 
 void ClientSharedImageInterface::DestroySharedImage(
@@ -243,11 +262,20 @@ void ClientSharedImageInterface::AddReferenceToSharedImage(
 
 std::unique_ptr<SharedImageInterface::ScopedMapping>
 ClientSharedImageInterface::MapSharedImage(const Mailbox& mailbox) {
-  auto* gpu_memory_buffer = proxy_->GetGpuMemoryBuffer(mailbox);
-  if (!gpu_memory_buffer) {
-    LOG(ERROR) << "Buffer is null.";
-    return nullptr;
+  gfx::GpuMemoryBuffer* gpu_memory_buffer = nullptr;
+  {
+    base::AutoLock lock(lock_);
+    auto it = mailbox_to_gmb_map_.find(mailbox);
+
+    // The mailbox for which the query is made must be present.
+    CHECK(it != mailbox_to_gmb_map_.end());
+    gpu_memory_buffer = it->second.get();
   }
+
+  // The GMB must be present as it should have been populated while creating the
+  // mailbox.
+  CHECK(gpu_memory_buffer);
+
   auto scoped_mapping =
       SharedImageInterface::ScopedMapping::Create(gpu_memory_buffer);
   if (!scoped_mapping) {

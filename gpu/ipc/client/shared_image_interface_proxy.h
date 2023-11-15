@@ -54,7 +54,6 @@ class SharedImageInterfaceProxy {
     int ref_count = 0;
     uint32_t usage = 0;
     std::vector<SyncToken> destruction_sync_tokens;
-    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
   };
 
   Mailbox CreateSharedImage(viz::SharedImageFormat format,
@@ -71,7 +70,8 @@ class SharedImageInterfaceProxy {
                             SkAlphaType alpha_type,
                             uint32_t usage,
                             base::StringPiece debug_label,
-                            gfx::BufferUsage buffer_usage);
+                            gfx::BufferUsage buffer_usage,
+                            gfx::GpuMemoryBufferHandle* handle_to_populate);
   Mailbox CreateSharedImage(viz::SharedImageFormat format,
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
@@ -142,8 +142,6 @@ class SharedImageInterfaceProxy {
 
   uint32_t UsageForMailbox(const Mailbox& mailbox);
   void NotifyMailboxAdded(const Mailbox& mailbox, uint32_t usage);
-
-  gfx::GpuMemoryBuffer* GetGpuMemoryBuffer(const Mailbox& mailbox);
 
   const gpu::SharedImageCapabilities& GetCapabilities() {
     return capabilities_;
