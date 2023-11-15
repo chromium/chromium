@@ -60,9 +60,8 @@ class ProfileOAuth2TokenServiceDelegateAndroid
   // Seeds the accounts with |core_account_infos| then resumes the reload of
   // accounts once the account seeding is complete.
   void SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& j_core_account_infos,
-      const base::android::JavaParamRef<jobject>& j_primary_account_id);
+      const std::vector<CoreAccountInfo>& core_account_infos,
+      const absl::optional<CoreAccountId>& primary_account_id) override;
 
   // Resumes the reload of accounts once the account seeding is complete.
   // TODO(crbug.com/934688) Once ProfileOAuth2TokenServiceDelegate.java is

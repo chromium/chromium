@@ -42,8 +42,6 @@ static_library("base") {
     "signin_metrics.h",
     "signin_pref_names.cc",
     "signin_pref_names.h",
-    "signin_switches.cc",
-    "signin_switches.h",
     "wait_for_network_callback_helper.cc",
     "wait_for_network_callback_helper.h",
   ]
@@ -56,6 +54,7 @@ static_library("base") {
   ]
   public_deps = [
     ":signin_buildflags",
+    ":signin_switches",
     "//base",
     "//components/keyed_service/core",
     "//components/version_info:channel",
@@ -136,5 +135,21 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//testing/gtest",
     "//url",
+  ]
+}
+
+component("signin_switches") {
+  output_name = "signin_switches"
+
+  defines = [ "IS_SIGNIN_SWITCHES_IMPL" ]
+
+  sources = [
+    "signin_switches.cc",
+    "signin_switches.h",
+  ]
+
+  deps = [
+    ":signin_buildflags",
+    "//base",
   ]
 }

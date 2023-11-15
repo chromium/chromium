@@ -63,6 +63,11 @@ class JniIdentityMutator {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& primary_account_id);
 
+  void SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobjectArray>& j_core_account_infos,
+      const base::android::JavaParamRef<jobject>& j_primary_account_id);
+
  private:
   friend IdentityMutator;
 

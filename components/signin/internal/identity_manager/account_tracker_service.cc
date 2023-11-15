@@ -891,7 +891,7 @@ CoreAccountId AccountTrackerService::SeedAccountInfo(AccountInfo info) {
 
 void AccountTrackerService::SeedAccountsInfo(
     const std::vector<CoreAccountInfo>& core_account_infos,
-    const CoreAccountId& primary_account_id) {
+    const absl::optional<CoreAccountId>& primary_account_id) {
   DVLOG(1) << "AccountTrackerService.SeedAccountsInfo: "
            << " number of accounts " << core_account_infos.size();
 

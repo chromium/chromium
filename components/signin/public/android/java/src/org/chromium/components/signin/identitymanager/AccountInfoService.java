@@ -22,7 +22,8 @@ public interface AccountInfoService {
     }
 
     /**
-     * Gets the {@link AccountInfo} of the given account email.
+     * Gets the {@link AccountInfo} of the given account email. TODO(crbug/1491005): Replace all
+     * calls to this method by calls to IdentityManager.findExtendedAccountInfoByEmailAddress().
      */
     Promise<AccountInfo> getAccountInfoByEmail(String email);
 

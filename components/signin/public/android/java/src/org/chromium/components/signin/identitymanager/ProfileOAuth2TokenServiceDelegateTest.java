@@ -198,21 +198,4 @@ public class ProfileOAuth2TokenServiceDelegateTest {
                 .reloadAllAccountsWithPrimaryAccountAfterSeeding(
                         NATIVE_DELEGATE, null, new String[] {ACCOUNT.name});
     }
-
-    @Test
-    @SmallTest
-    @Features.EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
-    public void testSeedAndReloadAccountsWhenAccountsAreSeeded_seedAccountRevampEnabled() {
-        mAccountManagerFacade.addAccount(ACCOUNT);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mDelegate.seedAndReloadAccountsWithPrimaryAccount(
-                            List.of(CORE_ACCOUNT_INFO), CORE_ACCOUNT_INFO.getId());
-                });
-        verify(mNativeMock)
-                .seedAccountsThenReloadAllAccountsWithPrimaryAccount(
-                        NATIVE_DELEGATE,
-                        new CoreAccountInfo[] {CORE_ACCOUNT_INFO},
-                        CORE_ACCOUNT_INFO.getId());
-    }
 }

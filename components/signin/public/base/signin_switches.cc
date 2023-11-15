@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/signin/public/base/signin_switches.h"
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 

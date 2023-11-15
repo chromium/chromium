@@ -10,9 +10,12 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutDelete;
 import org.chromium.components.signin.metrics.SignoutReason;
+
+import java.util.List;
 
 /**
  * IdentityMutator is the write interface of IdentityManager, see identity_mutator.h for more
@@ -78,16 +81,33 @@ public class IdentityMutator {
                 mNativeIdentityMutator, accountId);
     }
 
+    public void seedAccountsThenReloadAllAccountsWithPrimaryAccount(
+            List<CoreAccountInfo> coreAccountInfos, @Nullable CoreAccountId primaryAccountId) {
+        IdentityMutatorJni.get()
+                .seedAccountsThenReloadAllAccountsWithPrimaryAccount(
+                        mNativeIdentityMutator,
+                        coreAccountInfos.toArray(new CoreAccountInfo[0]),
+                        primaryAccountId);
+    }
+
     @NativeMethods
     interface Natives {
         public @PrimaryAccountError int setPrimaryAccount(long nativeJniIdentityMutator,
                 CoreAccountId accountId, @ConsentLevel int consentLevel,
                 @SigninAccessPoint int accessPoint);
+
         public boolean clearPrimaryAccount(long nativeJniIdentityMutator,
                 @SignoutReason int sourceMetric, @SignoutDelete int deleteMetric);
+
         public void revokeSyncConsent(long nativeJniIdentityMutator,
                 @SignoutReason int sourceMetric, @SignoutDelete int deleteMetric);
+
         public void reloadAllAccountsFromSystemWithPrimaryAccount(
                 long nativeJniIdentityMutator, @Nullable CoreAccountId accountId);
+
+        public void seedAccountsThenReloadAllAccountsWithPrimaryAccount(
+                long nativeJniIdentityMutator,
+                CoreAccountInfo[] coreAccountInfos,
+                @Nullable CoreAccountId primaryAccountId);
     }
 }
