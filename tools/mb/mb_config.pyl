@@ -857,7 +857,6 @@
     },
 
     'tryserver.chromium.android': {
-      'android-arm64-siso-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient',
       'android-asan': 'android_clang_asan_release_trybot_reclient',
       'android-chrome-pie-x86-wpt-android-specific': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
       'android-chrome-pie-x86-wpt-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
@@ -1062,7 +1061,6 @@
       'linux-mbi-mode-per-site-instance-rel': 'gpu_tests_release_trybot_mbi_mode_per_site_instance_reclient',
       'linux-perfetto-rel': 'perfetto_release_trybot_reclient',
       'linux-rel-warmed': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
-      'linux-siso-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
       'linux-ubsan-fyi-rel': 'ubsan_no_recover_release_bot_reclient',
       # This is intentionally a release_bot and not a release_trybot to match
       # the CI configuration, where no debug builder exists.
@@ -1131,7 +1129,6 @@
       'mac-cr23-rel': 'release_trybot_minimal_symbols_reclient',
       'mac-osxbeta-rel': 'gpu_tests_debug_trybot_reclient',
       'mac-perfetto-rel': 'perfetto_release_trybot_reclient',
-      'mac-siso-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_reclient',
       'mac10.15-wpt-content-shell-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',
       'mac11-arm64-wpt-content-shell-fyi-rel': 'release_bot_blink_arm64_minimal_symbols_reclient',
       'mac11-wpt-content-shell-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',

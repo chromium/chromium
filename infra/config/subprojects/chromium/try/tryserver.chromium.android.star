@@ -201,6 +201,7 @@ This builder should be removed after migrating android-arm64-rel from Ninja to S
     mirrors = builder_config.copy_from("try/android-arm64-rel"),
     compilator = "android-arm64-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
+    gn_args = "try/android-arm64-rel",
     main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 5,

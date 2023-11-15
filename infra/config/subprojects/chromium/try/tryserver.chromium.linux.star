@@ -318,6 +318,7 @@ This builder should be removed after migrating linux-rel from Ninja to Siso. b/2
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
+    gn_args = "try/linux-rel",
     main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 10,

@@ -191,6 +191,7 @@ This builder should be removed after migrating mac-rel from Ninja to Siso. b/277
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
+    gn_args = "try/mac-rel",
     main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 10,
