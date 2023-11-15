@@ -89,11 +89,11 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
       int seq_id,
       absl::optional<std::vector<web::TextAnnotation>> deferred);
 
-  // Triggers the parcel tracking UI display if the given list of annotations
-  // contains at least one parcel number and the user is eligible for the
-  // prompt. Removes parcels from `annotations_list`.
-  void ProcessParcelTrackingNumbers(
-      std::vector<web::TextAnnotation>& annotations_list);
+  // Records the measurement detection, and triggers the parcel tracking UI
+  // display if the given list of annotations contains at least one parcel
+  // number and the user is eligible for the prompt. Removes parcels from
+  // `annotations_list`.
+  void ProcessAnnotations(std::vector<web::TextAnnotation>& annotations_list);
 
   // Triggers the parcel tracking UI display for the given parcel
   // list `parcels`.
