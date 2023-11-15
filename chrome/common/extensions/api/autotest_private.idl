@@ -1599,7 +1599,9 @@ namespace autotestPrivate {
       boolean enabled, VoidCallback callback);
 
     // Returns whether a field trial exists and has been activated.
-    [supportsPromises] static void isFieldTrialActive(DOMString feature_name,
+    [supportsPromises] static void isFieldTrialActive(
+        DOMString trial_name,
+        DOMString group_name,
         IsFieldTrialActiveCallback callback);
 
     // ARC get wakefulness mode.

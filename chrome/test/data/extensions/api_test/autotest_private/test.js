@@ -1550,17 +1550,26 @@ var holdingSpaceTests = [
 ];
 
 var isFieldTrialActiveTests = [
-  function getActiveTrial() {
-    chrome.autotestPrivate.isFieldTrialActive("ActiveTrialForTest",
-      chrome.test.callbackPass(enabled => {
-        chrome.test.assertTrue(enabled);
-      }));
+  function getActiveTrialActiveGroup() {
+    chrome.autotestPrivate.isFieldTrialActive(
+        'ActiveTrialForTest', 'GroupForTest',
+        chrome.test.callbackPass(enabled => {
+          chrome.test.assertTrue(enabled);
+        }));
+  },
+  function getActiveTrialInactiveGroup() {
+    chrome.autotestPrivate.isFieldTrialActive(
+        'ActiveTrialForTest', 'WrongGroupForTest',
+        chrome.test.callbackPass(enabled => {
+          chrome.test.assertFalse(enabled);
+        }));
   },
   function getInactiveTrial() {
-    chrome.autotestPrivate.isFieldTrialActive("InactiveTrialForTest",
-      chrome.test.callbackPass(enabled => {
-        chrome.test.assertFalse(enabled);
-      }));
+    chrome.autotestPrivate.isFieldTrialActive(
+        'InactiveTrialForTest', 'GroupForTest',
+        chrome.test.callbackPass(enabled => {
+          chrome.test.assertFalse(enabled);
+        }));
   }
 ];
 

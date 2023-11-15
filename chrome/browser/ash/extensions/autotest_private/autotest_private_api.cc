@@ -6772,8 +6772,19 @@ AutotestPrivateIsFieldTrialActiveFunction::Run() {
       api::autotest_private::IsFieldTrialActive::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  return RespondNow(
-      WithArguments(base::FieldTrialList::IsTrialActive(params->feature_name)));
+  base::FieldTrial::ActiveGroups active_groups;
+  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
+
+  bool found = false;
+  for (base::FieldTrial::ActiveGroup field_trial : active_groups) {
+    if (field_trial.trial_name == params->trial_name &&
+        field_trial.group_name == params->group_name) {
+      found = true;
+      break;
+    }
+  }
+
+  return RespondNow(WithArguments(found));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
