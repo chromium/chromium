@@ -548,6 +548,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    "no_resource_allowlisting",
+    args = {
+        "enable_resource_allowlist_generation": False,
+    },
+)
+
+gn_args.config(
     "no_secondary_abi",
     args = {
         "skip_secondary_abi_for_cq": True,
@@ -667,6 +674,13 @@ gn_args.config(
         "try_builder",
         "no_symbols",
     ],
+)
+
+gn_args.config(
+    "resource_allowlisting",
+    args = {
+        "enable_resource_allowlist_generation": True,
+    },
 )
 
 gn_args.config(

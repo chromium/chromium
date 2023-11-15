@@ -154,6 +154,13 @@
     "mac-arm64-rel reclient test": "reclient/mac-arm64-rel reclient test/gn-args.json",
     "mac-arm64-rel reclient test untrusted": "reclient/mac-arm64-rel reclient test untrusted/gn-args.json"
   },
+  "chromium.win": {
+    "Win Builder": "ci/Win Builder/gn-args.json",
+    "Win Builder (dbg)": "ci/Win Builder (dbg)/gn-args.json",
+    "Win x64 Builder": "ci/Win x64 Builder/gn-args.json",
+    "Win x64 Builder (dbg)": "ci/Win x64 Builder (dbg)/gn-args.json",
+    "Windows deterministic": "ci/Windows deterministic/gn-args.json"
+  },
   "tryserver.chromium": {
     "linux-official": "try/linux-official/gn-args.json"
   },
@@ -250,5 +257,13 @@
     "mac_chromium_compile_dbg_ng": "try/mac_chromium_compile_dbg_ng/gn-args.json",
     "mac_chromium_compile_rel_ng": "try/mac_chromium_compile_rel_ng/gn-args.json",
     "mac_chromium_dbg_ng": "try/mac_chromium_dbg_ng/gn-args.json"
+  },
+  "tryserver.chromium.win": {
+    "win-rel": "try/win-rel/gn-args.json",
+    "win10-dbg": "try/win10-dbg/gn-args.json",
+    "win11-x64-fyi-rel": "try/win11-x64-fyi-rel/gn-args.json",
+    "win_chromium_compile_dbg_ng": "try/win_chromium_compile_dbg_ng/gn-args.json",
+    "win_chromium_compile_rel_ng": "try/win_chromium_compile_rel_ng/gn-args.json",
+    "win_chromium_x64_rel_ng": "try/win_chromium_x64_rel_ng/gn-args.json"
   }
 }

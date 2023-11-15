@@ -679,16 +679,6 @@
       'WebRTC Chromium FYI ios-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
     },
 
-    'chromium.win': {
-      # Windows bots take too long to link w/ full symbols and time out.
-      'Win Builder': 'gpu_tests_release_bot_x86_no_symbols_reclient',
-      'Win Builder (dbg)': 'gpu_tests_debug_bot_x86_no_symbols_reclient',
-      'Win x64 Builder': 'gpu_tests_release_bot_minimal_symbols_reclient',
-      'Win x64 Builder (dbg)': 'gpu_tests_debug_bot_reclient',
-      'Win x64 Builder Code Coverage': 'gpu_tests_release_bot_minimal_symbols_code_coverage',
-      'Windows deterministic': 'release_bot_x86_minimal_symbols_reclient',
-    },
-
     'client.devtools-frontend.integration': {
       'DevTools Linux': 'release_trybot_blink_do_typecheck',
       'DevTools Linux Fastbuild': 'release_trybot_blink',
@@ -1239,18 +1229,13 @@
       'win-fieldtrial-rel': 'release_bot_minimal_symbols_reclient',
       'win-libfuzzer-asan-rel': 'libfuzzer_windows_asan_release_trybot_reclient',
       'win-perfetto-rel': 'perfetto_release_trybot_reclient',
-      'win-rel': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
       'win-siso-rel': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
       'win10-code-coverage': 'clang_code_coverage_reclient',
-      'win10-dbg': 'gpu_tests_debug_bot_reclient',
       'win10-wpt-content-shell-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',
       'win10_chromium_x64_rel_ng_exp': 'release_trybot',
       'win11-wpt-content-shell-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',
-      'win11-x64-fyi-rel': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
       'win32-clobber-rel': 'release_trybot_x86_reclient',
       'win_chromium_compile_dbg_ng': 'gpu_tests_debug_bot_x86_no_symbols_reclient_use_dummy_lastchange',
-      'win_chromium_compile_rel_ng': 'gpu_tests_release_trybot_x86_resource_allowlisting_reclient',
-      'win_chromium_x64_rel_ng': 'gpu_tests_release_trybot_reclient',
       'win_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
       'win_upload_clang': 'release_bot',
     },
@@ -2288,11 +2273,6 @@
       'gpu_tests', 'release_bot_reclient', 'devtools_do_typecheck',
     ],
 
-    'gpu_tests_release_bot_minimal_symbols_code_coverage': [
-      'gpu_tests', 'release_bot', 'minimal_symbols', 'use_clang_coverage',
-      'partial_code_coverage_instrumentation',
-    ],
-
     'gpu_tests_release_bot_minimal_symbols_no_nacl_reclient': [
       'gpu_tests', 'release_bot_reclient', 'minimal_symbols', 'disable_nacl',
     ],
@@ -2307,10 +2287,6 @@
 
     'gpu_tests_release_bot_x86_minimal_symbols': [
       'gpu_tests', 'release_bot', 'x86', 'minimal_symbols',
-    ],
-
-    'gpu_tests_release_bot_x86_no_symbols_reclient': [
-      'gpu_tests', 'release_bot_reclient', 'x86', 'no_symbols',
     ],
 
     'gpu_tests_release_trybot_mbi_mode_per_render_process_host_reclient': [

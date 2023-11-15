@@ -9,6 +9,7 @@ load("//lib/builders.star", "os", "reclient", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
+load("//lib/gn_args.star", "gn_args")
 
 try_.defaults.set(
     executable = try_.DEFAULT_EXECUTABLE,
@@ -97,6 +98,16 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 5,
         "chromium.compilator_can_outlive_parent": 100,
     },
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Win x64 Builder",
+            "release_try_builder",
+            "no_resource_allowlisting",
+            "use_clang_coverage",
+            "partial_code_coverage_instrumentation",
+            "enable_dangling_raw_ptr_feature_flag",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
@@ -168,6 +179,12 @@ try_.builder(
     builderless = False,
     cores = 16,
     ssd = True,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Win Builder (dbg)",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
@@ -187,6 +204,13 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Win Builder",
+            "release_try_builder",
+            "resource_allowlisting",
+        ],
+    ),
 )
 
 try_.builder(
@@ -194,6 +218,12 @@ try_.builder(
     mirrors = [
         "ci/Win x64 Builder",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Win x64 Builder",
+            "release_try_builder",
+        ],
+    ),
 )
 
 try_.builder(
@@ -225,6 +255,7 @@ try_.builder(
     cores = 16,
     os = os.WINDOWS_10,
     ssd = True,
+    gn_args = "ci/Win x64 Builder (dbg)",
 )
 
 try_.builder(
@@ -252,6 +283,16 @@ try_.builder(
     builderless = True,
     os = os.WINDOWS_10,
     coverage_test_types = ["unit", "overall"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Win x64 Builder",
+            "release_try_builder",
+            "no_resource_allowlisting",
+            "use_clang_coverage",
+            "partial_code_coverage_instrumentation",
+            "enable_dangling_raw_ptr_feature_flag",
+        ],
+    ),
     tryjob = try_.job(
         # TODO(https://crbug.com/1441206): Enable after resources verified.
         experiment_percentage = 10,
