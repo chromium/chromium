@@ -138,7 +138,7 @@ chrome.fileManagerPrivate.TransferState = {
 /**
  * @enum {string}
  */
-chrome.fileManagerPrivate.InstallLinuxPackageResponse = {
+chrome.fileManagerPrivate.InstallLinuxPackageStatus = {
   STARTED: 'started',
   FAILED: 'failed',
   INSTALL_ALREADY_ACTIVE: 'install_already_active',
@@ -1583,9 +1583,8 @@ chrome.fileManagerPrivate.getLinuxPackageInfo = function(entry, callback) {};
 /**
  * Starts installation of a Linux package.
  * @param {Entry} entry
- * @param {function(!chrome.fileManagerPrivate.InstallLinuxPackageResponse, string): void}
- *     callback |status| Result of starting the install |failure_reason| Reason
- *     for failure for a 'failed' status
+ * @param {function(!chrome.fileManagerPrivate.InstallLinuxPackageStatus): void}
+ *     callback
  */
 chrome.fileManagerPrivate.installLinuxPackage = function(entry, callback) {};
 

@@ -100,7 +100,7 @@ enum FormatFileSystemType { vfat, exfat, ntfs };
 enum TransferState { in_progress, queued, completed, failed };
 
 // The response when starting installing a Linux package.
-enum InstallLinuxPackageResponse {
+enum InstallLinuxPackageStatus {
   started,
   failed,
   install_already_active
@@ -1462,10 +1462,7 @@ callback GetCrostiniSharedPathsCallback =
 callback GetLinuxPackageInfoCallback =
     void(LinuxPackageInfo linux_package_info);
 
-// |status| Result of starting the install
-// |failure_reason| Reason for failure for a 'failed' status
-callback InstallLinuxPackageCallback = void(
-    InstallLinuxPackageResponse response, DOMString failure_reason);
+callback InstallLinuxPackageCallback = void(InstallLinuxPackageStatus status);
 
 // |apps| List of Android picker apps.
 callback GetAndroidPickerAppsCallback = void(AndroidApp[] apps);
@@ -1901,7 +1898,7 @@ interface Functions {
                                   GetLinuxPackageInfoCallback callback);
 
   // Starts installation of a Linux package.
-  [nocompile]
+  [nocompile, supportsPromises]
   static void installLinuxPackage([instanceOf=Entry] object entry,
                                   InstallLinuxPackageCallback callback);
 

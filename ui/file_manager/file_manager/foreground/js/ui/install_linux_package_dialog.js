@@ -222,12 +222,10 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
    * The callback for installLinuxPackage(). Progress updates and completion
    * for successfully started installations will be displayed in a
    * notification, rather than the file manager.
-   * @param {!chrome.fileManagerPrivate.InstallLinuxPackageResponse} response
-   *     Whether the install successfully started or not.
-   * @param {string} failure_reason A textual reason for the 'failed' case.
+   * @param {!chrome.fileManagerPrivate.InstallLinuxPackageStatus} status
    */
-  onInstallLinuxPackage_(response, failure_reason) {
-    if (response == 'started') {
+  onInstallLinuxPackage_(status) {
+    if (status == chrome.fileManagerPrivate.InstallLinuxPackageStatus.STARTED) {
       // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.text.textContent = str('INSTALL_LINUX_PACKAGE_INSTALLATION_STARTED');
       return;
@@ -240,6 +238,6 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
     this.title.textContent = str('INSTALL_LINUX_PACKAGE_ERROR_TITLE');
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.text.textContent = str('INSTALL_LINUX_PACKAGE_ERROR_DESCRIPTION');
-    console.warn('Failed to begin package installation: ' + failure_reason);
+    console.warn('Failed to begin package installation.');
   }
 }

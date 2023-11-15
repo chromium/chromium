@@ -862,16 +862,16 @@ FileManagerPrivateInternalInstallLinuxPackageFunction::Run() {
 
 void FileManagerPrivateInternalInstallLinuxPackageFunction::
     OnInstallLinuxPackage(crostini::CrostiniResult result) {
-  fmp::InstallLinuxPackageResponse response;
+  fmp::InstallLinuxPackageStatus response;
   switch (result) {
     case crostini::CrostiniResult::SUCCESS:
-      response = fmp::InstallLinuxPackageResponse::kStarted;
+      response = fmp::InstallLinuxPackageStatus::kStarted;
       break;
     case crostini::CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED:
-      response = fmp::InstallLinuxPackageResponse::kFailed;
+      response = fmp::InstallLinuxPackageStatus::kFailed;
       break;
     case crostini::CrostiniResult::BLOCKING_OPERATION_ALREADY_ACTIVE:
-      response = fmp::InstallLinuxPackageResponse::kInstallAlreadyActive;
+      response = fmp::InstallLinuxPackageStatus::kInstallAlreadyActive;
       break;
     default:
       NOTREACHED();

@@ -65,7 +65,7 @@ namespace fileManagerPrivateInternal {
   callback GetLinuxPackageInfoCallback =
       void(fileManagerPrivate.LinuxPackageInfo linux_package_info);
   callback InstallLinuxPackageCallback =
-      void(fileManagerPrivate.InstallLinuxPackageResponse response);
+      void(fileManagerPrivate.InstallLinuxPackageStatus status);
   callback GetThumbnailCallback = void(DOMString ThumbnailDataUrl);
   callback BooleanCallback = void(boolean result);
   callback GetVolumeRootCallback = void(EntryDescription rootDir);
@@ -168,7 +168,7 @@ namespace fileManagerPrivateInternal {
     [supportsPromises] static void getLinuxPackageInfo(
         DOMString url,
         GetLinuxPackageInfoCallback callback);
-    static void installLinuxPackage(
+    [supportsPromises] static void installLinuxPackage(
         DOMString url,
         InstallLinuxPackageCallback callback);
     static void importCrostiniImage(DOMString url);
