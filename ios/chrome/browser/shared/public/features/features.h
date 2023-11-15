@@ -50,6 +50,9 @@ BASE_DECLARE_FEATURE(kIOSBrowserEditMenuMetrics);
 // Finchable cooldown period for non-modal promos.
 BASE_DECLARE_FEATURE(kNonModalDefaultBrowserPromoCooldownRefactor);
 
+// Feature flag to enable Set Up List Content Notification.
+BASE_DECLARE_FEATURE(kSetUpListContentNotification);
+
 // The default param value for the non-modal promo cooldown period, in days,
 // overridable through Finch.
 extern const base::FeatureParam<int>
@@ -587,5 +590,8 @@ bool ShouldHideIrrelevantModules();
 // How many days before showing the Compacted Set Up List module configuration
 // in the Magic Stack.
 int TimeUntilShowingCompactedSetUpList();
+
+// Yes if the Set Up List Content Notification is enabled.
+bool IsSetUpListContentNotificationEnabled();
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

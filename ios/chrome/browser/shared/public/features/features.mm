@@ -82,6 +82,10 @@ BASE_FEATURE(kNonModalDefaultBrowserPromoCooldownRefactor,
              "NonModalDefaultBrowserPromoCooldownRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSetUpListContentNotification,
+             "SetUpListContentNotification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<int>
     kNonModalDefaultBrowserPromoCooldownRefactorParam{
         &kNonModalDefaultBrowserPromoCooldownRefactor,
@@ -747,4 +751,8 @@ bool ShouldHideIrrelevantModules() {
 int TimeUntilShowingCompactedSetUpList() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kMagicStack, kSetUpListCompactedTimeThresholdDays, 3);
+}
+
+bool IsSetUpListContentNotificationEnabled() {
+  return base::FeatureList::IsEnabled(kSetUpListContentNotification);
 }
