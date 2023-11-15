@@ -121,6 +121,10 @@
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM" desc="Screen reader announcement indicating that current form was autofilled.">
     The form was filled in
   </message>
+  <!--TODO(crbug.com/1493361): Align with writers about related strings and remove translateable=false-->
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY" desc="Screen reader announcement used for non-expandable Autofill popup entries." translateable="false">
+    You are currently on a menu
+  </message>
 
   <!--TODO(crbug.com/1459990): Align with writers about related strings and remove translateable=false-->
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that edit autofill profile option was selected." translateable="false">

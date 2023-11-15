@@ -2633,6 +2633,59 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
                           base::UTF8ToUTF16(test::NextYear().substr(2))}));
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Verify that the suggestion's texts are populated correctly for a masked
+// server card suggestion when payments manual fallback is triggered.
+TEST_F(AutofillCreditCardSuggestionContentTest,
+       CreateCreditCardSuggestion_ManualFallback) {
+  CreditCard server_card = CreateServerCard();
+
+  Suggestion server_card_suggestion =
+      suggestion_generator()->CreateCreditCardSuggestion(
+          server_card, UNKNOWN_TYPE, /*virtual_card_option=*/false,
+          /*card_linked_offer_available=*/false);
+
+  // Only the name is displayed on the first line.
+  EXPECT_EQ(server_card_suggestion.popup_item_id,
+            PopupItemId::kEntryNotSelectable);
+  // For Desktop, split the first line and populate the card name and
+  // the last 4 digits separately.
+  EXPECT_EQ(server_card_suggestion.main_text.value, u"Visa");
+  EXPECT_EQ(server_card_suggestion.minor_text.value,
+            CreditCard::GetObfuscatedStringForCardDigits(4, u"1111"));
+
+  // The label is the expiration date formatted as mm/yy.
+  EXPECT_EQ(server_card_suggestion.labels.size(), 1U);
+  EXPECT_EQ(server_card_suggestion.labels[0].size(), 1U);
+  EXPECT_EQ(server_card_suggestion.labels[0][0].value,
+            base::StrCat({base::UTF8ToUTF16(test::NextMonth()), u"/",
+                          base::UTF8ToUTF16(test::NextYear().substr(2))}));
+
+  EXPECT_EQ(server_card_suggestion.acceptance_a11y_announcement,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY));
+}
+
+// Verify that manual fallback credit card suggestions are not filtered.
+TEST_F(AutofillCreditCardSuggestionContentTest,
+       GetSuggestionsForCreditCards_ManualFallbackSuggestionsNotFiltered) {
+  personal_data()->AddServerCreditCard(CreateServerCard());
+
+  FormFieldData field_data;
+  field_data.value = u"$$$";
+  bool should_display_gpay_logo;
+  bool with_offer;
+  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->GetSuggestionsForCreditCards(
+          field_data, UNKNOWN_TYPE, should_display_gpay_logo, with_offer,
+          metadata_logging_context);
+
+  // Credit card suggestions should not depend on the field's value.
+  EXPECT_EQ(suggestions.size(), 1U);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 #if !BUILDFLAG(IS_ANDROID)
 // Verify that the suggestion's texts are populated correctly for a local and
 // server card suggestion when the CVC field is focused.

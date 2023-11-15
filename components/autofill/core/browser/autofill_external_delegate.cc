@@ -103,6 +103,7 @@ bool IsFirstLayerFormFillingSuggestionId(PopupItemId item_id) {
     case PopupItemId::kPasswordEntry:
     case PopupItemId::kScanCreditCard:
     case PopupItemId::kSeePromoCodeDetails:
+    case PopupItemId::kEntryNotSelectable:
     case PopupItemId::kSeparator:
     case PopupItemId::kShowAccountCards:
     case PopupItemId::kTitle:
@@ -381,6 +382,8 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source)});
       break;
+    case PopupItemId::kEntryNotSelectable:
+      return;
     case PopupItemId::kTitle:
     case PopupItemId::kEditAddressProfile:
     case PopupItemId::kDeleteAddressProfile:
@@ -613,6 +616,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
             manager_->client().GetPopupScreenLocation(), std::move(callback));
       }
       break;
+    case PopupItemId::kEntryNotSelectable:
+      return;
     default:
       if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||
           suggestion.popup_item_id == PopupItemId::kCreditCardEntry ||

@@ -1053,9 +1053,11 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     bool& should_display_gpay_logo,
     bool& with_offer,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
-  DCHECK(GroupTypeOfServerFieldType(trigger_field_type) ==
-         FieldTypeGroup::kCreditCard);
   std::vector<Suggestion> suggestions;
+  // Manual fallback entries are shown for all non credit card fields.
+  const bool is_manual_fallback =
+      GroupTypeOfServerFieldType(trigger_field_type) !=
+      FieldTypeGroup::kCreditCard;
   const std::string& app_locale = personal_data_->app_locale();
 
   std::map<std::string, AutofillOfferData*> card_linked_offers_map =
@@ -1085,18 +1087,22 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     // The value of the stored data for this field type in the |credit_card|.
     std::u16string creditcard_field_value =
         credit_card.GetInfo(trigger_field_type, app_locale);
-    if (creditcard_field_value.empty())
+    if (!is_manual_fallback && creditcard_field_value.empty()) {
       continue;
+    }
 
-    if (IsValidSuggestionForFieldContents(
-            base::i18n::ToLower(creditcard_field_value), field_contents_lower,
-            trigger_field_type,
-            credit_card.record_type() ==
-                CreditCard::RecordType::kMaskedServerCard,
-            field.is_autofilled)) {
+    // Manual fallback suggestions aren't filtered based on the field's content.
+    if (is_manual_fallback || IsValidSuggestionForFieldContents(
+                                  base::i18n::ToLower(creditcard_field_value),
+                                  field_contents_lower, trigger_field_type,
+                                  credit_card.record_type() ==
+                                      CreditCard::RecordType::kMaskedServerCard,
+                                  field.is_autofilled)) {
       bool card_linked_offer_available =
           base::Contains(card_linked_offers_map, credit_card.guid());
-      if (ShouldShowVirtualCardOption(&credit_card)) {
+      // TODO(crbug.com/1493361): decide whether virtual credit card suggestions
+      // should be shown for the manual fallback.
+      if (!is_manual_fallback && ShouldShowVirtualCardOption(&credit_card)) {
         suggestions.push_back(CreateCreditCardSuggestion(
             credit_card, trigger_field_type,
             /*virtual_card_option=*/true, card_linked_offer_available));
@@ -1398,25 +1404,34 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     ServerFieldType trigger_field_type,
     bool virtual_card_option,
     bool card_linked_offer_available) const {
-  DCHECK(GroupTypeOfServerFieldType(trigger_field_type) ==
-         FieldTypeGroup::kCreditCard);
+  // Manual fallback entries are shown for all non credit card fields.
+  const bool is_manual_fallback =
+      GroupTypeOfServerFieldType(trigger_field_type) !=
+      FieldTypeGroup::kCreditCard;
 
   Suggestion suggestion;
   suggestion.icon = credit_card.CardIconForAutofillSuggestion();
-  CHECK(suggestion.popup_item_id == PopupItemId::kAutocompleteEntry);
-  suggestion.popup_item_id = PopupItemId::kCreditCardEntry;
+  // First layer manual fallback entries can't fill forms and thus can't be
+  // selected by the user.
+  suggestion.popup_item_id = is_manual_fallback
+                                 ? PopupItemId::kEntryNotSelectable
+                                 : PopupItemId::kCreditCardEntry;
   suggestion.payload = Suggestion::Guid(credit_card.guid());
 #if BUILDFLAG(IS_ANDROID)
   // The card art icon should always be shown at the start of the suggestion.
   suggestion.is_icon_at_start = true;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  auto [main_text, minor_text] =
-      GetSuggestionMainTextAndMinorTextForCard(credit_card, trigger_field_type);
+  // Manual fallback suggestions labels are computed as if the triggering field
+  // type was the credit card number.
+  auto [main_text, minor_text] = GetSuggestionMainTextAndMinorTextForCard(
+      credit_card,
+      is_manual_fallback ? CREDIT_CARD_NUMBER : trigger_field_type);
   suggestion.main_text = std::move(main_text);
   suggestion.minor_text = std::move(minor_text);
-  if (std::vector<Suggestion::Text> card_labels =
-          GetSuggestionLabelsForCard(credit_card, trigger_field_type);
+  if (std::vector<Suggestion::Text> card_labels = GetSuggestionLabelsForCard(
+          credit_card,
+          is_manual_fallback ? CREDIT_CARD_NUMBER : trigger_field_type);
       !card_labels.empty()) {
     suggestion.labels.push_back(std::move(card_labels));
   }
@@ -1447,8 +1462,12 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     }
   }
 
+  // TODO(crbug.com/1493360): Add child suggestions for manual fallback.
   suggestion.acceptance_a11y_announcement =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
+      suggestion.popup_item_id == PopupItemId::kEntryNotSelectable
+          ? l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY)
+          : l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
 
   return suggestion;
 }
@@ -1490,8 +1509,6 @@ std::vector<Suggestion::Text>
 AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
     const CreditCard& credit_card,
     ServerFieldType trigger_field_type) const {
-  DCHECK(GroupTypeOfServerFieldType(trigger_field_type) ==
-         FieldTypeGroup::kCreditCard);
   const std::string& app_locale = personal_data_->app_locale();
 
   // If the focused field is a card number field.
