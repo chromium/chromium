@@ -364,8 +364,9 @@ int ShelfConfig::control_border_radius() const {
 }
 
 int ShelfConfig::control_button_edge_spacing(bool is_primary_axis_edge) const {
-  if (is_primary_axis_edge)
-    return in_tablet_mode_ ? 8 : 6;
+  if (is_primary_axis_edge) {
+    return in_tablet_mode_ ? (is_in_app_ ? 0 : 8) : 6;
+  }
 
   return (shelf_size() - control_size()) / 2;
 }
