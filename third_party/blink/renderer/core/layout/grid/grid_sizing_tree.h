@@ -177,6 +177,12 @@ class GridSizingSubtree
     return grid_tree_->LookupSubgriddedItemData(grid_item);
   }
 
+  wtf_size_t LookupSubgridIndex(const GridItemData& subgrid_data) const {
+    DCHECK(grid_tree_);
+    DCHECK(subgrid_data.IsSubgrid());
+    return grid_tree_->LookupSubgridIndex(subgrid_data);
+  }
+
   GridSizingSubtree SubgridSizingSubtree(
       const GridItemData& subgrid_data) const {
     DCHECK(grid_tree_);

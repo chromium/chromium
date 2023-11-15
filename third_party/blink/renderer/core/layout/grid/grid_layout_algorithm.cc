@@ -1503,7 +1503,7 @@ wtf_size_t GridLayoutAlgorithm::ComputeAutomaticRepetitionsForSubgrid(
 }
 
 void GridLayoutAlgorithm::ComputeGridItemBaselines(
-    const GridLayoutSubtree& layout_subtree,
+    const scoped_refptr<const GridLayoutTree>& layout_tree,
     const GridSizingSubtree& sizing_subtree,
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint) const {
@@ -1516,10 +1516,8 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
   }
 
   const auto writing_mode = ConstraintSpace().GetWritingMode();
-
   track_collection.ResetBaselines();
 
-  auto next_subgrid_subtree = layout_subtree.FirstChild();
   for (auto& grid_item : sizing_data.grid_items) {
     if (!grid_item.IsBaselineSpecified(track_direction) ||
         !grid_item.IsConsideredForSizing(track_direction)) {
@@ -1528,9 +1526,8 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
 
     GridLayoutSubtree subgrid_layout_subtree;
     if (grid_item.IsSubgrid()) {
-      DCHECK(next_subgrid_subtree);
-      subgrid_layout_subtree = next_subgrid_subtree;
-      next_subgrid_subtree = next_subgrid_subtree.NextSibling();
+      subgrid_layout_subtree = GridLayoutSubtree(
+          layout_tree, sizing_subtree.LookupSubgridIndex(grid_item));
     }
 
     const auto subgridded_item =
@@ -1700,6 +1697,10 @@ void GridLayoutAlgorithm::InitializeTrackSizes(
       } else {
         track_collection.CacheInitializedSetsGeometry(
             start_border_scrollbar_padding);
+      }
+
+      if (track_collection.HasBaselines()) {
+        track_collection.ResetBaselines();
       }
     }
   };
@@ -1904,10 +1905,11 @@ void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint,
     bool* opt_needs_additional_pass) const {
-  ComputeBaselineAlignment(GridLayoutSubtree(sizing_tree.FinalizeTree()),
+  ComputeBaselineAlignment(sizing_tree.FinalizeTree(),
                            GridSizingSubtree(sizing_tree),
                            /* opt_subgrid_data */ kNoSubgriddedItemData,
                            track_direction, sizing_constraint);
+
   CompleteTrackSizingAlgorithm(GridSizingSubtree(sizing_tree),
                                /* opt_subgrid_data */ kNoSubgriddedItemData,
                                track_direction, sizing_constraint,
@@ -1915,7 +1917,7 @@ void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
 }
 
 void GridLayoutAlgorithm::ComputeBaselineAlignment(
-    const GridLayoutSubtree& layout_subtree,
+    const scoped_refptr<const GridLayoutTree>& layout_tree,
     const GridSizingSubtree& sizing_subtree,
     const SubgriddedItemData& opt_subgrid_data,
     const absl::optional<GridTrackSizingDirection>& opt_track_direction,
@@ -1942,8 +1944,8 @@ void GridLayoutAlgorithm::ComputeBaselineAlignment(
                 opt_subgrid_data, track_direction));
           }
         } else {
-          ComputeGridItemBaselines(layout_subtree, sizing_subtree,
-                                   track_direction, sizing_constraint);
+          ComputeGridItemBaselines(layout_tree, sizing_subtree, track_direction,
+                                   sizing_constraint);
         }
       };
 
@@ -1954,28 +1956,24 @@ void GridLayoutAlgorithm::ComputeBaselineAlignment(
     ComputeOrRecreateBaselines(kForRows);
   }
 
-  auto next_layout_subtree = layout_subtree.FirstChild();
   ForEachSubgrid(sizing_subtree,
                  [&](const GridLayoutAlgorithm& subgrid_algorithm,
                      const GridSizingSubtree& subgrid_subtree,
                      const SubgriddedItemData& subgrid_data) {
-                   DCHECK(next_layout_subtree);
                    subgrid_algorithm.ComputeBaselineAlignment(
-                       next_layout_subtree, subgrid_subtree, subgrid_data,
+                       layout_tree, subgrid_subtree, subgrid_data,
                        RelativeDirectionFilterInSubgrid(opt_track_direction,
                                                         *subgrid_data),
                        sizing_constraint);
-                   next_layout_subtree = next_layout_subtree.NextSibling();
                  });
 }
 
 void GridLayoutAlgorithm::CompleteFinalBaselineAlignment(
     const GridSizingTree& sizing_tree) const {
-  ComputeBaselineAlignment(GridLayoutSubtree(sizing_tree.FinalizeTree()),
-                           GridSizingSubtree(sizing_tree),
-                           /* opt_subgrid_data */ kNoSubgriddedItemData,
-                           /* opt_track_direction */ absl::nullopt,
-                           SizingConstraint::kLayout);
+  ComputeBaselineAlignment(
+      sizing_tree.FinalizeTree(), GridSizingSubtree(sizing_tree),
+      /* opt_subgrid_data */ kNoSubgriddedItemData,
+      /* opt_track_direction */ absl::nullopt, SizingConstraint::kLayout);
 }
 
 template <typename CallbackFunc>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Grid Test: Baseline-aligned items within subgrid</title>
+<link rel="author" title="Ethan Jimenez" href="mailto:ethavar@microsoft.com">
+<link rel="help" href="https://drafts.csswg.org/css-grid-2/#subgrid-grid-alignment">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  font: 15px/1 Ahem;
+}
+main {
+  display: grid;
+  align-items: baseline;
+  grid-template: 50px / repeat(2, 30px);
+}
+main > div {
+  display: grid;
+  grid-column: 1 / -1;
+  align-items: baseline;
+  grid-template: 50px / subgrid;
+}
+.item:nth-child(2) { font-size: 30px }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+<body onload="checkLayout('.item')">
+<main>
+  <div>
+    <div class="item" data-offset-y="12" data-expected-height="15">X</div>
+    <div class="item" data-offset-y="0" data-expected-height="30">X</div>
+  </div>
+</main>
+</body>

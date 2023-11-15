@@ -105,11 +105,12 @@ class CORE_EXPORT GridLayoutAlgorithm
       GridTrackSizingDirection track_direction) const;
 
   // Determines the major/minor alignment baselines for each row/column based on
-  // each item in |grid_items|, and stores the results in |track_collection|.
-  void ComputeGridItemBaselines(const GridLayoutSubtree& layout_subtree,
-                                const GridSizingSubtree& sizing_subtree,
-                                GridTrackSizingDirection track_direction,
-                                SizingConstraint sizing_constraint) const;
+  // each item in `grid_items`, and stores the results in `track_collection`.
+  void ComputeGridItemBaselines(
+      const scoped_refptr<const GridLayoutTree>& layout_tree,
+      const GridSizingSubtree& sizing_subtree,
+      GridTrackSizingDirection track_direction,
+      SizingConstraint sizing_constraint) const;
 
   std::unique_ptr<GridLayoutTrackCollection> CreateSubgridTrackCollection(
       const SubgriddedItemData& subgrid_data,
@@ -153,11 +154,11 @@ class CORE_EXPORT GridLayoutAlgorithm
 
   // Performs the final baseline alignment pass of a grid sizing subtree.
   void ComputeBaselineAlignment(
-      const GridLayoutSubtree& layout_subtree,
+      const scoped_refptr<const GridLayoutTree>& layout_tree,
       const GridSizingSubtree& sizing_subtree,
       const SubgriddedItemData& opt_subgrid_data,
       const absl::optional<GridTrackSizingDirection>& opt_track_direction,
-      SizingConstraint) const;
+      SizingConstraint sizing_constraint) const;
 
   // Helper that calls the method above for the entire grid sizing tree.
   void CompleteFinalBaselineAlignment(const GridSizingTree& sizing_tree) const;

@@ -248,8 +248,9 @@ class GridLayoutSubtree
  public:
   GridLayoutSubtree() = default;
 
-  explicit GridLayoutSubtree(scoped_refptr<const GridLayoutTree>&& layout_tree)
-      : GridSubtree(std::move(layout_tree)) {}
+  explicit GridLayoutSubtree(scoped_refptr<const GridLayoutTree> layout_tree,
+                             wtf_size_t subtree_root = 0)
+      : GridSubtree(std::move(layout_tree), subtree_root) {}
 
   GridLayoutSubtree(const scoped_refptr<const GridLayoutTree>& layout_tree,
                     wtf_size_t parent_end_index,
