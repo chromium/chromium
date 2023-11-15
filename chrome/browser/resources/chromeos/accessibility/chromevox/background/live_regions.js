@@ -5,6 +5,7 @@
 /**
  * @fileoverview Implements support for live regions in ChromeVox.
  */
+import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {AutomationUtil} from '../../common/automation_util.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {QueueMode, TtsCategory} from '../common/tts_types.js';
@@ -69,8 +70,9 @@ export class LiveRegions {
 
   /** @param {!AutomationNode} area */
   static announceDesktopLiveRegionChanged(area) {
-    if (area.root.role !== RoleType.DESKTOP &&
-        area.root.role !== RoleType.APPLICATION) {
+    const desktopOrApplication =
+        AutomationPredicate.roles([RoleType.DESKTOP, RoleType.APPLICATION]);
+    if (!area.root || !desktopOrApplication(area.root)) {
       return;
     }
 

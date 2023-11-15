@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {ChromeEventHandler} from '../../common/chrome_event_handler.js';
 import {EventHandler} from '../../common/event_handler.js';
 import {FlagName, Flags} from '../../common/flags.js';
@@ -224,8 +225,9 @@ export class Magnifier {
 
     // Skip trying to move magnifier to encompass whole webpage or pdf. It's too
     // big, and magnifier usually ends up in middle at left edge of page.
-    if (node.isRootNode || node.role === RoleType.WEB_VIEW ||
-        node.role === RoleType.EMBEDDED_OBJECT) {
+    const isTooBig = AutomationPredicate.roles(
+        [RoleType.WEB_VIEW, RoleType.EMBEDDED_OBJECT]);
+    if (node.isRootNode || isTooBig(node)) {
       return;
     }
 

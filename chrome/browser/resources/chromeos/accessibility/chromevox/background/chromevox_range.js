@@ -357,16 +357,14 @@ export class ChromeVoxRange {
     if (prevRange && prevRange.start.node && start) {
       const entered =
           AutomationUtil.getUniqueAncestors(prevRange.start.node, start);
+      const isPluginOrIframe =
+          AutomationPredicate.roles([RoleType.PLUGIN_OBJECT, RoleType.IFRAME]);
 
-      entered
-          .filter(
-              ancestor => ancestor.role === RoleType.PLUGIN_OBJECT ||
-                  ancestor.role === RoleType.IFRAME)
-          .forEach(container => {
-            if (!container.state[StateType.FOCUSED]) {
-              container.focus();
-            }
-          });
+      entered.filter(isPluginOrIframe).forEach(container => {
+        if (!container.state[StateType.FOCUSED]) {
+          container.focus();
+        }
+      });
     }
 
     if (start.state[StateType.FOCUSED] || end.state[StateType.FOCUSED]) {

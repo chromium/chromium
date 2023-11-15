@@ -313,14 +313,14 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     }
 
     // Invalidate any previous editable text handler state.
-    if (!this.createTextEditHandlerIfNeeded_(evt.target, true)) {
+    if (!this.createTextEditHandlerIfNeeded_(node, true)) {
       this.textEditHandler_ = null;
     }
 
     // Discard focus events on embeddedObject and webView.
-    if (node.role === RoleType.EMBEDDED_OBJECT ||
-        node.role === RoleType.PLUGIN_OBJECT ||
-        node.role === RoleType.WEB_VIEW) {
+    const shouldDiscard = AutomationPredicate.roles(
+        [RoleType.EMBEDDED_OBJECT, RoleType.PLUGIN_OBJECT, RoleType.WEB_VIEW]);
+    if (shouldDiscard(node)) {
       return;
     }
 
@@ -679,8 +679,8 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
       // TableView fires selection events on rows/cells
       // and we want to ignore those because it also fires focus events.
-      if (isDesktop && target.role === RoleType.CELL ||
-          target.role === RoleType.ROW) {
+      const skip = AutomationPredicate.roles([RoleType.CELL, RoleType.ROW]);
+      if (isDesktop && skip(target)) {
         return;
       }
 

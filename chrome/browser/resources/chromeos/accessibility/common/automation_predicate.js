@@ -970,6 +970,14 @@ AutomationPredicate.longClickable = AutomationPredicate.match({
   anyAttribute: {longClickable: true},
 });
 
+/**
+ * Returns if the node is a list option, either in a menu or a listbox.
+ * @param {!AutomationNode} node
+ * @return {boolean}
+ */
+AutomationPredicate.listOption =
+    AutomationPredicate.roles([Role.LIST_BOX_OPTION, Role.MENU_LIST_OPTION]);
+
 // Table related predicates.
 /**
  * Returns if the node has a cell like role.
@@ -979,6 +987,13 @@ AutomationPredicate.longClickable = AutomationPredicate.match({
 AutomationPredicate.cellLike =
     AutomationPredicate.roles([Role.CELL, Role.ROW_HEADER, Role.COLUMN_HEADER]);
 
+/**
+ * Returns if the node is a table header.
+ * @param {!AutomationNode} node
+ * @return {boolean}
+ */
+AutomationPredicate.tableHeader =
+    AutomationPredicate.roles([Role.ROW_HEADER, Role.COLUMN_HEADER]);
 
 /**
  * Matches against nodes that we may be able to retrieve image data from.

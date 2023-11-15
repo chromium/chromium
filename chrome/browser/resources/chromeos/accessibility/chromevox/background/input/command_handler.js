@@ -1058,8 +1058,7 @@ export class CommandHandler extends CommandHandlerInterface {
       return;
     }
 
-    while (actionNode.role === RoleType.INLINE_TEXT_BOX ||
-           actionNode.role === RoleType.STATIC_TEXT) {
+    while (actionNode && AutomationPredicate.text(actionNode)) {
       actionNode = actionNode.parent;
     }
     if (actionNode.inPageLinkTarget) {

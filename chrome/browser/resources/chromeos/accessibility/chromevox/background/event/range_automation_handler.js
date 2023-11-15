@@ -72,8 +72,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     while (retarget && retarget !== retarget.root) {
       // Table headers require retargeting for events because they often have
       // event types we care about e.g. sort direction.
-      if (retarget.role === RoleType.COLUMN_HEADER ||
-          retarget.role === RoleType.ROW_HEADER) {
+      if (AutomationPredicate.tableHeader(retarget)) {
         this.node_ = retarget;
         break;
       }
@@ -198,9 +197,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     }
 
     // Only report attribute changes on some *Option roles if it is selected.
-    if ((evt.target.role === RoleType.MENU_LIST_OPTION ||
-         evt.target.role === RoleType.LIST_BOX_OPTION) &&
-        !evt.target.selected) {
+    if (AutomationPredicate.listOption(evt.target) && !evt.target.selected) {
       return;
     }
 
