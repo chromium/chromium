@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/version.h"
+#include "chrome/browser/ash/growth/install_web_app_action_performer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -86,6 +87,14 @@ const base::Version& CampaignsManagerClientImpl::GetDemoModeAppVersion() const {
   }
 
   return version.value();
+}
+
+growth::ActionMap CampaignsManagerClientImpl::GetCampaignsActions() const {
+  growth::ActionMap action_map;
+  action_map.emplace(
+      make_pair(growth::ActionType::kInstallWebApp,
+                std::make_unique<InstallWebAppActionPerformer>()));
+  return action_map;
 }
 
 void CampaignsManagerClientImpl::OnComponentDownloaded(

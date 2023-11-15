@@ -20,13 +20,19 @@ class MockCampaignsManagerClient : public CampaignsManagerClient {
   ~MockCampaignsManagerClient() override;
 
   // CampaignsManagerClient:
-  MOCK_METHOD1(LoadCampaignsComponent,
-               void(CampaignComponentLoadedCallback callback));
-  MOCK_CONST_METHOD0(IsDeviceInDemoMode, bool());
-  MOCK_CONST_METHOD0(IsCloudGamingDevice, bool());
-  MOCK_CONST_METHOD0(IsFeatureAwareDevice, bool());
-  MOCK_CONST_METHOD0(GetApplicationLocale, std::string&());
-  MOCK_CONST_METHOD0(GetDemoModeAppVersion, const base::Version&());
+  MOCK_METHOD(void,
+              LoadCampaignsComponent,
+              (CampaignComponentLoadedCallback callback),
+              (override));
+  MOCK_METHOD(bool, IsDeviceInDemoMode, (), (const, override));
+  MOCK_METHOD(bool, IsCloudGamingDevice, (), (const, override));
+  MOCK_METHOD(bool, IsFeatureAwareDevice, (), (const, override));
+  MOCK_METHOD(std::string&, GetApplicationLocale, (), (const, override));
+  MOCK_METHOD(const base::Version&,
+              GetDemoModeAppVersion,
+              (),
+              (const, override));
+  MOCK_METHOD(ActionMap, GetCampaignsActions, (), (const, override));
 };
 
 }  // namespace growth

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/ash/components/growth/action_performer.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
@@ -56,6 +57,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // that targets the given `slot`.
   const Campaign* GetCampaignBySlot(Slot slot) const;
 
+  ActionMap& actions_map() { return actions_map_; }
+
  private:
   // Triggred when campaigns component loaded.
   void OnCampaignsComponentLoaded(
@@ -79,6 +82,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   CampaignsStore campaigns_store_;
   // Campaigns matcher for selecting campaigns based on criterias.
   CampaignsMatcher matcher_;
+
+  // Maps action type to the action.
+  ActionMap actions_map_;
 
   base::ObserverList<Observer> observers_;
 
