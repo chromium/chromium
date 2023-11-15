@@ -27,14 +27,16 @@ Task::Task(const std::string& id,
            const absl::optional<base::Time>& due,
            bool has_subtasks,
            bool has_email_link,
-           bool has_notes)
+           bool has_notes,
+           const base::Time& updated)
     : id(id),
       title(title),
       completed(completed),
       due(due),
       has_subtasks(has_subtasks),
       has_email_link(has_email_link),
-      has_notes(has_notes) {}
+      has_notes(has_notes),
+      updated(updated) {}
 
 Task::~Task() = default;
 

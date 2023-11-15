@@ -46,7 +46,8 @@ struct ASH_EXPORT Task {
        const absl::optional<base::Time>& due,
        bool has_subtasks,
        bool has_email_link,
-       bool has_notes);
+       bool has_notes,
+       const base::Time& updated);
   Task(const Task&) = delete;
   Task& operator=(const Task&) = delete;
   ~Task();
@@ -72,6 +73,9 @@ struct ASH_EXPORT Task {
 
   // Indicates whether the task has additional notes.
   const bool has_notes;
+
+  // When the task was last updated.
+  base::Time updated;
 };
 
 }  // namespace ash::api

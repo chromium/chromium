@@ -136,25 +136,30 @@ void FakeTasksClient::PopulateTaskLists(base::Time tasks_due_time) {
   task_list_1->Add(std::make_unique<Task>(
       "TaskListItem1", "Task List 1 Item 1 Title", /*completed=*/false,
       /*due=*/tasks_due_time,
-      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false));
+      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false,
+      /*updated=*/tasks_due_time));
   task_list_1->Add(std::make_unique<Task>(
       "TaskListItem2", "Task List 1 Item 2 Title", /*completed=*/false,
       /*due=*/tasks_due_time,
-      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false));
+      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false,
+      /*updated=*/tasks_due_time));
   std::unique_ptr<ui::ListModel<Task>> task_list_2 =
       std::make_unique<ui::ListModel<Task>>();
   task_list_2->Add(std::make_unique<Task>(
       "TaskListItem3", "Task List 2 Item 1 Title", /*completed=*/false,
       /*due=*/tasks_due_time,
-      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false));
+      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false,
+      /*updated=*/tasks_due_time));
   task_list_2->Add(std::make_unique<Task>(
       "TaskListItem4", "Task List 2 Item 2 Title", /*completed=*/false,
       /*due=*/tasks_due_time,
-      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false));
+      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false,
+      /*updated=*/tasks_due_time));
   task_list_2->Add(std::make_unique<Task>(
       "TaskListItem5", "Task List 2 Item 3 Title", /*completed=*/false,
       /*due=*/tasks_due_time,
-      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false));
+      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false,
+      /*updated=*/tasks_due_time));
   tasks_in_task_lists_.emplace("TaskListID1", std::move(task_list_1));
   tasks_in_task_lists_.emplace("TaskListID2", std::move(task_list_2));
   tasks_in_task_lists_.emplace("TaskListID3",

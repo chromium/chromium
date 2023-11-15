@@ -125,6 +125,8 @@ void Task::RegisterJSONConverter(JSONValueConverter<Task>* converter) {
   converter->RegisterRepeatedMessage<TaskLink>(kApiResponseLinksKey,
                                                &Task::links_);
   converter->RegisterStringField(kApiResponseNotesKey, &Task::notes_);
+  converter->RegisterCustomField<base::Time>(
+      kApiResponseUpdatedKey, &Task::updated_, &util::GetTimeFromString);
 }
 
 // static

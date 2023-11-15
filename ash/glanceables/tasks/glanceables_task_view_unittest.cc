@@ -64,7 +64,8 @@ TEST_F(GlanceablesTaskViewTest, FormatsDueDate) {
     const auto task = api::Task("task-id", "Task title", /*completed=*/false,
                                 /*due=*/due,
                                 /*has_subtasks=*/false,
-                                /*has_email_link=*/false, /*has_notes=*/false);
+                                /*has_email_link=*/false, /*has_notes=*/false,
+                                /*updated=*/due);
     const auto view = GlanceablesTaskView(
         &task, /*mark_as_completed_callback=*/base::DoNothing(),
         /*save_callback=*/base::DoNothing());
@@ -85,7 +86,7 @@ TEST_F(GlanceablesTaskViewTest, EntersAndExitsEditState) {
   const auto task = api::Task("task-id", "Task title", /*completed=*/false,
                               /*due=*/absl::nullopt,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
-                              /*has_notes=*/false);
+                              /*has_notes=*/false, /*updated=*/base::Time());
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
@@ -148,7 +149,7 @@ TEST_F(GlanceablesTaskViewTest,
   const auto task = api::Task("task-id", "Task title", /*completed=*/false,
                               /*due=*/absl::nullopt,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
-                              /*has_notes=*/false);
+                              /*has_notes=*/false, /*updated=*/base::Time());
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
@@ -183,7 +184,7 @@ TEST_F(GlanceablesTaskViewTest, InvokesMarkAsCompletedCallback) {
   const auto task = api::Task("task-id", "Task title", /*completed=*/false,
                               /*due=*/absl::nullopt,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
-                              /*has_notes=*/false);
+                              /*has_notes=*/false, /*updated=*/base::Time());
 
   base::test::TestFuture<const std::string&, bool> future;
 
@@ -246,7 +247,7 @@ TEST_F(GlanceablesTaskViewTest, InvokesSaveCallbackAfterEditing) {
   const auto task = api::Task("task-id", "Task title", /*completed=*/false,
                               /*due=*/absl::nullopt,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
-                              /*has_notes=*/false);
+                              /*has_notes=*/false, /*updated=*/base::Time());
 
   base::test::TestFuture<const std::string&, const std::string&> future;
 

@@ -126,6 +126,7 @@ class Task {
   const std::optional<base::Time>& due() const { return due_; }
   const std::vector<std::unique_ptr<TaskLink>>& links() const { return links_; }
   const std::string& notes() const { return notes_; }
+  const base::Time& updated() const { return updated_; }
 
  private:
   // Task identifier.
@@ -153,6 +154,9 @@ class Task {
 
   // Notes describing the task.
   std::string notes_;
+
+  // When the task was last updated.
+  base::Time updated_;
 };
 
 // Container for multiple `Task`s.

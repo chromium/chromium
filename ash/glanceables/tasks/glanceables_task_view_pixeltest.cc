@@ -41,7 +41,7 @@ class GlanceablesTaskViewPixelTest
         has_due_date() ? absl::make_optional(due_date) : absl::nullopt,
         has_subtasks(),
         /*has_email_link=*/false,
-        /*has_notes=*/has_notes());
+        /*has_notes=*/has_notes(), /*updated=*/base::Time());
 
     widget_ = CreateFramelessTestWidget();
     widget_->SetBounds(gfx::Rect(/*width=*/370, /*height=*/50));

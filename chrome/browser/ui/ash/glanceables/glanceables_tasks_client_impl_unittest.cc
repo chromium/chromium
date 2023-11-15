@@ -81,20 +81,23 @@ constexpr char kDefaultTasksResponseContent[] = R"(
           "id": "asd",
           "title": "Parent task, level 1",
           "status": "needsAction",
-          "due": "2023-04-19T00:00:00.000Z"
+          "due": "2023-04-19T00:00:00.000Z",
+          "updated": "2023-01-30T22:19:22.812Z"
         },
         {
           "id": "qwe",
           "title": "Child task, level 2",
           "parent": "asd",
-          "status": "needsAction"
+          "status": "needsAction",
+          "updated": "2022-12-21T23:38:22.590Z"
         },
         {
           "id": "zxc",
           "title": "Parent task 2, level 1",
           "status": "needsAction",
           "links": [{"type": "email"}],
-          "notes": "Lorem ipsum dolor sit amet"
+          "notes": "Lorem ipsum dolor sit amet",
+          "updated": "2022-12-21T23:38:22.590Z"
         }
       ]
     }
@@ -588,6 +591,8 @@ TEST_F(TasksClientImplTest, GetTasks) {
   EXPECT_TRUE(root_tasks->GetItemAt(0)->has_subtasks);
   EXPECT_FALSE(root_tasks->GetItemAt(0)->has_email_link);
   EXPECT_FALSE(root_tasks->GetItemAt(0)->has_notes);
+  EXPECT_EQ(FormatTimeAsString(root_tasks->GetItemAt(0)->updated),
+            "2023-01-30T22:19:22.812Z");
 
   EXPECT_EQ(root_tasks->GetItemAt(1)->id, "zxc");
   EXPECT_EQ(root_tasks->GetItemAt(1)->title, "Parent task 2, level 1");
@@ -596,6 +601,8 @@ TEST_F(TasksClientImplTest, GetTasks) {
   EXPECT_FALSE(root_tasks->GetItemAt(1)->has_subtasks);
   EXPECT_TRUE(root_tasks->GetItemAt(1)->has_email_link);
   EXPECT_TRUE(root_tasks->GetItemAt(1)->has_notes);
+  EXPECT_EQ(FormatTimeAsString(root_tasks->GetItemAt(1)->updated),
+            "2022-12-21T23:38:22.590Z");
 
   histogram_tester()->ExpectTotalCount(
       "Ash.Glanceables.Api.Tasks.GetTasks.Latency", /*expected_count=*/1);

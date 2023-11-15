@@ -85,7 +85,7 @@ std::vector<std::unique_ptr<api::Task>> ConvertTasks(
     const bool has_notes = !root_task->notes().empty();
     converted_tasks.push_back(std::make_unique<api::Task>(
         root_task->id(), root_task->title(), completed, root_task->due(),
-        has_subtasks, has_email_link, has_notes));
+        has_subtasks, has_email_link, has_notes, root_task->updated()));
   }
 
   return converted_tasks;
@@ -404,10 +404,11 @@ void TasksClientImpl::OnTaskAdded(
   // to the end of the list.
   iter->second.AddAt(
       /*index=*/0,
-      std::make_unique<api::Task>(
-          result.value()->id(), result.value()->title(),
-          /*completed=*/false, /*due=*/absl::nullopt, /*has_subtasks=*/false,
-          /*has_email_link=*/false, /*has_notes=*/false));
+      std::make_unique<api::Task>(result.value()->id(), result.value()->title(),
+                                  /*completed=*/false, /*due=*/absl::nullopt,
+                                  /*has_subtasks=*/false,
+                                  /*has_email_link=*/false, /*has_notes=*/false,
+                                  result.value()->updated()));
 }
 
 void TasksClientImpl::OnTaskUpdated(
@@ -430,6 +431,7 @@ void TasksClientImpl::OnTaskUpdated(
                      });
     if (task_iter != tasks_iter->second.end()) {
       task_iter->get()->title = result->get()->title();
+      task_iter->get()->updated = result->get()->updated();
     }
   }
 
