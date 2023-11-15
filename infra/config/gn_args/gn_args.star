@@ -14,10 +14,27 @@ gn_args.config(
 )
 
 gn_args.config(
+    "also_build_lacros_chrome",
+    args = {
+        "also_build_lacros_chrome": True,
+    },
+)
+
+gn_args.config(
     "also_build_lacros_chrome_for_architecture_amd64",
     args = {
         "also_build_lacros_chrome_for_architecture": "amd64",
     },
+)
+
+gn_args.config(
+    "amd64-generic",
+    args_file = "//build/args/chromeos/amd64-generic.gni",
+)
+
+gn_args.config(
+    "amd64-generic-crostoolchain",
+    args_file = "//build/args/chromeos/amd64-generic-crostoolchain.gni",
 )
 
 gn_args.config(
@@ -73,10 +90,30 @@ gn_args.config(
 )
 
 gn_args.config(
+    "arm-generic",
+    args_file = "//build/args/chromeos/arm-generic.gni",
+)
+
+gn_args.config(
+    "arm-generic-crostoolchain",
+    args_file = "//build/args/chromeos/arm-generic-crostoolchain.gni",
+)
+
+gn_args.config(
     "arm64",
     args = {
         "target_cpu": "arm64",
     },
+)
+
+gn_args.config(
+    "arm64-generic",
+    args_file = "//build/args/chromeos/arm64-generic.gni",
+)
+
+gn_args.config(
+    "arm64-generic-crostoolchain",
+    args_file = "//build/args/chromeos/arm64-generic-crostoolchain.gni",
 )
 
 gn_args.config(
@@ -170,6 +207,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    "cfm",
+    args = {
+        "is_cfm": True,
+    },
+)
+
+gn_args.config(
     "chrome_with_codecs",
     args = {
         "proprietary_codecs": True,
@@ -193,6 +237,14 @@ gn_args.config(
     },
     configs = [
         "ffmpeg_branding_chromeos",
+    ],
+)
+
+gn_args.config(
+    "chromeos_with_codecs",
+    configs = [
+        "chromeos",
+        "chromeos_codecs",
     ],
 )
 
@@ -485,6 +537,26 @@ gn_args.config(
 )
 
 gn_args.config(
+    "is_skylab",
+    args = {
+        "is_skylab": True,
+    },
+)
+
+gn_args.config(
+    "jacuzzi",
+    args_file = "//build/args/chromeos/jacuzzi.gni",
+)
+
+gn_args.config(
+    "lacros",
+    args = {
+        "target_os": "chromeos",
+        "chromeos_is_browser_only": True,
+    },
+)
+
+gn_args.config(
     "lacros_on_linux",
     args = {
         "chromeos_is_browser_only": True,
@@ -587,6 +659,11 @@ gn_args.config(
     args = {
         "symbol_level": 0,
     },
+)
+
+gn_args.config(
+    "octopus",
+    args_file = "//build/args/chromeos/octopus.gni",
 )
 
 gn_args.config(
@@ -792,6 +869,13 @@ gn_args.config(
     "use_clang_coverage",
     args = {
         "use_clang_coverage": True,
+    },
+)
+
+gn_args.config(
+    "use_cups",
+    args = {
+        "use_cups": True,
     },
 )
 

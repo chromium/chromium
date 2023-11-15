@@ -1,0 +1,12 @@
+{
+  "gn_args": {
+    "dcheck_always_on": true,
+    "is_cfm": true,
+    "is_component_build": false,
+    "is_debug": false,
+    "symbol_level": 0,
+    "target_os": "chromeos",
+    "use_dummy_lastchange": true,
+    "use_remoteexec": true
+  }
+}

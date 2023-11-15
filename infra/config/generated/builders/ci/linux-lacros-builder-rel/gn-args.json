@@ -1,0 +1,12 @@
+{
+  "gn_args": {
+    "also_build_ash_chrome": true,
+    "chromeos_is_browser_only": true,
+    "dcheck_always_on": false,
+    "is_component_build": false,
+    "is_debug": false,
+    "target_os": "chromeos",
+    "use_cups": true,
+    "use_remoteexec": true
+  }
+}

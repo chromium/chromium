@@ -9,6 +9,7 @@ load("//lib/builder_url.star", "linkify_builder")
 load("//lib/builders.star", "os", "reclient", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 load("//project.star", "settings")
 
 try_.defaults.set(
@@ -40,6 +41,7 @@ try_.builder(
     mirrors = [
         "ci/chromeos-amd64-generic-asan-rel",
     ],
+    gn_args = "ci/chromeos-amd64-generic-asan-rel",
 )
 
 try_.builder(
@@ -47,6 +49,9 @@ try_.builder(
     mirrors = [
         "ci/chromeos-amd64-generic-cfi-thin-lto-rel",
     ],
+    # TODO(crbug.com/913750): Enable DCHECKS on the two amd64-generic bots
+    # when the PFQ has it enabled.
+    gn_args = "ci/chromeos-amd64-generic-cfi-thin-lto-rel",
 )
 
 try_.builder(
@@ -55,6 +60,12 @@ try_.builder(
     mirrors = [
         "ci/chromeos-amd64-generic-dbg",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/chromeos-amd64-generic-dbg",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -71,6 +82,13 @@ try_.builder(
                        " This builder also build Lacros with alternative toolchain.",
     mirrors = ["ci/chromeos-amd64-generic-rel"],
     contact_team_email = "chromeos-sw-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/chromeos-amd64-generic-rel",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
 )
 
@@ -89,6 +107,13 @@ try_.orchestrator_builder(
     ],
     compilator = "chromeos-amd64-generic-rel-gtest-compilator",
     contact_team_email = "chromeos-sw-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/chromeos-amd64-generic-rel",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(
         equivalent_builder = "try/chromeos-amd64-generic-rel-gtest-and-tast",
@@ -119,6 +144,13 @@ try_.orchestrator_builder(
     ],
     compilator = "chromeos-amd64-generic-rel-gtest-and-tast-compilator",
     contact_team_email = "chromeos-sw-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/chromeos-amd64-generic-rel",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(
         omit_from_luci_cv = True,
@@ -136,6 +168,13 @@ try_.orchestrator_builder(
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
+    gn_args = gn_args.config(
+        configs = [
+            "ci/chromeos-amd64-generic-rel-renamed",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -221,6 +260,7 @@ try_.builder(
     mirrors = [
         "ci/chromeos-arm-generic-dbg",
     ],
+    gn_args = "ci/chromeos-arm-generic-dbg",
 )
 
 try_.builder(
@@ -228,6 +268,13 @@ try_.builder(
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     mirrors = ["ci/chromeos-arm-generic-rel"],
     builderless = not settings.is_main,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/chromeos-arm-generic-rel",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -236,6 +283,7 @@ try_.builder(
     name = "chromeos-arm64-generic-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     mirrors = ["ci/chromeos-arm64-generic-rel"],
+    gn_args = "ci/chromeos-arm64-generic-rel",
 )
 
 try_.orchestrator_builder(
@@ -248,6 +296,13 @@ Lacros builder that runs Tast tests and gtests on ChromeOS devices via Skylab"""
     ],
     compilator = "lacros-amd64-generic-rel-compilator",
     contact_team_email = "chrome-desktop-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/lacros-amd64-generic-rel",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -268,6 +323,13 @@ try_.builder(
         "ci/lacros-amd64-generic-rel-non-skylab",
     ],
     contact_team_email = "chrome-desktop-engprod@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/lacros-amd64-generic-rel-non-skylab",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
 )
 
@@ -277,6 +339,7 @@ try_.builder(
     mirrors = [
         "ci/chromeos-amd64-generic-lacros-dbg",
     ],
+    gn_args = "ci/chromeos-amd64-generic-lacros-dbg",
 )
 
 try_.builder(
@@ -286,6 +349,13 @@ try_.builder(
         "ci/lacros-arm-generic-rel",
     ],
     builderless = not settings.is_main,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/lacros-arm-generic-rel",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -297,6 +367,7 @@ try_.builder(
         "ci/lacros-arm-generic-rel-skylab",
     ],
     contact_team_email = "chrome-desktop-engprod@google.com",
+    gn_args = "ci/lacros-arm-generic-rel-skylab",
     main_list_view = "try",
 )
 
@@ -306,6 +377,12 @@ try_.builder(
     mirrors = [
         "ci/lacros-arm64-generic-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/lacros-arm64-generic-rel",
+            "dcheck_always_on",
+        ],
+    ),
     main_list_view = "try",
 )
 
@@ -316,6 +393,7 @@ try_.builder(
         "ci/lacros-arm64-generic-rel-skylab",
     ],
     contact_team_email = "chrome-desktop-engprod@google.com",
+    gn_args = "ci/lacros-arm64-generic-rel-skylab",
     main_list_view = "try",
 )
 
@@ -330,6 +408,13 @@ try_.builder(
         is_compile_only = True,
     ),
     builderless = not settings.is_main,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-chromeos-dbg",
+            "no_symbols",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
@@ -362,6 +447,12 @@ try_.builder(
     mirrors = [
         "ci/chromeos-jacuzzi-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/chromeos-jacuzzi-rel",
+            "dcheck_always_on",
+        ],
+    ),
     main_list_view = "try",
 )
 
@@ -383,6 +474,7 @@ try_.builder(
     mirrors = [
         "ci/chromeos-octopus-rel",
     ],
+    gn_args = "ci/chromeos-octopus-rel",
     main_list_view = "try",
 )
 
@@ -399,6 +491,17 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
         "chromium.pre_retry_shards_without_patch_compile": 100,
     },
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-chromeos-rel",
+            "release_try_builder",
+            "no_symbols",
+            "use_clang_coverage",
+            "partial_code_coverage_instrumentation",
+            "enable_dangling_raw_ptr_feature_flag",
+            "enable_backup_ref_ptr_feature_flag",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
@@ -422,6 +525,7 @@ try_.builder(
     mirrors = [
         "ci/linux-lacros-dbg",
     ],
+    gn_args = "ci/linux-lacros-dbg",
 )
 
 try_.orchestrator_builder(
@@ -437,6 +541,16 @@ try_.orchestrator_builder(
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-lacros-builder-rel",
+            "release_try_builder",
+            "clang",
+            "use_clang_coverage",
+            "partial_code_coverage_instrumentation",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
@@ -461,6 +575,12 @@ try_.builder(
     mirrors = [
         "ci/linux-chromeos-dbg",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-chromeos-dbg",
+            "use_dummy_lastchange",
+        ],
+    ),
 )
 
 try_.builder(
@@ -475,6 +595,12 @@ try_.builder(
     mirrors = [
         "ci/linux-cfm-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-cfm-rel",
+            "release_try_builder",
+        ],
+    ),
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     tryjob = try_.job(
         location_filters = [
