@@ -165,8 +165,8 @@ WHERE
   (ARRAY_TO_STRING(ft.typ_expectations, '') = "Pass" OR
    ARRAY_TO_STRING(ft.typ_expectations, '') = "PassSlow") AND
   pt.name IS NULL AND
-  (STARTS_WITH(step_name, 'blink_wpt_tests') OR
-   STARTS_WITH(step_name, 'blink_web_tests'))
+  (STARTS_WITH(ft.step_name, 'blink_wpt_tests') OR
+   STARTS_WITH(ft.step_name, 'blink_web_tests'))
 """.format(
     sheriff_rotations_ci_builds_subquery=SHERIFF_ROTATIONS_CI_BUILDS_SUBQUERY)
 
