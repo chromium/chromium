@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -26,10 +27,17 @@
 
 namespace autofill {
 
-using base::android::JavaRef;
-using content::BrowserThread;
-using mojom::SubmissionSource;
-using FieldInfo = AutofillProviderAndroidBridge::FieldInfo;
+namespace {
+
+using ::autofill::mojom::SubmissionSource;
+using ::base::android::JavaRef;
+using ::content::BrowserThread;
+using FieldInfo = ::autofill::AutofillProviderAndroidBridge::FieldInfo;
+
+constexpr int kMinimumSdkVersionForPrefillRequests =
+    base::android::SdkVersion::SDK_VERSION_U;
+
+}  // namespace
 
 // static
 void AutofillProviderAndroid::CreateForWebContents(
@@ -430,6 +438,13 @@ SessionId AutofillProviderAndroid::GetSessionId() {
                          ? kMinimumSessionId
                          : SessionId(last_session_id_.value() + 1);
   return last_session_id_;
+}
+
+bool AutofillProviderAndroid::ArePrefillRequestsSupported() const {
+  return base::android::BuildInfo::GetInstance()->sdk_int() >=
+             kMinimumSdkVersionForPrefillRequests &&
+         base::FeatureList::IsEnabled(
+             features::kAndroidAutofillPrefillRequestsForLoginForms);
 }
 
 }  // namespace autofill

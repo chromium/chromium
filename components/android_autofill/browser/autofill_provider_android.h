@@ -130,6 +130,10 @@ class AutofillProviderAndroid : public AutofillProvider,
   // form fields uniquely to the Android Autofill framework.
   SessionId GetSessionId();
 
+  // Returns whether prefill requests are supported. This depends on the
+  // Android version.
+  bool ArePrefillRequestsSupported() const;
+
   // The form of the current session (queried input or changed select box).
   std::unique_ptr<FormDataAndroid> form_;
 

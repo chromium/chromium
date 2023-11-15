@@ -220,6 +220,9 @@ public final class ProductionSupportedFlagList {
                 "When enabled, form submissions are reported to AutofillManager iff the form "
                         + "global ids match."),
         Flag.baseFeature(
+                AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME,
+                "When enabled, prefill requests are supported for login forms."),
+        Flag.baseFeature(
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_SUPPORT_VISIBILITY_CHANGES_NAME,
                 "Enables communicating visibility changes of form fields of a form in an "
                         + "ongoing Autofill session to Android AutofillManager."),

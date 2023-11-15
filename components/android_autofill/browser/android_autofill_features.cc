@@ -15,6 +15,7 @@ namespace {
 
 const base::Feature* kFeaturesExposedToJava[] = {
     &kAndroidAutofillFormSubmissionCheckById,
+    &kAndroidAutofillPrefillRequestsForLoginForms,
     &kAndroidAutofillSupportVisibilityChanges,
     &kAndroidAutofillViewStructureWithFormHierarchyLayer,
 };
@@ -29,6 +30,15 @@ const base::Feature* kFeaturesExposedToJava[] = {
 // their fields to be identical.
 BASE_FEATURE(kAndroidAutofillFormSubmissionCheckById,
              "AndroidAutofillFormSubmissionCheckById",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, prefill requests (i.e. calls to
+// `AutofillManager.notifyVirtualViewsReady`) are supported. Such prefill
+// requests are sent at most once per WebView session and are limited to forms
+// that are assumed to be login forms.
+// Future features may extend prefill requests to more form types.
+BASE_FEATURE(kAndroidAutofillPrefillRequestsForLoginForms,
+             "AndroidAutofillPrefillRequestsForLoginForms",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, visibility changes of form fields of the form of an ongoing

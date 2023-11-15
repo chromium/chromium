@@ -20,6 +20,8 @@ import org.chromium.base.Features;
 public class AndroidAutofillFeatures extends Features {
     public static final String ANDROID_AUTOFILL_FORM_SUBMISSION_CHECK_BY_ID_NAME =
             "AndroidAutofillFormSubmissionCheckById";
+    public static final String ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME =
+            "AndroidAutofillPrefillRequestsForLoginForms";
     public static final String ANDROID_AUTOFILL_SUPPORT_VISIBILITY_CHANGES_NAME =
             "AndroidAutofillSupportVisibilityChanges";
     public static final String ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME =
@@ -27,11 +29,14 @@ public class AndroidAutofillFeatures extends Features {
 
     public static final AndroidAutofillFeatures ANDROID_AUTOFILL_FORM_SUBMISSION_CHECK_BY_ID =
             new AndroidAutofillFeatures(0, ANDROID_AUTOFILL_FORM_SUBMISSION_CHECK_BY_ID_NAME);
+    public static final AndroidAutofillFeatures ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS =
+            new AndroidAutofillFeatures(1, ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME);
     public static final AndroidAutofillFeatures ANDROID_AUTOFILL_SUPPORT_VISIBILITY_CHANGES =
-            new AndroidAutofillFeatures(1, ANDROID_AUTOFILL_SUPPORT_VISIBILITY_CHANGES_NAME);
+            new AndroidAutofillFeatures(2, ANDROID_AUTOFILL_SUPPORT_VISIBILITY_CHANGES_NAME);
     public static final AndroidAutofillFeatures
-            ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER = new AndroidAutofillFeatures(
-                    2, ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME);
+            ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER =
+                    new AndroidAutofillFeatures(
+                            3, ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME);
 
     private final int mOrdinal;
 
