@@ -114,6 +114,7 @@ bool IsSecureAppCommandExePath(UpdaterScope scope,
                                const base::FilePath& exe_path) {
   return exe_path.IsAbsolute() &&
          (!IsSystemInstall(scope) ||
+          IsParentOf(base::DIR_PROGRAM_FILES, exe_path) ||
           IsParentOf(base::DIR_PROGRAM_FILESX86, exe_path) ||
           IsParentOf(base::DIR_PROGRAM_FILES6432, exe_path));
 }
