@@ -2279,6 +2279,7 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
             "update_url=?,"
             "trusted_bidding_signals_url=?,"
             "trusted_bidding_signals_keys=?,"
+            "user_bidding_signals=?,"
             "ads_pb=?,"
             "ad_components_pb=?,"
             "ad_sizes=?,"
@@ -2310,22 +2311,27 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
   store_group.BindString(11, Serialize(group.update_url));
   store_group.BindString(12, Serialize(group.trusted_bidding_signals_url));
   store_group.BindString(13, Serialize(group.trusted_bidding_signals_keys));
-  store_group.BindBlob(14, Serialize(group.ads));
-  store_group.BindBlob(15, Serialize(group.ad_components));
-  store_group.BindString(16, Serialize(group.ad_sizes));
-  store_group.BindString(17, Serialize(group.size_groups));
-  store_group.BindInt64(18, Serialize(group.auction_server_request_flags));
-  store_group.BindBlob(19, Serialize(group.additional_bid_key));
+  if (group.user_bidding_signals) {
+    store_group.BindString(14, group.user_bidding_signals.value());
+  } else {
+    store_group.BindNull(14);
+  }
+  store_group.BindBlob(15, Serialize(group.ads));
+  store_group.BindBlob(16, Serialize(group.ad_components));
+  store_group.BindString(17, Serialize(group.ad_sizes));
+  store_group.BindString(18, Serialize(group.size_groups));
+  store_group.BindInt64(19, Serialize(group.auction_server_request_flags));
+  store_group.BindBlob(20, Serialize(group.additional_bid_key));
   if (group.aggregation_coordinator_origin) {
-    store_group.BindString(20,
+    store_group.BindString(21,
                            Serialize(*group.aggregation_coordinator_origin));
   } else {
-    store_group.BindNull(20);
+    store_group.BindNull(21);
   }
-  store_group.BindInt64(21, group.EstimateSize());
+  store_group.BindInt64(22, group.EstimateSize());
 
-  store_group.BindString(22, Serialize(group.owner));
-  store_group.BindString(23, group.name);
+  store_group.BindString(23, Serialize(group.owner));
+  store_group.BindString(24, group.name);
 
   return store_group.Run();
 }
@@ -2400,6 +2406,9 @@ bool DoUpdateInterestGroup(sql::Database& db,
   if (update.trusted_bidding_signals_keys) {
     stored_group.trusted_bidding_signals_keys =
         std::move(update.trusted_bidding_signals_keys);
+  }
+  if (update.user_bidding_signals) {
+    stored_group.user_bidding_signals = std::move(update.user_bidding_signals);
   }
   if (update.ads) {
     stored_group.ads = std::move(update.ads);

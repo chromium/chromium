@@ -46,6 +46,7 @@
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/storage_interest_group.h"
@@ -727,7 +728,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
          blink::features::kFledgeClearOriginJoinedAdInterestGroups,
          blink::features::kFledgeNegativeTargeting,
          blink::features::kPrivateAggregationApiMultipleCloudProviders,
-         aggregation_service::kAggregationServiceMultipleCloudProviders},
+         aggregation_service::kAggregationServiceMultipleCloudProviders,
+         features::kEnableUpdatingUserBiddingSignals},
         /*disabled_features=*/{});
     fenced_frame_feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
@@ -1415,6 +1417,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 "trustedBiddingSignalsURL":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
+"userBiddingSignals": {"test":10},
 "updateURL": "%s/interest_group/new_daily_update_partial.json",
 "ads": [{"renderURL": "%s/new_ad_render_url",
          "sizeGroup": "group_new",
@@ -1460,6 +1463,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
+  interest_group.user_bidding_signals.emplace();
+  interest_group.user_bidding_signals = "{\"test\":4}";
   interest_group.ads.emplace();
   std::vector<url::Origin> allowed_reporting_origins = {kOriginF};
   blink::InterestGroup::Ad ad(
@@ -1539,6 +1544,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   ASSERT_TRUE(group.trusted_bidding_signals_keys.has_value());
   EXPECT_EQ(group.trusted_bidding_signals_keys->size(), 1u);
   EXPECT_EQ(group.trusted_bidding_signals_keys.value()[0], "new_key");
+  ASSERT_TRUE(group.user_bidding_signals.has_value());
+  EXPECT_EQ(group.user_bidding_signals.value(), "{\"test\":10}");
+
   ASSERT_TRUE(group.update_url.has_value());
   EXPECT_EQ(
       group.update_url->spec(),
@@ -9585,6 +9593,64 @@ function scoreAd(
 
   // privateAggregation should cause a ReferenceError.
   EXPECT_EQ(auction_result, absl::nullopt);
+}
+
+class AdAuctionServiceImplUpdateUserBiddingSignalsDisabledTest
+    : public AdAuctionServiceImplTest {
+ public:
+  AdAuctionServiceImplUpdateUserBiddingSignalsDisabledTest() {
+    feature_list_.InitAndDisableFeature(
+        features::kEnableUpdatingUserBiddingSignals);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(AdAuctionServiceImplUpdateUserBiddingSignalsDisabledTest,
+       DisabledUserBiddingSignalsTest) {
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+"userBiddingSignals": {"new":10},
+"ads": [{
+  "renderURL": "https://example.com/new_render",
+  "unsupportedField": "InAd"
+        }],
+"adComponents": [{
+  "renderURL": "https://example.com/new_component",
+  "unsupportedField": "InAdComponent"
+        }]
+})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.user_bidding_signals.emplace();
+  interest_group.user_bidding_signals = "{\"old\":4}";
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
+  interest_group.trusted_bidding_signals_keys.emplace();
+  interest_group.trusted_bidding_signals_keys->push_back("key1");
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  auto groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups->size(), 1u);
+  const auto& group = groups->GetInterestGroups()[0]->interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/new_render");
+  ASSERT_EQ(group.ad_components->size(), 1u);
+  EXPECT_EQ(group.ad_components.value()[0].render_url.spec(),
+            "https://example.com/new_component");
+  EXPECT_EQ(group.user_bidding_signals.value(), "{\"old\":4}");
 }
 
 class AdAuctionServiceImplKAnonTest

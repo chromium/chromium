@@ -28,6 +28,7 @@
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "components/aggregation_service/features.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/interest_group_update.h"
@@ -284,6 +285,25 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   return true;
 }
 
+// Copies the userBiddingSignals JSON "any" field into
+// `interest_group_update` as a string, returns true iff re-serialization
+// succeeded and the copy completed.
+[[nodiscard]] bool TryToCopyUserBiddingSignals(
+    const base::Value::Dict& dict,
+    InterestGroupUpdate& interest_group_update) {
+  const base::Value* maybe_user_bidding_signals =
+      dict.Find("userBiddingSignals");
+  if (!maybe_user_bidding_signals) {
+    return true;
+  }
+  std::string user_bidding_signals;
+  JSONStringValueSerializer serializer(&user_bidding_signals);
+  if (!serializer.Serialize(*maybe_user_bidding_signals)) {
+    return false;
+  }
+  interest_group_update.user_bidding_signals = std::move(user_bidding_signals);
+  return true;
+}
 // Helper for TryToCopyAds() and TryToCopyAdComponents().
 [[nodiscard]] absl::optional<std::vector<blink::InterestGroup::Ad>> ExtractAds(
     const base::Value::List& ads_list,
@@ -614,6 +634,12 @@ absl::optional<InterestGroupUpdate> ParseUpdateJson(
   }
   if (!TryToCopyTrustedBiddingSignalsKeys(*dict, interest_group_update)) {
     return absl::nullopt;
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kEnableUpdatingUserBiddingSignals)) {
+    if (!TryToCopyUserBiddingSignals(*dict, interest_group_update)) {
+      return absl::nullopt;
+    }
   }
   if (!TryToCopyAds(*dict, interest_group_update)) {
     return absl::nullopt;
