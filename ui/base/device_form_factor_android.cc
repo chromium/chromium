@@ -10,6 +10,11 @@
 
 namespace ui {
 
+// TODO(crbug.com/1501069): Need to land a long-term solution to return
+// foldable, either by exposing ui_mode or returning foldable here after
+// auditing usages. Currently we are temporarily returning the foldable form
+// factor in VariationsServiceClient::GetCurrentFormFactor() and
+// FormFactorMetricsProvider::GetFormFactor() for UMA.
 DeviceFormFactor GetDeviceFormFactor() {
   if (base::android::BuildInfo::GetInstance()->is_tv()) {
     return DEVICE_FORM_FACTOR_TV;

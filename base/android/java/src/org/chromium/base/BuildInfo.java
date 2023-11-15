@@ -133,6 +133,7 @@ public class BuildInfo {
             targetsAtLeastU() ? "1" : "0",
             Build.VERSION.CODENAME,
             String.valueOf(vulkanDeqpLevel),
+            isFoldable ? "1" : "0",
         };
     }
 

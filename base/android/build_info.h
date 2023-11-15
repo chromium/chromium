@@ -160,6 +160,8 @@ class BASE_EXPORT BuildInfo {
 
   const char* codename() const { return codename_; }
 
+  bool is_foldable() const { return is_foldable_; }
+
   // Available only on Android T+.
   int32_t vulkan_deqp_level() const { return vulkan_deqp_level_; }
 
@@ -204,6 +206,7 @@ class BASE_EXPORT BuildInfo {
   const bool targets_at_least_u_;
   const char* const codename_;
   const int32_t vulkan_deqp_level_;
+  const bool is_foldable_;
 };
 
 }  // namespace base::android

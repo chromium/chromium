@@ -518,13 +518,14 @@ TEST_F(FieldTrialUtilTest,
       Study::PHONE,
       Study::TABLET,
       Study::MEET_DEVICE,
+      Study::FOLDABLE,
   };
   const FieldTrialTestingExperimentParams array_kFieldTrialConfig_params[] =
       {{"x", "1"}, {"y", "2"}};
   const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments[] = {
-      {"TestGroup", &platform, 1, form_factors, 4, absl::nullopt, nullptr,
-       array_kFieldTrialConfig_params, 2, nullptr, 0, nullptr, 0, nullptr,
-       nullptr, 0},
+      {"TestGroup", &platform, 1, form_factors, std::size(form_factors),
+       absl::nullopt, nullptr, array_kFieldTrialConfig_params, 2, nullptr, 0,
+       nullptr, 0, nullptr,nullptr, 0},
   };
   const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] =
       {{"TestTrial", array_kFieldTrialConfig_experiments, 1}};
