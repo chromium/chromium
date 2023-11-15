@@ -236,6 +236,10 @@ void PlusAddressCreationDialogDelegate::ShowConfirmResult(
     const PlusProfileOrError& maybe_plus_profile) {
   CHECK(plus_address_label_);
   CHECK(GetWidget());
+  CHECK(GetBubbleFrameView());
+
+  // Stop indicating loading now that we have the server response.
+  GetBubbleFrameView()->SetProgress(absl::nullopt);
 
   if (maybe_plus_profile.has_value()) {
     GetWidget()->CloseWithReason(
@@ -248,9 +252,13 @@ void PlusAddressCreationDialogDelegate::ShowConfirmResult(
 }
 
 void PlusAddressCreationDialogDelegate::HandleButtonPress(ButtonType type) {
+  CHECK(GetBubbleFrameView());
+
   switch (type) {
     case ButtonType::kConfirm: {
       controller_->OnConfirmed();
+      // Show a progress bar that loops until the Confirm request is resolved.
+      GetBubbleFrameView()->SetProgress(-1);
       return;
     }
     case ButtonType::kCancel: {
