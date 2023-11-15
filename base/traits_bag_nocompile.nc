@@ -26,9 +26,8 @@ struct TestTraits {
     ValidTrait(BooleanTrait);
   };
 
-  template <class... ArgTypes,
-            class CheckArgumentsAreValid = std::enable_if_t<
-                trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>::value>>
+  template <class... ArgTypes>
+    requires trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>
   constexpr TestTraits(ArgTypes... args)
       : required_trait(trait_helpers::GetEnum<RequiredTrait>(args...)),
         boolean_trait(trait_helpers::HasTrait<BooleanTrait, ArgTypes...>()) {}

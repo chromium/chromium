@@ -35,10 +35,9 @@ class WebAppTest : public content::RenderViewHostTestHarness {
     explicit ValidTraits(WithTestUrlLoaderFactory);
   };
 
-  template <typename... WebAppTestTraits,
-            class CheckArgumentsAreValid = std::enable_if_t<
-                base::trait_helpers::
-                    AreValidTraits<ValidTraits, WebAppTestTraits...>::value>>
+  template <typename... WebAppTestTraits>
+    requires base::trait_helpers::AreValidTraits<ValidTraits,
+                                                 WebAppTestTraits...>
   explicit WebAppTest(WebAppTestTraits&&... traits)
       : content::RenderViewHostTestHarness(
             base::trait_helpers::Exclude<WithTestUrlLoaderFactory>::Filter(

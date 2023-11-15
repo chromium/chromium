@@ -148,11 +148,9 @@ class BrowserTaskEnvironment : public base::test::TaskEnvironment {
   // TaskEnvironment and optionally request a real IO thread. Unlike
   // TaskEnvironment the default MainThreadType for
   // BrowserTaskEnvironment is MainThreadType::UI.
-  template <
-      typename... TaskEnvironmentTraits,
-      class CheckArgumentsAreValid = std::enable_if_t<
-          base::trait_helpers::AreValidTraits<ValidTraits,
-                                              TaskEnvironmentTraits...>::value>>
+  template <typename... TaskEnvironmentTraits>
+    requires base::trait_helpers::AreValidTraits<ValidTraits,
+                                                 TaskEnvironmentTraits...>
   NOINLINE explicit BrowserTaskEnvironment(TaskEnvironmentTraits... traits)
       : BrowserTaskEnvironment(
             CreateTaskEnvironmentWithPriorities(
