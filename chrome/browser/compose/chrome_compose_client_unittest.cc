@@ -108,11 +108,11 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   void ShowDialogAndBindMojoWithFieldData(
       autofill::FormFieldData field_data,
-      ComposeCallback callback = base::NullCallback()) {
-    // Show the dialog.
-    client().ShowComposeDialog(
-        autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
-        field_data, std::nullopt, std::move(callback));
+      ComposeCallback callback = base::NullCallback(),
+      autofill::AutofillComposeDelegate::UiEntryPoint entry_point =
+          autofill::AutofillComposeDelegate::UiEntryPoint::kContextMenu) {
+    client().ShowComposeDialog(entry_point, field_data, std::nullopt,
+                               std::move(callback));
 
     BindMojo();
   }
@@ -171,6 +171,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   void TearDown() override {
     client_ = nullptr;
+    compose::ResetConfigForTesting();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -588,11 +589,10 @@ TEST_F(ChromeComposeClientTest, TestClearStateWhenOpenWithSelectedText) {
 }
 
 TEST_F(ChromeComposeClientTest, TestInputParams) {
-  compose::Config config;
+  compose::Config& config = compose::GetMutableConfigForTesting();
   config.input_min_words = 5;
   config.input_max_words = 20;
   config.input_max_chars = 100;
-  compose::SetComposeConfigForTesting(config);
   ShowDialogAndBindMojo();
 
   base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
@@ -939,9 +939,57 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeDisabled) {
                                  kOptimizationGuideModelExecution,
                              {}}},
       /*disabled_features=*/{});
+  // Needed for feature flags to apply.
+  compose::ResetConfigForTesting();
 
   SetSelection(u"testing alpha bravo charlie");
   ShowDialogAndBindMojo();
+}
+
+TEST_F(ChromeComposeClientTest, TestNoAutoComposeWithPopup) {
+  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _)).Times(0);
+  SetSelection(u"a");  // too short to cause auto compose.
+
+  ShowDialogAndBindMojo();
+
+  SetSelection(u"testing alpha bravo charlie");
+
+  // Show again.
+  ShowDialogAndBindMojoWithFieldData(
+      field_data(), base::NullCallback(),
+      autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup);
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+  compose::mojom::OpenMetadataPtr result = open_test_future.Take();
+  EXPECT_FALSE(result->compose_state->has_pending_request);
+}
+
+TEST_F(ChromeComposeClientTest, TestAutoComposeWithRepeatedRightClick) {
+  base::test::TestFuture<void> execute_model_future;
+  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
+      .WillOnce(base::test::RunOnceClosure(execute_model_future.GetCallback()));
+
+  SetSelection(u"a");  // too short to cause auto compose.
+
+  ShowDialogAndBindMojo();
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+  compose::mojom::OpenMetadataPtr result = open_test_future.Take();
+  EXPECT_FALSE(result->compose_state->has_pending_request);
+
+  std::u16string selection = u"testing alpha bravo charlie";
+  SetSelection(selection);
+
+  // Show again.
+  ShowDialogAndBindMojo();
+
+  EXPECT_TRUE(execute_model_future.Wait());
+
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+  result = open_test_future.Take();
+  EXPECT_TRUE(result->compose_state->has_pending_request);
+  EXPECT_EQ(base::UTF16ToUTF8(selection), result->initial_input);
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)

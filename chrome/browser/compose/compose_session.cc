@@ -294,9 +294,17 @@ void ComposeSession::OpenBugReportingLink() {
       /* is_renderer_initiated= */ false));
 }
 
-void ComposeSession::InitializeWithText(const std::string& text) {
-  initial_input_ = text;
+void ComposeSession::InitializeWithText(
+    const std::optional<std::string>& text) {
   RefreshInnerText();
+
+  // If no text provided (even an empty string), then we are reopening without
+  // calling compose again, or updating the input text..
+  if (!text.has_value()) {
+    return;
+  }
+
+  initial_input_ = text.value();
 
   if (!IsValidComposePrompt(initial_input_) ||
       !compose::GetComposeConfig().auto_submit_with_selection) {

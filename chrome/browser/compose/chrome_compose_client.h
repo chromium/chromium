@@ -43,6 +43,7 @@ class ChromeComposeClient
       public content::WebContentsUserData<ChromeComposeClient>,
       public compose::mojom::ComposeClientPageHandler {
  public:
+  using EntryPoint = autofill::AutofillComposeDelegate::UiEntryPoint;
   ChromeComposeClient(const ChromeComposeClient&) = delete;
   ChromeComposeClient& operator=(const ChromeComposeClient&) = delete;
   ~ChromeComposeClient() override;
@@ -50,7 +51,7 @@ class ChromeComposeClient
   // compose::ComposeClient:
   compose::ComposeManager& GetManager() override;
   void ShowComposeDialog(
-      autofill::AutofillComposeDelegate::UiEntryPoint ui_entry_point,
+      EntryPoint ui_entry_point,
       const autofill::FormFieldData& trigger_field,
       std::optional<autofill::AutofillClient::PopupScreenLocation>
           popup_screen_location,
@@ -111,7 +112,8 @@ class ChromeComposeClient
   // Creates a session for `trigger_field` and initializes it as necessary.
   // `callback` is a callback to the renderer to insert the compose response
   // into the compose field.
-  void CreateOrUpdateSession(const autofill::FormFieldData& trigger_field,
+  void CreateOrUpdateSession(EntryPoint ui_entry_point,
+                             const autofill::FormFieldData& trigger_field,
                              ComposeCallback callback);
 
   // Set the exit reason for a session.

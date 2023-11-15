@@ -16,7 +16,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/compose/core/browser/compose_features.h"  // nogncheck - https://crbug.com/1125897
+#include "components/compose/core/browser/compose_features.h"
+#include "components/compose/core/browser/config.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -105,6 +106,11 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
     AddTab(browser(), GURL(kExampleURL));
     context_menu_params_.is_content_editable_for_autofill = true;
     context_menu_params_.frame_origin = GetOrigin();
+  }
+
+  void TearDown() override {
+    compose::ResetConfigForTesting();
+    BrowserWithTestWindowTest::TearDown();
   }
 
   void SignIn(signin::ConsentLevel consent_level) {
@@ -385,7 +391,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageBypassTest) {
   // Enable the feature.
   compose_enabling.SetEnabledForTesting();
   std::string autocomplete_attribute;
-  bool has_saved_state = false;
+  bool has_saved_state = true;
 
   // Set the mock language to something we don't support. "eo" is Esperanto.
   // Not expected to be called.
@@ -414,34 +420,42 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupAutocompleteTest) {
       has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
 }
 
-TEST_F(ComposeEnablingTest, ShouldTriggerPopupSavedStateTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
-  // Enable everything..
-  compose_enabling.SetEnabledForTesting();
-  std::string autocomplete_attribute;
-  // We have saved state.
-  bool has_saved_state = true;
-
-  // Set the language to something we support.
-  SetLanguage("en");
-
-  EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
-      autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
-      has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
-}
-
-TEST_F(ComposeEnablingTest, ShouldTriggerPopupAllEnabledTest) {
+TEST_F(ComposeEnablingTest, ShouldTriggerPopupWithSavedStateTest) {
   ComposeEnabling compose_enabling(&mock_translate_language_provider_);
   // Enable everything.
   compose_enabling.SetEnabledForTesting();
   std::string autocomplete_attribute;
-  bool has_saved_state = false;
 
-  SetLanguage("en");
+  std::vector<std::pair<bool, bool>> tests = {
+      // config: popup with, popup without. expect: trigger with, trigger
+      // without.
+      {true, true},
+      {true, false},
+      {false, true},
+      {false, false}};
 
-  EXPECT_TRUE(compose_enabling.ShouldTriggerPopup(
-      autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
-      has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
+  bool popup_with_state, popup_without_state;
+  for (auto it = tests.begin(); it != tests.end(); ++it) {
+    std::tie(popup_with_state, popup_without_state) = *it;
+
+    compose::Config& config = compose::GetMutableConfigForTesting();
+    config.popup_with_saved_state = popup_with_state;
+    config.popup_with_no_saved_state = popup_without_state;
+
+    SetLanguage("en");
+
+    EXPECT_EQ(popup_with_state, compose_enabling.ShouldTriggerPopup(
+                                    autocomplete_attribute, GetProfile(),
+                                    mock_translate_manager_.get(),
+                                    /*has_saved_state=*/true, GetOrigin(),
+                                    GetOrigin(), GURL(kExampleURL)));
+
+    EXPECT_EQ(popup_without_state, compose_enabling.ShouldTriggerPopup(
+                                       autocomplete_attribute, GetProfile(),
+                                       mock_translate_manager_.get(),
+                                       /*has_saved_state=*/false, GetOrigin(),
+                                       GetOrigin(), GURL(kExampleURL)));
+  }
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupNudgeDisabledTest) {
@@ -451,15 +465,37 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupNudgeDisabledTest) {
       {compose::features::kEnableComposeNudge});
 
   ComposeEnabling compose_enabling(&mock_translate_language_provider_);
-  // Enable everything at the profile level.
+  // Enable everything.
   compose_enabling.SetEnabledForTesting();
+  std::string autocomplete_attribute;
 
-  // Set the language to something we support.
-  SetLanguage("en");
-  EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
-      "", GetProfile(), mock_translate_manager_.get(),
-      /* has_saved_state= */ false, GetOrigin(), GetOrigin(),
-      GURL(kExampleURL)));
+  std::vector<std::pair<bool, bool>> tests = {
+      // config: popup with, popup without. expect: trigger with, trigger
+      // without.
+      {true, true},
+      {true, false},
+      {false, true},
+      {false, false}};
+
+  bool popup_with_state, popup_without_state;
+  for (auto it = tests.begin(); it != tests.end(); ++it) {
+    std::tie(popup_with_state, popup_without_state) = *it;
+
+    compose::Config& config = compose::GetMutableConfigForTesting();
+    config.popup_with_saved_state = popup_with_state;
+    config.popup_with_no_saved_state = popup_without_state;
+
+    SetLanguage("en");
+
+    EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
+        autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
+        /*has_saved_state=*/true, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
+
+    EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
+        autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
+        /*has_saved_state=*/false, GetOrigin(), GetOrigin(),
+        GURL(kExampleURL)));
+  }
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupCrossOrigin) {

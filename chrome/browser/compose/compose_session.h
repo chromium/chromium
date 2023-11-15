@@ -87,7 +87,7 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   // Begins a Compose session, calling Compose immediately if the initial input
   // is valid.
-  void InitializeWithText(const std::string& text);
+  void InitializeWithText(const std::optional<std::string>& text);
 
   // Saves the last OK response state to the undo stack.
   void SaveLastOKStateToUndoStack();

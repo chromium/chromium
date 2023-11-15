@@ -95,12 +95,12 @@ void ChromeComposeClient::BindComposeDialog(
 }
 
 void ChromeComposeClient::ShowComposeDialog(
-    autofill::AutofillComposeDelegate::UiEntryPoint ui_entry_point,
+    EntryPoint ui_entry_point,
     const autofill::FormFieldData& trigger_field,
     std::optional<autofill::AutofillClient::PopupScreenLocation>
         popup_screen_location,
     ComposeCallback callback) {
-  CreateOrUpdateSession(trigger_field, std::move(callback));
+  CreateOrUpdateSession(ui_entry_point, trigger_field, std::move(callback));
   if (!skip_show_dialog_for_test_) {
     // The bounds given by autofill are relative to the top level frame. Here we
     // offset by the WebContents container to make up for that.
@@ -148,14 +148,18 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
 }
 
 void ChromeComposeClient::CreateOrUpdateSession(
+    EntryPoint ui_entry_point,
     const autofill::FormFieldData& trigger_field,
     ComposeCallback callback) {
   active_compose_field_id_ =
       std::make_optional<autofill::FieldGlobalId>(trigger_field.global_id());
   std::string selected_text = base::UTF16ToUTF8(trigger_field.selected_text);
   ComposeSession* current_session;
-  auto it = sessions_.find(active_compose_field_id_.value());
-  if (!selected_text.empty() || it == sessions_.end()) {
+
+  bool should_create_new_session_for_selection =
+      ui_entry_point != EntryPoint::kAutofillPopup && !selected_text.empty();
+  if (!HasSession(active_compose_field_id_.value()) ||
+      should_create_new_session_for_selection) {
     auto new_session = std::make_unique<ComposeSession>(
         &GetWebContents(), GetModelExecutor(), std::move(callback));
     current_session = new_session.get();
@@ -168,10 +172,13 @@ void ChromeComposeClient::CreateOrUpdateSession(
     compose::LogComposeDialogSelectionLength(
         utf8_chars.has_value() ? utf8_chars.value() : 0);
   } else {
+    auto it = sessions_.find(active_compose_field_id_.value());
     current_session = it->second.get();
     current_session->set_compose_callback(std::move(callback));
   }
-  current_session->InitializeWithText(selected_text);
+  current_session->InitializeWithText(should_create_new_session_for_selection
+                                          ? std::make_optional(selected_text)
+                                          : std::nullopt);
 }
 
 void ChromeComposeClient::RemoveActiveSession() {
@@ -219,10 +226,8 @@ ComposeEnabling& ChromeComposeClient::GetComposeEnabling() {
 
 bool ChromeComposeClient::ShouldTriggerPopup(
     const autofill::FormFieldData& form_field_data) {
-  // TODO(b/303502029): When we make an enum for return state, check to see if
-  // we have saved state for the current field, and offer the saved state
-  // bubble.
-  bool saved_state = !sessions_.empty();
+  bool saved_state =
+      sessions_.end() != sessions_.find(form_field_data.global_id());
   translate::TranslateManager* translate_manager =
       ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents());
   content::RenderFrameHost* top_level_frame =

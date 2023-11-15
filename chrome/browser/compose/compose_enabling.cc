@@ -11,6 +11,7 @@
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
+#include "components/compose/core/browser/config.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "compose_enabling.h"
 #include "content/public/browser/context_menu_params.h"
@@ -170,12 +171,17 @@ bool ComposeEnabling::ShouldTriggerPopup(
     return false;
   }
 
-  if (has_saved_state) {
-    DVLOG(2) << "has saved state";
-    return false;
-  }
+  auto& config = compose::GetComposeConfig();
 
-  // TODO(b/301609046): Add ContentEditable and TextArea checks.
+  if (has_saved_state) {
+    if (!config.popup_with_saved_state) {
+      return false;
+    }
+  } else {
+    if (!config.popup_with_no_saved_state) {
+      return false;
+    }
+  }
 
   return true;
 }
