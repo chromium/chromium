@@ -8,7 +8,6 @@
 #include "ash/shelf/shelf.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/unified/notification_icons_controller.h"
-#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -62,21 +61,14 @@ class NotificationCounterViewTest : public AshTestBase,
  protected:
   NotificationCounterView* GetNotificationCounterView() {
     auto* status_area_widget = GetPrimaryShelf()->status_area_widget();
-    return IsQsRevampEnabled() ? status_area_widget->notification_center_tray()
-                                     ->notification_icons_controller_
-                                     ->notification_counter_view()
-                               : status_area_widget->unified_system_tray()
-                                     ->notification_icons_controller_
-                                     ->notification_counter_view();
+    return status_area_widget->notification_center_tray()
+        ->notification_icons_controller_->notification_counter_view();
   }
 
   QuietModeView* GetDoNotDisturbIconView() {
     auto* status_area_widget = GetPrimaryShelf()->status_area_widget();
-    return IsQsRevampEnabled()
-               ? status_area_widget->notification_center_tray()
-                     ->notification_icons_controller_->quiet_mode_view()
-               : status_area_widget->unified_system_tray()
-                     ->notification_icons_controller_->quiet_mode_view();
+    return status_area_widget->notification_center_tray()
+        ->notification_icons_controller_->quiet_mode_view();
   }
 
  private:

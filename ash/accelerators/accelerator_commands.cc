@@ -366,22 +366,6 @@ void ShowToast(const std::string& id,
   Shell::Get()->toast_manager()->Show(std::move(toast));
 }
 
-void HandleToggleSystemTrayBubbleInternal(bool focus_message_center) {
-  aura::Window* target_root = Shell::GetRootWindowForNewWindows();
-  UnifiedSystemTray* tray = RootWindowController::ForWindow(target_root)
-                                ->GetStatusAreaWidget()
-                                ->unified_system_tray();
-  if (tray->IsBubbleShown()) {
-    tray->CloseBubble();
-  } else {
-    tray->ShowBubble();
-    tray->ActivateBubble();
-
-    if (focus_message_center)
-      tray->FocusMessageCenter(false, true);
-  }
-}
-
 // Enters capture mode image type with |source|.
 void EnterImageCaptureMode(CaptureModeSource source,
                            CaptureModeEntryType entry_type) {
@@ -1564,10 +1548,6 @@ void ToggleResizeLockMenu() {
 }
 
 void ToggleMessageCenterBubble() {
-  if (!features::IsQsRevampEnabled()) {
-    HandleToggleSystemTrayBubbleInternal(/*focus_message_center=*/true);
-    return;
-  }
   aura::Window* target_root = Shell::GetRootWindowForNewWindows();
   NotificationCenterTray* tray = RootWindowController::ForWindow(target_root)
                                      ->GetStatusAreaWidget()
@@ -1651,7 +1631,16 @@ void ToggleStylusTools() {
 }
 
 void ToggleSystemTrayBubble() {
-  HandleToggleSystemTrayBubbleInternal(false /*focus_message_center*/);
+  aura::Window* target_root = Shell::GetRootWindowForNewWindows();
+  UnifiedSystemTray* tray = RootWindowController::ForWindow(target_root)
+                                ->GetStatusAreaWidget()
+                                ->unified_system_tray();
+  if (tray->IsBubbleShown()) {
+    tray->CloseBubble();
+  } else {
+    tray->ShowBubble();
+    tray->ActivateBubble();
+  }
 }
 
 void ToggleUnifiedDesktop() {

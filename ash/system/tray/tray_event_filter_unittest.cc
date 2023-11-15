@@ -187,10 +187,6 @@ class TrayEventFilterTest : public AshTestBase {
     return GetPrimaryUnifiedSystemTray()->IsBubbleShown();
   }
 
-  bool IsMessageCenterBubbleShown() {
-    return GetPrimaryUnifiedSystemTray()->IsMessageCenterBubbleShown();
-  }
-
   UnifiedSystemTray* GetPrimaryUnifiedSystemTray() {
     return GetPrimaryShelf()->GetStatusAreaWidget()->unified_system_tray();
   }

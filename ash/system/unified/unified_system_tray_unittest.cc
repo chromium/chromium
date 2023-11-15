@@ -360,38 +360,10 @@ TEST_P(UnifiedSystemTrayTest, FocusQuickSettings) {
   auto* focus_manager = quick_settings_view->GetFocusManager();
   EXPECT_FALSE(quick_settings_view->Contains(focus_manager->GetFocusedView()));
 
-  // There's no `FocusQuickSettings` method in the new view. Press the tab key
-  // should focus on the first button in the qs bubble.
+  // Press the tab key should focus on the first button in the qs bubble.
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
   generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
   EXPECT_TRUE(quick_settings_view->Contains(focus_manager->GetFocusedView()));
-}
-
-TEST_P(UnifiedSystemTrayTest, FocusQuickSettings_BubbleNotShown) {
-  auto* tray = GetPrimaryUnifiedSystemTray();
-
-  auto did_focus = tray->FocusQuickSettings(false);
-
-  EXPECT_FALSE(did_focus);
-}
-
-TEST_P(UnifiedSystemTrayTest, FocusQuickSettings_VoxEnabled) {
-  auto* tray = GetPrimaryUnifiedSystemTray();
-  tray->ShowBubble();
-  auto* tray_bubble_widget = tray->bubble()->GetBubbleWidget();
-
-  Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
-
-  EXPECT_FALSE(tray_bubble_widget->IsActive());
-
-  auto did_focus = tray->FocusQuickSettings(false);
-
-  EXPECT_TRUE(did_focus);
-
-  auto* quick_settings_view = tray->bubble()->quick_settings_view();
-  auto* focus_manager = quick_settings_view->GetFocusManager();
-  EXPECT_TRUE(tray_bubble_widget->IsActive());
-  EXPECT_FALSE(quick_settings_view->Contains(focus_manager->GetFocusedView()));
 }
 
 TEST_P(UnifiedSystemTrayTest, TimeInQuickSettingsMetric) {

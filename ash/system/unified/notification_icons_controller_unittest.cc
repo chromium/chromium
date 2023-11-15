@@ -16,7 +16,6 @@
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "ash/system/unified/notification_counter_view.h"
-#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/message_center/message_center.h"
@@ -119,10 +118,8 @@ class NotificationIconsControllerTest
  protected:
   NotificationIconsController* GetNotificationIconsController() {
     auto* status_area_widget = GetPrimaryShelf()->status_area_widget();
-    return IsQsRevampEnabled() ? status_area_widget->notification_center_tray()
-                                     ->notification_icons_controller_.get()
-                               : status_area_widget->unified_system_tray()
-                                     ->notification_icons_controller_.get();
+    return status_area_widget->notification_center_tray()
+        ->notification_icons_controller_.get();
   }
   int notification_id_ = 0;
 

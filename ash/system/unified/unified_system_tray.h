@@ -19,7 +19,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ui {
@@ -40,7 +39,6 @@ class HotspotTrayView;
 class ImeModeView;
 class ManagedDeviceTrayItemView;
 class NetworkTrayView;
-class NotificationIconsController;
 class PrivacyScreenToastController;
 class Shelf;
 class TrayBubbleView;
@@ -66,8 +64,7 @@ class ASH_EXPORT UnifiedSystemTray
     : public TrayBackgroundView,
       public ShelfConfig::Observer,
       public UnifiedSystemTrayController::Observer,
-      public TabletModeObserver,
-      public message_center::MessageCenterObserver {
+      public TabletModeObserver {
   METADATA_HEADER(UnifiedSystemTray, TrayBackgroundView)
 
  public:
@@ -107,9 +104,6 @@ class ASH_EXPORT UnifiedSystemTray
   // Gets the slider view of the slider bubble.
   UnifiedSliderView* GetSliderView() const;
 
-  // True if the bubble containing notifications is visible..
-  bool IsMessageCenterBubbleShown() const;
-
   // True if the bubble is active.
   bool IsBubbleActive() const;
 
@@ -142,25 +136,10 @@ class ASH_EXPORT UnifiedSystemTray
   // open when disabling, also close it.
   void SetTrayEnabled(bool enabled);
 
-  // Set the target notification, which is visible in the viewport when the
-  // message center opens.
-  void SetTargetNotification(const std::string& notification_id);
-
   // Notifies the height of the secondary bubble (e.g. Volume/Brightness
   // sliders, Privacy screen/Autozoom toast) if one is showing so notification
   // popups or toasts won't overlap with it. Pass 0 if no bubble is shown.
   void NotifySecondaryBubbleHeight(int height);
-
-  // Transfer focus to the message center bubble. Will focus only on the message
-  // center if vox is enabled. Otherwise, will focus on the first element in the
-  // message center while honoring the `reverse` attribute that is passed in.
-  bool FocusMessageCenter(bool reverse, bool collapse_quick_settings = false);
-
-  // Transfer focus to the quick settings bubble. Will focus only on the quick
-  // settings bubble if vox is enabled. Otherwise, will focus on the first
-  // element in the quick settings while honoring the `reverse` attribute that
-  // is passed in.
-  bool FocusQuickSettings(bool reverse);
 
   // Called by `UnifiedSystemTrayBubble` when it is destroyed with the calendar
   // view in the foreground.
@@ -207,9 +186,6 @@ class ASH_EXPORT UnifiedSystemTray
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
 
-  // message_center::MessageCenterObserver:
-  void OnQuietModeChanged(bool in_quiet_mode) override;
-
   // Gets called when an action is performed on the `DateTray`.
   void OnDateTrayActionPerformed(const ui::Event& event);
 
@@ -234,24 +210,14 @@ class ASH_EXPORT UnifiedSystemTray
 
   CameraMicTrayItemView* mic_view() { return mic_view_; }
 
-  NotificationIconsController* notification_icons_controller() {
-    return notification_icons_controller_.get();
-  }
-
  private:
-  static const base::TimeDelta kNotificationCountUpdateDelay;
-
-  friend class NotificationCounterViewTest;
   friend class NotificationGroupingControllerTest;
-  friend class NotificationIconsControllerTest;
   friend class SystemTrayTestApi;
   friend class UnifiedSystemTrayTest;
 
   // Forwarded from `UiDelegate`.
   void ShowBubbleInternal();
   void HideBubbleInternal();
-  void UpdateNotificationInternal();
-  void UpdateNotificationAfterDelay();
 
   // Adds the tray item to the the unified system tray container. An unowned
   // pointer is stored in `tray_items_`.
@@ -275,10 +241,6 @@ class ASH_EXPORT UnifiedSystemTray
 
   std::unique_ptr<AutozoomToastController> autozoom_toast_controller_;
 
-  // Manages showing notification icons in the tray.
-  const std::unique_ptr<NotificationIconsController>
-      notification_icons_controller_;
-
   // Owned by the views hierarchy.
   raw_ptr<CurrentLocaleView, ExperimentalAsh> current_locale_view_ = nullptr;
   raw_ptr<ImeModeView, ExperimentalAsh> ime_mode_view_ = nullptr;
@@ -294,8 +256,6 @@ class ASH_EXPORT UnifiedSystemTray
 
   // Contains all tray items views added to tray_container().
   std::list<TrayItemView*> tray_items_;
-
-  base::OneShotTimer timer_;
 
   bool first_interaction_recorded_ = false;
 

@@ -37,8 +37,6 @@
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/ime_mode_view.h"
 #include "ash/system/unified/managed_device_tray_item_view.h"
-#include "ash/system/unified/notification_counter_view.h"
-#include "ash/system/unified/notification_icons_controller.h"
 #include "ash/system/unified/screen_capture_tray_item_view.h"
 #include "ash/system/unified/unified_slider_bubble_controller.h"
 #include "ash/system/unified/unified_slider_view.h"
@@ -54,7 +52,6 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -68,13 +65,10 @@ namespace ash {
 
 namespace {
 // The UMA histogram that records presentation time for opening QuickSettings
-// and Notification Center through Status Area button.
+// through `UnifiedSystemTray` button.
 constexpr char kStatusAreaShowBubbleHistogram[] =
     "Ash.StatusAreaShowBubble.PresentationTime";
 }  // namespace
-
-const base::TimeDelta UnifiedSystemTray::kNotificationCountUpdateDelay =
-    base::Milliseconds(100);
 
 UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
     : TrayBackgroundView(shelf,
@@ -84,12 +78,7 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
       slider_bubble_controller_(
           std::make_unique<UnifiedSliderBubbleController>(this)),
       privacy_screen_toast_controller_(
-          std::make_unique<PrivacyScreenToastController>(this)),
-      notification_icons_controller_(
-          features::IsQsRevampEnabled()
-              ? nullptr
-              : std::make_unique<NotificationIconsController>(shelf,
-                                                              model_.get())) {
+          std::make_unique<PrivacyScreenToastController>(this)) {
   SetCallback(base::BindRepeating(&UnifiedSystemTray::OnButtonPressed,
                                   base::Unretained(this)));
 
@@ -113,22 +102,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   time_view_ = AddTrayItemToContainer(
       std::make_unique<TimeTrayItemView>(shelf, TimeView::Type::kTime));
 
-  if (!features::IsQsRevampEnabled()) {
-    notification_icons_controller_->AddNotificationTrayItems(tray_container());
-    for (TrayItemView* tray_item :
-         notification_icons_controller_->tray_items()) {
-      tray_items_.push_back(tray_item);
-    }
-  }
 
   AddTrayItemToContainer(std::make_unique<ScreenCaptureTrayItemView>(shelf));
-
-  if (!features::IsQsRevampEnabled()) {
-    tray_items_.push_back(
-        notification_icons_controller_->notification_counter_view());
-
-    tray_items_.push_back(notification_icons_controller_->quiet_mode_view());
-  }
 
   if (features::IsSnoopingProtectionEnabled()) {
     AddTrayItemToContainer(std::make_unique<SnoopingProtectionView>(shelf));
@@ -171,13 +146,11 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
 
   ShelfConfig::Get()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
-  message_center::MessageCenter::Get()->AddObserver(this);
 }
 
 UnifiedSystemTray::~UnifiedSystemTray() {
   Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   ShelfConfig::Get()->RemoveObserver(this);
-  message_center::MessageCenter::Get()->RemoveObserver(this);
 
   DestroyBubble();
 }
@@ -221,10 +194,6 @@ bool UnifiedSystemTray::IsSliderBubbleShown() const {
 
 UnifiedSliderView* UnifiedSystemTray::GetSliderView() const {
   return slider_bubble_controller_->slider_view();
-}
-
-bool UnifiedSystemTray::IsMessageCenterBubbleShown() const {
-  return false;
 }
 
 bool UnifiedSystemTray::IsBubbleActive() const {
@@ -292,24 +261,6 @@ void UnifiedSystemTray::NotifySecondaryBubbleHeight(int height) {
   }
 }
 
-bool UnifiedSystemTray::FocusMessageCenter(bool reverse,
-                                           bool collapse_quick_settings) {
-  return false;
-}
-
-bool UnifiedSystemTray::FocusQuickSettings(bool reverse) {
-  if (!IsBubbleShown()) {
-    return false;
-  }
-
-  views::Widget* quick_settings_widget = bubble_->GetBubbleWidget();
-  quick_settings_widget->widget_delegate()->SetCanActivate(true);
-
-  Shell::Get()->focus_cycler()->FocusWidget(quick_settings_widget);
-
-  return true;
-}
-
 void UnifiedSystemTray::NotifyLeavingCalendarView() {
   for (auto& observer : observers_) {
     observer.OnLeavingCalendarView();
@@ -320,6 +271,8 @@ gfx::Rect UnifiedSystemTray::GetBubbleBoundsInScreen() const {
   return bubble_ ? bubble_->GetBoundsInScreen() : gfx::Rect();
 }
 
+// TODO(b/310298302) Remove or rename this method. Also remove the
+// `FirstInteractionType` enum.
 void UnifiedSystemTray::MaybeRecordFirstInteraction(FirstInteractionType type) {
   if (first_interaction_recorded_) {
     return;
@@ -387,12 +340,6 @@ void UnifiedSystemTray::OnTabletModeEnded() {
   UpdateLayout();
 }
 
-void UnifiedSystemTray::OnQuietModeChanged(bool in_quiet_mode) {
-  if (!features::IsQsRevampEnabled()) {
-    notification_icons_controller_->UpdateNotificationIndicators();
-  }
-}
-
 void UnifiedSystemTray::OnDateTrayActionPerformed(const ui::Event& event) {
   if (!bubble_) {
     ShowBubble();
@@ -430,11 +377,6 @@ void UnifiedSystemTray::SetTrayEnabled(bool enabled) {
   }
 
   SetEnabled(enabled);
-}
-
-void UnifiedSystemTray::SetTargetNotification(
-    const std::string& notification_id) {
-  model_->SetTargetNotification(notification_id);
 }
 
 void UnifiedSystemTray::ShowBubble() {
@@ -513,12 +455,6 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
                        ? managed_device_view_->image_view()->GetTooltipText()
                        : base::EmptyString16());
 
-  // `notification_icons_controller_` does not exist when QsRevamp is enabled.
-  status.push_back(
-      features::IsQsRevampEnabled()
-          ? base::EmptyString16()
-          : notification_icons_controller_->GetAccessibleNameString());
-
   status.push_back(ime_mode_view_->GetVisible()
                        ? ime_mode_view_->label()->GetAccessibleNameString()
                        : base::EmptyString16());
@@ -554,8 +490,8 @@ void UnifiedSystemTray::ShowBubbleInternal() {
 
   CloseSecondaryBubbles();
 
-  // Presentation time recorder for opening QuickSettings and Notification
-  // Center through Status Area button.
+  // Presentation time recorder for opening QuickSettings through
+  // UnifiedSystemTray button.
   auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
       shelf()->GetStatusAreaWidget()->GetCompositor(),
       kStatusAreaShowBubbleHistogram);
@@ -589,24 +525,6 @@ void UnifiedSystemTray::HideBubbleInternal() {
   SetIsActive(false);
 }
 
-void UnifiedSystemTray::UpdateNotificationInternal() {
-  // Limit update frequency in order to avoid flashing when 2 updates are
-  // incoming in a very short period of time. It happens when ARC++ apps
-  // creating bundled notifications.
-  if (!timer_.IsRunning()) {
-    timer_.Start(FROM_HERE, kNotificationCountUpdateDelay, this,
-                 &UnifiedSystemTray::UpdateNotificationAfterDelay);
-  }
-}
-
-void UnifiedSystemTray::UpdateNotificationAfterDelay() {
-  // Notification icons will be removed from system tray with the QsRevamp
-  // feature.
-  if (!features::IsQsRevampEnabled()) {
-    notification_icons_controller_->UpdateNotificationIndicators();
-  }
-}
-
 template <typename T>
 T* UnifiedSystemTray::AddTrayItemToContainer(
     std::unique_ptr<T> tray_item_view) {
@@ -624,7 +542,6 @@ void UnifiedSystemTray::DestroyBubble() {
 }
 
 void UnifiedSystemTray::UpdateTrayItemColor(bool is_active) {
-  DCHECK(chromeos::features::IsJellyEnabled());
   for (auto* tray_item : tray_items_) {
     tray_item->UpdateLabelOrImageViewColor(is_active);
   }
