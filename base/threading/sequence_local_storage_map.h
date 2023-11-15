@@ -57,7 +57,7 @@ class BASE_EXPORT SequenceLocalStorageMap {
 
     template <class T, class Deleter>
     void Destroy() {
-      Deleter()(&value_as<T>());
+      Deleter()(std::addressof(value_as<T>()));
     }
 
     template <typename T>

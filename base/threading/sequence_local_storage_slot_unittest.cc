@@ -10,6 +10,11 @@
 #include "base/threading/sequence_local_storage_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <wrl/client.h>
+#include <wrl/implements.h>
+#endif
+
 namespace base {
 
 namespace {
@@ -175,5 +180,38 @@ TEST(SequenceLocalStorageSlotMultipleMapTest, EmplaceGetMultipleMapsOneSlot) {
     EXPECT_EQ(*slot, i);
   }
 }
+
+#if BUILDFLAG(IS_WIN)
+namespace {
+class MockComClass
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IUnknown> {
+ public:
+  MockComClass() = default;
+  ~MockComClass() override = default;
+};
+}  // namespace
+
+TEST(SequenceLocalStorageComPtrTest, TestComPtrCanBeStored) {
+  internal::SequenceLocalStorageMap sequence_local_storage_map;
+  internal::ScopedSetSequenceLocalStorageMapForCurrentThread
+      scoped_sequence_local_storage(&sequence_local_storage_map);
+  SequenceLocalStorageSlot<Microsoft::WRL::ComPtr<IUnknown>> slot;
+  {
+    Microsoft::WRL::ComPtr<IUnknown> mock_object =
+        Microsoft::WRL::Make<MockComClass>();
+    EXPECT_NE(mock_object.Get(), nullptr);
+    slot.emplace(mock_object);
+    mock_object = nullptr;
+  }
+  EXPECT_NE(slot.GetValuePointer(), nullptr);
+  // Microsoft::WRL::ComPtr overrides & operator to release the underlying
+  // pointer. If during the emplace or GetValuePointer call the & operator
+  // is invoked, the test will fail.
+  // https://learn.microsoft.com/en-us/cpp/cppcx/wrl/comptr-class?view=msvc-170#operator-ampersand
+  EXPECT_NE(slot.GetValuePointer()->Get(), nullptr);
+}
+#endif
 
 }  // namespace base
