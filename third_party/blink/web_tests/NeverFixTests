@@ -2064,6 +2064,11 @@ crbug.com/1476305 external/wpt/subapps/* [ Skip ]
 # can be problematic on debug builds.
 crbug.com/1197087 [ Debug ] external/wpt/web-animations/interfaces/Animation/finished.html [ Skip ]
 
+# Chrome only runs nonvirtual WPT tests at the moment.
+[ Chrome ] * [ Skip ]
+[ Chrome ] external/wpt/* [ Pass ]
+[ Chrome ] wpt_internal/* [ Pass ]
+
 # At the moment, no plans to run wdspec tests for anything other than Chrome on
 # Linux due to resource constraints.
 [ Mac ] external/wpt/webdriver/tests/* [ Skip ]
