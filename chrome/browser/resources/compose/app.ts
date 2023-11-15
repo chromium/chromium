@@ -263,8 +263,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private onRefresh_() {
-    this.selectedLength_ = Length.kUnset;
-    this.selectedTone_ = Tone.kUnset;
     this.compose_(/*rewrite=*/ true);
   }
 
