@@ -106,7 +106,7 @@ TEST_F(WindowSplitterTest, CanSplitWindowFromTop) {
   auto dragged_window = CreateToplevelTestWindow(kDraggedWindowBounds);
 
   gfx::PointF screen_location(kTopmostWindowBounds.top_center());
-  screen_location.set_y(screen_location.y() + 5);
+  screen_location.Offset(0, 5);
 
   auto split_bounds = WindowSplitter::MaybeSplitWindow(
       topmost_window.get(), dragged_window.get(), screen_location);
@@ -122,7 +122,7 @@ TEST_F(WindowSplitterTest, CanSplitWindowFromLeft) {
   auto dragged_window = CreateToplevelTestWindow(kDraggedWindowBounds);
 
   gfx::PointF screen_location(kTopmostWindowBounds.left_center());
-  screen_location.set_x(screen_location.x() + 5);
+  screen_location.Offset(5, 0);
 
   auto split_bounds = WindowSplitter::MaybeSplitWindow(
       topmost_window.get(), dragged_window.get(), screen_location);
@@ -139,7 +139,7 @@ TEST_F(WindowSplitterTest, CanSplitWindowFromBottom) {
   auto dragged_window = CreateToplevelTestWindow(kDraggedWindowBounds);
 
   gfx::PointF screen_location(kTopmostWindowBounds.bottom_center());
-  screen_location.set_y(screen_location.y() - 5);
+  screen_location.Offset(0, -5);
 
   auto split_bounds = WindowSplitter::MaybeSplitWindow(
       topmost_window.get(), dragged_window.get(), screen_location);
@@ -155,7 +155,7 @@ TEST_F(WindowSplitterTest, CanSplitWindowFromRight) {
   auto dragged_window = CreateToplevelTestWindow(kDraggedWindowBounds);
 
   gfx::PointF screen_location(kTopmostWindowBounds.right_center());
-  screen_location.set_x(screen_location.x() - 5);
+  screen_location.Offset(-5, 0);
 
   auto split_bounds = WindowSplitter::MaybeSplitWindow(
       topmost_window.get(), dragged_window.get(), screen_location);
@@ -183,7 +183,7 @@ TEST_F(WindowSplitterTest, NoSplitTopmostWindowUnderMinimumSize) {
   auto dragged_window = CreateToplevelTestWindow(kDraggedWindowBounds);
 
   gfx::PointF screen_location(kTopmostWindowBounds.left_center());
-  screen_location.set_x(screen_location.x() + 5);
+  screen_location.Offset(5, 0);
 
   auto split_bounds = WindowSplitter::MaybeSplitWindow(
       topmost_window.get(), dragged_window.get(), screen_location);
@@ -196,7 +196,7 @@ TEST_F(WindowSplitterTest, NoSplitDraggedWindowUnderMinimumSize) {
   GetTestDelegate(dragged_window.get())->set_minimum_size(gfx::Size(300, 100));
 
   gfx::PointF screen_location(kTopmostWindowBounds.left_center());
-  screen_location.set_x(screen_location.x() + 5);
+  screen_location.Offset(5, 0);
 
   auto split_bounds = WindowSplitter::MaybeSplitWindow(
       topmost_window.get(), dragged_window.get(), screen_location);
@@ -210,7 +210,7 @@ TEST_F(WindowSplitterTest, NoSplitWindowOutsideWorkArea) {
   auto dragged_window = CreateToplevelTestWindow(kDraggedWindowBounds);
 
   gfx::PointF screen_location(topmost_window_bounds.right_center());
-  screen_location.set_x(screen_location.x() - 5);
+  screen_location.Offset(-5, 0);
 
   auto split_bounds = WindowSplitter::MaybeSplitWindow(
       topmost_window.get(), dragged_window.get(), screen_location);
@@ -224,11 +224,12 @@ TEST_F(WindowSplitterTest, DragSplitWindow) {
   base::HistogramTester histogram_tester;
 
   {
+    // Nested scope used to exercise metrics update on splitter destruction.
     WindowSplitter splitter(dragged_window.get());
     EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
 
     gfx::PointF screen_location(kTopmostWindowBounds.right_center());
-    screen_location.set_x(screen_location.x() - 5);
+    screen_location.Offset(-5, 0);
     splitter.UpdateDrag(screen_location, /*can_split=*/true);
     EXPECT_TRUE(RightHalf(kTopmostWindowBounds)
                     .Contains(GetPhantomWindowTargetBounds(splitter)));
@@ -251,11 +252,12 @@ TEST_F(WindowSplitterTest, DragSplitWindowShowPreviewMultipleTimes) {
   base::HistogramTester histogram_tester;
 
   {
+    // Nested scope used to exercise metrics update on splitter destruction.
     WindowSplitter splitter(dragged_window.get());
     EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
 
     gfx::PointF screen_location(kTopmostWindowBounds.right_center());
-    screen_location.set_x(screen_location.x() - 5);
+    screen_location.Offset(-5, 0);
     splitter.UpdateDrag(screen_location, /*can_split=*/true);
     EXPECT_TRUE(RightHalf(kTopmostWindowBounds)
                     .Contains(GetPhantomWindowTargetBounds(splitter)));
@@ -265,13 +267,13 @@ TEST_F(WindowSplitterTest, DragSplitWindowShowPreviewMultipleTimes) {
     EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
 
     screen_location = gfx::PointF(kTopmostWindowBounds.left_center());
-    screen_location.set_x(screen_location.x() + 5);
+    screen_location.Offset(5, 0);
     splitter.UpdateDrag(screen_location, /*can_split=*/true);
     EXPECT_TRUE(LeftHalf(kTopmostWindowBounds)
                     .Contains(GetPhantomWindowTargetBounds(splitter)));
 
     screen_location = gfx::PointF(kTopmostWindowBounds.bottom_center());
-    screen_location.set_y(screen_location.y() - 5);
+    screen_location.Offset(0, -5);
     splitter.UpdateDrag(screen_location, /*can_split=*/true);
     EXPECT_TRUE(BottomHalf(kTopmostWindowBounds)
                     .Contains(GetPhantomWindowTargetBounds(splitter)));
@@ -301,11 +303,12 @@ TEST_F(WindowSplitterTest, DragEnterExitMarginNoSplit) {
   base::HistogramTester histogram_tester;
 
   {
+    // Nested scope used to exercise metrics update on splitter destruction.
     WindowSplitter splitter(dragged_window.get());
     EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
 
     gfx::PointF screen_location(kTopmostWindowBounds.right_center());
-    screen_location.set_x(screen_location.x() - 5);
+    screen_location.Offset(-5, 0);
     splitter.UpdateDrag(screen_location, /*can_split=*/true);
     EXPECT_TRUE(RightHalf(kTopmostWindowBounds)
                     .Contains(GetPhantomWindowTargetBounds(splitter)));
@@ -334,11 +337,12 @@ TEST_F(WindowSplitterTest, DragWithCantSplit) {
   base::HistogramTester histogram_tester;
 
   {
+    // Nested scope used to exercise metrics update on splitter destruction.
     WindowSplitter splitter(dragged_window.get());
     EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
 
     gfx::PointF screen_location(kTopmostWindowBounds.top_center());
-    screen_location.set_y(screen_location.y() + 5);
+    screen_location.Offset(0, 5);
     splitter.UpdateDrag(screen_location, /*can_split=*/true);
     EXPECT_TRUE(TopHalf(kTopmostWindowBounds)
                     .Contains(GetPhantomWindowTargetBounds(splitter)));
@@ -365,11 +369,12 @@ TEST_F(WindowSplitterTest, DragDraggedWindowDestroyed) {
   base::HistogramTester histogram_tester;
 
   {
+    // Nested scope used to exercise metrics update on splitter destruction.
     WindowSplitter splitter(dragged_window.get());
     EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
 
     gfx::PointF screen_location(kTopmostWindowBounds.top_center());
-    screen_location.set_y(screen_location.y() + 5);
+    screen_location.Offset(0, 5);
     splitter.UpdateDrag(screen_location, /*can_split=*/true);
     EXPECT_TRUE(TopHalf(kTopmostWindowBounds)
                     .Contains(GetPhantomWindowTargetBounds(splitter)));
@@ -406,11 +411,12 @@ TEST_F(WindowSplitterTest, SplitMaximizedWindow) {
   base::HistogramTester histogram_tester;
 
   {
+    // Nested scope used to exercise metrics update on splitter destruction.
     WindowSplitter splitter(dragged_window.get());
     EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
 
     gfx::PointF screen_location(topmost_window_bounds.top_center());
-    screen_location.set_y(screen_location.y() + 5);
+    screen_location.Offset(0, 5);
     splitter.UpdateDrag(screen_location, /*can_split=*/true);
     EXPECT_TRUE(TopHalf(topmost_window_bounds)
                     .Contains(GetPhantomWindowTargetBounds(splitter)));
@@ -444,11 +450,12 @@ TEST_F(WindowSplitterTest, SplitSnappedWindow) {
   base::HistogramTester histogram_tester;
 
   {
+    // Nested scope used to exercise metrics update on splitter destruction.
     WindowSplitter splitter(dragged_window.get());
     EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
 
     gfx::PointF screen_location(topmost_window_bounds.bottom_center());
-    screen_location.set_y(screen_location.y() - 5);
+    screen_location.Offset(0, -5);
     splitter.UpdateDrag(screen_location, /*can_split=*/true);
     EXPECT_TRUE(BottomHalf(topmost_window_bounds)
                     .Contains(GetPhantomWindowTargetBounds(splitter)));
@@ -463,6 +470,67 @@ TEST_F(WindowSplitterTest, SplitSnappedWindow) {
   }
 
   ExpectHistogramWithSplit(histogram_tester, SplitRegion::kBottom,
+                           /*preview_count=*/1);
+}
+
+TEST_F(WindowSplitterTest, DragWithinExtendedDisplay) {
+  UpdateDisplay("0+0-1200x800,1200+0-1600x1200@1.25");
+  const gfx::Rect topmost_window_bounds(1300, 20, 500, 400);
+  const gfx::Rect dragged_window_bounds(1400, 120, 300, 200);
+  auto topmost_window = CreateToplevelTestWindow(topmost_window_bounds);
+  auto dragged_window = CreateToplevelTestWindow(dragged_window_bounds);
+
+  base::HistogramTester histogram_tester;
+
+  {
+    // Nested scope used to exercise metrics update on splitter destruction.
+    WindowSplitter splitter(dragged_window.get());
+    EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
+
+    gfx::PointF screen_location(topmost_window_bounds.right_center());
+    screen_location.Offset(-5, 0);
+    splitter.UpdateDrag(screen_location, /*can_split=*/true);
+    EXPECT_TRUE(RightHalf(topmost_window_bounds)
+                    .Contains(GetPhantomWindowTargetBounds(splitter)));
+
+    splitter.CompleteDrag(screen_location);
+    EXPECT_EQ(topmost_window->GetBoundsInScreen(),
+              LeftHalf(topmost_window_bounds));
+    EXPECT_EQ(dragged_window->GetBoundsInScreen(),
+              RightHalf(topmost_window_bounds));
+  }
+
+  ExpectHistogramWithSplit(histogram_tester, SplitRegion::kRight,
+                           /*preview_count=*/1);
+}
+
+TEST_F(WindowSplitterTest, DragAcrossExtendedDisplay) {
+  UpdateDisplay("0+0-1200x800,1200+0-1600x1200@1.25");
+  const gfx::Rect topmost_window_bounds(1300, 20, 500, 400);
+  auto topmost_window = CreateToplevelTestWindow(topmost_window_bounds);
+  auto dragged_window = CreateToplevelTestWindow(kDraggedWindowBounds);
+
+  base::HistogramTester histogram_tester;
+
+  {
+    // Nested scope used to exercise metrics update on splitter destruction.
+    WindowSplitter splitter(dragged_window.get());
+    EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
+
+    gfx::PointF screen_location(topmost_window_bounds.right_center());
+    screen_location.Offset(-5, 0);
+    splitter.UpdateDrag(screen_location, /*can_split=*/true);
+    EXPECT_TRUE(RightHalf(topmost_window_bounds)
+                    .Contains(GetPhantomWindowTargetBounds(splitter)));
+
+    splitter.CompleteDrag(screen_location);
+    EXPECT_EQ(topmost_window->GetBoundsInScreen(),
+              LeftHalf(topmost_window_bounds));
+    EXPECT_EQ(dragged_window->GetBoundsInScreen(),
+              RightHalf(topmost_window_bounds));
+  }
+
+  ExpectHistogramWithSplit(histogram_tester, SplitRegion::kRight,
                            /*preview_count=*/1);
 }
 

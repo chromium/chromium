@@ -162,7 +162,9 @@ void ResizeWindow(aura::Window* window, const gfx::Rect& screen_bounds) {
     window_state->OnWMEvent(&event);
   }
   // TODO(b/306204394): Also bring window to the front for visibility.
-  window->SetBounds(screen_bounds);
+  window->SetBoundsInScreen(
+      screen_bounds,
+      display::Screen::GetScreen()->GetDisplayMatching(screen_bounds));
 }
 
 absl::optional<SplitWindowInfo> WindowSplitter::MaybeSplitWindow(
