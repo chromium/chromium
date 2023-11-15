@@ -200,8 +200,18 @@ struct TestKeyEvent {
 };
 
 // Factory methods of TestKeyEvent for reducing syntax noises in tests.
+constexpr TestKeyEvent UnknownPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NONE, ui::DomKey::UNIDENTIFIED,
+          ui::VKEY_UNKNOWN, flags};
+}
+
 constexpr TestKeyEvent APressed(ui::EventFlags flags = ui::EF_NONE) {
   return {ui::ET_KEY_PRESSED, ui::DomCode::US_A,
+          ui::DomKey::Constant<'a'>::Character, ui::VKEY_A, flags};
+}
+
+constexpr TestKeyEvent AReleased(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_RELEASED, ui::DomCode::US_A,
           ui::DomKey::Constant<'a'>::Character, ui::VKEY_A, flags};
 }
 
@@ -213,12 +223,20 @@ constexpr TestKeyEvent UnidentifiedAPressed(
 
 constexpr TestKeyEvent BPressed(ui::EventFlags flags = ui::EF_NONE) {
   return {ui::ET_KEY_PRESSED, ui::DomCode::US_B,
-          ui::DomKey::Constant<'b'>::Character, ui::VKEY_B, flags};
+          ((flags & ui::EF_SHIFT_DOWN)
+               ? ui::DomKey(ui::DomKey::Constant<'B'>::Character)
+               : ui::DomKey(ui::DomKey::Constant<'b'>::Character)),
+          ui::VKEY_B, flags};
 }
 
 constexpr TestKeyEvent LWinPressed(ui::EventFlags flags = ui::EF_NONE) {
   return {ui::ET_KEY_PRESSED, ui::DomCode::META_LEFT, ui::DomKey::META,
           ui::VKEY_LWIN, flags | ui::EF_COMMAND_DOWN};
+}
+
+constexpr TestKeyEvent LWinReleased(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_RELEASED, ui::DomCode::META_LEFT, ui::DomKey::META,
+          ui::VKEY_LWIN, flags};
 }
 
 constexpr TestKeyEvent RWinPressed(ui::EventFlags flags = ui::EF_NONE) {
@@ -231,6 +249,11 @@ constexpr TestKeyEvent LControlPressed(ui::EventFlags flags = ui::EF_NONE) {
           ui::VKEY_CONTROL, flags | ui::EF_CONTROL_DOWN};
 }
 
+constexpr TestKeyEvent LControlReleased(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_RELEASED, ui::DomCode::CONTROL_LEFT, ui::DomKey::CONTROL,
+          ui::VKEY_CONTROL, flags};
+}
+
 constexpr TestKeyEvent RControlPressed(ui::EventFlags flags = ui::EF_NONE) {
   return {ui::ET_KEY_PRESSED, ui::DomCode::CONTROL_RIGHT, ui::DomKey::CONTROL,
           ui::VKEY_CONTROL, flags | ui::EF_CONTROL_DOWN};
@@ -241,9 +264,55 @@ constexpr TestKeyEvent LAltPressed(ui::EventFlags flags = ui::EF_NONE) {
           ui::VKEY_MENU, flags | ui::EF_ALT_DOWN};
 }
 
+constexpr TestKeyEvent LAltReleased(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_RELEASED, ui::DomCode::ALT_LEFT, ui::DomKey::ALT,
+          ui::VKEY_MENU, flags};
+}
+
 constexpr TestKeyEvent RAltPressed(ui::EventFlags flags = ui::EF_NONE) {
   return {ui::ET_KEY_PRESSED, ui::DomCode::ALT_RIGHT, ui::DomKey::ALT,
           ui::VKEY_MENU, flags | ui::EF_ALT_DOWN};
+}
+
+constexpr TestKeyEvent CapsLockPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::CAPS_LOCK, ui::DomKey::CAPS_LOCK,
+          ui::VKEY_CAPITAL, flags | ui::EF_MOD3_DOWN};
+}
+
+constexpr TestKeyEvent CapsLockReleased(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_RELEASED, ui::DomCode::CAPS_LOCK, ui::DomKey::CAPS_LOCK,
+          ui::VKEY_CAPITAL, flags};
+}
+
+constexpr TestKeyEvent EscapePressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::ESCAPE, ui::DomKey::ESCAPE,
+          ui::VKEY_ESCAPE, flags};
+}
+
+constexpr TestKeyEvent EscapeReleased(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_RELEASED, ui::DomCode::ESCAPE, ui::DomKey::ESCAPE,
+          ui::VKEY_ESCAPE, flags};
+}
+
+constexpr TestKeyEvent CommaPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::COMMA,
+          ((flags & ui::EF_SHIFT_DOWN)
+               ? ui::DomKey(ui::DomKey::Constant<'<'>::Character)
+               : ui::DomKey(ui::DomKey::Constant<','>::Character)),
+          ui::VKEY_OEM_COMMA, flags};
+}
+
+constexpr TestKeyEvent Digit9Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::DIGIT9,
+          ((flags & ui::EF_SHIFT_DOWN)
+               ? ui::DomKey(ui::DomKey::Constant<'('>::Character)
+               : ui::DomKey(ui::DomKey::Constant<'9'>::Character)),
+          ui::VKEY_9, flags};
+}
+
+constexpr TestKeyEvent BackspacePressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::BACKSPACE, ui::DomKey::BACKSPACE,
+          ui::VKEY_BACK, flags};
 }
 
 // Hereafter, numpad key events.
@@ -527,6 +596,11 @@ constexpr TestKeyboard kNonAppleKeyboardVariants[] = {
     kInternalChromeKeyboard,  kInternalChromeCustomLayoutKeyboard,
     kExternalChromeKeyboard,  kExternalChromeCustomLayoutKeyboard,
     kExternalGenericKeyboard,
+};
+constexpr TestKeyboard kAllKeyboardVariants[] = {
+    kInternalChromeKeyboard,  kInternalChromeCustomLayoutKeyboard,
+    kExternalChromeKeyboard,  kExternalChromeCustomLayoutKeyboard,
+    kExternalGenericKeyboard, kExternalAppleKeyboard,
 };
 
 // Table entry for simple single key event rewriting tests.
@@ -1219,99 +1293,65 @@ TEST_F(EventRewriterTest, TestRewriteNumPadKeysOnAppleKeyboard) {
 }
 
 TEST_F(EventRewriterTest, TestRewriteModifiersNoRemap) {
-  TestAllKeyboardVariants({
-      // Press Search. Confirm the event is not rewritten.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_NONE, ui::DomKey::META},
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
-        ui::DomKey::META}},
+  for (const auto& keyboard : kAllKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
 
-      // Press left Control. Confirm the event is not rewritten.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
-        ui::DomKey::CONTROL},
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
-        ui::DomKey::CONTROL}},
+    // Press Search. Confirm the event is not rewritten.
+    EXPECT_EQ(LWinPressed(), RunRewriter(LWinPressed()));
 
-      // Press right Control. Confirm the event is not rewritten.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
-        ui::DomKey::CONTROL},
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
-        ui::DomKey::CONTROL}},
+    // Press left Control. Confirm the event is not rewritten.
+    EXPECT_EQ(LControlPressed(), RunRewriter(LControlPressed()));
 
-      // Press left Alt. Confirm the event is not rewritten.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN, ui::DomKey::ALT},
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN,
-        ui::DomKey::ALT}},
+    // Press right Control. Confirm the event is not rewritten.
+    EXPECT_EQ(RControlPressed(), RunRewriter(RControlPressed()));
 
-      // Press right Alt. Confirm the event is not rewritten.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN, ui::DomKey::ALT},
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN,
-        ui::DomKey::ALT}},
+    // Press left Alt. Confirm the event is not rewritten.
+    EXPECT_EQ(LAltPressed(), RunRewriter(LAltPressed()));
 
-      // Test KeyRelease event, just in case.
-      // Release Search. Confirm the release event is not rewritten.
-      {ui::ET_KEY_RELEASED,
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_NONE, ui::DomKey::META},
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_NONE, ui::DomKey::META}},
-  });
+    // Press right Alt. Confirm the event is not rewritten.
+    EXPECT_EQ(RAltPressed(), RunRewriter(RAltPressed()));
+
+    // Test KeyRelease event, just in case.
+    // Release Search. Confirm the release event is not rewritten.
+    EXPECT_EQ(LWinReleased(), RunRewriter(LWinReleased()));
+  }
 }
 
 TEST_F(EventRewriterTest, TestRewriteModifiersNoRemapMultipleKeys) {
-  TestAllKeyboardVariants({
-      // Press Alt with Shift. Confirm the event is not rewritten.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT,
-        ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ALT},
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT,
-        ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ALT}},
+  for (const auto& keyboard : kAllKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
 
-      // Press Escape with Alt and Shift. Confirm the event is not rewritten.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ESCAPE, ui::DomCode::ESCAPE,
-        ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ESCAPE},
-       {ui::VKEY_ESCAPE, ui::DomCode::ESCAPE,
-        ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ESCAPE}},
+    // Press Alt with Shift. Confirm the event is not rewritten.
+    EXPECT_EQ(LAltPressed(ui::EF_SHIFT_DOWN),
+              RunRewriter(LAltPressed(ui::EF_SHIFT_DOWN)));
 
-      // Press Search with Caps Lock mask. Confirm the event is not rewritten.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT,
-        ui::EF_CAPS_LOCK_ON | ui::EF_COMMAND_DOWN, ui::DomKey::META},
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT,
-        ui::EF_CAPS_LOCK_ON | ui::EF_COMMAND_DOWN, ui::DomKey::META}},
+    // Press Escape with Alt and Shift. Confirm the event is not rewritten.
+    EXPECT_EQ(EscapePressed(ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN),
+              RunRewriter(EscapePressed(ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN)));
 
-      // Release Search with Caps Lock mask. Confirm the event is not rewritten.
-      {ui::ET_KEY_RELEASED,
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_CAPS_LOCK_ON,
-        ui::DomKey::META},
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_CAPS_LOCK_ON,
-        ui::DomKey::META}},
+    // Press Search with Caps Lock mask. Confirm the event is not rewritten.
+    EXPECT_EQ(LWinPressed(ui::EF_CAPS_LOCK_ON),
+              RunRewriter(LWinPressed(ui::EF_CAPS_LOCK_ON)));
 
-      // Press Shift+Ctrl+Alt+Search+Escape. Confirm the event is not rewritten.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ESCAPE, ui::DomCode::ESCAPE,
-        ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
-            ui::EF_COMMAND_DOWN,
-        ui::DomKey::ESCAPE},
-       {ui::VKEY_ESCAPE, ui::DomCode::ESCAPE,
-        ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
-            ui::EF_COMMAND_DOWN,
-        ui::DomKey::ESCAPE}},
+    // Release Search with Caps Lock mask. Confirm the event is not rewritten.
+    EXPECT_EQ(LWinReleased(ui::EF_CAPS_LOCK_ON),
+              RunRewriter(LWinReleased(ui::EF_CAPS_LOCK_ON)));
 
-      // Press Shift+Ctrl+Alt+Search+B. Confirm the event is not rewritten.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_B, ui::DomCode::US_B,
-        ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
-            ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'B'>::Character},
-       {ui::VKEY_B, ui::DomCode::US_B,
-        ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
-            ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'B'>::Character}},
-  });
+    // Press Shift+Ctrl+Alt+Search+Escape. Confirm the event is not rewritten.
+    EXPECT_EQ(
+        EscapePressed(ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
+                      ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN),
+        RunRewriter(EscapePressed(ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
+                                  ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN)));
+
+    // Press Shift+Ctrl+Alt+Search+B. Confirm the event is not rewritten.
+    EXPECT_EQ(BPressed(ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
+                       ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN),
+              RunRewriter(BPressed(ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
+                                   ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN)));
+  }
 }
 
 TEST_F(EventRewriterTest, TestRewriteModifiersDisableSome) {
@@ -1330,58 +1370,37 @@ TEST_F(EventRewriterTest, TestRewriteModifiersDisableSome) {
                       ui::mojom::ModifierKey::kEscape,
                       ui::mojom::ModifierKey::kVoid);
 
-  TestChromeKeyboardVariants({
-      // Press Alt with Shift. This key press shouldn't be affected by the
-      // pref. Confirm the event is not rewritten.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT,
-        ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ALT},
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT,
-        ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ALT}},
+  for (const auto& keyboard : kChromeKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
 
-      // Press Search. Confirm the event is now VKEY_UNKNOWN.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_NONE, ui::DomKey::META},
-       {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_NONE,
-        ui::DomKey::UNIDENTIFIED}},
+    // Press Alt with Shift. This key press shouldn't be affected by the
+    // pref. Confirm the event is not rewritten.
+    EXPECT_EQ(LAltPressed(ui::EF_SHIFT_DOWN),
+              RunRewriter(LAltPressed(ui::EF_SHIFT_DOWN)));
 
-      // Press Control. Confirm the event is now VKEY_UNKNOWN.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
-        ui::DomKey::CONTROL},
-       {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_NONE,
-        ui::DomKey::UNIDENTIFIED}},
+    // Press Search. Confirm the event is now VKEY_UNKNOWN.
+    EXPECT_EQ(UnknownPressed(), RunRewriter(LWinPressed()));
 
-      // Press Escape. Confirm the event is now VKEY_UNKNOWN.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ESCAPE, ui::DomCode::ESCAPE, ui::EF_NONE, ui::DomKey::ESCAPE},
-       {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_NONE,
-        ui::DomKey::UNIDENTIFIED}},
+    // Press Control. Confirm the event is now VKEY_UNKNOWN.
+    EXPECT_EQ(UnknownPressed(), RunRewriter(LControlPressed()));
 
-      // Press Control+Search. Confirm the event is now VKEY_UNKNOWN
-      // without any modifiers.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_CONTROL_DOWN,
-        ui::DomKey::META},
-       {ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_NONE,
-        ui::DomKey::UNIDENTIFIED}},
+    // Press Escape. Confirm the event is now VKEY_UNKNOWN.
+    EXPECT_EQ(UnknownPressed(), RunRewriter(EscapePressed()));
 
-      // Press Control+Search+a. Confirm the event is now VKEY_A without any
-      // modifiers.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_CONTROL_DOWN,
-        ui::DomKey::Constant<'a'>::Character},
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_NONE,
-        ui::DomKey::Constant<'a'>::Character}},
+    // Press Control+Search. Confirm the event is now VKEY_UNKNOWN
+    // without any modifiers.
+    EXPECT_EQ(UnknownPressed(), RunRewriter(LWinPressed(ui::EF_CONTROL_DOWN)));
 
-      // Press Control+Search+Alt+a. Confirm the event is now VKEY_A only with
-      // the Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-        ui::DomKey::Constant<'a'>::Character},
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_ALT_DOWN,
-        ui::DomKey::Constant<'a'>::Character}},
-  });
+    // Press Control+Search+a. Confirm the event is now VKEY_A without any
+    // modifiers.
+    EXPECT_EQ(APressed(), RunRewriter(APressed(ui::EF_CONTROL_DOWN)));
+
+    // Press Control+Search+Alt+a. Confirm the event is now VKEY_A only with
+    // the Alt modifier.
+    EXPECT_EQ(APressed(ui::EF_ALT_DOWN),
+              RunRewriter(APressed(ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN)));
+  }
 
   // Remap Alt to Control.
   IntegerPrefMember alt;
@@ -1389,22 +1408,19 @@ TEST_F(EventRewriterTest, TestRewriteModifiersDisableSome) {
                       ui::mojom::ModifierKey::kAlt,
                       ui::mojom::ModifierKey::kControl);
 
-  TestChromeKeyboardVariants({
-      // Press left Alt. Confirm the event is now VKEY_CONTROL
-      // even though the Control key itself is disabled.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN, ui::DomKey::ALT},
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
-        ui::DomKey::CONTROL}},
+  for (const auto& keyboard : kChromeKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
 
-      // Press Alt+a. Confirm the event is now Control+a even though the Control
-      // key itself is disabled.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_ALT_DOWN,
-        ui::DomKey::Constant<'a'>::Character},
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_CONTROL_DOWN,
-        ui::DomKey::Constant<'a'>::Character}},
-  });
+    // Press left Alt. Confirm the event is now VKEY_CONTROL
+    // even though the Control key itself is disabled.
+    EXPECT_EQ(LControlPressed(), RunRewriter(LAltPressed()));
+
+    // Press Alt+a. Confirm the event is now Control+a even though the Control
+    // key itself is disabled.
+    EXPECT_EQ(APressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(APressed(ui::EF_ALT_DOWN)));
+  }
 }
 
 TEST_F(EventRewriterTest, TestRewriteModifiersRemapToControl) {
@@ -1415,14 +1431,13 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToControl) {
                       ui::mojom::ModifierKey::kMeta,
                       ui::mojom::ModifierKey::kControl);
 
-  TestChromeKeyboardVariants({
-      // Press Search. Confirm the event is now VKEY_CONTROL.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
-        ui::DomKey::META},
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
-        ui::DomKey::CONTROL}},
-  });
+  for (const auto& keyboard : kChromeKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // Press Search. Confirm the event is now VKEY_CONTROL.
+    EXPECT_EQ(LControlPressed(), RunRewriter(LWinPressed()));
+  }
 
   // Remap Alt to Control too.
   IntegerPrefMember alt;
@@ -1430,48 +1445,32 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToControl) {
                       ui::mojom::ModifierKey::kAlt,
                       ui::mojom::ModifierKey::kControl);
 
-  TestChromeKeyboardVariants({
-      // Press Alt. Confirm the event is now VKEY_CONTROL.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN, ui::DomKey::ALT},
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
-        ui::DomKey::CONTROL}},
+  for (const auto& keyboard : kChromeKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
 
-      // Press Alt+Search. Confirm the event is now VKEY_CONTROL.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT,
-        ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN, ui::DomKey::META},
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
-        ui::DomKey::CONTROL}},
+    // Press Alt. Confirm the event is now VKEY_CONTROL.
+    EXPECT_EQ(LControlPressed(), RunRewriter(LAltPressed()));
 
-      // Press Control+Alt+Search. Confirm the event is now VKEY_CONTROL.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT,
-        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN,
-        ui::DomKey::META},
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
-        ui::DomKey::CONTROL}},
+    // Press Alt+Search. Confirm the event is now VKEY_CONTROL.
+    EXPECT_EQ(LControlPressed(), RunRewriter(LWinPressed(ui::EF_ALT_DOWN)));
 
-      // Press Shift+Control+Alt+Search. Confirm the event is now Control with
-      // Shift and Control modifiers.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT,
-        ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
-            ui::EF_COMMAND_DOWN,
-        ui::DomKey::META},
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-        ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::CONTROL}},
+    // Press Control+Alt+Search. Confirm the event is now VKEY_CONTROL.
+    EXPECT_EQ(LControlPressed(),
+              RunRewriter(LWinPressed(ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN)));
 
-      // Press Shift+Control+Alt+Search+B. Confirm the event is now B with Shift
-      // and Control modifiers.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_B, ui::DomCode::US_B,
-        ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
-            ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'B'>::Character},
-       {ui::VKEY_B, ui::DomCode::US_B, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-        ui::DomKey::Constant<'B'>::Character}},
-  });
+    // Press Shift+Control+Alt+Search. Confirm the event is now Control with
+    // Shift and Control modifiers.
+    EXPECT_EQ(LControlPressed(ui::EF_SHIFT_DOWN),
+              RunRewriter(LWinPressed(ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
+                                      ui::EF_ALT_DOWN)));
+
+    // Press Shift+Control+Alt+Search+B. Confirm the event is now B with Shift
+    // and Control modifiers.
+    EXPECT_EQ(BPressed(ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN),
+              RunRewriter(BPressed(ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
+                                   ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN)));
+  }
 }
 
 TEST_F(EventRewriterTest, TestRewriteModifiersRemapToEscape) {
@@ -1482,13 +1481,13 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToEscape) {
                       ui::mojom::ModifierKey::kMeta,
                       ui::mojom::ModifierKey::kEscape);
 
-  TestChromeKeyboardVariants({
-      // Press Search. Confirm the event is now VKEY_ESCAPE.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
-        ui::DomKey::META},
-       {ui::VKEY_ESCAPE, ui::DomCode::ESCAPE, ui::EF_NONE, ui::DomKey::ESCAPE}},
-  });
+  for (const auto& keyboard : kChromeKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // Press Search. Confirm the event is now VKEY_ESCAPE.
+    EXPECT_EQ(EscapePressed(), RunRewriter(LWinPressed()));
+  }
 }
 
 TEST_F(EventRewriterTest, TestRewriteModifiersRemapEscapeToAlt) {
@@ -1499,17 +1498,15 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapEscapeToAlt) {
                       ui::mojom::ModifierKey::kEscape,
                       ui::mojom::ModifierKey::kAlt);
 
-  TestAllKeyboardVariants({
-      // Press Escape. Confirm the event is now VKEY_MENU.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ESCAPE, ui::DomCode::ESCAPE, ui::EF_NONE, ui::DomKey::ESCAPE},
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN,
-        ui::DomKey::ALT}},
-      // Release Escape to clear flags.
-      {ui::ET_KEY_RELEASED,
-       {ui::VKEY_ESCAPE, ui::DomCode::ESCAPE, ui::EF_NONE, ui::DomKey::ESCAPE},
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_NONE, ui::DomKey::ALT}},
-  });
+  for (const auto& keyboard : kAllKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // Press Escape. Confirm the event is now VKEY_MENU.
+    EXPECT_EQ(LAltPressed(), RunRewriter(EscapePressed()));
+    // Release Escape to clear flags.
+    EXPECT_EQ(LAltReleased(), RunRewriter(EscapeReleased()));
+  }
 }
 
 TEST_F(EventRewriterTest, TestRewriteModifiersRemapAltToControl) {
@@ -1520,27 +1517,21 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapAltToControl) {
                       ui::mojom::ModifierKey::kAlt,
                       ui::mojom::ModifierKey::kControl);
 
-  TestAllKeyboardVariants({
-      // Press left Alt. Confirm the event is now VKEY_CONTROL.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN, ui::DomKey::ALT},
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
-        ui::DomKey::CONTROL}},
-      // Press Shift+comma. Verify that only the flags are changed.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_OEM_COMMA, ui::DomCode::COMMA,
-        ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_OEM_COMMA, ui::DomCode::COMMA,
-        ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-        ui::DomKey::Constant<'<'>::Character}},
-      // Press Shift+9. Verify that only the flags are changed.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_9, ui::DomCode::DIGIT9, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-        ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_9, ui::DomCode::DIGIT9,
-        ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-        ui::DomKey::Constant<'('>::Character}},
-  });
+  for (const auto& keyboard : kAllKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // Press left Alt. Confirm the event is now VKEY_CONTROL.
+    EXPECT_EQ(LControlPressed(), RunRewriter(LAltPressed()));
+
+    // Press Shift+comma. Verify that only the flags are changed.
+    EXPECT_EQ(CommaPressed(ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN),
+              RunRewriter(CommaPressed(ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN)));
+
+    // Press Shift+9. Verify that only the flags are changed.
+    EXPECT_EQ(Digit9Pressed(ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN),
+              RunRewriter(Digit9Pressed(ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN)));
+  }
 }
 
 TEST_F(EventRewriterTest, TestRewriteModifiersRemapUnderEscapeControlAlt) {
@@ -1564,42 +1555,30 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapUnderEscapeControlAlt) {
                       ui::mojom::ModifierKey::kControl,
                       ui::mojom::ModifierKey::kMeta);
 
-  TestAllKeyboardVariants({
-      // Press left Control. Confirm the event is now VKEY_LWIN.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
-        ui::DomKey::CONTROL},
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
-        ui::DomKey::META}},
+  for (const auto& keyboard : kAllKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
 
-      // Then, press all of the three, Control+Alt+Escape.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ESCAPE, ui::DomCode::ESCAPE,
-        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::CONTROL},
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT,
-        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN,
-        ui::DomKey::ALT}},
+    // Press left Control. Confirm the event is now VKEY_LWIN.
+    EXPECT_EQ(LWinPressed(), RunRewriter(LControlPressed()));
 
-      // Press Shift+Control+Alt+Escape.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ESCAPE, ui::DomCode::ESCAPE,
-        ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-        ui::DomKey::ESCAPE},
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT,
-        ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
-            ui::EF_COMMAND_DOWN,
-        ui::DomKey::ALT}},
+    // Then, press all of the three, Control+Alt+Escape.
+    EXPECT_EQ(
+        LAltPressed(ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN),
+        RunRewriter(EscapePressed(ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN)));
 
-      // Press Shift+Control+Alt+B
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_B, ui::DomCode::US_B,
-        ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-        ui::DomKey::Constant<'B'>::Character},
-       {ui::VKEY_B, ui::DomCode::US_B,
-        ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
-            ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'B'>::Character}},
-  });
+    // Press Shift+Control+Alt+Escape.
+    EXPECT_EQ(LAltPressed(ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
+                          ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN),
+              RunRewriter(EscapePressed(
+                  ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN)));
+
+    // Press Shift+Control+Alt+B
+    EXPECT_EQ(BPressed(ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
+                       ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN),
+              RunRewriter(BPressed(ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
+                                   ui::EF_ALT_DOWN)));
+  }
 }
 
 TEST_F(EventRewriterTest,
@@ -1630,33 +1609,20 @@ TEST_F(EventRewriterTest,
                       ui::mojom::ModifierKey::kMeta,
                       ui::mojom::ModifierKey::kBackspace);
 
-  TestChromeKeyboardVariants({
-      // Release Control and Escape, as Search and Alt would transform Backspace
-      // to Delete.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_NONE,
-        ui::DomKey::CONTROL},
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
-        ui::DomKey::META}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ESCAPE, ui::DomCode::ESCAPE, ui::EF_NONE, ui::DomKey::ESCAPE},
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN,
-        ui::DomKey::ALT}},
-      {ui::ET_KEY_RELEASED,
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_NONE,
-        ui::DomKey::CONTROL},
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_ALT_DOWN,
-        ui::DomKey::META}},
-      {ui::ET_KEY_RELEASED,
-       {ui::VKEY_ESCAPE, ui::DomCode::ESCAPE, ui::EF_NONE, ui::DomKey::ESCAPE},
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_NONE, ui::DomKey::ALT}},
-      // Press Search. Confirm the event is now VKEY_BACK.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
-        ui::DomKey::META},
-       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_NONE,
-        ui::DomKey::BACKSPACE}},
-  });
+  for (const auto& keyboard : kChromeKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // Release Control and Escape, as Search and Alt would transform Backspace
+    // to Delete.
+    EXPECT_EQ(LWinPressed(), RunRewriter(LControlPressed()));
+    EXPECT_EQ(LAltPressed(), RunRewriter(EscapePressed()));
+    EXPECT_EQ(LWinReleased(ui::EF_ALT_DOWN), RunRewriter(LControlReleased()));
+    EXPECT_EQ(LAltReleased(), RunRewriter(EscapeReleased()));
+
+    // Press Search. Confirm the event is now VKEY_BACK.
+    EXPECT_EQ(BackspacePressed(), RunRewriter(LWinPressed()));
+  }
 }
 
 TEST_F(EventRewriterTest, TestRewriteModifiersRemapBackspaceToEscape) {
@@ -1667,13 +1633,13 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapBackspaceToEscape) {
                       ui::mojom::ModifierKey::kBackspace,
                       ui::mojom::ModifierKey::kEscape);
 
-  TestAllKeyboardVariants({
-      // Press Backspace. Confirm the event is now VKEY_ESCAPE.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_NONE,
-        ui::DomKey::BACKSPACE},
-       {ui::VKEY_ESCAPE, ui::DomCode::ESCAPE, ui::EF_NONE, ui::DomKey::ESCAPE}},
-  });
+  for (const auto& keyboard : kAllKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // Press Backspace. Confirm the event is now VKEY_ESCAPE.
+    EXPECT_EQ(EscapePressed(), RunRewriter(BackspacePressed()));
+  }
 }
 
 TEST_F(EventRewriterTest,
@@ -1685,16 +1651,10 @@ TEST_F(EventRewriterTest,
                       ui::mojom::ModifierKey::kEscape,
                       ui::mojom::ModifierKey::kAlt);
 
-  SetupKeyboard("Internal Keyboard");
+  SetUpKeyboard(kInternalChromeKeyboard);
 
   // Press Escape.
-  EXPECT_EQ(
-      GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_MENU,
-                                ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN,
-                                ui::DomKey::ALT, kNoScanCode),
-      GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE,
-                                ui::DomCode::ESCAPE, ui::EF_NONE,
-                                ui::DomKey::ESCAPE, kNoScanCode));
+  EXPECT_EQ(LAltPressed(), RunRewriter(EscapePressed()));
 
   // Remap Escape to Control before releasing Escape.
   InitModifierKeyPref(&escape, ::prefs::kLanguageRemapEscapeKeyTo,
@@ -1702,31 +1662,13 @@ TEST_F(EventRewriterTest,
                       ui::mojom::ModifierKey::kControl);
 
   // Release Escape.
-  EXPECT_EQ(
-      GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_ESCAPE,
-                                ui::DomCode::ESCAPE, ui::EF_NONE,
-                                ui::DomKey::ESCAPE, kNoScanCode),
-      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_ESCAPE,
-                                ui::DomCode::ESCAPE, ui::EF_NONE,
-                                ui::DomKey::ESCAPE, kNoScanCode));
+  EXPECT_EQ(EscapeReleased(), RunRewriter(EscapeReleased()));
 
   // Press A, expect that Alt is not stickied.
-  EXPECT_EQ(GetExpectedResultAsString(
-                ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, ui::EF_NONE,
-                ui::DomKey::Constant<'a'>::Character, kNoScanCode),
-            GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_A,
-                                      ui::DomCode::US_A, ui::EF_NONE,
-                                      ui::DomKey::Constant<'a'>::Character,
-                                      kNoScanCode));
+  EXPECT_EQ(APressed(), RunRewriter(APressed()));
 
   // Release A.
-  EXPECT_EQ(GetExpectedResultAsString(
-                ui::ET_KEY_RELEASED, ui::VKEY_A, ui::DomCode::US_A, ui::EF_NONE,
-                ui::DomKey::Constant<'a'>::Character, kNoScanCode),
-            GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_A,
-                                      ui::DomCode::US_A, ui::EF_NONE,
-                                      ui::DomKey::Constant<'a'>::Character,
-                                      kNoScanCode));
+  EXPECT_EQ(AReleased(), RunRewriter(AReleased()));
 }
 
 TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
@@ -1737,148 +1679,73 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
                       ui::mojom::ModifierKey::kMeta,
                       ui::mojom::ModifierKey::kCapsLock);
 
-  SetupKeyboard("Internal Keyboard");
+  SetUpKeyboard(kInternalChromeKeyboard);
   EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Press Search.
-  EXPECT_EQ(
-      GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK,
-                                ui::EF_MOD3_DOWN | ui::EF_CAPS_LOCK_ON,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_LWIN,
-                                ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
-                                ui::DomKey::META, kNoScanCode));
+  EXPECT_EQ(CapsLockPressed(ui::EF_CAPS_LOCK_ON), RunRewriter(LWinPressed()));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Search.
-  EXPECT_EQ(
-      GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK, ui::EF_NONE,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
-                                ui::DomCode::META_LEFT, ui::EF_NONE,
-                                ui::DomKey::META, kNoScanCode));
+  EXPECT_EQ(CapsLockReleased(), RunRewriter(LWinReleased()));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Press Search.
-  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
-                                      ui::DomCode::CAPS_LOCK,
-                                      ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
-                                      ui::DomKey::CAPS_LOCK, kNoScanCode),
-            GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED,
-                                      ui::VKEY_LWIN, ui::DomCode::META_LEFT,
-                                      ui::EF_COMMAND_DOWN | ui::EF_CAPS_LOCK_ON,
-                                      ui::DomKey::META, kNoScanCode));
+  EXPECT_EQ(CapsLockPressed(ui::EF_CAPS_LOCK_ON),
+            RunRewriter(LWinPressed(ui::EF_CAPS_LOCK_ON)));
   EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Search.
-  EXPECT_EQ(
-      GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK, ui::EF_NONE,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
-                                ui::DomCode::META_LEFT, ui::EF_NONE,
-                                ui::DomKey::META, kNoScanCode));
+  EXPECT_EQ(CapsLockReleased(), RunRewriter(LWinReleased()));
   EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Do the same on external Chrome OS keyboard.
-  SetupKeyboard("External Chrome Keyboard", kKbdTopRowLayout1Tag,
-                ui::INPUT_DEVICE_UNKNOWN);
+  SetUpKeyboard(kExternalChromeKeyboard);
 
   // Press Search.
-  EXPECT_EQ(
-      GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK,
-                                ui::EF_MOD3_DOWN | ui::EF_CAPS_LOCK_ON,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_LWIN,
-                                ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
-                                ui::DomKey::META, kNoScanCode));
+  EXPECT_EQ(CapsLockPressed(ui::EF_CAPS_LOCK_ON), RunRewriter(LWinPressed()));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Search.
-  EXPECT_EQ(
-      GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK, ui::EF_NONE,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
-                                ui::DomCode::META_LEFT, ui::EF_NONE,
-                                ui::DomKey::META, kNoScanCode));
+  EXPECT_EQ(CapsLockReleased(), RunRewriter(LWinReleased()));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Press Search.
-  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
-                                      ui::DomCode::CAPS_LOCK,
-                                      ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
-                                      ui::DomKey::CAPS_LOCK, kNoScanCode),
-            GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED,
-                                      ui::VKEY_LWIN, ui::DomCode::META_LEFT,
-                                      ui::EF_COMMAND_DOWN | ui::EF_CAPS_LOCK_ON,
-                                      ui::DomKey::META, kNoScanCode));
+  EXPECT_EQ(CapsLockPressed(ui::EF_CAPS_LOCK_ON),
+            RunRewriter(LWinPressed(ui::EF_CAPS_LOCK_ON)));
   EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Search.
-  EXPECT_EQ(
-      GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK, ui::EF_NONE,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
-                                ui::DomCode::META_LEFT, ui::EF_NONE,
-                                ui::DomKey::META, kNoScanCode));
+  EXPECT_EQ(CapsLockReleased(), RunRewriter(LWinReleased()));
   EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Try external keyboard with Caps Lock.
-  SetupKeyboard("External Generic Keyboard", kKbdTopRowLayoutUnspecified,
-                ui::INPUT_DEVICE_UNKNOWN);
+  SetUpKeyboard(kExternalGenericKeyboard);
 
   // Press Caps Lock.
-  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
-                                      ui::DomCode::CAPS_LOCK,
-                                      ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
-                                      ui::DomKey::CAPS_LOCK, kNoScanCode),
-            GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED,
-                                      ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
-                                      ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
-                                      ui::DomKey::CAPS_LOCK, kNoScanCode));
+  EXPECT_EQ(CapsLockPressed(ui::EF_CAPS_LOCK_ON),
+            RunRewriter(CapsLockPressed(ui::EF_CAPS_LOCK_ON)));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Caps Lock.
-  EXPECT_EQ(
-      GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK, ui::EF_NONE,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK, ui::EF_NONE,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode));
+  EXPECT_EQ(CapsLockReleased(),
+            RunRewriter(CapsLockReleased(ui::EF_CAPS_LOCK_ON)));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 }
 
 TEST_F(EventRewriterTest, TestRewriteCapsLock) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
 
-  SetupKeyboard("External Generic Keyboard", kKbdTopRowLayoutUnspecified,
-                ui::INPUT_DEVICE_UNKNOWN);
+  SetUpKeyboard(kExternalGenericKeyboard);
   EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // On Chrome OS, CapsLock is mapped to CapsLock with Mod3Mask.
-  EXPECT_EQ(
-      GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK,
-                                ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK, ui::EF_MOD3_DOWN,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode));
+  EXPECT_EQ(CapsLockPressed(ui::EF_CAPS_LOCK_ON),
+            RunRewriter(CapsLockPressed()));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
-  EXPECT_EQ(
-      GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK, ui::EF_NONE,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK, ui::EF_MOD3_DOWN,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode));
+  EXPECT_EQ(CapsLockReleased(),
+            RunRewriter(CapsLockReleased(ui::EF_CAPS_LOCK_ON)));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Remap Caps Lock to Control.
@@ -1890,53 +1757,29 @@ TEST_F(EventRewriterTest, TestRewriteCapsLock) {
   // Press Caps Lock. CapsLock is enabled but we have remapped the key to
   // now be Control. We want to ensure that the CapsLock modifier is still
   // active even after pressing the remapped Capslock key.
-  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CONTROL,
-                                      ui::DomCode::CONTROL_LEFT,
-                                      ui::EF_CONTROL_DOWN | ui::EF_CAPS_LOCK_ON,
-                                      ui::DomKey::CONTROL, kNoScanCode),
-            GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED,
-                                      ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
-                                      ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
-                                      ui::DomKey::CAPS_LOCK, kNoScanCode));
+  EXPECT_EQ(LControlPressed(ui::EF_CAPS_LOCK_ON),
+            RunRewriter(CapsLockPressed(ui::EF_CAPS_LOCK_ON)));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Caps Lock.
-  EXPECT_EQ(
-      GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CONTROL,
-                                ui::DomCode::CONTROL_LEFT, ui::EF_CAPS_LOCK_ON,
-                                ui::DomKey::CONTROL, kNoScanCode),
-      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK, ui::EF_CAPS_LOCK_ON,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode));
+  EXPECT_EQ(LControlReleased(ui::EF_CAPS_LOCK_ON),
+            RunRewriter(CapsLockReleased(ui::EF_CAPS_LOCK_ON)));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 }
 
 TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
 
-  SetupKeyboard("External Generic Keyboard", kKbdTopRowLayoutUnspecified,
-                ui::INPUT_DEVICE_UNKNOWN);
+  SetUpKeyboard(kExternalGenericKeyboard);
   EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Turn on CapsLock.
-  EXPECT_EQ(
-      GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK,
-                                ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK, ui::EF_MOD3_DOWN,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode));
-
+  EXPECT_EQ(CapsLockPressed(ui::EF_CAPS_LOCK_ON),
+            RunRewriter(CapsLockPressed()));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
-  EXPECT_EQ(
-      GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK, ui::EF_NONE,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK, ui::EF_MOD3_DOWN,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode));
+  EXPECT_EQ(CapsLockReleased(),
+            RunRewriter(CapsLockReleased(ui::EF_CAPS_LOCK_ON)));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Remap CapsLock to Search.
@@ -1947,23 +1790,12 @@ TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
 
   // Now that CapsLock is enabled, press the remapped CapsLock button again
   // and expect to not disable CapsLock.
-  EXPECT_EQ(
-      GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_LWIN,
-                                ui::DomCode::META_LEFT,
-                                ui::EF_COMMAND_DOWN | ui::EF_CAPS_LOCK_ON,
-                                ui::DomKey::META, kNoScanCode),
-      GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK, ui::EF_CAPS_LOCK_ON,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode));
+  EXPECT_EQ(LWinPressed(ui::EF_CAPS_LOCK_ON),
+            RunRewriter(CapsLockPressed(ui::EF_CAPS_LOCK_ON)));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
-  EXPECT_EQ(
-      GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
-                                ui::DomCode::META_LEFT, ui::EF_CAPS_LOCK_ON,
-                                ui::DomKey::META, kNoScanCode),
-      GetRewrittenEventAsString(source(), ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK, ui::EF_CAPS_LOCK_ON,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode));
+  EXPECT_EQ(LWinReleased(ui::EF_CAPS_LOCK_ON),
+            RunRewriter(CapsLockReleased(ui::EF_CAPS_LOCK_ON)));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Remap CapsLock key back to CapsLock.
@@ -1974,14 +1806,8 @@ TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
 
   // Now press CapsLock again and now expect that the CapsLock modifier is
   // removed and the key is disabled.
-  EXPECT_EQ(
-      GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK,
-                                ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode),
-      GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
-                                ui::DomCode::CAPS_LOCK, ui::EF_MOD3_DOWN,
-                                ui::DomKey::CAPS_LOCK, kNoScanCode));
+  EXPECT_EQ(CapsLockPressed(ui::EF_CAPS_LOCK_ON),
+            RunRewriter(CapsLockPressed(ui::EF_CAPS_LOCK_ON)));
   EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 }
 
@@ -1993,31 +1819,22 @@ TEST_F(EventRewriterTest, TestRewriteCapsLockToControl) {
                       ui::mojom::ModifierKey::kCapsLock,
                       ui::mojom::ModifierKey::kControl);
 
-  TestExternalGenericKeyboard({
-      // Press CapsLock+a. Confirm that Mod3Mask is rewritten to ControlMask.
-      // On Chrome OS, CapsLock works as a Mod3 modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_MOD3_DOWN,
-        ui::DomKey::Constant<'a'>::Character},
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_CONTROL_DOWN,
-        ui::DomKey::Constant<'a'>::Character}},
+  SetUpKeyboard(kExternalGenericKeyboard);
 
-      // Press Control+CapsLock+a. Confirm that Mod3Mask is rewritten to
-      // ControlMask
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_CONTROL_DOWN | ui::EF_MOD3_DOWN,
-        ui::DomKey::Constant<'a'>::Character},
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_CONTROL_DOWN,
-        ui::DomKey::Constant<'a'>::Character}},
+  // Press CapsLock+a. Confirm that Mod3Mask is rewritten to ControlMask.
+  // On Chrome OS, CapsLock works as a Mod3 modifier.
+  EXPECT_EQ(APressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(APressed(ui::EF_MOD3_DOWN)));
 
-      // Press Alt+CapsLock+a. Confirm that Mod3Mask is rewritten to
-      // ControlMask.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_ALT_DOWN | ui::EF_MOD3_DOWN,
-        ui::DomKey::Constant<'a'>::Character},
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN,
-        ui::DomKey::Constant<'a'>::Character}},
-  });
+  // Press Control+CapsLock+a. Confirm that Mod3Mask is rewritten to
+  // ControlMask
+  EXPECT_EQ(APressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(APressed(ui::EF_CONTROL_DOWN | ui::EF_MOD3_DOWN)));
+
+  // Press Alt+CapsLock+a. Confirm that Mod3Mask is rewritten to
+  // ControlMask.
+  EXPECT_EQ(APressed(ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN),
+            RunRewriter(APressed(ui::EF_ALT_DOWN | ui::EF_MOD3_DOWN)));
 }
 
 TEST_F(EventRewriterTest, TestRewriteCapsLockMod3InUse) {
@@ -2028,19 +1845,12 @@ TEST_F(EventRewriterTest, TestRewriteCapsLockMod3InUse) {
                       ui::mojom::ModifierKey::kCapsLock,
                       ui::mojom::ModifierKey::kControl);
 
-  SetupKeyboard("External Generic Keyboard", kKbdTopRowLayoutUnspecified,
-                ui::INPUT_DEVICE_UNKNOWN);
+  SetUpKeyboard(kExternalGenericKeyboard);
   input_method_manager_mock_->set_mod3_used(true);
 
   // Press CapsLock+a. Confirm that Mod3Mask is NOT rewritten to ControlMask
   // when Mod3Mask is already in use by the current XKB layout.
-  EXPECT_EQ(GetExpectedResultAsString(
-                ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, ui::EF_NONE,
-                ui::DomKey::Constant<'a'>::Character, kNoScanCode),
-            GetRewrittenEventAsString(source(), ui::ET_KEY_PRESSED, ui::VKEY_A,
-                                      ui::DomCode::US_A, ui::EF_NONE,
-                                      ui::DomKey::Constant<'a'>::Character,
-                                      kNoScanCode));
+  EXPECT_EQ(APressed(), RunRewriter(APressed()));
 
   input_method_manager_mock_->set_mod3_used(false);
 }
