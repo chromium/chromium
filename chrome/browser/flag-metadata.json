@@ -8109,8 +8109,8 @@
   },
   {
     "name": "vm-per-boot-shader-cache",
-    "owners": [ "endlesspring@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 120
+    "owners": [ "endlesspring@google.com", "allenwebb@google.com", "borealis-syd@google.com" ],
+    "expiry_milestone": 123
   },
   {
     "name": "wait-threshold-seconds-for-capabilities-api",
