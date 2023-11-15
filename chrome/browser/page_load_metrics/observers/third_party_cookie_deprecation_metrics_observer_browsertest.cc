@@ -741,15 +741,15 @@ class ThirdPartyCookieDeprecationObserverMechanismBrowserTest
       browser()->profile()->GetPrefs()->SetBoolean(
           prefs::kBlockAll3pcToggleEnabled, false);
 
-      // Set up tpcd metadata, the first_party_url in OnCookieRead and
-      // OnCookieChange is empty when Javascript third_party cookies access
-      // trigger the calls, it only works for cases when matching the first
-      // primary pattern.
+      // Set up tpcd metadata, make sure both the primary pattern and secondary
+      // pattern match.
       const std::string primary_pattern_spec =
           ContentSettingsPattern::FromURL(third_party_url).ToString();
+      const std::string secondary_pattern_spec =
+          ContentSettingsPattern::FromURL(first_party_url).ToString();
       tpcd::metadata::Metadata metadata =
           tpcd::metadata::MakeMetadataProtoFromVectorOfPair(
-              {{primary_pattern_spec, "*"}});
+              {{primary_pattern_spec, secondary_pattern_spec}});
       EXPECT_EQ(metadata.metadata_entries_size(), 1);
       MockComponentInstallation(metadata);
       EXPECT_EQ(CookieSettingsFactory::GetForProfile(browser()->profile())

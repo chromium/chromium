@@ -387,14 +387,27 @@ void SplitCookiesIntoAllowedAndBlocked(
     const network::mojom::CookieAccessDetailsPtr& cookie_details,
     CookieAccessDetails* allowed,
     CookieAccessDetails* blocked) {
-  *allowed =
-      CookieAccessDetails({cookie_details->type,
-                           cookie_details->url,
-                           cookie_details->site_for_cookies.RepresentativeUrl(),
-                           {},
-                           cookie_details->count,
-                           /* blocked_by_policy=*/false,
-                           cookie_details->is_ad_tagged});
+  // For some cases `site_for_cookies` representative url is empty when
+  // OnCookieAccess is triggered for a third party. For example iframe third
+  // party accesses cookies when TPCD Metadata allows third party cookie access.
+  //
+  // Make `first_party_url` considering both `top_frame_origin` and
+  // `site_for_cookies` which is similar with GetFirstPartyURL() in
+  // components/content_settings/core/common/cookie_settings_base.h.
+  // If the `top_frame_origin` is non-opaque, it is chosen; otherwise, the
+  // `site_for_cookies` representative url is used.
+  const GURL first_party_url =
+      cookie_details->top_frame_origin.opaque()
+          ? cookie_details->site_for_cookies.RepresentativeUrl()
+          : cookie_details->top_frame_origin.GetURL();
+
+  *allowed = CookieAccessDetails({cookie_details->type,
+                                  cookie_details->url,
+                                  first_party_url,
+                                  {},
+                                  cookie_details->count,
+                                  /* blocked_by_policy=*/false,
+                                  cookie_details->is_ad_tagged});
   int allowed_count = base::ranges::count_if(
       cookie_details->cookie_list,
       [](const network::mojom::CookieOrLineWithAccessResultPtr&
@@ -405,14 +418,13 @@ void SplitCookiesIntoAllowedAndBlocked(
       });
   allowed->cookie_list.reserve(allowed_count);
 
-  *blocked =
-      CookieAccessDetails({cookie_details->type,
-                           cookie_details->url,
-                           cookie_details->site_for_cookies.RepresentativeUrl(),
-                           {},
-                           cookie_details->count,
-                           /* blocked_by_policy=*/true,
-                           cookie_details->is_ad_tagged});
+  *blocked = CookieAccessDetails({cookie_details->type,
+                                  cookie_details->url,
+                                  first_party_url,
+                                  {},
+                                  cookie_details->count,
+                                  /* blocked_by_policy=*/true,
+                                  cookie_details->is_ad_tagged});
   int blocked_count = base::ranges::count_if(
       cookie_details->cookie_list,
       [](const network::mojom::CookieOrLineWithAccessResultPtr&

@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
@@ -21,6 +22,10 @@ struct CookieAccessDetails {
   // loaded; if they're read by a script, it's the URL of window or service
   // worker script looking them up.
   url.mojom.Url url;
+
+  // The top frame origin for the given request, we use top_frame_origin from
+  // net::IsolationInfo.
+  url.mojom.Origin top_frame_origin;
 
   SiteForCookies site_for_cookies;
   // Each element of the `cookie_list` array includes a CookieInclusionStatus
