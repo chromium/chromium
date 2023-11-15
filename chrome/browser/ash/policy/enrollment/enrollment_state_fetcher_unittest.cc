@@ -3,14 +3,16 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/enrollment/enrollment_state_fetcher.h"
-#include <algorithm>
+
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
@@ -300,7 +302,7 @@ TEST_F(EnrollmentStateFetcherTest, DisabledOnFlex) {
   histograms.ExpectUniqueSample(kUMAStateDeterminationOnFlex, true, 1);
 }
 
-TEST_F(EnrollmentStateFetcherTest, SystemClockNotSyncronized) {
+TEST_F(EnrollmentStateFetcherTest, SystemClockNotSynchronized) {
   system_clock_.DisableService();
 
   AutoEnrollmentState state = FetchEnrollmentState();
@@ -446,7 +448,7 @@ TEST_F(EnrollmentStateFetcherTest, FailToCreateQueryRequest) {
                        use_case,
                        // Using fake ID, cipher key and seed will cause failure
                        // to create query request since it won't match the
-                       // ecrypted ID in OPRF response from the psm_test_case_.
+                       // encrypted ID in OPRF response from the psm_test_case_.
                        {plaintext_id}, "ec_cipher_key",
                        "seed4567890123456789012345678912")
                     .value();

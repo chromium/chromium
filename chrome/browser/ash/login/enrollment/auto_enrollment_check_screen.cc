@@ -4,9 +4,8 @@
 
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
 
-#include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
@@ -76,16 +75,13 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
           &AutoEnrollmentCheckScreen::OnAutoEnrollmentCheckProgressed,
           base::Unretained(this)));
 
-  NetworkState::PortalState new_captive_portal_state =
-      NetworkState::PortalState::kUnknown;
-
   NetworkStateHandler* network_state_handler =
       NetworkHandler::Get()->network_state_handler();
   network_state_handler->AddObserver(this);
   const NetworkState* default_network = network_state_handler->DefaultNetwork();
-  new_captive_portal_state = default_network
-                                 ? default_network->GetPortalState()
-                                 : NetworkState::PortalState::kUnknown;
+  const NetworkState::PortalState new_captive_portal_state =
+      default_network ? default_network->GetPortalState()
+                      : NetworkState::PortalState::kUnknown;
 
   // Perform an initial UI update.
   if (!UpdateCaptivePortalState(new_captive_portal_state))

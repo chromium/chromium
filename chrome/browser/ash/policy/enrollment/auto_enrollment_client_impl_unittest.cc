@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"

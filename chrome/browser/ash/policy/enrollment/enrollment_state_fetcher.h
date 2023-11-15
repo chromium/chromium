@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_STATE_FETCHER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
