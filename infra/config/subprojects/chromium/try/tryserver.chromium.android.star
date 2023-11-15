@@ -1106,6 +1106,7 @@ try_.builder(
         ],
     ),
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(),
 )
 
