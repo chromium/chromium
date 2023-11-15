@@ -18,7 +18,6 @@ constexpr int kTriangleLength = 20;
 constexpr int kTriangleHeight = 14;
 constexpr int kCornerRadius = 16;
 constexpr int kBorderThickness = 2;
-constexpr int kBorderInset = 16;
 
 // Whole menu width with arrow.
 constexpr int kMenuWidth = kButtonOptionsMenuWidth + kTriangleHeight;
@@ -126,11 +125,16 @@ void ArrowContainer::SetArrowOnLeft(bool arrow_on_left) {
 
 void ArrowContainer::UpdateBorder() {
   SetBorder(views::CreateEmptyBorder(
-      arrow_on_left_
-          ? gfx::Insets::TLBR(kBorderInset, kBorderInset + kTriangleHeight,
-                              kBorderInset, kBorderInset)
-          : gfx::Insets::TLBR(kBorderInset, kBorderInset, kBorderInset,
-                              kBorderInset + kTriangleHeight)));
+      arrow_on_left_ ? gfx::Insets::TLBR(kArrowContainerHorizontalBorderInset,
+                                         kArrowContainerHorizontalBorderInset +
+                                             kTriangleHeight,
+                                         kArrowContainerHorizontalBorderInset,
+                                         kArrowContainerHorizontalBorderInset)
+                     : gfx::Insets::TLBR(kArrowContainerHorizontalBorderInset,
+                                         kArrowContainerHorizontalBorderInset,
+                                         kArrowContainerHorizontalBorderInset,
+                                         kArrowContainerHorizontalBorderInset +
+                                             kTriangleHeight)));
 }
 
 void ArrowContainer::OnPaintBackground(gfx::Canvas* canvas) {

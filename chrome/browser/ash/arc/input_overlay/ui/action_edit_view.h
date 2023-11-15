@@ -27,7 +27,7 @@ class ActionEditView : public views::Button {
  public:
   ActionEditView(DisplayOverlayController* controller,
                  Action* action,
-                 bool is_editing_list);
+                 bool for_editing_list);
   ActionEditView(const ActionEditView&) = delete;
   ActionEditView& operator=(const ActionEditView&) = delete;
   ~ActionEditView() override;

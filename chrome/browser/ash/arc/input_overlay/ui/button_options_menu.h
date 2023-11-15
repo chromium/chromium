@@ -31,13 +31,14 @@ class DisplayOverlayController;
 // +----------------------------------+
 // ||"Button options"|          |icon||
 // |----------------------------------|
-// ||"Key assignment"|                |
-// |----------------------------------|
-// |  |feature_tile|  |feature_title| |
-// |  |            |  |             | |
+// ||"Buttons let..."|                |
 // |----------------------------------|
 // ||"Selected key"       |key labels||
 // ||"key"                            |
+// |----------------------------------|
+// |  |"Choose your button type:"   | |
+// |  |feature_tile|  |feature_title| |
+// |  |            |  |             | |
 // |----------------------------------|
 // -----------------------------------|
 // ||         Delete button          ||

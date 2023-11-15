@@ -37,7 +37,7 @@ constexpr int kNameTagAndLabelsPaddingForEditingList = 12;
 
 ActionEditView::ActionEditView(DisplayOverlayController* controller,
                                Action* action,
-                               bool is_editing_list)
+                               bool for_editing_list)
     : views::Button(base::BindRepeating(&ActionEditView::OnClicked,
                                         base::Unretained(this))),
       controller_(controller),
@@ -52,10 +52,10 @@ ActionEditView::ActionEditView(DisplayOverlayController* controller,
       views::CreateEmptyBorder(gfx::Insets::VH(14, kHorizontalInsets)));
   container->SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase,
-      /*top_radius=*/is_editing_list ? kCornerRadius : 0.0f,
-      /*bottom_radius=*/kCornerRadius,
+      /*top_radius=*/kCornerRadius,
+      /*bottom_radius=*/for_editing_list ? kCornerRadius : 0.0f,
       /*for_border_thickness=*/0));
-  const int padding_width = is_editing_list
+  const int padding_width = for_editing_list
                                 ? kNameTagAndLabelsPaddingForEditingList
                                 : kNameTagAndLabelsPaddingForButtonOptionsMenu;
   container
@@ -75,12 +75,12 @@ ActionEditView::ActionEditView(DisplayOverlayController* controller,
 
   // TODO(b/274690042): Replace placeholder text with localized strings.
   name_tag_ = container->AddChildView(
-      NameTag::CreateNameTag(u"Unassigned", is_editing_list));
+      NameTag::CreateNameTag(u"Unassigned", for_editing_list));
   labels_view_ = container->AddChildView(EditLabels::CreateEditLabels(
       controller_, action_, name_tag_, /*should_update_title=*/true));
 
   name_tag_->SetMaximumWidth(
-      (is_editing_list ? kEditingListWidth : kButtonOptionsMenuWidth) -
+      (for_editing_list ? kEditingListWidth : kButtonOptionsMenuWidth) -
       2 * kEditingListInsideBorderInsets - 2 * kHorizontalInsets -
       padding_width - labels_view_->GetPreferredSize().width());
 }

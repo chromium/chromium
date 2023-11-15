@@ -49,6 +49,8 @@ constexpr float kDeleteButtonHaloInset = -5.0f;
 // Thickness of focus ring.
 constexpr float kDeleteButtonHaloThickness = 3.0f;
 
+constexpr int kHeaderLeftMarginSpacing = 6;
+
 }  // namespace
 
 // ButtonOptionsActionEdit shows in ButtonOptions and is associated with each
@@ -182,8 +184,8 @@ void ButtonOptionsMenu::Init() {
       views::BoxLayout::Orientation::kVertical));
   AddHeader();
   AddEditTitle();
-  AddActionSelection();
   AddActionEdit();
+  AddActionSelection();
   AddDeleteButton();
 }
 
@@ -203,7 +205,8 @@ void ButtonOptionsMenu::AddHeader() {
                  views::TableLayout::ColumnSize::kUsePreferred,
                  /*fixed_width=*/0, /*min_width=*/0)
       .AddRows(1, views::TableLayout::kFixedSize, 0);
-  container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 16, 0));
+  container->SetProperty(views::kMarginsKey,
+                         gfx::Insets::TLBR(0, kHeaderLeftMarginSpacing, 12, 0));
 
   container->AddChildView(ash::bubble_utils::CreateLabel(
       // TODO(b/274690042): Replace placeholder text with localized strings.
@@ -220,33 +223,21 @@ void ButtonOptionsMenu::AddHeader() {
 
 void ButtonOptionsMenu::AddEditTitle() {
   // ------------------------------
-  // ||"Key assignment"|          |
+  // ||"Buttons let..."|          |
   // ------------------------------
-  auto* container = AddChildView(std::make_unique<views::View>());
-  container->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetMainAxisAlignment(views::LayoutAlignment::kStart);
-  container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 12, 0));
-
-  container->AddChildView(ash::bubble_utils::CreateLabel(
+  auto* label = AddChildView(ash::bubble_utils::CreateLabel(
       // TODO(b/274690042): Replace placeholder text with localized strings.
-      ash::TypographyToken::kCrosBody2, u"Key assignment",
+      ash::TypographyToken::kCrosAnnotation2,
+      u"Buttons let you choose keyboard keys to press on screen mobile buttons "
+      u"in your game.",
       cros_tokens::kCrosSysOnSurface));
-}
-
-void ButtonOptionsMenu::AddActionSelection() {
-  // ----------------------------------
-  // | |feature_tile| |feature_title| |
-  // ----------------------------------
-  auto* container = AddChildView(std::make_unique<views::View>());
-  container->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBase, /*top_radius=*/16,
-      /*bottom_radius=*/0, /*for_border_thickness=*/0));
-  container->SetUseDefaultFillLayout(true);
-  container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 2, 0));
-
-  button_group_ = container->AddChildView(
-      ActionTypeButtonGroup::CreateButtonGroup(controller_, action_));
+  label->SetMultiLine(true);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetMaximumWidth(kButtonOptionsMenuWidth -
+                         2 * kArrowContainerHorizontalBorderInset -
+                         kHeaderLeftMarginSpacing);
+  label->SetProperty(views::kMarginsKey,
+                     gfx::Insets::TLBR(0, kHeaderLeftMarginSpacing, 16, 0));
 }
 
 void ButtonOptionsMenu::AddActionEdit() {
@@ -256,6 +247,35 @@ void ButtonOptionsMenu::AddActionEdit() {
   // ------------------------------
   action_edit_ = AddChildView(
       std::make_unique<ButtonOptionsActionEdit>(controller_, action_));
+}
+
+void ButtonOptionsMenu::AddActionSelection() {
+  // ----------------------------------
+  // | |"Choose your button type:"  | |
+  // | |feature_tile| |feature_title| |
+  // ----------------------------------
+  auto* container = AddChildView(std::make_unique<views::View>());
+  container->SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBase, /*top_radius=*/0,
+      /*bottom_radius=*/16, /*for_border_thickness=*/0));
+  container->SetUseDefaultFillLayout(true);
+  container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(2, 0, 0, 0));
+  container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      /*inside_border_insets=*/gfx::Insets::TLBR(12, 16, 16, 16),
+      /*between_child_spacing=*/12));
+
+  auto* label = container->AddChildView(ash::bubble_utils::CreateLabel(
+      // TODO(b/274690042): Replace placeholder text with localized strings.
+      ash::TypographyToken::kCrosButton2, u"Choose your button type:",
+      cros_tokens::kCrosSysOnSurface));
+  label->SetMultiLine(true);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetMaximumWidth(kButtonOptionsMenuWidth -
+                         2 * kArrowContainerHorizontalBorderInset);
+
+  button_group_ = container->AddChildView(
+      ActionTypeButtonGroup::CreateButtonGroup(controller_, action_));
 }
 
 void ButtonOptionsMenu::AddDeleteButton() {

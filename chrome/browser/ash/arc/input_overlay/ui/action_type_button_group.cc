@@ -35,7 +35,7 @@ ActionTypeButtonGroup::~ActionTypeButtonGroup() = default;
 void ActionTypeButtonGroup::Init() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
                        views::BoxLayout::Orientation::kHorizontal,
-                       /*inside_border_insets=*/gfx::Insets::VH(8, 8),
+                       /*inside_border_insets=*/gfx::Insets(),
                        /*between_child_spacing=*/8))
       ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
 
