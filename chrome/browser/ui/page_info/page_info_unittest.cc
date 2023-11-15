@@ -169,14 +169,7 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
         /*is_affiliated=*/true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
-    content_settings::PageSpecificContentSettings::CreateForWebContents(
-        web_contents(),
-        std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-            web_contents()));
-
-    permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
-        web_contents());
+    CreateWebContentsUserData(web_contents());
 
     // Setup mock ui.
     ResetMockUI();
@@ -291,11 +284,7 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
           content::WebContentsTester::CreateTestWebContents(
               profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
               nullptr);
-
-      content_settings::PageSpecificContentSettings::CreateForWebContents(
-          incognito_web_contents_.get(),
-          std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-              incognito_web_contents_.get()));
+      CreateWebContentsUserData(incognito_web_contents_.get());
 
       incognito_mock_ui_ = std::make_unique<NiceMock<MockPageInfoUI>>();
       incognito_mock_ui_->set_permission_info_callback_ = base::BindRepeating(
@@ -313,6 +302,17 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
       run_loop.Run();
     }
     return incognito_page_info_.get();
+  }
+
+  void CreateWebContentsUserData(content::WebContents* contents) {
+    // The test WebContents don't have all the helpers attached, so add in the
+    // missing ones needed by these tests.
+    infobars::ContentInfoBarManager::CreateForWebContents(contents);
+    content_settings::PageSpecificContentSettings::CreateForWebContents(
+        contents, std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
+                      contents));
+    permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
+        contents);
   }
 
   security_state::SecurityLevel security_level_;
