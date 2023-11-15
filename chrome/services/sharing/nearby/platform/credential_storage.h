@@ -65,6 +65,9 @@ class CredentialStorage : public nearby::api::CredentialStorage {
       absl::optional<
           std::vector<ash::nearby::presence::mojom::LocalCredentialPtr>>
           local_credentials_mojom);
+  void OnLocalCredentialUpdated(nearby::presence::SaveCredentialsResultCallback
+                                    on_local_credential_updated_callback,
+                                mojo_base::mojom::AbslStatusCode update_status);
 
   const mojo::SharedRemote<
       ash::nearby::presence::mojom::NearbyPresenceCredentialStorage>
