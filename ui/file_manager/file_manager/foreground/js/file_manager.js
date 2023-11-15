@@ -1450,8 +1450,7 @@ export class FileManager extends EventTarget {
       const directoryTreeContainer = new DirectoryTreeContainer(
           // @ts-ignore: error TS2345: Argument of type 'HTMLElement | null' is
           // not assignable to parameter of type 'HTMLElement'.
-          treeContainer, this.directoryModel_, this.volumeManager_,
-          this.metadataModel_);
+          treeContainer, this.directoryModel_, this.volumeManager_);
       // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.ui_.initDirectoryTree(directoryTreeContainer);
     } else {

@@ -6,7 +6,7 @@ import {isRTL} from 'chrome://resources/ash/common/util.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {maybeShowTooltip} from '../common/js/dom_utils.js';
-import {isEntryInsideComputers, isEntryInsideDrive, isEntryInsideMyDrive, isGrandRootEntryInDrives, isMyFilesEntry, isOneDrive, isOneDriveId, isTrashEntry, isVolumeEntry} from '../common/js/entry_utils.js';
+import {isEntryInsideDrive, isGrandRootEntryInDrives, isMyFilesEntry, isOneDrive, isOneDriveId, isTrashEntry, isVolumeEntry, shouldSupportDriveSpecificIcons} from '../common/js/entry_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../common/js/files_app_entry_types.js';
 import {vmTypeToIconName} from '../common/js/icon_util.js';
 import {recordEnum, recordUserAction} from '../common/js/metrics.js';
@@ -16,7 +16,6 @@ import {AndroidApp, FileData, FileKey, NavigationKey, NavigationRoot, Navigation
 import {VolumeManager} from '../externs/volume_manager.js';
 import {constants} from '../foreground/js/constants.js';
 import {DirectoryModel} from '../foreground/js/directory_model.js';
-import {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
 import {Command} from '../foreground/js/ui/command.js';
 import {contextMenuHandler} from '../foreground/js/ui/context_menu_handler.js';
 import {Menu} from '../foreground/js/ui/menu.js';
@@ -32,11 +31,6 @@ import {type TreeItemCollapsedEvent, type TreeItemExpandedEvent, XfTreeItem} fro
  * @fileoverview The Directory Tree aka Navigation Tree.
  * @suppress {checkTypes} TS already checks this file.
  */
-
-const DRIVE_ENTRY_METADATA_PROPERTY_NAMES = [
-  ...constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES,
-  ...constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES,
-];
 
 const NAVIGATION_TYPES_WITHOUT_CHILDREN = new Set([
   NavigationType.ANDROID_APPS,
@@ -135,8 +129,7 @@ export class DirectoryTreeContainer {
 
   constructor(
       container: HTMLElement, private directoryModel_: DirectoryModel,
-      private volumeManager_: VolumeManager,
-      private metadataModel_: MetadataModel) {
+      private volumeManager_: VolumeManager) {
     this.tree.id = 'directory-tree';
     container.appendChild(this.tree);
 
@@ -386,12 +379,6 @@ export class DirectoryTreeContainer {
       this.setupEjectButton_(element, fileData.label);
     }
 
-    // Fetch metadata if the entry supports Drive specific share icon.
-    if (this.shouldSupportDriveSpecificIcons_(fileData)) {
-      this.metadataModel_.get(
-          [fileData.entry as Entry], DRIVE_ENTRY_METADATA_PROPERTY_NAMES);
-    }
-
     if (!(navigationRoot?.type &&
           NAVIGATION_TYPES_WITHOUT_CHILDREN.has(navigationRoot.type)) &&
         // For disabled tree root, we don't render any children inside.
@@ -506,7 +493,7 @@ export class DirectoryTreeContainer {
       element.icon = fileData.icon;
     }
     // For drive item, update icon based on the metadata.
-    if (this.shouldSupportDriveSpecificIcons_(fileData) && fileData.metadata) {
+    if (shouldSupportDriveSpecificIcons(fileData) && fileData.metadata) {
       const {shared, isMachineRoot, isExternalMedia} = fileData.metadata;
       if (shared) {
         element.icon = constants.ICON_TYPES.SHARED_FOLDER;
@@ -610,6 +597,7 @@ export class DirectoryTreeContainer {
     if (!fileData) {
       return;
     }
+    // Set context menu for the item.
     this.setContextMenu_(element, fileData, navigationRoot);
     // Expand MyFiles by default.
     const entry = fileData.entry;
@@ -713,21 +701,6 @@ export class DirectoryTreeContainer {
             childKey, /* shouldDeleteElement= */ false, /* isRoot= */ false);
       }
     }
-  }
-
-  /**
-   * Returns true if fileData's entry supports the "shared" feature, as in,
-   * displays a shared icon. It's only supported inside "My Drive" or
-   * "Computers", even Shared Drive does not support it, the "My Drive" and
-   * "Computers" itself don't support it either, only their children.
-   *
-   * Note: if the return value is true, fileData's entry is guaranteed to be
-   * native Entry type.
-   */
-  private shouldSupportDriveSpecificIcons_(fileData: FileData): boolean {
-    return (isEntryInsideMyDrive(fileData) && !isVolumeEntry(fileData.entry)) ||
-        (isEntryInsideComputers(fileData) &&
-         !isGrandRootEntryInDrives(fileData.entry));
   }
 
   /**

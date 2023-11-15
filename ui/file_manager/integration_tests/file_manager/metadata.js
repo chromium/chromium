@@ -122,7 +122,18 @@ testcase.metadataDrive = async () => {
   // +  2 folders when expanding photos1
   // = 14
   chrome.test.assertEq(14, metadataStats.fullFetch);
-  chrome.test.assertEq(12, metadataStats.fromCache);
+  if (directoryTree.isNewTree) {
+    // TODO(b/301204017): The metadata for the "3 folders in My Drive" and "2
+    // folders in photos1" are being fetched twice, hence the 5 more cache hit
+    // here. This is because metadata is fetched right after reading sub
+    // directories, when "My Drive" is rendered, we need to read sub directories
+    // in order to see if we need to show expanded icon or not, and when "My
+    // Drive" is expanded, we read sub directories again, same for "photos1".
+    // Revisit this when we are doing performance improvement.
+    chrome.test.assertEq(17, metadataStats.fromCache);
+  } else {
+    chrome.test.assertEq(12, metadataStats.fromCache);
+  }
 
   // Cleared 8 files + 3 folders when navigated out of My Drive and
   // clearing file list.

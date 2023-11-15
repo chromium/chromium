@@ -4,7 +4,7 @@
 
 import {getParentEntry} from '../../common/js/api.js';
 import {DialogType} from '../../common/js/dialog_type.js';
-import {isDriveRootEntryList, isFakeEntryInDrives, isGrandRootEntryInDrives, isVolumeEntry, sortEntries} from '../../common/js/entry_utils.js';
+import {isDriveRootEntryList, isEntryInsideDrive, isFakeEntryInDrives, isGrandRootEntryInDrives, isVolumeEntry, shouldSupportDriveSpecificIcons, sortEntries} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {recordInterval, recordSmallCount, startInterval} from '../../common/js/metrics.js';
@@ -509,7 +509,6 @@ function addChildEntriesReducer(currentState: State, payload: {
 
 /**
  * Read sub directories for a given entry.
- * TODO(b/271485133): Remove successCallback/errorCallback.
  */
 export async function*
     readSubDirectories(
@@ -543,6 +542,21 @@ export async function*
         childEntries.filter(childEntry => childEntry.isDirectory);
     yield addChildEntries({parentKey: entry.toURL(), entries: subDirectories});
     childEntriesToReadDeeper.push(...subDirectories);
+    // Fetch metadata if the entry supports Drive specific share icon.
+    const state = getStore().getState();
+    const parentFileData = getFileData(state, validEntry.toURL())!;
+    if (isEntryInsideDrive(parentFileData)) {
+      const entriesNeedMetadata = subDirectories.filter(subDirectory => {
+        const fileData = getFileData(state, subDirectory.toURL());
+        return fileData && shouldSupportDriveSpecificIcons(fileData);
+      });
+      if (entriesNeedMetadata.length > 0) {
+        window.fileManager.metadataModel.get(entriesNeedMetadata, [
+          ...constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES,
+          ...constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES,
+        ]);
+      }
+    }
   }
 
   // Track time for reading sub directories if metric for tracking is passed.

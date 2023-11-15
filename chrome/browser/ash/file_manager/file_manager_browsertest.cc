@@ -1972,8 +1972,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Metadata, /* metadata.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        // TODO(b/301342772): enable the test
-        // TestCase("metadataDrive").NewDirectoryTree(),
+        TestCase("metadataDrive").NewDirectoryTree(),
         TestCase("metadataDownloads").NewDirectoryTree(),
         TestCase("metadataLargeDrive").NewDirectoryTree(),
         TestCase("metadataTeamDrives").NewDirectoryTree(),

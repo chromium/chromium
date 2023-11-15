@@ -108,7 +108,7 @@ export function isGrandRootEntryInDrives(entry: Entry|FilesAppEntry):
  * inside Drive.
  */
 export function isFakeEntryInDrives(entry: Entry|
-                                    FilesAppEntry): entry is FakeEntryImpl {
+                                    FilesAppEntry): entry is FakeEntry {
   if (!(entry instanceof FakeEntryImpl)) {
     return false;
   }
@@ -241,10 +241,10 @@ export function isSharedDriveEntry(entry: Entry|FilesAppEntry) {
 
 /**
  * Extracts Shared Drive name from entry path.
- * @return {string} The name of Shared Drive. Empty string if |entry| is not
+ * @return The name of Shared Drive. Empty string if |entry| is not
  *     under Shared Drives.
  */
-export function getTeamDriveName(entry: Entry|FakeEntry|FilesAppEntry) {
+export function getTeamDriveName(entry: Entry|FakeEntry|FilesAppEntry): string {
   if (!entry.fullPath || !isSharedDriveEntry(entry)) {
     return '';
   }
@@ -319,12 +319,12 @@ export function isTrashEntry(entry: Entry|FilesAppEntry) {
 
 /**
  * Compares two entries.
- * @return {boolean} True if the both entry represents a same file or
+ * @return True if the both entry represents a same file or
  *     directory. Returns true if both entries are null.
  */
 export function isSameEntry(
     entry1: Entry|FilesAppEntry|undefined,
-    entry2: Entry|FilesAppEntry|undefined) {
+    entry2: Entry|FilesAppEntry|undefined): boolean {
   if (!entry1 && !entry2) {
     return true;
   }
@@ -336,10 +336,10 @@ export function isSameEntry(
 
 /**
  * Compares two entry arrays.
- * @return {boolean} True if the both arrays contain same files or directories
+ * @return True if the both arrays contain same files or directories
  *     in the same order. Returns true if both arrays are null.
  */
-export function isSameEntries(entries1: Entry[], entries2: Entry[]) {
+export function isSameEntries(entries1: Entry[], entries2: Entry[]): boolean {
   if (!entries1 && !entries2) {
     return true;
   }
@@ -359,11 +359,11 @@ export function isSameEntries(entries1: Entry[], entries2: Entry[]) {
 
 /**
  * Compares two file systems.
- * @return {boolean} True if the both file systems are equal. Also, returns true
+ * @return True if the both file systems are equal. Also, returns true
  *     if both file systems are null.
  */
 export function isSameFileSystem(
-    fileSystem1: FileSystem|null, fileSystem2: FileSystem|null) {
+    fileSystem1: FileSystem|null, fileSystem2: FileSystem|null): boolean {
   if (!fileSystem1 && !fileSystem2) {
     return true;
   }
@@ -375,9 +375,9 @@ export function isSameFileSystem(
 
 /**
  * Checks if given two entries are in the same directory.
- * @return {boolean} True if given entries are in the same directory.
+ * @return True if given entries are in the same directory.
  */
-export function isSiblingEntry(entry1: Entry, entry2: Entry) {
+export function isSiblingEntry(entry1: Entry, entry2: Entry): boolean {
   const path1 = entry1.fullPath.split('/');
   const path2 = entry2.fullPath.split('/');
   if (path1.length != path2.length) {
@@ -395,10 +395,10 @@ export function isSiblingEntry(entry1: Entry, entry2: Entry) {
  * Checks if the child entry is a descendant of another entry. If the entries
  * point to the same file or directory, then returns false.
  *
- * @param {!DirectoryEntry|!FilesAppEntry} ancestorEntry The ancestor
+ * @param ancestorEntry The ancestor
  *     directory entry. Can be a fake.
- * @param {!Entry|!FilesAppEntry} childEntry The child entry. Can be a fake.
- * @return {boolean} True if the child entry is contained in the ancestor path.
+ * @param childEntry The child entry. Can be a fake.
+ * @return True if the child entry is contained in the ancestor path.
  */
 export function isDescendantEntry(
     ancestorEntry: Entry|FilesAppEntry,
@@ -508,15 +508,15 @@ export function compareLabelAndGroupBottomEntries(
   function compare(entry1: Entry|FilesAppEntry, entry2: Entry|FilesAppEntry) {
     // Bottom entry here means Linux or Play files, which should appear after
     // all native entries.
-    const isBottomlEntry1 = childrenMap.has(entry1.toURL()) ? 1 : 0;
-    const isBottomlEntry2 = childrenMap.has(entry2.toURL()) ? 1 : 0;
+    const isBottomEntry1 = childrenMap.has(entry1.toURL()) ? 1 : 0;
+    const isBottomEntry2 = childrenMap.has(entry2.toURL()) ? 1 : 0;
 
     // When there are the same type, just compare by label.
-    if (isBottomlEntry1 === isBottomlEntry2) {
+    if (isBottomEntry1 === isBottomEntry2) {
       return compareLabel(locationInfo, entry1, entry2);
     }
 
-    return isBottomlEntry1 - isBottomlEntry2;
+    return isBottomEntry1 - isBottomEntry2;
   }
 
   return compare;
@@ -892,4 +892,19 @@ export function isGuestOs(type: VolumeManagerCommon.VolumeType) {
   return type === VolumeManagerCommon.VolumeType.GUEST_OS ||
       (type === VolumeManagerCommon.VolumeType.ANDROID_FILES &&
        isArcVmEnabled());
+}
+
+/**
+ * Returns true if fileData's entry supports the "shared" feature, as in,
+ * displays a shared icon. It's only supported inside "My Drive" or
+ * "Computers", even Shared Drive does not support it, the "My Drive" and
+ * "Computers" itself don't support it either, only their children.
+ *
+ * Note: if the return value is true, fileData's entry is guaranteed to be
+ * native Entry type.
+ */
+export function shouldSupportDriveSpecificIcons(fileData: FileData): boolean {
+  return (isEntryInsideMyDrive(fileData) && !isVolumeEntry(fileData.entry)) ||
+      (isEntryInsideComputers(fileData) &&
+       !isGrandRootEntryInDrives(fileData.entry));
 }

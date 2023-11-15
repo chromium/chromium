@@ -13,9 +13,6 @@ import {waitUntil} from '../common/js/test_error_reporting.js';
 import {waitForElementUpdate} from '../common/js/unittest_util.js';
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 import {State} from '../externs/ts/state.js';
-import {MetadataItem} from '../foreground/js/metadata/metadata_item.js';
-import {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
-import {MockMetadataModel} from '../foreground/js/metadata/mock_metadata.js';
 import {convertEntryToFileData} from '../state/ducks/all_entries.js';
 import {addVolume, convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey, removeVolume} from '../state/ducks/volumes.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore} from '../state/for_tests.js';
@@ -47,8 +44,8 @@ export function setUp() {
   installMockChrome(mockChrome);
   // Initialize directory tree container.
   const {directoryModel, volumeManager} = window.fileManager;
-  directoryTreeContainer = new DirectoryTreeContainer(
-      document.body, directoryModel, volumeManager, createMockMetadataModel());
+  directoryTreeContainer =
+      new DirectoryTreeContainer(document.body, directoryModel, volumeManager);
 }
 
 export function tearDown() {
@@ -57,18 +54,6 @@ export function tearDown() {
     getStore().unsubscribe(directoryTreeContainer);
   }
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
-}
-
-/**
- * Returns a mock MetadataModel.
- */
-function createMockMetadataModel(): MetadataModel {
-  const metadataModel = new MockMetadataModel({}) as unknown as MetadataModel;
-  metadataModel.notifyEntriesChanged = () => {};
-  // get and getCache mock a non-shared directory.
-  metadataModel.get = () => Promise.resolve([{shared: false} as MetadataItem]);
-  metadataModel.getCache = () => [{shared: false} as MetadataItem];
-  return metadataModel;
 }
 
 /**
