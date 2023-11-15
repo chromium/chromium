@@ -4251,9 +4251,6 @@ extern const char kDisableOfficeEditingComponentAppDescription[];
 extern const char kEnableBorderlessPrintingName[];
 extern const char kEnableBorderlessPrintingDescription[];
 
-extern const char kKioskEnableAppServiceName[];
-extern const char kKioskEnableAppServiceDescription[];
-
 extern const char kLacrosColorManagementName[];
 extern const char kLacrosColorManagementDescription[];
 

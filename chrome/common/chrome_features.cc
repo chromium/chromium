@@ -844,10 +844,6 @@ BASE_FEATURE(kIsolatedWebAppDevMode,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kKioskEnableAppService,
-             "KioskEnableAppService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kKioskEnableSystemWebApps,
              "KioskEnableSystemWebApps",
              base::FEATURE_DISABLED_BY_DEFAULT);

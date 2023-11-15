@@ -7429,11 +7429,6 @@ const char kEnableBorderlessPrintingDescription[] =
     "Enable borderless printing and paper type selection in the print preview "
     "dialog.";
 
-const char kKioskEnableAppServiceName[] = "Enable App Service in Kiosk.";
-const char kKioskEnableAppServiceDescription[] =
-    "Uses App Service to install web apps and launch both Chrome apps and web "
-    "apps in Kiosk sessions.";
-
 const char kLacrosColorManagementName[] = "Enable Chrome Color Management.";
 const char kLacrosColorManagementDescription[] =
     "Uses chrome-color-management wayland protocol to manage color spaces "

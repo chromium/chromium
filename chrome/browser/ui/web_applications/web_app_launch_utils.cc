@@ -133,8 +133,9 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
 
   // Avoid causing the existing browser window to close if this is the last tab
   // remaining.
-  if (source_tabstrip->count() == 1)
+  if (source_tabstrip->count() == 1) {
     chrome::NewTab(source_browser);
+  }
 
   if (as_pinned_home_tab) {
     if (HasPinnedHomeTab(target_tabstrip)) {
@@ -281,13 +282,15 @@ base::Value::Dict ToDebugDict(const apps::AppLaunchParams& params) {
 absl::optional<webapps::AppId> GetWebAppForActiveTab(const Browser* browser) {
   const WebAppProvider* const provider =
       WebAppProvider::GetForWebApps(browser->profile());
-  if (!provider)
+  if (!provider) {
     return absl::nullopt;
+  }
 
   const content::WebContents* const web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return absl::nullopt;
+  }
 
   return provider->registrar_unsafe().FindInstalledAppWithUrlInScope(
       web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -297,8 +300,9 @@ void PrunePreScopeNavigationHistory(const GURL& scope,
                                     content::WebContents* contents) {
   content::NavigationController& navigation_controller =
       contents->GetController();
-  if (!navigation_controller.CanPruneAllButLastCommitted())
+  if (!navigation_controller.CanPruneAllButLastCommitted()) {
     return;
+  }
 
   int index = navigation_controller.GetEntryCount() - 1;
   while (index >= 0 &&
@@ -315,8 +319,9 @@ void PrunePreScopeNavigationHistory(const GURL& scope,
 
 Browser* ReparentWebAppForActiveTab(Browser* browser) {
   absl::optional<webapps::AppId> app_id = GetWebAppForActiveTab(browser);
-  if (!app_id)
+  if (!app_id) {
     return nullptr;
+  }
   return ReparentWebContentsIntoAppBrowser(
       browser->tab_strip_model()->GetActiveWebContents(), *app_id);
 }
@@ -335,13 +340,15 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
   WebAppRegistrar& registrar = provider->registrar_unsafe();
   const WebApp* web_app = registrar.GetAppById(app_id);
-  if (!web_app)
+  if (!web_app) {
     return nullptr;
+  }
 
   if (registrar.IsInstalled(app_id)) {
     absl::optional<GURL> app_scope = registrar.GetAppScope(app_id);
-    if (!app_scope)
+    if (!app_scope) {
       app_scope = registrar.GetAppStartUrl(app_id).GetWithoutFilename();
+    }
 
     PrunePreScopeNavigationHistory(*app_scope, contents);
   }
@@ -431,8 +438,7 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
       WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
   if (provider && provider->registrar_unsafe().IsInstalled(app_id)) {
 #if BUILDFLAG(IS_CHROMEOS)
-    if (chromeos::IsKioskSession() &&
-        base::FeatureList::IsEnabled(features::kKioskEnableAppService)) {
+    if (chromeos::IsKioskSession()) {
       controller = CreateWebKioskBrowserController(browser, provider, app_id);
     } else {
       controller = CreateWebAppBrowserController(browser, provider, app_id);
@@ -443,8 +449,9 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
   } else {
     controller = MaybeCreateHostedAppBrowserController(browser, app_id);
   }
-  if (controller)
+  if (controller) {
     controller->Init();
+  }
   return controller;
 }
 
@@ -602,12 +609,14 @@ void RecordAppWindowLaunchMetric(Profile* profile,
                                  const std::string& app_id,
                                  apps::LaunchSource launch_source) {
   WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
-  if (!provider)
+  if (!provider) {
     return;
+  }
 
   const WebApp* web_app = provider->registrar_unsafe().GetAppById(app_id);
-  if (!web_app)
+  if (!web_app) {
     return;
+  }
 
   DisplayMode display =
       provider->registrar_unsafe().GetEffectiveDisplayModeFromManifest(app_id);

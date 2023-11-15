@@ -49,8 +49,6 @@ namespace {
 
 using ::testing::_;
 
-const char kAppLaunchUrl[] = "https://app.com/launch";
-const char16_t kAppTitle[] = u"title.";
 const test::UIPath kNetworkConfigureScreenContinueButton = {"error-message",
                                                             "continueButton"};
 
@@ -69,14 +67,6 @@ class WebKioskTest : public WebKioskBaseTest {
   WebKioskTest& operator=(const WebKioskTest&) = delete;
 
   void MakeAppAlreadyInstalled() {
-    if (!base::FeatureList::IsEnabled(::features::kKioskEnableAppService)) {
-      web_app::WebAppInstallInfo info;
-      info.start_url = GURL(kAppLaunchUrl);
-      info.title = kAppTitle;
-      WebKioskAppManager::Get()->UpdateAppByAccountId(account_id(), info);
-      return;
-    }
-
     // Intercept URL loader to avoid installing a placeholder app.
     content::URLLoaderInterceptor url_interceptor(base::BindRepeating(
         [](content::URLLoaderInterceptor::RequestParams* params) {

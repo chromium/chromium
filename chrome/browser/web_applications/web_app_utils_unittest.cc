@@ -236,8 +236,6 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
     EXPECT_TRUE(AreWebAppsEnabled(regular_profile));
   }
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(features::kKioskEnableAppService);
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     auto* user = user_manager->AddKioskAppUser(account_id);
     user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
@@ -247,31 +245,13 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
   }
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(features::kKioskEnableAppService);
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    auto* user = user_manager->AddWebKioskAppUser(account_id);
-    user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                               /*browser_restart=*/false, /*is_child=*/false);
-    user_manager::ScopedUserManager enabler(std::move(user_manager));
-    EXPECT_FALSE(AreWebAppsEnabled(regular_profile));
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(features::kKioskEnableAppService);
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    auto* user = user_manager->AddArcKioskAppUser(account_id);
-    user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                               /*browser_restart=*/false, /*is_child=*/false);
-    user_manager::ScopedUserManager enabler(std::move(user_manager));
-    EXPECT_FALSE(AreWebAppsEnabled(regular_profile));
-  }
-  {
+    feature_list.InitAndEnableFeature(features::kKioskEnableSystemWebApps);
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     auto* user = user_manager->AddKioskAppUser(account_id);
     user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
                                /*browser_restart=*/false, /*is_child=*/false);
     user_manager::ScopedUserManager enabler(std::move(user_manager));
-    EXPECT_FALSE(AreWebAppsEnabled(regular_profile));
+    EXPECT_TRUE(AreWebAppsEnabled(regular_profile));
   }
   {
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
