@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Fully unlocking the screen orientation causes a pending lock to be aborted
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Fully unlocking the screen orientation causes a pending lock in a nested browsing context to be aborted
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+Harness: the test ran to completion.
+

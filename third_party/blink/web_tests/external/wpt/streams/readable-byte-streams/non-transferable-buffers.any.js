@@ -22,7 +22,7 @@ promise_test(async t => {
   const reader = rs.getReader({ mode: 'byob' });
   const memory = new WebAssembly.Memory({ initial: 1 });
   const view = new Uint8Array(memory.buffer, 0, 1);
-  await promise_rejects_js(t, TypeError, reader.fill(view));
+  await promise_rejects_js(t, TypeError, reader.read(view, { min: 1 }));
 }, 'ReadableStream with byte source: fill() with a non-transferable buffer');
 
 test(t => {
