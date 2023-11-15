@@ -20,7 +20,7 @@ namespace blink {
 
 namespace {
 
-const size_t SOFT_NAVIGATION_PAINT_AREA_PRECENTAGE = 20;
+const size_t SOFT_NAVIGATION_PAINT_AREA_PRECENTAGE = 2;
 const size_t HUNDRED_PERCENT = 100;
 
 void LogAndTraceDetectedSoftNavigation(LocalFrame* frame,
