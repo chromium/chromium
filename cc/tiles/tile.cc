@@ -34,11 +34,7 @@ Tile::Tile(TileManager* tile_manager,
       flags_(flags),
       tiling_i_index_(info.tiling_i_index),
       tiling_j_index_(info.tiling_j_index),
-      required_for_activation_(false),
-      required_for_draw_(false),
-      is_solid_color_analysis_performed_(false),
       can_use_lcd_text_(info.can_use_lcd_text),
-      raster_task_scheduled_with_checker_images_(false),
       id_(tile_manager->GetUniqueTileId()) {
   raster_rects_.emplace_back(info.content_rect, info.raster_transform);
 }

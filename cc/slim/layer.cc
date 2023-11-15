@@ -52,17 +52,8 @@ scoped_refptr<Layer> Layer::Create() {
   }
   return base::AdoptRef(new Layer(std::move(cc_layer)));
 }
-
 Layer::Layer(scoped_refptr<cc::Layer> cc_layer)
-    : cc_layer_(std::move(cc_layer)),
-      id_(g_next_id.GetNext() + 1),
-      is_drawable_(false),
-      contents_opaque_(false),
-      draws_content_(false),
-      hide_layer_and_subtree_(false),
-      masks_to_bounds_(false),
-      property_changed_(false),
-      subtree_property_changed_(false) {}
+    : cc_layer_(std::move(cc_layer)), id_(g_next_id.GetNext() + 1) {}
 
 Layer::~Layer() {
   RemoveAllChildren();

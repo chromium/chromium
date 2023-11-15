@@ -302,18 +302,18 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
 
   SkColor4f background_color_ = SkColors::kTransparent;
   float opacity_ = 1.0f;
-  bool is_drawable_ : 1;
-  bool contents_opaque_ : 1;
-  bool draws_content_ : 1;
-  bool hide_layer_and_subtree_ : 1;
-  bool masks_to_bounds_ : 1;
+  bool is_drawable_ : 1 = false;
+  bool contents_opaque_ : 1 = false;
+  bool draws_content_ : 1 = false;
+  bool hide_layer_and_subtree_ : 1 = false;
+  bool masks_to_bounds_ : 1 = false;
 
   // Indicates there is damage for this layer.
-  bool property_changed_ : 1;
+  bool property_changed_ : 1 = false;
   // Indicates there is damage for the entire subtree. This is tracked
   // only at the root of the subtree, and is applied recursively to the entire
   // subtree at draw time.
-  bool subtree_property_changed_ : 1;
+  bool subtree_property_changed_ : 1 = false;
 };
 
 }  // namespace cc::slim

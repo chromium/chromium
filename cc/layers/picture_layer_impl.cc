@@ -98,13 +98,7 @@ gfx::Rect SafeIntersectRects(const gfx::Rect& one, const gfx::Rect& two) {
 }  // namespace
 
 PictureLayerImpl::PictureLayerImpl(LayerTreeImpl* tree_impl, int id)
-    : LayerImpl(tree_impl, id, /*will_always_push_properties=*/true),
-      is_backdrop_filter_mask_(false),
-      was_screen_space_transform_animating_(false),
-      only_used_low_res_last_append_quads_(false),
-      nearest_neighbor_(false),
-      raster_source_size_changed_(false),
-      directly_composited_image_default_raster_scale_changed_(false) {
+    : LayerImpl(tree_impl, id, /*will_always_push_properties=*/true) {
   layer_tree_impl()->RegisterPictureLayerImpl(this);
 }
 

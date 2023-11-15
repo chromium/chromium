@@ -516,7 +516,7 @@ class CC_EXPORT LayerImpl {
   // container layer. Remove scroll_container_bounds_ when we launch CAP.
   gfx::Size scroll_container_bounds_;
   gfx::Size scroll_contents_bounds_;
-  bool scrollable_ : 1;
+  bool scrollable_ : 1 = false;
 
   // Tracks if drawing-related properties have changed since last redraw.
   // TODO(wutao): We want to distinquish the sources of change so that we can
@@ -525,23 +525,23 @@ class CC_EXPORT LayerImpl {
   // |layer_property_changed_from_property_trees_| does not mean the layer is
   // damaged from animation. We need better mechanism to explicitly capture
   // damage from animations. http://crbug.com/755828.
-  bool layer_property_changed_not_from_property_trees_ : 1;
-  bool layer_property_changed_from_property_trees_ : 1;
+  bool layer_property_changed_not_from_property_trees_ : 1 = false;
+  bool layer_property_changed_from_property_trees_ : 1 = false;
 
-  bool may_contain_video_ : 1;
-  bool contents_opaque_ : 1;
-  bool contents_opaque_for_text_ : 1;
-  bool should_check_backface_visibility_ : 1;
-  bool draws_content_ : 1;
-  bool contributes_to_drawn_render_surface_ : 1;
+  bool may_contain_video_ : 1 = false;
+  bool contents_opaque_ : 1 = false;
+  bool contents_opaque_for_text_ : 1 = false;
+  bool should_check_backface_visibility_ : 1 = false;
+  bool draws_content_ : 1 = false;
+  bool contributes_to_drawn_render_surface_ : 1 = false;
 
-  bool is_inner_viewport_scroll_layer_ : 1;
+  bool is_inner_viewport_scroll_layer_ : 1 = false;
 
   HitTestOpaqueness hit_test_opaqueness_ = HitTestOpaqueness::kTransparent;
   TouchActionRegion touch_action_region_;
 
-  SkColor4f background_color_;
-  SkColor4f safe_opaque_background_color_;
+  SkColor4f background_color_ = SkColors::kTransparent;
+  SkColor4f safe_opaque_background_color_ = SkColors::kTransparent;
 
   int transform_tree_index_;
   int effect_tree_index_;
@@ -578,21 +578,21 @@ class CC_EXPORT LayerImpl {
   // |touch_action_region_|.
   mutable std::unique_ptr<Region> all_touch_action_regions_;
 
-  bool needs_push_properties_ : 1;
+  bool needs_push_properties_ : 1 = false;
 
   // The needs_show_scrollbars_ bit tracks a pending request to show the overlay
   // scrollbars. It's set by UpdateScrollable() on the scroll layer (not the
   // scrollbar layers) and consumed by LayerTreeImpl::PushPropertiesTo() and
   // LayerTreeImpl::HandleScrollbarShowRequests().
-  bool needs_show_scrollbars_ : 1;
+  bool needs_show_scrollbars_ : 1 = false;
 
   // This is set for layers that have a property because of which they are not
   // drawn (singular transforms), but they can become visible soon (the property
   // is being animated). For this reason, while these layers are not drawn, they
   // are still rasterized.
-  bool raster_even_if_not_drawn_ : 1;
+  bool raster_even_if_not_drawn_ : 1 = false;
 
-  bool has_transform_node_ : 1;
+  bool has_transform_node_ : 1 = false;
 };
 
 }  // namespace cc

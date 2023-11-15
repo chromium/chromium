@@ -373,13 +373,13 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   // required for an MSAA sample count for raster.
   int num_slow_paths_up_to_min_for_MSAA_ = 0;
 
-  bool has_non_aa_paint_ : 1;
-  bool has_discardable_images_ : 1;
-  bool has_draw_ops_ : 1;
-  bool has_draw_text_ops_ : 1;
-  bool has_save_layer_ops_ : 1;
-  bool has_save_layer_alpha_ops_ : 1;
-  bool has_effects_preventing_lcd_text_for_save_layer_alpha_ : 1;
+  bool has_non_aa_paint_ : 1 = false;
+  bool has_discardable_images_ : 1 = false;
+  bool has_draw_ops_ : 1 = false;
+  bool has_draw_text_ops_ : 1 = false;
+  bool has_save_layer_ops_ : 1 = false;
+  bool has_save_layer_alpha_ops_ : 1 = false;
+  bool has_effects_preventing_lcd_text_for_save_layer_alpha_ : 1 = false;
 };
 
 }  // namespace cc

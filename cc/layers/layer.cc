@@ -79,23 +79,11 @@ LayerDebugInfo::LayerDebugInfo() = default;
 LayerDebugInfo::LayerDebugInfo(const LayerDebugInfo&) = default;
 LayerDebugInfo::~LayerDebugInfo() = default;
 
-Layer::Inputs::Inputs()
-    : contents_opaque(false),
-      contents_opaque_for_text(false),
-      is_drawable(false),
-      double_sided(true),
-      background_color(SkColors::kTransparent) {}
+Layer::Inputs::Inputs() = default;
 
 Layer::Inputs::~Inputs() = default;
 
-Layer::LayerTreeInputs::LayerTreeInputs()
-    : masks_to_bounds(false),
-      is_fast_rounded_corner(false),
-      user_scrollable_horizontal(true),
-      user_scrollable_vertical(true),
-      trilinear_filtering(false),
-      hide_layer_and_subtree(false),
-      scrollable(false) {}
+Layer::LayerTreeInputs::LayerTreeInputs() = default;
 
 Layer::LayerTreeInputs::~LayerTreeInputs() = default;
 

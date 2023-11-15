@@ -280,19 +280,19 @@ class CC_EXPORT PictureLayerImpl
     return std::max(raster_contents_scale_.x(), raster_contents_scale_.y());
   }
 
-  bool is_backdrop_filter_mask_ : 1;
+  bool is_backdrop_filter_mask_ : 1 = false;
 
-  bool was_screen_space_transform_animating_ : 1;
-  bool only_used_low_res_last_append_quads_ : 1;
+  bool was_screen_space_transform_animating_ : 1 = false;
+  bool only_used_low_res_last_append_quads_ : 1 = false;
 
-  bool nearest_neighbor_ : 1;
+  bool nearest_neighbor_ : 1 = false;
 
   // This is set by UpdateRasterSource() on change of raster source size. It's
   // used to recalculate raster scale for will-chagne:transform. It's reset to
   // false after raster scale update.
-  bool raster_source_size_changed_ : 1;
+  bool raster_source_size_changed_ : 1 = false;
 
-  bool directly_composited_image_default_raster_scale_changed_ : 1;
+  bool directly_composited_image_default_raster_scale_changed_ : 1 = false;
 
   LCDTextDisallowedReason lcd_text_disallowed_reason_ =
       LCDTextDisallowedReason::kNoText;

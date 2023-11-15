@@ -60,27 +60,11 @@ LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
     : layer_id_(id),
       layer_tree_impl_(tree_impl),
       will_always_push_properties_(will_always_push_properties),
-      scrollable_(false),
-      layer_property_changed_not_from_property_trees_(false),
-      layer_property_changed_from_property_trees_(false),
-      may_contain_video_(false),
-      contents_opaque_(false),
-      contents_opaque_for_text_(false),
-      should_check_backface_visibility_(false),
-      draws_content_(false),
-      contributes_to_drawn_render_surface_(false),
-      is_inner_viewport_scroll_layer_(false),
-      background_color_(SkColors::kTransparent),
-      safe_opaque_background_color_(SkColors::kTransparent),
       transform_tree_index_(kInvalidPropertyNodeId),
       effect_tree_index_(kInvalidPropertyNodeId),
       clip_tree_index_(kInvalidPropertyNodeId),
       scroll_tree_index_(kInvalidPropertyNodeId),
-      current_draw_mode_(DRAW_MODE_NONE),
-      needs_push_properties_(false),
-      needs_show_scrollbars_(false),
-      raster_even_if_not_drawn_(false),
-      has_transform_node_(false) {
+      current_draw_mode_(DRAW_MODE_NONE) {
   DCHECK_GT(layer_id_, 0);
 
   DCHECK(layer_tree_impl_);
