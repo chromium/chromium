@@ -413,6 +413,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   _authServiceObserverBridge.reset();
   _syncObserverBridge.reset();
   _identityObserverBridge.reset();
+  _safetyCheckManagerObserver.reset();
   _syncedSessionsObserver.reset();
   if (_prefObserverBridge) {
     _prefChangeRegistrar.RemoveAll();
@@ -1804,6 +1805,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   // running state changes; this avoids calling the consumer every time an
   // individual check state changes.
   [self.consumer showSafetyCheck:_safetyCheckState];
+}
+
+- (void)safetyCheckManagerWillShutdown {
+  _safetyCheckManagerObserver.reset();
 }
 
 #pragma mark - ReadingListModelBridgeObserver

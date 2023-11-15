@@ -44,5 +44,5 @@ void SafetyCheckObserverBridge::RunningStateChanged(
 
 void SafetyCheckObserverBridge::ManagerWillShutdown(
     IOSChromeSafetyCheckManager* safety_check_manager) {
-  safety_check_manager->RemoveObserver(this);
+  [delegate_ safetyCheckManagerWillShutdown];
 }

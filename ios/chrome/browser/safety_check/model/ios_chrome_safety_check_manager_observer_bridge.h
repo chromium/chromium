@@ -34,6 +34,11 @@
 // Password check, Safe Browsing check, and/or Update check.
 - (void)runningStateChanged:(RunningSafetyCheckState)state;
 
+// Notifies the observer that the Safety Check Manager has begun shutting down.
+// Observers should reset their `SafetyCheckObserverBridge` observation when
+// this happens.
+- (void)safetyCheckManagerWillShutdown;
+
 @end
 
 // Simple observer bridge that forwards all events to its delegate observer.
