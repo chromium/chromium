@@ -76,7 +76,8 @@ absl::optional<std::string> UserAgentMetadata::Marshal(
     out.WriteString(brand_version.version);
   }
 
-  out.WriteUInt32(in->brand_full_version_list.size());
+  out.WriteUInt32(
+      base::checked_cast<uint32_t>(in->brand_full_version_list.size()));
   for (const auto& brand_version : in->brand_full_version_list) {
     out.WriteString(brand_version.brand);
     out.WriteString(brand_version.version);
@@ -91,7 +92,7 @@ absl::optional<std::string> UserAgentMetadata::Marshal(
   out.WriteString(in->bitness);
   out.WriteBool(in->wow64);
 
-  out.WriteUInt32(in->form_factor.size());
+  out.WriteUInt32(base::checked_cast<uint32_t>(in->form_factor.size()));
   for (const auto& form_factor : in->form_factor) {
     out.WriteString(form_factor);
   }
