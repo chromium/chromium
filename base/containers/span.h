@@ -11,6 +11,7 @@
 #include <array>
 #include <iterator>
 #include <limits>
+#include <memory>
 #include <type_traits>
 #include <utility>
 
@@ -18,7 +19,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
 #include "base/containers/contiguous_iterator.h"
-#include "base/cxx20_to_address.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/template_util.h"
 
@@ -281,7 +281,7 @@ class GSL_POINTER span : public internal::ExtentStorage<Extent> {
         // We can not protect here generally against an invalid iterator/count
         // being passed in, since we have no context to determine if the
         // iterator or count are valid.
-        data_(base::to_address(first)) {
+        data_(std::to_address(first)) {
     CHECK(Extent == dynamic_extent || Extent == count);
   }
 

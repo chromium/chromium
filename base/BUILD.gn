@@ -301,7 +301,6 @@ component("base") {
     "cpu_reduction_experiment.h",
     "critical_closure.h",
     "cxx20_is_constant_evaluated.h",
-    "cxx20_to_address.h",
     "dcheck_is_on.h",
     "debug/alias.cc",
     "debug/alias.h",

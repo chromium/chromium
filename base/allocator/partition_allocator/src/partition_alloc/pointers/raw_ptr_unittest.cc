@@ -16,7 +16,6 @@
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_alloc_support.h"
 #include "base/cpu.h"
-#include "base/cxx20_to_address.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_asan_service.h"
 #include "base/task/thread_pool.h"
@@ -1486,12 +1485,12 @@ TEST_F(RawPtrTest, CrossKindAssignment) {
 }
 
 // Without the explicitly customized `raw_ptr::to_address()`,
-// `base::to_address()` will use the dereference operator. This is not
+// `std::to_address()` will use the dereference operator. This is not
 // what we want; this test enforces extraction semantics for
 // `to_address()`.
 TEST_F(RawPtrTest, ToAddressDoesNotDereference) {
   CountingRawPtr<int> ptr = nullptr;
-  int* raw = base::to_address(ptr);
+  int* raw = std::to_address(ptr);
   std::ignore = raw;
   EXPECT_THAT((CountingRawPtrExpectations{.get_for_dereference_cnt = 0,
                                           .get_for_extraction_cnt = 1,
@@ -1503,7 +1502,7 @@ TEST_F(RawPtrTest, ToAddressDoesNotDereference) {
 TEST_F(RawPtrTest, ToAddressGivesBackRawAddress) {
   int* raw = nullptr;
   raw_ptr<int> miracle = raw;
-  EXPECT_EQ(base::to_address(raw), base::to_address(miracle));
+  EXPECT_EQ(std::to_address(raw), std::to_address(miracle));
 }
 
 void InOutParamFuncWithPointer(int* in, int** out) {

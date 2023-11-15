@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/cxx20_to_address.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "cc/paint/paint_flags.h"
@@ -309,7 +308,7 @@ void SavedTabGroupButton::MoveGroupToNewWindowPressed(int event_flags) {
       local_group_id_.has_value()
           ? SavedTabGroupUtils::GetBrowserWithTabGroupId(
                 local_group_id_.value())
-          : base::to_address(browser_);
+          : std::to_address(browser_);
 
   if (!local_group_id_.has_value()) {
     // Open the group in the browser the button was pressed.

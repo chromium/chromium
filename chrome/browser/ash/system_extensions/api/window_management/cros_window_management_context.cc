@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ash/system_extensions/api/window_management/cros_window_management_context.h"
 
-#include "base/cxx20_to_address.h"
+#include <memory>
+
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -109,7 +110,7 @@ CrosWindowManagementContext::CrosWindowManagementContext(Profile* profile)
       base::Unretained(this)));
 
   service_worker_manager_observation_.Observe(
-      base::to_address(system_extensions_service_worker_manager_));
+      std::to_address(system_extensions_service_worker_manager_));
 
   instance_registry_observation_.Observe(
       &apps::AppServiceProxyFactory::GetForProfile(profile)

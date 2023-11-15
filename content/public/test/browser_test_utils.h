@@ -12,7 +12,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
-#include "base/cxx20_to_address.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
@@ -551,7 +550,7 @@ class ToRenderFrameHost {
   // NOLINTNEXTLINE(google-explicit-constructor)
   ToRenderFrameHost(Ptr frame_convertible_value)
       : render_frame_host_(ConvertToRenderFrameHost(
-            base::to_address(frame_convertible_value))) {}
+            std::to_address(frame_convertible_value))) {}
 
   // Extract the underlying frame.
   RenderFrameHost* render_frame_host() const { return render_frame_host_; }

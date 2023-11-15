@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include <initializer_list>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -21,7 +22,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/cxx20_to_address.h"
 #include "base/strings/string_piece.h"  // For implicit conversions.
 #include "base/strings/string_util_internal.h"
 #include "build/build_config.h"
@@ -93,7 +93,7 @@ BASE_EXPORT bool IsWprintfFormatPortable(const wchar_t* format);
 template <typename CharT, typename Iter>
 constexpr BasicStringPiece<CharT> MakeBasicStringPiece(Iter begin, Iter end) {
   DCHECK_GE(end - begin, 0);
-  return {base::to_address(begin), static_cast<size_t>(end - begin)};
+  return {std::to_address(begin), static_cast<size_t>(end - begin)};
 }
 
 // Explicit instantiations of MakeBasicStringPiece for the BasicStringPiece

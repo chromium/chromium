@@ -104,7 +104,7 @@ class SavedTabGroupBar::OverflowMenu : public views::View {
     // Convert the event location into `parent_bar_`'s coordinate space.
     const gfx::Point screen_loc = ConvertPointToScreen(this, event.location());
     const gfx::Point bar_loc =
-        ConvertPointFromScreen(base::to_address(parent_bar_), screen_loc);
+        ConvertPointFromScreen(std::to_address(parent_bar_), screen_loc);
     ui::DropTargetEvent event_copy(event);
     event_copy.set_location(bar_loc);
 

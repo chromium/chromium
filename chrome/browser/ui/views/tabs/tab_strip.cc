@@ -710,15 +710,14 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     ~ResetDraggingStateDelegate() override = default;
 
     void AnimationProgressed(const gfx::Animation* animation) override {
-      tab_container_->OnTabSlotAnimationProgressed(
-          base::to_address(slot_view_));
+      tab_container_->OnTabSlotAnimationProgressed(std::to_address(slot_view_));
     }
 
     void AnimationEnded(const gfx::Animation* animation) override {
       AnimationProgressed(animation);
       slot_view_->set_animating(false);
       slot_view_->set_dragging(false);
-      tab_container_->ReturnTabSlotView(base::to_address(slot_view_));
+      tab_container_->ReturnTabSlotView(std::to_address(slot_view_));
     }
 
     void AnimationCanceled(const gfx::Animation* animation) override {
@@ -917,7 +916,7 @@ TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
       tab_container_(
           *AddChildViewAt(MakeTabContainer(this,
                                            hover_card_controller_.get(),
-                                           base::to_address(drag_context_)),
+                                           std::to_address(drag_context_)),
                           0)),
       style_(TabStyle::Get()) {
   // TODO(pbos): This is probably incorrect, the background of individual tabs
@@ -946,8 +945,8 @@ TabStrip::~TabStrip() {
   // |tab_container_|'s tabs may call back to us or to |drag_context_| from
   // their destructors. Delete them first so that if they call back we aren't in
   // a weird state.
-  RemoveChildViewT(base::to_address(tab_container_));
-  RemoveChildViewT(base::to_address(drag_context_));
+  RemoveChildViewT(std::to_address(tab_container_));
+  RemoveChildViewT(std::to_address(drag_context_));
 
   CHECK(!IsInObserverList());
 }
@@ -1304,7 +1303,7 @@ int TabStrip::GetModelPinnedTabCount() const {
 }
 
 TabDragContext* TabStrip::GetDragContext() {
-  return base::to_address(drag_context_);
+  return std::to_address(drag_context_);
 }
 
 bool TabStrip::IsAnimating() const {
@@ -1786,7 +1785,7 @@ const Browser* TabStrip::GetBrowser() const {
 views::SizeBounds TabStrip::GetAvailableSize(const views::View* child) const {
   // We can only reach here if SetAvailableWidthCallback() was never called,
   // e.g. if tab scrolling is disabled. Defer to our parent.
-  DCHECK(child == base::to_address(tab_container_));
+  DCHECK(child == std::to_address(tab_container_));
   return parent()->GetAvailableSize(this);
 }
 
