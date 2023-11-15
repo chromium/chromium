@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 144 tests; 76 PASS, 68 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 142 tests; 74 PASS, 68 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] idl_test setup
 [PASS] idl_test validation
 [PASS] Partial interface FontFace: original interface defined
@@ -24,7 +24,6 @@ Found 144 tests; 76 PASS, 68 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] FontFace interface: attribute weight
 [PASS] FontFace interface: attribute stretch
 [PASS] FontFace interface: attribute unicodeRange
-[PASS] FontFace interface: attribute variant
 [PASS] FontFace interface: attribute featureSettings
 [FAIL] FontFace interface: attribute variationSettings
   assert_true: The prototype object must have a property "variationSettings" expected true got false
@@ -48,7 +47,6 @@ Found 144 tests; 76 PASS, 68 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] FontFace interface: fontFace must inherit property "weight" with the proper type
 [PASS] FontFace interface: fontFace must inherit property "stretch" with the proper type
 [PASS] FontFace interface: fontFace must inherit property "unicodeRange" with the proper type
-[PASS] FontFace interface: fontFace must inherit property "variant" with the proper type
 [PASS] FontFace interface: fontFace must inherit property "featureSettings" with the proper type
 [FAIL] FontFace interface: fontFace must inherit property "variationSettings" with the proper type
   assert_inherits: property "variationSettings" not found in prototype chain

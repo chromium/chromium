@@ -216,7 +216,7 @@ Found 414 tests; 337 PASS, 77 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] MLGraphBuilder interface: operation input(DOMString, MLOperandDescriptor)
 [FAIL] MLGraphBuilder interface: operation constant(MLOperandDescriptor, MLBufferView)
   assert_equals: property has wrong .length expected 1 but got 2
-[FAIL] MLGraphBuilder interface: operation constant(double, optional MLOperandType)
+[FAIL] MLGraphBuilder interface: operation constant(double, optional MLOperandDataType)
   assert_equals: property has wrong .length expected 1 but got 2
 [FAIL] MLGraphBuilder interface: operation build(MLNamedOperands)
   assert_own_property: interface prototype object missing non-static operation expected property "build" missing
@@ -315,8 +315,8 @@ Found 414 tests; 337 PASS, 77 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] MLGraphBuilder interface: calling input(DOMString, MLOperandDescriptor) on builder with too few arguments must throw TypeError
 [PASS] MLGraphBuilder interface: builder must inherit property "constant(MLOperandDescriptor, MLBufferView)" with the proper type
 [PASS] MLGraphBuilder interface: calling constant(MLOperandDescriptor, MLBufferView) on builder with too few arguments must throw TypeError
-[PASS] MLGraphBuilder interface: builder must inherit property "constant(double, optional MLOperandType)" with the proper type
-[PASS] MLGraphBuilder interface: calling constant(double, optional MLOperandType) on builder with too few arguments must throw TypeError
+[PASS] MLGraphBuilder interface: builder must inherit property "constant(double, optional MLOperandDataType)" with the proper type
+[PASS] MLGraphBuilder interface: calling constant(double, optional MLOperandDataType) on builder with too few arguments must throw TypeError
 [FAIL] MLGraphBuilder interface: builder must inherit property "build(MLNamedOperands)" with the proper type
   assert_inherits: property "build" not found in prototype chain
 [FAIL] MLGraphBuilder interface: calling build(MLNamedOperands) on builder with too few arguments must throw TypeError

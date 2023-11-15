@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 544 tests; 485 PASS, 59 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 545 tests; 486 PASS, 59 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] idl_test setup
 [PASS] idl_test validation
 [PASS] Partial interface Element: original interface defined
@@ -10,6 +10,7 @@ Found 544 tests; 485 PASS, 59 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Partial interface mixin ElementCSSInlineStyle: member names are unique
 [PASS] Partial namespace CSS: original namespace defined
 [PASS] Partial namespace CSS: member names are unique
+[PASS] Partial interface Element[2]: member names are unique
 [PASS] HTMLElement includes ElementCSSInlineStyle: member names are unique
 [PASS] SVGElement includes ElementCSSInlineStyle: member names are unique
 [PASS] MathMLElement includes ElementCSSInlineStyle: member names are unique

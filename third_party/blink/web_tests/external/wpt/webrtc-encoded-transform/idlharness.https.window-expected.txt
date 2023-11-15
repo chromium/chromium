@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 65 tests; 35 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 63 tests; 33 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] idl_test setup
 [PASS] idl_test validation
 [PASS] Partial interface RTCRtpSender: original interface defined
@@ -55,7 +55,6 @@ Found 65 tests; 35 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] RTCEncodedVideoFrame interface: existence and properties of interface prototype object's "constructor" property
 [PASS] RTCEncodedVideoFrame interface: existence and properties of interface prototype object's @@unscopables property
 [PASS] RTCEncodedVideoFrame interface: attribute type
-[PASS] RTCEncodedVideoFrame interface: attribute timestamp
 [PASS] RTCEncodedVideoFrame interface: attribute data
 [PASS] RTCEncodedVideoFrame interface: operation getMetadata()
 [PASS] RTCEncodedAudioFrame interface: existence and properties of interface object
@@ -64,7 +63,6 @@ Found 65 tests; 35 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] RTCEncodedAudioFrame interface: existence and properties of interface prototype object
 [PASS] RTCEncodedAudioFrame interface: existence and properties of interface prototype object's "constructor" property
 [PASS] RTCEncodedAudioFrame interface: existence and properties of interface prototype object's @@unscopables property
-[PASS] RTCEncodedAudioFrame interface: attribute timestamp
 [PASS] RTCEncodedAudioFrame interface: attribute data
 [PASS] RTCEncodedAudioFrame interface: operation getMetadata()
 [PASS] RTCTransformEvent interface: existence and properties of interface object

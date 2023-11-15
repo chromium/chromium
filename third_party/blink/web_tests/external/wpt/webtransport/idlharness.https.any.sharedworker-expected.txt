@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 81 tests; 58 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 91 tests; 58 PASS, 33 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] idl_test setup
 [PASS] idl_test validation
 [PASS] WebTransportDatagramDuplexStream interface: existence and properties of interface object
@@ -37,6 +37,8 @@ Found 81 tests; 58 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] WebTransport interface: attribute incomingBidirectionalStreams
 [PASS] WebTransport interface: operation createUnidirectionalStream(optional WebTransportSendStreamOptions)
 [PASS] WebTransport interface: attribute incomingUnidirectionalStreams
+[FAIL] WebTransport interface: operation createSendGroup()
+  assert_own_property: interface prototype object missing non-static operation expected property "createSendGroup" missing
 [PASS] WebTransport must be primary interface of webTransport
 [PASS] Stringification of webTransport
 [FAIL] WebTransport interface: webTransport must inherit property "getStats()" with the proper type
@@ -58,6 +60,8 @@ Found 81 tests; 58 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] WebTransport interface: webTransport must inherit property "createUnidirectionalStream(optional WebTransportSendStreamOptions)" with the proper type
 [PASS] WebTransport interface: calling createUnidirectionalStream(optional WebTransportSendStreamOptions) on webTransport with too few arguments must throw TypeError
 [PASS] WebTransport interface: webTransport must inherit property "incomingUnidirectionalStreams" with the proper type
+[FAIL] WebTransport interface: webTransport must inherit property "createSendGroup()" with the proper type
+  assert_inherits: property "createSendGroup" not found in prototype chain
 [FAIL] WebTransportSendStream interface: existence and properties of interface object
   assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
 [FAIL] WebTransportSendStream interface object length
@@ -70,10 +74,26 @@ Found 81 tests; 58 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
 [FAIL] WebTransportSendStream interface: existence and properties of interface prototype object's @@unscopables property
   assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
+[FAIL] WebTransportSendStream interface: attribute sendGroup
+  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
 [FAIL] WebTransportSendStream interface: attribute sendOrder
   assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
 [FAIL] WebTransportSendStream interface: operation getStats()
   assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
+[FAIL] WebTransportSendGroup interface: existence and properties of interface object
+  assert_own_property: self does not have own property "WebTransportSendGroup" expected property "WebTransportSendGroup" missing
+[FAIL] WebTransportSendGroup interface object length
+  assert_own_property: self does not have own property "WebTransportSendGroup" expected property "WebTransportSendGroup" missing
+[FAIL] WebTransportSendGroup interface object name
+  assert_own_property: self does not have own property "WebTransportSendGroup" expected property "WebTransportSendGroup" missing
+[FAIL] WebTransportSendGroup interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "WebTransportSendGroup" expected property "WebTransportSendGroup" missing
+[FAIL] WebTransportSendGroup interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "WebTransportSendGroup" expected property "WebTransportSendGroup" missing
+[FAIL] WebTransportSendGroup interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "WebTransportSendGroup" expected property "WebTransportSendGroup" missing
+[FAIL] WebTransportSendGroup interface: operation getStats()
+  assert_own_property: self does not have own property "WebTransportSendGroup" expected property "WebTransportSendGroup" missing
 [FAIL] WebTransportReceiveStream interface: existence and properties of interface object
   assert_own_property: self does not have own property "WebTransportReceiveStream" expected property "WebTransportReceiveStream" missing
 [FAIL] WebTransportReceiveStream interface object length

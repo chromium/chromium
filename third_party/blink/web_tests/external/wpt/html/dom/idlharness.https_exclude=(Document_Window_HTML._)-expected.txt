@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1509 tests; 1478 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1528 tests; 1497 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] idl_test setup
 [PASS] idl_test validation
 [PASS] Partial interface Document: original interface defined
@@ -8,6 +8,10 @@ Found 1509 tests; 1478 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Partial interface mixin DocumentOrShadowRoot: member names are unique
 [PASS] Partial interface Navigator: original interface defined
 [PASS] Partial interface Navigator: member names are unique
+[PASS] Partial interface Element: original interface defined
+[PASS] Partial interface Element: member names are unique
+[PASS] Partial interface ShadowRoot: original interface defined
+[PASS] Partial interface ShadowRoot: member names are unique
 [PASS] Partial interface mixin NavigatorID: original interface mixin defined
 [PASS] Partial interface mixin NavigatorID: member names are unique
 [PASS] Partial interface HTMLAnchorElement: original interface defined
@@ -193,6 +197,8 @@ Found 1509 tests; 1478 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] DOMStringList interface: calling item(unsigned long) on location.ancestorOrigins with too few arguments must throw TypeError
 [PASS] DOMStringList interface: location.ancestorOrigins must inherit property "contains(DOMString)" with the proper type
 [PASS] DOMStringList interface: calling contains(DOMString) on location.ancestorOrigins with too few arguments must throw TypeError
+[PASS] Element interface: document.createElement("noscript") must inherit property "setHTMLUnsafe(DOMString)" with the proper type
+[PASS] Element interface: calling setHTMLUnsafe(DOMString) on document.createElement("noscript") with too few arguments must throw TypeError
 [PASS] DOMStringMap interface: existence and properties of interface object
 [PASS] DOMStringMap interface object length
 [PASS] DOMStringMap interface object name
@@ -883,6 +889,17 @@ Found 1509 tests; 1478 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Stringification of new ToggleEvent("beforetoggle")
 [PASS] ToggleEvent interface: new ToggleEvent("beforetoggle") must inherit property "oldState" with the proper type
 [PASS] ToggleEvent interface: new ToggleEvent("beforetoggle") must inherit property "newState" with the proper type
+[PASS] CloseWatcher interface: existence and properties of interface object
+[PASS] CloseWatcher interface object length
+[PASS] CloseWatcher interface object name
+[PASS] CloseWatcher interface: existence and properties of interface prototype object
+[PASS] CloseWatcher interface: existence and properties of interface prototype object's "constructor" property
+[PASS] CloseWatcher interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] CloseWatcher interface: operation requestClose()
+[PASS] CloseWatcher interface: operation close()
+[PASS] CloseWatcher interface: operation destroy()
+[PASS] CloseWatcher interface: attribute oncancel
+[PASS] CloseWatcher interface: attribute onclose
 [PASS] DataTransfer interface: existence and properties of interface object
 [PASS] DataTransfer interface object length
 [PASS] DataTransfer interface object name
@@ -1539,6 +1556,8 @@ Found 1509 tests; 1478 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: The prototype object must have a property "onunhandledrejection" expected true got false
 [FAIL] SVGSVGElement interface: attribute onunload
   assert_true: The prototype object must have a property "onunload" expected true got false
+[PASS] ShadowRoot interface: operation setHTMLUnsafe(DOMString)
 [PASS] ShadowRoot interface: attribute activeElement
+[PASS] Element interface: operation setHTMLUnsafe(DOMString)
 Harness: the test ran to completion.
 

@@ -1,7 +1,8 @@
 This is a testharness.js-based test.
-Found 485 tests; 475 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 486 tests; 476 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] idl_test setup
 [PASS] idl_test validation
+[PASS] Partial interface Element: member names are unique
 [PASS] SVGFilterElement includes SVGURIReference: member names are unique
 [PASS] SVGFEBlendElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
 [PASS] SVGFEColorMatrixElement includes SVGFilterPrimitiveStandardAttributes: member names are unique

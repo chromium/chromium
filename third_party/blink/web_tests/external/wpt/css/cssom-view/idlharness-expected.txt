@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 406 tests; 329 PASS, 77 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 407 tests; 330 PASS, 77 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] idl_test setup
 [PASS] idl_test validation
 [PASS] Partial interface Window: original interface defined
@@ -23,6 +23,7 @@ Found 406 tests; 329 PASS, 77 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Partial interface UIEvent[2]: member names are unique
 [PASS] Partial interface Document[2]: member names are unique
 [PASS] Partial interface Document[3]: member names are unique
+[PASS] Partial interface Element[3]: member names are unique
 [PASS] Partial interface HTMLImageElement[2]: member names are unique
 [PASS] Partial interface Document[4]: member names are unique
 [PASS] Partial interface Window[3]: member names are unique

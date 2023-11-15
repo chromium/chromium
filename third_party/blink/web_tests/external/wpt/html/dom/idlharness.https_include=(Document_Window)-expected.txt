@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1027 tests; 1020 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1038 tests; 1030 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] idl_test setup
 [PASS] idl_test validation
 [PASS] Partial interface Document: original interface defined
@@ -8,6 +8,10 @@ Found 1027 tests; 1020 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Partial interface mixin DocumentOrShadowRoot: member names are unique
 [PASS] Partial interface Navigator: original interface defined
 [PASS] Partial interface Navigator: member names are unique
+[PASS] Partial interface Element: original interface defined
+[PASS] Partial interface Element: member names are unique
+[PASS] Partial interface ShadowRoot: original interface defined
+[PASS] Partial interface ShadowRoot: member names are unique
 [PASS] Partial interface mixin NavigatorID: original interface mixin defined
 [PASS] Partial interface mixin NavigatorID: member names are unique
 [PASS] Partial interface HTMLAnchorElement: original interface defined
@@ -510,6 +514,7 @@ Found 1027 tests; 1020 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Window interface: calling cancelAnimationFrame(unsigned long) on window with too few arguments must throw TypeError
 [PASS] Window interface: window must inherit property "sessionStorage" with the proper type
 [PASS] Window interface: window must inherit property "localStorage" with the proper type
+[PASS] Document interface: operation parseHTMLUnsafe(DOMString)
 [PASS] Document interface: attribute domain
 [PASS] Document interface: attribute referrer
 [PASS] Document interface: attribute cookie
@@ -632,6 +637,9 @@ Found 1027 tests; 1020 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Document interface: attribute onwebkittransitionend
 [PASS] Document interface: attribute onwheel
 [PASS] Document interface: attribute activeElement
+[PASS] Document interface: iframe.contentDocument must inherit property "parseHTMLUnsafe(DOMString)" with the proper type
+[FAIL] Document interface: calling parseHTMLUnsafe(DOMString) on iframe.contentDocument with too few arguments must throw TypeError
+  assert_own_property: interface object must have static operation as own property expected property "parseHTMLUnsafe" missing
 [PASS] Document interface: iframe.contentDocument must have own property "location"
 [PASS] Document interface: iframe.contentDocument must inherit property "domain" with the proper type
 [PASS] Document interface: iframe.contentDocument must inherit property "referrer" with the proper type
@@ -766,6 +774,8 @@ Found 1027 tests; 1020 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Document interface: iframe.contentDocument must inherit property "onwebkittransitionend" with the proper type
 [PASS] Document interface: iframe.contentDocument must inherit property "onwheel" with the proper type
 [PASS] Document interface: iframe.contentDocument must inherit property "activeElement" with the proper type
+[PASS] Document interface: new Document() must inherit property "parseHTMLUnsafe(DOMString)" with the proper type
+[PASS] Document interface: calling parseHTMLUnsafe(DOMString) on new Document() with too few arguments must throw TypeError
 [PASS] Document interface: new Document() must have own property "location"
 [PASS] Document interface: new Document() must inherit property "domain" with the proper type
 [PASS] Document interface: new Document() must inherit property "referrer" with the proper type
@@ -900,6 +910,8 @@ Found 1027 tests; 1020 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Document interface: new Document() must inherit property "onwebkittransitionend" with the proper type
 [PASS] Document interface: new Document() must inherit property "onwheel" with the proper type
 [PASS] Document interface: new Document() must inherit property "activeElement" with the proper type
+[PASS] Document interface: documentWithHandlers must inherit property "parseHTMLUnsafe(DOMString)" with the proper type
+[PASS] Document interface: calling parseHTMLUnsafe(DOMString) on documentWithHandlers with too few arguments must throw TypeError
 [PASS] Document interface: documentWithHandlers must have own property "location"
 [PASS] Document interface: documentWithHandlers must inherit property "domain" with the proper type
 [PASS] Document interface: documentWithHandlers must inherit property "referrer" with the proper type

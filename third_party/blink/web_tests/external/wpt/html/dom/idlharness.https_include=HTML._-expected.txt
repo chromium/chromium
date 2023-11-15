@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 3883 tests; 3870 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 3893 tests; 3877 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] idl_test setup
 [PASS] idl_test validation
 [PASS] Partial interface Document: original interface defined
@@ -8,6 +8,10 @@ Found 3883 tests; 3870 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Partial interface mixin DocumentOrShadowRoot: member names are unique
 [PASS] Partial interface Navigator: original interface defined
 [PASS] Partial interface Navigator: member names are unique
+[PASS] Partial interface Element: original interface defined
+[PASS] Partial interface Element: member names are unique
+[PASS] Partial interface ShadowRoot: original interface defined
+[PASS] Partial interface ShadowRoot: member names are unique
 [PASS] Partial interface mixin NavigatorID: original interface mixin defined
 [PASS] Partial interface mixin NavigatorID: member names are unique
 [PASS] Partial interface HTMLAnchorElement: original interface defined
@@ -3644,9 +3648,11 @@ Found 3883 tests; 3870 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] HTMLDetailsElement interface: existence and properties of interface prototype object
 [PASS] HTMLDetailsElement interface: existence and properties of interface prototype object's "constructor" property
 [PASS] HTMLDetailsElement interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] HTMLDetailsElement interface: attribute name
 [PASS] HTMLDetailsElement interface: attribute open
 [PASS] HTMLDetailsElement must be primary interface of document.createElement("details")
 [PASS] Stringification of document.createElement("details")
+[PASS] HTMLDetailsElement interface: document.createElement("details") must inherit property "name" with the proper type
 [PASS] HTMLDetailsElement interface: document.createElement("details") must inherit property "open" with the proper type
 [PASS] HTMLDialogElement interface: existence and properties of interface object
 [PASS] HTMLDialogElement interface object length
@@ -3705,9 +3711,16 @@ Found 3883 tests; 3870 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] HTMLTemplateElement interface: existence and properties of interface prototype object's "constructor" property
 [PASS] HTMLTemplateElement interface: existence and properties of interface prototype object's @@unscopables property
 [PASS] HTMLTemplateElement interface: attribute content
+[PASS] HTMLTemplateElement interface: attribute shadowRootMode
+[FAIL] HTMLTemplateElement interface: attribute shadowRootDelegatesFocus
+  assert_true: The prototype object must have a property "shadowRootDelegatesFocus" expected true got false
 [PASS] HTMLTemplateElement must be primary interface of document.createElement("template")
 [PASS] Stringification of document.createElement("template")
 [PASS] HTMLTemplateElement interface: document.createElement("template") must inherit property "content" with the proper type
+[FAIL] HTMLTemplateElement interface: document.createElement("template") must inherit property "shadowRootMode" with the proper type
+  assert_equals: expected "string" but got "object"
+[FAIL] HTMLTemplateElement interface: document.createElement("template") must inherit property "shadowRootDelegatesFocus" with the proper type
+  assert_inherits: property "shadowRootDelegatesFocus" not found in prototype chain
 [PASS] HTMLSlotElement interface: existence and properties of interface object
 [PASS] HTMLSlotElement interface object length
 [PASS] HTMLSlotElement interface object name
