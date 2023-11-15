@@ -379,7 +379,7 @@ BASE_FEATURE(kProactivelySwapBrowsingInstance,
 // https://crbug.com/1286501.
 BASE_FEATURE(kRestrictCanAccessDataForOriginToUIThread,
              "RestrictCanAccessDataForOriginToUIThread",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for moving the checking of specific requested files from
 // SecurityState::CanCommitURL() to SecurityState::CanRequestURL() in
