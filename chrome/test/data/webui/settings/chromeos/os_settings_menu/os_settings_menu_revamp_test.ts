@@ -16,7 +16,8 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/m
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {AudioOutputCapability, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
@@ -622,6 +623,24 @@ suite('<os-settings-menu>', () => {
       await flushTasks();
     }
 
+    function getCellularDeviceStateProps(): OncMojo.DeviceStateProperties {
+      return {
+        ipv4Address: undefined,
+        ipv6Address: undefined,
+        imei: undefined,
+        macAddress: undefined,
+        scanning: false,
+        simLockStatus: undefined,
+        simInfos: undefined,
+        inhibitReason: InhibitReason.kNotInhibited,
+        simAbsent: false,
+        deviceState: DeviceStateType.kDisabled,
+        type: NetworkType.kCellular,
+        managedNetworkAvailable: false,
+        serial: undefined,
+      };
+    }
+
     setup(() => {
       networkConfigRemote = new FakeNetworkConfig();
       MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
@@ -675,8 +694,21 @@ suite('<os-settings-menu>', () => {
     });
 
     test(
-        'Default internet description shows when no network connected',
+        'Wifi internet description shows when no network connected and the device does not support mobile data',
         async () => {
+          await createMenu();
+
+          const internetMenuItem = getInternetMenuItem();
+          assertEquals('Wi-Fi', internetMenuItem.sublabel);
+        });
+
+    test(
+        'Wifi and mobile data internet description shows when no network connected but the device supports mobile data',
+        async () => {
+          networkConfigRemote.setDeviceStateForTest({
+            ...getCellularDeviceStateProps(),
+          });
+
           await createMenu();
 
           const internetMenuItem = getInternetMenuItem();
@@ -686,6 +718,10 @@ suite('<os-settings-menu>', () => {
     test(
         'Internet description updates dynamically on networks connection updates',
         async () => {
+          networkConfigRemote.setDeviceStateForTest({
+            ...getCellularDeviceStateProps(),
+          });
+
           await createMenu();
           const internetMenuItem = getInternetMenuItem();
 
@@ -695,7 +731,7 @@ suite('<os-settings-menu>', () => {
           // is the name of the Tether network.
           assertEquals(tetherNetwork.name, internetMenuItem.sublabel);
 
-          // Connect the Wi-Fi network,  now Wi-Fi network takes priority.
+          // Connect the Wi-Fi network, now Wi-Fi network takes priority.
           await addConnectedNetworks([NetworkType.kWiFi]);
           assertEquals(wifiNetwork.name, internetMenuItem.sublabel);
 

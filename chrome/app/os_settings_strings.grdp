@@ -3918,7 +3918,10 @@ Press an assigned switch or key to remove assignment.
   </message>
 
   <!-- Internet page (OS settings) -->
-  <message name="IDS_OS_SETTINGS_INTERNET_MENU_ITEM_DESCRIPTION" desc="Description for the Internet menu item in the left menu when no networks are connected.">
+  <message name="IDS_OS_SETTINGS_INTERNET_MENU_ITEM_DESCRIPTION_WIFI_ONLY" desc="Description for the Internet menu item in the left menu when no networks are connected and mobile data is not supported.">
+    Wi-Fi
+  </message>
+  <message name="IDS_OS_SETTINGS_INTERNET_MENU_ITEM_DESCRIPTION_WIFI_AND_MOBILE_DATA" desc="Description for the Internet menu item in the left menu when no networks are connected but mobile data is supported.">
     Wi-Fi, mobile data
   </message>
   <message name="IDS_SETTINGS_INTERNET_ADD_CELLULAR" desc="The accessibility label for the add cellular icon at Settings > Internet > Add Cellular label. This text will not be visible, but will be announced when ChromeVox is on and the user navigates to the icon. Clicking this icon will show a dialog that allows the user to activate a physical SIM or set up eSIM.">

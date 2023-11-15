@@ -255,6 +255,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   // Internet section members.
   private networkConfig_: CrosNetworkConfigInterface;
   private internetMenuItemDescription_: string;
+  private isDeviceCellularCapable_: boolean;
 
   // Multidevice section members.
   private multideviceBrowserProxy_: MultiDeviceBrowserProxy;
@@ -289,7 +290,9 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
       // Internet menu item.
       this.networkConfig_ =
           MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
-      this.updateInternetMenuItemDescription_();
+      this.computeIsDeviceCellularCapable_().then(() => {
+        this.updateInternetMenuItemDescription_();
+      });
 
       // Multidevice menu item.
       this.addWebUiListener(
@@ -685,11 +688,22 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     this.updateInternetMenuItemDescription_();
   }
 
+  private async computeIsDeviceCellularCapable_(): Promise<void> {
+    const {result: deviceStateList} =
+        await this.networkConfig_.getDeviceStateList();
+    const cellularDeviceState = deviceStateList.find(
+        deviceState => deviceState.type === NetworkType.kCellular);
+    this.isDeviceCellularCapable_ = !!cellularDeviceState;
+  }
+
   /**
    * Updates the "Internet" menu item description to one of the followings:
    * - If there are networks connected, show the name of one connected network
    *   with the priority: Ethernet, Wi-Fi, mobile(Cellular, Tether) and VPN.
-   * - If there is no networks connected show "Wi-Fi, mobile data".
+   * - If there is no networks connected and mobile data is not supported, show
+   * "Wi-Fi".
+   * - If there is no networks connected but mobile data is supported, show
+   * "Wi-Fi, mobile data".
    */
   private async updateInternetMenuItemDescription_(): Promise<void> {
     // Return early if the feature revamp wayfinding is not enabled since
@@ -706,7 +720,6 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           networkType: NetworkType.kAll,
         });
 
-
     const prioritizedConnectedNetwork =
         getPrioritizedConnectedNetwork(networkStateList);
     if (prioritizedConnectedNetwork) {
@@ -717,11 +730,14 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     // TODO(b/310253896): Check if there are available instant hotspot, if
     // there're, show "Instant hotspot available".
 
-    // TODO(b/310683941): Check if the device supports mobile data or not, if
-    // not, show "Wi-Fi" instand of "Wi-Fi, mobile data".
+    if (this.isDeviceCellularCapable_) {
+      this.internetMenuItemDescription_ =
+          this.i18n('internetMenuItemDescriptionWifiAndMobileData');
+      return;
+    }
 
     this.internetMenuItemDescription_ =
-        this.i18n('internetMenuItemDescription');
+        this.i18n('internetMenuItemDescriptionWifi');
   }
 
   /**
