@@ -53,7 +53,7 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
       PlusAddressMetrics::PlusAddressModalEvent::kModalShown);
   if (!suppress_ui_for_testing_) {
     dialog_delegate_ = std::make_unique<PlusAddressCreationDialogDelegate>(
-        GetWeakPtr(), maybe_email.value());
+        GetWeakPtr(), &GetWebContents(), maybe_email.value());
     constrained_window::ShowWebModalDialogViews(dialog_delegate_.get(),
                                                 &GetWebContents());
   }
@@ -76,10 +76,10 @@ void PlusAddressCreationControllerDesktop::OnConfirmed() {
     return;
   }
 
-  PlusAddressService* plus_address_service =
-      PlusAddressServiceFactory::GetForBrowserContext(
-          GetWebContents().GetBrowserContext());
-  if (plus_address_service) {
+  if (PlusAddressService* plus_address_service =
+          PlusAddressServiceFactory::GetForBrowserContext(
+              GetWebContents().GetBrowserContext());
+      plus_address_service) {
     // Note: this call may fail if this modal is confirmed on the same
     // `relevant_origin_` from another device.
     plus_address_service->ConfirmPlusAddress(

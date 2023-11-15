@@ -8,10 +8,14 @@
 #include "base/memory/weak_ptr.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/md_text_button.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace views {
 class Label;
+class MdTextButton;
 }  // namespace views
 
 namespace plus_addresses {
@@ -25,6 +29,7 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate {
 
   PlusAddressCreationDialogDelegate(
       base::WeakPtr<PlusAddressCreationController> controller,
+      content::WebContents* web_contents,
       const std::string& primary_email_address);
   PlusAddressCreationDialogDelegate(const PlusAddressCreationDialogDelegate&) =
       delete;
@@ -35,6 +40,9 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate {
   // WidgetDelegate:
   bool ShouldShowCloseButton() const override;
   void OnWidgetInitialized() override;
+
+  // Navigates to the link shown in the dialog's description.
+  void OpenSettingsLink(content::WebContents* web_contents);
 
   // TODO(crbug.com/1467623): Pull these into a shared delegate interface for
   // both Desktop & Android views.

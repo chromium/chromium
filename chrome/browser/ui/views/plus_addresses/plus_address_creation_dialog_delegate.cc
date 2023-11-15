@@ -12,10 +12,15 @@
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller_desktop.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/page_navigator.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
@@ -37,6 +42,7 @@ const int kPlusAddressLabelVerticalMargin = 10;
 
 PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
     base::WeakPtr<PlusAddressCreationController> controller,
+    content::WebContents* web_contents,
     const std::string& primary_email_address)
     : views::BubbleDialogDelegate(/*anchor_view=*/nullptr,
                                   views::BubbleBorder::Arrow::NONE),
@@ -103,8 +109,11 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
 
   gfx::Range settings_text_range(
       description_offsets[0], description_offsets[0] + settings_text.length());
-  views::StyledLabel::RangeStyleInfo settings_text_style;
-  settings_text_style.text_style = views::style::TextStyle::STYLE_LINK;
+  views::StyledLabel::RangeStyleInfo settings_text_style =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &PlusAddressCreationDialogDelegate::OpenSettingsLink,
+          // Safe because this delegate outlives the Widget (and this view).
+          base::Unretained(this), web_contents));
   description_paragraph->AddStyleRange(settings_text_range,
                                        settings_text_style);
 
@@ -215,6 +224,17 @@ void PlusAddressCreationDialogDelegate::OnWidgetInitialized() {
             &PlusAddressCreationDialogDelegate::HandleButtonPress,
             // Safe because this outlives the BubbleFrameView.
             base::Unretained(this), ButtonType::kClose)));
+  }
+}
+
+void PlusAddressCreationDialogDelegate::OpenSettingsLink(
+    content::WebContents* web_contents) {
+  if (web_contents && !kPlusAddressManagementUrl.Get().empty()) {
+    web_contents->OpenURL(content::OpenURLParams(
+        GURL(kPlusAddressManagementUrl.Get()), content::Referrer(),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui::PageTransition::PAGE_TRANSITION_LINK,
+        /*is_renderer_initiated=*/false));
   }
 }
 
