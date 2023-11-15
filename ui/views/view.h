@@ -35,6 +35,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_types.h"
+#include "ui/base/metadata/metadata_utils.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_observer.h"
@@ -424,6 +425,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     DCHECK(!view->owned_by_client())
         << "This should only be called if the client is passing ownership of "
            "|view| to the parent View.";
+    CHECK_CLASS_HAS_METADATA(T)
     return AddChildView<T>(view.release());
   }
   template <typename T>
@@ -431,6 +433,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     DCHECK(!view->owned_by_client())
         << "This should only be called if the client is passing ownership of "
            "|view| to the parent View.";
+    CHECK_CLASS_HAS_METADATA(T)
     return AddChildViewAt<T>(view.release(), index);
   }
 
@@ -438,22 +441,26 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // for new code.
   template <typename T>
   T* AddChildView(T* view) {
+    CHECK_CLASS_HAS_METADATA(T)
     AddChildViewAtImpl(view, children_.size());
     return view;
   }
   template <typename T>
   T* AddChildViewAt(T* view, size_t index) {
+    CHECK_CLASS_HAS_METADATA(T)
     AddChildViewAtImpl(view, index);
     return view;
   }
 
   template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
   T* AddChildView(raw_ptr<T, Traits> view) {
+    CHECK_CLASS_HAS_METADATA(T)
     AddChildViewAtImpl(view.get(), children_.size());
     return view;
   }
   template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
   T* AddChildViewAt(raw_ptr<T, Traits> view, size_t index) {
+    CHECK_CLASS_HAS_METADATA(T)
     AddChildViewAtImpl(view.get(), index);
     return view;
   }

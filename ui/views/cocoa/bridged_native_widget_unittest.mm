@@ -26,6 +26,8 @@
 #include "ui/base/cocoa/find_pasteboard.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #import "ui/base/test/cocoa_helper.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
@@ -620,6 +622,8 @@ class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,
 // Class that counts occurrences of a VKEY_RETURN accelerator, marking them
 // processed.
 class EnterAcceleratorView : public View {
+  METADATA_HEADER(EnterAcceleratorView, View)
+
  public:
   EnterAcceleratorView() { AddAccelerator({ui::VKEY_RETURN, 0}); }
   int count() const { return count_; }
@@ -633,6 +637,9 @@ class EnterAcceleratorView : public View {
  private:
   int count_ = 0;
 };
+
+BEGIN_METADATA(EnterAcceleratorView)
+END_METADATA
 
 BridgedNativeWidgetTest::BridgedNativeWidgetTest() = default;
 
