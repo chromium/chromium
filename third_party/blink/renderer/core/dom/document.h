@@ -124,6 +124,10 @@ enum class CSPDisposition : int32_t;
 }  // namespace mojom
 }  // namespace network
 
+namespace ui {
+class ColorProvider;
+}  // namespace ui
+
 namespace blink {
 
 class AXContext;
@@ -1849,6 +1853,9 @@ class CORE_EXPORT Document : public ContainerNode,
   void UpdateForcedColors();
   bool InForcedColorsMode() const;
   bool InDarkMode();
+
+  const ui::ColorProvider* GetColorProviderForPainting(
+      mojom::blink::ColorScheme color_scheme) const;
 
   // Capture the toggle event during parsing either by HTML parser or XML
   // parser.

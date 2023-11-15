@@ -9030,6 +9030,12 @@ bool Document::InDarkMode() {
              mojom::blink::PreferredColorScheme::kDark;
 }
 
+const ui::ColorProvider* Document::GetColorProviderForPainting(
+    mojom::blink::ColorScheme color_scheme) const {
+  return GetPage()->GetColorProviderForPainting(
+      color_scheme, in_forced_colors_mode_);
+}
+
 void Document::CountUse(mojom::WebFeature feature) const {
   if (execution_context_)
     execution_context_->CountUse(feature);

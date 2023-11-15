@@ -481,6 +481,18 @@ void Page::UpdateColorProviders(
           color_provider_colors.forced_colors_map));
 }
 
+const ui::ColorProvider* Page::GetColorProviderForPainting(
+    mojom::blink::ColorScheme color_scheme,
+    bool in_forced_colors) const {
+  if (in_forced_colors) {
+    return forced_colors_color_provider_.get();
+  }
+
+  return color_scheme == mojom::blink::ColorScheme::kDark
+             ? dark_color_provider_.get()
+             : light_color_provider_.get();
+}
+
 void Page::InitialStyleChanged() {
   for (Frame* frame = MainFrame(); frame;
        frame = frame->Tree().TraverseNext()) {

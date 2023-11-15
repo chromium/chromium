@@ -36,6 +36,7 @@
 #include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
@@ -163,6 +164,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   void UpdateColorProviders(
       const ColorProviderColorMaps& color_provider_colors);
+  const ui::ColorProvider* GetColorProviderForPainting(
+      mojom::blink::ColorScheme color_scheme,
+      bool in_forced_colors) const;
 
   void InitialStyleChanged();
   void UpdateAcceleratedCompositingSettings();
