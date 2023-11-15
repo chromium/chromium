@@ -833,6 +833,7 @@ source_set("test_support") {
     "//extensions/common",
     "//extensions/common:test_support",
     "//extensions/common/api:api",
+    "//net/traffic_annotation:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
     "//testing/gmock",

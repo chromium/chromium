@@ -8,7 +8,10 @@
 #include <memory>
 
 #include "base/threading/thread.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/test/udp_socket_test_util.h"
 
 namespace net {
 class HostPortPair;
@@ -31,14 +34,13 @@ class TestUdpEchoServer {
   // |host_port_pair| to the the host and port the server is listening on.
   // |host_port_pair| must not be null. Spins the current message loop while
   // waiting for the server to start.
-  [[nodiscard]] bool Start(net::HostPortPair* host_port_pair);
+  [[nodiscard]] bool Start(network::mojom::NetworkContext* network_context,
+                           net::HostPortPair* host_port_pair);
 
  private:
   // Class that does all the work. Created on the test server's thread, but
   // otherwise lives an IO thread, where it is also destroyed.
   class Core;
-
-  std::unique_ptr<base::Thread> io_thread_;
 
   std::unique_ptr<Core> core_;
 };
