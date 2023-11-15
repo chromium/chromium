@@ -71,7 +71,7 @@ version = "0.1"
 # all updates to dependencies that it needs to move forward.
 
 [patch.crates-io.aho-corasick]
-path = "vendor/aho-corasick-0.7.18"
+path = "vendor/aho-corasick-1.1.2"
 package = "aho-corasick"
 
 [patch.crates-io.anstyle]
@@ -79,7 +79,7 @@ path = "vendor/anstyle-1.0.4"
 package = "anstyle"
 
 [patch.crates-io.anyhow]
-path = "vendor/anyhow-1.0.70"
+path = "vendor/anyhow-1.0.75"
 package = "anyhow"
 
 [patch.crates-io.autocfg]
@@ -99,15 +99,15 @@ path = "vendor/cfg-if-1.0.0"
 package = "cfg-if"
 
 [patch.crates-io.clap_builder]
-path = "vendor/clap_builder-4.4.6"
+path = "vendor/clap_builder-4.4.8"
 package = "clap_builder"
 
 [patch.crates-io.clap_lex]
-path = "vendor/clap_lex-0.5.1"
+path = "vendor/clap_lex-0.6.0"
 package = "clap_lex"
 
 [patch.crates-io.clap]
-path = "vendor/clap-4.4.6"
+path = "vendor/clap-4.4.8"
 package = "clap"
 
 [patch.crates-io.codespan-reporting]
@@ -131,7 +131,7 @@ path = "vendor/font-types-0.4.0"
 package = "font-types"
 
 [patch.crates-io.getrandom]
-path = "vendor/getrandom-0.2.9"
+path = "vendor/getrandom-0.2.11"
 package = "getrandom"
 
 [patch.crates-io.hex-literal]
@@ -143,7 +143,7 @@ path = "vendor/hex-0.4.3"
 package = "hex"
 
 [patch.crates-io.itoa]
-path = "vendor/itoa-1.0.1"
+path = "vendor/itoa-1.0.9"
 package = "itoa"
 
 [patch.crates-io.lazy_static]
@@ -151,7 +151,7 @@ path = "vendor/lazy_static-1.4.0"
 package = "lazy_static"
 
 [patch.crates-io.libc]
-path = "vendor/libc-0.2.144"
+path = "vendor/libc-0.2.150"
 package = "libc"
 
 [patch.crates-io.link-cplusplus]
@@ -159,11 +159,11 @@ path = "vendor/link-cplusplus-1.0.9"
 package = "link-cplusplus"
 
 [patch.crates-io.log]
-path = "vendor/log-0.4.17"
+path = "vendor/log-0.4.20"
 package = "log"
 
 [patch.crates-io.memchr]
-path = "vendor/memchr-2.4.1"
+path = "vendor/memchr-2.6.4"
 package = "memchr"
 
 [patch.crates-io.memoffset]
@@ -175,7 +175,7 @@ path = "vendor/ppv-lite86-0.2.17"
 package = "ppv-lite86"
 
 [patch.crates-io.proc-macro2]
-path = "vendor/proc-macro2-1.0.66"
+path = "vendor/proc-macro2-1.0.69"
 package = "proc-macro2"
 
 [patch.crates-io.qr_code]
@@ -203,15 +203,15 @@ path = "vendor/rand-0.8.5"
 package = "rand"
 
 [patch.crates-io.read-fonts]
-path = "vendor/read-fonts-0.11.0"
+path = "vendor/read-fonts-0.11.2"
 package = "read-fonts"
 
 [patch.crates-io.regex-syntax]
-path = "vendor/regex-syntax-0.6.27"
+path = "vendor/regex-syntax-0.8.2"
 package = "regex-syntax"
 
 [patch.crates-io.regex]
-path = "vendor/regex-1.6.0"
+path = "vendor/regex-1.10.2"
 package = "regex"
 
 [patch.crates-io.rstest_macros]
@@ -239,19 +239,19 @@ path = "vendor/rustc_version-0.4.0"
 package = "rustc_version"
 
 [patch.crates-io.rustversion]
-path = "vendor/rustversion-1.0.6"
+path = "vendor/rustversion-1.0.14"
 package = "rustversion"
 
 [patch.crates-io.ryu]
-path = "vendor/ryu-1.0.5"
+path = "vendor/ryu-1.0.15"
 package = "ryu"
 
 [patch.crates-io.semver]
-path = "vendor/semver-1.0.4"
+path = "vendor/semver-1.0.20"
 package = "semver"
 
 [patch.crates-io.serde_derive]
-path = "vendor/serde_derive-1.0.188"
+path = "vendor/serde_derive-1.0.192"
 package = "serde_derive"
 
 [patch.crates-io.serde_json_lenient]
@@ -259,15 +259,15 @@ path = "vendor/serde_json_lenient-0.1.8"
 package = "serde_json_lenient"
 
 [patch.crates-io.serde_json]
-path = "vendor/serde_json-1.0.78"
+path = "vendor/serde_json-1.0.108"
 package = "serde_json"
 
 [patch.crates-io.serde]
-path = "vendor/serde-1.0.188"
+path = "vendor/serde-1.0.192"
 package = "serde"
 
 [patch.crates-io.skrifa]
-path = "vendor/skrifa-0.10.0"
+path = "vendor/skrifa-0.10.1"
 package = "skrifa"
 
 [patch.crates-io.small_ctor]
@@ -283,31 +283,31 @@ path = "vendor/strsim-0.10.0"
 package = "strsim"
 
 [patch.crates-io.syn]
-path = "vendor/syn-1.0.99"
+path = "vendor/syn-1.0.109"
 package = "syn"
 
 [patch.crates-io.syn2]
-path = "vendor/syn-2.0.29"
+path = "vendor/syn-2.0.39"
 package = "syn"
 
 [patch.crates-io.termcolor]
-path = "vendor/termcolor-1.1.2"
+path = "vendor/termcolor-1.4.0"
 package = "termcolor"
 
 [patch.crates-io.unicode-ident]
-path = "vendor/unicode-ident-1.0.8"
+path = "vendor/unicode-ident-1.0.12"
 package = "unicode-ident"
 
 [patch.crates-io.unicode-linebreak]
-path = "vendor/unicode-linebreak-0.1.2"
+path = "vendor/unicode-linebreak-0.1.5"
 package = "unicode-linebreak"
 
 [patch.crates-io.unicode-width]
-path = "vendor/unicode-width-0.1.9"
+path = "vendor/unicode-width-0.1.11"
 package = "unicode-width"
 
 [patch.crates-io.winapi-util]
-path = "vendor/winapi-util-0.1.5"
+path = "vendor/winapi-util-0.1.6"
 package = "winapi-util"
 
 [patch.crates-io.winapi]
