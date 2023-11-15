@@ -15,6 +15,27 @@
   Select to Autofill
   </message>
 
+  <!-- Consent dialog -->
+  <message name="IDS_COMPOSE_CONSENT_TITLE" desc="The title of the consent dialog." translateable="false">
+    Conquer all those empty online text boxes with autofill from the web
+  </message>
+  <message name="IDS_COMPOSE_CONSENT_MAIN_TOP" desc="The top main text of the consent dialog." translateable="false">
+  To provide you with the best autofill suggestions while using this feature, the content of pages you visit and the content you enter are sent to our servers. You can change this at anytime in
+  <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>settings<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_COMPOSE_CONSENT_MAIN_BOTTOM" desc="The bottom main text of the consent dialog." translateable="false">
+  Autofill relies on the information that you save.
+  </message>
+  <message name="IDS_COMPOSE_CONSENT_LEARN_LINK" desc="The bottom main text in the consent dialog used to link to the help page." translateable="false">
+  Learn more
+  </message>
+  <message name="IDS_COMPOSE_CONSENT_NO_BUTTON" desc="The first option for the consent dialog." translateable="false">
+  No thanks
+  </message>
+  <message name="IDS_COMPOSE_CONSENT_YES_BUTTON" desc="The first option for the consent dialog." translateable="false">
+  Yes I'm in
+  </message>
+
   <!-- Input dialog -->
   <message name="IDS_COMPOSE_TITLE" desc="The title of the input dialog." translateable="false">
   Lorem ipsum
@@ -30,10 +51,6 @@
   </message>
 
   <!-- Result dialog -->
-  <message name="IDS_COMPOSE_RESULT_FOOTER" desc="The footer text for the result." translateable="false">
-  Autofill relies on the information that you save.
-  <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
   <message name="IDS_COMPOSE_INSERT_BUTTON" desc="The button that inserts the result into the input textfield." translateable="false">
   Insert
   </message>
