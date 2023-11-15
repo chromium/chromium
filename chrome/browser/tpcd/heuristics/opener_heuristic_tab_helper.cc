@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_metrics.h"
+#include "chrome/browser/tpcd/heuristics/opener_heuristic_service.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -46,7 +47,11 @@ base::Clock* GetClock() {
 
 OpenerHeuristicTabHelper::OpenerHeuristicTabHelper(WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<OpenerHeuristicTabHelper>(*web_contents) {}
+      content::WebContentsUserData<OpenerHeuristicTabHelper>(*web_contents) {
+  // Initialize the service to run in the background if it doesn't already exist
+  // (we don't need to keep a reference).
+  OpenerHeuristicService::Get(web_contents->GetBrowserContext());
+}
 
 OpenerHeuristicTabHelper::~OpenerHeuristicTabHelper() = default;
 

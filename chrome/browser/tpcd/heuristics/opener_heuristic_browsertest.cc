@@ -1278,9 +1278,8 @@ class OpenerHeuristicBackfillGrantBrowserTest
   }
 };
 
-// Test the backfill grants created by DIPSService when tracking protection is
-// onboarded. This logic is located in DIPSService in order to run as a
-// singleton, rather than once per tab.
+// Test the backfill grants created by OpenerHeuristicService when tracking
+// protection is onboarded.
 IN_PROC_BROWSER_TEST_P(OpenerHeuristicBackfillGrantBrowserTest,
                        TrackingProtectionOnboardingCreatesBackfillGrants) {
   GURL opener_url = embedded_test_server()->GetURL("a.test", "/title1.html");

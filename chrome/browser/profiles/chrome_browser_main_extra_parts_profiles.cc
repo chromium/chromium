@@ -180,6 +180,7 @@
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
+#include "chrome/browser/tpcd/heuristics/opener_heuristic_service_factory.h"
 #include "chrome/browser/tpcd/metadata/updater_service_factory.h"
 #include "chrome/browser/tpcd/support/tpcd_support_service_factory.h"
 #include "chrome/browser/translate/translate_model_service_factory.h"
@@ -909,6 +910,7 @@ void ChromeBrowserMainExtraPartsProfiles::
     OneTimePermissionsTrackerFactory::GetInstance();
   }
 #endif
+  OpenerHeuristicServiceFactory::GetInstance();
   if (optimization_guide::switches::ShouldValidateModel()) {
     optimization_guide::ModelValidatorKeyedServiceFactory::GetInstance();
   }
