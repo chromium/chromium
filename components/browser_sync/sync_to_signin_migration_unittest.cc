@@ -24,19 +24,23 @@
 namespace browser_sync {
 namespace {
 
-class SyncToSigninMigrationTest : public testing::Test {
+class SyncToSigninMigrationTestBase {
  public:
-  SyncToSigninMigrationTest() {
+  explicit SyncToSigninMigrationTestBase(bool migration_feature_enabled) {
     // TODO(crbug.com/1486420): Add tests for the feature-enabled case, once
     // that is implemented.
-    features_.InitAndDisableFeature(kMigrateSyncingUserToSignedIn);
+    if (migration_feature_enabled) {
+      features_.InitAndEnableFeature(kMigrateSyncingUserToSignedIn);
+    } else {
+      features_.InitAndDisableFeature(kMigrateSyncingUserToSignedIn);
+    }
 
     signin::IdentityManager::RegisterProfilePrefs(pref_service_.registry());
     syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
 
     sync_prefs_ = std::make_unique<syncer::SyncPrefs>(&pref_service_);
   }
-  ~SyncToSigninMigrationTest() override = default;
+  virtual ~SyncToSigninMigrationTestBase() = default;
 
   void RecordStateToPrefs(bool include_status_recorder = true) {
     // Populate signin prefs based on the state of the TestSyncService.
@@ -75,7 +79,23 @@ class SyncToSigninMigrationTest : public testing::Test {
   syncer::TestSyncService sync_service_;
 };
 
-TEST_F(SyncToSigninMigrationTest, SyncAndAllDataTypesActive) {
+// Fixture for tests covering migration metrics. The test param determines
+// whether the feature flag is enabled or not.
+class SyncToSigninMigrationMetricsTest : public SyncToSigninMigrationTestBase,
+                                         public testing::TestWithParam<bool> {
+ public:
+  SyncToSigninMigrationMetricsTest()
+      : SyncToSigninMigrationTestBase(
+            /*migration_feature_enabled=*/GetParam()) {}
+
+  bool IsMigrationEnabled() const { return GetParam(); }
+
+  std::string GetTypeDecisionHistogramInfix() const {
+    return IsMigrationEnabled() ? "Migration" : "DryRun";
+  }
+};
+
+TEST_P(SyncToSigninMigrationMetricsTest, SyncAndAllDataTypesActive) {
   // Everything is active.
   ASSERT_EQ(sync_service_.GetTransportState(),
             syncer::SyncService::TransportState::ACTIVE);
@@ -90,24 +110,28 @@ TEST_F(SyncToSigninMigrationTest, SyncAndAllDataTypesActive) {
 
   MaybeMigrateSyncingUserToSignedIn(&pref_service_);
 
-  // The overall migration should run, except that the feature flag is disabled.
+  // The overall migration should run, except if the feature flag is disabled.
+  int expected_decision =
+      IsMigrationEnabled()
+          ? /*SyncToSigninMigrationDecision::kMigrate*/ 0
+          : /*SyncToSigninMigrationDecision::kDontMigrateFlagDisabled*/ 5;
+  histograms.ExpectUniqueSample("Sync.SyncToSigninMigrationDecision",
+                                expected_decision, 1);
+  // All the data type migrations should run - in "DryRun" mode if the feature
+  // flag is disabled.
+  std::string infix = GetTypeDecisionHistogramInfix();
   histograms.ExpectUniqueSample(
-      "Sync.SyncToSigninMigrationDecision",
-      /*SyncToSigninMigrationDecision::kDontMigrateFlagDisabled*/ 5, 1);
-  // All the data type migrations should run - "DryRun" because the feature flag
-  // is disabled.
-  histograms.ExpectUniqueSample(
-      "Sync.SyncToSigninMigrationDecision.DryRun.BOOKMARK",
+      "Sync.SyncToSigninMigrationDecision." + infix + ".BOOKMARK",
       /*SyncToSigninMigrationDataTypeDecision::kMigrate*/ 0, 1);
   histograms.ExpectUniqueSample(
-      "Sync.SyncToSigninMigrationDecision.DryRun.PASSWORD",
+      "Sync.SyncToSigninMigrationDecision." + infix + ".PASSWORD",
       /*SyncToSigninMigrationDataTypeDecision::kMigrate*/ 0, 1);
   histograms.ExpectUniqueSample(
-      "Sync.SyncToSigninMigrationDecision.DryRun.READING_LIST",
+      "Sync.SyncToSigninMigrationDecision." + infix + ".READING_LIST",
       /*SyncToSigninMigrationDataTypeDecision::kMigrate*/ 0, 1);
 }
 
-TEST_F(SyncToSigninMigrationTest, SyncActiveButNotDataTypes) {
+TEST_P(SyncToSigninMigrationMetricsTest, SyncActiveButNotDataTypes) {
   // Sync-the-feature is active.
   ASSERT_EQ(sync_service_.GetTransportState(),
             syncer::SyncService::TransportState::ACTIVE);
@@ -132,26 +156,31 @@ TEST_F(SyncToSigninMigrationTest, SyncActiveButNotDataTypes) {
 
   MaybeMigrateSyncingUserToSignedIn(&pref_service_);
 
-  // The overall migration should run, except that the feature flag is disabled.
-  histograms.ExpectUniqueSample(
-      "Sync.SyncToSigninMigrationDecision",
-      /*SyncToSigninMigrationDecision::kDontMigrateFlagDisabled*/ 5, 1);
+  // The overall migration should run, except if the feature flag is disabled.
+  int expected_decision =
+      IsMigrationEnabled()
+          ? /*SyncToSigninMigrationDecision::kMigrate*/ 0
+          : /*SyncToSigninMigrationDecision::kDontMigrateFlagDisabled*/ 5;
+  histograms.ExpectUniqueSample("Sync.SyncToSigninMigrationDecision",
+                                expected_decision, 1);
+
+  std::string infix = GetTypeDecisionHistogramInfix();
   // Bookmarks was active, so its migration should run.
   histograms.ExpectUniqueSample(
-      "Sync.SyncToSigninMigrationDecision.DryRun.BOOKMARK",
+      "Sync.SyncToSigninMigrationDecision." + infix + ".BOOKMARK",
       /*SyncToSigninMigrationDataTypeDecision::kMigrate*/ 0, 1);
   // Passwords was not active, even though it was enabled.
   histograms.ExpectUniqueSample(
-      "Sync.SyncToSigninMigrationDecision.DryRun.PASSWORD",
+      "Sync.SyncToSigninMigrationDecision." + infix + ".PASSWORD",
       /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
       1);
   // ReadingList was disabled by the user.
   histograms.ExpectUniqueSample(
-      "Sync.SyncToSigninMigrationDecision.DryRun.READING_LIST",
+      "Sync.SyncToSigninMigrationDecision." + infix + ".READING_LIST",
       /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeDisabled*/ 1, 1);
 }
 
-TEST_F(SyncToSigninMigrationTest, SyncStatusPrefsUnset) {
+TEST_P(SyncToSigninMigrationMetricsTest, SyncStatusPrefsUnset) {
   // Everything is active.
   ASSERT_EQ(sync_service_.GetTransportState(),
             syncer::SyncService::TransportState::ACTIVE);
@@ -178,9 +207,15 @@ TEST_F(SyncToSigninMigrationTest, SyncStatusPrefsUnset) {
       "Sync.SyncToSigninMigrationDecision.DryRun.PASSWORD", 0);
   histograms.ExpectTotalCount(
       "Sync.SyncToSigninMigrationDecision.DryRun.READING_LIST", 0);
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision.Migration.BOOKMARK", 0);
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision.Migration.PASSWORD", 0);
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision.Migration.READING_LIST", 0);
 }
 
-TEST_F(SyncToSigninMigrationTest, NotSignedIn) {
+TEST_P(SyncToSigninMigrationMetricsTest, NotSignedIn) {
   // There's no signed-in user.
   sync_service_.SetAccountInfo(CoreAccountInfo());
   sync_service_.SetHasSyncConsent(false);
@@ -205,9 +240,15 @@ TEST_F(SyncToSigninMigrationTest, NotSignedIn) {
       "Sync.SyncToSigninMigrationDecision.DryRun.PASSWORD", 0);
   histograms.ExpectTotalCount(
       "Sync.SyncToSigninMigrationDecision.DryRun.READING_LIST", 0);
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision.Migration.BOOKMARK", 0);
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision.Migration.PASSWORD", 0);
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision.Migration.READING_LIST", 0);
 }
 
-TEST_F(SyncToSigninMigrationTest, SyncTransport) {
+TEST_P(SyncToSigninMigrationMetricsTest, SyncTransport) {
   // There's no Sync consent, but otherwise everything is active (running in
   // transport mode).
   sync_service_.SetHasSyncConsent(false);
@@ -233,9 +274,15 @@ TEST_F(SyncToSigninMigrationTest, SyncTransport) {
       "Sync.SyncToSigninMigrationDecision.DryRun.PASSWORD", 0);
   histograms.ExpectTotalCount(
       "Sync.SyncToSigninMigrationDecision.DryRun.READING_LIST", 0);
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision.Migration.BOOKMARK", 0);
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision.Migration.PASSWORD", 0);
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision.Migration.READING_LIST", 0);
 }
 
-TEST_F(SyncToSigninMigrationTest, SyncPaused) {
+TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused) {
   sync_service_.SetPersistentAuthError();
   ASSERT_EQ(sync_service_.GetTransportState(),
             syncer::SyncService::TransportState::PAUSED);
@@ -249,28 +296,33 @@ TEST_F(SyncToSigninMigrationTest, SyncPaused) {
 
   MaybeMigrateSyncingUserToSignedIn(&pref_service_);
 
-  // In the Sync-paused state, the overall migration should run, except that the
+  // In the Sync-paused state, the overall migration should run, except if the
   // feature flag is disabled.
-  histograms.ExpectUniqueSample(
-      "Sync.SyncToSigninMigrationDecision",
-      /*SyncToSigninMigrationDecision::kDontMigrateFlagDisabled*/ 5, 1);
+  int expected_decision =
+      IsMigrationEnabled()
+          ? /*SyncToSigninMigrationDecision::kMigrate*/ 0
+          : /*SyncToSigninMigrationDecision::kDontMigrateFlagDisabled*/ 5;
+  histograms.ExpectUniqueSample("Sync.SyncToSigninMigrationDecision",
+                                expected_decision, 1);
+
   // However, the individual data types were by definition not active and so
   // should not be migrated.
+  std::string infix = GetTypeDecisionHistogramInfix();
   histograms.ExpectUniqueSample(
-      "Sync.SyncToSigninMigrationDecision.DryRun.BOOKMARK",
+      "Sync.SyncToSigninMigrationDecision." + infix + ".BOOKMARK",
       /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
       1);
   histograms.ExpectUniqueSample(
-      "Sync.SyncToSigninMigrationDecision.DryRun.PASSWORD",
+      "Sync.SyncToSigninMigrationDecision." + infix + ".PASSWORD",
       /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
       1);
   histograms.ExpectUniqueSample(
-      "Sync.SyncToSigninMigrationDecision.DryRun.READING_LIST",
+      "Sync.SyncToSigninMigrationDecision." + infix + ".READING_LIST",
       /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
       1);
 }
 
-TEST_F(SyncToSigninMigrationTest, SyncInitializing) {
+TEST_P(SyncToSigninMigrationMetricsTest, SyncInitializing) {
   sync_service_.SetTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
   ASSERT_TRUE(sync_service_.HasSyncConsent());
@@ -294,7 +346,21 @@ TEST_F(SyncToSigninMigrationTest, SyncInitializing) {
       "Sync.SyncToSigninMigrationDecision.DryRun.PASSWORD", 0);
   histograms.ExpectTotalCount(
       "Sync.SyncToSigninMigrationDecision.DryRun.READING_LIST", 0);
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision.Migration.BOOKMARK", 0);
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision.Migration.PASSWORD", 0);
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision.Migration.READING_LIST", 0);
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SyncToSigninMigrationMetricsTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "MigrationEnabled"
+                                             : "MigrationDisabled";
+                         });
 
 }  // namespace
 }  // namespace browser_sync
