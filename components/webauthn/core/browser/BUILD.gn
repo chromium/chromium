@@ -32,6 +32,21 @@ source_set("browser") {
   }
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (!is_ios && !is_android) {
+    sources += [ "passkey_model_utils_unittest.cc" ]
+    deps += [
+      ":browser",
+      "//base/test:test_support",
+      "//components/sync/protocol",
+    ]
+  }
+}
+
 static_library("test_support") {
   testonly = true
   sources = [
