@@ -487,6 +487,7 @@ TEST_F(DownloadBubbleSecurityViewTest, ResizesOnUpdate) {
   security_view_->InitializeForDownload(*row1_model_);
   security_view_->SetUIInfoForTesting(
       DownloadUIModel::BubbleUIInfo()
+          .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
           .AddPrimarySubpageButton(std::u16string(),
                                    DownloadCommands::Command::DISCARD)
           .AddSubpageSummary(std::u16string(u"Subpage warning")));
@@ -497,6 +498,7 @@ TEST_F(DownloadBubbleSecurityViewTest, ResizesOnUpdate) {
   security_view_->InitializeForDownload(*row1_model_);
   security_view_->SetUIInfoForTesting(
       DownloadUIModel::BubbleUIInfo()
+          .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
           .AddPrimarySubpageButton(
               std::u16string(u"really really really really really really long "
                              u"button text"),
@@ -511,6 +513,7 @@ TEST_F(DownloadBubbleSecurityViewTest, ResizesOnUpdate) {
   security_view_->InitializeForDownload(*row1_model_);
   security_view_->SetUIInfoForTesting(
       DownloadUIModel::BubbleUIInfo()
+          .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
           .AddPrimarySubpageButton(std::u16string(),
                                    DownloadCommands::Command::DISCARD)
           .AddSubpageSummary(std::u16string(u"Subpage warning")));
