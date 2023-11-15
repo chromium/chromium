@@ -1263,7 +1263,7 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsForAdvancedProtection) {
 
   const std::string username = "test@google.com";
   SetSyncingPasswords(true);
-  FakeSigninAs(username);
+  FakeSigninAs(username, signin::ConsentLevel::kSync);
 
   base::HistogramTester histogram_tester;
 

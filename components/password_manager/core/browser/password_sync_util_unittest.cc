@@ -49,7 +49,7 @@ TEST_F(PasswordSyncUtilTest,
     SCOPED_TRACE(testing::Message() << "i=" << i);
     SetSyncingPasswords(kTestCases[i].password_sync ==
                         TestCase::SYNCING_PASSWORDS);
-    FakeSigninAs(kTestCases[i].fake_sync_username);
+    FakeSigninAs(kTestCases[i].fake_sync_username, signin::ConsentLevel::kSync);
     EXPECT_EQ(kTestCases[i].expected_result,
               GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
                   kTestCases[i].sync_service, kTestCases[i].identity_manager));
@@ -78,7 +78,7 @@ TEST_F(PasswordSyncUtilTest, IsSyncAccountEmail) {
                                    signin::ConsentLevel::kSignin));
       continue;
     }
-    FakeSigninAs(kTestCases[i].fake_sync_email);
+    FakeSigninAs(kTestCases[i].fake_sync_email, signin::ConsentLevel::kSync);
     EXPECT_EQ(
         kTestCases[i].expected_result,
         IsSyncAccountEmail(kTestCases[i].input_username, identity_manager(),
