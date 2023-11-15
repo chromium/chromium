@@ -52,6 +52,7 @@ class Profile;
 
 namespace user_manager {
 class User;
+class KnownUser;
 }  // namespace user_manager
 
 namespace ash {
@@ -422,6 +423,12 @@ class UserSessionManager
   // ProfileManager::DoFinalInit() gets called is done here.
   void InitProfilePreferences(Profile* profile,
                               const UserContext& user_context);
+
+  // Initializes `user_context` and `known_user` with a device id. Does not
+  // overwrite the device id in `known_user` if it already exists.
+  void InitializeDeviceId(bool is_ephemeral_user,
+                          UserContext& user_context,
+                          user_manager::KnownUser& known_user);
 
   // Callback for Profile::CREATE_STATUS_INITIALIZED profile state.
   // Profile is created, extensions and promo resources are initialized.

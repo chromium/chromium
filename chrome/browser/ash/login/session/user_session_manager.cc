@@ -18,6 +18,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/base_paths.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
@@ -110,7 +111,9 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
@@ -131,6 +134,7 @@
 #include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
 #include "chromeos/ash/components/login/auth/authenticator_builder.h"
 #include "chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
 #include "chromeos/ash/components/login/hibernate/hibernate_manager.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
@@ -785,10 +789,12 @@ void UserSessionManager::StartSession(
     StartCrosSession();
 
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  if (!user_context.GetDeviceId().empty()) {
-    known_user.SetDeviceId(user_context.GetAccountId(),
-                           user_context.GetDeviceId());
-  }
+  // Note: Using `user_context_` here instead of `user_context`.
+  // `CreateUserSession()` call above copies the value of `user_context`
+  // (immutable) into `user_context_` (mutable).
+  InitializeDeviceId(user_manager::UserManager::Get()->IsEphemeralAccountId(
+                         user_context_.GetAccountId()),
+                     user_context_, known_user);
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       kEventCategoryChromeOS, kEventPrePrepareProfile, TRACE_ID_LOCAL(this));
@@ -1520,8 +1526,8 @@ void UserSessionManager::InitProfilePreferences(
                                      user->GetDisplayEmail() /* raw_email */,
                                      user_context.GetRefreshToken());
     } else if (!account_manager->IsTokenAvailable(account_key)) {
-      // When `user_context` does not contain a refresh token and account is not
-      // present in the AccountManager it means the migration to the
+      // When `user_context` does not contain a refresh token and account is
+      // not present in the AccountManager it means the migration to the
       // AccountManager didn't happen.
       // Set account with dummy token to let IdentitManager know that account
       // exists and we can safely configure the primary account at the step 2.
@@ -1624,6 +1630,41 @@ void UserSessionManager::InitProfilePreferences(
   } else {
     // Active Directory (non-supervised, non-GAIA) accounts take this path.
   }
+}
+
+void UserSessionManager::InitializeDeviceId(
+    bool is_ephemeral_user,
+    UserContext& user_context,
+    user_manager::KnownUser& known_user) {
+  const AccountId& account_id = user_context.GetAccountId();
+  // `UserContext` and `KnownUser` should have the same device id cached /
+  // stored in them. The source of truth is the value persisted in `KnownUser`
+  // so check that first.
+  const std::string stored_device_id = known_user.GetDeviceId(account_id);
+  if (!stored_device_id.empty()) {
+    user_context.SetDeviceId(stored_device_id);
+    return;
+  }
+
+  // We do not have any device id stored on disk. If `UserContext`  already has
+  // a device id, respect that.
+  const std::string cached_device_id = user_context.GetDeviceId();
+  if (!cached_device_id.empty()) {
+    known_user.SetDeviceId(account_id, cached_device_id);
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(kStableDeviceId)) {
+    // Do not generate and store new device identifiers if the feature is not
+    // enabled yet.
+    return;
+  }
+
+  // We do not have any device id - neither stored on disk, nor cached in
+  // memory. Generate and persist a new one.
+  const std::string device_id = GenerateSigninScopedDeviceId(is_ephemeral_user);
+  user_context.SetDeviceId(device_id);
+  known_user.SetDeviceId(account_id, device_id);
 }
 
 void UserSessionManager::UserProfileInitialized(Profile* profile,

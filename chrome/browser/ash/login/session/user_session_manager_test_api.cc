@@ -34,6 +34,14 @@ void UserSessionManagerTestApi::SetShouldObtainTokenHandleInTests(
   session_manager_->SetShouldObtainHandleInTests(should_obtain_handle);
 }
 
+void UserSessionManagerTestApi::InitializeDeviceId(
+    bool is_ephemeral_user,
+    user_manager::KnownUser& known_user) {
+  session_manager_->InitializeDeviceId(
+      is_ephemeral_user, *session_manager_->mutable_user_context_for_testing(),
+      known_user);
+}
+
 void UserSessionManagerTestApi::SetAttemptRestartClosureInTests(
     const base::RepeatingClosure& attempt_restart_closure) {
   session_manager_->SetAttemptRestartClosureInTests(attempt_restart_closure);

@@ -37,6 +37,10 @@ class UserSessionManagerTestApi {
   // Controls whether token handle fetching is enabled (used in tests).
   void SetShouldObtainTokenHandleInTests(bool should_obtain_handle);
 
+  // Proxy to `UserSessionManager::InitializeDeviceId()`.
+  void InitializeDeviceId(bool is_ephemeral_user,
+                          user_manager::KnownUser& known_user);
+
   // Sets the function which is used to request a chrome restart.
   void SetAttemptRestartClosureInTests(
       const base::RepeatingClosure& attempt_restart_closure);
