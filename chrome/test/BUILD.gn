@@ -507,6 +507,7 @@ static_library("test_support") {
         ]
         public_deps += [
           "//chrome/services/printing/public/mojom",
+          "//chromeos/printing:printing",
           "//printing/backend:test_support",
         ]
       }

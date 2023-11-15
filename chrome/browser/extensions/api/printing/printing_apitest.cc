@@ -44,17 +44,6 @@ using testing::WithArg;
 using testing::WithArgs;
 using testing::WithoutArgs;
 
-std::vector<crosapi::mojom::LocalDestinationInfoPtr> CreateGetPrintersResponse(
-    const std::string& printer_id,
-    const std::string& printer_name) {
-  chromeos::Printer printer;
-  printer.set_id(printer_id);
-  printer.set_display_name(printer_name);
-  std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers;
-  printers.push_back(printing::PrinterToMojom(printer));
-  return printers;
-}
-
 #endif
 
 }  // namespace
@@ -175,7 +164,7 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetPrinters) {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_CALL(local_printer(), GetPrinters(_))
       .WillOnce(base::test::RunOnceCallback<0>(
-          CreateGetPrintersResponse(kId, kName)));
+          ConstructGetPrintersResponse(kId, kName)));
 #endif
 
   RunTest("get_printers.html");

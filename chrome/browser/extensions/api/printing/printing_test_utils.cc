@@ -10,8 +10,10 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/printing/local_printer_utils_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/printing/printer_configuration.h"
 #include "extensions/common/constants.h"
 #include "extensions/test/test_extension_dir.h"
 
@@ -169,6 +171,17 @@ ConstructPrinterCapabilities() {
   capabilities->papers.push_back(std::move(paper));
   capabilities->collate_capable = true;
   return capabilities;
+}
+
+std::vector<crosapi::mojom::LocalDestinationInfoPtr>
+ConstructGetPrintersResponse(const std::string& printer_id,
+                             const std::string& printer_name) {
+  chromeos::Printer printer;
+  printer.set_id(printer_id);
+  printer.set_display_name(printer_name);
+  std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers;
+  printers.push_back(printing::PrinterToMojom(printer));
+  return printers;
 }
 
 }  // namespace extensions

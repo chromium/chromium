@@ -115,17 +115,9 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, GetPrinters) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   AddPrinter(kId, kName);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // For some reason first creating a vector of printers and then performing a
-  // trick with RunOnceCallback<0>(std::move(printers)) doesn't work.
   EXPECT_CALL(local_printer(), GetPrinters(_))
-      .WillOnce([](MockLocalPrinter::GetPrintersCallback callback) {
-        chromeos::Printer printer;
-        printer.set_id(kId);
-        printer.set_display_name(kName);
-        std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers;
-        printers.push_back(printing::PrinterToMojom(printer));
-        std::move(callback).Run(std::move(printers));
-      });
+      .WillOnce(base::test::RunOnceCallback<0>(
+          extensions::ConstructGetPrintersResponse(kId, kName)));
 #endif
 
   constexpr base::StringPiece kGetPrintersScript = R"(
