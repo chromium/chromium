@@ -321,6 +321,10 @@ void UnifiedSystemTrayController::ShowMediaControlsDetailedView(
 }
 
 void UnifiedSystemTrayController::TransitionToMainView(bool restore_focus) {
+  if (!detailed_view_controller_) {
+    return;
+  }
+
   if (showing_calendar_view_) {
     showing_calendar_view_ = false;
     for (auto& observer : observers_) {
