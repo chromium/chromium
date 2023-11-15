@@ -65,12 +65,13 @@ const std::string UserAgentMetadata::SerializeFormFactor() {
 // static
 absl::optional<std::string> UserAgentMetadata::Marshal(
     const absl::optional<UserAgentMetadata>& in) {
-  if (!in)
+  if (!in) {
     return absl::nullopt;
+  }
   base::Pickle out;
   out.WriteUInt32(kVersion);
 
-  out.WriteUInt32(in->brand_version_list.size());
+  out.WriteUInt32(base::checked_cast<uint32_t>(in->brand_version_list.size()));
   for (const auto& brand_version : in->brand_version_list) {
     out.WriteString(brand_version.brand);
     out.WriteString(brand_version.version);
