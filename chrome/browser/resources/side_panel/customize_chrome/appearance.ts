@@ -32,6 +32,7 @@ export interface AppearanceElement {
     followThemeToggle: HTMLElement,
     followThemeToggleControl: CrToggleElement,
     uploadedImageButton: HTMLButtonElement,
+    searchedImageButton: HTMLButtonElement,
   };
 }
 
@@ -102,6 +103,12 @@ export class AppearanceElement extends PolymerElement {
         type: Boolean,
         value: false,
         computed: 'computeShowUploadedImageButton_(theme_)',
+      },
+
+      showSearchedImageButton_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShowSearchedImageButton_(theme_)',
       },
 
       showManagedDialog_: Boolean,
@@ -200,7 +207,15 @@ export class AppearanceElement extends PolymerElement {
     return !!(
         this.chromeRefresh2023Enabled_ && this.theme_ &&
         this.theme_.backgroundImage &&
-        this.theme_.backgroundImage.isUploadedImage);
+        this.theme_.backgroundImage.isUploadedImage &&
+        !this.theme_.backgroundImage.localBackgroundId);
+  }
+
+  private computeShowSearchedImageButton_(): boolean {
+    return !!(
+        this.chromeRefresh2023Enabled_ && this.theme_ &&
+        this.theme_.backgroundImage &&
+        this.theme_.backgroundImage.localBackgroundId);
   }
 
   private onEditThemeClicked_() {
@@ -218,6 +233,10 @@ export class AppearanceElement extends PolymerElement {
 
   private onUploadedImageButtonClick_() {
     this.pageHandler_.chooseLocalCustomBackground();
+  }
+
+  private onSearchedImageButtonClick_() {
+    this.dispatchEvent(new CustomEvent('wallpaper-search-click'));
   }
 
   private onSetClassicChromeClicked_() {

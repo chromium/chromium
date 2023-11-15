@@ -281,6 +281,7 @@ suite('AppearanceTest', () => {
       assertStyle(appearanceElement.$.thirdPartyLinkButton, 'display', 'none');
       assertNotStyle(
           appearanceElement.$.uploadedImageButton, 'display', 'none');
+      assertStyle(appearanceElement.$.searchedImageButton, 'display', 'none');
       assertNotStyle(
           appearanceElement.$.setClassicChromeButton, 'display', 'none');
       assertStyle(appearanceElement.$.themeSnapshot, 'display', 'none');
@@ -299,6 +300,32 @@ suite('AppearanceTest', () => {
           appearanceElement.$.uploadedImageButton, 'display', 'none');
       appearanceElement.$.uploadedImageButton.click();
       assertEquals(1, handler.getCallCount('chooseLocalCustomBackground'));
+    });
+
+    test('searched image shows button', async () => {
+      const theme = createTheme();
+      theme.backgroundImage = createBackgroundImage('searched');
+      theme.backgroundImage.isUploadedImage = true;
+      theme.backgroundImage.localBackgroundId = {
+        low: BigInt(10),
+        high: BigInt(20),
+      };
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+
+      assertStyle(appearanceElement.$.thirdPartyLinkButton, 'display', 'none');
+      assertStyle(appearanceElement.$.uploadedImageButton, 'display', 'none');
+      assertNotStyle(
+          appearanceElement.$.searchedImageButton, 'display', 'none');
+      assertNotStyle(
+          appearanceElement.$.setClassicChromeButton, 'display', 'none');
+      assertStyle(appearanceElement.$.themeSnapshot, 'display', 'none');
+      assertNotStyle(appearanceElement.$.chromeColors, 'display', 'none');
+
+      const clickEvent =
+          eventToPromise('wallpaper-search-click', appearanceElement);
+      appearanceElement.$.searchedImageButton.click();
+      await clickEvent;
     });
   });
 });
