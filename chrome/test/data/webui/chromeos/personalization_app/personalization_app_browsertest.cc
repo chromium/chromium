@@ -139,6 +139,11 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest,
       "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest, SeaPenTemplateQuery) {
+  RunTest("chromeos/personalization_app/sea_pen_template_query_element_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest, UserPreview) {
   RunTest("chromeos/personalization_app/user_preview_element_test.js",
           "mocha.run()");

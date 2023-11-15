@@ -118,6 +118,7 @@ export {LocalImagesElement} from './wallpaper/local_images_element.js';
 export {SeaPenCollectionElement} from './wallpaper/sea_pen/sea_pen_collection_element.js';
 export {SeaPenImagesElement} from './wallpaper/sea_pen/sea_pen_images_element.js';
 export {SeaPenRecentWallpapersElement} from './wallpaper/sea_pen/sea_pen_recent_wallpapers_element.js';
+export {SeaPenTemplateQueryElement} from './wallpaper/sea_pen/sea_pen_template_query_element.js';
 export {setSeaPenProviderForTesting} from './wallpaper/sea_pen/sea_pen_interface_provider.js';
 export {isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage} from './wallpaper/utils.js';
 export * from './wallpaper/wallpaper_actions.js';

@@ -54,6 +54,10 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
         type: HTMLElement,
       },
 
+      selectedChipText_: {
+        type: String,
+      },
+
       // `options_` is an array of possible values for the selected chip. Each
       // "option" will be mapped to a clickable button that the user could
       // select. The options are dependent on the `selectedChip_`.
@@ -68,6 +72,7 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
   private templateText_: string[];
   private options_: SeaPenOption[];
   private selectedChip_: HTMLElement;
+  private selectedChipText_: string|null;
   templateId: string|null;
 
   private computeSeaPenTemplate_(templateId: string|null) {
@@ -83,18 +88,23 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
 
   private onClickChip_(event: Event) {
     this.selectedChip_ = event.currentTarget as HTMLElement;
-    // First class name is the chip. Determined by |this.computeChipClassName_|.
-    const chip = `<${this.selectedChip_.className.split(' ')[0]}>`;
+    this.selectedChipText_ = this.selectedChip_.innerText;
+    const chip = this.getSelectedChipName_();
     this.options_ = this.seaPenTemplate_.options.get(chip) as SeaPenOption[];
   }
 
   private onClickOption_(event: Event) {
     const eventTarget = event.currentTarget as HTMLElement;
     this.selectedChip_.innerText = eventTarget.innerText;
-    // First class name is the chip. Determined by |this.computeChipClassName_|.
-    const chip = `<${this.selectedChip_.className.split(' ')[0]}>`;
+    this.selectedChipText_ = eventTarget.innerText;
+    const chip = this.getSelectedChipName_();
     const newValue = eventTarget.getAttribute('value') as string;
     this.selectedOptions_.set(chip, newValue);
+  }
+
+  private getSelectedChipName_(): string {
+    // First class name is the chip. Determined by |this.computeChipClassName_|.
+    return `<${this.selectedChip_.className.split(' ')[0]}>`;
   }
 
   private computeSelectedOptions_(template: SeaPenTemplate) {
@@ -114,11 +124,32 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
     return parseTemplateText(template.text);
   }
 
-  private computeChipClassName_(chip: string) {
+  private computeChipClassName_(chip: string, selectedChipText: string|null) {
     if (!this.isChip_(chip)) {
       return;
     }
-    return `${chip.substring(1, chip.length - 1)} clickable`;
+    // If there are no selected chips, then use the 'selected' styling on all
+    // chips.
+    const selected = !selectedChipText || this.getSelectedChipName_() === chip ?
+        'selected' :
+        'unselected';
+    return `${chip.substring(1, chip.length - 1)} clickable ${selected}`;
+  }
+
+  private isOptionSelected_(
+      option: SeaPenOption, selectedChipText: string|null): 'true'|'false' {
+    return option.translation === selectedChipText ? 'true' : 'false';
+  }
+
+  private getOptionClass_(option: SeaPenOption, selectedChipText: string|null):
+      string {
+    return option.translation === selectedChipText ? 'action-button' :
+                                                     'unselected-option';
+  }
+
+  private computeTextClassName_(selectedChipText: string|null): string {
+    // Use the 'unselected' styling only if a chip has been selected.
+    return selectedChipText ? 'unselected' : '';
   }
 }
 
