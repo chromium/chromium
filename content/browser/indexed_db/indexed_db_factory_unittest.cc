@@ -880,6 +880,8 @@ TEST_F(IndexedDBFactoryTest, QuotaErrorOnDiskFull) {
   ASSERT_EQ(1U, quota_manager()->write_error_tracker().size());
   EXPECT_EQ(storage_key, quota_manager()->write_error_tracker().begin()->first);
   EXPECT_EQ(1, quota_manager()->write_error_tracker().begin()->second);
+
+  leveldb_env::SetDBFactoryForTesting({});
 }
 
 TEST_F(IndexedDBFactoryTest, NotifyQuotaOnDatabaseError) {
