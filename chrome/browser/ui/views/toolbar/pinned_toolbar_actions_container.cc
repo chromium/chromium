@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -107,6 +108,8 @@ PinnedToolbarActionsContainer::PinnedActionToolbarButton::GetActionId() {
 void PinnedToolbarActionsContainer::PinnedActionToolbarButton::ButtonPressed() {
   base::RecordAction(
       base::UserMetricsAction("Actions.PinnedToolbarButtonActivation"));
+
+  base::AutoReset<bool> invoking_action(&invoking_action_, true);
   action_item_->InvokeAction(
       actions::ActionInvocationContext::Builder()
           .SetProperty(
@@ -114,6 +117,11 @@ void PinnedToolbarActionsContainer::PinnedActionToolbarButton::ButtonPressed() {
               static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
                   SidePanelOpenTrigger::kPinnedEntryToolbarButton))
           .Build());
+}
+
+bool PinnedToolbarActionsContainer::PinnedActionToolbarButton::
+    IsInvokingAction() {
+  return invoking_action_;
 }
 
 bool PinnedToolbarActionsContainer::PinnedActionToolbarButton::IsActive() {
@@ -478,8 +486,7 @@ void PinnedToolbarActionsContainer::RemovePoppedOutButtonFor(
   if (iter == popped_out_buttons_.end()) {
     return;
   }
-  // This returns a unique_ptr which is immediately destroyed.
-  RemoveChildViewT(*iter);
+  RemoveButton(*iter);
   popped_out_buttons_.erase(iter);
   ReorderViews();
 }
@@ -515,7 +522,7 @@ void PinnedToolbarActionsContainer::RemovePinnedActionButtonFor(
     return;
   }
   if (!(*iter)->IsActive()) {
-    RemoveChildViewT(*iter);
+    RemoveButton(*iter);
   } else {
     popped_out_buttons_.push_back(*iter);
   }
@@ -537,6 +544,18 @@ PinnedToolbarActionsContainer::GetPoppedOutButtonFor(
       base::ranges::find(popped_out_buttons_, id,
                          [](auto* button) { return button->GetActionId(); });
   return iter == popped_out_buttons_.end() ? nullptr : *iter;
+}
+
+void PinnedToolbarActionsContainer::RemoveButton(
+    PinnedActionToolbarButton* button) {
+  if (button->IsInvokingAction()) {
+    // Defer deletion of the view to allow the pressed event handler
+    // that triggers its removal to run to completion.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, RemoveChildViewT(button));
+  } else {
+    RemoveChildViewT(button);
+  }
 }
 
 void PinnedToolbarActionsContainer::ReorderViews() {

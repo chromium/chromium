@@ -24,9 +24,6 @@ class Browser;
 class BrowserView;
 
 // Container for pinned actions shown in the toolbar.
-// TODO(b/303064829): Handle pop-out behavior including separator in this class
-// as well.
-// TODO(b/299463183): Handle highlighting of pinned/popped-out buttons.
 class PinnedToolbarActionsContainer
     : public ToolbarIconContainerView,
       public PinnedToolbarActionsModel::Observer,
@@ -51,6 +48,7 @@ class PinnedToolbarActionsContainer
     void SetIconVisibility(bool visible);
 
     bool IsActive();
+    bool IsInvokingAction();
 
     // Button:
     gfx::Size CalculatePreferredSize() const override;
@@ -63,6 +61,7 @@ class PinnedToolbarActionsContainer
     base::CallbackListSubscription action_changed_subscription_;
     // Used to ensure the button remains highlighted while active.
     absl::optional<Button::ScopedAnchorHighlight> anchor_higlight_;
+    bool invoking_action_ = false;
   };
 
   explicit PinnedToolbarActionsContainer(BrowserView* browser_view);
@@ -121,6 +120,8 @@ class PinnedToolbarActionsContainer
 
   // Sorts child views to display them in the correct order.
   void ReorderViews();
+
+  void RemoveButton(PinnedActionToolbarButton* button);
 
   void SetActionButtonIconVisibility(actions::ActionId id, bool visible);
 
