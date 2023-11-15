@@ -451,6 +451,8 @@ TEST_F(AutofillProfileComparatorTest, NormalizeForComparison) {
   EXPECT_EQ(u"timothe noel etienne perier",
             AutofillProfileComparator::NormalizeForComparison(
                 u"Timothé-Noël Étienne Périer"));
+  EXPECT_EQ(u"strasse",
+            AutofillProfileComparator::NormalizeForComparison(u"Straße"));
   // NOP.
   EXPECT_EQ(std::u16string(), AutofillProfileComparator::NormalizeForComparison(
                                   std::u16string()));
@@ -1124,6 +1126,39 @@ TEST_F(AutofillProfileComparatorTest, MergeAddressesWithRewrite) {
   expected.SetRawInfo(ADDRESS_HOME_STATE, u"QC");
   expected.SetRawInfo(ADDRESS_HOME_ZIP, u"hhh 999");
   expected.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
+
+  MergeAddressesAndExpect(p1, p2, expected);
+  MergeAddressesAndExpect(p2, p1, expected);
+}
+
+// The intention of this test is to verify that "Straße" and "Str."" ar
+// considered equivalent, which requires a normalization of ß to ss followed by
+// a rewrite of "strasse" to "str".
+TEST_F(AutofillProfileComparatorTest, MergeAddressesWithRewriteDE) {
+  AutofillProfile p1 = CreateProfileWithAddress("Erika-Mann-Straße 33", "APP 3",
+                                                "München", "", "80636", "DE");
+
+  p1.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME, u"Erika-Mann-Straße");
+  p1.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"33");
+  p1.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"APP 3");
+
+  AutofillProfile p2 = CreateProfileWithAddress("Erika-Mann-Str. 33", "",
+                                                "Munchen", "", "80636", "DE");
+  p2.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME, u"Erika-Mann-Str");
+  p2.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"33");
+
+  p2.set_use_date(p1.use_date() + base::Minutes(1));
+
+  Address expected(kLegacyHierarchyCountryCode);
+  // The longer string wins.
+  expected.SetRawInfo(ADDRESS_HOME_LINE1, u"Erika-Mann-Straße 33");
+  // Extra information.
+  expected.SetRawInfo(ADDRESS_HOME_LINE2, u"APP 3");
+  // The most recent string wins.
+  expected.SetRawInfo(ADDRESS_HOME_CITY, u"Munchen");
+  expected.SetRawInfo(ADDRESS_HOME_STATE, u"");
+  expected.SetRawInfo(ADDRESS_HOME_ZIP, u"80636");
+  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
 
   MergeAddressesAndExpect(p1, p2, expected);
   MergeAddressesAndExpect(p2, p1, expected);
