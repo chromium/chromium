@@ -4398,10 +4398,6 @@ static_library("browser") {
       "signin/signin_ui_util.h",
       "speech/chrome_speech_recognition_service.cc",
       "speech/chrome_speech_recognition_service.h",
-      "speech/extension_api/tts_extension_api_constants.cc",  # Should be moved
-                                                              # to extensions
-                                                              # section ?
-      "speech/extension_api/tts_extension_api_constants.h",
       "speech/speech_recognition_client_browser_interface.cc",
       "speech/speech_recognition_client_browser_interface.h",
       "speech/speech_recognition_client_browser_interface_factory.cc",
@@ -7218,6 +7214,8 @@ static_library("browser") {
       "speech/extension_api/tts_engine_extension_api.h",
       "speech/extension_api/tts_extension_api.cc",
       "speech/extension_api/tts_extension_api.h",
+      "speech/extension_api/tts_extension_api_constants.cc",
+      "speech/extension_api/tts_extension_api_constants.h",
       "sync_file_system/conflict_resolution_policy.h",
       "sync_file_system/drive_backend/callback_helper.h",
       "sync_file_system/drive_backend/callback_tracker.cc",
