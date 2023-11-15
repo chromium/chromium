@@ -89,6 +89,13 @@ BASE_FEATURE(kNewConfirmationBubbleForGeneratedPasswords,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+// Enabled in M121. Remove at or after M123.
+BASE_FEATURE(kPasskeysPrefetchAffiliations,
+             "PasskeysPrefetchAffiliations",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 // Enables different experiments that modify content and behavior of the
 // existing generated password suggestion dropdown.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop

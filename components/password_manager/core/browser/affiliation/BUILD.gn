@@ -73,6 +73,9 @@ source_set("affiliation_fetching") {
     "//net",
     "//url",
   ]
+  if (!is_ios && !is_android) {
+    deps += [ "//components/webauthn/core/browser" ]
+  }
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
@@ -160,6 +163,10 @@ source_set("affiliation_fetching_unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (!is_android && !is_ios) {
+    deps += [ "//components/webauthn/core/browser:test_support" ]
+  }
 }
 
 if (use_fuzzing_engine_with_lpm) {

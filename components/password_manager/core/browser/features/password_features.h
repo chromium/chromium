@@ -41,6 +41,11 @@ BASE_DECLARE_FEATURE(kNewConfirmationBubbleForGeneratedPasswords);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+// Have GPM passkeys trigger prefetching affiliation like passwords do.
+BASE_DECLARE_FEATURE(kPasskeysPrefetchAffiliations);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 BASE_DECLARE_FEATURE(kPasswordGenerationExperiment);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
