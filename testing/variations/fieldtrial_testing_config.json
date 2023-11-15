@@ -7765,6 +7765,27 @@
             ]
         }
     ],
+    "HappinessTrackingBluetoothAudio": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20231030",
+                    "params": {
+                        "prob": "0.05",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1698332400000",
+                        "trigger_id": "9ymFQS2qm0jBnuKU19R0UaKeWPaL"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingBluetoothAudio"
+                    ]
+                }
+            ]
+        }
+    ],
     "HappinessTrackingBorealisGames": [
         {
             "platforms": [
