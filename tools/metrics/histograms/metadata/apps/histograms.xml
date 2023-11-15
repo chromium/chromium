@@ -2052,6 +2052,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".FromFullRestore" summary="From full restore."/>
     <variant name=".FromInstalledNotification"
         summary="From installed notification."/>
+    <variant name=".FromInstaller" summary="From Intallation UI."/>
     <variant name=".FromIntentUrl" summary="From Intent Url."/>
     <variant name=".FromKeyboard" summary="From keyboard shortcut."/>
     <variant name=".FromKiosk" summary="From Kiosk."/>

@@ -50,6 +50,7 @@ bool IsHumanLaunch(apps::LaunchSource launch_source) {
     case apps::LaunchSource::kFromReparenting:
     case apps::LaunchSource::kFromProfileMenu:
     case apps::LaunchSource::kFromSysTrayCalendar:
+    case apps::LaunchSource::kFromInstaller:
       return true;
     case apps::LaunchSource::kUnknown:
     case apps::LaunchSource::kFromChromeInternal:

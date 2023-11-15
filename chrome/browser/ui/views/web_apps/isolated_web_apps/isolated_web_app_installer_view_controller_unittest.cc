@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
@@ -22,9 +23,11 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -38,6 +41,16 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
+#include "components/keyed_service/core/keyed_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
+#include "chrome/browser/web_applications/app_service/test/loopback_crosapi_app_service_proxy.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace web_app {
 namespace {
 
@@ -45,6 +58,7 @@ using ::testing::AllOf;
 using ::testing::Exactly;
 using ::testing::ExplainMatchResult;
 using ::testing::Field;
+using ::testing::IgnoreResult;
 using ::testing::Invoke;
 using ::testing::Property;
 using DialogContent = IsolatedWebAppInstallerModel::DialogContent;
@@ -114,6 +128,12 @@ blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& iwa_url,
   return manifest;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+std::unique_ptr<KeyedService> NullServiceFactory(content::BrowserContext*) {
+  return nullptr;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 class MockView : public IsolatedWebAppInstallerView {
  public:
   explicit MockView(IsolatedWebAppInstallerView::Delegate* delegate)
@@ -163,6 +183,19 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     profile_ = profile_builder.Build();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ash::full_restore::FullRestoreServiceFactory::GetInstance()
+        ->SetTestingFactory(profile_.get(),
+                            base::BindRepeating(&NullServiceFactory));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Set up Lacros so the AppService -> LaunchWebAppCommand plumbing works.
+    extensions::SetEmptyAshKeeplistForTest();
+    app_service_proxy_ =
+        std::make_unique<LoopbackCrosapiAppServiceProxy>(profile_.get());
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
@@ -206,6 +239,10 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
   base::ScopedTempDir scoped_temp_dir_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<TestingProfile> profile_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<LoopbackCrosapiAppServiceProxy> app_service_proxy_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest,
@@ -339,6 +376,39 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   EXPECT_TRUE(callback.Wait());
   EXPECT_TRUE(
       fake_provider()->registrar_unsafe().IsInstalled(url_info.app_id()));
+}
+
+TEST_F(IsolatedWebAppInstallerViewControllerTest, CanLaunchAppAfterInstall) {
+  base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
+  IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
+  MockIconAndPageState(url_info, "1.0");
+
+  IsolatedWebAppInstallerModel model(bundle_path);
+  IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
+                                                   &model);
+  testing::StrictMock<MockView> view(&controller);
+  controller.SetViewForTesting(&view);
+
+  auto metadata = SignedWebBundleMetadata::CreateForTesting(
+      url_info, InstalledBundle(bundle_path), u"app name", base::Version("1.0"),
+      IconBitmaps());
+  model.SetSignedWebBundleMetadata(metadata);
+  model.SetStep(IsolatedWebAppInstallerModel::Step::kConfirmInstall);
+  model.SetDialogContent(CreateDummyDialog());
+
+  EXPECT_CALL(view, ShowInstallScreen(metadata));
+  EXPECT_CALL(view, ShowInstallSuccessScreen(metadata))
+      .WillOnce(IgnoreResult(Invoke(
+          &controller, &IsolatedWebAppInstallerViewController::OnAccept)));
+
+  base::test::TestFuture<apps::AppLaunchParams, LaunchWebAppWindowSetting>
+      future;
+  static_cast<FakeWebAppUiManager*>(&fake_provider()->ui_manager())
+      ->SetOnLaunchWebAppCallback(future.GetRepeatingCallback());
+
+  controller.OnChildDialogAccepted();
+
+  EXPECT_EQ(future.Get<0>().app_id, metadata.app_id());
 }
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest,

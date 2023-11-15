@@ -25,6 +25,15 @@
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "ui/events/event_constants.h"
+#else
+#include "base/command_line.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -134,9 +143,23 @@ bool IsolatedWebAppInstallerViewController::OnAccept() {
       return false;
     }
 
-    case IsolatedWebAppInstallerModel::Step::kInstallSuccess:
-      // TODO(crbug.com/1479140): Launch the app.
-      break;
+    case IsolatedWebAppInstallerModel::Step::kInstallSuccess: {
+      webapps::AppId app_id = model_->bundle_metadata().app_id();
+#if BUILDFLAG(IS_CHROMEOS)
+      apps::AppServiceProxyFactory::GetForProfile(profile_)->Launch(
+          app_id, ui::EF_NONE, apps::LaunchSource::kFromInstaller,
+          /*window_info=*/nullptr);
+#else
+      web_app_provider_->scheduler().LaunchApp(
+          app_id, *base::CommandLine::ForCurrentProcess(),
+          /*current_directory=*/base::FilePath(),
+          /*url_handler_launch_url=*/absl::nullopt,
+          /*protocol_handler_launch_url=*/absl::nullopt,
+          /*file_launch_url=*/absl::nullopt, /*launch_files=*/{},
+          base::DoNothing());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      return true;
+    }
 
     default:
       NOTREACHED();

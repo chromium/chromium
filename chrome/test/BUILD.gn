@@ -8668,6 +8668,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/policy:onc",
       "//chrome/browser/policy:unit_tests",
+      "//chrome/browser/web_applications/app_service:test_support",
       "//chromeos/components/onc:onc",
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/dlp:dlp",

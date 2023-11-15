@@ -152,6 +152,10 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
       base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromSysTrayCalendar",
                                     default_app_name);
       break;
+    case apps::LaunchSource::kFromInstaller:
+      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromInstaller",
+                                    default_app_name);
+      break;
     case apps::LaunchSource::kFromCommandLine:
     case apps::LaunchSource::kFromBackgroundMode:
     case apps::LaunchSource::kFromAppHomePage:

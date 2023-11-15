@@ -1076,6 +1076,14 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripLaunchSource) {
             input, output));
     EXPECT_EQ(output, input);
   }
+  {
+    input = apps::LaunchSource::kFromInstaller;
+    apps::LaunchSource output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::LaunchSource>(
+            input, output));
+    EXPECT_EQ(output, input);
+  }
 }
 
 TEST(AppServiceTypesMojomTraitsTest, RoundTripPermissions) {

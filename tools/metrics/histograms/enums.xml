@@ -34563,6 +34563,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="35"
       label="Profile menu of installable chrome://password-manager WebUI)"/>
   <int value="36" label="Launch from system tray Calendar"/>
+  <int value="37" label="Installer"/>
 </enum>
 
 <enum name="LaunchWebAuthFlowResult">

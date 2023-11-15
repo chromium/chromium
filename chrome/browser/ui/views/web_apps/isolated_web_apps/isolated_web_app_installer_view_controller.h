@@ -59,6 +59,8 @@ class IsolatedWebAppInstallerViewController
                            InstallationErrorShowsErrorDialog);
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
                            InstallationErrorRetryRestartsFlow);
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
+                           CanLaunchAppAfterInstall);
 
   // Handles returning a default value if the controller has been deleted.
   static bool OnAcceptWrapper(
