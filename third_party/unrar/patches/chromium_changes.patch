@@ -471,7 +471,7 @@ index 83391c5a45107..1ca9f03e9bcc5 100644
    {
      MinContext->U.Stats[i].Symbol=i;      
 diff --git a/third_party/unrar/src/os.hpp b/third_party/unrar/src/os.hpp
-index b69f34878b3df..51d547b0f68ba 100644
+index b69f34878b3df..e55a37cda1d24 100644
 --- a/third_party/unrar/src/os.hpp
 +++ b/third_party/unrar/src/os.hpp
 @@ -32,6 +32,7 @@
@@ -511,6 +511,23 @@ index b69f34878b3df..51d547b0f68ba 100644
  #else
    #include <dirent.h>
  #endif // _MSC_VER
+@@ -261,9 +268,16 @@
+   #endif
+ #endif
+ 
++// Disable this optimization in Chromium. Although the underlying architecture
++// may allow unaligned access, C and C++ themselves do not allow this. Rather,
++// unaligned loads should be written with either memcpy, or by endian-agnostic
++// reassembling of values with shifts and ORs. Modern compilers recognize these
++// patterns and generate the unaligned load anyway.
++#if !defined(CHROMIUM_UNRAR)
+ #if !defined(BIG_ENDIAN) && defined(_WIN_ALL) || defined(__i386__) || defined(__x86_64__)
+ // Allow not aligned integer access, increases speed in some operations.
+ #define ALLOW_MISALIGNED
+ #endif
++#endif
+ 
+ #endif // _RAR_OS_
 diff --git a/third_party/unrar/src/pathfn.cpp b/third_party/unrar/src/pathfn.cpp
 index 41594bf955278..4c4d40626e8be 100644
 --- a/third_party/unrar/src/pathfn.cpp

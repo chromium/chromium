@@ -268,9 +268,16 @@
   #endif
 #endif
 
+// Disable this optimization in Chromium. Although the underlying architecture
+// may allow unaligned access, C and C++ themselves do not allow this. Rather,
+// unaligned loads should be written with either memcpy, or by endian-agnostic
+// reassembling of values with shifts and ORs. Modern compilers recognize these
+// patterns and generate the unaligned load anyway.
+#if !defined(CHROMIUM_UNRAR)
 #if !defined(BIG_ENDIAN) && defined(_WIN_ALL) || defined(__i386__) || defined(__x86_64__)
 // Allow not aligned integer access, increases speed in some operations.
 #define ALLOW_MISALIGNED
+#endif
 #endif
 
 #endif // _RAR_OS_

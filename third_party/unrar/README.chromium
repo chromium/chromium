@@ -36,5 +36,6 @@ Notable changes from upstream:
 - More static initializers removed.
 - Changes to support building in -std=c++20 mode.
 - Cherry-picked https://github.com/aawc/unrar/pull/35
+- Fix alignment errors reported by UBSan by disabling ALLOW_MISALIGNED.
 
 All these changes are included in one patch file (chromium_changes.patch)
