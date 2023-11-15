@@ -191,7 +191,9 @@ class PolicyTestHandlerTest : public PlatformBrowserTest {
     base::StringPiece test_name =
         ::testing::UnitTest::GetInstance()->current_test_info()->name();
 
-    if (base::StartsWith(test_name, "PRE_")) {
+    if (base::StartsWith(test_name, "PRE_") &&
+        policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
+                                              chrome::GetChannel())) {
       // Expect a browser relaunch late in browser shutdown.
       mock_relaunch_callback_ = std::make_unique<::testing::StrictMock<
           base::MockCallback<upgrade_util::RelaunchChromeBrowserCallback>>>();
@@ -451,6 +453,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
                        PRE_ApplyTestPoliciesAfterRestart) {
+  if (!policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
+                                             chrome::GetChannel())) {
+    GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
+  }
   const policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME,
                                                  std::string());
   policy::PolicyService* policy_service =
