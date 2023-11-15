@@ -84,13 +84,21 @@ WallpaperSearchHandler::WallpaperSearchHandler(
       receiver_(this, std::move(pending_handler)) {}
 
 WallpaperSearchHandler::~WallpaperSearchHandler() {
-  if (log_entry_) {
+  auto backround_id =
+      wallpaper_search_background_manager_->SaveCurrentBackgroundToHistory();
+  if (!log_entries_.empty()) {
     auto* quality =
-        log_entry_
+        log_entries_.back()
             ->quality_data<optimization_guide::WallpaperSearchFeatureTypeMap>();
     quality->set_final_request_in_session(true);
+    if (backround_id.has_value() &&
+        base::Contains(wallpaper_search_results_, *backround_id)) {
+      auto* image_quality = wallpaper_search_results_[*backround_id].first;
+      if (image_quality) {
+        image_quality->set_selected(true);
+      }
+    }
   }
-  wallpaper_search_background_manager_->SaveCurrentBackgroundToHistory();
 }
 
 void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
@@ -199,8 +207,12 @@ void WallpaperSearchHandler::GetWallpaperSearchResults(
 void WallpaperSearchHandler::SetBackgroundToWallpaperSearchResult(
     const base::Token& result_id) {
   CHECK(base::Contains(wallpaper_search_results_, result_id));
-  wallpaper_search_background_manager_->SelectLocalBackgroundImage(
-      result_id, wallpaper_search_results_[result_id]);
+  auto& [image_quality, bitmap] = wallpaper_search_results_[result_id];
+  if (image_quality) {
+    image_quality->set_previewed(true);
+  }
+  wallpaper_search_background_manager_->SelectLocalBackgroundImage(result_id,
+                                                                   bitmap);
 }
 
 void WallpaperSearchHandler::OnDescriptorsRetrieved(
@@ -306,15 +318,16 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
     base::ElapsedTimer request_timer,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  // Logs data of the previous log entry if it exists.
-  log_entry_ = std::move(log_entry);
-  if (log_entry_) {
+  if (log_entry) {
+    log_entries_.push_back(std::move(log_entry));
+  }
+  if (!log_entries_.empty()) {
     auto* quality =
-        log_entry_
+        log_entries_.back()
             ->quality_data<optimization_guide::WallpaperSearchFeatureTypeMap>();
     quality->set_session_id(session_id_);
-    quality->set_index(request_index_++);
-    // We will set this to true if the log entry still exist when the side panel
+    quality->set_index(log_entries_.size() - 1);
+    // We will set this to true for the respective log entry when the side panel
     // closes.
     quality->set_final_request_in_session(false);
     quality->set_request_latency_ms(request_timer.Elapsed().InMilliseconds());
@@ -337,7 +350,8 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
   if (response->images().empty()) {
     return;
   }
-  auto barrier = base::BarrierCallback<SkBitmap>(
+  auto barrier = base::BarrierCallback<std::pair<
+      optimization_guide::proto::WallpaperSearchImageQuality*, SkBitmap>>(
       response->images_size(),
       base::BindOnce(&WallpaperSearchHandler::OnWallpaperSearchResultsDecoded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -346,20 +360,33 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
   // from gfx::Image to SkBitmap before passing to the barrier callback because
   // of some issues with const gfx::Image& and base::BarrierCallback.
   for (auto& image : response->images()) {
-    if (log_entry_) {
-      auto* quality = log_entry_->quality_data<
-          optimization_guide::WallpaperSearchFeatureTypeMap>();
-      auto* image_quality = quality->add_images_quality();
+    optimization_guide::proto::WallpaperSearchImageQuality* image_quality =
+        nullptr;
+    if (!log_entries_.empty()) {
+      auto* quality =
+          log_entries_.back()
+              ->quality_data<
+                  optimization_guide::WallpaperSearchFeatureTypeMap>();
+      image_quality = quality->add_images_quality();
       image_quality->set_image_id(image.image_id());
+      // We default to false and will flip if image was previewed or selected.
+      image_quality->set_previewed(false);
+      image_quality->set_selected(false);
     }
     image_decoder_->DecodeImage(
         image.encoded_image(), gfx::Size(), nullptr,
         base::BindOnce(
-            [](base::RepeatingCallback<void(SkBitmap)> barrier,
+            [](base::RepeatingCallback<void(
+                   std::pair<
+                       optimization_guide::proto::WallpaperSearchImageQuality*,
+                       SkBitmap>)> barrier,
+               optimization_guide::proto::WallpaperSearchImageQuality*
+                   image_quality,
                const gfx::Image& image) {
-              std::move(barrier).Run(image.AsBitmap());
+              std::move(barrier).Run(
+                  std::make_pair(image_quality, image.AsBitmap()));
             },
-            barrier));
+            barrier, image_quality));
   }
 }
 
@@ -368,11 +395,13 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
 // make it base64 for easy reading by the UI.
 void WallpaperSearchHandler::OnWallpaperSearchResultsDecoded(
     GetWallpaperSearchResultsCallback callback,
-    std::vector<SkBitmap> bitmaps) {
+    std::vector<
+        std::pair<optimization_guide::proto::WallpaperSearchImageQuality*,
+                  SkBitmap>> bitmaps) {
   std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
       thumbnails;
 
-  for (auto& bitmap : bitmaps) {
+  for (auto& [image_quality, bitmap] : bitmaps) {
     auto dimensions =
         CalculateResizeDimensions(bitmap.width(), bitmap.height(), 100);
     SkBitmap small_bitmap = skia::ImageOperations::Resize(
@@ -386,7 +415,8 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsDecoded(
       auto thumbnail =
           side_panel::customize_chrome::mojom::WallpaperSearchResult::New();
       auto id = base::Token::CreateRandom();
-      wallpaper_search_results_[id] = std::move(bitmap);
+      wallpaper_search_results_[id] =
+          std::make_pair(image_quality, std::move(bitmap));
       thumbnail->image = base::Base64Encode(encoded);
       thumbnail->id = std::move(id);
       thumbnails.push_back(std::move(thumbnail));

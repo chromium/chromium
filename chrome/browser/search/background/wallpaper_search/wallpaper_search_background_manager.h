@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/token.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 class PrefRegistrySimple;
@@ -29,8 +30,9 @@ class WallpaperSearchBackgroundManager {
   virtual void SelectLocalBackgroundImage(const base::Token& id,
                                           const SkBitmap& bitmap);
 
-  // Saves a background to history.
-  virtual void SaveCurrentBackgroundToHistory();
+  // Saves the current background to history if it is a wallpaper search one.
+  // Returns the backround's ID if successful.
+  virtual absl::optional<base::Token> SaveCurrentBackgroundToHistory();
 
  private:
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;

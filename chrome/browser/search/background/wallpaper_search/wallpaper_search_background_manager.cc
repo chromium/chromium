@@ -19,6 +19,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
@@ -118,7 +119,8 @@ void WallpaperSearchBackgroundManager::SelectLocalBackgroundImage(
   }
 }
 
-void WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory() {
+absl::optional<base::Token>
+WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory() {
   absl::optional<CustomBackground> current_theme =
       ntp_custom_background_service_->GetCustomBackground();
   if (current_theme.has_value() &&
@@ -149,5 +151,7 @@ void WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory() {
     }
     pref_service_->SetList(prefs::kNtpWallpaperSearchHistory,
                            std::move(new_history));
+    return current_theme->local_background_id;
   }
+  return absl::nullopt;
 }

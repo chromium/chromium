@@ -61,7 +61,7 @@ class MockWallpaperSearchBackgroundManager
       : WallpaperSearchBackgroundManager(profile) {}
   MOCK_METHOD2(SelectLocalBackgroundImage,
                void(const base::Token&, const SkBitmap&));
-  MOCK_METHOD0(SaveCurrentBackgroundToHistory, void());
+  MOCK_METHOD0(SaveCurrentBackgroundToHistory, absl::optional<base::Token>());
 };
 
 std::unique_ptr<TestingProfile> MakeTestingProfile(
@@ -499,7 +499,11 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
   EXPECT_EQ(321, quality.request_latency_ms());
   ASSERT_EQ(2, quality.images_quality_size());
   EXPECT_EQ(111, quality.images_quality(0).image_id());
+  EXPECT_FALSE(quality.images_quality(0).previewed());
+  EXPECT_FALSE(quality.images_quality(0).selected());
   EXPECT_EQ(222, quality.images_quality(1).image_id());
+  EXPECT_FALSE(quality.images_quality(1).previewed());
+  EXPECT_FALSE(quality.images_quality(1).selected());
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
@@ -969,6 +973,11 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   EXPECT_EQ(bitmap.getColor(0, 0), bitmap2.getColor(0, 0));
   EXPECT_EQ(token, images[1]->id);
 
+  // Simulate current background is saved to history.
+  ON_CALL(mock_wallpaper_search_background_manager(),
+          SaveCurrentBackgroundToHistory)
+      .WillByDefault(Return(absl::make_optional(token)));
+
   // Quality logs on destruction.
   handler.reset();
   EXPECT_EQ(123, quality.session_id());
@@ -977,5 +986,9 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   EXPECT_EQ(321, quality.request_latency_ms());
   ASSERT_EQ(2, quality.images_quality_size());
   EXPECT_EQ(111, quality.images_quality(0).image_id());
+  EXPECT_FALSE(quality.images_quality(0).previewed());
+  EXPECT_FALSE(quality.images_quality(0).selected());
   EXPECT_EQ(222, quality.images_quality(1).image_id());
+  EXPECT_TRUE(quality.images_quality(1).previewed());
+  EXPECT_TRUE(quality.images_quality(1).selected());
 }

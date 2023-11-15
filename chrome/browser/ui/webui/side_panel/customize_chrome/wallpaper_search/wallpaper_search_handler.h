@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_WALLPAPER_SEARCH_WALLPAPER_SEARCH_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_WALLPAPER_SEARCH_WALLPAPER_SEARCH_HANDLER_H_
 
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -72,7 +73,9 @@ class WallpaperSearchHandler
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
   void OnWallpaperSearchResultsDecoded(
       GetWallpaperSearchResultsCallback callback,
-      std::vector<SkBitmap> bitmaps);
+      std::vector<
+          std::pair<optimization_guide::proto::WallpaperSearchImageQuality*,
+                    SkBitmap>> bitmaps);
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
@@ -80,10 +83,19 @@ class WallpaperSearchHandler
   const raw_ref<image_fetcher::ImageDecoder> image_decoder_;
   const raw_ref<WallpaperSearchBackgroundManager>
       wallpaper_search_background_manager_;
-  base::flat_map<base::Token, SkBitmap> wallpaper_search_results_;
-  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry_;
+  // We keep all log entries alive until the session closes because whether and
+  // which image was selected will only be known then.
+  std::vector<std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
+      log_entries_;
+  // `wallpaper_search_results_` points to entries in `log_entries_`. Therefore,
+  // `wallpaper_search_results_` is defined below so that the pointers get
+  // destructed before the pointed to objects in `log_entries_`.
+  base::flat_map<
+      base::Token,
+      std::pair<optimization_guide::proto::WallpaperSearchImageQuality*,
+                SkBitmap>>
+      wallpaper_search_results_;
   const int64_t session_id_;
-  int32_t request_index_ = 0;
 
   mojo::Receiver<side_panel::customize_chrome::mojom::WallpaperSearchHandler>
       receiver_;
