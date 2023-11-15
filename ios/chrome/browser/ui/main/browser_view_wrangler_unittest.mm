@@ -23,8 +23,8 @@
 #import "ios/chrome/browser/sessions/test_session_restoration_observer.h"
 #import "ios/chrome/browser/sessions/test_session_restoration_service.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_util_test_support.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser_list_observer.h"
@@ -184,8 +184,7 @@ TEST_F(BrowserViewWranglerTest, TestInitNilObserver) {
 
     // Test that SceneState is associated with the browser.
     SceneState* main_browser_scene_state =
-        SceneStateBrowserAgent::FromBrowser(wrangler.mainInterface.browser)
-            ->GetSceneState();
+        wrangler.mainInterface.browser->GetSceneState();
     EXPECT_EQ(scene_state(), main_browser_scene_state);
 
     // Test that once created the BVC isn't re-created.
@@ -198,8 +197,7 @@ TEST_F(BrowserViewWranglerTest, TestInitNilObserver) {
 
     // Test that the OTR browser has SceneState associated with it.
     SceneState* otr_browser_scene_state =
-        SceneStateBrowserAgent::FromBrowser(wrangler.incognitoInterface.browser)
-            ->GetSceneState();
+        wrangler.incognitoInterface.browser->GetSceneState();
     EXPECT_EQ(scene_state(), otr_browser_scene_state);
 
     [wrangler shutdown];

@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -307,9 +306,6 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
   } else {
     browserList->AddBrowser(browser);
   }
-
-  // Associate the current SceneState with the new browser.
-  SceneStateBrowserAgent::CreateForBrowser(browser, _sceneState);
 
   [self dispatchToEndpointsForBrowser:browser];
 
