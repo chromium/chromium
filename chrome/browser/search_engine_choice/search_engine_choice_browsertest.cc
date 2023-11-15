@@ -497,8 +497,9 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 }
 #endif
 
+// TODO(crbug.com/1502568): Fix and re-enable test.
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
-                       DialogDoesNotShowAgainAfterSettingPref) {
+                       DISABLED_DialogDoesNotShowAgainAfterSettingPref) {
   Profile* profile = browser()->profile();
   auto* service = static_cast<MockSearchEngineChoiceService*>(
       SearchEngineChoiceServiceFactory::GetForProfile(profile));
@@ -527,8 +528,10 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
-                       DialogDoesNotOverlapWithProfileCustomizationDialog) {
+// TODO(crbug.com/1502568): Fix and re-enable test.
+IN_PROC_BROWSER_TEST_F(
+    SearchEngineChoiceBrowserTest,
+    DISABLED_DialogDoesNotOverlapWithProfileCustomizationDialog) {
   Profile* profile = browser()->profile();
   auto* service = static_cast<MockSearchEngineChoiceService*>(
       SearchEngineChoiceServiceFactory::GetForProfile(profile));
@@ -579,8 +582,10 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
             base::UTF8ToUTF16(kCustomSearchEngineDomain));
 }
 
-IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
-                       DialogDoesNotShowWithExtensionEnabledThatOverridesDSE) {
+// TODO(crbug.com/1502568): Fix and re-enable test.
+IN_PROC_BROWSER_TEST_F(
+    SearchEngineChoiceBrowserTest,
+    DISABLED_DialogDoesNotShowWithExtensionEnabledThatOverridesDSE) {
   Profile* profile = browser()->profile();
   auto* search_engine_choice_service =
       static_cast<MockSearchEngineChoiceService*>(

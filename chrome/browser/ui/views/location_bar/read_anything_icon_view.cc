@@ -36,13 +36,6 @@ ReadAnythingIconView::ReadAnythingIconView(
 
 ReadAnythingIconView::~ReadAnythingIconView() = default;
 
-void ReadAnythingIconView::UpdateImpl() {
-  // TODO(crbug.com/1266555): Only show icon when the active tab is distillable.
-  if (!IsReadAnythingEntryShowing(browser_)) {
-    SetVisible(true);
-  }
-}
-
 void ReadAnythingIconView::ExecuteCommand(ExecuteSource source) {
   OnExecuting(source);
   ShowReadAnythingSidePanel(browser_,
@@ -70,6 +63,13 @@ void ReadAnythingIconView::Activate(bool active) {
 
 void ReadAnythingIconView::OnCoordinatorDestroyed() {
   coordinator_ = nullptr;
+}
+
+void ReadAnythingIconView::OnActivePageDistillable(bool distillable) {
+  if (IsReadAnythingEntryShowing(browser_)) {
+    return;
+  }
+  SetVisible(distillable);
 }
 
 BEGIN_METADATA(ReadAnythingIconView, PageActionIconView)

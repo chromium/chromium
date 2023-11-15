@@ -40,6 +40,7 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
   class Observer : public base::CheckedObserver {
    public:
     virtual void Activate(bool active) {}
+    virtual void OnActivePageDistillable(bool distillable) {}
     virtual void OnCoordinatorDestroyed() = 0;
     virtual void SetDefaultLanguageCode(const std::string& code) {}
   };
@@ -57,6 +58,9 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
 
   void OnReadAnythingSidePanelEntryShown();
   void OnReadAnythingSidePanelEntryHidden();
+
+  void ActivePageDistillableForTesting();
+  void ActivePageNotDistillableForTesting();
 
  private:
   friend class BrowserUserData<ReadAnythingCoordinator>;
@@ -86,10 +90,11 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
 
   content::WebContents* GetActiveWebContents() const;
 
-  // Attempts to show in product help for reading mode.
-  void MaybeShowReadingModeSidePanelIPH();
-  void CancelShowReadingModeSidePanelIPH();
-  bool ShouldShowReadingModeSidePanelIPH() const;
+  // Decides whether the active page is distillable and alerts observers. Also,
+  // attempts to show or hide in product help for reading mode.
+  void ActivePageDistillable();
+  void ActivePageNotDistillable();
+  bool IsActivePageDistillable() const;
 
   std::string default_language_code_;
   std::unique_ptr<ReadAnythingModel> model_;

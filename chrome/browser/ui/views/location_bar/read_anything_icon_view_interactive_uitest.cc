@@ -22,7 +22,6 @@ class ReadAnythingIconViewTest : public InProcessBrowserTest {
 
   ReadAnythingIconViewTest(const ReadAnythingIconViewTest&) = delete;
   ReadAnythingIconViewTest& operator=(const ReadAnythingIconViewTest&) = delete;
-
   ~ReadAnythingIconViewTest() override = default;
 
   PageActionIconView* GetReadAnythingOmniboxIcon() {
@@ -31,36 +30,40 @@ class ReadAnythingIconViewTest : public InProcessBrowserTest {
         ->GetPageActionIconView(PageActionIconType::kReadAnything);
   }
 
-  void ClickReadAnythingOmniboxIcon(PageActionIconView* icon) {
-    ui::MouseEvent pressed_event(
-        ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
-        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
-    ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
-                                  gfx::Point(), ui::EventTimeForNow(),
-                                  ui::EF_LEFT_MOUSE_BUTTON,
-                                  ui::EF_LEFT_MOUSE_BUTTON);
+  void ClickReadAnythingOmniboxIcon() {
+    GetReadAnythingOmniboxIcon()->button_controller()->NotifyClick();
+  }
 
-    static_cast<views::View*>(icon)->OnMousePressed(pressed_event);
-    static_cast<views::View*>(icon)->OnMouseReleased(released_event);
+  void SetActivePageDistillable() {
+    GetReadAnythingCoordinator()->ActivePageDistillableForTesting();
+  }
+
+  void SetActivePageNotDistillable() {
+    GetReadAnythingCoordinator()->ActivePageNotDistillableForTesting();
   }
 
  private:
+  ReadAnythingCoordinator* GetReadAnythingCoordinator() {
+    return ReadAnythingCoordinator::GetOrCreateForBrowser(browser());
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Clicking the icon opens reading mode in the side panel.
 IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest, OpensReadingModeOnClick) {
-  PageActionIconView* icon = GetReadAnythingOmniboxIcon();
+  SetActivePageDistillable();
   EXPECT_FALSE(IsReadAnythingEntryShowing(browser()));
-  ClickReadAnythingOmniboxIcon(icon);
+  ClickReadAnythingOmniboxIcon();
   EXPECT_TRUE(IsReadAnythingEntryShowing(browser()));
 }
 
 // When reading mode is opened, hides the icon.
 IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest, OpenReadingModeHidesIcon) {
+  SetActivePageDistillable();
   PageActionIconView* icon = GetReadAnythingOmniboxIcon();
   EXPECT_TRUE(icon->GetVisible());
-  ClickReadAnythingOmniboxIcon(icon);
+  ClickReadAnythingOmniboxIcon();
   EXPECT_FALSE(icon->GetVisible());
 }
 
@@ -69,7 +72,18 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest,
                        IconNotVisibleIfReadingModeOpen) {
   ShowReadAnythingSidePanel(browser(),
                             SidePanelOpenTrigger::kReadAnythingOmniboxIcon);
+  SetActivePageDistillable();
   PageActionIconView* icon = GetReadAnythingOmniboxIcon();
+  EXPECT_FALSE(icon->GetVisible());
+}
+
+// Show the icon when the page is distillable.
+IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest, IconShownIfDistillable) {
+  PageActionIconView* icon = GetReadAnythingOmniboxIcon();
+  EXPECT_FALSE(icon->GetVisible());
+  SetActivePageDistillable();
+  EXPECT_TRUE(icon->GetVisible());
+  SetActivePageNotDistillable();
   EXPECT_FALSE(icon->GetVisible());
 }
 

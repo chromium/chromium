@@ -26,6 +26,7 @@ class MockReadAnythingCoordinatorObserver
     : public ReadAnythingCoordinator::Observer {
  public:
   MOCK_METHOD(void, Activate, (bool active), (override));
+  MOCK_METHOD(void, OnActivePageDistillable, (bool distillable), (override));
   MOCK_METHOD(void, OnCoordinatorDestroyed, (), (override));
 };
 
@@ -95,6 +96,14 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
     read_anything_coordinator_->OnBrowserSetLastActive(browser);
   }
 
+  void ActivePageDistillable() {
+    read_anything_coordinator_->ActivePageDistillable();
+  }
+
+  void ActivePageNotDistillable() {
+    read_anything_coordinator_->ActivePageNotDistillable();
+  }
+
  protected:
   raw_ptr<SidePanelCoordinator, DanglingUntriaged> side_panel_coordinator_ =
       nullptr;
@@ -162,6 +171,17 @@ TEST_F(ReadAnythingCoordinatorTest,
   OnBrowserSetLastActive(browser);
 
   EXPECT_FALSE(side_panel_coordinator_->IsSidePanelShowing());
+}
+
+TEST_F(ReadAnythingCoordinatorTest, OnActivePageDistillableCalled) {
+  AddObserver(&coordinator_observer_);
+
+  EXPECT_CALL(coordinator_observer_, OnActivePageDistillable(true)).Times(1);
+  // Called once when calling ActivePageDistillable and once on destruction.
+  EXPECT_CALL(coordinator_observer_, OnActivePageDistillable(false)).Times(2);
+
+  ActivePageDistillable();
+  ActivePageNotDistillable();
 }
 
 class ReadAnythingCoordinatorScreen2xDataCollectionModeTest

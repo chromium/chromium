@@ -229,7 +229,7 @@ void ReadAnythingCoordinator::OnTabChangeDelayComplete() {
   CHECK(web_contents);
   if (!web_contents->IsLoading()) {
     // Ability to show was already checked before timer was started.
-    MaybeShowReadingModeSidePanelIPH();
+    ActivePageDistillable();
   }
 }
 
@@ -252,10 +252,10 @@ void ReadAnythingCoordinator::OnTabStripModelChanged(
     return;
   }
   Observe(GetActiveWebContents());
-  if (ShouldShowReadingModeSidePanelIPH()) {
+  if (IsActivePageDistillable()) {
     StartPageChangeDelay();
   } else {
-    CancelShowReadingModeSidePanelIPH();
+    ActivePageNotDistillable();
   }
 }
 
@@ -263,10 +263,10 @@ void ReadAnythingCoordinator::DidStopLoading() {
   if (!post_tab_change_delay_complete_) {
     return;
   }
-  if (ShouldShowReadingModeSidePanelIPH()) {
-    MaybeShowReadingModeSidePanelIPH();
+  if (IsActivePageDistillable()) {
+    ActivePageDistillable();
   } else {
-    CancelShowReadingModeSidePanelIPH();
+    ActivePageNotDistillable();
   }
 }
 
@@ -274,10 +274,10 @@ void ReadAnythingCoordinator::PrimaryPageChanged(content::Page& page) {
   // On navigation, cancel any running delays.
   delay_timer_.Stop();
 
-  if (!ShouldShowReadingModeSidePanelIPH()) {
+  if (!IsActivePageDistillable()) {
     // On navigation, if we shouldn't show the IPH hide it. Otherwise continue
     // to show it.
-    CancelShowReadingModeSidePanelIPH();
+    ActivePageDistillable();
   }
 }
 
@@ -285,7 +285,7 @@ content::WebContents* ReadAnythingCoordinator::GetActiveWebContents() const {
   return GetBrowser().tab_strip_model()->GetActiveWebContents();
 }
 
-bool ReadAnythingCoordinator::ShouldShowReadingModeSidePanelIPH() const {
+bool ReadAnythingCoordinator::IsActivePageDistillable() const {
   auto* web_contents = GetActiveWebContents();
   if (!web_contents) {
     return false;
@@ -303,14 +303,28 @@ bool ReadAnythingCoordinator::ShouldShowReadingModeSidePanelIPH() const {
   return false;
 }
 
-void ReadAnythingCoordinator::CancelShowReadingModeSidePanelIPH() {
+void ReadAnythingCoordinator::ActivePageNotDistillable() {
   GetBrowser().window()->CloseFeaturePromo(
       feature_engagement::kIPHReadingModeSidePanelFeature);
+  for (Observer& obs : observers_) {
+    obs.OnActivePageDistillable(false);
+  }
 }
 
-void ReadAnythingCoordinator::MaybeShowReadingModeSidePanelIPH() {
+void ReadAnythingCoordinator::ActivePageDistillable() {
   GetBrowser().window()->MaybeShowFeaturePromo(
       feature_engagement::kIPHReadingModeSidePanelFeature);
+  for (Observer& obs : observers_) {
+    obs.OnActivePageDistillable(true);
+  }
+}
+
+void ReadAnythingCoordinator::ActivePageNotDistillableForTesting() {
+  ActivePageNotDistillable();
+}
+
+void ReadAnythingCoordinator::ActivePageDistillableForTesting() {
+  ActivePageDistillable();
 }
 
 void ReadAnythingCoordinator::OnBrowserSetLastActive(Browser* browser) {

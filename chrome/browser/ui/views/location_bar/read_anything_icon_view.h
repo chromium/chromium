@@ -27,7 +27,7 @@ class ReadAnythingIconView : public PageActionIconView,
 
  protected:
   // PageActionIconView:
-  void UpdateImpl() override;
+  void UpdateImpl() override {}
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override {}
   void ExecuteCommand(ExecuteSource source) override;
   views::BubbleDialogDelegate* GetBubble() const override;
@@ -36,6 +36,7 @@ class ReadAnythingIconView : public PageActionIconView,
 
   // ReadAnythingCoordinator::Observer:
   void Activate(bool active) override;
+  void OnActivePageDistillable(bool distillable) override;
   void OnCoordinatorDestroyed() override;
 
  private:
