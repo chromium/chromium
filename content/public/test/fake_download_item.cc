@@ -202,10 +202,6 @@ FakeDownloadItem::GetDownloadCreationType() const {
   return download::DownloadItem::DownloadCreationType::TYPE_ACTIVE_DOWNLOAD;
 }
 
-bool FakeDownloadItem::IsDlpManaged() const {
-  return false;
-}
-
 ::network::mojom::CredentialsMode FakeDownloadItem::GetCredentialsMode() const {
   return ::network::mojom::CredentialsMode::kInclude;
 }
@@ -549,10 +545,6 @@ void FakeDownloadItem::SetOpened(bool opened) {
 }
 
 void FakeDownloadItem::SetDisplayName(const base::FilePath& name) {
-  NOTREACHED();
-}
-
-void FakeDownloadItem::SetIsDlpManaged(bool is_managed) {
   NOTREACHED();
 }
 
