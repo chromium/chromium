@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/views/location_bar/read_anything_icon_view.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/events/event_utils.h"
@@ -85,6 +89,19 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest, IconShownIfDistillable) {
   EXPECT_TRUE(icon->GetVisible());
   SetActivePageNotDistillable();
   EXPECT_FALSE(icon->GetVisible());
+}
+
+// The label only shows the first 3 times that the icon is shown.
+IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest, ShowLabel3Times) {
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kAccessibilityReadAnythingOmniboxIconLabelShownCount, 0);
+
+  PageActionIconView* icon = GetReadAnythingOmniboxIcon();
+  for (int i = 0; i < 3; i++) {
+    EXPECT_TRUE(icon->ShouldShowLabel());
+    SetActivePageDistillable();
+  }
+  EXPECT_FALSE(icon->ShouldShowLabel());
 }
 
 }  // namespace

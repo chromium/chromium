@@ -60,6 +60,9 @@ const double kReadAnythingMinimumFontScale = 0.5;
 const double kReadAnythingMaximumFontScale = 4.5;
 const double kReadAnythingFontScaleIncrement = 0.25;
 
+// The maximum number of times the label is shown in the omnibox icon.
+const int kReadAnythingOmniboxIconLabelShownCountMax = 3;
+
 const char* kLanguagesSupportedByPoppins[] = {
     "af", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
     "fr", "hi", "hr", "hu", "id", "it", "lt", "lv", "mr", "ms",

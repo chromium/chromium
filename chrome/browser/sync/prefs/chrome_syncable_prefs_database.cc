@@ -300,6 +300,7 @@ enum {
   kReadAloudSpeed = 100243,
   kReadAloudHighlightingEnabled = 100244,
   kHttpsFirstModeIncognito = 100245,
+  kAccessibilityReadAnythingOmniboxIconLabelShownCount = 100246,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -311,7 +312,7 @@ enum {
 
 const auto& SyncablePreferences() {
   // Non-iOS specific list of syncable preferences.
-  static constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
+  static const auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       base::StringPiece, sync_preferences::SyncablePrefMetadata>({
 #if BUILDFLAG(IS_ANDROID)
     {language::prefs::kAppLanguagePromptShown,
@@ -385,6 +386,11 @@ const auto& SyncablePreferences() {
           sync_preferences::MergeBehavior::kNone}},
         {prefs::kAccessibilityReadAnythingHighlightColor,
          {syncable_prefs_ids::kAccessibilityReadAnythingHighlightColor,
+          syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
+        {prefs::kAccessibilityReadAnythingOmniboxIconLabelShownCount,
+         {syncable_prefs_ids::
+              kAccessibilityReadAnythingOmniboxIconLabelShownCount,
           syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
           sync_preferences::MergeBehavior::kNone}},
         {prefs::kLensRegionSearchEnabled,
