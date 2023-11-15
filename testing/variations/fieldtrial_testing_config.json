@@ -6521,22 +6521,15 @@
             ]
         }
     ],
-    "EnableShoppingListIOS": [
+    "EnableShoppingListIOSM119": [
         {
             "platforms": [
                 "ios"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230517",
-                    "params": {
-                        "enable_price_notification": "true"
-                    },
+                    "name": "Enabled_20231112",
                     "enable_features": [
-                        "CommercePriceTracking",
-                        "IPH_PriceNotificationsWhileBrowsing",
-                        "NotificationSettingsMenuItem",
-                        "OptimizationGuidePushNotifications",
                         "ShoppingList"
                     ]
                 }
