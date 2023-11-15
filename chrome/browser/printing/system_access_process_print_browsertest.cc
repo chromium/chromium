@@ -2132,11 +2132,6 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
 // RunLoop behavior can be made to work with test expectations.
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
                        SystemPrintAfterSystemPrintFromPrintPreview) {
-  // TODO(crbug.com/1497945):  Let test run once crash is resolved.
-  if (UseService()) {
-    GTEST_SKIP();
-  }
-
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForCancelInAskUserForSettings();
