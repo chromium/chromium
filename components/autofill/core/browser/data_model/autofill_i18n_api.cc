@@ -55,6 +55,10 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
       return std::make_unique<ApartmentNode>(std::move(children));
     case ADDRESS_HOME_BETWEEN_STREETS:
       return std::make_unique<BetweenStreetsNode>(std::move(children));
+    case ADDRESS_HOME_BETWEEN_STREETS_1:
+      return std::make_unique<BetweenStreets1Node>(std::move(children));
+    case ADDRESS_HOME_BETWEEN_STREETS_2:
+      return std::make_unique<BetweenStreets2Node>(std::move(children));
     case ADDRESS_HOME_CITY:
       return std::make_unique<CityNode>(std::move(children));
     case ADDRESS_HOME_COUNTRY:
@@ -81,16 +85,19 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
       return std::make_unique<SubPremiseNode>(std::move(children));
     case ADDRESS_HOME_ZIP:
       return std::make_unique<PostalCodeNode>(std::move(children));
+    case ADDRESS_HOME_OVERFLOW:
+      return std::make_unique<AddressOverflowNode>(std::move(children));
+    case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
+      return std::make_unique<AddressOverflowAndLandmarkNode>(
+          std::move(children));
+    case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
+      return std::make_unique<BetweenStreetsOrLandmarkNode>(
+          std::move(children));
     case ADDRESS_HOME_LINE1:
     case ADDRESS_HOME_LINE2:
     case ADDRESS_HOME_LINE3:
     case ADDRESS_HOME_APT:
     case ADDRESS_HOME_APT_TYPE:
-    case ADDRESS_HOME_OVERFLOW:
-    case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
-    case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
-    case ADDRESS_HOME_BETWEEN_STREETS_1:
-    case ADDRESS_HOME_BETWEEN_STREETS_2:
     case ADDRESS_HOME_OTHER_SUBUNIT:
     case ADDRESS_HOME_ADDRESS_WITH_NAME:
     case COMPANY_NAME:
