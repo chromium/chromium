@@ -47,37 +47,39 @@ public class LinkToTextIPHController {
     public LinkToTextIPHController(ObservableSupplier<Tab> tabSupplier,
             TabModelSelector tabModelSelector, ObservableSupplier<Profile> profileSupplier) {
         mTabModelSelector = tabModelSelector;
-        mCurrentTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
-            @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                if (!ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)) {
-                    return;
-                }
+        mCurrentTabObserver =
+                new CurrentTabObserver(
+                        tabSupplier,
+                        new EmptyTabObserver() {
+                            @Override
+                            public void onPageLoadFinished(Tab tab, GURL url) {
+                                if (!ChromeFeatureList.isEnabled(
+                                        ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)) {
+                                    return;
+                                }
 
-                if (!LinkToTextHelper.hasTextFragment(url)) return;
+                                if (!LinkToTextHelper.hasTextFragment(url)) return;
 
-                Profile profile = profileSupplier.get();
-                // In some cases, ProfileSupplier.get() will return null. See
-                // https://crbug.com/1346710 and https://crbug.com/1353138.
-                if (profile == null) {
-                    profile = Profile.getLastUsedRegularProfile();
-                }
-                if (profile == null) {
-                    return;
-                }
-                mTracker = TrackerFactory.getTrackerForProfile(profile);
-                if (!mTracker.wouldTriggerHelpUI(FEATURE_NAME)) {
-                    return;
-                }
+                                Profile profile = profileSupplier.get();
+                                if (profile == null) {
+                                    assert false : "Unexpected null profile";
+                                    return;
+                                }
+                                mTracker = TrackerFactory.getTrackerForProfile(profile);
+                                if (!mTracker.wouldTriggerHelpUI(FEATURE_NAME)) {
+                                    return;
+                                }
 
-                LinkToTextHelper.hasExistingSelectors(tab, (hasSelectors) -> {
-                    if (mTracker.shouldTriggerHelpUI(FEATURE_NAME)) {
-                        showMessageIPH(tab);
-                    }
-                });
-            }
-        }, null);
+                                LinkToTextHelper.hasExistingSelectors(
+                                        tab,
+                                        (hasSelectors) -> {
+                                            if (mTracker.shouldTriggerHelpUI(FEATURE_NAME)) {
+                                                showMessageIPH(tab);
+                                            }
+                                        });
+                            }
+                        },
+                        null);
     }
 
     private void showMessageIPH(Tab tab) {
