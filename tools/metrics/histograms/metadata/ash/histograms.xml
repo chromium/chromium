@@ -5706,11 +5706,7 @@ chromium-metrics-reviews@google.com.
     The number of feature pods (e.g. WiFi, Bluetooth, IME, Accessibility, etc.)
     in the system tray quick settings when it is opened, including pods that
     overflow to other pages. This metric is logged by 2 different types of
-    {DeviceMode}: &quot;Clamshell&quot; and &quot;Tablet&quot;. This metric gets
-    recorded for both the new quick settings view and the old unified system
-    view, see
-    &quot;Ash.UnifiedSystemView.{DeviceMode}.FeaturePodCountOnOpen&quot; which
-    is the metric for the old view.
+    {DeviceMode}: &quot;Clamshell&quot; and &quot;Tablet&quot;.
   </summary>
   <token key="DeviceMode">
     <variant name="Clamshell" summary="Regular mode"/>
@@ -6727,69 +6723,6 @@ chromium-metrics-reviews@google.com.
     The total time that TouchView is not active during a session. Warning: this
     histogram was expired from 2023-03-19 to 2023-11-06; data may be missing.
   </summary>
-</histogram>
-
-<histogram name="Ash.UnifiedSystemView.Button.Activated"
-    enum="QsButtonCatalogName" expires_after="2024-07-30">
-  <owner>jiamingc@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Recorded when any button in the old quick settings view is activated.
-  </summary>
-</histogram>
-
-<histogram name="Ash.UnifiedSystemView.FeaturePod.{FeaturePodBehavior}"
-    enum="QsFeatureCatalogName" expires_after="2024-07-30">
-  <owner>jiamingc@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Recorded when an action is done on any FeaturePod in the old quick settings
-    view. {FeaturePodBehavior} can be a toggle to enable the feature, toggle to
-    disable this feature, going to the feature's detailed page, or making the
-    button visible.
-  </summary>
-  <token key="FeaturePodBehavior">
-    <variant name="DiveIn" summary="Go to the feature's detailed page"/>
-    <variant name="ToggledOff" summary="Toggle to disable the feature"/>
-    <variant name="ToggledOn" summary="Toggle to enable the feature"/>
-    <variant name="Visible" summary="The feature pod is shown"/>
-  </token>
-</histogram>
-
-<histogram name="Ash.UnifiedSystemView.Slider.{SliderBehavior}"
-    enum="QsSliderCatalogName" expires_after="2024-07-30">
-  <owner>jiamingc@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Recorded when an action is done on any slider in the old quick settings view
-    or in the slider bubble. {SliderBehavior} can be changing the value or
-    toggling to enable the feature.
-  </summary>
-  <token key="SliderBehavior">
-    <variant name="DisableFeature" summary="Toggle to disable the feature"/>
-    <variant name="Down" summary="Turn the slider value down"/>
-    <variant name="EnableFeature" summary="Toggle to enable the feature"/>
-    <variant name="Up" summary="Turn the slider value up"/>
-  </token>
-</histogram>
-
-<histogram name="Ash.UnifiedSystemView.{DeviceMode}.FeaturePodCountOnOpen"
-    units="count" expires_after="2024-07-30">
-  <owner>jiamingc@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    The number of feature pods (e.g. WiFi, Bluetooth, IME, Accessibility, etc.)
-    in the old system tray quick settings when it is opened, including pods that
-    overflow to other pages. This metric is logged by 2 different types of
-    {DeviceMode}: &quot;Clamshell&quot; and &quot;Tablet&quot;. This metric gets
-    recorded for both the new quick settings view and the old unified system
-    view, see &quot;Ash.QuickSettings.{DeviceMode}.FeaturePodCountOnOpen&quot;
-    which is the metric for the new quick settings view.
-  </summary>
-  <token key="DeviceMode">
-    <variant name="Clamshell" summary="Regular mode"/>
-    <variant name="Tablet" summary="Tablet mode"/>
-  </token>
 </histogram>
 
 <histogram base="true" name="Ash.UnlockAnimation.Smoothness" units="%"
