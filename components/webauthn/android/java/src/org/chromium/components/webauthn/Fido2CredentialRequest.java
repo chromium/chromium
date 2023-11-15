@@ -114,8 +114,6 @@ public class Fido2CredentialRequest
      * Constructs the object.
      *
      * @param intentSender Interface for starting {@link Intent}s from Play Services.
-     * @param supportLevel Whether this code should use the privileged or non-privileged Play
-     *     Services API. (Note that a value of `NONE` is not allowed.)
      */
     public Fido2CredentialRequest(FidoIntentSender intentSender) {
         mIntentSender = intentSender;
