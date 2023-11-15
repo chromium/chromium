@@ -494,6 +494,11 @@ class AddressComponent {
   // const version of GetNodeForType.
   const AddressComponent* GetNodeForType(ServerFieldType field_type) const;
 
+  // Recursively adds the supported types to the set. If `!storable_only`, calls
+  // |GetAdditionalSupportedFieldTypes()| to add computed field types.
+  virtual void GetTypes(bool storable_only,
+                        ServerFieldTypeSet* supported_types) const;
+
  private:
   // Unsets the node and all of its children.
   void UnsetAddressComponentAndItsSubcomponents();
@@ -556,10 +561,6 @@ class AddressComponent {
   // ancestors). Previously set values are not overridden.
   bool AssignParsedValuesToSubcomponentsRespectingSetValues(
       i18n_model_definition::ValueParsingResults values);
-
-  // Recursively adds the supported types to the set. If `!storable_only`, calls
-  // |GetAdditionalSupportedFieldTypes()| to add computed field types.
-  void GetTypes(bool storable_only, ServerFieldTypeSet* supported_types) const;
 
   // This method verifies that the `value` is token compatible with this node
   // and all the node's descendants.

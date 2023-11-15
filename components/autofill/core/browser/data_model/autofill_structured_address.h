@@ -30,7 +30,8 @@ class AddressComponentWithRewriter : public AddressComponent {
 
 // This class represents a type that is controlled by a feature flag. It
 // overrides the SetValue method to prevent setting values to nodes for which
-// the flag is turned off.
+// the flag is turned off. It further prevents exposing disabled types as
+// supported.
 class FeatureGuardedAddressComponent : public AddressComponent {
  public:
   FeatureGuardedAddressComponent(raw_ptr<const base::Feature> feature,
@@ -38,8 +39,10 @@ class FeatureGuardedAddressComponent : public AddressComponent {
                                  SubcomponentsList children,
                                  unsigned int merge_mode);
 
-  // Sets the value corresponding to the storage type of this component.
+  // AddressComponent overrides:
   void SetValue(std::u16string value, VerificationStatus status) override;
+  void GetTypes(bool storable_only,
+                ServerFieldTypeSet* supported_types) const override;
 
  private:
   // Feature guarding the rollout of this address component.

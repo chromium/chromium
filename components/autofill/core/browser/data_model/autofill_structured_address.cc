@@ -49,6 +49,15 @@ void FeatureGuardedAddressComponent::SetValue(std::u16string value,
   AddressComponent::SetValue(value, status);
 }
 
+void FeatureGuardedAddressComponent::GetTypes(
+    bool storable_only,
+    ServerFieldTypeSet* supported_types) const {
+  if (!base::FeatureList::IsEnabled(*feature_)) {
+    return;
+  }
+  AddressComponent::GetTypes(storable_only, supported_types);
+}
+
 StreetNameNode::StreetNameNode(SubcomponentsList children)
     : AddressComponent(ADDRESS_HOME_STREET_NAME,
                        std::move(children),
