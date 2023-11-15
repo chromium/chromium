@@ -63,6 +63,7 @@ import android.content.ReceiverCallNotAllowedException;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -89,6 +90,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.BuildConfig;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
@@ -104,6 +106,8 @@ import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.ui.accessibility.AccessibilityFeatures;
+import org.chromium.ui.accessibility.AccessibilityFeaturesMap;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -1041,13 +1045,23 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
 
         mHasFinishedLatestAccessibilitySnapshot = false;
+        long beforeSnapshotTimeMs = SystemClock.elapsedRealtime();
         mDelegate.requestAccessibilitySnapshot(
                 viewRoot,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        viewRoot.asyncCommit();
-                        mHasFinishedLatestAccessibilitySnapshot = true;
+                () -> {
+                    viewRoot.asyncCommit();
+                    mHasFinishedLatestAccessibilitySnapshot = true;
+
+                    if (AccessibilityFeaturesMap.isEnabled(
+                            AccessibilityFeatures.ACCESSIBILITY_SNAPSHOT_STRESS_TESTS)) {
+                        long snapshotRuntimeMs =
+                                SystemClock.elapsedRealtime() - beforeSnapshotTimeMs;
+                        RecordHistogram.recordLinearCountHistogram(
+                                "Accessibility.AXTreeSnapshotter.Snapshot.EndToEndRuntime",
+                                (int) snapshotRuntimeMs,
+                                1,
+                                5 * 1000,
+                                100);
                     }
                 });
     }

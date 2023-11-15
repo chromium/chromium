@@ -29,6 +29,11 @@ class AXTreeSnapshotterImpl : public AXTreeSnapshotter {
                 ui::AXTreeUpdate* accessibility_tree) override;
 
  private:
+  bool SerializeTreeWithLimits(size_t max_node_count,
+                               base::TimeDelta timeout,
+                               ui::AXTreeUpdate* response);
+  bool SerializeTree(ui::AXTreeUpdate* response);
+
   raw_ptr<RenderFrameImpl, ExperimentalRenderer> render_frame_;
   std::unique_ptr<blink::WebAXContext> context_;
 

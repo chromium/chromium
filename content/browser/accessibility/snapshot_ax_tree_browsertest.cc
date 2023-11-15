@@ -5,6 +5,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_features.h"
@@ -18,6 +19,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 
@@ -66,8 +68,16 @@ void DumpRolesAndNamesAsText(const ui::AXNode* node,
 
 class SnapshotAXTreeBrowserTest : public ContentBrowserTest {
  public:
-  SnapshotAXTreeBrowserTest() {}
-  ~SnapshotAXTreeBrowserTest() override {}
+  SnapshotAXTreeBrowserTest() {
+#if BUILDFLAG(IS_ANDROID)
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kAccessibilitySnapshotStressTests);
+#endif
+  }
+  ~SnapshotAXTreeBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,

@@ -5,11 +5,15 @@
 #include "content/renderer/accessibility/ax_tree_snapshotter_impl.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/task/thread_pool.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "content/renderer/render_frame_impl.h"
 #include "third_party/blink/public/web/web_ax_context.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_error_types.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -19,6 +23,13 @@ using blink::WebAXObject;
 using blink::WebDocument;
 
 namespace content {
+
+namespace {
+
+constexpr int kMaxNodesHistogramLimit = 20000;
+constexpr int kTimeoutInMillisecondsHistogramLimit = 3000;
+
+}  // namespace
 
 constexpr char kAXTreeSnapshotterErrorHistogramName[] =
     "Accessibility.AXTreeSnapshotter.Snapshot.Error";
@@ -76,30 +87,22 @@ void AXTreeSnapshotterImpl::Snapshot(size_t max_node_count,
     NOTREACHED_NORETURN();
   }
 
-  std::set<ui::AXSerializationErrorFlag> out_error;
-  if (context_->SerializeEntireTree(max_node_count, timeout, response,
-                                    &out_error)) {
-    std::set<ui::AXSerializationErrorFlag>::iterator max_nodes_iter =
-        out_error.find(ui::AXSerializationErrorFlag::kMaxNodesReached);
-    std::set<ui::AXSerializationErrorFlag>::iterator timeout_iter =
-        out_error.find(ui::AXSerializationErrorFlag::kTimeoutReached);
-
-    if (max_nodes_iter != out_error.end() && timeout_iter != out_error.end()) {
-      base::UmaHistogramEnumeration(
-          kAXTreeSnapshotterErrorHistogramName,
-          AXTreeSnapshotErrorReason::kSerializeMaxNodesAndTimeoutReached);
-    } else if (max_nodes_iter != out_error.end()) {
-      base::UmaHistogramEnumeration(
-          kAXTreeSnapshotterErrorHistogramName,
-          AXTreeSnapshotErrorReason::kSerializeMaxNodesReached);
-    } else if (timeout_iter != out_error.end()) {
-      base::UmaHistogramEnumeration(
-          kAXTreeSnapshotterErrorHistogramName,
-          AXTreeSnapshotErrorReason::kSerializeTimeoutReached);
-    }
-
+#if !BUILDFLAG(IS_ANDROID)
+  if (SerializeTreeWithLimits(max_node_count, timeout, response)) {
     return;
   }
+#else
+  // On Android, experiment with serialization without any limits.
+  if (features::IsAccessibilitySnapshotStressTestsEnabled()) {
+    if (SerializeTree(response)) {
+      return;
+    }
+  } else {
+    if (SerializeTreeWithLimits(max_node_count, timeout, response)) {
+      return;
+    }
+  }
+#endif
 
   base::UmaHistogramEnumeration(
       kAXTreeSnapshotterErrorHistogramName,
@@ -115,6 +118,59 @@ void AXTreeSnapshotterImpl::Snapshot(size_t max_node_count,
   DCHECK_EQ(0, response->node_id_to_clear);
   DCHECK_EQ(ax::mojom::EventFrom::kNone, response->event_from);
   DCHECK_EQ(ax::mojom::Action::kNone, response->event_from_action);
+}
+
+bool AXTreeSnapshotterImpl::SerializeTreeWithLimits(
+    size_t max_node_count,
+    base::TimeDelta timeout,
+    ui::AXTreeUpdate* response) {
+  std::set<ui::AXSerializationErrorFlag> out_error;
+  if (!context_->SerializeEntireTree(max_node_count, timeout, response,
+                                     &out_error)) {
+    return false;
+  }
+
+  std::set<ui::AXSerializationErrorFlag>::iterator max_nodes_iter =
+      out_error.find(ui::AXSerializationErrorFlag::kMaxNodesReached);
+  std::set<ui::AXSerializationErrorFlag>::iterator timeout_iter =
+      out_error.find(ui::AXSerializationErrorFlag::kTimeoutReached);
+
+  if (max_nodes_iter != out_error.end() && timeout_iter != out_error.end()) {
+    base::UmaHistogramEnumeration(
+        kAXTreeSnapshotterErrorHistogramName,
+        AXTreeSnapshotErrorReason::kSerializeMaxNodesAndTimeoutReached);
+  } else if (max_nodes_iter != out_error.end()) {
+    base::UmaHistogramEnumeration(
+        kAXTreeSnapshotterErrorHistogramName,
+        AXTreeSnapshotErrorReason::kSerializeMaxNodesReached);
+  } else if (timeout_iter != out_error.end()) {
+    base::UmaHistogramEnumeration(
+        kAXTreeSnapshotterErrorHistogramName,
+        AXTreeSnapshotErrorReason::kSerializeTimeoutReached);
+  }
+
+  return true;
+}
+
+bool AXTreeSnapshotterImpl::SerializeTree(ui::AXTreeUpdate* response) {
+  base::ElapsedTimer timer = base::ElapsedTimer();
+  timer.start_time();
+  if (!context_->SerializeEntireTree(0, {}, response)) {
+    return false;
+  }
+
+  base::TimeDelta snapshotDuration = timer.Elapsed();
+  base::LinearHistogram::FactoryGet(
+      "Accessibility.AXTreeSnapshotter.Snapshot.NoRestrictions.Nodes", 0,
+      kMaxNodesHistogramLimit, 100, base::HistogramBase::kNoFlags)
+      ->Add(response->nodes.size());
+
+  base::LinearHistogram::FactoryGet(
+      "Accessibility.AXTreeSnapshotter.Snapshot.NoRestrictions.Time", 0,
+      kTimeoutInMillisecondsHistogramLimit, 100, base::HistogramBase::kNoFlags)
+      ->Add(snapshotDuration.InMilliseconds());
+
+  return true;
 }
 
 }  // namespace content
