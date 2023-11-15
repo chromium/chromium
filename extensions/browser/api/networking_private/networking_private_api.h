@@ -265,8 +265,8 @@ class NetworkingPrivateGetDeviceStatesFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Result(std::unique_ptr<NetworkingPrivateDelegate::DeviceStateList>
-                  device_states);
+  void Result(
+      std::optional<NetworkingPrivateDelegate::DeviceStateList> device_states);
 };
 
 // Implements the chrome.networkingPrivate.enableNetworkType method.

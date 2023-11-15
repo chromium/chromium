@@ -187,7 +187,7 @@ PropertiesDelegateCallback PropertiesAdapterCallback(
 
 void DeviceStateListCallbackAdapter(
     NetworkingPrivateAsh::GetDeviceStateListCallback callback,
-    std::unique_ptr<extensions::NetworkingPrivateDelegate::DeviceStateList>
+    std::optional<extensions::NetworkingPrivateDelegate::DeviceStateList>
         result) {
   if (!result) {
     std::move(callback).Run(absl::nullopt);
@@ -197,11 +197,7 @@ void DeviceStateListCallbackAdapter(
   std::vector<absl::optional<base::Value::Dict>> list;
 
   for (size_t i = 0; i < result->size(); ++i) {
-    if (result->at(i)) {
-      list.push_back(result->at(i)->ToValue());
-    } else {
-      list.push_back(base::Value::Dict());
-    }
+    list.emplace_back(result->at(i).ToValue());
   }
 
   std::move(callback).Run(std::move(list));

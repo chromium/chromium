@@ -205,22 +205,19 @@ void DeviceStateListCallbackAdapter(
     extensions::NetworkingPrivateDelegate::DeviceStateListCallback callback,
     DeviceStateListPtr result) {
   if (!result) {
-    std::move(callback).Run(
-        std::make_unique<
-            extensions::NetworkingPrivateDelegate::DeviceStateList>());
+    std::move(callback).Run(std::nullopt);
     return;
   }
-  auto list = std::make_unique<
-      extensions::NetworkingPrivateDelegate::DeviceStateList>();
+  auto list =
+      std::optional<extensions::NetworkingPrivateDelegate::DeviceStateList>();
   for (auto& item : *result) {
     if (item) {
-      list->push_back(
-          extensions::api::networking_private::DeviceStateProperties::
-              FromValueDeprecated(base::Value(std::move(*item))));
+      list->emplace_back(
+          extensions::api::networking_private::DeviceStateProperties::FromValue(
+              base::Value(std::move(*item)))
+              .value());
     } else {
-      list->push_back(
-          std::make_unique<
-              extensions::api::networking_private::DeviceStateProperties>());
+      list->emplace_back();
     }
   }
   std::move(callback).Run(std::move(list));
@@ -488,7 +485,7 @@ void NetworkingPrivateLacros::GetDeviceStateList(
     DeviceStateListCallback callback) {
   auto* networking_private = GetNetworkingPrivateRemote();
   if (!networking_private || !is_primary_user_) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   (*networking_private)

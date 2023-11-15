@@ -483,14 +483,14 @@ NetworkingPrivateGetDeviceStatesFunction::Run() {
 }
 
 void NetworkingPrivateGetDeviceStatesFunction::Result(
-    std::unique_ptr<NetworkingPrivateDelegate::DeviceStateList> device_states) {
+    std::optional<NetworkingPrivateDelegate::DeviceStateList> device_states) {
   if (!device_states) {
     return Respond(Error(networking_private::kErrorNotSupported));
   }
 
   base::Value::List device_state_list;
   for (const auto& properties : *device_states) {
-    device_state_list.Append(properties->ToValue());
+    device_state_list.Append(properties.ToValue());
   }
   return Respond(WithArguments(std::move(device_state_list)));
 }
