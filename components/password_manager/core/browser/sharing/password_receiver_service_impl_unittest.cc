@@ -226,28 +226,15 @@ TEST_F(PasswordReceiverServiceImplTest,
 TEST_F(PasswordReceiverServiceImplTest,
        ShouldIgnoreIncomingInvitationWhenConflictingPasswordExists) {
   base::HistogramTester histogram_tester;
+  PasswordForm password = CreatePasswordForm();
   sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
-      CreateIncomingSharingInvitation();
-  const sync_pb::PasswordSharingInvitationData::PasswordData&
-      incoming_password =
-          invitation.client_only_unencrypted_data().password_data();
-  const sync_pb::UserDisplayInfo& sender_info =
-      invitation.sender_info().user_display_info();
+      PasswordFormToIncomingSharingInvitation(password);
 
-  PasswordForm conflicting_password;
-  conflicting_password.url = GURL(incoming_password.origin());
-  conflicting_password.signon_realm = incoming_password.signon_realm();
-  conflicting_password.username_value =
-      base::UTF8ToUTF16(incoming_password.username_value());
-  conflicting_password.sender_email = base::UTF8ToUTF16(sender_info.email());
-  conflicting_password.sender_name =
-      base::UTF8ToUTF16(sender_info.display_name());
-  conflicting_password.sender_profile_image_url =
-      GURL(sender_info.profile_image_url());
+  PasswordForm conflicting_password = password;
   conflicting_password.type = PasswordForm::Type::kReceivedViaSharing;
-
   conflicting_password.password_value = u"AnotherPassword";
   conflicting_password.in_store = PasswordForm::Store::kProfileStore;
+
   AddLoginAndWait(conflicting_password, profile_password_store());
 
   password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
