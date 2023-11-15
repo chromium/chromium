@@ -22,22 +22,3 @@ source_set("sdk_manager") {
     "//third_party/content_analysis_sdk:liblcasdk",
   ]
 }
-
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "fake_content_analysis_sdk_client.cc",
-    "fake_content_analysis_sdk_client.h",
-    "fake_content_analysis_sdk_manager.cc",
-    "fake_content_analysis_sdk_manager.h",
-  ]
-
-  # This data is needed so that the agent binary gets installed on test bots
-  # when it is not the same as the build bot.
-  data_deps = [ "//third_party/content_analysis_sdk:lca_agent" ]
-
-  public_deps = [
-    ":sdk_manager",
-    "//third_party/content_analysis_sdk:lca_agent",
-  ]
-}

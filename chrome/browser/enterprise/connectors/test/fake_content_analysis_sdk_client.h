@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_FAKE_CONTENT_ANALYSIS_SDK_CLIENT_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_FAKE_CONTENT_ANALYSIS_SDK_CLIENT_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_FAKE_CONTENT_ANALYSIS_SDK_CLIENT_H_
+#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_FAKE_CONTENT_ANALYSIS_SDK_CLIENT_H_
 
 #include "base/synchronization/lock.h"
 #include "third_party/content_analysis_sdk/src/browser/include/content_analysis/sdk/analysis_client.h"
@@ -67,4 +67,4 @@ class FakeContentAnalysisSdkClient : public content_analysis::sdk::Client {
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_FAKE_CONTENT_ANALYSIS_SDK_CLIENT_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_FAKE_CONTENT_ANALYSIS_SDK_CLIENT_H_

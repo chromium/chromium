@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_FAKE_CONTENT_ANALYSIS_SDK_MANAGER_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_FAKE_CONTENT_ANALYSIS_SDK_MANAGER_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_FAKE_CONTENT_ANALYSIS_SDK_MANAGER_H_
+#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_FAKE_CONTENT_ANALYSIS_SDK_MANAGER_H_
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"
-#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_client.h"
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_sdk_client.h"
 #include "third_party/content_analysis_sdk/src/browser/include/content_analysis/sdk/analysis_client.h"
 
 namespace enterprise_connectors {
@@ -64,4 +64,4 @@ class FakeContentAnalysisSdkManager final : public ContentAnalysisSdkManager {
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_FAKE_CONTENT_ANALYSIS_SDK_MANAGER_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_FAKE_CONTENT_ANALYSIS_SDK_MANAGER_H_
