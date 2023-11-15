@@ -489,8 +489,11 @@ void PrefetchService::CheckEligibilityOfPrefetch(
     return;
   }
 
+  // Fail the prefetch (or more precisely, PrefetchContainer::SinglePrefetch)
+  // early if it is going to go through a proxy, and we know that it is not
+  // available.
   if (prefetch_container->IsProxyRequiredForURL(url) &&
-      !prefetch_container->GetPrefetchType().IsProxyBypassedForTesting() &&
+      !ShouldPrefetchBypassProxyForTestHost(url.host()) &&
       (!prefetch_proxy_configurator_ ||
        !prefetch_proxy_configurator_->IsPrefetchProxyAvailable())) {
     std::move(result_callback)
