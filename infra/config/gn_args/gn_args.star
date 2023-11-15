@@ -25,24 +25,23 @@ gn_args.config(
     args_file = "//build/args/chromeos/amd64-generic-vm.gni",
 )
 
+gn_args.config(
+    name = "android",
+    args = {
+        "target_os": "android",
+    },
+)
+
 # We build Android with codecs on most bots to ensure maximum test
-# coverage, but use 'android_without_codecs' on bots responsible for
+# coverage, but use 'android_builder_without_codecs' on bots responsible for
 # building publicly advertised non-Official Android builds --
 # which are not allowed to have proprietary codecs enabled.
 gn_args.config(
-    "android",
+    "android_builder",
     configs = [
-        "android_without_codecs",
+        "android_builder_without_codecs",
         "chrome_with_codecs",
     ],
-)
-
-# It's significantly faster to build without static analysis checks.
-gn_args.config(
-    "android_fastbuild",
-    args = {
-        "android_static_analysis": "off",
-    },
 )
 
 # Builders never have a use for android:debuggable="true". They do not use
@@ -51,10 +50,18 @@ gn_args.config(
 # android:debuggable="true" causes ART to run more slowly, so tests run
 # faster without it. https://crbug.com/1276429
 gn_args.config(
-    "android_without_codecs",
+    "android_builder_without_codecs",
+    configs = ["android"],
     args = {
-        "target_os": "android",
         "debuggable_apks": False,
+    },
+)
+
+# It's significantly faster to build without static analysis checks.
+gn_args.config(
+    "android_fastbuild",
+    args = {
+        "android_static_analysis": "off",
     },
 )
 

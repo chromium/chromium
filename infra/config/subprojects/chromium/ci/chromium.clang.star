@@ -271,7 +271,7 @@ ci.builder(
     contact_team_email = "lexan@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "release_builder",
             "minimal_symbols",
             "strip_debug_info",
@@ -308,7 +308,7 @@ ci.builder(
     contact_team_email = "lexan@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android_without_codecs",
+            "android_builder_without_codecs",
             "clang_tot",
             "shared",
             "debug",
@@ -344,7 +344,7 @@ ci.builder(
     contact_team_email = "lexan@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android_without_codecs",
+            "android_builder_without_codecs",
             "clang_tot",
             "shared",
             "release",
@@ -382,7 +382,7 @@ ci.builder(
     contact_team_email = "lexan@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android_without_codecs",
+            "android_builder_without_codecs",
             "clang_tot",
             "shared",
             "release",
@@ -420,7 +420,7 @@ ci.builder(
     contact_team_email = "lexan@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android_without_codecs",
+            "android_builder_without_codecs",
             "clang_tot",
             "shared",
             "release",
@@ -459,7 +459,7 @@ ci.builder(
     contact_team_email = "lexan@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android_without_codecs",
+            "android_builder_without_codecs",
             "clang_tot",
             "release",
             "arm64",
@@ -495,7 +495,7 @@ ci.builder(
     contact_team_email = "lexan@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android_without_codecs",
+            "android_builder_without_codecs",
             "clang_tot",
             "asan",
             "debug_builder",
@@ -532,7 +532,7 @@ ci.builder(
     contact_team_email = "lexan@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "release_builder",
             "minimal_symbols",
             "official_optimize",

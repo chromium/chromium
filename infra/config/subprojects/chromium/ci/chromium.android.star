@@ -81,7 +81,7 @@ ci.builder(
     execution_timeout = 8 * time.hour,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "clang",
             "asan",
             "debug_builder",
@@ -203,7 +203,7 @@ ci.builder(
     execution_timeout = 4 * time.hour,
     gn_args = gn_args.config(
         configs = [
-            "android_without_codecs",
+            "android_builder_without_codecs",
             "debug_builder",
             "reclient",
         ],
@@ -249,7 +249,7 @@ ci.builder(
     execution_timeout = 7 * time.hour,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "debug_static_builder",
             "reclient",
             "arm64",
@@ -302,7 +302,7 @@ ci.builder(
     execution_timeout = 7 * time.hour,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "debug_static_builder",
             "reclient",
             "arm64",
@@ -329,7 +329,7 @@ ci.builder(
     execution_timeout = 7 * time.hour,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "debug_static_builder",
             "reclient",
             "x64",
@@ -375,7 +375,7 @@ ci.builder(
     execution_timeout = 7 * time.hour,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "debug_static_builder",
             "reclient",
             "x64",
@@ -417,7 +417,7 @@ ci.builder(
     execution_timeout = 6 * time.hour,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "debug_static_builder",
             "reclient",
             "x86",
@@ -455,7 +455,7 @@ ci.builder(
     contact_team_email = "woa-engprod@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "release_builder",
             "reclient",
             "minimal_symbols",
@@ -531,7 +531,7 @@ ci.builder(
     contact_team_email = "clank-engprod@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cast_android",
             "cast_receiver",
             "clang",
@@ -554,7 +554,7 @@ ci.builder(
     execution_timeout = 7 * time.hour,
     gn_args = gn_args.config(
         configs = [
-            "android_without_codecs",
+            "android_builder_without_codecs",
             "release_builder",
             "reclient",
             "minimal_symbols",
@@ -578,7 +578,7 @@ ci.builder(
     execution_timeout = 6 * time.hour,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "debug_builder",
             "reclient",
         ],
@@ -653,7 +653,7 @@ ci.builder(
     contact_team_email = "clank-engprod@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "release_builder",
             "reclient",
             "minimal_symbols",
@@ -730,7 +730,7 @@ ci.builder(
     execution_timeout = 8 * time.hour,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "release_builder",
             "reclient",
             "minimal_symbols",
@@ -767,7 +767,7 @@ ci.builder(
     execution_timeout = 4 * time.hour,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "release_builder",
             "reclient",
             "minimal_symbols",
@@ -793,7 +793,7 @@ ci.builder(
     contact_team_email = "clank-engprod@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "chrome_with_codecs",
             "reclient",
             "minimal_symbols",
@@ -840,7 +840,7 @@ ci.builder(
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "debug_static_builder",
             "reclient",
@@ -886,7 +886,7 @@ ci.builder(
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "official_optimize",
             "release_builder",
@@ -927,7 +927,7 @@ ci.builder(
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "debug_static_builder",
             "reclient",
@@ -965,7 +965,7 @@ ci.builder(
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "official_optimize",
             "release_builder",
@@ -1005,7 +1005,7 @@ ci.builder(
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "release_builder",
             "reclient",
@@ -1048,7 +1048,7 @@ ci.builder(
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "debug_static_builder",
             "reclient",
@@ -1088,7 +1088,7 @@ ci.builder(
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "official_optimize",
             "release_builder",
@@ -1136,7 +1136,7 @@ ci.builder(
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "debug_static_builder",
             "reclient",
@@ -1176,7 +1176,7 @@ ci.builder(
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "official_optimize",
             "release_builder",
@@ -1205,7 +1205,7 @@ ci.builder(
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "official_optimize",
             "release_builder",
@@ -1247,7 +1247,7 @@ ci.builder(
     contact_team_email = "cronet-sheriff@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "debug_static_builder",
             "reclient",
@@ -1285,7 +1285,7 @@ ci.builder(
     contact_team_email = "cronet-sheriff@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "official_optimize",
             "release_builder",
@@ -1331,7 +1331,7 @@ ci.builder(
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "debug_static_builder",
             "reclient",
@@ -1374,7 +1374,7 @@ ci.builder(
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "debug_static_builder",
             "reclient",
@@ -1764,7 +1764,7 @@ ci.builder(
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "official_optimize",
             "release_builder",
@@ -1805,7 +1805,7 @@ ci.builder(
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "official_optimize",
             "release_builder",
@@ -1846,7 +1846,7 @@ ci.builder(
     execution_timeout = 4 * time.hour,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "release_builder",
             "reclient",
             "minimal_symbols",
@@ -1928,7 +1928,7 @@ ci.builder(
     execution_timeout = 4 * time.hour,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "release_builder",
             "reclient",
             "minimal_symbols",
@@ -1971,7 +1971,7 @@ ci.builder(
     contact_team_email = "clank-engprod@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "release_builder",
             "reclient",
             "minimal_symbols",
@@ -2019,7 +2019,7 @@ ci.builder(
     execution_timeout = 4 * time.hour,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "release_builder",
             "reclient",
             "minimal_symbols",
@@ -2065,7 +2065,7 @@ ci.builder(
     execution_timeout = 4 * time.hour,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "release_builder",
             "reclient",
             "minimal_symbols",
@@ -2115,7 +2115,7 @@ ci.builder(
     execution_timeout = 4 * time.hour,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "release_builder",
             "reclient",
             "minimal_symbols",

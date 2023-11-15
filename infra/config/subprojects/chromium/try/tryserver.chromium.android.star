@@ -251,7 +251,7 @@ try_.builder(
     ssd = True,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "chrome_with_codecs",
             "reclient",
             "minimal_symbols",
@@ -333,7 +333,7 @@ try_.builder(
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "debug_static_builder",
             "reclient",
@@ -626,7 +626,7 @@ try_.builder(
     ],
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "debug_builder",
             "reclient",
             "arm64",
@@ -671,7 +671,7 @@ try_.builder(
     cores = 16,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "debug_builder",
             "reclient",
             "arm64",
@@ -872,7 +872,7 @@ try_.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "debug_builder",
             "reclient",
             "compile_only",
@@ -890,7 +890,7 @@ try_.builder(
     ],
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "debug_builder",
             "reclient",
             "compile_only",
@@ -958,7 +958,7 @@ try_.builder(
     ssd = True,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "debug_builder",
             "reclient",
             "compile_only",
@@ -1012,7 +1012,7 @@ try_.builder(
     ssd = True,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "debug_builder",
             "reclient",
             "compile_only",
@@ -1062,7 +1062,7 @@ try_.builder(
     ssd = True,
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "debug_builder",
             "reclient",
             "compile_only",
@@ -1098,7 +1098,7 @@ try_.builder(
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
         configs = [
-            "android",
+            "android_builder",
             "cronet_android",
             "release_try_builder",
             "reclient",
