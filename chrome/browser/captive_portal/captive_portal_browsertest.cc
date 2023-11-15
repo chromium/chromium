@@ -217,15 +217,10 @@ struct LoadObserver : public WebContentsObserver {
 // Tracks how many times each tab has been navigated since the Observer was
 // created.  The standard TestNavigationObserver can only watch specific
 // pre-existing tabs or loads in serial for all tabs.
-class MultiNavigationObserver : public TabStripModelObserver,
-                                public BrowserListObserver,
+class MultiNavigationObserver : public ui_test_utils::AllTabsObserver,
                                 public LoadObserver::Observer {
  public:
   MultiNavigationObserver();
-
-  MultiNavigationObserver(const MultiNavigationObserver&) = delete;
-  MultiNavigationObserver& operator=(const MultiNavigationObserver&) = delete;
-
   ~MultiNavigationObserver() override;
 
   // Waits for exactly |num_navigations_to_wait_for| LOAD_STOP
@@ -241,28 +236,16 @@ class MultiNavigationObserver : public TabStripModelObserver,
   int num_navigations() const { return num_navigations_; }
 
  private:
+  // AllTabsObserver
+  std::unique_ptr<base::CheckedObserver> ProcessOneContents(
+      WebContents* web_contents) override;
+
   // LoadObserver::Observer;
   void OnWebContentsDestroyed(WebContents* web_contents) override;
   void OnDidStopLoading(WebContents* web_contents) override;
 
-  // Record for every tab we're watching.
-  struct TabNavigationMapEntry {
-    std::unique_ptr<LoadObserver> load_observer;
-    int stop_loading_count = 0;
-  };
-  using TabNavigationMap = std::map<const WebContents*, TabNavigationMapEntry>;
-
-  // Add all tabs from `browser`, and start watching for changes.
-  void AddBrowser(Browser* browser);
-
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-
-  // BrowserListObserver
-  void OnBrowserAdded(Browser* browser) override { AddBrowser(browser); }
+  // [WebContents] == number of `DidStopLoading` events.
+  using TabNavigationMap = std::map<const WebContents*, int>;
 
   // Total number of `DidStopLoading` calls.  Might not match the sum of the
   // individual loading events in `tab_navigation_map_` if entries have been
@@ -272,54 +255,20 @@ class MultiNavigationObserver : public TabStripModelObserver,
   // Map of how many times each tab has navigated since |this| was created.
   TabNavigationMap tab_navigation_map_;
 
-  // Total number of navigations to wait for.  Value only matters when
-  // |waiting_for_navigation_| is true.
-  int num_navigations_to_wait_for_ = 0;
-
-  // True if WaitForNavigations has been called, until
-  // |num_navigations_to_wait_for_| have been observed.
-  bool waiting_for_navigation_ = false;
-  std::unique_ptr<base::RunLoop> run_loop_;
+  // Total number of navigations to wait for, if known.
+  std::optional<int> num_navigations_to_wait_for_;
 };
 
 MultiNavigationObserver::MultiNavigationObserver() {
-  // Watch all browsers.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    AddBrowser(browser);
-  }
-  BrowserList::GetInstance()->AddObserver(this);
+  AddAllBrowsers();
 }
 
-MultiNavigationObserver::~MultiNavigationObserver() {
-  BrowserList::GetInstance()->RemoveObserver(this);
-  // We're tracking all browsers, so remove us from all of all of them.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    browser->tab_strip_model()->RemoveObserver(this);
-  }
-}
+MultiNavigationObserver::~MultiNavigationObserver() = default;
 
-void MultiNavigationObserver::AddBrowser(Browser* browser) {
-  browser->tab_strip_model()->AddObserver(this);
-
-  // Add all the tabs.
-  for (int index = 0; index < browser->tab_strip_model()->count(); index++) {
-    auto* web_contents = browser->tab_strip_model()->GetWebContentsAt(index);
-    tab_navigation_map_[web_contents].load_observer =
-        std::make_unique<LoadObserver>(this, web_contents);
-  }
-}
-
-void MultiNavigationObserver::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (change.type() != TabStripModelChange::kInserted) {
-    return;
-  }
-
-  auto* web_contents = change.GetInsert()->contents[0].contents.get();
-  tab_navigation_map_[web_contents].load_observer =
-      std::make_unique<LoadObserver>(this, web_contents);
+std::unique_ptr<base::CheckedObserver>
+MultiNavigationObserver::ProcessOneContents(WebContents* web_contents) {
+  tab_navigation_map_[web_contents] = 0;
+  return std::make_unique<LoadObserver>(this, web_contents);
 }
 
 void MultiNavigationObserver::OnWebContentsDestroyed(
@@ -332,29 +281,24 @@ void MultiNavigationObserver::OnWebContentsDestroyed(
 void MultiNavigationObserver::OnDidStopLoading(WebContents* web_contents) {
   auto iter = tab_navigation_map_.find(web_contents);
   CHECK(iter != tab_navigation_map_.end());
-  ++(iter->second.stop_loading_count);
+  ++(iter->second);
   ++num_navigations_;
 
-  if (waiting_for_navigation_ &&
-      num_navigations_to_wait_for_ == num_navigations_) {
-    waiting_for_navigation_ = false;
-    if (run_loop_) {
-      run_loop_->Quit();
-    }
+  if (num_navigations_to_wait_for_ &&
+      *num_navigations_to_wait_for_ == num_navigations_) {
+    ConditionMet();
   }
 }
 
 void MultiNavigationObserver::WaitForNavigations(
     int num_navigations_to_wait_for) {
-  // Shouldn't already be waiting for navigations.
-  EXPECT_FALSE(waiting_for_navigation_);
   EXPECT_LT(0, num_navigations_to_wait_for);
+  // Since we don't know how many navigations are going to be waited for, see
+  // how many we've seen so far.
   if (num_navigations_ < num_navigations_to_wait_for) {
+    // Let `OnDidStopLoading()` know when to stop waiting.
     num_navigations_to_wait_for_ = num_navigations_to_wait_for;
-    waiting_for_navigation_ = true;
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-    EXPECT_FALSE(waiting_for_navigation_);
+    Wait();
   }
   EXPECT_EQ(num_navigations_, num_navigations_to_wait_for);
 }
@@ -362,9 +306,10 @@ void MultiNavigationObserver::WaitForNavigations(
 int MultiNavigationObserver::NumNavigationsForTab(
     WebContents* web_contents) const {
   auto tab_navigations = tab_navigation_map_.find(web_contents);
-  if (tab_navigations == tab_navigation_map_.end())
+  if (tab_navigations == tab_navigation_map_.end()) {
     return 0;
-  return tab_navigations->second.stop_loading_count;
+  }
+  return tab_navigations->second;
 }
 
 // This observer creates a list of loading tabs, and then waits for them all
