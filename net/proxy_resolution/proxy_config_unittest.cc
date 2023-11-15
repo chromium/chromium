@@ -157,7 +157,7 @@ ProxyConfigToValueTestCase GetTestCaseSingleProxy() {
   ProxyConfig config;
   config.proxy_rules().ParseFromString("https://proxy1:8080");
 
-  return {std::move(config), "{\"single_proxy\":[\"https://proxy1:8080\"]}"};
+  return {std::move(config), "{\"single_proxy\":[\"[https://proxy1:8080]\"]}"};
 }
 
 ProxyConfigToValueTestCase GetTestCaseSingleProxyWithBypass() {
@@ -168,7 +168,7 @@ ProxyConfigToValueTestCase GetTestCaseSingleProxyWithBypass() {
 
   return {std::move(config),
           "{\"bypass_list\":[\"*.google.com\",\"192.168.0.1/"
-          "16\"],\"single_proxy\":[\"https://proxy1:8080\"]}"};
+          "16\"],\"single_proxy\":[\"[https://proxy1:8080]\"]}"};
 }
 
 ProxyConfigToValueTestCase GetTestCaseSingleProxyWithReversedBypass() {
@@ -179,7 +179,7 @@ ProxyConfigToValueTestCase GetTestCaseSingleProxyWithReversedBypass() {
 
   return {std::move(config),
           "{\"bypass_list\":[\"*.google.com\"],\"reverse_bypass\":true,"
-          "\"single_proxy\":[\"https://proxy1:8080\"]}"};
+          "\"single_proxy\":[\"[https://proxy1:8080]\"]}"};
 }
 
 ProxyConfigToValueTestCase GetTestCaseProxyPerScheme() {
@@ -193,8 +193,8 @@ ProxyConfigToValueTestCase GetTestCaseProxyPerScheme() {
   return {
       std::move(config),
       "{\"auto_detect\":true,\"bypass_list\":[\"*.google.com\"],\"pac_url\":"
-      "\"http://wpad/wpad.dat\",\"proxy_per_scheme\":{\"http\":[\"https://"
-      "proxy1:8080\"],\"https\":[\"socks5://proxy2:1080\"]}}"};
+      "\"http://wpad/wpad.dat\",\"proxy_per_scheme\":{\"http\":[\"[https://"
+      "proxy1:8080]\"],\"https\":[\"[socks5://proxy2:1080]\"]}}"};
 }
 
 ProxyConfigToValueTestCase GetTestCaseSingleProxyList() {
@@ -202,9 +202,10 @@ ProxyConfigToValueTestCase GetTestCaseSingleProxyList() {
   config.proxy_rules().ParseFromString(
       "https://proxy1:8080,http://proxy2,direct://");
 
-  return {std::move(config),
-          "{\"single_proxy\":[\"https://proxy1:8080\",\"proxy2:80\",\"direct://"
-          "\"]}"};
+  return {
+      std::move(config),
+      "{\"single_proxy\":[\"[https://proxy1:8080]\",\"[proxy2:80]\",\"direct://"
+      "\"]}"};
 }
 
 INSTANTIATE_TEST_SUITE_P(

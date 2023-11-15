@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "net/proxy_resolution/proxy_list.h"
 
 #include "base/check.h"
@@ -110,14 +112,15 @@ void ProxyList::DeprioritizeBadProxyChains(
 }
 
 void ProxyList::RemoveProxiesWithoutScheme(int scheme_bit_field) {
-  for (auto it = proxy_chains_.begin(); it != proxy_chains_.end();) {
-    // TODO(crbug.com/1491092): Iterate over all servers in the chain.
-    if (!(scheme_bit_field & it->proxy_server().scheme())) {
-      it = proxy_chains_.erase(it);
-      continue;
-    }
-    ++it;
-  }
+  std::erase_if(proxy_chains_, [&](const ProxyChain& chain) {
+    auto& proxy_servers = chain.proxy_servers();
+    // Remove the chain if any of the component servers does not match
+    // at least one scheme in `scheme_bit_field`.
+    return std::any_of(proxy_servers.begin(), proxy_servers.end(),
+                       [&](const ProxyServer& server) {
+                         return !(scheme_bit_field & server.scheme());
+                       });
+  });
 
   UpdateProxyServers();
 }
@@ -190,8 +193,13 @@ std::string ProxyList::ToPacString() const {
   for (; iter != proxy_chains_.end(); ++iter) {
     if (!proxy_list.empty())
       proxy_list += ";";
-    // TODO(crbug.com/1491092): Figure out how to represent a multi-proxy chain.
-    proxy_list += ProxyServerToPacResultElement(iter->proxy_server());
+    if (iter->is_multi_proxy()) {
+      // TODO(crbug.com/1491092): Figure out how to represent a multi-proxy
+      // chain.
+      proxy_list += iter->ToDebugString();
+    } else {
+      proxy_list += ProxyServerToPacResultElement(iter->proxy_server());
+    }
   }
   return proxy_list.empty() ? std::string() : proxy_list;
 }
@@ -199,9 +207,11 @@ std::string ProxyList::ToPacString() const {
 base::Value ProxyList::ToValue() const {
   base::Value::List list;
   for (const auto& proxy_chain : proxy_chains_) {
-    // TODO(crbug.com/1491092): Determine a representation for proxy chains in
-    // Values and use that for chains of length greater than one.
-    list.Append(ProxyServerToProxyUri(proxy_chain.proxy_server()));
+    if (proxy_chain.is_direct()) {
+      list.Append(ProxyServerToProxyUri(ProxyServer::Direct()));
+    } else {
+      list.Append(proxy_chain.ToDebugString());
+    }
   }
   return base::Value(std::move(list));
 }
