@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/test/browser_task_environment.h"
@@ -16,8 +15,7 @@
 
 namespace {
 
-const char kTestIdpOriginKey[] = "identity-provider";
-
+constexpr char kTestIdpOriginKey[] = "identity-provider";
 }
 
 class FederatedIdentityAccountKeyedPermissionContextTest
@@ -272,4 +270,35 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, RecoverFrom1381130) {
 
   context()->GrantPermission(site, site, site, account);
   EXPECT_TRUE(context()->HasPermission(site, site, site, account));
+}
+
+TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, RevokeNoMatch) {
+  constexpr char kAccountId[] = "account123";
+  const url::Origin rpRequester =
+      url::Origin::Create(GURL("https://rp.example"));
+  const url::Origin rpEmbedder =
+      url::Origin::Create(GURL("https://rp-embedder.example"));
+  const url::Origin idp = url::Origin::Create(GURL("https://idp.example"));
+
+  // Revoke will not crash if there are no previous permissions.
+  context()->RevokePermission(rpRequester, rpEmbedder, idp, kAccountId);
+
+  context()->GrantPermission(rpRequester, rpEmbedder, idp, kAccountId);
+  EXPECT_TRUE(
+      context()->HasPermission(rpRequester, rpEmbedder, idp, kAccountId));
+
+  // Revoke will remove the permission even if the account ID does not
+  // match.
+  context()->RevokePermission(rpRequester, rpEmbedder, idp, "noMatch");
+  EXPECT_FALSE(
+      context()->HasPermission(rpRequester, rpEmbedder, idp, kAccountId));
+
+  // Revoke will remove the permission when the account ID matches, but
+  // only that permission.
+  context()->GrantPermission(rpRequester, rpEmbedder, idp, kAccountId);
+  context()->GrantPermission(rpRequester, rpEmbedder, idp, "other");
+  context()->RevokePermission(rpRequester, rpEmbedder, idp, kAccountId);
+  EXPECT_FALSE(
+      context()->HasPermission(rpRequester, rpEmbedder, idp, kAccountId));
+  EXPECT_TRUE(context()->HasPermission(rpRequester, rpEmbedder, idp, "other"));
 }

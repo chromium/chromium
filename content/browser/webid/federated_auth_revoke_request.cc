@@ -93,7 +93,6 @@ void FederatedAuthRevokeRequest::SetCallbackAndStart(
       error_revoke_status = RevokeStatusForMetrics::kDisabledInFlags;
       break;
     case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
-      // TODO(crbug.com/1495108): determine if blocking is the right behavior.
       error_revoke_status = RevokeStatusForMetrics::kDisabledInSettings;
       break;
     // We do not block revocation on FedCM cooldown.
@@ -227,19 +226,23 @@ void FederatedAuthRevokeRequest::OnRevokeResponse(
     IdpNetworkRequestManager::FetchStatus fetch_status,
     const std::string& account_id) {
   CHECK(callback_);
-  if (fetch_status.parse_status !=
-      IdpNetworkRequestManager::ParseStatus::kSuccess) {
-    Complete(RevokeStatus::kError,
-             RevokeStatusForMetrics::kRevocationFailedOnServer,
-             /*should_delay_callback=*/false);
-    return;
-  }
   // Matches the GrantSharingPermission() call in
   // FederatedAuthRequestImpl::CompleteTokenRequest(). Note that the IDP origin
   // cannot be an arbitrary origin, but rather needs to be a potentially
   // trustworthy one.
   url::Origin idp_origin = url::Origin::Create(options_->config->config_url);
-  // TODO(crbug.com/1473134): revoke relevant permissions.
+  if (fetch_status.parse_status !=
+      IdpNetworkRequestManager::ParseStatus::kSuccess) {
+    // Even though the response was unsuccessful, the credentialed fetch was
+    // sent to the IDP, so revoke all permissions associated with the triple
+    // (`origin_`, `embedding_origin`, `idp_origin`).
+    permission_delegate_->RevokeSharingPermission(
+        origin_, embedding_origin_, idp_origin, /*account_id=*/"");
+    Complete(RevokeStatus::kError,
+             RevokeStatusForMetrics::kRevocationFailedOnServer,
+             /*should_delay_callback=*/false);
+    return;
+  }
   permission_delegate_->RevokeSharingPermission(origin_, embedding_origin_,
                                                 idp_origin, account_id);
   Complete(RevokeStatus::kSuccess, RevokeStatusForMetrics::kSuccess,

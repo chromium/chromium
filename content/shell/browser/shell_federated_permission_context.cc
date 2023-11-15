@@ -158,11 +158,23 @@ void ShellFederatedPermissionContext::RevokeSharingPermission(
       relying_party_requester.Serialize(), relying_party_embedder.Serialize(),
       identity_provider.Serialize(), account_id));
   // If we did not remove any sharing permission, to preserve strong privacy
-  // guarantees of the FedCM API, remove an arbitrary sharing permission. This
-  // disabled auto re-authentication on that account and means revocation may
-  // not be invoked repeatedly after a single successful FedCM flow.
+  // guarantees of the FedCM API, remove all sharing permissions associated with
+  // the (`relying_party_requester`, `relying_party_embedder`,
+  // `identity_provider` triple). This disabled auto re-authentication on that
+  // account and means revocation may not be invoked repeatedly after a single
+  // successful FedCM flow.
   if (!removed && !sharing_permissions_.empty()) {
-    sharing_permissions_.erase(sharing_permissions_.begin());
+    auto it = sharing_permissions_.begin();
+    while (it != sharing_permissions_.end()) {
+      const auto& [requester, embedder, idp, account] = *it;
+      if (requester == relying_party_requester.Serialize() &&
+          embedder == relying_party_embedder.Serialize() &&
+          idp == identity_provider.Serialize()) {
+        it = sharing_permissions_.erase(it);
+      } else {
+        ++it;
+      }
+    }
   }
 }
 

@@ -88,8 +88,6 @@ void FederatedIdentityPermissionContext::RevokeSharingPermission(
     const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
     const std::string& account_id) {
-  // TODO(crbug.com/1473134): ensure that a permission is revoked in this call
-  // if there is none matching the provided account id.
   sharing_context_->RevokePermission(relying_party_requester,
                                      relying_party_embedder, identity_provider,
                                      account_id);
