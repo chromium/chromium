@@ -336944,10 +336944,6 @@
        []
       ]
      },
-     "sin-cos-tan-serialize-expected.txt": [
-      "692b9cb129cbe083f11e82d8eae198be7f0418de",
-      []
-     ],
      "support": {
       "1x1-green.png": [
        "b98ca0ba0a03c580ac339e4a3653539cfa8edc71",
@@ -385873,7 +385869,7 @@
       []
      ],
      "storage-access-beyond-cookies-iframe-iframe.html": [
-      "b33d3b0ddc551cc839129b931748e0649fbb89c4",
+      "993d87d0d3a346aa410d662bdfd43379185a2a46",
       []
      ],
      "storage-access-beyond-cookies-iframe.sub.html": [
@@ -464647,7 +464643,7 @@
       ]
      ],
      "sin-cos-tan-computed.html": [
-      "bad6017520944a7726b2962a9f859f97626d0db4",
+      "6cf4f1968472de0348e8e9d770e03a34ca24c075",
       [
        null,
        {}
@@ -622991,7 +622987,7 @@
      ]
     ],
     "storage-access-beyond-cookies.localStorage.tentative.sub.https.window.js": [
-     "108e778766db5d89fb442ceb4d6ab37cf50aee38",
+     "6243cb1fa8c5c25e15747dfc22de3f3c108eea98",
      [
       "storage-access-api/storage-access-beyond-cookies.localStorage.tentative.sub.https.window.html",
       {
@@ -623027,7 +623023,7 @@
      ]
     ],
     "storage-access-beyond-cookies.sessionStorage.tentative.sub.https.window.js": [
-     "2e504851c22b58c60e79829f7bd9921424a877df",
+     "1b12f133b2c36ea2ed8eaa3cfd86b8d268dbff9c",
      [
       "storage-access-api/storage-access-beyond-cookies.sessionStorage.tentative.sub.https.window.html",
       {
@@ -656030,6 +656026,15 @@
      [
       null,
       {}
+     ]
+    ],
+    "RTCConfiguration-validation.html": [
+     "851ed8d81b188468c053996275e534c307c6864d",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "RTCDTMFSender-insertDTMF.https.html": [
