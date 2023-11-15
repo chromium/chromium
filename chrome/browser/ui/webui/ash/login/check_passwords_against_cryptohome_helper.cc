@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
-#include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -42,11 +41,9 @@ CheckPasswordsAgainstCryptohomeHelper::CheckPasswordsAgainstCryptohomeHelper(
       on_check_passwords_against_cryptohome_helper_success_callback_(std::move(
           on_check_passwords_against_cryptohome_helper_success_callback)) {
   current_password_index_ = 0u;
-  extended_authenticator_ = ExtendedAuthenticator::Create(this);
   SetKeyForUserContext(user_context_,
                        scraped_passwords_[current_password_index_]);
-  extended_authenticator_.get()->AuthenticateToCheck(user_context_,
-                                                     base::OnceClosure());
+  // TODO(crbug.com/1295294): Find some way to check the passwords.
 }
 
 CheckPasswordsAgainstCryptohomeHelper::
@@ -65,8 +62,7 @@ void CheckPasswordsAgainstCryptohomeHelper::OnAuthFailure(
 
   SetKeyForUserContext(user_context_,
                        scraped_passwords_[current_password_index_]);
-  extended_authenticator_.get()->AuthenticateToCheck(user_context_,
-                                                     base::OnceClosure());
+  // TODO(crbug.com/1295294): Find some way to check the passwords.
 }
 
 void CheckPasswordsAgainstCryptohomeHelper::OnAuthSuccess(

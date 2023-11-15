@@ -12,7 +12,6 @@
 #include "components/login/base_screen_handler_utils.h"
 
 namespace ash {
-class ExtendedAuthenticator;
 
 class CheckPasswordsAgainstCryptohomeHelper : public AuthStatusConsumer {
  public:
@@ -44,9 +43,6 @@ class CheckPasswordsAgainstCryptohomeHelper : public AuthStatusConsumer {
   UserContext user_context_;
   const ::login::StringList scraped_passwords_;
   size_t current_password_index_ = 0u;
-
-  // Used to authenticate the user.
-  scoped_refptr<ExtendedAuthenticator> extended_authenticator_;
 
   OnCheckPasswordsAgainstCryptohomeHelperFailureCallback
       on_check_passwords_against_cryptohome_helper_failure_callback_;

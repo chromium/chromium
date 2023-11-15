@@ -424,6 +424,8 @@ class SamlTestWithImprovedScraping : public ImprovedScrapingTestBase {
   }
 };
 
+// Tests that signin frame should display the SAML notice and the 'back' button
+
 // Saml test with kCheckPasswordsAgainstCryptohomeHelper disabled.
 class SamlTestWithoutImprovedScraping : public ImprovedScrapingTestBase {
  public:
@@ -431,8 +433,6 @@ class SamlTestWithoutImprovedScraping : public ImprovedScrapingTestBase {
     SetFeatures(/*enable_improved_scraping=*/false);
   }
 };
-
-// Tests that signin frame should display the SAML notice and the 'back' button
 // when SAML IdP page is loaded. And the 'back' button goes back to gaia on
 // clicking.
 IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, SamlUI) {
@@ -775,7 +775,10 @@ IN_PROC_BROWSER_TEST_F(SamlTestWithoutImprovedScraping, ScrapedMultiple) {
 }
 
 // Tests the multiple password scraped flow.
-IN_PROC_BROWSER_TEST_F(SamlTestWithImprovedScraping, ScrapedMultiple) {
+// TODO(crbug.com/1295294): This feature was deprioritized in mid-2022.
+// Restore test once work resumes, or feel free to clean it up if you
+// step on it past mid-2024.
+IN_PROC_BROWSER_TEST_F(SamlTestWithImprovedScraping, DISABLED_ScrapedMultiple) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
 
