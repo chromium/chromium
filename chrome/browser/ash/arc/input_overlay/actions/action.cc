@@ -482,6 +482,10 @@ bool Action::IsDeleted() {
          current_input_->input_sources() == InputSource::IS_NONE;
 }
 
+bool Action::IsActive() {
+  return !!touch_id_;
+}
+
 bool Action::CreateTouchPressedEvent(const base::TimeTicks& time_stamp,
                                      std::list<ui::TouchEvent>& touch_events) {
   if (touch_id_) {

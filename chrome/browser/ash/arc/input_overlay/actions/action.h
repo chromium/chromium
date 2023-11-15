@@ -131,6 +131,10 @@ class Action {
   // instance is deleted.
   bool IsDeleted();
 
+  // Returns true if this action has event translated to touch events and not
+  // released yet.
+  bool IsActive();
+
   InputElement* current_input() const { return current_input_.get(); }
   InputElement* original_input() const { return original_input_.get(); }
   InputElement* pending_input() const { return pending_input_.get(); }

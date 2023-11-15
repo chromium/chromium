@@ -713,7 +713,10 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   }
 
   std::list<ui::TouchEvent> touch_events;
+  bool is_play_mode_active = false;
   for (auto& action : actions_) {
+    is_play_mode_active |= action->IsActive();
+
     bool keep_original_event = false;
     bool rewritten =
         action->RewriteEvent(event, is_mouse_locked_, rotation_transform_.get(),
@@ -752,17 +755,10 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     }
   }
 
-  // Discard other mouse events if the mouse is locked.
-  if (is_mouse_locked_ && event.IsMouseEvent()) {
+  // Discard other mouse events if the mouse is locked or it is in active play
+  // mode.
+  if (event.IsMouseEvent() && (is_mouse_locked_ || is_play_mode_active)) {
     return DiscardEvent(continuation);
-  }
-
-  // When the mouse is unlocked and the mouse event interrupts here, release
-  // active actions first and then send the mouse event. Otherwise, Android
-  // generates touch cancel event automatically, which puts some games into a
-  // weird state.
-  if (event.IsMouseEvent()) {
-    CleanupTouchEvents();
   }
 
   return SendEvent(continuation, &event);
