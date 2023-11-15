@@ -116,8 +116,9 @@ source_set("browser_tests") {
   }
 }
 
-# On Lacros, these browser tests require Ash to be running, as they rely on
-# web apps being registered with the App Service. Runs in the "lacros_chrome_browsertests_run_in_series" target.
+# On Lacros, these browser tests require Ash to be running, as they rely on web
+# apps being registered with the App Service. So runs in the
+# "lacros_chrome_browsertests" target on Lacros.
 source_set("app_service_browser_tests") {
   testonly = true
 
