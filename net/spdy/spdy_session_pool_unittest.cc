@@ -1825,6 +1825,49 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChanged) {
   }
 }
 
+// Tests the OnSSLConfigForServersChanged() method matches SpdySessions
+// containing proxy chains.
+TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithProxyChain) {
+  const MockConnect connect_data(SYNCHRONOUS, OK);
+  const MockRead reads[] = {
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
+  };
+
+  ProxyChain proxy_chain({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "proxya", 443),
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "proxyb", 443),
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "proxyc", 443),
+  });
+
+  std::vector<std::unique_ptr<StaticSocketDataProvider>> socket_data;
+  socket_data.push_back(std::make_unique<StaticSocketDataProvider>(
+      reads, base::span<MockWrite>()));
+  socket_data.back()->set_connect_data(connect_data);
+  session_deps_.socket_factory->AddSocketDataProvider(socket_data.back().get());
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+
+  SpdySessionKey key(HostPortPair::FromURL(GURL("https://example.com")),
+                     proxy_chain, PRIVACY_MODE_DISABLED,
+                     SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+  base::WeakPtr<SpdySession> session =
+      CreateSpdySession(http_session_.get(), key, NetLogWithSource());
+
+  EXPECT_TRUE(session->IsAvailable());
+
+  spdy_session_pool_->OnSSLConfigForServersChanged(
+      {HostPortPair("proxyb", 443)});
+  base::RunLoop().RunUntilIdle();
+
+  // The unavailable session is closed.
+  EXPECT_FALSE(session);
+}
+
 // Tests the OnSSLConfigForServersChanged() method when there are streams open.
 TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithStreams) {
   // Set up a SpdySession with an active, created, and pending stream.
