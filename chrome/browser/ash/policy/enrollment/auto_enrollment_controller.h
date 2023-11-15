@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_AUTO_ENROLLMENT_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -118,7 +119,7 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
       const ash::NetworkState::PortalState portal_state) override;
   void OnShuttingDown() override;
 
-  AutoEnrollmentState state() const { return state_; }
+  std::optional<AutoEnrollmentState> state() const { return state_; }
 
   // Returns the auto-enrollment check type performed by this client.
   // The returned value will be `CheckType::kNone` before calling `Start()`.
@@ -241,7 +242,7 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // Used for checking dev boot status.
   std::unique_ptr<EnrollmentFwmpHelper> enrollment_fwmp_helper_;
 
-  AutoEnrollmentState state_ = AutoEnrollmentState::kIdle;
+  std::optional<AutoEnrollmentState> state_;
   ProgressCallbackList progress_callbacks_;
 
   std::unique_ptr<AutoEnrollmentClient> client_;

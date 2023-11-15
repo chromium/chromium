@@ -110,8 +110,6 @@ int GetSanitizedArg(const std::string& switch_name) {
 
 std::string AutoEnrollmentStateToString(AutoEnrollmentState state) {
   switch (state) {
-    case AutoEnrollmentState::kIdle:
-      return "Not started";
     case AutoEnrollmentState::kPending:
       return "Pending";
     case AutoEnrollmentState::kConnectionError:
@@ -156,7 +154,6 @@ void ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport report) {
 
 bool IsFinalAutoEnrollmentState(AutoEnrollmentState state) {
   switch (state) {
-    case AutoEnrollmentState::kIdle:
     case AutoEnrollmentState::kPending:
     case AutoEnrollmentState::kConnectionError:
     case AutoEnrollmentState::kServerError:
@@ -170,7 +167,6 @@ bool IsFinalAutoEnrollmentState(AutoEnrollmentState state) {
 
 bool IsInProgressAutoEnrollmentState(AutoEnrollmentState state) {
   switch (state) {
-    case AutoEnrollmentState::kIdle:
     case AutoEnrollmentState::kPending:
       return true;
     case AutoEnrollmentState::kConnectionError:
@@ -275,21 +271,13 @@ AutoEnrollmentController::~AutoEnrollmentController() = default;
 
 void AutoEnrollmentController::Start() {
   LOG(WARNING) << "Starting auto-enrollment controller.";
-  switch (state_) {
-    case AutoEnrollmentState::kPending:
-      // Abort re-start if the check is still running.
-      return;
-    case AutoEnrollmentState::kNoEnrollment:
-    case AutoEnrollmentState::kEnrollment:
-    case AutoEnrollmentState::kDisabled:
-      // Abort re-start when there's already a final decision.
-      return;
 
-    case AutoEnrollmentState::kIdle:
-    case AutoEnrollmentState::kConnectionError:
-    case AutoEnrollmentState::kServerError:
-      // Continue (re-)start.
-      break;
+  if (state_.has_value() && IsInProgressAutoEnrollmentState(state_.value())) {
+    return;
+  }
+
+  if (state_.has_value() && IsFinalAutoEnrollmentState(state_.value())) {
+    return;
   }
 
   if (!network_state_observation_.IsObserving()) {
@@ -603,11 +591,11 @@ void AutoEnrollmentController::UpdateState(AutoEnrollmentState new_state) {
                << AutoEnrollmentStateToString(new_state);
   state_ = new_state;
 
-  if (IsFinalAutoEnrollmentState(state_)) {
+  if (IsFinalAutoEnrollmentState(state_.value())) {
     network_state_observation_.Reset();
   }
 
-  if (!IsInProgressAutoEnrollmentState(state_)) {
+  if (!IsInProgressAutoEnrollmentState(state_.value())) {
     // Stop the safeguard timer once a result comes in.
     safeguard_timer_.Stop();
     // Reset enrollment state fetcher to allow restarting.
@@ -630,7 +618,7 @@ void AutoEnrollmentController::UpdateState(AutoEnrollmentState new_state) {
   if (state_ == AutoEnrollmentState::kNoEnrollment) {
     StartCleanupForcedReEnrollment();
   } else {
-    progress_callbacks_.Notify(state_);
+    progress_callbacks_.Notify(state_.value());
   }
 }
 
@@ -645,10 +633,10 @@ void AutoEnrollmentController::StartCleanupForcedReEnrollment() {
 
 void AutoEnrollmentController::StartRemoveFirmwareManagementParameters(
     bool service_is_ready) {
-  DCHECK_EQ(AutoEnrollmentState::kNoEnrollment, state_);
+  DCHECK(state_ == AutoEnrollmentState::kNoEnrollment);
   if (!service_is_ready) {
     LOG(ERROR) << "Failed waiting for cryptohome D-Bus service availability.";
-    progress_callbacks_.Notify(state_);
+    progress_callbacks_.Notify(state_.value());
     return;
   }
 
@@ -678,11 +666,11 @@ void AutoEnrollmentController::OnFirmwareManagementParametersRemoved(
 
 void AutoEnrollmentController::StartClearForcedReEnrollmentVpd(
     bool service_is_ready) {
-  DCHECK_EQ(AutoEnrollmentState::kNoEnrollment, state_);
+  DCHECK(state_ == AutoEnrollmentState::kNoEnrollment);
   if (!service_is_ready) {
     LOG(ERROR)
         << "Failed waiting for session_manager D-Bus service availability.";
-    progress_callbacks_.Notify(state_);
+    progress_callbacks_.Notify(state_.value());
     return;
   }
 
@@ -696,7 +684,7 @@ void AutoEnrollmentController::OnForcedReEnrollmentVpdCleared(bool reply) {
     LOG(ERROR) << "Failed to clear forced re-enrollment flags in RW VPD.";
   }
 
-  progress_callbacks_.Notify(state_);
+  progress_callbacks_.Notify(state_.value());
 }
 
 void AutoEnrollmentController::Timeout() {

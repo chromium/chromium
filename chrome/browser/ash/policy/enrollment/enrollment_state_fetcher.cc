@@ -976,7 +976,6 @@ class EnrollmentStateFetcherImpl::Sequence {
                            AutoEnrollmentState state) {
     std::string uma_suffix;
     switch (state) {
-      case AutoEnrollmentState::kIdle:
       case AutoEnrollmentState::kPending:
         NOTREACHED();
         break;
@@ -1012,7 +1011,6 @@ class EnrollmentStateFetcherImpl::Sequence {
   }
 
   void ReportResult(AutoEnrollmentState state) {
-    DCHECK(state != AutoEnrollmentState::kIdle);
     DCHECK(state != AutoEnrollmentState::kPending);
     ReportTotalDuration(base::TimeTicks::Now() - fetch_started_, state);
     std::move(report_result_).Run(state);

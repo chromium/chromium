@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -84,8 +86,10 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
                       : NetworkState::PortalState::kUnknown;
 
   // Perform an initial UI update.
-  if (!UpdateCaptivePortalState(new_captive_portal_state))
-    UpdateAutoEnrollmentState(auto_enrollment_controller_->state());
+  if (!UpdateCaptivePortalState(new_captive_portal_state) &&
+      auto_enrollment_controller_->state().has_value()) {
+    UpdateAutoEnrollmentState(auto_enrollment_controller_->state().value());
+  }
 
   captive_portal_state_ = new_captive_portal_state;
 
@@ -143,19 +147,21 @@ void AutoEnrollmentCheckScreen::OnAutoEnrollmentCheckProgressed(
 
 void AutoEnrollmentCheckScreen::UpdateState(
     NetworkState::PortalState new_captive_portal_state) {
-  policy::AutoEnrollmentState new_auto_enrollment_state =
+  const std::optional<policy::AutoEnrollmentState> new_auto_enrollment_state =
       auto_enrollment_controller_->state();
 
   // Configure the error screen to show the appropriate error message.
-  if (!UpdateCaptivePortalState(new_captive_portal_state))
-    UpdateAutoEnrollmentState(new_auto_enrollment_state);
+  if (!UpdateCaptivePortalState(new_captive_portal_state) &&
+      new_auto_enrollment_state.has_value()) {
+    UpdateAutoEnrollmentState(new_auto_enrollment_state.value());
+  }
 
   // Update the connecting indicator.
   error_screen_->ShowConnectingIndicator(new_auto_enrollment_state ==
                                          policy::AutoEnrollmentState::kPending);
 
   // Determine whether a retry is in order.
-  bool retry =
+  const bool retry =
       (new_captive_portal_state == NetworkState::PortalState::kOnline) &&
       (captive_portal_state_ != NetworkState::PortalState::kOnline);
 
@@ -198,7 +204,6 @@ bool AutoEnrollmentCheckScreen::UpdateCaptivePortalState(
 bool AutoEnrollmentCheckScreen::UpdateAutoEnrollmentState(
     policy::AutoEnrollmentState new_auto_enrollment_state) {
   switch (new_auto_enrollment_state) {
-    case policy::AutoEnrollmentState::kIdle:
     case policy::AutoEnrollmentState::kPending:
     case policy::AutoEnrollmentState::kEnrollment:
     case policy::AutoEnrollmentState::kNoEnrollment:
@@ -263,8 +268,11 @@ void AutoEnrollmentCheckScreen::SignalCompletion() {
 }
 
 bool AutoEnrollmentCheckScreen::IsCompleted() const {
-  switch (auto_enrollment_controller_->state()) {
-    case policy::AutoEnrollmentState::kIdle:
+  if (!auto_enrollment_controller_->state().has_value()) {
+    return false;
+  }
+
+  switch (auto_enrollment_controller_->state().value()) {
     case policy::AutoEnrollmentState::kPending:
     case policy::AutoEnrollmentState::kConnectionError:
       return false;

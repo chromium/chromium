@@ -555,11 +555,13 @@ TEST_F(AutoEnrollmentControllerNetworkTest, DoesNotStartWhenGoesOnline) {
 
   auto controller = CreateController();
 
-  EXPECT_EQ(controller.state(), AutoEnrollmentState::kIdle);
+  EXPECT_FALSE(controller.state().has_value());
+  EXPECT_FALSE(controller.SafeguardTimerForTesting().IsRunning());
 
   testing_network_.GoOnline();
 
-  EXPECT_EQ(controller.state(), AutoEnrollmentState::kIdle);
+  EXPECT_FALSE(controller.state().has_value());
+  EXPECT_FALSE(controller.SafeguardTimerForTesting().IsRunning());
 }
 
 // Tests that the controller retries when the network goes online.

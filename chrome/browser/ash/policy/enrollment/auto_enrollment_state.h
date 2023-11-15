@@ -12,8 +12,6 @@ enum class AutoEnrollmentState {
   // TODO(b/265923216): Deprecate kIdle and kPending states after fully
   // migrating to EnrollmentStateFetcher and removing AutoEnrollmentClient.
 
-  // Not yet started.
-  kIdle = 0,
   // Working, another event will be fired eventually.
   kPending = 1,
   // Failed to connect to DMServer or to synchronize the system clock.
