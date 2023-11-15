@@ -4,11 +4,11 @@
 
 #include "cc/resources/ui_resource_manager.h"
 
+#include <unordered_map>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "cc/resources/scoped_ui_resource.h"
 
 namespace cc {
@@ -83,7 +83,7 @@ UIResourceId UIResourceManager::GetOrCreateUIResource(const SkBitmap& bitmap) {
 
   // Evict all UIResources whose bitmaps are no longer referenced outside of the
   // map.
-  base::EraseIf(owned_shared_resources_,
+  std::erase_if(owned_shared_resources_,
                 [](auto& pair) { return pair.second->IsUniquelyOwned(); });
 
   // Max capacity of `owned_shared_resources_`. A DCHECK() would fire if cache

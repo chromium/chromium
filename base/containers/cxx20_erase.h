@@ -11,8 +11,6 @@
 #include "base/containers/cxx20_erase_map.h"
 #include "base/containers/cxx20_erase_set.h"
 #include "base/containers/cxx20_erase_string.h"
-#include "base/containers/cxx20_erase_unordered_map.h"
-#include "base/containers/cxx20_erase_unordered_set.h"
 #include "base/containers/cxx20_erase_vector.h"
 
 // Erase/EraseIf are based on C++20's uniform container erasure API:

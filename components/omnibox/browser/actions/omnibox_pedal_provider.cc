@@ -5,8 +5,8 @@
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 
 #include <numeric>
+#include <unordered_map>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/rtl.h"
@@ -55,7 +55,7 @@ OmniboxPedalProvider::OmniboxPedalProvider(
 
   // Cull Pedals with incomplete data; they won't trigger if not enabled,
   // but there's no need to keep them in the collection (iterated frequently).
-  base::EraseIf(pedals_, [](const auto& it) {
+  std::erase_if(pedals_, [](const auto& it) {
     const OmniboxPedal::LabelStrings& labels = it.second->GetLabelStrings();
     return labels.hint.empty() || labels.suggestion_contents.empty() ||
            labels.accessibility_hint.empty() ||

@@ -156,23 +156,5 @@ TEST(Erase, Multiset) {
   RunEraseIfTest<std::multiset<std::pair<int, int>, std::greater<>>>();
 }
 
-TEST(Erase, UnorderedMap) {
-  RunEraseIfTest<std::unordered_map<int, int>>();
-  RunEraseIfTest<std::unordered_map<int, int, CustomIntHash>>();
-}
-
-TEST(Erase, UnorderedMultimap) {
-  RunEraseIfTest<std::unordered_multimap<int, int>>();
-  RunEraseIfTest<std::unordered_multimap<int, int, CustomIntHash>>();
-}
-
-TEST(Erase, UnorderedSet) {
-  RunEraseIfTest<std::unordered_set<std::pair<int, int>, HashByFirst>>();
-}
-
-TEST(Erase, UnorderedMultiset) {
-  RunEraseIfTest<std::unordered_multiset<std::pair<int, int>, HashByFirst>>();
-}
-
 }  // namespace
 }  // namespace base
