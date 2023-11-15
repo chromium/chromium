@@ -152,10 +152,10 @@ bool CorruptSizeInHeader(const base::FilePath& db_path) {
     // any future transaction always touches the DB file and not just the WAL
     // file.
     base::ScopedAllowBlockingForTesting allow_blocking;
-    // TODO: This function doesn't reliably work if connections to the DB are
-    // still open. Change any uses to ensure that we close all database
-    // connections before calling this function.
-    sql::Database db({.exclusive_locking = false, .wal_mode = true});
+    // This function doesn't reliably work if connections to the DB are still
+    // open. The database is opened in excusive mode. Open will fail if any
+    // other connection exists on the database.
+    sql::Database db({.wal_mode = true});
     if (!db.Open(db_path))
       return false;
     int wal_log_size = 0;
