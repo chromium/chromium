@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -42,7 +43,6 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/validation.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -293,8 +293,7 @@ base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
           static_cast<jint>(source()),
           base::android::ConvertUTF8ToJavaString(env, language_code()));
 
-  for (ServerFieldType type :
-       AutofillTable::GetStoredTypesForAutofillProfile()) {
+  for (ServerFieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
     auto status = static_cast<jint>(GetVerificationStatus(type));
     // TODO(crbug.com/1471502): Reconcile usage of GetInfo and GetRawInfo below.
     if (type == NAME_FULL || type == NAME_HONORIFIC_PREFIX) {
@@ -797,7 +796,7 @@ void AutofillProfile::MergeFormGroupTokenQuality(
   merged_group.GetSupportedTypes(&supported_types);
   for (ServerFieldType type : supported_types) {
     const std::u16string& merged_value = merged_group.GetRawInfo(type);
-    if (!ProfileTokenQuality::IsStoredType(type) ||
+    if (!GetDatabaseStoredTypesOfAutofillProfile().contains(type) ||
         merged_value == GetRawInfo(type)) {
       // Quality information is only tracked for stored types. If the merged
       // value matches the existing value, its token quality is kept.

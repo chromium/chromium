@@ -322,15 +322,20 @@ Several important subsets of ServerFieldTypes exist:
   Every form group defines which ServerFieldTypes it maintains. For example:
   * The supported type of [EmailInfo](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/contact_info.h;l=87;drc=10009f6ff9f3b626979c9422321686f360df7cee) is [EMAIL_ADDRESS](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/contact_info.cc;l=184;drc=59b1cf76cc21ae34bc99073e963f7d268b0a5c17).
   * The supported types of AutofillProfile are all name, address, phone number, etc. types.
-* Stored types of AutofillProfile: The set of types stored in AutofillTable, defined by [AutofillTable::GetStoredTypesForAutofillProfile()](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/webdata/autofill_table.h;l=565;drc=d9e2cfc408da9805b9e711c33081eabe2fca299b).
-  * Conceptually, the stored types are a subset of the supported types of AutofillProfile. In practice,
-    this is not always true, since types might not be fully implemented yet and are still behind feature flags.
-    An example of a stored type that is not supported by AutofillProfile is NAME_HONORIFIC_PREFIX.
-  * Not all supported types of AutofillProfile are stored, since types following a standard format can unambiguously be derived from
-    another type. See derived types below.
-  * Since parsing and formatting are not necessarily inverse operations, most supported types of AutofillProfile are stored.
-* Derived types of AutofillProfile: The relative complement of stored types in the supported types of AutofillProfile. Every derived type is derived directly from a stored type. The set of derived types and their corresponding stored types are listed [here](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/profile_token_quality.cc;l=32-62;drc=c50f718fc17e5a616359370bb4bbe9e702934aa1).
-* Setting-visible types of AutofillProfiles: The types shown in the "Addresses and more" settings UI. They correspond to the top-level types of the hierarchy: NAME_FULL, ADDRESS_HOME_COUNTRY, etc.
+* Stored types of AutofillProfile: The set of types stored in AutofillTable,
+  defined by `GetDatabaseStoredTypesOfAutofillProfile()` in field_type_util.h.
+  * Not all supported types of AutofillProfile are stored, since types following
+    a standard format can unambiguously be derived from another type. See
+    derived types below.
+  * Since parsing and formatting are not necessarily inverse operations, most
+    supported types of AutofillProfile are stored.
+* Derived types of AutofillProfile: The relative complement of stored types in
+  the supported types of AutofillProfile. Every derived type is derived directly
+  from a stored type. The set of derived types and their corresponding stored
+  types are listed [here](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/profile_token_quality.cc;l=32-62;drc=c50f718fc17e5a616359370bb4bbe9e702934aa1).
+* Setting-visible types of AutofillProfiles: The types shown in the "Addresses
+  and more" settings UI. They correspond to the top-level types of the
+  hierarchy: NAME_FULL, ADDRESS_HOME_COUNTRY, etc.
 
 ## How to introduce new field types?
 

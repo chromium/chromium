@@ -23,10 +23,10 @@
 #include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 
@@ -50,7 +50,7 @@ ServerFieldTypeSet GetSupportedTypes(const AutofillProfile& profile) {
 // to represent the root node of the address tree. The type is not stored and
 // not used for filling.
 ServerFieldType GetStoredTypeOf(ServerFieldType type) {
-  if (ProfileTokenQuality::IsStoredType(type)) {
+  if (GetDatabaseStoredTypesOfAutofillProfile().contains(type)) {
     return type;
   }
   CHECK_NE(type, ADDRESS_HOME_ADDRESS);
@@ -160,11 +160,6 @@ bool ProfileTokenQuality::operator==(const ProfileTokenQuality& other) const {
 
 bool ProfileTokenQuality::operator!=(const ProfileTokenQuality& other) const {
   return !operator==(other);
-}
-
-// static
-bool ProfileTokenQuality::IsStoredType(ServerFieldType type) {
-  return AutofillTable::GetStoredTypesForAutofillProfile().contains(type);
 }
 
 bool ProfileTokenQuality::AddObservationsForFilledForm(
@@ -302,8 +297,9 @@ ObservationType ProfileTokenQuality::GetObservationTypeFromField(
   const ServerFieldType type = field.Type().GetStorableType();
   if (field.is_autofilled) {
     // The filled value was accepted without editing.
-    return IsStoredType(type) ? ObservationType::kAccepted
-                              : ObservationType::kPartiallyAccepted;
+    return GetDatabaseStoredTypesOfAutofillProfile().contains(type)
+               ? ObservationType::kAccepted
+               : ObservationType::kPartiallyAccepted;
   }
 
   // Since the `autofill_source_profile_guid()` is set and the field is not
@@ -315,7 +311,7 @@ ObservationType ProfileTokenQuality::GetObservationTypeFromField(
 
 std::vector<uint8_t> ProfileTokenQuality::SerializeObservationsForStoredType(
     ServerFieldType type) const {
-  CHECK(IsStoredType(type));
+  CHECK(GetDatabaseStoredTypesOfAutofillProfile().contains(type));
   std::vector<uint8_t> serialized_data;
   if (auto it = observations_.find(type); it != observations_.end()) {
     for (const Observation& observation : it->second) {
@@ -329,7 +325,7 @@ std::vector<uint8_t> ProfileTokenQuality::SerializeObservationsForStoredType(
 void ProfileTokenQuality::LoadSerializedObservationsForStoredType(
     ServerFieldType type,
     base::span<const uint8_t> serialized_data) {
-  CHECK(IsStoredType(type));
+  CHECK(GetDatabaseStoredTypesOfAutofillProfile().contains(type));
   // If the database was modified through external means, the `serialized_data`
   // might not be valid. In this case, the code won't crash, but it might create
   // observations with incorrect types.
@@ -346,7 +342,7 @@ void ProfileTokenQuality::LoadSerializedObservationsForStoredType(
 void ProfileTokenQuality::CopyObservationsForStoredType(
     ServerFieldType type,
     const ProfileTokenQuality& other) {
-  CHECK(IsStoredType(type));
+  CHECK(GetDatabaseStoredTypesOfAutofillProfile().contains(type));
   if (auto it = other.observations_.find(type);
       it != other.observations_.end()) {
     observations_[type] = it->second;
@@ -356,7 +352,7 @@ void ProfileTokenQuality::CopyObservationsForStoredType(
 }
 
 void ProfileTokenQuality::ResetObservationsForStoredType(ServerFieldType type) {
-  CHECK(IsStoredType(type));
+  CHECK(GetDatabaseStoredTypesOfAutofillProfile().contains(type));
   observations_.erase(type);
 }
 
@@ -366,8 +362,7 @@ void ProfileTokenQuality::ResetObservationsForDifferingTokens(
           features::kAutofillTrackProfileTokenQuality)) {
     return;
   }
-  for (ServerFieldType type :
-       AutofillTable::GetStoredTypesForAutofillProfile()) {
+  for (ServerFieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
     if (profile_->GetRawInfo(type) != other.GetRawInfo(type)) {
       ResetObservationsForStoredType(type);
     }

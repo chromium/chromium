@@ -101,10 +101,6 @@ class ProfileTokenQuality {
   bool operator==(const ProfileTokenQuality& other) const;
   bool operator!=(const ProfileTokenQuality& other) const;
 
-  // Determines if a `type` is considered stored. Observations are only tracked
-  // for stored types.
-  static bool IsStoredType(ServerFieldType type);
-
   // Derives an observation from every field of the `form_structure` that was
   // autofilled with the `profile_`. Only fields with no existing observation
   // for the same type are considered.
@@ -251,7 +247,7 @@ class ProfileTokenQuality {
   // The profile for which observations are collected.
   raw_ref<AutofillProfile> profile_;
 
-  // Maps from `AutofillTable::GetStoredTypesForAutofillProfile()` to the
+  // Maps from `AutofillTable::GetDatabaseStoredTypesOfAutofillProfile()` to the
   // observations for this stored type. The following invariants hold for the
   // `circular_deque`:
   // - The observations are ordered from oldest (`front()`) to newest

@@ -87,7 +87,7 @@ class ProfileTokenQualityTest : public testing::Test {
 // `AutofillProfile`. In particular, this test ensures that whenever a new
 // non-stored type is added, the map in `GetStoredTypeOf()` is updated
 // accordingly. If the type is supposed to be stored, it should be added to
-// `AutofillTable::GetStoredTypesForAutofillProfile()`.
+// `AutofillTable::GetDatabaseStoredTypesOfAutofillProfile()`.
 TEST_F(ProfileTokenQualityTest, AllSupportedTypesHandled) {
   ServerFieldTypeSet supported_types;
   AutofillProfile profile;

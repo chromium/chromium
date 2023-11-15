@@ -22,10 +22,10 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -69,7 +69,7 @@ autofill_private::AddressEntry ProfileToAddressEntry(
   address.guid = profile.guid();
 
   base::ranges::transform(
-      autofill::AutofillTable::GetStoredTypesForAutofillProfile(),
+      autofill::GetDatabaseStoredTypesOfAutofillProfile(),
       back_inserter(address.fields), [&profile](auto field_type) {
         autofill_private::AddressField field;
         field.type = autofill_private::ParseServerFieldType(

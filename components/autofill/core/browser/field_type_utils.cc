@@ -9,9 +9,51 @@
 #include "base/notreached.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
+
+const ServerFieldTypeSet& GetDatabaseStoredTypesOfAutofillProfile() {
+  static constexpr ServerFieldTypeSet stored_types{
+      COMPANY_NAME,
+      NAME_HONORIFIC_PREFIX,
+      NAME_FIRST,
+      NAME_MIDDLE,
+      NAME_LAST_FIRST,
+      NAME_LAST_CONJUNCTION,
+      NAME_LAST_SECOND,
+      NAME_LAST,
+      NAME_FULL,
+      NAME_FULL_WITH_HONORIFIC_PREFIX,
+      ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_STREET_NAME,
+      ADDRESS_HOME_STREET_LOCATION,
+      ADDRESS_HOME_HOUSE_NUMBER,
+      ADDRESS_HOME_SUBPREMISE,
+      ADDRESS_HOME_DEPENDENT_LOCALITY,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_SORTING_CODE,
+      ADDRESS_HOME_COUNTRY,
+      ADDRESS_HOME_APT,
+      ADDRESS_HOME_APT_NUM,
+      ADDRESS_HOME_APT_TYPE,
+      ADDRESS_HOME_FLOOR,
+      ADDRESS_HOME_OVERFLOW,
+      ADDRESS_HOME_LANDMARK,
+      ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+      ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+      ADDRESS_HOME_BETWEEN_STREETS,
+      ADDRESS_HOME_BETWEEN_STREETS_1,
+      ADDRESS_HOME_BETWEEN_STREETS_2,
+      ADDRESS_HOME_ADMIN_LEVEL2,
+      EMAIL_ADDRESS,
+      PHONE_HOME_WHOLE_NUMBER,
+      BIRTHDATE_DAY,
+      BIRTHDATE_MONTH,
+      BIRTHDATE_4_DIGIT_YEAR};
+  return stored_types;
+}
 
 size_t NumberOfPossibleFieldTypesInGroup(const AutofillField& field,
                                          FieldTypeGroup group) {

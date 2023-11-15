@@ -608,19 +608,6 @@ class AutofillTable : public WebDatabaseTable,
   // Retrieves the AutofillTable* owned by |db|.
   static AutofillTable* FromWebDatabase(WebDatabase* db);
 
-  // All ServerFieldTypes stored for an AutofillProfile in the local_addresses
-  // or contact_info table (depending on the profile source).
-  // When introducing a new field type, it suffices to add it here. When
-  // removing a field type, removing it from the list suffices (no additional
-  // clean-up in the table necessary). This is not reusing
-  // `AutofillProfile::SupportedTypes()` for three reasons:
-  // - Due to the table design, the stored types are already ambiguous, so we
-  //   prefer the explicitness here.
-  // - Some supported types (like PHONE_HOME_CITY_CODE) are not stored.
-  // - Some non-supported types are stored (usually types that don't have
-  //   filling support yet).
-  static const ServerFieldTypeSet& GetStoredTypesForAutofillProfile();
-
   // WebDatabaseTable:
   WebDatabaseTable::TypeKey GetTypeKey() const override;
   bool CreateTablesIfNecessary() override;
