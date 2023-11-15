@@ -6656,6 +6656,9 @@ void NavigationRequest::OnNavigationEventProcessed(
     NavigationThrottle::ThrottleCheckResult result) {
   DCHECK_NE(NavigationThrottle::DEFER, result.action());
   switch (event) {
+    case NavigationThrottleRunner::Event::NoEvent:
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
+      return;
     case NavigationThrottleRunner::Event::WillStartRequest:
       OnWillStartRequestProcessed(result);
       return;
@@ -6671,8 +6674,6 @@ void NavigationRequest::OnNavigationEventProcessed(
     case NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader:
       OnWillCommitWithoutUrlLoaderProcessed(result);
       return;
-    default:
-      NOTREACHED();
   }
   NOTREACHED();
 }
