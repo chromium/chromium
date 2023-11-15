@@ -175,7 +175,6 @@ void WebKioskAppServiceLauncher::OnAppLaunched(bool success) {
 }
 
 void WebKioskAppServiceLauncher::OnAppBecomesVisible() {
-  // TODO(b/242023891): Make sure we send a absl::nullopt when Lacros is enabled
   observers_.NotifyAppWindowCreated(
       web_app::GenerateApplicationNameFromAppId(app_id_));
 }

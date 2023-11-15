@@ -20,6 +20,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "kiosk_troubleshooting_controller_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -34,6 +35,14 @@ void MakeWindowResizable(BrowserWindow* window) {
   if (widget) {
     widget->widget_delegate()->SetCanResize(true);
   }
+}
+
+bool IsAshWithLacrosEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return crosapi::browser_util::IsLacrosEnabled();
+#else
+  return false;
+#endif
 }
 
 }  // namespace
@@ -97,6 +106,17 @@ void KioskBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
     return;
   }
 #endif
+
+  if (IsAshWithLacrosEnabled()) {
+    base::UmaHistogramEnumeration(
+        kKioskNewBrowserWindowHistogram,
+        KioskBrowserWindowType::kClosedAshBrowserWithLacrosEnabled);
+    LOG(WARNING) << "Tried to open ash browser-window during lacros-kiosk"
+                 << ", url=" << url_string;
+    browser->window()->Close();
+    on_browser_window_added_callback_.Run(/*is_closing=*/true);
+    return;
+  }
 
   if (IsNewBrowserWindowAllowed(browser)) {
     base::UmaHistogramEnumeration(

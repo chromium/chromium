@@ -33416,6 +33416,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Opened devtools browser"/>
   <int value="4" label="Opened normal troubleshooting browser"/>
   <int value="5" label="Opened system web app"/>
+  <int value="6" label="Closed ash browser with Lacros enabled"/>
 </enum>
 
 <enum name="KioskInternetAccessInfo">
