@@ -37680,6 +37680,7 @@ from previous Chrome versions.
   <int value="-1251359563" label="SharingRenameDevices:disabled"/>
   <int value="-1250965985" label="MediaFeeds:enabled"/>
   <int value="-1250611337" label="ChromeVoxArcSupport:disabled"/>
+  <int value="-1250299966" label="SuspiciousSiteDetectionRTLookups:enabled"/>
   <int value="-1250240035" label="NearbySharingOnePageOnboarding:enabled"/>
   <int value="-1250222445" label="WebMidi:enabled"/>
   <int value="-1249349654" label="UseAndroidStagingSmds:disabled"/>
@@ -41751,6 +41752,7 @@ from previous Chrome versions.
   <int value="715957869" label="SendTabToSelfSigninPromo:disabled"/>
   <int value="716073306" label="AssistantVoiceMatch:disabled"/>
   <int value="716080990" label="restrict-iframe-permissions"/>
+  <int value="716592729" label="SuspiciousSiteDetectionRTLookups:disabled"/>
   <int value="717020975" label="ForceOffTextAutosizing:disabled"/>
   <int value="717591093" label="UrlLoaderSyncClient:disabled"/>
   <int value="717827121" label="ChromeSharingHub:disabled"/>

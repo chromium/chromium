@@ -53,7 +53,9 @@ UrlRealTimeMechanism::UrlRealTimeMechanism(
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
     WebUIDelegate* webui_delegate,
-    MechanismExperimentHashDatabaseCache experiment_cache_selection)
+    MechanismExperimentHashDatabaseCache experiment_cache_selection,
+    scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
+    const base::RepeatingCallback<content::WebContents*()>& web_contents_getter)
     : SafeBrowsingLookupMechanism(url,
                                   threat_types,
                                   database_manager,
@@ -65,7 +67,9 @@ UrlRealTimeMechanism::UrlRealTimeMechanism(
       last_committed_url_(last_committed_url),
       ui_task_runner_(ui_task_runner),
       url_lookup_service_on_ui_(url_lookup_service_on_ui),
-      webui_delegate_(webui_delegate) {}
+      webui_delegate_(webui_delegate),
+      url_checker_delegate_(url_checker_delegate),
+      web_contents_getter_(web_contents_getter) {}
 
 UrlRealTimeMechanism::~UrlRealTimeMechanism() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -213,13 +217,17 @@ void UrlRealTimeMechanism::OnLookupResponse(
 
   LogLookupResponse(*response);
 
+  RTLookupResponse::ThreatInfo::VerdictType rt_verdict_type =
+      RTLookupResponse::ThreatInfo::SAFE;
   SBThreatType sb_threat_type = SB_THREAT_TYPE_SAFE;
   if (response && (response->threat_info_size() > 0)) {
+    rt_verdict_type = response->threat_info(0).verdict_type();
     sb_threat_type =
         RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
-            response->threat_info(0).threat_type(),
-            response->threat_info(0).verdict_type());
+            response->threat_info(0).threat_type(), rt_verdict_type);
   }
+
+  MaybePerformSuspiciousSiteDetection(rt_verdict_type);
 
   if (is_cached_response && sb_threat_type == SB_THREAT_TYPE_SAFE) {
     is_cached_safe_url_ = true;
@@ -338,6 +346,15 @@ void UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResultInternal(
       /*real_time_request_failed=*/real_time_request_failed));
   // NOTE: Calling CompleteCheck results in the synchronous destruction of this
   // object, so there is nothing safe to do here but return.
+}
+
+void UrlRealTimeMechanism::MaybePerformSuspiciousSiteDetection(
+    RTLookupResponse::ThreatInfo::VerdictType rt_verdict_type) {
+  if (rt_verdict_type == RTLookupResponse::ThreatInfo::SUSPICIOUS &&
+      base::FeatureList::IsEnabled(
+          safe_browsing::kSuspiciousSiteDetectionRTLookups)) {
+    url_checker_delegate_->NotifySuspiciousSiteDetected(web_contents_getter_);
+  }
 }
 
 }  // namespace safe_browsing

@@ -8859,6 +8859,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableRedInterstitialFaceliftDescription, kOsAll,
      FEATURE_VALUE_TYPE(safe_browsing::kRedInterstitialFacelift)},
 
+    {"enable-suspicious-site-detection-rt-lookups",
+     flag_descriptions::kEnableSuspiciousSiteDetectionRTLookupsName,
+     flag_descriptions::kEnableSuspiciousSiteDetectionRTLookupsDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(safe_browsing::kSuspiciousSiteDetectionRTLookups)},
+
     {"enable-tailored-security-retry-for-sync-users",
      flag_descriptions::kTailoredSecurityRetryForSyncUsersName,
      flag_descriptions::kTailoredSecurityRetryForSyncUsersDescription, kOsAll,

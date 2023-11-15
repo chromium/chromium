@@ -15,6 +15,7 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
+#include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "url/gurl.h"
 
@@ -52,7 +53,10 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       WebUIDelegate* webui_delegate,
-      MechanismExperimentHashDatabaseCache experiment_cache_selection);
+      MechanismExperimentHashDatabaseCache experiment_cache_selection,
+      scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
+      const base::RepeatingCallback<content::WebContents*()>&
+          web_contents_getter);
   UrlRealTimeMechanism(const UrlRealTimeMechanism&) = delete;
   UrlRealTimeMechanism& operator=(const UrlRealTimeMechanism&) = delete;
   ~UrlRealTimeMechanism() override;
@@ -129,6 +133,9 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
       absl::optional<ThreatSource> threat_source,
       bool real_time_request_failed);
 
+  void MaybePerformSuspiciousSiteDetection(
+      RTLookupResponse::ThreatInfo::VerdictType rt_verdict_type);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // This is used only for logging purposes, primarily (but not exclusively) to
@@ -172,6 +179,14 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
   // chrome://safe-browsing and in unit tests. If non-null, guaranteed to
   // outlive this object by contract.
   raw_ptr<WebUIDelegate> webui_delegate_ = nullptr;
+
+  // This object is used to call the |NotifySusiciousSiteDetected| method on
+  // URLs with suspicious verdicts.
+  scoped_refptr<UrlCheckerDelegate> url_checker_delegate_;
+
+  // This stores the callback method that will be used to obtain WebContents,
+  // which is needed to call the |NotifySusiciousSiteDetected| trigger.
+  base::RepeatingCallback<content::WebContents*()> web_contents_getter_;
 
   // If the URL is classified as safe in cache manager during real time
   // lookup.

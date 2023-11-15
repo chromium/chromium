@@ -748,6 +748,9 @@ extern const char
 extern const char kEnableRedInterstitialFaceliftName[];
 extern const char kEnableRedInterstitialFaceliftDescription[];
 
+extern const char kEnableSuspiciousSiteDetectionRTLookupsName[];
+extern const char kEnableSuspiciousSiteDetectionRTLookupsDescription[];
+
 extern const char kEnableTailoredSecurityUpdatedMessagesName[];
 extern const char kEnableTailoredSecurityUpdatedMessagesDescription[];
 

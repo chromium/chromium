@@ -289,6 +289,10 @@ constexpr base::FeatureParam<int> kStrictDownloadTimeoutMilliseconds{
     &kStrictDownloadTimeout, "TimeoutMilliseconds",
     /*default_value=*/7000};
 
+BASE_FEATURE(kSuspiciousSiteDetectionRTLookups,
+             "SuspiciousSiteDetectionRTLookups",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSuspiciousSiteTriggerQuotaFeature,
              "SafeBrowsingSuspiciousSiteTriggerQuota",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -387,6 +391,7 @@ constexpr struct {
     {&kSevenZipEvaluationEnabled, true},
     {&kSimplifiedUrlDisplay, true},
     {&kStrictDownloadTimeout, true},
+    {&kSuspiciousSiteDetectionRTLookups, false},
     {&kSuspiciousSiteTriggerQuotaFeature, true},
     {&kTailoredSecurityIntegration, true},
     {&kThreatDomDetailsTagAndAttributeFeature, false},

@@ -554,7 +554,8 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
               can_check_high_confidence_allowlist_,
               url_lookup_service_metric_suffix_, last_committed_url_,
               url_lookup_service_on_ui_, webui_delegate_,
-              hash_realtime_service_on_ui_);
+              hash_realtime_service_on_ui_, url_checker_delegate_,
+              web_contents_getter_);
       return KickOffLookupMechanismResult(start_check_result, performed_check);
     } else {
       lookup_mechanism = std::make_unique<UrlRealTimeMechanism>(
@@ -563,7 +564,8 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
           can_check_high_confidence_allowlist_,
           url_lookup_service_metric_suffix_, last_committed_url_,
           ui_task_runner_, url_lookup_service_on_ui_, webui_delegate_,
-          MechanismExperimentHashDatabaseCache::kNoExperiment);
+          MechanismExperimentHashDatabaseCache::kNoExperiment,
+          url_checker_delegate_, web_contents_getter_);
     }
   } else if (!can_check_db_) {
     return KickOffLookupMechanismResult(

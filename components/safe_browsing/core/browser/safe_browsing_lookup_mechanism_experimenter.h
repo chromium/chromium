@@ -65,7 +65,10 @@ class SafeBrowsingLookupMechanismExperimenter
       const GURL& last_committed_url,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       UrlRealTimeMechanism::WebUIDelegate* webui_delegate,
-      base::WeakPtr<HashRealTimeService> hash_real_time_service_on_ui);
+      base::WeakPtr<HashRealTimeService> hash_real_time_service_on_ui,
+      scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
+      const base::RepeatingCallback<content::WebContents*()>&
+          web_contents_getter);
 
   // This records the time that WillProcessResponse was called by
   // BrowserURLLoaderThrottle, which is used for logs when the experiment

@@ -1266,6 +1266,11 @@ const char kEnableRedInterstitialFaceliftDescription[] =
     "Enables red interstitial facelift UI changes, including icon, string, and "
     "style changes.";
 
+const char kEnableSuspiciousSiteDetectionRTLookupsName[] =
+    "Suspicious site detection RT lookups";
+const char kEnableSuspiciousSiteDetectionRTLookupsDescription[] =
+    "Enables suspicious site detection for real time URL lookups.";
+
 const char kEnableTailoredSecurityUpdatedMessagesName[] =
     "Enable tailored security updated messages";
 const char kEnableTailoredSecurityUpdatedMessagesDescription[] =
