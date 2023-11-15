@@ -23,6 +23,8 @@ _cros_components_ts_files = [
   "sidenav/sidenav_util.ts",
   "slider/slider.ts",
   "switch/switch.ts",
+  "tab_slider/tab-slider.ts",
+  "tab_slider/tab-slider-item.ts",
   "tag/tag.ts",
   "textfield/textfield.ts",
 ]
@@ -82,7 +84,7 @@ rewrite_imports("cros_components_ts") {
     "@material/|chrome://resources/mwc/@material/",
 
     # Add js prefix's to any internal imports so they work at runtime.
-    "(?P<filepath>\.\.?/[\w/]+)\$|\g<filepath>.js",
+    "(?P<filepath>\.\.?/[\w\-/]+)\$|\g<filepath>.js",
   ]
 
   deps = [

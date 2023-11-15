@@ -177,6 +177,18 @@ static constexpr const ComponentTestData kComponentsTestData[] = {
         .gtest_name = "CrosSlider",
     },
     {
+        .script_src =
+            "chrome://resources/cros_components/tab_slider/tab-slider.js",
+        .component_name = "cros-tab-slider",
+        .gtest_name = "CrosTabSlider",
+    },
+    {
+        .script_src =
+            "chrome://resources/cros_components/tab_slider/tab-slider-item.js",
+        .component_name = "cros-tab-slider-item",
+        .gtest_name = "CrosTabSliderItem",
+    },
+    {
         .script_src = "chrome://resources/cros_components/tag/tag.js",
         .component_name = "cros-tag",
         .gtest_name = "CrosTag",
