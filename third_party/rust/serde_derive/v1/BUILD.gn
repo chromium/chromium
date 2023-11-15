@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
 # Do not edit!
 
 import("//build/rust/cargo_crate.gni")
@@ -31,12 +32,8 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/ser.rs",
     "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/src/this.rs",
   ]
-  inputs = [
-    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/README.md",
-    "//third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.188/crates-io.md",
-  ]
+  inputs = []
 
-  # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2015"
   cargo_pkg_version = "1.0.188"

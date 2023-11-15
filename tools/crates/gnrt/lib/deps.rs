@@ -56,9 +56,9 @@ pub struct Package {
     /// package may still be locally vendored through cargo configuration (see
     /// https://doc.rust-lang.org/cargo/reference/source-replacement.html)
     pub is_local: bool,
-    /// Whether this package is a member of the cargo workspace the metadata
-    /// came from, as opposed to a third-party dependency.
-    pub is_workspace_member: bool,
+    /// Whether this package is depended on directly by the root Cargo.toml or
+    /// it is a transitive dependency.
+    pub is_toplevel_dep: bool,
 }
 
 impl Package {
@@ -237,6 +237,9 @@ pub fn collect_dependencies(
         explore_node(&mut traversal_state, node_map.get(*root_id).unwrap());
     }
 
+    // TODO(danakj): Throw an error if any `safe` crate depends on a `sandbox`
+    // crate.
+
     // `traversal_state.dependencies` is the output of `explore_node`. Pull it
     // out for processing.
     let mut dependencies = traversal_state.dependencies;
@@ -330,8 +333,11 @@ pub fn collect_dependencies(
         // the error for later.
         dep.is_local = package.source.is_none();
 
-        // Determine whether it's a workspace member or third-party dependency.
-        dep.is_workspace_member = dep_graph.workspace_members.contains(&package.id);
+        // Determine whether it's a direct or transitive dependency.
+        dep.is_toplevel_dep = {
+            let fake_root_node = dep_graph.nodes.get(fake_root).unwrap();
+            fake_root_node.dependencies.contains(id)
+        };
     }
 
     // Return a flat list of dependencies.
@@ -383,7 +389,7 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
         build_script: None,
         dependency_path: path,
         is_local: false,
-        is_workspace_member: false,
+        is_toplevel_dep: false,
     };
 
     state.path.push(node.id.repr.clone());
@@ -473,7 +479,6 @@ fn iter_node_deps(node: &cargo_metadata::Node) -> impl Iterator<Item = Dependenc
 struct MetadataGraph<'a> {
     nodes: HashMap<&'a cargo_metadata::PackageId, &'a cargo_metadata::Node>,
     packages: HashMap<&'a cargo_metadata::PackageId, &'a cargo_metadata::Package>,
-    workspace_members: HashSet<&'a cargo_metadata::PackageId>,
     roots: Vec<&'a cargo_metadata::PackageId>,
 }
 
@@ -496,12 +501,7 @@ fn build_graph(metadata: &cargo_metadata::Metadata) -> MetadataGraph<'_> {
         .chain(metadata.workspace_members.iter())
         .collect();
 
-    MetadataGraph {
-        nodes: graph,
-        packages,
-        workspace_members: metadata.workspace_members.iter().collect(),
-        roots,
-    }
+    MetadataGraph { nodes: graph, packages, roots }
 }
 
 /// A crate target type we support.

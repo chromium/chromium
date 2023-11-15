@@ -59,6 +59,9 @@ pub struct CrateConfig {
     /// These do not affect dependency resolution, so it will not change any
     /// other generated targets.
     pub exclude_deps_in_gn: Vec<String>,
+    /// If true, the build script should not be built or used.
+    #[serde(default)]
+    pub remove_build_rs: bool,
     /// Include rs and input files under these relative paths as part of the
     /// crate. The roots may each be a single file or a directory.
     #[serde(default)]
@@ -78,4 +81,12 @@ pub struct CrateConfig {
     pub extra_build_script_input_roots: Vec<std::path::PathBuf>,
     #[serde(default)]
     pub extra_kv: HashMap<String, serde_json::Value>,
+
+    // Third-party crate settings.
+    #[serde(default)]
+    pub allow_first_party_usage: bool,
+    #[serde(default)]
+    pub build_script_outputs: Vec<std::path::PathBuf>,
+    #[serde(default)]
+    pub group: Option<String>,
 }

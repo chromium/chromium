@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
 # Do not edit!
 
 import("//build/rust/cargo_crate.gni")
@@ -14,7 +15,6 @@ cargo_crate("lib") {
   crate_root =
       "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/build.rs",
     "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/src/backtrace.rs",
     "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/src/chain.rs",
     "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/src/context.rs",
@@ -26,33 +26,9 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/src/macros.rs",
     "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/src/ptr.rs",
     "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/src/wrapper.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/common/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/compiletest.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/drop/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/test_autotrait.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/test_backtrace.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/test_boxed.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/test_chain.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/test_context.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/test_convert.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/test_downcast.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/test_ensure.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/test_ffi.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/test_fmt.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/test_macros.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/test_repr.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/test_source.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/ui/chained-comparison.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/ui/empty-ensure.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/ui/must-use.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/ui/no-impl.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/ui/temporary-value.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/tests/ui/wrong-interpolation.rs",
   ]
-  inputs =
-      [ "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.70/README.md" ]
+  inputs = []
 
-  # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2018"
   cargo_pkg_version = "1.0.70"
@@ -73,6 +49,7 @@ cargo_crate("lib") {
   # Only for usage from third-party crates. Add the crate to
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
+  testonly = true
 }
 group("test_support") {
   public_deps = [ ":lib" ]

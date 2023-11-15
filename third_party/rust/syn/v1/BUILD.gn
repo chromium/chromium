@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
 # Do not edit!
 
 import("//build/rust/cargo_crate.gni")
@@ -14,9 +15,6 @@ cargo_crate("lib") {
   crate_root =
       "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/benches/file.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/benches/rust.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/build.rs",
     "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/src/attr.rs",
     "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/src/await.rs",
     "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/src/bigint.rs",
@@ -68,47 +66,9 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/src/ty.rs",
     "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/src/verbatim.rs",
     "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/src/whitespace.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/common/eq.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/common/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/common/parse.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/debug/gen.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/debug/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/macros/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/regression.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/regression/issue1108.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/repo/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/repo/progress.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_asyncness.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_attribute.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_derive_input.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_expr.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_generics.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_grouping.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_ident.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_item.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_iterators.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_lit.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_meta.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_parse_buffer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_parse_stream.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_pat.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_path.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_precedence.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_receiver.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_round_trip.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_shebang.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_should_parse.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_size.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_stmt.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_token_trees.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_ty.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/test_visibility.rs",
-    "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/tests/zzz_stable.rs",
   ]
-  inputs =
-      [ "//third_party/rust/chromium_crates_io/vendor/syn-1.0.99/README.md" ]
+  inputs = []
 
-  # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2018"
   cargo_pkg_version = "1.0.99"

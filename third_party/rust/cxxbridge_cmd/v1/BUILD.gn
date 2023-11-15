@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
 # Do not edit!
 
 import("//build/rust/cargo_crate.gni")
@@ -64,7 +65,6 @@ cargo_crate("cxxbridge") {
   ]
   inputs = [ "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-1.0.110/src/gen/include/cxx.h" ]
 
-  # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2021"
   cargo_pkg_version = "1.0.110"

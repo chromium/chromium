@@ -22,7 +22,7 @@ pub fn generate(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result
     if args.get_one::<String>("for-std").is_some() {
         generate_for_std(args, paths)
     } else {
-        generate_for_third_party(args, paths)
+        generate_for_third_party_ng(args, paths)
     }
 }
 
@@ -321,15 +321,17 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
 
     // Filter out any crates' dependencies removed by config file.
     for dep in dependencies.iter_mut() {
-        let Some(conf) = config.per_crate_config.get(&dep.package_name) else { continue };
-        if conf.remove_deps.is_empty() {
+        let all: Option<&Vec<String>> = Some(&config.all_config.remove_deps);
+        let per: Option<&Vec<String>> =
+            config.per_crate_config.get(&dep.package_name).map(|config| &config.remove_deps);
+
+        let combined: Vec<&String> = all.into_iter().chain(per).flatten().collect();
+        if combined.is_empty() {
             continue;
         }
 
         for kind in [&mut dep.dependencies, &mut dep.build_dependencies] {
-            kind.retain(|dep_of_dep| {
-                !conf.remove_deps.iter().any(|r| **r == dep_of_dep.package_name)
-            });
+            kind.retain(|dep_of_dep| !combined.iter().any(|r| **r == dep_of_dep.package_name));
         }
     }
 
@@ -407,15 +409,18 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
         .iter()
         .filter(|p| p.lib_target.is_some())
         .map(|p| {
-            crates::collect_std_crate_files(p, &config)
+            crates::collect_std_crate_files(p, &config, crates::IncludeCrateTargets::LibOnly)
                 .expect("missing a stdlib input file, did you gclient sync?")
         })
         .collect();
 
-    let build_file =
-        gn::build_file_from_std_deps(dependencies.iter(), paths, &config, |crate_id| {
-            crate_inputs.get(crate_id).unwrap()
-        });
+    let build_file = gn::build_file_from_std_deps(
+        dependencies.iter(),
+        paths,
+        &config,
+        gn::NameLibStyle::PackageName,
+        |crate_id| crate_inputs.get(crate_id).unwrap(),
+    );
 
     if args.get_flag("dump-template-input") {
         return serde_json::to_writer_pretty(
@@ -454,6 +459,188 @@ fn run_cargo_metadata(
 
     log::debug!("invoking cargo with:\n`{:?}`", command.cargo_command());
     command.exec().context("running cargo metadata")
+}
+
+fn generate_for_third_party_ng(
+    args: &clap::ArgMatches,
+    paths: &paths::ChromiumPaths,
+) -> Result<()> {
+    let config_file_contents = std::fs::read_to_string(paths.third_party_config_file).unwrap();
+    let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
+
+    let template_path =
+        paths.third_party_config_file.parent().unwrap().join(&config.gn_config.build_file_template);
+    let handlebars = init_handlebars(&template_path)?;
+
+    println!("Generating third-party GN rules from {}", paths.third_party_cargo_root.display());
+
+    let cargo_extra_options = vec![
+        // Use offline to constrain dependency resolution to locally vendored crates.
+        "--offline".to_string(),
+        // Use locked to prevent updating dependencies at the same time as generating
+        // metadata.
+        "--locked".to_string(),
+        // Allow the binary dependency on cxxbridge-cmd.
+        "-Zbindeps".to_string(),
+    ];
+
+    // Compute the set of all third-party crates.
+    let mut dependencies = deps::collect_dependencies(
+        &run_cargo_metadata(
+            paths.third_party_cargo_root.into(),
+            args,
+            cargo_extra_options,
+            HashMap::new(),
+        )?,
+        Some(vec![config.resolve.root.clone()]),
+        None,
+    );
+
+    // Filter out any crates' dependencies removed by config file.
+    for dep in dependencies.iter_mut() {
+        let all: Option<&Vec<String>> = Some(&config.all_config.remove_deps);
+        let per: Option<&Vec<String>> =
+            config.per_crate_config.get(&dep.package_name).map(|config| &config.remove_deps);
+
+        let combined: Vec<&String> = all.into_iter().chain(per).flatten().collect();
+        if combined.is_empty() {
+            continue;
+        }
+
+        for kind in [&mut dep.dependencies, &mut dep.build_dependencies] {
+            kind.retain(|dep_of_dep| !combined.iter().any(|r| **r == dep_of_dep.package_name));
+        }
+    }
+
+    // Remove any excluded dep entries.
+    dependencies
+        .retain(|dep| !config.resolve.remove_crates.iter().any(|r| **r == dep.package_name));
+
+    // Remove dev dependencies since tests aren't run.
+    dependencies.retain(|dep| {
+        dep.dependency_kinds.contains_key(&deps::DependencyKind::Normal)
+        // TODO: Needed?
+            || dep.dependency_kinds.contains_key(&deps::DependencyKind::Build)
+    });
+
+    dependencies.sort_unstable_by(|a, b| {
+        a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))
+    });
+
+    for dep in &dependencies {
+        // TODO(danakj): Invert this once we're vendoring deps and removed the patches
+        // from Cargo.toml. The error message is already inverted.
+        if !dep.is_local {
+            Err(format_err!(
+                "local dependency {}-{} found for 3p library, {}",
+                dep.package_name,
+                dep.version,
+                "all dependencies should be non-local (everything goes through crates.io)",
+            ))?;
+        }
+    }
+
+    let third_party_deps = dependencies.iter().filter(|dep| !dep.is_local).collect::<Vec<_>>();
+
+    // Check that all resolved third party deps are available. First, collect
+    // the set of third-party dependencies vendored in the Rust source package.
+    let vendored_crates: HashSet<VendoredCrate> = crates::collect_std_vendored_crates(
+        &paths.third_party_cargo_root.join(paths.rust_src_vendor_subdir),
+    )
+    .unwrap()
+    .into_iter()
+    .collect();
+
+    // Collect vendored dependencies, and also check that all resolved
+    // dependencies point to our Rust source package. Build rules will be
+    // generated for these crates separately from std, alloc, and core which
+    // need special treatment.
+    for dep in third_party_deps.iter() {
+        vendored_crates
+            .get(&VendoredCrate { name: dep.package_name.clone(), version: dep.version.clone() })
+            .ok_or_else(|| {
+                format_err!(
+                    "Resolved dependency does not match any vendored crate: {} {}",
+                    dep.package_name,
+                    dep.version
+                )
+            })?;
+    }
+
+    let crate_inputs: HashMap<VendoredCrate, CrateFiles> = dependencies
+        .iter()
+        .map(|p| {
+            crates::collect_std_crate_files(p, &config, crates::IncludeCrateTargets::LibAndBin)
+                .expect(&format!(
+                    "missing a crate input file for '{}'. Dependencies are not vendored?",
+                    p.package_name
+                ))
+        })
+        .collect();
+
+    // If there are multiple crates with the same epoch, this is unexpected. Bail
+    // out.
+    {
+        let mut found = HashSet::new();
+        for dep in &dependencies {
+            let epoch = crates::Epoch::from_version(&dep.version);
+            if found.insert((&dep.package_name, epoch)) == false {
+                Err(anyhow!(
+                    "Two '{}' crates found with the same {} epoch",
+                    dep.package_name,
+                    epoch
+                ))?
+            }
+        }
+    }
+
+    // Split up the dependencies by crate and epoch.
+    let all_build_files: HashMap<PathBuf, gn::BuildFile> = {
+        let mut map = HashMap::new();
+        for dep in &dependencies {
+            let build_file = gn::build_file_from_std_deps(
+                std::iter::once(dep),
+                paths,
+                &config,
+                // TODO(danakj): Change to PackageName for consistency?
+                gn::NameLibStyle::LibLiteral,
+                |crate_id| crate_inputs.get(crate_id).unwrap(),
+            );
+            let path = paths
+                .third_party
+                // TODO(danakj): Generate into `safe`, `sandbox`, or `test` directories here.
+                .join(crates::NormalizedName::from_crate_name(&dep.package_name).as_str())
+                .join(crates::Epoch::from_version(&dep.version).to_string());
+            let previous = map.insert(path, build_file);
+            if previous.is_some() {
+                Err(format_err!(
+                    "multiple versions of crate {} with the same epoch",
+                    dep.package_name
+                ))?
+            }
+        }
+        map
+    };
+
+    if args.get_flag("dump-template-input") {
+        for (dir, build_file) in &all_build_files {
+            create_dirs_if_needed(dir).unwrap();
+            serde_json::to_writer_pretty(
+                std::fs::File::create(dir.join("gnrt-template-input.json"))
+                    .context("opening dump file")?,
+                &build_file,
+            )
+            .context("dumping gn information")?;
+        }
+        return Ok(());
+    }
+
+    for (dir, build_file) in &all_build_files {
+        create_dirs_if_needed(dir).unwrap();
+        let gn_str = handlebars.render("template", &build_file)?;
+        write_build_file(&dir.join("BUILD.gn"), gn_str).unwrap();
+    }
+    Ok(())
 }
 
 fn build_file_path(crate_id: &VendoredCrate, paths: &paths::ChromiumPaths) -> PathBuf {

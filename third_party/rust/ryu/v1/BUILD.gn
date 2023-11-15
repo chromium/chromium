@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
 # Do not edit!
 
 import("//build/rust/cargo_crate.gni")
@@ -14,9 +15,6 @@ cargo_crate("lib") {
   crate_root =
       "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/benches/bench.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/build.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/examples/upstream_benchmark.rs",
     "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/src/buffer/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/src/common.rs",
     "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/src/d2s.rs",
@@ -33,19 +31,9 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/src/pretty/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/src/s2d.rs",
     "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/src/s2f.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/tests/common_test.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/tests/d2s_table_test.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/tests/d2s_test.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/tests/exhaustive.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/tests/f2s_test.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/tests/macros/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/tests/s2d_test.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/tests/s2f_test.rs",
   ]
-  inputs =
-      [ "//third_party/rust/chromium_crates_io/vendor/ryu-1.0.5/README.md" ]
+  inputs = []
 
-  # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2018"
   cargo_pkg_version = "1.0.5"

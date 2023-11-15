@@ -423,57 +423,85 @@ pub fn std_crate_path(id: &VendoredCrate) -> PathBuf {
     format!("{}-{}", id.name, id.version).into()
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub enum IncludeCrateTargets {
+    LibOnly,
+    LibAndBin,
+}
+
 /// Collect the source and input files (i.e. `CrateFiles`) for each library that
 /// is part of the standard library build.
 pub fn collect_std_crate_files<'a>(
     p: &deps::Package,
     config: &BuildConfig,
+    include_targets: IncludeCrateTargets,
 ) -> anyhow::Result<(VendoredCrate, CrateFiles)> {
-    // We only look at lib targets here because these are stdlib targets, and thus
-    // we only are building the libs. We're not building bins even if they existed.
-    let lib_target = p.lib_target.as_ref().expect("dependency had no lib target");
-    let root_dir = lib_target.root.parent().expect("lib target has no directory in its path");
     let crate_config = config.per_crate_config.get(&p.crate_id().name);
 
-    let extra_src_roots =
-        crate_config.iter().flat_map(|crate_config| &crate_config.extra_src_roots);
-    let extra_input_roots =
-        crate_config.iter().flat_map(|crate_config| &crate_config.extra_input_roots);
-    let extra_build_script_src_roots =
-        crate_config.iter().flat_map(|crate_config| &crate_config.extra_build_script_src_roots);
-    let extra_build_script_input_roots =
-        crate_config.iter().flat_map(|crate_config| &crate_config.extra_build_script_input_roots);
-
     let mut files = CrateFiles::new();
-    recurse_crate_files(&root_dir, &mut |filepath| {
-        collect_crate_file(&mut files, CollectCrateFiles::Internal, filepath)
-    })?;
-    for path in extra_src_roots {
-        recurse_crate_files(&root_dir.to_owned().join(path), &mut |filepath| {
-            collect_crate_file(&mut files, CollectCrateFiles::ExternalSourcesAndInputs, filepath)
-        })?;
+
+    struct RootDir {
+        path: PathBuf,
+        collect: CollectCrateFiles,
     }
-    for path in extra_input_roots {
-        recurse_crate_files(&root_dir.to_owned().join(path), &mut |filepath| {
-            collect_crate_file(&mut files, CollectCrateFiles::ExternalInputsOnly, filepath)
-        })?;
+
+    let mut root_dirs = Vec::new();
+    if let Some(lib_target) = p.lib_target.as_ref() {
+        let lib_root = lib_target.root.parent().expect("lib target has no directory in its path");
+        root_dirs.push(RootDir { path: lib_root.to_owned(), collect: CollectCrateFiles::Internal });
+
+        root_dirs.extend(
+            crate_config
+                .iter()
+                .flat_map(|crate_config| &crate_config.extra_src_roots)
+                .chain(&config.all_config.extra_src_roots)
+                .map(|path| RootDir {
+                    path: lib_root.join(path),
+                    collect: CollectCrateFiles::ExternalSourcesAndInputs,
+                }),
+        );
+        root_dirs.extend(
+            crate_config
+                .iter()
+                .flat_map(|crate_config| &crate_config.extra_input_roots)
+                .chain(&config.all_config.extra_input_roots)
+                .map(|path| RootDir {
+                    path: lib_root.join(path),
+                    collect: CollectCrateFiles::ExternalInputsOnly,
+                }),
+        );
+        root_dirs.extend(
+            crate_config
+                .iter()
+                .flat_map(|crate_config| &crate_config.extra_build_script_src_roots)
+                .chain(&config.all_config.extra_build_script_src_roots)
+                .map(|path| RootDir {
+                    path: lib_root.join(path),
+                    collect: CollectCrateFiles::BuildScriptExternalSourcesAndInputs,
+                }),
+        );
+        root_dirs.extend(
+            crate_config
+                .iter()
+                .flat_map(|crate_config| &crate_config.extra_build_script_input_roots)
+                .chain(&config.all_config.extra_build_script_input_roots)
+                .map(|path| RootDir {
+                    path: lib_root.join(path),
+                    collect: CollectCrateFiles::BuildScriptExternalInputsOnly,
+                }),
+        );
     }
-    for path in extra_build_script_src_roots {
-        recurse_crate_files(&root_dir.to_owned().join(path), &mut |filepath| {
-            collect_crate_file(
-                &mut files,
-                CollectCrateFiles::BuildScriptExternalSourcesAndInputs,
-                filepath,
-            )
-        })?;
+    if include_targets == IncludeCrateTargets::LibAndBin {
+        for bin in &p.bin_targets {
+            let bin_root = bin.root.parent().expect("bin target has no directory in its path");
+            root_dirs
+                .push(RootDir { path: bin_root.to_owned(), collect: CollectCrateFiles::Internal });
+        }
     }
-    for path in extra_build_script_input_roots {
-        recurse_crate_files(&root_dir.to_owned().join(path), &mut |filepath| {
-            collect_crate_file(
-                &mut files,
-                CollectCrateFiles::BuildScriptExternalInputsOnly,
-                filepath,
-            )
+
+    for root_dir in root_dirs {
+        recurse_crate_files(&root_dir.path, &mut |filepath| {
+            collect_crate_file(&mut files, root_dir.collect, filepath)
         })?;
     }
     files.sort();
