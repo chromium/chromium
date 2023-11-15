@@ -252,6 +252,25 @@ static inline bool IsColorPropertyID(CSSPropertyID property_id) {
       CSSPropertyID::kWebkitTextFillColor,
       CSSPropertyID::kWebkitTextStrokeColor,
       CSSPropertyID::kTextDecorationColor,
+
+      // -internal-visited for all of the above that have them.
+      CSSPropertyID::kInternalVisitedCaretColor,
+      CSSPropertyID::kInternalVisitedColor,
+      CSSPropertyID::kInternalVisitedBackgroundColor,
+      CSSPropertyID::kInternalVisitedBorderBottomColor,
+      CSSPropertyID::kInternalVisitedBorderLeftColor,
+      CSSPropertyID::kInternalVisitedBorderRightColor,
+      CSSPropertyID::kInternalVisitedBorderTopColor,
+      CSSPropertyID::kInternalVisitedFill,
+      CSSPropertyID::kInternalVisitedOutlineColor,
+      CSSPropertyID::kInternalVisitedStroke,
+      CSSPropertyID::kInternalVisitedBorderBlockEndColor,
+      CSSPropertyID::kInternalVisitedBorderBlockStartColor,
+      CSSPropertyID::kInternalVisitedBorderInlineEndColor,
+      CSSPropertyID::kInternalVisitedBorderInlineStartColor,
+      CSSPropertyID::kInternalVisitedColumnRuleColor,
+      CSSPropertyID::kInternalVisitedTextEmphasisColor,
+      CSSPropertyID::kInternalVisitedTextDecorationColor,
   }};
   return properties.Has(property_id);
 }
