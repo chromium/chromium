@@ -77,9 +77,7 @@ bool MediaUrlDemuxer::IsSeekable() const {
   return true;
 }
 
-void MediaUrlDemuxer::Stop() {
-  host_ = nullptr;
-}
+void MediaUrlDemuxer::Stop() {}
 
 void MediaUrlDemuxer::AbortPendingReads() {}
 

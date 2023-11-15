@@ -547,7 +547,7 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // Found dangling on `linux-rel` in
   // `benchmarks.system_health_smoke_test.SystemHealthBenchmarkSmokeTest.
   // system_health.memory_desktop/browse:media:youtubetv:2019`.
-  raw_ptr<DemuxerHost> host_ = nullptr;
+  raw_ptr<DemuxerHost, DanglingUntriaged> host_ = nullptr;
   base::OnceClosure open_cb_;
   const base::RepeatingClosure progress_cb_;
   EncryptedMediaInitDataCB encrypted_media_init_data_cb_;

@@ -515,7 +515,6 @@ void ChunkDemuxer::Initialize(DemuxerHost* host,
 void ChunkDemuxer::Stop() {
   DVLOG(1) << "Stop()";
   Shutdown();
-  host_ = nullptr;
 }
 
 void ChunkDemuxer::Seek(base::TimeDelta time, PipelineStatusCallback cb) {
