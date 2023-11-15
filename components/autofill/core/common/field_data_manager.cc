@@ -49,13 +49,13 @@ bool FieldDataManager::FindMatchedValue(const std::u16string& value) const {
 }
 
 void FieldDataManager::UpdateFieldDataMap(FieldRendererId id,
-                                          const std::u16string& value,
+                                          std::u16string_view value,
                                           FieldPropertiesMask mask) {
   if (HasFieldData(id)) {
-    field_value_and_properties_map_[id].first = value;
+    field_value_and_properties_map_[id].first = std::u16string(value);
     field_value_and_properties_map_[id].second |= mask;
   } else {
-    field_value_and_properties_map_[id] = {value, mask};
+    field_value_and_properties_map_[id] = {std::u16string(value), mask};
   }
   // Reset kUserTyped and kAutofilled flags if the value is empty.
   if (value.empty()) {
