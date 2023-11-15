@@ -682,6 +682,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void SetShouldCheckForPaintInvalidation();
 
+  bool UsedColorSchemeScrollbarsChanged(const ComputedStyle* old_style) const;
+  bool IsGlobalRootNonOverlayScroller() const;
+
   // PaintLayer is destructed before PaintLayerScrollable area, during this
   // time before PaintLayerScrollableArea has been collected layer_ will
   // be set to nullptr by the Dispose method.

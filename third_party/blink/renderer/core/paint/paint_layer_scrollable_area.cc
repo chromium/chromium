@@ -1251,22 +1251,42 @@ mojom::blink::ScrollBehavior PaintLayerScrollableArea::ScrollBehaviorStyle()
 
 mojom::blink::ColorScheme PaintLayerScrollableArea::UsedColorSchemeScrollbars()
     const {
-  if (RuntimeEnabledFeatures::UsedColorSchemeRootScrollbarsEnabled() &&
-      GetLayoutBox()->IsGlobalRootScroller() &&
-      !GetPageScrollbarTheme().UsesOverlayScrollbars()) {
-    const Document& document = GetLayoutBox()->GetDocument();
-    if (document.documentElement() &&
-        document.documentElement()->GetComputedStyle() &&
-        document.documentElement()->GetComputedStyle()->ColorScheme().empty() &&
-        document.GetStyleEngine().GetPageColorSchemes() ==
-            static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal) &&
-        document.GetPreferredColorScheme() ==
-            mojom::blink::PreferredColorScheme::kDark) {
-      return mojom::blink::ColorScheme::kDark;
-    }
+  if (IsGlobalRootNonOverlayScroller() &&
+      GetLayoutBox()->StyleRef().ColorSchemeFlagsIsNormal() &&
+      GetLayoutBox()->GetDocument().GetPreferredColorScheme() ==
+          mojom::blink::PreferredColorScheme::kDark) {
+    return mojom::blink::ColorScheme::kDark;
   }
 
   return GetLayoutBox()->StyleRef().UsedColorScheme();
+}
+
+bool PaintLayerScrollableArea::UsedColorSchemeScrollbarsChanged(
+    const ComputedStyle* old_style) const {
+  if (!old_style) {
+    return false;
+  }
+
+  if (old_style->UsedColorScheme() !=
+      GetLayoutBox()->StyleRef().UsedColorScheme()) {
+    return true;
+  }
+
+  // Root scrollbars will be invalidated on preferred color scheme change
+  // so here we only check for the changes in color scheme flags.
+  if (IsGlobalRootNonOverlayScroller() &&
+      old_style->ColorSchemeFlagsIsNormal() !=
+          GetLayoutBox()->StyleRef().ColorSchemeFlagsIsNormal()) {
+    return true;
+  }
+
+  return false;
+}
+
+bool PaintLayerScrollableArea::IsGlobalRootNonOverlayScroller() const {
+  return RuntimeEnabledFeatures::UsedColorSchemeRootScrollbarsEnabled() &&
+         GetLayoutBox()->IsGlobalRootScroller() &&
+         !GetPageScrollbarTheme().UsesOverlayScrollbars();
 }
 
 bool PaintLayerScrollableArea::HasHorizontalOverflow() const {
@@ -1335,8 +1355,7 @@ void PaintLayerScrollableArea::UpdateAfterStyleChange(
 
   UpdateScrollCornerStyle();
 
-  if (!old_style ||
-      old_style->UsedColorScheme() != UsedColorSchemeScrollbars() ||
+  if (!old_style || UsedColorSchemeScrollbarsChanged(old_style) ||
       old_style->ScrollbarThumbColorResolved() !=
           GetLayoutBox()->StyleRef().ScrollbarThumbColorResolved() ||
       old_style->ScrollbarTrackColorResolved() !=

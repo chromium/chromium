@@ -2840,6 +2840,12 @@ void ComputedStyleBuilder::SetUsedColorScheme(
       (force_dark && !prefers_dark);
 
   SetColorSchemeForced(forced_scheme);
+
+  if (RuntimeEnabledFeatures::UsedColorSchemeRootScrollbarsEnabled()) {
+    const bool is_normal =
+        flags == static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal);
+    SetColorSchemeFlagsIsNormal(is_normal);
+  }
 }
 
 CSSVariableData* ComputedStyleBuilder::GetVariableData(

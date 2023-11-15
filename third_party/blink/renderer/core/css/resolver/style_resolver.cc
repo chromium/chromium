@@ -2913,6 +2913,10 @@ void StyleResolver::PropagateStyleToViewport() {
                    absl::nullopt);
     PROPAGATE_FROM(document_element_style, ForcedColorAdjust,
                    SetForcedColorAdjust, EForcedColorAdjust::kAuto);
+    if (RuntimeEnabledFeatures::UsedColorSchemeRootScrollbarsEnabled()) {
+      PROPAGATE_FROM(document_element_style, ColorSchemeFlagsIsNormal,
+                     SetColorSchemeFlagsIsNormal, false);
+    }
   }
 
   // scroll-start
