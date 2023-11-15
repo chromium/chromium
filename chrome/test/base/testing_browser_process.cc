@@ -17,6 +17,7 @@
 #include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/download/download_request_limiter.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/stub_notification_platform_bridge.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
@@ -346,6 +347,10 @@ TestingBrowserProcess::safe_browsing_service() {
   return sb_service_.get();
 }
 
+WebRtcLogUploader* TestingBrowserProcess::webrtc_log_uploader() {
+  return webrtc_log_uploader_.get();
+}
+
 subresource_filter::RulesetService*
 TestingBrowserProcess::subresource_filter_ruleset_service() {
   return subresource_filter_ruleset_service_.get();
@@ -465,10 +470,6 @@ MediaFileSystemRegistry* TestingBrowserProcess::media_file_system_registry() {
     media_file_system_registry_ = std::make_unique<MediaFileSystemRegistry>();
   return media_file_system_registry_.get();
 #endif
-}
-
-WebRtcLogUploader* TestingBrowserProcess::webrtc_log_uploader() {
-  return nullptr;
 }
 
 network_time::NetworkTimeTracker*
@@ -601,6 +602,11 @@ TestingBrowserProcess::GetTestPlatformPart() {
 void TestingBrowserProcess::SetSafeBrowsingService(
     safe_browsing::SafeBrowsingService* sb_service) {
   sb_service_ = sb_service;
+}
+
+void TestingBrowserProcess::SetWebRtcLogUploader(
+    std::unique_ptr<WebRtcLogUploader> uploader) {
+  webrtc_log_uploader_ = std::move(uploader);
 }
 
 void TestingBrowserProcess::SetRulesetService(

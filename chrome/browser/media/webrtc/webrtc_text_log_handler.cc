@@ -187,8 +187,7 @@ void WebRtcTextLogHandler::SetMetaData(
   FireGenericDoneCallback(std::move(callback), true, "");
 }
 
-bool WebRtcTextLogHandler::StartLogging(WebRtcLogUploader* log_uploader,
-                                        GenericDoneCallback callback) {
+bool WebRtcTextLogHandler::StartLogging(GenericDoneCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
@@ -204,6 +203,7 @@ bool WebRtcTextLogHandler::StartLogging(WebRtcLogUploader* log_uploader,
     return false;
   }
 
+  WebRtcLogUploader* log_uploader = WebRtcLogUploader::GetInstance();
   if (!log_uploader->ApplyForStartLogging()) {
     FireGenericDoneCallback(std::move(callback), false,
                             "Cannot start, maybe the maximum number of "

@@ -98,6 +98,14 @@ WebRtcLogUploader::UploadDoneData::UploadDoneData(
     WebRtcLogUploader::UploadDoneData&& other) = default;
 WebRtcLogUploader::UploadDoneData::~UploadDoneData() = default;
 
+// static
+WebRtcLogUploader* WebRtcLogUploader::GetInstance() {
+  if (!g_browser_process) {
+    return nullptr;
+  }
+  return g_browser_process->webrtc_log_uploader();
+}
+
 WebRtcLogUploader::WebRtcLogUploader()
     : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(

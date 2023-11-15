@@ -79,6 +79,7 @@ class WebRtcLogUploader {
     int web_app_id;
   };
 
+  static WebRtcLogUploader* GetInstance();
   WebRtcLogUploader();
 
   WebRtcLogUploader(const WebRtcLogUploader&) = delete;
