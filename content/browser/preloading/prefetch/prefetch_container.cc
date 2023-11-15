@@ -230,6 +230,7 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
       case PrefetchStatus::kPrefetchFailedInvalidRedirect:
       case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
       case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
+      case PrefetchStatus::kPrefetchNotUsedProbeFailed:
       case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
       // TODO(adithyas): This would report 'eviction' as a failure even though
       // the initial prefetch succeeded, consider introducing a different
@@ -263,7 +264,6 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
       case PrefetchStatus::kPrefetchIneligibleRetryAfter:
       case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
       case PrefetchStatus::kPrefetchIneligibleBrowserContextOffTheRecord:
-      case PrefetchStatus::kPrefetchNotUsedProbeFailed:
       case PrefetchStatus::
           kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
         NOTIMPLEMENTED();
@@ -834,7 +834,7 @@ void PrefetchContainer::Reader::OnPrefetchProbeResult(
       break;
     case PrefetchProbeResult::kDNSProbeFailure:
     case PrefetchProbeResult::kTLSProbeFailure:
-      prefetch_container_->SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
+      prefetch_container_->SetPrefetchStatus(
           PrefetchStatus::kPrefetchNotUsedProbeFailed);
       break;
     default:
