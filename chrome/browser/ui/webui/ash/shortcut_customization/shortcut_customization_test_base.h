@@ -7,6 +7,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
 namespace ash {
@@ -112,6 +113,9 @@ class ShortcutCustomizationInteractiveUiTestBase
   // processing. When adding new accelerators, this method is called to
   // prevent the system from processing Ash accelerators.
   ui::InteractionSequence::StepBuilder EnsureAcceleratorsAreProcessed();
+
+  ui::test::InteractiveTestApi::MultiStep SendShortcutAccelerator(
+      ui::Accelerator accel);
 
   void SetUpOnMainThread() override;
 

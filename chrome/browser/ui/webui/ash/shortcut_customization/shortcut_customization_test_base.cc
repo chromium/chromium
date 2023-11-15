@@ -7,6 +7,7 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/interactive_test.h"
 
 namespace ash {
 
@@ -44,6 +45,13 @@ ShortcutCustomizationInteractiveUiTestBase::EnsureAcceleratorsAreProcessed() {
                    "() => "
                    "document.querySelector('shortcut-customization-app')."
                    "shortcutProvider.preventProcessingAccelerators(false)");
+}
+
+ui::test::InteractiveTestApi::MultiStep
+ShortcutCustomizationInteractiveUiTestBase::SendShortcutAccelerator(
+    ui::Accelerator accel) {
+  CHECK(webcontents_id_);
+  return Steps(SendAccelerator(webcontents_id_, accel), FlushEvents());
 }
 
 }  // namespace ash
