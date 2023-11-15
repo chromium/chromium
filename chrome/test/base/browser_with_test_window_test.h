@@ -46,7 +46,6 @@ class GURL;
 
 namespace chromeos {
 class ScopedLacrosServiceTestHelper;
-class TabletState;
 }  // namespace chromeos
 
 namespace content {
@@ -256,10 +255,6 @@ class BrowserWithTestWindowTest : public testing::Test {
   std::unique_ptr<views::ScopedViewsTestHelper> views_test_helper_ =
       std::make_unique<views::ScopedViewsTestHelper>(
           std::make_unique<ChromeTestViewsDelegate<>>());
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::TabletState> tablet_state_;
 #endif
 
   // The existence of this object enables tests via RenderViewHostTester.

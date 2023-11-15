@@ -49,7 +49,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_test_helper.h"
-#include "chromeos/ui/base/tablet_state.h"
 #endif
 
 using content::NavigationController;
@@ -84,7 +83,6 @@ void BrowserWithTestWindowTest::SetUp() {
     lacros_service_test_helper_ =
         std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
   }
-  tablet_state_ = std::make_unique<chromeos::TabletState>();
 #endif
 
   // This must be created after |ash_test_helper_| is set up so that it doesn't
@@ -148,7 +146,6 @@ void BrowserWithTestWindowTest::TearDown() {
   profile_manager_.reset();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  tablet_state_.reset();
   lacros_service_test_helper_.reset();
 #endif
 

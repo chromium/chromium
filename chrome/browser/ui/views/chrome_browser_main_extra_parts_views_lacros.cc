@@ -7,7 +7,6 @@
 #include "chrome/browser/ui/lacros/float_controller_lacros.h"
 #include "chrome/browser/ui/lacros/immersive_context_lacros.h"
 #include "chrome/browser/ui/lacros/snap_controller_lacros.h"
-#include "chromeos/ui/base/tablet_state.h"
 
 ChromeBrowserMainExtraPartsViewsLacros::
     ChromeBrowserMainExtraPartsViewsLacros() = default;
@@ -19,7 +18,6 @@ void ChromeBrowserMainExtraPartsViewsLacros::PreProfileInit() {
   float_controller_ = std::make_unique<FloatControllerLacros>();
   immersive_context_ = std::make_unique<ImmersiveContextLacros>();
   snap_controller_ = std::make_unique<SnapControllerLacros>();
-  tablet_state_ = std::make_unique<chromeos::TabletState>();
 
   ChromeBrowserMainExtraPartsViews::PreProfileInit();
 }

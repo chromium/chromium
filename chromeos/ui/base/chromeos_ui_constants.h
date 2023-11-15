@@ -6,7 +6,6 @@
 #define CHROMEOS_UI_BASE_CHROMEOS_UI_CONSTANTS_H_
 
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace chromeos {

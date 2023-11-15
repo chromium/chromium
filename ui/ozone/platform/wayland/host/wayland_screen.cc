@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/device_event_log/device_event_log.h"
 #include "ui/base/linux/linux_desktop.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/display/display.h"
 #include "ui/display/display_finder.h"
 #include "ui/display/display_list.h"
@@ -553,6 +554,10 @@ base::Value::List WaylandScreen::GetGpuExtraInfo(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void WaylandScreen::OnTabletStateChanged(display::TabletState tablet_state) {
   tablet_state_ = tablet_state;
+
+  ui::TouchUiController::Get()->OnTabletModeToggled(
+      tablet_state == display::TabletState::kInTabletMode ||
+      tablet_state == display::TabletState::kEnteringTabletMode);
 
   auto* observer_list = display_list_.observers();
   for (auto& observer : *observer_list)
