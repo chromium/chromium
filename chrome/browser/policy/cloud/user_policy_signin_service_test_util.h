@@ -38,6 +38,7 @@ class FakeUserPolicySigninService : public policy::UserPolicySigninService {
       const AccountId& account_id,
       const std::string& dm_token,
       const std::string& client_id,
+      const std::vector<std::string>& user_affiliation_ids,
       scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory,
       PolicyFetchCallback callback) override;
 

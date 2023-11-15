@@ -82,7 +82,7 @@ class UserPolicySigninServiceUtilTest : public ::testing::Test {
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
     g_browser_process->browser_policy_connector()
         ->SetMachineLevelUserCloudPolicyManagerForTesting(nullptr);
-#endif  //  !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
  private:

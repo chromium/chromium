@@ -89,6 +89,7 @@ const char kPreviousEmail[] = "notme@bar.com";
 const char kPreviousGaiaId[] = "gaia_id_for_not_me_at_bar_com";
 const char kEnterpriseEmail[] = "enterprise@managed.com";
 const char kEnterpriseHostedDomain[] = "managed.com";
+const char kUserAffiliationId[] = "user-affiliation-id";
 
 const signin_metrics::AccessPoint kAccessPoint =
     signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER;
@@ -236,13 +237,18 @@ class FakeUserPolicySigninService : public policy::UserPolicySigninService {
                                 nullptr,
                                 nullptr,
                                 identity_manager,
-                                nullptr) {}
+                                nullptr) {
+    add_user_affiliation_id(kUserAffiliationId);
+  }
 
   void set_dm_token(const std::string& dm_token) { dm_token_ = dm_token; }
   void set_client_id(const std::string& client_id) { client_id_ = client_id; }
   void set_account(const CoreAccountId& account_id, const std::string& email) {
     account_id_ = account_id;
     email_ = email;
+  }
+  void add_user_affiliation_id(const std::string& id) {
+    user_affiliation_ids_.push_back(id);
   }
   void set_is_hanging(bool is_hanging) { is_hanging_ = is_hanging; }
 
@@ -254,7 +260,8 @@ class FakeUserPolicySigninService : public policy::UserPolicySigninService {
     EXPECT_EQ(email_, username);
     EXPECT_EQ(account_id_, account_id);
     if (!is_hanging_) {
-      std::move(callback).Run(dm_token_, client_id_);
+      std::move(callback).Run(dm_token_, client_id_,
+                              /*user_affiliation_ids=*/user_affiliation_ids_);
     }
   }
 
@@ -263,8 +270,11 @@ class FakeUserPolicySigninService : public policy::UserPolicySigninService {
       const AccountId& account_id,
       const std::string& dm_token,
       const std::string& client_id,
+      const std::vector<std::string>& user_affiliation_ids,
       scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory,
       PolicyFetchCallback callback) override {
+    EXPECT_EQ(1u, user_affiliation_ids.size());
+    EXPECT_EQ(user_affiliation_ids_, user_affiliation_ids);
     if (!is_hanging_) {
       std::move(callback).Run(true);
     }
@@ -273,6 +283,8 @@ class FakeUserPolicySigninService : public policy::UserPolicySigninService {
  private:
   std::string dm_token_;
   std::string client_id_;
+  std::vector<std::string> user_affiliation_ids_;
+
   CoreAccountId account_id_;
   std::string email_;
   bool is_hanging_ = false;

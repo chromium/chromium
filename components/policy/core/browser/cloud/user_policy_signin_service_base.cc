@@ -73,6 +73,7 @@ void UserPolicySigninServiceBase::FetchPolicyForSignedInUser(
     const AccountId& account_id,
     const std::string& dm_token,
     const std::string& client_id,
+    const std::vector<std::string>& user_affiliation_ids,
     scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory,
     PolicyFetchCallback callback) {
   DVLOG_POLICY(3, POLICY_FETCHING)
@@ -91,9 +92,7 @@ void UserPolicySigninServiceBase::FetchPolicyForSignedInUser(
     // time).
     std::unique_ptr<CloudPolicyClient> client =
         CreateClientForNonRegistration(profile_url_loader_factory);
-    client->SetupRegistration(
-        dm_token, client_id,
-        std::vector<std::string>() /* user_affiliation_ids */);
+    client->SetupRegistration(dm_token, client_id, user_affiliation_ids);
     DCHECK(client->is_registered());
     DCHECK(!manager->core()->client());
     InitializeCloudPolicyManager(account_id, std::move(client));
@@ -286,7 +285,8 @@ void UserPolicySigninServiceBase::
         std::unique_ptr<CloudPolicyClient> client,
         PolicyRegistrationCallback callback) {
   registration_helper_for_temporary_client_.reset();
-  std::move(callback).Run(client->dm_token(), client->client_id());
+  std::move(callback).Run(client->dm_token(), client->client_id(),
+                          client->user_affiliation_ids());
 }
 
 void UserPolicySigninServiceBase::RegisterForPolicyWithAccountId(
@@ -298,8 +298,10 @@ void UserPolicySigninServiceBase::RegisterForPolicyWithAccountId(
   if (policy_manager() && policy_manager()->IsClientRegistered()) {
     // Reuse the already fetched DM token if the client of the manager is
     // already registered.
-    std::move(callback).Run(policy_manager()->core()->client()->dm_token(),
-                            policy_manager()->core()->client()->client_id());
+    std::move(callback).Run(
+        policy_manager()->core()->client()->dm_token(),
+        policy_manager()->core()->client()->client_id(),
+        policy_manager()->core()->client()->user_affiliation_ids());
     return;
   }
 
@@ -308,7 +310,8 @@ void UserPolicySigninServiceBase::RegisterForPolicyWithAccountId(
   std::unique_ptr<CloudPolicyClient> policy_client =
       CreateClientForRegistrationOnly(username);
   if (!policy_client) {
-    std::move(callback).Run(std::string(), std::string());
+    std::move(callback).Run(std::string(), std::string(),
+                            std::vector<std::string>());
     return;
   }
 

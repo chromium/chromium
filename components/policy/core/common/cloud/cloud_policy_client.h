@@ -479,6 +479,11 @@ class POLICY_EXPORT CloudPolicyClient {
     return manufacture_date_;
   }
 
+  const std::vector<std::string>& user_affiliation_ids() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return user_affiliation_ids_;
+  }
+
   void set_last_policy_timestamp(const base::Time& timestamp) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     last_policy_timestamp_ = timestamp;
@@ -706,6 +711,10 @@ class POLICY_EXPORT CloudPolicyClient {
   // Device DMToken for affiliated user policy requests.
   // Retrieved from |device_dm_token_callback_| on registration.
   std::string device_dm_token_;
+
+  // A list of user affiliation ids, provided during setup or after
+  // registration.
+  std::vector<std::string> user_affiliation_ids_;
 
   // Information for the latest policy invalidation received.
   int64_t invalidation_version_ = 0;

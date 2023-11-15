@@ -300,6 +300,7 @@ void CloudPolicyClient::SetupRegistration(
   if (device_dm_token_callback_) {
     device_dm_token_ = device_dm_token_callback_.Run(user_affiliation_ids);
   }
+  user_affiliation_ids_ = user_affiliation_ids;
 
   NotifyRegistrationStateChanged();
 }
@@ -1165,11 +1166,12 @@ void CloudPolicyClient::OnRegisterCompleted(DMServerJobResult result) {
           result.response.register_response().enrollment_type());
     }
 
+    user_affiliation_ids_ = std::vector<std::string>(
+        result.response.register_response().user_affiliation_ids().begin(),
+        result.response.register_response().user_affiliation_ids().end());
+
     if (device_dm_token_callback_) {
-      std::vector<std::string> user_affiliation_ids(
-          result.response.register_response().user_affiliation_ids().begin(),
-          result.response.register_response().user_affiliation_ids().end());
-      device_dm_token_ = device_dm_token_callback_.Run(user_affiliation_ids);
+      device_dm_token_ = device_dm_token_callback_.Run(user_affiliation_ids_);
     }
     NotifyRegistrationStateChanged();
   } else {

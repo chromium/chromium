@@ -55,8 +55,10 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   // The callback invoked once policy registration is complete. Passed
   // |dm_token| and |client_id| parameters are empty if policy registration
   // failed.
-  typedef base::OnceCallback<void(const std::string& dm_token,
-                                  const std::string& client_id)>
+  typedef base::OnceCallback<void(
+      const std::string& dm_token,
+      const std::string& client_id,
+      const std::vector<std::string>& user_affiliation_ids)>
       PolicyRegistrationCallback;
 
   // The callback invoked once policy fetch is complete. Passed boolean
@@ -85,6 +87,7 @@ class POLICY_EXPORT UserPolicySigninServiceBase
       const AccountId& account_id,
       const std::string& dm_token,
       const std::string& client_id,
+      const std::vector<std::string>& user_affiliation_ids,
       scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory,
       PolicyFetchCallback callback);
 

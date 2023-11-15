@@ -122,6 +122,10 @@ enum AuthenticationState {
   NSString* _dmToken;
   // ID of the client that is registered for user policy.
   NSString* _clientID;
+  // List of IDs that represents the domain of the user. The list will be used
+  // to compare with a similiar list from device mangement to understand whether
+  // user and device are managed by the same domain.
+  NSArray<NSString*>* _userAffiliationIDs;
 
   // This AuthenticationFlow keeps a reference to `self` while a sign-in flow is
   // is in progress to ensure it outlives any attempt to destroy it in
@@ -392,6 +396,7 @@ enum AuthenticationState {
       [_performer fetchUserPolicy:browserState
                       withDmToken:_dmToken
                          clientID:_clientID
+               userAffiliationIDs:_userAffiliationIDs
                          identity:_identityToSignIn];
       return;
 
@@ -606,11 +611,14 @@ enum AuthenticationState {
 }
 
 - (void)didRegisterForUserPolicyWithDMToken:(NSString*)dmToken
-                                   clientID:(NSString*)clientID {
+                                   clientID:(NSString*)clientID
+                         userAffiliationIDs:
+                             (NSArray<NSString*>*)userAffiliationIDs {
   DCHECK_EQ(REGISTER_FOR_USER_POLICY, _state);
 
   _dmToken = dmToken;
   _clientID = clientID;
+  _userAffiliationIDs = userAffiliationIDs;
   [self continueSignin];
 }
 

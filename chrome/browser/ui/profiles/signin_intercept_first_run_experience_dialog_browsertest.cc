@@ -75,7 +75,8 @@ class FakeUserPolicySigninService : public policy::UserPolicySigninService {
       const std::string& username,
       const CoreAccountId& account_id,
       PolicyRegistrationCallback callback) override {
-    std::move(callback).Run(std::string(), std::string());
+    std::move(callback).Run(std::string(), std::string(),
+                            std::vector<std::string>());
   }
 
   // policy::UserPolicySigninServiceBase:
@@ -83,6 +84,7 @@ class FakeUserPolicySigninService : public policy::UserPolicySigninService {
       const AccountId& account_id,
       const std::string& dm_token,
       const std::string& client_id,
+      const std::vector<std::string>& user_affiliation_ids,
       scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory,
       PolicyFetchCallback callback) override {
     std::move(callback).Run(true);

@@ -163,6 +163,16 @@ void SigninManagerAndroid::Shutdown() {
                                  java_signin_manager_);
 }
 
+SigninManagerAndroid::ManagementCredentials::ManagementCredentials(
+    const std::string& dm_token,
+    const std::string& client_id,
+    const std::vector<std::string>& user_affiliation_ids)
+    : dm_token(dm_token),
+      client_id(client_id),
+      user_affiliation_ids(user_affiliation_ids) {}
+
+SigninManagerAndroid::ManagementCredentials::~ManagementCredentials() = default;
+
 bool SigninManagerAndroid::IsSigninAllowed() const {
   return signin_allowed_.GetValue();
 }
@@ -198,10 +208,11 @@ void SigninManagerAndroid::RegisterPolicyWithAccount(
       account.email, account.account_id,
       base::BindOnce(
           [](RegisterPolicyWithAccountCallback callback,
-             const std::string& dm_token, const std::string& client_id) {
+             const std::string& dm_token, const std::string& client_id,
+             const std::vector<std::string>& user_affiliation_ids) {
             absl::optional<ManagementCredentials> credentials;
             if (!dm_token.empty()) {
-              credentials.emplace(dm_token, client_id);
+              credentials.emplace(dm_token, client_id, user_affiliation_ids);
             }
             std::move(callback).Run(credentials);
           },
@@ -245,7 +256,8 @@ void SigninManagerAndroid::FetchPolicyBeforeSignIn(
           ->GetURLLoaderFactoryForBrowserProcess();
   user_policy_signin_service_->FetchPolicyForSignedInUser(
       AccountIdFromAccountInfo(account), credentials.dm_token,
-      credentials.client_id, url_loader_factory,
+      credentials.client_id, credentials.user_affiliation_ids,
+      url_loader_factory,
       base::BindOnce([](base::OnceCallback<void()> callback,
                         bool success) { std::move(callback).Run(); },
                      std::move(policy_callback)));

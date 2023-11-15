@@ -103,11 +103,14 @@ class UserPolicySigninServiceTest : public testing::Test {
 
   MOCK_METHOD1(OnPolicyRefresh, void(bool));
 
-  void OnRegisterCompleted(const std::string& dm_token,
-                           const std::string& client_id) {
+  void OnRegisterCompleted(
+      const std::string& dm_token,
+      const std::string& client_id,
+      const std::vector<std::string>& user_affiliation_ids) {
     register_completed_ = true;
     dm_token_ = dm_token;
     client_id_ = client_id;
+    user_affiliation_ids_ = user_affiliation_ids;
   }
 
   void RegisterPolicyClientWithCallback(UserPolicySigninService* service) {
@@ -271,15 +274,20 @@ class UserPolicySigninServiceTest : public testing::Test {
               job_type);
 
     std::string expected_dm_token = "dm_token";
-    em::DeviceManagementResponse registration_response;
-    registration_response.mutable_register_response()
-        ->set_device_management_token(expected_dm_token);
-    registration_response.mutable_register_response()->set_enrollment_type(
+    std::string expected_user_affiliation_id = "affiliation_id";
+    em::DeviceManagementResponse dm_response;
+    auto* register_response = dm_response.mutable_register_response();
+    register_response->set_device_management_token(expected_dm_token);
+    register_response->set_enrollment_type(
         em::DeviceRegisterResponse::ENTERPRISE);
-    device_management_service_.SendJobOKNow(&job, registration_response);
+    register_response->add_user_affiliation_ids(expected_user_affiliation_id);
+    device_management_service_.SendJobOKNow(&job, dm_response);
 
     EXPECT_TRUE(register_completed_);
     EXPECT_EQ(dm_token_, expected_dm_token);
+    std::vector<std::string> expected_user_affiliation_ids = {
+        expected_user_affiliation_id};
+    EXPECT_EQ(user_affiliation_ids_, expected_user_affiliation_ids);
   }
 
   signin::IdentityTestEnvironment* identity_test_env() {
@@ -304,6 +312,7 @@ class UserPolicySigninServiceTest : public testing::Test {
   // callbacks.
   std::string dm_token_;
   std::string client_id_;
+  std::vector<std::string> user_affiliation_ids_;
 
   // AccountId for the test user.
   AccountId test_account_id_;
@@ -680,7 +689,7 @@ TEST_F(UserPolicySigninServiceTest,
   network::TestURLLoaderFactory fetch_policy_url_loader_factory;
   base::test::TestFuture<bool> future;
   signin_service->FetchPolicyForSignedInUser(
-      test_account_id_, "dm_token", "client-id",
+      test_account_id_, "dm_token", "client-id", std::vector<std::string>(),
       fetch_policy_url_loader_factory.GetSafeWeakWrapper(),
       future.GetCallback());
 
@@ -902,6 +911,7 @@ TEST_F(UserPolicySigninServiceTest, FetchPolicyForSignedInUser) {
   base::MockCallback<CloudPolicyClient::DeviceDMTokenCallback>
       device_dm_token_callback;
   std::string device_dm_token = "device-dm-token";
+  std::string user_affiliation_id = "user-affiliation_id";
 
   EXPECT_CALL(job_creation_handler_, OnJobCreation)
       .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type_1),
@@ -910,7 +920,9 @@ TEST_F(UserPolicySigninServiceTest, FetchPolicyForSignedInUser) {
           device_management_service_.CaptureJobType(&job_type_2),
           device_management_service_.CaptureRequest(&policy_fetch_request),
           SaveArg<0>(&job)));
-  EXPECT_CALL(device_dm_token_callback, Run).WillOnce(Return(device_dm_token));
+  EXPECT_CALL(device_dm_token_callback,
+              Run(::testing::ElementsAre(user_affiliation_id)))
+      .WillOnce(Return(device_dm_token));
 
   UserPolicySigninService* signin_service =
       UserPolicySigninServiceFactory::GetForProfile(profile_.get());
@@ -920,7 +932,7 @@ TEST_F(UserPolicySigninServiceTest, FetchPolicyForSignedInUser) {
   signin_service->SetDeviceDMTokenCallbackForTesting(
       device_dm_token_callback.Get());
   signin_service->FetchPolicyForSignedInUser(
-      test_account_id_, "dm_token", "client-id",
+      test_account_id_, "dm_token", "client-id", {user_affiliation_id},
       fetch_policy_url_loader_factory.GetSafeWeakWrapper(),
       future.GetCallback());
   // The client should be registered.

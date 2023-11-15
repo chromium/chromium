@@ -65,6 +65,8 @@ constexpr char kHostedDomainResponse[] = R"(
 
 constexpr char kDmToken[] = "dm_token";
 
+constexpr char kUserAffiliationId[] = "user-affiliation-id";
+
 // Builds and returns a UserCloudPolicyManager for testing.
 std::unique_ptr<UserCloudPolicyManager> BuildCloudPolicyManager() {
   auto store = std::make_unique<MockUserCloudPolicyStore>();
@@ -88,11 +90,14 @@ class UserPolicySigninServiceTest : public PlatformTest {
   MOCK_METHOD1(OnPolicyRefresh, void(bool));
 
   // Called when the user policy registration is completed.
-  void OnRegisterCompleted(const std::string& dm_token,
-                           const std::string& client_id) {
+  void OnRegisterCompleted(
+      const std::string& dm_token,
+      const std::string& client_id,
+      const std::vector<std::string>& user_affiliation_ids) {
     register_completed_ = true;
     dm_token_ = dm_token;
     client_id_ = client_id;
+    user_affiliation_ids_ = user_affiliation_ids;
   }
 
   // Registers the `kManagedTestUser` for user policy.
@@ -219,6 +224,9 @@ class UserPolicySigninServiceTest : public PlatformTest {
 
     EXPECT_TRUE(register_completed_);
     EXPECT_EQ(dm_token_, kDmToken);
+    std::vector<std::string> expected_user_affiliation_ids = {
+        kUserAffiliationId};
+    EXPECT_EQ(user_affiliation_ids_, expected_user_affiliation_ids);
   }
 
   signin::IdentityTestEnvironment* identity_test_env() {
@@ -268,14 +276,15 @@ class UserPolicySigninServiceTest : public PlatformTest {
     EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REGISTRATION,
               job_type);
 
-    enterprise_management::DeviceManagementResponse registration_response;
+    enterprise_management::DeviceManagementResponse dm_response;
     if (with_dm_token) {
-      registration_response.mutable_register_response()
-          ->set_device_management_token(kDmToken);
-      registration_response.mutable_register_response()->set_enrollment_type(
+      auto* register_response = dm_response.mutable_register_response();
+      register_response->set_device_management_token(kDmToken);
+      register_response->set_enrollment_type(
           enterprise_management::DeviceRegisterResponse::ENTERPRISE);
+      register_response->add_user_affiliation_ids(kUserAffiliationId);
     }
-    device_management_service_.SendJobOKNow(&job, registration_response);
+    device_management_service_.SendJobOKNow(&job, dm_response);
   }
 
  protected:
@@ -294,6 +303,7 @@ class UserPolicySigninServiceTest : public PlatformTest {
   // callbacks.
   std::string dm_token_;
   std::string client_id_;
+  std::vector<std::string> user_affiliation_ids_;
 
   // AccountId for the test user.
   AccountId test_account_id_;

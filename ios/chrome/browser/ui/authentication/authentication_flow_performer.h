@@ -94,6 +94,7 @@ class PrefService;
 - (void)fetchUserPolicy:(ChromeBrowserState*)browserState
             withDmToken:(NSString*)dmToken
                clientID:(NSString*)clientID
+     userAffiliationIDs:(NSArray<NSString*>*)userAffiliationIDs
                identity:(id<SystemIdentity>)identity;
 
 @property(nonatomic, weak, readonly) id<AuthenticationFlowPerformerDelegate>

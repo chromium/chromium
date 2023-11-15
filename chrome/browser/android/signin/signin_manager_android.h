@@ -83,16 +83,18 @@ class SigninManagerAndroid : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(SigninManagerAndroidTest,
                            DeleteGoogleServiceWorkerCaches);
 
-  void OnSigninAllowedPrefChanged() const;
-  bool IsSigninAllowed() const;
-
   struct ManagementCredentials {
     ManagementCredentials(const std::string& dm_token,
-                          const std::string& client_id)
-        : dm_token(dm_token), client_id(client_id) {}
+                          const std::string& client_id,
+                          const std::vector<std::string>& user_affiliation_ids);
+    ~ManagementCredentials();
     const std::string dm_token;
     const std::string client_id;
+    const std::vector<std::string> user_affiliation_ids;
   };
+
+  void OnSigninAllowedPrefChanged() const;
+  bool IsSigninAllowed() const;
 
   using RegisterPolicyWithAccountCallback = base::OnceCallback<void(
       const absl::optional<ManagementCredentials>& credentials)>;
