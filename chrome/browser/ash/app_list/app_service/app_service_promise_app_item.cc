@@ -84,7 +84,7 @@ void AppServicePromiseAppItem::LoadIcon() {
   apps::AppServiceProxyFactory::GetForProfile(profile())->LoadPromiseIcon(
       package_id_,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
-      apps::IconEffects::kCrOsStandardMask,
+      apps::IconEffects::kCrOsStandardIcon,
       base::BindOnce(&AppServicePromiseAppItem::OnLoadIcon,
                      weak_ptr_factory_.GetWeakPtr()));
 }
