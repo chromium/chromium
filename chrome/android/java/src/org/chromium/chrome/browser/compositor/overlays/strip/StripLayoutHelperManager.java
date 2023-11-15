@@ -931,6 +931,9 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         };
 
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
+        if (mTabDragSource != null) {
+            mTabDragSource.setTabModelSelector(mTabModelSelector);
+        }
     }
 
     private void updateTitleForTab(Tab tab) {

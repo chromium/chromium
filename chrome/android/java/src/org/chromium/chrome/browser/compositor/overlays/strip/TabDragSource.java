@@ -19,6 +19,7 @@ import android.view.View.DragShadowBuilder;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -32,6 +33,8 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -62,6 +65,7 @@ public class TabDragSource implements View.OnDragListener {
     private float mLastXDp;
     private float mLastYDp;
     private int mLastAction;
+    @Nullable private TabModelSelector mTabModelSelector;
 
     /**
      * Prepares the toolbar view to listen to the drag events and data drop after the drag is
@@ -174,6 +178,11 @@ public class TabDragSource implements View.OnDragListener {
         return res;
     }
 
+    /** Sets @{@link TabModelSelector} to retrieve model info. */
+    public void setTabModelSelector(TabModelSelector tabModelSelector) {
+        mTabModelSelector = tabModelSelector;
+    }
+
     private boolean didOccurInTabStrip(float yPx) {
         return yPx <= mTabStripHeightPx;
     }
@@ -216,16 +225,18 @@ public class TabDragSource implements View.OnDragListener {
             // dragged. Return the original payload drop for next in line to receive the
             // drop to handle.
             Tab tabBeingDragged = DragDropGlobalState.getInstance().tabBeingDragged;
-            if (tabBeingDragged == null || sourceTabId != tabBeingDragged.getId()) {
+            if (tabBeingDragged == null
+                    || sourceTabId != tabBeingDragged.getId()
+                    || mTabModelSelector == null) {
                 Log.w(TAG, "DnD: Received an invalid tab drop.");
                 return false;
             }
-            int tabPositionIndex = getTabPositionIndex(xPx * mPxToDp);
+            int tabPositionIndex =
+                    getTabPositionIndex(xPx * mPxToDp, tabBeingDragged.isIncognito());
             // TODO(crbug.com/1497784): Pass the Activity explicitly in place of casting the
             // context handle.
             mMultiInstanceManager.moveTabToWindow(
                     (Activity) view.getContext(), tabBeingDragged, tabPositionIndex);
-            mStripLayoutHelperSupplier.get().selectTabAtIndex(tabPositionIndex);
         }
         return true;
     }
@@ -282,12 +293,18 @@ public class TabDragSource implements View.OnDragListener {
         return numberText.isEmpty() ? Tab.INVALID_TAB_ID : Integer.parseInt(numberText);
     }
 
-    private int getTabPositionIndex(float dropXDp) {
+    private int getTabPositionIndex(float dropXDp, boolean isDraggedTabIncognito) {
+        StripLayoutHelper activeStripHelper = mStripLayoutHelperSupplier.get();
+        // If dragged tab and drop target strip don't belong to same model,
+        // drop tab at corresponding model at end of strip.
+        if (mTabModelSelector.getCurrentModel().isIncognito() != isDraggedTabIncognito) {
+            TabModel model = mTabModelSelector.getModel(isDraggedTabIncognito);
+            return model.getCount();
+        }
         // Based on the location of the drop determine the position index where the tab will be
         // placed.
-        StripLayoutHelper activeStripHelper = mStripLayoutHelperSupplier.get();
         StripLayoutTab droppedOn = activeStripHelper.getTabAtPosition(dropXDp);
-        int tabPositionIndex = activeStripHelper.getTabCount();
+        int tabPositionIndex = mTabModelSelector.getCurrentModel().getCount();
         // If not dropped on any existing tabs then simply add it at the end.
         if (droppedOn != null) {
             tabPositionIndex = activeStripHelper.findIndexForTab(droppedOn.getId());

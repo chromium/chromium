@@ -50,6 +50,8 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -76,6 +78,8 @@ public class TabDragSourceTest {
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private StripLayoutHelper mStripLayoutHelper;
     @Mock private Profile mProfile;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TestTabModel mTabModel;
 
     private Activity mActivity;
     private TabDragSource mTabDragSource;
@@ -109,6 +113,8 @@ public class TabDragSourceTest {
                         mMultiInstanceManager,
                         mDragDropDelegate,
                         mBrowserControlsStateProvider);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        mTabDragSource.setTabModelSelector(mTabModelSelector);
     }
 
     @After
@@ -331,7 +337,7 @@ public class TabDragSourceTest {
         when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(CURR_INSTANCE_ID + 1);
         // Mock strip actions.
         when(mStripLayoutHelper.getTabAtPosition(POS_X)).thenReturn(null);
-        when(mStripLayoutHelper.getTabCount()).thenReturn(10);
+        when(mTabModel.getCount()).thenReturn(10);
 
         // Trigger drop in tab strip.
         triggerDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY);
@@ -359,6 +365,34 @@ public class TabDragSourceTest {
         // Verify - Move to new window not invoked.
         verify(mMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
         verifyNoInteractions(mStripLayoutHelper);
+    }
+
+    @Test
+    public void test_DropInDestinationWithDifferentModel_MoveTabToDestinationAtEnd() {
+        // Set selector
+        mTabDragSource.setTabModelSelector(mTabModelSelector);
+        // Set state - tab created in standard model.
+        mTabDragSource.setGlobalState(mTabBeingDragged);
+        // Simulate destination instance.
+        when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(CURR_INSTANCE_ID + 1);
+        // Destination tab model is incognito.
+        when(mTabModel.isIncognito()).thenReturn(true);
+        TabModel standardModelDestination = mock(TabModel.class);
+        when(mTabModelSelector.getModel(false)).thenReturn(standardModelDestination);
+        when(standardModelDestination.getCount()).thenReturn(5);
+
+        // Mock strip actions - tab exists at drop position.
+        StripLayoutTab stripTab = mock(StripLayoutTab.class);
+        when(mStripLayoutHelper.getTabAtPosition(POS_X)).thenReturn(stripTab);
+
+        // Trigger drop in tab strip.
+        triggerDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY);
+        triggerDragEvent(DragEvent.ACTION_DROP, POS_X, mPosY);
+        triggerDragEvent(DragEvent.ACTION_DRAG_ENDED, POS_X, mPosY);
+
+        // Verify - Tab moved to destination window at end.
+        verify(mMultiInstanceManager, times(1)).moveTabToWindow(any(), eq(mTabBeingDragged), eq(5));
+        verify(mMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
     }
 
     @Test

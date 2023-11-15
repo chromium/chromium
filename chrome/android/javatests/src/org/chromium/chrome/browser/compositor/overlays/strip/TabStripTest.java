@@ -1375,10 +1375,6 @@ public class TabStripTest {
 
         if (activeModel.isIncognito() == incognito) {
             Assert.assertEquals("TabStrip is not in the right visible state", strip, activeStrip);
-            Assert.assertEquals(
-                    "TabStrip does not have the same number of views as the model",
-                    strip.getTabCount(),
-                    model.getCount());
         } else {
             Assert.assertTrue("TabStrip is not in the right visible state", model != activeModel);
         }

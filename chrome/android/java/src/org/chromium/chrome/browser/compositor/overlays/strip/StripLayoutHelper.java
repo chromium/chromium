@@ -158,7 +158,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private static final float NEW_TAB_BUTTON_DEFAULT_PRESSED_OPACITY = 0.2f;
     private static final float NEW_TAB_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.12f;
     private static final float NEW_TAB_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.08f;
-    private static final float NEW_TAB_BUTTON_DARK_DETACHED_OPACITY = 0.15f;
     static final float TAB_OPACITY_HIDDEN = 0.f;
     static final float TAB_OPACITY_VISIBLE_BACKGROUND = 0.55f;
     static final float TAB_OPACITY_VISIBLE_FOREGROUND = 1.f;
@@ -183,9 +182,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             "Android.TabStrip.PlaceholderStripTabsNeededDuringRestoreCount";
     private static final String PLACEHOLDER_VISIBLE_DURATION_HISTOGRAM_NAME =
             "Android.TabStrip.PlaceholderStripVisibleDuration";
-
-    // The max width of the tab hover card in terms of the enclosing window width percent.
-    static final float HOVER_CARD_MAX_WIDTH_PERCENT = 0.9f;
 
     // External influences
     private final LayoutUpdateHost mUpdateHost;
@@ -521,11 +517,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      */
     public StripLayoutTab[] getStripLayoutTabsToRender() {
         return mStripTabsToRender;
-    }
-
-    @VisibleForTesting
-    public int getTabCount() {
-        return mStripTabs.length;
     }
 
     /**
@@ -3521,10 +3512,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mLastOffsetX = 0.f;
     }
 
-    protected void setActiveClickedTabForTesting(StripLayoutTab tab) {
-        mActiveClickedTab = tab;
-    }
-
     StripLayoutTab getActiveClickedTabForTesting() {
         return mActiveClickedTab;
     }
@@ -3600,17 +3587,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                         resizeStripOnTabClose(draggedTab.getId(), null);
                     }
                 });
-    }
-
-    void selectTabAtIndex(int atIndex) {
-        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
-        if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
-
-        TabModelUtils.setIndex(mModel, atIndex, true);
-    }
-
-    int getCurrentTabIndexForTesting() {
-        return findIndexForTab(TabModelUtils.getCurrentTabId(mModel));
     }
 
     void sendMoveWindowBroadcast(View view, float startXInView, float startYInView) {

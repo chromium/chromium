@@ -2908,27 +2908,6 @@ public class StripLayoutHelperTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @Config(sdk = Build.VERSION_CODES.R)
-    public void testDrag_selectTabAtIndex_success() {
-        // Setup with 10 tabs and select first tab.
-        int selectedTabIndex = 0;
-        setTabDragSourceMock();
-        initializeTest(false, false, false, selectedTabIndex, 10);
-
-        // Act and verify.
-        assertTrue(
-                "The initial selected tab index should be " + selectedTabIndex + ".",
-                mStripLayoutHelper.getCurrentTabIndexForTesting() == selectedTabIndex);
-        int nextSelectedTabIndex = 5;
-        mStripLayoutHelper.selectTabAtIndex(nextSelectedTabIndex);
-        assertTrue(
-                "The selected tab index should now be " + nextSelectedTabIndex + ".",
-                mStripLayoutHelper.getCurrentTabIndexForTesting() == nextSelectedTabIndex);
-
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag_sendMoveWindowBroadcast_success() {
         // Setup with tabs and select first tab.
         setTabDragSourceMock();
