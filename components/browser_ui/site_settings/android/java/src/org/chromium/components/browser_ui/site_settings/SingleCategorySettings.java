@@ -1391,6 +1391,13 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         }
         binaryToggle.setSummaryOff(ContentSettingsResources.getDisabledSummary(
                 contentType, getSiteSettingsDelegate()));
+        int summaryForAccessibility =
+                ContentSettingsResources.getSummaryOverrideForScreenReader(
+                        contentType, getSiteSettingsDelegate());
+        if (summaryForAccessibility != 0) {
+            binaryToggle.setSummaryOverrideForScreenReader(
+                    getContext().getString(summaryForAccessibility));
+        }
 
         binaryToggle.setManagedPreferenceDelegate(new SingleCategoryManagedPreferenceDelegate(
                 getSiteSettingsDelegate().getManagedPreferenceDelegate()));

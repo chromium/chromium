@@ -8,6 +8,8 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
@@ -28,6 +30,14 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
 
     /** Indicates if the preference uses a custom layout. */
     private final boolean mHasCustomLayout;
+
+    // TOOD(crbug.com/1451550): This is an interim solution. In the long-term, we should migrate
+    // away from a switch with dynamically changing summaries onto a radio group.
+    /**
+     * Text to use for a11y announcements of the `summary` label. This text is static and does not
+     * change when the toggle is switched between on/off states.
+     */
+    private String mSummaryOverrideForScreenReader;
 
     public ChromeSwitchPreference(Context context) {
         this(context, null);
@@ -55,11 +65,36 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
         TextView title = (TextView) holder.findViewById(android.R.id.title);
         title.setSingleLine(false);
 
+        TextView summary = (TextView) holder.findViewById(android.R.id.summary);
+        View.AccessibilityDelegate summaryOverrideDelegate = null;
+        if (mSummaryOverrideForScreenReader != null) {
+            summaryOverrideDelegate =
+                    new View.AccessibilityDelegate() {
+                        @Override
+                        public void onInitializeAccessibilityNodeInfo(
+                                View host, AccessibilityNodeInfo info) {
+                            super.onInitializeAccessibilityNodeInfo(host, info);
+                            info.setText(mSummaryOverrideForScreenReader);
+                        }
+
+                        @Override
+                        public void onPopulateAccessibilityEvent(
+                                View unusedHost, AccessibilityEvent event) {
+                            // Intentionally not calling through to `super` to replace
+                            // default announcement.
+                            event.getText().add(mSummaryOverrideForScreenReader);
+                        }
+                    };
+            summary.setAccessibilityDelegate(summaryOverrideDelegate);
+        }
+
         // Use summary as title if title is empty.
         if (TextUtils.isEmpty(getTitle())) {
-            TextView summary = (TextView) holder.findViewById(android.R.id.summary);
             title.setText(summary.getText());
             title.setVisibility(View.VISIBLE);
+            if (summaryOverrideDelegate != null) {
+                title.setAccessibilityDelegate(summaryOverrideDelegate);
+            }
             summary.setVisibility(View.GONE);
         }
 
@@ -83,6 +118,16 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
         if (mBackgroundColorRes != null && mBackgroundColorRes == colorRes) return;
         mBackgroundColorRes = colorRes;
         updateBackground();
+    }
+
+    /**
+     * Sets the text to use when a11y announces the `summary` label.
+     *
+     * @param text The text to use in both on/off states, overriding both `summaryOn` and
+     *     `summaryOff` values.
+     */
+    public void setSummaryOverrideForScreenReader(String text) {
+        mSummaryOverrideForScreenReader = text;
     }
 
     private void updateBackground() {
