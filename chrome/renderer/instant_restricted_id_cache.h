@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/containers/lru_cache.h"
 #include "base/gtest_prod_util.h"
+#include "base/numerics/wrapping_math.h"
 #include "chrome/common/search/instant_types.h"
 
 // In InstantExtended, iframes are used to display objects which can only be
@@ -107,7 +108,8 @@ void InstantRestrictedIDCache<T>::AddItems(const ItemVector& items) {
   }
 
   for (size_t i = 0; i < items.size(); ++i) {
-    InstantRestrictedID id = ++last_restricted_id_;
+    InstantRestrictedID id = base::WrappingAdd(last_restricted_id_, 1);
+    last_restricted_id_ = id;
     cache_.Put(id, items[i]);
     if (i == 0)
       last_add_start_ = --cache_.rend();
