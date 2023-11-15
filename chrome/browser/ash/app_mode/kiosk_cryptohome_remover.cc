@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/app_mode/pref_names.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/account_id/account_id.h"
@@ -54,9 +55,10 @@ void OnRemoveAppCryptohomeComplete(
     const cryptohome::Identification& id,
     base::OnceClosure callback,
     absl::optional<user_data_auth::RemoveReply> reply) {
-  cryptohome::MountError error = ReplyToMountError(reply);
-  if (error == cryptohome::MOUNT_ERROR_NONE ||
-      error == cryptohome::MOUNT_ERROR_USER_DOES_NOT_EXIST) {
+  cryptohome::ErrorWrapper error = ReplyToCryptohomeError(reply);
+  if (!cryptohome::HasError(error) ||
+      cryptohome::ErrorMatches(
+          error, user_data_auth::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND)) {
     UnscheduleDelayedCryptohomeRemoval(id);
   }
   if (callback) {
