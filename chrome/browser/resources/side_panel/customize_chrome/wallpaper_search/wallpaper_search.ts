@@ -27,7 +27,7 @@ import {Debouncer, DomRepeatEvent, PolymerElement, timeOut} from 'chrome://resou
 
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from '../customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from '../customize_chrome_api_proxy.js';
-import {DescriptorA, DescriptorDValue, Descriptors, WallpaperSearchHandlerInterface, WallpaperSearchResult, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
+import {DescriptorA, DescriptorB, DescriptorDValue, Descriptors, WallpaperSearchHandlerInterface, WallpaperSearchResult, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
 import {CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
@@ -277,6 +277,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private isColorSelected_(defaultColor: string): boolean {
     return defaultColor === this.selectedDefaultColor_;
+  }
+
+  private isOptionSelectedInDescriptorB_(option: DescriptorB): boolean {
+    return option.label === this.selectedDescriptorB_;
   }
 
   private async onBackClick_() {

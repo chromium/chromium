@@ -126,6 +126,12 @@
     height: 48px;
   }
 
+  #descriptorComboboxB customize-chrome-check-mark-wrapper {
+    --customize-chrome-check-mark-wrapper-end: -8px;
+    --customize-chrome-check-mark-wrapper-size: 16px;
+    --customize-chrome-check-mark-wrapper-top: -3px;
+  }
+
   #descriptorComboboxB img {
     border-radius: 8px;
     height: 40px;
@@ -249,11 +255,6 @@
       outline: var(--cr-focus-outline-hcm);
     }
   }
-
-  /** Temporary CSS to style demo. */
-  #descriptorComboboxB [selected] {
-    background: green;
-  }
 </style>
 <div class="sp-card">
   <sp-heading id="heading" on-back-button-click="onBackClick_"
@@ -297,7 +298,11 @@
           value="{{selectedDescriptorB_}}">
         <template is="dom-repeat" items="[[descriptors_.descriptorB]]">
           <div class="dropdown-item" role="option" value="[[item.label]]">
-            <img is="cr-auto-img" auto-src="[[item.imagePath]]"></img>
+            <customize-chrome-check-mark-wrapper
+                checked="[[isOptionSelectedInDescriptorB_(
+                    item, selectedDescriptorB_)]]">
+              <img is="cr-auto-img" auto-src="[[item.imagePath]]"></img>
+            </customize-chrome-check-mark-wrapper>
             <span>[[item.label]]</span>
           </div>
         </template>

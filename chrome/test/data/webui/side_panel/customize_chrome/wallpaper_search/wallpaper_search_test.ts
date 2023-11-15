@@ -140,6 +140,38 @@ suite('WallpaperSearchTest', () => {
       assertEquals('cr:expand-more', categoryLabelIcon.icon);
     });
 
+    test('check marks selected descriptorComboboxB option', async () => {
+      createWallpaperSearchElement({
+        descriptorA: [],
+        descriptorB: [
+          {label: 'one', imagePath: 'one.png'},
+          {label: 'two', imagePath: 'two.png'},
+        ],
+        descriptorC: [],
+      });
+      await flushTasks();
+
+      const optionCheckmarks =
+          wallpaperSearchElement.$.descriptorComboboxB.querySelectorAll(
+              'customize-chrome-check-mark-wrapper');
+      assertEquals(2, optionCheckmarks.length);
+
+      const option1Checkmark = optionCheckmarks[0]!;
+      const option2Checkmark = optionCheckmarks[1]!;
+      assertFalse(option1Checkmark.checked);
+      assertFalse(option2Checkmark.checked);
+
+      wallpaperSearchElement.$.descriptorComboboxB.value = 'one';
+      await flushTasks();
+      assertTrue(option1Checkmark.checked);
+      assertFalse(option2Checkmark.checked);
+
+      wallpaperSearchElement.$.descriptorComboboxB.value = 'two';
+      await flushTasks();
+      assertFalse(option1Checkmark.checked);
+      assertTrue(option2Checkmark.checked);
+    });
+
     test('check marks one item in descriptorMenuD at a time', async () => {
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
