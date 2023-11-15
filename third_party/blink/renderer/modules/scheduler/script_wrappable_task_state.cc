@@ -11,8 +11,21 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 
 namespace blink {
+
+namespace {
+
+void ClearContinuationPreservedEmbedderData(v8::Isolate* isolate) {
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context =
+      V8PerIsolateData::From(isolate)->EnsureScriptRegexpContext();
+  v8::Context::Scope context_scope(context);
+  context->SetContinuationPreservedEmbedderData(v8::Local<v8::Value>());
+}
+
+}  // namespace
 
 ScriptWrappableTaskState::ScriptWrappableTaskState(
     scheduler::TaskAttributionInfo* task,
@@ -64,19 +77,31 @@ void ScriptWrappableTaskState::SetCurrent(
     ScriptState* script_state,
     ScriptWrappableTaskState* task_state) {
   DCHECK(script_state);
-  if (!script_state->ContextIsValid()) {
-    return;
-  }
-  CHECK(!ScriptForbiddenScope::IsScriptForbidden());
-  ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
   DCHECK(isolate);
   if (isolate->IsExecutionTerminating()) {
     return;
   }
+  CHECK(!ScriptForbiddenScope::IsScriptForbidden());
+  if (!script_state->ContextIsValid()) {
+    // TODO(crbug.com/1351643): This is a temporary workaround for detached
+    // contexts while transitioning to per-isolate CPED. When v8 switches to
+    // per-isolate CPED, we won't restore the previous value if the context is
+    // detached, which can result in propagating the wrong value or leaking the
+    // context.
+    //
+    // The following prevents this by clearing the CPED on an arbitrary context
+    // associated with the isolate. Before the v8 API changes, this is a no-op
+    // (aside from potentially creating the context). After it changes, this
+    // will clear the per-isolate CPED since
+    // Context::SetContinuationPreservedEmbedderData() will delegate to
+    // Isolate::SetContinuationPreservedEmbedderData().
+    ClearContinuationPreservedEmbedderData(isolate);
+    return;
+  }
+  ScriptState::Scope scope(script_state);
   v8::Local<v8::Context> context = script_state->GetContext();
   DCHECK(!context.IsEmpty());
-
   if (task_state) {
     context->SetContinuationPreservedEmbedderData(
         ToV8Traits<ScriptWrappableTaskState>::ToV8(script_state, task_state)
