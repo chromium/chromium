@@ -48,8 +48,8 @@ class DisplaySizeScreenTest : public OobeBaseTest {
         WizardController::default_controller()->GetScreen<DisplaySizeScreen>();
 
     original_callback_ = display_size_screen->get_exit_callback_for_testing();
-    display_size_screen->set_exit_callback_for_testing(base::BindRepeating(
-        &DisplaySizeScreenTest::HandleScreenExit, base::Unretained(this)));
+    display_size_screen->set_exit_callback_for_testing(
+        screen_result_waiter_.GetRepeatingCallback());
     OobeBaseTest::SetUpOnMainThread();
   }
 
@@ -64,13 +64,10 @@ class DisplaySizeScreenTest : public OobeBaseTest {
         DisplaySizeScreenView::kScreenId);
   }
 
-  void WaitForScreenExit() {
-    if (result_.has_value()) {
-      return;
-    }
-    base::test::TestFuture<void> waiter;
-    quit_closure_ = waiter.GetCallback();
-    EXPECT_TRUE(waiter.Wait());
+  DisplaySizeScreen::Result WaitForScreenExitResult() {
+    DisplaySizeScreen::Result result = screen_result_waiter_.Take();
+    original_callback_.Run(result);
+    return result;
   }
 
   std::vector<float> GetAvailableSizes() {
@@ -99,23 +96,13 @@ class DisplaySizeScreenTest : public OobeBaseTest {
     return current_size_index;
   }
 
-  DisplaySizeScreen::ScreenExitCallback original_callback_;
-  absl::optional<DisplaySizeScreen::Result> result_;
-
  protected:
   base::test::ScopedFeatureList feature_list_;
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
 
  private:
-  void HandleScreenExit(DisplaySizeScreen::Result result) {
-    result_ = result;
-    original_callback_.Run(result);
-    if (quit_closure_) {
-      std::move(quit_closure_).Run();
-    }
-  }
-
-  base::OnceClosure quit_closure_;
+  base::test::TestFuture<DisplaySizeScreen::Result> screen_result_waiter_;
+  DisplaySizeScreen::ScreenExitCallback original_callback_;
 };
 
 IN_PROC_BROWSER_TEST_F(DisplaySizeScreenTest, InitialSliderValue) {
@@ -125,8 +112,8 @@ IN_PROC_BROWSER_TEST_F(DisplaySizeScreenTest, InitialSliderValue) {
   test::OobeJS().ExpectAttributeEQ("value", kSizeSlider, GetCurrentSizeIndex());
 
   test::OobeJS().TapOnPath(kNextButton);
-  OobeScreenExitWaiter(DisplaySizeScreenView::kScreenId).Wait();
-  EXPECT_EQ(result_.value(), DisplaySizeScreen::Result::kNext);
+  DisplaySizeScreen::Result result = WaitForScreenExitResult();
+  EXPECT_EQ(result, DisplaySizeScreen::Result::kNext);
 
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   EXPECT_TRUE(prefs->HasPrefPath(prefs::kOobeDisplaySizeFactorDeferred));
@@ -143,8 +130,8 @@ IN_PROC_BROWSER_TEST_F(DisplaySizeScreenTest, PrefUpdatedMaxSize) {
   }
 
   test::OobeJS().TapOnPath(kNextButton);
-  OobeScreenExitWaiter(DisplaySizeScreenView::kScreenId).Wait();
-  EXPECT_EQ(result_.value(), DisplaySizeScreen::Result::kNext);
+  DisplaySizeScreen::Result result = WaitForScreenExitResult();
+  EXPECT_EQ(result, DisplaySizeScreen::Result::kNext);
 
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   EXPECT_TRUE(prefs->HasPrefPath(prefs::kOobeDisplaySizeFactorDeferred));
@@ -164,8 +151,8 @@ IN_PROC_BROWSER_TEST_F(DisplaySizeScreenTest, PrefUpdatedMinSize) {
   }
 
   test::OobeJS().TapOnPath(kNextButton);
-  OobeScreenExitWaiter(DisplaySizeScreenView::kScreenId).Wait();
-  EXPECT_EQ(result_.value(), DisplaySizeScreen::Result::kNext);
+  DisplaySizeScreen::Result result = WaitForScreenExitResult();
+  EXPECT_EQ(result, DisplaySizeScreen::Result::kNext);
 
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   EXPECT_TRUE(prefs->HasPrefPath(prefs::kOobeDisplaySizeFactorDeferred));
