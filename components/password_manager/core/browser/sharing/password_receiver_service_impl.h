@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
-#include "components/password_manager/core/browser/sharing/sharing_invitations.h"
+#include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
 #include "components/sync/service/sync_service_observer.h"
 
 class PrefService;
@@ -33,7 +33,7 @@ class ProcessIncomingSharingInvitationTask : public PasswordStoreConsumer {
   // `done_callback` is invoked when the task is completed passing the value of
   // `this` informing the embedder which task has completed.
   ProcessIncomingSharingInvitationTask(
-      IncomingSharingInvitation invitation,
+      sync_pb::IncomingPasswordSharingInvitationSpecifics invitation,
       PasswordStoreInterface* password_store,
       base::OnceCallback<void(ProcessIncomingSharingInvitationTask*)>
           done_callback);
@@ -49,7 +49,7 @@ class ProcessIncomingSharingInvitationTask : public PasswordStoreConsumer {
       std::vector<std::unique_ptr<PasswordForm>> results) override;
 
   // The invitation that is being processed by this task.
-  IncomingSharingInvitation invitation_;
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation_;
 
   raw_ptr<PasswordStoreInterface> password_store_;
 
@@ -79,7 +79,7 @@ class PasswordReceiverServiceImpl : public PasswordReceiverService,
 
   // PasswordReceiverService implementation:
   void ProcessIncomingSharingInvitation(
-      IncomingSharingInvitation invitation) override;
+      sync_pb::IncomingPasswordSharingInvitationSpecifics invitation) override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
       override;
   void OnSyncServiceInitialized(syncer::SyncService* service) override;

@@ -28,8 +28,6 @@ source_set("sharing") {
     "recipients_fetcher.h",
     "recipients_fetcher_impl.cc",
     "recipients_fetcher_impl.h",
-    "sharing_invitations.cc",
-    "sharing_invitations.h",
   ]
   deps = [
     "//base",

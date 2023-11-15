@@ -7,6 +7,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -14,7 +15,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
-#include "components/password_manager/core/browser/sharing/sharing_invitations.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/service/sync_service.h"
@@ -30,39 +30,79 @@ namespace {
 ProcessIncomingPasswordSharingInvitationResult
 GetProcessSharingInvitationResultForIgnoredInvitations(
     const PasswordForm& exsiting_credentials,
-    const IncomingSharingInvitation& incoming_invitation) {
+    const sync_pb::IncomingPasswordSharingInvitationSpecifics&
+        incoming_invitation) {
+  const sync_pb::PasswordSharingInvitationData::PasswordData&
+      incoming_credentials =
+          incoming_invitation.client_only_unencrypted_data().password_data();
   CHECK_EQ(exsiting_credentials.username_value,
-           incoming_invitation.username_value);
+           base::UTF8ToUTF16(incoming_credentials.username_value()));
+
+  std::u16string incoming_password_value =
+      base::UTF8ToUTF16(incoming_credentials.password_value());
   if (exsiting_credentials.type != PasswordForm::Type::kReceivedViaSharing) {
-    return exsiting_credentials.password_value ==
-                   incoming_invitation.password_value
+    return exsiting_credentials.password_value == incoming_password_value
                ? ProcessIncomingPasswordSharingInvitationResult::
                      kCredentialsExistWithSamePassword
                : ProcessIncomingPasswordSharingInvitationResult::
                      kCredentialsExistWithDifferentPassword;
   }
 
-  if (exsiting_credentials.sender_email == incoming_invitation.sender_email) {
-    return exsiting_credentials.password_value ==
-                   incoming_invitation.password_value
+  if (exsiting_credentials.sender_email ==
+      base::UTF8ToUTF16(
+          incoming_invitation.sender_info().user_display_info().email())) {
+    return exsiting_credentials.password_value == incoming_password_value
                ? ProcessIncomingPasswordSharingInvitationResult::
                      kSharedCredentialsExistWithSameSenderAndSamePassword
                : ProcessIncomingPasswordSharingInvitationResult::
                      kSharedCredentialsExistWithSameSenderAndDifferentPassword;
   }
 
-  return exsiting_credentials.password_value ==
-                 incoming_invitation.password_value
+  return exsiting_credentials.password_value == incoming_password_value
              ? ProcessIncomingPasswordSharingInvitationResult::
                    kSharedCredentialsExistWithDifferentSenderAndSamePassword
              : ProcessIncomingPasswordSharingInvitationResult::
                    kSharedCredentialsExistWithDifferentSenderAndDifferentPassword;
 }
 
+PasswordForm IncomingSharingInvitationToPasswordForm(
+    const sync_pb::IncomingPasswordSharingInvitationSpecifics& invitation) {
+  const sync_pb::PasswordSharingInvitationData::PasswordData&
+      incoming_credentials =
+          invitation.client_only_unencrypted_data().password_data();
+  PasswordForm form;
+  form.url = GURL(incoming_credentials.origin());
+  form.username_element =
+      base::UTF8ToUTF16(incoming_credentials.username_element());
+  form.username_value =
+      base::UTF8ToUTF16(incoming_credentials.username_value());
+  form.password_element =
+      base::UTF8ToUTF16(incoming_credentials.password_element());
+  form.signon_realm = incoming_credentials.signon_realm();
+  form.password_value =
+      base::UTF8ToUTF16(incoming_credentials.password_value());
+  form.scheme =
+      static_cast<PasswordForm::Scheme>(incoming_credentials.scheme());
+  form.display_name = base::UTF8ToUTF16(incoming_credentials.display_name());
+  form.date_created = base::Time::Now();
+  form.type = PasswordForm::Type::kReceivedViaSharing;
+
+  // Invitation metadata.
+  const sync_pb::UserDisplayInfo& sender_info =
+      invitation.sender_info().user_display_info();
+  form.sender_email = base::UTF8ToUTF16(sender_info.email());
+  form.sender_name = base::UTF8ToUTF16(sender_info.display_name());
+  form.sender_profile_image_url = GURL(sender_info.profile_image_url());
+
+  form.date_received = base::Time::Now();
+  form.sharing_notification_displayed = false;
+  return form;
+}
+
 }  // namespace
 
 ProcessIncomingSharingInvitationTask::ProcessIncomingSharingInvitationTask(
-    IncomingSharingInvitation invitation,
+    sync_pb::IncomingPasswordSharingInvitationSpecifics invitation,
     PasswordStoreInterface* password_store,
     base::OnceCallback<void(ProcessIncomingSharingInvitationTask*)>
         done_callback)
@@ -72,9 +112,15 @@ ProcessIncomingSharingInvitationTask::ProcessIncomingSharingInvitationTask(
   // Incoming sharing invitation are only accepted if they represent a password
   // form that doesn't exist in the password store. Query the password store
   // first in order to detect existing credentials.
+  const sync_pb::PasswordSharingInvitationData::PasswordData&
+      incoming_credentials =
+          invitation_.client_only_unencrypted_data().password_data();
+
   password_store_->GetLogins(
-      PasswordFormDigest(invitation_.scheme, invitation_.signon_realm,
-                         invitation_.url),
+      PasswordFormDigest(
+          static_cast<PasswordForm::Scheme>(incoming_credentials.scheme()),
+          incoming_credentials.signon_realm(),
+          GURL(incoming_credentials.origin())),
       weak_ptr_factory_.GetWeakPtr());
 }
 
@@ -86,9 +132,14 @@ void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResults(
   // TODO(crbug.com/1448235): process PSL and affilated credentials if needed.
   // TODO(crbug.com/1448235): process conflicting passwords differently if
   // necessary.
+  std::u16string incoming_username_value =
+      base::UTF8ToUTF16(invitation_.client_only_unencrypted_data()
+                            .password_data()
+                            .username_value());
   auto credential_with_same_username_it = base::ranges::find_if(
-      results, [this](const std::unique_ptr<PasswordForm>& result) {
-        return result->username_value == invitation_.username_value;
+      results,
+      [&incoming_username_value](const std::unique_ptr<PasswordForm>& result) {
+        return result->username_value == incoming_username_value;
       });
   if (credential_with_same_username_it == results.end()) {
     metrics_util::LogProcessIncomingPasswordSharingInvitationResult(
@@ -141,7 +192,7 @@ PasswordReceiverServiceImpl::PasswordReceiverServiceImpl(
 PasswordReceiverServiceImpl::~PasswordReceiverServiceImpl() = default;
 
 void PasswordReceiverServiceImpl::ProcessIncomingSharingInvitation(
-    IncomingSharingInvitation invitation) {
+    sync_pb::IncomingPasswordSharingInvitationSpecifics invitation) {
   PasswordStoreInterface* password_store = nullptr;
   // Although at this time, the sync service must exist already since it is
   // responsible for fetching the incoming sharing invitations for the sync
@@ -174,6 +225,8 @@ void PasswordReceiverServiceImpl::ProcessIncomingSharingInvitation(
     return;
   }
 
+  // TODO(crbug.com/1445868): fill in creation date if still relevant and verify
+  // incoming invitations.
   auto task = std::make_unique<ProcessIncomingSharingInvitationTask>(
       std::move(invitation), password_store,
       /*done_callback=*/
