@@ -58,7 +58,6 @@ class ASH_EXPORT MediaNotificationProviderImpl
   std::unique_ptr<views::View> GetMediaNotificationListView(
       int separator_thickness,
       bool should_clip_height,
-      const std::string& item_id,
       const std::string& show_devices_for_item_id) override;
   void OnBubbleClosing() override;
   void SetColorTheme(

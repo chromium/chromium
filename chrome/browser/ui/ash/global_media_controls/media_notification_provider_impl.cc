@@ -110,7 +110,6 @@ std::unique_ptr<views::View>
 MediaNotificationProviderImpl::GetMediaNotificationListView(
     int separator_thickness,
     bool should_clip_height,
-    const std::string& item_id,
     const std::string& show_devices_for_item_id) {
   CHECK(item_manager_);
   CHECK(color_theme_);
@@ -121,15 +120,17 @@ MediaNotificationProviderImpl::GetMediaNotificationListView(
           should_clip_height);
   media_item_ui_list_view_ = media_item_ui_list_view->GetWeakPtr();
   show_devices_for_item_id_ = show_devices_for_item_id;
-  if (item_id.empty()) {
+  if (show_devices_for_item_id.empty()) {
     entry_point_ =
         global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray;
-    item_manager_->SetDialogDelegate(this);
   } else {
+    // TODO(crbug.com/1501668): Entries via the Cast button in the quick
+    // settings mini player also hits this else-branch, being miscounted in the
+    // histogram below.
     entry_point_ =
         global_media_controls::GlobalMediaControlsEntryPoint::kPresentation;
-    item_manager_->SetDialogDelegateForId(this, item_id);
   }
+  item_manager_->SetDialogDelegate(this);
   base::UmaHistogramEnumeration("Media.GlobalMediaControls.EntryPoint",
                                 entry_point_);
   return media_item_ui_list_view;

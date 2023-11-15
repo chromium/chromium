@@ -65,7 +65,7 @@ UnifiedMediaControlsDetailedViewController::CreateView() {
   return std::make_unique<UnifiedMediaControlsDetailedView>(
       detailed_view_delegate_.get(),
       MediaNotificationProvider::Get()->GetMediaNotificationListView(
-          kMenuSeparatorWidth, /*should_clip_height=*/false, /*item_id=*/"",
+          kMenuSeparatorWidth, /*should_clip_height=*/false,
           show_devices_for_item_id_));
 }
 

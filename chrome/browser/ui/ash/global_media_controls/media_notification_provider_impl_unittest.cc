@@ -179,7 +179,7 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
   std::unique_ptr<global_media_controls::MediaItemUIListView>
   CreateNotificationListView() {
     auto view = provider_->GetMediaNotificationListView(
-        1, /*should_clip_height=*/true, /*item_id=*/"",
+        1, /*should_clip_height=*/true,
         /*show_devices_for_item_id=*/"");
     return base::WrapUnique(
         static_cast<global_media_controls::MediaItemUIListView*>(
@@ -289,7 +289,7 @@ class CastStartStopMediaNotificationProviderImplTest
     // We must initialize the list view before we can show individual media
     // items.
     list_view_ = provider_->GetMediaNotificationListView(
-        1, /*should_clip_height=*/true, /*item_id=*/"",
+        1, /*should_clip_height=*/true,
         /*show_devices_for_item_id=*/"");
   }
 
