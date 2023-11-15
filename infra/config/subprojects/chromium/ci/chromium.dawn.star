@@ -9,6 +9,7 @@ load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -71,6 +72,14 @@ ci.gpu.linux_builder(
         category = "ToT|Linux|Builder",
         short_name = "x64",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
 )
 
 ci.gpu.linux_builder(
@@ -99,6 +108,14 @@ ci.gpu.linux_builder(
         short_name = "x64",
     ),
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
 )
 
 ci.gpu.linux_builder(
@@ -123,6 +140,14 @@ ci.gpu.linux_builder(
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Android|Builder",
         short_name = "arm",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
     ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -203,6 +228,15 @@ ci.gpu.linux_builder(
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Android",
         short_name = "p6",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android",
+            "arm64",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
     ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -291,6 +325,15 @@ ci.gpu.linux_builder(
     # Serially executed tests + TSAN = more than the default timeout needed in
     # order to prevent build timeouts.
     execution_timeout = 6 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "tsan",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -317,6 +360,14 @@ ci.gpu.linux_builder(
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Android|Builder",
         short_name = "arm",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
     ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -401,6 +452,15 @@ ci.gpu.linux_builder(
         category = "ToT|Android",
         short_name = "p6",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android",
+            "arm64",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -479,6 +539,15 @@ ci.gpu.mac_builder(
         category = "DEPS|Mac",
         short_name = "arm64",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "arm64",
+        ],
+    ),
 )
 
 ci.gpu.mac_builder(
@@ -507,6 +576,15 @@ ci.gpu.mac_builder(
         category = "ToT|Mac",
         short_name = "arm64",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "arm64",
+        ],
+    ),
 )
 
 ci.gpu.mac_builder(
@@ -534,6 +612,14 @@ ci.gpu.mac_builder(
         category = "ToT|Mac|Builder",
         short_name = "x64",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
 )
 
 ci.gpu.mac_builder(
@@ -560,6 +646,14 @@ ci.gpu.mac_builder(
         short_name = "x64",
     ),
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
 )
 
 # Note that the Mac testers are all thin Linux VMs, triggering jobs on the
@@ -754,6 +848,16 @@ ci.gpu.windows_builder(
         category = "ToT|Windows|ASAN|Builder",
         short_name = "x64",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_use_built_dxc",
+            "dawn_enable_opengles",
+            "asan",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -846,6 +950,15 @@ ci.gpu.windows_builder(
         category = "ToT|Windows|Builder",
         short_name = "x64",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_use_built_dxc",
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -873,6 +986,15 @@ ci.gpu.windows_builder(
         short_name = "x64",
     ),
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_use_built_dxc",
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -1039,6 +1161,15 @@ ci.gpu.windows_builder(
         category = "ToT|Windows|Builder",
         short_name = "x86",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "x86",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -1066,6 +1197,15 @@ ci.gpu.windows_builder(
         short_name = "x86",
     ),
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "x86",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 

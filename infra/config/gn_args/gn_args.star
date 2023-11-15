@@ -264,6 +264,20 @@ gn_args.config(
 )
 
 gn_args.config(
+    "dawn_enable_opengles",
+    args = {
+        "dawn_enable_opengles": True,
+    },
+)
+
+gn_args.config(
+    "dawn_use_built_dxc",
+    args = {
+        "dawn_use_built_dxc": True,
+    },
+)
+
+gn_args.config(
     "dcheck_always_on",
     args = {
         "dcheck_always_on": True,
