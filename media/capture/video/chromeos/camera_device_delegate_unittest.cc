@@ -165,7 +165,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
         mock_camera_module_.GetPendingRemote());
   }
 
-  void TearDown() override { camera_hal_delegate_->Reset(); }
+  void TearDown() override {}
 
   void AllocateDevice() {
     ASSERT_FALSE(device_delegate_thread_.IsRunning());

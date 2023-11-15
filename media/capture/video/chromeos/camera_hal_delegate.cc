@@ -301,7 +301,22 @@ bool CameraHalDelegate::Init() {
 }
 
 CameraHalDelegate::~CameraHalDelegate() {
+  std::vector<CameraClientObserver*> observers;
+  for (auto& client_observer : local_client_observers_) {
+    observers.emplace_back(client_observer.get());
+  }
+  auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
+  dispatcher->RemoveClientObservers(observers);
+  local_client_observers_.clear();
+
+  if (ipc_task_runner_) {
+    ipc_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CameraHalDelegate::ResetMojoInterfaceOnIpcThread,
+                       base::Unretained(this)));
+  }
   camera_hal_ipc_thread_.Stop();
+
   power_manager_client_proxy_->Shutdown();
   ui_task_runner_->DeleteSoon(FROM_HERE,
                               std::move(power_manager_client_proxy_));
@@ -338,22 +353,6 @@ void CameraHalDelegate::SetCameraModule(
       FROM_HERE,
       base::BindOnce(&CameraHalDelegate::SetCameraModuleOnIpcThread,
                      base::Unretained(this), std::move(camera_module)));
-}
-
-void CameraHalDelegate::Reset() {
-  if (ipc_task_runner_) {
-    ipc_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CameraHalDelegate::ResetMojoInterfaceOnIpcThread,
-                       base::Unretained(this)));
-  }
-  std::vector<CameraClientObserver*> observers;
-  for (auto& client_observer : local_client_observers_) {
-    observers.emplace_back(client_observer.get());
-  }
-  auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
-  dispatcher->RemoveClientObservers(observers);
-  local_client_observers_.clear();
 }
 
 std::unique_ptr<VideoCaptureDevice> CameraHalDelegate::CreateDevice(

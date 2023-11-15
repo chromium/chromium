@@ -90,9 +90,6 @@ class CAPTURE_EXPORT CameraHalDelegate final
   void SetCameraModule(
       mojo::PendingRemote<cros::mojom::CameraModule> camera_module);
 
-  // Resets various mojo bindings, WaitableEvents, and cached information.
-  void Reset();
-
   // Delegation methods for the VideoCaptureDeviceFactory interface.  These
   // methods are called by VideoCaptureDeviceFactoryChromeOS directly.  They
   // operate on the same thread that the VideoCaptureDeviceFactoryChromeOS runs

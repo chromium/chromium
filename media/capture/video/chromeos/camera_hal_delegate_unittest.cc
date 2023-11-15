@@ -59,7 +59,7 @@ class CameraHalDelegateTest : public ::testing::Test {
         mock_camera_module_.GetPendingRemote());
   }
 
-  void TearDown() override { camera_hal_delegate_->Reset(); }
+  void TearDown() override {}
 
   void Wait() {
     run_loop_ = std::make_unique<base::RunLoop>();
