@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/app_constants/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -143,6 +144,10 @@ AppPlatformInputMetrics::AppPlatformInputMetrics(
     InstanceRegistry& instance_registry)
     : profile_(profile), app_registry_cache_(app_registry_cache) {
   instance_registry_observation_.Observe(&instance_registry);
+  if (chromeos::IsManagedGuestSession()) {
+    CHECK(ukm::UkmRecorder::Get());
+    ukm_recorder_observer_.Observe(ukm::UkmRecorder::Get());
+  }
   if (ash::Shell::HasInstance()) {
     ash::Shell::Get()->AddPreTargetHandler(this);
   }
@@ -186,20 +191,7 @@ void AppPlatformInputMetrics::OnFiveMinutes() {
 }
 
 void AppPlatformInputMetrics::OnTwoHours() {
-  if (!ShouldRecordUkm(profile_)) {
-    return;
-  }
-
-  for (const auto& event_counts : app_id_to_event_count_per_two_hours_) {
-    if (!ShouldRecordUkmForApp(event_counts.first)) {
-      continue;
-    }
-    // `event_counts.second` is the map from InputEventSource to the event
-    // counts.
-    RecordInputEventsUkm(event_counts.first, event_counts.second);
-  }
-
-  app_id_to_event_count_per_two_hours_.clear();
+  RecordInputEventsUkm();
 }
 
 void AppPlatformInputMetrics::OnInstanceUpdate(const InstanceUpdate& update) {
@@ -235,6 +227,11 @@ void AppPlatformInputMetrics::OnInstanceUpdate(const InstanceUpdate& update) {
 void AppPlatformInputMetrics::OnInstanceRegistryWillBeDestroyed(
     InstanceRegistry* cache) {
   instance_registry_observation_.Reset();
+}
+
+void AppPlatformInputMetrics::OnStartingShutdown() {
+  CHECK(chromeos::IsManagedGuestSession());
+  RecordInputEventsUkm();
 }
 
 void AppPlatformInputMetrics::SetAppInfoForActivatedWindow(
@@ -327,7 +324,24 @@ void AppPlatformInputMetrics::RecordEventCount(InputEventSource event_source,
                                         [it->second.app_type_name];
 }
 
-void AppPlatformInputMetrics::RecordInputEventsUkm(
+void AppPlatformInputMetrics::RecordInputEventsUkm() {
+  if (!ShouldRecordUkm(profile_)) {
+    return;
+  }
+
+  for (const auto& event_counts : app_id_to_event_count_per_two_hours_) {
+    if (!ShouldRecordUkmForApp(event_counts.first)) {
+      continue;
+    }
+    // `event_counts.second` is the map from InputEventSource to the event
+    // counts.
+    RecordInputEventsUkmForApp(event_counts.first, event_counts.second);
+  }
+
+  app_id_to_event_count_per_two_hours_.clear();
+}
+
+void AppPlatformInputMetrics::RecordInputEventsUkmForApp(
     const std::string& app_id,
     const EventSourceToCounts& event_counts) {
   for (const auto& counts : event_counts) {
@@ -380,7 +394,7 @@ void AppPlatformInputMetrics::RecordInputEventsUkmFromPref() {
 
     EventSourceToCounts event_counts =
         ConvertDictValueToEventCounts(*events_dict);
-    RecordInputEventsUkm(app_id, event_counts);
+    RecordInputEventsUkmForApp(app_id, event_counts);
   }
 }
 

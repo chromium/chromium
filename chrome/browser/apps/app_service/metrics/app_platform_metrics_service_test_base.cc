@@ -62,7 +62,11 @@ TestApp::TestApp(std::string app_id,
       is_platform_app(is_platform_app),
       window_mode(window_mode) {}
 
+TestApp::TestApp() = default;
+
 TestApp::TestApp(const TestApp& other) = default;
+
+TestApp::TestApp(TestApp&& other) = default;
 
 AppPtr MakeApp(TestApp app) {
   auto result = AppPublisher::MakeApp(app.app_type, app.app_id, app.readiness,
@@ -100,7 +104,9 @@ void AppPlatformMetricsServiceTestBase::SetUp() {
       kAppPlatformMetricsDayId,
       start_time.UTCMidnight().since_origin().InDaysFloored());
 
-  ::chromeos::PowerManagerClient::InitializeFake();
+  if (!::chromeos::PowerManagerClient::Get()) {
+    ::chromeos::PowerManagerClient::InitializeFake();
+  }
 
   app_platform_metrics_service_ =
       std::make_unique<AppPlatformMetricsService>(profile());

@@ -47,8 +47,9 @@ struct TestApp {
           bool is_platform_app = false,
           WindowMode window_mode = WindowMode::kUnknown);
 
-  TestApp() = delete;
+  TestApp();
   TestApp(const TestApp& other);
+  TestApp(TestApp&& other);
 };
 
 // Helper method that creates an app object so it can be used with the
@@ -63,7 +64,7 @@ void AddApp(AppServiceProxy* proxy, TestApp app);
 // platform metric collection. Also facilitates tests to simulate app
 // installation and usage.
 class AppPlatformMetricsServiceTestBase : public ::testing::Test {
- protected:
+ public:
   AppPlatformMetricsServiceTestBase();
   ~AppPlatformMetricsServiceTestBase() override;
 
