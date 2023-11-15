@@ -73,7 +73,9 @@ CGFloat const kRadioButtonSize = 20;
     [optionsView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
                                                constant:-kHorizontalMargin],
   ]];
-  [self updateButtonForState:UIControlStateDisabled];
+
+  [self setPrimaryButtonConfiguration];
+  self.primaryActionButton.enabled = NO;
 }
 
 - (void)viewWillLayoutSubviews {
@@ -193,7 +195,7 @@ CGFloat const kRadioButtonSize = 20;
   }
   cell.accessoryView = [[UIImageView alloc] initWithImage:icon];
   cell.accessoryView.tintColor = [UIColor colorNamed:kBlueColor];
-  [self updateButtonForState:UIControlStateNormal];
+  self.primaryActionButton.enabled = YES;
 }
 
 - (void)tableView:(UITableView*)tableView
@@ -229,24 +231,6 @@ CGFloat const kRadioButtonSize = 20;
   return _tableView;
 }
 
-// Updates the "Enable Tracking" button. The button should be disabled initially
-// and only enabled after an option, either "always track" or "ask to track",
-// has been selected by the user.
-- (void)updateButtonForState:(UIControlState)state {
-  UIButton* button = self.primaryActionButton;
-  if (state == UIControlStateDisabled) {
-    button.userInteractionEnabled = NO;
-    [button setBackgroundColor:[UIColor colorNamed:kGrey200Color]];
-    [button setTitleColor:[UIColor colorNamed:kGrey600Color]
-                 forState:UIControlStateNormal];
-  } else if (state == UIControlStateNormal) {
-    button.userInteractionEnabled = YES;
-    [button setBackgroundColor:[UIColor colorNamed:kBlueColor]];
-    [button setTitleColor:[UIColor colorNamed:kBackgroundColor]
-                 forState:UIControlStateNormal];
-  }
-}
-
 // Updates the optionsView's height constraint.
 - (void)updateOptionsViewHeightConstraint {
   CGFloat totalCellHeight = 0;
@@ -254,6 +238,35 @@ CGFloat const kRadioButtonSize = 20;
     totalCellHeight += cell.frame.size.height;
   }
   _optionsViewHeightConstraint.constant = totalCellHeight;
+}
+
+// Sets the configurationUpdateHandler for the primaryActionButton to handle the
+// button's state changes. The button should be disabled initially and only
+// enabled after an option, either "always track" or "ask to track", has been
+// selected by the user.
+- (void)setPrimaryButtonConfiguration {
+  UIButton* button = self.primaryActionButton;
+  button.configurationUpdateHandler = ^(UIButton* incomingButton) {
+    UIButtonConfiguration* updatedConfig = incomingButton.configuration;
+    switch (incomingButton.state) {
+      case UIControlStateDisabled: {
+        updatedConfig.background.backgroundColor =
+            [UIColor colorNamed:kGrey200Color];
+        updatedConfig.baseForegroundColor = [UIColor colorNamed:kGrey600Color];
+        break;
+      }
+      case UIControlStateNormal: {
+        updatedConfig.background.backgroundColor =
+            [UIColor colorNamed:kBlueColor];
+        updatedConfig.baseForegroundColor =
+            [UIColor colorNamed:kBackgroundColor];
+        break;
+      }
+      default:
+        break;
+    }
+    incomingButton.configuration = updatedConfig;
+  };
 }
 
 @end
