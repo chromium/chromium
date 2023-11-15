@@ -7040,6 +7040,6 @@ crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-resource
 crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
 
 # Gardener 2023-11-13
-crbug.com/1501802 [ Linux ] virtual/pna-permission/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Failure Pass ]
-crbug.com/1501802 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribute-change.https.html [ Failure Pass ]
-crbug.com/1501802 [ Linux ] external/wpt/idle-detection/idle-detection-allowed-by-permissions-policy.https.sub.html [ Failure Pass ]
+crbug.com/1501462 [ Linux ] virtual/pna-permission/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Failure Pass ]
+crbug.com/1455263 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribute-change.https.html [ Failure Pass ]
+crbug.com/1502336 [ Linux ] external/wpt/idle-detection/idle-detection-allowed-by-permissions-policy.https.sub.html [ Failure Pass ]
