@@ -55,6 +55,7 @@ extern const char kTpcdWritePopupCurrentInteractionHeuristicsGrantsName[];
 extern const char kTpcdWritePopupPastInteractionHeuristicsGrantsName[];
 extern const char kTpcdBackfillPopupHeuristicsGrantsName[];
 extern const char kTpcdPopupHeuristicDisableForAdTaggedPopupsName[];
+extern const char kTpcdPopupHeuristicEnableForIframeInitiatorName[];
 extern const char kTpcdWriteRedirectHeuristicGrantsName[];
 extern const char kTpcdRedirectHeuristicRequireABAFlowName[];
 extern const char kTpcdRedirectHeuristicRequireCurrentInteractionName[];
@@ -81,6 +82,24 @@ extern const base::FeatureParam<base::TimeDelta>
 // via an ad-tagged frame.
 extern const base::FeatureParam<bool>
     kTpcdPopupHeuristicDisableForAdTaggedPopups;
+
+enum class EnableForIframeTypes { kNone = 0, kFirstParty = 1, kAll = 2 };
+
+// Whether to enable writing Popup heuristic grants when the popup is opened via
+// an iframe initiator.
+
+// * kNone: Ignore popups initiated from iframes.
+// * kFirstPartyIframes: Only write grants for popups initiated from 1P iframes,
+// or nested tree of all 1P iframes.
+// * kAllIframes: Write grants for popups initiated from any frame.
+constexpr base::FeatureParam<EnableForIframeTypes>::Option
+    kEnableForIframeTypesOptions[] = {
+        {EnableForIframeTypes::kNone, "none"},
+        {EnableForIframeTypes::kFirstParty, "first-party"},
+        {EnableForIframeTypes::kAll, "all"},
+};
+extern const base::FeatureParam<EnableForIframeTypes>
+    kTpcdPopupHeuristicEnableForIframeInitiator;
 
 // The duration of the storage access grant created when observing the Redirect
 // With Current Interaction scenario. If set to zero duration, do not create a

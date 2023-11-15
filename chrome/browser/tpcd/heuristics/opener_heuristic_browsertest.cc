@@ -18,6 +18,7 @@
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
+#include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_metrics.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_utils.h"
@@ -54,6 +55,7 @@ using content::WebContents;
 using content::WebContentsObserver;
 using testing::ElementsAre;
 using testing::Pair;
+using tpcd::experiment::EnableForIframeTypes;
 
 namespace {
 
@@ -218,6 +220,22 @@ class OpenerHeuristicBrowserTest
     return new_web_contents;
   }
 
+  // Navigate a (possibly nested) iframe of `parent_frame` to `url`. Return true
+  // iff navigation is successful.
+  [[nodiscard]] bool NavigateIframeTo(content::RenderFrameHost* parent_frame,
+                                      const GURL& url) {
+    content::TestNavigationObserver load_observer(GetActiveWebContents());
+    std::string script = base::StringPrintf(
+        "var iframe = document.getElementById('test');iframe.src='%s';",
+        url.spec().c_str());
+    if (!content::ExecJs(parent_frame, script,
+                         content::EXECUTE_SCRIPT_NO_USER_GESTURE)) {
+      return false;
+    }
+    load_observer.Wait();
+    return load_observer.last_navigation_succeeded();
+  }
+
   void SimulateMouseClick(WebContents* web_contents) {
     content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
     UserActivationObserver observer(web_contents,
@@ -328,6 +346,107 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   ASSERT_TRUE(popup_tab_helper);
   ASSERT_TRUE(popup_tab_helper->popup_observer_for_testing());
 }
+
+class OpenerHeuristicIframeInitiatorBrowserTest
+    : public OpenerHeuristicBrowserTest,
+      public testing::WithParamInterface<
+          ::testing::tuple<EnableForIframeTypes, bool>> {
+ public:
+  OpenerHeuristicIframeInitiatorBrowserTest()
+      : iframe_types_flag_(std::get<0>(GetParam())),
+        is_nested_iframe_(std::get<1>(GetParam())) {
+    for (const auto [val, str] :
+         tpcd::experiment::kEnableForIframeTypesOptions) {
+      if (val == iframe_types_flag_) {
+        tpcd_heuristics_grants_params_
+            ["TpcdPopupHeuristicEnableForIframeInitiator"] = str;
+      }
+    }
+  }
+
+  const EnableForIframeTypes iframe_types_flag_;
+  const bool is_nested_iframe_;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    OpenerHeuristicIframeInitiatorBrowserTest,
+    URLsInitiatedByFirstPartyIframes_HavePopupStateWithFlag) {
+  WebContents* web_contents = GetActiveWebContents();
+  const GURL opener_primary_frame_url =
+      embedded_test_server()->GetURL("a.test", "/iframe_blank.html");
+  const GURL opener_iframe_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, opener_primary_frame_url));
+  RenderFrameHost* parent_frame = web_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(NavigateIframeTo(parent_frame, opener_primary_frame_url));
+  if (is_nested_iframe_) {
+    parent_frame = ChildFrameAt(parent_frame, 0);
+    ASSERT_TRUE(NavigateIframeTo(parent_frame, opener_iframe_url));
+  }
+
+  PopupObserver observer(web_contents,
+                         WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  ASSERT_TRUE(
+      content::ExecJs(ChildFrameAt(parent_frame, 0),
+                      content::JsReplace("window.open($1);", popup_url)));
+  observer.Wait();
+
+  auto* popup_tab_helper =
+      OpenerHeuristicTabHelper::FromWebContents(observer.popup());
+  ASSERT_TRUE(popup_tab_helper);
+
+  if (iframe_types_flag_ == EnableForIframeTypes::kNone) {
+    ASSERT_FALSE(popup_tab_helper->popup_observer_for_testing());
+  } else {
+    ASSERT_TRUE(popup_tab_helper->popup_observer_for_testing());
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(
+    OpenerHeuristicIframeInitiatorBrowserTest,
+    URLsInitiatedByThirdPartyIframes_HavePopupStateWithFlag) {
+  WebContents* web_contents = GetActiveWebContents();
+  const GURL opener_1p_frame_url =
+      embedded_test_server()->GetURL("a.test", "/iframe_blank.html");
+  const GURL opener_3p_frame_url =
+      embedded_test_server()->GetURL("b.test", "/iframe_blank.html");
+  GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, opener_1p_frame_url));
+  RenderFrameHost* parent_frame = web_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(NavigateIframeTo(parent_frame, opener_3p_frame_url));
+  if (is_nested_iframe_) {
+    parent_frame = ChildFrameAt(parent_frame, 0);
+    ASSERT_TRUE(NavigateIframeTo(parent_frame, opener_1p_frame_url));
+  }
+
+  PopupObserver observer(web_contents,
+                         WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  ASSERT_TRUE(
+      content::ExecJs(ChildFrameAt(parent_frame, 0),
+                      content::JsReplace("window.open($1);", popup_url)));
+  observer.Wait();
+
+  auto* popup_tab_helper =
+      OpenerHeuristicTabHelper::FromWebContents(observer.popup());
+  ASSERT_TRUE(popup_tab_helper);
+
+  if (iframe_types_flag_ == EnableForIframeTypes::kAll) {
+    ASSERT_TRUE(popup_tab_helper->popup_observer_for_testing());
+  } else {
+    ASSERT_FALSE(popup_tab_helper->popup_observer_for_testing());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OpenerHeuristicIframeInitiatorBrowserTest,
+    ::testing::Combine(::testing::Values(EnableForIframeTypes::kNone,
+                                         EnableForIframeTypes::kFirstParty,
+                                         EnableForIframeTypes::kAll),
+                       ::testing::Bool()));
 
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
                        PopupPastInteractionIsNotReportedWithoutInteraction) {

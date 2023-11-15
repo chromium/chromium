@@ -30,6 +30,7 @@
 using content::NavigationHandle;
 using content::RenderFrameHost;
 using content::WebContents;
+using tpcd::experiment::EnableForIframeTypes;
 
 namespace {
 
@@ -97,13 +98,14 @@ void OpenerHeuristicTabHelper::DidOpenRequestedURL(
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
-  if (!source_render_frame_host->IsInPrimaryMainFrame()) {
+  if (source_render_frame_host->GetMainFrame() !=
+      web_contents()->GetPrimaryMainFrame()) {
+    // Not sure exactly when this happens, but it seems to involve devtools.
+    // Cf. crbug.com/1448789
     return;
   }
 
-  if (source_render_frame_host != web_contents()->GetPrimaryMainFrame()) {
-    // Not sure exactly when this happens, but it seems to involve devtools.
-    // Cf. crbug.com/1448789
+  if (!PassesIframeInitiatorCheck(source_render_frame_host)) {
     return;
   }
 
@@ -121,6 +123,33 @@ void OpenerHeuristicTabHelper::DidOpenRequestedURL(
   OpenerHeuristicTabHelper::CreateForWebContents(new_contents);
   OpenerHeuristicTabHelper::FromWebContents(new_contents)
       ->InitPopup(url, weak_factory_.GetWeakPtr());
+}
+
+bool OpenerHeuristicTabHelper::PassesIframeInitiatorCheck(
+    content::RenderFrameHost* source_render_frame_host) {
+  if (source_render_frame_host->IsInPrimaryMainFrame()) {
+    return true;
+  }
+
+  switch (tpcd::experiment::kTpcdPopupHeuristicEnableForIframeInitiator.Get()) {
+    case EnableForIframeTypes::kNone:
+      return false;
+    case EnableForIframeTypes::kAll:
+      return true;
+    case EnableForIframeTypes::kFirstParty: {
+      // Check that the frame tree consists of only first-party iframes.
+      std::string main_frame_site = GetSiteForDIPS(
+          source_render_frame_host->GetMainFrame()->GetLastCommittedURL());
+      RenderFrameHost* rfh_itr = source_render_frame_host;
+      while (rfh_itr->GetParent() != nullptr) {
+        if (GetSiteForDIPS(rfh_itr->GetLastCommittedURL()) != main_frame_site) {
+          return false;
+        }
+        rfh_itr = rfh_itr->GetParent();
+      }
+      return true;
+    }
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(OpenerHeuristicTabHelper);
