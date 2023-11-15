@@ -480,14 +480,14 @@ class MockDataTransferPolicyController
                     base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     const absl::optional<size_t> size));
   MOCK_METHOD5(PasteIfAllowed,
-               void(const ui::DataTransferEndpoint* const data_src,
-                    const ui::DataTransferEndpoint* const data_dst,
+               void(base::optional_ref<const ui::DataTransferEndpoint> data_src,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     const absl::optional<size_t> size,
                     content::RenderFrameHost* rfh,
                     base::OnceCallback<void(bool)> callback));
   MOCK_METHOD3(DropIfAllowed,
                void(const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb));
 };
 
@@ -499,7 +499,7 @@ TEST_F(DesktopDragDropClientOzoneTest, DataLeakPreventionAllowDrop) {
   // Data Leak Prevention stack allows the drop.
   EXPECT_CALL(dtp_controller, DropIfAllowed(testing::_, testing::_, testing::_))
       .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb) { std::move(drop_cb).Run(); });
 
   // Set the operation which the destination can accept.

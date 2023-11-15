@@ -29,8 +29,8 @@ class MockDataTransferPolicyController : public DataTransferPolicyController {
               (override));
   MOCK_METHOD(void,
               PasteIfAllowed,
-              (const ui::DataTransferEndpoint* const data_src,
-               const ui::DataTransferEndpoint* const data_dst,
+              (base::optional_ref<const ui::DataTransferEndpoint> data_src,
+               base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                const absl::optional<size_t> size,
                content::RenderFrameHost* rfh,
                base::OnceCallback<void(bool)> callback),
@@ -38,7 +38,7 @@ class MockDataTransferPolicyController : public DataTransferPolicyController {
   MOCK_METHOD(void,
               DropIfAllowed,
               (const ui::OSExchangeData* drag_data,
-               const ui::DataTransferEndpoint* data_dst,
+               base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                base::OnceClosure drop_cb),
               (override));
 };

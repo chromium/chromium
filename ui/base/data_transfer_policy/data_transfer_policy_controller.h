@@ -52,20 +52,22 @@ class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY)
   // true. Otherwise `callback` will be invoked with false.
   // If the WebContents of `rfh` got destroyed before `callback` is invoked, the
   // notification will get closed.
-  virtual void PasteIfAllowed(const DataTransferEndpoint* data_src,
-                              const DataTransferEndpoint* data_dst,
-                              absl::optional<size_t> size,
-                              content::RenderFrameHost* rfh,
-                              base::OnceCallback<void(bool)> callback) = 0;
+  virtual void PasteIfAllowed(
+      base::optional_ref<const DataTransferEndpoint> data_src,
+      base::optional_ref<const DataTransferEndpoint> data_dst,
+      absl::optional<size_t> size,
+      content::RenderFrameHost* rfh,
+      base::OnceCallback<void(bool)> callback) = 0;
 
   // `drag_data` can't be nullptr. nullptr can be passed instead of `data_dst`.
   // If dropping the data is not allowed, this function will show a notification
   // to the user. If the drop is allowed, `drop_cb` will be run. Otherwise
   // `drop_cb` will be reset. `drop_cb` may be run asynchronously after the user
   // comfirms they want to drop the data.
-  virtual void DropIfAllowed(const ui::OSExchangeData* drag_data,
-                             const DataTransferEndpoint* data_dst,
-                             base::OnceClosure drop_cb) = 0;
+  virtual void DropIfAllowed(
+      const ui::OSExchangeData* drag_data,
+      base::optional_ref<const DataTransferEndpoint> data_dst,
+      base::OnceClosure drop_cb) = 0;
 
  protected:
   DataTransferPolicyController();

@@ -1420,15 +1420,17 @@ class FakeDataTransferPolicyController
            (*data_src->GetURL() == allowed_url_);
   }
 
-  void PasteIfAllowed(const ui::DataTransferEndpoint* const data_src,
-                      const ui::DataTransferEndpoint* const data_dst,
-                      const absl::optional<size_t> size,
-                      content::RenderFrameHost* rfh,
-                      base::OnceCallback<void(bool)> callback) override {}
+  void PasteIfAllowed(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      const absl::optional<size_t> size,
+      content::RenderFrameHost* rfh,
+      base::OnceCallback<void(bool)> callback) override {}
 
-  void DropIfAllowed(const ui::OSExchangeData* drag_data,
-                     const ui::DataTransferEndpoint* data_dst,
-                     base::OnceClosure drop_cb) override {}
+  void DropIfAllowed(
+      const ui::OSExchangeData* drag_data,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      base::OnceClosure drop_cb) override {}
 
  private:
   const GURL allowed_url_;

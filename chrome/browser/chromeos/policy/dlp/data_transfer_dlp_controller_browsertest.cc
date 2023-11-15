@@ -110,28 +110,29 @@ class FakeDlpController : public DataTransferDlpController,
   }
 
   void NotifyBlockedPaste(
-      const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst) override {
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst) override {
     helper_->NotifyBlockedAction(data_src, data_dst);
   }
 
-  void WarnOnPaste(const ui::DataTransferEndpoint* const data_src,
-                   const ui::DataTransferEndpoint* const data_dst,
+  void WarnOnPaste(base::optional_ref<const ui::DataTransferEndpoint> data_src,
+                   base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                    base::RepeatingCallback<void()> reporting_cb) override {
     helper_->WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
   }
 
-  void WarnOnBlinkPaste(const ui::DataTransferEndpoint* const data_src,
-                        const ui::DataTransferEndpoint* const data_dst,
-                        content::WebContents* web_contents,
-                        base::OnceCallback<void(bool)> paste_cb) override {
+  void WarnOnBlinkPaste(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      content::WebContents* web_contents,
+      base::OnceCallback<void(bool)> paste_cb) override {
     blink_data_dst_.emplace(*data_dst);
     helper_->WarnOnBlinkPaste(data_src, data_dst, web_contents,
                               std::move(paste_cb));
   }
 
   bool ShouldPasteOnWarn(
-      const ui::DataTransferEndpoint* const data_dst) override {
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst) override {
     if (force_paste_on_warn_) {
       return true;
     }
@@ -148,15 +149,15 @@ class FakeDlpController : public DataTransferDlpController,
   }
 
   void ReportWarningProceededEvent(
-      const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst,
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
       const std::string& src_pattern,
       const std::string& dst_pattern,
       const DlpRulesManager::RuleMetadata& rule_metadata,
       bool is_clipboard_event) {
     DataTransferDlpController::ReportWarningProceededEvent(
-        base::OptionalFromPtr(data_src), base::OptionalFromPtr(data_dst),
-        src_pattern, dst_pattern, is_clipboard_event, rule_metadata);
+        data_src, data_dst, src_pattern, dst_pattern, is_clipboard_event,
+        rule_metadata);
   }
 
   raw_ptr<FakeClipboardNotifier> helper_ = nullptr;

@@ -679,8 +679,8 @@ void ClipboardHostImpl::PasteIfPolicyAllowed(
     auto source =
         ui::Clipboard::GetForCurrentThread()->GetSource(clipboard_buffer);
     ui::DataTransferPolicyController::Get()->PasteIfAllowed(
-        base::OptionalToPtr(source), CreateDataEndpoint().get(), data_size,
-        &render_frame_host(), std::move(policy_cb));
+        source, CreateDataEndpoint().get(), data_size, &render_frame_host(),
+        std::move(policy_cb));
     return;
   }
   std::move(policy_cb).Run(/*is_allowed=*/true);

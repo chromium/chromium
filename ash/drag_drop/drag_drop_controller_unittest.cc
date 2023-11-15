@@ -1773,7 +1773,7 @@ TEST_F(DragDropControllerDlpTest, AllowedSyncDragDrop) {
   // Configure `dlp_controller_` to allow sync drop.
   EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _))
       .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb) { std::move(drop_cb).Run(); });
 
   PerformDlpDragAndDrop(CreateDragData(/*with_image=*/false));
@@ -1829,7 +1829,7 @@ TEST_F(DragDropControllerDlpTest, AllowedAsyncDrop) {
   base::OnceClosure drop_callback;
   EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _))
       .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb) {
         drop_callback = std::move(drop_cb);
       });
@@ -1857,7 +1857,7 @@ TEST_F(DragDropControllerDlpTest, InterruptedAsyncDrop) {
   base::OnceClosure drop_callback;
   EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _))
       .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb) {
         drop_callback = std::move(drop_cb);
       });
@@ -1894,7 +1894,7 @@ TEST_F(DragDropControllerDlpTest, DlpDisallowAsyncDrop) {
   base::OnceClosure drop_callback;
   EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _))
       .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb) {
         drop_callback = std::move(drop_cb);
       });

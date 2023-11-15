@@ -368,14 +368,14 @@ class MockDataTransferPolicyController
                     base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     const absl::optional<size_t> size));
   MOCK_METHOD5(PasteIfAllowed,
-               void(const ui::DataTransferEndpoint* const data_src,
-                    const ui::DataTransferEndpoint* const data_dst,
+               void(base::optional_ref<const ui::DataTransferEndpoint> data_src,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     const absl::optional<size_t> size,
                     content::RenderFrameHost* rfh,
                     base::OnceCallback<void(bool)> callback));
   MOCK_METHOD3(DropIfAllowed,
                void(const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb));
 };
 
@@ -418,7 +418,7 @@ TEST_F(DragDropOperationTest, DragDropCheckSourceFromLacros) {
   // Expect the encoded endpoint from Lacros to be correctly parsed.
   EXPECT_CALL(*dlp_controller, DropIfAllowed)
       .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb) {
         ASSERT_TRUE(drag_data);
         auto* data_src = drag_data->GetSource();
@@ -484,7 +484,7 @@ TEST_F(DragDropOperationTest, DragDropCheckSourceFromNonLacros) {
   // Expect the encoded endpoint from non-Lacros to be ignored.
   EXPECT_CALL(*dlp_controller, DropIfAllowed)
       .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb) {
         ASSERT_TRUE(drag_data);
         auto* data_src = drag_data->GetSource();

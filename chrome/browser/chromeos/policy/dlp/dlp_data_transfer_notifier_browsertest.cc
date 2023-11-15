@@ -31,8 +31,8 @@ class MockDlpDataTransferNotifier : public DlpDataTransferNotifier {
 
   // DlpDataTransferNotifier:
   void NotifyBlockedAction(
-      const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst) override {}
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst) override {}
 
   MOCK_METHOD(void, OnWidgetDestroying, (views::Widget*), (override));
 

@@ -58,9 +58,9 @@ bool IsNullEndpoint(const absl::optional<ui::DataTransferEndpoint>& endpoint) {
          endpoint->type() == ui::EndpointType::kDefault;
 }
 
-bool IsFilesApp(const ui::DataTransferEndpoint* const data_dst) {
+bool IsFilesApp(base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!data_dst || !data_dst->IsUrlType()) {
+  if (!data_dst.has_value() || !data_dst->IsUrlType()) {
     return false;
   }
 
@@ -80,12 +80,16 @@ bool IsFilesApp(const ui::DataTransferEndpoint* const data_dst) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-bool IsClipboardHistory(const ui::DataTransferEndpoint* const data_dst) {
-  return data_dst && data_dst->type() == ui::EndpointType::kClipboardHistory;
+bool IsClipboardHistory(
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
+  return data_dst.has_value() &&
+         data_dst->type() == ui::EndpointType::kClipboardHistory;
 }
 
-bool ShouldNotifyOnPaste(const ui::DataTransferEndpoint* const data_dst) {
-  bool notify_on_paste = !data_dst || data_dst->notify_if_restricted();
+bool ShouldNotifyOnPaste(
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
+  bool notify_on_paste =
+      !data_dst.has_value() || data_dst->notify_if_restricted();
 
   // Files Apps continuously reads the clipboard data which triggers a lot of
   // notifications while the user isn't actually initiating any copy/paste.
@@ -103,8 +107,8 @@ bool ShouldNotifyOnPaste(const ui::DataTransferEndpoint* const data_dst) {
 
 DlpRulesManager::Level IsDataTransferAllowed(
     const DlpRulesManager& dlp_rules_manager,
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst,
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     const absl::optional<size_t> size,
     std::string* src_pattern,
     std::string* dst_pattern,
@@ -114,13 +118,14 @@ DlpRulesManager::Level IsDataTransferAllowed(
     return DlpRulesManager::Level::kAllow;
   }
 
-  if (!data_src || !data_src->IsUrlType()) {  // Currently we only handle URLs.
+  // Currently we only handle URLs.
+  if (!data_src.has_value() || !data_src->IsUrlType()) {
     return DlpRulesManager::Level::kAllow;
   }
 
   const GURL src_url = *data_src->GetURL();
   ui::EndpointType dst_type =
-      data_dst ? data_dst->type() : ui::EndpointType::kDefault;
+      data_dst.has_value() ? data_dst->type() : ui::EndpointType::kDefault;
 
   DlpRulesManager::Level level = DlpRulesManager::Level::kAllow;
 
@@ -286,12 +291,12 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
 }
 
 void DataTransferDlpController::PasteIfAllowed(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst,
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     const absl::optional<size_t> size,
     content::RenderFrameHost* rfh,
     base::OnceCallback<void(bool)> paste_cb) {
-  DCHECK(data_dst);
+  DCHECK(data_dst.has_value());
   DCHECK(data_dst->IsUrlType());
 
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
@@ -324,9 +329,7 @@ void DataTransferDlpController::PasteIfAllowed(
 
   if (ShouldPasteOnWarn(data_dst)) {
     if (ShouldNotifyOnPaste(data_dst)) {
-      ReportWarningProceededEvent(base::OptionalFromPtr(data_src),
-                                  base::OptionalFromPtr(data_dst), src_pattern,
-                                  dst_pattern,
+      ReportWarningProceededEvent(data_src, data_dst, src_pattern, dst_pattern,
                                   /*is_clipboard_event=*/true, rule_metadata);
     }
     std::move(paste_cb).Run(true);
@@ -340,8 +343,8 @@ void DataTransferDlpController::PasteIfAllowed(
 
       auto reporting_cb = base::BindOnce(
           &DataTransferDlpController::ReportWarningProceededEvent,
-          weak_ptr_factory_.GetWeakPtr(), base::OptionalFromPtr(data_src),
-          base::OptionalFromPtr(data_dst), src_pattern, dst_pattern,
+          weak_ptr_factory_.GetWeakPtr(), data_src.CopyAsOptional(),
+          data_dst.CopyAsOptional(), src_pattern, dst_pattern,
           /*is_clipboard_event=*/true, rule_metadata);
 
       auto report_and_paste_cb =
@@ -358,7 +361,7 @@ void DataTransferDlpController::PasteIfAllowed(
 
 void DataTransferDlpController::DropIfAllowed(
     const ui::OSExchangeData* drag_data,
-    const ui::DataTransferEndpoint* data_dst,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     base::OnceClosure drop_cb) {
   DCHECK(drag_data);
 
@@ -370,16 +373,17 @@ void DataTransferDlpController::DropIfAllowed(
       std::vector<ui::FileInfo> dropped_files;
       drag_data->GetFilenames(&dropped_files);
       files_controller->CheckIfDropAllowed(
-          dropped_files, data_dst,
+          dropped_files, data_dst.as_ptr(),
           base::BindOnce(&DataTransferDlpController::ContinueDropIfAllowed,
-                         weak_ptr_factory_.GetWeakPtr(), drag_data, data_dst,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         *drag_data->GetSource(), data_dst,
                          std::move(drop_cb)));
       return;
     }
 #endif
     // TODO(b/269610458): Check dropped files in Lacros.
   }
-  ContinueDropIfAllowed(drag_data, data_dst, std::move(drop_cb),
+  ContinueDropIfAllowed(*drag_data->GetSource(), data_dst, std::move(drop_cb),
                         /*is_allowed=*/true);
 }
 
@@ -394,8 +398,8 @@ base::TimeDelta DataTransferDlpController::GetSkipReportingTimeout() {
 }
 
 void DataTransferDlpController::ReportWarningProceededEvent(
-    const absl::optional<ui::DataTransferEndpoint> maybe_data_src,
-    const absl::optional<ui::DataTransferEndpoint> maybe_data_dst,
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     const std::string& src_pattern,
     const std::string& dst_pattern,
     bool is_clipboard_event,
@@ -406,26 +410,20 @@ void DataTransferDlpController::ReportWarningProceededEvent(
     return;
   }
 
-  const ui::DataTransferEndpoint* data_dst =
-      maybe_data_dst.has_value() ? &maybe_data_dst.value() : nullptr;
-
   if (is_clipboard_event) {
     base::TimeTicks curr_time = base::TimeTicks::Now();
-
-    const ui::DataTransferEndpoint* data_src =
-        maybe_data_src.has_value() ? &maybe_data_src.value() : nullptr;
 
     if (ShouldSkipReporting(data_src, data_dst, /*is_warning_proceeded=*/true,
                             curr_time)) {
       return;
     }
-    last_reported_.data_src = maybe_data_src;
-    last_reported_.data_dst = maybe_data_dst;
+    last_reported_.data_src = data_src.CopyAsOptional();
+    last_reported_.data_dst = data_dst.CopyAsOptional();
     last_reported_.time = curr_time;
     last_reported_.is_warning_proceeded = true;
   }
 
-  if (data_dst && IsVM(data_dst->type())) {
+  if (data_dst.has_value() && IsVM(data_dst->type())) {
     NOTREACHED();
   } else {
     reporting_manager->ReportWarningProceededEvent(
@@ -435,22 +433,22 @@ void DataTransferDlpController::ReportWarningProceededEvent(
 }
 
 void DataTransferDlpController::NotifyBlockedPaste(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst) {
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
   clipboard_notifier_.NotifyBlockedAction(data_src, data_dst);
 }
 
 void DataTransferDlpController::WarnOnPaste(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst,
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     base::RepeatingCallback<void()> reporting_cb) {
-  DCHECK(!(data_dst && data_dst->IsUrlType()));
+  DCHECK(!(data_dst.has_value() && data_dst->IsUrlType()));
   clipboard_notifier_.WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
 }
 
 void DataTransferDlpController::WarnOnBlinkPaste(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst,
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     content::WebContents* web_contents,
     base::OnceCallback<void(bool)> paste_cb) {
   clipboard_notifier_.WarnOnBlinkPaste(data_src, data_dst, web_contents,
@@ -458,31 +456,31 @@ void DataTransferDlpController::WarnOnBlinkPaste(
 }
 
 bool DataTransferDlpController::ShouldPasteOnWarn(
-    const ui::DataTransferEndpoint* const data_dst) {
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
   return clipboard_notifier_.DidUserApproveDst(data_dst);
 }
 
 bool DataTransferDlpController::ShouldCancelOnWarn(
-    const ui::DataTransferEndpoint* const data_dst) {
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
   return clipboard_notifier_.DidUserCancelDst(data_dst);
 }
 
 void DataTransferDlpController::NotifyBlockedDrop(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst) {
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
   drag_drop_notifier_.NotifyBlockedAction(data_src, data_dst);
 }
 
 void DataTransferDlpController::WarnOnDrop(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst,
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     base::OnceClosure drop_cb) {
   drag_drop_notifier_.WarnOnDrop(data_src, data_dst, std::move(drop_cb));
 }
 
 bool DataTransferDlpController::ShouldSkipReporting(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst,
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     bool is_warning_proceeded,
     base::TimeTicks curr_time) {
   // Skip reporting for destination endpoints which don't notify the user
@@ -493,10 +491,12 @@ bool DataTransferDlpController::ShouldSkipReporting(
 
   // In theory, there is no need to check for data source and destination if
   // |kSkipReportingTimeout| is shorter than human reaction time.
-  bool is_same_src = data_src ? *data_src == last_reported_.data_src
-                              : IsNullEndpoint(last_reported_.data_src);
-  bool is_same_dst = data_dst ? *data_dst == last_reported_.data_dst
-                              : IsNullEndpoint(last_reported_.data_dst);
+  bool is_same_src = data_src.has_value()
+                         ? *data_src == last_reported_.data_src
+                         : IsNullEndpoint(last_reported_.data_src);
+  bool is_same_dst = data_dst.has_value()
+                         ? *data_dst == last_reported_.data_dst
+                         : IsNullEndpoint(last_reported_.data_dst);
   bool is_same_mode =
       last_reported_.is_warning_proceeded.has_value() &&
       is_warning_proceeded == last_reported_.is_warning_proceeded.value();
@@ -514,8 +514,8 @@ bool DataTransferDlpController::ShouldSkipReporting(
 }
 
 void DataTransferDlpController::ReportEvent(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst,
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     const std::string& src_pattern,
     const std::string& dst_pattern,
     DlpRulesManager::Level level,
@@ -532,16 +532,14 @@ void DataTransferDlpController::ReportEvent(
                             curr_time)) {
       return;
     }
-    last_reported_.data_src =
-        base::OptionalFromPtr<ui::DataTransferEndpoint>(data_src);
-    last_reported_.data_dst =
-        base::OptionalFromPtr<ui::DataTransferEndpoint>(data_dst);
+    last_reported_.data_src = data_src.CopyAsOptional();
+    last_reported_.data_dst = data_dst.CopyAsOptional();
     last_reported_.time = curr_time;
     last_reported_.is_warning_proceeded = false;
   }
 
   ui::EndpointType dst_type =
-      data_dst ? data_dst->type() : ui::EndpointType::kDefault;
+      data_dst.has_value() ? data_dst->type() : ui::EndpointType::kDefault;
   switch (dst_type) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case ui::EndpointType::kCrostini:
@@ -574,8 +572,8 @@ void DataTransferDlpController::ReportEvent(
 }
 
 void DataTransferDlpController::MaybeReportEvent(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst,
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     const std::string& src_pattern,
     const std::string& dst_pattern,
     DlpRulesManager::Level level,
@@ -589,13 +587,10 @@ void DataTransferDlpController::MaybeReportEvent(
 }
 
 void DataTransferDlpController::ContinueDropIfAllowed(
-    const ui::OSExchangeData* drag_data,
-    const ui::DataTransferEndpoint* data_dst,
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     base::OnceClosure drop_cb,
     bool is_allowed) {
-  DCHECK(drag_data);
-  auto* data_src = drag_data->GetSource();
-
   DlpRulesManager::Level level;
   if (!is_allowed) {
     level = DlpRulesManager::Level::kBlock;

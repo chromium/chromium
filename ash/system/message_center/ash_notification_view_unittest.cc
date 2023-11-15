@@ -1713,7 +1713,7 @@ TEST_P(AshNotificationViewDragAsyncDropTest, Basics) {
   base::OnceClosure drop_callback;
   EXPECT_CALL(dlp_controller_, DropIfAllowed(_, _, _))
       .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb) {
         drop_callback = std::move(drop_cb);
       });
@@ -1750,17 +1750,19 @@ TEST_P(AshNotificationViewDragAsyncDropTest,
     // Configure `dlp_controller_` to hold all drop callbacks.
     testing::InSequence s;
     EXPECT_CALL(dlp_controller_, DropIfAllowed(_, _, _))
-        .WillOnce([&](const ui::OSExchangeData* drag_data,
-                      const ui::DataTransferEndpoint* data_dst,
-                      base::OnceClosure drop_cb) {
-          first_drop_callback = std::move(drop_cb);
-        });
+        .WillOnce(
+            [&](const ui::OSExchangeData* drag_data,
+                base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+                base::OnceClosure drop_cb) {
+              first_drop_callback = std::move(drop_cb);
+            });
     EXPECT_CALL(dlp_controller_, DropIfAllowed(_, _, _))
-        .WillOnce([&](const ui::OSExchangeData* drag_data,
-                      const ui::DataTransferEndpoint* data_dst,
-                      base::OnceClosure drop_cb) {
-          second_drop_callback = std::move(drop_cb);
-        });
+        .WillOnce(
+            [&](const ui::OSExchangeData* drag_data,
+                base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+                base::OnceClosure drop_cb) {
+              second_drop_callback = std::move(drop_cb);
+            });
   }
 
   // Add one image notification then perform drag-and-drop.
@@ -1807,17 +1809,19 @@ TEST_P(AshNotificationViewDragAsyncDropTest, InterruptAsyncDropWithViewDrag) {
     // Configure `dlp_controller_` to hold all drop callbacks.
     testing::InSequence s;
     EXPECT_CALL(dlp_controller_, DropIfAllowed(_, _, _))
-        .WillOnce([&](const ui::OSExchangeData* drag_data,
-                      const ui::DataTransferEndpoint* data_dst,
-                      base::OnceClosure drop_cb) {
-          first_drop_callback = std::move(drop_cb);
-        });
+        .WillOnce(
+            [&](const ui::OSExchangeData* drag_data,
+                base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+                base::OnceClosure drop_cb) {
+              first_drop_callback = std::move(drop_cb);
+            });
     EXPECT_CALL(dlp_controller_, DropIfAllowed(_, _, _))
-        .WillOnce([&](const ui::OSExchangeData* drag_data,
-                      const ui::DataTransferEndpoint* data_dst,
-                      base::OnceClosure drop_cb) {
-          second_drop_callback = std::move(drop_cb);
-        });
+        .WillOnce(
+            [&](const ui::OSExchangeData* drag_data,
+                base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+                base::OnceClosure drop_cb) {
+              second_drop_callback = std::move(drop_cb);
+            });
   }
 
   // Add one image notification then perform drag-and-drop.

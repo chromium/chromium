@@ -42,9 +42,10 @@ namespace policy {
 namespace {
 
 ui::DataTransferEndpoint CloneEndpoint(
-    const ui::DataTransferEndpoint* const data_endpoint) {
-  if (data_endpoint == nullptr)
+    base::optional_ref<const ui::DataTransferEndpoint> data_endpoint) {
+  if (!data_endpoint.has_value()) {
     return ui::DataTransferEndpoint(ui::EndpointType::kDefault);
+  }
 
   return ui::DataTransferEndpoint(*data_endpoint);
 }
@@ -91,9 +92,9 @@ void SynthesizePaste() {
 }
 
 bool HasEndpoint(const std::vector<ui::DataTransferEndpoint>& saved_endpoints,
-                 const ui::DataTransferEndpoint* const endpoint) {
+                 base::optional_ref<const ui::DataTransferEndpoint> endpoint) {
   const ui::EndpointType endpoint_type =
-      endpoint ? endpoint->type() : ui::EndpointType::kDefault;
+      endpoint.has_value() ? endpoint->type() : ui::EndpointType::kDefault;
 
   for (const auto& ept : saved_endpoints) {
     if (ept.type() == endpoint_type) {
@@ -126,14 +127,14 @@ DlpClipboardNotifier::~DlpClipboardNotifier() {
 }
 
 void DlpClipboardNotifier::NotifyBlockedAction(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst) {
-  DCHECK(data_src);
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
+  DCHECK(data_src.has_value());
   DCHECK(data_src->GetURL());
   const std::u16string host_name =
       base::UTF8ToUTF16(data_src->GetURL()->host());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (data_dst) {
+  if (data_dst.has_value()) {
     if (data_dst->type() == ui::EndpointType::kCrostini) {
       ShowToast(kClipboardBlockCrostiniToastId,
                 ash::ToastCatalogName::kClipboardBlockedAction,
@@ -166,10 +167,10 @@ void DlpClipboardNotifier::NotifyBlockedAction(
 }
 
 void DlpClipboardNotifier::WarnOnPaste(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst,
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     base::RepeatingCallback<void()> reporting_cb) {
-  DCHECK(data_src);
+  DCHECK(data_src.has_value());
   DCHECK(data_src->GetURL());
 
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
@@ -177,7 +178,7 @@ void DlpClipboardNotifier::WarnOnPaste(
   const std::u16string host_name =
       base::UTF8ToUTF16(data_src->GetURL()->host());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (data_dst) {
+  if (data_dst.has_value()) {
     if (data_dst->type() == ui::EndpointType::kCrostini) {
       ShowToast(kClipboardWarnCrostiniToastId,
                 ash::ToastCatalogName::kClipboardWarnOnPaste,
@@ -231,11 +232,11 @@ void DlpClipboardNotifier::WarnOnPaste(
 }
 
 void DlpClipboardNotifier::WarnOnBlinkPaste(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst,
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     content::WebContents* web_contents,
     base::OnceCallback<void(bool)> paste_cb) {
-  DCHECK(data_src);
+  DCHECK(data_src.has_value());
   DCHECK(data_src->GetURL());
 
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
@@ -258,12 +259,12 @@ void DlpClipboardNotifier::WarnOnBlinkPaste(
 }
 
 bool DlpClipboardNotifier::DidUserApproveDst(
-    const ui::DataTransferEndpoint* const data_dst) {
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
   return HasEndpoint(approved_dsts_, data_dst);
 }
 
 bool DlpClipboardNotifier::DidUserCancelDst(
-    const ui::DataTransferEndpoint* const data_dst) {
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
   return HasEndpoint(cancelled_dsts_, data_dst);
 }
 

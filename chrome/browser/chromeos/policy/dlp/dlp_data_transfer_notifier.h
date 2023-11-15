@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/timer/timer.h"
+#include "base/types/optional_ref.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -28,8 +29,8 @@ class DlpDataTransferNotifier : public views::WidgetObserver {
 
   // Notifies the user that the data transfer action is not allowed.
   virtual void NotifyBlockedAction(
-      const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst) = 0;
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst) = 0;
 
  protected:
   // Virtual for tests to override.

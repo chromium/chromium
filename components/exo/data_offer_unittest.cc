@@ -105,15 +105,17 @@ class TestDataTransferPolicyController : ui::DataTransferPolicyController {
     return true;
   }
 
-  void PasteIfAllowed(const ui::DataTransferEndpoint* const data_src,
-                      const ui::DataTransferEndpoint* const data_dst,
-                      const absl::optional<size_t> size,
-                      content::RenderFrameHost* web_contents,
-                      base::OnceCallback<void(bool)> callback) override {}
+  void PasteIfAllowed(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      const absl::optional<size_t> size,
+      content::RenderFrameHost* web_contents,
+      base::OnceCallback<void(bool)> callback) override {}
 
-  void DropIfAllowed(const ui::OSExchangeData* const drag_data,
-                     const ui::DataTransferEndpoint* const data_dst,
-                     base::OnceClosure drop_cb) override {
+  void DropIfAllowed(
+      const ui::OSExchangeData* const drag_data,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      base::OnceClosure drop_cb) override {
     std::move(drop_cb).Run();
   }
 
