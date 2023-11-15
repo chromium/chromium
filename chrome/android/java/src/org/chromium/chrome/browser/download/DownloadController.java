@@ -9,7 +9,6 @@ import android.Manifest.permission;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.download.DownloadCollectionBridge;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -20,46 +19,6 @@ import org.chromium.url.GURL;
  */
 public class DownloadController {
     /**
-     * Class for notifying download events to other classes.
-     */
-    public interface Observer {
-        /**
-         * Notify the host application that a download is finished.
-         * @param downloadInfo Information about the completed download.
-         */
-        void onDownloadCompleted(final DownloadInfo downloadInfo);
-
-        /**
-         * Notify the host application that a download is in progress.
-         * @param downloadInfo Information about the in-progress download.
-         */
-        void onDownloadUpdated(final DownloadInfo downloadInfo);
-
-        /**
-         * Notify the host application that a download is cancelled.
-         * @param downloadInfo Information about the cancelled download.
-         */
-        void onDownloadCancelled(final DownloadInfo downloadInfo);
-
-        /**
-         * Notify the host application that a download is interrupted.
-         * @param downloadInfo Information about the completed download.
-         * @param isAutoResumable Download can be auto resumed when network becomes available.
-         */
-        void onDownloadInterrupted(final DownloadInfo downloadInfo, boolean isAutoResumable);
-    }
-
-    private static Observer sObserver;
-
-    public static void setDownloadNotificationService(Observer observer) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)) {
-            return;
-        }
-
-        sObserver = observer;
-    }
-
-    /**
      * Notifies the download delegate that a download completed and passes along info about the
      * download. This can be either a POST download or a GET download with authentication.
      */
@@ -67,38 +26,6 @@ public class DownloadController {
     private static void onDownloadCompleted(DownloadInfo downloadInfo) {
         MediaStoreHelper.addImageToGalleryOnSDCard(
                 downloadInfo.getFilePath(), downloadInfo.getMimeType());
-
-        if (sObserver == null) return;
-        sObserver.onDownloadCompleted(downloadInfo);
-    }
-
-    /**
-     * Notifies the download delegate that a download completed and passes along info about the
-     * download. This can be either a POST download or a GET download with authentication.
-     */
-    @CalledByNative
-    private static void onDownloadInterrupted(DownloadInfo downloadInfo, boolean isAutoResumable) {
-        if (sObserver == null) return;
-        sObserver.onDownloadInterrupted(downloadInfo, isAutoResumable);
-    }
-
-    /**
-     * Called when a download was cancelled.
-     */
-    @CalledByNative
-    private static void onDownloadCancelled(DownloadInfo downloadInfo) {
-        if (sObserver == null) return;
-        sObserver.onDownloadCancelled(downloadInfo);
-    }
-
-    /**
-     * Notifies the download delegate about progress of a download. Downloads that use Chrome
-     * network stack use custom notification to display the progress of downloads.
-     */
-    @CalledByNative
-    private static void onDownloadUpdated(DownloadInfo downloadInfo) {
-        if (sObserver == null) return;
-        sObserver.onDownloadUpdated(downloadInfo);
     }
 
     /**

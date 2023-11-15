@@ -532,7 +532,6 @@ void DownloadManagerService::ResumeDownloadInternal(
     OnResumptionFailed(download_guid);
     return;
   }
-  DownloadControllerBase::Get()->AboutToResumeDownload(item);
   item->Resume(has_user_gesture);
   if (resume_callback_for_testing_)
     std::move(resume_callback_for_testing_).Run(true);

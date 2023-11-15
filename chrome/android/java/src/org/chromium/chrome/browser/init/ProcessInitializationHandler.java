@@ -47,8 +47,6 @@ import org.chromium.chrome.browser.content_capture.ContentCaptureHistoryDeletion
 import org.chromium.chrome.browser.crash.CrashUploadCountStore;
 import org.chromium.chrome.browser.crash.LogcatExtractionRunnable;
 import org.chromium.chrome.browser.crash.MinidumpUploadServiceImpl;
-import org.chromium.chrome.browser.download.DownloadController;
-import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.OfflineContentAvailabilityStatusProvider;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationGuideService;
@@ -423,10 +421,6 @@ public class ProcessInitializationHandler {
                 // Add process check to diagnose http://crbug.com/606309. Remove this after the bug
                 // is fixed.
                 assert !CommandLine.getInstance().hasSwitch(ContentSwitches.SWITCH_PROCESS_TYPE);
-                if (!CommandLine.getInstance().hasSwitch(ContentSwitches.SWITCH_PROCESS_TYPE)) {
-                    DownloadController.setDownloadNotificationService(
-                            DownloadManagerService.getDownloadManagerService());
-                }
             }
         });
 

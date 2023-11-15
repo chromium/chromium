@@ -327,27 +327,6 @@ void DownloadController::CreateAndroidDownload(
                                 base::Unretained(this), wc_getter, info));
 }
 
-void DownloadController::AboutToResumeDownload(DownloadItem* download_item) {
-  download_item->RemoveObserver(this);
-  download_item->AddObserver(this);
-
-  // If a download is resumed from an interrupted state, record its strong
-  // validators so we know whether the resumption causes a restart.
-  if (download_item->GetState() == DownloadItem::IN_PROGRESS ||
-      download_item->GetLastReason() ==
-          download::DOWNLOAD_INTERRUPT_REASON_NONE) {
-    return;
-  }
-  if (download_item->GetETag().empty() &&
-      download_item->GetLastModifiedTime().empty()) {
-    return;
-  }
-  strong_validators_map_.emplace(
-      download_item->GetGuid(),
-      std::make_pair(download_item->GetETag(),
-                     download_item->GetLastModifiedTime()));
-}
-
 void DownloadController::StartAndroidDownload(
     const content::WebContents::Getter& wc_getter,
     const DownloadInfo& info) {
@@ -427,38 +406,15 @@ void DownloadController::OnDownloadUpdated(DownloadItem* item) {
     return;
   }
 
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_item =
-      DownloadManagerService::CreateJavaDownloadInfo(env, item);
-  switch (item->GetState()) {
-    case DownloadItem::IN_PROGRESS: {
-      Java_DownloadController_onDownloadUpdated(env, j_item);
-      break;
-    }
-    case DownloadItem::COMPLETE:
-      strong_validators_map_.erase(item->GetGuid());
-      // Multiple OnDownloadUpdated() notifications may be issued while the
-      // download is in the COMPLETE state. Only handle one.
-      item->RemoveObserver(this);
-
-      // Call onDownloadCompleted
-      Java_DownloadController_onDownloadCompleted(env, j_item);
-      break;
-    case DownloadItem::CANCELLED:
-      strong_validators_map_.erase(item->GetGuid());
-      Java_DownloadController_onDownloadCancelled(env, j_item);
-      break;
-    case DownloadItem::INTERRUPTED:
-      if (item->IsDone())
-        strong_validators_map_.erase(item->GetGuid());
-      // When device loses/changes network, we get a NETWORK_TIMEOUT,
-      // NETWORK_FAILED or NETWORK_DISCONNECTED error. Download should auto
-      // resume in this case.
-      Java_DownloadController_onDownloadInterrupted(
-          env, j_item, IsInterruptedDownloadAutoResumable(item));
-      break;
-    case DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED();
+  if (item->GetState() == DownloadItem::COMPLETE) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    ScopedJavaLocalRef<jobject> j_item =
+        DownloadManagerService::CreateJavaDownloadInfo(env, item);
+    // Multiple OnDownloadUpdated() notifications may be issued while the
+    // download is in the COMPLETE state. Only handle one.
+    item->RemoveObserver(this);
+    // Call onDownloadCompleted
+    Java_DownloadController_onDownloadCompleted(env, j_item);
   }
 }
 
@@ -500,44 +456,6 @@ void DownloadController::StartContextMenuDownload(
   AcquireFileAccessPermission(
       wc_getter, base::BindOnce(&CreateContextMenuDownloadInternal, wc_getter,
                                 params, is_link));
-}
-
-bool DownloadController::IsInterruptedDownloadAutoResumable(
-    download::DownloadItem* download_item) {
-  if (!download_item->GetURL().SchemeIsHTTPOrHTTPS())
-    return false;
-  static int size_limit = DownloadUtils::GetAutoResumptionSizeLimit();
-  bool exceeds_size_limit = download_item->GetReceivedBytes() > size_limit;
-  std::string etag = download_item->GetETag();
-  std::string last_modified = download_item->GetLastModifiedTime();
-
-  if (exceeds_size_limit && etag.empty() && last_modified.empty() &&
-      !base::FeatureList::IsEnabled(
-          download::features::
-              kAllowDownloadResumptionWithoutStrongValidators)) {
-    return false;
-  }
-
-  // If the download has strong validators, but it caused a restart, stop auto
-  // resumption as the server may always send new strong validators on
-  // resumption.
-  auto strong_validator = strong_validators_map_.find(download_item->GetGuid());
-  if (strong_validator != strong_validators_map_.end()) {
-    if (exceeds_size_limit &&
-        (strong_validator->second.first != etag ||
-         strong_validator->second.second != last_modified)) {
-      return false;
-    }
-  }
-
-  int interrupt_reason = download_item->GetLastReason();
-  DCHECK_NE(interrupt_reason, download::DOWNLOAD_INTERRUPT_REASON_NONE);
-  return interrupt_reason ==
-             download::DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT ||
-         interrupt_reason ==
-             download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED ||
-         interrupt_reason ==
-             download::DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED;
 }
 
 ProfileKey* DownloadController::GetProfileKey(DownloadItem* download_item) {

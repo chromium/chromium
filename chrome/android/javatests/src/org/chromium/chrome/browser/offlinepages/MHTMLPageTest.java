@@ -17,8 +17,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.browser.download.DownloadController;
-import org.chromium.chrome.browser.download.DownloadInfo;
 import org.chromium.chrome.browser.download.DownloadTestRule;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
@@ -49,29 +47,6 @@ public class MHTMLPageTest implements CustomMainActivityStart {
     private static final String[] TEST_FILES = new String[] {"hello.mhtml", "test.mht"};
 
     private EmbeddedTestServer mTestServer;
-
-    private static class TestDownloadNotificationService implements DownloadController.Observer {
-        private Semaphore mSemaphore;
-
-        TestDownloadNotificationService(Semaphore semaphore) {
-            mSemaphore = semaphore;
-        }
-
-        @Override
-        public void onDownloadCompleted(final DownloadInfo downloadInfo) {}
-
-        @Override
-        public void onDownloadUpdated(final DownloadInfo downloadInfo) {
-            mSemaphore.release();
-        }
-
-        @Override
-        public void onDownloadCancelled(final DownloadInfo downloadInfo) {}
-
-        @Override
-        public void onDownloadInterrupted(
-                final DownloadInfo downloadInfo, boolean isAutoResumable) {}
-    }
 
     /**
      * Observes the download updates from the new download backend. Depending on whether the new
@@ -127,8 +102,6 @@ public class MHTMLPageTest implements CustomMainActivityStart {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    DownloadController.setDownloadNotificationService(
-                            new TestDownloadNotificationService(semaphore));
                     OfflineContentAggregatorFactory.get()
                             .addObserver(new TestNewDownloadBackendObserver(semaphore));
                     tab.loadUrl(
@@ -149,8 +122,6 @@ public class MHTMLPageTest implements CustomMainActivityStart {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    DownloadController.setDownloadNotificationService(
-                            new TestDownloadNotificationService(semaphore));
                     OfflineContentAggregatorFactory.get()
                             .addObserver(new TestNewDownloadBackendObserver(semaphore));
                     tab.loadUrl(

@@ -80,8 +80,7 @@ import java.util.concurrent.RejectedExecutionException;
  * handles all Android DownloadManager interactions. And DownloadManagerService should not know
  * download Id issued by Android DownloadManager.
  */
-public class DownloadManagerService implements DownloadController.Observer,
-                                               DownloadServiceDelegate, ProfileManager.Observer {
+public class DownloadManagerService implements DownloadServiceDelegate, ProfileManager.Observer {
     private static final String TAG = "DownloadService";
     private static final String DOWNLOAD_RETRY_COUNT_FILE_NAME = "DownloadRetryCount";
     private static final String DOWNLOAD_MANUAL_RETRY_SUFFIX = ".Manual";
@@ -231,15 +230,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         mDownloadSnackbarController = new DownloadSnackbarController();
         mOMADownloadHandler = new OMADownloadHandler(applicationContext);
         DownloadCollectionBridge.setDownloadDelegate(new DownloadDelegateImpl());
-        // Note that this technically leaks the native object, however, DownloadManagerService
-        // is a singleton that lives forever and there's no clean shutdown of Chrome on Android.
-        init();
         mOMADownloadHandler.clearPendingOMADownloads();
-    }
-
-    @VisibleForTesting
-    protected void init() {
-        DownloadController.setDownloadNotificationService(this);
     }
 
     /**
@@ -273,28 +264,6 @@ public class DownloadManagerService implements DownloadController.Observer,
     }
 
     // Deprecated after new download backend.
-    @Override
-    public void onDownloadCompleted(final DownloadInfo downloadInfo) {
-        @DownloadStatus
-        int status = DownloadStatus.COMPLETE;
-        String mimeType = downloadInfo.getMimeType();
-        if (downloadInfo.getBytesReceived() == 0) {
-            status = DownloadStatus.FAILED;
-        } else {
-            mimeType = MimeUtils.remapGenericMimeType(
-                    mimeType, downloadInfo.getOriginalUrl().getSpec(), downloadInfo.getFileName());
-        }
-        DownloadInfo newInfo =
-                DownloadInfo.Builder.fromDownloadInfo(downloadInfo).setMimeType(mimeType).build();
-        DownloadItem downloadItem = new DownloadItem(false, newInfo);
-        downloadItem.setSystemDownloadId(
-                DownloadManagerBridge.getDownloadIdForDownloadGuid(downloadInfo.getDownloadGuid()));
-        updateDownloadProgress(downloadItem, status);
-        updateDownloadInfoBar(downloadItem);
-    }
-
-    // Deprecated after new download backend.
-    @Override
     public void onDownloadUpdated(final DownloadInfo downloadInfo) {
         DownloadItem item = new DownloadItem(false, downloadInfo);
         // If user manually paused a download, this download is no longer auto resumable.
@@ -307,7 +276,6 @@ public class DownloadManagerService implements DownloadController.Observer,
     }
 
     // Deprecated after new download backend.
-    @Override
     public void onDownloadCancelled(final DownloadInfo downloadInfo) {
         DownloadInfo newInfo = DownloadInfo.Builder.fromDownloadInfo(downloadInfo)
                                        .setState(DownloadState.CANCELLED)
@@ -319,7 +287,6 @@ public class DownloadManagerService implements DownloadController.Observer,
     }
 
     // Deprecated after new download backend.
-    @Override
     public void onDownloadInterrupted(final DownloadInfo downloadInfo, boolean isAutoResumable) {
         @DownloadStatus
         int status = DownloadStatus.INTERRUPTED;
