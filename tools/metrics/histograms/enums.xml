@@ -40691,6 +40691,8 @@ from previous Chrome versions.
   <int value="260374622" label="BiometricAuthenticationForFilling:disabled"/>
   <int value="261245835" label="ContextualSearchLiteralTapSearch:disabled"/>
   <int value="261903398" label="CertificateTransparency2022Policy:disabled"/>
+  <int value="262035701"
+      label="UnifiedPasswordManagerLocalPasswordsAndroidNoMigration:enabled"/>
   <int value="262382944" label="GuestViewCrossProcessFrames:disabled"/>
   <int value="264443322" label="CompressionDictionaryTransportBackend:enabled"/>
   <int value="264534322" label="FilesDriveShortcuts:enabled"/>
@@ -44426,6 +44428,8 @@ from previous Chrome versions.
   <int value="2025618564" label="AutofillShowAutocompleteDeleteButton:enabled"/>
   <int value="2027492085" label="SuppressToolbarCaptures:disabled"/>
   <int value="2027793952" label="EditPasswordsInSettings:disabled"/>
+  <int value="2029145363"
+      label="UnifiedPasswordManagerLocalPasswordsAndroidNoMigration:disabled"/>
   <int value="2030086360"
       label="EnableMachineLearningModelLoaderWebPlatformApi:disabled"/>
   <int value="2031620694"

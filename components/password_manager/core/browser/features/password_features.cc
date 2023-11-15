@@ -146,13 +146,13 @@ BASE_FEATURE(kSkipUndecryptablePasswords,
 // feature once UPM starts to be rolled out to users who have saved local
 // passwords.
 BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-             "kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration",
+             "UnifiedPasswordManagerLocalPasswordsAndroidNoMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables use of Google Mobile services for non-synced password storage add for
 // users who have local passwords saved.
 BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
-             "kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration",
+             "UnifiedPasswordManagerLocalPasswordsAndroidWithMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
