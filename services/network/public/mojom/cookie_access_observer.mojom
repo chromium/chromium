@@ -8,6 +8,7 @@ import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
+import "services/network/public/mojom/cookie_setting_overrides.mojom";
 
 struct CookieAccessDetails {
   enum Type {
@@ -47,6 +48,9 @@ struct CookieAccessDetails {
   // If the cookies are accessed by a network transfer, `is_ad_tagged` records
   // whether the request was determined to be for advertising purposes.
   bool is_ad_tagged;
+
+  // A set of enum values as a bitmask.
+  CookieSettingOverrides cookie_setting_overrides;
 };
 
 // Cloneable interface to observe the cookie reads or writes.

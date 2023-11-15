@@ -505,12 +505,14 @@ void MetricsWebContentsObserver::OnCookiesAccessedImpl(
   switch (details.type) {
     case content::CookieAccessDetails::Type::kRead:
       tracker.OnCookiesRead(details.url, details.first_party_url,
-                            details.blocked_by_policy, details.is_ad_tagged);
+                            details.blocked_by_policy, details.is_ad_tagged,
+                            details.cookie_setting_overrides);
       break;
     case content::CookieAccessDetails::Type::kChange:
       for (const auto& cookie : details.cookie_list) {
         tracker.OnCookieChange(details.url, details.first_party_url, cookie,
-                               details.blocked_by_policy, details.is_ad_tagged);
+                               details.blocked_by_policy, details.is_ad_tagged,
+                               details.cookie_setting_overrides);
       }
       break;
   }

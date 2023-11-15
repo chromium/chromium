@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/net/storage_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
@@ -37,7 +38,9 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 
@@ -862,4 +865,117 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverMechanismBrowserTest,
   observer.Wait();
   NavigateToUntrackedUrl();
   VerifyThirdPartyCookieAllowMechanism(histogram_tester);
+}
+
+class ThirdPartyCookieDeprecationObserverSSABrowserTest
+    : public ThirdPartyCookieDeprecationObserverBaseBrowserTest {
+ public:
+  ThirdPartyCookieDeprecationObserverSSABrowserTest() = default;
+
+  ThirdPartyCookieDeprecationObserverSSABrowserTest(
+      const ThirdPartyCookieDeprecationObserverSSABrowserTest&) = delete;
+  ThirdPartyCookieDeprecationObserverSSABrowserTest& operator=(
+      const ThirdPartyCookieDeprecationObserverSSABrowserTest&) = delete;
+
+  ~ThirdPartyCookieDeprecationObserverSSABrowserTest() override = default;
+
+  static constexpr char kVerifyHasStorageAccessPermission[] =
+      "navigator.permissions.query({name: 'storage-access'}).then("
+      "  (permission) => permission.name === 'storage-access' && "
+      "permission.state === 'granted');";
+  static constexpr char kRequestStorageAccess[] =
+      "document.requestStorageAccess()";
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{content_settings::features::kTrackingProtection3pcd, {}},
+         {blink::features::kStorageAccessAPI, {}}},
+        {});
+    subresource_filter::SubresourceFilterBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ThirdPartyCookieDeprecationObserverBaseBrowserTest::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitchASCII(
+        network::switches::kUseRelatedWebsiteSet,
+        base::StrCat({R"({"primary": "https://)", kHostA,
+                      R"(", "associatedSites": ["https://)", kHostC, R"("])",
+                      R"(, "serviceSites": ["https://)", kHostB, R"("]})"}));
+  }
+
+  void SetCrossSiteCookieOnHost(const std::string& host) {
+    GURL host_url = GetURL(host);
+    std::string cookie = base::StrCat({"cross-site=", host});
+    content::SetCookie(browser()->profile(), host_url,
+                       base::StrCat({cookie, ";SameSite=None;Secure"}));
+    ASSERT_THAT(content::GetCookies(browser()->profile(), host_url),
+                testing::HasSubstr(cookie));
+  }
+
+  void SetStorageAccessAPIPermission(content::RenderFrameHost* frame) {
+    // See comments in RequestStorageAccessForBaseBrowserTest.
+    EXPECT_FALSE(content::ExecJs(frame, kRequestStorageAccess,
+                                 content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
+        web_contents()->GetPrimaryMainFrame(), GetURL(kHostB).spec()));
+    EXPECT_TRUE(content::ExecJs(frame, kRequestStorageAccess,
+                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    EXPECT_TRUE(storage::test::HasStorageAccessForFrame(frame));
+    EXPECT_TRUE(content::EvalJs(frame, kVerifyHasStorageAccessPermission)
+                    .ExtractBool());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverSSABrowserTest,
+                       ThirdPartyCookiesReadAndWrite) {
+  SetCrossSiteCookieOnHost(kHostB);
+
+  content::CookieChangeObserver observer(web_contents(), 2);
+  base::HistogramTester histogram_tester;
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/");
+
+  content::RenderFrameHost* frame =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  SetStorageAccessAPIPermission(frame);
+
+  // 3p cookie write
+  NavigateFrameTo(kHostB, "/set-cookie?thirdparty=1;SameSite=None;Secure");
+  // 3p cookie read
+  NavigateFrameTo(kHostB, "/");
+  observer.Wait();
+  NavigateToUntrackedUrl();
+
+  // TODO(https://crbug.com/1494080) In this case, url_loader can't get correct
+  // cookie_setting_overrides value when creating CookieAccessDetails object. It
+  // fails to get the correct enabling mechanism of storage access API. Confirm
+  // with storage access API owner.
+  histogram_tester.ExpectUniqueSample(kThirdPartyCookieAllowMechanismHistogram,
+                                      /*kAllowByStorageAccess*/ 6, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverSSABrowserTest,
+                       ThirdPartyJavaScriptCookieReadAndWrite) {
+  SetCrossSiteCookieOnHost(kHostB);
+
+  content::CookieChangeObserver observer(web_contents(), 2);
+  base::HistogramTester histogram_tester;
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/empty.html");
+
+  content::RenderFrameHost* frame =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  SetStorageAccessAPIPermission(frame);
+
+  // Write a third-party cookie.
+  EXPECT_TRUE(content::ExecJs(
+      frame, "document.cookie = 'foo=bar;SameSite=None;Secure';"));
+  // Read a third-party cookie.
+  EXPECT_TRUE(content::ExecJs(frame, "let x = document.cookie;"));
+  observer.Wait();
+  NavigateToUntrackedUrl();
+
+  histogram_tester.ExpectUniqueSample(kThirdPartyCookieAllowMechanismHistogram,
+                                      /*kAllowByStorageAccess*/ 6, 2);
 }
