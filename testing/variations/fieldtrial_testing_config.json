@@ -11946,7 +11946,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_Dogfood",
                     "enable_features": [
                         "MantaService",
                         "OrcaDogfood",
