@@ -95,6 +95,8 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
 
   EventStorage* event_storage() { return event_storage_.get(); }
 
+  KeyDataProvider* key_data_provider() { return key_data_provider_.get(); }
+
  protected:
   friend class TestStructuredMetricsProvider;
   friend class StructuredMetricsMixin;

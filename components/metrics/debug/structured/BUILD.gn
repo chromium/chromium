@@ -1,0 +1,13 @@
+static_library("debug") {
+  sources = [
+    "structured_metrics_utils.cc",
+    "structured_metrics_utils.h",
+    "structured_metrics_watcher.cc",
+    "structured_metrics_watcher.h",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/metrics/structured",
+  ]
+}

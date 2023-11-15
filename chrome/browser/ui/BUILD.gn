@@ -6267,6 +6267,7 @@ static_library("ui") {
         "views/apps/app_dialog/shortcut_removal_dialog_view.cc",
         "views/apps/app_dialog/shortcut_removal_dialog_view.h",
       ]
+      deps += [ "//components/metrics/debug/structured:debug" ]
     }
 
     if (enable_screen_ai_service) {

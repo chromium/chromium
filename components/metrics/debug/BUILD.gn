@@ -16,6 +16,10 @@ build_webui("build") {
     "metrics_internals.ts",
   ]
 
+  if (is_chromeos_ash) {
+    non_web_component_files += [ "structured/structured_utils.ts" ]
+  }
+
   html_to_wrapper_template = "native"
 
   ts_composite = true
