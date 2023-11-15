@@ -3,17 +3,18 @@
 // found in the LICENSE file.
 
 import {decorate} from '../../../common/js/ui.js';
-import {MenuItem} from './menu_item.js';
 
 import {FilesMenuItem} from './files_menu.js';
+import {MenuItem} from './menu_item.js';
 import {MultiMenuButton} from './multi_menu_button.js';
+
 
 /**
  * @fileoverview This implements a combobutton control.
  */
-  /**
-   * Creates a new combo button element.
-   */
+/**
+ * Creates a new combo button element.
+ */
 // @ts-ignore: error TS2415: Class 'ComboButton' incorrectly extends base class
 // 'MultiMenuButton'.
 export class ComboButton extends MultiMenuButton {
@@ -83,9 +84,6 @@ export class ComboButton extends MultiMenuButton {
       // @ts-ignore: error TS2339: Property 'iconStartFileType' does not exist
       // on type 'MenuItem'.
       menuitem.iconStartFileType = item.iconType;
-    }
-    if (item.bold) {
-      menuitem.style.fontWeight = 'bold';
     }
     menuitem.toggleAttribute('disabled', !!item.isDlpBlocked);
     return menuitem;

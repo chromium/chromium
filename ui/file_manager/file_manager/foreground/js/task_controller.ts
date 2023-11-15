@@ -306,7 +306,7 @@ export class TaskController {
       if (task === fileTasks.defaultTask) {
         const title = task.title + ' ' + str('DEFAULT_TASK_LABEL');
         items.push(createDropdownItem(
-            task, title, /*bold=*/ false, /*isDefault=*/ true,
+            task, title, /*isDefault=*/ true,
             /*isPolicyDefault=*/
             !!fileTasks.getPolicyDefaultHandlerStatus()));
       } else {
@@ -679,7 +679,6 @@ export interface DropdownItem {
   iconUrl?: string;
   iconType: string;
   task: chrome.fileManagerPrivate.FileTask;
-  bold: boolean;
   isDefault: boolean;
   isPolicyDefault: boolean;
   isGenericFileHandler?: boolean;
@@ -688,11 +687,10 @@ export interface DropdownItem {
 
 /**
  * Creates dropdown item based on task.
- * @param bold Make a menu item bold.
  * @param isDefault Mark the item as default item.
  */
 function createDropdownItem(
-    task: chrome.fileManagerPrivate.FileTask, title?: string, bold?: boolean,
+    task: chrome.fileManagerPrivate.FileTask, title?: string,
     isDefault?: boolean, isPolicyDefault?: boolean): DropdownItem {
   return {
     type: TaskMenuItemType.RUN_TASK,
@@ -700,7 +698,6 @@ function createDropdownItem(
     iconUrl: task.iconUrl || '',
     iconType: (task as AnnotatedTask).iconType || '',
     task: task,
-    bold: bold || false,
     isDefault: isDefault || false,
     isPolicyDefault: isPolicyDefault || false,
     isGenericFileHandler: task.isGenericFileHandler,
