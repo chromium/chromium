@@ -35800,6 +35800,7 @@ from previous Chrome versions.
   <int value="-2073402331"
       label="BrokerFileOperationsOnDiskCacheInNetworkService:disabled"/>
   <int value="-2073265579" label="EnablePreferencesAccountStorage:disabled"/>
+  <int value="-2072754800" label="HelpAppAppsList:disabled"/>
   <int value="-2072471036" label="OobeHidDetectionRevamp:disabled"/>
   <int value="-2072181147" label="WebContentsCaptureHiDPI:enabled"/>
   <int value="-2071515296" label="allow-sync-xhr-in-page-dismissal"/>
@@ -42893,6 +42894,7 @@ from previous Chrome versions.
   <int value="1308474501" label="SiteInstanceGroupsForDataUrls:disabled"/>
   <int value="1308537004" label="force-pnacl-subzero"/>
   <int value="1308583017" label="PrefetchFontLookupTables:disabled"/>
+  <int value="1308795362" label="HelpAppAppsList:enabled"/>
   <int value="1309807376" label="IgnoreCSPInWebPaymentAPI:enabled"/>
   <int value="1310000273" label="ReleaseNotesNotificationAllChannels:disabled"/>
   <int value="1310316934" label="OptimizationGuideModelDownloading:enabled"/>

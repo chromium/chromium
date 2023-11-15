@@ -3749,6 +3749,9 @@ extern const char kFuseBoxDebugDescription[];
 extern const char kGlanceablesV2Name[];
 extern const char kGlanceablesV2Description[];
 
+extern const char kHelpAppAppsListName[];
+extern const char kHelpAppAppsListDescription[];
+
 extern const char kHelpAppAutoTriggerInstallDialogName[];
 extern const char kHelpAppAutoTriggerInstallDialogDescription[];
 

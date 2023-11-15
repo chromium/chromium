@@ -81,6 +81,8 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
 
   // Add any features that have been enabled.
   source->AddBoolean("HelpAppAppsGamesBannerV2", true);
+  source->AddBoolean("HelpAppAppsList", base::FeatureList::IsEnabled(
+                                            ash::features::kHelpAppAppsList));
   source->AddBoolean(
       "HelpAppCrosComponents",
       base::FeatureList::IsEnabled(ash::features::kHelpAppCrosComponents));
