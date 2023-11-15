@@ -436,6 +436,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.NetworkPanelMoreFiltersItemSelected"
+    enum="DevToolsNetworkPanelMoreFiltersItemSelected"
+    expires_after="2024-11-09">
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <owner>wolfi@chromium.org</owner>
+  <summary>
+    Records when a filter is selected in the Network panel's 'More filters'
+    dropdown.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.NetworkPanelMoreFiltersNumberOfSelectedChanged"
+    enum="DevToolsNetworkPanelMoreFiltersNumberOfSelectedChanged"
+    expires_after="2024-11-09">
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <owner>wolfi@chromium.org</owner>
+  <summary>
+    Records the number of selected items in the Network panel's 'More filters'
+    dropdown.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.NetworkPanelResponsePreviewOpened"
     enum="DevToolsMediaType" expires_after="2023-12-31">
   <owner>yangguo@chromium.org</owner>
@@ -553,6 +577,28 @@ chromium-metrics-reviews@google.com.
   <owner>yangguo@chromium.org</owner>
   <summary>
     Recorded when a recording is started or finished in the Recorder panel.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.ResourceTypeFilterItemSelected"
+    enum="DevToolsResourceTypeFilterItemSelected" expires_after="2024-11-09">
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <owner>wolfi@chromium.org</owner>
+  <summary>
+    Records when a resource type is selected in the Network panel's filter bar.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.ResourceTypeFilterNumberOfSelectedChanged"
+    enum="DevToolsResourceTypeFilterNumberOfSelectedChanged"
+    expires_after="2024-11-09">
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <owner>wolfi@chromium.org</owner>
+  <summary>
+    Records the number of selected resource types in the Network panel's filter
+    bar.
   </summary>
 </histogram>
 
