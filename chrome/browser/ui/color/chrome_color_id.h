@@ -575,12 +575,14 @@
   E_CPONLY(kColorTabThrobber) \
   E_CPONLY(kColorTabThrobberPreconnect) \
   /* Tab Search colors */ \
+  E_CPONLY(kColorTabSearchCardBackground) \
   E_CPONLY(kColorTabSearchBackground) \
   E_CPONLY(kColorTabSearchDivider) \
   E_CPONLY(kColorTabSearchMediaIcon) \
   E_CPONLY(kColorTabSearchMediaRecordingIcon) \
   E_CPONLY(kColorTabSearchPrimaryForeground) \
   E_CPONLY(kColorTabSearchSecondaryForeground) \
+  E_CPONLY(kColorTabSearchSelected) \
   E_CPONLY(kColorTabSearchScrollbarThumb) \
   /* Thumbnail tab colors. */ \
   E_CPONLY(kColorThumbnailTabBackground) \

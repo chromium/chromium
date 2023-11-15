@@ -84,12 +84,14 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorProfileMenuSyncPausedIcon] = {ui::kColorSysPrimary};
 
   // Tab Search colors.
+  mixer[kColorTabSearchCardBackground] = {ui::kColorSysSurface5};
   mixer[kColorTabSearchBackground] = {ui::kColorSysSurface};
   mixer[kColorTabSearchDivider] = {ui::kColorSysDivider};
   mixer[kColorTabSearchMediaIcon] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorTabSearchMediaRecordingIcon] = {ui::kColorSysError};
   mixer[kColorTabSearchPrimaryForeground] = {ui::kColorSysOnSurface};
   mixer[kColorTabSearchSecondaryForeground] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorTabSearchSelected] = {ui::kColorSysPrimary};
   mixer[kColorTabSearchScrollbarThumb] = {ui::kColorSysPrimary};
 
   // Side Panel colors.
