@@ -46,7 +46,7 @@
 
 namespace net {
 
-class ProxyServer;
+class ProxyChain;
 
 // Returns true if a failed request issued through a proxy server should be
 // re-tried using the next proxy in the fallback list.
@@ -55,14 +55,14 @@ class ProxyServer;
 // increasing odds of success, and may choose not to retry a request on the
 // next proxy option, even though that could work.
 //
-//  - |proxy| is the proxy server that failed the request.
-//  - |error| is the error for the request when it was sent through |proxy|.
-//  - |final_error| is an out parameter that is set with the "final" error to
+//  - `proxy_chain` is the proxy chain that failed the request.
+//  - `error` is the error for the request when it was sent through |proxy|.
+//  - `final_error` is an out parameter that is set with the "final" error to
 //    report to the caller. The error is only re-written in cases where
 //    CanFalloverToNextProxy() returns false.
-//  - |is_for_ip_protection| is true if this request is to an IP Protection
+//  - `is_for_ip_protection` is true if this request is to an IP Protection
 //    proxy.
-NET_EXPORT bool CanFalloverToNextProxy(const ProxyServer& proxy,
+NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
                                        int error,
                                        int* final_error,
                                        bool is_for_ip_protection = false);

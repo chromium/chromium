@@ -19,7 +19,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/privacy_mode.h"
-#include "net/base/proxy_server.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/url_util.h"
 #include "net/http/bidirectional_stream_impl.h"
@@ -39,13 +39,12 @@ namespace net {
 namespace {
 
 // Returns parameters associated with the proxy resolution.
-base::Value::Dict NetLogHttpStreamJobProxyServerResolved(
-    const ProxyServer& proxy_server) {
+base::Value::Dict NetLogHttpStreamJobProxyChainResolved(
+    const ProxyChain& proxy_chain) {
   base::Value::Dict dict;
 
-  dict.Set("proxy_server", proxy_server.is_valid()
-                               ? ProxyServerToPacResultElement(proxy_server)
-                               : std::string());
+  dict.Set("proxy_chain",
+           proxy_chain.IsValid() ? proxy_chain.ToDebugString() : std::string());
   return dict;
 }
 
@@ -80,8 +79,17 @@ void ConvertWsToHttp(url::SchemeHostPort& input) {
 void HistogramProxyUsed(const ProxyInfo& proxy_info, bool success) {
   const ProxyServer::Scheme max_scheme = ProxyServer::Scheme::SCHEME_QUIC;
   ProxyServer::Scheme proxy_scheme = ProxyServer::Scheme::SCHEME_DIRECT;
-  if (!proxy_info.is_empty())
-    proxy_scheme = proxy_info.proxy_server().scheme();
+  if (!proxy_info.is_empty() && !proxy_info.is_direct()) {
+    if (proxy_info.proxy_chain().is_multi_proxy()) {
+      // TODO(https://crbug.com/1491092): Update this histogram to have a new
+      // bucket for multi-chain proxies. Until then, don't influence the
+      // existing metric counts which have historically been only for single-hop
+      // proxies.
+      return;
+    }
+    proxy_scheme =
+        proxy_info.proxy_chain().GetProxyServer(/*chain_index=*/0).scheme();
+  }
   if (success) {
     UMA_HISTOGRAM_ENUMERATION("Net.HttpJob.ProxyTypeSuccess", proxy_scheme,
                               max_scheme);
@@ -759,9 +767,8 @@ int HttpStreamFactory::JobController::DoResolveProxyComplete(int rv) {
   proxy_resolve_request_ = nullptr;
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_JOB_CONTROLLER_PROXY_SERVER_RESOLVED, [&] {
-        return NetLogHttpStreamJobProxyServerResolved(
-            proxy_info_.is_empty() ? ProxyServer()
-                                   : proxy_info_.proxy_server());
+        return NetLogHttpStreamJobProxyChainResolved(
+            proxy_info_.is_empty() ? ProxyChain() : proxy_info_.proxy_chain());
       });
 
   if (rv != OK)
@@ -1361,8 +1368,12 @@ int HttpStreamFactory::JobController::ReconsiderProxyAfterError(Job* job,
     return error;
 
   if (proxy_info_.is_secure_http_like()) {
+    // TODO(https://crbug.com/1491092): Should do this for every proxy in the
+    // chain as part of adding support for client certificates.
     session_->ssl_client_context()->ClearClientCertificate(
-        proxy_info_.proxy_server().host_port_pair());
+        proxy_info_.proxy_chain()
+            .GetProxyServer(/*chain_index=*/0)
+            .host_port_pair());
   }
 
   if (!proxy_info_.Fallback(error, net_log_)) {

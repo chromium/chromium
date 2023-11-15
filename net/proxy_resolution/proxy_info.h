@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_list.h"
@@ -19,7 +20,6 @@
 namespace net {
 
 class NetLogWithSource;
-class ProxyChain;
 
 // This object holds proxy information returned by ResolveProxy.
 class NET_EXPORT ProxyInfo {
@@ -70,9 +70,10 @@ class NET_EXPORT ProxyInfo {
   // Returns true if this proxy info specifies a direct connection.
   bool is_direct() const {
     // We don't implicitly fallback to DIRECT unless it was added to the list.
-    if (is_empty())
+    if (is_empty()) {
       return false;
-    return proxy_list_.Get().is_direct();
+    }
+    return proxy_chain().is_direct();
   }
 
   bool is_direct_only() const {
@@ -80,46 +81,90 @@ class NET_EXPORT ProxyInfo {
   }
 
   // Returns true if the first valid proxy server is an https proxy.
+  // TODO(https://crbug.com/1491092): Remove this method in favor of checking
+  // the corresponding property of the relevant proxy server from the next
+  // proxy chain in the proxy list.
   bool is_https() const {
-    if (is_empty())
+    if (is_empty() || is_direct()) {
       return false;
-    return proxy_server().is_https();
+    }
+    if (proxy_chain().is_multi_proxy()) {
+      return true;
+    }
+    return proxy_chain().GetProxyServer(/*chain_index=*/0).is_https();
   }
 
   // Returns true if the first proxy server is an HTTP compatible proxy.
+  // TODO(https://crbug.com/1491092): Remove this method in favor of checking
+  // the corresponding property of the relevant proxy server from the next
+  // proxy chain in the proxy list.
   bool is_http_like() const {
-    if (is_empty())
+    if (is_empty() || is_direct()) {
       return false;
-    return proxy_server().is_http_like();
+    }
+    if (proxy_chain().is_multi_proxy()) {
+      return true;
+    }
+    return proxy_chain().GetProxyServer(/*chain_index=*/0).is_http_like();
   }
 
   // Returns true if the first proxy server is an HTTP compatible proxy over a
   // secure connection.
+  // TODO(https://crbug.com/1491092): Remove this method in favor of checking
+  // the corresponding property of the relevant proxy server from the next
+  // proxy chain in the proxy list.
   bool is_secure_http_like() const {
-    if (is_empty())
+    if (is_empty() || is_direct()) {
       return false;
-    return proxy_server().is_secure_http_like();
+    }
+    if (proxy_chain().is_multi_proxy()) {
+      return true;
+    }
+    return proxy_chain()
+        .GetProxyServer(/*chain_index=*/0)
+        .is_secure_http_like();
   }
 
   // Returns true if the first valid proxy server is an http proxy.
+  // TODO(https://crbug.com/1491092): Remove this method in favor of checking
+  // the corresponding property of the relevant proxy server from the next
+  // proxy chain in the proxy list.
   bool is_http() const {
-    if (is_empty())
+    if (is_empty() || is_direct()) {
       return false;
-    return proxy_server().is_http();
+    }
+    if (proxy_chain().is_multi_proxy()) {
+      return false;
+    }
+    return proxy_chain().GetProxyServer(/*chain_index=*/0).is_http();
   }
 
   // Returns true if the first valid proxy server is a quic proxy.
+  // TODO(https://crbug.com/1491092): Remove this method in favor of checking
+  // the corresponding property of the relevant proxy server from the next
+  // proxy chain in the proxy list.
   bool is_quic() const {
-    if (is_empty())
+    if (is_empty() || is_direct()) {
       return false;
-    return proxy_server().is_quic();
+    }
+    if (proxy_chain().is_multi_proxy()) {
+      return false;
+    }
+    return proxy_chain().GetProxyServer(/*chain_index=*/0).is_quic();
   }
 
   // Returns true if the first valid proxy server is a socks server.
+  // TODO(https://crbug.com/1491092): Remove this method in favor of checking
+  // the corresponding property of the relevant proxy server from the next
+  // proxy chain in the proxy list.
   bool is_socks() const {
-    if (is_empty())
+    if (is_empty() || is_direct()) {
       return false;
-    return proxy_server().is_socks();
+    }
+    if (proxy_chain().is_multi_proxy()) {
+      return false;
+    }
+    return proxy_chain().GetProxyServer(/*chain_index=*/0).is_socks();
   }
 
   // Returns true if this proxy info has no proxies left to try.
@@ -136,10 +181,12 @@ class NET_EXPORT ProxyInfo {
   // Returns true if this proxy info is for IP Protection.
   bool is_for_ip_protection() const { return is_for_ip_protection_; }
 
+#ifdef UNIT_TEST
   // Returns the first valid proxy server. `is_empty()` must be false to be able
   // to call this function, and the first chain must not be multi-proxy.
   // TODO(crbug.com/1491092): Remove this method.
   const ProxyServer& proxy_server() const { return proxy_list_.Get(); }
+#endif
 
   // Returns the first valid proxy chain. is_empty() must be false to be able
   // to call this function.

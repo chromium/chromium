@@ -138,10 +138,9 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
           proxy_info_.is_direct()),
       // Don't use IP connection pooling for HTTP over HTTPS proxies. It doesn't
       // get us much, and testing it is more effort than its worth.
-      enable_ip_based_pooling_(
-          enable_ip_based_pooling &&
-          !(proxy_info_.proxy_server().is_secure_http_like() &&
-            origin_url_.SchemeIs(url::kHttpScheme))),
+      enable_ip_based_pooling_(enable_ip_based_pooling &&
+                               !(proxy_info_.is_secure_http_like() &&
+                                 origin_url_.SchemeIs(url::kHttpScheme))),
       delegate_(delegate),
       job_type_(job_type),
       using_ssl_(origin_url_.SchemeIs(url::kHttpsScheme) ||
@@ -160,7 +159,7 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
       spdy_session_key_(
           using_quic_
               ? SpdySessionKey()
-              : GetSpdySessionKey(proxy_info_.proxy_server(),
+              : GetSpdySessionKey(proxy_info_.proxy_chain(),
                                   origin_url_,
                                   request_info_.privacy_mode,
                                   request_info_.socket_tag,
@@ -172,9 +171,9 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
          base::EqualsCaseInsensitiveASCII(destination_.scheme(),
                                           url::kHttpsScheme));
 
-  // This class is specific to a single `ProxyServer`, so `proxy_info_` must be
+  // This class is specific to a single `ProxyChain`, so `proxy_info_` must be
   // non-empty. Entries beyond the first are ignored. It should simply take a
-  // `ProxyServer`, but the full `ProxyInfo` is passed back to
+  // `ProxyChain`, but the full `ProxyInfo` is passed back to
   // `HttpNetworkTransaction`, which consumes additional fields.
   DCHECK(!proxy_info_.is_empty());
 
@@ -425,24 +424,30 @@ bool HttpStreamFactory::Job::ShouldForceQuic(
 
 // static
 SpdySessionKey HttpStreamFactory::Job::GetSpdySessionKey(
-    const ProxyServer& proxy_server,
+    const ProxyChain& proxy_chain,
     const GURL& origin_url,
     PrivacyMode privacy_mode,
     const SocketTag& socket_tag,
     const NetworkAnonymizationKey& network_anonymization_key,
     SecureDnsPolicy secure_dns_policy) {
+  // TODO(https://crbug.com/1491092): Update this to support proxy chains with
+  // multiple proxies and add tests.
+  CHECK(!proxy_chain.is_multi_proxy());
   // In the case that we're using an HTTPS proxy for an HTTP url, look for a
   // HTTP/2 proxy session *to* the proxy, instead of to the origin server.
-  if (proxy_server.is_https() && origin_url.SchemeIs(url::kHttpScheme)) {
-    return SpdySessionKey(proxy_server.host_port_pair(), ProxyChain::Direct(),
-                          PRIVACY_MODE_DISABLED,
-                          SpdySessionKey::IsProxySession::kTrue, socket_tag,
-                          network_anonymization_key, secure_dns_policy);
+  if (!proxy_chain.is_direct() &&
+      proxy_chain.GetProxyServer(proxy_chain.length() - 1).is_https() &&
+      origin_url.SchemeIs(url::kHttpScheme)) {
+    return SpdySessionKey(
+        proxy_chain.GetProxyServer(proxy_chain.length() - 1).host_port_pair(),
+        ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
+        SpdySessionKey::IsProxySession::kTrue, socket_tag,
+        network_anonymization_key, secure_dns_policy);
   }
-  return SpdySessionKey(HostPortPair::FromURL(origin_url),
-                        ProxyChain(proxy_server), privacy_mode,
-                        SpdySessionKey::IsProxySession::kFalse, socket_tag,
-                        network_anonymization_key, secure_dns_policy);
+  return SpdySessionKey(HostPortPair::FromURL(origin_url), proxy_chain,
+                        privacy_mode, SpdySessionKey::IsProxySession::kFalse,
+                        socket_tag, network_anonymization_key,
+                        secure_dns_policy);
 }
 
 bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {
@@ -465,8 +470,7 @@ bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {
   // The only time we can use an existing session is if the request URL is
   // https (the normal case) or if we are connecting to a HTTP/2 proxy.
   // https://crbug.com/133176
-  return origin_url_.SchemeIs(url::kHttpsScheme) ||
-         proxy_info_.proxy_server().is_https();
+  return origin_url_.SchemeIs(url::kHttpsScheme) || (proxy_info_.is_https());
 }
 
 void HttpStreamFactory::Job::OnStreamReadyCallback() {
@@ -916,8 +920,14 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
     // Any proxy-specific SSL behavior here should also be configured for HTTPS
     // proxies in ConnectJobFactory.
     cert_verifier_flags = CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES;
+
+    // TODO(https://crbug.com/1491092): Update this to support proxy chains with
+    // multiple proxies and add tests.
+    CHECK(!proxy_info_.proxy_chain().is_multi_proxy());
     const HostPortPair& proxy_endpoint =
-        proxy_info_.proxy_server().host_port_pair();
+        proxy_info_.proxy_chain()
+            .GetProxyServer(proxy_info_.proxy_chain().length() - 1)
+            .host_port_pair();
     destination = url::SchemeHostPort(url::kHttpsScheme, proxy_endpoint.host(),
                                       proxy_endpoint.port());
     url = destination.GetURL();
@@ -1292,7 +1302,7 @@ void HttpStreamFactory::Job::OnSpdySessionAvailable(
 
 int HttpStreamFactory::Job::ReconsiderProxyAfterError(int error) {
   // Check if the error was a proxy failure.
-  if (!CanFalloverToNextProxy(proxy_info_.proxy_server(), error, &error,
+  if (!CanFalloverToNextProxy(proxy_info_.proxy_chain(), error, &error,
                               proxy_info_.is_for_ip_protection())) {
     return error;
   }
