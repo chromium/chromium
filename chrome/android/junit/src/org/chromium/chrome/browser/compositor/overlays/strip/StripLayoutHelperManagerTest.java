@@ -112,7 +112,7 @@ public class StripLayoutHelperManagerTest {
     private static final float SCREEN_HEIGHT = 1600.f;
     private static final float VISIBLE_VIEWPORT_Y = 200.f;
     private static final int ORIENTATION = 2;
-    private static final float BUTTON_END_PADDING_TSR = 12.f;
+    private static final float BUTTON_END_PADDING_TSR = 8.f;
 
     @Before
     public void beforeTest() {
@@ -220,14 +220,15 @@ public class StripLayoutHelperManagerTest {
     @Feature("Tab Strip Redesign")
     public void testModelSelectorButtonXPosition_TSR() {
         // Set model selector button position.
+        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
 
         // Verify model selector button x-position.
-        // stripWidth(800) - buttonEndPadding(12) - MsbWidth(32) = 756
+        // stripWidth(800) - buttonEndPadding(8) - MsbWidth(32) = 760
         assertEquals(
                 "Model selector button x-position is not as expected",
-                756.f,
+                760.f,
                 mStripLayoutHelperManager.getModelSelectorButton().getX(),
                 0.0);
     }
@@ -237,6 +238,7 @@ public class StripLayoutHelperManagerTest {
     public void testModelSelectorButtonXPosition_RTL_TSR() {
         // Set model selector button position.
         LocalizationUtils.setRtlForTesting(true);
+        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
 

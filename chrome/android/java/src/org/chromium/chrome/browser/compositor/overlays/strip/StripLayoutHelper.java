@@ -137,7 +137,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private static final float NEW_TAB_BUTTON_Y_OFFSET_DP = 10.f;
     private static final float NEW_TAB_BUTTON_BACKGROUND_Y_OFFSET_DP_FOLIO = 3.f;
     private static final float NEW_TAB_BUTTON_BACKGROUND_Y_OFFSET_DP_DETACHED = 5.f;
-    private static final float NEW_TAB_BUTTON_CLICK_SLOP_DP = 12.f;
+    private static final float NEW_TAB_BUTTON_CLICK_SLOP_DP = 8.f;
     private static final float NEW_TAB_BUTTON_WIDTH_DP = 24.f;
     private static final float NEW_TAB_BUTTON_HEIGHT_DP = 24.f;
     private static final float NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP_TSR = 32.f;
@@ -150,6 +150,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     @VisibleForTesting
     static final float FOLIO_DETACHED_BOTTOM_MARGIN_DP = 4.f;
     private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
+
+    // Desired spacing between new tab button and tabs when tab strip is not full.
+    private static final float NEW_TAB_BUTTON_X_OFFSET_TOWARDS_TABS = 4.f;
+    private static final float DESIRED_PADDING_BETWEEN_NEW_TAB_BUTTON_AND_TABS = 2.f;
+
     private static final float NEW_TAB_BUTTON_DEFAULT_PRESSED_OPACITY = 0.2f;
     private static final float NEW_TAB_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.12f;
     private static final float NEW_TAB_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.08f;
@@ -250,10 +255,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private float mRightFadeWidth;
 
     // New tab button with tab strip end padding
-    private float mNewTabButtonWithTabStripEndPadding;
+    private float mTabStripEndPadding;
     // 3-dots menu button with tab strip end padding
-    private float mMenuButtonPadding;
-
     private final boolean mIncognito;
     private boolean mIsFirstLayoutPass;
     private boolean mAnimationsDisabledForTesting;
@@ -335,21 +338,17 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
             // Use toolbar menu button padding to align NTB with menu button.
-            mMenuButtonPadding = context.getResources().getDimension(R.dimen.button_end_padding)
-                    / context.getResources().getDisplayMetrics().density;
-            mNewTabButtonWithTabStripEndPadding =
-                    (BUTTON_DESIRED_TOUCH_TARGET_SIZE - mNewTabButtonWidth - mMenuButtonPadding) / 2
-                    + mMenuButtonPadding;
+            mTabStripEndPadding =
+                    context.getResources().getDimension(R.dimen.button_end_padding)
+                            / context.getResources().getDisplayMetrics().density;
         } else {
-            mNewTabButtonWithTabStripEndPadding = NEW_TAB_BUTTON_PADDING_DP;
+            mTabStripEndPadding = NEW_TAB_BUTTON_PADDING_DP;
         }
 
-        mRightMargin = LocalizationUtils.isLayoutRtl()
-                ? 0
-                : mNewTabButtonWithTabStripEndPadding + mNewTabButtonWidth;
-        mLeftMargin = LocalizationUtils.isLayoutRtl()
-                ? mNewTabButtonWithTabStripEndPadding + mNewTabButtonWidth
-                : 0;
+        mRightMargin =
+                LocalizationUtils.isLayoutRtl() ? 0 : mTabStripEndPadding + mNewTabButtonWidth;
+        mLeftMargin =
+                LocalizationUtils.isLayoutRtl() ? mTabStripEndPadding + mNewTabButtonWidth : 0;
 
         mMinTabWidth = TAB_STRIP_TAB_WIDTH;
 
@@ -540,14 +539,39 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     /**
      * @return The touch target offset to be applied to the new tab button.
      */
-    public float getNewTabButtonTouchTargetOffset() {
+    protected float getNewTabButtonTouchTargetOffset() {
         boolean isRtl = LocalizationUtils.isLayoutRtl();
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            float newTabButtonTouchTargetOffsetTSR =
-                    (BUTTON_DESIRED_TOUCH_TARGET_SIZE - mNewTabButtonWidth) / 2;
+            float newTabButtonTouchTargetOffsetTSR;
+            if (isTabStripFull()) {
+                newTabButtonTouchTargetOffsetTSR = 0;
+            } else {
+                newTabButtonTouchTargetOffsetTSR = getNtbVisualOffsetHorizontal();
+            }
             return isRtl ? newTabButtonTouchTargetOffsetTSR : -newTabButtonTouchTargetOffsetTSR;
         }
         return isRtl ? NEW_TAB_BUTTON_TOUCH_TARGET_OFFSET : -NEW_TAB_BUTTON_TOUCH_TARGET_OFFSET;
+    }
+
+    /**
+     * Check whether the tab strip is full by checking whether tab width has decreased to fit more
+     * tabs.
+     *
+     * @return Whether the tab strip is full.
+     */
+    protected boolean isTabStripFull() {
+        return mCachedTabWidth < TabUiThemeUtil.getMaxTabStripTabWidthDp();
+    }
+
+    /**
+     * Determine How far to shift new tab button icon visually towards the tab in order to achieve
+     * the desired spacing between new tab button and tabs when tab strip is not full.
+     *
+     * @return Visual offset of new tab button icon.
+     */
+    protected float getNtbVisualOffsetHorizontal() {
+        return (BUTTON_DESIRED_TOUCH_TARGET_SIZE - mNewTabButtonWidth) / 2
+                - DESIRED_PADDING_BETWEEN_NEW_TAB_BUTTON_AND_TABS;
     }
 
     /**
@@ -614,18 +638,22 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (LocalizationUtils.isLayoutRtl()) {
             mLeftMargin = margin + mNewTabButtonWidth;
             if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-                mLeftMargin += isMsbVisible ? NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING
-                                            : mNewTabButtonWithTabStripEndPadding;
+                mLeftMargin +=
+                        isMsbVisible
+                                ? NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING
+                                : mTabStripEndPadding;
             } else {
-                mLeftMargin += mNewTabButtonWithTabStripEndPadding;
+                mLeftMargin += mTabStripEndPadding;
             }
         } else {
             mRightMargin = margin + mNewTabButtonWidth;
             if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-                mRightMargin += isMsbVisible ? NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING
-                                             : mNewTabButtonWithTabStripEndPadding;
+                mRightMargin +=
+                        isMsbVisible
+                                ? NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING
+                                : mTabStripEndPadding;
             } else {
-                mRightMargin += mNewTabButtonWithTabStripEndPadding;
+                mRightMargin += mTabStripEndPadding;
             }
         }
         computeAndUpdateTabWidth(false, false);
@@ -2293,15 +2321,20 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     mLeftMargin, mRightMargin, mWidth, mNewTabButtonWidth,
                     Math.abs(getNewTabButtonTouchTargetOffset()), mCachedTabWidth, animate);
 
-            // For TSI, NTB touch target offset is skewed towards the end of strip and then visually
-            // placed correctly in the cc layer. Since we do not skew NTB touch target offset for
-            // TSR here, so revert.
+            boolean isRtl = LocalizationUtils.isLayoutRtl();
+
             if (TabUiFeatureUtilities.isTabStripNtbAnchorDisabled()) {
                 offset += getNewTabButtonTouchTargetOffset();
+                if (!isTabStripFull()) {
+                    // Move NTB close to tabs by 4 dp when tab strip is not full.
+                    offset +=
+                            isRtl
+                                    ? NEW_TAB_BUTTON_X_OFFSET_TOWARDS_TABS
+                                    : -NEW_TAB_BUTTON_X_OFFSET_TOWARDS_TABS;
+                }
             }
 
             // 3. Hide the new tab button if it's not visible on the screen.
-            boolean isRtl = LocalizationUtils.isLayoutRtl();
             if ((isRtl && offset + mNewTabButtonWidth < 0) || (!isRtl && offset > mWidth)) {
                 mNewTabButton.setVisible(false);
                 return null;

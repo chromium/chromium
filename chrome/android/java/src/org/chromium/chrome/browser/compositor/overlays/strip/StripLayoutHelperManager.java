@@ -159,7 +159,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private final ViewStub mTabHoverCardViewStub;
     private float mModelSelectorWidth;
     // 3-dots menu button with tab strip end padding
-    private float mMenuButtonPadding;
+    private float mStripEndPadding;
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver =
@@ -400,9 +400,11 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             mTabStripFadeShortWidth = FADE_SHORT_TSR_WIDTH_DP;
             mTabStripFadeLongWidth = FADE_LONG_TSR_WIDTH_DP;
 
-            // Use toolbar menu button padding to align MSB with menu button.
-            mMenuButtonPadding = context.getResources().getDimension(R.dimen.button_end_padding)
-                    / context.getResources().getDisplayMetrics().density;
+            // Use toolbar menu button padding as the strip end adding to align MSB with menu
+            // button.
+            mStripEndPadding =
+                    context.getResources().getDimension(R.dimen.button_end_padding)
+                            / context.getResources().getDisplayMetrics().density;
 
         } else {
             mModelSelectorButton = new CompositorButton(context, MODEL_SELECTOR_BUTTON_WIDTH_DP,
@@ -594,7 +596,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         }
         if (!LocalizationUtils.isLayoutRtl()) {
             if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-                mModelSelectorButton.setX(mWidth - getModelSelectorButtonWidthWithPadding());
+                mModelSelectorButton.setX(mWidth - getModelSelectorButtonWidthWithEndPadding());
             } else {
                 mModelSelectorButton.setX(
                         mWidth - mModelSelectorWidth - MODEL_SELECTOR_BUTTON_PADDING_DP);
@@ -602,7 +604,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         } else {
             if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
                 mModelSelectorButton.setX(
-                        getModelSelectorButtonWidthWithPadding() - mModelSelectorWidth);
+                        getModelSelectorButtonWidthWithEndPadding() - mModelSelectorWidth);
             } else {
                 mModelSelectorButton.setX(MODEL_SELECTOR_BUTTON_PADDING_DP);
             }
@@ -616,20 +618,34 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mEventFilter.setEventArea(mStripFilterArea);
     }
 
-    private float getModelSelectorButtonWidthWithPadding() {
+    private float getModelSelectorButtonWidthWithEndPadding() {
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            float modelSelectorWithStripEndPadding =
-                    (BUTTON_DESIRED_TOUCH_TARGET_SIZE - mModelSelectorWidth - mMenuButtonPadding)
-                            / 2
-                    + mMenuButtonPadding;
-            return mModelSelectorWidth + modelSelectorWithStripEndPadding;
+            return mModelSelectorWidth + mStripEndPadding;
         } else {
             return mModelSelectorWidth + (MODEL_SELECTOR_BUTTON_PADDING_DP * 2);
         }
     }
 
+    /**
+     * @Return The start padding needed for model selector button to ensure there is enough space
+     * for touch target.
+     */
+    private float getButtonStartPaddingForTouchTarget() {
+        if (mModelSelectorButton.isVisible() && ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            return BUTTON_DESIRED_TOUCH_TARGET_SIZE
+                    - mModelSelectorButton.getWidth()
+                    - mStripEndPadding;
+        } else {
+            return 0.f;
+        }
+    }
+
     public TintedCompositorButton getNewTabButton() {
         return getActiveStripLayoutHelper().getNewTabButton();
+    }
+
+    public boolean isTabStripFull() {
+        return getActiveStripLayoutHelper().isTabStripFull();
     }
 
     /**
@@ -984,7 +1000,13 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
             mModelSelectorButton.setVisible(isVisible);
 
-            float endMargin = isVisible ? getModelSelectorButtonWidthWithPadding() : 0.0f;
+            // endMargin = msbEndPadding(8dp) + msbWidth(32dp) + msbStartPadding(8dp to create more
+            // gap between MSB and NTB so there is enough space for touch target).
+            float endMargin =
+                    isVisible
+                            ? getModelSelectorButtonWidthWithEndPadding()
+                                    + getButtonStartPaddingForTouchTarget()
+                            : 0.0f;
             mNormalHelper.setEndMargin(endMargin, isVisible);
             mIncognitoHelper.setEndMargin(endMargin, true);
         }

@@ -153,6 +153,8 @@ void TabStripSceneLayer::UpdateNewTabButton(
   new_tab_button_->SetHideLayerAndSubtree(!visible);
   new_tab_button_->SetOpacity(button_alpha);
 
+  float left_offset = touch_target_offset;
+
   // Set Tab Strip Redesign new tab button background
   if (is_tab_strip_redesign_enabled_) {
     ui::Resource* button_background_resource =
@@ -165,6 +167,9 @@ void TabStripSceneLayer::UpdateNewTabButton(
     float background_top_offset = (button_background_resource->size().height() -
                                    button_resource->size().height()) /
                                   2;
+
+    // Move new tab button visually towards tabs when tab strip is not full.
+    x += left_offset;
 
     // Only show button bg if btn style enabled or when the btn is being
     // hovered on.
@@ -190,7 +195,6 @@ void TabStripSceneLayer::UpdateNewTabButton(
     // The touch target for the new tab button is skewed towards the end of the
     // strip. This ensures that the view itself is correctly aligned without
     // adjusting the touch target.
-    float left_offset = touch_target_offset;
 
     // Only show new tab button icon when TSR is disabled
     new_tab_button_->SetPosition(gfx::PointF(x + left_offset, y));
