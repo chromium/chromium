@@ -2980,7 +2980,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.ReportVerification.DestinationOriginStatus"
     enum="ConversionsTriggerVerificationDestinationOriginStatus"
-    expires_after="M121">
+    expires_after="M126">
   <owner>anthonygarant@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -2991,7 +2991,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.ReportVerification.Duration.{TimeSpan}.{Outcome}"
-    units="ms" expires_after="M121">
+    units="ms" expires_after="M126">
   <owner>anthonygarant@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -3025,7 +3025,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.ReportVerification.GetHeadersStatus"
-    enum="ConversionTriggerVerificationGetHeadersStatus" expires_after="M121">
+    enum="ConversionTriggerVerificationGetHeadersStatus" expires_after="M126">
   <owner>anthonygarant@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -3037,7 +3037,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.ReportVerification.ProcessVerificationStatus"
     enum="ConversionTriggerVerificationProcessVerificationStatus"
-    expires_after="M121">
+    expires_after="M126">
   <owner>anthonygarant@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
