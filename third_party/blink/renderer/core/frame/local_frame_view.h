@@ -235,6 +235,7 @@ class CORE_EXPORT LocalFrameView final
       const {
     return intersection_observation_state_;
   }
+  void InvalidateIntersectionObservations();
 
   // Get the InstersectionObservation::ComputeFlags for target elements in this
   // view.

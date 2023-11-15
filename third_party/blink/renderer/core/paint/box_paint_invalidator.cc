@@ -127,8 +127,9 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
   if (reason == PaintInvalidationReason::kNone)
     return reason;
 
-  if (IsLayoutPaintInvalidationReason(reason))
+  if (IsLayoutFullPaintInvalidationReason(reason)) {
     return reason;
+  }
 
   if (IsFullPaintInvalidationReason(reason) &&
       !box_.ShouldCheckLayoutForPaintInvalidation()) {

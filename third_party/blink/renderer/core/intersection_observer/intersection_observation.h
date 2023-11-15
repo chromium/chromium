@@ -79,6 +79,8 @@ class CORE_EXPORT IntersectionObservation final
   void TakeRecords(HeapVector<Member<IntersectionObserverEntry>>&);
   void Disconnect();
   void InvalidateCachedRects() { cached_rects_.valid = false; }
+  // Returns true if cached rects have been invalidated since the last update.
+  bool InvalidateCachedRectsIfNeeded();
 
   void Trace(Visitor*) const;
 
@@ -92,6 +94,7 @@ class CORE_EXPORT IntersectionObservation final
   // generate a notification and schedule it for delivery.
   void ProcessIntersectionGeometry(const IntersectionGeometry& geometry,
                                    DOMHighResTimeStamp timestamp);
+  bool NeedsInvalidateCachedRects() const;
 
   Member<IntersectionObserver> observer_;
   WeakMember<Element> target_;

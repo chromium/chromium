@@ -1600,6 +1600,13 @@ void LayoutObject::InvalidateSubtreeLayoutForFontUpdates() {
   }
 }
 
+void LayoutObject::DeprecatedInvalidateIntersectionObserverCachedRects() {
+  NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    InvalidateIntersectionObserverCachedRects();
+  }
+}
+
 void LayoutObject::InvalidateIntersectionObserverCachedRects() {
   NOT_DESTROYED();
   if (GetNode() && GetNode()->IsElementNode()) {
@@ -3872,8 +3879,7 @@ void LayoutObject::SetNeedsPaintPropertyUpdate() {
     return;
   }
   SetNeedsPaintPropertyUpdatePreservingCachedRects();
-  InvalidateIntersectionObserverCachedRects();
-  GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
+  DeprecatedInvalidateIntersectionObserverCachedRects();
 }
 
 void LayoutObject::SetNeedsPaintPropertyUpdatePreservingCachedRects() {
@@ -4555,7 +4561,7 @@ void LayoutObject::SetShouldInvalidateSelection() {
 void LayoutObject::SetShouldDoFullPaintInvalidation(
     PaintInvalidationReason reason) {
   NOT_DESTROYED();
-  DCHECK(IsLayoutPaintInvalidationReason(reason));
+  DCHECK(IsLayoutFullPaintInvalidationReason(reason));
   SetShouldCheckForPaintInvalidation();
   SetShouldDoFullPaintInvalidationWithoutLayoutChangeInternal(reason);
 }

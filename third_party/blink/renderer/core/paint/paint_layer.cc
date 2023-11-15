@@ -454,7 +454,7 @@ void PaintLayer::UpdateDescendantDependentFlags() {
         MarkAncestorChainForFlagsUpdate(kDoesNotNeedDescendantDependentUpdate);
       }
     }
-    GetLayoutObject().InvalidateIntersectionObserverCachedRects();
+    GetLayoutObject().DeprecatedInvalidateIntersectionObserverCachedRects();
     needs_visual_overflow_recalc_ = false;
   }
 

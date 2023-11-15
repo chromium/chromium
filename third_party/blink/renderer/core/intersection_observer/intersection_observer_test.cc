@@ -1137,17 +1137,14 @@ TEST_P(IntersectionObserverTest, CachedRectsWithOverflowHidden) {
   EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
   EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
 
-  // Scrolling the root should not invalidate.
+  // Scrolling the root the first time creates a scroll translation node which
+  // causes the invalidation.
   root->scrollTo(0, 100);
   target2->parentElement()->scrollTo(0, 100);
   target3->parentElement()->scrollTo(0, 100);
   GetDocument().View()->UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kTest);
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    EXPECT_TRUE(observation1->CanUseCachedRectsForTesting());
-  } else {
-    EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
-  }
+  EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
   EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
   EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
 

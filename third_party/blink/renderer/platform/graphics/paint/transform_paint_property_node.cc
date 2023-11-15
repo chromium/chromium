@@ -159,6 +159,27 @@ bool TransformPaintPropertyNodeOrAlias::Changed(
   return relative_to_node.Changed(change, TransformPaintPropertyNode::Root());
 }
 
+bool TransformPaintPropertyNodeOrAlias::ChangedExceptScroll(
+    PaintPropertyChangeType change,
+    const TransformPaintPropertyNodeOrAlias& relative_to_node) const {
+  for (const auto* node = this; node; node = node->Parent()) {
+    if (node == &relative_to_node) {
+      return false;
+    }
+    if (!node->IsParentAlias() &&
+        static_cast<const TransformPaintPropertyNode*>(node)->ScrollNode()) {
+      continue;
+    }
+    if (node->NodeChanged() >= change) {
+      return true;
+    }
+  }
+
+  // |this| is not a descendant of |relative_to_node|. We have seen no changed
+  // flag from |this| to the root. Now check |relative_to_node| to the root.
+  return relative_to_node.Changed(change, TransformPaintPropertyNode::Root());
+}
+
 std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
   auto json = ToJSONBase();
   if (IsIdentityOr2dTranslation()) {

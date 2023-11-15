@@ -1576,7 +1576,7 @@ TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {
   frame_document->documentElement()->setAttribute(html_names::kStyleAttr,
                                                   AtomicString("color: blue"));
   // This is needed to reproduce crbug.com/1054644 before the fix.
-  frame_view->SetNeedsPaintPropertyUpdate();
+  frame_view->SetIntersectionObservationState(LocalFrameView::kDesired);
 
   // Show the frame without any other change.
   LocalFrameRoot().WasShown();

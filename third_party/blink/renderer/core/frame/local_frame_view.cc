@@ -4434,6 +4434,20 @@ void LocalFrameView::UpdateIntersectionObservationStateOnScroll(
   }
 }
 
+void LocalFrameView::InvalidateIntersectionObservations() {
+  DCHECK_EQ(Lifecycle().GetState(), DocumentLifecycle::kInPrePaint);
+  DCHECK(GetFrame().IsLocalRoot() || !IsAttached());
+  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
+    if (auto* controller = frame_view.GetFrame()
+                               .GetDocument()
+                               ->GetIntersectionObserverController()) {
+      if (controller->InvalidateCachedRectsIfNeeded()) {
+        frame_view.SetIntersectionObservationState(LocalFrameView::kDesired);
+      }
+    }
+  });
+}
+
 void LocalFrameView::SetVisualViewportOrOverlayNeedsRepaint() {
   if (LocalFrameView* root = GetFrame().LocalFrameRoot().View())
     root->visual_viewport_or_overlay_needs_repaint_ = true;

@@ -162,14 +162,6 @@ bool ComputeIsVisible(const LayoutObject* target, const PhysicalRect& rect) {
   return false;
 }
 
-bool CanUseGeometryMapper(const LayoutObject* object) {
-  // This checks for cases where we didn't just complete a successful lifecycle
-  // update, e.g., if the frame is throttled.
-  LayoutView* layout_view = object->GetDocument().GetLayoutView();
-  return layout_view && !layout_view->NeedsPaintPropertyUpdate() &&
-         !layout_view->DescendantNeedsPaintPropertyUpdate();
-}
-
 static const unsigned kConstructorFlagsMask =
     IntersectionGeometry::kShouldReportRootBounds |
     IntersectionGeometry::kShouldComputeVisibility |
@@ -260,7 +252,7 @@ bool IsAllowedLayoutObjectType(const LayoutObject& target) {
 }
 
 // Validates the given target element and returns its LayoutObject
-const LayoutObject* IntersectionGeometry::RootAndTarget::GetTargetLayoutObject(
+const LayoutObject* IntersectionGeometry::GetTargetLayoutObject(
     const Element& target_element) {
   if (!target_element.isConnected()) {
     return nullptr;
@@ -357,6 +349,14 @@ void IntersectionGeometry::RootAndTarget::ComputeRelationship(
   }
 }
 
+bool IntersectionGeometry::CanUseGeometryMapper(const LayoutObject& object) {
+  // This checks for cases where we didn't just complete a successful lifecycle
+  // update, e.g., if the frame is throttled.
+  LayoutView* layout_view = object.GetDocument().GetLayoutView();
+  return layout_view && !layout_view->NeedsPaintPropertyUpdate() &&
+         !layout_view->DescendantNeedsPaintPropertyUpdate();
+}
+
 void IntersectionGeometry::UpdateShouldUseCachedRects(
     const RootAndTarget& root_and_target,
     CachedRects* cached_rects) {
@@ -370,12 +370,6 @@ void IntersectionGeometry::UpdateShouldUseCachedRects(
     return;
   }
 
-  // TODO(wangxianzhu): Allow cached rects in IntersectionOptimization with
-  // implicit root. For now this is blocked by some under-invalidation bugs.
-  if (RootIsImplicit()) {
-    return;
-  }
-
   if (!root_and_target.intermediate_scrollers.empty()) {
     // This happens when there are scroll margins. We can't use cached rects
     // because we need to call ApplyClip for each scroller to apply the
@@ -384,13 +378,20 @@ void IntersectionGeometry::UpdateShouldUseCachedRects(
   }
 
   if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    // TODO(wangxianzhu): Allow cached rects in IntersectionOptimization with
-    // intermediate clippers.
+    // Cached rects can only be used if there are no scrollable objects in the
+    // hierarchy between target and root (a scrollable root is ok). The reason
+    // is that a scroll change in an intermediate scroller would change the
+    // intersection geometry, but we intentionally don't invalidate cached
+    // rects and schedule intersection update to enable the minimul-scroll-
+    // delta-to-update optimization.
     if (root_and_target.relationship != RootAndTarget::kNotScrollable &&
         root_and_target.relationship != RootAndTarget::kScrollableByRootOnly) {
       return;
     }
   } else {
+    if (RootIsImplicit()) {
+      return;
+    }
     // Cached rects can only be used if there are no scrollable objects in the
     // hierarchy between target and root (a scrollable root is ok). The reason
     // is that a scroll change in an intermediate scroller would change the
@@ -465,7 +466,7 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
   PropertyTreeStateOrAlias container_properties =
       PropertyTreeState::Uninitialized();
   const LayoutObject* property_container =
-      CanUseGeometryMapper(target)
+      CanUseGeometryMapper(*target)
           ? target->GetPropertyContainer(nullptr, &container_properties)
           : nullptr;
   gfx::Transform target_to_document_transform;
@@ -654,7 +655,7 @@ bool IntersectionGeometry::ApplyClip(const LayoutObject* root,
   if (RuntimeEnabledFeatures::IntersectionObserverIgnoreFiltersEnabled()) {
     flags |= kIgnoreFilters;
   }
-  if (CanUseGeometryMapper(target)) {
+  if (CanUseGeometryMapper(*target)) {
     flags |= kUseGeometryMapper;
   }
   if (ignore_local_clip_path) {

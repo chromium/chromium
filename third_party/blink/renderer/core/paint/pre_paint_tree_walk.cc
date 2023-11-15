@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -74,7 +75,7 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
 
   bool updates_executed = root_frame_view.ExecuteAllPendingUpdates();
   if (updates_executed) {
-    needs_invalidate_chrome_client_ = true;
+    needs_invalidate_chrome_client_and_intersection_ = true;
   }
 
 #if DCHECK_IS_ON()
@@ -87,9 +88,15 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
   // If the page has anything changed, we need to inform the chrome client
   // so that the client will initiate repaint of the contents if needed (e.g.
   // when this page is embedded as a non-composited content of another page).
-  if (needs_invalidate_chrome_client_) {
-    if (auto* client = root_frame_view.GetChromeClient())
+  if (needs_invalidate_chrome_client_and_intersection_) {
+    if (auto* client = root_frame_view.GetChromeClient()) {
       client->InvalidateContainer();
+    }
+    // TODO(wangxianzhu): For now we call this whenever there has been any
+    // paint property change or paint invalidation. If this shows up as a
+    // performance issue, we should exclude scroll, effect and non-layout
+    // paint invalidations for v1 intersection observations.
+    root_frame_view.InvalidateIntersectionObservations();
   }
 }
 
@@ -546,15 +553,16 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
   if (paint_invalidator_.InvalidatePaint(
           object, pre_paint_info,
           base::OptionalToPtr(context.tree_builder_context),
-          paint_invalidator_context))
-    needs_invalidate_chrome_client_ = true;
+          paint_invalidator_context)) {
+    needs_invalidate_chrome_client_and_intersection_ = true;
+  }
 
   InvalidatePaintForHitTesting(object, context);
 
   if (context.tree_builder_context) {
     property_tree_builder->UpdateForChildren();
     property_tree_builder->IssueInvalidationsAfterUpdate();
-    needs_invalidate_chrome_client_ |=
+    needs_invalidate_chrome_client_and_intersection_ |=
         property_tree_builder->PropertiesChanged();
   }
 }

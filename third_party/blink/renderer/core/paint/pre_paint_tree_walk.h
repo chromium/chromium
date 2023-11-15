@@ -242,7 +242,7 @@ class CORE_EXPORT PrePaintTreeWalk final {
   // CollectMissableChildren() and WalkMissedChildren().
   HeapHashSet<Member<const NGPhysicalFragment>> pending_missables_;
 
-  bool needs_invalidate_chrome_client_ = false;
+  bool needs_invalidate_chrome_client_and_intersection_ = false;
 
   FRIEND_TEST_ALL_PREFIXES(PrePaintTreeWalkTest, ClipRects);
 };

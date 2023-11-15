@@ -85,7 +85,10 @@ class CORE_EXPORT IntersectionGeometry {
     bool valid = false;
   };
 
+  static const LayoutObject* GetTargetLayoutObject(
+      const Element& target_element);
   static const LayoutObject* GetExplicitRootLayoutObject(const Node& root_node);
+  static bool CanUseGeometryMapper(const LayoutObject&);
 
   // If `root_geometry` is nullopt, it will be emplaced with `root` and
   // `root_margin`. The caller can call this constructor again with the same
@@ -178,8 +181,6 @@ class CORE_EXPORT IntersectionGeometry {
     HeapVector<Member<const LayoutBox>, 2> intermediate_scrollers;
 
    private:
-    static const LayoutObject* GetTargetLayoutObject(
-        const Element& target_element);
     const LayoutObject* GetRootLayoutObject(const Node* root_node) const;
     void ComputeRelationship(bool root_is_implicit, bool has_scroll_margin);
   };

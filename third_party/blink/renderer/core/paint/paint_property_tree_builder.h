@@ -231,6 +231,11 @@ struct PaintPropertyTreeBuilderContext final {
 
   unsigned composited_scrolling_preference : 2;
 
+  // This propagates to descendants (but not through isolations) to capture
+  // the situation of added/removed transform/clip affecting property tree
+  // states.
+  unsigned transform_or_clip_added_or_removed : 1;
+
   // This is always recalculated in PaintPropertyTreeBuilder::UpdateForSelf()
   // which overrides the inherited value.
   CompositingReasons direct_compositing_reasons = CompositingReason::kNone;
@@ -312,6 +317,11 @@ struct PaintPropertiesChangeInfo {
   PaintPropertyChangeType Max() const {
     return std::max(
         {transform_changed, clip_changed, effect_changed, scroll_changed});
+  }
+
+  bool TransformOrClipAddedOrRemoved() const {
+    return transform_changed >= PaintPropertyChangeType::kNodeAddedOrRemoved ||
+           clip_changed >= PaintPropertyChangeType::kNodeAddedOrRemoved;
   }
 };
 

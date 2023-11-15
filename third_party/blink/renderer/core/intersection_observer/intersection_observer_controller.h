@@ -73,6 +73,10 @@ class IntersectionObserverController
     return tracked_implicit_root_observations_.size();
   }
 
+  // Returns true if any IntersectionObservation has invalidated cached rects
+  // since the last update.
+  bool InvalidateCachedRectsIfNeeded();
+
  private:
   void PostTaskToDeliverNotifications();
 

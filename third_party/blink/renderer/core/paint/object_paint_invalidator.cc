@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 
@@ -24,6 +25,28 @@ void ObjectPaintInvalidator::CheckPaintLayerNeedsRepaint() {
 void ObjectPaintInvalidator::SlowSetPaintingLayerNeedsRepaint() {
   if (PaintLayer* painting_layer = object_.PaintingLayer())
     painting_layer->SetNeedsRepaint();
+}
+
+void ObjectPaintInvalidator::InvalidateDisplayItemClient(
+    const DisplayItemClient& client,
+    PaintInvalidationReason reason) {
+#if DCHECK_IS_ON()
+  // It's caller's responsibility to ensure PaintingLayer's NeedsRepaint is
+  // set. Don't set the flag here because getting PaintLayer has cost and the
+  // caller can use various ways (e.g.
+  // PaintInvalidatinContext::painting_layer) to reduce the cost.
+  CheckPaintLayerNeedsRepaint();
+#endif
+  TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("blink.invalidation"),
+                       "InvalidateDisplayItemClient", TRACE_EVENT_SCOPE_GLOBAL,
+                       "client", client.DebugName().Utf8(), "reason",
+                       PaintInvalidationReasonToString(reason));
+  client.Invalidate(reason);
+
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
+      &client == &object_ && IsLayoutPaintInvalidationReason(reason)) {
+    object_.GetMutableForPainting().InvalidateIntersectionObserverCachedRects();
+  }
 }
 
 DISABLE_CFI_PERF

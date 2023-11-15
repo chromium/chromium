@@ -1980,7 +1980,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // and preferred width recalc. Also invalidates shaping on all text nodes.
   virtual void InvalidateSubtreeLayoutForFontUpdates();
 
-  void InvalidateIntersectionObserverCachedRects();
+  void DeprecatedInvalidateIntersectionObserverCachedRects();
 
   // Mark elements with a principal box and a computed position-fallback
   // different from 'none' for layout when @position-fallback rules are removed
@@ -3701,6 +3701,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 
  private:
+  void InvalidateIntersectionObserverCachedRects();
+
   gfx::QuadF LocalToAncestorQuadInternal(const gfx::QuadF&,
                                          const LayoutBoxModelObject* ancestor,
                                          MapCoordinatesFlags = 0) const;
