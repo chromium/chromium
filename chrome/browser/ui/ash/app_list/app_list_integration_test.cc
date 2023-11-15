@@ -17,9 +17,13 @@ namespace {
 
 using AppListIntegrationTest = InteractiveAshTest;
 
-IN_PROC_BROWSER_TEST_F(AppListIntegrationTest, OpenAndClose) {
+// Basic smoke test of the bubble launcher.
+// Contacts: chromeos-launcher@google.com, chromeos-sw-engprod@google.com
+// Ported from Tast by: jamescook@chromium.org
+// BugComponent: b:1288350
+IN_PROC_BROWSER_TEST_F(AppListIntegrationTest, BubbleSmoke) {
   base::AddFeatureIdTagToTestResult(
-      "screenplay-869e4d5b-a6f9-42fb-9509-03d57c04976e");
+      "screenplay-90e4fecc-d2ea-40dc-b9db-eb9d61089e22");
 
   SetupContextWidget();
 
