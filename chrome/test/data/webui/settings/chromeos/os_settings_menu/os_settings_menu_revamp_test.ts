@@ -319,15 +319,26 @@ suite('<os-settings-menu>', () => {
 
     setup(() => {
       bluetoothConfig = new FakeBluetoothConfig();
+      bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
       setBluetoothConfigForTesting(bluetoothConfig);
     });
 
-    test('Description is not shown when no devices are connected', async () => {
+    test('Description shows "Off" when bluetooth is off', async () => {
+      bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ false);
       await createMenu();
 
       const bluetoothMenuItem = getBluetoothMenuItem();
-      assertEquals('', bluetoothMenuItem.sublabel);
+      assertEquals('Off', bluetoothMenuItem.sublabel);
     });
+
+    test(
+        'Description shows "On" when bluetooth is on and no devices are connected',
+        async () => {
+          await createMenu();
+
+          const bluetoothMenuItem = getBluetoothMenuItem();
+          assertEquals('On', bluetoothMenuItem.sublabel);
+        });
 
     test(
         'Description shows device name for a single connected device',
@@ -352,7 +363,7 @@ suite('<os-settings-menu>', () => {
       await createMenu();
 
       const bluetoothMenuItem = getBluetoothMenuItem();
-      assertEquals('', bluetoothMenuItem.sublabel);
+      assertEquals('On', bluetoothMenuItem.sublabel);
 
       // Connect a bluetooth mouse.
       bluetoothConfig.appendToPairedDeviceList([bluetoothMouse]);
@@ -372,7 +383,11 @@ suite('<os-settings-menu>', () => {
       // Disconnect the bluetooth headphones.
       bluetoothConfig.removePairedDevice(bluetoothHeadphones);
       await flushTasks();
-      assertEquals('', bluetoothMenuItem.sublabel);
+      assertEquals('On', bluetoothMenuItem.sublabel);
+
+      bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ false);
+      await flushTasks();
+      assertEquals('Off', bluetoothMenuItem.sublabel);
     });
   });
 

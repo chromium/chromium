@@ -22,7 +22,7 @@ import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome:
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {BluetoothSystemProperties, DeviceConnectionState, PairedBluetoothDeviceProperties, SystemPropertiesObserverReceiver as BluetoothPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, PairedBluetoothDeviceProperties, SystemPropertiesObserverReceiver as BluetoothPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {CrosNetworkConfigInterface, FilterType, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
@@ -634,22 +634,28 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
 
   /** Implements SystemPropertiesObserverInterface */
   onPropertiesUpdated(properties: BluetoothSystemProperties): void {
+    const isBluetoothOn =
+        properties.systemState === BluetoothSystemState.kEnabled ||
+        properties.systemState === BluetoothSystemState.kEnabling;
     const connectedDevices = properties.pairedDevices.filter(
         (device) => device.deviceProperties.connectionState ===
             DeviceConnectionState.kConnected);
-    this.updateBluetoothMenuItemDescription_(connectedDevices);
+    this.updateBluetoothMenuItemDescription_(isBluetoothOn, connectedDevices);
   }
 
   /**
    * Updates the "Bluetooth" menu item description to one of the following:
-   * - No description if no bluetooth devices are connected.
+   * - If bluetooth is off, show "Off".
+   * - If bluetooth is on but no bluetooth devices are connected, show "On".
    * - If one device is connected, show the name of the device.
    * - If there are multiple devices connected, show "N devices connected".
    */
   private updateBluetoothMenuItemDescription_(
+      isBluetoothOn: boolean,
       connectedDevices: PairedBluetoothDeviceProperties[]): void {
     if (connectedDevices.length === 0) {
-      this.bluetoothMenuItemDescription_ = '';
+      this.bluetoothMenuItemDescription_ =
+          isBluetoothOn ? this.i18n('deviceOn') : this.i18n('deviceOff');
       return;
     }
 
