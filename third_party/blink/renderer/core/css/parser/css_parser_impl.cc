@@ -2335,7 +2335,9 @@ StyleRuleBase* CSSParserImpl::ConsumeNestedRule(
                                   parent_rule_for_nesting);
   }
   parsed_properties_ = std::move(outer_parsed_properties);
-  context_->Count(WebFeature::kCSSNesting);
+  if (child) {
+    context_->Count(WebFeature::kCSSNesting);
+  }
   return child;
 }
 
