@@ -1237,9 +1237,8 @@ void PinningManager::EnableDocsOffline() {
             << "Failed to enable Docs offline: " << error << " with status "
             << Quote(status);
         VLOG(1) << "Docs offline enablement status: " << Quote(status);
-        base::UmaHistogramExactLinear(
-            "FileBrowser.GoogleDrive.BulkPinning.EnableDocsOfflineResult",
-            1 - error, 2 - drive::FILE_ERROR_MAX);
+        base::UmaHistogramEnumeration(
+            "FileBrowser.GoogleDrive.BulkPinning.EnableDocsOffline", status);
       }));
 }
 

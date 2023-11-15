@@ -17052,6 +17052,24 @@ Called by update_debug_scenarios.py.-->
   <int value="3" label="Keyboard"/>
 </enum>
 
+<enum name="DocsOfflineEnableStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Already enabled"/>
+  <int value="3" label="Unknown error"/>
+  <int value="4" label="Disable unsupported"/>
+  <int value="5" label="Offline eligible"/>
+  <int value="6" label="Offline ineligible - Unknown"/>
+  <int value="7" label="Offline ineligible - Other user already enabled"/>
+  <int value="8" label="Offline ineligible - DD in invalid state"/>
+  <int value="9" label="Offline ineligible - Policy disallow"/>
+  <int value="10" label="Offline ineligible - No extension"/>
+  <int value="11" label="Offline ineligible - Insufficient disk space"/>
+  <int value="12" label="Native message host error"/>
+  <int value="13" label="Native message client error"/>
+  <int value="14" label="System error"/>
+</enum>
+
 <enum name="DocumentPolicyFeature">
 <!-- Generated from third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom.
 Called by update_document_policy_enum.py.-->
