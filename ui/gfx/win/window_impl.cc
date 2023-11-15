@@ -36,18 +36,23 @@ const wchar_t* const WindowImpl::kBaseClassName = L"Chrome_WidgetWin_";
 
 // WindowImpl class information used for registering unique windows.
 struct ClassInfo {
-  ClassInfo(int style, HICON icon, HICON small_icon)
-      : style(style), icon(icon), small_icon(small_icon) {}
+  ClassInfo(int style, HICON icon, HICON small_icon, const wchar_t* class_name)
+      : style(style),
+        icon(icon),
+        small_icon(small_icon),
+        class_name(class_name) {}
 
   // Compares two ClassInfos. Returns true if all members match.
   bool Equals(const ClassInfo& other) const {
     return (other.style == style && other.icon == icon &&
-            other.small_icon == small_icon);
+            other.small_icon == small_icon &&
+            lstrcmp(other.class_name, class_name) == 0);
   }
 
   UINT style;
   HICON icon;
   HICON small_icon;
+  const wchar_t* class_name;
 };
 
 // WARNING: this class may be used on multiple threads.
@@ -128,8 +133,10 @@ ATOM ClassRegistrar::RetrieveClassAtom(const ClassInfo& class_info) {
   }
 
   // No class found, need to register one.
-  std::wstring name = std::wstring(WindowImpl::kBaseClassName) +
-                      base::NumberToWString(registered_count_++);
+  std::wstring name = class_info.class_name
+                          ? class_info.class_name
+                          : std::wstring(WindowImpl::kBaseClassName) +
+                                base::NumberToWString(registered_count_++);
 
   WNDCLASSEX window_class;
   base::win::InitializeWindowClass(
@@ -204,9 +211,8 @@ void WindowImpl::Init(HWND parent, const Rect& bounds) {
 
   ATOM atom = GetWindowClassAtom();
   auto weak_this = weak_factory_.GetWeakPtr();
-  HWND hwnd = CreateWindowEx(window_ex_style_,
-                             reinterpret_cast<wchar_t*>(atom), NULL,
-                             window_style_, x, y, width, height,
+  HWND hwnd = CreateWindowEx(window_ex_style_, reinterpret_cast<wchar_t*>(atom),
+                             window_name_, window_style_, x, y, width, height,
                              parent, NULL, NULL, this);
   const DWORD create_window_error = ::GetLastError();
 
@@ -267,6 +273,10 @@ LRESULT WindowImpl::OnWndProc(UINT message, WPARAM w_param, LPARAM l_param) {
   if (!ProcessWindowMessage(hwnd, message, w_param, l_param, result))
     result = DefWindowProc(hwnd, message, w_param, l_param);
 
+  if (message == WM_NCDESTROY) {
+    OnFinalMessage(hwnd);
+  }
+
   return result;
 }
 
@@ -305,7 +315,7 @@ LRESULT CALLBACK WindowImpl::WndProc(HWND hwnd,
 ATOM WindowImpl::GetWindowClassAtom() {
   HICON icon = GetDefaultWindowIcon();
   HICON small_icon = GetSmallWindowIcon();
-  ClassInfo class_info(initial_class_style(), icon, small_icon);
+  ClassInfo class_info(initial_class_style(), icon, small_icon, class_name_);
   return ClassRegistrar::GetInstance()->RetrieveClassAtom(class_info);
 }
 

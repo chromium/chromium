@@ -72,6 +72,10 @@ class GFX_EXPORT WindowImpl : public MessageMapInterface {
   void set_window_ex_style(DWORD style) { window_ex_style_ = style; }
   DWORD window_ex_style() const { return window_ex_style_; }
 
+  void set_window_name(const wchar_t* name) { window_name_ = name; }
+
+  void set_window_class_name(const wchar_t* name) { class_name_ = name; }
+
   // Sets the class style to use. The default is CS_DBLCLKS.
   void set_initial_class_style(UINT class_style) {
     // We dynamically generate the class name, so don't register it globally!
@@ -85,6 +89,9 @@ class GFX_EXPORT WindowImpl : public MessageMapInterface {
  protected:
   // Handles the WndProc callback for this object.
   virtual LRESULT OnWndProc(UINT message, WPARAM w_param, LPARAM l_param);
+
+  // Called after receiving the last message (typically WM_NCDESTROY).
+  virtual void OnFinalMessage(HWND window) {}
 
   // Subclasses must call this method from their destructors to ensure that
   // this object is properly disassociated from the HWND during destruction,
@@ -115,6 +122,12 @@ class GFX_EXPORT WindowImpl : public MessageMapInterface {
 
   // Window Extended Styles used when creating the window.
   DWORD window_ex_style_ = 0;
+
+  // Name of the windows class to use. Otherwise one will be generated.
+  const wchar_t* class_name_ = nullptr;
+
+  // Name of the widow to use.  Otherwise it will be null.
+  const wchar_t* window_name_ = nullptr;
 
   // Style of the class to use.
   UINT class_style_;
