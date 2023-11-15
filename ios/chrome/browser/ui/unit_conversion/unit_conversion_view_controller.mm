@@ -416,11 +416,19 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
                       children:menuItemsArray];
 }
 
-// Invoked when the value of textfield is changed.
-- (void)textFieldDidChange:(UITextField*)textField {
+// Invoked when the value of the source unit textfield is changed.
+- (void)sourceUnitFieldDidChange:(UITextField*)textField {
   _sourceUnitValueField = [textField.text copy];
   self.unitValue = [_sourceUnitValueField doubleValue];
   [self.mutator sourceUnitValueFieldDidChange:_sourceUnitValueField
+                                   sourceUnit:_sourceUnit
+                                   targetUnit:_targetUnit];
+}
+
+// Invoked when the value of the target unit textfield is changed.
+- (void)targetUnitFieldDidChange:(UITextField*)textField {
+  _targetUnitValueField = [textField.text copy];
+  [self.mutator targetUnitValueFieldDidChange:_targetUnitValueField
                                    sourceUnit:_sourceUnit
                                    targetUnit:_targetUnit];
 }
@@ -481,13 +489,15 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
       cell.unitValueTextField.accessibilityIdentifier =
           kSourceUnitFieldIdentifier;
       [cell.unitValueTextField addTarget:self
-                                  action:@selector(textFieldDidChange:)
+                                  action:@selector(sourceUnitFieldDidChange:)
                         forControlEvents:UIControlEventEditingChanged];
     } else if (indexPath.section == kTargetSection) {
       cell.unitValueTextField.text = _targetUnitValueField;
       cell.unitValueTextField.accessibilityIdentifier =
           kTargetUnitFieldIdentifier;
-      cell.unitValueTextField.enabled = NO;
+      [cell.unitValueTextField addTarget:self
+                                  action:@selector(targetUnitFieldDidChange:)
+                        forControlEvents:UIControlEventEditingChanged];
     } else {
       NOTREACHED_NORETURN();
     }

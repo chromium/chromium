@@ -29,6 +29,11 @@
                            sourceUnit:(NSUnit*)sourceUnit
                            targetUnit:(NSUnit*)targetUnit;
 
+// Notifies the mutator of a target unit value change.
+- (void)targetUnitValueFieldDidChange:(NSString*)targetUnitValueField
+                           sourceUnit:(NSUnit*)sourceUnit
+                           targetUnit:(NSUnit*)targetUnit;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_MUTATOR_H_

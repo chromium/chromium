@@ -18,6 +18,8 @@
   BOOL _unitTypeChanged;
   // A boolean to track if the source unit value has changed.
   BOOL _sourceUnitValueChanged;
+  // A boolean to track if the target unit value has changed.
+  BOOL _targetUnitValueChanged;
 
   // An item to track the source unit change before the unit type is changed,
   // it's initialised with the value `kUnchanged` and store the first change
@@ -39,6 +41,7 @@
   if (self) {
     _unitTypeChanged = NO;
     _sourceUnitValueChanged = NO;
+    _targetUnitValueChanged = NO;
     _sourceUnitChangedBeforeUnitType = UnitConversionActionTypes::kUnchanged;
     _sourceUnitChangedAfterUnitType = UnitConversionActionTypes::kUnchanged;
     _targetUnitChanged = UnitConversionActionTypes::kUnchanged;
@@ -166,6 +169,31 @@
       _sourceUnitValueChanged = YES;
       base::RecordAction(
           base::UserMetricsAction("IOS.UnitConversion.SourceUnitValueChange"));
+    }
+  }
+}
+
+- (void)targetUnitValueFieldDidChange:(NSString*)targetUnitValueField
+                           sourceUnit:(NSUnit*)sourceUnit
+                           targetUnit:(NSUnit*)targetUnit {
+  NSNumber* unitValueNumber = [self numberFromString:targetUnitValueField];
+  if (!unitValueNumber) {
+    return;
+  }
+  double unitValue = unitValueNumber.doubleValue;
+  NSMeasurement* targetUnitMeasurement =
+      [[NSMeasurement alloc] initWithDoubleValue:unitValue unit:targetUnit];
+  if ([targetUnitMeasurement canBeConvertedToUnit:sourceUnit]) {
+    NSMeasurement* sourceUnitMeasurement =
+        [targetUnitMeasurement measurementByConvertingToUnit:sourceUnit];
+    [self.consumer updateSourceUnitValue:sourceUnitMeasurement.doubleValue
+                                  reload:YES];
+    // Record only the first targetUnitValueChange before any change of the unit
+    // type.
+    if (!_targetUnitValueChanged) {
+      _targetUnitValueChanged = YES;
+      base::RecordAction(
+          base::UserMetricsAction("IOS.UnitConversion.TargetUnitValueChange"));
     }
   }
 }

@@ -17,13 +17,15 @@ namespace {
 
 // Source and target unit values for testing.
 const double kSourceUnitValue = 1;
+const double kExpectedSourceUnitValue = 1;
 const double kExpectedTargetUnitValue = 1000;
 
-// Source unit value field in valid format.
+// Source and target units value fields in valid format.
 NSString* kValidSourceUnitValueField = @"1";
+NSString* kValidTargetUnitValueField = @"1000";
 
-// Source unit value field in invalid format.
-NSString* kInvalidSourceUnitValueField = @"&1";
+// Source/Target unit value field in invalid format.
+NSString* kInvalidUnitValueField = @"&1";
 
 }  // namespace
 
@@ -297,9 +299,41 @@ TEST_F(UnitConversionMediatorTest, TestInvalidSourceUnitValueFieldChange) {
   mediator_.consumer = consumer_mock;
   NSUnitMass* source_unit = [NSUnitMass kilograms];
   NSUnitMass* target_unit = [NSUnitMass grams];
-  [mediator_ sourceUnitValueFieldDidChange:kInvalidSourceUnitValueField
+  [mediator_ sourceUnitValueFieldDidChange:kInvalidUnitValueField
                                 sourceUnit:source_unit
                                 targetUnit:target_unit];
+}
+
+// Tests that the target field unit is handled properly when the string to
+// NSNumber cast is possible.
+TEST_F(UnitConversionMediatorTest, TestValidTargetUnitValueFieldChange) {
+  base::UserActionTester user_action_tester;
+  id consumer_mock = OCMStrictProtocolMock(@protocol(UnitConversionConsumer));
+  mediator_.consumer = consumer_mock;
+  NSUnitMass* source_unit = [NSUnitMass kilograms];
+  NSUnitMass* target_unit = [NSUnitMass grams];
+  OCMExpect([consumer_mock updateSourceUnitValue:kExpectedSourceUnitValue
+                                          reload:YES]);
+
+  [mediator_ targetUnitValueFieldDidChange:kValidTargetUnitValueField
+                                sourceUnit:source_unit
+                                targetUnit:target_unit];
+  [mediator_ reportMetrics];
   // Test.
   EXPECT_OCMOCK_VERIFY(consumer_mock);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "IOS.UnitConversion.TargetUnitValueChange"),
+            1);
+}
+
+// Tests that no update nor conversion is taking place when the target unit
+// field value is invalid.
+TEST_F(UnitConversionMediatorTest, TestInvalidTargetUnitValueFieldChange) {
+  id consumer_mock = OCMStrictProtocolMock(@protocol(UnitConversionConsumer));
+  mediator_.consumer = consumer_mock;
+  NSUnitMass* source_unit = [NSUnitMass kilograms];
+  NSUnitMass* target_unit = [NSUnitMass grams];
+  [mediator_ targetUnitValueFieldDidChange:kInvalidUnitValueField
+                                sourceUnit:source_unit
+                                targetUnit:target_unit];
 }

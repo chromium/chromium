@@ -12965,6 +12965,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.UnitConversion.TargetUnitValueChange">
+  <owner>erahmaoui@google.com</owner>
+  <owner>olivierrobin@google.com</owner>
+  <description>
+    Recorded the first time (between the presentation and the dismissal of the
+    unit conversion view controller) the user changes the target unit value
+    field of a unit conversion view controller. iOS only.
+  </description>
+</action>
+
 <action name="IOS.UnitConversion.UnitTypeChange">
   <owner>erahmaoui@google.com</owner>
   <description>
