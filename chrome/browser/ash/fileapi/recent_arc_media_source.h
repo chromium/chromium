@@ -26,7 +26,12 @@ class RecentFile;
 // All member functions must be called on the UI thread.
 class RecentArcMediaSource : public RecentSource {
  public:
-  explicit RecentArcMediaSource(Profile* profile);
+  // Creates a recent file sources that scans Arc media. The `profile` is used
+  // to create scanners for all known media roots (Documents, Movies, etc.). The
+  // `max_files` parameter limits the maximum number of files returned by this
+  // source to the callback specified in the parameters of the GetRecentFiles
+  // method.
+  RecentArcMediaSource(Profile* profile, size_t max_files);
 
   RecentArcMediaSource(const RecentArcMediaSource&) = delete;
   RecentArcMediaSource& operator=(const RecentArcMediaSource&) = delete;
@@ -59,6 +64,8 @@ class RecentArcMediaSource : public RecentSource {
 
   int num_inflight_roots_ = 0;
   std::vector<RecentFile> files_;
+
+  size_t max_files_;
 
   base::WeakPtrFactory<RecentArcMediaSource> weak_ptr_factory_{this};
 };

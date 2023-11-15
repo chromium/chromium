@@ -337,8 +337,8 @@ bool RecentArcMediaSource::MediaRoot::MatchesFileType(
   }
 }
 
-RecentArcMediaSource::RecentArcMediaSource(Profile* profile)
-    : profile_(profile) {
+RecentArcMediaSource::RecentArcMediaSource(Profile* profile, size_t max_files)
+    : profile_(profile), max_files_(max_files) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const char* root_id : kMediaDocumentsProviderRootIds) {
     roots_.emplace_back(std::make_unique<MediaRoot>(root_id, profile_));
@@ -382,9 +382,8 @@ void RecentArcMediaSource::GetRecentFiles(Params params) {
   for (auto& root : roots_) {
     root->GetRecentFiles(
         Params(params_.value().file_system_context(), params_.value().origin(),
-               params_.value().max_files(), params_.value().query(),
-               params_.value().cutoff_time(), params_.value().end_time(),
-               params_.value().file_type(),
+               params_.value().query(), params_.value().cutoff_time(),
+               params_.value().end_time(), params_.value().file_type(),
                base::BindOnce(&RecentArcMediaSource::OnGetRecentFilesForRoot,
                               weak_ptr_factory_.GetWeakPtr())));
   }
@@ -416,8 +415,13 @@ void RecentArcMediaSource::OnComplete() {
 
   Params params = std::move(params_.value());
   params_.reset();
-  std::vector<RecentFile> files = std::move(files_);
-  files_.clear();
+  std::vector<RecentFile> files;
+  files.swap(files_);
+
+  std::sort(files.begin(), files.end(), RecentFileComparator());
+  if (files.size() > max_files_) {
+    files.resize(max_files_);
+  }
   std::move(params.callback()).Run(std::move(files));
 }
 

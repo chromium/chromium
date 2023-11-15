@@ -32,8 +32,8 @@ class RecentFile;
 // All member functions must be called on the UI thread.
 class RecentSource {
  public:
-  using GetRecentFilesCallback =
-      base::OnceCallback<void(std::vector<RecentFile> files)>;
+  typedef base::OnceCallback<void(std::vector<RecentFile> files)>
+      GetRecentFilesCallback;
 
   // File types to filter the results of GetRecentFiles().
   enum class FileType {
@@ -49,7 +49,6 @@ class RecentSource {
    public:
     Params(storage::FileSystemContext* file_system_context,
            const GURL& origin,
-           size_t max_files,
            const std::string& query,
            const base::Time& cutoff_time,
            const base::TimeTicks& end_time,
@@ -69,11 +68,6 @@ class RecentSource {
     // Origin of external file system URLs.
     // E.g. "chrome-extension://<extension-ID>/"
     const GURL& origin() const { return origin_; }
-
-    // Maximum number of files a RecentSource is expected to return. It is fine
-    // to return more files than requested here, but excessive items will be
-    // filtered out by RecentModel.
-    size_t max_files() const { return max_files_; }
 
     // The query to be applied to recent files to further narrow the returned
     // matches.
@@ -103,7 +97,6 @@ class RecentSource {
    private:
     scoped_refptr<storage::FileSystemContext> file_system_context_;
     GURL origin_;
-    size_t max_files_;
     std::string query_;
     base::Time cutoff_time_;
     FileType file_type_;

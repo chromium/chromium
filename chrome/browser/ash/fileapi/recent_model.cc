@@ -40,20 +40,22 @@ constexpr base::TimeDelta kCacheExpiration = base::Seconds(10);
 constexpr size_t kMaxFiles = 1000u;
 
 std::vector<std::unique_ptr<RecentSource>> CreateDefaultSources(
-    Profile* profile) {
+    Profile* profile,
+    size_t max_files) {
   std::vector<std::unique_ptr<RecentSource>> sources;
-  sources.emplace_back(std::make_unique<RecentArcMediaSource>(profile));
+  sources.emplace_back(
+      std::make_unique<RecentArcMediaSource>(profile, max_files));
   // Crostini.
   sources.emplace_back(std::make_unique<RecentDiskSource>(
       file_manager::util::GetCrostiniMountPointName(profile),
-      true /* ignore_dotfiles */, 4 /* max_depth */,
+      true /* ignore_dotfiles */, 4 /* max_depth */, max_files,
       "FileBrowser.Recent.LoadCrostini"));
   // Downloads / MyFiles.
   sources.emplace_back(std::make_unique<RecentDiskSource>(
       file_manager::util::GetDownloadsMountPointName(profile),
-      true /* ignore_dotfiles */, 0 /* max_depth unlimited */,
+      true /* ignore_dotfiles */, 0 /* max_depth unlimited */, max_files,
       "FileBrowser.Recent.LoadDownloads"));
-  sources.emplace_back(std::make_unique<RecentDriveSource>(profile));
+  sources.emplace_back(std::make_unique<RecentDriveSource>(profile, max_files));
 
   if (base::FeatureList::IsEnabled(ash::features::kFSPsInRecents)) {
     file_manager::VolumeManager* volume_manager =
@@ -72,7 +74,7 @@ std::vector<std::unique_ptr<RecentSource>> CreateDefaultSources(
       }
       sources.emplace_back(std::make_unique<RecentDiskSource>(
           volume->mount_path().BaseName().AsUTF8Unsafe(),
-          /*ignore_dot_files=*/true, /*max_depth=*/0,
+          /*ignore_dot_files=*/true, /*max_depth=*/0, max_files,
           "FileBrowser.Recent.LoadFileSystemProvider"));
     }
   }
@@ -90,7 +92,7 @@ std::unique_ptr<RecentModel> RecentModel::CreateForTest(
 }
 
 RecentModel::RecentModel(Profile* profile)
-    : RecentModel(CreateDefaultSources(profile), kMaxFiles) {}
+    : RecentModel(CreateDefaultSources(profile, kMaxFiles), kMaxFiles) {}
 
 RecentModel::RecentModel(std::vector<std::unique_ptr<RecentSource>> sources,
                          size_t max_files)
@@ -169,8 +171,7 @@ void RecentModel::GetRecentFiles(
 
   for (const auto& source : sources_) {
     source->GetRecentFiles(RecentSource::Params(
-        file_system_context, origin, accumulator_.max_capacity(), query,
-        cutoff_time, end_time, file_type,
+        file_system_context, origin, query, cutoff_time, end_time, file_type,
         base::BindOnce(&RecentModel::OnGetRecentFiles,
                        weak_ptr_factory_.GetWeakPtr(), run_on_sequence_id,
                        cutoff_time, search_criteria)));

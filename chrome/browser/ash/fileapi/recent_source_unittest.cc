@@ -25,7 +25,7 @@ class RecentSourceTest : public testing::Test {
 };
 
 TEST_F(RecentSourceTest, NeverIsLate) {
-  RecentSource::Params params(nullptr, GURL(u""), 100, "", base::Time::Max(),
+  RecentSource::Params params(nullptr, GURL(u""), "", base::Time::Max(),
                               base::TimeTicks::Max(),
                               RecentSource::FileType::kAll, base::DoNothing());
   EXPECT_FALSE(params.IsLate());
@@ -34,7 +34,7 @@ TEST_F(RecentSourceTest, NeverIsLate) {
 }
 
 TEST_F(RecentSourceTest, IsLate) {
-  RecentSource::Params params(nullptr, GURL(u""), 100, "", base::Time::Max(),
+  RecentSource::Params params(nullptr, GURL(u""), "", base::Time::Max(),
                               base::TimeTicks::Now() + base::Milliseconds(1000),
                               RecentSource::FileType::kAll, base::DoNothing());
   EXPECT_FALSE(params.IsLate());

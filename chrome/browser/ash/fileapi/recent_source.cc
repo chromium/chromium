@@ -12,7 +12,6 @@ namespace ash {
 
 RecentSource::Params::Params(storage::FileSystemContext* file_system_context,
                              const GURL& origin,
-                             size_t max_files,
                              const std::string& query,
                              const base::Time& cutoff_time,
                              const base::TimeTicks& end_time,
@@ -20,7 +19,6 @@ RecentSource::Params::Params(storage::FileSystemContext* file_system_context,
                              GetRecentFilesCallback callback)
     : file_system_context_(file_system_context),
       origin_(origin),
-      max_files_(max_files),
       query_(query),
       cutoff_time_(cutoff_time),
       file_type_(file_type),

@@ -31,7 +31,7 @@ class RecentFile;
 // TODO(nya): Write unit tests.
 class RecentDriveSource : public RecentSource {
  public:
-  explicit RecentDriveSource(Profile* profile);
+  RecentDriveSource(Profile* profile, size_t max_files);
 
   RecentDriveSource(const RecentDriveSource&) = delete;
   RecentDriveSource& operator=(const RecentDriveSource&) = delete;
@@ -63,6 +63,8 @@ class RecentDriveSource : public RecentSource {
   base::TimeTicks build_start_time_;
 
   std::vector<RecentFile> files_;
+
+  const size_t max_files_;
 
   mojo::Remote<drivefs::mojom::SearchQuery> search_query_;
 

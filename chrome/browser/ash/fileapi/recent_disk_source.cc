@@ -83,11 +83,13 @@ void GetMetadataOnIOThread(
 RecentDiskSource::RecentDiskSource(std::string mount_point_name,
                                    bool ignore_dotfiles,
                                    int max_depth,
+                                   size_t max_files,
                                    std::string uma_histogram_name)
     : mount_point_name_(std::move(mount_point_name)),
       ignore_dotfiles_(ignore_dotfiles),
       max_depth_(max_depth),
-      uma_histogram_name_(std::move(uma_histogram_name)) {
+      uma_histogram_name_(std::move(uma_histogram_name)),
+      accumulator_(max_files) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -113,7 +115,6 @@ void RecentDiskSource::GetRecentFiles(Params params) {
 
   params_.emplace(std::move(params));
   DCHECK(params_.has_value());
-  accumulator_ = std::make_unique<FileAccumulator>(params_.value().max_files());
 
   build_start_time_ = base::TimeTicks::Now();
 
@@ -195,7 +196,7 @@ void RecentDiskSource::OnGetMetadata(const storage::FileSystemURL& url,
 
   if (result == base::File::FILE_OK &&
       info.last_modified >= params_.value().cutoff_time()) {
-    accumulator_->Add(RecentFile(url, info.last_modified));
+    accumulator_.Add(RecentFile(url, info.last_modified));
   }
 
   --inflight_stats_;
@@ -209,8 +210,8 @@ void RecentDiskSource::OnReadOrStatFinished() {
     return;
 
   // All reads/scans completed.
-  std::vector<RecentFile> files = accumulator_->Get();
-  accumulator_.reset();
+  std::vector<RecentFile> files = accumulator_.Get();
+  accumulator_.Clear();
 
   DCHECK(!build_start_time_.is_null());
   UmaHistogramTimes(uma_histogram_name_,

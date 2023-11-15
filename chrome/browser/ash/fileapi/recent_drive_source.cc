@@ -37,7 +37,8 @@ const char kAudioMimeType[] = "audio";
 const char kImageMimeType[] = "image";
 const char kVideoMimeType[] = "video";
 
-RecentDriveSource::RecentDriveSource(Profile* profile) : profile_(profile) {
+RecentDriveSource::RecentDriveSource(Profile* profile, size_t max_files)
+    : profile_(profile), max_files_(max_files) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -90,7 +91,7 @@ void RecentDriveSource::GetRecentFiles(Params params) {
   }
 
   auto query_params = drivefs::mojom::QueryParameters::New();
-  query_params->page_size = params_->max_files();
+  query_params->page_size = max_files_;
   query_params->query_source =
       drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
   query_params->sort_field =
