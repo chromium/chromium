@@ -50,7 +50,14 @@ void ChromeArcIntentHelperDelegate::HandleUpdateAndroidSettings(
       return;
     case mojom::AndroidSetting::kGeoLocation:
     case mojom::AndroidSetting::kGeoLocationUserTriggered:
-      UpdateLocationSettings(is_enabled);
+      // This path is also executed when location change is triggered from
+      // ChromeOS. Android apps only prompt users to enable geolocation, so we
+      // can simply drop the disable events, which creates ambiguity (whether
+      // it's "Blocked for all" or "Only allowed for system services").
+      // TODO(b/310168397): Redesign to avoid "disable" event filtration.
+      if (is_enabled) {
+        UpdateLocationSettings(is_enabled);
+      }
       return;
     case mojom::AndroidSetting::kUnknown:
       break;
