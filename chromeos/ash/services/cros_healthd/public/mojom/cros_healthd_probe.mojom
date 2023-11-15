@@ -826,8 +826,8 @@ struct BluetoothDeviceInfo {
   string? modalias@4;
   // Received Signal Strength Indicator.
   NullableInt16? rssi@5;
-  // The Maximum Transmission Unit used in ATT communication.
-  NullableUint16? mtu@6;
+  // The Maximum Transmission Unit used in ATT communication. DEPRECATED.
+  NullableUint16? deprecated_mtu@6;
   // The list of the available remote services.
   array<string>? uuids@7;
   // The battery percentage of the device.
