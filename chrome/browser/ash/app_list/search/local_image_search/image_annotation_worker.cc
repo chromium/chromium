@@ -37,6 +37,7 @@ constexpr int kConfidenceThreshold = 128;  // 50% of 255 (max of ICA)
 constexpr int kOcrMinWordLength = 3;
 constexpr base::TimeDelta kInitialIndexingDelay = base::Seconds(1);
 constexpr base::TimeDelta kRetryDelay = base::Seconds(1);
+constexpr base::TimeDelta kMaxImageProcessingTime = base::Minutes(2);
 
 // These values persist to logs. Entries should not be renumbered and numeric
 // values should never be reused.
@@ -44,7 +45,9 @@ enum class Status {
   kOk = 0,
   kFailedToInitializeIca = 1,
   kFailedToInitializeOcr = 2,
-  kMaxValue = kFailedToInitializeOcr,
+  kFailedToDecodeImage = 3,
+  kImageProcessingTimeOut = 4,
+  kMaxValue = kImageProcessingTimeOut,
 };
 
 void LogStatusUma(Status status) {
@@ -386,7 +389,19 @@ void ImageAnnotationWorker::ProcessNextImage() {
 void ImageAnnotationWorker::OnDecodeImageFile(
     ImageInfo image_info,
     const gfx::ImageSkia& image_skia) {
-  DVLOG(1) << "OnDecodeImageFile. Is decoded " << !image_skia.size().IsEmpty();
+  DVLOG(1) << "OnDecodeImageFile.";
+  if (image_skia.size().IsEmpty()) {
+    LOG(ERROR) << "Failed to decode image.";
+    LogStatusUma(Status::kFailedToDecodeImage);
+    files_to_process_.pop();
+    return ProcessNextItem();
+  }
+
+  timeout_timer_.Start(
+      FROM_HERE, kMaxImageProcessingTime,
+      base::BindOnce(&ImageAnnotationWorker::OnImageProcessTimeout,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   if (use_ocr_ && use_ica_) {
     optical_character_recognizer_.ReadImage(
         *image_skia.bitmap(),
@@ -440,6 +455,7 @@ void ImageAnnotationWorker::OnPerformOcr(
 
   // OCR is the first in the pipeline.
   if (!use_ica_) {
+    timeout_timer_.Stop();
     files_to_process_.pop();
     ProcessNextItem();
   }
@@ -468,6 +484,7 @@ void ImageAnnotationWorker::OnPerformIca(
   }
 
   // ICA is the last in the pipeline.
+  timeout_timer_.Stop();
   files_to_process_.pop();
   ProcessNextItem();
 }
@@ -496,6 +513,13 @@ void ImageAnnotationWorker::FindAndRemoveDeletedFiles(
                           [&](auto path) { annotation_storage->Remove(path); });
           },
           annotation_storage_));
+}
+
+void ImageAnnotationWorker::OnImageProcessTimeout() {
+  LOG(ERROR) << "Annotators timed out.";
+  LogStatusUma(Status::kImageProcessingTimeOut);
+  files_to_process_.pop();
+  ProcessNextItem();
 }
 
 void ImageAnnotationWorker::RunFakeImageAnnotator(ImageInfo image_info) {

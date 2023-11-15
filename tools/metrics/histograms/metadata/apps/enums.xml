@@ -483,6 +483,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Ok"/>
   <int value="1" label="Failed to initialize ICA"/>
   <int value="2" label="Failed to initialize OCR"/>
+  <int value="3" label="Failed to decode image"/>
+  <int value="4" label="Image processing time out"/>
 </enum>
 
 <enum name="ItemSuggestCacheStatus">
