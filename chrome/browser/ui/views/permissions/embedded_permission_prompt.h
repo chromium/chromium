@@ -74,6 +74,7 @@ class EmbeddedPermissionPrompt
   void Acknowledge() override;
   void StopAllowing() override;
   void ShowSystemSettings() override;
+
   base::WeakPtr<permissions::PermissionPrompt::Delegate>
   GetPermissionPromptDelegate() const override;
   const std::vector<permissions::PermissionRequest*>& Requests() const override;
@@ -88,6 +89,16 @@ class EmbeddedPermissionPrompt
                                     ContentSettingsType type);
 
   void RebuildRequests();
+
+  void PromptForOsPermission();
+
+#if BUILDFLAG(IS_MAC)
+  void OnRequestSystemMediaPermissionResponse(
+      const ContentSettingsType request_type,
+      bool grouped_permissions);
+  void RequestMacOSMediaSystemPermission(const ContentSettingsType request_type,
+                                         bool grouped_permissions);
+#endif
 
   Variant embedded_prompt_variant_ = Variant::kUninitialized;
   views::ViewTracker prompt_view_tracker_;

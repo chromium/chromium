@@ -190,6 +190,11 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
     case Variant::kOsPrompt:
       prompt_view = new EmbeddedPermissionPromptShowSystemPromptView(
           browser(), weak_factory_.GetWeakPtr());
+// This view has no buttons, so the OS level prompt should be triggered at the
+// same time as the |EmbeddedPermissionPromptShowSystemPromptView|.
+#if BUILDFLAG(IS_MAC)
+      PromptForOsPermission();
+#endif
       break;
     case Variant::kOsSystemSettings:
       prompt_view = new EmbeddedPermissionPromptSystemSettingsView(
@@ -261,6 +266,7 @@ void EmbeddedPermissionPrompt::Dismiss() {
 void EmbeddedPermissionPrompt::Acknowledge() {
   // TOOO(crbug.com/1462930): Find how to distinguish between a dismiss and an
   // acknowledge.
+  CloseView();
   delegate_->FinalizeCurrentRequests();
 }
 
@@ -272,19 +278,94 @@ void EmbeddedPermissionPrompt::StopAllowing() {
 void EmbeddedPermissionPrompt::ShowSystemSettings() {
   const auto& requests = delegate()->Requests();
   CHECK_GT(requests.size(), 0U);
-
 // TODO(crbug.com/1462930) Chrome always shows the first permission in a group,
 // as it is not possible to open multiple System Setting pages. Figure out a
 // better way to handle this scenario.
 #if BUILDFLAG(IS_MAC)
-  if (requests[0]->request_type() == permissions::RequestType::kCameraStream) {
+  if (requests_[0]->request_type() == permissions::RequestType::kCameraStream) {
     OpenCameraSystemSettingsOnMacOS();
-  } else if (requests[0]->request_type() ==
+  } else if (requests_[0]->request_type() ==
              permissions::RequestType::kMicStream) {
     OpenMicSystemSettingsOnMacOS();
   }
 #endif
 }
+
+void EmbeddedPermissionPrompt::PromptForOsPermission() {
+#if BUILDFLAG(IS_MAC)
+  // We currently support <=2 grouped permissions.
+  CHECK_LE(prompt_types_.size(), 2U);
+
+  for (const auto prompt : prompt_types_) {
+    RequestMacOSMediaSystemPermission(prompt, prompt_types_.size() == 2U);
+  }
+#endif
+}
+
+#if BUILDFLAG(IS_MAC)
+void EmbeddedPermissionPrompt::OnRequestSystemMediaPermissionResponse(
+    const ContentSettingsType request_type,
+    bool grouped_permissions) {
+  system_media_permissions::SystemPermission permission,
+      other_permission =
+          system_media_permissions::SystemPermission::kNotDetermined;
+
+  if (request_type == ContentSettingsType::MEDIASTREAM_MIC) {
+    permission = system_media_permissions::CheckSystemAudioCapturePermission();
+    other_permission =
+        grouped_permissions
+            ? system_media_permissions::CheckSystemVideoCapturePermission()
+            : system_media_permissions::SystemPermission::kNotDetermined;
+  }
+
+  if (request_type == ContentSettingsType::MEDIASTREAM_CAMERA) {
+    permission = system_media_permissions::CheckSystemVideoCapturePermission();
+    other_permission =
+        grouped_permissions
+            ? system_media_permissions::CheckSystemAudioCapturePermission()
+            : system_media_permissions::SystemPermission::kNotDetermined;
+  }
+
+  switch (permission) {
+    case system_media_permissions::SystemPermission::kRestricted:
+    case system_media_permissions::SystemPermission::kDenied:
+    case system_media_permissions::SystemPermission::kAllowed:
+      // Do not finalize request until all the necessary system permissions are
+      // granted.
+      if (!grouped_permissions ||
+          other_permission !=
+              system_media_permissions::SystemPermission::kNotDetermined) {
+        CloseView();
+        delegate_->FinalizeCurrentRequests();
+      }
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
+// TODO: Refactor this logic for PEPC and other permission prompts, to avoid
+// code duplication.
+void EmbeddedPermissionPrompt::RequestMacOSMediaSystemPermission(
+    const ContentSettingsType request_type,
+    bool grouped_permissions) {
+  if (request_type == ContentSettingsType::MEDIASTREAM_MIC) {
+    system_media_permissions::RequestSystemAudioCapturePermission(
+        base::BindOnce(
+            &EmbeddedPermissionPrompt::OnRequestSystemMediaPermissionResponse,
+            weak_factory_.GetWeakPtr(), request_type, grouped_permissions));
+    return;
+  }
+
+  if (request_type == ContentSettingsType::MEDIASTREAM_CAMERA) {
+    system_media_permissions::RequestSystemVideoCapturePermission(
+        base::BindOnce(
+            &EmbeddedPermissionPrompt::OnRequestSystemMediaPermissionResponse,
+            weak_factory_.GetWeakPtr(), request_type, grouped_permissions));
+    return;
+  }
+}
+#endif
 
 void EmbeddedPermissionPrompt::PrioritizeAndMergeNewVariant(
     EmbeddedPermissionPrompt::Variant new_variant,
