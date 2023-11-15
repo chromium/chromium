@@ -17,6 +17,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -193,5 +194,8 @@ void KioskAppsButton::NotifyClick(const ui::Event& event) {
   // Run pressed callback via MenuButtonController, instead of directly.
   menu_button_controller_->Activate(&event);
 }
+
+BEGIN_METADATA(KioskAppsButton)
+END_METADATA
 
 }  // namespace ash

@@ -19,6 +19,7 @@
 #include "ash/shell_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -55,6 +56,8 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
                               public ShelfConfig::Observer,
                               public AppListModelProvider::Observer,
                               public QuickAppAccessModel::Observer {
+  METADATA_HEADER(HomeButton, ShelfControlButton)
+
  public:
   class ScopedNoClipRect {
    public:
@@ -85,8 +88,6 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
     // Called when the nudge label is animated to fully shown.
     virtual void NudgeLabelShown(HomeButton* home_button) = 0;
   };
-
-  static const char kViewClassName[];
 
   explicit HomeButton(Shelf* shelf);
 

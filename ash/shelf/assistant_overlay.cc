@@ -26,6 +26,7 @@
 #include "base/timer/timer.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -221,5 +222,8 @@ void AssistantOverlay::OnThemeChanged() {
 void AssistantOverlay::OnImplicitAnimationsCompleted() {
   scoped_no_clip_rect_.reset();
 }
+
+BEGIN_METADATA(AssistantOverlay)
+END_METADATA
 
 }  // namespace ash

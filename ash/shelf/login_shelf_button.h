@@ -15,12 +15,15 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
 
 class ASH_EXPORT LoginShelfButton : public PillButton, public ShelfObserver {
+  METADATA_HEADER(LoginShelfButton, PillButton)
+
  public:
   LoginShelfButton(PressedCallback callback,
                    int text_resource_id,

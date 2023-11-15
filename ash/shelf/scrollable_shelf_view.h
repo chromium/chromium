@@ -24,6 +24,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/geometry/linear_gradient.h"
@@ -51,6 +52,8 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
                                        public ShelfTooltipDelegate,
                                        public views::ContextMenuController,
                                        public ui::ImplicitAnimationObserver {
+  METADATA_HEADER(ScrollableShelfView, views::AccessiblePaneView)
+
  public:
   class TestObserver {
    public:
@@ -234,7 +237,6 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
   void ChildPreferredSizeChanged(views::View* child) override;
-  const char* GetClassName() const override;
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;

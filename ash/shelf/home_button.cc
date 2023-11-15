@@ -39,6 +39,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -118,6 +119,8 @@ constexpr base::TimeDelta kQuickAppFadeOutDuration = base::Milliseconds(100);
 }  // namespace
 
 class HomeButton::ButtonImageView : public views::View {
+  METADATA_HEADER(ButtonImageView, views::View)
+
  public:
   explicit ButtonImageView(HomeButtonController* button_controller)
       : button_controller_(button_controller) {
@@ -262,8 +265,8 @@ class HomeButton::ButtonImageView : public views::View {
   bool toggled_ = false;
 };
 
-// static
-const char HomeButton::kViewClassName[] = "ash/HomeButton";
+BEGIN_METADATA(HomeButton, ButtonImageView, views::View)
+END_METADATA
 
 // HomeButton::ScopedNoClipRect ------------------------------------------------
 
@@ -403,8 +406,10 @@ std::u16string HomeButton::GetTooltipText(const gfx::Point& p) const {
   return IsShowingAppList() ? std::u16string() : GetAccessibleName();
 }
 
+// TODO(http://b/311054594): Remove GetClassName and update launcher.BubbleSmoke
+// test
 const char* HomeButton::GetClassName() const {
-  return kViewClassName;
+  return "ash/HomeButton";
 }
 
 void HomeButton::OnShelfButtonAboutToRequestFocusFromTabTraversal(
@@ -1109,5 +1114,8 @@ gfx::Rect HomeButton::GetExpandableContainerClipRectToHomeButton() {
 
   return clip_rect;
 }
+
+BEGIN_METADATA(HomeButton)
+END_METADATA
 
 }  // namespace ash

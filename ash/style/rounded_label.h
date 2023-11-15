@@ -5,12 +5,15 @@
 #ifndef ASH_STYLE_ROUNDED_LABEL_H_
 #define ASH_STYLE_ROUNDED_LABEL_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
 
 // A rounded background with a label containing text we want to display.
 class RoundedLabel : public views::Label {
+  METADATA_HEADER(RoundedLabel, views::Label)
+
  public:
   RoundedLabel(int horizontal_padding,
                int vertical_padding,

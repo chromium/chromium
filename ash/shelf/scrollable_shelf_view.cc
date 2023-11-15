@@ -26,6 +26,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -90,6 +91,8 @@ gfx::Insets GetMirroredInsets(const gfx::Insets& insets) {
 class ScrollableShelfView::ScrollableShelfArrowView
     : public ScrollArrowView,
       public views::ViewTargeterDelegate {
+  METADATA_HEADER(ScrollableShelfArrowView, ScrollArrowView)
+
  public:
   explicit ScrollableShelfArrowView(ArrowType arrow_type,
                                     bool is_horizontal_alignment,
@@ -143,13 +146,12 @@ class ScrollableShelfView::ScrollableShelfArrowView
   // ScrollableShelfContainerView. Then erase this empty function.
   void ScrollRectToVisible(const gfx::Rect& rect) override {}
 
-  const char* GetClassName() const override {
-    return "ScrollableShelfArrowView";
-  }
-
  private:
   const raw_ptr<Shelf, ExperimentalAsh> shelf_;
 };
+
+BEGIN_METADATA(ScrollableShelfView, ScrollableShelfArrowView, ScrollArrowView)
+END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
 // ScopedActiveInkDropCountImpl
@@ -181,6 +183,8 @@ class ScrollableShelfView::ScopedActiveInkDropCountImpl
 
 class ScrollableShelfContainerView : public ShelfContainerView,
                                      public views::ViewTargeterDelegate {
+  METADATA_HEADER(ScrollableShelfContainerView, ShelfContainerView)
+
  public:
   explicit ScrollableShelfContainerView(
       ScrollableShelfView* scrollable_shelf_view)
@@ -247,6 +251,9 @@ bool ScrollableShelfContainerView::DoesIntersectRect(
   views::View::ConvertRectToTarget(scrollable_shelf_view_, this, &bounds);
   return ToEnclosedRect(bounds).Contains(rect);
 }
+
+BEGIN_METADATA(ScrollableShelfContainerView)
+END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
 // ScrollableShelfFocusSearch
@@ -976,10 +983,6 @@ void ScrollableShelfView::ScrollRectToVisible(const gfx::Rect& rect) {
 std::unique_ptr<ui::Layer> ScrollableShelfView::RecreateLayer() {
   layer()->SetGradientMask(gfx::LinearGradient::GetEmpty());
   return views::View::RecreateLayer();
-}
-
-const char* ScrollableShelfView::GetClassName() const {
-  return "ScrollableShelfView";
 }
 
 void ScrollableShelfView::OnShelfButtonAboutToRequestFocusFromTabTraversal(
@@ -2345,5 +2348,8 @@ int ScrollableShelfView::CalculateShelfIconsPreferredLength() const {
                                            : shelf_preferred_size.height());
   return preferred_length + 2 * ShelfConfig::Get()->GetAppIconEndPadding();
 }
+
+BEGIN_METADATA(ScrollableShelfView)
+END_METADATA
 
 }  // namespace ash

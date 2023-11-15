@@ -48,6 +48,7 @@
 #include "components/account_id/account_id.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/events/types/event_type.h"
@@ -890,5 +891,8 @@ bool LoginShelfView::ShouldShowOsInstallButton() const {
 
   return true;
 }
+
+BEGIN_METADATA(LoginShelfView)
+END_METADATA
 
 }  // namespace ash

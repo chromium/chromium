@@ -79,6 +79,8 @@ constexpr SkColor kSearchIllustrationIconColorDark =
 
 // Custom No Results image view to handle color theme changes.
 class KSVNoResultsImageView : public views::ImageView {
+  METADATA_HEADER(KSVNoResultsImageView, views::ImageView)
+
  public:
   KSVNoResultsImageView()
       : dark_light_mode_controller_(ash::DarkLightModeControllerImpl::Get()) {}
@@ -105,6 +107,9 @@ class KSVNoResultsImageView : public views::ImageView {
   const raw_ptr<ash::DarkLightModeControllerImpl, ExperimentalAsh>
       dark_light_mode_controller_;
 };
+
+BEGIN_METADATA(KSVNoResultsImageView)
+END_METADATA
 
 // Creates the no search result view.
 std::unique_ptr<views::View> CreateNoSearchResultView() {

@@ -14,6 +14,7 @@
 #include "ash/shelf/login_shelf_button.h"
 #include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -24,6 +25,8 @@ namespace ash {
 // shelf. The appearance of the button is managed by it's base class.
 // The class manages the kiosk menu appearance and model.
 class ASH_EXPORT KioskAppsButton : public LoginShelfButton {
+  METADATA_HEADER(KioskAppsButton, LoginShelfButton)
+
  public:
   KioskAppsButton();
   KioskAppsButton(const KioskAppsButton&) = delete;

@@ -12,6 +12,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
@@ -86,10 +87,6 @@ gfx::PointF ShelfControlButton::GetCenterPoint() const {
   return gfx::RectF(GetLocalBounds()).CenterPoint();
 }
 
-const char* ShelfControlButton::GetClassName() const {
-  return "ash/ShelfControlButton";
-}
-
 gfx::Size ShelfControlButton::CalculatePreferredSize() const {
   return gfx::Size(ShelfConfig::Get()->control_size(),
                    ShelfConfig::Get()->control_size());
@@ -99,5 +96,8 @@ void ShelfControlButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ShelfButton::GetAccessibleNodeData(node_data);
   node_data->SetNameChecked(GetAccessibleName());
 }
+
+BEGIN_METADATA(ShelfControlButton)
+END_METADATA
 
 }  // namespace ash

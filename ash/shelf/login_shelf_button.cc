@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -111,5 +112,8 @@ void LoginShelfButton::UpdateColors(ShelfBackgroundType background_type) {
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(*icon_, icon_color));
 }
+
+BEGIN_METADATA(LoginShelfButton)
+END_METADATA
 
 }  // namespace ash
