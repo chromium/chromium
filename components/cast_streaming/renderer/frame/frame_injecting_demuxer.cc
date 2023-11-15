@@ -480,7 +480,6 @@ void FrameInjectingDemuxer::Stop() {
   if (video_stream_) {
     video_stream_.reset();
   }
-  host_ = nullptr;
 }
 
 base::TimeDelta FrameInjectingDemuxer::GetStartTime() const {
