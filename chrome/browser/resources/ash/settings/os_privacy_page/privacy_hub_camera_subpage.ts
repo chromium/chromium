@@ -209,6 +209,10 @@ export class SettingsPrivacyHubCameraSubpage extends
   private onAccessStatusRowClick_(): void {
     this.getCameraToggle_().click();
   }
+
+  private onManagePermissionsInChromeRowClick_(): void {
+    window.open('chrome://settings/content/camera');
+  }
 }
 
 declare global {

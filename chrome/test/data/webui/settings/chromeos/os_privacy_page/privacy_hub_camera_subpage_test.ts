@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl, SettingsPrivacyHubCameraSubpage} from 'chrome://os-settings/lazy_load.js';
-import {appPermissionHandlerMojom, CrToggleElement, Router, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import {appPermissionHandlerMojom, CrLinkRowElement, CrToggleElement, Router, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -330,5 +330,52 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
     await flushTasks();
 
     assertEquals(0, getAppList()!.items!.length);
+  });
+
+  function getManagePermissionsInChromeRow(): CrLinkRowElement|null {
+    return privacyHubCameraSubpage.shadowRoot!.querySelector<CrLinkRowElement>(
+        '#managePermissionsInChromeRow');
+  }
+
+  function getNoWebsiteHasAccessTextRow(): HTMLDivElement|null {
+    return privacyHubCameraSubpage.shadowRoot!.querySelector<HTMLDivElement>(
+        '#noWebsiteHasAccessText');
+  }
+
+  test('Websites section texts', async () => {
+    assertEquals(
+        privacyHubCameraSubpage.i18n('websitesSectionTitle'),
+        privacyHubCameraSubpage.shadowRoot!
+            .querySelector('#websitesSectionTitle')!.textContent!.trim());
+
+    assertEquals(
+        privacyHubCameraSubpage.i18n('manageCameraPermissionsInChromeText'),
+        getManagePermissionsInChromeRow()!.label);
+
+    mediaDevices.addDevice('videoinput', 'Fake Camera');
+    await flushTasks();
+    // Disable camera access.
+    getCameraCrToggle().click();
+    flush();
+
+    assertEquals(
+        privacyHubCameraSubpage.i18n('noWebsiteCanUseCameraText'),
+        getNoWebsiteHasAccessTextRow()!.textContent!.trim());
+  });
+
+  test('Websites section when camera allowed', () => {
+    assertTrue(!!getManagePermissionsInChromeRow());
+    assertNull(getNoWebsiteHasAccessTextRow());
+  });
+
+  test('Websites section when camera not allowed', async () => {
+    mediaDevices.addDevice('videoinput', 'Fake Camera');
+    await flushTasks();
+    // Disable camera access.
+    getCameraCrToggle().click();
+    flush();
+
+    assertNull(getManagePermissionsInChromeRow());
+    assertTrue(!!getNoWebsiteHasAccessTextRow());
   });
 });
