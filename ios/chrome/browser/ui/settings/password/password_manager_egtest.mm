@@ -3060,7 +3060,6 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
 // Tests that the save passwords in account section is shown when the user is
 // eligible.
 - (void)testSavePasswordsInAccountShownWhenEligible {
-  NSLog(@"GUJENAI");
   SavePasswordForm(@"passwordtest1", @"user1", @"https://test1.com");
 
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
