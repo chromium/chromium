@@ -282,6 +282,11 @@ ExtensionContextMenuModel::ExtensionContextMenuModel(
       delegate_(delegate),
       is_pinned_(is_pinned),
       source_(source) {
+  if (GetActiveWebContents()) {
+    origin_ =
+        url::Origin::Create(GetActiveWebContents()->GetLastCommittedURL());
+  }
+
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
     InitMenuWithFeature(extension, can_show_icon_in_toolbar);
@@ -428,8 +433,13 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       break;
     }
     case TOGGLE_SIDE_PANEL_VISIBILITY: {
-      // TODO(crbug/1500800): Page navigations can occur while the context menu
-      // is open. This needs to be handled here but testing became a problem.
+      // Do nothing if the web contents have navigated to a different origin.
+      auto* web_contents = GetActiveWebContents();
+      if (!web_contents ||
+          !origin_.IsSameOriginWith(web_contents->GetLastCommittedURL())) {
+        return;
+      }
+
       SidePanelService* const side_panel_service = GetSidePanelService();
       CHECK(side_panel_service);
 
@@ -551,9 +561,6 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
           *extension)) {
     content::WebContents* web_contents = GetActiveWebContents();
     const GURL& url = web_contents->GetLastCommittedURL();
-    // We store the origin to make sure it's the same when executing page access
-    // commands.
-    origin_ = url::Origin::Create(url);
     auto site_setting = permissions_manager->GetUserSiteSetting(origin_);
 
     if (site_setting ==
@@ -815,9 +822,6 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
       extensions_features::kExtensionsMenuAccessControl));
 
   const GURL& url = web_contents->GetLastCommittedURL();
-  // We store the origin to make sure it's the same when executing page access
-  // commands.
-  origin_ = url::Origin::Create(url);
   auto* permissions_manager = PermissionsManager::Get(profile_);
 
   // The extension wants site access but can't run on the page if it does

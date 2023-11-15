@@ -1816,6 +1816,11 @@ IN_PROC_BROWSER_TEST_F(
     OpenSidePanel_ContextMenu_GlobalPanel_ToggleSidePanelVisibility) {
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
 
+  // Intentionally navigate and commit a new tab. The first tab in the browser
+  // does not do this, this causes a failure in the origin_ CHECK since a tuple
+  // origin and an opaque origin are never the same. More info in url/origin.h.
+  OpenNewForegroundTab();
+
   {
     // Verify the "Open side panel" entry is absent if the extension does not
     // have the side panel permission.
@@ -1921,6 +1926,44 @@ IN_PROC_BROWSER_TEST_F(
         GetCommandState(
             *menu, ExtensionContextMenuModel::TOGGLE_SIDE_PANEL_VISIBILITY),
         CommandState::kAbsent);
+  }
+}
+
+// Tests that the extension context menus "(Open / Close) side panel" menu item
+// does nothing if the page navigated while the menu is open.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionOpenSidePanelBrowserTest,
+    OpenSidePanel_ContextMenu_ContextualPanel_PageNavigations) {
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+
+  scoped_refptr<const extensions::Extension> side_panel_extension =
+      LoadSidePanelExtension();
+
+  // Intentionally add a new tab in order to update the origin url in the
+  // context menus.
+  OpenNewForegroundTab();
+
+  int new_tab_id = GetCurrentTabId();
+  RunSetOptions(*side_panel_extension, /*tab_id=*/new_tab_id,
+                /*path=*/"panel_1.html",
+                /*enabled=*/true);
+
+  {
+    // Verify the "Open side panel" entry is present if the extension has the
+    // side panel permission and a contextual panel is set for the tab.
+    auto* menu = GetContextMenuForExtension(side_panel_extension->id());
+    EXPECT_EQ(GetCommandState(*menu, extensions::ExtensionContextMenuModel::
+                                         TOGGLE_SIDE_PANEL_VISIBILITY),
+              CommandState::kEnabled);
+
+    // Navigate to another page while the menu is open.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://2.com")));
+
+    // Ensure that the menu item does not open the side panel.
+    menu->ExecuteCommand(
+        extensions::ExtensionContextMenuModel::TOGGLE_SIDE_PANEL_VISIBILITY, 0);
+    EXPECT_FALSE(side_panel_coordinator()->IsSidePanelEntryShowing(
+        GetKey(side_panel_extension->id())));
   }
 }
 
