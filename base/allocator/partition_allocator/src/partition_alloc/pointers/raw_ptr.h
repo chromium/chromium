@@ -638,7 +638,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   PA_ALWAYS_INLINE constexpr raw_ptr& operator-=(Z delta_elems) {
     static_assert(
         raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
-        "cannot increment raw_ptr unless AllowPtrArithmetic trait is present.");
+        "cannot decrement raw_ptr unless AllowPtrArithmetic trait is present.");
     wrapped_ptr_ = Impl::Retreat(wrapped_ptr_, delta_elems);
     return *this;
   }
@@ -669,6 +669,11 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
                                                       Z delta_elems) {
     raw_ptr result = p;
     return result += delta_elems;
+  }
+  template <typename Z>
+  PA_ALWAYS_INLINE friend constexpr raw_ptr operator+(Z delta_elems,
+                                                      const raw_ptr& p) {
+    return p + delta_elems;
   }
   template <typename Z>
   PA_ALWAYS_INLINE friend constexpr raw_ptr operator-(const raw_ptr& p,
