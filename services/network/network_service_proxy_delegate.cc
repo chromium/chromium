@@ -366,14 +366,14 @@ net::ProxyList NetworkServiceProxyDelegate::MergeProxyRules(
     const net::ProxyList& existing_proxy_list,
     const net::ProxyList& custom_proxy_list) const {
   net::ProxyList merged_proxy_list;
-  for (const auto& existing_proxy : existing_proxy_list.GetAll()) {
-    if (existing_proxy.is_direct()) {
+  for (const auto& existing_chain : existing_proxy_list.AllChains()) {
+    if (existing_chain.is_direct()) {
       // Replace direct option with all proxies in the custom proxy list
-      for (const auto& custom_proxy : custom_proxy_list.GetAll()) {
-        merged_proxy_list.AddProxyServer(custom_proxy);
+      for (const auto& custom_chain : custom_proxy_list.AllChains()) {
+        merged_proxy_list.AddProxyChain(custom_chain);
       }
     } else {
-      merged_proxy_list.AddProxyServer(existing_proxy);
+      merged_proxy_list.AddProxyChain(existing_chain);
     }
   }
 

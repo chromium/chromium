@@ -74,6 +74,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   }
 
  private:
+  friend class NetworkServiceProxyDelegateTest;
+  FRIEND_TEST_ALL_PREFIXES(NetworkServiceProxyDelegateTest, MergeProxyRules);
+
   // Checks if this CustomProxyConfig is supporting IP Protection.
   bool IsForIpProtection();
 
