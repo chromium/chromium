@@ -62,26 +62,6 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
   CertificateViewerDialog(std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
                           std::vector<std::string> cert_nicknames);
 
-  // ui::WebDialogDelegate:
-  ui::ModalType GetDialogModalType() const override;
-  std::u16string GetDialogTitle() const override;
-  GURL GetDialogContentURL() const override;
-  void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) override;
-  void GetDialogSize(gfx::Size* size) const override;
-  std::string GetDialogArgs() const override;
-  void OnDialogShown(content::WebUI* webui) override;
-  void OnDialogClosed(const std::string& json_retval) override;
-  void OnCloseContents(content::WebContents* source,
-                       bool* out_close_dialog) override;
-  bool ShouldShowDialogTitle() const override;
-
-  std::vector<x509_certificate_model::X509CertificateModel> certs_;
-
-  // The title of the certificate viewer dialog, Certificate Viewer: CN.
-  std::u16string title_;
-
-  raw_ptr<content::WebUI, DanglingUntriaged> webui_ = nullptr;
   raw_ptr<ConstrainedWebDialogDelegate, DanglingUntriaged> delegate_ = nullptr;
 };
 
@@ -91,7 +71,7 @@ class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
  public:
   CertificateViewerDialogHandler(
       CertificateViewerDialog* dialog,
-      const std::vector<x509_certificate_model::X509CertificateModel>* certs);
+      std::vector<x509_certificate_model::X509CertificateModel> certs);
 
   CertificateViewerDialogHandler(const CertificateViewerDialogHandler&) =
       delete;
@@ -124,8 +104,7 @@ class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
   // The dialog.
   raw_ptr<CertificateViewerDialog> dialog_;
 
-  raw_ptr<const std::vector<x509_certificate_model::X509CertificateModel>>
-      certs_;
+  std::vector<x509_certificate_model::X509CertificateModel> certs_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CERTIFICATE_VIEWER_WEBUI_H_
