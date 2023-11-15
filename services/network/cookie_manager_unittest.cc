@@ -512,7 +512,7 @@ TEST_F(CookieManagerTest, GetAllCookies) {
   EXPECT_FALSE(cookies[4].IsHttpOnly());
   EXPECT_EQ(net::CookieSameSite::LAX_MODE, cookies[4].SameSite());
   EXPECT_EQ(net::COOKIE_PRIORITY_MEDIUM, cookies[4].Priority());
-  EXPECT_TRUE(cookies[4].IsSameParty());
+  EXPECT_FALSE(cookies[4].IsSameParty());
 }
 
 TEST_F(CookieManagerTest, GetAllCookiesWithAccessSemantics) {

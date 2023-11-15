@@ -176,7 +176,7 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
               ElementsAre(Property(&CanonicalCookie::IsSameParty, Eq(false)),
                           Property(&CanonicalCookie::IsSameParty, Eq(false)),
                           Property(&CanonicalCookie::IsSameParty, Eq(false)),
-                          Property(&CanonicalCookie::IsSameParty, Eq(true))));
+                          Property(&CanonicalCookie::IsSameParty, Eq(false))));
 
   EXPECT_THAT(result.cookies()[0].CreationDate().InSecondsFSinceUnixEpoch(),
               DoubleNear(now, 0.5));

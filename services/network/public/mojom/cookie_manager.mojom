@@ -183,7 +183,6 @@ struct CanonicalCookie {
   CookieSameSite site_restrictions = NO_RESTRICTION;
   CookiePriority priority = MEDIUM;
   CookieSourceScheme source_scheme = kUnset;
-  bool same_party = false;
   CookiePartitionKey? partition_key;
   // -1 because of url::PORT_UNSPECIFIED
   // url/third_party/mozilla/url_parse.h

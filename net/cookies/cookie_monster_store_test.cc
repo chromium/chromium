@@ -120,7 +120,7 @@ std::unique_ptr<CanonicalCookie> BuildCanonicalCookie(
   return CanonicalCookie::CreateUnsafeCookieForTesting(
       pc.Name(), pc.Value(), "." + url.host(), cookie_path, creation_time,
       cookie_expires, base::Time(), base::Time(), pc.IsSecure(),
-      pc.IsHttpOnly(), pc.SameSite(), pc.Priority(), pc.IsSameParty());
+      pc.IsHttpOnly(), pc.SameSite(), pc.Priority(), /*same_party=*/false);
 }
 
 void AddCookieToList(const GURL& url,

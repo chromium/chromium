@@ -270,9 +270,6 @@ struct StructTraits<network::mojom::CanonicalCookieDataView,
   static net::CookieSourceScheme source_scheme(const net::CanonicalCookie& c) {
     return c.SourceScheme();
   }
-  static bool same_party(const net::CanonicalCookie& c) {
-    return c.IsSameParty();
-  }
   static const absl::optional<net::CookiePartitionKey>& partition_key(
       const net::CanonicalCookie& c) {
     return c.PartitionKey();

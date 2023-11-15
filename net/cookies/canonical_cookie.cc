@@ -385,7 +385,6 @@ CanonicalCookie::CanonicalCookie(
       httponly_(httponly),
       same_site_(same_site),
       priority_(priority),
-      same_party_(same_party),
       partition_key_(std::move(partition_key)),
       source_scheme_(source_scheme),
       source_port_(source_port) {}
@@ -684,8 +683,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
       cookie_expires, creation_time,
       /*last_update=*/base::Time::Now(), parsed_cookie.IsSecure(),
       parsed_cookie.IsHttpOnly(), samesite, parsed_cookie.Priority(),
-      parsed_cookie.IsSameParty(), cookie_partition_key, source_scheme,
-      source_port);
+      /*same_party=*/false, cookie_partition_key, source_scheme, source_port);
 
   // TODO(chlily): Log metrics.
   if (!cc->IsCanonical()) {

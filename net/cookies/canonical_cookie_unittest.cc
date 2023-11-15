@@ -76,7 +76,7 @@ TEST(CanonicalCookieTest, Constructor) {
   auto cookie2 = CanonicalCookie::CreateUnsafeCookieForTesting(
       "A", "2", ".www.example.com", "/", current_time, base::Time(),
       base::Time(), base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, true,
+      COOKIE_PRIORITY_DEFAULT, /*same_party=*/true,
       CookiePartitionKey::FromURLForTesting(GURL("https://foo.com")),
       CookieSourceScheme::kNonSecure, 65536);
   EXPECT_EQ("A", cookie2->Name());
@@ -87,7 +87,7 @@ TEST(CanonicalCookieTest, Constructor) {
   EXPECT_FALSE(cookie2->IsHttpOnly());
   EXPECT_EQ(CookieSameSite::NO_RESTRICTION, cookie2->SameSite());
   EXPECT_EQ(CookiePriority::COOKIE_PRIORITY_DEFAULT, cookie2->Priority());
-  EXPECT_TRUE(cookie2->IsSameParty());
+  EXPECT_FALSE(cookie2->IsSameParty());
   EXPECT_TRUE(cookie2->IsPartitioned());
   EXPECT_EQ(cookie2->SourceScheme(), CookieSourceScheme::kNonSecure);
   // Because the port can be set explicitly in the constructor its value can be
@@ -666,7 +666,7 @@ TEST(CanonicalCookieTest, CreateSameParty) {
   ASSERT_TRUE(cookie.get());
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsSecure());
-  EXPECT_TRUE(cookie->IsSameParty());
+  EXPECT_FALSE(cookie->IsSameParty());
   EXPECT_EQ(CookieSameSite::UNSPECIFIED, cookie->SameSite());
 
   cookie = CanonicalCookie::Create(url, "A=2; SameParty; SameSite=None; Secure",
@@ -676,7 +676,7 @@ TEST(CanonicalCookieTest, CreateSameParty) {
   ASSERT_TRUE(cookie.get());
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsSecure());
-  EXPECT_TRUE(cookie->IsSameParty());
+  EXPECT_FALSE(cookie->IsSameParty());
   EXPECT_EQ(CookieSameSite::NO_RESTRICTION, cookie->SameSite());
 
   cookie = CanonicalCookie::Create(url, "A=2; SameParty; SameSite=Lax; Secure",
@@ -686,7 +686,7 @@ TEST(CanonicalCookieTest, CreateSameParty) {
   ASSERT_TRUE(cookie.get());
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(cookie->IsSecure());
-  EXPECT_TRUE(cookie->IsSameParty());
+  EXPECT_FALSE(cookie->IsSameParty());
   EXPECT_EQ(CookieSameSite::LAX_MODE, cookie->SameSite());
 
   // SameParty cookie with SameSite=Strict is valid, since SameParty is ignored.
@@ -2124,7 +2124,7 @@ TEST(CanonicalCookieTest, IncludeForRequestURLSameParty) {
             cookie_samesite_unspecified->SameSite());
   EXPECT_EQ(CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
             cookie_samesite_unspecified->GetEffectiveSameSiteForTesting());
-  EXPECT_TRUE(cookie_samesite_unspecified->IsSameParty());
+  EXPECT_FALSE(cookie_samesite_unspecified->IsSameParty());
 
   // SameSite=None.
   std::unique_ptr<CanonicalCookie> cookie_samesite_none =
@@ -2136,7 +2136,7 @@ TEST(CanonicalCookieTest, IncludeForRequestURLSameParty) {
   EXPECT_EQ(CookieSameSite::NO_RESTRICTION, cookie_samesite_none->SameSite());
   EXPECT_EQ(CookieEffectiveSameSite::NO_RESTRICTION,
             cookie_samesite_none->GetEffectiveSameSiteForTesting());
-  EXPECT_TRUE(cookie_samesite_none->IsSameParty());
+  EXPECT_FALSE(cookie_samesite_none->IsSameParty());
 
   // SameSite=Lax.
   std::unique_ptr<CanonicalCookie> cookie_samesite_lax =
@@ -2148,7 +2148,7 @@ TEST(CanonicalCookieTest, IncludeForRequestURLSameParty) {
   EXPECT_EQ(CookieSameSite::LAX_MODE, cookie_samesite_lax->SameSite());
   EXPECT_EQ(CookieEffectiveSameSite::LAX_MODE,
             cookie_samesite_lax->GetEffectiveSameSiteForTesting());
-  EXPECT_TRUE(cookie_samesite_lax->IsSameParty());
+  EXPECT_FALSE(cookie_samesite_lax->IsSameParty());
 }
 
 TEST(CanonicalCookieTest, IncludeForRequestURL_SameSiteNone_Metrics) {
@@ -3797,7 +3797,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Inputs) {
       false /*httponly*/, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW,
       true /*same_party*/, absl::nullopt /*partition_key*/, &status);
   EXPECT_TRUE(cc);
-  EXPECT_TRUE(cc->IsSameParty());
+  EXPECT_FALSE(cc->IsSameParty());
   EXPECT_TRUE(status.IsInclude());
 
   // Partitioned

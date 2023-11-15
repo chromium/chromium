@@ -18,7 +18,6 @@ TEST(ParsedCookieTest, TestBasic) {
   EXPECT_TRUE(pc1.IsValid());
   EXPECT_FALSE(pc1.IsSecure());
   EXPECT_FALSE(pc1.IsHttpOnly());
-  EXPECT_FALSE(pc1.IsSameParty());
   EXPECT_FALSE(pc1.IsPartitioned());
   EXPECT_EQ("a", pc1.Name());
   EXPECT_EQ("b", pc1.Value());
@@ -35,7 +34,6 @@ TEST(ParsedCookieTest, TestBasic) {
   EXPECT_TRUE(pc2.IsValid());
   EXPECT_TRUE(pc2.IsSecure());
   EXPECT_TRUE(pc2.IsHttpOnly());
-  EXPECT_TRUE(pc2.IsSameParty());
   EXPECT_TRUE(pc2.IsPartitioned());
   EXPECT_EQ("c", pc2.Name());
   EXPECT_EQ("d", pc2.Value());
@@ -219,7 +217,6 @@ TEST(ParsedCookieTest, TestAttributeCase) {
   EXPECT_TRUE(pc.IsValid());
   EXPECT_TRUE(pc.IsSecure());
   EXPECT_TRUE(pc.IsHttpOnly());
-  EXPECT_TRUE(pc.IsSameParty());
   EXPECT_TRUE(pc.IsPartitioned());
   EXPECT_EQ(CookieSameSite::LAX_MODE, pc.SameSite());
   EXPECT_TRUE(pc.HasPath());
@@ -763,12 +760,11 @@ TEST(ParsedCookieTest, SetAttributes) {
   EXPECT_TRUE(pc.SetIsHttpOnly(true));
   EXPECT_TRUE(pc.SetSameSite("LAX"));
   EXPECT_TRUE(pc.SetPriority("HIGH"));
-  EXPECT_TRUE(pc.SetIsSameParty(true));
   EXPECT_TRUE(pc.SetIsPartitioned(true));
   EXPECT_EQ(
       "name=value; domain=domain.com; path=/; "
       "expires=Sun, 18-Apr-2027 21:06:29 GMT; max-age=12345; secure; "
-      "httponly; samesite=LAX; priority=HIGH; sameparty; partitioned",
+      "httponly; samesite=LAX; priority=HIGH; partitioned",
       pc.ToCookieLine());
   EXPECT_TRUE(pc.HasDomain());
   EXPECT_TRUE(pc.HasPath());
@@ -778,7 +774,6 @@ TEST(ParsedCookieTest, SetAttributes) {
   EXPECT_TRUE(pc.IsHttpOnly());
   EXPECT_EQ(CookieSameSite::LAX_MODE, pc.SameSite());
   EXPECT_EQ(COOKIE_PRIORITY_HIGH, pc.Priority());
-  EXPECT_TRUE(pc.IsSameParty());
 
   // Modify one attribute in the middle.
   EXPECT_TRUE(pc.SetPath("/foo"));
@@ -788,11 +783,10 @@ TEST(ParsedCookieTest, SetAttributes) {
   EXPECT_TRUE(pc.HasExpires());
   EXPECT_TRUE(pc.IsSecure());
   EXPECT_TRUE(pc.IsHttpOnly());
-  EXPECT_TRUE(pc.IsSameParty());
   EXPECT_EQ(
       "name=value; domain=domain.com; path=/foo; "
       "expires=Sun, 18-Apr-2027 21:06:29 GMT; max-age=12345; secure; "
-      "httponly; samesite=LAX; priority=HIGH; sameparty; partitioned",
+      "httponly; samesite=LAX; priority=HIGH; partitioned",
       pc.ToCookieLine());
 
   // Set priority to medium.
@@ -801,7 +795,7 @@ TEST(ParsedCookieTest, SetAttributes) {
   EXPECT_EQ(
       "name=value; domain=domain.com; path=/foo; "
       "expires=Sun, 18-Apr-2027 21:06:29 GMT; max-age=12345; secure; "
-      "httponly; samesite=LAX; priority=medium; sameparty; partitioned",
+      "httponly; samesite=LAX; priority=medium; partitioned",
       pc.ToCookieLine());
 
   // Clear attribute from the end.
@@ -810,7 +804,7 @@ TEST(ParsedCookieTest, SetAttributes) {
   EXPECT_EQ(
       "name=value; domain=domain.com; path=/foo; "
       "expires=Sun, 18-Apr-2027 21:06:29 GMT; max-age=12345; secure; "
-      "httponly; samesite=LAX; priority=medium; sameparty",
+      "httponly; samesite=LAX; priority=medium",
       pc.ToCookieLine());
 
   // Clear the rest and change the name and value.
@@ -831,10 +825,8 @@ TEST(ParsedCookieTest, SetAttributes) {
   EXPECT_FALSE(pc.IsSecure());
   EXPECT_FALSE(pc.IsHttpOnly());
   EXPECT_EQ(CookieSameSite::UNSPECIFIED, pc.SameSite());
-  EXPECT_TRUE(pc.SetIsSameParty(false));
   EXPECT_TRUE(pc.SetIsPartitioned(false));
   EXPECT_EQ("name2=value2", pc.ToCookieLine());
-  EXPECT_FALSE(pc.IsSameParty());
   EXPECT_FALSE(pc.IsPartitioned());
 }
 
@@ -1045,10 +1037,6 @@ TEST(ParsedCookieTest, ToCookieLineSpecialTokens) {
     EXPECT_EQ(pc.ToCookieLine(), "name=foo; httponly");
   }
   {
-    ParsedCookie pc("name=foo; sameparty=baz");
-    EXPECT_EQ(pc.ToCookieLine(), "name=foo; sameparty");
-  }
-  {
     ParsedCookie pc("name=foo; bar=secure");
     EXPECT_EQ(pc.ToCookieLine(), "name=foo; bar=secure");
   }
@@ -1058,14 +1046,12 @@ TEST(ParsedCookieTest, ToCookieLineSpecialTokens) {
     EXPECT_TRUE(pc.IsValid());
     EXPECT_TRUE(pc.IsSecure());
     EXPECT_FALSE(pc.IsHttpOnly());
-    EXPECT_FALSE(pc.IsSameParty());
   }
   {
     ParsedCookie pc("sameparty; sameparty; secure; httponly; httponly; secure");
     EXPECT_EQ("", pc.Name());
     EXPECT_EQ("sameparty", pc.Value());
     EXPECT_TRUE(pc.IsSecure());
-    EXPECT_TRUE(pc.IsSameParty());
     EXPECT_TRUE(pc.IsHttpOnly());
   }
   {
