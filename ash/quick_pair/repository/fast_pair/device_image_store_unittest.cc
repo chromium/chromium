@@ -57,7 +57,7 @@ class DeviceImageStoreTest : public AshTestBase {
     mock_decoder_ = std::make_unique<MockFastPairImageDecoder>();
     // On call to DecodeImage, run the third argument callback with test_image_.
     ON_CALL(*mock_decoder_, DecodeImageFromUrl(_, _, _))
-        .WillByDefault(RunOnceCallback<2>(test_image_));
+        .WillByDefault(base::test::RunOnceCallbackRepeatedly<2>(test_image_));
 
     device_image_store_ =
         std::make_unique<DeviceImageStore>(mock_decoder_.get());
@@ -184,7 +184,7 @@ TEST_F(DeviceImageStoreTest, FetchDeviceImagesInvalidTrueWireless) {
 
   // Simulate an error during download/decode by returning an empty image.
   ON_CALL(*mock_decoder_, DecodeImageFromUrl(_, _, _))
-      .WillByDefault(RunOnceCallback<2>(gfx::Image()));
+      .WillByDefault(base::test::RunOnceCallbackRepeatedly<2>(gfx::Image()));
   device_image_store_->FetchDeviceImages(kTestModelId, device_metadata_.get(),
                                          callback.Get());
 }

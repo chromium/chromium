@@ -1272,7 +1272,7 @@ TEST_F(InsecureCredentialsManagerTest, ReuseCheckUsesAffiliationInfo) {
   facet.uri = FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm);
   grouped_facets[0].facets.push_back(facet);
   EXPECT_CALL(mock_affiliation_service, GetGroupingInfo)
-      .WillRepeatedly(base::test::RunOnceCallback<1>(grouped_facets));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(grouped_facets));
 
   store().AddLogin(form1);
   store().AddLogin(form2);

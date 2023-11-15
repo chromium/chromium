@@ -156,7 +156,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliatedMatchesOnlyTest) {
   facets.emplace_back(
       FacetURI::FromPotentiallyInvalidSpec(kAffiliatedAndroidApp));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillRepeatedly(RunOnceCallback<2>(facets, true));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<2>(facets, true));
   GroupedFacets group;
   group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
   EXPECT_CALL(affiliation_service(), GetGroupingInfo)
@@ -210,7 +210,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   facets.emplace_back(
       FacetURI::FromPotentiallyInvalidSpec(kAffiliatedAndroidApp));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillRepeatedly(RunOnceCallback<2>(facets, true));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<2>(facets, true));
 
   PasswordFormDigest observed_form = CreateFormDigest(kTestWebURL);
   base::MockCallback<LoginsOrErrorReply> result_callback;
@@ -356,7 +356,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   facets.emplace_back(
       FacetURI::FromPotentiallyInvalidSpec(kAffiliatedAndroidApp));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillRepeatedly(RunOnceCallback<2>(facets, true));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<2>(facets, true));
 
   GroupedFacets group;
   group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
@@ -411,7 +411,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   facets.emplace_back(
       FacetURI::FromPotentiallyInvalidSpec("https://b.slack.com/"));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillRepeatedly(RunOnceCallback<2>(facets, true));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<2>(facets, true));
 
   GroupedFacets group;
   group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));

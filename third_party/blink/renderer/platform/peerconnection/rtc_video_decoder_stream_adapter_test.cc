@@ -483,8 +483,8 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, SlowDecodingCausesReset) {
   // All Decodes succeed immediately.  The backup will come from the fact that
   // we won't run the media thread while sending decode requests in.
   EXPECT_CALL(*decoder, Decode_(_, _))
-      .WillRepeatedly(
-          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(
+          media::DecoderStatus::Codes::kOk));
   // At some point, `adapter_` should trigger a reset.
   EXPECT_CALL(*decoder, Reset_(_)).WillOnce(base::test::RunOnceCallback<0>());
 
@@ -532,8 +532,8 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, ReallySlowDecodingCausesFallback) {
   // All Decodes succeed immediately.  The backup will come from the fact that
   // we won't run the media thread while sending decode requests in.
   EXPECT_CALL(*decoder, Decode_(_, _))
-      .WillRepeatedly(
-          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(
+          media::DecoderStatus::Codes::kOk));
   // At some point, `adapter_` should trigger a reset, before it falls back.  It
   // should not do so more than once, since we won't complete the reset.
   EXPECT_CALL(*decoder, Reset_(_)).WillOnce(base::test::RunOnceCallback<0>());

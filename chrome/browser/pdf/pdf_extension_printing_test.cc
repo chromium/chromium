@@ -59,6 +59,7 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 using testing::_;
+using testing::AtMost;
 using testing::NiceMock;
 #endif
 
@@ -138,12 +139,15 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
         local_printer_receiver_.BindNewPipeAndPassRemote());
 
     EXPECT_CALL(local_printer(), AddPrintServerObserver(_, _))
-        .WillRepeatedly(base::test::RunOnceCallback<1>());
+        .Times(AtMost(1))
+        .WillOnce(base::test::RunOnceCallback<1>());
     EXPECT_CALL(local_printer(), GetPolicies(_))
-        .WillRepeatedly(
+        .Times(AtMost(1))
+        .WillOnce(
             base::test::RunOnceCallback<0>(crosapi::mojom::Policies::New()));
     EXPECT_CALL(local_printer(), GetEulaUrl(_, _))
-        .WillRepeatedly(base::test::RunOnceCallback<1>(GURL()));
+        .Times(AtMost(1))
+        .WillOnce(base::test::RunOnceCallback<1>(GURL()));
   }
 #endif
   void TearDownOnMainThread() override {

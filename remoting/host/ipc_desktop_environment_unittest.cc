@@ -508,7 +508,7 @@ void IpcDesktopEnvironmentTest::ResetRemoteUrlForwarderConfigurator() {
   remote_url_forwarder_configurator_ =
       owned_remote_url_forwarder_configurator_.get();
   ON_CALL(*remote_url_forwarder_configurator_, IsUrlForwarderSetUp(_))
-      .WillByDefault(RunOnceCallback<0>(false));
+      .WillByDefault(base::test::RunOnceCallbackRepeatedly<0>(false));
 }
 
 void IpcDesktopEnvironmentTest::OnDisconnectCallback() {

@@ -381,7 +381,8 @@ TEST_F(EnrollmentStateFetcherTest, ProceedWithMissingStateKeys) {
   ExpectOprfRequest();
   ExpectQueryRequest();
   EXPECT_CALL(state_key_broker_, RequestStateKeys)
-      .WillRepeatedly(RunOnceCallback<0>(std::vector<std::string>{}));
+      .WillRepeatedly(
+          base::test::RunOnceCallbackRepeatedly<0>(std::vector<std::string>{}));
   EXPECT_CALL(job_creation_handler_, OnJobCreation(JobWithStateRequest(
                                          /*state_key=*/std::string(),
                                          kTestSerialNumber, kTestBrandCode)))

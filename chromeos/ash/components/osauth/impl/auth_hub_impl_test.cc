@@ -72,10 +72,10 @@ class AuthHubTestBase : public ::testing::Test {
     EXPECT_CALL(*engine, GetFactor()).WillRepeatedly(Return(kFactor));
     EXPECT_CALL(*engine, InitializeCommon(_))
         .Times(AnyNumber())
-        .WillRepeatedly(RunOnceCallback<0>(kFactor));
+        .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(kFactor));
     EXPECT_CALL(*engine, ShutdownCommon(_))
         .Times(AnyNumber())
-        .WillRepeatedly(RunOnceCallback<0>(kFactor));
+        .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(kFactor));
 
     EXPECT_CALL(*engine_factory_, GetFactor()).WillRepeatedly(Return(kFactor));
     EXPECT_CALL(*engine_factory_, CreateEngine(_))
@@ -93,7 +93,7 @@ class AuthHubTestBase : public ::testing::Test {
 
   void ExpectEngineStop() {
     EXPECT_CALL(*engine_, StopAuthFlow(_))
-        .WillRepeatedly(RunOnceCallback<0>(kFactor));
+        .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(kFactor));
   }
 
   void ConfigureFactorAsAvailable() {

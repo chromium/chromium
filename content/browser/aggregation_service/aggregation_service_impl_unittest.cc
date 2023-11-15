@@ -454,7 +454,7 @@ TEST_F(AggregationServiceImplTest,
           InvokeCallback(CreateExampleAggregatableReport(),
                          AggregatableReportAssembler::AssemblyStatus::kOk));
   EXPECT_CALL(*test_sender_, SendReport)
-      .WillRepeatedly(base::test::RunOnceCallback<2>(
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<2>(
           AggregatableReportSender::RequestStatus::kOk));
 
   EXPECT_CALL(*test_scheduler_, NotifyInProgressRequestSucceeded(request_id_1));

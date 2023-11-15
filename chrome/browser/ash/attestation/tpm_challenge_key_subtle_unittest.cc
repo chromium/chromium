@@ -264,7 +264,7 @@ TpmChallengeKeySubtleTestBase::TpmChallengeKeySubtleTestBase(
 
   // By default make it reply that the certificate is already uploaded.
   ON_CALL(mock_cert_uploader_, WaitForUploadComplete)
-      .WillByDefault(RunOnceCallback<0>(true));
+      .WillByDefault(base::test::RunOnceCallbackRepeatedly<0>(true));
 }
 
 TpmChallengeKeySubtleTestBase::~TpmChallengeKeySubtleTestBase() {

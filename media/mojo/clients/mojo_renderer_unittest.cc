@@ -450,7 +450,8 @@ TEST_F(MojoRendererTest, OnEnded) {
 TEST_F(MojoRendererTest, Destroy_PendingInitialize) {
   CreateAudioStream();
   EXPECT_CALL(*mock_renderer_, OnInitialize(_, _, _))
-      .WillRepeatedly(RunOnceCallback<2>(PIPELINE_ERROR_ABORT));
+      .WillRepeatedly(
+          base::test::RunOnceCallbackRepeatedly<2>(PIPELINE_ERROR_ABORT));
   EXPECT_CALL(*this, OnInitialized(
                          HasStatusCode(PIPELINE_ERROR_INITIALIZATION_FAILED)));
   mojo_renderer_->Initialize(
@@ -461,7 +462,7 @@ TEST_F(MojoRendererTest, Destroy_PendingInitialize) {
 
 TEST_F(MojoRendererTest, Destroy_PendingFlush) {
   EXPECT_CALL(*mock_renderer_, OnSetCdm(_, _))
-      .WillRepeatedly(RunOnceCallback<1>(true));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(true));
   EXPECT_CALL(*this, OnCdmAttached(false));
   mojo_renderer_->SetCdm(
       &cdm_context_,

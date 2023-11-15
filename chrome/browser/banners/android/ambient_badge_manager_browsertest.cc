@@ -353,8 +353,9 @@ IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerSmartTest,
 IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerSmartTest, BlockedByGuardrail) {
   EXPECT_CALL(mock_segmentation_service_, GetClassificationResult(_, _, _, _))
       .Times(testing::Exactly(2))
-      .WillRepeatedly(RunOnceCallback<3>(GetClassificationResult(
-          MLInstallabilityPromoter::kShowInstallPromptLabel)));
+      .WillRepeatedly(
+          base::test::RunOnceCallbackRepeatedly<3>(GetClassificationResult(
+              MLInstallabilityPromoter::kShowInstallPromptLabel)));
 
   auto app_banner_manager = std::make_unique<TestAppBannerManager>(
       web_contents(), &mock_segmentation_service_);

@@ -325,7 +325,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     auto authenticator = std::make_unique<MockDeviceAuthenticator>();
     ON_CALL(*authenticator, AuthenticateWithMessage)
-        .WillByDefault(RunOnceCallback<1>(/*auth_succeeded=*/true));
+        .WillByDefault(
+            base::test::RunOnceCallbackRepeatedly<1>(/*auth_succeeded=*/true));
     EXPECT_CALL(client(), GetDeviceAuthenticator)
         .WillOnce(Return(testing::ByMove(std::move(authenticator))));
   }

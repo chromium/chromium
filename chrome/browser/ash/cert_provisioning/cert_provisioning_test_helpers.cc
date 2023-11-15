@@ -91,7 +91,8 @@ scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
           chromeos::platform_keys::GetSubjectPublicKeyInfoBlob(cert),
           chromeos::platform_keys::KeyAttributeType::kCertificateProvisioningId,
           _))
-      .WillRepeatedly(RunOnceCallback<3>(attribute, status));
+      .WillRepeatedly(
+          base::test::RunOnceCallbackRepeatedly<3>(attribute, status));
 
   cert_list_.push_back(cert);
   return cert;

@@ -32,7 +32,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::test::RunOnceCallback;
+using base::test::RunOnceCallbackRepeatedly;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
@@ -113,7 +113,8 @@ class SegmentationPlatformServiceImplTest
     model_provider_data_.default_provider_metadata
         [SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER] = metadata;
     EXPECT_CALL(model_provider, ExecuteModelWithInput(_, _))
-        .WillRepeatedly(RunOnceCallback<1>(ModelProvider::Response(1, 1)));
+        .WillRepeatedly(
+            RunOnceCallbackRepeatedly<1>(ModelProvider::Response(1, 1)));
   }
 
   void OnGetSelectedSegment(base::RepeatingClosure closure,

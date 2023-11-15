@@ -5,11 +5,11 @@
 #ifndef BASE_TEST_GMOCK_CALLBACK_SUPPORT_H_
 #define BASE_TEST_GMOCK_CALLBACK_SUPPORT_H_
 
-#include <functional>
+#include <ostream>
 #include <tuple>
-#include <type_traits>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -25,75 +25,28 @@ decltype(auto) get(Args&&... args) {
   return std::get<I>(std::forward_as_tuple(std::forward<Args>(args)...));
 }
 
+// Wraps `tuple` inside RefCountedData<std::unique_ptr<Tuple>> to allow creating
+// shallow copies in lambda return of RunOnceCallback<>.
+// Since RefCountedData<Tuple> stores Tuple directly, the indirection via
+// std::unique_ptr<Tuple> is necessary to be able to CHECK() on second
+// invocation instead of running the callback with a default-constructed tuple.
+template <typename Tuple>
+auto WrapTupleAsRefCountedData(Tuple&& tuple) {
+  return MakeRefCounted<RefCountedData<std::unique_ptr<Tuple>>>(
+      std::make_unique<Tuple>(std::forward<Tuple>(tuple)));
+}
+
 // Invokes `cb` with the arguments stored in `tuple`. Both `cb` and `tuple` are
 // perfectly forwarded, allowing callers to specify whether they should be
 // passed by move or copy.
-template <typename Callback, typename Tuple, size_t... Is>
-decltype(auto) RunImpl(Callback&& cb,
-                       Tuple&& tuple,
-                       std::index_sequence<Is...>) {
-  return std::forward<Callback>(cb).Run(
-      std::get<Is>(std::forward<Tuple>(tuple))...);
-}
-
-// Invokes `cb` with the arguments stored in `tuple`. Both `cb` and `tuple` are
-// perfectly forwarded, allowing callers to specify whether they should be
-// passed by move or copy. Needs to dispatch to the three arguments version to
-// be able to construct a `std::index_sequence` of the corresponding size.
 template <typename Callback, typename Tuple>
 decltype(auto) RunImpl(Callback&& cb, Tuple&& tuple) {
-  return RunImpl(std::forward<Callback>(cb), std::forward<Tuple>(tuple),
-                 std::make_index_sequence<
-                     std::tuple_size_v<std::remove_reference_t<Tuple>>>());
-}
-
-// Invoked when the arguments to a OnceCallback are copy constructible. In this
-// case the returned lambda will pass the arguments to the provided callback by
-// copy, allowing it to be used multiple times.
-template <size_t I,
-          typename Tuple,
-          std::enable_if_t<std::is_copy_constructible_v<Tuple>, int> = 0>
-auto RunOnceCallbackImpl(Tuple&& tuple) {
-  return
-      [tuple = std::forward<Tuple>(tuple)](auto&&... args) -> decltype(auto) {
-        return RunImpl(
-            std::move(::base::gmock_callback_support_internal::get<I>(args...)),
-            tuple);
-      };
-}
-
-// Invoked when the arguments to a OnceCallback are not copy constructible. In
-// this case the returned lambda will pass the arguments to the provided
-// callback by move, allowing it to be only used once.
-template <size_t I,
-          typename Tuple,
-          std::enable_if_t<!std::is_copy_constructible_v<Tuple>, int> = 0>
-auto RunOnceCallbackImpl(Tuple&& tuple) {
-  // Mock actions need to be copyable, but `tuple` is not. Wrap it in in a
-  // `scoped_refptr` to allow it to be copied.
-  auto tuple_ptr = base::MakeRefCounted<base::RefCountedData<Tuple>>(
+  return std::apply(
+      [&](auto&&... args) -> decltype(auto) {
+        return std::forward<Callback>(cb).Run(
+            std::forward<decltype(args)>(args)...);
+      },
       std::forward<Tuple>(tuple));
-  return [tuple_ptr =
-              std::move(tuple_ptr)](auto&&... args) mutable -> decltype(auto) {
-    // Since running the action will move out of the arguments, `tuple_ptr` is
-    // nulled out, so that attempting to run it twice will result in a run-time
-    // crash.
-    return RunImpl(
-        std::move(::base::gmock_callback_support_internal::get<I>(args...)),
-        std::move(std::exchange(tuple_ptr, nullptr)->data));
-  };
-}
-
-// Invoked for RepeatingCallbacks. In this case the returned lambda will pass
-// the arguments to the provided callback by copy, allowing it to be used
-// multiple times. Move-only arguments are not supported.
-template <size_t I, typename Tuple>
-auto RunRepeatingCallbackImpl(Tuple&& tuple) {
-  return
-      [tuple = std::forward<Tuple>(tuple)](auto&&... args) -> decltype(auto) {
-        return RunImpl(::base::gmock_callback_support_internal::get<I>(args...),
-                       tuple);
-      };
 }
 
 }  // namespace gmock_callback_support_internal
@@ -119,12 +72,12 @@ ACTION_P(RunClosure, closure) {
 
 // This action can be invoked at most once. Any further invocation will trigger
 // a CHECK failure.
-inline auto RunOnceClosure(base::OnceClosure cb) {
+inline auto RunOnceClosure(OnceClosure cb) {
   // Mock actions need to be copyable, but OnceClosure is not. Wrap the closure
   // in a base::RefCountedData<> to allow it to be copied.
-  using RefCountedOnceClosure = base::RefCountedData<base::OnceClosure>;
+  using RefCountedOnceClosure = RefCountedData<OnceClosure>;
   scoped_refptr<RefCountedOnceClosure> copyable_cb =
-      base::MakeRefCounted<RefCountedOnceClosure>(std::move(cb));
+      MakeRefCounted<RefCountedOnceClosure>(std::move(cb));
   return [copyable_cb](auto&&...) {
     CHECK(copyable_cb->data);
     std::move(copyable_cb->data).Run();
@@ -136,15 +89,14 @@ inline auto RunOnceClosure(base::OnceClosure cb) {
 template <size_t I>
 auto RunClosure() {
   return [](auto&&... args) -> decltype(auto) {
-    return ::base::gmock_callback_support_internal::get<I>(args...).Run();
+    return gmock_callback_support_internal::get<I>(args...).Run();
   };
 }
 
 template <size_t I>
 auto RunOnceClosure() {
   return [](auto&&... args) -> decltype(auto) {
-    return std::move(::base::gmock_callback_support_internal::get<I>(args...))
-        .Run();
+    return std::move(gmock_callback_support_internal::get<I>(args...)).Run();
   };
 }
 
@@ -173,23 +125,49 @@ auto RunOnceClosure() {
 //   to the callback.  This makes it easy for a user to define an
 //   RunCallback action from temporary values and have it performed later.
 //
-//   3. In order to facilitate re-use of the `RunOnceCallback()` action,
-//   the arguments are copied during each run if possible. If this can't
-//   be done (e.g. one of the arguments is move-only), the arguments will
-//   be passed by move. However, since moving potentially invalidates the
-//   arguments, the resulting action is only allowed to run once in this
-//   case. Attempting to run it twice will result in a runtime crash.
+//   3. There are two separate APIs for interacting with OnceCallback<> --
+//   RunOnceCallback<> and RunOnceCallbackRepeatedly<>. In the former, arguments
+//   are copies during each run; in the latter, they are passed by move.
+//   Note that RunOnceCallback<> cannot be used with WillRepeatedly() since its
+//   arguments are moved out upon first invocation -- the code doing so will
+//   crash with a CHECK().
 //   Using move-only arguments with `RunCallback()` is not supported.
 template <size_t I, typename... RunArgs>
 auto RunOnceCallback(RunArgs&&... run_args) {
-  return ::base::gmock_callback_support_internal::RunOnceCallbackImpl<I>(
-      std::make_tuple(std::forward<RunArgs>(run_args)...));
+  // Mock actions have to be copyable. However, since this action is only
+  // supposed to be invoked once and might contain move-only arguments, the arg
+  // tuple is explicitly wrapped as RefCountedData<> to allow shallow copies.
+  return
+      [tuple_ptr = gmock_callback_support_internal::WrapTupleAsRefCountedData(
+           std::make_tuple(std::forward<RunArgs>(run_args)...))](
+          auto&&... args) -> decltype(auto) {
+        CHECK(tuple_ptr->data)
+            << "A RunOnceCallback() action must be called at most once. "
+               "Use RunOnceCallbackRepeatedly() for invoking a "
+               "OnceCallback<> more than once.";
+        auto data = std::exchange(tuple_ptr->data, nullptr);
+        return gmock_callback_support_internal::RunImpl(
+            std::move(gmock_callback_support_internal::get<I>(args...)),
+            std::move(*data));
+      };
+}
+
+template <size_t I, typename... RunArgs>
+auto RunOnceCallbackRepeatedly(RunArgs&&... run_args) {
+  return [tuple = std::make_tuple(std::forward<RunArgs>(run_args)...)](
+             auto&&... args) -> decltype(auto) {
+    return gmock_callback_support_internal::RunImpl(
+        std::move(gmock_callback_support_internal::get<I>(args...)), tuple);
+  };
 }
 
 template <size_t I, typename... RunArgs>
 auto RunCallback(RunArgs&&... run_args) {
-  return ::base::gmock_callback_support_internal::RunRepeatingCallbackImpl<I>(
-      std::make_tuple(std::forward<RunArgs>(run_args)...));
+  return [tuple = std::make_tuple(std::forward<RunArgs>(run_args)...)](
+             auto&&... args) -> decltype(auto) {
+    return gmock_callback_support_internal::RunImpl(
+        gmock_callback_support_internal::get<I>(args...), tuple);
+  };
 }
 
 }  // namespace test

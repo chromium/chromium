@@ -44,6 +44,17 @@ using testing::WithArg;
 using testing::WithArgs;
 using testing::WithoutArgs;
 
+std::vector<crosapi::mojom::LocalDestinationInfoPtr> CreateGetPrintersResponse(
+    const std::string& printer_id,
+    const std::string& printer_name) {
+  chromeos::Printer printer;
+  printer.set_id(printer_id);
+  printer.set_display_name(printer_name);
+  std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers;
+  printers.push_back(printing::PrinterToMojom(printer));
+  return printers;
+}
+
 #endif
 
 }  // namespace
@@ -162,17 +173,9 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetPrinters) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   AddPrinter(kId, kName);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // For some reason first creating a vector of printers and then performing a
-  // trick with RunOnceCallback<0>(std::move(printers)) doesn't work.
   EXPECT_CALL(local_printer(), GetPrinters(_))
-      .WillOnce([](MockLocalPrinter::GetPrintersCallback callback) {
-        chromeos::Printer printer;
-        printer.set_id(kId);
-        printer.set_display_name(kName);
-        std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers;
-        printers.push_back(printing::PrinterToMojom(printer));
-        std::move(callback).Run(std::move(printers));
-      });
+      .WillOnce(base::test::RunOnceCallback<0>(
+          CreateGetPrintersResponse(kId, kName)));
 #endif
 
   RunTest("get_printers.html");

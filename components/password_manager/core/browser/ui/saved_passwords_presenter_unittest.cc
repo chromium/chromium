@@ -926,7 +926,7 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroupsWithPasskeys) {
   grouped_facets[1].branding_info.icon_url =
       GURL("https://test3.com/favicon.ico");
   EXPECT_CALL(mock_affiliation_service, GetGroupingInfo)
-      .WillRepeatedly(base::test::RunOnceCallback<1>(grouped_facets));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(grouped_facets));
   RunUntilIdle();
 
   CredentialUIEntry credential1(form1), credential2(form2), credential3(form3);

@@ -167,7 +167,7 @@ class FastPairRepositoryImplTest : public AshTestBase {
     image_decoder_ = image_decoder.get();
     test_image_ = gfx::test::CreateImage(100, 100);
     ON_CALL(*image_decoder_, DecodeImage(_, _, _))
-        .WillByDefault(RunOnceCallback<2>(test_image_));
+        .WillByDefault(base::test::RunOnceCallbackRepeatedly<2>(test_image_));
 
     auto device_address_map = std::make_unique<DeviceAddressMap>();
     device_address_map_ = device_address_map.get();

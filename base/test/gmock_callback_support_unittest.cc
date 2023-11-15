@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,8 +16,7 @@ using testing::_;
 using testing::ByRef;
 using testing::MockFunction;
 
-namespace base {
-namespace test {
+namespace base::test {
 
 using TestCallback = base::RepeatingCallback<void(const bool& src, bool* dst)>;
 using TestOnceCallback = base::OnceCallback<void(const bool& src, bool* dst)>;
@@ -139,7 +139,7 @@ TEST(GmockCallbackSupportTest, RunOnceCallbackTwice) {
   bool src = true;
 
   EXPECT_CALL(check, Call)
-      .WillRepeatedly(RunOnceCallback<0>(std::ref(src), &dst));
+      .WillRepeatedly(RunOnceCallbackRepeatedly<0>(std::ref(src), &dst));
 
   check.Call(base::BindOnce(&SetBool));
   EXPECT_TRUE(dst);
@@ -211,26 +211,24 @@ TEST(GmockCallbackSupportTest, RunOnceCallbackWithMoveOnlyType) {
   EXPECT_FALSE(val);
 }
 
-TEST(GmockCallbackSupportTest,
-     RunOnceCallbackMultipleTimesWithMoveOnlyArgCrashes) {
-  MockFunction<void(TestOnceCallbackMove)> check;
-  auto val = std::make_unique<int>(42);
-  int dst = 0;
-  EXPECT_CALL(check, Call)
-      .WillRepeatedly(RunOnceCallback<0>(std::move(val), &dst));
+TEST(GmockCallbackSupportTest, RunOnceCallbackMultipleTimesCrashes) {
+  MockFunction<void(TestOnceCallback)> check;
+  bool value = true;
+  bool dst = false;
+  EXPECT_CALL(check, Call).WillRepeatedly(RunOnceCallback<0>(value, &dst));
 
-  check.Call(base::BindOnce(&SetIntFromPtr));
-  EXPECT_EQ(dst, 42);
-  EXPECT_FALSE(val);
+  EXPECT_FALSE(dst);
+  check.Call(BindOnce(&SetBool));
+  EXPECT_TRUE(dst);
 
-  // The first `Call` has invalidated the captured std::unique_ptr. Attempting
-  // to run `Call` again should result in a runtime crash.
-  EXPECT_DEATH_IF_SUPPORTED(check.Call(base::BindOnce(&SetIntFromPtr)), "");
+  // The first `Call` has invalidated the captured args. Attempting
+  // to run `Call` again should result in a CHECK().
+  EXPECT_DEATH_IF_SUPPORTED(check.Call(BindOnce(&SetBool)), "");
 }
 
 TEST(GmockCallbackSupportTest, RunOnceCallbackReturnsValue) {
   MockFunction<int(base::OnceCallback<int(int)>)> check;
-  EXPECT_CALL(check, Call).WillRepeatedly(RunOnceCallback<0>(42));
+  EXPECT_CALL(check, Call).WillRepeatedly(RunOnceCallbackRepeatedly<0>(42));
   EXPECT_EQ(43, check.Call(base::BindOnce([](int i) { return i + 1; })));
   EXPECT_EQ(44, check.Call(base::BindOnce([](int i) { return i + 2; })));
   EXPECT_EQ(45, check.Call(base::BindOnce([](int i) { return i + 3; })));
@@ -252,5 +250,16 @@ TEST(GmockCallbackSupportTest, RunCallbackReturnsValue) {
   EXPECT_EQ(45, check.Call(base::BindRepeating([](int i) { return i + 3; })));
 }
 
-}  // namespace test
-}  // namespace base
+// Smoke test to validate that RunOnceCallback<> works with vectors of move-only
+// args.
+TEST(GmockCallbackSupportTest, VectorOfMoveOnlyArgs) {
+  using VectorOfMoveOnly = std::vector<std::unique_ptr<std::string>>;
+  MockFunction<void(base::OnceCallback<void(VectorOfMoveOnly)>)> check;
+
+  EXPECT_CALL(check, Call).WillOnce(RunOnceCallback<0>([] {
+    return VectorOfMoveOnly();
+  }()));
+  check.Call(base::DoNothing());
+}
+
+}  // namespace base::test

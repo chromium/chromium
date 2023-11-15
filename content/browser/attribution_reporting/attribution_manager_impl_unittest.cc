@@ -321,7 +321,7 @@ class AttributionManagerImplTest : public testing::Test {
     os_level_manager_ = os_level_manager.get();
 
     ON_CALL(*os_level_manager_, ClearData)
-        .WillByDefault(base::test::RunOnceCallback<6>());
+        .WillByDefault(base::test::RunOnceCallbackRepeatedly<6>());
 
     attribution_manager_ = AttributionManagerImpl::CreateForTesting(
         dir_.GetPath(), kMaxPendingEvents, mock_storage_policy_,

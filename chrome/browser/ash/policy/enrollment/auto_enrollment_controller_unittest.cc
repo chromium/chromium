@@ -347,7 +347,7 @@ class AutoEnrollmentControllerBaseTest : public testing::Test {
 
   void SetupOwnership(ash::DeviceSettingsService::OwnershipStatus status) {
     ON_CALL(mock_device_settings_service_, GetOwnershipStatusAsync)
-        .WillByDefault(base::test::RunOnceCallback<0>(
+        .WillByDefault(base::test::RunOnceCallbackRepeatedly<0>(
             ash::DeviceSettingsService::OwnershipStatus::kOwnershipNone));
   }
 
@@ -357,7 +357,7 @@ class AutoEnrollmentControllerBaseTest : public testing::Test {
 
   void SetupStateKeysAvailable() {
     ON_CALL(mock_state_keys_broker_, RequestStateKeys)
-        .WillByDefault(base::test::RunOnceCallback<0>(
+        .WillByDefault(base::test::RunOnceCallbackRepeatedly<0>(
             std::vector<std::string>{kTestStateKey}));
   }
 
@@ -505,7 +505,7 @@ TEST_F(AutoEnrollmentControllerSafeguardTimeoutTest,
   EXPECT_CALL(mock_state_keys_broker_, RequestStateKeys)
       .Times(kMaxRequestStateKeysTries - 1)
       .WillRepeatedly(
-          base::test::RunOnceCallback<0>(std::vector<std::string>{}))
+          base::test::RunOnceCallbackRepeatedly<0>(std::vector<std::string>{}))
       .RetiresOnSaturation();
 
   auto controller = CreateController();

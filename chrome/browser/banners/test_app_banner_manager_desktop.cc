@@ -40,13 +40,13 @@ TestAppBannerManagerDesktop::TestAppBannerManagerDesktop(
           GetClassificationResult(
               segmentation_platform::kWebAppInstallationPromoKey, testing::_,
               testing::_, base::test::IsNotNullCallback()))
-      .WillByDefault(base::test::RunOnceCallback<3>(result));
+      .WillByDefault(base::test::RunOnceCallbackRepeatedly<3>(result));
   ON_CALL(*segmentation_platform_service_,
           CollectTrainingData(
               segmentation_platform::proto::SegmentId::
                   OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO,
               testing::_, testing::_, base::test::IsNotNullCallback()))
-      .WillByDefault(base::test::RunOnceCallback<3>(true));
+      .WillByDefault(base::test::RunOnceCallbackRepeatedly<3>(true));
 }
 
 TestAppBannerManagerDesktop::~TestAppBannerManagerDesktop() = default;

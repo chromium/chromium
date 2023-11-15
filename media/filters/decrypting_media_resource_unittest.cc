@@ -211,8 +211,8 @@ TEST_F(DecryptingMediaResourceTest, WaitingCallback) {
   EXPECT_CALL(*streams_.front(), OnRead(_))
       .WillRepeatedly(ReturnBuffer(encrypted_buffer_));
   EXPECT_CALL(decryptor_, Decrypt(_, encrypted_buffer_, _))
-      .WillRepeatedly(RunOnceCallback<2>(Decryptor::kNoKey,
-                                         scoped_refptr<DecoderBuffer>()));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<2>(
+          Decryptor::kNoKey, scoped_refptr<DecoderBuffer>()));
   EXPECT_CALL(decrypting_media_resource_init_cb_, Run(true));
   EXPECT_CALL(waiting_cb_, Run(WaitingReason::kNoDecryptionKey));
 

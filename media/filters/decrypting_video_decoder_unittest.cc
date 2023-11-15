@@ -25,6 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::base::test::RunOnceCallback;
+using ::base::test::RunOnceCallbackRepeatedly;
 using ::testing::_;
 using ::testing::HasSubstr;
 using ::testing::Invoke;
@@ -269,7 +270,7 @@ TEST_F(DecryptingVideoDecoderTest, Initialize_Failure) {
     return std::make_unique<CallbackRegistration>();
   });
   EXPECT_CALL(*decryptor_, InitializeVideoDecoder(_, _))
-      .WillRepeatedly(RunOnceCallback<1>(false));
+      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(false));
 
   InitializeAndExpectResult(TestVideoConfig::NormalEncrypted(), false);
 }
@@ -293,8 +294,8 @@ TEST_F(DecryptingVideoDecoderTest, ClearToEncryptedNormal) {
   Initialize();
 
   EXPECT_CALL(*decryptor_, DecryptAndDecodeVideo(_, _))
-      .WillRepeatedly(
-          RunOnceCallback<1>(Decryptor::kSuccess, decoded_video_frame_));
+      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(Decryptor::kSuccess,
+                                                   decoded_video_frame_));
 
   EXPECT_MEDIA_LOG(HasSubstr("First switch from clear to encrypted buffers."));
 
@@ -311,8 +312,8 @@ TEST_F(DecryptingVideoDecoderTest, EncryptedBuffersNoMediaLog) {
   Initialize();
 
   EXPECT_CALL(*decryptor_, DecryptAndDecodeVideo(_, _))
-      .WillRepeatedly(
-          RunOnceCallback<1>(Decryptor::kSuccess, decoded_video_frame_));
+      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(Decryptor::kSuccess,
+                                                   decoded_video_frame_));
 
   EXPECT_MEDIA_LOG(HasSubstr("First switch from clear to encrypted buffers."))
       .Times(0);
@@ -349,8 +350,8 @@ TEST_F(DecryptingVideoDecoderTest, DecryptAndDecode_SubsampleError) {
       CreateMismatchedBufferForTest();
 
   EXPECT_CALL(*decryptor_, DecryptAndDecodeVideo(_, _))
-      .WillRepeatedly(RunOnceCallback<1>(Decryptor::kError,
-                                         scoped_refptr<VideoFrame>(nullptr)));
+      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(
+          Decryptor::kError, scoped_refptr<VideoFrame>(nullptr)));
   EXPECT_MEDIA_LOG(
       HasSubstr("DecryptingVideoDecoder: Subsamples for Buffer do not match"));
 
@@ -366,8 +367,8 @@ TEST_F(DecryptingVideoDecoderTest, DecryptAndDecode_DecodeError) {
   Initialize();
 
   EXPECT_CALL(*decryptor_, DecryptAndDecodeVideo(_, _))
-      .WillRepeatedly(RunOnceCallback<1>(Decryptor::kError,
-                                         scoped_refptr<VideoFrame>(nullptr)));
+      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(
+          Decryptor::kError, scoped_refptr<VideoFrame>(nullptr)));
 
   EXPECT_MEDIA_LOG(HasSubstr("DecryptingVideoDecoder: decode error"));
 
@@ -392,8 +393,8 @@ TEST_F(DecryptingVideoDecoderTest, KeyAdded_DuringWaitingForKey) {
   EnterWaitingForKeyState();
 
   EXPECT_CALL(*decryptor_, DecryptAndDecodeVideo(_, _))
-      .WillRepeatedly(
-          RunOnceCallback<1>(Decryptor::kSuccess, decoded_video_frame_));
+      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(Decryptor::kSuccess,
+                                                   decoded_video_frame_));
   EXPECT_CALL(*this, FrameReady(decoded_video_frame_));
   EXPECT_CALL(*this, DecodeDone(IsOkStatus()));
   EXPECT_MEDIA_LOG(
@@ -411,8 +412,8 @@ TEST_F(DecryptingVideoDecoderTest, KeyAdded_DuringPendingDecode) {
   EnterPendingDecodeState();
 
   EXPECT_CALL(*decryptor_, DecryptAndDecodeVideo(_, _))
-      .WillRepeatedly(
-          RunOnceCallback<1>(Decryptor::kSuccess, decoded_video_frame_));
+      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(Decryptor::kSuccess,
+                                                   decoded_video_frame_));
   EXPECT_CALL(*this, FrameReady(decoded_video_frame_));
   EXPECT_CALL(*this, DecodeDone(IsOkStatus()));
   EXPECT_MEDIA_LOG(

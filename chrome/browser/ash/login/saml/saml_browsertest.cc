@@ -2164,7 +2164,8 @@ void SAMLDeviceAttestationTest::SetUpInProcessBrowserTestFixture() {
 
   // By default make it reply that the certificate is already uploaded.
   ON_CALL(mock_cert_uploader_, WaitForUploadComplete)
-      .WillByDefault(RunOnceCallback<0>(/*certificate_uploaded=*/true));
+      .WillByDefault(base::test::RunOnceCallbackRepeatedly<0>(
+          /*certificate_uploaded=*/true));
 
   attestation::TpmChallengeKeyFactory::SetForTesting(
       std::make_unique<attestation::TpmChallengeKeyImpl>(

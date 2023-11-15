@@ -574,8 +574,8 @@ TEST_P(RTCVideoDecoderAdapterTest, ReinitializesForHDRColorSpaceInitially) {
   // Decode() is expected to be called for EOS flush as well.
   EXPECT_CALL(*video_decoder_, Decode_(_, _))
       .Times(3)
-      .WillRepeatedly(
-          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(
+          media::DecoderStatus::Codes::kOk));
   EXPECT_CALL(decoded_cb_, Run(_)).Times(2);
 
   // First Decode() should cause a reinitialize as new color space is given.

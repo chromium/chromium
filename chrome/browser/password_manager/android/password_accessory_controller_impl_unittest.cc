@@ -1281,7 +1281,8 @@ TEST_F(PasswordAccessoryControllerTest,
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
     ON_CALL(*mock_authenticator, AuthenticateWithMessage)
-        .WillByDefault(RunOnceCallback<1>(/*auth_succeeded=*/true));
+        .WillByDefault(
+            base::test::RunOnceCallbackRepeatedly<1>(/*auth_succeeded=*/true));
     EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
         .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))))
         .RetiresOnSaturation();
@@ -1318,7 +1319,8 @@ TEST_F(PasswordAccessoryControllerTest, DontShowMigrationSheetlIfDisabled) {
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
     ON_CALL(*mock_authenticator, AuthenticateWithMessage)
-        .WillByDefault(RunOnceCallback<1>(/*auth_succeeded=*/true));
+        .WillByDefault(
+            base::test::RunOnceCallbackRepeatedly<1>(/*auth_succeeded=*/true));
     EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
         .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))))
         .RetiresOnSaturation();

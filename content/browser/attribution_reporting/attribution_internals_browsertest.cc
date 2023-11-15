@@ -113,10 +113,12 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
     auto manager = std::make_unique<MockAttributionManager>();
 
     ON_CALL(*manager, GetActiveSourcesForWebUI)
-        .WillByDefault(RunOnceCallback<0>(std::vector<StoredSource>{}));
+        .WillByDefault(base::test::RunOnceCallbackRepeatedly<0>(
+            std::vector<StoredSource>{}));
 
     ON_CALL(*manager, GetPendingReportsForInternalUse)
-        .WillByDefault(RunOnceCallback<1>(std::vector<AttributionReport>{}));
+        .WillByDefault(base::test::RunOnceCallbackRepeatedly<1>(
+            std::vector<AttributionReport>{}));
 
     static_cast<StoragePartitionImpl*>(shell()
                                            ->web_contents()
@@ -303,7 +305,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // with `Number.MAX_SAFE_INTEGER`.
 
   ON_CALL(*manager(), GetActiveSourcesForWebUI)
-      .WillByDefault(RunOnceCallback<0>(std::vector<StoredSource>{
+      .WillByDefault(base::test::RunOnceCallbackRepeatedly<
+                     0>(std::vector<StoredSource>{
           SourceBuilder(now)
               .SetSourceEventId(std::numeric_limits<uint64_t>::max())
               .SetAttributionLogic(StoredSource::AttributionLogic::kNever)
@@ -650,16 +653,17 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       SendResult(SendResult::Status::kTransientFailure, net::ERR_TIMED_OUT));
 
   ON_CALL(*manager(), GetPendingReportsForInternalUse)
-      .WillByDefault(RunOnceCallback<1>(std::vector<AttributionReport>{
-          ReportBuilder(
-              AttributionInfoBuilder().Build(),
-              SourceBuilder(now)
-                  .SetSourceType(SourceType::kEvent)
-                  .SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
-                  .BuildStored())
-              .SetReportTime(now)
-              .SetPriority(13)
-              .Build()}));
+      .WillByDefault(base::test::RunOnceCallbackRepeatedly<1>(
+          std::vector<AttributionReport>{
+              ReportBuilder(AttributionInfoBuilder().Build(),
+                            SourceBuilder(now)
+                                .SetSourceType(SourceType::kEvent)
+                                .SetAttributionLogic(
+                                    StoredSource::AttributionLogic::kFalsely)
+                                .BuildStored())
+                  .SetReportTime(now)
+                  .SetPriority(13)
+                  .Build()}));
   manager()->NotifyTriggerHandled(
       DefaultTrigger(),
       CreateReportResult(
@@ -881,8 +885,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   base::Time now = base::Time::Now();
 
   ON_CALL(*manager(), GetActiveSourcesForWebUI)
-      .WillByDefault(RunOnceCallback<0>(std::vector<StoredSource>{
-          SourceBuilder(now).SetSourceEventId(5).BuildStored()}));
+      .WillByDefault(
+          base::test::RunOnceCallbackRepeatedly<0>(std::vector<StoredSource>{
+              SourceBuilder(now).SetSourceEventId(5).BuildStored()}));
 
   manager()->NotifySourceHandled(
       SourceBuilder(now + base::Hours(2)).SetSourceEventId(6).Build(),
@@ -1092,16 +1097,17 @@ IN_PROC_BROWSER_TEST_F(
                               SendResult(SendResult::Status::kSent, net::OK,
                                          /*http_response_code=*/200));
   ON_CALL(*manager(), GetPendingReportsForInternalUse)
-      .WillByDefault(RunOnceCallback<1>(std::vector<AttributionReport>{
-          ReportBuilder(AttributionInfoBuilder().Build(),
-                        SourceBuilder(now)
-                            .SetSourceType(SourceType::kEvent)
-                            .BuildStored())
-              .SetReportTime(now)
-              .SetAggregatableHistogramContributions(contributions)
-              .SetAggregationCoordinatorOrigin(
-                  *SuitableOrigin::Deserialize("https://aws.example.test"))
-              .BuildAggregatableAttribution()}));
+      .WillByDefault(base::test::RunOnceCallbackRepeatedly<1>(
+          std::vector<AttributionReport>{
+              ReportBuilder(AttributionInfoBuilder().Build(),
+                            SourceBuilder(now)
+                                .SetSourceType(SourceType::kEvent)
+                                .BuildStored())
+                  .SetReportTime(now)
+                  .SetAggregatableHistogramContributions(contributions)
+                  .SetAggregationCoordinatorOrigin(
+                      *SuitableOrigin::Deserialize("https://aws.example.test"))
+                  .BuildAggregatableAttribution()}));
 
   {
     static constexpr char kScript[] = R"(
@@ -1380,12 +1386,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                                          /*http_response_code=*/200));
 
   ON_CALL(*manager(), GetPendingReportsForInternalUse)
-      .WillByDefault(RunOnceCallback<1>(std::vector<AttributionReport>{
-          ReportBuilder(AttributionInfoBuilder().Build(),
-                        SourceBuilder(now).BuildStored())
-              .SetReportTime(now + base::Hours(1))
-              .SetPriority(2)
-              .Build()}));
+      .WillByDefault(base::test::RunOnceCallbackRepeatedly<1>(
+          std::vector<AttributionReport>{
+              ReportBuilder(AttributionInfoBuilder().Build(),
+                            SourceBuilder(now).BuildStored())
+                  .SetReportTime(now + base::Hours(1))
+                  .SetPriority(2)
+                  .Build()}));
 
   // By default, debug reports are shown.
   {

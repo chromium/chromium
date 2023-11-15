@@ -50,6 +50,7 @@ namespace segmentation_platform {
 namespace {
 
 using ::base::test::RunOnceCallback;
+using ::base::test::RunOnceCallbackRepeatedly;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -739,8 +740,9 @@ TEST_P(TrainingDataCollectorImplTest,
   ModelSource model_source = GetModelSource(GetParam());
   EXPECT_CALL(*feature_list_processor(),
               ProcessFeatureList(_, _, _, _, _, _, _))
-      .WillRepeatedly(RunOnceCallback<6>(false, ModelProvider::Request{1.f},
-                                         ModelProvider::Response{2.f, 3.f}));
+      .WillRepeatedly(
+          RunOnceCallbackRepeatedly<6>(false, ModelProvider::Request{1.f},
+                                       ModelProvider::Response{2.f, 3.f}));
   CreateSegmentInfo(kTestOptimizationTarget0, kPeriodicDecisionType,
                     model_source);
   Init();
@@ -766,8 +768,9 @@ TEST_P(TrainingDataCollectorImplTest, NoDataCollectionIfUkmAllowedPrefNotSet) {
   ModelSource model_source = GetModelSource(GetParam());
   EXPECT_CALL(*feature_list_processor(),
               ProcessFeatureList(_, _, _, _, _, _, _))
-      .WillRepeatedly(RunOnceCallback<6>(false, ModelProvider::Request{1.f},
-                                         ModelProvider::Response{2.f, 3.f}));
+      .WillRepeatedly(
+          RunOnceCallbackRepeatedly<6>(false, ModelProvider::Request{1.f},
+                                       ModelProvider::Response{2.f, 3.f}));
   LocalStateHelper::GetInstance().SetPrefTime(
       kSegmentationUkmMostRecentAllowedTimeKey, base::Time());
   CreateSegmentInfo(kTestOptimizationTarget0, kPeriodicDecisionType,
@@ -872,8 +875,9 @@ TEST_P(TrainingDataCollectorImplTest,
   ModelSource model_source = GetModelSource(GetParam());
   EXPECT_CALL(*feature_list_processor(),
               ProcessFeatureList(_, _, _, _, _, _, _))
-      .WillRepeatedly(RunOnceCallback<6>(false, ModelProvider::Request{1.f},
-                                         ModelProvider::Response{2.f, 3.f}));
+      .WillRepeatedly(
+          RunOnceCallbackRepeatedly<6>(false, ModelProvider::Request{1.f},
+                                       ModelProvider::Response{2.f, 3.f}));
 
   // Create a segment that contain a uma trigger.
   CreateSegmentInfo(kTestOptimizationTarget0, kOnDemandDecisionType,
@@ -916,8 +920,9 @@ TEST_P(TrainingDataCollectorImplTest, DataCollectionWithTimeTrigger) {
   ModelSource model_source = GetModelSource(GetParam());
   EXPECT_CALL(*feature_list_processor(),
               ProcessFeatureList(_, _, _, _, _, _, _))
-      .WillRepeatedly(RunOnceCallback<6>(false, ModelProvider::Request{1.f},
-                                         ModelProvider::Response{2.f, 3.f}));
+      .WillRepeatedly(
+          RunOnceCallbackRepeatedly<6>(false, ModelProvider::Request{1.f},
+                                       ModelProvider::Response{2.f, 3.f}));
 
   // Create a segment that contain a time delay trigger and a uma trigger.
   auto* segment_info = CreateSegmentInfo(kTestOptimizationTarget0,
@@ -978,8 +983,9 @@ TEST_P(TrainingDataCollectorImplTest, DataCollectionWithTriggerAPI) {
   ModelSource model_source = GetModelSource(GetParam());
   EXPECT_CALL(*feature_list_processor(),
               ProcessFeatureList(_, _, _, _, _, _, _))
-      .WillRepeatedly(RunOnceCallback<6>(false, ModelProvider::Request{1.f},
-                                         ModelProvider::Response{2.f, 3.f}));
+      .WillRepeatedly(
+          RunOnceCallbackRepeatedly<6>(false, ModelProvider::Request{1.f},
+                                       ModelProvider::Response{2.f, 3.f}));
 
   // Create a segment.
   CreateSegmentInfo(kTestOptimizationTarget0, kOnDemandDecisionType,
@@ -1051,8 +1057,9 @@ TEST_P(TrainingDataCollectorImplTest,
        DataCollectionWithTriggerAPIForPreferredSegment) {
   EXPECT_CALL(*feature_list_processor(),
               ProcessFeatureList(_, _, _, _, _, _, _))
-      .WillRepeatedly(RunOnceCallback<6>(false, ModelProvider::Request{1.f},
-                                         ModelProvider::Response{2.f, 3.f}));
+      .WillRepeatedly(
+          RunOnceCallbackRepeatedly<6>(false, ModelProvider::Request{1.f},
+                                       ModelProvider::Response{2.f, 3.f}));
 
   // Create a segment.
   CreateSegmentInfo(kTestOptimizationTarget0, kOnDemandDecisionType);
@@ -1122,4 +1129,3 @@ TEST_P(TrainingDataCollectorImplTest,
 
 }  // namespace
 }  // namespace segmentation_platform
-

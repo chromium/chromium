@@ -198,8 +198,9 @@ TEST_F(FileAnalysisRequestTest, NormalFilesDataControls) {
   file_access::MockScopedFileAccessDelegate scoped_files_access_delegate;
 
   EXPECT_CALL(scoped_files_access_delegate, RequestFilesAccessForSystem)
-      .Times(2)
-      .WillRepeatedly(base::test::RunOnceCallback<1>(
+      .WillOnce(base::test::RunOnceCallback<1>(
+          file_access::ScopedFileAccess::Allowed()))
+      .WillOnce(base::test::RunOnceCallback<1>(
           file_access::ScopedFileAccess::Allowed()));
 
   std::string normal_contents = "Normal file contents";
