@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.Page;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsightsMetadata;
@@ -55,7 +54,6 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
@@ -80,9 +78,6 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private static final float MINIMUM_CONFIDENCE = 0.5f;
     static final String PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END =
             "page_insights_can_autotrigger_after_end";
-    private static final MutableFlagWithSafeDefault sResizeInSyncFeature =
-            new MutableFlagWithSafeDefault(
-                    ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB_BETTER_SCROLL, false);
 
     private final PageInsightsSheetContent mSheetContent;
     private final ManagedBottomSheetController mSheetController;
@@ -121,8 +116,6 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private final Supplier<Profile> mProfileSupplier;
     private final ObservableSupplierImpl<Boolean> mWillHandleBackPressSupplier;
     private final boolean mIsAccessibilityEnabled;
-    private final ObservableSupplierImpl<Integer> mSheetInset = new ObservableSupplierImpl<>();
-    private final boolean mResizeInSync;
 
     private PageInsightsDataLoader mPageInsightsDataLoader;
     @Nullable
@@ -195,7 +188,6 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             BrowserControlsStateProvider controlsStateProvider,
             BrowserControlsSizer browserControlsSizer,
             @Nullable BackPressManager backPressManager,
-            ApplicationViewportInsetSupplier appViewportInsetSupplier,
             BooleanSupplier isPageInsightsEnabledSupplier,
             Function<NavigationHandle, PageInsightsConfig> pageInsightsConfigProvider) {
         mContext = context;
@@ -269,10 +261,6 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                         backPressHandler, BackPressHandler.Type.PAGE_INSIGHTS_BOTTOM_SHEET);
             }
         }
-
-        // Native is ready by now. The feature flag can be cached from here.
-        mResizeInSync = sResizeInSyncFeature.isEnabled();
-        if (mResizeInSync) appViewportInsetSupplier.setBottomSheetInsetSupplier(mSheetInset);
     }
 
     void initView(View bottomSheetContainer) {
@@ -332,6 +320,8 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         return true;
     }
 
+    // TabObserver
+
     private void autoTriggerPageInsightsFromTimer() {
         mAutoTriggerReady = true;
         maybeAutoTriggerPageInsights();
@@ -341,8 +331,6 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mAutoTriggerReady = false;
         mHandler.removeCallbacks(mAutoTriggerRunnable);
     }
-
-    // TabObserver
 
     @Override
     public void onPageLoadStarted(Tab tab, GURL url) {
@@ -512,12 +500,10 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     public void onSheetStateChanged(@SheetState int newState, @StateChangeReason int reason) {
         if (newState == SheetState.HIDDEN) {
             mWillHandleBackPressSupplier.set(false);
-            if (mResizeInSync) mSheetInset.set(0);
             setBottomControlsHeight(mSheetController.getCurrentOffset());
             handleDismissal(mOldState);
         } else if (newState == SheetState.PEEK) {
             mWillHandleBackPressSupplier.set(false);
-            if (mResizeInSync) mSheetInset.set(0);
             setBottomControlsHeight(mSheetController.getCurrentOffset());
             setBackgroundColors(/* ratioOfCompletionFromPeekToExpanded */ .0f);
             logPageInsightsEvent(PageInsightsEvent.STATE_PEEK);
@@ -578,21 +564,11 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     @Override
     public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
         float peekHeightRatio = getPeekHeightRatio();
-        if (mSheetController.getSheetState() == SheetState.SCROLLING) {
-            if (mResizeInSync) {
-                // Calling |setBottomControlsHeight| to resize WebContents per each offset change
-                // is janky. While the sheet is being dragged, let the app-wide inset supplier
-                // handle the resizing so the sheet and the contents move in sync smoothly.
-                if (BrowserControlsUtils.areBrowserControlsFullyVisible(mControlsStateProvider)
-                        && heightFraction < peekHeightRatio) {
-                    setBottomControlsHeight(0);
-                    mSheetInset.set((int) offsetPx);
-                }
-            } else if (heightFraction < peekHeightRatio) {
-                // Set the content height to zero in advance when user drags/scrolls the sheet down
-                // below the peeking state. This helps hide the white patch (blank bottom controls).
-                setBottomControlsHeight(0);
-            }
+        if (mSheetController.getSheetState() == SheetState.SCROLLING
+                && heightFraction < peekHeightRatio) {
+            // Set the content height to zero in advance when user drags/scrolls the sheet down
+            // below the peeking state. This helps hide the white patch (blank bottom controls).
+            setBottomControlsHeight(0);
         }
 
         float ratioOfCompletionFromPeekToExpanded =
@@ -665,10 +641,6 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
 
     View getContainerForTesting() {
         return mSheetContainer;
-    }
-
-    ObservableSupplierImpl<Integer> getSheetInsetForTesting() {
-        return mSheetInset;
     }
 
     private PageInsightsSurfaceRenderer getSurfaceRenderer() {

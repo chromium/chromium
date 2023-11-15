@@ -11,13 +11,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -60,7 +57,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -107,7 +103,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -152,7 +147,6 @@ public class PageInsightsMediatorTest {
     @Mock private BackPressHandler mBackPressHandler;
     @Mock private Function<NavigationHandle, PageInsightsConfig> mPageInsightsConfigProvider;
     @Mock private NavigationHandle mNavigationHandle;
-    @Mock private ApplicationViewportInsetSupplier mAppInsetSupplier;
 
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer>
@@ -218,7 +212,7 @@ public class PageInsightsMediatorTest {
                 ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                 PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END,
                 String.valueOf(triggerDelayMs));
-        FeatureList.mergeTestValues(testValues, /* replace= */ true);
+        FeatureList.setTestValues(testValues);
         Context context = ContextUtils.getApplicationContext();
         context.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
         mMediator =
@@ -234,7 +228,6 @@ public class PageInsightsMediatorTest {
                         mControlsStateProvider,
                         mBrowserControlsSizer,
                         mBackPressManager,
-                        mAppInsetSupplier,
                         () -> true,
                         mPageInsightsConfigProvider);
         verify(mControlsStateProvider).addObserver(mBrowserControlsStateProviderObserver.capture());
@@ -1094,63 +1087,6 @@ public class PageInsightsMediatorTest {
                         .getVisibility());
         verify(mBottomSheetController, never())
                 .hideContent(eq(mMediator.getSheetContent()), anyBoolean());
-    }
-
-    @Test
-    @MediumTest
-    public void resizeInSync() {
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB_BETTER_SCROLL, true);
-        FeatureList.mergeTestValues(testValues, /* replace= */ true);
-        createMediator();
-        ObservableSupplierImpl<Integer> sheetInset = mMediator.getSheetInsetForTesting();
-        verify(mAppInsetSupplier).setBottomSheetInsetSupplier(sheetInset);
-
-        int fullHeight = 2000;
-        ViewGroup contentView = (ViewGroup) mock(ViewGroup.class);
-        when(contentView.getMeasuredHeight()).thenReturn(fullHeight);
-        var sheetContent = mMediator.getSheetContent();
-        sheetContent.setShouldHavePeekStateForTesting(true);
-        sheetContent.setContentViewForTesting(contentView);
-        sheetContent.setFullScreenHeightForTesting(fullHeight);
-        int peekSheetHeight = sheetContent.getPeekHeight();
-
-        // First, let the sheet move to peeking state.
-        when(mBottomSheetController.getCurrentOffset()).thenReturn(peekSheetHeight);
-        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.PEEK);
-
-        sheetInset.set(1); // set a non-zero value for testing.
-        mMediator.onSheetStateChanged(SheetState.PEEK, StateChangeReason.SWIPE);
-
-        verify(mBrowserControlsSizer).setBottomControlsHeight(eq(peekSheetHeight), eq(0));
-        assertEquals("BottomSheet inset should be reset", 0, (int) sheetInset.get());
-        clearInvocations(mBrowserControlsSizer);
-
-        // Make the browser controls fully visible.
-        when(mControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(0.f);
-        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.SCROLLING);
-
-        // Simulate drag up and down the sheet across the peeking height.
-        float fraction = peekSheetHeight / (float) fullHeight + 0.1f; // above peek height
-        int offset = (int) (fullHeight * fraction);
-        mMediator.onSheetOffsetChanged(fraction, offset);
-        verify(mBrowserControlsSizer, never()).setBottomControlsHeight(anyInt(), anyInt());
-        assertEquals("BottomSheet inset should remain zero", 0, (int) sheetInset.get());
-
-        fraction = peekSheetHeight / (float) fullHeight - 0.1f; // below peek height
-        offset = (int) (fullHeight * fraction);
-        mMediator.onSheetOffsetChanged(fraction, offset);
-        verify(mBrowserControlsSizer, never()).setBottomControlsHeight(eq(offset), eq(0));
-        assertEquals("BottomSheet inset should be updated", offset, (int) sheetInset.get());
-
-        // Hide the sheet.
-        when(mBottomSheetController.getCurrentOffset()).thenReturn(0);
-        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.HIDDEN);
-        mMediator.onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.SWIPE);
-
-        verify(mBrowserControlsSizer).setBottomControlsHeight(eq(0), eq(0));
-        assertEquals("BottomSheet inset should be reset", 0, (int) sheetInset.get());
     }
 
     private PageInsightsMetadata getPageInsightsMetadata() {

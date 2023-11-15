@@ -315,7 +315,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         mBrowserControlsManager,
                         mBrowserControlsManager,
                         mBackPressManager,
-                        mWindowAndroid.getApplicationBottomInsetSupplier(),
                         this::isPageInsightsHubEnabled,
                         this::getPageInsightsConfig);
 

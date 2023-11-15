@@ -202,7 +202,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTMinimized,
     &kCCTNewDownloadTab,
     &kCCTPageInsightsHub,
-    &kCCTPageInsightsHubBetterScroll,
     &kCCTPostMessageAPI,
     &kCCTPrefetchDelayShowOnStart,
     &kCCTPreventTouches,
@@ -601,10 +600,6 @@ BASE_FEATURE(kCCTMinimized, "CCTMinimized", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTPageInsightsHub,
              "CCTPageInsightsHub",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTPageInsightsHubBetterScroll,
-             "CCTPageInsightsHubBetterScroll",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTPostMessageAPI,

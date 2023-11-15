@@ -2272,9 +2272,6 @@ extern const char kCCTMinimizedDescription[];
 extern const char kCCTPageInsightsHubName[];
 extern const char kCCTPageInsightsHubDescription[];
 
-extern const char kCCTPageInsightsHubBetterScrollName[];
-extern const char kCCTPageInsightsHubBetterScrollDescription[];
-
 extern const char kCCTPreventTouchesName[];
 extern const char kCCTPreventTouchesDescription[];
 
