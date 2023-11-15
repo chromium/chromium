@@ -13,7 +13,7 @@ namespace base {
 
 BigEndianReader BigEndianReader::FromStringPiece(
     base::StringPiece string_piece) {
-  return BigEndianReader(base::as_bytes(base::make_span(string_piece)));
+  return BigEndianReader(base::as_byte_span(string_piece));
 }
 
 BigEndianReader::BigEndianReader(const uint8_t* buf, size_t len)

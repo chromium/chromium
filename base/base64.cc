@@ -47,11 +47,11 @@ void Base64EncodeAppend(span<const uint8_t> input, std::string* output) {
 }
 
 void Base64Encode(StringPiece input, std::string* output) {
-  *output = Base64Encode(base::as_bytes(base::make_span(input)));
+  *output = Base64Encode(base::as_byte_span(input));
 }
 
 std::string Base64Encode(StringPiece input) {
-  return Base64Encode(base::as_bytes(base::make_span(input)));;
+  return Base64Encode(base::as_byte_span(input));
 }
 
 bool Base64Decode(StringPiece input,

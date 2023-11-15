@@ -228,6 +228,9 @@ constexpr size_t must_not_be_dynamic_extent() {
 //   sized container (e.g. std::vector) requires an explicit conversion (in the
 //   C++20 draft this is simply UB)
 //
+// Additions beyond the C++20 draft
+// - as_byte_span() function.
+//
 // Furthermore, all constructors and methods are marked noexcept due to the lack
 // of exceptions in Chromium.
 //
@@ -559,6 +562,16 @@ constexpr auto make_span(Container&& container) noexcept {
   using T =
       std::remove_pointer_t<decltype(std::data(std::declval<Container>()))>;
   return span<T, N>(std::data(container), std::size(container));
+}
+
+// Convenience function for converting an object which is itself convertible
+// to span into a span of bytes (i.e. span of const uint8_t). Typically used
+// to convert std::string or string-objects holding chars, or std::vector
+// or vector-like objects holding other scalar types, prior to passing them
+// into an API that requires byte spans.
+template <typename T>
+inline span<const uint8_t> as_byte_span(const T& arg) {
+  return as_bytes(make_span(arg));
 }
 
 }  // namespace base

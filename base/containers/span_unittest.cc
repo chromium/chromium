@@ -1271,6 +1271,23 @@ TEST(SpanTest, AsWritableBytes) {
   EXPECT_EQ(0, vec[0]);
 }
 
+TEST(SpanTest, AsByteSpan) {
+  {
+    constexpr int kArray[] = {2, 3, 5, 7, 11, 13};
+    auto byte_span = as_byte_span(kArray);
+    static_assert(std::is_same_v<decltype(byte_span), span<const uint8_t>>);
+    EXPECT_EQ(byte_span.data(), reinterpret_cast<const uint8_t*>(kArray));
+    EXPECT_EQ(byte_span.size(), sizeof(kArray));
+  }
+  {
+    int kMutArray[] = {2, 3, 5, 7};
+    auto byte_span = as_byte_span(kMutArray);
+    static_assert(std::is_same_v<decltype(byte_span), span<const uint8_t>>);
+    EXPECT_EQ(byte_span.data(), reinterpret_cast<const uint8_t*>(kMutArray));
+    EXPECT_EQ(byte_span.size(), sizeof(kMutArray));
+  }
+}
+
 TEST(SpanTest, MakeSpanFromDataAndSize) {
   int* nullint = nullptr;
   auto empty_span = make_span(nullint, 0u);
