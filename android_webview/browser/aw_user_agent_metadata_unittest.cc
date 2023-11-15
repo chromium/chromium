@@ -79,7 +79,7 @@ TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObject_Metadata_Full) {
       .mobile = true,
       .bitness = "64",
       .wow64 = false,
-      .form_factor = ""};
+      .form_factor = {"Desktop", "Mobile"}};
   verifyUaMetadata(ua_metadata,
                    FromJavaAwUserAgentMetadata(
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
@@ -98,7 +98,7 @@ TEST_F(AwUserAgentMetadataTest,
       .mobile = true,
       .bitness = "64",
       .wow64 = false,
-      .form_factor = ""};
+      .form_factor = {"Desktop"}};
   verifyUaMetadata(ua_metadata,
                    FromJavaAwUserAgentMetadata(
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
@@ -117,7 +117,7 @@ TEST_F(AwUserAgentMetadataTest,
       .mobile = true,
       .bitness = "64",
       .wow64 = false,
-      .form_factor = ""};
+      .form_factor = {}};
   verifyUaMetadata(ua_metadata,
                    FromJavaAwUserAgentMetadata(
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
@@ -135,7 +135,7 @@ TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObject_Metadata_NoBrandList) {
       .mobile = true,
       .bitness = "64",
       .wow64 = false,
-      .form_factor = ""};
+      .form_factor = {"Desktop"}};
   verifyUaMetadata(ua_metadata,
                    FromJavaAwUserAgentMetadata(
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
@@ -153,7 +153,7 @@ TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObject_Metadata_LowEntropy) {
       .mobile = false,
       .bitness = "",
       .wow64 = false,
-      .form_factor = ""};
+      .form_factor = {"Desktop"}};
   verifyUaMetadata(ua_metadata,
                    FromJavaAwUserAgentMetadata(
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));

@@ -37,7 +37,7 @@ class NavigatorUAData : public ScriptWrappable, ExecutionContextClient {
   void SetUAFullVersion(const String& uaFullVersion);
   void SetBitness(const String& bitness);
   void SetWoW64(bool wow64);
-  void SetFormFactor(const String& form_factor);
+  void SetFormFactor(Vector<String> form_factor);
 
   // IDL implementation
   const HeapVector<Member<NavigatorUABrandVersion>>& brands() const;
@@ -60,7 +60,7 @@ class NavigatorUAData : public ScriptWrappable, ExecutionContextClient {
   String ua_full_version_;
   String bitness_;
   bool is_wow64_ = false;
-  String form_factor_;
+  Vector<String> form_factor_;
 
   void AddBrandVersion(const String& brand, const String& version);
   void AddBrandFullVersion(const String& brand, const String& version);
