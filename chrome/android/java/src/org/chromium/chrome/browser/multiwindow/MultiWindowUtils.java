@@ -88,6 +88,28 @@ public class MultiWindowUtils implements ActivityStateListener {
         int MULTI_WINDOW = 1;
     }
 
+    @IntDef({
+        InstanceAllocationType.DEFAULT,
+        InstanceAllocationType.EXISTING_INSTANCE_UNMAPPED_TASK,
+        InstanceAllocationType.EXISTING_INSTANCE_MAPPED_TASK,
+        InstanceAllocationType.PREFER_NEW_INSTANCE_NEW_TASK,
+        InstanceAllocationType.PREFER_NEW_INVALID_INSTANCE,
+        InstanceAllocationType.NEW_INSTANCE_NEW_TASK,
+        InstanceAllocationType.EXISTING_INSTANCE_NEW_TASK,
+        InstanceAllocationType.INVALID_INSTANCE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface InstanceAllocationType {
+        int DEFAULT = 0;
+        int EXISTING_INSTANCE_UNMAPPED_TASK = 1;
+        int EXISTING_INSTANCE_MAPPED_TASK = 2;
+        int PREFER_NEW_INSTANCE_NEW_TASK = 3;
+        int PREFER_NEW_INVALID_INSTANCE = 4;
+        int NEW_INSTANCE_NEW_TASK = 5;
+        int EXISTING_INSTANCE_NEW_TASK = 6;
+        int INVALID_INSTANCE = 7;
+    }
+
     protected MultiWindowUtils() {
         mMultiInstanceApi31Enabled = isMultiInstanceApi31Enabled();
     }

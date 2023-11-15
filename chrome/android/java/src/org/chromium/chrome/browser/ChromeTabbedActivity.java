@@ -132,6 +132,7 @@ import org.chromium.chrome.browser.modaldialog.TabModalLifetimeHandler;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceChromeTabbedActivity;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
@@ -2288,9 +2289,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // |allocInstanceId| doesn't do any disk I/O that would add a long-running task
             // to pre-inflation startup.
             boolean preferNew = getExtraPreferNewFromIntent(intent);
-            mWindowId = mMultiInstanceManager.allocInstanceId(
-                    windowId, ApplicationStatus.getTaskId(this), preferNew);
-            logIntentInfo(intent, mWindowId);
+            Pair<Integer, Integer> instanceIdInfo =
+                    mMultiInstanceManager.allocInstanceId(
+                            windowId, ApplicationStatus.getTaskId(this), preferNew);
+            mWindowId = instanceIdInfo.first;
+            logIntentInfo(intent, instanceIdInfo);
         }
         if (mWindowId == INVALID_WINDOW_ID) {
             Log.i(TAG, "Window ID not allocated. Finishing the activity");
@@ -2310,12 +2313,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         return super.isStartedUpCorrectly(intent);
     }
 
-    private void logIntentInfo(Intent intent, int windowId) {
+    private void logIntentInfo(Intent intent, Pair<Integer, Integer> instanceIdInfo) {
         boolean willUseNewInstance = MultiWindowUtils.willUseNewInstance();
         boolean isFromOs =
                 getReferrer() != null
                         && getReferrer().toString().equals(SOURCE_ACTIVITY_REFERRER_OS);
         boolean isFromChrome = IntentHandler.wasIntentSenderChrome(intent);
+        int windowId = instanceIdInfo.first;
+        @InstanceAllocationType int windowAllocationType = instanceIdInfo.second;
 
         var logMessage =
                 "Intent action: "
@@ -2325,6 +2330,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 intent,
                                 IntentHandler.EXTRA_LAUNCHED_VIA_CHROME_LAUNCHER_ACTIVITY,
                                 false)
+                        + "\nReferrer: "
+                        + getReferrer()
                         + "\nIntent contains LAUNCHER category: "
                         + intent.hasCategory(Intent.CATEGORY_LAUNCHER)
                         + "\nIntent contains FLAG_ACTIVITY_MULTIPLE_TASK: "
@@ -2339,8 +2346,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         + isFromOs
                         + "\n@ExternalAppId of intent source: "
                         + IntentHandler.determineExternalIntentSource(intent)
-                        + "\nIs new instanceId allocated: "
-                        + willUseNewInstance;
+                        + "\nAre all instances running: "
+                        + willUseNewInstance
+                        + "\nWindow allocation type: "
+                        + windowAllocationType;
         Log.i(TAG_MULTI_INSTANCE, logMessage);
         // Only crash-report if a valid window ID is allocated to launch the intent.
         if (windowId == INVALID_WINDOW_ID) return;

@@ -881,8 +881,9 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     private int allocInstanceIndex(int passedId, Activity activity, boolean preferNew) {
-        int index =
+        Pair<Integer, Integer> instanceIdInfo =
                 mMultiInstanceManager.allocInstanceId(passedId, activity.getTaskId(), preferNew);
+        int index = instanceIdInfo.first;
 
         // Does what TabModelOrchestrator.createTabModels() would do to simulate production code.
         Pair<Integer, TabModelSelector> pair =

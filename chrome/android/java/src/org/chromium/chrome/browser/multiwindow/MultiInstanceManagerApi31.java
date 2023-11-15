@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.Pair;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -242,7 +244,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     }
 
     @Override
-    public int allocInstanceId(int windowId, int taskId, boolean preferNew) {
+    public Pair<Integer, Integer> allocInstanceId(int windowId, int taskId, boolean preferNew) {
         removeInvalidInstanceData();
 
         int instanceId = getInstanceByTask(taskId);
@@ -252,7 +254,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         // When out of range, ignore the ID and apply the normal allocation logic below.
         if (windowId >= 0 && windowId < mMaxInstances && instanceId == INVALID_INSTANCE_ID) {
             Log.i(TAG_MULTI_INSTANCE, "Existing Instance - selected Id allocated: " + windowId);
-            return windowId;
+            return Pair.create(windowId, InstanceAllocationType.EXISTING_INSTANCE_UNMAPPED_TASK);
         }
 
         // First, see if we have instance-task ID mapping. If we do, use the instance id. This
@@ -260,7 +262,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         // new one. We pair them again.
         if (instanceId != INVALID_INSTANCE_ID) {
             Log.i(TAG_MULTI_INSTANCE, "Existing Instance - mapped Id allocated: " + instanceId);
-            return instanceId;
+            return Pair.create(instanceId, InstanceAllocationType.EXISTING_INSTANCE_MAPPED_TASK);
         }
 
         // If asked to always create a fresh new instance, not from persistent state, do it here.
@@ -268,10 +270,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             for (int i = 0; i < mMaxInstances; ++i) {
                 if (!instanceEntryExists(i)) {
                     logNewInstanceId(i);
-                    return i;
+                    return Pair.create(i, InstanceAllocationType.PREFER_NEW_INSTANCE_NEW_TASK);
                 }
             }
-            return INVALID_INSTANCE_ID;
+            return Pair.create(
+                    INVALID_INSTANCE_ID, InstanceAllocationType.PREFER_NEW_INVALID_INSTANCE);
         }
 
         // Search for an unassigned ID. The index is available for the assignment if:
@@ -281,6 +284,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         // for |readLastAccessedTime|, so can be regarded as the least favored.
         int id = INVALID_INSTANCE_ID;
         boolean newInstanceIdAllocated = false;
+        @InstanceAllocationType int allocationType = InstanceAllocationType.INVALID_INSTANCE;
         for (int i = 0; i < mMaxInstances; ++i) {
             int taskIdFromMap = getTaskFromMap(i);
             if (taskIdFromMap != INVALID_TASK_ID) {
@@ -289,17 +293,21 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             if (id == INVALID_INSTANCE_ID || readLastAccessedTime(i) > readLastAccessedTime(id)) {
                 id = i;
                 newInstanceIdAllocated = !instanceEntryExists(i);
+                allocationType =
+                        newInstanceIdAllocated
+                                ? InstanceAllocationType.NEW_INSTANCE_NEW_TASK
+                                : InstanceAllocationType.EXISTING_INSTANCE_NEW_TASK;
             }
         }
 
         if (newInstanceIdAllocated) {
             logNewInstanceId(id);
-        } else {
+        } else if (id != INVALID_INSTANCE_ID) {
             Log.i(TAG_MULTI_INSTANCE,
                     "Existing Instance - persisted and unmapped Id allocated: " + id);
         }
 
-        return id;
+        return Pair.create(id, allocationType);
     }
 
     private void logNewInstanceId(int i) {

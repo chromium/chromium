@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.DisplayManager.DisplayListener;
+import android.util.Pair;
 import android.view.Display;
 
 import androidx.annotation.Nullable;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.RecreateObserver;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
@@ -518,13 +520,14 @@ public class MultiInstanceManager
 
     /**
      * Assigned an ID for the current activity instance.
+     *
      * @param windowId Instance ID explicitly given for assignment.
      * @param taskId Task ID of the activity.
-     * @param preferNew Boolean indicating a fresh new instance is preferred
-     *        over the one that will load previous tab files from disk.
+     * @param preferNew Boolean indicating a fresh new instance is preferred over the one that will
+     *     load previous tab files from disk.
      */
-    public int allocInstanceId(int windowId, int taskId, boolean preferNew) {
-        return 0; // Use a default index 0.
+    public Pair<Integer, Integer> allocInstanceId(int windowId, int taskId, boolean preferNew) {
+        return Pair.create(0, InstanceAllocationType.DEFAULT); // Use a default index 0.
     }
 
     /**
