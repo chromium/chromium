@@ -91,6 +91,8 @@ class SaveUpdateBubbleController
 
   std::vector<password_manager::PasswordForm> existing_credentials_;
 
+  std::u16string original_username_;
+
   base::WeakPtrFactory<SaveUpdateBubbleController> weak_ptr_factory_{this};
 };
 
