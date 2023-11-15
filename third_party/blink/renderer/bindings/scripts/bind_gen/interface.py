@@ -459,8 +459,9 @@ def bind_callback_local_vars(code_node, cg_context):
                 "LocalDOMWindow* ${blink_receiver} = &UnsafeTo<LocalDOMWindow>("
                 "*${class_name}::ToWrappableUnsafe(${v8_receiver}));")
     else:
-        pattern = ("{_1}* ${blink_receiver} = "
-                   "${class_name}::ToWrappableUnsafe(${v8_receiver});")
+        pattern = (
+            "{_1}* ${blink_receiver} = "
+            "${class_name}::ToWrappableUnsafe(${isolate}, ${v8_receiver});")
         _1 = blink_class_name(cg_context.class_like)
         text = _format(pattern, _1=_1)
     local_vars.append(S("blink_receiver", text))

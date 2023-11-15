@@ -187,6 +187,14 @@ inline T* GetInternalField(v8::Local<v8::Object> wrapper) {
 }
 
 template <typename T, int offset>
+inline T* GetInternalField(v8::Isolate* isolate,
+                           v8::Local<v8::Object> wrapper) {
+  DCHECK_LT(offset, wrapper->InternalFieldCount());
+  return reinterpret_cast<T*>(
+      wrapper->GetAlignedPointerFromInternalField(isolate, offset));
+}
+
+template <typename T, int offset>
 inline T* GetInternalField(v8::Object* wrapper) {
   DCHECK_LT(offset, wrapper->InternalFieldCount());
   return reinterpret_cast<T*>(
@@ -202,6 +210,12 @@ inline ScriptWrappable* ToScriptWrappable(
 
 inline ScriptWrappable* ToScriptWrappable(v8::Local<v8::Object> wrapper) {
   return GetInternalField<ScriptWrappable, kV8DOMWrapperObjectIndex>(wrapper);
+}
+
+inline ScriptWrappable* ToScriptWrappable(v8::Isolate* isolate,
+                                          v8::Local<v8::Object> wrapper) {
+  return GetInternalField<ScriptWrappable, kV8DOMWrapperObjectIndex>(isolate,
+                                                                     wrapper);
 }
 
 inline ScriptWrappable* ToScriptWrappable(v8::Object* wrapper) {
