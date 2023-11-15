@@ -3238,7 +3238,7 @@ bool AXNodeObject::StepValueForRange(float* out_value) const {
     // less than stops in the slider, otherwise, move by 5%.
     float max = step_range.Maximum().ToString().ToFloat();
     float min = step_range.Minimum().ToString().ToFloat();
-    int num_stops = (max - min) / step;
+    int num_stops = base::saturated_cast<int>((max - min) / step);
     constexpr int kNumStopsForFivePercentRule = 40;
     if (num_stops >= kNumStopsForFivePercentRule) {
       // No explicit step, and the step is very small -- don't expose a step
