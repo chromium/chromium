@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_STRUCTURED_LACROS_STRUCTURED_METRICS_RECORDER_H_
-#define CHROME_BROWSER_METRICS_STRUCTURED_LACROS_STRUCTURED_METRICS_RECORDER_H_
+#ifndef CHROME_BROWSER_METRICS_STRUCTURED_LACROS_STRUCTURED_METRICS_DELEGATE_H_
+#define CHROME_BROWSER_METRICS_STRUCTURED_LACROS_STRUCTURED_METRICS_DELEGATE_H_
 
 #include <vector>
 
@@ -14,24 +14,24 @@
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
-// Structured metrics recorder for Lacros. This class forwards all events to Ash
-// Chrome, where the main service to validate and persist events is.
+// Structured metrics recording delegate for Lacros. This class forwards all
+// events to Ash Chrome, where the main service to validate and persist events
+// is.
 //
 // This recorder is thread-safe. Any calls to |this| not on the dedicated
 // sequence will be forwarded to the dedicated sequence set by |SetSequence|.
-class LacrosStructuredMetricsRecorder
+class LacrosStructuredMetricsDelegate
     : public StructuredMetricsClient::RecordingDelegate {
  public:
-  LacrosStructuredMetricsRecorder();
-  ~LacrosStructuredMetricsRecorder() override;
+  LacrosStructuredMetricsDelegate();
+  ~LacrosStructuredMetricsDelegate() override;
 
-  LacrosStructuredMetricsRecorder(
-      const LacrosStructuredMetricsRecorder& recorder) = delete;
-  LacrosStructuredMetricsRecorder& operator=(
-      const LacrosStructuredMetricsRecorder& recorder) = delete;
+  LacrosStructuredMetricsDelegate(
+      const LacrosStructuredMetricsDelegate& recorder) = delete;
+  LacrosStructuredMetricsDelegate& operator=(
+      const LacrosStructuredMetricsDelegate& recorder) = delete;
 
   // Assigns a sequence for which events will be recorded. Should be called
   // before any calls to Record. This sequence should be the affine sequence.
@@ -43,7 +43,7 @@ class LacrosStructuredMetricsRecorder
   bool IsReadyToRecord() const override;
 
  private:
-  friend class LacrosStructuredMetricsRecorderTest;
+  friend class LacrosStructuredMetricsDelegateTest;
 
   // For testing.
   class Observer : public base::CheckedObserver {
@@ -70,10 +70,9 @@ class LacrosStructuredMetricsRecorder
 
   base::ObserverList<Observer> observers_;
 
-  base::WeakPtrFactory<LacrosStructuredMetricsRecorder> weak_ptr_factory_{this};
+  base::WeakPtrFactory<LacrosStructuredMetricsDelegate> weak_ptr_factory_{this};
 };
 
-}  // namespace structured
-}  // namespace metrics
+}  // namespace metrics::structured
 
-#endif  // CHROME_BROWSER_METRICS_STRUCTURED_LACROS_STRUCTURED_METRICS_RECORDER_H_
+#endif  // CHROME_BROWSER_METRICS_STRUCTURED_LACROS_STRUCTURED_METRICS_DELEGATE_H_

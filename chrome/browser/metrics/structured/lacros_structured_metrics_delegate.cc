@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/structured/lacros_structured_metrics_recorder.h"
+#include "chrome/browser/metrics/structured/lacros_structured_metrics_delegate.h"
 
 #include <vector>
 
@@ -13,18 +13,17 @@
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
-LacrosStructuredMetricsRecorder::LacrosStructuredMetricsRecorder() = default;
-LacrosStructuredMetricsRecorder::~LacrosStructuredMetricsRecorder() = default;
+LacrosStructuredMetricsDelegate::LacrosStructuredMetricsDelegate() = default;
+LacrosStructuredMetricsDelegate::~LacrosStructuredMetricsDelegate() = default;
 
-void LacrosStructuredMetricsRecorder::SetSequence(
+void LacrosStructuredMetricsDelegate::SetSequence(
     const scoped_refptr<base::SequencedTaskRunner> sequence_task_runner) {
   sequence_task_runner_ = sequence_task_runner;
 }
 
-void LacrosStructuredMetricsRecorder::RecordEvent(Event&& event) {
+void LacrosStructuredMetricsDelegate::RecordEvent(Event&& event) {
   DCHECK(IsReadyToRecord());
 
   // No-op if not properly initialized.
@@ -37,7 +36,7 @@ void LacrosStructuredMetricsRecorder::RecordEvent(Event&& event) {
   if (!sequence_task_runner_->RunsTasksInCurrentSequence()) {
     sequence_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&LacrosStructuredMetricsRecorder::RecordEvent,
+        base::BindOnce(&LacrosStructuredMetricsDelegate::RecordEvent,
                        weak_ptr_factory_.GetWeakPtr(), std::move(event)));
     return;
   }
@@ -77,17 +76,16 @@ void LacrosStructuredMetricsRecorder::RecordEvent(Event&& event) {
   remote->Record(std::move(events));
 }
 
-bool LacrosStructuredMetricsRecorder::IsReadyToRecord() const {
+bool LacrosStructuredMetricsDelegate::IsReadyToRecord() const {
   return static_cast<bool>(sequence_task_runner_);
 }
 
-void LacrosStructuredMetricsRecorder::AddObserver(Observer* observer) {
+void LacrosStructuredMetricsDelegate::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void LacrosStructuredMetricsRecorder::RemoveObserver(Observer* observer) {
+void LacrosStructuredMetricsDelegate::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-}  // namespace structured
-}  // namespace metrics
+}  // namespace metrics::structured

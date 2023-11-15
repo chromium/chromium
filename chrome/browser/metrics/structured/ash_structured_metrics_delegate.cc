@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"
+#include "chrome/browser/metrics/structured/ash_structured_metrics_delegate.h"
 #include <memory>
 
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -17,10 +17,10 @@
 
 namespace metrics::structured {
 
-AshStructuredMetricsRecorder::AshStructuredMetricsRecorder() = default;
-AshStructuredMetricsRecorder::~AshStructuredMetricsRecorder() = default;
+AshStructuredMetricsDelegate::AshStructuredMetricsDelegate() = default;
+AshStructuredMetricsDelegate::~AshStructuredMetricsDelegate() = default;
 
-void AshStructuredMetricsRecorder::Initialize() {
+void AshStructuredMetricsDelegate::Initialize() {
   DCHECK(!is_initialized_);
 
   // If already initialized, do nothing.
@@ -46,14 +46,14 @@ void AshStructuredMetricsRecorder::Initialize() {
   }
 }
 
-void AshStructuredMetricsRecorder::RecordEvent(Event&& event) {
+void AshStructuredMetricsDelegate::RecordEvent(Event&& event) {
   // It is OK not to check whether the remote is bound or not yet.
   std::vector<Event> events;
   events.emplace_back(std::move(event));
   remote_->Record(std::move(events));
 }
 
-bool AshStructuredMetricsRecorder::IsReadyToRecord() const {
+bool AshStructuredMetricsDelegate::IsReadyToRecord() const {
   // Remote doesn't have to be bound to since the remote can queue up
   // messages. Should be ready to record the moment it is initialized.
   return true;

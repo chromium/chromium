@@ -28,6 +28,8 @@ using RecordingDelegate = StructuredMetricsClient::RecordingDelegate;
 // This class delegates to a Recorder that will be created on ctor.
 // |Initialize()| should be called ASAP. When |Initialize()| should be called is
 // platform specific.
+// TODO(andrewbregger): change name to ChromeStructuredMetricsDelegate to
+// align with the other delegates.
 class ChromeStructuredMetricsRecorder : public RecordingDelegate {
  public:
   // Pointer to singleton.
@@ -65,7 +67,7 @@ class ChromeStructuredMetricsRecorder : public RecordingDelegate {
   ~ChromeStructuredMetricsRecorder() override;
 
   friend class base::NoDestructor<ChromeStructuredMetricsRecorder>;
-  friend class LacrosStructuredMetricsRecorderTest;
+  friend class LacrosStructuredMetricsDelegateTest;
 
   std::unique_ptr<RecordingDelegate> delegate_;
   bool is_initialized_ = false;

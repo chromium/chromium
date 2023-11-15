@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_STRUCTURED_ASH_STRUCTURED_METRICS_RECORDER_H_
-#define CHROME_BROWSER_METRICS_STRUCTURED_ASH_STRUCTURED_METRICS_RECORDER_H_
+#ifndef CHROME_BROWSER_METRICS_STRUCTURED_ASH_STRUCTURED_METRICS_DELEGATE_H_
+#define CHROME_BROWSER_METRICS_STRUCTURED_ASH_STRUCTURED_METRICS_DELEGATE_H_
 
 #include "chrome/browser/metrics/structured/structured_metrics_key_events_observer.h"
 #include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
@@ -18,15 +18,15 @@ namespace metrics::structured {
 // Although the main service also lives in Ash, this recorder sends events using
 // a mojo pipe. Instantiating a mojo pipe adds little overhead and provides lots
 // of benefits out of the box (ie message buffer).
-class AshStructuredMetricsRecorder
+class AshStructuredMetricsDelegate
     : public StructuredMetricsClient::RecordingDelegate {
  public:
-  AshStructuredMetricsRecorder();
-  AshStructuredMetricsRecorder(const AshStructuredMetricsRecorder& recorder) =
+  AshStructuredMetricsDelegate();
+  AshStructuredMetricsDelegate(const AshStructuredMetricsDelegate& recorder) =
       delete;
-  AshStructuredMetricsRecorder& operator=(
-      const AshStructuredMetricsRecorder& recorder) = delete;
-  ~AshStructuredMetricsRecorder() override;
+  AshStructuredMetricsDelegate& operator=(
+      const AshStructuredMetricsDelegate& recorder) = delete;
+  ~AshStructuredMetricsDelegate() override;
 
   // Sets up the recorder. This should be called after CrosApi is initialized,
   // which is done in PreProfileInit() of the browser process setup.
@@ -44,4 +44,4 @@ class AshStructuredMetricsRecorder
 
 }  // namespace metrics::structured
 
-#endif  // CHROME_BROWSER_METRICS_STRUCTURED_ASH_STRUCTURED_METRICS_RECORDER_H_
+#endif  // CHROME_BROWSER_METRICS_STRUCTURED_ASH_STRUCTURED_METRICS_DELEGATE_H_

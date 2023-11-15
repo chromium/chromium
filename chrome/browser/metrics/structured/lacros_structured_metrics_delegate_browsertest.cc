@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/structured/lacros_structured_metrics_recorder.h"
+#include "chrome/browser/metrics/structured/lacros_structured_metrics_delegate.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -19,8 +18,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
 namespace {
 
@@ -33,12 +31,12 @@ using testing::Eq;
 
 // TODO(jongahn): Improve test checkers once callback API is implemented to
 // verify that events sent to Ash-Chrome have been verified.
-class LacrosStructuredMetricsRecorderTest : public InProcessBrowserTest {
+class LacrosStructuredMetricsDelegateTest : public InProcessBrowserTest {
  public:
-  LacrosStructuredMetricsRecorderTest() = default;
-  ~LacrosStructuredMetricsRecorderTest() override = default;
+  LacrosStructuredMetricsDelegateTest() = default;
+  ~LacrosStructuredMetricsDelegateTest() override = default;
 
-  class TestObserver : public LacrosStructuredMetricsRecorder::Observer {
+  class TestObserver : public LacrosStructuredMetricsDelegate::Observer {
    public:
     TestObserver() = default;
     ~TestObserver() override = default;
@@ -72,7 +70,7 @@ class LacrosStructuredMetricsRecorderTest : public InProcessBrowserTest {
 
   TestObserver* InitTestObserver() {
     observer_ = std::make_unique<TestObserver>();
-    recorder_ = static_cast<LacrosStructuredMetricsRecorder*>(
+    recorder_ = static_cast<LacrosStructuredMetricsDelegate*>(
         ChromeStructuredMetricsRecorder::Get()->delegate_.get());
     recorder_->AddObserver(observer_.get());
     return observer_.get();
@@ -82,14 +80,14 @@ class LacrosStructuredMetricsRecorderTest : public InProcessBrowserTest {
     recorder_->RemoveObserver(observer);
   }
 
-  LacrosStructuredMetricsRecorder* recorder() { return recorder_; }
+  LacrosStructuredMetricsDelegate* recorder() { return recorder_; }
 
  private:
-  raw_ptr<LacrosStructuredMetricsRecorder> recorder_;
+  raw_ptr<LacrosStructuredMetricsDelegate> recorder_;
   std::unique_ptr<TestObserver> observer_;
 };
 
-IN_PROC_BROWSER_TEST_F(LacrosStructuredMetricsRecorderTest,
+IN_PROC_BROWSER_TEST_F(LacrosStructuredMetricsDelegateTest,
                        SendValidEventSuccessfully) {
   auto* observer = InitTestObserver();
   RecordCallback record_callback =
@@ -107,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(LacrosStructuredMetricsRecorderTest,
   test_event.Record();
 }
 
-IN_PROC_BROWSER_TEST_F(LacrosStructuredMetricsRecorderTest,
+IN_PROC_BROWSER_TEST_F(LacrosStructuredMetricsDelegateTest,
                        EventIgnoredIfSequenceNotSet) {
   auto* observer = InitTestObserver();
   RecordCallback record_callback =
@@ -126,6 +124,4 @@ IN_PROC_BROWSER_TEST_F(LacrosStructuredMetricsRecorderTest,
   // SUCCESS() if callback not triggered.
 }
 
-}  // namespace structured
-
-}  // namespace metrics
+}  // namespace metrics::structured

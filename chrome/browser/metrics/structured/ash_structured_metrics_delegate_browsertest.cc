@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"
+#include "chrome/browser/metrics/structured/ash_structured_metrics_delegate.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -41,9 +40,9 @@ constexpr uint64_t kMetricTwoHash = UINT64_C(14083999144141567134);
 
 }  // namespace
 
-class AshStructuredMetricsRecorderTest : public MixinBasedInProcessBrowserTest {
+class AshStructuredMetricsDelegateTest : public MixinBasedInProcessBrowserTest {
  public:
-  AshStructuredMetricsRecorderTest() = default;
+  AshStructuredMetricsDelegateTest() = default;
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
@@ -54,7 +53,7 @@ class AshStructuredMetricsRecorderTest : public MixinBasedInProcessBrowserTest {
   StructuredMetricsMixin structured_metrics_mixin_{&mixin_host_};
 };
 
-IN_PROC_BROWSER_TEST_F(AshStructuredMetricsRecorderTest,
+IN_PROC_BROWSER_TEST_F(AshStructuredMetricsDelegateTest,
                        SendValidEventAndSuccessfullyRecords) {
   structured_metrics_mixin_.WaitUntilKeysReady();
 
