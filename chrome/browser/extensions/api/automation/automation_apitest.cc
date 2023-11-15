@@ -57,8 +57,16 @@
 
 namespace extensions {
 
+using ContextType = ExtensionBrowserTest::ContextType;
+
 class AutomationApiTest : public ExtensionApiTest {
  public:
+  explicit AutomationApiTest(ContextType context_type = ContextType::kNone)
+      : ExtensionApiTest(context_type) {}
+  ~AutomationApiTest() override = default;
+  AutomationApiTest(const AutomationApiTest&) = delete;
+  AutomationApiTest& operator=(const AutomationApiTest&) = delete;
+
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -94,24 +102,46 @@ class AutomationApiTest : public ExtensionApiTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class AutomationApiTestWithContextType
+    : public AutomationApiTest,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  AutomationApiTestWithContextType() : AutomationApiTest(GetParam()) {}
+  ~AutomationApiTestWithContextType() override = default;
+  AutomationApiTestWithContextType(const AutomationApiTestWithContextType&) =
+      delete;
+  AutomationApiTestWithContextType& operator=(
+      const AutomationApiTestWithContextType&) = delete;
+};
+
 // Canvas tests rely on the harness producing pixel output in order to read back
 // pixels from a canvas element. So we have to override the setup function.
 class AutomationApiCanvasTest : public AutomationApiTest {
  public:
   void SetUp() override {
     EnablePixelOutput();
-    ExtensionApiTest::SetUp();
+    AutomationApiTest::SetUp();
   }
 };
 
 #if defined(USE_AURA)
+
+// TODO(crbug.com/1093066): This should be moved outside of the USE_AURA
+// block when tests are converted that are outside of this block.
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         AutomationApiTestWithContextType,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         AutomationApiTestWithContextType,
+                         ::testing::Values(ContextType::kServiceWorker));
 
 namespace {
 static const char kDomain[] = "a.com";
 static const char kGotTree[] = "got_tree";
 }  // anonymous namespace
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, TestRendererAccessibilityEnabled) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
+                       TestRendererAccessibilityEnabled) {
   StartEmbeddedTestServer();
   const GURL url = GetURLForPath(kDomain, "/index.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -160,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, SanityCheck) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, ImageLabels) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ImageLabels) {
   StartEmbeddedTestServer();
   const GURL url = GetURLForPath(kDomain, "/index.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
