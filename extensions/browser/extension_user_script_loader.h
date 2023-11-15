@@ -76,7 +76,7 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
   // Adds `scripts` to the set of scripts managed by this loader and once these
   // scripts are loaded, calls OnDynamicScriptsAdded, which also calls
   // `callback`.
-  void AddDynamicScripts(std::unique_ptr<UserScriptList> scripts,
+  void AddDynamicScripts(UserScriptList scripts,
                          std::set<std::string> persistent_script_ids,
                          DynamicScriptsModifiedCallback callback);
 
@@ -94,7 +94,7 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
   // loader, persisting the ones in `persistent_script_ids`. Invokes
   // `add_callback` once scripts are updated.
   void UpdateDynamicScripts(
-      std::unique_ptr<UserScriptList> scripts,
+      UserScriptList scripts,
       std::set<std::string> script_ids,
       std::set<std::string> persistent_script_ids,
       ExtensionUserScriptLoader::DynamicScriptsModifiedCallback add_callback);
@@ -120,8 +120,7 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
   // A wrapper around the method to load user scripts. Waits for the user
   // scripts to load and returns the scripts that were loaded. Exposed only for
   // tests.
-  std::unique_ptr<UserScriptList> LoadScriptsForTest(
-      std::unique_ptr<UserScriptList> user_scripts);
+  UserScriptList LoadScriptsForTest(UserScriptList user_scripts);
 
  private:
   // A helper class which handles getting/setting script metadata from the
@@ -171,7 +170,7 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
   };
 
   // UserScriptLoader:
-  void LoadScripts(std::unique_ptr<UserScriptList> user_scripts,
+  void LoadScripts(UserScriptList user_scripts,
                    const std::set<std::string>& added_script_ids,
                    LoadScriptsCallback callback) override;
 
@@ -182,7 +181,7 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
   // Called when the extension's initial set of persistent dynamic scripts have
   // been fetched right after the extension has been loaded.
   void OnInitialDynamicScriptsReadFromStateStore(
-      std::unique_ptr<UserScriptList> scripts,
+      UserScriptList scripts,
       UserScriptLoader::ScriptsLoadedCallback callback,
       UserScriptList initial_dynamic_scripts);
 
@@ -198,7 +197,7 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
   // `added_scripts` corresponds to newly loaded scripts, their IDs are removed
   // from `pending_dynamic_script_ids_` and their metadata added to
   // `loaded_dynamic_scripts_`.
-  void OnDynamicScriptsAdded(std::unique_ptr<UserScriptList> added_scripts,
+  void OnDynamicScriptsAdded(UserScriptList added_scripts,
                              std::set<std::string> new_persistent_script_ids,
                              DynamicScriptsModifiedCallback callback,
                              UserScriptLoader* loader,

@@ -607,7 +607,7 @@ WebViewInternalAddContentScriptsFunction::Run() {
   DCHECK(manager);
 
   manager->AddContentScripts(source_process_id(), render_frame_host(),
-                             params->instance_id, host_id, std::move(result));
+                             params->instance_id, host_id, std::move(*result));
 
   return RespondNow(NoArguments());
 }

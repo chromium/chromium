@@ -210,8 +210,8 @@ ExtensionFunction::ResponseAction UserScriptsRegisterFunction::Run() {
   }
 
   // Parse user scripts.
-  auto parsed_scripts = std::make_unique<UserScriptList>();
-  parsed_scripts->reserve(scripts.size());
+  UserScriptList parsed_scripts;
+  parsed_scripts.reserve(scripts.size());
   std::u16string parse_error;
 
   bool allowed_in_incognito = scripting::ScriptsShouldBeAllowedInIncognito(
@@ -224,7 +224,7 @@ ExtensionFunction::ResponseAction UserScriptsRegisterFunction::Run() {
       return RespondNow(Error(base::UTF16ToASCII(parse_error)));
     }
 
-    parsed_scripts->push_back(std::move(user_script));
+    parsed_scripts.push_back(std::move(user_script));
   }
   scripts.clear();  // The contents of `scripts` have been std::move()d.
 
@@ -258,7 +258,7 @@ void UserScriptsRegisterFunction::OnUserScriptFilesValidated(
   auto scripts = std::move(result.first);
 
   std::set<std::string> script_ids;
-  for (const auto& script : *scripts) {
+  for (const auto& script : scripts) {
     script_ids.insert(script->id());
   }
   ExtensionUserScriptLoader* loader =
@@ -394,14 +394,14 @@ ExtensionFunction::ResponseAction UserScriptsUpdateFunction::Run() {
           ->user_script_manager()
           ->GetUserScriptLoaderForExtension(extension()->id());
 
-  std::unique_ptr<UserScriptList> parsed_scripts = scripting::UpdateScripts(
+  UserScriptList parsed_scripts = scripting::UpdateScripts(
       scripts_to_update, UserScript::Source::kDynamicUserScript, *loader,
       base::BindRepeating(&CreateRegisteredUserScriptInfo),
       base::BindRepeating(&UserScriptsUpdateFunction::ApplyUpdate, this),
       &error);
 
   if (!error.empty()) {
-    CHECK(!parsed_scripts);
+    CHECK(parsed_scripts.empty());
     return RespondNow(Error(std::move(error)));
   }
 
@@ -480,7 +480,7 @@ void UserScriptsUpdateFunction::OnUserScriptFilesValidated(
       extension()->id(), browser_context());
 
   std::set<std::string> script_ids;
-  for (const auto& script : *scripts) {
+  for (const auto& script : scripts) {
     script_ids.insert(script->id());
     script->set_incognito_enabled(allowed_in_incognito);
   }

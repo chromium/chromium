@@ -367,18 +367,17 @@ void LoadUserScripts(
 }
 
 void LoadScriptsOnFileTaskRunner(
-    std::unique_ptr<UserScriptList> user_scripts,
+    UserScriptList user_scripts,
     ScriptResourceIds script_resource_ids,
     const ExtensionUserScriptLoader::PathAndLocaleInfo& host_info,
     const std::set<std::string>& added_script_ids,
     const scoped_refptr<ContentVerifier>& verifier,
     UserScriptLoader::LoadScriptsCallback callback) {
   DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
-  DCHECK(user_scripts.get());
-  LoadUserScripts(user_scripts.get(), std::move(script_resource_ids), host_info,
+  LoadUserScripts(&user_scripts, std::move(script_resource_ids), host_info,
                   added_script_ids, verifier);
   base::ReadOnlySharedMemoryRegion memory =
-      UserScriptLoader::Serialize(*user_scripts);
+      UserScriptLoader::Serialize(user_scripts);
   // Explicit priority to prevent unwanted task priority inheritance.
   content::GetUIThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
       ->PostTask(FROM_HERE,
@@ -531,20 +530,20 @@ UserScriptList ConvertValueToScripts(const Extension& extension,
 // Gets an extension's manifest scripts' metadata; i.e., gets a list of
 // UserScript objects that contains script info, but not the contents of the
 // scripts.
-std::unique_ptr<UserScriptList> GetManifestScriptsMetadata(
+UserScriptList GetManifestScriptsMetadata(
     content::BrowserContext* browser_context,
     const Extension& extension) {
   bool incognito_enabled =
       util::IsIncognitoEnabled(extension.id(), browser_context);
   const UserScriptList& script_list =
       ContentScriptsInfo::GetContentScripts(&extension);
-  auto script_vector = std::make_unique<UserScriptList>();
-  script_vector->reserve(script_list.size());
+  UserScriptList script_vector;
+  script_vector.reserve(script_list.size());
   for (const auto& script : script_list) {
     std::unique_ptr<UserScript> script_copy =
         UserScript::CopyMetadataFrom(*script);
     script_copy->set_incognito_enabled(incognito_enabled);
-    script_vector->push_back(std::move(script_copy));
+    script_vector.push_back(std::move(script_copy));
   }
   return script_vector;
 }
@@ -625,12 +624,13 @@ void ExtensionUserScriptLoader::RemovePendingDynamicScriptIDs(
 bool ExtensionUserScriptLoader::AddScriptsForExtensionLoad(
     const Extension& extension,
     UserScriptLoader::ScriptsLoadedCallback callback) {
-  std::unique_ptr<UserScriptList> manifest_scripts =
+  UserScriptList manifest_scripts =
       GetManifestScriptsMetadata(browser_context(), extension);
   bool has_dynamic_scripts = HasInitialDynamicScripts(extension);
 
-  if (manifest_scripts->empty() && !has_dynamic_scripts)
+  if (manifest_scripts.empty() && !has_dynamic_scripts) {
     return false;
+  }
 
   if (has_dynamic_scripts) {
     helper_.GetDynamicScripts(base::BindOnce(
@@ -645,31 +645,31 @@ bool ExtensionUserScriptLoader::AddScriptsForExtensionLoad(
 }
 
 void ExtensionUserScriptLoader::AddDynamicScripts(
-    std::unique_ptr<UserScriptList> scripts,
+    UserScriptList scripts,
     std::set<std::string> persistent_script_ids,
     DynamicScriptsModifiedCallback callback) {
   // Only proceed with adding scripts that the extension still intends to add.
   // This guards again an edge case where scripts registered by an API call
   // are quickly unregistered.
-  base::EraseIf(*scripts, [pending_ids = this->pending_dynamic_script_ids_](
-                              const std::unique_ptr<UserScript>& script) {
+  base::EraseIf(scripts, [&pending_ids = pending_dynamic_script_ids_](
+                             const std::unique_ptr<UserScript>& script) {
     return !base::Contains(pending_ids, script->id());
   });
 
-  if (scripts->empty()) {
+  if (scripts.empty()) {
     std::move(callback).Run(/*error=*/absl::nullopt);
     return;
   }
 
-  auto scripts_to_add = std::make_unique<UserScriptList>();
-  for (const auto& script : *scripts) {
+  UserScriptList scripts_to_add;
+  for (const auto& script : scripts) {
     // Additionally, only add scripts to the set of active scripts in renderers
     // (through `AddScripts()`) if the `source` for that script is enabled.
     if (!base::Contains(disabled_sources_, script->GetSource())) {
       // TODO(crbug.com/1496555): This results in an additional copy being
       // stored in the browser for each of these scripts. Optimize the usage of
       // inline code.
-      scripts_to_add->push_back(CopyDynamicScriptInfo(*script));
+      scripts_to_add.push_back(CopyDynamicScriptInfo(*script));
     }
   }
 
@@ -719,14 +719,14 @@ void ExtensionUserScriptLoader::SetSourceEnabled(UserScript::Source source,
   if (enabled) {
     // Re-enable any previously-disabled scripts.
     disabled_sources_.erase(source);
-    auto scripts_to_add = std::make_unique<UserScriptList>();
+    UserScriptList scripts_to_add;
     for (const auto& script : loaded_dynamic_scripts_) {
       if (script->GetSource() == source) {
-        scripts_to_add->push_back(CopyDynamicScriptInfo(*script));
+        scripts_to_add.push_back(CopyDynamicScriptInfo(*script));
       }
     }
 
-    if (scripts_to_add->empty()) {
+    if (scripts_to_add.empty()) {
       // There were no registered scripts of the given source. Nothing more to
       // do.
       return;
@@ -753,7 +753,7 @@ void ExtensionUserScriptLoader::SetSourceEnabled(UserScript::Source source,
 }
 
 void ExtensionUserScriptLoader::UpdateDynamicScripts(
-    std::unique_ptr<UserScriptList> scripts,
+    UserScriptList scripts,
     std::set<std::string> script_ids,
     std::set<std::string> persistent_script_ids,
     ExtensionUserScriptLoader::DynamicScriptsModifiedCallback add_callback) {
@@ -800,27 +800,28 @@ std::set<std::string> ExtensionUserScriptLoader::GetPersistentDynamicScriptIDs()
   return persistent_dynamic_script_ids_;
 }
 
-std::unique_ptr<UserScriptList> ExtensionUserScriptLoader::LoadScriptsForTest(
-    std::unique_ptr<UserScriptList> user_scripts) {
+UserScriptList ExtensionUserScriptLoader::LoadScriptsForTest(
+    UserScriptList user_scripts) {
   std::set<std::string> added_script_ids;
-  for (const std::unique_ptr<UserScript>& script : *user_scripts)
+  for (const std::unique_ptr<UserScript>& script : user_scripts) {
     added_script_ids.insert(script->id());
+  }
 
-  std::unique_ptr<UserScriptList> result;
+  UserScriptList result;
 
   // Block until the scripts have been loaded on the file task runner so that
   // we can return the result synchronously.
   base::RunLoop run_loop;
-  LoadScripts(std::move(user_scripts), added_script_ids,
-              base::BindOnce(
-                  [](base::OnceClosure done_callback,
-                     std::unique_ptr<UserScriptList>& loaded_user_scripts,
-                     std::unique_ptr<UserScriptList> user_scripts,
-                     base::ReadOnlySharedMemoryRegion /* shared_memory */) {
-                    loaded_user_scripts = std::move(user_scripts);
-                    std::move(done_callback).Run();
-                  },
-                  run_loop.QuitClosure(), std::ref(result)));
+  LoadScripts(
+      std::move(user_scripts), added_script_ids,
+      base::BindOnce(
+          [](base::OnceClosure done_callback,
+             UserScriptList& loaded_user_scripts, UserScriptList user_scripts,
+             base::ReadOnlySharedMemoryRegion /* shared_memory */) {
+            loaded_user_scripts = std::move(user_scripts);
+            std::move(done_callback).Run();
+          },
+          run_loop.QuitClosure(), std::ref(result)));
   run_loop.Run();
 
   return result;
@@ -905,13 +906,13 @@ void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::
 }
 
 void ExtensionUserScriptLoader::LoadScripts(
-    std::unique_ptr<UserScriptList> user_scripts,
+    UserScriptList user_scripts,
     const std::set<std::string>& added_script_ids,
     LoadScriptsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ScriptResourceIds script_resource_ids;
-  for (const std::unique_ptr<UserScript>& script : *user_scripts) {
+  for (const std::unique_ptr<UserScript>& script : user_scripts) {
     if (!base::Contains(added_script_ids, script->id()))
       continue;
     FillScriptFileResourceIds(script->js_scripts(), script_resource_ids);
@@ -930,15 +931,15 @@ void ExtensionUserScriptLoader::OnExtensionSystemReady() {
 }
 
 void ExtensionUserScriptLoader::OnInitialDynamicScriptsReadFromStateStore(
-    std::unique_ptr<UserScriptList> manifest_scripts,
+    UserScriptList manifest_scripts,
     UserScriptLoader::ScriptsLoadedCallback callback,
     UserScriptList initial_dynamic_scripts) {
-  std::unique_ptr<UserScriptList> scripts_to_add = std::move(manifest_scripts);
+  UserScriptList scripts_to_add = std::move(manifest_scripts);
   for (const std::unique_ptr<UserScript>& script : initial_dynamic_scripts) {
     // Only add the script to the `UserScriptLoader`'s set (thus sending it to
     // renderers) if the script source type is enabled.
     if (!base::Contains(disabled_sources_, script->GetSource())) {
-      scripts_to_add->push_back(CopyDynamicScriptInfo(*script));
+      scripts_to_add.push_back(CopyDynamicScriptInfo(*script));
       pending_dynamic_script_ids_.insert(script->id());
     }
   }
@@ -973,7 +974,7 @@ void ExtensionUserScriptLoader::OnInitialExtensionScriptsLoaded(
 }
 
 void ExtensionUserScriptLoader::OnDynamicScriptsAdded(
-    std::unique_ptr<UserScriptList> added_scripts,
+    UserScriptList added_scripts,
     std::set<std::string> new_persistent_script_ids,
     DynamicScriptsModifiedCallback callback,
     UserScriptLoader* loader,
@@ -982,14 +983,15 @@ void ExtensionUserScriptLoader::OnDynamicScriptsAdded(
   // occurred, add these scripts to `loaded_dynamic_scripts_` and remove any ids
   // in `pending_dynamic_script_ids_` that correspond to a script in
   // `added_scripts`.
-  for (const std::unique_ptr<UserScript>& script : *added_scripts)
+  for (const std::unique_ptr<UserScript>& script : added_scripts) {
     pending_dynamic_script_ids_.erase(script->id());
+  }
 
   if (!error.has_value()) {
     loaded_dynamic_scripts_.insert(
         loaded_dynamic_scripts_.end(),
-        std::make_move_iterator(added_scripts->begin()),
-        std::make_move_iterator(added_scripts->end()));
+        std::make_move_iterator(added_scripts.begin()),
+        std::make_move_iterator(added_scripts.end()));
 
     persistent_dynamic_script_ids_.insert(
         std::make_move_iterator(new_persistent_script_ids.begin()),

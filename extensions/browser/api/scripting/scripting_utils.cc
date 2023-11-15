@@ -149,7 +149,7 @@ void ClearPersistentScriptURLPatterns(content::BrowserContext* browser_context,
 
 ValidateScriptsResult ValidateParsedScriptsOnFileThread(
     ExtensionResource::SymlinkPolicy symlink_policy,
-    std::unique_ptr<UserScriptList> scripts) {
+    UserScriptList scripts) {
   DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
 
   // Validate that claimed script resources actually exist, and are UTF-8
@@ -157,7 +157,7 @@ ValidateScriptsResult ValidateParsedScriptsOnFileThread(
   std::string error;
   std::vector<InstallWarning> warnings;
   bool are_script_files_valid = script_parsing::ValidateFileSources(
-      *scripts, symlink_policy, &error, &warnings);
+      scripts, symlink_policy, &error, &warnings);
 
   // Script files over the per script/extension size limit are recorded as
   // warnings. However, for this case we should treat "install warnings" as

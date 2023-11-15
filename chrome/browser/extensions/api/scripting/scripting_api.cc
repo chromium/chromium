@@ -947,13 +947,13 @@ ScriptingRegisterContentScriptsFunction::Run() {
 
   // Parse content scripts.
   std::u16string parse_error;
-  auto parsed_scripts = std::make_unique<UserScriptList>();
+  UserScriptList parsed_scripts;
   std::set<std::string> persistent_script_ids;
 
   bool allowed_in_incognito = scripting::ScriptsShouldBeAllowedInIncognito(
       extension()->id(), browser_context());
 
-  parsed_scripts->reserve(scripts.size());
+  parsed_scripts.reserve(scripts.size());
   for (auto& script : scripts) {
     if (!script.matches) {
       return RespondNow(Error(ErrorUtils::FormatErrorMessage(
@@ -974,7 +974,7 @@ ScriptingRegisterContentScriptsFunction::Run() {
     if (persist_across_sessions) {
       persistent_script_ids.insert(user_script->id());
     }
-    parsed_scripts->push_back(std::move(user_script));
+    parsed_scripts.push_back(std::move(user_script));
   }
   // The contents of `scripts` have all been std::move()'d.
   scripts.clear();
@@ -1017,7 +1017,7 @@ void ScriptingRegisterContentScriptsFunction::OnContentScriptFilesValidated(
 
   if (error.has_value()) {
     std::set<std::string> ids_to_remove;
-    for (const auto& script : *scripts) {
+    for (const auto& script : scripts) {
       ids_to_remove.insert(script->id());
     }
 
@@ -1173,7 +1173,7 @@ ExtensionFunction::ResponseAction ScriptingUpdateContentScriptsFunction::Run() {
           ->GetUserScriptLoaderForExtension(extension()->id());
 
   std::set<std::string> updated_script_ids_to_persist;
-  std::unique_ptr<UserScriptList> parsed_scripts = scripting::UpdateScripts(
+  UserScriptList parsed_scripts = scripting::UpdateScripts(
       scripts_to_update, UserScript::Source::kDynamicContentScript, *loader,
       base::BindRepeating(&CreateRegisteredContentScriptInfo),
       base::BindRepeating(&ScriptingUpdateContentScriptsFunction::ApplyUpdate,
@@ -1181,7 +1181,7 @@ ExtensionFunction::ResponseAction ScriptingUpdateContentScriptsFunction::Run() {
       &error);
 
   if (!error.empty()) {
-    CHECK(!parsed_scripts);
+    CHECK(parsed_scripts.empty());
     return RespondNow(Error(std::move(error)));
   }
 
@@ -1282,7 +1282,7 @@ void ScriptingUpdateContentScriptsFunction::OnContentScriptFilesValidated(
       extension()->id(), browser_context());
 
   std::set<std::string> script_ids;
-  for (const auto& script : *scripts) {
+  for (const auto& script : scripts) {
     script_ids.insert(script->id());
 
     script->set_incognito_enabled(allowed_in_incognito);

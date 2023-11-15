@@ -345,8 +345,8 @@ void RequestContentScript::InitScript(const mojom::HostID& host_id,
 
 void RequestContentScript::AddScript() {
   DCHECK(script_loader_);
-  auto scripts = std::make_unique<UserScriptList>();
-  scripts->push_back(UserScript::CopyMetadataFrom(script_));
+  UserScriptList scripts;
+  scripts.push_back(UserScript::CopyMetadataFrom(script_));
   script_loader_->AddScripts(std::move(scripts),
                              UserScriptLoader::ScriptsLoadedCallback());
 }

@@ -22,10 +22,10 @@ namespace {
 
 void SerializeOnBlockingTask(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    std::unique_ptr<extensions::UserScriptList> user_scripts,
+    extensions::UserScriptList user_scripts,
     extensions::UserScriptLoader::LoadScriptsCallback callback) {
   base::ReadOnlySharedMemoryRegion memory =
-      extensions::UserScriptLoader::Serialize(*user_scripts);
+      extensions::UserScriptLoader::Serialize(user_scripts);
 
   task_runner->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(user_scripts),
@@ -57,25 +57,25 @@ WebUIUserScriptLoader::WebUIUserScriptLoader(
 WebUIUserScriptLoader::~WebUIUserScriptLoader() {
 }
 
-void WebUIUserScriptLoader::AddScripts(
-    std::unique_ptr<extensions::UserScriptList> scripts,
-    int render_process_id,
-    int render_frame_id,
-    ScriptsLoadedCallback callback) {
+void WebUIUserScriptLoader::AddScripts(extensions::UserScriptList scripts,
+                                       int render_process_id,
+                                       int render_frame_id,
+                                       ScriptsLoadedCallback callback) {
   UserScriptRenderInfo info(render_process_id, render_frame_id);
-  for (const std::unique_ptr<extensions::UserScript>& script : *scripts)
+  for (const std::unique_ptr<extensions::UserScript>& script : scripts) {
     script_render_info_map_.emplace(script->id(), info);
+  }
 
   extensions::UserScriptLoader::AddScripts(std::move(scripts),
                                            std::move(callback));
 }
 
 void WebUIUserScriptLoader::LoadScripts(
-    std::unique_ptr<extensions::UserScriptList> user_scripts,
+    extensions::UserScriptList user_scripts,
     const std::set<std::string>& added_script_ids,
     LoadScriptsCallback callback) {
-  DCHECK(!user_scripts_cache_) << "Loading scripts in flight.";
-  user_scripts_cache_.swap(user_scripts);
+  DCHECK(user_scripts_cache_.empty()) << "Loading scripts in flight.";
+  user_scripts_cache_ = std::move(user_scripts);
   scripts_loaded_callback_ = std::move(callback);
 
   // The total number of the tasks is used to trace whether all the fetches
@@ -85,7 +85,7 @@ void WebUIUserScriptLoader::LoadScripts(
   DCHECK_EQ(0u, complete_fetchers_);
 
   for (const std::unique_ptr<extensions::UserScript>& script :
-       *user_scripts_cache_) {
+       user_scripts_cache_) {
     if (added_script_ids.count(script->id()) == 0)
       continue;
 
@@ -161,4 +161,5 @@ void WebUIUserScriptLoader::OnWebUIURLFetchComplete() {
                      base::SequencedTaskRunner::GetCurrentDefault(),
                      std::move(user_scripts_cache_),
                      std::move(scripts_loaded_callback_)));
+  user_scripts_cache_.clear();
 }

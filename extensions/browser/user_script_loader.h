@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 
 #include "base/compiler_specific.h"
@@ -42,7 +43,7 @@ namespace extensions {
 class UserScriptLoader : public content::RenderProcessHostCreationObserver {
  public:
   using LoadScriptsCallback =
-      base::OnceCallback<void(std::unique_ptr<UserScriptList>,
+      base::OnceCallback<void(UserScriptList,
                               base::ReadOnlySharedMemoryRegion shared_memory)>;
 
   using ScriptsLoadedCallback =
@@ -70,8 +71,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
 
   // Add |scripts| to the set of scripts managed by this loader. If provided,
   // |callback| is called when |scripts| have been loaded.
-  void AddScripts(std::unique_ptr<UserScriptList> scripts,
-                  ScriptsLoadedCallback callback);
+  void AddScripts(UserScriptList scripts, ScriptsLoadedCallback callback);
 
   // Add |scripts| to the set of scripts managed by this loader.
   // The fetch of the content of the script starts URL request
@@ -79,7 +79,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   // |render_process_id, render_frame_id|.
   // TODO(hanxi): The renderer information doesn't really belong in this base
   // class, but it's not an easy fix.
-  virtual void AddScripts(std::unique_ptr<UserScriptList> scripts,
+  virtual void AddScripts(UserScriptList scripts,
                           int render_process_id,
                           int render_frame_id,
                           ScriptsLoadedCallback callback);
@@ -116,7 +116,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
  protected:
   // Allows the derived classes to have different ways to load user scripts.
   // This may not be synchronous with the calls to Add/Remove/Clear scripts.
-  virtual void LoadScripts(std::unique_ptr<UserScriptList> user_scripts,
+  virtual void LoadScripts(UserScriptList user_scripts,
                            const std::set<std::string>& added_script_ids,
                            LoadScriptsCallback callback) = 0;
 
@@ -145,7 +145,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   void StartLoad();
 
   // Called once we have finished loading the scripts on the file thread.
-  void OnScriptsLoaded(std::unique_ptr<UserScriptList> user_scripts,
+  void OnScriptsLoaded(UserScriptList user_scripts,
                        base::ReadOnlySharedMemoryRegion shared_memory);
 
   // Sends the renderer process a new set of user scripts for this
@@ -155,7 +155,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
 
   bool is_loading() const {
     // |loaded_scripts_| is reset when loading.
-    return loaded_scripts_.get() == nullptr;
+    return !loaded_scripts_.has_value();
   }
 
   // Contains the scripts that were found the last time scripts were updated.
@@ -163,7 +163,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
 
   // List of scripts that are currently loaded. This is null when a load is in
   // progress.
-  std::unique_ptr<UserScriptList> loaded_scripts_;
+  std::optional<UserScriptList> loaded_scripts_;
 
   // The mutually-exclusive information about sets of scripts that were added or
   // removed since the last script load. These maps are keyed by script ids.
