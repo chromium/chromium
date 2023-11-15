@@ -29,6 +29,10 @@ class TpcdSupportService
   // KeyedService overrides:
   void Shutdown() override;
 
+  void Update3pcdSupportSettingsForTesting(const url::Origin& origin,
+                                           const std::string& partition_site,
+                                           bool enabled);
+
  private:
   // Updates ContentSettingsForOneType::TPCD_SUPPORT to reflect
   // the status of the trial for `origin` (when embedded by `partition_site`).

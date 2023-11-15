@@ -32,6 +32,20 @@ reviewer.
   <variant name="Server" summary="server-side"/>
 </variants>
 
+<histogram name="Privacy.3PCD.AdsHeuristicAddedToOverrides"
+    enum="ProfileEligibilityMismatch" expires_after="2024-07-01">
+  <owner>johnidel@chromium.org</owner>
+  <owner>src/chrome/browser/tpcd/OWNERS</owner>
+  <summary>
+    Records what overrides were added to cookie setting overrides by the ads
+    heuristic. For non-ad cookie accesses, this records none. Only recorded
+    while the SkipTPCDMitigationsWithAdsHeuristic feature is on. Recorded once
+    on request start, or document.cookie access. Note that a single request may
+    emit multiple entries to this histogram, and the overall bucket proportions
+    will not be accurate.
+  </summary>
+</histogram>
+
 <histogram name="Privacy.3pcd.Experiment3pcBlockStatusHistogram"
     enum="Experiment3pcBlockStatus" expires_after="2024-07-01">
   <owner>trishalfonso@google.com</owner>

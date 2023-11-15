@@ -288,7 +288,8 @@ class CookieSettingsBase {
 
   // Returns true iff the query for third-party cookie access should consider
   // grants awarded by the global allowlist.
-  bool ShouldConsider3pcdMetadataGrantsSettings() const;
+  bool ShouldConsider3pcdMetadataGrantsSettings(
+      net::CookieSettingOverrides overrides) const;
 
  private:
   // Returns a content setting for the requested parameters and populates |info|
@@ -305,9 +306,11 @@ class CookieSettingsBase {
   bool IsAllowedByStorageAccessGrant(const GURL& url,
                                      const GURL& first_party_url) const;
 
-  bool ShouldConsider3pcdSupportSettings() const;
+  bool ShouldConsider3pcdSupportSettings(
+      net::CookieSettingOverrides overrides) const;
 
-  bool ShouldConsider3pcdHeuristicsGrantsSettings() const;
+  bool ShouldConsider3pcdHeuristicsGrantsSettings(
+      net::CookieSettingOverrides overrides) const;
 
   // Returns true iff the query should consider Storage Access API permission
   // grants.

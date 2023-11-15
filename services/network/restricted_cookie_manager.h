@@ -287,7 +287,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
 
   // Computes the CookieSettingOverrides to be used by this instance.
   net::CookieSettingOverrides GetCookieSettingOverrides(
-      bool has_storage_access) const;
+      bool has_storage_access,
+      bool is_ad_tagged) const;
 
   void OnCookiesAccessed(network::mojom::CookieAccessDetailsPtr details);
 

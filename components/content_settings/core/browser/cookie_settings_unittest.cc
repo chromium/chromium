@@ -1527,6 +1527,13 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdSupport) {
       kAllowedRequestsHistogram,
       static_cast<int>(BlockedStorageAccessResultWith3pcdSupportSetting()), 1);
 
+  // Check override support setting.
+  auto overrides = GetCookieSettingOverrides();
+  overrides.Put(net::CookieSettingOverride::kSkipTPCDSupport);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, overrides,
+                                               nullptr),
+            CONTENT_SETTING_BLOCK);
+
   // Invalid pair the |top_level_url| granting access to |url| is now being
   // loaded under |url| as the top level url.
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
@@ -1570,6 +1577,13 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdMetadataGrants) {
       static_cast<int>(
           BlockedStorageAccessResultWith3pcdMetadataGrantOverride()),
       1);
+
+  // Check override metadata grant.
+  auto overrides = GetCookieSettingOverrides();
+  overrides.Put(net::CookieSettingOverride::kSkipTPCDMetadataGrant);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, overrides,
+                                               nullptr),
+            CONTENT_SETTING_BLOCK);
 
   // Invalid pair the |top_level_url| granting access to |url| is now being
   // loaded under |url| as the top level url.
@@ -1625,6 +1639,13 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdHeuristicsGrants) {
       static_cast<int>(net::cookie_util::StorageAccessResult::
                            ACCESS_ALLOWED_3PCD_HEURISTICS_GRANT),
       1);
+
+  // Check override heuristics grant.
+  auto overrides = GetCookieSettingOverrides();
+  overrides.Put(net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
+                                               overrides, nullptr),
+            CONTENT_SETTING_BLOCK);
 
   FastForwardTime(expiration + base::Seconds(1));
 
