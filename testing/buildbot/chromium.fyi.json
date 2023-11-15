@@ -4555,55 +4555,55 @@
     "skylab_tests": [
       {
         "autotest_name": "tast.chrome-from-gcs",
+        "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
-        "name": "chrome_all_tast_tests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
+        "cros_img": "jacuzzi-public/R121-15673.0.0",
+        "name": "chrome_all_tast_tests JACUZZI_CQ_PUBLIC_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
         "shards": 10,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 21600,
-        "use_lkgm": true,
-        "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
+        "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
       },
       {
         "autotest_name": "tast.chrome-from-gcs",
+        "bucket": "chromiumos-image-archive",
         "ci_only": true,
         "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-public/R121-15673.0.0",
         "experiment_percentage": 100,
-        "name": "chrome_criticalstaging_tast_tests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
+        "name": "chrome_criticalstaging_tast_tests JACUZZI_CQ_PUBLIC_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
         "shards": 3,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_criticalstaging_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_criticalstaging_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 7200,
-        "use_lkgm": true,
-        "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
+        "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
       },
       {
         "autotest_name": "tast.chrome-from-gcs",
+        "bucket": "chromiumos-image-archive",
         "ci_only": true,
         "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-public/R121-15673.0.0",
         "experiment_percentage": 100,
-        "name": "chrome_disabled_tast_tests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
+        "name": "chrome_disabled_tast_tests JACUZZI_CQ_PUBLIC_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
         "shards": 2,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_disabled_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_disabled_tast_tests/",
         "test_level_retries": 1,
         "timeout_sec": 7200,
-        "use_lkgm": true,
-        "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
-      },
-      {
-        "autotest_name": "chromium",
-        "cros_board": "jacuzzi",
-        "name": "chromeos_integration_tests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
-        "test": "chromeos_integration_tests",
-        "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
-        "use_lkgm": true,
-        "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
+        "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
       }
     ]
   },

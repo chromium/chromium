@@ -3429,7 +3429,7 @@
           'chrome',
         ],
         'test_suites': {
-          'skylab_tests': 'chromeos_jacuzzi_skylab_tests',
+          'skylab_tests': 'chromeos_jacuzzi_rel_skylab_tests',
         },
         'os_type': 'chromeos',
       },
