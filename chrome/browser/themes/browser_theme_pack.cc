@@ -806,7 +806,7 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
     return nullptr;
   }
   pack->source_images_ =
-      reinterpret_cast<int*>(const_cast<char*>(pointer->data()));
+      reinterpret_cast<SourceImage*>(const_cast<char*>(pointer->data()));
 
   pointer = data_pack->GetStringPiece(kScaleFactorsID);
   if (!pointer) {
@@ -929,9 +929,10 @@ bool BrowserThemePack::WriteToDisk(const base::FilePath& path) const {
       sizeof(DisplayPropertyPair[kDisplayPropertiesSize]));
 
   int source_count = 1;
-  int* end = source_images_;
-  for (; *end != -1; end++)
+  SourceImage* end = source_images_;
+  for (; end->id != -1; end++) {
     source_count++;
+  }
   resources[kSourceImagesID] =
       base::StringPiece(reinterpret_cast<const char*>(source_images_.get()),
                         source_count * sizeof(*source_images_));
@@ -1068,10 +1069,11 @@ bool BrowserThemePack::HasCustomImage(int idr_id) const {
   if (prs_id == PersistentID::kInvalid)
     return false;
 
-  int* img = source_images_;
-  for (; *img != -1; ++img) {
-    if (*img == prs_id)
+  SourceImage* img = source_images_;
+  for (; img->id != -1; ++img) {
+    if (img->id == prs_id) {
       return true;
+    }
   }
 
   return false;
@@ -1279,8 +1281,8 @@ void BrowserThemePack::InitDisplayProperties() {
 }
 
 void BrowserThemePack::InitSourceImages() {
-  source_images_ = new int[1];
-  source_images_[0] = -1;
+  source_images_ = new SourceImage[1];
+  source_images_[0].id = -1;
 }
 
 void BrowserThemePack::FinalizePackFromColors() {
@@ -1495,10 +1497,11 @@ void BrowserThemePack::AddFileAtScaleToMap(const std::string& image_name,
 }
 
 void BrowserThemePack::BuildSourceImagesArray(const FilePathMap& file_paths) {
-  source_images_ = new int[file_paths.size() + 1];
-  base::ranges::transform(file_paths, source_images_.get(),
-                          &FilePathMap::value_type::first);
-  source_images_[file_paths.size()] = -1;
+  source_images_ = new SourceImage[file_paths.size() + 1];
+  base::ranges::transform(
+      file_paths, source_images_.get(),
+      [](const auto& pair) { return SourceImage{pair.first}; });
+  source_images_[file_paths.size()].id = -1;
 }
 
 bool BrowserThemePack::LoadRawBitmapsTo(
