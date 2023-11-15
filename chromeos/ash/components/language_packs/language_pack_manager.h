@@ -16,6 +16,9 @@
 #include "base/strings/strcat.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/ime/ash/input_method_util.h"
+
+class PrefService;
 
 namespace ash::language_packs {
 
@@ -245,6 +248,11 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // This class should be accessed only via GetInstance();
   LanguagePackManager();
   ~LanguagePackManager() override;
+
+  void UpdateFromInputMethodPrefs(
+      base::span<const std::string> installed_hwr_locales,
+      input_method::InputMethodUtil* input_method_util,
+      PrefService* prefs);
 
   // DlcserviceClient::Observer overrides.
   void OnDlcStateChanged(const dlcservice::DlcState& dlc_state) override;
