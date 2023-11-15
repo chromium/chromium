@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/plus_addresses/plus_address_creation_dialog_delegate.h"
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller_desktop.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/plus_addresses/plus_address_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -30,14 +32,15 @@ namespace plus_addresses {
 
 namespace {
 const float kDescriptionWidthPercent = 0.8;
-const int kPlusAddressLabelTopMargin = 10;
+const int kPlusAddressLabelVerticalMargin = 10;
 }  // namespace
 
 PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
     base::WeakPtr<PlusAddressCreationController> controller,
     const std::string& primary_email_address)
     : views::BubbleDialogDelegate(/*anchor_view=*/nullptr,
-                                  views::BubbleBorder::Arrow::NONE) {
+                                  views::BubbleBorder::Arrow::NONE),
+      controller_(controller) {
   // This delegate is owned & deleted by the PlusAddressCreationController.
   SetOwnedByWidget(false);
   RegisterDeleteDelegateCallback(base::BindOnce(
@@ -112,7 +115,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
           .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
           .Build());
 
-  // Set the primary email address  & update the styling.
+  // Set the primary email address & update the styling.
   std::vector<size_t> email_address_offsets;
   std::u16string u16_primary_email_address =
       base::UTF8ToUTF16(primary_email_address);
@@ -146,23 +149,53 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
           .Build());
   plus_address_label_->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::TLBR(kPlusAddressLabelTopMargin, 0, 0, 0));
+      gfx::Insets::TLBR(kPlusAddressLabelVerticalMargin, 0,
+                        kPlusAddressLabelVerticalMargin, 0));
   plus_address_label_->SetSelectable(true);
   plus_address_label_->SetLineHeight(2 * plus_address_label_->GetLineHeight());
 
+  // Avoid using the builtin DialogDelegate buttons so that we can use
+  // GetWidget()->Close() to close the UI when ready.
+  SetButtons(ui::DIALOG_BUTTON_NONE);
+
   // Initialize buttons.
-  SetDefaultButton(ui::DIALOG_BUTTON_OK);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                 l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                 l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT));
-  SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_OK, false);
-  SetAcceptCallback(
-      base::BindOnce(&PlusAddressCreationController::OnConfirmed, controller));
-  SetCancelCallback(
-      base::BindOnce(&PlusAddressCreationController::OnCanceled, controller));
-  SetCloseCallback(
-      base::BindOnce(&PlusAddressCreationController::OnCanceled, controller));
+  views::BoxLayoutView* buttons_view = primary_view->AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd)
+          .SetBetweenChildSpacing(provider->GetDistanceMetric(
+              views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL))
+          .Build());
+
+  views::MdTextButton* cancel =
+      buttons_view->AddChildView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating(
+              &PlusAddressCreationDialogDelegate::HandleButtonPress,
+              // Safe because this delegate outlives the Widget (and this view).
+              base::Unretained(this), ButtonType::kCancel),
+          l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT)
+
+              ));
+  cancel->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT));
+  cancel->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT));
+  cancel->SizeToPreferredSize();
+
+  confirm_button_ =
+      buttons_view->AddChildView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating(
+              &PlusAddressCreationDialogDelegate::HandleButtonPress,
+              // Safe because this delegate outlives the Widget (and this view).
+              base::Unretained(this), ButtonType::kConfirm),
+          l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT)));
+  confirm_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT));
+  confirm_button_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT));
+  confirm_button_->SizeToPreferredSize();
+  confirm_button_->SetStyle(ui::ButtonStyle::kProminent);
+  confirm_button_->SetEnabled(false);
 
   SetContentsView(std::move(primary_view));
 }
@@ -175,20 +208,64 @@ bool PlusAddressCreationDialogDelegate::ShouldShowCloseButton() const {
   return true;
 }
 
-void PlusAddressCreationDialogDelegate::OnModalReadyForUse(
-    const std::string& plus_address) {
-  if (plus_address_label_) {
-    plus_address_label_->SetText(base::UTF8ToUTF16(plus_address));
+void PlusAddressCreationDialogDelegate::OnWidgetInitialized() {
+  if (views::BubbleFrameView* frame = GetBubbleFrameView(); frame) {
+    frame->close_button()->SetCallback(
+        views::Button::PressedCallback(base::BindRepeating(
+            &PlusAddressCreationDialogDelegate::HandleButtonPress,
+            // Safe because this outlives the BubbleFrameView.
+            base::Unretained(this), ButtonType::kClose)));
   }
-  SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_OK, true);
 }
 
-void PlusAddressCreationDialogDelegate::OnRequestError() {
-  if (plus_address_label_) {
+void PlusAddressCreationDialogDelegate::ShowReserveResult(
+    const PlusProfileOrError& maybe_plus_profile) {
+  CHECK(plus_address_label_);
+
+  if (maybe_plus_profile.has_value()) {
+    plus_address_label_->SetText(
+        base::UTF8ToUTF16(maybe_plus_profile->plus_address));
+    confirm_button_->SetEnabled(true);
+  } else {
     plus_address_label_->SetText(
         l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_ERROR_MESSAGE));
   }
-  SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_OK, false);
+}
+
+void PlusAddressCreationDialogDelegate::ShowConfirmResult(
+    const PlusProfileOrError& maybe_plus_profile) {
+  CHECK(plus_address_label_);
+  CHECK(GetWidget());
+
+  if (maybe_plus_profile.has_value()) {
+    GetWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kAcceptButtonClicked);
+  } else {
+    plus_address_label_->SetText(
+        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_ERROR_MESSAGE));
+    confirm_button_->SetEnabled(false);
+  }
+}
+
+void PlusAddressCreationDialogDelegate::HandleButtonPress(ButtonType type) {
+  switch (type) {
+    case ButtonType::kConfirm: {
+      controller_->OnConfirmed();
+      return;
+    }
+    case ButtonType::kCancel: {
+      controller_->OnCanceled();
+      GetWidget()->CloseWithReason(
+          views::Widget::ClosedReason::kCancelButtonClicked);
+      return;
+    }
+    case ButtonType::kClose: {
+      controller_->OnCanceled();
+      GetWidget()->CloseWithReason(
+          views::Widget::ClosedReason::kCloseButtonClicked);
+      return;
+    }
+  }
 }
 
 }  // namespace plus_addresses

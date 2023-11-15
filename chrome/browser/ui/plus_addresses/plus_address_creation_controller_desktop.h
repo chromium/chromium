@@ -55,10 +55,8 @@ class PlusAddressCreationControllerDesktop
   std::unique_ptr<PlusAddressCreationDialogDelegate> dialog_delegate_;
   url::Origin relevant_origin_;
   PlusAddressCallback callback_;
-  bool ui_modal_showing_ = false;
   bool suppress_ui_for_testing_ = false;
-  // This is set by OnPlusAddressReserved and cleared when it's confirmed or
-  // when the dialog is closed or cancelled.
+  // This is set by OnPlusAddressReserved and cleared when the dialog is closed.
   absl::optional<PlusProfile> plus_profile_;
 
   base::WeakPtrFactory<PlusAddressCreationControllerDesktop> weak_ptr_factory_{

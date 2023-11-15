@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller_desktop.h"
-#include "base/notreached.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ui/views/plus_addresses/plus_address_creation_dialog_delegate.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -81,6 +80,8 @@ void PlusAddressCreationControllerDesktop::OnConfirmed() {
       PlusAddressServiceFactory::GetForBrowserContext(
           GetWebContents().GetBrowserContext());
   if (plus_address_service) {
+    // Note: this call may fail if this modal is confirmed on the same
+    // `relevant_origin_` from another device.
     plus_address_service->ConfirmPlusAddress(
         relevant_origin_, plus_profile_->plus_address,
         base::BindOnce(
@@ -114,28 +115,22 @@ PlusAddressCreationControllerDesktop::GetWeakPtr() {
 
 void PlusAddressCreationControllerDesktop::OnPlusAddressReserved(
     const PlusProfileOrError& maybe_plus_profile) {
-  if (!maybe_plus_profile.has_value()) {
-    // TODO: crbug.com/1467623 - Handle error case.
-    if (dialog_delegate_) {
-      dialog_delegate_->OnRequestError();
-    }
-    return;
+  if (dialog_delegate_) {
+    dialog_delegate_->ShowReserveResult(maybe_plus_profile);
   }
-  plus_profile_ = maybe_plus_profile.value();
-  if (!suppress_ui_for_testing_) {
-    if (dialog_delegate_) {
-      dialog_delegate_->OnModalReadyForUse(maybe_plus_profile->plus_address);
-    }
+  if (maybe_plus_profile.has_value()) {
+    plus_profile_ = maybe_plus_profile.value();
   }
 }
 
 void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
     const PlusProfileOrError& maybe_plus_profile) {
-  if (!maybe_plus_profile.has_value()) {
-    // TODO: crbug.com/1467623 - Handle error case.
-    return;
+  if (dialog_delegate_) {
+    dialog_delegate_->ShowConfirmResult(maybe_plus_profile);
   }
-  std::move(callback_).Run(maybe_plus_profile->plus_address);
+  if (maybe_plus_profile.has_value()) {
+    std::move(callback_).Run(maybe_plus_profile->plus_address);
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PlusAddressCreationControllerDesktop);
