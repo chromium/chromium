@@ -113,7 +113,7 @@ void WontCompile() {
   method_to_const_cb.Run();
 }
 
-#elif defined(NCTEST_METHOD_BIND_NEEDS_REFCOUNTED_OBJECT)  // [r"fatal error: static assertion failed due to requirement '!IsPointerV<base::NoRef \*> \|\| IsRefCountedType<base::NoRef, void>::value': Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained\(\) and document why it's safe."]
+#elif defined(NCTEST_METHOD_BIND_NEEDS_REFCOUNTED_OBJECT)  // [r"fatal error: static assertion failed due to requirement '!IsPointerV<base::NoRef \*> \|\| IsRefCountedType<base::NoRef>': Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained\(\) and document why it's safe."]
 
 
 // Method bound to non-refcounted object.
@@ -126,7 +126,7 @@ void WontCompile() {
   no_ref_cb.Run();
 }
 
-#elif defined(NCTEST_CONST_METHOD_BIND_NEEDS_REFCOUNTED_OBJECT)  // [r"fatal error: static assertion failed due to requirement '!IsPointerV<base::NoRef \*> \|\| IsRefCountedType<base::NoRef, void>::value': Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained\(\) and document why it's safe."]
+#elif defined(NCTEST_CONST_METHOD_BIND_NEEDS_REFCOUNTED_OBJECT)  // [r"fatal error: static assertion failed due to requirement '!IsPointerV<base::NoRef \*> \|\| IsRefCountedType<base::NoRef>': Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained\(\) and document why it's safe."]
 
 // Const Method bound to non-refcounted object.
 //
@@ -138,7 +138,7 @@ void WontCompile() {
   no_ref_const_cb.Run();
 }
 
-#elif defined(NCTEST_METHOD_BIND_RAW_PTR_RECEIVER_NEEDS_REFCOUNTED_OBJECT)  // [r"fatal error: static assertion failed due to requirement '!IsPointerV<base::raw_ptr<base::NoRef, [^>]+>?>> \|\| IsRefCountedType<base::NoRef, void>::value': Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained\(\) and document why it's safe."]
+#elif defined(NCTEST_METHOD_BIND_RAW_PTR_RECEIVER_NEEDS_REFCOUNTED_OBJECT)  // [r"fatal error: static assertion failed due to requirement '!IsPointerV<base::raw_ptr<base::NoRef, [^>]+>?>> \|\| IsRefCountedType<base::NoRef>': Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained\(\) and document why it's safe."]
 
 
 // Method bound to non-refcounted object.
@@ -152,7 +152,7 @@ void WontCompile() {
   no_ref_cb.Run();
 }
 
-#elif defined(NCTEST_CONST_METHOD_BIND_RAW_PTR_RECEIVER_NEEDS_REFCOUNTED_OBJECT)  // [r"fatal error: static assertion failed due to requirement '!IsPointerV<base::raw_ptr<base::NoRef, [^>]+>?>> \|\| IsRefCountedType<base::NoRef, void>::value': Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained\(\) and document why it's safe."]
+#elif defined(NCTEST_CONST_METHOD_BIND_RAW_PTR_RECEIVER_NEEDS_REFCOUNTED_OBJECT)  // [r"fatal error: static assertion failed due to requirement '!IsPointerV<base::raw_ptr<base::NoRef, [^>]+>?>> \|\| IsRefCountedType<base::NoRef>': Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained\(\) and document why it's safe."]
 
 // Const Method bound to non-refcounted object.
 //
@@ -396,7 +396,7 @@ void WontCompile() {
       BindRepeating(&VoidPolymorphic1<int>);
 }
 
-#elif defined(NCTEST_DISALLOW_CAPTURING_LAMBDA)  // [r"static assertion failed due to requirement 'FunctorTraits<\(lambda at [^)]+\), void>::is_stateless': Capturing lambdas and stateful lambdas are intentionally not supported\."]
+#elif defined(NCTEST_DISALLOW_CAPTURING_LAMBDA)  // [r"static assertion failed due to requirement 'FunctorTraits<\(lambda at [^)]+\)>::is_stateless': Capturing lambdas and stateful lambdas are intentionally not supported\."]
 
 void WontCompile() {
   int i = 0, j = 0;
@@ -464,7 +464,7 @@ void WontCompile() {
   BindRepeating(&TakesMoveOnly, std::move(x));
 }
 
-#elif defined(NCTEST_BIND_NON_EMPTY_FUNCTOR)  // [r"static assertion failed due to requirement 'FunctorTraits<base::NonEmptyFunctor, void>::is_stateless': Capturing lambdas and stateful lambdas are intentionally not supported\."]
+#elif defined(NCTEST_BIND_NON_EMPTY_FUNCTOR)  // [r"static assertion failed due to requirement 'FunctorTraits<base::NonEmptyFunctor>::is_stateless': Capturing lambdas and stateful lambdas are intentionally not supported\."]
 
 void WontCompile() {
   BindRepeating(NonEmptyFunctor());

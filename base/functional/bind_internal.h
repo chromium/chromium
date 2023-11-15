@@ -74,7 +74,7 @@ struct IsWeakReceiver;
 template <typename>
 struct BindUnwrapTraits;
 
-template <typename Functor, typename BoundArgsTuple, typename SFINAE = void>
+template <typename Functor, typename BoundArgsTuple>
 struct CallbackCancellationTraits;
 
 template <typename Signature>
@@ -100,7 +100,7 @@ struct MayDangleUntriaged {};
 
 namespace internal {
 
-template <typename Functor, typename SFINAE = void>
+template <typename Functor>
 struct FunctorTraits;
 
 template <typename T,
@@ -133,17 +133,17 @@ class UnretainedWrapper {
 
   // Raw pointer makes sense only if there are no PtrTraits. If there are,
   // it means that a `raw_ptr` is being passed, so use the ctors below instead.
-  template <RawPtrTraits PTraits = PtrTraits,
-            typename = std::enable_if_t<PTraits == RawPtrTraits::kEmpty>>
-  explicit UnretainedWrapper(T* o) : ptr_(o) {}
 
-  // Trick to only instantiate these constructors if they are used. Otherwise,
-  // instantiating UnretainedWrapper with a T that is not supported by
-  // raw_ptr would trigger raw_ptr<T>'s static_assert.
-  template <typename U = T>
-  explicit UnretainedWrapper(const raw_ptr<U, PtrTraits>& o) : ptr_(o) {}
-  template <typename U = T>
-  explicit UnretainedWrapper(raw_ptr<U, PtrTraits>&& o) : ptr_(std::move(o)) {}
+  explicit UnretainedWrapper(T* o)
+    requires(PtrTraits == RawPtrTraits::kEmpty)
+      : ptr_(o) {}
+
+  explicit UnretainedWrapper(const raw_ptr<T, PtrTraits>& o)
+    requires(raw_ptr_traits::IsSupportedType<T>::value)
+      : ptr_(o) {}
+  explicit UnretainedWrapper(raw_ptr<T, PtrTraits>&& o)
+    requires(raw_ptr_traits::IsSupportedType<T>::value)
+      : ptr_(std::move(o)) {}
 
   GetPtrType get() const { return GetInternal(ptr_); }
 
@@ -206,17 +206,17 @@ class UnretainedRefWrapper {
 
   // Raw reference makes sense only if there are no PtrTraits. If there are,
   // it means that a `raw_ref` is being passed, so use the ctors below instead.
-  template <RawPtrTraits PTraits = PtrTraits,
-            typename = std::enable_if_t<PTraits == RawPtrTraits::kEmpty>>
-  explicit UnretainedRefWrapper(T& o) : ref_(o) {}
 
-  // Trick to only instantiate these constructors if they are used. Otherwise,
-  // instantiating UnretainedWrapper with a T that is not supported by
-  // raw_ref would trigger raw_ref<T>'s static_assert.
-  template <typename U = T>
-  explicit UnretainedRefWrapper(const raw_ref<U, PtrTraits>& o) : ref_(o) {}
-  template <typename U = T>
-  explicit UnretainedRefWrapper(raw_ref<U, PtrTraits>&& o)
+  explicit UnretainedRefWrapper(T& o)
+    requires(PtrTraits == RawPtrTraits::kEmpty)
+      : ref_(o) {}
+
+  explicit UnretainedRefWrapper(const raw_ref<T, PtrTraits>& o)
+    requires(raw_ptr_traits::IsSupportedType<T>::value)
+      : ref_(o) {}
+  explicit UnretainedRefWrapper(raw_ref<T, PtrTraits>&& o)
+
+    requires(raw_ptr_traits::IsSupportedType<T>::value)
       : ref_(std::move(o)) {}
 
   T& get() const { return GetInternal(ref_); }
@@ -551,12 +551,12 @@ using ExtractCallableRunType =
 //   int i = 0;
 //   auto f = [i] {};
 //   IsCallableObject<decltype(f)>::value is false.
-template <typename Functor, typename SFINAE = void>
+template <typename Functor>
 struct IsCallableObject : std::false_type {};
 
 template <typename Callable>
-struct IsCallableObject<Callable, std::void_t<decltype(&Callable::operator())>>
-    : std::true_type {};
+  requires requires { &Callable::operator(); }
+struct IsCallableObject<Callable> : std::true_type {};
 
 // HasRefCountedTypeAsRawPtr inherits from true_type when any of the |Args| is a
 // raw pointer to a RefCounted type.
@@ -578,7 +578,7 @@ struct ForceVoidReturn<R(Args...)> {
 // FunctorTraits<>
 //
 // See description at top of file.
-template <typename Functor, typename SFINAE>
+template <typename Functor>
 struct FunctorTraits;
 
 // For callable types.
@@ -601,8 +601,8 @@ struct FunctorTraits;
 //     // No non-static member variable and no virtual functions.
 //   };
 template <typename Functor>
-struct FunctorTraits<Functor,
-                     std::enable_if_t<IsCallableObject<Functor>::value>> {
+  requires(IsCallableObject<Functor>::value)
+struct FunctorTraits<Functor> {
   using RunType = ExtractCallableRunType<Functor>;
   static constexpr bool is_method = false;
   static constexpr bool is_nullable = false;
@@ -1000,14 +1000,14 @@ struct BindTypeHelper {
 };
 
 template <typename Functor>
-std::enable_if_t<FunctorTraits<Functor>::is_nullable, bool> IsNull(
-    const Functor& functor) {
+  requires(FunctorTraits<Functor>::is_nullable)
+constexpr bool IsNull(const Functor& functor) {
   return !functor;
 }
 
 template <typename Functor>
-std::enable_if_t<!FunctorTraits<Functor>::is_nullable, bool> IsNull(
-    const Functor&) {
+  requires(!FunctorTraits<Functor>::is_nullable)
+constexpr bool IsNull(const Functor&) {
   return false;
 }
 
@@ -1043,23 +1043,15 @@ bool QueryCancellationTraits(const BindStateBase* base,
 }
 
 // The base case of BanUnconstructedRefCountedReceiver that checks nothing.
-template <typename Functor, typename Receiver, typename... Unused>
-std::enable_if_t<
-    !(MakeFunctorTraits<Functor>::is_method &&
-      IsPointerV<std::decay_t<Receiver>> &&
-      IsRefCountedType<RemovePointerT<std::decay_t<Receiver>>>::value)>
-BanUnconstructedRefCountedReceiver(const Receiver& receiver, Unused&&...) {}
-
-template <typename Functor>
-void BanUnconstructedRefCountedReceiver() {}
+template <typename Functor, typename... Unused>
+void BanUnconstructedRefCountedReceiver(Unused&&...) {}
 
 // Asserts that Callback is not the first owner of a ref-counted receiver.
 template <typename Functor, typename Receiver, typename... Unused>
-std::enable_if_t<
-    MakeFunctorTraits<Functor>::is_method &&
-    IsPointerV<std::decay_t<Receiver>> &&
-    IsRefCountedType<RemovePointerT<std::decay_t<Receiver>>>::value>
-BanUnconstructedRefCountedReceiver(const Receiver& receiver, Unused&&...) {
+  requires(MakeFunctorTraits<Functor>::is_method &&
+           IsPointerV<std::decay_t<Receiver>> &&
+           IsRefCountedType<RemovePointerT<std::decay_t<Receiver>>>)
+void BanUnconstructedRefCountedReceiver(Receiver&& receiver, Unused&&...) {
   DCHECK(receiver);
 
   // It's error prone to make the implicit first reference to ref-counted types.
@@ -1197,7 +1189,7 @@ struct MakeBindStateTypeImpl<true, Functor, Receiver, BoundArgs...> {
       " it's safe.");
   static_assert(
       !IsPointerV<DecayedReceiver> ||
-          IsRefCountedType<RemovePointerT<DecayedReceiver>>::value,
+          IsRefCountedType<RemovePointerT<DecayedReceiver>>,
       "Receivers may not be raw pointers. If using a raw pointer here is safe"
       " and has no lifetime concerns, use base::Unretained() and document why"
       " it's safe.");
@@ -1589,29 +1581,22 @@ decltype(auto) BindImpl(Functor&& functor, Args&&... args) {
 // bound arguments. We CHECK() the validity of callback to guard against null
 // pointers accidentally ending up in posted tasks, causing hard-to-debug
 // crashes.
-template <template <typename> class CallbackT,
-          typename Signature,
-          std::enable_if_t<std::is_same_v<CallbackT<Signature>,
-                                          OnceCallback<Signature>>>* = nullptr>
+template <template <typename> class CallbackT, typename Signature>
+  requires(std::same_as<CallbackT<Signature>, OnceCallback<Signature>>)
 OnceCallback<Signature> BindImpl(OnceCallback<Signature> callback) {
   CHECK(callback);
   return callback;
 }
 
-template <template <typename> class CallbackT,
-          typename Signature,
-          std::enable_if_t<std::is_same_v<CallbackT<Signature>,
-                                          OnceCallback<Signature>>>* = nullptr>
+template <template <typename> class CallbackT, typename Signature>
+  requires(std::same_as<CallbackT<Signature>, OnceCallback<Signature>>)
 OnceCallback<Signature> BindImpl(RepeatingCallback<Signature> callback) {
   CHECK(callback);
   return callback;
 }
 
-template <template <typename> class CallbackT,
-          typename Signature,
-          std::enable_if_t<std::is_same_v<CallbackT<Signature>,
-                                          RepeatingCallback<Signature>>>* =
-              nullptr>
+template <template <typename> class CallbackT, typename Signature>
+  requires(std::same_as<CallbackT<Signature>, RepeatingCallback<Signature>>)
 RepeatingCallback<Signature> BindImpl(RepeatingCallback<Signature> callback) {
   CHECK(callback);
   return callback;
@@ -1731,19 +1716,16 @@ struct BindUnwrapTraits<Microsoft::WRL::ComPtr<T>> {
 // semantics. By default, callbacks are not cancellable. A specialization should
 // set is_cancellable = true and implement an IsCancelled() that returns if the
 // callback should be cancelled.
-template <typename Functor, typename BoundArgsTuple, typename SFINAE>
+template <typename Functor, typename BoundArgsTuple>
 struct CallbackCancellationTraits {
   static constexpr bool is_cancellable = false;
 };
 
 // Specialization for method bound to weak pointer receiver.
 template <typename Functor, typename... BoundArgs>
-struct CallbackCancellationTraits<
-    Functor,
-    std::tuple<BoundArgs...>,
-    std::enable_if_t<
-        internal::IsWeakMethod<internal::FunctorTraits<Functor>::is_method,
-                               BoundArgs...>::value>> {
+  requires(internal::IsWeakMethod<internal::FunctorTraits<Functor>::is_method,
+                                  BoundArgs...>::value)
+struct CallbackCancellationTraits<Functor, std::tuple<BoundArgs...>> {
   static constexpr bool is_cancellable = true;
 
   template <typename Receiver, typename... Args>

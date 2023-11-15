@@ -424,8 +424,8 @@ internal::OwnedRefWrapper<std::decay_t<T>> OwnedRef(T&& t) {
 // via use of enable_if, and the second takes a T* which will not bind to T&.
 //
 // DEPRECATED - Do not use in new code. See https://crbug.com/1326449
-template <typename T,
-          std::enable_if_t<!std::is_lvalue_reference_v<T>>* = nullptr>
+template <typename T>
+  requires(!std::is_lvalue_reference_v<T>)
 inline internal::PassedWrapper<T> Passed(T&& scoper) {
   return internal::PassedWrapper<T>(std::move(scoper));
 }
