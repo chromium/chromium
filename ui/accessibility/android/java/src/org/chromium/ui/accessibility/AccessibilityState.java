@@ -196,6 +196,14 @@ public class AccessibilityState {
     private static int sFlagsMask;
     private static int sCapabilitiesMask;
 
+    // A bitmask containing the union of all event types, feedback types, flags, and
+    // capabilities of running accessibility services, with heuristics applied. These masks are
+    // kept separate from the ones above, as those should be the source of truth.
+    private static int sEventTypeMaskHeuristic;
+    private static int sFeedbackTypeMaskHeuristic;
+    private static int sFlagsMaskHeuristic;
+    private static int sCapabilitiesMaskHeuristic;
+
     private static State sState;
     private static boolean sInitialized;
     private static boolean sIsInTestingMode;
@@ -242,7 +250,7 @@ public class AccessibilityState {
     private static int sFontWeightAdjustment;
 
     // The IDs of all running accessibility services.
-    private static String[] sServiceIds;
+    private static List<String> sServiceIds;
 
     // The set of listeners of AccessibilityState, implemented using
     // a WeakHashSet behind the scenes so that listeners can be garbage-collected
@@ -503,6 +511,22 @@ public class AccessibilityState {
         return enabledServiceNames;
     }
 
+    private static void calculateHeuristicState(AccessibilityServiceInfo service) {
+        // Only check the event, feedback, flag, and capability types for the password manager
+        // heuristic if the running service is not the AutofillCompatAccessibilityService. The
+        // AutofillCompatAccessibilityService requests all events like a screenreader but
+        // does not serve assistive technology. It only serves autofill applications. The
+        // AutofillCompatAccessibilityService event mask would prevent the form controls
+        // heuristic from identifying the presence of other assistive technologies, so skip
+        // the mask for this service.
+        if (!service.getId().equals(AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID)) {
+            sEventTypeMaskHeuristic |= service.eventTypes;
+            sFeedbackTypeMaskHeuristic |= service.feedbackType;
+            sFlagsMaskHeuristic |= service.flags;
+            sCapabilitiesMaskHeuristic |= service.getCapabilities();
+        }
+    }
+
     static void updateAccessibilityServices() {
         long now = SystemClock.elapsedRealtimeNanos() / 1000;
         if (!sInitialized) {
@@ -510,32 +534,26 @@ public class AccessibilityState {
             fetchAccessibilityManager();
         }
         sInitialized = true;
+
+        // Reset previous state calculations.
         sEventTypeMask = 0;
         sFeedbackTypeMask = 0;
         sFlagsMask = 0;
         sCapabilitiesMask = 0;
 
-        // Used solely as part of the heuristic to identify whether screen readers are running.
-        // This mask is kept separate from the above masks as those should be the source of
-        // truth.
-        int screenReaderCheckEventTypeMask = 0;
-
-        // Used solely as part of the heuristic to identify whether password managers are running.
-        // These masks are kept separate from the above masks as those should be the source of
-        // truth.
-        int passwordCheckEventTypeMask = 0;
-        int passwordCheckFeedbackTypeMask = 0;
-        int passwordCheckFlagsMask = 0;
-        int passwordCheckCapabilitiesMask = 0;
+        // Reset previous heuristic state calculations.
+        sEventTypeMaskHeuristic = 0;
+        sFeedbackTypeMaskHeuristic = 0;
+        sFlagsMaskHeuristic = 0;
+        sCapabilitiesMaskHeuristic = 0;
 
         boolean isAnyAccessibilityServiceEnabled = false;
         boolean isAccessibilityToolPresent = false;
 
         // Get the list of currently running accessibility services.
         List<AccessibilityServiceInfo> serviceInfoList = getRunningServiceInfoList();
-        sServiceIds = new String[serviceInfoList.size()];
-        ArrayList<String> runningServiceNames = new ArrayList<String>();
-        int i = 0;
+        sServiceIds = new ArrayList<String>();
+        List<String> runningServiceNames = new ArrayList<String>();
         for (AccessibilityServiceInfo service : serviceInfoList) {
             if (service == null) continue;
             isAccessibilityToolPresent |= (Build.VERSION.SDK_INT < Build.VERSION_CODES.S
@@ -543,27 +561,14 @@ public class AccessibilityState {
             isAnyAccessibilityServiceEnabled = true;
 
             String serviceId = service.getId();
-            sServiceIds[i++] = serviceId;
+            sServiceIds.add(serviceId);
 
             sEventTypeMask |= service.eventTypes;
             sFeedbackTypeMask |= service.feedbackType;
             sFlagsMask |= service.flags;
             sCapabilitiesMask |= service.getCapabilities();
 
-            // Only check the event, feedback, flag, and capability types for the password manager
-            // heuristic if the running service is not the AutofillCompatAccessibilityService. The
-            // AutofillCompatAccessibilityService requests all events like a screenreader but
-            // does not serve assistive technology. It only serves autofill applications. The
-            // AutofillCompatAccessibilityService event mask would prevent the form controls
-            // heuristic from identifying the presence of other assistive technologies, so skip
-            // the mask for this service.
-            if (!serviceId.equals(AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID)) {
-                screenReaderCheckEventTypeMask |= service.eventTypes;
-                passwordCheckEventTypeMask |= service.eventTypes;
-                passwordCheckFeedbackTypeMask |= service.feedbackType;
-                passwordCheckFlagsMask |= service.flags;
-                passwordCheckCapabilitiesMask |= service.getCapabilities();
-            }
+            calculateHeuristicState(service);
 
             // Try to canonicalize the component name.
             ComponentName componentName = ComponentName.unflattenFromString(serviceId);
@@ -638,16 +643,17 @@ public class AccessibilityState {
         // and if there are, at most, the expected set of password manager event, flags, and
         // capabilities enabled, then the system is probably running only password managers
         boolean areOnlyPasswordManagerMasksRequestedByServices =
-                (passwordCheckEventTypeMask != 0 && passwordCheckFlagsMask != 0
-                        && passwordCheckCapabilitiesMask != 0)
-                && ((passwordCheckEventTypeMask | PASSWORD_MANAGER_EVENT_TYPE_MASK)
-                        == PASSWORD_MANAGER_EVENT_TYPE_MASK)
-                && ((passwordCheckFlagsMask | PASSWORD_MANAGER_FLAG_TYPE_MASK)
-                        == PASSWORD_MANAGER_FLAG_TYPE_MASK)
-                && ((passwordCheckCapabilitiesMask | PASSWORD_MANAGER_CAPABILITY_TYPE_MASK)
-                        == PASSWORD_MANAGER_CAPABILITY_TYPE_MASK)
-                && ((passwordCheckFeedbackTypeMask | AccessibilityServiceInfo.FEEDBACK_GENERIC)
-                        == AccessibilityServiceInfo.FEEDBACK_GENERIC);
+                (sEventTypeMaskHeuristic != 0
+                                && sFlagsMaskHeuristic != 0
+                                && sCapabilitiesMaskHeuristic != 0)
+                        && ((sEventTypeMaskHeuristic | PASSWORD_MANAGER_EVENT_TYPE_MASK)
+                                == PASSWORD_MANAGER_EVENT_TYPE_MASK)
+                        && ((sFlagsMaskHeuristic | PASSWORD_MANAGER_FLAG_TYPE_MASK)
+                                == PASSWORD_MANAGER_FLAG_TYPE_MASK)
+                        && ((sCapabilitiesMaskHeuristic | PASSWORD_MANAGER_CAPABILITY_TYPE_MASK)
+                                == PASSWORD_MANAGER_CAPABILITY_TYPE_MASK)
+                        && ((sFeedbackTypeMaskHeuristic | AccessibilityServiceInfo.FEEDBACK_GENERIC)
+                                == AccessibilityServiceInfo.FEEDBACK_GENERIC);
 
         boolean isOnlyAutofillRunning = false;
 
@@ -693,7 +699,7 @@ public class AccessibilityState {
         // new state includes a screen reader.
         Log.i(TAG, "Informing listeners of changes.");
         boolean isScreenReaderEnabled =
-                (0 != (screenReaderCheckEventTypeMask & SCREEN_READER_EVENT_TYPE_MASK));
+                (0 != (sEventTypeMaskHeuristic & SCREEN_READER_EVENT_TYPE_MASK));
         boolean isSpokenFeedbackServicePresent = (0 != (sFeedbackTypeMask & FEEDBACK_SPOKEN));
 
         boolean isTouchExplorationEnabled;
@@ -787,7 +793,7 @@ public class AccessibilityState {
     @CalledByNative
     private static String[] getAccessibilityServiceIds() {
         if (!sInitialized) updateAccessibilityServices();
-        return sServiceIds;
+        return sServiceIds.toArray(new String[0]);
     }
 
     /**
