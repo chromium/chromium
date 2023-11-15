@@ -26,10 +26,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * JNI wrapper for the native SyncServiceImpl.
  *
- * This class mostly makes calls to native and contains a minimum of business logic. It is only
- * usable from the UI thread as the native SyncServiceImpl requires its access to be on the
- * UI thread. See components/sync/service/sync_service_impl.h for more details.
- * TODO(crbug.com/1451811): Update to no reference UI thread.
+ * <p>This class mostly makes calls to native and contains a minimum of business logic. It is only
+ * usable from the UI thread as the native SyncServiceImpl requires its access to be on the UI
+ * thread. See components/sync/service/sync_service_impl.h for more details.
+ *
+ * <p>TODO(crbug.com/1451811): Update to no reference UI thread.
  */
 public class SyncServiceImpl implements SyncService {
     private final long mSyncServiceAndroidBridge;

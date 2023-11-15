@@ -268,46 +268,60 @@ public abstract class SyncConsentFragmentBase extends Fragment
     // TODO(crbug.com/1462264): Refactor method to take CoreAccountInfo instead of String email.
     protected void signinAndEnableSync(
             String accountEmail, boolean settingsClicked, Runnable callback) {
-        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().then(coreAccountInfos -> {
-            @Nullable
-            CoreAccountInfo coreAccountInfo =
-                    AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, accountEmail);
-            if (coreAccountInfo == null) {
-                callback.run();
-                return;
-            }
-            Profile profile = Profile.getLastUsedRegularProfile();
-            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
-            signinManager.signinAndEnableSync(
-                    CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo), mSigninAccessPoint,
-                    new SigninManager.SignInCallback() {
-                        @Override
-                        public void onSignInComplete() {
-                            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC)
-                                    && getTangibleSyncGroup() != TangibleSyncGroup.GROUP_F) {
-                                // Groups A-E are only for enabling History and Tab Sync
-                                SyncServiceFactory.getForProfile(profile).setSelectedTypes(false,
-                                        Set.of(UserSelectableType.HISTORY,
-                                                UserSelectableType.TABS));
+        AccountManagerFacadeProvider.getInstance()
+                .getCoreAccountInfos()
+                .then(
+                        coreAccountInfos -> {
+                            @Nullable
+                            CoreAccountInfo coreAccountInfo =
+                                    AccountUtils.findCoreAccountInfoByEmail(
+                                            coreAccountInfos, accountEmail);
+                            if (coreAccountInfo == null) {
+                                callback.run();
+                                return;
                             }
-                            if (!settingsClicked) {
-                                UnifiedConsentServiceBridge
-                                        .setUrlKeyedAnonymizedDataCollectionEnabled(
-                                                Profile.getLastUsedRegularProfile(), true);
-                                SyncServiceFactory.getForProfile(profile)
-                                        .setInitialSyncFeatureSetupComplete(
-                                                SyncFirstSetupCompleteSource.BASIC_FLOW);
-                            }
-                            closeAndMaybeOpenSyncSettings(settingsClicked);
-                            callback.run();
-                        }
+                            Profile profile = Profile.getLastUsedRegularProfile();
+                            SigninManager signinManager =
+                                    IdentityServicesProvider.get().getSigninManager(profile);
+                            signinManager.signinAndEnableSync(
+                                    CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo),
+                                    mSigninAccessPoint,
+                                    new SigninManager.SignInCallback() {
+                                        @Override
+                                        public void onSignInComplete() {
+                                            if (ChromeFeatureList.isEnabled(
+                                                            ChromeFeatureList.TANGIBLE_SYNC)
+                                                    && getTangibleSyncGroup()
+                                                            != TangibleSyncGroup.GROUP_F) {
+                                                // Groups A-E are only for enabling History and Tab
+                                                // Sync
+                                                SyncServiceFactory.getForProfile(profile)
+                                                        .setSelectedTypes(
+                                                                false,
+                                                                Set.of(
+                                                                        UserSelectableType.HISTORY,
+                                                                        UserSelectableType.TABS));
+                                            }
+                                            if (!settingsClicked) {
+                                                UnifiedConsentServiceBridge
+                                                        .setUrlKeyedAnonymizedDataCollectionEnabled(
+                                                                Profile.getLastUsedRegularProfile(),
+                                                                true);
+                                                SyncServiceFactory.getForProfile(profile)
+                                                        .setInitialSyncFeatureSetupComplete(
+                                                                SyncFirstSetupCompleteSource
+                                                                        .BASIC_FLOW);
+                                            }
+                                            closeAndMaybeOpenSyncSettings(settingsClicked);
+                                            callback.run();
+                                        }
 
-                        @Override
-                        public void onSignInAborted() {
-                            callback.run();
-                        }
-                    });
-        });
+                                        @Override
+                                        public void onSignInAborted() {
+                                            callback.run();
+                                        }
+                                    });
+                        });
     }
 
     @Override
