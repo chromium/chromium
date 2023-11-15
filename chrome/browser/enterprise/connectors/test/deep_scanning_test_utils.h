@@ -36,6 +36,7 @@ class EventReportValidator {
 
   void ExpectDangerousDeepScanningResult(
       const std::string& expected_url,
+      const std::string& expected_tab_url,
       const std::string& expected_source,
       const std::string& expected_destination,
       const std::string& expected_filename,
@@ -51,6 +52,7 @@ class EventReportValidator {
 
   void ExpectSensitiveDataEvent(
       const std::string& expected_url,
+      const std::string& expected_tab_url,
       const std::string& expected_source,
       const std::string& expected_destination,
       const std::string& expected_filename,
@@ -66,6 +68,7 @@ class EventReportValidator {
 
   void ExpectSensitiveDataEvents(
       const std::string& expected_url,
+      const std::string& expected_tab_url,
       const std::string& expected_source,
       const std::string& expected_destination,
       const std::vector<std::string>& expected_filenames,
@@ -81,6 +84,7 @@ class EventReportValidator {
 
   void ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
       const std::string& expected_url,
+      const std::string& expected_tab_url,
       const std::string& expected_source,
       const std::string& expected_destination,
       const std::string& expected_filename,
@@ -97,6 +101,7 @@ class EventReportValidator {
 
   void ExpectSensitiveDataEventAndDangerousDeepScanningResult(
       const std::string& expected_url,
+      const std::string& expected_tab_url,
       const std::string& expected_source,
       const std::string& expected_destination,
       const std::string& expected_filename,
@@ -112,6 +117,7 @@ class EventReportValidator {
       const std::string& expected_scan_id);
 
   void ExpectUnscannedFileEvent(const std::string& expected_url,
+                                const std::string& expected_tab_url,
                                 const std::string& expected_source,
                                 const std::string& expected_destination,
                                 const std::string& expected_filename,
@@ -126,6 +132,7 @@ class EventReportValidator {
 
   void ExpectUnscannedFileEvents(
       const std::string& expected_url,
+      const std::string& expected_tab_url,
       const std::string& expected_source,
       const std::string& expected_destination,
       const std::vector<std::string>& expected_filenames,
@@ -140,6 +147,7 @@ class EventReportValidator {
 
   void ExpectDangerousDownloadEvent(
       const std::string& expected_url,
+      const std::string& expected_tab_url,
       const std::string& expected_filename,
       const std::string& expected_sha256,
       const std::string& expected_threat_type,
@@ -197,6 +205,7 @@ class EventReportValidator {
 
   std::string event_key_;
   absl::optional<std::string> url_;
+  absl::optional<std::string> tab_url_;
   absl::optional<std::string> source_;
   absl::optional<std::string> destination_;
   absl::optional<std::string> trigger_ = absl::nullopt;

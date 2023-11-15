@@ -880,6 +880,9 @@ const std::string& DownloadItemImpl::GetSerializedEmbedderDownloadData() const {
 }
 
 const GURL& DownloadItemImpl::GetTabUrl() const {
+  if (IsSavePackageDownload()) {
+    return GetURL();
+  }
   return request_info_.tab_url;
 }
 

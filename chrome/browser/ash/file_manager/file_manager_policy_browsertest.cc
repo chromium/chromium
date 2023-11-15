@@ -681,6 +681,7 @@ class FileTransferConnectorFilesAppBrowserTestBase {
               cloud_policy_client());
       validator_->ExpectSensitiveDataEvents(
           /*url*/ "",
+          /*tab_url*/ "",
           /*source*/ *source_volume_name,
           /*destination*/ *destination_volume_name,
           /*filenames*/ file_names,

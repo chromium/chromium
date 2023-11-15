@@ -43,6 +43,7 @@ EventReportValidator::~EventReportValidator() {
 
 void EventReportValidator::ExpectUnscannedFileEvent(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_source,
     const std::string& expected_destination,
     const std::string& expected_filename,
@@ -56,6 +57,7 @@ void EventReportValidator::ExpectUnscannedFileEvent(
     const std::string& expected_profile_identifier) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -81,6 +83,7 @@ void EventReportValidator::ExpectUnscannedFileEvent(
 
 void EventReportValidator::ExpectUnscannedFileEvents(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_source,
     const std::string& expected_destination,
     const std::vector<std::string>& expected_filenames,
@@ -100,6 +103,7 @@ void EventReportValidator::ExpectUnscannedFileEvents(
 
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   mimetypes_ = expected_mimetypes;
@@ -119,6 +123,7 @@ void EventReportValidator::ExpectUnscannedFileEvents(
 
 void EventReportValidator::ExpectDangerousDeepScanningResult(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_source,
     const std::string& expected_destination,
     const std::string& expected_filename,
@@ -133,6 +138,7 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
     const absl::optional<std::string>& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -161,6 +167,7 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
 
 void EventReportValidator::ExpectSensitiveDataEvent(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_source,
     const std::string& expected_destination,
     const std::string& expected_filename,
@@ -175,6 +182,7 @@ void EventReportValidator::ExpectSensitiveDataEvent(
     const std::string& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   dlp_verdicts_[expected_filename] = expected_dlp_verdict;
@@ -201,6 +209,7 @@ void EventReportValidator::ExpectSensitiveDataEvent(
 
 void EventReportValidator::ExpectSensitiveDataEvents(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_source,
     const std::string& expected_destination,
     const std::vector<std::string>& expected_filenames,
@@ -222,6 +231,7 @@ void EventReportValidator::ExpectSensitiveDataEvents(
 
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   mimetypes_ = expected_mimetypes;
@@ -242,6 +252,7 @@ void EventReportValidator::ExpectSensitiveDataEvents(
 void EventReportValidator::
     ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
         const std::string& expected_url,
+        const std::string& expected_tab_url,
         const std::string& expected_source,
         const std::string& expected_destination,
         const std::string& expected_filename,
@@ -257,6 +268,7 @@ void EventReportValidator::
         const std::string& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -292,6 +304,7 @@ void EventReportValidator::
 void EventReportValidator::
     ExpectSensitiveDataEventAndDangerousDeepScanningResult(
         const std::string& expected_url,
+        const std::string& expected_tab_url,
         const std::string& expected_source,
         const std::string& expected_destination,
         const std::string& expected_filename,
@@ -307,6 +320,7 @@ void EventReportValidator::
         const std::string& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -341,6 +355,7 @@ void EventReportValidator::
 
 void EventReportValidator::ExpectDangerousDownloadEvent(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_filename,
     const std::string& expected_sha256,
     const std::string& expected_threat_type,
@@ -352,6 +367,7 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
     const std::string& expected_profile_identifier) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   filenames_and_hashes_[expected_filename] = expected_sha256;
   threat_type_ = expected_threat_type;
   mimetypes_ = expected_mimetypes;
@@ -440,6 +456,7 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
 
   // The event should match the expected values.
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyUrl, url_);
+  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyTabUrl, tab_url_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeySource, source_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyDestination,
                 destination_);

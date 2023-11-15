@@ -410,6 +410,7 @@ TEST_F(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
             run_loop.QuitClosure()),
         &download_protection_service_, dlp_and_malware_settings(),
         /*password=*/absl::nullopt);
+
     request.Start();
     run_loop.Run();
     expect_dlp_and_malware_tags();
@@ -438,6 +439,7 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
             run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
         /*password=*/absl::nullopt);
+
     request.Start();
     run_loop.Run();
     EXPECT_EQ(2, download_protection_service_.GetFakeBinaryUploadService()
@@ -488,6 +490,7 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
             run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
         /*password=*/absl::nullopt);
+
     request.Start();
     run_loop.Run();
     EXPECT_EQ(1, download_protection_service_.GetFakeBinaryUploadService()
@@ -520,6 +523,7 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
             run_loop.QuitClosure()),
         &download_protection_service_, settings().value(),
         /*password=*/absl::nullopt);
+
     request.Start();
     run_loop.Run();
     EXPECT_EQ(1, download_protection_service_.GetFakeBinaryUploadService()
@@ -554,6 +558,7 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
             run_loop.QuitClosure()),
         &download_protection_service_, std::move(analysis_settings),
         /*password=*/absl::nullopt);
+
     request.Start();
     run_loop.Run();
     EXPECT_TRUE(download_protection_service_.GetFakeBinaryUploadService()
@@ -577,6 +582,7 @@ TEST_F(DeepScanningAPPRequestTest, GeneratesCorrectRequestForConsumer) {
       DownloadCheckResult::SAFE, base::DoNothing(),
       &download_protection_service_, std::move(settings),
       /*password=*/absl::nullopt);
+
   request.Start();
 
   EXPECT_EQ(1, download_protection_service_.GetFakeBinaryUploadService()
@@ -693,6 +699,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
         /*source*/ "",
         /*destination*/ "",
         /*filename*/ "download.exe",
@@ -765,6 +772,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
         /*source*/ "",
         /*destination*/ "",
         /*filename*/ "download.exe",
@@ -829,6 +837,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
         /*source*/ "",
         /*destination*/ "",
         /*filename*/ "download.exe",
@@ -891,6 +900,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
         /*source*/ "",
         /*destination*/ "",
         /*filename*/ "download.exe",
@@ -957,6 +967,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
         /*source*/ "",
         /*destination*/ "",
         /*filename*/ "download.exe",
@@ -1014,6 +1025,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
         /*source*/ "",
         /*destination*/ "",
         /*filename*/ "download.exe",
@@ -1071,6 +1083,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
         /*source*/ "",
         /*destination*/ "",
         /*filename*/ "download.exe",
@@ -1133,6 +1146,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
         /*source*/ "",
         /*destination*/ "",
         /*filename*/ "download.exe",
@@ -1414,6 +1428,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
         /*source*/ "",
         /*destination*/ "",
         /*filename*/ secondary_files_targets_[0].BaseName().AsUTF8Unsafe(),
@@ -1508,6 +1523,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvents(
         /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
         /*source*/ "",
         /*destination*/ "",
         {
@@ -1575,6 +1591,7 @@ TEST_F(DeepScanningReportingTest, Timeout) {
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "https://example.com/download.exe",
+      /*tab_url*/ "https://example.com/",
       /*source*/ "",
       /*destination*/ "",
       /*filename*/ "download.exe",
@@ -1702,6 +1719,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     validator.ExpectDangerousDeepScanningResult(
         /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
         /*source*/ "",
         /*destination*/ "",
         /*filename*/ "download.exe",
@@ -1764,6 +1782,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     validator.ExpectDangerousDeepScanningResult(
         /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
         /*source*/ "",
         /*destination*/ "",
         /*filename*/ "download.exe",
@@ -1818,6 +1837,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
         /*source*/ "",
         /*destination*/ "",
         /*filename*/ "download.exe",
@@ -1877,6 +1897,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
         /*source*/ "",
         /*destination*/ "",
         /*filename*/ "download.exe",
@@ -1983,6 +2004,7 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest, PopulatesRequest) {
           run_loop.QuitClosure()),
       &download_protection_service_, settings().value(),
       /*password=*/absl::nullopt);
+
   request.Start();
   run_loop.Run();
   EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()

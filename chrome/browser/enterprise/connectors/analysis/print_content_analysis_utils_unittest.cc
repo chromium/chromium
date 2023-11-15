@@ -533,6 +533,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyReportOnly) {
   if (ExpectPostDialogAnalysis()) {
     validator.ExpectSensitiveDataEvent(
         /*url*/ "",
+        /*tab_url*/ "",
         /*source*/ "",
         /*destination*/ kPrinterName,
         /*filename*/ "New Tab",
@@ -607,6 +608,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnThenCancel) {
   if (ExpectPostDialogAnalysis()) {
     validator.ExpectSensitiveDataEvent(
         /*url*/ "",
+        /*tab_url*/ "",
         /*source*/ "",
         /*destination*/ kPrinterName,
         /*filename*/ "New Tab",
@@ -681,6 +683,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
       testing::Mock::VerifyAndClearExpectations(client_.get());
       validator.ExpectSensitiveDataEvent(
           /*url*/ "",
+          /*tab_url*/ "",
           /*source*/ "",
           /*destination*/ kPrinterName,
           /*filename*/ "New Tab",
@@ -707,6 +710,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
   if (ExpectPostDialogAnalysis()) {
     validator.ExpectSensitiveDataEvent(
         /*url*/ "",
+        /*tab_url*/ "",
         /*source*/ "",
         /*destination*/ kPrinterName,
         /*filename*/ "New Tab",
@@ -774,6 +778,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyBlocked) {
   if (ExpectPostDialogAnalysis()) {
     validator.ExpectSensitiveDataEvent(
         /*url*/ "",
+        /*tab_url*/ "",
         /*source*/ "",
         /*destination*/ kPrinterName,
         /*filename*/ "New Tab",

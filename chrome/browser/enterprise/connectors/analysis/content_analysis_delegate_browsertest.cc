@@ -481,6 +481,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
   test::EventReportValidator validator(client());
   validator.ExpectDangerousDeepScanningResult(
       /*url*/ "about:blank",
+      /*tab_url*/ "about:blank",
       /*source*/ "",
       /*destination*/ "",
       /*filename*/ "bad.exe",
@@ -597,6 +598,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
   // equal to the length of the concatenated texts (2 * 100 * 'a').
   validator.ExpectSensitiveDataEvent(
       /*url*/ "about:blank",
+      /*tab_url*/ "about:blank",
       /*source*/ "",
       /*destination*/ "",
       /*filename*/ "Text data",
@@ -914,6 +916,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
   test::EventReportValidator validator(client());
   validator.ExpectUnscannedFileEvents(
       /*url*/ "about:blank",
+      /*tab_url*/ "about:blank",
       /*source*/ "",
       /*destination*/ "",
       {
@@ -1058,6 +1061,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   test::EventReportValidator validator(client());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "about:blank",
+      /*tab_url*/ "about:blank",
       /*source*/ "",
       /*destination*/ "",
       /*filename*/ "encrypted.zip",
@@ -1148,6 +1152,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   test::EventReportValidator validator(client());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "about:blank",
+      /*tab_url*/ "about:blank",
       /*source*/ "",
       /*destination*/ "",
       /*filename*/ "large.doc",
@@ -1322,6 +1327,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       kScanId1, ContentAnalysisAcknowledgement::BLOCK);
   validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
       /*url*/ "about:blank",
+      /*tab_url*/ "about:blank",
       /*source*/ "",
       /*destination*/ "",
       /*filename*/ "foo.doc",

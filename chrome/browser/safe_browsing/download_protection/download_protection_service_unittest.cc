@@ -2995,6 +2995,7 @@ TEST_F(DownloadProtectionServiceTest,
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectDangerousDownloadEvent(
       "",                     // URL, not set in this test
+      "",                     // Tab URL, not set in this test
       "a.exe",                // Simple filename without the directory
       "68617368",             // SHA256 of the fake download
       "DANGEROUS_FILE_TYPE",  // expected_threat_type
@@ -3063,6 +3064,7 @@ TEST_F(DownloadProtectionServiceTest,
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
       "",          // URL, not set in this test
+      "",          // Tab URL, not set in this test
       "",          // source, not used for file downloads.
       "",          // destination, not used for file downloads.
       "a.exe",     // Simple filename without the directory
@@ -3117,6 +3119,7 @@ TEST_F(DownloadProtectionServiceTest,
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectDangerousDownloadEvent(
       "",                     // URL, not set in this test
+      "",                     // Tab URL, not set in this test
       "a.exe",                // Simple filename without the directory
       "68617368",             // SHA256 of the fake download
       "DANGEROUS_FILE_TYPE",  // expected_threat_type
@@ -3179,6 +3182,7 @@ TEST_F(DownloadProtectionServiceTest,
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
       "",          // URL, not set in this test
+      "",          // Tab URL, not set in this test
       "",          // source, not used for file downloads.
       "",          // destination, not used for file downloads.
       "a.exe",     // Simple filename without the directory
@@ -3242,6 +3246,7 @@ TEST_F(DownloadProtectionServiceTest,
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
       "",          // URL, not set in this test
+      "",          // Tab URL, not set in this test
       "",          // source, not used for file downloads.
       "",          // destination, not used for file downloads.
       "a.exe",     // Simple filename without the directory
