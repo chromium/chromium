@@ -295,11 +295,6 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
   }
 }
 
-bool SupervisedUserService::IsSafeSitesEnabled() const {
-  return supervised_user::IsChildAccount(user_prefs_.get()) &&
-         user_prefs_->GetBoolean(prefs::kSupervisedUserSafeSites);
-}
-
 void SupervisedUserService::OnSafeSitesSettingChanged() {
   UpdateAsyncUrlChecker();
 
@@ -319,7 +314,7 @@ void SupervisedUserService::UpdateAsyncUrlChecker() {
       SupervisedUserURLFilter::BehaviorFromInt(behavior_value);
 
   bool use_online_check =
-      IsSafeSitesEnabled() ||
+      IsSafeSitesEnabled(user_prefs_.get()) ||
       behavior == supervised_user::FilteringBehavior::kBlock;
 
   if (use_online_check != url_filter_->HasAsyncURLChecker()) {

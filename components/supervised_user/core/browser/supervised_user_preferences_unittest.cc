@@ -122,6 +122,27 @@ TEST_F(SupervisedUserPreferencesTest, IsChildAccountNonSupervisedUser) {
   EXPECT_FALSE(supervised_user::IsChildAccount(pref_service_));
 }
 
+TEST_F(SupervisedUserPreferencesTest, IsSafeSitesEnabledSupervisedUser) {
+  pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
+  pref_service_.SetString(prefs::kSupervisedUserId,
+                            supervised_user::kChildAccountSUID);
+
+  EXPECT_TRUE(supervised_user::IsSafeSitesEnabled(pref_service_));
+}
+
+TEST_F(SupervisedUserPreferencesTest, IsSafeSitesEnabledNonSupervisedUser) {
+  pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
+  pref_service_.SetString(prefs::kSupervisedUserId, std::string());
+
+  EXPECT_FALSE(supervised_user::IsSafeSitesEnabled(pref_service_));
+}
+
+TEST_F(SupervisedUserPreferencesTest, IsSafeSitesDisabled) {
+  pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, false);
+
+  EXPECT_FALSE(supervised_user::IsSafeSitesEnabled(pref_service_));
+}
+
 enum class UrlFilteringStatus { kEnabled, kDisabled };
 
 // Tests for the method IsSubjectToParentalControlsForSupervisedUser which

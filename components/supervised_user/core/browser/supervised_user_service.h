@@ -178,8 +178,6 @@ class SupervisedUserService : public KeyedService,
 
   void OnDefaultFilteringBehaviorChanged();
 
-  bool IsSafeSitesEnabled() const;
-
   void OnSafeSitesSettingChanged();
 
   void UpdateAsyncUrlChecker();
