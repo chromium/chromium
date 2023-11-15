@@ -16,6 +16,7 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/trigger_config.h"
+#include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -63,7 +64,7 @@ class CONTENT_EXPORT StoredSource {
       Id source_id,
       int64_t aggregatable_budget_consumed,
       double randomized_response_rate,
-      attribution_reporting::TriggerConfig,
+      attribution_reporting::mojom::TriggerDataMatching,
       bool debug_cookie_set);
 
   ~StoredSource();
@@ -128,8 +129,9 @@ class CONTENT_EXPORT StoredSource {
 
   double randomized_response_rate() const { return randomized_response_rate_; }
 
-  const attribution_reporting::TriggerConfig& trigger_config() const {
-    return trigger_config_;
+  attribution_reporting::mojom::TriggerDataMatching trigger_data_matching()
+      const {
+    return trigger_data_matching_;
   }
 
   bool debug_cookie_set() const { return debug_cookie_set_; }
@@ -160,7 +162,7 @@ class CONTENT_EXPORT StoredSource {
                Id source_id,
                int64_t aggregatable_budget_consumed,
                double randomized_response_rate,
-               attribution_reporting::TriggerConfig,
+               attribution_reporting::mojom::TriggerDataMatching,
                bool debug_cookie_set);
 
   CommonSourceInfo common_info_;
@@ -193,8 +195,7 @@ class CONTENT_EXPORT StoredSource {
 
   double randomized_response_rate_;
 
-  // TODO(apaseltiner): Merge this field with `trigger_specs_`.
-  attribution_reporting::TriggerConfig trigger_config_;
+  attribution_reporting::mojom::TriggerDataMatching trigger_data_matching_;
 
   bool debug_cookie_set_;
 

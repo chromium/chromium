@@ -142,7 +142,8 @@ SourceRegistration::Parse(base::Value::Dict registration,
   ASSIGN_OR_RETURN(result.max_event_level_reports,
                    MaxEventLevelReports::Parse(registration, source_type));
 
-  ASSIGN_OR_RETURN(result.trigger_config, TriggerConfig::Parse(registration));
+  ASSIGN_OR_RETURN(result.trigger_data_matching,
+                   ParseTriggerDataMatching(registration));
 
   result.debug_key = ParseDebugKey(registration);
 
@@ -205,7 +206,7 @@ base::Value::Dict SourceRegistration::ToJson() const {
 
   max_event_level_reports.Serialize(dict);
 
-  trigger_config.Serialize(dict);
+  Serialize(dict, trigger_data_matching);
 
   return dict;
 }

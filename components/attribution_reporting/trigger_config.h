@@ -20,7 +20,7 @@
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
-#include "components/attribution_reporting/trigger_data_matching.mojom.h"
+#include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 
 namespace base {
 class TimeDelta;
@@ -198,40 +198,12 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
   std::vector<TriggerSpec> specs_;
 };
 
-class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerConfig {
- public:
-  static base::expected<TriggerConfig, mojom::SourceRegistrationError> Parse(
-      const base::Value::Dict&);
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::expected<mojom::TriggerDataMatching, mojom::SourceRegistrationError>
+ParseTriggerDataMatching(const base::Value::Dict&);
 
-  TriggerConfig();
-
-  explicit TriggerConfig(mojom::TriggerDataMatching);
-
-  ~TriggerConfig();
-
-  TriggerConfig(const TriggerConfig&);
-  TriggerConfig& operator=(const TriggerConfig&);
-
-  TriggerConfig(TriggerConfig&&);
-  TriggerConfig& operator=(TriggerConfig&&);
-
-  mojom::TriggerDataMatching trigger_data_matching() const {
-    return trigger_data_matching_;
-  }
-
-  // Serializes into the given dictionary iff
-  // `features::kAttributionReportingTriggerConfig` is enabled.
-  void Serialize(base::Value::Dict&) const;
-
-  // Always serializes regardless of the above feature status.
-  void SerializeForTesting(base::Value::Dict&) const;
-
-  friend bool operator==(const TriggerConfig&, const TriggerConfig&) = default;
-
- private:
-  mojom::TriggerDataMatching trigger_data_matching_ =
-      mojom::TriggerDataMatching::kModulus;
-};
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+void Serialize(base::Value::Dict&, mojom::TriggerDataMatching);
 
 }  // namespace attribution_reporting
 

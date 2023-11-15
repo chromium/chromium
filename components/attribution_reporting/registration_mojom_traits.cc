@@ -207,15 +207,6 @@ bool StructTraits<attribution_reporting::mojom::TriggerSpecsDataView,
 }
 
 // static
-bool StructTraits<attribution_reporting::mojom::TriggerConfigDataView,
-                  attribution_reporting::TriggerConfig>::
-    Read(attribution_reporting::mojom::TriggerConfigDataView data,
-         attribution_reporting::TriggerConfig* out) {
-  *out = attribution_reporting::TriggerConfig(data.trigger_data_matching());
-  return true;
-}
-
-// static
 bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
                   attribution_reporting::SourceRegistration>::
     Read(attribution_reporting::mojom::SourceRegistrationDataView data,
@@ -244,10 +235,6 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
     return false;
   }
 
-  if (!data.ReadTriggerConfig(&out->trigger_config)) {
-    return false;
-  }
-
   if (!out->max_event_level_reports.SetIfValid(
           data.max_event_level_reports())) {
     return false;
@@ -257,6 +244,7 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
   out->priority = data.priority();
   out->debug_key = data.debug_key();
   out->debug_reporting = data.debug_reporting();
+  out->trigger_data_matching = data.trigger_data_matching();
   return out->IsValid();
 }
 

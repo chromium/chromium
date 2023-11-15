@@ -61,8 +61,6 @@ std::ostream& operator<<(std::ostream&, const AggregatableDedupKey&);
 
 std::ostream& operator<<(std::ostream&, const OsRegistrationItem&);
 
-std::ostream& operator<<(std::ostream&, const TriggerConfig&);
-
 std::ostream& operator<<(std::ostream&, const TriggerSpec&);
 
 std::ostream& operator<<(std::ostream&, const TriggerSpecs&);

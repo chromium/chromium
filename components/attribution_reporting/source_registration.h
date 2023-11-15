@@ -20,7 +20,7 @@
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
-#include "components/attribution_reporting/trigger_config.h"
+#include "components/attribution_reporting/trigger_data_matching.mojom.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -73,7 +73,8 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   absl::optional<uint64_t> debug_key;
   AggregationKeys aggregation_keys;
   bool debug_reporting = false;
-  TriggerConfig trigger_config;
+  mojom::TriggerDataMatching trigger_data_matching =
+      mojom::TriggerDataMatching::kModulus;
 };
 
 }  // namespace attribution_reporting

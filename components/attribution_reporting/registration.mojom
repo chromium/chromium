@@ -88,12 +88,6 @@ struct TriggerSpecs {
   map<uint32, uint8> trigger_data_indices;
 };
 
-// Configures a source's output space.
-// https://github.com/WICG/attribution-reporting-api/blob/main/flexible_event_config.md
-struct TriggerConfig {
-  TriggerDataMatching trigger_data_matching;
-};
-
 struct SourceRegistration {
   DestinationSet destinations;
 
@@ -128,7 +122,8 @@ struct SourceRegistration {
   // Specifies whether to enable verbose debug reporting.
   bool debug_reporting = false;
 
-  TriggerConfig trigger_config;
+  // Controls how trigger data is matched against the source's trigger specs.
+  TriggerDataMatching trigger_data_matching;
 };
 
 // Mojo representation of the trigger configuration provided by a reporting

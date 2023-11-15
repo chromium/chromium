@@ -273,7 +273,7 @@ class Source {
     this.aggregatableBudgetConsumed = mojo.aggregatableBudgetConsumed;
     this.aggregatableDedupKeys = mojo.aggregatableDedupKeys;
     this.triggerDataMatching =
-        triggerDataMatchingText[mojo.triggerConfig.triggerDataMatching];
+        triggerDataMatchingText[mojo.triggerDataMatching];
     this.status = attributabilityText[mojo.attributability];
     this.debugCookieSet = mojo.debugCookieSet;
   }

@@ -1827,8 +1827,8 @@ void StorageHandler::OnSourceHandled(
                   registration.event_report_windows)))
           .SetAggregatableReportWindow(
               registration.aggregatable_report_window.InSeconds())
-          .SetTriggerDataMatching(ToTriggerDataMatching(
-              registration.trigger_config.trigger_data_matching()))
+          .SetTriggerDataMatching(
+              ToTriggerDataMatching(registration.trigger_data_matching))
           .Build();
 
   if (registration.debug_key.has_value()) {

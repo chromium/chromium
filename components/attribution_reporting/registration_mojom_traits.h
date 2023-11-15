@@ -162,19 +162,6 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
-    StructTraits<attribution_reporting::mojom::TriggerConfigDataView,
-                 attribution_reporting::TriggerConfig> {
-  static attribution_reporting::mojom::TriggerDataMatching
-  trigger_data_matching(const attribution_reporting::TriggerConfig& config) {
-    return config.trigger_data_matching();
-  }
-
-  static bool Read(attribution_reporting::mojom::TriggerConfigDataView data,
-                   attribution_reporting::TriggerConfig* out);
-};
-
-template <>
-struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
                  attribution_reporting::SourceRegistration> {
   static const attribution_reporting::DestinationSet& destinations(
@@ -232,9 +219,10 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return source.debug_reporting;
   }
 
-  static const attribution_reporting::TriggerConfig& trigger_config(
+  static attribution_reporting::mojom::TriggerDataMatching
+  trigger_data_matching(
       const attribution_reporting::SourceRegistration& source) {
-    return source.trigger_config;
+    return source.trigger_data_matching;
   }
 
   static bool Read(

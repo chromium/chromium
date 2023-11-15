@@ -25,6 +25,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_config.h"
+#include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
@@ -210,9 +211,9 @@ SourceBuilder& SourceBuilder::SetMaxEventLevelReports(
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetTriggerConfig(
-    attribution_reporting::TriggerConfig config) {
-  registration_.trigger_config = std::move(config);
+SourceBuilder& SourceBuilder::SetTriggerDataMatching(
+    attribution_reporting::mojom::TriggerDataMatching trigger_data_matching) {
+  registration_.trigger_data_matching = trigger_data_matching;
   return *this;
 }
 
@@ -239,7 +240,7 @@ StoredSource SourceBuilder::BuildStored() const {
       registration_.filter_data, registration_.debug_key,
       registration_.aggregation_keys, attribution_logic_, active_state_,
       source_id_, aggregatable_budget_consumed_, randomized_response_rate_,
-      registration_.trigger_config, debug_cookie_set_);
+      registration_.trigger_data_matching, debug_cookie_set_);
   source.SetDedupKeys(dedup_keys_);
   source.SetAggregatableDedupKeys(aggregatable_dedup_keys_);
   return source;
@@ -503,7 +504,7 @@ bool operator==(const StoredSource& a, const StoredSource& b) {
         source.filter_data(), source.debug_key(), source.aggregation_keys(),
         source.attribution_logic(), source.active_state(), source.dedup_keys(),
         source.aggregatable_budget_consumed(), source.aggregatable_dedup_keys(),
-        source.randomized_response_rate(), source.trigger_config(),
+        source.randomized_response_rate(), source.trigger_data_matching(),
         source.debug_cookie_set());
   };
   return tie(a) == tie(b);
@@ -659,7 +660,8 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
       << ",aggregatable_budget_consumed="
       << source.aggregatable_budget_consumed()
       << ",randomized_response_rate=" << source.randomized_response_rate()
-      << ",trigger_config=" << source.trigger_config() << ",dedup_keys=[";
+      << ",trigger_data_matching=" << source.trigger_data_matching()
+      << ",dedup_keys=[";
 
   const char* separator = "";
   for (int64_t dedup_key : source.dedup_keys()) {

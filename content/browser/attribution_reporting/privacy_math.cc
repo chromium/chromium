@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"

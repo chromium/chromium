@@ -44,37 +44,6 @@ constexpr char kTriggerDataMatchingModulus[] = "modulus";
 // https://wicg.github.io/attribution-reporting-api/#max-distinct-trigger-data-per-source
 constexpr uint8_t kMaxTriggerDataPerSource = 32;
 
-base::expected<TriggerDataMatching, SourceRegistrationError>
-ParseTriggerDataMatching(const base::Value& value) {
-  const std::string* str = value.GetIfString();
-  if (!str) {
-    return base::unexpected(
-        SourceRegistrationError::kTriggerDataMatchingWrongType);
-  } else if (*str == kTriggerDataMatchingExact) {
-    return TriggerDataMatching::kExact;
-  } else if (*str == kTriggerDataMatchingModulus) {
-    return TriggerDataMatching::kModulus;
-  } else {
-    return base::unexpected(
-        SourceRegistrationError::kTriggerDataMatchingUnknownValue);
-  }
-}
-
-std::string SerializeTriggerDataMatching(TriggerDataMatching v) {
-  switch (v) {
-    case TriggerDataMatching::kExact:
-      return kTriggerDataMatchingExact;
-    case TriggerDataMatching::kModulus:
-      return kTriggerDataMatchingModulus;
-  }
-}
-
-void SerializeTriggerConfig(const TriggerConfig& config,
-                            base::Value::Dict& dict) {
-  dict.Set(kTriggerDataMatching,
-           SerializeTriggerDataMatching(config.trigger_data_matching()));
-}
-
 // If `dict` contains a valid "trigger_data" field, writes the resulting keys
 // into `trigger_data_indices` using `spec_index` as the value.
 // `trigger_data_indices` is also used to perform deduplication checks.
@@ -164,47 +133,42 @@ bool AreSpecsValidForTriggerDataMatching(
 
 }  // namespace
 
-TriggerConfig::TriggerConfig() = default;
-
-TriggerConfig::TriggerConfig(TriggerDataMatching trigger_data_matching)
-    : trigger_data_matching_(trigger_data_matching) {}
-
-TriggerConfig::~TriggerConfig() = default;
-
-TriggerConfig::TriggerConfig(const TriggerConfig&) = default;
-
-TriggerConfig& TriggerConfig::operator=(const TriggerConfig&) = default;
-
-TriggerConfig::TriggerConfig(TriggerConfig&&) = default;
-
-TriggerConfig& TriggerConfig::operator=(TriggerConfig&&) = default;
-
-// static
-base::expected<TriggerConfig, SourceRegistrationError> TriggerConfig::Parse(
-    const base::Value::Dict& dict) {
+base::expected<TriggerDataMatching, SourceRegistrationError>
+ParseTriggerDataMatching(const base::Value::Dict& dict) {
   if (!base::FeatureList::IsEnabled(
           features::kAttributionReportingTriggerConfig)) {
-    return TriggerConfig();
+    return TriggerDataMatching::kModulus;
   }
 
-  TriggerConfig config;
-  if (const base::Value* value = dict.Find(kTriggerDataMatching)) {
-    ASSIGN_OR_RETURN(config.trigger_data_matching_,
-                     ParseTriggerDataMatching(*value));
+  const base::Value* value = dict.Find(kTriggerDataMatching);
+  if (!value) {
+    return TriggerDataMatching::kModulus;
   }
 
-  return config;
+  const std::string* str = value->GetIfString();
+  if (!str) {
+    return base::unexpected(
+        SourceRegistrationError::kTriggerDataMatchingWrongType);
+  } else if (*str == kTriggerDataMatchingExact) {
+    return TriggerDataMatching::kExact;
+  } else if (*str == kTriggerDataMatchingModulus) {
+    return TriggerDataMatching::kModulus;
+  } else {
+    return base::unexpected(
+        SourceRegistrationError::kTriggerDataMatchingUnknownValue);
+  }
 }
 
-void TriggerConfig::Serialize(base::Value::Dict& dict) const {
-  if (base::FeatureList::IsEnabled(
-          features::kAttributionReportingTriggerConfig)) {
-    SerializeTriggerConfig(*this, dict);
+void Serialize(base::Value::Dict& dict,
+               TriggerDataMatching trigger_data_matching) {
+  switch (trigger_data_matching) {
+    case TriggerDataMatching::kExact:
+      dict.Set(kTriggerDataMatching, kTriggerDataMatchingExact);
+      break;
+    case TriggerDataMatching::kModulus:
+      dict.Set(kTriggerDataMatching, kTriggerDataMatchingModulus);
+      break;
   }
-}
-
-void TriggerConfig::SerializeForTesting(base::Value::Dict& dict) const {
-  SerializeTriggerConfig(*this, dict);
 }
 
 TriggerSpec::TriggerSpec() = default;

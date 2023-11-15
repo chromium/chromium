@@ -3976,8 +3976,7 @@ TEST_F(AttributionStorageTest, TriggerDataMatching) {
         SourceBuilder()
             .SetSourceType(
                 SourceType::kNavigation)  // valid trigger data [0, 7]
-            .SetTriggerConfig(attribution_reporting::TriggerConfig(
-                test_case.trigger_data_matching))
+            .SetTriggerDataMatching(test_case.trigger_data_matching)
             .Build());
 
     EXPECT_EQ(

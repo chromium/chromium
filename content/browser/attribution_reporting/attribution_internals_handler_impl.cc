@@ -92,7 +92,8 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
                 attribution_reporting::HexEncodeAggregationKey(key.second));
           }),
       source.aggregatable_budget_consumed(), source.aggregatable_dedup_keys(),
-      source.trigger_config(), source.debug_cookie_set(), attributability);
+      source.trigger_data_matching(), source.debug_cookie_set(),
+      attributability);
 }
 
 void ForwardSourcesToWebUI(

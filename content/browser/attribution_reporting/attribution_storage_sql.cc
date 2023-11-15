@@ -367,8 +367,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       max_event_level_reports, priority, std::move(*filter_data), debug_key,
       std::move(*aggregation_keys), *attribution_logic, *active_state,
       source_id, aggregatable_budget_consumed, randomized_response_rate,
-      attribution_reporting::TriggerConfig(trigger_data_matching),
-      debug_cookie_set);
+      trigger_data_matching, debug_cookie_set);
   if (!stored_source.has_value()) {
     return absl::nullopt;
   }
@@ -600,10 +599,10 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   statement.BindBlob(14, SerializeAggregationKeys(reg.aggregation_keys));
   statement.BindBlob(15, SerializeFilterData(reg.filter_data));
   statement.BindBlob(
-      16, SerializeReadOnlySourceData(reg.event_report_windows,
-                                      reg.max_event_level_reports,
-                                      randomized_response_data.rate(),
-                                      reg.trigger_config, debug_cookie_set));
+      16, SerializeReadOnlySourceData(
+              reg.event_report_windows, reg.max_event_level_reports,
+              randomized_response_data.rate(), reg.trigger_data_matching,
+              debug_cookie_set));
 
   if (!statement.Run()) {
     return StoreSourceResult::InternalError();
@@ -632,7 +631,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       reg.priority, reg.filter_data, reg.debug_key, reg.aggregation_keys,
       attribution_logic, *active_state, source_id,
       /*aggregatable_budget_consumed=*/0, randomized_response_data.rate(),
-      reg.trigger_config, debug_cookie_set);
+      reg.trigger_data_matching, debug_cookie_set);
 
   if (!stored_source.has_value() ||
       !rate_limit_table_.AddRateLimitForSource(&db_, *stored_source)) {
@@ -1282,7 +1281,7 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
   }
 
   auto trigger_spec_it = source.trigger_specs().find(
-      event_trigger->data, source.trigger_config().trigger_data_matching());
+      event_trigger->data, source.trigger_data_matching());
   if (!trigger_spec_it) {
     return EventLevelResult::kNoMatchingTriggerData;
   }

@@ -21,6 +21,7 @@
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
+#include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -35,7 +36,6 @@
 namespace attribution_reporting {
 class AggregationKeys;
 class EventReportWindows;
-class TriggerConfig;
 }  // namespace attribution_reporting
 
 namespace net {
@@ -119,7 +119,8 @@ class SourceBuilder {
 
   SourceBuilder& SetMaxEventLevelReports(int max_event_level_reports);
 
-  SourceBuilder& SetTriggerConfig(attribution_reporting::TriggerConfig);
+  SourceBuilder& SetTriggerDataMatching(
+      attribution_reporting::mojom::TriggerDataMatching);
 
   SourceBuilder& SetDebugCookieSet(bool debug_cookie_set);
 

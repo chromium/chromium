@@ -145,7 +145,7 @@ std::string SerializeReadOnlySourceData(
     const attribution_reporting::EventReportWindows& event_report_windows,
     attribution_reporting::MaxEventLevelReports max_event_level_reports,
     double randomized_response_rate,
-    const attribution_reporting::TriggerConfig& trigger_config,
+    TriggerDataMatching trigger_data_matching,
     bool debug_cookie_set) {
   DCHECK_GE(randomized_response_rate, 0);
   DCHECK_LE(randomized_response_rate, 1);
@@ -156,7 +156,7 @@ std::string SerializeReadOnlySourceData(
 
   msg.set_randomized_response_rate(randomized_response_rate);
 
-  switch (trigger_config.trigger_data_matching()) {
+  switch (trigger_data_matching) {
     case TriggerDataMatching::kExact:
       msg.set_trigger_data_matching(
           proto::AttributionReadOnlySourceData::EXACT);

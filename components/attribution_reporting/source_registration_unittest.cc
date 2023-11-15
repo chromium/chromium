@@ -21,7 +21,7 @@
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
-#include "components/attribution_reporting/trigger_config.h"
+#include "components/attribution_reporting/trigger_data_matching.mojom.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -87,7 +87,8 @@ TEST(SourceRegistrationTest, Parse) {
               Field(&SourceRegistration::debug_key, absl::nullopt),
               Field(&SourceRegistration::aggregation_keys, AggregationKeys()),
               Field(&SourceRegistration::debug_reporting, false),
-              Field(&SourceRegistration::trigger_config, TriggerConfig()))),
+              Field(&SourceRegistration::trigger_data_matching,
+                    mojom::TriggerDataMatching::kModulus))),
       },
       {
           "source_event_id_valid",
@@ -362,7 +363,8 @@ TEST(SourceRegistrationTest, ToJson) {
             "expiry": 2592000,
             "max_event_level_reports": 0,
             "priority": "0",
-            "source_event_id": "0"
+            "source_event_id": "0",
+            "trigger_data_matching": "modulus"
           })json",
       },
       {
@@ -378,6 +380,7 @@ TEST(SourceRegistrationTest, ToJson) {
                 r.priority = -6;
                 r.source_event_id = 7;
                 r.max_event_level_reports = MaxEventLevelReports(8);
+                r.trigger_data_matching = mojom::TriggerDataMatching::kExact;
               }),
           R"json({
             "aggregatable_report_window": 1,
@@ -394,6 +397,7 @@ TEST(SourceRegistrationTest, ToJson) {
             "priority": "-6",
             "source_event_id": "7",
             "max_event_level_reports": 8,
+            "trigger_data_matching": "exact"
           })json",
       },
   };
