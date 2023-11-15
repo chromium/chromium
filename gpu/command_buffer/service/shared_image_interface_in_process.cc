@@ -349,6 +349,11 @@ SharedImageInterfaceInProcess::CreateSharedImage(
                        MakeSyncToken(next_fence_sync_release_++)),
         {});
   }
+
+  // Ensure that the GMB is created. This paves the path for an upcoming CL that
+  // will have ClientSharedImage own the GMB.
+  GetGpuMemoryBuffer(mailbox);
+
   return base::MakeRefCounted<ClientSharedImage>(mailbox);
 }
 
