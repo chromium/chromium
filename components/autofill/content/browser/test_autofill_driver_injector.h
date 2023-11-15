@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_TEST_AUTOFILL_DRIVER_INJECTOR_H_
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_TEST_AUTOFILL_DRIVER_INJECTOR_H_
 
+#include <concepts>
+#include <map>
+#include <memory>
+
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -61,11 +65,9 @@ class TestAutofillDriverInjectorBase {
 //    private:
 //     TestAutofillDriverInjector<TestAutofillDriver> autofill_driver_injector_;
 //   };
-template <typename T>
+template <std::derived_from<ContentAutofillDriver> T>
 class TestAutofillDriverInjector : public TestAutofillDriverInjectorBase {
  public:
-  static_assert(std::is_base_of_v<ContentAutofillDriver, T>);
-
   TestAutofillDriverInjector() = default;
   TestAutofillDriverInjector(const TestAutofillDriverInjector&) = delete;
   TestAutofillDriverInjector& operator=(const TestAutofillDriverInjector&) =

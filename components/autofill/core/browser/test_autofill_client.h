@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_CLIENT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_CLIENT_H_
 
+#include <concepts>
 #include <memory>
 #include <string>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -83,11 +83,9 @@ namespace autofill {
 //
 // If you enable the Finch feature `kAutofillLoggingToTerminal`,
 // autofill-internals logs are recorded to LOG(INFO).
-template <typename T>
+template <std::derived_from<AutofillClient> T>
 class TestAutofillClientTemplate : public T {
  public:
-  static_assert(std::is_base_of_v<AutofillClient, T>);
-
   using T::T;
   TestAutofillClientTemplate(const TestAutofillClientTemplate&) = delete;
   TestAutofillClientTemplate& operator=(const TestAutofillClientTemplate&) =
