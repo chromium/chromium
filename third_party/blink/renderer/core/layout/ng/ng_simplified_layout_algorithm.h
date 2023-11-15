@@ -35,7 +35,7 @@ class NGPhysicalFragment;
 //       OOF-positioned candidate.
 //    b. Otherwise perform layout on the inflow child (which may trigger
 //       "simplified" layout on its children).
-//  3. Run the |NGOutOfFlowLayoutPart|.
+//  3. Run the |OutOfFlowLayoutPart|.
 class CORE_EXPORT NGSimplifiedLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
                                NGBoxFragmentBuilder,

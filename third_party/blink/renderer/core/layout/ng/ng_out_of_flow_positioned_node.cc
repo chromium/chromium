@@ -6,47 +6,45 @@
 
 namespace blink {
 
-void NGPhysicalOutOfFlowPositionedNode::Trace(Visitor* visitor) const {
+void PhysicalOofPositionedNode::Trace(Visitor* visitor) const {
   if (is_for_fragmentation) {
-    static_cast<const NGPhysicalOOFNodeForFragmentation*>(this)
+    static_cast<const PhysicalOofNodeForFragmentation*>(this)
         ->TraceAfterDispatch(visitor);
   } else {
     TraceAfterDispatch(visitor);
   }
 }
 
-void NGPhysicalOutOfFlowPositionedNode::TraceAfterDispatch(
-    Visitor* visitor) const {
+void PhysicalOofPositionedNode::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(box);
   visitor->Trace(inline_container);
 }
 
-void NGLogicalOutOfFlowPositionedNode::Trace(Visitor* visitor) const {
+void LogicalOofPositionedNode::Trace(Visitor* visitor) const {
   if (is_for_fragmentation) {
-    static_cast<const NGLogicalOOFNodeForFragmentation*>(this)
+    static_cast<const LogicalOofNodeForFragmentation*>(this)
         ->TraceAfterDispatch(visitor);
   } else {
     TraceAfterDispatch(visitor);
   }
 }
 
-void NGLogicalOutOfFlowPositionedNode::TraceAfterDispatch(
-    Visitor* visitor) const {
+void LogicalOofPositionedNode::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(box);
   visitor->Trace(inline_container);
 }
 
-void NGPhysicalOOFNodeForFragmentation::TraceAfterDispatch(
+void PhysicalOofNodeForFragmentation::TraceAfterDispatch(
     Visitor* visitor) const {
-  NGPhysicalOutOfFlowPositionedNode::TraceAfterDispatch(visitor);
+  PhysicalOofPositionedNode::TraceAfterDispatch(visitor);
   visitor->Trace(containing_block);
   visitor->Trace(fixedpos_containing_block);
   visitor->Trace(fixedpos_inline_container);
 }
 
-void NGLogicalOOFNodeForFragmentation::TraceAfterDispatch(
+void LogicalOofNodeForFragmentation::TraceAfterDispatch(
     Visitor* visitor) const {
-  NGLogicalOutOfFlowPositionedNode::TraceAfterDispatch(visitor);
+  LogicalOofPositionedNode::TraceAfterDispatch(visitor);
   visitor->Trace(containing_block);
   visitor->Trace(fixedpos_containing_block);
   visitor->Trace(fixedpos_inline_container);

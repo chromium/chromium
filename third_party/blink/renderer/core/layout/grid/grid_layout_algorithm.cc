@@ -350,7 +350,7 @@ const NGLayoutResult* GridLayoutAlgorithm::LayoutInternal() {
             row_break_between, oof_children));
   }
 
-  NGOutOfFlowLayoutPart(node, constraint_space, &container_builder_).Run();
+  OutOfFlowLayoutPart(node, constraint_space, &container_builder_).Run();
   return container_builder_.ToBoxFragment();
 }
 

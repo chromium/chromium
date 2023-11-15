@@ -21,14 +21,14 @@ struct NGLink;
 // elements to an already laid out fragmentainer. It performs a copy of the
 // previous |NGPhysicalFragment| and appends the OOF-positioned elements to the
 // |container_builder_|.
-class CORE_EXPORT NGSimplifiedOOFLayoutAlgorithm
+class CORE_EXPORT SimplifiedOofLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
-  NGSimplifiedOOFLayoutAlgorithm(const NGLayoutAlgorithmParams&,
-                                 const NGPhysicalBoxFragment&,
-                                 bool is_new_fragment);
+  SimplifiedOofLayoutAlgorithm(const NGLayoutAlgorithmParams&,
+                               const NGPhysicalBoxFragment&,
+                               bool is_new_fragment);
 
   const NGLayoutResult* Layout() override;
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override {

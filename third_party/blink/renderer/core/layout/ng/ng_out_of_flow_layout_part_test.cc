@@ -15,7 +15,7 @@
 namespace blink {
 namespace {
 
-class NGOutOfFlowLayoutPartTest : public NGBaseLayoutAlgorithmTest {
+class OutOfFlowLayoutPartTest : public NGBaseLayoutAlgorithmTest {
  protected:
   const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
     NGBlockNode container(element->GetLayoutBox());
@@ -41,9 +41,9 @@ class NGOutOfFlowLayoutPartTest : public NGBaseLayoutAlgorithmTest {
 };
 
 // Fixed blocks inside absolute blocks trigger otherwise unused while loop
-// inside NGOutOfFlowLayoutPart::Run.
+// inside OutOfFlowLayoutPart::Run.
 // This test exercises this loop by placing two fixed elements inside abs.
-TEST_F(NGOutOfFlowLayoutPartTest, FixedInsideAbs) {
+TEST_F(OutOfFlowLayoutPartTest, FixedInsideAbs) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -99,7 +99,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, FixedInsideAbs) {
 }
 
 // Tests non-fragmented positioned nodes inside a multi-column.
-TEST_F(NGOutOfFlowLayoutPartTest, PositionedInMulticol) {
+TEST_F(OutOfFlowLayoutPartTest, PositionedInMulticol) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -145,7 +145,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedInMulticol) {
 }
 
 // Tests that positioned nodes fragment correctly.
-TEST_F(NGOutOfFlowLayoutPartTest, SimplePositionedFragmentation) {
+TEST_F(OutOfFlowLayoutPartTest, SimplePositionedFragmentation) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -187,7 +187,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, SimplePositionedFragmentation) {
 }
 
 // Tests fragmentation when a positioned node's child overflows.
-TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithOverflow) {
+TEST_F(OutOfFlowLayoutPartTest, PositionedFragmentationWithOverflow) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -234,7 +234,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithOverflow) {
 
 // Tests that new column fragments are added correctly if a positioned node
 // fragments beyond the last fragmentainer in a context.
-TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithNewColumns) {
+TEST_F(OutOfFlowLayoutPartTest, PositionedFragmentationWithNewColumns) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -275,7 +275,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithNewColumns) {
 // Tests that empty column fragments are added if an OOF element begins layout
 // in a fragmentainer that is more than one index beyond the last existing
 // column fragmentainer.
-TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithNewEmptyColumns) {
+TEST_F(OutOfFlowLayoutPartTest, PositionedFragmentationWithNewEmptyColumns) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -316,7 +316,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithNewEmptyColumns) {
 }
 
 // Break-inside does not apply to absolute positioned elements.
-TEST_F(NGOutOfFlowLayoutPartTest, BreakInsideAvoid) {
+TEST_F(OutOfFlowLayoutPartTest, BreakInsideAvoid) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -355,7 +355,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, BreakInsideAvoid) {
 }
 
 // Break-before does not apply to absolute positioned elements.
-TEST_F(NGOutOfFlowLayoutPartTest, BreakBeforeColumn) {
+TEST_F(OutOfFlowLayoutPartTest, BreakBeforeColumn) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -394,7 +394,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, BreakBeforeColumn) {
 }
 
 // Break-after does not apply to absolute positioned elements.
-TEST_F(NGOutOfFlowLayoutPartTest, BreakAfterColumn) {
+TEST_F(OutOfFlowLayoutPartTest, BreakAfterColumn) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -433,7 +433,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, BreakAfterColumn) {
 }
 
 // Break-inside should still apply to children of absolute positioned elements.
-TEST_F(NGOutOfFlowLayoutPartTest, ChildBreakInsideAvoid) {
+TEST_F(OutOfFlowLayoutPartTest, ChildBreakInsideAvoid) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -475,7 +475,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, ChildBreakInsideAvoid) {
 }
 
 // Break-before should still apply to children of absolute positioned elements.
-TEST_F(NGOutOfFlowLayoutPartTest, ChildBreakBeforeAvoid) {
+TEST_F(OutOfFlowLayoutPartTest, ChildBreakBeforeAvoid) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -519,7 +519,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, ChildBreakBeforeAvoid) {
 }
 
 // Break-after should still apply to children of absolute positioned elements.
-TEST_F(NGOutOfFlowLayoutPartTest, ChildBreakAfterAvoid) {
+TEST_F(OutOfFlowLayoutPartTest, ChildBreakAfterAvoid) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -564,7 +564,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, ChildBreakAfterAvoid) {
 
 // Tests that a positioned element with a negative top property moves the OOF
 // node to the previous fragmentainer and spans 3 columns.
-TEST_F(NGOutOfFlowLayoutPartTest,
+TEST_F(OutOfFlowLayoutPartTest,
        PositionedFragmentationWithNegativeTopPropertyAndNewEmptyColumn) {
   SetBodyInnerHTML(
       R"HTML(
@@ -606,7 +606,7 @@ TEST_F(NGOutOfFlowLayoutPartTest,
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithBottomProperty) {
+TEST_F(OutOfFlowLayoutPartTest, PositionedFragmentationWithBottomProperty) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -645,8 +645,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithBottomProperty) {
 
 // Tests that a positioned element without a top or bottom property stays in
 // flow - even though it's treated as an OOF element.
-TEST_F(NGOutOfFlowLayoutPartTest,
-       PositionedFragmentationInFlowWithAddedColumns) {
+TEST_F(OutOfFlowLayoutPartTest, PositionedFragmentationInFlowWithAddedColumns) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -691,7 +690,7 @@ TEST_F(NGOutOfFlowLayoutPartTest,
 
 // Tests that the fragments of a positioned element are added to the right
 // fragmentainer despite the presence of column spanners.
-TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationAndColumnSpanners) {
+TEST_F(OutOfFlowLayoutPartTest, PositionedFragmentationAndColumnSpanners) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -742,7 +741,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationAndColumnSpanners) {
 
 // Tests that column spanners are skipped over when laying out fragmented abspos
 // elements.
-TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithNestedSpanner) {
+TEST_F(OutOfFlowLayoutPartTest, PositionedFragmentationWithNestedSpanner) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -784,7 +783,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithNestedSpanner) {
 
 // Tests that column spanners are skipped over when laying out fragmented abspos
 // elements.
-TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithNestedSpanners) {
+TEST_F(OutOfFlowLayoutPartTest, PositionedFragmentationWithNestedSpanners) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -839,7 +838,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithNestedSpanners) {
 
 // Tests that abspos elements bubble up to their containing block when nested
 // inside of a spanner.
-TEST_F(NGOutOfFlowLayoutPartTest, AbsposInSpanner) {
+TEST_F(OutOfFlowLayoutPartTest, AbsposInSpanner) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -892,7 +891,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposInSpanner) {
 
 // Tests that abspos elements bubble up to their containing block when nested
 // inside of a spanner and get the correct static position.
-TEST_F(NGOutOfFlowLayoutPartTest, AbsposInSpannerStaticPos) {
+TEST_F(OutOfFlowLayoutPartTest, AbsposInSpannerStaticPos) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -942,7 +941,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposInSpannerStaticPos) {
 }
 
 // Tests fragmented abspos elements with a spanner nested inside.
-TEST_F(NGOutOfFlowLayoutPartTest, SpannerInAbspos) {
+TEST_F(OutOfFlowLayoutPartTest, SpannerInAbspos) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -984,7 +983,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, SpannerInAbspos) {
 // Tests that new column fragments are added correctly if a positioned node
 // fragments beyond the last fragmentainer in a context in the presence of a
 // spanner.
-TEST_F(NGOutOfFlowLayoutPartTest,
+TEST_F(OutOfFlowLayoutPartTest,
        PositionedFragmentationWithNewColumnsAndSpanners) {
   SetBodyInnerHTML(
       R"HTML(
@@ -1035,7 +1034,7 @@ TEST_F(NGOutOfFlowLayoutPartTest,
 // Tests that new column fragments are added correctly if a positioned node
 // fragments beyond the last fragmentainer in a context directly after a
 // spanner.
-TEST_F(NGOutOfFlowLayoutPartTest,
+TEST_F(OutOfFlowLayoutPartTest,
        PositionedFragmentationWithNewColumnsAfterSpanner) {
   SetBodyInnerHTML(
       R"HTML(
@@ -1080,8 +1079,7 @@ TEST_F(NGOutOfFlowLayoutPartTest,
 // Tests that new column fragments are added correctly if a positioned node
 // fragments beyond the last fragmentainer in a context in the presence of a
 // spanner.
-TEST_F(NGOutOfFlowLayoutPartTest,
-       AbsposFragWithSpannerAndNewColumnsAutoHeight) {
+TEST_F(OutOfFlowLayoutPartTest, AbsposFragWithSpannerAndNewColumnsAutoHeight) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -1126,7 +1124,7 @@ TEST_F(NGOutOfFlowLayoutPartTest,
 // Tests that empty column fragments are added if an OOF element begins layout
 // in a fragmentainer that is more than one index beyond the last existing
 // column fragmentainer in the presence of a spanner.
-TEST_F(NGOutOfFlowLayoutPartTest, AbsposFragWithSpannerAndNewEmptyColumns) {
+TEST_F(OutOfFlowLayoutPartTest, AbsposFragWithSpannerAndNewEmptyColumns) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -1173,7 +1171,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposFragWithSpannerAndNewEmptyColumns) {
 }
 
 // Fragmented OOF element with block-size percentage resolution.
-TEST_F(NGOutOfFlowLayoutPartTest, AbsposFragmentationPctResolution) {
+TEST_F(OutOfFlowLayoutPartTest, AbsposFragmentationPctResolution) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -1216,8 +1214,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposFragmentationPctResolution) {
 }
 
 // Fragmented OOF element with block-size percentage resolution and overflow.
-TEST_F(NGOutOfFlowLayoutPartTest,
-       AbsposFragmentationPctResolutionWithOverflow) {
+TEST_F(OutOfFlowLayoutPartTest, AbsposFragmentationPctResolutionWithOverflow) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -1277,7 +1274,7 @@ TEST_F(NGOutOfFlowLayoutPartTest,
 }
 
 // Fragmented OOF element inside a nested multi-column.
-TEST_F(NGOutOfFlowLayoutPartTest, SimpleAbsposNestedFragmentation) {
+TEST_F(OutOfFlowLayoutPartTest, SimpleAbsposNestedFragmentation) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -1321,7 +1318,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, SimpleAbsposNestedFragmentation) {
 }
 
 // Fragmented OOF element inside a nested multi-column with new columns.
-TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentationNewColumns) {
+TEST_F(OutOfFlowLayoutPartTest, AbsposNestedFragmentationNewColumns) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -1376,7 +1373,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentationNewColumns) {
 
 // Fragmented OOF element inside a nested multi-column starting at a
 // fragmentainer index beyond the last existing fragmentainer.
-TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentationNewEmptyColumns) {
+TEST_F(OutOfFlowLayoutPartTest, AbsposNestedFragmentationNewEmptyColumns) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -1430,7 +1427,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentationNewEmptyColumns) {
 }
 
 // Fragmented OOF with `height: auto` and positioned with the bottom property.
-TEST_F(NGOutOfFlowLayoutPartTest,
+TEST_F(OutOfFlowLayoutPartTest,
        PositionedFragmentationWithBottomPropertyAndHeightAuto) {
   SetBodyInnerHTML(
       R"HTML(
@@ -1478,7 +1475,7 @@ TEST_F(NGOutOfFlowLayoutPartTest,
 
 // Tests an OOF element with an inline containing block inside a multicol
 // with a column spanner.
-TEST_F(NGOutOfFlowLayoutPartTest, AbsposFragWithInlineCBAndSpanner) {
+TEST_F(OutOfFlowLayoutPartTest, AbsposFragWithInlineCBAndSpanner) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -1545,7 +1542,7 @@ static void CheckMulticolumnPositionedObjects(const LayoutBox* multicol,
   EXPECT_TRUE(false);
 }
 
-TEST_F(NGOutOfFlowLayoutPartTest, PositionedObjectsInMulticol) {
+TEST_F(OutOfFlowLayoutPartTest, PositionedObjectsInMulticol) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -1568,7 +1565,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedObjectsInMulticol) {
                                     GetLayoutBoxByElementId("abs2"));
 }
 
-TEST_F(NGOutOfFlowLayoutPartTest, PositionedObjectsInMulticolWithInline) {
+TEST_F(OutOfFlowLayoutPartTest, PositionedObjectsInMulticolWithInline) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -1592,7 +1589,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedObjectsInMulticolWithInline) {
 
 // Make sure the fragmentainer break tokens are correct when OOFs are added to
 // existing fragmentainers.
-TEST_F(NGOutOfFlowLayoutPartTest, FragmentainerBreakTokens) {
+TEST_F(OutOfFlowLayoutPartTest, FragmentainerBreakTokens) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -1653,7 +1650,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, FragmentainerBreakTokens) {
 
 // Make sure the fragmentainer break tokens are correct when a new column is
 // created before a spanner for an OOF.
-TEST_F(NGOutOfFlowLayoutPartTest, FragmentainerBreakTokenBeforeSpanner) {
+TEST_F(OutOfFlowLayoutPartTest, FragmentainerBreakTokenBeforeSpanner) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -1712,7 +1709,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, FragmentainerBreakTokenBeforeSpanner) {
 }
 
 // crbug.com/1296900
-TEST_F(NGOutOfFlowLayoutPartTest, RelayoutNestedMulticolWithOOF) {
+TEST_F(OutOfFlowLayoutPartTest, RelayoutNestedMulticolWithOOF) {
   SetBodyInnerHTML(
       R"HTML(
       <div id="outer" style="columns:1; column-fill:auto; width:333px; height:100px;">
@@ -1760,7 +1757,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, RelayoutNestedMulticolWithOOF) {
   EXPECT_EQ(fragmentainer->Children().size(), 2u);
 }
 
-TEST_F(NGOutOfFlowLayoutPartTest, UseCountOutOfFlowNoInsets) {
+TEST_F(OutOfFlowLayoutPartTest, UseCountOutOfFlowNoInsets) {
   SetBodyInnerHTML(R"HTML(
     <div style="position: absolute; justify-self: center;"></div>
   )HTML");
@@ -1770,7 +1767,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, UseCountOutOfFlowNoInsets) {
       GetDocument().IsUseCounted(WebFeature::kOutOfFlowAlignSelfNoInsets));
 }
 
-TEST_F(NGOutOfFlowLayoutPartTest, UseCountOutOfFlowSingleInset) {
+TEST_F(OutOfFlowLayoutPartTest, UseCountOutOfFlowSingleInset) {
   SetBodyInnerHTML(R"HTML(
     <div style="position: absolute; right: 0; bottom: 0; justify-self: center;"></div>
   )HTML");
@@ -1780,7 +1777,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, UseCountOutOfFlowSingleInset) {
       GetDocument().IsUseCounted(WebFeature::kOutOfFlowAlignSelfSingleInset));
 }
 
-TEST_F(NGOutOfFlowLayoutPartTest, UseCountOutOfFlowBothInsets) {
+TEST_F(OutOfFlowLayoutPartTest, UseCountOutOfFlowBothInsets) {
   SetBodyInnerHTML(R"HTML(
     <div style="position: absolute; inset: 0; justify-self: center;"></div>
   )HTML");

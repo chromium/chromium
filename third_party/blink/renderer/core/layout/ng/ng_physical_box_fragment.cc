@@ -93,12 +93,12 @@ void ApplyOverflowClip(OverflowClipAxes overflow_clip_axes,
   }
 }
 
-NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
+OofContainingBlock<PhysicalOffset> PhysicalContainingBlock(
     NGFragmentBuilder* builder,
     PhysicalSize outer_size,
     PhysicalSize inner_size,
-    const NGContainingBlock<LogicalOffset>& containing_block) {
-  return NGContainingBlock<PhysicalOffset>(
+    const OofContainingBlock<LogicalOffset>& containing_block) {
+  return OofContainingBlock<PhysicalOffset>(
       containing_block.Offset().ConvertToPhysical(
           builder->Style().GetWritingDirection(), outer_size, inner_size),
       RelativeInsetToPhysical(containing_block.RelativeOffset(),
@@ -108,10 +108,10 @@ NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
       containing_block.IsInsideColumnSpanner());
 }
 
-NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
+OofContainingBlock<PhysicalOffset> PhysicalContainingBlock(
     NGFragmentBuilder* builder,
     PhysicalSize size,
-    const NGContainingBlock<LogicalOffset>& containing_block) {
+    const OofContainingBlock<LogicalOffset>& containing_block) {
   PhysicalSize containing_block_size =
       containing_block.Fragment() ? containing_block.Fragment()->Size() : size;
   return PhysicalContainingBlock(builder, size, containing_block_size,
@@ -436,15 +436,13 @@ void NGPhysicalBoxFragment::Dispose() {
 }
 
 // TODO(kojii): Move to ng_physical_fragment.cc
-NGPhysicalFragment::OutOfFlowData*
-NGPhysicalFragment::FragmentedOutOfFlowDataFromBuilder(
+NGPhysicalFragment::OofData* NGPhysicalFragment::FragmentedOofDataFromBuilder(
     NGFragmentBuilder* builder) {
   DCHECK(has_fragmented_out_of_flow_data_);
   DCHECK_EQ(has_fragmented_out_of_flow_data_,
             !builder->oof_positioned_fragmentainer_descendants_.empty() ||
                 !builder->multicols_with_pending_oofs_.empty());
-  NGFragmentedOutOfFlowData* fragmented_data =
-      MakeGarbageCollected<NGFragmentedOutOfFlowData>();
+  auto* fragmented_data = MakeGarbageCollected<FragmentedOofData>();
   fragmented_data->oof_positioned_fragmentainer_descendants.reserve(
       builder->oof_positioned_fragmentainer_descendants_.size());
   const PhysicalSize& size = Size();
@@ -452,11 +450,11 @@ NGPhysicalFragment::FragmentedOutOfFlowDataFromBuilder(
   const WritingModeConverter converter(writing_direction, size);
   for (const auto& descendant :
        builder->oof_positioned_fragmentainer_descendants_) {
-    NGInlineContainer<PhysicalOffset> inline_container(
+    OofInlineContainer<PhysicalOffset> inline_container(
         descendant.inline_container.container,
         converter.ToPhysical(descendant.inline_container.relative_offset,
                              PhysicalSize()));
-    NGInlineContainer<PhysicalOffset> fixedpos_inline_container(
+    OofInlineContainer<PhysicalOffset> fixedpos_inline_container(
         descendant.fixedpos_inline_container.container,
         converter.ToPhysical(
             descendant.fixedpos_inline_container.relative_offset,
@@ -483,13 +481,13 @@ NGPhysicalFragment::FragmentedOutOfFlowDataFromBuilder(
   }
   for (const auto& multicol : builder->multicols_with_pending_oofs_) {
     auto& value = multicol.value;
-    NGInlineContainer<PhysicalOffset> fixedpos_inline_container(
+    OofInlineContainer<PhysicalOffset> fixedpos_inline_container(
         value->fixedpos_inline_container.container,
         converter.ToPhysical(value->fixedpos_inline_container.relative_offset,
                              PhysicalSize()));
     fragmented_data->multicols_with_pending_oofs.insert(
         multicol.key,
-        MakeGarbageCollected<NGMulticolWithPendingOOFs<PhysicalOffset>>(
+        MakeGarbageCollected<MulticolWithPendingOofs<PhysicalOffset>>(
             value->multicol_offset.ConvertToPhysical(
                 builder->Style().GetWritingDirection(), size, PhysicalSize()),
             PhysicalContainingBlock(builder, size,

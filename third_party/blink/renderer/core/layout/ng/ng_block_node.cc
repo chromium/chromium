@@ -1232,7 +1232,7 @@ void NGBlockNode::PlaceChildrenInLayoutBox(
 
     // The offset for an OOF positioned node that is added as a child of a
     // fragmentainer box is handled by
-    // NGOutOfFlowLayoutPart::AddOOFToFragmentainer().
+    // OutOfFlowLayoutPart::AddOOFToFragmentainer().
     if (UNLIKELY(physical_fragment.IsFragmentainerBox() &&
                  child_fragment->IsOutOfFlowPositioned()))
       continue;

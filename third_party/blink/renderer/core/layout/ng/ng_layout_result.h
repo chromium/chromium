@@ -484,12 +484,12 @@ class CORE_EXPORT NGLayoutResult final
   }
 
   // This exposes a mutable part of the layout result just for the
-  // |NGOutOfFlowLayoutPart|.
+  // |OutOfFlowLayoutPart|.
   class MutableForOutOfFlow final {
     STACK_ALLOCATED();
 
    protected:
-    friend class NGOutOfFlowLayoutPart;
+    friend class OutOfFlowLayoutPart;
 
     void SetOutOfFlowInsetsForGetComputedStyle(
         const BoxStrut& insets,
@@ -1026,7 +1026,7 @@ class CORE_EXPORT NGLayoutResult final
   union {
     BfcOffset bfc_offset_;
     // This is the absolutized inset property values of an OOF-positioned object
-    // in its parent's writing-mode. This is set by the |NGOutOfFlowLayoutPart|
+    // in its parent's writing-mode. This is set by the |OutOfFlowLayoutPart|
     // while generating this layout result.
     BoxStrut oof_insets_for_get_computed_style_;
   };

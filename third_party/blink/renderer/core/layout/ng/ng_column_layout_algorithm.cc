@@ -337,7 +337,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::Layout() {
     FinalizeTableCellLayout(intrinsic_block_size_, &container_builder_);
   }
 
-  NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
   return container_builder_.ToBoxFragment();
 }
@@ -497,7 +497,7 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutChildren() {
 
     // Handle any OOF fragmentainer descendants that were found before the
     // spanner.
-    NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_)
+    OutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_)
         .HandleFragmentation();
     walker.UpdateNextColumnBreakToken(container_builder_.Children());
 
@@ -769,9 +769,10 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
       }
 
       if (!has_oof_fragmentainer_descendants && balance_columns &&
-          NGFragmentedOutOfFlowData::
-              HasOutOfFlowPositionedFragmentainerDescendants(column))
+          FragmentedOofData::HasOutOfFlowPositionedFragmentainerDescendants(
+              column)) {
         has_oof_fragmentainer_descendants = true;
+      }
 
       // Add the new column fragment to the list, but don't commit anything to
       // the fragment builder until we know whether these are the final columns.
@@ -868,7 +869,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
 
     // Any OOFs contained within this multicol get laid out once all columns
     // complete layout. However, OOFs should affect column balancing. Pass the
-    // current set of columns into NGOutOfFlowLayoutPart to determine if OOF
+    // current set of columns into OutOfFlowLayoutPart to determine if OOF
     // layout will affect column balancing in any way (without actually adding
     // the OOF results to the builder - this will be handled at a later point).
     if (has_oof_fragmentainer_descendants) {
@@ -879,7 +880,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
       // offsets to be relative to the first column in the current row.
       LayoutUnit containing_block_adjustment = -TotalColumnBlockSize();
 
-      NGOutOfFlowLayoutPart::ColumnBalancingInfo column_balancing_info;
+      OutOfFlowLayoutPart::ColumnBalancingInfo column_balancing_info;
       for (wtf_size_t i = 0; i < new_columns.size(); i++) {
         auto& new_column = new_columns[i];
         column_balancing_info.columns.push_back(
@@ -888,7 +889,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
         // Because the current set of columns haven't been added to the builder
         // yet, any OOF descendants won't have been propagated up yet. Instead,
         // propagate any OOF descendants up to |column_balancing_info| so that
-        // they can be passed into NGOutOfFlowLayoutPart (without affecting the
+        // they can be passed into OutOfFlowLayoutPart (without affecting the
         // builder).
         container_builder_.PropagateOOFFragmentainerDescendants(
             new_column.Fragment(), new_column.offset,
@@ -899,7 +900,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
       }
       DCHECK(column_balancing_info.HasOutOfFlowFragmentainerDescendants());
 
-      NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_)
+      OutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_)
           .HandleFragmentation(&column_balancing_info);
       actual_column_count += column_balancing_info.num_new_columns;
       if (column_balancing_info.minimal_space_shortage > LayoutUnit()) {

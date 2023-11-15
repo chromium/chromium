@@ -106,7 +106,7 @@ void NGBoxFragmentBuilder::AddResult(
     const LogicalOffset offset,
     absl::optional<const BoxStrut> margins,
     absl::optional<LogicalOffset> relative_offset,
-    const NGInlineContainer<LogicalOffset>* inline_container) {
+    const OofInlineContainer<LogicalOffset>* inline_container) {
   const auto& fragment = child_layout_result.PhysicalFragment();
 
   // We'll normally propagate info from child_layout_result here, but if that's
@@ -166,7 +166,7 @@ void NGBoxFragmentBuilder::AddChild(
     const MarginStrut* margin_strut,
     bool is_self_collapsing,
     absl::optional<LogicalOffset> relative_offset,
-    const NGInlineContainer<LogicalOffset>* inline_container) {
+    const OofInlineContainer<LogicalOffset>* inline_container) {
 #if DCHECK_IS_ON()
   needs_inflow_bounds_explicitly_set_ = !!relative_offset;
   needs_may_have_descendant_above_block_start_explicitly_set_ =
@@ -613,7 +613,7 @@ LogicalOffset NGBoxFragmentBuilder::GetChildOffset(
 }
 
 void NGBoxFragmentBuilder::AdjustFragmentainerDescendant(
-    NGLogicalOOFNodeForFragmentation& descendant,
+    LogicalOofNodeForFragmentation& descendant,
     bool only_fixedpos_containing_block) {
   LayoutUnit previous_consumed_block_size;
   if (PreviousBreakToken())
@@ -663,7 +663,7 @@ void NGBoxFragmentBuilder::AdjustFixedposContainingBlockForInnerMulticols() {
   LayoutUnit previous_consumed_block_size =
       PreviousBreakToken()->ConsumedBlockSize();
   for (auto& multicol : multicols_with_pending_oofs_) {
-    NGMulticolWithPendingOOFs<LogicalOffset>& value = *multicol.value;
+    MulticolWithPendingOofs<LogicalOffset>& value = *multicol.value;
     if (!value.fixedpos_containing_block.Fragment() &&
         (node_.IsFixedContainer() ||
          value.fixedpos_inline_container.container)) {

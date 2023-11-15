@@ -166,7 +166,7 @@ const NGLayoutResult* TableSectionLayoutAlgorithm::Layout() {
     DCHECK_EQ(status, NGBreakStatus::kContinue);
   }
 
-  NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
   return container_builder_.ToBoxFragment();
 }
 

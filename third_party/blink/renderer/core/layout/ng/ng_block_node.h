@@ -84,7 +84,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   // To be called when we're done repeating a node, when at the last fragment.
   void FinishRepeatableRoot() const;
 
-  // This method is just for use within the |NGOutOfFlowLayoutPart|.
+  // This method is just for use within the |OutOfFlowLayoutPart|.
   //
   // As OOF-positioned objects have their position, and size computed
   // pre-layout, we need a way to quickly determine if we need to perform this

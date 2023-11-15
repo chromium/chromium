@@ -330,7 +330,7 @@ void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
   // positioned elements during regular layout. OOFs are handled by regular
   // layout during the initial column balacning pass, while it's handled
   // specially during actual layout - at the outermost fragmentation context in
-  // NGOutOfFlowLayoutPart (so this is only an issue when calculating the
+  // OutOfFlowLayoutPart (so this is only an issue when calculating the
   // initial column block-size). So just disallow breaks (we only need to worry
   // about forced breaks, as soft breaks are impossible in the initial column
   // balancing pass). This might result in over-stretched columns in some

@@ -144,7 +144,7 @@ const NGLayoutResult* FieldsetLayoutAlgorithm::Layout() {
 #endif
   }
 
-  NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
   const auto& style = Style();
   if (style.LogicalHeight().IsPercentOrCalc() ||

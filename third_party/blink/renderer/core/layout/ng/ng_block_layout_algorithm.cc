@@ -1159,7 +1159,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
         2);
   }
 
-  NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
   if (ConstraintSpace().BaselineAlgorithmType() ==
       NGBaselineAlgorithmType::kInlineBlock) {

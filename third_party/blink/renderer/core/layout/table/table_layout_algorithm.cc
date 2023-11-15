@@ -1670,7 +1670,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
                                    table_borders, table_grid_rect,
                                    column_block_size);
 
-  NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
   if (has_repeated_header && has_entered_table_box &&
       !table_box_will_continue && !is_known_to_be_last_table_box_) {

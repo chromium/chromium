@@ -98,7 +98,7 @@ class NGAbsoluteUtilsTest : public RenderingTest {
       const BoxStrut& border_padding,
       const LogicalStaticPosition& static_position,
       const WritingDirectionMode container_writing_direction,
-      NGLogicalOutOfFlowDimensions* dimensions) {
+      LogicalOofDimensions* dimensions) {
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInPerformLayout);
@@ -115,16 +115,15 @@ class NGAbsoluteUtilsTest : public RenderingTest {
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* offset_to_padding_box */
         PhysicalOffset());
-    const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
+    const LogicalOofInsets insets = ComputeOutOfFlowInsets(
         node.Style(), space.AvailableSize(), &anchor_evaluator);
     const InsetModifiedContainingBlock imcb =
         ComputeInsetModifiedContainingBlock(
             node, space.AvailableSize(), insets, static_position,
             container_writing_direction, node.Style().GetWritingDirection());
-    blink::ComputeOutOfFlowInlineDimensions(
-        node, node.Style(), space, imcb, border_padding, absl::nullopt,
-        container_writing_direction,
-        /* anchor_evaluator */ nullptr, dimensions);
+    ComputeOofInlineDimensions(node, node.Style(), space, imcb, border_padding,
+                               absl::nullopt, container_writing_direction,
+                               /* anchor_evaluator */ nullptr, dimensions);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);
   }
@@ -135,7 +134,7 @@ class NGAbsoluteUtilsTest : public RenderingTest {
       const BoxStrut& border_padding,
       const LogicalStaticPosition& static_position,
       const WritingDirectionMode container_writing_direction,
-      NGLogicalOutOfFlowDimensions* dimensions) {
+      LogicalOofDimensions* dimensions) {
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInPerformLayout);
@@ -152,16 +151,15 @@ class NGAbsoluteUtilsTest : public RenderingTest {
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* offset_to_padding_box */
         PhysicalOffset());
-    const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
+    const LogicalOofInsets insets = ComputeOutOfFlowInsets(
         node.Style(), space.AvailableSize(), &anchor_evaluator);
     const InsetModifiedContainingBlock imcb =
         ComputeInsetModifiedContainingBlock(
             node, space.AvailableSize(), insets, static_position,
             container_writing_direction, node.Style().GetWritingDirection());
-    blink::ComputeOutOfFlowBlockDimensions(
-        node, node.Style(), space, imcb, border_padding, absl::nullopt,
-        container_writing_direction,
-        /* anchor_evaluator */ nullptr, dimensions);
+    ComputeOofBlockDimensions(node, node.Style(), space, imcb, border_padding,
+                              absl::nullopt, container_writing_direction,
+                              /* anchor_evaluator */ nullptr, dimensions);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);
   }
@@ -197,7 +195,7 @@ TEST_F(NGAbsoluteUtilsTest, Horizontal) {
       LogicalStaticPosition::kInlineEnd,
       LogicalStaticPosition::kBlockStart};
 
-  NGLogicalOutOfFlowDimensions dimensions;
+  LogicalOofDimensions dimensions;
 
   // All auto => width is content, left is 0.
   SetHorizontalStyle("auto", "auto", "auto", "auto", "auto");
@@ -355,7 +353,7 @@ TEST_F(NGAbsoluteUtilsTest, Vertical) {
       LogicalStaticPosition::kInlineStart,
       LogicalStaticPosition::kBlockEnd};
 
-  NGLogicalOutOfFlowDimensions dimensions;
+  LogicalOofDimensions dimensions;
 
   // Set inline-dimensions in-case any block dimensions require it.
   ComputeOutOfFlowInlineDimensions(
@@ -461,7 +459,7 @@ TEST_F(NGAbsoluteUtilsTest, CenterStaticPosition) {
   SetVerticalStyle("auto", "auto", "auto", "auto", "auto");
 
   BoxStrut border_padding;
-  NGLogicalOutOfFlowDimensions dimensions;
+  LogicalOofDimensions dimensions;
 
   ComputeOutOfFlowInlineDimensions(
       node, ltr_space_, border_padding, static_position,
@@ -501,7 +499,7 @@ TEST_F(NGAbsoluteUtilsTest, MinMax) {
                                            LogicalStaticPosition::kInlineStart,
                                            LogicalStaticPosition::kBlockStart};
 
-  NGLogicalOutOfFlowDimensions dimensions;
+  LogicalOofDimensions dimensions;
 
   // WIDTH TESTS
 

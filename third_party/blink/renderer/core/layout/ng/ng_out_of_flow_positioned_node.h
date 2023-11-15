@@ -20,20 +20,20 @@ namespace blink {
 // once it reaches its containing block. A containing block holds the
 // containing block information needed to place these OOF positioned nodes once
 // they reach the fragmentation context root. See
-// NGPhysicalOOFNodeForFragmentation/NGLogicalOOFNodeForFragmentation for more
+// PhysicalOofNodeForFragmentation/LogicalOofNodeForFragmentation for more
 // details.
 template <typename OffsetType>
-class NGContainingBlock {
+class OofContainingBlock {
   DISALLOW_NEW();
 
  public:
-  NGContainingBlock() = default;
+  OofContainingBlock() = default;
 
-  NGContainingBlock(OffsetType offset,
-                    OffsetType relative_offset,
-                    const NGPhysicalFragment* fragment,
-                    absl::optional<LayoutUnit> clipped_container_block_offset,
-                    bool is_inside_column_spanner)
+  OofContainingBlock(OffsetType offset,
+                     OffsetType relative_offset,
+                     const NGPhysicalFragment* fragment,
+                     absl::optional<LayoutUnit> clipped_container_block_offset,
+                     bool is_inside_column_spanner)
       : offset_(offset),
         relative_offset_(relative_offset),
         fragment_(std::move(fragment)),
@@ -82,7 +82,7 @@ class NGContainingBlock {
 // root (i.e. the first LayoutInline in the continuation chain for the same
 // node) if continuations are involved.
 template <typename OffsetType>
-struct NGInlineContainer {
+struct OofInlineContainer {
   DISALLOW_NEW();
 
  public:
@@ -91,8 +91,8 @@ struct NGInlineContainer {
   // if inside a fragmentation context.
   OffsetType relative_offset;
 
-  NGInlineContainer() = default;
-  NGInlineContainer(const LayoutInline* container, OffsetType relative_offset)
+  OofInlineContainer() = default;
+  OofInlineContainer(const LayoutInline* container, OffsetType relative_offset)
       : container(container), relative_offset(relative_offset) {}
 
   void Trace(Visitor* visitor) const { visitor->Trace(container); }
@@ -104,8 +104,8 @@ struct NGInlineContainer {
 // needed to perform layout on the OOF descendants once they make their way to
 // the outermost context.
 template <typename OffsetType>
-struct NGMulticolWithPendingOOFs
-    : public GarbageCollected<NGMulticolWithPendingOOFs<OffsetType>> {
+struct MulticolWithPendingOofs
+    : public GarbageCollected<MulticolWithPendingOofs<OffsetType>> {
  public:
   // If no fixedpos containing block was found, |multicol_offset| will be
   // relative to the outer fragmentation context root. Otherwise, it will be
@@ -116,14 +116,14 @@ struct NGMulticolWithPendingOOFs
   // block lives inside an outer fragmentation context. Thus, we also need to
   // store information on the containing block and inline container for any
   // fixedpos descendants, if one exists.
-  NGContainingBlock<OffsetType> fixedpos_containing_block;
-  NGInlineContainer<OffsetType> fixedpos_inline_container;
+  OofContainingBlock<OffsetType> fixedpos_containing_block;
+  OofInlineContainer<OffsetType> fixedpos_inline_container;
 
-  NGMulticolWithPendingOOFs() = default;
-  NGMulticolWithPendingOOFs(
+  MulticolWithPendingOofs() = default;
+  MulticolWithPendingOofs(
       OffsetType multicol_offset,
-      NGContainingBlock<OffsetType> fixedpos_containing_block,
-      NGInlineContainer<OffsetType> fixedpos_inline_container)
+      OofContainingBlock<OffsetType> fixedpos_containing_block,
+      OofInlineContainer<OffsetType> fixedpos_inline_container)
       : multicol_offset(multicol_offset),
         fixedpos_containing_block(fixedpos_containing_block),
         fixedpos_inline_container(fixedpos_inline_container) {}
@@ -146,7 +146,7 @@ struct NGMulticolWithPendingOOFs
 // This is struct is allowed to be stored/persisted.
 //
 // [1] https://www.w3.org/TR/CSS2/visudet.html#abs-non-replaced-width
-struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
+struct CORE_EXPORT PhysicalOofPositionedNode {
   DISALLOW_NEW();
 
   using HorizontalEdge = PhysicalStaticPosition::HorizontalEdge;
@@ -158,17 +158,16 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
   PhysicalOffset static_position;
   unsigned static_position_horizontal_edge : 2;
   unsigned static_position_vertical_edge : 2;
-  // Whether or not this is an NGPhysicalOOFNodeForFragmentation.
+  // Whether or not this is an PhysicalOofNodeForFragmentation.
   unsigned is_for_fragmentation : 1;
   unsigned requires_content_before_breaking : 1;
-  NGInlineContainer<PhysicalOffset> inline_container;
+  OofInlineContainer<PhysicalOffset> inline_container;
 
-  NGPhysicalOutOfFlowPositionedNode(
+  PhysicalOofPositionedNode(
       NGBlockNode node,
       PhysicalStaticPosition static_position,
       bool requires_content_before_breaking,
-      NGInlineContainer<PhysicalOffset> inline_container =
-          NGInlineContainer<PhysicalOffset>())
+      OofInlineContainer<PhysicalOffset> inline_container = {})
       : box(node.GetLayoutBox()),
         static_position(static_position.offset),
         static_position_horizontal_edge(static_position.horizontal_edge),
@@ -201,24 +200,23 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
 //
 // It is *only* used within an algorithm pass, (it is temporary, and should not
 // be stored/persisted).
-struct CORE_EXPORT NGLogicalOutOfFlowPositionedNode {
+struct CORE_EXPORT LogicalOofPositionedNode {
   DISALLOW_NEW();
 
  public:
   Member<LayoutBox> box;
   LogicalStaticPosition static_position;
-  NGInlineContainer<LogicalOffset> inline_container;
-  // Whether or not this is an NGLogicalOOFNodeForFragmentation.
+  OofInlineContainer<LogicalOffset> inline_container;
+  // Whether or not this is an LogicalOofNodeForFragmentation.
   unsigned is_for_fragmentation : 1;
 
   unsigned requires_content_before_breaking : 1;
 
-  NGLogicalOutOfFlowPositionedNode(
+  LogicalOofPositionedNode(
       NGBlockNode node,
       LogicalStaticPosition static_position,
       bool requires_content_before_breaking,
-      NGInlineContainer<LogicalOffset> inline_container =
-          NGInlineContainer<LogicalOffset>())
+      OofInlineContainer<LogicalOffset> inline_container = {})
       : box(node.GetLayoutBox()),
         static_position(static_position),
         inline_container(inline_container),
@@ -250,31 +248,27 @@ struct CORE_EXPORT NGLogicalOutOfFlowPositionedNode {
 // descendants, if one exists.
 //
 // This is struct is allowed to be stored/persisted.
-struct CORE_EXPORT NGPhysicalOOFNodeForFragmentation final
-    : public NGPhysicalOutOfFlowPositionedNode {
+struct CORE_EXPORT PhysicalOofNodeForFragmentation final
+    : public PhysicalOofPositionedNode {
   DISALLOW_NEW();
 
  public:
-  NGContainingBlock<PhysicalOffset> containing_block;
-  NGContainingBlock<PhysicalOffset> fixedpos_containing_block;
-  NGInlineContainer<PhysicalOffset> fixedpos_inline_container;
+  OofContainingBlock<PhysicalOffset> containing_block;
+  OofContainingBlock<PhysicalOffset> fixedpos_containing_block;
+  OofInlineContainer<PhysicalOffset> fixedpos_inline_container;
 
-  NGPhysicalOOFNodeForFragmentation(
+  PhysicalOofNodeForFragmentation(
       NGBlockNode node,
       PhysicalStaticPosition static_position,
       bool requires_content_before_breaking,
-      NGInlineContainer<PhysicalOffset> inline_container =
-          NGInlineContainer<PhysicalOffset>(),
-      NGContainingBlock<PhysicalOffset> containing_block =
-          NGContainingBlock<PhysicalOffset>(),
-      NGContainingBlock<PhysicalOffset> fixedpos_containing_block =
-          NGContainingBlock<PhysicalOffset>(),
-      NGInlineContainer<PhysicalOffset> fixedpos_inline_container =
-          NGInlineContainer<PhysicalOffset>())
-      : NGPhysicalOutOfFlowPositionedNode(node,
-                                          static_position,
-                                          requires_content_before_breaking,
-                                          inline_container),
+      OofInlineContainer<PhysicalOffset> inline_container = {},
+      OofContainingBlock<PhysicalOffset> containing_block = {},
+      OofContainingBlock<PhysicalOffset> fixedpos_containing_block = {},
+      OofInlineContainer<PhysicalOffset> fixedpos_inline_container = {})
+      : PhysicalOofPositionedNode(node,
+                                  static_position,
+                                  requires_content_before_breaking,
+                                  inline_container),
         containing_block(containing_block),
         fixedpos_containing_block(fixedpos_containing_block),
         fixedpos_inline_container(fixedpos_inline_container) {
@@ -290,44 +284,39 @@ struct CORE_EXPORT NGPhysicalOOFNodeForFragmentation final
 //
 // It is *only* used within an algorithm pass, (it is temporary, and should not
 // be stored/persisted).
-struct CORE_EXPORT NGLogicalOOFNodeForFragmentation final
-    : public NGLogicalOutOfFlowPositionedNode {
+struct CORE_EXPORT LogicalOofNodeForFragmentation final
+    : public LogicalOofPositionedNode {
   DISALLOW_NEW();
 
  public:
-  NGContainingBlock<LogicalOffset> containing_block;
-  NGContainingBlock<LogicalOffset> fixedpos_containing_block;
-  NGInlineContainer<LogicalOffset> fixedpos_inline_container;
+  OofContainingBlock<LogicalOffset> containing_block;
+  OofContainingBlock<LogicalOffset> fixedpos_containing_block;
+  OofInlineContainer<LogicalOffset> fixedpos_inline_container;
 
-  NGLogicalOOFNodeForFragmentation(
+  LogicalOofNodeForFragmentation(
       NGBlockNode node,
       LogicalStaticPosition static_position,
       bool requires_content_before_breaking,
-      NGInlineContainer<LogicalOffset> inline_container =
-          NGInlineContainer<LogicalOffset>(),
-      NGContainingBlock<LogicalOffset> containing_block =
-          NGContainingBlock<LogicalOffset>(),
-      NGContainingBlock<LogicalOffset> fixedpos_containing_block =
-          NGContainingBlock<LogicalOffset>(),
-      NGInlineContainer<LogicalOffset> fixedpos_inline_container =
-          NGInlineContainer<LogicalOffset>())
-      : NGLogicalOutOfFlowPositionedNode(node,
-                                         static_position,
-                                         requires_content_before_breaking,
-                                         inline_container),
+      OofInlineContainer<LogicalOffset> inline_container = {},
+      OofContainingBlock<LogicalOffset> containing_block = {},
+      OofContainingBlock<LogicalOffset> fixedpos_containing_block = {},
+      OofInlineContainer<LogicalOffset> fixedpos_inline_container = {})
+      : LogicalOofPositionedNode(node,
+                                 static_position,
+                                 requires_content_before_breaking,
+                                 inline_container),
         containing_block(containing_block),
         fixedpos_containing_block(fixedpos_containing_block),
         fixedpos_inline_container(fixedpos_inline_container) {
     is_for_fragmentation = true;
   }
 
-  explicit NGLogicalOOFNodeForFragmentation(
-      const NGLogicalOutOfFlowPositionedNode& oof_node)
-      : NGLogicalOutOfFlowPositionedNode(
-            oof_node.Node(),
-            oof_node.static_position,
-            oof_node.requires_content_before_breaking,
-            oof_node.inline_container) {
+  explicit LogicalOofNodeForFragmentation(
+      const LogicalOofPositionedNode& oof_node)
+      : LogicalOofPositionedNode(oof_node.Node(),
+                                 oof_node.static_position,
+                                 oof_node.requires_content_before_breaking,
+                                 oof_node.inline_container) {
     is_for_fragmentation = true;
   }
 
@@ -337,28 +326,27 @@ struct CORE_EXPORT NGLogicalOOFNodeForFragmentation final
 };
 
 template <>
-struct DowncastTraits<NGLogicalOOFNodeForFragmentation> {
-  static bool AllowFrom(const NGLogicalOutOfFlowPositionedNode& oof_node) {
+struct DowncastTraits<LogicalOofNodeForFragmentation> {
+  static bool AllowFrom(const LogicalOofPositionedNode& oof_node) {
     return oof_node.is_for_fragmentation;
   }
 };
 
-// This is a sub class of |NGPhysicalFragment::OutOfFlowData| that can store OOF
+// This is a sub class of |NGPhysicalFragment::OofData| that can store OOF
 // propagation data under the NG block fragmentation context.
 //
 // This class is defined here instead of |NGPhysicalFragment| because types
 // needed for this class requires full definition of |NGPhysicalFragment|, and
 // |NGPhysicalFragment| requires full definition of this class if this is put
 // into |NGPhysicalFragment|.
-struct NGFragmentedOutOfFlowData final : NGPhysicalFragment::OutOfFlowData {
+struct FragmentedOofData final : NGPhysicalFragment::OofData {
   using MulticolCollection =
       HeapHashMap<Member<LayoutBox>,
-                  Member<NGMulticolWithPendingOOFs<PhysicalOffset>>>;
+                  Member<MulticolWithPendingOofs<PhysicalOffset>>>;
 
   static bool HasOutOfFlowPositionedFragmentainerDescendants(
       const NGPhysicalFragment& fragment) {
-    const NGFragmentedOutOfFlowData* oof_data =
-        fragment.FragmentedOutOfFlowData();
+    const auto* oof_data = fragment.GetFragmentedOofData();
     return oof_data &&
            !oof_data->oof_positioned_fragmentainer_descendants.empty();
   }
@@ -368,15 +356,14 @@ struct NGFragmentedOutOfFlowData final : NGPhysicalFragment::OutOfFlowData {
            !multicols_with_pending_oofs.empty();
   }
 
-  static base::span<NGPhysicalOOFNodeForFragmentation>
+  static base::span<PhysicalOofNodeForFragmentation>
   OutOfFlowPositionedFragmentainerDescendants(
       const NGPhysicalFragment& fragment) {
-    const NGFragmentedOutOfFlowData* oof_data =
-        fragment.FragmentedOutOfFlowData();
+    const auto* oof_data = fragment.GetFragmentedOofData();
     if (!oof_data || oof_data->oof_positioned_fragmentainer_descendants.empty())
-      return base::span<NGPhysicalOOFNodeForFragmentation>();
-    HeapVector<NGPhysicalOOFNodeForFragmentation>& descendants =
-        const_cast<HeapVector<NGPhysicalOOFNodeForFragmentation>&>(
+      return base::span<PhysicalOofNodeForFragmentation>();
+    HeapVector<PhysicalOofNodeForFragmentation>& descendants =
+        const_cast<HeapVector<PhysicalOofNodeForFragmentation>&>(
             oof_data->oof_positioned_fragmentainer_descendants);
     return {descendants.data(), descendants.size()};
   }
@@ -384,10 +371,10 @@ struct NGFragmentedOutOfFlowData final : NGPhysicalFragment::OutOfFlowData {
   void Trace(Visitor* visitor) const override {
     visitor->Trace(oof_positioned_fragmentainer_descendants);
     visitor->Trace(multicols_with_pending_oofs);
-    NGPhysicalFragment::OutOfFlowData::Trace(visitor);
+    NGPhysicalFragment::OofData::Trace(visitor);
   }
 
-  HeapVector<NGPhysicalOOFNodeForFragmentation>
+  HeapVector<PhysicalOofNodeForFragmentation>
       oof_positioned_fragmentainer_descendants;
   MulticolCollection multicols_with_pending_oofs;
 };
@@ -409,12 +396,11 @@ inline LogicalOffset RelativeInsetToLogical(
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGPhysicalOutOfFlowPositionedNode)
+    blink::PhysicalOofPositionedNode)
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGPhysicalOOFNodeForFragmentation)
+    blink::PhysicalOofNodeForFragmentation)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::LogicalOofPositionedNode)
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGLogicalOutOfFlowPositionedNode)
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGLogicalOOFNodeForFragmentation)
+    blink::LogicalOofNodeForFragmentation)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_OUT_OF_FLOW_POSITIONED_NODE_H_

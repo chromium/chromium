@@ -103,12 +103,12 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return PostLayoutChildLinkList(children_.size(), children_.data());
   }
 
-  // This exposes a mutable part of the fragment for |NGOutOfFlowLayoutPart|.
+  // This exposes a mutable part of the fragment for |OutOfFlowLayoutPart|.
   class MutableChildrenForOutOfFlow final {
     STACK_ALLOCATED();
 
    protected:
-    friend class NGOutOfFlowLayoutPart;
+    friend class OutOfFlowLayoutPart;
     base::span<NGLink> Children() const {
       return base::make_span(buffer_, num_children_);
     }
@@ -494,7 +494,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     void ClearIsFirstForNode() {
       fragment_.bit_field_.set<IsFirstForNodeFlag>(false);
     }
-    void ClearPropagatedOOFs() { fragment_.ClearOutOfFlowData(); }
+    void ClearPropagatedOOFs() { fragment_.ClearOofData(); }
     void SetBreakToken(const NGBlockBreakToken* token) {
       fragment_.break_token_ = token;
     }

@@ -13,7 +13,7 @@
 
 namespace blink {
 
-NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
+SimplifiedOofLayoutAlgorithm::SimplifiedOofLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params,
     const NGPhysicalBoxFragment& previous_fragment,
     bool is_new_fragment)
@@ -75,17 +75,17 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
       previous_fragment.MayHaveDescendantAboveBlockStart());
 }
 
-const NGLayoutResult* NGSimplifiedOOFLayoutAlgorithm::Layout() {
+const NGLayoutResult* SimplifiedOofLayoutAlgorithm::Layout() {
   FinishFragmentationForFragmentainer(ConstraintSpace(), &container_builder_);
   return container_builder_.ToBoxFragment();
 }
 
-void NGSimplifiedOOFLayoutAlgorithm::AppendOutOfFlowResult(
+void SimplifiedOofLayoutAlgorithm::AppendOutOfFlowResult(
     const NGLayoutResult* result) {
   container_builder_.AddResult(*result, result->OutOfFlowPositionedOffset());
 }
 
-void NGSimplifiedOOFLayoutAlgorithm::AddChildFragment(const NGLink& child) {
+void SimplifiedOofLayoutAlgorithm::AddChildFragment(const NGLink& child) {
   const auto* fragment = child.get();
   // Determine the previous position in the logical coordinate system.
   LogicalOffset child_offset =

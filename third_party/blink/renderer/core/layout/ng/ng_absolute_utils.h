@@ -21,7 +21,7 @@ class NGConstraintSpace;
 class NGLayoutResult;
 struct LogicalStaticPosition;
 
-struct CORE_EXPORT NGLogicalOutOfFlowDimensions {
+struct CORE_EXPORT LogicalOofDimensions {
   LayoutUnit MarginBoxInlineStart() const {
     return inset.inline_start - margins.inline_start;
   }
@@ -40,14 +40,14 @@ struct CORE_EXPORT NGLogicalOutOfFlowDimensions {
   BoxStrut margins;
 };
 
-struct CORE_EXPORT NGLogicalOutOfFlowInsets {
+struct CORE_EXPORT LogicalOofInsets {
   absl::optional<LayoutUnit> inline_start;
   absl::optional<LayoutUnit> inline_end;
   absl::optional<LayoutUnit> block_start;
   absl::optional<LayoutUnit> block_end;
 };
 
-CORE_EXPORT NGLogicalOutOfFlowInsets
+CORE_EXPORT LogicalOofInsets
 ComputeOutOfFlowInsets(const ComputedStyle& style,
                        const LogicalSize& available_size,
                        NGAnchorEvaluatorImpl* anchor_evaluator);
@@ -91,7 +91,7 @@ struct CORE_EXPORT InsetModifiedContainingBlock {
 CORE_EXPORT InsetModifiedContainingBlock ComputeInsetModifiedContainingBlock(
     const NGBlockNode& node,
     const LogicalSize& available_size,
-    const NGLogicalOutOfFlowInsets&,
+    const LogicalOofInsets&,
     const LogicalStaticPosition&,
     const WritingDirectionMode& container_writing_direction,
     const WritingDirectionMode& self_writing_direction);
@@ -102,7 +102,7 @@ CORE_EXPORT InsetModifiedContainingBlock ComputeInsetModifiedContainingBlock(
 // https://www.w3.org/TR/css-anchor-position-1/#fallback-apply
 CORE_EXPORT InsetModifiedContainingBlock ComputeIMCBForPositionFallback(
     const LogicalSize& available_size,
-    const NGLogicalOutOfFlowInsets&,
+    const LogicalOofInsets&,
     const LogicalStaticPosition&,
     const WritingDirectionMode& container_writing_direction,
     const WritingDirectionMode& self_writing_direction);
@@ -110,18 +110,17 @@ CORE_EXPORT InsetModifiedContainingBlock ComputeIMCBForPositionFallback(
 // The following routines implement the absolute size resolution algorithm.
 // https://www.w3.org/TR/css-position-3/#abs-non-replaced-width
 //
-// The size is computed as |NGLogicalOutOfFlowDimensions|.
+// The size is computed as |LogicalOofDimensions|.
 // It needs to be computed in 2 stages:
-// 1. The inline-dimensions with |ComputeOutOfFlowInlineDimensions|.
-// 2. The block-dimensions with |ComputeOutOfFlowBlockDimensions|.
+// 1. The inline-dimensions with |ComputeOofInlineDimensions|.
+// 2. The block-dimensions with |ComputeOofBlockDimensions|.
 //
-// NOTE: |ComputeOutOfFlowInlineDimensions| may call
-// |ComputeOutOfFlowBlockDimensions| if its required to correctly determine the
-// min/max content sizes.
+// NOTE: |ComputeOofInlineDimensions| may call |ComputeOofBlockDimensions| if
+// its required to correctly determine the min/max content sizes.
 
 // |replaced_size| should be set if and only if element is replaced element.
 // Will return true if |NGBlockNode::ComputeMinMaxSizes| was called.
-CORE_EXPORT bool ComputeOutOfFlowInlineDimensions(
+CORE_EXPORT bool ComputeOofInlineDimensions(
     const NGBlockNode&,
     const ComputedStyle& style,
     const NGConstraintSpace&,
@@ -130,11 +129,11 @@ CORE_EXPORT bool ComputeOutOfFlowInlineDimensions(
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     const Length::AnchorEvaluator* anchor_evaluator,
-    NGLogicalOutOfFlowDimensions* dimensions);
+    LogicalOofDimensions* dimensions);
 
 // If layout was performed to determine the position, this will be returned
 // otherwise it will return nullptr.
-CORE_EXPORT const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
+CORE_EXPORT const NGLayoutResult* ComputeOofBlockDimensions(
     const NGBlockNode&,
     const ComputedStyle& style,
     const NGConstraintSpace&,
@@ -143,7 +142,7 @@ CORE_EXPORT const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     const Length::AnchorEvaluator* anchor_evaluator,
-    NGLogicalOutOfFlowDimensions* dimensions);
+    LogicalOofDimensions* dimensions);
 
 CORE_EXPORT void AdjustOffsetForSplitInline(
     const NGBlockNode& node,

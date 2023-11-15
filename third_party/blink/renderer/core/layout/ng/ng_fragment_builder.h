@@ -47,7 +47,7 @@ class CORE_EXPORT NGFragmentBuilder {
   using ChildrenVector = NGLogicalLinkVector;
   using MulticolCollection =
       HeapHashMap<Member<LayoutBox>,
-                  Member<NGMulticolWithPendingOOFs<LogicalOffset>>>;
+                  Member<MulticolWithPendingOofs<LogicalOffset>>>;
 
   const ComputedStyle& Style() const {
     DCHECK(style_);
@@ -199,7 +199,7 @@ class CORE_EXPORT NGFragmentBuilder {
   //
   // Part 2: Out-of-flow layout part positions OOF-positioned nodes.
   //
-  // NGOutOfFlowLayoutPart(container_style, builder).Run();
+  // OutOfFlowLayoutPart(container_style, builder).Run();
   //
   // See layout part for builder interaction.
   void AddOutOfFlowChildCandidate(
@@ -208,8 +208,7 @@ class CORE_EXPORT NGFragmentBuilder {
       LogicalStaticPosition::InlineEdge = LogicalStaticPosition::kInlineStart,
       LogicalStaticPosition::BlockEdge = LogicalStaticPosition::kBlockStart);
 
-  void AddOutOfFlowChildCandidate(
-      const NGLogicalOutOfFlowPositionedNode& candidate);
+  void AddOutOfFlowChildCandidate(const LogicalOofPositionedNode& candidate);
 
   // This should only be used for inline-level OOF-positioned nodes.
   // |inline_container_direction| is the current text direction for determining
@@ -220,15 +219,14 @@ class CORE_EXPORT NGFragmentBuilder {
       TextDirection inline_container_direction);
 
   void AddOutOfFlowFragmentainerDescendant(
-      const NGLogicalOOFNodeForFragmentation& descendant);
+      const LogicalOofNodeForFragmentation& descendant);
   void AddOutOfFlowFragmentainerDescendant(
-      const NGLogicalOutOfFlowPositionedNode& descendant);
+      const LogicalOofPositionedNode& descendant);
 
-  void AddOutOfFlowDescendant(
-      const NGLogicalOutOfFlowPositionedNode& descendant);
+  void AddOutOfFlowDescendant(const LogicalOofPositionedNode& descendant);
 
   void SwapOutOfFlowPositionedCandidates(
-      HeapVector<NGLogicalOutOfFlowPositionedNode>* candidates);
+      HeapVector<LogicalOofPositionedNode>* candidates);
 
   // Out-of-flow positioned elements inside a nested fragmentation context
   // are laid out once they've reached the outermost fragmentation context.
@@ -237,14 +235,14 @@ class CORE_EXPORT NGFragmentBuilder {
   // store such inner multicols for later use.
   void AddMulticolWithPendingOOFs(
       const NGBlockNode& multicol,
-      NGMulticolWithPendingOOFs<LogicalOffset>* multicol_info =
-          MakeGarbageCollected<NGMulticolWithPendingOOFs<LogicalOffset>>());
+      MulticolWithPendingOofs<LogicalOffset>* multicol_info =
+          MakeGarbageCollected<MulticolWithPendingOofs<LogicalOffset>>());
 
   void SwapMulticolsWithPendingOOFs(
       MulticolCollection* multicols_with_pending_oofs);
 
   void SwapOutOfFlowFragmentainerDescendants(
-      HeapVector<NGLogicalOOFNodeForFragmentation>* descendants);
+      HeapVector<LogicalOofNodeForFragmentation>* descendants);
 
   // Transfer the candidates from |oof_positioned_candidates_| to
   // |destination_builder|, adding any |additional_offset| to the candidate
@@ -256,7 +254,7 @@ class CORE_EXPORT NGFragmentBuilder {
   void TransferOutOfFlowCandidates(
       NGFragmentBuilder* destination_builder,
       LogicalOffset additional_offset,
-      const NGMulticolWithPendingOOFs<LogicalOffset>* multicol = nullptr);
+      const MulticolWithPendingOofs<LogicalOffset>* multicol = nullptr);
 
   bool HasOutOfFlowPositionedCandidates() const {
     return !oof_positioned_candidates_.empty();
@@ -274,8 +272,7 @@ class CORE_EXPORT NGFragmentBuilder {
     return !multicols_with_pending_oofs_.empty();
   }
 
-  HeapVector<NGLogicalOutOfFlowPositionedNode>*
-  MutableOutOfFlowPositionedCandidates() {
+  HeapVector<LogicalOofPositionedNode>* MutableOutOfFlowPositionedCandidates() {
     return &oof_positioned_candidates_;
   }
 
@@ -325,21 +322,21 @@ class CORE_EXPORT NGFragmentBuilder {
         has_out_of_flow_in_fragmentainer_subtree;
   }
   // Propagate the OOF descendants from a fragment to the builder. Since the OOF
-  // descendants on the fragment are NGPhysicalOutOfFlowPositionedNodes, we
-  // first have to create NGLogicalOutOfFlowPositionedNodes copies before
-  // appending them to our list of descendants.
+  // descendants on the fragment are PhysicalOofPositionedNodes, we first have
+  // to create LogicalOofPositionedNodes copies before appending them to our
+  // list of descendants.
   // In addition, propagate any inner multicols with pending OOF descendants.
   void PropagateOOFPositionedInfo(
       const NGPhysicalFragment& fragment,
       LogicalOffset offset,
       LogicalOffset relative_offset,
       LogicalOffset offset_adjustment = LogicalOffset(),
-      const NGInlineContainer<LogicalOffset>* inline_container = nullptr,
+      const OofInlineContainer<LogicalOffset>* inline_container = nullptr,
       LayoutUnit containing_block_adjustment = LayoutUnit(),
-      const NGContainingBlock<LogicalOffset>* containing_block = nullptr,
-      const NGContainingBlock<LogicalOffset>* fixedpos_containing_block =
+      const OofContainingBlock<LogicalOffset>* containing_block = nullptr,
+      const OofContainingBlock<LogicalOffset>* fixedpos_containing_block =
           nullptr,
-      const NGInlineContainer<LogicalOffset>* fixedpos_inline_container =
+      const OofInlineContainer<LogicalOffset>* fixedpos_inline_container =
           nullptr,
       LogicalOffset additional_fixedpos_offset = LogicalOffset());
   // Same as PropagateOOFPositionedInfo(), but only performs the propagation of
@@ -351,9 +348,9 @@ class CORE_EXPORT NGFragmentBuilder {
       LogicalOffset offset,
       LogicalOffset relative_offset,
       LayoutUnit containing_block_adjustment,
-      const NGContainingBlock<LogicalOffset>* containing_block,
-      const NGContainingBlock<LogicalOffset>* fixedpos_containing_block,
-      HeapVector<NGLogicalOOFNodeForFragmentation>* out_list = nullptr);
+      const OofContainingBlock<LogicalOffset>* containing_block,
+      const OofContainingBlock<LogicalOffset>* fixedpos_containing_block,
+      HeapVector<LogicalOofNodeForFragmentation>* out_list = nullptr);
 
   void SetIsSelfCollapsing() { is_self_collapsing_ = true; }
 
@@ -530,7 +527,7 @@ class CORE_EXPORT NGFragmentBuilder {
       const NGLayoutResult&,
       LogicalOffset child_offset,
       LogicalOffset relative_offset,
-      const NGInlineContainer<LogicalOffset>* = nullptr);
+      const OofInlineContainer<LogicalOffset>* = nullptr);
 
   void PropagateFromLayoutResult(const NGLayoutResult&);
   void PropagateScrollStartTarget(const NGPhysicalFragment& child);
@@ -539,7 +536,7 @@ class CORE_EXPORT NGFragmentBuilder {
       const NGPhysicalFragment& child,
       LogicalOffset child_offset,
       LogicalOffset relative_offset,
-      const NGInlineContainer<LogicalOffset>* inline_container = nullptr);
+      const OofInlineContainer<LogicalOffset>* inline_container = nullptr);
 
   void AddChildInternal(const NGPhysicalFragment*, const LogicalOffset&);
 
@@ -548,9 +545,9 @@ class CORE_EXPORT NGFragmentBuilder {
   void AdjustFixedposContainerInfo(
       const NGPhysicalFragment* box_fragment,
       LogicalOffset relative_offset,
-      NGInlineContainer<LogicalOffset>* fixedpos_inline_container,
+      OofInlineContainer<LogicalOffset>* fixedpos_inline_container,
       const NGPhysicalFragment** fixedpos_containing_block_fragment,
-      const NGInlineContainer<LogicalOffset>* current_inline_container =
+      const OofInlineContainer<LogicalOffset>* current_inline_container =
           nullptr) const;
 
   NGLayoutInputNode node_;
@@ -589,10 +586,10 @@ class CORE_EXPORT NGFragmentBuilder {
   NGBreakTokenVector child_break_tokens_;
   const InlineBreakToken* last_inline_break_token_ = nullptr;
 
-  HeapVector<NGLogicalOutOfFlowPositionedNode> oof_positioned_candidates_;
-  HeapVector<NGLogicalOOFNodeForFragmentation>
+  HeapVector<LogicalOofPositionedNode> oof_positioned_candidates_;
+  HeapVector<LogicalOofNodeForFragmentation>
       oof_positioned_fragmentainer_descendants_;
-  HeapVector<NGLogicalOutOfFlowPositionedNode> oof_positioned_descendants_;
+  HeapVector<LogicalOofPositionedNode> oof_positioned_descendants_;
   MulticolCollection multicols_with_pending_oofs_;
 
   UnpositionedListMarker unpositioned_list_marker_;

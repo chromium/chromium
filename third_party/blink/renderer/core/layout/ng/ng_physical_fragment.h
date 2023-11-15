@@ -36,9 +36,9 @@ class FragmentItem;
 class Node;
 class NGFragmentBuilder;
 class PaintLayer;
+struct FragmentedOofData;
 struct LogicalRect;
-struct NGFragmentedOutOfFlowData;
-struct NGPhysicalOutOfFlowPositionedNode;
+struct PhysicalOofPositionedNode;
 
 enum class NGOutlineType;
 
@@ -680,11 +680,11 @@ class CORE_EXPORT NGPhysicalFragment
            PropagatedSnapAreas();
   }
 
-  struct OutOfFlowData : public GarbageCollected<OutOfFlowData> {
+  struct OofData : public GarbageCollected<OofData> {
    public:
-    virtual ~OutOfFlowData() = default;
+    virtual ~OofData() = default;
     virtual void Trace(Visitor* visitor) const;
-    HeapVector<NGPhysicalOutOfFlowPositionedNode> oof_positioned_descendants;
+    HeapVector<PhysicalOofPositionedNode> oof_positioned_descendants;
     NGPhysicalAnchorQuery anchor_query;
   };
 
@@ -706,8 +706,7 @@ class CORE_EXPORT NGPhysicalFragment
     return oof_data_ && !oof_data_->oof_positioned_descendants.empty();
   }
 
-  base::span<NGPhysicalOutOfFlowPositionedNode> OutOfFlowPositionedDescendants()
-      const;
+  base::span<PhysicalOofPositionedNode> OutOfFlowPositionedDescendants() const;
 
   bool HasAnchorQuery() const {
     return oof_data_ && !oof_data_->anchor_query.IsEmpty();
@@ -721,7 +720,7 @@ class CORE_EXPORT NGPhysicalFragment
     return &oof_data_->anchor_query;
   }
 
-  NGFragmentedOutOfFlowData* FragmentedOutOfFlowData() const;
+  FragmentedOofData* GetFragmentedOofData() const;
 
   // Return true if there are nested multicol container descendants with OOFs
   // inside.
@@ -767,10 +766,10 @@ class CORE_EXPORT NGPhysicalFragment
 
   static bool DependsOnPercentageBlockSize(const NGFragmentBuilder&);
 
-  OutOfFlowData* OutOfFlowDataFromBuilder(NGFragmentBuilder*);
-  OutOfFlowData* FragmentedOutOfFlowDataFromBuilder(NGFragmentBuilder*);
-  void ClearOutOfFlowData();
-  OutOfFlowData* CloneOutOfFlowData() const;
+  OofData* OofDataFromBuilder(NGFragmentBuilder*);
+  OofData* FragmentedOofDataFromBuilder(NGFragmentBuilder*);
+  void ClearOofData();
+  OofData* CloneOofData() const;
 
   Member<LayoutObject> layout_object_;
   PhysicalSize size_;
@@ -818,7 +817,7 @@ class CORE_EXPORT NGPhysicalFragment
 
   Member<const PropagatedData> propagated_data_;
   Member<const NGBreakToken> break_token_;
-  Member<OutOfFlowData> oof_data_;
+  Member<OofData> oof_data_;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGPhysicalFragment*);
