@@ -119,6 +119,8 @@ source_set("browser") {
     "component_updater/loader_policies/empty_component_loader_policy.h",
     "component_updater/loader_policies/origin_trials_component_loader_policy.cc",
     "component_updater/loader_policies/origin_trials_component_loader_policy.h",
+    "component_updater/masked_domain_list_component_loader.cc",
+    "component_updater/masked_domain_list_component_loader.h",
     "component_updater/origin_trials_component_loader.cc",
     "component_updater/origin_trials_component_loader.h",
     "component_updater/registration.cc",
