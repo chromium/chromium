@@ -70,15 +70,6 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
     // Called by |worker|'s thread to get a TaskSource from which to run a Task.
     virtual RegisteredTaskSource GetWork(WorkerThread* worker) = 0;
 
-    // // Called by the WorkerThread after it ran a Task. Must only be passed a
-    // // task when ShouldExit() returns true, meaning that this worker should
-    // quit
-    // // immediately and relinquish any task sources it owns. If a task source
-    // // just run by this WorkerThread contains more work after
-    // // RunAndPopNextTask() and the worker is running as usual,
-    // // SwapProcessedTask() should be used instead.
-    // virtual void DidProcessTask(RegisteredTaskSource task_source) = 0;
-
     // Called by the worker thread to swap the task source that has just run for
     // another one, if available. |task_source| must not be null. The worker can
     // then run the task returned as if it was acquired via GetWork().
