@@ -673,6 +673,14 @@ public class Fido2CredentialRequest
             }
         }
 
+        mCredManHelper.setNoCredentialsFallback(
+                () ->
+                        this.maybeDispatchGetAssertionRequest(
+                                options,
+                                convertOriginToString(callerOrigin),
+                                maybeClientDataHash,
+                                /* credentialId= */ null));
+
         // No elements of the allowlist are local, non-discoverable credentials
         // so route to CredMan.
         mCredManHelper.startGetRequest(
