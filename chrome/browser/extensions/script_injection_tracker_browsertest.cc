@@ -36,6 +36,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/result_catcher.h"
 #include "extensions/test/test_content_script_load_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -1210,7 +1211,7 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
       window.onload = function() {
           chrome.test.assertEq('complete', document.readyState);
           document.body.innerText = 'content script has run';
-          chrome.test.sendMessage('SCRIPT_INJECTED');
+          chrome.test.notifyPass();
       }
   )";
   dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
@@ -1238,11 +1239,11 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
   // above.
   {
     GURL injected_url = embedded_test_server()->GetURL("a.com", "/title1.html");
-    ExtensionTestMessageListener listener("SCRIPT_INJECTED");
+    ResultCatcher catcher;
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), injected_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-    ASSERT_TRUE(listener.WaitUntilSatisfied());
+    ASSERT_TRUE(catcher.GetNextResult());
   }
   content::WebContents* second_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1322,7 +1323,7 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
       window.onload = function() {
           chrome.test.assertEq('complete', document.readyState);
           document.body.innerText = 'content script has run';
-          chrome.test.sendMessage('SCRIPT_INJECTED');
+          chrome.test.notifyPass();
       }
   )";
   dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
@@ -1358,7 +1359,7 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
       *second_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 
   {
-    ExtensionTestMessageListener script_injected_listener("SCRIPT_INJECTED");
+    ResultCatcher catcher;
 
     // Step 2: Register a dynamic content script.
     {
@@ -1382,7 +1383,7 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
       subframe_response.Done();
 
       // Step 4: Wait until content script gets injected.
-      ASSERT_TRUE(script_injected_listener.WaitUntilSatisfied());
+      ASSERT_TRUE(catcher.GetNextResult());
     }
   }
 
@@ -1451,7 +1452,7 @@ IN_PROC_BROWSER_TEST_F(UserScriptTrackerBrowserTest,
       window.onload = function() {
           chrome.test.assertEq('complete', document.readyState);
           document.body.innerText = 'user script has run';
-          chrome.test.sendMessage('SCRIPT_INJECTED');
+          chrome.test.notifyPass();
       }
   )";
   dir.WriteFile(FILE_PATH_LITERAL("user_script.js"), kUserScript);
@@ -1477,11 +1478,11 @@ IN_PROC_BROWSER_TEST_F(UserScriptTrackerBrowserTest,
   // Navigate to a page that is in the user script 'matches'.
   GURL injected_url =
       embedded_test_server()->GetURL("requested.com", "/title1.html");
-  ExtensionTestMessageListener listener("SCRIPT_INJECTED");
+  ResultCatcher catcher;
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), injected_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  ASSERT_TRUE(listener.WaitUntilSatisfied());
+  ASSERT_TRUE(catcher.GetNextResult());
 
   content::WebContents* second_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
