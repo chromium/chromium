@@ -22,6 +22,12 @@ using blink::WebAXContext;
 using blink::WebAXObject;
 using blink::WebDocument;
 
+// Simple macro to make recording histograms easier to read in the code below.
+#define RECORD_ERROR(histogram)                                       \
+  base::UmaHistogramEnumeration(kAXTreeSnapshotterErrorHistogramName, \
+                                AXTreeSnapshotErrorReason::k##histogram)
+
+using ErrorSet = std::set<ui::AXSerializationErrorFlag>;
 namespace content {
 
 namespace {
@@ -68,21 +74,17 @@ void AXTreeSnapshotterImpl::Snapshot(size_t max_node_count,
                             true);
 
   if (!render_frame_->GetWebFrame()) {
-    base::UmaHistogramEnumeration(kAXTreeSnapshotterErrorHistogramName,
-                                  AXTreeSnapshotErrorReason::kNoWebFrame);
+    RECORD_ERROR(NoWebFrame);
     return;
   }
 
   if (!context_->HasActiveDocument()) {
-    base::UmaHistogramEnumeration(kAXTreeSnapshotterErrorHistogramName,
-                                  AXTreeSnapshotErrorReason::kNoActiveDocument);
+    RECORD_ERROR(NoActiveDocument);
     return;
   }
 
   if (!context_->HasAXObjectCache()) {
-    base::UmaHistogramEnumeration(
-        kAXTreeSnapshotterErrorHistogramName,
-        AXTreeSnapshotErrorReason::kNoExistingAXObjectCache);
+    RECORD_ERROR(NoExistingAXObjectCache);
     // TODO(chrishtr): not clear why this can happen.
     NOTREACHED_NORETURN();
   }
@@ -124,29 +126,23 @@ bool AXTreeSnapshotterImpl::SerializeTreeWithLimits(
     size_t max_node_count,
     base::TimeDelta timeout,
     ui::AXTreeUpdate* response) {
-  std::set<ui::AXSerializationErrorFlag> out_error;
+  ErrorSet out_error;
   if (!context_->SerializeEntireTree(max_node_count, timeout, response,
                                      &out_error)) {
     return false;
   }
 
-  std::set<ui::AXSerializationErrorFlag>::iterator max_nodes_iter =
+  ErrorSet::iterator max_nodes_iter =
       out_error.find(ui::AXSerializationErrorFlag::kMaxNodesReached);
-  std::set<ui::AXSerializationErrorFlag>::iterator timeout_iter =
+  ErrorSet::iterator timeout_iter =
       out_error.find(ui::AXSerializationErrorFlag::kTimeoutReached);
 
   if (max_nodes_iter != out_error.end() && timeout_iter != out_error.end()) {
-    base::UmaHistogramEnumeration(
-        kAXTreeSnapshotterErrorHistogramName,
-        AXTreeSnapshotErrorReason::kSerializeMaxNodesAndTimeoutReached);
+    RECORD_ERROR(SerializeMaxNodesAndTimeoutReached);
   } else if (max_nodes_iter != out_error.end()) {
-    base::UmaHistogramEnumeration(
-        kAXTreeSnapshotterErrorHistogramName,
-        AXTreeSnapshotErrorReason::kSerializeMaxNodesReached);
+    RECORD_ERROR(SerializeMaxNodesReached);
   } else if (timeout_iter != out_error.end()) {
-    base::UmaHistogramEnumeration(
-        kAXTreeSnapshotterErrorHistogramName,
-        AXTreeSnapshotErrorReason::kSerializeTimeoutReached);
+    RECORD_ERROR(SerializeTimeoutReached);
   }
 
   return true;
