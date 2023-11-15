@@ -173,16 +173,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner
  protected:
   friend class AutomationTreeManagerOwnerTest;
 
-  void OnAccessibilityEvents(const ui::AXTreeID& tree_id,
-                             const std::vector<AXEvent>& events,
-                             const std::vector<AXTreeUpdate>& updates,
-                             const gfx::Point& mouse_location,
-                             bool is_active_profile);
-
-  void OnAccessibilityLocationChange(const ui::AXTreeID& tree_id,
-                                     int node_id,
-                                     AXRelativeBounds new_location);
-
   // Invalidates this AutomationTreeManagerOnwer.
   void Invalidate();
 
@@ -267,8 +257,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner
 
   // The global focused node id.
   int32_t focus_id_ = -1;
-
-  bool is_active_profile_ = true;
 };
 
 }  // namespace ui

@@ -190,22 +190,4 @@ void AutomationInternalBindings::PerformAction(
   // automation_client_remote_->PerformAction(action_data);
 }
 
-void AutomationInternalBindings::DispatchAccessibilityEvents(
-    const ui::AXTreeID& tree_id,
-    const std::vector<ui::AXTreeUpdate>& updates,
-    const gfx::Point& mouse_location,
-    const std::vector<ui::AXEvent>& events) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  OnAccessibilityEvents(tree_id, events, updates, mouse_location,
-                        /*is_active_profile=*/true);
-}
-
-void AutomationInternalBindings::DispatchAccessibilityLocationChange(
-    const ui::AXTreeID& tree_id,
-    int node_id,
-    const ui::AXRelativeBounds& bounds) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  OnAccessibilityLocationChange(tree_id, node_id, bounds);
-}
-
 }  // namespace ax

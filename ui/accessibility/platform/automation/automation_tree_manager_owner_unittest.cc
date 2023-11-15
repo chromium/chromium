@@ -239,12 +239,12 @@ class AutomationTreeManagerOwnerTest : public testing::Test {
     return tree_manager_owner_->tree_id_to_tree_wrapper_map_;
   }
 
-  void SendOnAccessibilityEvents(const ui::AXTreeID& tree_id,
-                                 const std::vector<ui::AXTreeUpdate>& updates,
-                                 const gfx::Point& mouse_location,
-                                 const std::vector<ui::AXEvent>& events) {
-    tree_manager_owner_->OnAccessibilityEvents(tree_id, events, updates,
-                                               mouse_location, true);
+  void SendAccessibilityEvents(const ui::AXTreeID& tree_id,
+                               const std::vector<ui::AXTreeUpdate>& updates,
+                               const gfx::Point& mouse_location,
+                               const std::vector<ui::AXEvent>& events) {
+    tree_manager_owner_->DispatchAccessibilityEvents(tree_id, updates,
+                                                     mouse_location, events);
   }
 
   void SendOnTreeDestroyedEvent(const ui::AXTreeID& tree_id) {
@@ -314,7 +314,7 @@ TEST_F(AutomationTreeManagerOwnerTest, GetDesktop) {
   node_data.role = ax::mojom::Role::kDesktop;
   node_data.id = 1;
   std::vector<ui::AXEvent> events;
-  SendOnAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(), events);
+  SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(), events);
 
   ASSERT_EQ(1U, GetTreeIDToTreeMap().size());
 
@@ -344,7 +344,7 @@ TEST_F(AutomationTreeManagerOwnerTest, GetFocusOneTree) {
   node_data2.id = 2;
   node_data2.role = ax::mojom::Role::kButton;
   std::vector<ui::AXEvent> events;
-  SendOnAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(), events);
+  SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(), events);
 
   ASSERT_EQ(1U, GetTreeIDToTreeMap().size());
 
@@ -364,7 +364,7 @@ TEST_F(AutomationTreeManagerOwnerTest, GetFocusOneTree) {
   focused_wrapper = nullptr;
   focused_node = nullptr;
   tree_data.focus_id = 1;
-  SendOnAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(), events);
+  SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(), events);
   CallGetFocusInternal(desktop, &focused_wrapper, &focused_node);
   ASSERT_TRUE(focused_wrapper);
   ASSERT_TRUE(focused_node);
@@ -375,7 +375,7 @@ TEST_F(AutomationTreeManagerOwnerTest, GetFocusOneTree) {
   focused_wrapper = nullptr;
   focused_node = nullptr;
   tree_data.focus_id = 100;
-  SendOnAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(), events);
+  SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(), events);
   CallGetFocusInternal(desktop, &focused_wrapper, &focused_node);
   ASSERT_FALSE(focused_wrapper);
   ASSERT_FALSE(focused_node);
@@ -423,8 +423,8 @@ TEST_F(AutomationTreeManagerOwnerTest,
 
   std::vector<ui::AXEvent> empty_events;
   for (auto& updates : updates_list) {
-    SendOnAccessibilityEvents(updates[0].tree_data.tree_id, updates,
-                              gfx::Point(), empty_events);
+    SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
+                            empty_events);
   }
 
   ASSERT_EQ(3U, GetTreeIDToTreeMap().size());
@@ -454,8 +454,8 @@ TEST_F(AutomationTreeManagerOwnerTest,
 
   // The link in wrapper 0 which has a child tree id pointing to wrapper 2.
   updates_list[0][0].tree_data.focus_id = 3;
-  SendOnAccessibilityEvents(updates_list[0][0].tree_data.tree_id,
-                            updates_list[0], gfx::Point(), empty_events);
+  SendAccessibilityEvents(updates_list[0][0].tree_data.tree_id, updates_list[0],
+                          gfx::Point(), empty_events);
   CallGetFocusInternal(wrapper_0, &focused_wrapper, &focused_node);
   ASSERT_TRUE(focused_wrapper);
   ASSERT_TRUE(focused_node);
@@ -518,8 +518,8 @@ TEST_F(AutomationTreeManagerOwnerTest, GetFocusMultipleTreesAppIdConstruction) {
 
   std::vector<ui::AXEvent> empty_events;
   for (auto& updates : updates_list) {
-    SendOnAccessibilityEvents(updates[0].tree_data.tree_id, updates,
-                              gfx::Point(), empty_events);
+    SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
+                            empty_events);
   }
 
   ASSERT_EQ(3U, GetTreeIDToTreeMap().size());
@@ -552,8 +552,8 @@ TEST_F(AutomationTreeManagerOwnerTest, GetFocusMultipleTreesAppIdConstruction) {
 
   // The link in wrapper 0 which has a child tree id pointing to wrapper 2.
   updates_list[0][0].tree_data.focus_id = 3;
-  SendOnAccessibilityEvents(updates_list[0][0].tree_data.tree_id,
-                            updates_list[0], gfx::Point(), empty_events);
+  SendAccessibilityEvents(updates_list[0][0].tree_data.tree_id, updates_list[0],
+                          gfx::Point(), empty_events);
   CallGetFocusInternal(wrapper_0, &focused_wrapper, &focused_node);
   ASSERT_TRUE(focused_wrapper);
   ASSERT_TRUE(focused_node);
@@ -605,8 +605,8 @@ TEST_F(AutomationTreeManagerOwnerTest, GetBoundsAppIdConstruction) {
 
   std::vector<ui::AXEvent> empty_events;
   for (auto& updates : updates_list) {
-    SendOnAccessibilityEvents(updates[0].tree_data.tree_id, updates,
-                              gfx::Point(), empty_events);
+    SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
+                            empty_events);
   }
 
   ASSERT_EQ(2U, GetTreeIDToTreeMap().size());
@@ -686,8 +686,8 @@ TEST_F(AutomationTreeManagerOwnerTest, GetBoundsNestedAppIdConstruction) {
 
   std::vector<ui::AXEvent> empty_events;
   for (auto& updates : updates_list) {
-    SendOnAccessibilityEvents(updates[0].tree_data.tree_id, updates,
-                              gfx::Point(), empty_events);
+    SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
+                            empty_events);
   }
 
   ASSERT_EQ(2U, GetTreeIDToTreeMap().size());
@@ -762,8 +762,8 @@ TEST_F(AutomationTreeManagerOwnerTest, IgnoredAncestorTrees) {
 
   std::vector<ui::AXEvent> empty_events;
   for (auto& updates : updates_list) {
-    SendOnAccessibilityEvents(updates[0].tree_data.tree_id, updates,
-                              gfx::Point(), empty_events);
+    SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
+                            empty_events);
   }
 
   ASSERT_EQ(3U, GetTreeIDToTreeMap().size());
@@ -847,8 +847,8 @@ TEST_F(AutomationTreeManagerOwnerTest, GetMultipleChildRootsAppIdConstruction) {
 
   std::vector<ui::AXEvent> empty_events;
   for (auto& updates : updates_list) {
-    SendOnAccessibilityEvents(updates[0].tree_data.tree_id, updates,
-                              gfx::Point(), empty_events);
+    SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
+                            empty_events);
   }
 
   ASSERT_EQ(2U, GetTreeIDToTreeMap().size());
@@ -898,8 +898,8 @@ TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
       [&](const std::string& event) { events.push_back(event); }));
 
   std::vector<ui::AXEvent> ax_events;
-  SendOnAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
-                            ax_events);
+  SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
+                          ax_events);
 
   // We aren't listening for any events yet, but we should still get one that
   // gets fired on initial tree creation.
@@ -913,8 +913,8 @@ TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
 
   // Trigger a role change.
   tree_update.nodes[0].role = ax::mojom::Role::kSwitch;
-  SendOnAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
-                            ax_events);
+  SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
+                          ax_events);
 
   // There should be no events since there are no listeners and this isn't the
   // initial tree.
@@ -930,8 +930,8 @@ TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
   EXPECT_EQ(1U, wrapper->EventListenerCount());
   EXPECT_TRUE(wrapper->HasEventListener(event_type, tree->GetFromId(2)));
   tree_update.nodes[0].role = ax::mojom::Role::kButton;
-  SendOnAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
-                            ax_events);
+  SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
+                          ax_events);
 
   // We should now have exactly one event.
   ASSERT_EQ(1U, events.size());
@@ -947,8 +947,8 @@ TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
           ax::mojom::Event::kLoadComplete, ui::AXEventGenerator::Event::NONE),
       tree->GetFromId(1));
   tree_update.nodes[0].role = ax::mojom::Role::kSwitch;
-  SendOnAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
-                            ax_events);
+  SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
+                          ax_events);
 
   // We should have no events.
   ASSERT_TRUE(events.empty());
@@ -963,8 +963,8 @@ TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
   auto& event = ax_events.back();
   event.event_type = ax::mojom::Event::kClicked;
   event.id = 2;
-  SendOnAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
-                            ax_events);
+  SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
+                          ax_events);
 
   // No event.
   ASSERT_TRUE(events.empty());
@@ -975,8 +975,8 @@ TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
       std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>(
           ax::mojom::Event::kClicked, ui::AXEventGenerator::Event::NONE),
       tree->GetFromId(1));
-  SendOnAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
-                            ax_events);
+  SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
+                          ax_events);
 
   ASSERT_EQ(1U, events.size());
   EXPECT_EQ("clicked none", events[0]);
