@@ -69,13 +69,11 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
                 const Font& font,
                 const gfx::Rect& visual_rect,
                 const LineRelativeOffset& text_origin,
-                const LineRelativeRect& text_frame_rect,
                 NGInlinePaintContext* inline_context,
                 bool horizontal)
       : TextPainterBase(context,
                         font,
                         text_origin,
-                        text_frame_rect,
                         inline_context,
                         horizontal),
         visual_rect_(visual_rect) {

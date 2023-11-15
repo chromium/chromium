@@ -51,7 +51,6 @@ class CORE_EXPORT TextPainterBase {
   TextPainterBase(GraphicsContext&,
                   const Font&,
                   const LineRelativeOffset& text_origin,
-                  const LineRelativeRect& text_frame_rect,
                   NGInlinePaintContext* inline_context,
                   bool horizontal);
   ~TextPainterBase();
@@ -129,7 +128,6 @@ class CORE_EXPORT TextPainterBase {
   GraphicsContext& graphics_context_;
   const Font& font_;
   const LineRelativeOffset text_origin_;
-  const LineRelativeRect text_frame_rect_;
   AtomicString emphasis_mark_;
   int emphasis_mark_offset_ = 0;
   const bool horizontal_;

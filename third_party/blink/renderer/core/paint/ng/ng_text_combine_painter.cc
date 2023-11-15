@@ -19,11 +19,10 @@ namespace blink {
 NGTextCombinePainter::NGTextCombinePainter(
     GraphicsContext& context,
     const ComputedStyle& style,
-    const LineRelativeRect& text_frame_rect)
+    const LineRelativeOffset& text_origin)
     : TextPainterBase(context,
                       style.GetFont(),
-                      text_frame_rect.offset,
-                      text_frame_rect,
+                      text_origin,
                       /* inline_context */ nullptr,
                       /* horizontal */ false),
       style_(style) {}
@@ -68,7 +67,8 @@ void NGTextCombinePainter::Paint(const PaintInfo& paint_info,
       text_frame_rect.ComputeRelativeToPhysicalTransform(
           style.GetWritingMode()));
 
-  NGTextCombinePainter text_painter(paint_info.context, style, text_frame_rect);
+  NGTextCombinePainter text_painter(paint_info.context, style,
+                                    text_frame_rect.offset);
   const TextPaintStyle text_style = TextPainterBase::TextPaintingStyle(
       text_combine.GetDocument(), style, paint_info);
 
@@ -76,8 +76,10 @@ void NGTextCombinePainter::Paint(const PaintInfo& paint_info,
     text_painter.PaintEmphasisMark(text_style, style.GetFont());
   }
 
-  if (has_text_decoration)
-    text_painter.PaintDecorations(paint_info, text_style);
+  if (has_text_decoration) {
+    text_painter.PaintDecorations(paint_info, text_frame_rect.InlineSize(),
+                                  text_style);
+  }
 }
 
 // static
@@ -95,13 +97,11 @@ void NGTextCombinePainter::ClipDecorationsStripe(const NGTextFragmentPaintInfo&,
 }
 
 void NGTextCombinePainter::PaintDecorations(const PaintInfo& paint_info,
+                                            LayoutUnit width,
                                             const TextPaintStyle& text_style) {
   // Setup arguments for painting text decorations
-  const absl::optional<AppliedTextDecoration> selection_text_decoration;
-  TextDecorationInfo decoration_info(
-      text_frame_rect_.offset, text_frame_rect_.size.inline_size, style_,
-      /* inline_context */ nullptr, selection_text_decoration);
-
+  TextDecorationInfo decoration_info(text_origin_, width, style_,
+                                     /* inline_context */ nullptr, {});
   const NGTextDecorationOffset decoration_offset(style_);
 
   // Paint underline and overline text decorations
@@ -130,12 +130,11 @@ void NGTextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
     graphics_context_.SetFillColor(text_style.emphasis_mark_color);
   }
 
-  const auto font_ascent = font_data->GetFontMetrics().Ascent();
+  const int font_ascent = font_data->GetFontMetrics().Ascent();
   const TextRun placeholder_text_run(&kIdeographicFullStopCharacter, 1);
-  const gfx::PointF emphasis_mark_text_origin(
-      text_frame_rect_.LineLeft().ToFloat(),
-      text_frame_rect_.LineOver().ToFloat() + font_ascent +
-          emphasis_mark_offset_);
+  const gfx::PointF emphasis_mark_text_origin =
+      gfx::PointF(text_origin_) +
+      gfx::Vector2dF(0, font_ascent + emphasis_mark_offset_);
   const TextRunPaintInfo text_run_paint_info(placeholder_text_run);
   graphics_context_.DrawEmphasisMarks(
       emphasis_mark_font, text_run_paint_info, emphasis_mark_,

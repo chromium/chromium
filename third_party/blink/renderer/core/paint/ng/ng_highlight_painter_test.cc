@@ -73,7 +73,7 @@ TEST_P(NGHighlightPainterTest, FastSpellingGrammarPaintCase) {
         LineRelativeRect::CreateFromLineBox(physical_rect, true);
     NGTextPainter text_painter(
         graphics_context, text_item.ScaledFont(), rect,
-        LineRelativeOffset::CreateFromBoxOrigin(physical_offset), rotated_rect,
+        LineRelativeOffset::CreateFromBoxOrigin(physical_offset),
         &inline_context, true);
     NGTextDecorationPainter decoration_painter(text_painter, text_item,
                                                paint_info, style, text_style,

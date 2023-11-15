@@ -11,7 +11,7 @@ namespace blink {
 
 class ComputedStyle;
 class LayoutTextCombine;
-struct LineRelativeRect;
+struct LineRelativeOffset;
 
 // The painter for painting text decorations and emphasis marks for
 // LayoutNGTextCombine.
@@ -19,7 +19,7 @@ class NGTextCombinePainter final : public TextPainterBase {
  public:
   NGTextCombinePainter(GraphicsContext& context,
                        const ComputedStyle& style,
-                       const LineRelativeRect& text_frame_rect);
+                       const LineRelativeOffset& text_origin);
   ~NGTextCombinePainter();
 
   static void Paint(const PaintInfo& paint_info,
@@ -36,6 +36,7 @@ class NGTextCombinePainter final : public TextPainterBase {
 
  private:
   void PaintDecorations(const PaintInfo& paint_info,
+                        LayoutUnit width,
                         const TextPaintStyle& text_style);
   // Paints emphasis mark as for ideographic full stop character. Callers of
   // this function should rotate canvas to paint emphasis mark at left/right

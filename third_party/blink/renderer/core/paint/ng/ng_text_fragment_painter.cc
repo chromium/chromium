@@ -414,7 +414,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
           : physical_box.offset.top + ascent};
 
   NGTextPainter text_painter(context, font, visual_rect, text_origin,
-                             rotated_box, inline_context_, is_horizontal);
+                             inline_context_, is_horizontal);
   NGTextDecorationPainter decoration_painter(text_painter, text_item,
                                              paint_info, style, text_style,
                                              rotated_box, selection);
