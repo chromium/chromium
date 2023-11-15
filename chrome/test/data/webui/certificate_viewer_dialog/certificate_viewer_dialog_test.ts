@@ -2,22 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals, assertFalse, assertLT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {CrTreeBaseElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_base.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
+import {TreeItemDetail} from 'chrome://view-cert/certificate_viewer.js';
 
 /**
  * Find the first tree item (in the certificate fields tree) with a value.
- * @param {!Element} tree Certificate fields subtree to search.
- * @return {?Element} The first found element with a value, null if not found.
+ * @param tree Certificate fields subtree to search.
+ * @return The first found element with a value, null if not found.
  */
-function getElementWithValue(tree) {
+function getElementWithValue(tree: CrTreeBaseElement): CrTreeBaseElement|null {
   for (let i = 0; i < tree.items.length; i++) {
-    let element = tree.items[i];
-    if (element.detail && element.detail.payload &&
-        element.detail.payload.val) {
+    let element: CrTreeBaseElement|null = tree.items[i]!;
+    const detail = element.detail as TreeItemDetail|null;
+    if (detail && detail.payload && detail.payload.val) {
       return element;
     }
-    if (element = getElementWithValue(element)) {
+    element = getElementWithValue(element);
+    if (element) {
       return element;
     }
   }
@@ -32,20 +36,20 @@ suite('CertificateViewer', function() {
 
   // Tests for the correct common name in the test certificate.
   test('CommonName', function() {
-    assertTrue(document.querySelector('#general-error').hidden);
-    assertFalse(document.querySelector('#general-fields').hidden);
+    assertTrue(getRequiredElement('general-error').hidden);
+    assertFalse(getRequiredElement('general-fields').hidden);
 
     assertEquals(
-        'www.google.com', document.querySelector('#issued-cn').textContent);
+        'www.google.com', getRequiredElement('issued-cn').textContent);
   });
 
   test('Details', async function() {
-    const certHierarchy = document.querySelector('#hierarchy');
-    const certFields = document.querySelector('#cert-fields');
-    const certFieldVal = document.querySelector('#cert-field-value');
+    const certHierarchy = getRequiredElement<CrTreeBaseElement>('hierarchy');
+    const certFields = getRequiredElement<CrTreeBaseElement>('cert-fields');
+    const certFieldVal = getRequiredElement('cert-field-value');
 
     // Select the second tab, causing its data to be loaded if needed.
-    document.querySelector('cr-tab-box').setAttribute('selected-index', '1');
+    getRequiredElement('tabbox').setAttribute('selected-index', '1');
 
     // There must be at least one certificate in the hierarchy.
     assertLT(0, certHierarchy.items.length);
@@ -64,24 +68,24 @@ suite('CertificateViewer', function() {
     // Test that a field can be selected to see the details for that
     // field.
     const item = getElementWithValue(certFields);
-    assertNotEquals(null, item);
+    assertTrue(!!item);
     certFields.selectedItem = item;
-    assertEquals(item.detail.payload.val, certFieldVal.textContent);
+    assertEquals((item.detail as TreeItemDetail).payload.val, certFieldVal.textContent);
 
     // Test that selecting an item without a value empties the field.
-    certFields.selectedItem = certFields.items[0];
+    certFields.selectedItem = certFields.items[0]!;
     assertEquals('', certFieldVal.textContent);
   });
 
   test('InvalidCert', async function() {
     // Error should be shown instead of cert fields.
-    assertFalse(document.querySelector('#general-error').hidden);
-    assertTrue(document.querySelector('#general-fields').hidden);
+    assertFalse(getRequiredElement('general-error').hidden);
+    assertTrue(getRequiredElement('general-fields').hidden);
 
     // Cert hash should still be shown.
     assertEquals(
         '787188ffa5cca48212ed291e62cb03e1' +
             '1c1f8279df07feb1d2b0e02e0e4aa9e4',
-        document.querySelector('#sha256').textContent);
+        getRequiredElement('sha256').textContent);
   });
 });

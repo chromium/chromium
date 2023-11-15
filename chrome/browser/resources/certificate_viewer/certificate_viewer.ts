@@ -24,7 +24,7 @@ interface CertificateInfo {
   isError: boolean;
 }
 
-interface TreeItemDetail {
+export interface TreeItemDetail {
   payload: {
     val?: string,
     index?: number,

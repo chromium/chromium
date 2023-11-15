@@ -337,11 +337,6 @@ ts_library("build_ts") {
     ]
   }
 
-  if (enable_webui_certificate_viewer) {
-    in_files +=
-        [ "certificate_viewer_dialog/certificate_viewer_dialog_test.js" ]
-  }
-
   if (!is_chromeos_lacros) {
     in_files += [
       "bluetooth_internals/bluetooth_internals_test.js",
@@ -468,6 +463,11 @@ generate_grd("build_grd") {
   if (enable_print_preview) {
     deps += [ "print_preview:build_grdp" ]
     grdp_files += [ "$target_gen_dir/print_preview/resources.grdp" ]
+  }
+
+  if (enable_webui_certificate_viewer) {
+    deps += [ "certificate_viewer_dialog:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/certificate_viewer_dialog/resources.grdp" ]
   }
 
   if (enable_webui_tab_strip) {
