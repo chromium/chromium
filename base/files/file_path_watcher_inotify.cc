@@ -744,6 +744,13 @@ bool FilePathWatcherImpl::UpdateRecursiveWatches(
     recursive_paths_by_watch_.erase(end_it->second);
   }
   recursive_watches_by_path_.erase(start_it, end_it);
+
+  // If `changed_dir` does not exist anymore, then there is no need to call
+  // UpdateRecursiveWatchesForPath().
+  if (!DirectoryExists(changed_dir)) {
+    return true;
+  }
+
   return UpdateRecursiveWatchesForPath(changed_dir);
 }
 
