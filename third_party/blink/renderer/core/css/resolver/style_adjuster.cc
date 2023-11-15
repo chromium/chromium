@@ -412,7 +412,8 @@ static void AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
         element.GetDocument().GetStyleResolver().InitialZoom());
   }
 
-  if (IsA<HTMLRTElement>(element)) {
+  if (IsA<HTMLRTElement>(element) &&
+      !RuntimeEnabledFeatures::CssDisplayRubyEnabled()) {
     // Ruby text does not support float or position. This might change with
     // evolution of the specification.
     builder.SetPosition(EPosition::kStatic);
