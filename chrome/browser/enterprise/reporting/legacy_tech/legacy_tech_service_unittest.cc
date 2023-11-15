@@ -71,7 +71,7 @@ TEST_F(LegacyTechServiceTest, MatchedAndUpload) {
       "example.com", "filename",        /*line=*/10,
       /*column=*/42};
 
-  EXPECT_CALL(mock_trigger_, Run(_)).Times(1);
+  EXPECT_CALL(mock_trigger_, Run(expected_data)).Times(1);
   SetPolicy({"example.com"});
   LegacyTechServiceFactory::GetForProfile(&profile_)->ReportEvent(
       "type", GURL("https://example.com"), "filename",

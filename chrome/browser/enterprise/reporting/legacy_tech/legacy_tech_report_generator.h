@@ -30,6 +30,9 @@ class LegacyTechReportGenerator {
                    uint64_t column);
     LegacyTechData(const LegacyTechData& other);
     ~LegacyTechData();
+
+    bool operator==(const LegacyTechData&) const = default;
+
     std::string type;
     base::Time timestamp;
     GURL url;
