@@ -55,7 +55,7 @@ MockCastActivityManager::~MockCastActivityManager() = default;
 
 const char* const CastActivityTestBase::kAppId = "theAppId";
 const char* const CastActivityTestBase::kRouteId = "theRouteId";
-const char* const CastActivityTestBase::kSinkId = "cast:<id42>";
+const char* const CastActivityTestBase::kSinkId = "cast:id42";
 const char* const CastActivityTestBase::kHashToken = "dummyHashToken";
 
 CastActivityTestBase::CastActivityTestBase() = default;

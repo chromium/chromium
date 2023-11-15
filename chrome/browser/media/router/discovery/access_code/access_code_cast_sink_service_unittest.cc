@@ -455,7 +455,7 @@ TEST_F(AccessCodeCastSinkServiceTest, OnChannelOpenedSuccess) {
   MockAddSinkResultCallback mock_callback;
   MediaSinkInternal cast_sink1 = CreateCastSink(1);
 
-  EXPECT_CALL(mock_callback, Run(AddSinkResultCode::OK, Eq("cast:<id1>")));
+  EXPECT_CALL(mock_callback, Run(AddSinkResultCode::OK, Eq("cast:id1")));
   access_code_cast_sink_service_->OnChannelOpenedResult(mock_callback.Get(),
                                                         cast_sink1, true);
 }
