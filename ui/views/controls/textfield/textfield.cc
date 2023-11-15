@@ -1248,19 +1248,18 @@ bool Textfield::CanStartDragForView(View* sender,
 
 bool Textfield::GetWordLookupDataAtPoint(const gfx::Point& point,
                                          gfx::DecoratedText* decorated_word,
-                                         gfx::Point* baseline_point) {
-  return GetRenderText()->GetWordLookupDataAtPoint(point, decorated_word,
-                                                   baseline_point);
+                                         gfx::Rect* rect) {
+  return GetRenderText()->GetWordLookupDataAtPoint(point, decorated_word, rect);
 }
 
 bool Textfield::GetWordLookupDataFromSelection(
     gfx::DecoratedText* decorated_text,
-    gfx::Point* baseline_point) {
+    gfx::Rect* rect) {
   if (GetRenderText()->obscured()) {
     return false;
   }
   return GetRenderText()->GetLookupDataForRange(GetRenderText()->selection(),
-                                                decorated_text, baseline_point);
+                                                decorated_text, rect);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

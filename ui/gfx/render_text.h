@@ -598,22 +598,21 @@ class GFX_EXPORT RenderText {
 
   // Retrieves the word displayed at the given |point| along with its styling
   // information. |point| is in the view's coordinates. If no word is displayed
-  // at the point, returns a nearby word. |baseline_point| should correspond to
-  // the baseline point of the leftmost glyph of the |word| in the view's
-  // coordinates. Returns false, if no word can be retrieved.
+  // at the point, returns a nearby word. |rect| should correspond to the space
+  // used by the glyph of the |word| in the view's coordinates. Returns false,
+  // if no word can be retrieved.
   bool GetWordLookupDataAtPoint(const Point& point,
                                 DecoratedText* decorated_word,
-                                Point* baseline_point);
+                                Rect* rect);
 
   // Retrieves the text at |range| along with its styling information.
-  // |baseline_point| should correspond to the baseline point of
-  // the leftmost glyph of the text in the view's coordinates. If the text
-  // spans multiple lines, |baseline_point| will correspond with the leftmost
-  // glyph on the first line in the range. Returns false, if no text can be
-  // retrieved.
+  // |rect| should correspond to the space used by the glyph of the text in the
+  // view's coordinates. If the text spans multiple lines, |rect| will
+  // correspond with the leftmost glyph on the first line in the range. Returns
+  // false, if no text can be retrieved.
   bool GetLookupDataForRange(const Range& range,
                              DecoratedText* decorated_text,
-                             Point* baseline_point);
+                             Rect* rect);
 
   // Retrieves the text in the given |range|.
   std::u16string GetTextFromRange(const Range& range) const;

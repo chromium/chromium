@@ -1039,22 +1039,20 @@ void Label::ShowContextMenuForViewImpl(View* source,
 
 bool Label::GetWordLookupDataAtPoint(const gfx::Point& point,
                                      gfx::DecoratedText* decorated_word,
-                                     gfx::Point* baseline_point) {
+                                     gfx::Rect* rect) {
   gfx::RenderText* render_text = GetRenderTextForSelectionController();
   if (render_text && !render_text->obscured()) {
-    return render_text->GetWordLookupDataAtPoint(point, decorated_word,
-                                                 baseline_point);
+    return render_text->GetWordLookupDataAtPoint(point, decorated_word, rect);
   }
   return false;
 }
 
 bool Label::GetWordLookupDataFromSelection(gfx::DecoratedText* decorated_text,
-                                           gfx::Point* baseline_point) {
+                                           gfx::Rect* rect) {
   gfx::RenderText* render_text = GetRenderTextForSelectionController();
-  return render_text
-             ? render_text->GetLookupDataForRange(
-                   render_text->selection(), decorated_text, baseline_point)
-             : false;
+  return render_text ? render_text->GetLookupDataForRange(
+                           render_text->selection(), decorated_text, rect)
+                     : false;
 }
 
 gfx::RenderText* Label::GetRenderTextForSelectionController() {

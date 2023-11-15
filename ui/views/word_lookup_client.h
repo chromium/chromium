@@ -19,16 +19,16 @@ class VIEWS_EXPORT WordLookupClient {
  public:
   // Retrieves the word displayed at the given |point| along with its styling
   // information. |point| is in the coordinate system of the view. If no word is
-  // displayed at the point, returns a nearby word. |baseline_point| should
-  // correspond to the baseline point of the leftmost glyph of the |word| in the
-  // view's coordinates. Returns false, if no word can be retrieved.
+  // displayed at the point, returns a nearby word. |rect| should correspond to
+  // the space used by the leftmost glyph of the |word| in the view's
+  // coordinates. Returns false, if no word can be retrieved.
   virtual bool GetWordLookupDataAtPoint(const gfx::Point& point,
                                         gfx::DecoratedText* decorated_word,
-                                        gfx::Point* baseline_point) = 0;
+                                        gfx::Rect* rect) = 0;
 
   virtual bool GetWordLookupDataFromSelection(
       gfx::DecoratedText* decorated_text,
-      gfx::Point* baseline_point) = 0;
+      gfx::Rect* rect) = 0;
 
  protected:
   virtual ~WordLookupClient() = default;
