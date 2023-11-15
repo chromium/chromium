@@ -177,6 +177,7 @@ ts_library("build_ts") {
   in_files = [
     "bluetooth_pairing_test.js",
     "chai_assert.js",
+    "cr_focus_row_behavior_test.ts",
     "crostini_installer_app_test.js",
     "crostini_upgrader_app_test.js",
     "fake_network_config_mojom.js",

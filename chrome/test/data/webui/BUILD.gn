@@ -331,7 +331,6 @@ ts_library("build_ts") {
 
   if (is_chromeos_ash) {
     in_files += [
-      "cr_focus_row_behavior_test.ts",
       "mocha_adapter.js",
       "mojo_webui_test_support.js",
     ]
