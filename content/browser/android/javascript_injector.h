@@ -15,7 +15,6 @@
 namespace content {
 
 class GinJavaBridgeDispatcherHost;
-class RenderFrameHost;
 
 class JavascriptInjector : public WebContentsUserData<JavascriptInjector> {
  public:
@@ -44,11 +43,6 @@ class JavascriptInjector : public WebContentsUserData<JavascriptInjector> {
   void RemoveInterface(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& /* obj */,
                        const base::android::JavaParamRef<jstring>& name);
-
-  static void BindGinJavaBridgeHost(
-      RenderFrameHost* host,
-      mojo::PendingReceiver<mojom::GinJavaBridgeHost> receiver);
-
  private:
   friend class content::WebContentsUserData<JavascriptInjector>;
   // A weak reference to the Java JavascriptInjectorImpl object.

@@ -66,6 +66,7 @@ class GinJavaBridgeDispatcher
 
   void AddNamedObject(const std::string& name, ObjectID object_id) override;
   void RemoveNamedObject(const std::string& name) override;
+  void SetHost(mojo::PendingRemote<mojom::GinJavaBridgeHost> host) override;
 
   mojom::GinJavaBridgeHost* GetRemoteObjectHost();
 

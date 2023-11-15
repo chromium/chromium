@@ -46,17 +46,6 @@ GinJavaBridgeDispatcherHost::GinJavaBridgeDispatcherHost(
 GinJavaBridgeDispatcherHost::~GinJavaBridgeDispatcherHost() {
 }
 
-void GinJavaBridgeDispatcherHost::BindNewHost(
-    GlobalRenderFrameHostId routing_id,
-    mojo::PendingReceiver<mojom::GinJavaBridgeHost> host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  JavaBridgeThread::GetTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &GinJavaBridgeDispatcherHost::BindNewHostOnBackgroundThread, this,
-          routing_id, std::move(host)));
-}
-
 void GinJavaBridgeDispatcherHost::BindNewHostOnBackgroundThread(
     GlobalRenderFrameHostId routing_id,
     mojo::PendingReceiver<mojom::GinJavaBridgeHost> host) {
@@ -85,10 +74,19 @@ mojom::GinJavaBridge* GinJavaBridgeDispatcherHost::GetJavaBridge(
       return nullptr;
     }
     CHECK(frame_host->IsRenderFrameLive());
-    auto& bound_host = remotes_[routing_id];
+    auto& bound_remote = remotes_[routing_id];
     frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
-        bound_host.BindNewEndpointAndPassReceiver());
-    return bound_host.get();
+        bound_remote.BindNewEndpointAndPassReceiver());
+
+    mojo::PendingReceiver<mojom::GinJavaBridgeHost> host_receiver;
+    bound_remote->SetHost(host_receiver.InitWithNewPipeAndPassRemote());
+    JavaBridgeThread::GetTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &GinJavaBridgeDispatcherHost::BindNewHostOnBackgroundThread, this,
+            routing_id, std::move(host_receiver)));
+
+    return bound_remote.get();
   }
   return it->second.get();
 }

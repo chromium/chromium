@@ -64,9 +64,6 @@ class GinJavaBridgeDispatcherHost
   void PrimaryMainDocumentElementAvailable() override;
   void PrimaryPageChanged(Page& page) override;
 
-  void BindNewHost(GlobalRenderFrameHostId routing_id,
-                   mojo::PendingReceiver<mojom::GinJavaBridgeHost> host);
-
   // GinJavaMethodInvocationHelper::DispatcherDelegate
   JavaObjectWeakGlobalRef GetObjectWeakRef(
       GinJavaBoundObject::ObjectID object_id) override;

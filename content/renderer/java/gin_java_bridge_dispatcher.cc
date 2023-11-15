@@ -83,6 +83,12 @@ void GinJavaBridgeDispatcher::RemoveNamedObject(const std::string& name) {
   named_objects_.erase(name);
 }
 
+void GinJavaBridgeDispatcher::SetHost(
+    mojo::PendingRemote<mojom::GinJavaBridgeHost> host) {
+  CHECK(!remote_);
+  remote_.Bind(std::move(host));
+}
+
 void GinJavaBridgeDispatcher::GetJavaMethods(
     ObjectID object_id,
     std::vector<std::string>* methods) {
@@ -149,12 +155,9 @@ void GinJavaBridgeDispatcher::OnDestruct() {
 }
 
 mojom::GinJavaBridgeHost* GinJavaBridgeDispatcher::GetRemoteObjectHost() {
-  if (!remote_) {
-    render_frame()->GetBrowserInterfaceBroker()->GetInterface(
-        remote_.BindNewPipeAndPassReceiver());
-    remote_.reset_on_disconnect();
-  }
-
+  // Remote should always be sent because it is the first method sent to
+  // this object.
+  CHECK(remote_);
   return remote_.get();
 }
 

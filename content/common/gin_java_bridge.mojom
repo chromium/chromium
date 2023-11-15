@@ -29,6 +29,9 @@ interface GinJavaBridge {
 
   // Sent from browser to renderer to remove a Java object with the given name.
   RemoveNamedObject(string name);
+
+  // Sets the associated GinJavaBridgeHost object.
+  SetHost(pending_remote<GinJavaBridgeHost> host);
 };
 
 // Implemented in the process hosting the remote object. Allows methods to be
