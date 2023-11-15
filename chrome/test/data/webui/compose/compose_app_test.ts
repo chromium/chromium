@@ -7,12 +7,12 @@ import 'chrome://compose/app.js';
 import {ComposeAppElement, ComposeAppState} from 'chrome://compose/app.js';
 import {CloseReason, ComposeDialogCallbackRouter, ComposeState, ComposeStatus, Length, OpenMetadata, StyleModifiers, Tone} from 'chrome://compose/compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
+import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
-
 
 class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
   private initialInput_: string = '';
@@ -31,6 +31,7 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
       'acceptComposeResult',
       'closeUi',
       'compose',
+      'openBugReportingLink',
       'requestInitialState',
       'saveWebuiState',
       'undo',
@@ -59,7 +60,9 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
     return this.router_;
   }
 
-  openBugReportingLink() {}
+  openBugReportingLink() {
+    this.methodCalled('openBugReportingLink');
+  }
 
   requestInitialState(): Promise<OpenMetadata> {
     this.methodCalled('requestInitialState');
@@ -548,5 +551,16 @@ suite('ComposeApp', () => {
         'some undone result'));
     assertEquals(Length.kLonger, Number(appWithUndo.$.lengthMenu.value));
     assertEquals(Tone.kCasual, Number(appWithUndo.$.toneMenu.value));
+  });
+
+  test('Feedback', async () => {
+    const feedbackButtons =
+        app.shadowRoot!.querySelector('cr-feedback-buttons')!;
+    feedbackButtons.dispatchEvent(new CustomEvent('selected-option-changed', {
+      bubbles: true,
+      composed: true,
+      detail: {value: CrFeedbackOption.THUMBS_DOWN},
+    }));
+    await testProxy.whenCalled('openBugReportingLink');
   });
 });

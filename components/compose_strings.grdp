@@ -44,7 +44,7 @@
   We can Autofill many things (e.g., adresses, passwords, user names, credit card.). You can autofill any fields you want.
   </message>
   <message name="IDS_COMPOSE_INPUT_FOOTER" desc="The footer text for the input dialog." translateable="false">
-  <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Tip:<ph name="END_BOLD">&lt;/b&gt;</ph> You can activate Autofill in any text field when you right click.
+  Your bookmark is saved to <ph name="START">&lt;a href="chrome://bookmarks"&gt;</ph>Bookmark UI<ph name="END">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_COMPOSE_SUBMIT_BUTTON" desc="The button to submit the input." translateable="false">
   Submit

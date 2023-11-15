@@ -19,6 +19,7 @@ build_webui_tests("build") {
     "cr_dialog_test.ts",
     "cr_drawer_test.ts",
     "cr_expand_button_test.ts",
+    "cr_feedback_buttons_test.ts",
     "cr_fingerprint_progress_arc_test.ts",
     "cr_focus_row_mixin_test.ts",
     "cr_grid_focus_test.ts",

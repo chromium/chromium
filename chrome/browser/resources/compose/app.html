@@ -402,11 +402,9 @@
             $i18nRaw{fileBugText}
           </a>
         </div>
-        <div class="icon-buttons-row">
-          <cr-icon-button iron-icon="cr:thumbs-up"></cr-icon-button>
-          <cr-icon-button iron-icon="cr:thumbs-down" on-click="onFileBugClick_">
-          </cr-icon-button>
-        </div>
+        <cr-feedback-buttons
+            on-selected-option-changed="onFeedbackSelectedOptionChanged_">
+        </cr-feedback-buttons>
       </div>
       <cr-button id="insertButton" class="action-button" on-click="onAccept_">
         $i18n{insertButton}

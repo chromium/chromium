@@ -16489,6 +16489,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE" desc="Subtitle of an error popup during the verification step of the Isolated Web App installer">
       This bundle might be broken or compromised. Please close this window and download it again
     </message>
+
+    <!-- Common WebUI elements. -->
+    <message name="IDS_THUMBS_DOWN" desc="Accessibility label for a thumbs down icon that a user can click to provide negative feedback about a feature." translateable="false">
+      Thumbs down
+    </message>
+    <message name="IDS_THUMBS_UP" desc="Accessibility label for a thumbs up icon that a user can click to provide positive feedback about a feature." translateable="false">
+      Thumbs up
+    </message>
   </messages>
 </release>
 </grit>

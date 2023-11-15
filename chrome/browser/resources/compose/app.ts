@@ -7,6 +7,7 @@ import './strings.m.js';
 import './textarea.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
+import '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import '//resources/cr_elements/icons.html.js';
@@ -14,6 +15,7 @@ import '//resources/cr_elements/md_select.css.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrScrollableMixin} from '//resources/cr_elements/cr_scrollable_mixin.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
@@ -410,6 +412,19 @@ export class ComposeAppElement extends ComposeAppElementBase {
       // So we think it is possible to undo, but the Promise failed.
       // Allow the user to try again. Leave the undo button enabled.
       // TODO(b/301368162) Ask UX how to handle the edge case of multiple fails.
+    }
+  }
+
+  private onFeedbackSelectedOptionChanged_(
+      e: CustomEvent<{value: CrFeedbackOption}>) {
+    switch (e.detail.value) {
+      case CrFeedbackOption.UNSPECIFIED:
+      case CrFeedbackOption.THUMBS_UP:
+        // TODO(b/308355619): Save state and call handler.
+        return;
+      case CrFeedbackOption.THUMBS_DOWN:
+        this.apiProxy_.openBugReportingLink();
+        return;
     }
   }
 }

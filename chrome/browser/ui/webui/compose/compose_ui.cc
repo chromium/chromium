@@ -64,6 +64,8 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"editCancelButton", IDS_CANCEL},
       {"editUpdateButton", IDS_COMPOSE_EDIT_UPDATE_BUTTON},
       {"fileBugText", IDS_COMPOSE_FILE_BUG},
+      {"thumbsDown", IDS_THUMBS_DOWN},
+      {"thumbsUp", IDS_THUMBS_UP},
   };
   source->AddLocalizedStrings(kStrings);
 }
