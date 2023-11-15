@@ -842,6 +842,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1641113438599504367">Navigation sécurisée</translation>
 <translation id="1641496881756082050">Plus d'actions pour <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 autre mot de passe n'a pas été importé, car son format est incorrect}one{{NUM_PASSWORDS} autre mot de passe n'a pas été importé, car son format est incorrect}other{{NUM_PASSWORDS} autres mots de passe n'ont pas été importés, car leur format est incorrect}}</translation>
+<translation id="1642299742557467312">Ce fichier pourrait endommager votre appareil</translation>
 <translation id="1642492862748815878">Connecté à <ph name="DEVICE" /> et <ph name="NUMBER_OF_DEVICES" /> autres appareils Bluetooth</translation>
 <translation id="1642494467033190216">La suppression de la protection rootfs et un redémarrage s'avèrent nécessaires avant d'activer d'autres fonctionnalités de débogage.</translation>
 <translation id="1643072738649235303">Signature X9.62 ECDSA avec SHA-1</translation>
@@ -4073,6 +4074,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4148195018520464922">Vous pouvez limiter la connexion à certains utilisateurs. L'option "Ajouter une personne" est alors supprimée de l'écran de connexion. Vous pouvez également supprimer les utilisateurs actuels.</translation>
 <translation id="4148957013307229264">Installation...</translation>
 <translation id="4150201353443180367">Écran</translation>
+<translation id="4150417452770391330">Connectez une caméra</translation>
 <translation id="4150569944729499860">Contexte de l'écran</translation>
 <translation id="4151449637210235443">Parlez-nous de votre partie récente</translation>
 <translation id="4151503145138736576">Aucun espace de stockage hors connexion à nettoyer</translation>
@@ -4173,6 +4175,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4244238649050961491">Trouver plus d'applications de stylet</translation>
 <translation id="4246980464509998944">Autres commentaires :</translation>
 <translation id="424726838611654458">Toujours ouvrir dans Adobe Reader</translation>
+<translation id="4248401726442101648">Aucune caméra connectée</translation>
 <translation id="4249248555939881673">Connexion réseau en attente…</translation>
 <translation id="4249373718504745892">L'accès à votre caméra et à votre micro est bloqué pour cette page</translation>
 <translation id="424963718355121712">Les applications doivent être diffusées depuis l'hôte qu'elles affectent</translation>
@@ -4195,6 +4198,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4261429981378979799">Autorisations de l'extension</translation>
 <translation id="4262004481148703251">Ignorer l'avertissement</translation>
 <translation id="4263223596040212967">Vérifiez la disposition de votre clavier et réessayez.</translation>
+<translation id="4265301768135164545">Vous pouvez également configurer un profil eSIM <ph name="BEGIN_LINK" />manuellement<ph name="END_LINK" /></translation>
 <translation id="426564820080660648">Pour rechercher des mises à jour, veuillez utiliser une connexion Ethernet, Wi-Fi ou de données mobiles.</translation>
 <translation id="426652736638196239">Cet IBAN sera enregistré sur cet appareil uniquement</translation>
 <translation id="4266679478228765574">Si vous retirez des dossiers, les fichiers ne seront plus partagés, mais ne seront pas supprimés.</translation>
@@ -4295,6 +4299,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4345457680916430965">&amp;Ouvrir dans <ph name="APP" /></translation>
 <translation id="4345587454538109430">Configurer...</translation>
 <translation id="4345732373643853732">Le serveur ne connaît pas ce nom d'utilisateur</translation>
+<translation id="4346159263667201092">Ajouter des détails facultatifs</translation>
 <translation id="4348426576195894795">Si vous supprimez ce compte, tous les profils Chrome qui lui sont associés seront supprimés</translation>
 <translation id="4348766275249686434">Recueillir les erreurs</translation>
 <translation id="4349828822184870497">Utile</translation>
@@ -4379,6 +4384,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4406883609789734330">Sous-titres instantanés</translation>
 <translation id="4407039574263172582">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail et photo de profil. Consultez les <ph name="BEGIN_LINK" />Conditions d'utilisation<ph name="END_LINK" /> du site.</translation>
 <translation id="4408599188496843485">&amp;Aide</translation>
+<translation id="4408965460206576430">Ce fichier contient un logiciel malveillant ou provient d'un site suspect</translation>
 <translation id="4409271659088619928">Votre moteur de recherche est <ph name="DSE" />. Lisez ses instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="4409697491990005945">Marges</translation>
 <translation id="4409779593816003679">Mots de passe et saisie automatique</translation>
@@ -9732,6 +9738,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8676313779986170923">Merci de nous avoir envoyé vos commentaires.</translation>
 <translation id="8676374126336081632">Effacer la saisie</translation>
 <translation id="8676770494376880701">Chargeur de faible puissance connecté</translation>
+<translation id="8676985325915861058">Passer et configurer un nouveau profil</translation>
 <translation id="8677212948402625567">Tout réduire...</translation>
 <translation id="8678192320753081984">Fournit le plus haut niveau de sécurité de Google aux comptes pouvant faire l'objet d'attaques ciblées</translation>
 <translation id="8678378565142776698">Redémarrer et activer les mises à jour automatiques</translation>
@@ -10241,7 +10248,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9057354806206861646">Calendrier des mises à jour</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Environ 1 notification par jour}one{Environ {NUM_NOTIFICATION} notification par jour}other{Environ {NUM_NOTIFICATION} notifications par jour}}</translation>
 <translation id="9058760336383947367">Affichez le PPD de l'imprimante</translation>
-<translation id="9060042817356580609">Sélectionner un fournisseur DNS</translation>
 <translation id="9061694916020926968">Vous devez être connecté à un compte Google pour utiliser Steam pour Chromebook (bêta). Connectez-vous et réessayez.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Erreur de la ligne <ph name="ERROR_LINE_START" /> à la ligne <ph name="ERROR_LINE_END" /></translation>

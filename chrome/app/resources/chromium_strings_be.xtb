@@ -228,6 +228,7 @@
 <translation id="5352264705793813212">У нас ёсць некалькі рэкамендацый па бяспецы пры рабоце ў Chromium</translation>
 <translation id="5358375970380395591">Вы ўваходзіце праз уліковы запіс пад кіраваннем, што дае адміністратару кантроль над вашым профілем у браўзеры Chromium. Даныя Chromium (праграмы, закладкі, гісторыя, паролі і іншыя налады) будуць назаўсёды прывязаны да ўліковага запісу <ph name="USER_NAME" />. Вы зможаце выдаліць гэтыя даныя праз панэль кіравання Уліковымі запісамі Google, але іх нельга будзе звязаць з іншым уліковым запісам. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Дадатковы код: <ph name="EXTRA_CODE" />.</translation>
+<translation id="5383439451358640070">Даведацца, чаму Chromium блакіруе некаторыя файлы</translation>
 <translation id="5386450000063123300">Chromium абнаўляецца (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Дазволіць уваход у Chromium</translation>
 <translation id="5398878173008909840">Даступная новая версія Chromium.</translation>
@@ -397,6 +398,7 @@
 <translation id="800195749539500647">Выкарыстоўвайце ўсе магчымасці Chromium</translation>
 <translation id="8013436988911883588">Як толькі Chromium атрымае дазвол, вэб-сайты змогуць запытваць у вас доступ.</translation>
 <translation id="80471789339884597">Дзякуй, што ўсталявалі <ph name="BUNDLE_NAME" />. Каб завяршыць усталяванне, перазапусціце ўсе свае браўзеры.</translation>
+<translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium запытвае дазвол на вызначэнне месцазнаходжання для гэтага сайта</translation>
 <translation id="8133124826068723441">Сістэме Chromium OS не ўдалося сінхранізаваць вашы даныя: для вашага дамена сінхранізацыя недаступная.</translation>
 <translation id="813913629614996137">Ідзе ініцыялізацыя...</translation>

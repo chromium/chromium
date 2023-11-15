@@ -841,6 +841,7 @@
 <translation id="1641113438599504367">محفوظ براؤزنگ</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" /> کے لیے مزید کارروائیاں</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 دوسرا پاس ورڈ درآمد نہیں کیا گیا کیونکہ اسے غلط طریقے سے فارمیٹ کیا گیا ہے}other{{NUM_PASSWORDS} دوسرے پاس ورڈز درآمد نہیں کیے گئے کیونکہ وہ غلط طریقے سے فارمیٹ کیے گئے ہیں}}</translation>
+<translation id="1642299742557467312">یہ فائل آپ کے آلے کو نقصان پہنچا سکتی ہے</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> اور <ph name="NUMBER_OF_DEVICES" /> دیگر بلوٹوتھ آلات سے منسلک کیا گیا</translation>
 <translation id="1642494467033190216">‏ڈیبگ کی دیگر خصوصیات فعال کرنے سے پہلے rootfs کا تحفظ ہٹائے جانے اور دوبارہ شروع کرنے کی ضرورت ہے۔</translation>
 <translation id="1643072738649235303">‏X9.62 ECDSA SHA-1 والا دستخط</translation>
@@ -4074,6 +4075,7 @@
 <translation id="4148195018520464922">آپ سائن ان کو بعض مخصوص صارفین تک محدود کر سکتے ہیں۔ اس سے سائن ان اسکرین پر "شخص کو شامل کریں" اختیار ہٹ جاتا ہے۔ آپ موجودہ صارفین کو بھی ہٹا سکتے ہیں۔</translation>
 <translation id="4148957013307229264">انسٹال جاری…</translation>
 <translation id="4150201353443180367">ڈسپلے</translation>
+<translation id="4150417452770391330">کیمرہ منسلک کریں</translation>
 <translation id="4150569944729499860">اسکرین کا سیاق و سباق</translation>
 <translation id="4151449637210235443">ہمیں اپنے حالیہ گیم پلے کے بارے میں بتائیں</translation>
 <translation id="4151503145138736576">صاف کرنے کے لیے کوئی آف لائن اسٹوریج نہیں ہے</translation>
@@ -4174,6 +4176,7 @@
 <translation id="4244238649050961491">مزید اسٹائلس ایپس تلاش کریں</translation>
 <translation id="4246980464509998944">اضافی تبصرے:</translation>
 <translation id="424726838611654458">‏ہمیشہ Adobe Reader میں کھولیں</translation>
+<translation id="4248401726442101648">کوئی کیمرہ منسلک نہیں ہے</translation>
 <translation id="4249248555939881673">نیٹ ورک کنکشن کا انتظار ہے…</translation>
 <translation id="4249373718504745892">اس صفحہ کو آپ کے کیمرا اور مائیکروفون تک رسائی حاصل کرنے سے مسدود کر دیا گیا ہے۔</translation>
 <translation id="424963718355121712">ایپس جو کسی سائٹ کو کنٹرول کرتی ہیں وہ صرف اسی سائٹ سے ہی انسٹال ہو سکتی ہیں</translation>
@@ -4297,6 +4300,7 @@
 <translation id="4345457680916430965"><ph name="APP" /> میں کھولیں</translation>
 <translation id="4345587454538109430">کنفیگر کریں…</translation>
 <translation id="4345732373643853732">صارف نام سرور کے لیے نامعلوم ہے</translation>
+<translation id="4346159263667201092">اختیاری تفصیلات شامل کریں</translation>
 <translation id="4348426576195894795">‏اس اکاؤنٹ کو ہٹانے سے اس کے ساتھ سائن ان کردہ Chrome کی سبھی پروفائلز بھی حذف ہو جائیں گی</translation>
 <translation id="4348766275249686434">خرابیاں جمع کریں</translation>
 <translation id="4349828822184870497">مفید</translation>
@@ -4381,6 +4385,7 @@
 <translation id="4406883609789734330">لائیو کیپشن</translation>
 <translation id="4407039574263172582">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے نام، ای میل پتہ اور پروفائل کی تصویر کا اشتراک کرے گا۔ اس سائٹ کی <ph name="BEGIN_LINK" />سروس کی شرائط<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="4408599188496843485">&amp;مدد</translation>
+<translation id="4408965460206576430">یہ فائل میلوئیر پر مشتمل ہے یا کسی مشکوک سائٹ سے آتی ہے</translation>
 <translation id="4409271659088619928">آپ کا سرچ انجن <ph name="DSE" /> ہے۔ اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت حذف کرنے کے لیے ان کی ہدایات دیکھیں۔</translation>
 <translation id="4409697491990005945">مارجنز</translation>
 <translation id="4409779593816003679">پاس ورڈز اور آٹو فل</translation>
@@ -10237,7 +10242,6 @@
 <translation id="9057354806206861646">شیڈول اپ ڈیٹ کریں</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{تقریباً 1 اطلاع ایک دن میں}other{تقریباً {NUM_NOTIFICATION} اطلاعات ایک دن میں}}</translation>
 <translation id="9058760336383947367">‏پرنٹر PPD دیکھیں</translation>
-<translation id="9060042817356580609">‏DNS فراہم کنندہ کو منتخب کریں</translation>
 <translation id="9061694916020926968">‏Steam برائے Chromebook (بی ٹا) استعمال کرنے کے لیے آپ کو Google اکاؤنٹ میں سائن ان ہونے کی ضرورت ہے۔ سائن ان کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">لائن <ph name="ERROR_LINE_START" /> سے <ph name="ERROR_LINE_END" /> تک خرابی</translation>

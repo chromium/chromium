@@ -130,7 +130,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="146902737843070955">Ovu promjenu zatražio je vaš administrator</translation>
 <translation id="1469148162491666137">To omogućuje pristup za aplikacije <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> te sve aplikacije i web-lokacije s dopuštenjem za kameru i mikrofon. Možda ćete morati osvježiti web-stranicu ili ponovo pokrenuti aplikaciju.</translation>
 <translation id="147310119694673958">Baterija telefona <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="1475340220124222168">Prebacite žarišnu točku. Žarišna točka je uključena, povezan je jedan uređaj.</translation>
+<translation id="1475340220124222168">Uključite/isključite žarišnu točku. Žarišna točka je uključena, povezan je jedan uređaj.</translation>
 <translation id="1479909375538722835">Pomični izbornik pristupačnosti</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Diktiranje omogućuje pisanje glasom. Pritisnite tipku diktiranja ili odaberite ikonu mikrofona pri dnu zaslona dok ste u tekstnom polju. Jezik za diktiranje postavljen je na <ph name="LANGUAGE" />. Govor se šalje Googleu radi obrade. Jezik diktiranja uvijek možete promijeniti u odjeljku Postavke &gt; Pristupačnost.</translation>
@@ -888,7 +888,7 @@ Neke su značajke ograničene radi produljenja trajanja baterije.</translation>
 <translation id="4577990005084629481">Prikaži preglede</translation>
 <translation id="4578906031062871102">Otvoren je izbornik postavki</translation>
 <translation id="458210817642223147">Snimi GIF</translation>
-<translation id="4582666543382004902">Žarišna točka isključena je da biste upotrebljavali Wi-Fi. Da biste upotrebljavali žarišnu točku, isključite Wi-Fi.</translation>
+<translation id="4582666543382004902">Žarišna točka je isključena jer upotrebljavate Wi-Fi. Da biste upotrebljavali žarišnu točku, isključite Wi-Fi.</translation>
 <translation id="4585337515783392668">Zaustavite emitiranje na nepoznatom prijamniku</translation>
 <translation id="4596144739579517758">Tamna je tema isključena</translation>
 <translation id="4611292653554630842">Prijava</translation>
@@ -1095,7 +1095,7 @@ Neke su značajke ograničene i mogu produljiti trajanje baterije.</translation>
 <translation id="5393156353051693207">Dodirnite i držite bilo gdje da biste promijenili redoslijed svojih aplikacija</translation>
 <translation id="5395308026110844773">Aplikacija <ph name="DRAGGED_APP_NAME" /> povučena je iznad aplikacije <ph name="IN_PLACE_APP" />. Pustite je da biste izradili mapu.</translation>
 <translation id="5397578532367286026">Upravitelj (<ph name="MANAGER_EMAIL" />) može pregledavati upotrebu i povijest tog korisnika na web-lokaciji chrome.com.</translation>
-<translation id="540713187982329711">Prebacite žarišnu točku. Žarišna točka je uključena, nije povezan nijedan uređaj.</translation>
+<translation id="540713187982329711">Uključite/isključite žarišnu točku. Žarišna točka je uključena, nije povezan nijedan uređaj.</translation>
 <translation id="5413656666631274079">Stranica postavki</translation>
 <translation id="5414198321558177633">Osvježava se popis profila. To može potrajati nekoliko minuta.</translation>
 <translation id="5426063383988017631">Izbornik postavki je zatvoren</translation>
@@ -1190,7 +1190,7 @@ Neke su značajke ograničene i mogu produljiti trajanje baterije.</translation>
 <translation id="5769373120130404283">Zaslon privatnosti</translation>
 <translation id="5773950591113557721">To omogućuje pristup za aplikaciju <ph name="APP_NAME" /> i sve aplikacije i web-lokacije s dopuštenjem za kameru i mikrofon</translation>
 <translation id="5774295353725270860">Aplikacija za otvaranje datoteka</translation>
-<translation id="5775936059231769503">Prebacite žarišnu točku. Žarišna je točka isključena.</translation>
+<translation id="5775936059231769503">Uključite/isključite žarišnu točku. Žarišna točka je isključena.</translation>
 <translation id="5777841717266010279">Prekinuti dijeljenje zaslona?</translation>
 <translation id="5779721926447984944">Prikvačene datoteke</translation>
 <translation id="5785221443435874078">Ukloni taj prijedlog</translation>
@@ -1508,7 +1508,7 @@ Novo instaliranje</translation>
 <translation id="7068360136237591149">Otvori datoteke</translation>
 <translation id="7076293881109082629">Prijava</translation>
 <translation id="7076878155205969899">Isključivanje zvuka</translation>
-<translation id="7084678090004350185">Prebacite žarišnu točku. Žarišna točka je uključena, povezani su uređaji (<ph name="DEVICECOUNT" />).</translation>
+<translation id="7084678090004350185">Uključite/isključite žarišnu točku. Žarišna točka je uključena. Broj povezanih uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="7086931198345821656">Za ovo je ažuriranje potrebno izvršiti powerwash vašeg uređaja <ph name="DEVICE_TYPE" />. Izbrisat će se svi podaci. Saznajte više o najnovijem ažuriranju za <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Navigacija prekidačima</translation>
 <translation id="709015856939120012">Povećavanje stranice</translation>

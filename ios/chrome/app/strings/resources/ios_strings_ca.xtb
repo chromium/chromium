@@ -68,7 +68,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="1295289763199166823">Personalitza el menú</translation>
 <translation id="1305822519689023679">Per assegurar-te que puguis fer servir sempre les contrasenyes del teu Compte de Google, verifica la teva identitat.</translation>
 <translation id="1312721752506309252">La protecció millorada està activada</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Fes el seguiment d'aquest paquet}other{Fes el seguiment de tots els paquets}}</translation>
 <translation id="1321993286294231467">S'ha produït un error en desar la imatge.</translation>
 <translation id="1322735045095424339">La teva organització requereix el mode d'incògnit</translation>
 <translation id="1323735185997015385">Suprimeix</translation>
@@ -655,7 +654,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4489536976005181779">{count,plural, =1{La pàgina s'ha afegit a la llista de lectura del teu compte, {email}}other{Les pàgines s'han afegit a la llista de lectura del teu compte, {email}}}</translation>
 <translation id="4493604894403585654">Has iniciat la sessió com a <ph name="USER_EMAIL" />. Pots aturar la sincronització en qualsevol moment a la configuració. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
 <translation id="4502566650163919158">Comprova ara</translation>
-<translation id="4505980578794259603">Última comprovació: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Tanca la promoció d'inici de sessió</translation>
 <translation id="4514889972748124117">Suggereix una contrasenya segura...</translation>
 <translation id="4520798012560649652">Més informació sobre el mode d'incògnit</translation>
@@ -1059,7 +1057,6 @@ Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i de
 
 Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="6497850081273517953">Chrome no està actualitzat. Actualitza'l a la darrera versió per protegir-te.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Deixa de fer el seguiment d'aquest paquet}other{Deixa de fer el seguiment de tots els paquets}}</translation>
 <translation id="650279896687777322">Més informació...</translation>
 <translation id="6507973708545996744">Inicia la sessió per accedir a la llista de lectura en tots els teus dispositius.</translation>
 <translation id="6510072653668207258">Recorda-m'ho més tard</translation>

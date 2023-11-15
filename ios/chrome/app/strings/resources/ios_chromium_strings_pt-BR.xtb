@@ -107,6 +107,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromi
 <translation id="5048795749726991615">Para acessar com facilidade suas senhas salvas em outros apps, use o preenchimento automático no Chromium</translation>
 <translation id="5076601183701536878">Limpar dados de navegação no Chromium</translation>
 <translation id="5131565040785979529">Sua organização, <ph name="DOMAIN" />, gerencia a conta em que você fez login e como o Chromium é usado.</translation>
+<translation id="5146749061471423558">Adicionar favoritos ao Chromium</translation>
 <translation id="5171868502429358653">Faça login no Chromium</translation>
 <translation id="5213683223491576284">Abre o Gerenciador de senhas no Chromium.</translation>
 <translation id="5224391634244552924">Nenhuma senha salva. O Chromium poderá verificar suas senhas quando elas forem salvas.</translation>
@@ -114,6 +115,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromi
 
         Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão excluídos.</translation>
 <translation id="5308226104666789935">Não é possível verificar se há atualizações</translation>
+<translation id="5311557153294205270">Adiciona os URLs inseridos aos seus favoritos no Chromium.</translation>
 <translation id="5396916991083608703">Definir o Chromium como padrão?</translation>
 <translation id="5453478652154926037">O Chromium não pode verificar suas senhas.</translation>
 <translation id="5521125884468363740">Para acessar suas guias em qualquer lugar onde você usar o Chromium, faça login e ative a sincronização</translation>

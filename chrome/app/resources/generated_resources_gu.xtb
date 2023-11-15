@@ -4195,6 +4195,7 @@
 <translation id="4261429981378979799">એક્સ્ટેન્શનની પરવાનગીઓ</translation>
 <translation id="4262004481148703251">ચેતવણી છોડી દો</translation>
 <translation id="4263223596040212967">તમારા કીબોર્ડનું લેઆઉટ ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
+<translation id="4265301768135164545">તમે <ph name="BEGIN_LINK" />મેન્યુઅલી<ph name="END_LINK" /> પણ ઇ-સિમ પ્રોફાઇલનું સેટઅપ કરી શકો છો</translation>
 <translation id="426564820080660648">અપડેટ માટે તપાસ કરવા, કૃપા કરીને ઇથરનેટ, વાઇ-ફાઇ અથવા મોબાઇલ ડેટાનો ઉપયોગ કરો.</translation>
 <translation id="426652736638196239">આ IBAN માત્ર આ ડિવાઇસમાં જ સાચવવામાં આવશે</translation>
 <translation id="4266679478228765574">ફોલ્ડર કાઢી નાખવાથી શેર કરવાનું બંધ થશે પણ ફાઇલો ડિલીટ થશે નહીં.</translation>
@@ -9729,6 +9730,7 @@ USB ડિવાઇસ</translation>
 <translation id="8676313779986170923">પ્રતિસાદ મોકલવા બદલ આભાર.</translation>
 <translation id="8676374126336081632">ઇનપુટ સાફ કરો</translation>
 <translation id="8676770494376880701">નિમ્ન-પાવર ચાર્જર કનેક્ટ કર્યું છે</translation>
+<translation id="8676985325915861058">આને છોડીને નવી પ્રોફાઇલનું સેટઅપ કરો</translation>
 <translation id="8677212948402625567">બધાને સંકુચિત કરો...</translation>
 <translation id="8678192320753081984">લક્ષિત હુમલાઓનું જોખમ ધરાવતા લોકો માટે Googleની સૌથી સક્ષમ એકાઉન્ટ સુરક્ષા પ્રદાન કરે છે</translation>
 <translation id="8678378565142776698">ફરી શરૂ કરીને ઑટોમૅટિક રીતે અપડેટ મેળવો</translation>
@@ -10238,7 +10240,6 @@ USB ડિવાઇસ</translation>
 <translation id="9057354806206861646">શેડ્યૂલ અપડેટ કરો</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{દિવસમાં લગભગ 1 નોટિફિકેશન}one{દિવસમાં લગભગ {NUM_NOTIFICATION} નોટિફિકેશન}other{દિવસમાં લગભગ {NUM_NOTIFICATION} નોટિફિકેશન}}</translation>
 <translation id="9058760336383947367">પ્રિન્ટર PPD જુઓ</translation>
-<translation id="9060042817356580609">DNS પ્રદાતા પસંદ કરો</translation>
 <translation id="9061694916020926968">Chromebook માટે Steam (બીટા)નો ઉપયોગ કરવા માટે, તમારે Google એકાઉન્ટમાં સાઇન ઇન થવું જરૂરી રહેશે. સાઇન ઇન કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">લાઇન <ph name="ERROR_LINE_START" /> થી <ph name="ERROR_LINE_END" />માં ભૂલ આવી છે</translation>

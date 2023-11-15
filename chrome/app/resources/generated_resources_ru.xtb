@@ -843,6 +843,7 @@
 <translation id="1641113438599504367">Безопасный просмотр</translation>
 <translation id="1641496881756082050">Другие действия с сетью "<ph name="NETWORK_NAME" />"</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Не удалось импортировать 1 пароль. У него неверный формат.}one{Не удалось импортировать {NUM_PASSWORDS} пароль. У них неверный формат.}few{Не удалось импортировать {NUM_PASSWORDS} пароля. У них неверный формат.}many{Не удалось импортировать {NUM_PASSWORDS} паролей. У них неверный формат.}other{Не удалось импортировать {NUM_PASSWORDS} пароля. У них неверный формат.}}</translation>
+<translation id="1642299742557467312">Этот файл может навредить устройству</translation>
 <translation id="1642492862748815878">Установлено подключение к устройству "<ph name="DEVICE" />" и другим устройствам Bluetooth (<ph name="NUMBER_OF_DEVICES" />)</translation>
 <translation id="1642494467033190216">Перед включением других функций отладки отключите защиту корневой файловой системы и перезагрузите устройство.</translation>
 <translation id="1643072738649235303">Подпись ECDSA X9.62 с SHA-1</translation>
@@ -4074,6 +4075,7 @@
 <translation id="4148195018520464922">Вы можете разрешить вход только определенным пользователям. Тогда на экране входа не будет варианта "Добавить пользователя". Вы также можете удалить существующих пользователей.</translation>
 <translation id="4148957013307229264">Установка...</translation>
 <translation id="4150201353443180367">Экран</translation>
+<translation id="4150417452770391330">Подключите камеру</translation>
 <translation id="4150569944729499860">Содержимое экрана</translation>
 <translation id="4151449637210235443">Расскажите о недавнем геймплее.</translation>
 <translation id="4151503145138736576">Нет автономного хранилища, которое нужно очистить</translation>
@@ -4174,6 +4176,7 @@
 <translation id="4244238649050961491">Другие приложения для стилуса</translation>
 <translation id="4246980464509998944">Дополнительные комментарии:</translation>
 <translation id="424726838611654458">Всегда открывать в Adobe Reader</translation>
+<translation id="4248401726442101648">Нет подключенных камер</translation>
 <translation id="4249248555939881673">Ожидается подключение к сети...</translation>
 <translation id="4249373718504745892">Этот сайт не имеет доступа к вашим камере и микрофону</translation>
 <translation id="424963718355121712">Приложения должны загружаться с того сайта, с которым они работают</translation>
@@ -4296,6 +4299,7 @@
 <translation id="4345457680916430965">&amp;Открыть в приложении "<ph name="APP" />"</translation>
 <translation id="4345587454538109430">Настройка...</translation>
 <translation id="4345732373643853732">Серверу неизвестно это имя пользователя.</translation>
+<translation id="4346159263667201092">Добавьте дополнительную информацию</translation>
 <translation id="4348426576195894795">В результате также будут удалены все профили Chrome, для входа в которые использовался этот аккаунт.</translation>
 <translation id="4348766275249686434">Собирать данные об ошибках</translation>
 <translation id="4349828822184870497">Полезно</translation>
@@ -4380,6 +4384,7 @@
 <translation id="4406883609789734330">Автоматические субтитры</translation>
 <translation id="4407039574263172582">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт. Ознакомьтесь с его <ph name="BEGIN_LINK" />условиями предоставления услуг<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">&amp;Справка</translation>
+<translation id="4408965460206576430">Файл содержит вредоносное ПО или размещен на подозрительном сайте.</translation>
 <translation id="4409271659088619928">Ваша поисковая система – <ph name="DSE" />. Изучите инструкции по удалению истории поиска в справочных материалах указанной поисковой системы.</translation>
 <translation id="4409697491990005945">Поля</translation>
 <translation id="4409779593816003679">Пароли и автозаполнение</translation>
@@ -10246,7 +10251,6 @@
 <translation id="9057354806206861646">График обновлений</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Приблизительно 1 уведомление в день}one{Приблизительно {NUM_NOTIFICATION} уведомление в день}few{Приблизительно {NUM_NOTIFICATION} уведомления в день}many{Приблизительно {NUM_NOTIFICATION} уведомлений в день}other{Приблизительно {NUM_NOTIFICATION} уведомления в день}}</translation>
 <translation id="9058760336383947367">Посмотрите PPD-файл для принтера</translation>
-<translation id="9060042817356580609">Выбрать поставщика услуг DNS</translation>
 <translation id="9061694916020926968">Чтобы использовать Steam для Chromebook (бета), нужно войти в аккаунт Google. Сделайте это и повторите попытку.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Ошибка в строках <ph name="ERROR_LINE_START" />–<ph name="ERROR_LINE_END" /></translation>

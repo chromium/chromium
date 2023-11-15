@@ -224,6 +224,7 @@
 <translation id="5352264705793813212">Chromium откри някои препоръки за безопасност, които да прегледате</translation>
 <translation id="5358375970380395591">Влизате с управляван профил и давате на администратора му контрол над потребителския си профил в Chromium. Данните ви там, като например приложения, отметки, история, пароли и други настройки, ще се свържат за постоянно с/ъс <ph name="USER_NAME" />. Ще можете да ги изтриете чрез таблото за управление на Google Профили, но не и да ги свържете с друг профил. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Допълнителен код: <ph name="EXTRA_CODE" />.</translation>
+<translation id="5383439451358640070">Научете защо Chromium блокира някои файлове</translation>
 <translation id="5386450000063123300">Chromium се актуализира (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Разрешаване на влизането в Chromium</translation>
 <translation id="5398878173008909840">Налице е нова версия на Chromium.</translation>
@@ -390,6 +391,7 @@
 <translation id="800195749539500647">Възползвайте се максимално от Chromium</translation>
 <translation id="8013436988911883588">След като Chromium получи достъп, уебсайтовете ще могат да искат достъп от вас.</translation>
 <translation id="80471789339884597">Благодарим ви, че инсталирахте <ph name="BUNDLE_NAME" />. Трябва да рестартирате всичките си браузъри, преди да използвате това приложение.</translation>
+<translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome for Testing</translation>
 <translation id="8105840573057009683">За този сайт Chromium се нуждае от разрешение за достъп до местоположението</translation>
 <translation id="8133124826068723441">Chromium OS не можа да синхронизира данните ви, защото тази функция не е налице за домейна ви.</translation>
 <translation id="813913629614996137">Подготвя се за работа...</translation>

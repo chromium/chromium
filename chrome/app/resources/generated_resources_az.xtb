@@ -837,6 +837,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1641113438599504367">Təhlükəsiz Axtarış</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" /> üçün digər əməliyyatlar</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Yanlış formatlaşdırıldığı üçün başqa 1 parol import edilmədi}other{Yanlış formatlaşdırıldığı üçün başqa {NUM_PASSWORDS} parol import edilmədi}}</translation>
+<translation id="1642299742557467312">Bu fayl cihazınızı zədələyə bilər</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> və digər <ph name="NUMBER_OF_DEVICES" /> Bluetooth cihazına qoşulub</translation>
 <translation id="1642494467033190216">Digər debaq funksiyalarını aktiv etmədən öncə kök qorunmasının silinməsi və yenidən başlanma tələb olunur.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA SHA-1 ilə imza</translation>
@@ -4069,6 +4070,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4148195018520464922">Girişi müəyyən istifadəçilərə məhdudlaşdıra bilərsiniz. Bu zaman giriş ekranında "Şəxs əlavə edin" seçimi silinir. Cari istifadəçiləri də silə bilərsiniz.</translation>
 <translation id="4148957013307229264">Quraşdırılır...</translation>
 <translation id="4150201353443180367">Ekran</translation>
+<translation id="4150417452770391330">Kamera qoşun</translation>
 <translation id="4150569944729499860">Ekran konteksti</translation>
 <translation id="4151449637210235443">Son oyun sürəsi haqqında bildirin</translation>
 <translation id="4151503145138736576">Təmizlənəcək oflayn yaddaş yoxdur</translation>
@@ -4169,6 +4171,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4244238649050961491">Daha çox stiloqraf tətbiqləri axtarın</translation>
 <translation id="4246980464509998944">Əlavə şərhlər:</translation>
 <translation id="424726838611654458">Həmişə Adobe Reader'də açın</translation>
+<translation id="4248401726442101648">Kamera qoşulmayıb</translation>
 <translation id="4249248555939881673">Şəbəkə bağlantısı gözlənilir...</translation>
 <translation id="4249373718504745892">Bu səhifə kameranıza və mikrofonunuza girə bilməz.</translation>
 <translation id="424963718355121712">Tətbiqlər təsir etdiyi hostdan təmin edilməlidirlər</translation>
@@ -4291,6 +4294,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4345457680916430965"><ph name="APP" /> tətbiqində açın</translation>
 <translation id="4345587454538109430">Sazlayın...</translation>
 <translation id="4345732373643853732">İstifadəçi adı serverə məlum deyil</translation>
+<translation id="4346159263667201092">İstəyə görə məlumatlar əlavə edin</translation>
 <translation id="4348426576195894795">Bu hesabın silinməsi bu hesabla daxil olan bütün Chrome profillərini də siləcək</translation>
 <translation id="4348766275249686434">Xətaları toplayın</translation>
 <translation id="4349828822184870497">Faydalı</translation>
@@ -4375,6 +4379,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4406883609789734330">Avtomatik subtitrlər</translation>
 <translation id="4407039574263172582">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ad, e-poçt ünvanı və profil şəklinizi bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK" />xidmət şərtlərinə<ph name="END_LINK" /> baxın.</translation>
 <translation id="4408599188496843485">Yardım</translation>
+<translation id="4408965460206576430">Bu faylda zərərli proqram var və ya şübhəli saytdan gəlir</translation>
 <translation id="4409271659088619928">Axtarış sisteminiz <ph name="DSE" />. Axtarış tarixçənizi silmək üçün onun təlimatlarına (təmin edilibsə) baxın.</translation>
 <translation id="4409697491990005945">Kənar boşluqlar</translation>
 <translation id="4409779593816003679">Parollar və avto doldurma</translation>
@@ -10227,7 +10232,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="9057354806206861646">Cədvəli güncəlləyin</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Gündə təxminən 1 bildiriş}other{Gündə təxminən {NUM_NOTIFICATION} bildiriş}}</translation>
 <translation id="9058760336383947367">Printer PPD'nə baxın</translation>
-<translation id="9060042817356580609">DNS provayderini seçin</translation>
 <translation id="9061694916020926968">Chromebook üçün Steam (Beta) istifadə etmək məqsədilə Google Hesabına daxil olmalısınız. Daxil olun və yenidən cəhd edin.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> - <ph name="ERROR_LINE_END" /> üzrə xəta baş verdi</translation>

@@ -840,6 +840,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1641496881756082050">Máis accións para <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Hai 1 contrasinal que non se importou porque ten un formato incorrecto}other{Hai {NUM_PASSWORDS} contrasinais que non se importaron porque teñen un formato incorrecto}}</translation>
+<translation id="1642299742557467312">Este ficheiro podería danar o teu dispositivo</translation>
 <translation id="1642492862748815878">Conexión establecida cos seguintes dispositivos Bluetooth: <ph name="DEVICE" /> e <ph name="NUMBER_OF_DEVICES" /> máis</translation>
 <translation id="1642494467033190216">Necesítase a eliminación e o reinicio da protección rootfs antes de activar outras funcións de depuración.</translation>
 <translation id="1643072738649235303">Sinatura X9.62 ECDSA con SHA-1</translation>
@@ -4074,6 +4075,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4148195018520464922">Podes limitar o inicio de sesión a determinados usuarios. Se o fas, a opción Engadir unha persoa quitarase da pantalla de inicio de sesión. Tamén podes quitar usuarios.</translation>
 <translation id="4148957013307229264">Instalando...</translation>
 <translation id="4150201353443180367">Pantalla</translation>
+<translation id="4150417452770391330">Conecta unha cámara</translation>
 <translation id="4150569944729499860">Contexto da pantalla</translation>
 <translation id="4151449637210235443">Cóntanos que tal foi a túa partida máis recente</translation>
 <translation id="4151503145138736576">Non hai espazo de almacenamento sen conexión para liberar</translation>
@@ -4174,6 +4176,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4244238649050961491">Buscar máis aplicacións de lapis óptico</translation>
 <translation id="4246980464509998944">Comentarios adicionais:</translation>
 <translation id="424726838611654458">Abrir sempre en Adobe Reader</translation>
+<translation id="4248401726442101648">Non hai ningunha cámara conectada</translation>
 <translation id="4249248555939881673">Esperando conexión de rede...</translation>
 <translation id="4249373718504745892">Bloqueouse o acceso desta páxina ao micrófono e á cámara.</translation>
 <translation id="424963718355121712">As aplicacións deben proceder do host no que repercuten</translation>
@@ -4296,6 +4299,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4345457680916430965">&amp;Abrir en <ph name="APP" /></translation>
 <translation id="4345587454538109430">Configurar...</translation>
 <translation id="4345732373643853732">O servidor non recoñece o nome de usuario</translation>
+<translation id="4346159263667201092">Engadir detalles opcionais</translation>
 <translation id="4348426576195894795">Se quitas esta conta, tamén se eliminarán os perfís de Chrome nos que teñas a sesión iniciada con ela</translation>
 <translation id="4348766275249686434">Recompilar erros</translation>
 <translation id="4349828822184870497">É útil</translation>
@@ -4380,6 +4384,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4406883609789734330">Subtítulos instantáneos</translation>
 <translation id="4407039574263172582">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio. Consulta as <ph name="BEGIN_LINK" />condicións de servizo<ph name="END_LINK" /> deste sitio.</translation>
 <translation id="4408599188496843485">A&amp;xuda</translation>
+<translation id="4408965460206576430">Este ficheiro contén software malicioso ou procede dun sitio sospeitoso</translation>
 <translation id="4409271659088619928">O teu motor de busca é <ph name="DSE" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>
 <translation id="4409697491990005945">Marxes</translation>
 <translation id="4409779593816003679">Contrasinais e &amp;Autocompletar</translation>
@@ -10233,7 +10238,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="9057354806206861646">Programa de actualización</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Arredor de 1 notificación ao día}other{Arredor de {NUM_NOTIFICATION} notificacións ao día}}</translation>
 <translation id="9058760336383947367">Ver PPD da impresora</translation>
-<translation id="9060042817356580609">Seleccionar fornecedor de DNS</translation>
 <translation id="9061694916020926968">Para poder usar Steam para Chromebook (beta), debes ter a sesión iniciada nunha Conta de Google. Inicia sesión e téntao de novo.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Produciuse un erro da liña <ph name="ERROR_LINE_START" /> á <ph name="ERROR_LINE_END" /></translation>

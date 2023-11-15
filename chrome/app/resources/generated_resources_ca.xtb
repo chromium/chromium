@@ -4196,6 +4196,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4261429981378979799">Permisos d'extensions</translation>
 <translation id="4262004481148703251">Ignora l'advertiment</translation>
 <translation id="4263223596040212967">Comprova la disposició del teclat i torna-ho a provar.</translation>
+<translation id="4265301768135164545">També pots configurar un perfil d'eSIM <ph name="BEGIN_LINK" />manualment<ph name="END_LINK" />.</translation>
 <translation id="426564820080660648">Per comprovar si hi ha actualitzacions, feu servir Ethernet, Wi-Fi o dades mòbils.</translation>
 <translation id="426652736638196239">Aquest IBAN només es desarà en aquest dispositiu</translation>
 <translation id="4266679478228765574">En suprimir carpetes, es deixen de compartir, però no se'n suprimeixen els fitxers.</translation>
@@ -9732,6 +9733,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8676313779986170923">Gràcies per enviar els suggeriments.</translation>
 <translation id="8676374126336081632">Esborra l'entrada</translation>
 <translation id="8676770494376880701">S'ha connectat un carregador de baix consum</translation>
+<translation id="8676985325915861058">Omet i configura un perfil nou</translation>
 <translation id="8677212948402625567">Redueix-ho tot...</translation>
 <translation id="8678192320753081984">Proporciona el sistema de seguretat per a comptes més eficaç de Google a les persones que corren més risc de patir atacs dirigits.</translation>
 <translation id="8678378565142776698">Reinicia i rep actualitzacions automàtiques</translation>
@@ -10240,7 +10242,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="9057354806206861646">Actualitza la programació</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Aproximadament 1 notificació al dia}other{Aproximadament {NUM_NOTIFICATION} notificacions al dia}}</translation>
 <translation id="9058760336383947367">Mostra el fitxer PPD de la impressora</translation>
-<translation id="9060042817356580609">Selecciona un proveïdor de DNS</translation>
 <translation id="9061694916020926968">Per utilitzar Steam per a Chromebook (beta), has de tenir la sessió iniciada en un Compte de Google. Inicia la sessió i torna-ho a provar.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Error des de la línia <ph name="ERROR_LINE_START" /> fins a la <ph name="ERROR_LINE_END" /></translation>

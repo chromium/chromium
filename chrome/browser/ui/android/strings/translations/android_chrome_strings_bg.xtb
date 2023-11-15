@@ -502,6 +502,7 @@
 <translation id="371230970611282515">Предвижда и ви предупреждава за опасни събития, преди да се случат.</translation>
 <translation id="3714981814255182093">Отваряне на лентата за търсене</translation>
 <translation id="3716182511346448902">Тази страница използва твърде много памет, така че Chrome я постави на пауза.</translation>
+<translation id="3720422586473670527">Не, благодаря</translation>
 <translation id="3721119614952978349">Вие и Google</translation>
 <translation id="3737319253362202215">Настройки за превод</translation>
 <translation id="3737402728074743863">За да използвате това устройство като ключ за сигурност, задайте опция за заключване на екрана</translation>
@@ -799,6 +800,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Изтегля се файл…}other{Изтеглят се # файла…}}</translation>
 <translation id="5210286577605176222">Преминаване към предишния раздел</translation>
 <translation id="5210365745912300556">Затваряне на раздела</translation>
+<translation id="5216863793077689658">Активността ви в Page Insights се запазва в <ph name="BEGIN_LINK" />профила ви в Google<ph name="END_LINK" />.</translation>
 <translation id="5222676887888702881">Изход</translation>
 <translation id="5226378907213531272">Ще отключвате екрана си при всяко използване на автомобила</translation>
 <translation id="5227554086496586518">Докоснете, за да видите резултатите от търсенето</translation>

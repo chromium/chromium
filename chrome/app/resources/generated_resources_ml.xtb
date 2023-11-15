@@ -10241,7 +10241,6 @@
 <translation id="9057354806206861646">ഷെഡ്യൂൾ അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{ഒരു ദിവസം ഏകദേശം ഒരു അറിയിപ്പ്}other{ഒരു ദിവസം ഏകദേശം {NUM_NOTIFICATION} അറിയിപ്പുകൾ}}</translation>
 <translation id="9058760336383947367">പ്രിന്റർ PPD കാണുക</translation>
-<translation id="9060042817356580609">DNS ദാതാവിനെ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="9061694916020926968">Chromebook-നുള്ള Steam (ബീറ്റ) ഉപയോഗിക്കുന്നതിന് നിങ്ങൾ Google Account-ലേക്ക് സൈൻ ഇൻ ചെയ്യേണ്ടതുണ്ട്. സൈൻ ഇൻ ചെയ്‌ത് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />-മത്തെ വരി മുതൽ <ph name="ERROR_LINE_END" />-മത്തെ വരി വരെ പിശക്</translation>

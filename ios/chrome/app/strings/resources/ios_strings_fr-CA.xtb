@@ -68,7 +68,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1295289763199166823">Personnaliser le menu</translation>
 <translation id="1305822519689023679">Pour vous assurer de toujours pouvoir utiliser les mots de passe dans votre compte Google, vérifiez qu'il s'agit bien de vous.</translation>
 <translation id="1312721752506309252">La protection renforcée est activée</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Suivre ce colis}one{Suivre tous les colis}other{Suivre tous les colis}}</translation>
 <translation id="1321993286294231467">Une erreur s'est produite lors de l'enregistrement de l'image.</translation>
 <translation id="1322735045095424339">Votre organisation vous demande d'utiliser le mode de navigation privée</translation>
 <translation id="1323735185997015385">Supprimer</translation>
@@ -655,7 +654,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4489536976005181779">{count,plural, =1{ page ajoutée à votre liste de lecture dans votre compte, {email}}one{ page ajoutée à votre liste de lecture dans votre compte, {email}}other{ pages ajoutées à votre liste de lecture dans votre compte, {email}}}</translation>
 <translation id="4493604894403585654">Vous êtes connecté en tant que <ph name="USER_EMAIL" />. Vous pouvez arrêter la synchronisation en tout temps dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="4502566650163919158">Vérifier maintenant</translation>
-<translation id="4505980578794259603">Dernière vérification : <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Fermer la promotion de connexion</translation>
 <translation id="4514889972748124117">Suggérer un mot de passe fort…</translation>
 <translation id="4520798012560649652">En savoir plus à propos du mode de navigation privée</translation>
@@ -1059,7 +1057,6 @@ Vos données sont chiffrées avec votre phrase de passe. Saisissez-la pour utili
 
 Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
 <translation id="6497850081273517953">Chrome est obsolète; effectuez la mise à jour vers la version la plus récente pour rester en sécurité.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Annuler le suivi de ce colis}one{Annuler le suivi de tous les colis}other{Annuler le suivi de tous les colis}}</translation>
 <translation id="650279896687777322">En savoir plus…</translation>
 <translation id="6507973708545996744">Connectez-vous pour obtenir votre liste de lecture sur tous vos appareils.</translation>
 <translation id="6510072653668207258">Me le rappeler plus tard</translation>

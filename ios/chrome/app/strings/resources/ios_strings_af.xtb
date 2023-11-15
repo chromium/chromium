@@ -68,7 +68,6 @@
 <translation id="1295289763199166823">Pasmaak kieslys</translation>
 <translation id="1305822519689023679">Verifieer dis jy om seker te maak dat jy altyd die wagwoorde in jou Google-rekening kan gebruik</translation>
 <translation id="1312721752506309252">Verbeterde Beskerming is aan</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Spoor hierdie pakkie na}other{Spoor alle pakkies na}}</translation>
 <translation id="1321993286294231467">Kon nie prent stoor nie.</translation>
 <translation id="1322735045095424339">Jou organisasie vereis Incognitomodus</translation>
 <translation id="1323735185997015385">Vee uit</translation>
@@ -655,7 +654,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4489536976005181779">{count,plural, =1{Bladsy is by jou leeslys in jou rekening, {email}, gevoeg}other{Bladsye is by jou leeslys in jou rekening, {email}, gevoeg}}</translation>
 <translation id="4493604894403585654">Jy is aangemeld as <ph name="USER_EMAIL" />. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="4502566650163919158">Meld nou aan</translation>
-<translation id="4505980578794259603">Laas gekontroleer: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Maak aanmelding-promosie toe</translation>
 <translation id="4514889972748124117">Stel sterk wagwoord voor …</translation>
 <translation id="4520798012560649652">Kom meer te wete oor Incognitomodus</translation>
@@ -1059,7 +1057,6 @@ Jou data is met jou wagfrase geënkripteer. Voer dit in om Chrome-data in jou Go
 
 Probeer 'n unieke wagwoord vir elke werf gebruik.</translation>
 <translation id="6497850081273517953">Chrome is verouderd, dateer op na die nuutste weergawe om veilig te bly.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Stop nasporing van hierdie pakkie}other{Stop nasporing van hierdie pakkie}}</translation>
 <translation id="650279896687777322">Kom meer te wete …</translation>
 <translation id="6507973708545996744">Meld aan om jou leeslys op al jou toestelle te kry.</translation>
 <translation id="6510072653668207258">Herinner my later</translation>

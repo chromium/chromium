@@ -843,6 +843,7 @@
 <translation id="1641113438599504367">גלישה בטוחה</translation>
 <translation id="1641496881756082050">עוד פעולות לרשת <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{סיסמה אחת נוספת לא יובאה כי הפורמט שלה שגוי}one{{NUM_PASSWORDS} סיסמאות נוספות לא יובאו כי הפורמט שלהן שגוי}two{{NUM_PASSWORDS} סיסמאות נוספות לא יובאו כי הפורמט שלהן שגוי}other{{NUM_PASSWORDS} סיסמאות נוספות לא יובאו כי הפורמט שלהן שגוי}}</translation>
+<translation id="1642299742557467312">הקובץ הזה עלול להזיק למכשיר</translation>
 <translation id="1642492862748815878">‏קיים חיבור אל <ph name="DEVICE" /> ול-<ph name="NUMBER_OF_DEVICES" /> מכשירי Bluetooth נוספים</translation>
 <translation id="1642494467033190216">‏הסרה של הגנת rootfs והפעלה מחדש נדרשות לפני שמפעילים תכונות אחרות של ניפוי באגים.</translation>
 <translation id="1643072738649235303">‏חתימת X9.62 ECDSA עם SHA-1</translation>
@@ -4087,6 +4088,7 @@
 <translation id="4148195018520464922">אפשר להגביל את הכניסה של משתמשים מסוימים. הפעולה הזו תסיר את האפשרות 'הוספת משתמש' ממסך הכניסה. אפשר גם להסיר משתמשים קיימים.</translation>
 <translation id="4148957013307229264">מתקין...</translation>
 <translation id="4150201353443180367">תצוגה</translation>
+<translation id="4150417452770391330">חיבור מצלמה</translation>
 <translation id="4150569944729499860">הקשר מסך</translation>
 <translation id="4151449637210235443">‏איך היה מהלך המשחק (gameplay) האחרון שלך?</translation>
 <translation id="4151503145138736576">אין אחסון אופליין לניקוי</translation>
@@ -4187,6 +4189,7 @@
 <translation id="4244238649050961491">חיפוש עוד אפליקציות לשימוש בסטיילוס</translation>
 <translation id="4246980464509998944">הערות נוספות:</translation>
 <translation id="424726838611654458">‏פתיחה תמיד ב-Adobe Reader</translation>
+<translation id="4248401726442101648">לא מחוברת מצלמה</translation>
 <translation id="4249248555939881673">תיכף נתחבר לרשת…</translation>
 <translation id="4249373718504745892">הגישה של הדף הזה למצלמה ולמיקרופון נחסמה.</translation>
 <translation id="424963718355121712">הפעלת אפליקציות חייבת להתבצע מהמארח שעליו הן משפיעות</translation>
@@ -4310,6 +4313,7 @@
 <translation id="4345457680916430965">&amp;פתיחה באמצעות <ph name="APP" /></translation>
 <translation id="4345587454538109430">הגדרה...</translation>
 <translation id="4345732373643853732">שם המשתמש לא מוכר לשרת</translation>
+<translation id="4346159263667201092">הוספת פרטים אופציונליים</translation>
 <translation id="4348426576195894795">‏אם החשבון הזה יוסר, יימחקו כל הפרופילים של Chrome שמחוברים לחשבון הזה</translation>
 <translation id="4348766275249686434">תיעוד שגיאות</translation>
 <translation id="4349828822184870497">מועילה</translation>
@@ -4394,6 +4398,7 @@
 <translation id="4406883609789734330">כתוביות מיידיות</translation>
 <translation id="4407039574263172582">כדי להמשיך, הפרטים הבאים ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה: השם, כתובת האימייל ותמונת הפרופיל שלך. <ph name="BEGIN_LINK" />כאן מפורטים התנאים וההגבלות<ph name="END_LINK" /> של האתר הזה.</translation>
 <translation id="4408599188496843485">ע&amp;זרה</translation>
+<translation id="4408965460206576430">הקובץ הזה מכיל תוכנה זדונית או מגיע מאתר חשוד</translation>
 <translation id="4409271659088619928">מנוע החיפוש שלך הוא <ph name="DSE" />. ניתן לעיין בהוראות שלו לגבי מחיקת היסטוריית החיפושים, אם רלוונטי.</translation>
 <translation id="4409697491990005945">שוליים</translation>
 <translation id="4409779593816003679">סיסמאות ו&amp;מילוי אוטומטי</translation>
@@ -10261,7 +10266,6 @@
 <translation id="9057354806206861646">לוח זמנים של עדכונים</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{בערך התראה אחת ביום}one{בערך {NUM_NOTIFICATION} התראות ביום}two{בערך {NUM_NOTIFICATION} התראות ביום}other{בערך {NUM_NOTIFICATION} התראות ביום}}</translation>
 <translation id="9058760336383947367">‏אפשר לראות את קובץ PPD של המדפסת</translation>
-<translation id="9060042817356580609">‏בחירת ספק DNS</translation>
 <translation id="9061694916020926968">‏צריך להיכנס לחשבון Google כדי להשתמש ב-Steam ל-Chromebook (בטא). עליך להיכנס לחשבון ולנסות שוב.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">שגיאה משורה <ph name="ERROR_LINE_START" /> עד <ph name="ERROR_LINE_END" /></translation>

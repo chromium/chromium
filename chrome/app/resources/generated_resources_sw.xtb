@@ -841,6 +841,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1641113438599504367">Kuvinjari Salama</translation>
 <translation id="1641496881756082050">Vitendo zaidi vya <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Nenosiri lingine 1 halijapakiwa kwa sababu lina muundo usio sahihi}other{Manenosiri mengine {NUM_PASSWORDS} hayajapakiwa kwa sababu yana muundo usio sahihi}}</translation>
+<translation id="1642299742557467312">Faili hii inaweza kudhuru kifaa chako</translation>
 <translation id="1642492862748815878">Imeunganishwa kwenye <ph name="DEVICE" /> na vifaa vingine <ph name="NUMBER_OF_DEVICES" /> vyenye Bluetooth</translation>
 <translation id="1642494467033190216">Kuondoa ulinzi na kuzima na kuwasha rootfs kunahitajika kabla ya kuwasha vipengele vya kutatua.</translation>
 <translation id="1643072738649235303">Sahihi ya X9.62 ECDSA yenye SHA-1</translation>
@@ -4082,6 +4083,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4148195018520464922">Unaweza kuweka kikomo cha wanaoweza kuingia kwa watumiaji fulani. Hatua hii huondoa chaguo la "Weka mtu" kwenye skrini ya kuingia. Unaweza pia kuondoa watumiaji wa sasa.</translation>
 <translation id="4148957013307229264">Inasakinisha...</translation>
 <translation id="4150201353443180367">Onyesho</translation>
+<translation id="4150417452770391330">Unganisha kamera</translation>
 <translation id="4150569944729499860">Muktadha wa skrini</translation>
 <translation id="4151449637210235443">Tueleze kuhusu uchezaji wako wa hivi karibuni</translation>
 <translation id="4151503145138736576">Hakuna data ya kufuta kwenye hifadhi iliyo nje ya mtandao</translation>
@@ -4182,6 +4184,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4244238649050961491">Pata programu zaidi za stylus</translation>
 <translation id="4246980464509998944">Maoni mengine:</translation>
 <translation id="424726838611654458">Fungua katika Adobe Reader wakati wowote</translation>
+<translation id="4248401726442101648">Hakuna kamera iliyounganishwa</translation>
 <translation id="4249248555939881673">Inasubiri muunganisho kwa mtandao...</translation>
 <translation id="4249373718504745892">Ukurasa huu umezuiwa kufikia kamera na maikrofoni yako.</translation>
 <translation id="424963718355121712">Ni lazima programu zitoke kwenye seva pangishi ambapo zinatumika</translation>
@@ -4204,6 +4207,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4261429981378979799">Ruhusa za kiendelezi</translation>
 <translation id="4262004481148703251">Ondoa onyo</translation>
 <translation id="4263223596040212967">Angalia muundo wa kibodi yako kisha ujaribu tena.</translation>
+<translation id="4265301768135164545">Pia, unaweza kuweka mipangilio ya wasifu wa eSIM <ph name="BEGIN_LINK" />mwenyewe<ph name="END_LINK" /></translation>
 <translation id="426564820080660648">Ili kuangalia sasisho, tafadhali tumia Ethernet, Wi-Fi au data ya simu ya mkononi.</translation>
 <translation id="426652736638196239">Tutahifadhi IBAN hii kwenye kifaa hiki pekee</translation>
 <translation id="4266679478228765574">Hatua ya kuondoa folda itakomesha shughuli ya kushiriki lakini haitafuta faili.</translation>
@@ -4304,6 +4308,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4345457680916430965">Fungua kwenye <ph name="APP" /></translation>
 <translation id="4345587454538109430">Sanidi...</translation>
 <translation id="4345732373643853732">Seva haitambui jina la mtumiaji</translation>
+<translation id="4346159263667201092">Weka maelezo yasiyo ya lazima</translation>
 <translation id="4348426576195894795">Hatua ya kufuta akaunti hii pia itafuta wasifu wowote kwenye Chrome ambapo umeingia kwa kutumia akaunti hii</translation>
 <translation id="4348766275249686434">Kusanya hitilafu</translation>
 <translation id="4349828822184870497">Imenifaa</translation>
@@ -4388,6 +4393,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4406883609789734330">Manukuu Papo Hapo</translation>
 <translation id="4407039574263172582">Ili uendelee, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> itashiriki jina, anwani ya barua pepe, pamoja na picha yako ya wasifu na tovuti hii. Angalia <ph name="BEGIN_LINK" />sheria na masharti<ph name="END_LINK" />ya tovuti hii.</translation>
 <translation id="4408599188496843485">Usaidizi</translation>
+<translation id="4408965460206576430">Faili hii ina programu hasidi au imetoka kwenye tovuti ya kutiliwa shaka</translation>
 <translation id="4409271659088619928">Mtambo wako wa kutafuta ni <ph name="DSE" />. Angalia maagizo ya mtambo huo wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta historia ya mambo uliyotafuta.</translation>
 <translation id="4409697491990005945">Pambizo</translation>
 <translation id="4409779593816003679">Manenosiri na kujaza kiotomatiki</translation>
@@ -9740,6 +9746,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8676313779986170923">Asante kwa kutuma maoni.</translation>
 <translation id="8676374126336081632">Futa uingizaji wa maandishi</translation>
 <translation id="8676770494376880701">Chaja ya nguvu ya chini imeunganishwa</translation>
+<translation id="8676985325915861058">Ruka na uweke mipangilio ya wasifu mpya</translation>
 <translation id="8677212948402625567">Kunja zote...</translation>
 <translation id="8678192320753081984">Hutoa usalama thabiti zaidi wa akaunti kutoka Google kwa watu walio katika hatari ya mashambulizi mahususi</translation>
 <translation id="8678378565142776698">Zima kisha uwashe ili upate masasisho ya kiotomatiki</translation>
@@ -10248,7 +10255,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="9057354806206861646">Sasisha ratiba</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Takribani arifa 1 kwa siku}other{Takribani arifa {NUM_NOTIFICATION} kwa siku}}</translation>
 <translation id="9058760336383947367">Tazama kichapishi cha PPD</translation>
-<translation id="9060042817356580609">Chagua Mtoa huduma wa DNS</translation>
 <translation id="9061694916020926968">Unahitaji kuingia katika Akaunti ya Google ili utumie programu ya Steam for Chromebook (Beta). Ingia katika akaunti kisha ujaribu tena.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Hitilafu imepatikana kuanzia mstari wa <ph name="ERROR_LINE_START" /> hadi <ph name="ERROR_LINE_END" /></translation>

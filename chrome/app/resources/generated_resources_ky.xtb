@@ -4212,6 +4212,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4261429981378979799">Кеңейтүү уруксаттары</translation>
 <translation id="4262004481148703251">Эскертүүнү жабуу</translation>
 <translation id="4263223596040212967">Баскычтобуңуздун калыбын текшерип, кайталап көрүңүз.</translation>
+<translation id="4265301768135164545">eSIM профилин <ph name="BEGIN_LINK" />кол менен<ph name="END_LINK" /> да тууралай аласыз</translation>
 <translation id="426564820080660648">Жаңыртууларды карап көрүү үчүн, Ethernet, Wi-Fi же уюктук дайындар тармактарын колдонуңуз</translation>
 <translation id="426652736638196239">Бул IBAN ушул түзмөккө гана сакталат</translation>
 <translation id="4266679478228765574">Өчүрүлгөн папкаларды бөлүшүүгө мүмкүн болбой калат, бирок файлдар өчпөйт.</translation>
@@ -9747,6 +9748,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8676313779986170923">Пикир жөнөткөнүңүз үчүн рахмат!</translation>
 <translation id="8676374126336081632">Киргизилген нерсени тазалоо</translation>
 <translation id="8676770494376880701">Кубаты төмөн кубаттагыч туташтырылды</translation>
+<translation id="8676985325915861058">Өткөрүп жиберип, жаңы профилди тууралоо</translation>
 <translation id="8677212948402625567">Баарын жыйнап коюу…</translation>
 <translation id="8678192320753081984">Максаттуу чабуулдарга кабылуу коркунучу бар адамдардын аккаунттарын Google'дун эң күчтүү коопсуздук тутуму коргойт</translation>
 <translation id="8678378565142776698">Өчүрүп күйгүзүп, автоматтык жаңыртууларды алуу</translation>
@@ -10255,7 +10257,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="9057354806206861646">Ырааттаманы жаңыртуу</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Күнүнө 1 билдирме}other{Күнүнө {NUM_NOTIFICATION} билдирме}}</translation>
 <translation id="9058760336383947367">Принтердин PPD файлын көрүү</translation>
-<translation id="9060042817356580609">DNS кызмат көрсөтүүчүсүн тандоо</translation>
 <translation id="9061694916020926968">Steam for Chromebook'ту (бета) колдонуу үчүн Google аккаунтуңузга киришиңиз керек. Кирип, кайталап көрүңүз.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> сабынан <ph name="ERROR_LINE_END" /> сабына чейин ката бар</translation>

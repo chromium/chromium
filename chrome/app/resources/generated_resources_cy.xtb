@@ -4215,6 +4215,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4261429981378979799">Caniatadau estyniad</translation>
 <translation id="4262004481148703251">Diystyru'r rhybudd</translation>
 <translation id="4263223596040212967">Gwiriwch gynllun eich bysellfwrdd a rhowch gynnig arall arni.</translation>
+<translation id="4265301768135164545">Gallwch hefyd osod proffil eSIM <ph name="BEGIN_LINK" />yn bwrpasol<ph name="END_LINK" /></translation>
 <translation id="426564820080660648">I weld a oes unrhyw ddiweddariadau ar gael, defnyddiwch Ether-rwyd, Wi-Fi, neu ddata symudol.</translation>
 <translation id="426652736638196239">Bydd yr IBAN hwn yn cael ei gadw i'r ddyfais hon yn unig</translation>
 <translation id="4266679478228765574">Bydd tynnu ffolderi yn stopio rhannu ond ni fydd yn dileu ffeiliau.</translation>
@@ -9758,6 +9759,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8676313779986170923">Diolch am anfon adborth.</translation>
 <translation id="8676374126336081632">Clirio mewnbwn</translation>
 <translation id="8676770494376880701">Mae gwefrydd pŵer isel wedi'i gysylltu</translation>
+<translation id="8676985325915861058">Hepgor a gosod proffil newydd</translation>
 <translation id="8677212948402625567">Crebachu popeth...</translation>
 <translation id="8678192320753081984">Yn darparu diogelwch cryfaf Google i bobl sydd mewn perygl o ymosodiadau sydd wedi'u targedu</translation>
 <translation id="8678378565142776698">Ailgychwyn a chael diweddariadau awtomatig</translation>
@@ -10270,7 +10272,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="9057354806206861646">Amserlen diweddaru</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Tua 1 hysbysiad y dydd}zero{Tua {NUM_NOTIFICATION} hysbysiad y dydd}two{Tua {NUM_NOTIFICATION} hysbysiad y dydd}few{Tua {NUM_NOTIFICATION} hysbysiad y dydd}many{Tua {NUM_NOTIFICATION} hysbysiad y dydd}other{Tua {NUM_NOTIFICATION} hysbysiad y dydd}}</translation>
 <translation id="9058760336383947367">Gweld argraffydd PPD</translation>
-<translation id="9060042817356580609">Dewis Darparwr DNS</translation>
 <translation id="9061694916020926968">Mae angen i chi fod wedi mewngofnodi i Gyfrif Google i ddefnyddio Steam ar gyfer Chromebook (Beta). Mewngofnodwch a rhowch gynnig arall arni.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Bu gwall o'r llinell <ph name="ERROR_LINE_START" /> i <ph name="ERROR_LINE_END" /></translation>

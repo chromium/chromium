@@ -502,6 +502,7 @@
 <translation id="371230970611282515">위험한 이벤트가 발생하기 전에 이를 예측하여 알립니다.</translation>
 <translation id="3714981814255182093">찾기 창 열기</translation>
 <translation id="3716182511346448902">페이지에서 너무 많은 메모리를 사용하므로 Chrome에서 페이지를 일시중지했습니다.</translation>
+<translation id="3720422586473670527">나중에</translation>
 <translation id="3721119614952978349">나와 Google의 관계</translation>
 <translation id="3737319253362202215">번역 설정</translation>
 <translation id="3737402728074743863">이 기기를 보안 키로 사용하려면 화면 잠금을 설정하세요.</translation>
@@ -799,6 +800,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{파일 1개 다운로드 중…}other{파일 #개 다운로드 중…}}</translation>
 <translation id="5210286577605176222">이전 탭으로 이동</translation>
 <translation id="5210365745912300556">탭 닫기</translation>
+<translation id="5216863793077689658">페이지 통계에서 이루어진 활동은 <ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />에 저장됩니다.</translation>
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="5226378907213531272">자동차를 사용할 때마다 화면이 잠금 해제됩니다.</translation>
 <translation id="5227554086496586518">검색결과를 보려면 탭하세요.</translation>

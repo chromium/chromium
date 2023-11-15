@@ -4003,6 +4003,13 @@ Si elle est désactivée, les utilisateurs ne peuvent pas suivre leurs colis dan
 <translation id="4389073105055031853">Autoriser les utilisateurs à gérer tous les certificats</translation>
 <translation id="4389091865841123886">Configurer l'attestation à distance avec le mécanisme TPM</translation>
 <translation id="4389113579547582722">Autoriser l'affichage de la promo concernant la note sur l'App Store</translation>
+<translation id="4395619678972620537">Si cette règle est activée, les connexions homologues WebRTC peuvent revenir à
+      des versions antérieures obsolètes des protocoles TLS/DTLS (DTLS 1.0, TLS 1.0 et TLS 1.1).
+      Si cette règle est désactivée ou qu'elle n'est pas configurée, ces versions
+      de TLS/DTLS sont désactivées.
+
+      Cette règle a été supprimée dans la version M121 de
+      <ph name="PRODUCT_NAME" />.</translation>
 <translation id="439661169333921592">Désactiver la mise en surbrillance des éléments sélectionnés au clavier sur l'écran de connexion</translation>
 <translation id="4397045637922200204">Désactiver la récupération de compte</translation>
 <translation id="4397464099112037398">Paramètre d'autorisation de positionnement des fenêtres par défaut</translation>
@@ -8369,6 +8376,19 @@ Avertissement : Il est recommandé de ne pas désactiver les mises à jour auto
 <translation id="8102854005031553638">La visionneuse PDF utilise le moteur de rendu AGG.</translation>
 <translation id="8102913158860568230">Paramètre MediaStream par défaut</translation>
 <translation id="8104962233214241919">Sélectionner automatiquement des certificats client pour ces sites</translation>
+<translation id="8106782817348995849">Cette règle permet aux administrateurs de limiter les comptes autorisés à se connecter à <ph name="MICROSOFT_ONE_DRIVE_NAME" /> lorsque la règle <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> est activée.
+
+Si cette règle contient une valeur "<ph name="COMMON_NAME" />", n'importe quel compte peut être utilisé pour se connecter.
+
+Si cette règle contient une valeur "<ph name="ORGANIZATIONS_NAME" />", un compte professionnel ou scolaire peut être utilisé pour se connecter.
+
+Si cette règle contient une valeur "<ph name="CONSUMER_NAME" />", un compte personnel <ph name="MICROSOFT_NAME" /> peut être utilisé pour se connecter.
+
+Si cette règle contient des noms de domaine ou des ID de locataire, les comptes de ces noms de domaine ou ID de locataire (voir https://learn.microsoft.com/fr-fr/azure/active-directory/develop/v2-protocols#Endpoint) peuvent être utilisés pour se connecter.
+
+Si cette règle n'est pas configurée ou ne contient qu'une valeur vide, c'est comme si "<ph name="COMMON_NAME" />" était spécifié pour les utilisateurs de la version Standard et comme si "<ph name="ORGANIZATIONS_NAME" />" était spécifié pour les utilisateurs de la version Enterprise.
+
+Modifier la restriction peut entraîner la déconnexion des utilisateurs de leur compte <ph name="MICROSOFT_ONE_DRIVE_NAME" /> si celui-ci ne respecte pas les nouvelles restrictions.</translation>
 <translation id="8109762054721090517">Modèle pour l'attribut <ph name="IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
 <translation id="8111331908123507719">Configure le délai d'inactivité de l'appareil, en secondes, avant d'afficher l'économiseur d'écran à l'écran de verrouillage.
 
@@ -8575,6 +8595,19 @@ Si elle est désactivée, la page est bloquée.</translation>
 <translation id="8269238942896230153">Un compte géré doit être un compte principal, et l'importation des données de navigation existantes est autorisée au moment de la création du profil.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Activer l'interface utilisateur liée à la connexion sur le bureau hôte lorsqu'une connexion est active</translation>
+<translation id="8272422063636310696">Permet de définir si une page qui utilise d'anciennes technologies fera l'objet d'un rapport en fonction de son URL.
+
+Lorsque cette règle est configurée, les URL dont le préfixe correspond à une entrée de la liste d'autorisation sont utilisées pour générer un rapport et l'importer. Les URL dont le préfixe ne correspond à aucune entrée de la liste sont ignorées.
+Si cette règle n'est pas configurée ou qu'aucun préfixe ne correspond, aucun rapport n'est généré.
+
+Les formats correspondant dans la liste sont semblables à ceux de la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> décrite sur https://support.google.com/chrome/a?p=url_blocklist_filter_format. À quelques exceptions près :
+ * Le caractère générique "*" n'est pas accepté.
+ * Les schémas, ports et requêtes sont ignorés.
+ * La liste d'autorisation est limitée à 100 URL.
+
+Pour <ph name="PRODUCT_NAME" />, cette règle n'est appliquée que si l'ordinateur est enregistré avec <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
+
+Pour en savoir plus sur les anciennes technologies, consultez https://chromestatus.com/features.</translation>
 <translation id="8273183018575414926">Progressive Web Apps</translation>
 <translation id="8274603902181597201">Nettoyer le répertoire d'accueil eCryptfs de l'utilisateur et employer un nouveau répertoire d'accueil chiffré avec ext4.</translation>
 <translation id="8274926413890711289">Activer les contrôles de rapports précis</translation>

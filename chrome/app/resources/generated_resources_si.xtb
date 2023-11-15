@@ -841,6 +841,7 @@
 <translation id="1641113438599504367">ආරක්ෂිත බ්‍රවුස් කිරීම</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" /> සඳහා තවත් ක්‍රියා</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{තව 1 මුරපදයක් වැරදි ලෙස ෆෝමැට් කර ඇති නිසා ආයාත කර නොමැත}one{තව මුරපද {NUM_PASSWORDS}ක් වැරදි ලෙස ෆෝමැට් කර ඇති නිසා ආයාත කර නොමැත}other{තව මුරපද {NUM_PASSWORDS}ක් වැරදි ලෙස ෆෝමැට් කර ඇති නිසා ආයාත කර නොමැත}}</translation>
+<translation id="1642299742557467312">මෙම ගොනුව ඔබේ උපාංගයට හානි කළ හැක</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> සහ වෙනත් බ්ලූටූත් උපාංග <ph name="NUMBER_OF_DEVICES" />කට සම්බන්ධ විය</translation>
 <translation id="1642494467033190216">වෙනත් දෝශ නිරාකරණ විශේෂාංග සක්‍රීය කිරීමට පෙර rootfs ආරක්ශාව ඉවත් කර යළි ආරම්භ කිරීම අවශ්‍යයි.</translation>
 <translation id="1643072738649235303">SHA-1 සහිත X9.62 ECDSA අත්සන</translation>
@@ -4077,6 +4078,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4148195018520464922">ඔබට ඇතැම් පරිශීලකයින්ට පුරනය වීම සීමා කළ හැක. මෙය පුරනය වීමේ තිරයෙහි ඇති "පුද්ගලයා එක් කරන්න" විකල්පය ඉවත් කරයි. ඔබට වත්මන් පරිශීලකයින් ඉවත් කිරීමට ද හැක.</translation>
 <translation id="4148957013307229264">ස්ථාපනය කරමින්...</translation>
 <translation id="4150201353443180367">සංදර්ශකය</translation>
+<translation id="4150417452770391330">කැමරාවක් සම්බන්ධ කරන්න</translation>
 <translation id="4150569944729499860">තිර සන්දර්භය</translation>
 <translation id="4151449637210235443">ඔබේ මෑත ක්‍රීඩා කිරීම ගැන අපට කියන්න</translation>
 <translation id="4151503145138736576">පිරිසිදු කිරීමට නොබැඳි ආචයනය නැත</translation>
@@ -4177,6 +4179,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4244238649050961491">තවත් පන්හිඳ යෙදුම් සොයා ගන්න</translation>
 <translation id="4246980464509998944">අතිරේක අදහස්:</translation>
 <translation id="424726838611654458">සැමවිට Adobe Reader තුළ විවෘත කරන්න</translation>
+<translation id="4248401726442101648">කැමරාවක් සම්බන්ධ නැත</translation>
 <translation id="4249248555939881673">ජාල සම්බන්ධතාවය සඳහා රැඳී සිටිමින්...</translation>
 <translation id="4249373718504745892">ඔබේ කැමරාව හා මයික්‍රෙෆෝනය වෙත පිවිසීමෙන් මෙම පිටුව අවහිර කර තිබේ</translation>
 <translation id="424963718355121712">යෙදුම් ඒවාට බලපාන සත්කාරක වෙතින් සැපයිය යුතුය</translation>
@@ -4199,6 +4202,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4261429981378979799">දිගු අවසර</translation>
 <translation id="4262004481148703251">අනතුරු ඇඟවීම ඉවතලන්න</translation>
 <translation id="4263223596040212967">ඔබේ යතුරු පුවරු වින්‍යාසය පරීක්‍ෂා කර නැවත උත්සාහ කරන්න.</translation>
+<translation id="4265301768135164545">ඔබට eSIM පැතිකඩක් <ph name="BEGIN_LINK" />හස්තීයව<ph name="END_LINK" /> ද පිහිටුවිය හැක</translation>
 <translation id="426564820080660648">යාවත්කාලීන සඳහා පරික්ෂා කිරීමට, කරුණාකර ඊතර්නෙට්, Wi-Fi හෝ ජංගම දත්ත භාවිතා කරන්න.</translation>
 <translation id="426652736638196239">මෙම IBAN මෙම උපාංගයට පමණක් සුරැකෙනු ඇත</translation>
 <translation id="4266679478228765574">ෆෝල්ඩර් ඉවත් කිරීම බෙදා ගැනීම නවත්වන නමුත් ගොනු මකන්නේ නැත.</translation>
@@ -4299,6 +4303,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4345457680916430965"><ph name="APP" /> තුළ විවෘත කරන්න</translation>
 <translation id="4345587454538109430">වින්‍යාස කරන්න...</translation>
 <translation id="4345732373643853732">සේවාදායකය පරිශීලක නාමය නොදනියි</translation>
+<translation id="4346159263667201092">විකල්පමය විස්තර එක් කරන්න</translation>
 <translation id="4348426576195894795">මෙම ගිණුම ඉවත් කිරීම මෙම ගිණුම සමඟින් පුරනය වී ඇති ඕනෑම Chrome පැතිකඩක්ද මකනු ඇත</translation>
 <translation id="4348766275249686434">දෝශ එක්රැස් කරන්න</translation>
 <translation id="4349828822184870497">උපකාරී</translation>
@@ -4383,6 +4388,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4406883609789734330">සජීවී සිරස්තලය</translation>
 <translation id="4407039574263172582">ඉදිරියට යාමට, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ඔබගේ නම, ඉ-තැපැල් ලිපිනය සහ පැතිකඩ පින්තූරය මෙම අඩවිය සමග බෙදා ගනු ඇත. මෙම අඩවියේ <ph name="BEGIN_LINK" />සේවා නියම<ph name="END_LINK" /> බලන්න.</translation>
 <translation id="4408599188496843485">උ&amp;පකාරය</translation>
+<translation id="4408965460206576430">මෙම ගොනුවේ අනිෂ්ට මෘදුකාංග අඩංගු වේ හෝ සැක සහිත අඩවියකින් පැමිණේ</translation>
 <translation id="4409271659088619928">ඔබගේ සෙවීම් යන්ත්‍රය වන්නේ <ph name="DSE" />. අදාළ වන්නේ නම්, ඔබගේ සෙවීම් ඉතිහාසය මැකීම සඳහා ඔවුන්ගේ උපදෙස් බලන්න.</translation>
 <translation id="4409697491990005945">තීරු</translation>
 <translation id="4409779593816003679">මුරපද සහ &amp;ස්වයං පිරවීම</translation>
@@ -9731,6 +9737,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8676313779986170923">ප්‍රතිපෝෂණ එවීම පිළිබඳව ස්තුතියි.</translation>
 <translation id="8676374126336081632">ආදානය හිස් කරන්න</translation>
 <translation id="8676770494376880701">අඩු-බල ආරෝපකය සමබන්ධ කර ඇත</translation>
+<translation id="8676985325915861058">මඟ හරින්න සහ නව පැතිකඩ පිහිටුවන්න</translation>
 <translation id="8677212948402625567">සියල්ල හකුළන්න...</translation>
 <translation id="8678192320753081984">ඉලක්කගත ප්‍රහාරවල අවදානමක් ඇති පුද්ගලයින් සඳහා Google හි ශක්තිමත්ම ගිණුම් ආරක්ෂාව සපයයි</translation>
 <translation id="8678378565142776698">යළි අරඹා ස්වයංක්‍රීය යාවත්කාලීන ලබා ගන්න</translation>
@@ -10240,7 +10247,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9057354806206861646">කාල සටහන යාවත්කාලීන කරන්න</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{දිනකට දැනුම්දීම් 1ක් පමණ}one{දිනකට දැනුම්දීම් {NUM_NOTIFICATION}ක් පමණ}other{දිනකට දැනුම්දීම් {NUM_NOTIFICATION}ක් පමණ}}</translation>
 <translation id="9058760336383947367">මුද්‍රකයේ PPD බලන්න</translation>
-<translation id="9060042817356580609">DNS සපයන්නා තෝරන්න</translation>
 <translation id="9061694916020926968">Chromebook (බීටා) සඳහා Steam භාවිත කිරීමට ඔබ Google ගිණුමකට පුරනය වී සිටීමට අවශ්‍ය වේ. පුරනය වී නැවත උත්සාහ කරන්න.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> සිට <ph name="ERROR_LINE_END" /> දක්වා මාර්ගයෙන් දෝෂයකි</translation>

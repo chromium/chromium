@@ -4212,6 +4212,7 @@
 <translation id="4261429981378979799">확장 프로그램 권한</translation>
 <translation id="4262004481148703251">경고 닫기</translation>
 <translation id="4263223596040212967">키보드 레이아웃을 확인한 다음 다시 시도해 주세요.</translation>
+<translation id="4265301768135164545">eSIM 프로필을 <ph name="BEGIN_LINK" />직접<ph name="END_LINK" /> 설정할 수도 있습니다.</translation>
 <translation id="426564820080660648">업데이트를 확인하려면 이더넷, Wi-Fi 또는 모바일 데이터를 사용하세요.</translation>
 <translation id="426652736638196239">이 IBAN은 이 기기에만 저장됩니다.</translation>
 <translation id="4266679478228765574">폴더를 삭제하면 공유가 중지되지만 파일이 삭제되지는 않습니다.</translation>
@@ -4278,7 +4279,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{Google 계정 1개}other{Google 계정 <ph name="EXTRA_ACCOUNTS" />개}}</translation>
 <translation id="4312866146174492540">차단(기본값)</translation>
 <translation id="4314497418046265427">휴대전화를 <ph name="DEVICE_TYPE" /> 기기와 연결하여 생산성 향상</translation>
-<translation id="4314561087119792062">새 액세스포인트 네임(APN) 추가</translation>
+<translation id="4314561087119792062">새 액세스 포인트 네임(APN) 추가</translation>
 <translation id="4314815835985389558">동기화 관리</translation>
 <translation id="4316850752623536204">개발자 웹사이트</translation>
 <translation id="4317733381297736564">인앱 구매</translation>
@@ -9749,6 +9750,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8676313779986170923">의견을 보내 주셔서 감사합니다.</translation>
 <translation id="8676374126336081632">입력내용 지우기</translation>
 <translation id="8676770494376880701">저출력 충전기 연결됨</translation>
+<translation id="8676985325915861058">건너뛰고 새 프로필 설정</translation>
 <translation id="8677212948402625567">모두 접기...</translation>
 <translation id="8678192320753081984">표적 공격을 당할 위험이 있는 사용자에게 Google에서 가장 강력한 계정 보안을 제공합니다</translation>
 <translation id="8678378565142776698">다시 시작하고 자동 업데이트 받기</translation>
@@ -10257,7 +10259,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9057354806206861646">업데이트 일정</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{하루에 알림 약 1개}other{하루에 알림 약 {NUM_NOTIFICATION}개}}</translation>
 <translation id="9058760336383947367">프린터 PPD 보기</translation>
-<translation id="9060042817356580609">DNS 제공업체 선택</translation>
 <translation id="9061694916020926968">Chromebook용 Steam(베타)을 사용하려면 Google 계정에 로그인해야 합니다. 로그인한 후 다시 시도해 보세요.</translation>
 <translation id="9062468308252555888">14배</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />행부터 <ph name="ERROR_LINE_END" />행까지에 오류가 있음</translation>

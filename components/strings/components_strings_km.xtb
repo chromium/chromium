@@ -3056,6 +3056,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> និង <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ទៀត}other{<ph name="PAYMENT_METHOD_PREVIEW" /> និង <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ទៀត}}</translation>
 <translation id="7153618581592392745">ឡាវិនឌ័រ</translation>
 <translation id="7156870133441232244">ម៉ាស៊ីនមេគួរតែដំឡើង​កំណែទៅ TLS 1.2 ឬខ្ពស់ជាងនេះ។</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{ដើម្បីផ្ញើ​ឯកសារនេះ​ដោយប្រើ <ph name="FEATURE_NAME" /> សូមសម្អាតឱ្យសល់​ទំហំផ្ទុក (<ph name="DISK_SPACE_SIZE" />) នៅលើ​ឧបករណ៍​របស់អ្នក}other{ដើម្បីផ្ញើ​ឯកសារទាំងនេះ​ដោយប្រើ <ph name="FEATURE_NAME" /> សូមសម្អាតឱ្យសល់​ទំហំផ្ទុក (<ph name="DISK_SPACE_SIZE" />) នៅលើ​ឧបករណ៍​របស់អ្នក}}</translation>
 <translation id="7160999678034985039">សូមរក្សាទុកការងាររបស់អ្នក ហើយចាប់ផ្តើមដំឡើងកំណែនៅពេលអ្នករួចរាល់។</translation>
 <translation id="7163295244162773898">{0,plural, =1{ចម្លង​ឯកសារ​សម្ងាត់​ឬ?}other{ចម្លង​ឯកសារ​សម្ងាត់​ឬ?}}</translation>
 <translation id="717330890047184534">លេខ​សម្គាល់ Gaia៖</translation>

@@ -838,6 +838,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1641496881756082050">Más acciones para <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{No se importó 1 contraseña más porque tiene un formato incorrecto}other{No se importaron {NUM_PASSWORDS} contraseñas más porque tienen un formato incorrecto}}</translation>
+<translation id="1642299742557467312">Este archivo podría dañar tu dispositivo</translation>
 <translation id="1642492862748815878">Se estableció conexión con <ph name="DEVICE" /> y <ph name="NUMBER_OF_DEVICES" /> dispositivos Bluetooth más</translation>
 <translation id="1642494467033190216">Se requiere una eliminación de la protección de rootfs y el reinicio antes de habilitar otras funciones de depuración.</translation>
 <translation id="1643072738649235303">Firma X9.62 ECDSA con SHA-1</translation>
@@ -4069,6 +4070,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4148195018520464922">Puedes limitar el acceso a ciertos usuarios. Esto quitará la opción "Agregar a una persona" de la pantalla de acceso. También puedes quitar a los usuarios actuales.</translation>
 <translation id="4148957013307229264">Instalando...</translation>
 <translation id="4150201353443180367">Pantalla</translation>
+<translation id="4150417452770391330">Conecta una cámara</translation>
 <translation id="4150569944729499860">Contexto de pantalla</translation>
 <translation id="4151449637210235443">Cuéntanos acerca de tu experiencia de juego más reciente.</translation>
 <translation id="4151503145138736576">No hay espacio de almacenamiento sin conexión para liberar</translation>
@@ -4169,6 +4171,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4244238649050961491">Encontrar más apps para la pluma stylus</translation>
 <translation id="4246980464509998944">Comentarios adicionales:</translation>
 <translation id="424726838611654458">Abrir siempre en Adobe Reader</translation>
+<translation id="4248401726442101648">No hay ninguna cámara conectada</translation>
 <translation id="4249248555939881673">Esperando la conexión de red...</translation>
 <translation id="4249373718504745892">Se bloqueó el acceso de esta página a la cámara y el micrófono.</translation>
 <translation id="424963718355121712">Las apps deben proceder del host al que afecten</translation>
@@ -4191,6 +4194,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4261429981378979799">Permisos de extensiones</translation>
 <translation id="4262004481148703251">Descartar advertencia</translation>
 <translation id="4263223596040212967">Comprueba el diseño de tu teclado y vuelve a intentarlo.</translation>
+<translation id="4265301768135164545">También puedes configurar un perfil de eSIM <ph name="BEGIN_LINK" />manualmente<ph name="END_LINK" /></translation>
 <translation id="426564820080660648">Para comprobar si hay actualizaciones, utiliza una conexión Ethernet, Wi-Fi o de datos móviles.</translation>
 <translation id="426652736638196239">Este IBAN solo se guardará en este dispositivo</translation>
 <translation id="4266679478228765574">Si quitas carpetas, se detendrá el uso compartido, pero no se borrarán los archivos.</translation>
@@ -4291,6 +4295,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4345457680916430965">Abrir en <ph name="APP" /></translation>
 <translation id="4345587454538109430">Configurar...</translation>
 <translation id="4345732373643853732">El servidor no reconoce el nombre de usuario</translation>
+<translation id="4346159263667201092">Agrega detalles opcionales</translation>
 <translation id="4348426576195894795">Si quitas esta cuenta, también se borrarán los perfiles de Chrome en los que hayas accedido con esta cuenta.</translation>
 <translation id="4348766275249686434">Recopilar errores</translation>
 <translation id="4349828822184870497">Útil</translation>
@@ -4375,6 +4380,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4406883609789734330">Subtitulado instantáneo</translation>
 <translation id="4407039574263172582">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, dirección de correo electrónico y foto de perfil con este sitio. Consulta las <ph name="BEGIN_LINK" />condiciones del servicio<ph name="END_LINK" /> del sitio.</translation>
 <translation id="4408599188496843485">A&amp;yuda</translation>
+<translation id="4408965460206576430">Este archivo contiene software malicioso o proviene de un sitio sospechoso</translation>
 <translation id="4409271659088619928">Tu motor de búsqueda es <ph name="DSE" />. Consulta las instrucciones para borrar el historial de búsqueda (si corresponde).</translation>
 <translation id="4409697491990005945">Márgenes</translation>
 <translation id="4409779593816003679">Contraseñas y &amp;autocompletar</translation>
@@ -9725,6 +9731,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8676313779986170923">Gracias por enviar tus comentarios.</translation>
 <translation id="8676374126336081632">Borrar entrada</translation>
 <translation id="8676770494376880701">Cargador de baja potencia conectado</translation>
+<translation id="8676985325915861058">Omitir y configurar nuevo perfil</translation>
 <translation id="8677212948402625567">Contraer todo...</translation>
 <translation id="8678192320753081984">Brinda la seguridad de la cuenta más eficaz de Google para las personas en riesgo de sufrir ataques dirigidos</translation>
 <translation id="8678378565142776698">Reiniciar y obtener actualizaciones automáticas</translation>
@@ -10233,7 +10240,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9057354806206861646">Cronograma de actualizaciones</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Aproximadamente 1 notificación por día}other{Aproximadamente {NUM_NOTIFICATION} notificaciones por día}}</translation>
 <translation id="9058760336383947367">Ver el PPD de la impresora</translation>
-<translation id="9060042817356580609">Seleccionar proveedor de DNS</translation>
 <translation id="9061694916020926968">Para usar Steam for Chromebook (beta), debes acceder a una Cuenta de Google. Accede y vuelve a intentarlo.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Se produjo un error de la línea <ph name="ERROR_LINE_START" /> a la <ph name="ERROR_LINE_END" /></translation>

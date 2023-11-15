@@ -68,7 +68,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="1295289763199166823">Personalizar menú</translation>
 <translation id="1305822519689023679">Para asegurarte de poder usar sempre os contrasinais na túa Conta de Google, verifica a túa identidade.</translation>
 <translation id="1312721752506309252">A protección mellorada está activada</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Facer o seguimento deste paquete}other{Facer o seguimento de todos os paquetes}}</translation>
 <translation id="1321993286294231467">Produciuse un erro ao gardar a imaxe.</translation>
 <translation id="1322735045095424339">A túa organización esixe o uso do modo de incógnito</translation>
 <translation id="1323735185997015385">Eliminar</translation>
@@ -655,7 +654,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4489536976005181779">{count,plural, =1{Engadiuse a páxina á túa lista de lectura da conta {email}}other{Engadíronse as páxinas á túa lista de lectura da conta {email}}}</translation>
 <translation id="4493604894403585654">Tes a sesión iniciada como <ph name="USER_EMAIL" />. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="4502566650163919158">Comprobar agora</translation>
-<translation id="4505980578794259603">Última comprobación: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Pecha a promoción de inicio de sesión</translation>
 <translation id="4514889972748124117">Suxerir contrasinal seguro…</translation>
 <translation id="4520798012560649652">Máis información sobre o modo de incógnito</translation>
@@ -1059,7 +1057,6 @@ Os teus datos están encriptados coa túa frase de acceso. Introdúcea para usar
 
 Tenta usar un contrasinal distinto para cada sitio.</translation>
 <translation id="6497850081273517953">A versión de Chrome está desactualizada. Descarga a máis recente para non correr riscos.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Deixar de facer o seguimento deste paquete}other{Deixar de facer un seguimento de todos os paquetes}}</translation>
 <translation id="650279896687777322">Máis información…</translation>
 <translation id="6507973708545996744">Inicia a sesión para consultar a túa lista de lectura en todos os teus dispositivos.</translation>
 <translation id="6510072653668207258">Lembrarmo máis tarde</translation>
@@ -1216,6 +1213,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7367530036083223701">Accede de maneira segura aos teus contrasinais desde a pantalla de inicio grazas ao widget do xestor de contrasinais.</translation>
 <translation id="7380220816562673297">Polo de agora, só podes compartir contrasinais cos membros da familia. <ph name="BEGIN_LINK" />Crea un grupo familiar<ph name="END_LINK" /> cun máximo de 6 membros para tirardes proveito dos teus produtos e subscricións de Google.</translation>
 <translation id="7383797227493018512">Lista de lectura</translation>
+<translation id="739101637685146669">Que URL queres engadir aos marcadores?</translation>
 <translation id="7396331865858820922">Non se compartiu o contrasinal</translation>
 <translation id="7398893703713203428">Crear ligazón</translation>
 <translation id="7399802613464275309">Revisión de seguranza</translation>
@@ -1451,6 +1449,7 @@ Os teus datos encriptáronse coa túa frase de acceso o <ph name="TIME" />. Intr
 <translation id="8591976964826315682">Bloquear cookies de terceiros no modo de incógnito</translation>
 <translation id="8593565399399144771">Podes abrir unha pestana nova aquí.</translation>
 <translation id="8605219856220328675">Pechar pestana.</translation>
+<translation id="8609743333007776886">Engade ${url} aos marcadores</translation>
 <translation id="8613883225817609844">Ocultar Pestanas recentes</translation>
 <translation id="8620640915598389714">Editar</translation>
 <translation id="8624447588354561276">Número de paquete</translation>

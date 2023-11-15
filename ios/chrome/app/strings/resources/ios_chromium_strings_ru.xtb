@@ -107,6 +107,7 @@
 <translation id="5048795749726991615">Чтобы легко вводить сохраненные пароли в других приложениях, укажите значение Chromium для параметра "Автозаполнение".</translation>
 <translation id="5076601183701536878">Удалить данные о работе в Chromium</translation>
 <translation id="5131565040785979529">Аккаунтом, в который вы вошли, и использованием Chromium управляет ваша организация (<ph name="DOMAIN" />).</translation>
+<translation id="5146749061471423558">Создать закладки в Chromium</translation>
 <translation id="5171868502429358653">Вход в Chromium</translation>
 <translation id="5213683223491576284">Открывает Менеджер паролей в Chromium.</translation>
 <translation id="5224391634244552924">Сохраненных паролей нет. Чтобы браузер Chromium мог проверять пароли, сохраните их.</translation>
@@ -114,6 +115,7 @@
 
         Подождите несколько минут. Если вы выйдете прямо сейчас, эти данные будут удалены.</translation>
 <translation id="5308226104666789935">Браузеру Chromium не удалось проверить наличие обновлений</translation>
+<translation id="5311557153294205270">Указанные URL будут добавлены в закладки в Chromium.</translation>
 <translation id="5396916991083608703">Сделать Chromium браузером по умолчанию?</translation>
 <translation id="5453478652154926037">Не удается проверить пароли в Chromium</translation>
 <translation id="5521125884468363740">Чтобы ваши вкладки всегда были доступны вам при работе с Chromium, выполните вход и включите синхронизацию.</translation>

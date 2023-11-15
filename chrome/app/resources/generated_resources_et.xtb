@@ -844,6 +844,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1641113438599504367">Ohutu sirvimine</translation>
 <translation id="1641496881756082050">Rohkem toiminguid: <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Veel 1 parooli ei imporditud, kuna see on valesti vormindatud}other{Veel {NUM_PASSWORDS} parooli ei imporditud, kuna need on valesti vormindatud}}</translation>
+<translation id="1642299742557467312">See fail võib teie seadet kahjustada</translation>
 <translation id="1642492862748815878">Ühendatud seadmega <ph name="DEVICE" /> ja veel <ph name="NUMBER_OF_DEVICES" /> Bluetooth-seadmega</translation>
 <translation id="1642494467033190216">Enne muude silumisfunktsioonide lubamist tuleb eemaldada kaitse rootfs ja seade tuleb taaskäivitada.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA allkiri SHA-1-ga</translation>
@@ -4078,6 +4079,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4148195018520464922">Sisselogimist saab piirata nii, et seda saavad teha vaid konkreetsed kasutajad. See eemaldab sisselogimiskuvalt valiku „Lisa isik”. Ka praegused kasutajad saate eemaldada.</translation>
 <translation id="4148957013307229264">Installimine ...</translation>
 <translation id="4150201353443180367">Kuva</translation>
+<translation id="4150417452770391330">Ühendage kaamera</translation>
 <translation id="4150569944729499860">Ekraanikuva kontekst</translation>
 <translation id="4151449637210235443">Rääkige meile oma hiljutisest mängu mängimisest</translation>
 <translation id="4151503145138736576">Pole võrguvälist salvestusruumi, mida vabastada</translation>
@@ -4178,6 +4180,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4244238649050961491">Otsi rohkem elektronpliiatsi rakendusi</translation>
 <translation id="4246980464509998944">Täiendavad kommentaarid:</translation>
 <translation id="424726838611654458">Ava alati programmis Adobe Reader</translation>
+<translation id="4248401726442101648">Ühtegi kaamerat pole ühendatud</translation>
 <translation id="4249248555939881673">Võrguühenduse ootamine ...</translation>
 <translation id="4249373718504745892">Sellele lehele on juurdepääs teie kaamerale ja mikrofonile blokeeritud.</translation>
 <translation id="424963718355121712">Rakendusi tuleb esitada hostist, mida need mõjutavad</translation>
@@ -4300,6 +4303,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4345457680916430965">&amp;Rakenduses <ph name="APP" /> avamine</translation>
 <translation id="4345587454538109430">Konfigureeri...</translation>
 <translation id="4345732373643853732">Kasutajanimi on serverile tundmatu</translation>
+<translation id="4346159263667201092">Lisage valikulised üksikasjad</translation>
 <translation id="4348426576195894795">Selle konto eemaldamisel kustutatakse ka kõik Chrome'i profiilid, millele on selle kontoga sisse logitud</translation>
 <translation id="4348766275249686434">Kogu vigu</translation>
 <translation id="4349828822184870497">Kasulik</translation>
@@ -4384,6 +4388,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4406883609789734330">Reaalajas subtiitrid</translation>
 <translation id="4407039574263172582">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie nime, e-posti aadressi ja profiilipilti. Vaadake selle saidi <ph name="BEGIN_LINK" />teenusetingimusi<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">A&amp;bi</translation>
+<translation id="4408965460206576430">See fail sisaldab pahavara või pärineb kahtlaselt saidilt</translation>
 <translation id="4409271659088619928">Teie otsingumootor on <ph name="DSE" />. Vaadake selle juhiseid otsinguajaloo kustutamise kohta, kui see on asjakohane.</translation>
 <translation id="4409697491990005945">Veerised</translation>
 <translation id="4409779593816003679">Paroolid ja &amp;automaattäide</translation>
@@ -10242,7 +10247,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="9057354806206861646">Ajakava värskendamine</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Umbes 1 märguanne päevas}other{Umbes {NUM_NOTIFICATION} märguannet päevas}}</translation>
 <translation id="9058760336383947367">Kuva printeri PPD</translation>
-<translation id="9060042817356580609">Valige DNS-i pakkuja</translation>
 <translation id="9061694916020926968">Teenuse Steam Chromebookile (beeta) kasutamiseks peate olema Google'i kontole sisse logitud. Logige sisse ja proovige uuesti.</translation>
 <translation id="9062468308252555888">14-kordne</translation>
 <translation id="9063208415146866933">Viga ridadel <ph name="ERROR_LINE_START" /> kuni <ph name="ERROR_LINE_END" /></translation>

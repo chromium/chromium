@@ -68,7 +68,6 @@
 <translation id="1295289763199166823">Tuỳ chỉnh trình đơn</translation>
 <translation id="1305822519689023679">Nhằm đảm bảo bạn luôn có thể sử dụng mật khẩu trong Tài khoản Google, hãy xác minh danh tính của bạn.</translation>
 <translation id="1312721752506309252">Chế độ Bảo vệ nâng cao đang bật</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Theo dõi gói hàng này}other{Theo dõi tất cả các gói hàng}}</translation>
 <translation id="1321993286294231467">Lỗi khi lưu hình ảnh.</translation>
 <translation id="1322735045095424339">Tổ chức của bạn yêu cầu Chế độ ẩn danh</translation>
 <translation id="1323735185997015385">Xoá</translation>
@@ -655,7 +654,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4489536976005181779">{count,plural, =1{Trang đã được thêm vào danh sách đọc trong tài khoản {email} của bạn}other{Các trang đã được thêm vào danh sách đọc trong tài khoản {email} của bạn}}</translation>
 <translation id="4493604894403585654">Bạn đã đăng nhập bằng <ph name="USER_EMAIL" />. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="4502566650163919158">Kiểm tra ngay</translation>
-<translation id="4505980578794259603">Lần kiểm tra gần đây nhất: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Đóng quảng cáo đăng nhập</translation>
 <translation id="4514889972748124117">Đề xuất mật khẩu mạnh...</translation>
 <translation id="4520798012560649652">Tìm hiểu thêm về Chế độ ẩn danh</translation>
@@ -1059,7 +1057,6 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 
 Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</translation>
 <translation id="6497850081273517953">Chrome đã lỗi thời, hãy cập nhật lên phiên bản mới nhất để luôn an toàn.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Bỏ theo dõi gói hàng này}other{Bỏ theo dõi tất cả các gói hàng}}</translation>
 <translation id="650279896687777322">Tìm hiểu thêm...</translation>
 <translation id="6507973708545996744">Đăng nhập để xem danh sách đọc trên tất cả thiết bị của bạn.</translation>
 <translation id="6510072653668207258">Nhắc tôi sau</translation>
@@ -1216,6 +1213,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="7367530036083223701">Truy cập vào mật khẩu của bạn một cách an toàn từ màn hình chính bằng tiện ích Trình quản lý mật khẩu.</translation>
 <translation id="7380220816562673297">Hiện tại, bạn chỉ có thể chia sẻ mật khẩu với các thành viên gia đình. <ph name="BEGIN_LINK" />Tạo một nhóm gia đình<ph name="END_LINK" /> gồm tối đa 6 thành viên để sử dụng các sản phẩm cũng như thuê bao của bạn trên Google hiệu quả hơn.</translation>
 <translation id="7383797227493018512">Danh sách đọc</translation>
+<translation id="739101637685146669">Bạn muốn đánh dấu trang URL nào?</translation>
 <translation id="7396331865858820922">Mật khẩu chưa được chia sẻ</translation>
 <translation id="7398893703713203428">Tạo đường liên kết</translation>
 <translation id="7399802613464275309">Kiểm tra an toàn</translation>
@@ -1451,6 +1449,7 @@ Dữ liệu của bạn đã được mã hoá bằng cụm mật khẩu vào <p
 <translation id="8591976964826315682">Chặn cookie của bên thứ ba ở Chế độ ẩn danh</translation>
 <translation id="8593565399399144771">Bạn có thể mở một thẻ mới tại đây.</translation>
 <translation id="8605219856220328675">Đóng thẻ.</translation>
+<translation id="8609743333007776886">Thêm ${url} vào danh sách dấu trang</translation>
 <translation id="8613883225817609844">Ẩn tuỳ chọn Các thẻ gần đây</translation>
 <translation id="8620640915598389714">Chỉnh sửa</translation>
 <translation id="8624447588354561276">Số gói hàng</translation>

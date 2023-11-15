@@ -68,7 +68,6 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="1295289763199166823">Customise Menu</translation>
 <translation id="1305822519689023679">To make sure that you can always use the passwords in your Google Account, verify that it's you.</translation>
 <translation id="1312721752506309252">Enhanced protection is on</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Track this package}other{Track all packages}}</translation>
 <translation id="1321993286294231467">Error saving image.</translation>
 <translation id="1322735045095424339">Your organisation requires Incognito mode</translation>
 <translation id="1323735185997015385">Delete</translation>
@@ -655,7 +654,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4489536976005181779">{count,plural, =1{Page added to your reading list in your account, {email}}other{Pages added to your reading list in your account, {email}}}</translation>
 <translation id="4493604894403585654">You are signed in as <ph name="USER_EMAIL" />. You can stop syncing at any time in settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="4502566650163919158">Check now</translation>
-<translation id="4505980578794259603">Last checked <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Close sign-in promo</translation>
 <translation id="4514889972748124117">Suggest strong password…</translation>
 <translation id="4520798012560649652">Learn more about Incognito mode</translation>
@@ -1059,7 +1057,6 @@ Your data is encrypted with your passphrase. Enter it to use and save Chrome dat
 
 Try to use a unique password for every site.</translation>
 <translation id="6497850081273517953">Chrome is out of date, update to the latest version to stay secure.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Untrack this package}other{Untrack all packages}}</translation>
 <translation id="650279896687777322">Learn more…</translation>
 <translation id="6507973708545996744">Sign in to get your reading list on all your devices.</translation>
 <translation id="6510072653668207258">Remind me later</translation>

@@ -4213,6 +4213,7 @@
 <translation id="4261429981378979799">এক্সটেনশনকে দেওয়া অনুমতি</translation>
 <translation id="4262004481148703251">সতর্কতা বাতিল করুন</translation>
 <translation id="4263223596040212967">আপনার কীবোর্ড লে-আউট ভাল করে দেখে নিয়ে আবার চেষ্টা করুন।</translation>
+<translation id="4265301768135164545">তাছাড়া, আপনি <ph name="BEGIN_LINK" />ম্যানুয়ালি<ph name="END_LINK" /> ই-সিম প্রোফাইলও সেট-আপ করতে পারবেন</translation>
 <translation id="426564820080660648">আপডেটগুলি পরীক্ষা করার জন্য, অনুগ্রহ করে Ethernet, ওয়াই-ফাই বা মোবাইল ডেটা ব্যবহার করুন৷</translation>
 <translation id="426652736638196239">এই IBAN শুধুমাত্র এই ডিভাইসে সেভ করা হবে</translation>
 <translation id="4266679478228765574">ফোল্ডার সরিয়ে দিলে শেয়ার করা বন্ধ হয়ে যাবে কিন্তু ফাইল মুছে যাবে না।</translation>
@@ -9754,6 +9755,7 @@
 <translation id="8676313779986170923">মতামত জানানোর জন্য ধন্যবাদ।</translation>
 <translation id="8676374126336081632">ইনপুট সাফ করুন</translation>
 <translation id="8676770494376880701">নিম্ন শক্তির চার্জার সংযুক্ত করা হয়েছে</translation>
+<translation id="8676985325915861058">এড়িয়ে যান ও নতুন প্রোফাইল সেট-আপ করুন</translation>
 <translation id="8677212948402625567">সবগুলি আড়াল করুন...</translation>
 <translation id="8678192320753081984">টার্গেট করা অ্যাটাকের ঝুঁকি নিয়েও লোকজনের জন্য Google-এর সবচেয়ে শক্তিশালী অ্যাকাউন্ট সুরক্ষা প্রদান করে</translation>
 <translation id="8678378565142776698">রিস্টার্ট করুন ও অটোমেটিক আপডেট পান</translation>
@@ -10263,7 +10265,6 @@
 <translation id="9057354806206861646">সময়সূচি আপডেট করুন</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{দিনে প্রায় ১টি বিজ্ঞপ্তি}one{দিনে প্রায় {NUM_NOTIFICATION}টি বিজ্ঞপ্তি}other{দিনে প্রায় {NUM_NOTIFICATION}টি বিজ্ঞপ্তি}}</translation>
 <translation id="9058760336383947367">প্রিন্টার PPD দেখুন</translation>
-<translation id="9060042817356580609">ডিএনএস প্রদানকারী বেছে নিন</translation>
 <translation id="9061694916020926968">Chromebook (বিটা)-এর জন্য Steam ব্যবহার করতে আপনাকে কোনও Google অ্যাকাউন্টে সাইন-ইন করতে হবে। সাইন-ইন করে আবার চেষ্টা করুন।</translation>
 <translation id="9062468308252555888">১৪x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> থেকে <ph name="ERROR_LINE_END" /> নম্বর লাইনে কোনও ভুল আছে</translation>

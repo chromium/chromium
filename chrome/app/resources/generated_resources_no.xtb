@@ -10250,7 +10250,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9057354806206861646">Oppdateringsplan</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Omtrent 1 varsel per dag}other{Omtrent {NUM_NOTIFICATION} varsler per dag}}</translation>
 <translation id="9058760336383947367">Se skriverens PPD</translation>
-<translation id="9060042817356580609">Velg DNS-leverandør</translation>
 <translation id="9061694916020926968">Du må være logget på en Google-konto for å kunne bruke Steam for Chromebook (beta). Logg på, og prøv igjen.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Feil fra linje <ph name="ERROR_LINE_START" /> til linje <ph name="ERROR_LINE_END" /></translation>
@@ -10338,6 +10337,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9115932142612197835">Denne innstillingen endrer ikke tilgjengeligheten av Google Oversetter eller Lens</translation>
 <translation id="9116799625073598554">Notatapper</translation>
 <translation id="9117030152748022724">Administrer appene dine</translation>
+<translation id="9120362425083889527">Installasjonen kunne ikke fullføres. Prøv på nytt, eller lukk dette vinduet</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />For å få den beste opplevelsen bør du installere <ph name="DEVICE_OS" /> på den interne disken. Du kan også installere det senere via påloggingsskjermbildet.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Hvis du ikke er klar til å installere det, kan du kjøre det fra USB for å prøve det. Da beholder du operativsystemet og dataene du har nå, men det kan hende du opplever lagrings- og ytelsesbegrensninger.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Åpne som festet fane</translation>

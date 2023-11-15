@@ -68,7 +68,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1295289763199166823">Tilpass menyen</translation>
 <translation id="1305822519689023679">For å sikre at du alltid kan bruke passordene i Google-kontoen din, må du bekrefte at det er deg.</translation>
 <translation id="1312721752506309252">Økt beskyttelse er på</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Spor denne pakken}other{Spor alle pakkene}}</translation>
 <translation id="1321993286294231467">Feil ved lagring av bilde.</translation>
 <translation id="1322735045095424339">Organisasjonen din krever inkognitomodus</translation>
 <translation id="1323735185997015385">Slett</translation>
@@ -655,7 +654,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4489536976005181779">{count,plural, =1{Siden er lagt til på leselisten i kontoen din, {email}}other{Sidene er lagt til på leselisten i kontoen din, {email}}}</translation>
 <translation id="4493604894403585654">Du er pålogget som <ph name="USER_EMAIL" />. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="4502566650163919158">Sjekk nå</translation>
-<translation id="4505980578794259603">Sist sjekket <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Lukk påloggingskampanjen</translation>
 <translation id="4514889972748124117">Foreslå et sterkt passord…</translation>
 <translation id="4520798012560649652">Finn ut mer om inkognitomodus</translation>
@@ -1059,7 +1057,6 @@ Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og la
 
 Prøv å bruke unike passord for hvert nettsted.</translation>
 <translation id="6497850081273517953">Chrome er utdatert. Oppdater til den nyeste versjonen for å holde deg sikker.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Slutt å spore denne pakken}other{Slutt å spore alle pakker}}</translation>
 <translation id="650279896687777322">Finn ut mer …</translation>
 <translation id="6507973708545996744">Logg på for å få leselisten din på alle enhetene dine.</translation>
 <translation id="6510072653668207258">Påminn meg senere</translation>

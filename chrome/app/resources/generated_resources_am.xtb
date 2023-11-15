@@ -842,6 +842,7 @@
 <translation id="1641113438599504367">የጥንቃቄ አሰሳ</translation>
 <translation id="1641496881756082050">ለ<ph name="NETWORK_NAME" /> ተጨማሪ እርምጃዎች</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{በስህተት ቅርጸት ስለተሰራለት 1 ሌላ የይለፍ ቃል ማምጣት አልተቻለም}one{በስህተት ቅርጸት ስለተሰራለት {NUM_PASSWORDS} ሌላ የይለፍ ቃል ማምጣት አልተቻለም}other{በስህተት ቅርጸት ስለተሰራላቸው {NUM_PASSWORDS} ሌላ የይለፍ ቃላት ማምጣት አልተቻለም}}</translation>
+<translation id="1642299742557467312">ይህ ፋይል መሣሪያዎን ሊጎዳ ይችላል</translation>
 <translation id="1642492862748815878">ከ<ph name="DEVICE" /> እና <ph name="NUMBER_OF_DEVICES" /> ሌሎች የብሉቱዝ መሣሪያዎች ጋር ተገናኝቷል</translation>
 <translation id="1642494467033190216">ሌሎች የማረሚያ ባህሪያት ከመንቃታቸው በፊት የrootfs ጥበቃ መወገድ እና ዳግም መጀመር ያስፈልጋል።</translation>
 <translation id="1643072738649235303">የX9.62 ECDSA ፊርማ በSHA-1</translation>
@@ -4079,6 +4080,7 @@
 <translation id="4148195018520464922">ለተወሰኑ ተጠቃሚዎች ወደ መለያ መግባትን መገደብ ይችላሉ። ይህ ወደ መለያ መግቢያ ማያ ገፅ ላይ «ሰው አክል» አማራጩን ያስወግዳል። እንዲሁም የአሁን ጊዜ ተጠቃሚዎችን ማስወገድ ይችላሉ።</translation>
 <translation id="4148957013307229264">በመጫን ላይ...</translation>
 <translation id="4150201353443180367">ማሳያ</translation>
+<translation id="4150417452770391330">ካሜራ ያገናኙ</translation>
 <translation id="4150569944729499860">የማያ ገፅ አውድ</translation>
 <translation id="4151449637210235443">ስለ ቅርብ ጊዜ የጨዋታ ዘዴዎ ይንገሩን</translation>
 <translation id="4151503145138736576">ለማጽዳት ምንም ከመስመር ውጭ የሆነ ማከማቻ የለም</translation>
@@ -4179,6 +4181,7 @@
 <translation id="4244238649050961491">ተጨማሪ የስቲለስ መተግበሪያዎችን ያግኙ</translation>
 <translation id="4246980464509998944">ተጨማሪ አስተያየቶች፦</translation>
 <translation id="424726838611654458">ሁልጊዜ በAdobe Reader ክፈት</translation>
+<translation id="4248401726442101648">ምንም ካሜራ አልተገናኘም</translation>
 <translation id="4249248555939881673">የአውታረ መረብ ግንኙነትን በመጠበቅ ላይ...</translation>
 <translation id="4249373718504745892">ይህ ገፅ ካሜራዎን እና ማይክሮፎንዎን እንዳይደርስባቸው ታግዷል።</translation>
 <translation id="424963718355121712">መተግበሪያዎች ተፅዕኖ ከሚያሳርፉበት አስተናጋጅ መቅረብ አለባቸው</translation>
@@ -4201,6 +4204,7 @@
 <translation id="4261429981378979799">የቅጥያ ፈቃዶች</translation>
 <translation id="4262004481148703251">ማስጠንቀቂያን አሰናብት</translation>
 <translation id="4263223596040212967">የእርስዎን የቁልፍ ሰሌዳ አቀማመጥ ይፈትሹ እና እንደገና ይሞክሩ።</translation>
+<translation id="4265301768135164545">እንዲሁም የኢሲም መገለጫን <ph name="BEGIN_LINK" />በእጅ<ph name="END_LINK" /> ማዋቀር ይችላሉ።</translation>
 <translation id="426564820080660648">ዝማኔዎች ካሉ ለማየት እባክዎ Ethernet፣ Wi-Fi ወይም የተንቀሳቃሽ ስልክ ውሂብ ይጠቀሙ።</translation>
 <translation id="426652736638196239">ይህ አይ ቢ ኤ ኤን በዚህ መሣሪያ ላይ ብቻ ይቀመጣል</translation>
 <translation id="4266679478228765574">አቃፊዎችን ማስወገድ ማጋራትን ያቆማል፣ ነገር ግን ፋይሎችን አይሰርዝም።</translation>
@@ -4301,6 +4305,7 @@
 <translation id="4345457680916430965">በ<ph name="APP" /> ውስጥ ይክፈቱ</translation>
 <translation id="4345587454538109430">አዋቅር...</translation>
 <translation id="4345732373643853732">የተጠቃሚ ስም ለአገልጋይ አይታወቅም</translation>
+<translation id="4346159263667201092">አማራጭ ዝርዝሮችን ይጨምሩ</translation>
 <translation id="4348426576195894795">እንዲሁም ይህን መለያ ማስወገድ በዚህ መለያ የገቡባቸውን ማናቸውም የChrome መገለጫዎችን ይሰርዛል</translation>
 <translation id="4348766275249686434">ስህተቶችን ሰብስብ</translation>
 <translation id="4349828822184870497">አጋዥ</translation>
@@ -4385,6 +4390,7 @@
 <translation id="4406883609789734330">የቀጥታ ስርጭት መግለጫ ጽሁፍ</translation>
 <translation id="4407039574263172582">ለመቀጠል <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> የእርስዎን ስም፣ ኢሜይል አድራሻ እና የመገለጫ ሥዕል ለዚህ ጣቢያ ያጋራል። የዚህን ጣቢያ <ph name="BEGIN_LINK" />የአገልግሎት ውል<ph name="END_LINK" /> ይመልከቱ።</translation>
 <translation id="4408599188496843485">እ&amp;ገዛ</translation>
+<translation id="4408965460206576430">ይህ ፋይል ተንኮል አዘል ዌር አለው ወይም ከተጠራጣሪ ጣቢያ የመጣ ነው</translation>
 <translation id="4409271659088619928">የእርስዎ የፍለጋ ፕሮግራም <ph name="DSE" /> ነው። መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ መመሪያዎቻቸውን ይመልከቱ።</translation>
 <translation id="4409697491990005945">ህዳጎች</translation>
 <translation id="4409779593816003679">የይለፍ ቃላት እና ራስ-ሙላ</translation>
@@ -9742,6 +9748,7 @@ nil</translation>
 <translation id="8676313779986170923">ግብረመልስ ስለላኩ እናመሰግናለን።</translation>
 <translation id="8676374126336081632">ግቤቱን አጽዳ</translation>
 <translation id="8676770494376880701">አነስተኛ ኃይል ያለው ባትሪ መሙያ ተገናኝቷል</translation>
+<translation id="8676985325915861058">ይዝለሉ እና አዲስ መገለጫ ያዋቅሩ</translation>
 <translation id="8677212948402625567">ሁሉንም ሰብስብ...</translation>
 <translation id="8678192320753081984">ዒላማ የተደረገ ጥቃት ስጋት ላለባቸው ሰዎች የGoogleን ጠንካራ የመለያ ደህንነት ያቀርባል</translation>
 <translation id="8678378565142776698">እንደገና ጀምር እና የራስ-ሰር ዝማኔዎችን አግኝ</translation>
@@ -10251,7 +10258,6 @@ nil</translation>
 <translation id="9057354806206861646">መርሐግብርን አዘምን</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{በቀን 1 ያህል ማሳወቂያ}one{በቀን {NUM_NOTIFICATION} ያህል ማሳወቂያ}other{በቀን {NUM_NOTIFICATION} ያህል ማሳወቂያዎች}}</translation>
 <translation id="9058760336383947367">የማተሚያ PPDን ይመልከቱ</translation>
-<translation id="9060042817356580609">የዲኤንኤስ አቅራቢ ይምረጡ</translation>
 <translation id="9061694916020926968">Steam for Chromebook (ቅድመ ይሁንታ) ለመጠቀም ወደ Google መለያ መግባት አለብዎት። በመለያ ይግቡ እና እንደገና ይሞክሩ።</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">ከመስመር <ph name="ERROR_LINE_START" /> እስከ <ph name="ERROR_LINE_END" /> ስህተት</translation>

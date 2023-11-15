@@ -10240,7 +10240,6 @@
 <translation id="9057354806206861646">განახლების განრიგი</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{დაახლოებით 1 შეტყობინება დღეში}other{დაახლოებით {NUM_NOTIFICATION} შეტყობინება დღეში}}</translation>
 <translation id="9058760336383947367">პრინტერის PPD-ის ნახვა</translation>
-<translation id="9060042817356580609">აირჩიეთ DNS-ის პროვაიდერი</translation>
 <translation id="9061694916020926968">Steam for Chromebook (ბეტა) რომ გამოიყენოთ, Google ანგარიშში უნდა იყოთ შესული. შედით და ცადეთ ხელახლა.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">შეცდომა ხაზებში <ph name="ERROR_LINE_START" />-<ph name="ERROR_LINE_END" /></translation>

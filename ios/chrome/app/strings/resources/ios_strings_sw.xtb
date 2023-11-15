@@ -68,7 +68,6 @@ Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="1295289763199166823">Weka Mapendeleo kwenye Menyu</translation>
 <translation id="1305822519689023679">Ili uhakikishe kuwa unaweza kutumia manenosiri katika Akaunti yako ya Google kila wakati, thibitisha kuwa ni wewe.</translation>
 <translation id="1312721752506309252">Kipengele cha ulinzi ulioboreshwa kimewashwa</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Fuatilia kifurushi hiki}other{Fuatilia vifurushi vyote}}</translation>
 <translation id="1321993286294231467">Hitilafu imetokea wakati wa kuhifadhi picha.</translation>
 <translation id="1322735045095424339">Shirika lako linahitaji utumie hali Fiche</translation>
 <translation id="1323735185997015385">Futa</translation>
@@ -655,7 +654,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4489536976005181779">{count,plural, =1{Ukurasa umewekwa kwenye orodha yako ya kusoma katika akaunti yako, {email}}other{Kurasa zimewekwa kwenye orodha yako ya kusoma katika akaunti yako, {email}}}</translation>
 <translation id="4493604894403585654">Umeingia katika akaunti ukitumia <ph name="USER_EMAIL" />. Unaweza kuacha kusawazisha wakati wowote katika mipangilio. Google inaweza kuweka mapendeleo kwenye huduma ya Tafuta na huduma nyinginezo kulingana na historia yako.</translation>
 <translation id="4502566650163919158">Kagua Sasa</translation>
-<translation id="4505980578794259603">Mara ya mwisho kukaguliwa <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Funga matangazo ya kuingia kwenye akaunti</translation>
 <translation id="4514889972748124117">Pendekeza Nenosiri Thabiti...</translation>
 <translation id="4520798012560649652">Pata maelezo zaidi kuhusu Hali fiche</translation>
@@ -1059,7 +1057,6 @@ Data yako imesimbwa kwa njia fiche kwa kutumia kauli yako ya siri. Iweke ili utu
 
 Jaribu kutumia nenosiri la kipekee kwa kila tovuti.</translation>
 <translation id="6497850081273517953">Toleo la Chrome limepitwa na wakati, pata toleo jipya zaidi ili uendelee kuwa salama.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Acha kufuatilia kifurushi hiki}other{Acha kufuatilia vifurushi vyote}}</translation>
 <translation id="650279896687777322">Pata Maelezo Zaidi...</translation>
 <translation id="6507973708545996744">Ingia katika akaunti ili upate orodha yako ya kusoma kwenye vifaa vyako vyote.</translation>
 <translation id="6510072653668207258">Nikumbushe Baadaye</translation>
@@ -1216,6 +1213,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7367530036083223701">Fikia manenosiri yako kwa usalama kwenye skrini ya kwanza ukitumia wijeti ya Kidhibiti cha Manenosiri.</translation>
 <translation id="7380220816562673297">Kwa sasa, unaweza tu kushiriki manenosiri na wanafamilia. <ph name="BEGIN_LINK" />Anzisha kikundi cha familia<ph name="END_LINK" /> chenye hadi watu 6 na mnufaike zaidi na bidhaa na usajili kwenye Google.</translation>
 <translation id="7383797227493018512">Orodha ya Kusoma</translation>
+<translation id="739101637685146669">Je, ungependa kualamisha URL ipi?</translation>
 <translation id="7396331865858820922">Nenosiri Halikushirikiwa</translation>
 <translation id="7398893703713203428">Weka Kiungo</translation>
 <translation id="7399802613464275309">Angalizo la Usalama</translation>
@@ -1451,6 +1449,7 @@ Data yako ilisimbwa kwa njia fiche kwa kutumia kauli ya siri <ph name="TIME" />.
 <translation id="8591976964826315682">Zuia Vidakuzi vya Tovuti Nyingine katika Hali Fiche</translation>
 <translation id="8593565399399144771">Unaweza kufungua kichupo kipya hapa.</translation>
 <translation id="8605219856220328675">Funga kichupo</translation>
+<translation id="8609743333007776886">Alamisha ${url}</translation>
 <translation id="8613883225817609844">Kuficha Vichupo vya Hivi Karibuni</translation>
 <translation id="8620640915598389714">Badilisha</translation>
 <translation id="8624447588354561276">Nambari ya Kifurushi</translation>

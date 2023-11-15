@@ -502,6 +502,7 @@
 <translation id="371230970611282515">Προβλέπει και σας προειδοποιεί για επικίνδυνα συμβάντα προτού αυτά συμβούν.</translation>
 <translation id="3714981814255182093">Άνοιγμα της γραμμής εύρεσης</translation>
 <translation id="3716182511346448902">Αυτή η σελίδα χρησιμοποιεί πάρα πολλή μνήμη. Για αυτόν τον λόγο, το Chrome την έθεσε σε παύση.</translation>
+<translation id="3720422586473670527">Όχι, ευχαριστώ</translation>
 <translation id="3721119614952978349">Εσείς και η Google</translation>
 <translation id="3737319253362202215">Ρυθμίσεις μετάφρασης</translation>
 <translation id="3737402728074743863">Για χρήση αυτής της συσκευής ως κλειδιού ασφαλείας, ορίστε ένα κλείδωμα οθόνης.</translation>
@@ -799,6 +800,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Λήψη αρχείου…}other{Λήψη # αρχείων…}}</translation>
 <translation id="5210286577605176222">Μετάβαση στην προηγούμενη καρτέλα</translation>
 <translation id="5210365745912300556">Κλείσιμο καρτέλας</translation>
+<translation id="5216863793077689658">Η δραστηριότητά σας στα Insight σελίδας αποθηκεύεται στον <ph name="BEGIN_LINK" />Λογαριασμό σας Google<ph name="END_LINK" />.</translation>
 <translation id="5222676887888702881">Έξοδος</translation>
 <translation id="5226378907213531272">Η οθόνη θα ξεκλειδώνεται κάθε φορά που χρησιμοποιείτε το αυτοκίνητο</translation>
 <translation id="5227554086496586518">Πατήστε για να δείτε αποτελέσματα αναζήτησης</translation>

@@ -68,7 +68,6 @@
 <translation id="1295289763199166823">Prilagodi meni</translation>
 <translation id="1305822519689023679">Če želite zagotoviti, da boste lahko v računu Google vedno uporabljali gesla, potrdite, da ste to vi.</translation>
 <translation id="1312721752506309252">Izboljšana zaščita je vklopljena.</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Sledi temu paketu}one{Sledi vsem paketom}two{Sledi vsem paketom}few{Sledi vsem paketom}other{Sledi vsem paketom}}</translation>
 <translation id="1321993286294231467">Napaka pri shranjevanju slike.</translation>
 <translation id="1322735045095424339">Vaša organizacija zahteva anonimni način.</translation>
 <translation id="1323735185997015385">Izbriši</translation>
@@ -655,7 +654,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4489536976005181779">{count,plural, =1{Stran je bila dodana na bralni seznam v računu {email}}one{Strani so bile dodane na bralni seznam v računu {email}}two{Strani so bile dodane na bralni seznam v računu {email}}few{Strani so bile dodane na bralni seznam v računu {email}}other{Strani so bile dodane na bralni seznam v računu {email}}}</translation>
 <translation id="4493604894403585654">Prijavljeni ste kot <ph name="USER_EMAIL" />. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="4502566650163919158">Preveri</translation>
-<translation id="4505980578794259603">Nazadnje preverjeno: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Zapri predstavitev prijave</translation>
 <translation id="4514889972748124117">Predlagaj zapleteno geslo ...</translation>
 <translation id="4520798012560649652">Preberite več o anonimnem načinu</translation>
@@ -1059,7 +1057,6 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 
 Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="6497850081273517953">Chrome je zastarel. Če želite poskrbeti za varnost, ga posodobite na najnovejšo različico.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Preklic sledenja temu paketu}one{Prekliči sledenje vsem paketom}two{Prekliči sledenje vsem paketom}few{Prekliči sledenje vsem paketom}other{Prekliči sledenje vsem paketom}}</translation>
 <translation id="650279896687777322">Več o tem …</translation>
 <translation id="6507973708545996744">Prijavite se, da boste imeli bralni seznam v vseh napravah.</translation>
 <translation id="6510072653668207258">Opomni me pozneje</translation>

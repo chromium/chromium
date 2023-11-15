@@ -68,7 +68,6 @@ Ukuze ushintshel lawa masethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-C
 <translation id="1295289763199166823">Yenza Imenyu Ngokwezifiso</translation>
 <translation id="1305822519689023679">Ukuze wenze isiqiniseko sokuthi ungakwazi njalo ukusebenzisa amaphasiwedi ku-Google Account yakho, qinisekisa ukuthi nguwe.</translation>
 <translation id="1312721752506309252">Ukuvikela okuthuthukisiwe kuvuliwe</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Landelela le phakheji}one{Landelela wonke amaphakheji}other{Landelela wonke amaphakheji}}</translation>
 <translation id="1321993286294231467">Iphutha lokulondoloza isithombe.</translation>
 <translation id="1322735045095424339">Inhlangano yakho idinga imodi ye-Incognito</translation>
 <translation id="1323735185997015385">Susa</translation>
@@ -655,7 +654,6 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="4489536976005181779">{count,plural, =1{Ikhasi lengezwe ohlwini lwakho lokufunda ku-akhawunti yakho, {email}}one{Ikhasi lengezwe ohlwini lwakho lokufunda ku-akhawunti yakho, {email}}other{Ikhasi lengezwe ohlwini lwakho lokufunda ku-akhawunti yakho, {email}}}</translation>
 <translation id="4493604894403585654">Ungene ngemvume njengo-<ph name="USER_EMAIL" />. Ungayeka ukuvumelanisa nganoma yisiphi isikhathi kumasethingi. I-Google ingase iqondanise nomuntu siqu i-Search namanye amasevisi ngokususelwe emlandweni wakho.</translation>
 <translation id="4502566650163919158">Hlola manje</translation>
-<translation id="4505980578794259603">Kugcine ukuhlolwa ngo-<ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Vala iphromo yokungena ngemvume</translation>
 <translation id="4514889972748124117">Iphakamisa Iphasiwedi Eqinile</translation>
 <translation id="4520798012560649652">Funda kabanzi mayelana nemodi ye-Incognito</translation>
@@ -1059,7 +1057,6 @@ Idatha yakho ibethelwe ngomushwana wokungena. Ifake ukuze usebenzise futhi wonge
 
 Zama ukusebenzisa iphasiwedi eyingqayizivele kusayithi ngayinye.</translation>
 <translation id="6497850081273517953">I-Chrome isiphelelwe yisikhathi, buyekezela ohlotsheni lwakamuva ukuze uhlale uvikelekile.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Yeka ukulandelela le phakheji}one{Yeka ukulandelela wonke amaphakheji}other{Yeka ukulandelela wonke amaphakheji}}</translation>
 <translation id="650279896687777322">Funda Kabanzi...</translation>
 <translation id="6507973708545996744">Ngena ngemvume ukuze uthole uhlu lwakho lokufunda kuwo wonke amadivayisi akho.</translation>
 <translation id="6510072653668207258">Ngikhumbuze ngemuva kwesikhathi</translation>

@@ -10259,7 +10259,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9057354806206861646">Update schedule</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{About 1 notification a day}other{About {NUM_NOTIFICATION} notifications a day}}</translation>
 <translation id="9058760336383947367">View printer PPD</translation>
-<translation id="9060042817356580609">Select DNS provider</translation>
 <translation id="9061694916020926968">You need to be signed-in to a Google Account to use Steam for Chromebook (Beta). Sign in and try again.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Error from line <ph name="ERROR_LINE_START" /> to <ph name="ERROR_LINE_END" /></translation>

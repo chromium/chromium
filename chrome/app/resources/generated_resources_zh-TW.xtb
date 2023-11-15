@@ -10236,7 +10236,6 @@
 <translation id="9057354806206861646">更新時間表</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{每天約傳送 1 則通知}other{每天約傳送 {NUM_NOTIFICATION} 則通知}}</translation>
 <translation id="9058760336383947367">查看印表機 PPD</translation>
-<translation id="9060042817356580609">選取 DNS 供應商</translation>
 <translation id="9061694916020926968">需要登入 Google 帳戶才能使用 Steam for Chromebook (Beta 版)。請登入帳戶，然後再試一次。</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933">第 <ph name="ERROR_LINE_START" /> 至第 <ph name="ERROR_LINE_END" /> 行有錯誤</translation>

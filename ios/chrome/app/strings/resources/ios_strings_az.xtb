@@ -68,7 +68,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="1295289763199166823">Menyunu fərdiləşdirin</translation>
 <translation id="1305822519689023679">Google Hesabında parollardan hər zaman istifadə etmək üçün kimliyinizi təsdiq edin.</translation>
 <translation id="1312721752506309252">Qabaqcıl qoruma aktivdir</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Bu bağlamanı izləyin}other{Bütün bağlamaları izləyin}}</translation>
 <translation id="1321993286294231467">Şəkil yadda saxlanılarkən xəta.</translation>
 <translation id="1322735045095424339">Təşkilatınız Anonim rejimi tələb edir</translation>
 <translation id="1323735185997015385">Silin</translation>
@@ -655,7 +654,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4489536976005181779">{count,plural, =1{Səhifə hesabdakı ({email}) oxu siyahısına əlavə edildi}other{Səhifələr hesabdakı ({email}) oxu siyahısına əlavə edildi}}</translation>
 <translation id="4493604894403585654"><ph name="USER_EMAIL" /> kimi daxil olmusunuz. Ayarlarda sinxronlaşdırmanı dayandıra bilərsiniz. Google tarixçəyə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
 <translation id="4502566650163919158">İndi Yoxlayın</translation>
-<translation id="4505980578794259603">Sonuncu yoxlama: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Giriş reklamını bağlayın</translation>
 <translation id="4514889972748124117">Güclü Parol Təklif Edin...</translation>
 <translation id="4520798012560649652">Anonim rejimi haqqında ətraflı məlumat</translation>
@@ -1059,7 +1057,6 @@ Data parol ifadəsi ilə şifrələnib. Google Hesabında Chrome datasını isti
 
 Hər sayt üçün unikal parol istifadə edin.</translation>
 <translation id="6497850081273517953">Chrome köhnəlib. Təhlükəsizlik üçün son versiyaya güncəlləyin.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Bu bağlamanı izləməyin}other{Heç bir bağlamanı izləməyin}}</translation>
 <translation id="650279896687777322">Ətraflı məlumat...</translation>
 <translation id="6507973708545996744">Bütün cihazlarda oxu siyahısı əldə etmək üçün daxil olun.</translation>
 <translation id="6510072653668207258">Sonra xatırladın</translation>
@@ -1216,6 +1213,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7367530036083223701">Parol meneceri vidceti ilə parollara əsas ekrandan təhlükəsiz daxil olun.</translation>
 <translation id="7380220816562673297">Parolları yalnız ailə üzvləri ilə paylaşa bilərsiniz. 6-ya qədər üzv ilə <ph name="BEGIN_LINK" />ailə qrupu yaradın<ph name="END_LINK" />, Google-da məhsul və abunələrdən daha çox yararlanın.</translation>
 <translation id="7383797227493018512">Oxu Siyahısı</translation>
+<translation id="739101637685146669">Hansı URL-ni əlfəcinə əlavə etmək istəyırsiniz?</translation>
 <translation id="7396331865858820922">Parol paylaşılmadı</translation>
 <translation id="7398893703713203428">Keçid yaradın</translation>
 <translation id="7399802613464275309">Təhlükəsizlik Yoxlanışı</translation>
@@ -1451,6 +1449,7 @@ Data <ph name="TIME" /> tarixində parol ifadəsi ilə şifrələnib. Google Hes
 <translation id="8591976964826315682">Anonim rejimdə üçüncü tərəf kukilərini bloklayın</translation>
 <translation id="8593565399399144771">Burada yeni tab aça bilərsiniz.</translation>
 <translation id="8605219856220328675">Paneli qapadın.</translation>
+<translation id="8609743333007776886">Bu URL-ni əlfəcinlərə əlavə edin: ${url}</translation>
 <translation id="8613883225817609844">Son tabları gizlədin</translation>
 <translation id="8620640915598389714">Redaktə edin</translation>
 <translation id="8624447588354561276">Bağlama nömrəsi</translation>

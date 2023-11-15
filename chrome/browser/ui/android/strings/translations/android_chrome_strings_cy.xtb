@@ -502,6 +502,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="371230970611282515">Mae'n rhagfynegi digwyddiadau peryglus ac yn eich rhybuddio amdanynt cyn iddynt ddigwydd.</translation>
 <translation id="3714981814255182093">Agorwch y Bar Chwilio</translation>
 <translation id="3716182511346448902">Mae'r dudalen hon yn defnyddio gormod o gof, felly gwnaeth Chrome ei seibio.</translation>
+<translation id="3720422586473670527">Dim diolch</translation>
 <translation id="3721119614952978349">Chi a Google</translation>
 <translation id="3737319253362202215">Gosodiadau cyfieithu</translation>
 <translation id="3737402728074743863">I ddefnyddio'r ddyfais hon fel allwedd ddiogelwch, gosodwch glo sgrîn</translation>
@@ -799,6 +800,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Wrthi'n lawrlwytho'r ffeil…}zero{Wrthi'n lawrlwytho # ffeil…}two{Wrthi'n lawrlwytho # ffeil…}few{Wrthi'n lawrlwytho # ffeil…}many{Wrthi'n lawrlwytho # ffeil…}other{Wrthi'n lawrlwytho # ffeil…}}</translation>
 <translation id="5210286577605176222">Neidio i'r tab blaenorol</translation>
 <translation id="5210365745912300556">Cau'r tab</translation>
+<translation id="5216863793077689658">Mae'ch gweithgarwch ym Mewnwelediadau Tudalen wedi'i gadw yn eich <ph name="BEGIN_LINK" />Cyfrif Google<ph name="END_LINK" />.</translation>
 <translation id="5222676887888702881">Allgofnodi</translation>
 <translation id="5226378907213531272">Byddwch yn datgloi eich sgrîn bob tro y byddwch yn defnyddio'r car</translation>
 <translation id="5227554086496586518">Tapiwch i weld canlyniadau chwilio</translation>

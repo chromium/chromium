@@ -68,7 +68,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="1295289763199166823">Sesuaikan Menu</translation>
 <translation id="1305822519689023679">Untuk memastikan Anda selalu dapat menggunakan sandi yang tersimpan di Akun Google Anda, verifikasi diri Anda.</translation>
 <translation id="1312721752506309252">Perlindungan yang ditingkatkan aktif</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Lacak paket ini}other{Lacak semua paket}}</translation>
 <translation id="1321993286294231467">Error saat menyimpan gambar.</translation>
 <translation id="1322735045095424339">Organisasi Anda mengharuskan mode Samaran</translation>
 <translation id="1323735185997015385">Hapus</translation>
@@ -655,7 +654,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4489536976005181779">{count,plural, =1{Halaman ditambahkan ke daftar bacaan di akun Anda, {email}}other{Halaman ditambahkan ke daftar bacaan di akun Anda, {email}}}</translation>
 <translation id="4493604894403585654">Anda login sebagai <ph name="USER_EMAIL" />. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="4502566650163919158">Periksa Sekarang</translation>
-<translation id="4505980578794259603">Terakhir diperiksa <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Tutup promo login</translation>
 <translation id="4514889972748124117">Sarankan Sandi Kuat ...</translation>
 <translation id="4520798012560649652">Pelajari lebih lanjut mode Samaran</translation>
@@ -1059,7 +1057,6 @@ Data Anda dienkripsi dengan frasa sandi. Masukkan frasa sandi untuk menggunakan 
 
 Coba gunakan sandi yang unik untuk setiap situs.</translation>
 <translation id="6497850081273517953">Chrome belum diupdate, update ke versi terbaru agar tetap aman.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Batalkan pelacakan paket ini}other{Batalkan pelacakan semua paket}}</translation>
 <translation id="650279896687777322">Pelajari Lebih Lanjut ...</translation>
 <translation id="6507973708545996744">Login untuk mendapatkan daftar bacaan di semua perangkat Anda.</translation>
 <translation id="6510072653668207258">Ingatkan Saya Nanti</translation>

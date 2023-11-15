@@ -843,6 +843,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1641113438599504367">Droša pārlūkošana</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" />: citas darbības</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Viena cita parole netika importēta, jo tā ir nepareizi formatēta}zero{{NUM_PASSWORDS} citas paroles netika importētas, jo tās ir nepareizi formatētas}one{{NUM_PASSWORDS} cita parole netika importēta, jo tās ir nepareizi formatētas}other{{NUM_PASSWORDS} citas paroles netika importētas, jo tās ir nepareizi formatētas}}</translation>
+<translation id="1642299742557467312">Šis fails var kaitēt jūsu ierīcei</translation>
 <translation id="1642492862748815878">Izveidots savienojums ar ierīci “<ph name="DEVICE" />” un vēl <ph name="NUMBER_OF_DEVICES" /> Bluetooth ierīcēm.</translation>
 <translation id="1642494467033190216">Lai varētu iespējot citas atkļūdošanas funkcijas, ir jānoņem rootfs aizsardzība un jāveic restartēšana.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA paraksts ar SHA-1</translation>
@@ -4074,6 +4075,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4148195018520464922">Varat norādīt, ka tikai noteikti lietotāji var pierakstīties. Tādējādi no pierakstīšanās ekrāna tiks noņemta opcija “Pievienot personu”. Varat arī noņemt pašreizējos lietotājus.</translation>
 <translation id="4148957013307229264">Notiek instalēšana...</translation>
 <translation id="4150201353443180367">Displejs</translation>
+<translation id="4150417452770391330">Pievienojiet kameru</translation>
 <translation id="4150569944729499860">Ekrāna konteksts</translation>
 <translation id="4151449637210235443">Pastāstiet mums, kā veicās pēdējā spēles izspēlē</translation>
 <translation id="4151503145138736576">Nav bezsaistes krātuves, ko notīrīt.</translation>
@@ -4174,6 +4176,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4244238649050961491">Atrast citas skārienekrāna pildspalvas lietotnes</translation>
 <translation id="4246980464509998944">Papildu komentāri</translation>
 <translation id="424726838611654458">Vienmēr atvērt programmā Adobe Reader</translation>
+<translation id="4248401726442101648">Nav pievienota kamera</translation>
 <translation id="4249248555939881673">Tiek gaidīta savienojuma izveide ar tīklu...</translation>
 <translation id="4249373718504745892">Šīs lapas piekļuve jūsu kamerai un mikrofonam ir bloķēta.</translation>
 <translation id="424963718355121712">Lietotnēm ir jābūt no tā paša saimniekdatora, kuru tās ietekmē.</translation>
@@ -4296,6 +4299,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4345457680916430965">Atvērt liet&amp;otnē <ph name="APP" /></translation>
 <translation id="4345587454538109430">Konfigurēt...</translation>
 <translation id="4345732373643853732">Serverim nezināms lietotājvārds</translation>
+<translation id="4346159263667201092">Pievienot detalizētu informāciju (neobligāti)</translation>
 <translation id="4348426576195894795">Noņemot šo kontu, tiks arī izdzēsti visi Chrome profili, kuros pierakstījāties ar šo kontu</translation>
 <translation id="4348766275249686434">Vākt kļūdas</translation>
 <translation id="4349828822184870497">Noderīgs</translation>
@@ -4380,6 +4384,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4406883609789734330">Subtitri reāllaikā</translation>
 <translation id="4407039574263172582">Lai turpinātu, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kopīgos jūsu vārdu, e-pasta adresi un profila attēlu ar šo vietni. Skatiet šīs vietnes <ph name="BEGIN_LINK" />pakalpojumu sniegšanas noteikumus<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">P&amp;alīdzība</translation>
+<translation id="4408965460206576430">Šajā failā ir ļaunprātīga programmatūra, vai arī tas ir no aizdomīgas vietnes.</translation>
 <translation id="4409271659088619928">Jūsu meklētājprogramma ir <ph name="DSE" />. Skatiet tās norādījumus par meklēšanas vēstures dzēšanu, ja šāda iespēja ir pieejama.</translation>
 <translation id="4409697491990005945">Malas</translation>
 <translation id="4409779593816003679">Paroles un &amp;automātiskā aizpilde</translation>
@@ -10240,7 +10245,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="9057354806206861646">Grafika atjaunināšana</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Apmēram viens paziņojums dienā}zero{Apmēram {NUM_NOTIFICATION} paziņojumu dienā}one{Apmēram {NUM_NOTIFICATION} paziņojums dienā}other{Apmēram {NUM_NOTIFICATION} paziņojumi dienā}}</translation>
 <translation id="9058760336383947367">Skatiet printera PPD</translation>
-<translation id="9060042817356580609">Atlasiet DNS pakalpojumu sniedzēju</translation>
 <translation id="9061694916020926968">Lai izmantotu Steam for Chromebook (Beta), jums ir jāpierakstās Google kontā. Pierakstieties un mēģiniet vēlreiz.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Kļūda no rindiņas <ph name="ERROR_LINE_START" /> līdz rindiņai <ph name="ERROR_LINE_END" /></translation>

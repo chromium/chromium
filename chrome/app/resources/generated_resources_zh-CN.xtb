@@ -836,6 +836,7 @@
 <translation id="1641113438599504367">安全浏览</translation>
 <translation id="1641496881756082050">显示可对“<ph name="NETWORK_NAME" />”执行的更多操作</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{还有 1 个密码未能导入，因为它的格式不正确}other{还有 {NUM_PASSWORDS} 个密码未能导入，因为它们的格式不正确}}</translation>
+<translation id="1642299742557467312">此文件可能会损害您的设备</translation>
 <translation id="1642492862748815878">已连接到设备“<ph name="DEVICE" />”以及另外 <ph name="NUMBER_OF_DEVICES" /> 部蓝牙设备</translation>
 <translation id="1642494467033190216">要启用其他调试功能，必须先取消根文件系统保护并重启设备。</translation>
 <translation id="1643072738649235303">采用 SHA-1 算法的 X9.62 ECDSA 签名</translation>
@@ -4063,6 +4064,7 @@
 <translation id="4148195018520464922">您可以设置限制，只允许某些用户登录。此操作会移除登录界面上的“添加用户”选项。您还可以移除当前用户。</translation>
 <translation id="4148957013307229264">正在安装...</translation>
 <translation id="4150201353443180367">显示</translation>
+<translation id="4150417452770391330">连接摄像头</translation>
 <translation id="4150569944729499860">屏幕上下文</translation>
 <translation id="4151449637210235443">欢迎与我们分享您近期的游戏内容</translation>
 <translation id="4151503145138736576">没有可清理的离线存储空间</translation>
@@ -4163,6 +4165,7 @@
 <translation id="4244238649050961491">查找更多触控笔应用</translation>
 <translation id="4246980464509998944">其他评论：</translation>
 <translation id="424726838611654458">始终用Adobe Reader打开</translation>
+<translation id="4248401726442101648">未连接到摄像头</translation>
 <translation id="4249248555939881673">正在等待建立网络连接…</translation>
 <translation id="4249373718504745892">已禁止此网页使用您的摄像头和麦克风。</translation>
 <translation id="424963718355121712">应用的安装来源必须是其自己发挥作用的主机</translation>
@@ -4185,6 +4188,7 @@
 <translation id="4261429981378979799">扩展程序权限</translation>
 <translation id="4262004481148703251">关闭警告</translation>
 <translation id="4263223596040212967">请检查键盘布局，然后重试。</translation>
+<translation id="4265301768135164545">您也可<ph name="BEGIN_LINK" />手动<ph name="END_LINK" />设置 eSIM 卡配置文件</translation>
 <translation id="426564820080660648">要检查是否有更新，请使用以太网、WLAN 或移动数据。</translation>
 <translation id="426652736638196239">此 IBAN 将仅保存到这部设备上</translation>
 <translation id="4266679478228765574">移除文件夹会停止共享但不会删除其中的文件。</translation>
@@ -4285,6 +4289,7 @@
 <translation id="4345457680916430965">在 <ph name="APP" />中打开(&amp;O)</translation>
 <translation id="4345587454538109430">配置...</translation>
 <translation id="4345732373643853732">服务器无法识别用户名</translation>
+<translation id="4346159263667201092">添加可选填的详细信息</translation>
 <translation id="4348426576195894795">移除此账号亦会删除所有已使用此账号登录的 Chrome 个人资料</translation>
 <translation id="4348766275249686434">收集各项错误</translation>
 <translation id="4349828822184870497">有用</translation>
@@ -4369,6 +4374,7 @@
 <translation id="4406883609789734330">实时字幕</translation>
 <translation id="4407039574263172582">如果您继续注册，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的用户名、电子邮件地址和个人资料照片提供给此网站。不妨查看此网站的<ph name="BEGIN_LINK" />服务条款<ph name="END_LINK" />。</translation>
 <translation id="4408599188496843485">帮助(&amp;E)</translation>
+<translation id="4408965460206576430">此文件包含恶意软件或来自可疑网站</translation>
 <translation id="4409271659088619928">您所用的搜索引擎是<ph name="DSE" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="4409697491990005945">边距</translation>
 <translation id="4409779593816003679">密码和自动填充(&amp;A)</translation>
@@ -9716,6 +9722,7 @@
 <translation id="8676313779986170923">感谢您发送反馈。</translation>
 <translation id="8676374126336081632">清除输入的内容</translation>
 <translation id="8676770494376880701">已连接低功率充电器</translation>
+<translation id="8676985325915861058">跳过此步骤并设置新的个人资料</translation>
 <translation id="8677212948402625567">全部收起...</translation>
 <translation id="8678192320753081984">为面临定向攻击风险的用户提供 Google 最强大的账号安保服务</translation>
 <translation id="8678378565142776698">重启设备并获取自动更新</translation>
@@ -10224,7 +10231,6 @@
 <translation id="9057354806206861646">更新时间表</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{每天大约 1 条通知}other{每天大约 {NUM_NOTIFICATION} 条通知}}</translation>
 <translation id="9058760336383947367">查看打印机 PPD</translation>
-<translation id="9060042817356580609">选择 DNS 提供商</translation>
 <translation id="9061694916020926968">您需要登录 Google 账号，才能使用 Steam for Chromebook（Beta 版）。请登录，然后重试。</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933">第 <ph name="ERROR_LINE_START" /> 行到第 <ph name="ERROR_LINE_END" /> 行存在错误</translation>

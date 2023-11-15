@@ -68,7 +68,6 @@
 <translation id="1295289763199166823">メニューをカスタマイズ</translation>
 <translation id="1305822519689023679">Google アカウントのパスワードを常に使用できるようにするには、本人確認を行ってください。</translation>
 <translation id="1312721752506309252">保護強化機能がオンになっています</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{この荷物を追跡}other{すべての荷物を追跡}}</translation>
 <translation id="1321993286294231467">画像の保存中にエラーが発生しました。</translation>
 <translation id="1322735045095424339">組織がシークレット モードを使用するよう求めています</translation>
 <translation id="1323735185997015385">削除</translation>
@@ -655,7 +654,6 @@
 <translation id="4489536976005181779">{count,plural, =1{アカウント「{email}」のリーディング リストにページを追加しました}other{アカウント「{email}」のリーディング リストにページを追加しました}}</translation>
 <translation id="4493604894403585654"><ph name="USER_EMAIL" /> でログインしています。同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
 <translation id="4502566650163919158">今すぐ確認</translation>
-<translation id="4505980578794259603">最終確認日: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">ログイン プロモーションを閉じる</translation>
 <translation id="4514889972748124117">安全なパスワードを自動生成...</translation>
 <translation id="4520798012560649652">シークレット モードの詳細を表示します</translation>
@@ -1059,7 +1057,6 @@
 
 各サイトで個別のパスワードを使用することをご検討ください。</translation>
 <translation id="6497850081273517953">Chrome が最新ではありません。安全を確保するため、最新バージョンに更新してください。</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{この荷物の追跡を停止}other{すべての荷物の追跡を停止}}</translation>
 <translation id="650279896687777322">詳細を表示...</translation>
 <translation id="6507973708545996744">ログインすると、どのデバイスでもリーディング リストを利用できます。</translation>
 <translation id="6510072653668207258">後で通知する</translation>

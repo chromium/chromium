@@ -68,7 +68,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="1295289763199166823">Prispôsobiť ponuku</translation>
 <translation id="1305822519689023679">Ak sa chcete uistiť, že vo svojom účte Google môžete kedykoľvek použiť heslá, overte svoju totožnosť.</translation>
 <translation id="1312721752506309252">Je zapnutá rozšírená ochrana</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Sledovať túto zásielku}few{Sledovať všetky zásielky}many{Track all packages}other{Sledovať všetky zásielky}}</translation>
 <translation id="1321993286294231467">Chyba pri ukladaní obrázka.</translation>
 <translation id="1322735045095424339">Vaša organizácia vyžaduje režim inkognito</translation>
 <translation id="1323735185997015385">Odstrániť</translation>
@@ -655,7 +654,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4489536976005181779">{count,plural, =1{Stránka bola pridaná do čitateľského zoznamu vo vašom účte ({email})}few{Stránky boli pridané do čitateľského zoznamu vo vašom účte ({email})}many{Pages added to your reading list in your account, {email}}other{Stránky boli pridané do čitateľského zoznamu vo vašom účte ({email})}}</translation>
 <translation id="4493604894403585654">Máte prihlásený účet <ph name="USER_EMAIL" />. Synchronizáciu môžete kedykoľvek zastaviť v nastaveniach. Google môže prispôsobovať Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
 <translation id="4502566650163919158">Skontrolovať</translation>
-<translation id="4505980578794259603">Posledná kontrola: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Zavrieť propagáciu prihlásenia</translation>
 <translation id="4514889972748124117">Navrhnúť silné heslo…</translation>
 <translation id="4520798012560649652">Ďalšie informácie o režime inkognito</translation>
@@ -1059,7 +1057,6 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 
 Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="6497850081273517953">Chrome je zastaraný, aktualizujte ho na najnovšiu verziu a zabezpečte ho.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Zastaviť sledovanie tejto zásielky}few{Zastaviť sledovanie týchto zásielok}many{Untrack all packages}other{Zastaviť sledovanie týchto zásielok}}</translation>
 <translation id="650279896687777322">Ďalšie informácie…</translation>
 <translation id="6507973708545996744">Ak chcete mať čitateľský zoznam k dispozícii vo všetkých zariadeniach, prihláste sa.</translation>
 <translation id="6510072653668207258">Pripomenúť neskôr</translation>

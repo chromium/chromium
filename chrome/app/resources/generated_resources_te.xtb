@@ -844,6 +844,7 @@
 <translation id="1641113438599504367">సురక్షిత బ్రౌజింగ్</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" /> కోసం మరిన్ని చర్యలు</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 ఇతర పాస్‌వర్డ్ తప్పుగా ఫార్మాట్ చేయబడింది, కాబట్టి అది దిగుమతి చేయబడలేదు}other{{NUM_PASSWORDS} ఇతర పాస్‌వర్డ్‌లు తప్పుగా ఫార్మాట్ చేయబడ్డాయి, కాబట్టి అవి దిగుమతి చేయబడలేదు}}</translation>
+<translation id="1642299742557467312">ఈ ఫైల్ మీ పరికరానికి హాని కలిగించవచ్చు</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" />కు, ఇంకా <ph name="NUMBER_OF_DEVICES" /> ఇతర బ్లూటూత్ పరికరాలకు కనెక్ట్ చేయబడింది</translation>
 <translation id="1642494467033190216">ఇతర డీబగ్గింగ్ ఫీచ‌ర్‌లను ప్రారంభించడానికి ముందు rootfs రక్షణను తీసివేసి, పునఃప్రారంభించాలి.</translation>
 <translation id="1643072738649235303">SHA-1తో X9.62 ECDSA సంతకం</translation>
@@ -4085,6 +4086,7 @@
 <translation id="4148195018520464922">నిర్దిష్ట వ్యక్తులకు మాత్రమే సైన్ ఇన్ చేయడానికి అనుమతిని ఇవ్వగలరు. ఇది సైన్-ఇన్ స్క్రీన్‌లోని "వ్యక్తిని జోడించండి" ఆప్షన్‌ను తీసివేస్తుంది. మీరు ప్రస్తుత యూజర్‌లను కూడా తీసివేయవచ్చు.</translation>
 <translation id="4148957013307229264">వ్యవస్థాపిస్తోంది...</translation>
 <translation id="4150201353443180367">డిస్‌ప్లే</translation>
+<translation id="4150417452770391330">కెమెరాను కనెక్ట్ చేయండి</translation>
 <translation id="4150569944729499860">స్క్రీన్ కాంటెక్ట్స్</translation>
 <translation id="4151449637210235443">మీ తాజా గేమ్ ఆడే విధానం గురించి మాకు తెలియజేయండి</translation>
 <translation id="4151503145138736576">క్లీనప్ చేయడానికి ఆఫ్‌లైన్ స్టోరేజ్ లేదు</translation>
@@ -4185,6 +4187,7 @@
 <translation id="4244238649050961491">మరిన్ని స్టైలస్ యాప్‌లను కనుగొనండి</translation>
 <translation id="4246980464509998944">అదనపు కామెంట్‌లు:</translation>
 <translation id="424726838611654458">ఎల్లప్పుడూ Adobe Readerలో తెరువు</translation>
+<translation id="4248401726442101648">కెమెరా కనెక్ట్ కాలేదు</translation>
 <translation id="4249248555939881673">నెట్‌వర్క్ కనెక్షన్ కోసం వేచి ఉంది...</translation>
 <translation id="4249373718504745892">మీ కెమెరా మరియు మైక్రోఫోన్‌ను యాక్సెస్‌ చేయకుండా ఈ పేజీ బ్లాక్ చేయబడింది.</translation>
 <translation id="424963718355121712">యాప్‌లు తప్పనిసరిగా అవి ప్రభావితమయ్యే హోస్ట్ నుండి అందించబడాలి</translation>
@@ -4308,6 +4311,7 @@
 <translation id="4345457680916430965"><ph name="APP" />లో తెరవండి</translation>
 <translation id="4345587454538109430">కాన్ఫిగర్ చేయి...</translation>
 <translation id="4345732373643853732">సర్వర్‌కు వినియోగదారు పేరు తెలియదు</translation>
+<translation id="4346159263667201092">ఆప్షనల్ వివరాలను జోడించండి</translation>
 <translation id="4348426576195894795">ఈ ఖాతాను తీసివేస్తే, ఈ ఖాతాతో సైన్ ఇన్ అయిన Chrome ప్రొఫైల్స్ ఏవైనా ఉంటే, అవి కూడా తొలగించబడతాయి</translation>
 <translation id="4348766275249686434">లోపాలను సేకరించు</translation>
 <translation id="4349828822184870497">సహాయకరమైనవి</translation>
@@ -4392,6 +4396,7 @@
 <translation id="4406883609789734330">లైవ్ క్యాప్షన్</translation>
 <translation id="4407039574263172582">కొనసాగించడానికి, మీ పేరు, ఈమెయిల్ అడ్రస్, ప్రొఫైల్ ఫోటోను <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో షేర్ చేస్తుంది. ఈ సైట్ <ph name="BEGIN_LINK" />సర్వీస్ నియమాలను<ph name="END_LINK" /> చూడండి.</translation>
 <translation id="4408599188496843485">స&amp;హాయం</translation>
+<translation id="4408965460206576430">ఈ ఫైల్ మాల్‌వేర్‌ను కలిగి ఉంది లేదా అనుమానాస్పద సైట్ నుండి వచ్చింది</translation>
 <translation id="4409271659088619928">మీ సెర్చ్ ఇంజిన్ <ph name="DSE" />. వర్తిస్తే, మీ సెర్చ్ హిస్టరీని తొలగించడానికి దాని సూచనలను చూడండి.</translation>
 <translation id="4409697491990005945">సరిహద్దులు</translation>
 <translation id="4409779593816003679">పాస్‌వర్డ్‌లు, ఆటోఫిల్</translation>
@@ -10248,7 +10253,6 @@
 <translation id="9057354806206861646">షెడ్యూల్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{ఒక రోజులో సుమారు 1 నోటిఫికేషన్}other{ఒక రోజులో సుమారు {NUM_NOTIFICATION} నోటిఫికేషన్‌లు}}</translation>
 <translation id="9058760336383947367">ప్రింటర్ PPDని చూడండి</translation>
-<translation id="9060042817356580609">DNS ప్రొవైడర్‌ను ఎంచుకోండి</translation>
 <translation id="9061694916020926968">'Steam for Chromebook' (బీటా)ను ఉపయోగించడానికి మీరు ఒక Google ఖాతాకు సైన్ ఇన్ చేయాలి. సైన్ ఇన్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">పంక్తి <ph name="ERROR_LINE_START" /> నుండి <ph name="ERROR_LINE_END" /> వరకు ఎర్రర్</translation>

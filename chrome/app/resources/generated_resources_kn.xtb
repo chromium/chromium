@@ -4206,6 +4206,7 @@
 <translation id="4261429981378979799">ವಿಸ್ತರಣೆ ಅನುಮತಿಗಳು</translation>
 <translation id="4262004481148703251">ಎಚ್ಚರಿಕೆಯನ್ನು ವಜಾಗೊಳಿಸಿ</translation>
 <translation id="4263223596040212967">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ವಿನ್ಯಾಸವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="4265301768135164545">ನೀವು eSIM ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸಹ <ph name="BEGIN_LINK" />ಹಸ್ತಚಾಲಿತವಾಗಿ<ph name="END_LINK" /> ಸೆಟಪ್ ಮಾಡಬಹುದು</translation>
 <translation id="426564820080660648">ನವೀಕರಣಗಳಿಗಾಗಿ ಪರಿಶೀಲಿಸಲು, ದಯವಿಟ್ಟು ಇಥರ್ನೆಟ್, ವೈ-ಫೈ ಅಥವಾ ಮೊಬೈಲ್ ಡೇಟಾವನ್ನು ಬಳಸಿ.</translation>
 <translation id="426652736638196239">ಈ IBAN ಅನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರವೇ ಉಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="4266679478228765574">ಫೋಲ್ಡರ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿದರೆ, ಹಂಚಿಕೊಳ್ಳುವುದನ್ನು ನಿಲ್ಲಿಸಲಾಗುತ್ತದೆ ಆದರೆ ಫೈಲ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
@@ -9742,6 +9743,7 @@
 <translation id="8676313779986170923">ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿದ್ದಕ್ಕಾಗಿ ಧನ್ಯವಾದಗಳು.</translation>
 <translation id="8676374126336081632">ಇನ್‌ಪುಟ್‌‌ ತೆರವುಗೊಳಿಸು</translation>
 <translation id="8676770494376880701">ಕಡಿಮೆ ವಿದ್ಯುತ್ ಚಾರ್ಜರ್ ಸಂಪರ್ಕಪಡಿಸಲಾಗಿದೆ</translation>
+<translation id="8676985325915861058">ಸ್ಕಿಪ್ ಮಾಡಿ ಮತ್ತು ಹೊಸ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೆಟಪ್‌ ಮಾಡಿ</translation>
 <translation id="8677212948402625567">ಎಲ್ಲವನ್ನು ಕುಗ್ಗಿಸು...</translation>
 <translation id="8678192320753081984">ಉದ್ದೇಶಿತ ದಾಳಿಯ ಅಪಾಯದಲ್ಲಿರುವ ಜನರಿಗಾಗಿ Google ನ ಅತಿ ಪ್ರಬಲ ಖಾತೆಯು ಭದ್ರತೆಯನ್ನು ಒದಗಿಸುತ್ತದೆ</translation>
 <translation id="8678378565142776698">ಮರುಪ್ರಾರಂಭಿಸಿ ಮತ್ತು ಸ್ವಯಂಚಾಲಿತ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
@@ -10251,7 +10253,6 @@
 <translation id="9057354806206861646">ಅಪ್‌ಡೇಟ್ ವೇಳಾಪಟ್ಟಿ</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{ದಿನಕ್ಕೆ ಸುಮಾರು 1 ನೋಟಿಫಿಕೇಶನ್}one{ದಿನಕ್ಕೆ ಸುಮಾರು {NUM_NOTIFICATION} ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}other{ದಿನಕ್ಕೆ ಸುಮಾರು {NUM_NOTIFICATION} ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}}</translation>
 <translation id="9058760336383947367">ಪ್ರಿಂಟರ್ PPD ಅನ್ನು ವೀಕ್ಷಿಸಿ</translation>
-<translation id="9060042817356580609">DNS ಒದಗಿಸುವವರನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="9061694916020926968">Steam for Chromebook (ಬೀಟಾ) ಅನ್ನು ಬಳಸಲು, ನೀವು Google ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿರಬೇಕಾಗುತ್ತದೆ. ಸೈನ್ ಇನ್ ಮಾಡಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> ನೇ ಸಾಲಿನಿಂದ <ph name="ERROR_LINE_END" /> ನೇ ಸಾಲಿನವರೆಗೆ ದೋಷವಿದೆ</translation>

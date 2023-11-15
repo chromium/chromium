@@ -4197,6 +4197,7 @@
 <translation id="4261429981378979799">Ընդլայնման թույլտվություններ</translation>
 <translation id="4262004481148703251">Փակել նախազգուշացումը</translation>
 <translation id="4263223596040212967">Ստուգեք ստեղնաշարի դասավորությունը և նորից փորձեք։</translation>
+<translation id="4265301768135164545">Դուք կարող եք eSIM պրոֆիլը կարգավորել նաև <ph name="BEGIN_LINK" />ձեռքով<ph name="END_LINK" /></translation>
 <translation id="426564820080660648">Թարմացումների առկայությունն ստուգելու համար օգտագործեք Ethernet, Wi-Fi կամ տվյալների բջջային փոխանցում:</translation>
 <translation id="426652736638196239">IBAN-ը կպահվի միայն այս սարքում</translation>
 <translation id="4266679478228765574">Եթե պանակները ջնջեք, կհեռացվի միայն դրանց հասանելիությունը։ Ֆայլերը կպահպանվեն։</translation>
@@ -9732,6 +9733,7 @@
 <translation id="8676313779986170923">Շնորհակալություն արձագանքելու համար։</translation>
 <translation id="8676374126336081632">Մաքրել ներածումը</translation>
 <translation id="8676770494376880701">Կապակցվել է թույլ լիցքով լիցքավորիչ</translation>
+<translation id="8676985325915861058">Բաց թողնել և կարգավորել նոր պրոֆիլ</translation>
 <translation id="8677212948402625567">Կոծկել բոլորը…</translation>
 <translation id="8678192320753081984">Ապահովում է Google-ի՝ հաշիվների ամենահուսալի պաշտպանությունն այն մարդկանց համար, որոնք թիրախավորված հարձակման վտանգի տակ են</translation>
 <translation id="8678378565142776698">Վերագործարկել և ստանալ ավտոմատ թարմացումներ</translation>
@@ -10241,7 +10243,6 @@
 <translation id="9057354806206861646">Ժամանակացույցի թարմացում</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Օրական մոտ 1 ծանուցում}one{Օրական մոտ {NUM_NOTIFICATION} ծանուցում}other{Օրական մոտ {NUM_NOTIFICATION} ծանուցում}}</translation>
 <translation id="9058760336383947367">Դիտեք տպիչի PPD ֆայլը</translation>
-<translation id="9060042817356580609">Ընտրել DNS ծառայություններ մատուցողին</translation>
 <translation id="9061694916020926968">Դուք պետք է մուտք գործած լինեք Google հաշիվ, որպեսզի օգտագործեք Chromebook-ի համար Steam-ը (բետա)։ Մտեք հաշիվ և նորից փորձեք։</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Սխալ <ph name="ERROR_LINE_START" />-<ph name="ERROR_LINE_END" /> տողերում</translation>

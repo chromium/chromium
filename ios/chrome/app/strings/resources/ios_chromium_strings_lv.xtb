@@ -107,6 +107,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chromium datus 
 <translation id="5048795749726991615">Lai ērti iegūtu savas saglabātās paroles citās lietotnēs, izmantojiet pārlūku Chromium automātiskajai aizpildei.</translation>
 <translation id="5076601183701536878">Notīrīt pārlūkošanas datus pārlūkā Chromium</translation>
 <translation id="5131565040785979529">Jūsu organizācija (<ph name="DOMAIN" />) pārvalda kontu, kurā esat pierakstījies, un to, kā tiek izmantots pārlūks Chromium.</translation>
+<translation id="5146749061471423558">Grāmatzīmju pievienošana pārlūkā Chromium</translation>
 <translation id="5171868502429358653">Pierakstīšanās pārlūkprogrammā Chromium</translation>
 <translation id="5213683223491576284">Pārlūkā Chromium tiek atvērts paroļu pārvaldnieks.</translation>
 <translation id="5224391634244552924">Nav saglabātu paroļu. Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
@@ -114,6 +115,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chromium datus 
 
         Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, šie dati tiks dzēsti.</translation>
 <translation id="5308226104666789935">Pārlūkā Chromium nevar pārbaudīt atjauninājumu pieejamību.</translation>
+<translation id="5311557153294205270">Ievadītie URL tiek pievienoti jūsu grāmatzīmēm pārlūkā Chromium.</translation>
 <translation id="5396916991083608703">Vai iestatīt Chromium kā noklusējuma pārlūku?</translation>
 <translation id="5453478652154926037">Pārlūkā Chromium nevar pārbaudīt jūsu paroles.</translation>
 <translation id="5521125884468363740">Lai skatītu cilnes no visām ierīcēm, kurās izmantojat pārlūku Chromium, pierakstieties un ieslēdziet sinhronizāciju.</translation>

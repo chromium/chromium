@@ -313,6 +313,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1235924639474699896">{COUNT,plural, =1{texto}other{# textos}}</translation>
 <translation id="1236009322878349843">Edite o telemóvel</translation>
 <translation id="1239594683407221485">Explore o conteúdo do dispositivo na aplicação Ficheiros.</translation>
+<translation id="1239841552505950173">Iniciar aplicação</translation>
 <translation id="1240903469550363138">Para continuar, o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu nome, endereço de email e imagem do perfil com este site. Consulte a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />termos de utilização<ph name="END_LINK2" /> deste site.</translation>
 <translation id="1241066500170667906">Selecione o estado da experiência de <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Mais idiomas</translation>
@@ -461,6 +462,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1362865166188278099">Ocorreu um problema mecânico. Verifique a impressora.</translation>
 <translation id="1363585519747660921">É necessário configurar a impressora USB</translation>
 <translation id="136378536198524553">A Poupança de energia está ativada</translation>
+<translation id="136522805455656552">Para manter o seu dispositivo seguro, só deve executar e instalar software de origens e programadores fidedignos. <ph name="LEARN_MORE" /></translation>
 <translation id="1368603372088757436">O Linux não é suportado no seu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1370384480654163477">Veja e edite ficheiros da última vez que visitou este site:</translation>
 <translation id="1372841398847029212">Sincronizar com a sua conta</translation>
@@ -732,6 +734,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1572266655485775982">Ativar Wi-Fi</translation>
 <translation id="1572876035008611720">Introduza o seu email</translation>
 <translation id="1573127087832371028">Descreva o problema</translation>
+<translation id="1575036763505533001">Painel lateral da funcionalidade Personalizar o Chrome</translation>
 <translation id="1575741822946219011">Idiomas e métodos de introdução</translation>
 <translation id="1576594961618857597">Avatar branco predefinido</translation>
 <translation id="1576729678809834061">Denunciar este resultado da pesquisa</translation>
@@ -3158,6 +3161,7 @@ Quer pará-lo?</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3446274660183028131">Inicie o Parallels Desktop para instalar o Windows.</translation>
 <translation id="344630545793878684">Ler os seus dados em vários Sites</translation>
+<translation id="3446548199318150462">Ativa o novo design para computador. O painel lateral da funcionalidade Personalizar o Chrome também tem de estar ativado.</translation>
 <translation id="3447644283769633681">Bloquear todos os cookies de terceiros</translation>
 <translation id="3447797901512053632">A transmitir <ph name="TAB_NAME" /> para <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Atualizar conta</translation>
@@ -4248,6 +4252,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4298660926525614540">Nomes de dispositivos de armazenamento amovíveis</translation>
 <translation id="4299022904780065004">Nova janela de navegação anón&amp;ima</translation>
 <translation id="4301671483919369635">Esta página tem autorização para editar ficheiros</translation>
+<translation id="4301697210743228350">{COUNT,plural, =1{# contacto não está disponível. Para usar a funcionalidade <ph name="FEATURE_NAME" /> com este contacto, adicione o endereço de email associado à respetiva Conta Google aos seus contactos.}other{# contactos não estão disponíveis. Para usar a funcionalidade <ph name="FEATURE_NAME" /> com estes contactos, adicione os endereços de email associados às respetivas Contas Google aos seus contactos.}}</translation>
 <translation id="4303079906735388947">Configure um novo PIN para a sua chave de segurança.</translation>
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
 <translation id="4305402730127028764">Copiar para <ph name="DEVICE_NAME" /></translation>
@@ -4717,6 +4722,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4667027203988048332">Que dados são usados:</translation>
 <translation id="4668279686271488041">Os dados de medição de anúncios são eliminados regularmente do seu dispositivo</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4670909875730475086">Parabéns! A app <ph name="APP_NAME" /> foi instalada com êxito no seu dispositivo</translation>
 <translation id="4672759829555593783">Abrir <ph name="FILE_NAME" /> agora</translation>
 <translation id="4673442866648850031">Abra as ferramentas da caneta stylus quando a caneta stylus for removida</translation>
 <translation id="4673785607287397025">Problemas ao associar. Certifique-se de que o Chromecast e o computador estão na mesma rede e tente novamente.</translation>
@@ -5486,6 +5492,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5297082477358294722">Palavra-passe guardada. Veja e faça a gestão das palavras-passe guardadas em <ph name="SAVED_PASSWORDS_STORE" />.</translation>
 <translation id="5297946558563358707">Quando alguém olhar para o ecrã, mostrar o ícone de olho de privacidade na parte inferior direita do ecrã</translation>
 <translation id="5298219193514155779">Tema criado por</translation>
+<translation id="5298315677001348398">Quer continuar e permitir que este software faça alterações ao seu dispositivo?</translation>
 <translation id="5299109548848736476">Não monitorizar</translation>
 <translation id="5299558715747014286">Ver e gerir grupos de separadores</translation>
 <translation id="5300426565656326054">Personalização de anúncios com base no navegador</translation>
@@ -7985,9 +7992,11 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7328867076235380839">Combinação inválida.</translation>
 <translation id="7329154610228416156">O início de sessão falhou porque foi configurado para utilizar um URL não seguro (<ph name="BLOCKED_URL" />). Contacte o gestor.</translation>
+<translation id="7330533963640151632">Definições da funcionalidade <ph name="FEATURE_NAME" /> para o dispositivo de <ph name="USER_NAME" />, a partilhar com a conta <ph name="USER_EMAIL" />.</translation>
 <translation id="7331646370422660166">alt + seta para baixo</translation>
 <translation id="7332053360324989309">Trabalhador dedicado: <ph name="SCRIPT_URL" /></translation>
 <translation id="7333669215417470379">Faça uma cópia de segurança e restaure as apps e as definições</translation>
+<translation id="7335436113423103413">Ativa a capacidade de usar a funcionalidade Personalizar o Chrome a partir do painel lateral unificado na página Novo separador.</translation>
 <translation id="7335974957018254119">Usar o corretor ortográfico para</translation>
 <translation id="7336799713063880535">Notific. bloqueadas</translation>
 <translation id="7338630283264858612">O número de série do dispositivo é inválido.</translation>
@@ -8656,6 +8665,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7828642077514646543">Erro: não foi possível descodificar o certificado</translation>
 <translation id="7829877209233347340">Peça a um dos seus pais para lhe conceder autorização para adicionar uma conta escolar.</translation>
 <translation id="7830833461614351956">Copiar <ph name="NUM_OF_FILES" /> ficheiros para o <ph name="CLOUD_PROVIDER" /> para abrir?</translation>
+<translation id="783088158898934992">Idioma da app</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Se a Google encontrar um desconto, este será apresentado nesta página</translation>
 <translation id="7833720883933317473">As palavras personalizadas guardadas aparecem aqui</translation>
@@ -10245,7 +10255,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9057354806206861646">Programa de atualizações</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Cerca de 1 notificação por dia}other{Cerca de {NUM_NOTIFICATION} notificações por dia}}</translation>
 <translation id="9058760336383947367">Ver PPD da impressora</translation>
-<translation id="9060042817356580609">Selecionar fornecedor DNS</translation>
 <translation id="9061694916020926968">Tem de ter sessão iniciada numa Conta Google para usar o Steam para o Chromebook (beta). Inicie sessão e tente novamente.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Erro da linha <ph name="ERROR_LINE_START" /> até <ph name="ERROR_LINE_END" />.</translation>

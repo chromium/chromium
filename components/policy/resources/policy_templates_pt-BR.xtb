@@ -4100,6 +4100,13 @@ Quando ela é desativada, os usuários não podem rastrear as encomendas no <ph 
 <translation id="4389073105055031853">Permitir que os usuários gerenciem todos os certificados</translation>
 <translation id="4389091865841123886">Configurar a declaração remota com mecanismo TPM</translation>
 <translation id="4389113579547582722">Permitir que a promoção de avaliação na App Store seja mostrada</translation>
+<translation id="4395619678972620537">Se ativadas, as conexões de ponto WebRTC podem fazer downgrade para versões
+      obsoletas dos protocolos TLS/DTLS (DTLS 1.0, TLS 1.0 e TLS 1.1).
+      Quando esta política estiver desativada ou não for definida, essas versões TLS/DTLS serão
+      desativadas.
+
+      Esta política foi removida na versão M121 do
+      <ph name="PRODUCT_NAME" />.</translation>
 <translation id="439661169333921592">Desativar o destaque de foco do teclado na tela de login</translation>
 <translation id="4397045637922200204">Desativar a recuperação de conta</translation>
 <translation id="4397464099112037398">Configuração padrão da permissão para posicionamento de janelas</translation>
@@ -8623,6 +8630,19 @@ Aviso: recomendamos que você deixe as atualizações automáticas ativadas para
 <translation id="8102854005031553638">O visualizador de PDF usa o renderizador AGG.</translation>
 <translation id="8102913158860568230">Configuração padrão mediastream</translation>
 <translation id="8104962233214241919">Selecionar certificados de cliente automaticamente para estes sites</translation>
+<translation id="8106782817348995849">Esta política permite que os administradores restrinjam quais contas têm permissão para fazer login no <ph name="MICROSOFT_ONE_DRIVE_NAME" /> quando a <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> está ativada.
+
+Se esta política tiver o valor "<ph name="COMMON_NAME" />", qualquer conta poderá ser usada para fazer login.
+
+Se ela tiver o valor "<ph name="ORGANIZATIONS_NAME" />", será possível usar contas escolares ou de trabalho para fazer login.
+
+Se tiver o valor "<ph name="CONSUMER_NAME" />", contas pessoais da <ph name="MICROSOFT_NAME" /> poderão ser usadas para fazer login.
+
+Se a política tiver nomes de domínio ou IDs de locatário, as contas deles poderão ser usadas para fazer login. Acesse https://learn.microsoft.com/pt-br/azure/active-directory/develop/v2-protocols#endpoints para mais informações.
+
+Se a política for deixada sem definição ou tiver apenas um valor vazio, ela vai se comportar como se "<ph name="COMMON_NAME" />" estivesse especificada para usuários comuns. Para usuários corporativos, ela se comporta como se "<ph name="ORGANIZATIONS_NAME" />" estivesse especificado.
+
+Mudar a restrição pode fazer com que os usuários sejam desconectados da conta do <ph name="MICROSOFT_ONE_DRIVE_NAME" /> caso não cumpram as novas restrições.</translation>
 <translation id="8109762054721090517">Modelo do <ph name="IPP_ATTRIBUTE" /><ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
 <translation id="8111331908123507719">Configura por quantos segundos o dispositivo precisa ficar inativo antes de mostrar o protetor na tela de bloqueio.
 
@@ -8830,6 +8850,19 @@ Se a política for desativada, a página será bloqueada.</translation>
 <translation id="8269238942896230153">Uma conta gerenciada precisa ser a principal. A importação de dados de navegação existentes é permitida no momento da criação do perfil</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Ativar IUs relacionadas à conexão no computador host quando uma conexão estiver ativa</translation>
+<translation id="8272422063636310696">Controla se uma página que usa tecnologias legadas será informada com base no URL dela.
+
+Quando a política for definida, os URLs com o prefixo correspondente a uma entrada da lista de permissões serão usados no relatório gerado e enviados por upload. Os URLs sem correspondência serão ignorados.
+Quando a política for configurada como uma lista vazia ou deixada sem definição, nenhum relatório será gerado.
+
+Os padrões de correspondência usam um formato semelhante aos da política <ph name="URL_BLOCKLIST_POLICY_NAME" />, que estão documentados em https://support.google.com/chrome/a?p=url_blocklist_filter_format. Estas são algumas das exceções:
+ * Sem suporte a caractere curinga "*".
+ * O esquema, a porta e a consulta são ignorados.
+ * É possível adicionar no máximo 100 URLs à lista de permissões.
+
+No caso do <ph name="PRODUCT_NAME" />, esta política só é eficaz quando a máquina está registrada no <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
+
+Mais informações sobre tecnologias legadas podem ser encontradas em https://chromestatus.com/features.</translation>
 <translation id="8273183018575414926">Progressive Web Apps</translation>
 <translation id="8274603902181597201">Faz a limpeza do diretório inicial do ecryptfs do usuário e começa com um novo diretório inicial ext4-encrypted.</translation>
 <translation id="8274926413890711289">Ativar controles de geração de relatórios granulares</translation>

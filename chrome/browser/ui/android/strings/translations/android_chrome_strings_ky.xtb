@@ -502,6 +502,7 @@
 <translation id="371230970611282515">Кооптуу нерселер орун алганга чейин аларды аныктап, сизге кабарлап турат.</translation>
 <translation id="3714981814255182093">Издөө тилкесин ачуу</translation>
 <translation id="3716182511346448902">Бул барак өтө көп эстутум колдонгондуктан Chrome аны тындырды.</translation>
+<translation id="3720422586473670527">Жок, рахмат</translation>
 <translation id="3721119614952978349">Сиз жана Google</translation>
 <translation id="3737319253362202215">Которуу параметрлери</translation>
 <translation id="3737402728074743863">Бул түзмөктү коопсуздук ачкычы катары колдонуу үчүн экранды кулпулоону иштетиңиз</translation>
@@ -799,6 +800,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Файл жүктөлүп алынууда…}other{# файл жүктөлүп алынууда…}}</translation>
 <translation id="5210286577605176222">Мурунку өтмөккө секирүү</translation>
 <translation id="5210365745912300556">Өтмөктү жабуу</translation>
+<translation id="5216863793077689658">Барактын статистикасындагы аракеттериңиз <ph name="BEGIN_LINK" />Google аккаунтуңузда<ph name="END_LINK" /> сакталат.</translation>
 <translation id="5222676887888702881">Чыгуу</translation>
 <translation id="5226378907213531272">Унааны колдонгон сайын экраныңыздын кулпусун ачасыз</translation>
 <translation id="5227554086496586518">Издөө натыйжаларын көрүү үчүн таптап коюңуз</translation>

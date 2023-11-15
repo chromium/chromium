@@ -224,6 +224,7 @@
 <translation id="5352264705793813212">У нас есть несколько рекомендаций по безопасности во время работы в Chromium</translation>
 <translation id="5358375970380395591">Выполнив вход в управляемый аккаунт, вы предоставляете администратору право контролировать настройки вашего профиля Chromium. Ваши данные Chromium (приложения, закладки, история, пароли и другие настройки) будут временно связаны с аккаунтом <ph name="USER_NAME" />. Эти данные можно удалить в Личном кабинете Google, но их нельзя связать с другим аккаунтом. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Дополнительный код: <ph name="EXTRA_CODE" />.</translation>
+<translation id="5383439451358640070">Узнайте, почему Chromium блокирует скачивание некоторых файлов</translation>
 <translation id="5386450000063123300">Обновление Chromium (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="538767207339317086">Разрешить вход в Chromium</translation>
 <translation id="5398878173008909840">Доступна новая версия Chromium.</translation>
@@ -391,6 +392,7 @@
 <translation id="800195749539500647">Максимально эффективная работа с Chromium</translation>
 <translation id="8013436988911883588">Когда вы предоставите доступ Chromium, веб-сайты также смогут запрашивать у вас доступ.</translation>
 <translation id="80471789339884597">Спасибо, что установили <ph name="BUNDLE_NAME" />. Чтобы изменения вступили в силу, перезапустите все открытые браузеры.</translation>
+<translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome для тестирования</translation>
 <translation id="8105840573057009683">Браузер Chromium запрашивает доступ к данным о местоположении для этого сайта.</translation>
 <translation id="8133124826068723441">Не удалось синхронизировать данные, так как эта функция недоступна для вашего домена.</translation>
 <translation id="813913629614996137">Инициализация...</translation>

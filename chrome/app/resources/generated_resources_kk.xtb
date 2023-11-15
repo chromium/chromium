@@ -838,6 +838,7 @@
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" /> желісіне қатысты басқа әрекеттер</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Дұрыс форматталмағандықтан, тағы 1 құпия сөз импортталмады.}other{Дұрыс форматталмағандықтан, тағы {NUM_PASSWORDS} құпия сөз импортталмады.}}</translation>
+<translation id="1642299742557467312">Бұл файл құрылғыңызға зиян тигізуі мүмкін</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> және тағы <ph name="NUMBER_OF_DEVICES" /> Bluetooth құрылғысына қосылды.</translation>
 <translation id="1642494467033190216">Басқа түзету мүмкіндтерін қосудан бұрын түпкі қорғанысты алып тастау және қайта іске қосу қажет.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA, SHA-1 алгоритмімен қол қою</translation>
@@ -4069,6 +4070,7 @@
 <translation id="4148195018520464922">Аккаунтқа кіруге тек белгілі бір пайдаланушыларға рұқсат бере аласыз. Бұл жағдайда аккаунтқа кіру экранында "Адам қосу" опциясы өшеді. Ағымдағы пайдаланушыларды да өшіруге болады.</translation>
 <translation id="4148957013307229264">Орнатылуда…</translation>
 <translation id="4150201353443180367">Дисплей</translation>
+<translation id="4150417452770391330">Камера жалғау</translation>
 <translation id="4150569944729499860">Экран контексі</translation>
 <translation id="4151449637210235443">Бізге соңғы геймплейіңіз туралы айтып беріңіз</translation>
 <translation id="4151503145138736576">Офлайн жад көлемі бос.</translation>
@@ -4169,6 +4171,7 @@
 <translation id="4244238649050961491">Басқа да стилус қолданбаларын табу</translation>
 <translation id="4246980464509998944">Қосымша пікір:</translation>
 <translation id="424726838611654458">Әрқашан Adobe Reader қолданбасында ашу</translation>
+<translation id="4248401726442101648">Ешқандай камера жалғанбады</translation>
 <translation id="4249248555939881673">Желі байланысы күтілуде…</translation>
 <translation id="4249373718504745892">Бұл бетке камераңыз бен микрофоныңызды пайдалануға тыйым салынған.</translation>
 <translation id="424963718355121712">Қолданбаларға олар қолданылатын хостан қызмет көрсетілуі керек</translation>
@@ -4292,6 +4295,7 @@
 <translation id="4345457680916430965"><ph name="APP" /> қолданбасында &amp;ашу</translation>
 <translation id="4345587454538109430">Конфигурациялау…</translation>
 <translation id="4345732373643853732">Пайдаланушы аты серверден табылмады.</translation>
+<translation id="4346159263667201092">Қосымша мәліметтер қосу</translation>
 <translation id="4348426576195894795">Бұл аккаунтты өшірсеңіз, осы аккаунт арқылы кірген барлық Chrome профильдері де жойылады.</translation>
 <translation id="4348766275249686434">Қателерді жинау</translation>
 <translation id="4349828822184870497">Пайдалы</translation>
@@ -4376,6 +4380,7 @@
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4407039574263172582">Жалғастыру үшін <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аты-жөніңізді, электрондық мекенжайыңызды және профиль суретіңізді осы сайтпен бөліседі. Сайттың <ph name="BEGIN_LINK" />қызмет көрсету шарттарын<ph name="END_LINK" /> қараңыз.</translation>
 <translation id="4408599188496843485">А&amp;нықтама</translation>
+<translation id="4408965460206576430">Бұл файл зиянды бағдарламадан тұрады немесе күдікті сайттан келеді.</translation>
 <translation id="4409271659088619928">Іздеу жүйесі — <ph name="DSE" />. Қажет болса, ондағы іздеу тарихын жою туралы нұсқауларды қараңыз.</translation>
 <translation id="4409697491990005945">Жиектер</translation>
 <translation id="4409779593816003679">Құпия сөздер және автотолтыру</translation>
@@ -10229,7 +10234,6 @@
 <translation id="9057354806206861646">Кестені жаңарту</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Күніне шамамен 1 хабарландыру}other{Күніне шамамен {NUM_NOTIFICATION} хабарландыру}}</translation>
 <translation id="9058760336383947367">Принтердің PPD файлын көру</translation>
-<translation id="9060042817356580609">DNS қызмет көрсетушісін таңдау</translation>
 <translation id="9061694916020926968">Steam for Chromebook (бета) қолданбасын пайдалану үшін Google аккаунтына кіруіңіз керек. Аккаунтқа кіріп, әрекетті қайталаңыз.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> - <ph name="ERROR_LINE_END" /> аралығындағы жолдарда қате шықты</translation>

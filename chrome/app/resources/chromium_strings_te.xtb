@@ -224,6 +224,7 @@
 <translation id="5352264705793813212">Chromium మీ రివ్యూ కోసం కొన్ని భద్రతా సిఫార్సులను కనుగొంది</translation>
 <translation id="5358375970380395591">మీరు నిర్వహించబడే ఖాతాతో సైన్ ఇన్ చేస్తున్నారు. దీని నిర్వాహకునికి మీ Chromium ప్రొఫైల్‌పై నియంత్రణను అందిస్తున్నారు. మీ యాప్‌లు, బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు, ఇతర సెట్టింగ్‌ల వంటి మీ Chromium డేటా శాశ్వతంగా <ph name="USER_NAME" />కు అనుబంధించబడుతుంది. మీరు Google ఖాతాల డ్యాష్‌బోర్డ్ ద్వారా ఈ డేటాను తొలగించవచ్చు. కానీ ఈ డేటాను మరో ఖాతాతో అనుబంధించలేరు. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">అదనపు కోడ్: <ph name="EXTRA_CODE" />.</translation>
+<translation id="5383439451358640070">Chromium కొన్ని ఫైల్స్‌ను ఎందుకు బ్లాక్ చేస్తుందో తెలుసుకోండి</translation>
 <translation id="5386450000063123300">Chromium నవీకరించబడుతోంది (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium సైన్-ఇన్‌ని అనుమతించండి</translation>
 <translation id="5398878173008909840">కొత్త Chromium వెర్షన్ అందుబాటులో ఉంది.</translation>
@@ -392,6 +393,7 @@
 <translation id="800195749539500647">Chromium నుండి అత్యధిక ప్రయోజనాలను పొందండి</translation>
 <translation id="8013436988911883588">ఓసారి Chromiumకి యాక్సెస్ లభించాక, ఆపై వెబ్‌సైట్‌లకు ఏమైనా యాక్సెస్‌ కావాలంటే అవి మిమ్మల్ని అడగవచ్చు.</translation>
 <translation id="80471789339884597">ఇన్‌స్టాల్ చేసినందుకు ధన్యవాదాలు. <ph name="BUNDLE_NAME" />‌ను ఉపయోగించే ముందు మీరు తప్పకుండా మీ అన్ని బ్రౌజర్‌లను రీస్టార్ట్ చేయాలి.</translation>
+<translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>
 <translation id="8105840573057009683">ఈ సైట్ కోసం Chromiumకు లొకేషన్ అనుమతి అవసరం</translation>
 <translation id="8133124826068723441">మీ డొమైన్ కోసం సింక్ అందుబాటులో లేనందున, ChromiumOS మీ డేటాను సింక్ చేయలేకపోయింది.</translation>
 <translation id="813913629614996137">ప్రారంభిస్తోంది...</translation>

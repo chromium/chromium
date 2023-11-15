@@ -4212,6 +4212,7 @@
 <translation id="4261429981378979799">एक्सटेंशन की अनुमतियां</translation>
 <translation id="4262004481148703251">चेतावनी खारिज करें</translation>
 <translation id="4263223596040212967">अपना कीबोर्ड लेआउट जांचें और फिर से कोशिश करें.</translation>
+<translation id="4265301768135164545">ई-सिम प्रोफ़ाइल को <ph name="BEGIN_LINK" />मैन्युअल तरीके<ph name="END_LINK" /> से भी सेट अप किया जा सकता है</translation>
 <translation id="426564820080660648">अपडेट की जाँच करने के लिए, कृपया Ethernet या वाई-फ़ाई का उपयोग करें.</translation>
 <translation id="426652736638196239">इस IBAN को सिर्फ़ इस डिवाइस पर सेव किया जाएगा</translation>
 <translation id="4266679478228765574">फ़ोल्डर हटाने से फ़ाइलें शेयर नहीं हो पाएंगी, लेकिन फ़ाइलें मिटेंगी नहीं.</translation>
@@ -9749,6 +9750,7 @@
 <translation id="8676313779986170923">फ़ीडबैक (सुझाव, शिकायत या राय) भेजने के लिए धन्यवाद.</translation>
 <translation id="8676374126336081632">इनपुट साफ़ करें</translation>
 <translation id="8676770494376880701">कम-शक्ति वाला चार्जर</translation>
+<translation id="8676985325915861058">स्किप करें और नई प्रोफ़ाइल सेट अप करें</translation>
 <translation id="8677212948402625567">सभी को छोटा करें...</translation>
 <translation id="8678192320753081984">इससे, उन लोगों के खातों के लिए Google की सबसे मज़बूत सुरक्षा मिलती है जिन पर निशाना बनाकर किए जाने वाले हमलों का खतरा बना रहता है</translation>
 <translation id="8678378565142776698">रीस्टार्ट करें और अपने-आप अपडेट होने की सुविधा पाएं</translation>
@@ -10258,7 +10260,6 @@
 <translation id="9057354806206861646">शेड्यूल को अपडेट करें</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{एक दिन में करीब 1 सूचना}one{एक दिन में करीब {NUM_NOTIFICATION} सूचना}other{एक दिन में करीब {NUM_NOTIFICATION} सूचनाएं}}</translation>
 <translation id="9058760336383947367">प्रिंटर के लिए पीपीडी फ़ाइल देखें</translation>
-<translation id="9060042817356580609">डीएनएस प्रोवाइडर चुनें</translation>
 <translation id="9061694916020926968">Steam for Chromebook (बीटा वर्शन) का इस्तेमाल करने के लिए, आपको Google खाते में साइन-इन करना होगा. साइन इन करके फिर से कोशिश करें.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">लाइन <ph name="ERROR_LINE_START" /> से <ph name="ERROR_LINE_END" /> तक में गड़बड़ी</translation>

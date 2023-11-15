@@ -4209,6 +4209,7 @@
 <translation id="4261429981378979799">এক্সটেনশ্বনৰ অনুমতি</translation>
 <translation id="4262004481148703251">সকীয়নি অগ্ৰাহ্য কৰক</translation>
 <translation id="4263223596040212967">আপোনাৰ কীব'ৰ্ডৰ লে’আউট পৰীক্ষা কৰক আৰু আকৌ চেষ্টা কৰক</translation>
+<translation id="4265301768135164545">আপুনি এটা ই-ছিমৰ প্ৰ’ফাইল <ph name="BEGIN_LINK" />মেনুৱেলীও<ph name="END_LINK" /> ছেট আপ কৰিব পাৰে</translation>
 <translation id="426564820080660648">আপডে‘ট আছে নেকি চাবলৈ ইথাৰনেট, ৱাই-ফাই বা ম’বাইল ডেটা ব্যৱহাৰ কৰক।</translation>
 <translation id="426652736638196239">এই IBANটো কেৱল এই ডিভাইচটোতহে ছেভ কৰা হ’ব</translation>
 <translation id="4266679478228765574">ফল্ডাৰসমূহ আঁতৰালে শ্বেয়াৰ কৰা কার্যটো বন্ধ হ'ব কিন্তু ফাইল মচা নাযায়।</translation>
@@ -9746,6 +9747,7 @@
 <translation id="8676313779986170923">মতামত পঠিওৱাৰ বাবে ধন্যবাদ।</translation>
 <translation id="8676374126336081632">ইনপুট মচক</translation>
 <translation id="8676770494376880701">কম শক্তিযুক্ত চ্চাৰ্জাৰ সংযোগ কৰা হৈছে</translation>
+<translation id="8676985325915861058">এৰি যাওক আৰু নতুন প্ৰ’ফাইল ছেট আপ কৰক</translation>
 <translation id="8677212948402625567">সকলো সংকোচন কৰক...</translation>
 <translation id="8678192320753081984">উদ্দেশ্য কৰি কৰা আক্ৰমণৰ বিপদাশংকা থকা লোকসকলৰ বাবে Googleৰ আটাইতকৈ শক্তিশালী একাউণ্টৰ সুৰক্ষা প্ৰদান কৰে</translation>
 <translation id="8678378565142776698">ৰিষ্টাৰ্ট কৰক আৰু স্বয়ংক্ৰিয় আপডে’ট লাভ কৰক</translation>
@@ -10255,7 +10257,6 @@
 <translation id="9057354806206861646">সময়সূচী আপডে’ট কৰক</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{এদিনত প্ৰায় ১ খন জাননী}one{এদিনত প্ৰায় {NUM_NOTIFICATION} খন জাননী}other{এদিনত প্ৰায় {NUM_NOTIFICATION} খন জাননী}}</translation>
 <translation id="9058760336383947367">প্ৰিণ্টাৰ PPD চাওক</translation>
-<translation id="9060042817356580609">DNS প্ৰদানকাৰী</translation>
 <translation id="9061694916020926968">Chromebook (বিটা)ৰ বাবে Steam ব্যৱহাৰ কৰিবলৈ আপুনি এটা Google একাউণ্টত ছাইন ইন কৰিব লাগিব। ছাইন ইন কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="9062468308252555888">১৪x</translation>
 <translation id="9063208415146866933">লাইন <ph name="ERROR_LINE_START" />ৰপৰা <ph name="ERROR_LINE_END" />লৈ কিবা আসোঁৱাহ আছে</translation>

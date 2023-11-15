@@ -68,7 +68,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="1295289763199166823">Menyuni sozlash</translation>
 <translation id="1305822519689023679">Google hisobingizdagi parollardan istalgan vaqt foydalanish uchun shaxsingizni tasdiqlang.</translation>
 <translation id="1312721752506309252">Kengaytirilgan himoya yoniq</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Bu paketni kuzatish}other{Barcha paketlarni kuzatish}}</translation>
 <translation id="1321993286294231467">Rasm saqlanmadi.</translation>
 <translation id="1322735045095424339">Tashkilotingiz Inkognito rejimda ishlashni talab qiladi</translation>
 <translation id="1323735185997015385">O‘chirish</translation>
@@ -655,7 +654,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4489536976005181779">{count,plural, =1{Hisobingizdagi ({email}) mutolaa roʻyxatiga sahifa kiritildi.}other{Hisobingizdagi ({email}) mutolaa roʻyxatiga sahifalar kiritildi.}}</translation>
 <translation id="4493604894403585654"><ph name="USER_EMAIL" /> nomidan kirgansiz. Sinxronlashni istalgan vaqt sozlamalar orqali toʻxtatish mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
 <translation id="4502566650163919158">Hozir tekshirish</translation>
-<translation id="4505980578794259603">Oxirgi marta: <ph name="TIME" /> da tekshirilgan.</translation>
 <translation id="4508750114462689118">Kirish reklamasini yopish</translation>
 <translation id="4514889972748124117">Ishonchli parol yaratish...</translation>
 <translation id="4520798012560649652">Inkognito rejimi haqida batafsil</translation>
@@ -1059,7 +1057,6 @@ Maʼlumotlaringiz kodli ibora bilan shifrlangan. Chrome maʼlumotlarini Google h
 
 Har bir sayt uchun alohida parol ishlating.</translation>
 <translation id="6497850081273517953">Chrome eskirgan. Xavfsiz qolish uchun oxirgi versiyaga yangilang.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Bu paketni kuzatishni bekor qilish}other{Barcha paketlarni kuzatishni bekor qilish}}</translation>
 <translation id="650279896687777322">Batafsil...</translation>
 <translation id="6507973708545996744">Oʻqish roʻyxatini barcha qurilmalarda ochish uchun hisobga kiring.</translation>
 <translation id="6510072653668207258">Keyinroq eslatilsin</translation>

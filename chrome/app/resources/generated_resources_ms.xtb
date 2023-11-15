@@ -4212,6 +4212,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4261429981378979799">Kebenaran sambungan</translation>
 <translation id="4262004481148703251">Ketepikan amaran</translation>
 <translation id="4263223596040212967">Semak reka letak papan kekunci anda dan cuba lagi.</translation>
+<translation id="4265301768135164545">Anda juga boleh menyediakan profil eSIM <ph name="BEGIN_LINK" />secara manual<ph name="END_LINK" /></translation>
 <translation id="426564820080660648">Untuk menyemak kemas kini, sila gunakan Ethernet, Wi-Fi atau data mudah alih.</translation>
 <translation id="426652736638196239">IBAN ini akan disimpan pada peranti ini sahaja</translation>
 <translation id="4266679478228765574">Tindakan mengalih keluar folder akan menghentikan perkongsian tetapi tidak akan memadamkan fail.</translation>
@@ -9750,6 +9751,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8676313779986170923">Terima kasih kerana menghantar maklum balas.</translation>
 <translation id="8676374126336081632">Kosongkan input</translation>
 <translation id="8676770494376880701">Pengecas berkuasa rendah disambungkan</translation>
+<translation id="8676985325915861058">Langkau &amp; sediakan profil baharu</translation>
 <translation id="8677212948402625567">Runtuhkan semua...</translation>
 <translation id="8678192320753081984">Memberikan keselamatan akaun paling kukuh Google untuk individu yang berisiko mendapat serangan bertumpu</translation>
 <translation id="8678378565142776698">Mulakan semula dan dapatkan kemaskinian automatik</translation>
@@ -10258,7 +10260,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="9057354806206861646">Kemas kini jadual</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Kira-kira 1 pemberitahuan sehari}other{Kira-kira {NUM_NOTIFICATION} pemberitahuan sehari}}</translation>
 <translation id="9058760336383947367">Lihat PPD pencetak</translation>
-<translation id="9060042817356580609">Pilih Penyedia DNS</translation>
 <translation id="9061694916020926968">Anda perlu log masuk ke Google Account untuk menggunakan Steam untuk Chromebook (Beta). Log masuk dan cuba lagi.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Ralat daripada baris <ph name="ERROR_LINE_START" /> hingga <ph name="ERROR_LINE_END" /></translation>

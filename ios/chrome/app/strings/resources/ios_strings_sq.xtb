@@ -68,7 +68,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="1295289763199166823">Personalizo menynë</translation>
 <translation id="1305822519689023679">Për t'u siguruar që mund t'i përdorësh gjithmonë fjalëkalimet në "Llogarinë tënde të Google" verifiko që je ti</translation>
 <translation id="1312721752506309252">Mbrojtja e përmirësuar është aktive</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Gjurmo këtë pako}other{Gjurmo të gjitha pakot}}</translation>
 <translation id="1321993286294231467">Gabim në ruajtjen e imazhit.</translation>
 <translation id="1322735045095424339">Organizata jote kërkon modalitetin "e fshehtë"</translation>
 <translation id="1323735185997015385">Fshi</translation>
@@ -655,7 +654,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4489536976005181779">{count,plural, =1{Faqja u shtua në listën e leximit në llogarinë tënde, {email}}other{Faqet u shtuan në listën e leximit në llogarinë tënde, {email}}}</translation>
 <translation id="4493604894403585654">Je i identifikuar si <ph name="USER_EMAIL" />. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="4502566650163919158">Kontrollo tani</translation>
-<translation id="4505980578794259603">Kontrolli i fundit: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Mbyll promocionin për identifikimin</translation>
 <translation id="4514889972748124117">Sugjero një fjalëkalim të fortë...</translation>
 <translation id="4520798012560649652">Mëso më shumë për modalitetin "e fshehtë"</translation>
@@ -1059,7 +1057,6 @@ Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë
 
 Provo të përdorësh një fjalëkalim unik për çdo sajt.</translation>
 <translation id="6497850081273517953">Chrome është i papërditësuar, përditësoje me versionin më të fundit për të qëndruar i sigurt.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Anulo gjurmimin e kësaj pakoje}other{Anulo gjurmimin e të gjitha pakove}}</translation>
 <translation id="650279896687777322">Mëso më shumë...</translation>
 <translation id="6507973708545996744">Identifikohu për të marrë listën tënde të leximit në të gjitha pajisjet e tua.</translation>
 <translation id="6510072653668207258">Më kujto më vonë</translation>
@@ -1216,6 +1213,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7367530036083223701">Qasu në mënyrë të sigurt në fjalëkalimet e tua nga ekrani bazë me miniaplikacionin "Menaxheri i fjalëkalimeve".</translation>
 <translation id="7380220816562673297">Për momentin, mund t'i ndash fjalëkalimet vetëm me anëtarët e familjes. <ph name="BEGIN_LINK" />Krijo një grup të familjes<ph name="END_LINK" /> me deri në 6 anëtarë dhe merr më shumë nga produktet dhe abonimet e tua nëpër Google.</translation>
 <translation id="7383797227493018512">Lista e leximit</translation>
+<translation id="739101637685146669">Cilën URL dëshiron të shtosh te faqeshënuesit?</translation>
 <translation id="7396331865858820922">Fjalëkalimi nuk është ndarë</translation>
 <translation id="7398893703713203428">Krijo një lidhje</translation>
 <translation id="7399802613464275309">Kontrolli i sigurisë</translation>
@@ -1451,6 +1449,7 @@ Të dhënat e tua janë enkriptuar me frazën tënde të kalimit më <ph name="T
 <translation id="8591976964826315682">Blloko kukit e palëve të treta në modalitetin "i fshehtë"</translation>
 <translation id="8593565399399144771">Mund të hapësh një skedë të re këtu.</translation>
 <translation id="8605219856220328675">Mbylle skedën</translation>
+<translation id="8609743333007776886">Shto ${url} te faqeshënuesit</translation>
 <translation id="8613883225817609844">Fshih "Skedat e fundit"</translation>
 <translation id="8620640915598389714">Redakto</translation>
 <translation id="8624447588354561276">Numri i pakos</translation>

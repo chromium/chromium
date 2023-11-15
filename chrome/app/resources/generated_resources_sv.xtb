@@ -844,6 +844,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1641113438599504367">Säker webbsökning</translation>
 <translation id="1641496881756082050">Fler åtgärder för <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 annat lösenord importerades inte eftersom det hade fel format}other{{NUM_PASSWORDS} andra lösenord importerades inte eftersom de hade fel format}}</translation>
+<translation id="1642299742557467312">Den här filen kan skada enheten</translation>
 <translation id="1642492862748815878">Ansluten till <ph name="DEVICE" /> och <ph name="NUMBER_OF_DEVICES" /> andra Bluetooth-enheter</translation>
 <translation id="1642494467033190216">Borttagning av rootfs-skydd och omstart krävs innan du kan aktivera andra felsökningsfunktioner.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA-signatur med SHA-1</translation>
@@ -4087,6 +4088,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4148195018520464922">Du kan begränsa inloggning så att det bara är tillgängligt för vissa användare. Då tas alternativet Lägg till person bort från inloggningsskärmen. Du kan även ta bort befintliga användare.</translation>
 <translation id="4148957013307229264">Installerar...</translation>
 <translation id="4150201353443180367">Skärm</translation>
+<translation id="4150417452770391330">Anslut en kamera</translation>
 <translation id="4150569944729499860">Innehållet på skärmen</translation>
 <translation id="4151449637210235443">Berätta om din senaste spelupplevelse</translation>
 <translation id="4151503145138736576">Det finns inget offlinelagringsutrymme att rensa</translation>
@@ -4187,6 +4189,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4244238649050961491">Hitta fler appar för e-penna</translation>
 <translation id="4246980464509998944">Fler kommentarer:</translation>
 <translation id="424726838611654458">Öppna alltid i Adobe Reader</translation>
+<translation id="4248401726442101648">Ingen kamera är ansluten</translation>
 <translation id="4249248555939881673">Väntar på nätverksanslutning ...</translation>
 <translation id="4249373718504745892">Den här sidan har blockerats och kan inte komma åt kameran och mikrofonen.</translation>
 <translation id="424963718355121712">Appar måste visas från värden de är kopplade till</translation>
@@ -4209,6 +4212,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4261429981378979799">Behörigheter för tillägg</translation>
 <translation id="4262004481148703251">Ignorera varning</translation>
 <translation id="4263223596040212967">Kontrollera tangentbordslayouten och försök igen.</translation>
+<translation id="4265301768135164545">Du kan även konfigurera en eSIM-profil <ph name="BEGIN_LINK" />manuellt<ph name="END_LINK" />.</translation>
 <translation id="426564820080660648">Använd Ethernet, wifi eller mobildata om du vill söka efter uppdateringar.</translation>
 <translation id="426652736638196239">Detta IBAN-nummer sparas enbart på den här enheten</translation>
 <translation id="4266679478228765574">Om mappar tas bort avbryts delningen, men inga filer raderas.</translation>
@@ -4309,6 +4313,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4345457680916430965">&amp;Öppna i <ph name="APP" /></translation>
 <translation id="4345587454538109430">Konfigurera...</translation>
 <translation id="4345732373643853732">Användarnamnet är okänt på servern</translation>
+<translation id="4346159263667201092">Lägg till information (valfritt)</translation>
 <translation id="4348426576195894795">Om du tar bort det här kontot raderas även alla Chrome-profiler där du loggat in med kontot</translation>
 <translation id="4348766275249686434">Samla in fel</translation>
 <translation id="4349828822184870497">Användbart</translation>
@@ -4393,6 +4398,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4407039574263172582"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar ditt namn, din e-postadress och din profilbild med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK" />användarvillkor<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">H&amp;jälp</translation>
+<translation id="4408965460206576430">Den här filen innehåller skadlig programvara eller kommer från en misstänkt webbplats</translation>
 <translation id="4409271659088619928">Du använder <ph name="DSE" /> som sökmotor. Läs den sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</translation>
 <translation id="4409697491990005945">Marginaler</translation>
 <translation id="4409779593816003679">Lösenord och autofyll</translation>
@@ -9744,6 +9750,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8676313779986170923">Tack för att du skickar feedback.</translation>
 <translation id="8676374126336081632">Radera inmatning</translation>
 <translation id="8676770494376880701">Laddare med låg effekt ansluten</translation>
+<translation id="8676985325915861058">Hoppa över och konfigurera en ny profil</translation>
 <translation id="8677212948402625567">Dölj alla...</translation>
 <translation id="8678192320753081984">Ger Googles starkaste kontoskydd för personer som löper risk att bli utsatta för riktade attacker</translation>
 <translation id="8678378565142776698">Starta om och få automatiska uppdateringar</translation>
@@ -10252,7 +10259,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="9057354806206861646">Uppdateringsschema</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Cirka 1 avisering om dagen}other{Cirka {NUM_NOTIFICATION} aviseringar om dagen}}</translation>
 <translation id="9058760336383947367">Se skrivarens PPD-fil</translation>
-<translation id="9060042817356580609">Välj DNS-leverantör</translation>
 <translation id="9061694916020926968">Du måste vara inloggad på ett Google-konto för att använda Steam för Chromebook (beta). Logga in och försök igen.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Fel på rad <ph name="ERROR_LINE_START" /> till och med <ph name="ERROR_LINE_END" /></translation>

@@ -10247,7 +10247,6 @@
 <translation id="9057354806206861646">Ажурирајте распоред</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Око 1 обавештење дневно}one{Око {NUM_NOTIFICATION} обавештење дневно}few{Око {NUM_NOTIFICATION} обавештења дневно}other{Око {NUM_NOTIFICATION} обавештења дневно}}</translation>
 <translation id="9058760336383947367">Прикажи PPD штампача</translation>
-<translation id="9060042817356580609">Изаберите DNS добављача</translation>
 <translation id="9061694916020926968">Морате да будете пријављени на Google налог да бисте користили Steam за Chromebook (бета). Пријавите се и пробајте поново.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Грешка од <ph name="ERROR_LINE_START" />. до <ph name="ERROR_LINE_END" />. реда</translation>

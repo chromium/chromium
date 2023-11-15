@@ -4208,6 +4208,7 @@
 <translation id="4261429981378979799">擴充程式權限</translation>
 <translation id="4262004481148703251">關閉警告</translation>
 <translation id="4263223596040212967">請檢查您的鍵盤版面配置，然後再試一次。</translation>
+<translation id="4265301768135164545">你亦可<ph name="BEGIN_LINK" />手動<ph name="END_LINK" />設定 eSIM 設定檔</translation>
 <translation id="426564820080660648">如要檢查更新，請使用乙太網絡、Wi-Fi 或流動數據。</translation>
 <translation id="426652736638196239">此 IBAN 只會儲存在此裝置上</translation>
 <translation id="4266679478228765574">移除資料夾會停止與他人共用檔案，但不會刪除檔案。</translation>
@@ -9742,6 +9743,7 @@
 <translation id="8676313779986170923">多謝您提供意見。</translation>
 <translation id="8676374126336081632">清除輸入</translation>
 <translation id="8676770494376880701">已連接低功率充電器</translation>
+<translation id="8676985325915861058">略過並設定新的設定檔</translation>
 <translation id="8677212948402625567">全部收合…</translation>
 <translation id="8678192320753081984">為容易受針對性攻擊的使用者提供 Google 最強大的帳戶安全防護功能</translation>
 <translation id="8678378565142776698">重新啟動並取得自動更新</translation>
@@ -10250,7 +10252,6 @@
 <translation id="9057354806206861646">更新時間表</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{每天約傳送 1 則通知}other{每天約傳送 {NUM_NOTIFICATION} 則通知}}</translation>
 <translation id="9058760336383947367">查看打印機 PPD</translation>
-<translation id="9060042817356580609">選取 DNS 供應商</translation>
 <translation id="9061694916020926968">您需要登入 Google 帳戶，才能使用 Chromebook 版 Steam (Beta 版本)。請登入帳戶，然後再試一次。</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933">第<ph name="ERROR_LINE_START" />至第<ph name="ERROR_LINE_END" />行有錯</translation>

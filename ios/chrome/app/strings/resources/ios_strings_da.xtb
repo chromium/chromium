@@ -68,7 +68,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="1295289763199166823">Tilpas menu</translation>
 <translation id="1305822519689023679">Verificer din identitet for at sikre, at du altid kan bruge adgangskoderne på din Google-konto.</translation>
 <translation id="1312721752506309252">Forbedret beskyttelse er aktiveret</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Spor denne pakke}one{Spor denne pakke}other{Spor alle pakker}}</translation>
 <translation id="1321993286294231467">Billedet kunne ikke gemmes.</translation>
 <translation id="1322735045095424339">Din organisation kræver inkognitotilstand</translation>
 <translation id="1323735185997015385">Slet</translation>
@@ -655,7 +654,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4489536976005181779">{count,plural, =1{Siden blev føjet til din læseliste på kontoen {email}}one{Siden blev føjet til din læseliste på kontoen {email}}other{Siderne blev føjet til din læseliste på kontoen {email}}}</translation>
 <translation id="4493604894403585654">Du er logget ind som <ph name="USER_EMAIL" />. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="4502566650163919158">Tjek nu</translation>
-<translation id="4505980578794259603">Senest tjekket <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Luk loginkampagne</translation>
 <translation id="4514889972748124117">Foreslå en stærk adgangskode...</translation>
 <translation id="4520798012560649652">Få flere oplysninger om inkognitotilstand</translation>
@@ -1059,7 +1057,6 @@ Dine data krypteres med din adgangssætning. Angiv adgangssætningen for at brug
 
 Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="6497850081273517953">Chrome er forældet. Opdater til den nyeste version for at forblive beskyttet.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Fjern sporing af denne pakke}one{Fjern sporing af denne pakke}other{Fjern sporing af alle pakker}}</translation>
 <translation id="650279896687777322">Få flere oplysninger...</translation>
 <translation id="6507973708545996744">Log ind for at se din læseliste på alle dine enheder.</translation>
 <translation id="6510072653668207258">Påmind mig senere</translation>
@@ -1216,6 +1213,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7367530036083223701">Få sikker adgang til dine adgangskoder fra startskærmen med widgetten Adgangskodeadministrator.</translation>
 <translation id="7380220816562673297">Indtil videre kan du kun dele adgangskoder med familiemedlemmer. <ph name="BEGIN_LINK" />Opret en familiegruppe<ph name="END_LINK" /> med op til 6 medlemmer for at få mere ud af dine produkter og abonnementer fra Google.</translation>
 <translation id="7383797227493018512">Læseliste</translation>
+<translation id="739101637685146669">Hvilken webadresse vil du tilføje som bogmærke?</translation>
 <translation id="7396331865858820922">Adgangskoden blev ikke delt</translation>
 <translation id="7398893703713203428">Opret link</translation>
 <translation id="7399802613464275309">Sikkerhedstjek</translation>
@@ -1451,6 +1449,7 @@ Dine data blev krypteret med din adgangssætning <ph name="TIME" />. Angiv adgan
 <translation id="8591976964826315682">Bloker tredjepartscookies i inkognito</translation>
 <translation id="8593565399399144771">Du kan åbne en ny fane her.</translation>
 <translation id="8605219856220328675">Luk fane.</translation>
+<translation id="8609743333007776886">Tilføj ${url} som bogmærke</translation>
 <translation id="8613883225817609844">Skjul seneste faner</translation>
 <translation id="8620640915598389714">Rediger</translation>
 <translation id="8624447588354561276">Pakkenummer</translation>

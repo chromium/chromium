@@ -68,7 +68,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="1295289763199166823">Personalizar menu</translation>
 <translation id="1305822519689023679">Para garantir que você sempre possa usar as senhas na sua Conta do Google, confirme sua identidade.</translation>
 <translation id="1312721752506309252">A Proteção reforçada está ativa</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Rastrear pacote}one{Rastrear todos os pacotes}other{Rastrear todos os pacotes}}</translation>
 <translation id="1321993286294231467">Erro ao salvar a imagem.</translation>
 <translation id="1322735045095424339">Sua organização requer o uso do modo de navegação anônima</translation>
 <translation id="1323735185997015385">Excluir</translation>
@@ -655,7 +654,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4489536976005181779">{count,plural, =1{Página adicionada à Lista de leitura na sua conta {email}}one{Página adicionada à Lista de leitura na sua conta {email}}other{Páginas adicionadas à Lista de leitura na sua conta {email}}}</translation>
 <translation id="4493604894403585654">Você fez login como <ph name="USER_EMAIL" />. Você pode parar a sincronização a qualquer momento nas configurações. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="4502566650163919158">Verificar agora</translation>
-<translation id="4505980578794259603">Última verificação <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Fechar promoção de login</translation>
 <translation id="4514889972748124117">Sugerir senha forte…</translation>
 <translation id="4520798012560649652">Saiba mais sobre o modo de navegação anônima</translation>
@@ -1059,7 +1057,6 @@ Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os
 
 Tente usar uma senha exclusiva para cada site.</translation>
 <translation id="6497850081273517953">O Chrome está desatualizado. Atualize para a versão mais recente para manter a segurança.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Cancelar rastreamento deste pacote}one{Cancelar rastreamento de todos os pacotes}other{Cancelar rastreamento de todos os pacotes}}</translation>
 <translation id="650279896687777322">Saiba mais…</translation>
 <translation id="6507973708545996744">Faça login para ter sua Lista de leitura em todos os seus dispositivos.</translation>
 <translation id="6510072653668207258">Lembrar mais tarde</translation>
@@ -1216,6 +1213,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7367530036083223701">Acesse suas senhas com segurança na tela inicial com o widget do Gerenciador de senhas.</translation>
 <translation id="7380220816562673297">Por enquanto, só é possível compartilhar senhas com membros da família. <ph name="BEGIN_LINK" />Crie um grupo familiar<ph name="END_LINK" /> com até seis membros e aproveite ao máximo seus produtos e assinaturas do Google.</translation>
 <translation id="7383797227493018512">Lista de leitura</translation>
+<translation id="739101637685146669">Qual URL você quer adicionar aos favoritos?</translation>
 <translation id="7396331865858820922">A senha não foi compartilhada</translation>
 <translation id="7398893703713203428">Criar link</translation>
 <translation id="7399802613464275309">Confirmação de segurança</translation>
@@ -1451,6 +1449,7 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <translation id="8591976964826315682">Bloquear cookies de terceiros na navegação anônima</translation>
 <translation id="8593565399399144771">Você pode abrir uma nova guia aqui.</translation>
 <translation id="8605219856220328675">Fechar guia.</translation>
+<translation id="8609743333007776886">Adicionar ${url} aos favoritos</translation>
 <translation id="8613883225817609844">Ocultar guias recentes</translation>
 <translation id="8620640915598389714">Editar</translation>
 <translation id="8624447588354561276">Número do pacote</translation>

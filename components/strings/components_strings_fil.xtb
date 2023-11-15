@@ -3052,6 +3052,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> pa}one{<ph name="PAYMENT_METHOD_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> pa}other{<ph name="PAYMENT_METHOD_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> pa}}</translation>
 <translation id="7153618581592392745">Lavender</translation>
 <translation id="7156870133441232244">Dapat i-upgrade ang server sa TLS 1.2 o mas bago.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Para maipadala ang file na ito gamit ang <ph name="FEATURE_NAME" />, magbakante ng space (<ph name="DISK_SPACE_SIZE" />) sa iyong device}one{Para maipadala ang mga file na ito gamit ang <ph name="FEATURE_NAME" />, magbakante ng space (<ph name="DISK_SPACE_SIZE" />) sa iyong device}other{Para maipadala ang mga file na ito gamit ang <ph name="FEATURE_NAME" />, magbakante ng space (<ph name="DISK_SPACE_SIZE" />) sa iyong device}}</translation>
 <translation id="7160999678034985039">Paki-save ang iyong gawa at simulan ang pag-update kapag handa ka na.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Kopyahin ang kumpidensyal na file?}one{Kopyahin ang mga kumpidensyal na file?}other{Kopyahin ang mga kumpidensyal na file?}}</translation>
 <translation id="717330890047184534">Gaia ID:</translation>

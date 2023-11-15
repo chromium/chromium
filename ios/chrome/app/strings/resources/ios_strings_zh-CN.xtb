@@ -66,7 +66,6 @@
 <translation id="1295289763199166823">自定义菜单</translation>
 <translation id="1305822519689023679">为了确保您可以一直使用 Google 账号的密码，请验证是您本人在操作。</translation>
 <translation id="1312721752506309252">增强型保护已开启</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{跟踪此包裹}other{跟踪所有包裹}}</translation>
 <translation id="1321993286294231467">保存图片时出错。</translation>
 <translation id="1322735045095424339">贵单位要求使用无痕模式</translation>
 <translation id="1323735185997015385">删除</translation>
@@ -653,7 +652,6 @@
 <translation id="4489536976005181779">{count,plural, =1{网页已添加到您的以下账户的阅读清单中：{email}}other{网页已添加到您的以下账户的阅读清单中：{email}}}</translation>
 <translation id="4493604894403585654">您目前登录的账号是 <ph name="USER_EMAIL" />。您可以随时在“设置”中停止同步。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="4502566650163919158">立即检查</translation>
-<translation id="4505980578794259603">上次检查时间：<ph name="TIME" />。</translation>
 <translation id="4508750114462689118">关闭登录推广元素</translation>
 <translation id="4514889972748124117">建议一个安全系数高的密码…</translation>
 <translation id="4520798012560649652">详细了解无痕模式</translation>
@@ -1055,7 +1053,6 @@
 
 请尽量为每个网站使用独一无二的密码。</translation>
 <translation id="6497850081273517953">Chrome 版本过旧，请更新到最新版本以确保安全。</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{取消跟踪此包裹}other{取消跟踪所有包裹}}</translation>
 <translation id="650279896687777322">了解详情…</translation>
 <translation id="6507973708545996744">登录后即可将您的阅读清单同步到您的所有设备上。</translation>
 <translation id="6510072653668207258">以后再提醒我</translation>
@@ -1192,7 +1189,7 @@
 <translation id="721597782417389033">卡的昵称无效</translation>
 <translation id="7221173315674413369">探索“新变化”中的新功能和提示</translation>
 <translation id="7223102419539744003">关闭这个标签页</translation>
-<translation id="722454870747268814">打开新的无痕模式标签页</translation>
+<translation id="722454870747268814">新的无痕式标签页</translation>
 <translation id="7233006041370588369">选择要填充的密码。</translation>
 <translation id="7265758999917665941">一律不保存此网站的密码</translation>
 <translation id="7272437679830969316">无法验证您的身份。未复制密码。</translation>
@@ -1212,6 +1209,7 @@
 <translation id="7367530036083223701">使用“密码管理工具”小组件从主屏幕安全地获取您的密码。</translation>
 <translation id="7380220816562673297">目前，您只能向家庭成员分享密码。不妨<ph name="BEGIN_LINK" />创建一个家人群组<ph name="END_LINK" />并添加最多 6 名成员，与他们一起充分利用 Google 产品和订阅。</translation>
 <translation id="7383797227493018512">阅读清单</translation>
+<translation id="739101637685146669">您想为哪个网址添加书签？</translation>
 <translation id="7396331865858820922">未能分享密码</translation>
 <translation id="7398893703713203428">创建链接</translation>
 <translation id="7399802613464275309">安全检查</translation>
@@ -1445,6 +1443,7 @@
 <translation id="8591976964826315682">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="8593565399399144771">您可在此处打开新标签页。</translation>
 <translation id="8605219856220328675">关闭标签页。</translation>
+<translation id="8609743333007776886">将 ${url} 添加到书签</translation>
 <translation id="8613883225817609844">隐藏“最近打开的标签页”</translation>
 <translation id="8620640915598389714">编辑</translation>
 <translation id="8624447588354561276">包裹编号</translation>

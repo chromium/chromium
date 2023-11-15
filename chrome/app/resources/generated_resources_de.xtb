@@ -4194,6 +4194,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4261429981378979799">Erweiterungsberechtigungen</translation>
 <translation id="4262004481148703251">Warnung schließen</translation>
 <translation id="4263223596040212967">Prüfe dein Tastaturlayout und versuche es noch einmal.</translation>
+<translation id="4265301768135164545">Du kannst ein eSIM-Profil auch <ph name="BEGIN_LINK" />manuell<ph name="END_LINK" /> einrichten</translation>
 <translation id="426564820080660648">Verwende Ethernet, WLAN oder eine mobile Datenverbindung zur Suche nach Updates.</translation>
 <translation id="426652736638196239">Diese IBAN wird nur auf diesem Gerät gespeichert</translation>
 <translation id="4266679478228765574">Wenn du Ordner entfernst, werden die Dateien nicht mehr geteilt, aber nicht gelöscht.</translation>
@@ -9727,6 +9728,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8676313779986170923">Vielen Dank für dein Feedback.</translation>
 <translation id="8676374126336081632">Eingabe löschen</translation>
 <translation id="8676770494376880701">Leistungsschwaches Ladegerät angeschlossen</translation>
+<translation id="8676985325915861058">Überspringen und neues Profil einrichten</translation>
 <translation id="8677212948402625567">Alle minimieren...</translation>
 <translation id="8678192320753081984">Bietet Nutzern, bei denen ein Risiko gezielter Angriffe besteht, die stärksten Kontosicherheitslösungen von Google</translation>
 <translation id="8678378565142776698">Neu starten und automatische Updates erhalten</translation>
@@ -10235,7 +10237,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="9057354806206861646">Aktualisierungszeitplan</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Etwa 1 Benachrichtigung pro Tag}other{Etwa {NUM_NOTIFICATION} Benachrichtigungen pro Tag}}</translation>
 <translation id="9058760336383947367">Drucker-PPD-Datei ansehen</translation>
-<translation id="9060042817356580609">DNS-Anbieter auswählen</translation>
 <translation id="9061694916020926968">Du musst in einem Google-Konto angemeldet sein, um Steam für Chromebook (Beta) nutzen zu können. Melde dich an und versuch es noch einmal.</translation>
 <translation id="9062468308252555888">14-fach</translation>
 <translation id="9063208415146866933">Fehler von Zeile <ph name="ERROR_LINE_START" /> bis <ph name="ERROR_LINE_END" /></translation>

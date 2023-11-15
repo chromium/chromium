@@ -226,6 +226,7 @@
 <translation id="5352264705793813212">Веб-переглядач Chromium знайшов для вас кілька рекомендацій щодо безпеки</translation>
 <translation id="5358375970380395591">Ви входите, використовуючи дані облікового запису, яким керує адміністратор. Адміністратор може контролювати ваш профіль Chromium. Ваші дані Chromium, як-от програми, закладки, історія, паролі й інші налаштування, буде назавжди пов’язано з обліковим записом <ph name="USER_NAME" />. Ці дані можна видалити на інформаційній панелі Облікових записів Google, але ви не зможете пов’язати їх з іншим обліковим записом. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Додатковий код: <ph name="EXTRA_CODE" />.</translation>
+<translation id="5383439451358640070">Чому Chromium блокує деякі файли</translation>
 <translation id="5386450000063123300">Chromium оновлюється (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Дозволити вхід у Chromium</translation>
 <translation id="5398878173008909840">Доступна нова версія Chromium.</translation>
@@ -396,6 +397,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="800195749539500647">Користуйтеся всіма можливостями Chromium</translation>
 <translation id="8013436988911883588">Коли Chromium отримає доступ, веб-сайти зможуть надсилати вам запити на доступ.</translation>
 <translation id="80471789339884597">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити всі веб-переглядачі.</translation>
+<translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Веб-переглядачу Chromium потрібен дозвіл на доступ до геоданих для цього сайту</translation>
 <translation id="8133124826068723441">Chromium OS не вдалося синхронізувати ваші дані, оскільки синхронізація для вашого домену недоступна.</translation>
 <translation id="813913629614996137">Ініціалізація...</translation>

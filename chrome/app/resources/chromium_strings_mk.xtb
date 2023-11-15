@@ -228,6 +228,7 @@
 <translation id="5352264705793813212">Chromium најде неколку препораки за безбедност што може да ги прегледате</translation>
 <translation id="5358375970380395591">Се пријавувате со управувана сметка и му давате контрола на администраторот над вашиот профил на Chromium. Вашите податоци на Chromium, како на пример ваши апликации, обележувачи, историја, лозинки и други поставки ќе бидат трајно поврзани со <ph name="USER_NAME" />. Може да ги бришете овие податоци преку информациската табла со сметки на Google, но нема да може да ги поврзувате овие податоци со друга сметка. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Дополнителен код: <ph name="EXTRA_CODE" />.</translation>
+<translation id="5383439451358640070">Дознајте зошто Chromium блокира некои датотеки</translation>
 <translation id="5386450000063123300">Chromium се ажурира (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Дозволете најавување на Chromium</translation>
 <translation id="5398878173008909840">Достапна е нова верзија на Chromium.</translation>
@@ -398,6 +399,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="800195749539500647">Извлечете го максимумот од Chromium</translation>
 <translation id="8013436988911883588">Ако Chromium има пристап, тогаш и веб-сајтовите ќе може да ви бараат пристап.</translation>
 <translation id="80471789339884597">Фала за инсталирањето. Мора да ги рестартирате сите ваши прелистувачи пред да користите <ph name="BUNDLE_NAME" />.</translation>
+<translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome за тестирање</translation>
 <translation id="8105840573057009683">На Chromium му треба дозвола за локација за сајтов</translation>
 <translation id="8133124826068723441">Chromium OS не може да ги синхронизира податоците бидејќи синхронизацијата не е достапна за вашиот домен.</translation>
 <translation id="813913629614996137">Се иницијализира…</translation>

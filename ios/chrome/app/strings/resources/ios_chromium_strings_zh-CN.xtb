@@ -107,6 +107,7 @@
 <translation id="5048795749726991615">若要在其他应用中轻松获取您已保存的密码，请使用 Chromium 的自动填充功能</translation>
 <translation id="5076601183701536878">清除 Chromium 中的浏览数据</translation>
 <translation id="5131565040785979529">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号以及 Chromium 的使用方式。</translation>
+<translation id="5146749061471423558">将书签添加到 Chromium</translation>
 <translation id="5171868502429358653">登录 Chromium</translation>
 <translation id="5213683223491576284">在 Chromium 中打开密码管理工具。</translation>
 <translation id="5224391634244552924">尚未保存任何密码。您需要先保存密码才能使用 Chromium 的密码检查功能。</translation>
@@ -114,6 +115,7 @@
 
         请尝试等待几分钟，然后再退出账号。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="5308226104666789935">Chromium 无法检查是否有更新</translation>
+<translation id="5311557153294205270">将输入的网址添加到您在 Chromium 中保存的书签。</translation>
 <translation id="5396916991083608703">将 Chromium 设为默认浏览器？</translation>
 <translation id="5453478652154926037">Chromium 无法检查您的密码。</translation>
 <translation id="5521125884468363740">要查看您在其他设备上用 Chromium 打开的标签页，请登录账号并开启同步功能</translation>

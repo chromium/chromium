@@ -10237,7 +10237,6 @@
 <translation id="9057354806206861646">अद्यावधिक तालिका</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{एक दिनमा लगभग एउटा सूचना}other{एक दिनमा लगभग {NUM_NOTIFICATION} वटा सूचना}}</translation>
 <translation id="9058760336383947367">प्रिन्टर PPD हेर्नुहोस्</translation>
-<translation id="9060042817356580609">DNS सेवा प्रदायक चयन गर्नुहोस्</translation>
 <translation id="9061694916020926968">Steam for Chromebook (बिटा) प्रयोग गर्न तपाईं Google खातामा साइन इन हुनु पर्छ। साइन इन गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="9062468308252555888">१४ गुणा</translation>
 <translation id="9063208415146866933">हरफ <ph name="ERROR_LINE_START" /> देखि हरफ <ph name="ERROR_LINE_END" /> सम्म त्रुटि छ</translation>

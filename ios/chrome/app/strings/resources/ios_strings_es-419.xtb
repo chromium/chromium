@@ -68,7 +68,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chr
 <translation id="1295289763199166823">Personalizar menú</translation>
 <translation id="1305822519689023679">Para asegurarte de que siempre puedas usar las contraseñas en tu Cuenta de Google, verifica tu identidad.</translation>
 <translation id="1312721752506309252">Se activó la protección mejorada</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Realizar seguimiento de este paquete}other{Realizar seguimiento de todos los paquetes}}</translation>
 <translation id="1321993286294231467">Se produjo un error al guardar la imagen.</translation>
 <translation id="1322735045095424339">Tu organización requiere que utilices el modo Incógnito</translation>
 <translation id="1323735185997015385">Borrar</translation>
@@ -655,7 +654,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4489536976005181779">{count,plural, =1{Se agregó la página a la lista de lectura de tu cuenta ({email})}other{Se agregaron las páginas a la lista de lectura de tu cuenta ({email})}}</translation>
 <translation id="4493604894403585654">Accediste como <ph name="USER_EMAIL" />. Puedes detener la sincronización en cualquier momento desde la configuración. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="4502566650163919158">Verificar ahora</translation>
-<translation id="4505980578794259603">Última comprobación: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Cerrar promoción de acceso</translation>
 <translation id="4514889972748124117">Sugerir contraseña segura…</translation>
 <translation id="4520798012560649652">Más información sobre el modo Incógnito</translation>
@@ -1059,7 +1057,6 @@ Tus datos se encriptan con tu frase de contraseña. Ingrésala para usar y guard
 
 Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="6497850081273517953">Chrome está desactualizado. Actualiza a la versión más reciente para mantener la seguridad.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Detener el seguimiento de este paquete}other{Detener el seguimiento de todos los paquetes}}</translation>
 <translation id="650279896687777322">Más información…</translation>
 <translation id="6507973708545996744">Accede para obtener tu lista de lectura en todos tus dispositivos.</translation>
 <translation id="6510072653668207258">Recordarme más tarde</translation>
@@ -1216,6 +1213,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7367530036083223701">Accede de forma segura a tus contraseñas desde la pantalla principal con el widget del Administrador de contraseñas.</translation>
 <translation id="7380220816562673297">Por el momento, solo puedes compartir contraseñas con miembros de la familia. <ph name="BEGIN_LINK" />Crea un grupo familiar<ph name="END_LINK" /> de hasta 6 miembros y aprovecha al máximo los productos y las suscripciones de Google.</translation>
 <translation id="7383797227493018512">Lista de lectura</translation>
+<translation id="739101637685146669">¿Qué URL quieres agregar a favoritos?</translation>
 <translation id="7396331865858820922">No se compartió la contraseña</translation>
 <translation id="7398893703713203428">Crear vínculo</translation>
 <translation id="7399802613464275309">Verificación de seguridad</translation>
@@ -1451,6 +1449,7 @@ Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingr
 <translation id="8591976964826315682">Bloquear cookies de terceros en modo Incógnito</translation>
 <translation id="8593565399399144771">Puedes abrir una pestaña nueva aquí.</translation>
 <translation id="8605219856220328675">Cierra la pestaña.</translation>
+<translation id="8609743333007776886">Agregar ${url} a favoritos</translation>
 <translation id="8613883225817609844">Ocultar la opción Pestañas recientes</translation>
 <translation id="8620640915598389714">Editar</translation>
 <translation id="8624447588354561276">Número de paquete</translation>

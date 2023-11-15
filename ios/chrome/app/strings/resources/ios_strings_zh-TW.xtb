@@ -66,7 +66,6 @@
 <translation id="1295289763199166823">自訂選單</translation>
 <translation id="1305822519689023679">為確保你隨時可以使用 Google 帳戶中的密碼，請驗證身分。</translation>
 <translation id="1312721752506309252">已啟用強化防護功能</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{追蹤這個包裹}other{追蹤所有包裹}}</translation>
 <translation id="1321993286294231467">儲存圖片時發生錯誤。</translation>
 <translation id="1322735045095424339">貴機構規定必須使用無痕模式</translation>
 <translation id="1323735185997015385">刪除</translation>
@@ -653,7 +652,6 @@
 <translation id="4489536976005181779">{count,plural, =1{已將網頁新增至帳戶 {email} 的閱讀清單}other{已將網頁新增至帳戶 {email} 的閱讀清單}}</translation>
 <translation id="4493604894403585654">目前登入的帳戶是 <ph name="USER_EMAIL" />。你隨時可以透過「設定」停止同步作業。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="4502566650163919158">立即檢查</translation>
-<translation id="4505980578794259603">上次檢查時間：<ph name="TIME" />。</translation>
 <translation id="4508750114462689118">關閉登入提示</translation>
 <translation id="4514889972748124117">建議高強度密碼...</translation>
 <translation id="4520798012560649652">進一步瞭解無痕模式</translation>
@@ -1057,7 +1055,6 @@
 
 建議你為每個網站設定專屬的密碼。</translation>
 <translation id="6497850081273517953">Chrome 版本過舊，請更新至最新版本以確保安全。</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{取消追蹤這個包裹}other{取消追蹤所有包裹}}</translation>
 <translation id="650279896687777322">瞭解詳情...</translation>
 <translation id="6507973708545996744">只要登入帳戶，即可在所有裝置上取用自己的閱讀清單。</translation>
 <translation id="6510072653668207258">稍後提醒我</translation>

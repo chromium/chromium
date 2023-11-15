@@ -502,6 +502,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="371230970611282515">Xavfli tahdidlarni aniqlaydi va sizni ulardan himoya qiladi.</translation>
 <translation id="3714981814255182093">Qidiruv panelini ochish</translation>
 <translation id="3716182511346448902">Bu sahifa juda ko‘p xotira ishlatishi sababli Chrome tomonidan to‘xtatildi.</translation>
+<translation id="3720422586473670527">Kerak emas</translation>
 <translation id="3721119614952978349">Siz va Google</translation>
 <translation id="3737319253362202215">Tarjima sozlamalari</translation>
 <translation id="3737402728074743863">Bu qurilmani elektron kalit sifatida ishlatish uchun ekran qulfini sozlang</translation>
@@ -799,6 +800,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Fayl yuklab olinmoqda…}other{# ta fayl yuklab olinmoqda…}}</translation>
 <translation id="5210286577605176222">Avvalgi varaqqa o‘tish</translation>
 <translation id="5210365745912300556">Tabni yopish</translation>
+<translation id="5216863793077689658">Sahifa statistikasidagi faoliyatingiz <ph name="BEGIN_LINK" />Google hisobingizga<ph name="END_LINK" /> saqlanadi</translation>
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
 <translation id="5226378907213531272">Har safar mashinadan foydalanishda ekran qulfini ochasiz</translation>
 <translation id="5227554086496586518">Qidiruv natijalarni koʻrish uchun bosing</translation>

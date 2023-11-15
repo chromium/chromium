@@ -68,7 +68,6 @@
 <translation id="1295289763199166823">התאמה אישית של התפריט</translation>
 <translation id="1305822519689023679">‏כדי לוודא שתמיד תהיה לך אפשרות להשתמש בסיסמאות בחשבון Google שלך, עליך לאמת את הזהות שלך.</translation>
 <translation id="1312721752506309252">מופעלת הגנה משופרת</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{מעקב אחרי החבילה הזו}one{מעקב אחר כל החבילות}two{מעקב אחר כל החבילות}other{מעקב אחר כל החבילות}}</translation>
 <translation id="1321993286294231467">קרתה שגיאה בשמירת התמונה.</translation>
 <translation id="1322735045095424339">מצב אנונימי נדרש על ידי הארגון שלך</translation>
 <translation id="1323735185997015385">מחיקה</translation>
@@ -655,7 +654,6 @@
 <translation id="4489536976005181779">{count,plural, =1{הדף נוסף לרשימת הקריאה בחשבון שלך, {email}}one{הדפים נוספו לרשימת הקריאה בחשבון שלך, {email}}two{הדפים נוספו לרשימת הקריאה בחשבון שלך, {email}}other{הדפים נוספו לרשימת הקריאה בחשבון שלך, {email}}}</translation>
 <translation id="4493604894403585654">‏נכנסת לחשבון בתור <ph name="USER_EMAIL" /> אפשר לעדכן את ההגדרות, בכל רגע, כדי להפסיק את הסנכרון. Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="4502566650163919158">לבדיקה</translation>
-<translation id="4505980578794259603">בדיקה אחרונה: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">סגירת קידום הכניסה</translation>
 <translation id="4514889972748124117">הצעת סיסמה חזקה…</translation>
 <translation id="4520798012560649652">למידע נוסף בנושא המצב הפרטי</translation>
@@ -1059,7 +1057,6 @@
 
 כדאי לנסות להשתמש בסיסמה ייחודית בכל אתר.</translation>
 <translation id="6497850081273517953">‏Chrome לא מעודכן, צריך לעדכן לגרסה האחרונה כדי לשמור על האבטחה.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{ביטול המעקב אחר החבילה הזו}one{ביטול המעקב אחר כל החבילות}two{ביטול המעקב אחר כל החבילות}other{ביטול המעקב אחר כל החבילות}}</translation>
 <translation id="650279896687777322">למידע נוסף…</translation>
 <translation id="6507973708545996744">כדי שרשימת הקריאה תופיע בכל המכשירים שלך, כדאי להיכנס לחשבון.</translation>
 <translation id="6510072653668207258">קבלת תזכורת מאוחר יותר</translation>
@@ -1216,6 +1213,7 @@
 <translation id="7367530036083223701">הווידג'ט של מנהל הסיסמאות מאפשר לגשת לסיסמאות באופן מאובטח במסך הבית.</translation>
 <translation id="7380220816562673297">‏בשלב הזה אפשר לשתף סיסמאות רק עם חברים בקבוצה המשפחתית. ניתן <ph name="BEGIN_LINK" />ליצור קבוצה משפחתית<ph name="END_LINK" /> של עד 6 אנשים ולהפיק יותר ממוצרי Google ומהמינויים לשירותי Google.</translation>
 <translation id="7383797227493018512">רשימת קריאה</translation>
+<translation id="739101637685146669">‏איזו כתובת URL להוסיף לסימניות?</translation>
 <translation id="7396331865858820922">הסיסמה לא שותפה</translation>
 <translation id="7398893703713203428">יצירת קישור</translation>
 <translation id="7399802613464275309">בדיקת אבטחה</translation>
@@ -1451,6 +1449,7 @@
 <translation id="8591976964826315682">‏חסימת קובצי cookie של צד שלישי במצב אנונימי</translation>
 <translation id="8593565399399144771">כאן אפשר לפתוח כרטיסייה חדשה.</translation>
 <translation id="8605219856220328675">סגירת כרטיסייה.</translation>
+<translation id="8609743333007776886">‏הוספת הכתובת ${url} לסימניות</translation>
 <translation id="8613883225817609844">הסתרת הכרטיסיות האחרונות</translation>
 <translation id="8620640915598389714">עריכה</translation>
 <translation id="8624447588354561276">מספר החבילה</translation>

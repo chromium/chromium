@@ -8495,6 +8495,19 @@ Uyarı: Kullanıcıların yazılım güncellemelerini ve kritik güvenlik düzel
 <translation id="8102854005031553638">PDF görüntüleyici AGG oluşturucuyu kullanır.</translation>
 <translation id="8102913158860568230">Varsayılan medya akışı ayarı</translation>
 <translation id="8104962233214241919">Bu siteler için istemci sertifikalarını otomatik olarak seç</translation>
+<translation id="8106782817348995849">Bu politika, <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> etkinleştirildiğinde yöneticilerin, <ph name="MICROSOFT_ONE_DRIVE_NAME" /> hizmetinde oturum açmasına izin verilen hesapları kısıtlamasına olanak tanır.
+
+Bu politika "<ph name="COMMON_NAME" />" değerini içeriyorsa oturum açmak için herhangi bir hesap kullanılabilir.
+
+Bu politika "<ph name="ORGANIZATIONS_NAME" />" değerini içeriyorsa oturum açmak için iş veya okul hesapları kullanılabilir.
+
+Bu politika "<ph name="CONSUMER_NAME" />" değerini içeriyorsa oturum açmak için kişisel <ph name="MICROSOFT_NAME" /> hesapları kullanılabilir.
+
+Bu politika alan adları ya da kiracı kimlikleri içeriyorsa oturum açmak için bu alan adlarındaki veya kiracı kimliklerindeki hesaplar (https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints adresine göz atın) kullanılabilir.
+
+Bu politika ayarlanmazsa veya yalnızca boş bir değer içerirse normal kullanıcılar için "<ph name="COMMON_NAME" />", kurumsal kullanıcılar için "<ph name="ORGANIZATIONS_NAME" />" değeri belirtilmiş gibi davranır.
+
+Kısıtlama durumunun değiştirilmesi, yeni kısıtlamalara uymadığı takdirde kullanıcıların <ph name="MICROSOFT_ONE_DRIVE_NAME" /> hesaplarının oturumunun kapatılmasına neden olabilir.</translation>
 <translation id="8109762054721090517"><ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" /> şablonu</translation>
 <translation id="8111331908123507719">Kilit ekranında ekran koruyucu gösterilmeden önce cihazın boşta bekleyeceği süreyi saniye cinsinden yapılandırır.
 

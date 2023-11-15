@@ -843,6 +843,7 @@
 <translation id="1641113438599504367">التصفح الآمن</translation>
 <translation id="1641496881756082050">مزيد من الإجراءات للشبكة <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{لم يتم استيراد كلمة مرور واحدة أخرى بسبب تنسيقها بشكل غير صحيح.}zero{لم يتم استيراد {NUM_PASSWORDS} كلمة مرور أخرى بسبب تنسيقها بشكل غير صحيح.}two{لم يتم استيراد كلمتَي مرور ({NUM_PASSWORDS}) أخريين بسبب تنسيقهما بشكل غير صحيح.}few{لم يتم استيراد {NUM_PASSWORDS} كلمات مرور أخرى بسبب تنسيقها بشكل غير صحيح.}many{لم يتم استيراد {NUM_PASSWORDS} كلمة مرور أخرى بسبب تنسيقها بشكل غير صحيح.}other{لم يتم استيراد {NUM_PASSWORDS} كلمة مرور أخرى بسبب تنسيقها بشكل غير صحيح.}}</translation>
+<translation id="1642299742557467312">هذا الملف يمكن أن يضر جهازك</translation>
 <translation id="1642492862748815878">تم الاتصال بالجهاز <ph name="DEVICE" /> و<ph name="NUMBER_OF_DEVICES" /> جهاز آخر يتضمّن بلوتوث.</translation>
 <translation id="1642494467033190216">‏مطلوب إزالة الحماية من rootfs وإعادة التشغيل قبل تفعيل ميزات التصحيح الأخرى.</translation>
 <translation id="1643072738649235303">‏توقيع X9.62 ECDSA باستخدام SHA-1</translation>
@@ -4074,6 +4075,7 @@
 <translation id="4148195018520464922">يمكنك حصر إمكانية تسجيل الدخول على مستخدمين معيّنين. سيؤدي هذا الإجراء إلى إزالة خيار "إضافة شخص" على شاشة تسجيل الدخول. ويمكنك أيضًا إزالة المستخدمين الحاليين.</translation>
 <translation id="4148957013307229264">جارٍ التثبيت...</translation>
 <translation id="4150201353443180367">عرض</translation>
+<translation id="4150417452770391330">توصيل كاميرا</translation>
 <translation id="4150569944729499860">سياق الشاشة</translation>
 <translation id="4151449637210235443">أخبِرنا عن تجربتك مع اللّعب في الفترة الأخيرة.</translation>
 <translation id="4151503145138736576">لا تتوفّر مساحة تخزين بلا إنترنت للمسح</translation>
@@ -4174,6 +4176,7 @@
 <translation id="4244238649050961491">العثور على المزيد من تطبيقات قلم الشاشة</translation>
 <translation id="4246980464509998944">التعليقات الإضافية:</translation>
 <translation id="424726838611654458">‏الفتح دائمًا باستخدام Adobe Reader</translation>
+<translation id="4248401726442101648">لم يتم توصيل أي كاميرات.</translation>
 <translation id="4249248555939881673">في انتظار الاتصال بالشبكة...</translation>
 <translation id="4249373718504745892">تم حظر دخول هذه الصفحة إلى الكاميرا والميكروفون التابعين لك.</translation>
 <translation id="424963718355121712">يجب عرض التطبيقات من المضيف الذي تؤثر فيه.</translation>
@@ -4296,6 +4299,7 @@
 <translation id="4345457680916430965">الفتح في "<ph name="APP" />"</translation>
 <translation id="4345587454538109430">إعداد...</translation>
 <translation id="4345732373643853732">اسم المستخدم غير معروف للخادم</translation>
+<translation id="4346159263667201092">إضافة تفاصيل اختيارية</translation>
 <translation id="4348426576195894795">‏ستؤدي إزالة هذا الحساب إلى حذف أي ملفات شخصية تم تسجيل الدخول إليها على Chrome باستخدام هذا الحساب.</translation>
 <translation id="4348766275249686434">جمع الأخطاء</translation>
 <translation id="4349828822184870497">مفيد</translation>
@@ -4380,6 +4384,7 @@
 <translation id="4406883609789734330">النسخ النصي التلقائي</translation>
 <translation id="4407039574263172582">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اسمك وعنوان بريدك الإلكتروني وصورة ملفك الشخصي مع هذا الموقع الإلكتروني. يُرجى الاطّلاع على <ph name="BEGIN_LINK" />بنود الخدمة<ph name="END_LINK" /> لهذا الموقع الإلكتروني.</translation>
 <translation id="4408599188496843485">م&amp;ساعدة</translation>
+<translation id="4408965460206576430">يحتوي هذا الملف على برامج ضارة أو برامج من موقع إلكتروني مريب.</translation>
 <translation id="4409271659088619928">محرّك البحث المستخدَم لديك هو <ph name="DSE" />. يمكنك الاطّلاع على تعليمات محرّك البحث الذي تستخدمه بشأن حذف سجلّ البحث إذا كان يوفّر هذه الميزة.</translation>
 <translation id="4409697491990005945">الهوامش</translation>
 <translation id="4409779593816003679">كلمات المرور وميزة "الملء التلقائي"</translation>
@@ -10251,7 +10256,6 @@
 <translation id="9057354806206861646">تعديل الجدول الزمني</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{إشعار واحد تقريبًا في اليوم}zero{{NUM_NOTIFICATION} إشعار تقريبًا في اليوم}two{إشعاران ({NUM_NOTIFICATION}) تقريبًا في اليوم}few{{NUM_NOTIFICATION} إشعارات تقريبًا في اليوم}many{{NUM_NOTIFICATION} إشعارًا تقريبًا في اليوم}other{{NUM_NOTIFICATION} إشعار تقريبًا في اليوم}}</translation>
 <translation id="9058760336383947367">‏الاطّلاع على ملف PPD للطابعة</translation>
-<translation id="9060042817356580609">اختيار مزوِّد نظام أسماء النطاقات</translation>
 <translation id="9061694916020926968">‏يجب تسجيل الدخول إلى حساب Google لاستخدام تطبيق "Steam لأجهزة Chromebook" (الإصدار التجريبي). يُرجى تسجيل الدخول وإعادة المحاولة.</translation>
 <translation id="9062468308252555888">14 ضعفًا</translation>
 <translation id="9063208415146866933">خطأ من السطر رقم <ph name="ERROR_LINE_START" /> إلى <ph name="ERROR_LINE_END" /></translation>

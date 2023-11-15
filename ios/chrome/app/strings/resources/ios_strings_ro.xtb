@@ -68,7 +68,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="1295289763199166823">Personalizează meniul</translation>
 <translation id="1305822519689023679">Pentru a te asigura că poți folosi oricând parolele din Contul Google, confirmă-ți identitatea.</translation>
 <translation id="1312721752506309252">Protecția îmbunătățită este activată</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Urmărește coletul}few{Urmărește toate coletele}other{Urmărește toate coletele}}</translation>
 <translation id="1321993286294231467">Eroare la salvarea imaginii.</translation>
 <translation id="1322735045095424339">Organizația ta solicită modul incognito</translation>
 <translation id="1323735185997015385">Șterge</translation>
@@ -655,7 +654,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4489536976005181779">{count,plural, =1{Pagina a fost adăugată în lista de lecturi din contul tău, {email}}few{Paginile au fost adăugate în lista de lecturi din contul tău, {email}}other{Paginile au fost adăugate în lista de lecturi din contul tău, {email}}}</translation>
 <translation id="4493604894403585654">Te-ai conectat ca <ph name="USER_EMAIL" />. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="4502566650163919158">Verifică acum</translation>
-<translation id="4505980578794259603">Ultima verificare: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Închide mesajul promoțional de conectare</translation>
 <translation id="4514889972748124117">Sugerează o parolă puternică</translation>
 <translation id="4520798012560649652">Află mai multe despre modul incognito</translation>
@@ -1059,7 +1057,6 @@ Datele tale sunt criptate cu expresia de acces. Introdu-o pentru a folosi și a 
 
 Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6497850081273517953">Chrome este învechit. Actualizează la cea mai recentă versiune pentru a te proteja.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Anulează urmărirea coletului}few{Anulează urmărirea tuturor coletelor}other{Anulează urmărirea tuturor coletelor}}</translation>
 <translation id="650279896687777322">Află mai multe…</translation>
 <translation id="6507973708545996744">Conectează-te pentru a accesa lista de lecturi pe toate dispozitivele.</translation>
 <translation id="6510072653668207258">Amintește-mi mai târziu</translation>

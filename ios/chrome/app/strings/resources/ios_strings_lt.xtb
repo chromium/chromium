@@ -68,7 +68,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="1295289763199166823">Tinkinti meniu</translation>
 <translation id="1305822519689023679">Kad užtikrintumėte, jog visada galėsite naudoti slaptažodžius „Google“ paskyroje, patvirtinkite savo tapatybę.</translation>
 <translation id="1312721752506309252">Sustiprinta apsauga įjungta</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Stebėti šį siuntinį}one{Stebėti visus siuntinius}few{Stebėti visus siuntinius}many{Stebėti visus siuntinius}other{Stebėti visus siuntinius}}</translation>
 <translation id="1321993286294231467">Klaida išsaugant vaizdą.</translation>
 <translation id="1322735045095424339">Organizacija reikalauja naudoti inkognito režimą</translation>
 <translation id="1323735185997015385">Ištrinti</translation>
@@ -655,7 +654,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4489536976005181779">{count,plural, =1{Puslapis pridėtas prie skaitymo sąrašo paskyroje ({email})}one{Puslapiai pridėtas prie skaitymo sąrašo paskyroje ({email})}few{Puslapiai pridėtas prie skaitymo sąrašo paskyroje ({email})}many{Puslapiai pridėtas prie skaitymo sąrašo paskyroje ({email})}other{Puslapiai pridėtas prie skaitymo sąrašo paskyroje ({email})}}</translation>
 <translation id="4493604894403585654">Esate prisijungę kaip <ph name="USER_EMAIL" />. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="4502566650163919158">Tikrinti dabar</translation>
-<translation id="4505980578794259603">Paskutinį kartą tikrinta: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Uždaryti prisijungimo reklamą</translation>
 <translation id="4514889972748124117">Siūlyti sudėtingą slaptažodį...</translation>
 <translation id="4520798012560649652">Sužinokite daugiau apie inkognito režimą</translation>
@@ -1059,7 +1057,6 @@ Duomenys užšifruoti naudojant slaptafrazę. Įveskite ją, kad galėtumėte na
 
 Kiekvienoje svetainėje stenkitės naudoti unikalius slaptažodžius.</translation>
 <translation id="6497850081273517953">„Chrome“ pasenusi, atnaujinkite į naujausią versiją, kad užtikrintumėte saugą.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Nebestebėti šio siuntinio}one{Nebestebėti visų siuntinių}few{Nebestebėti visų siuntinių}many{Nebestebėti visų siuntinių}other{Nebestebėti visų siuntinių}}</translation>
 <translation id="650279896687777322">Sužinokite daugiau...</translation>
 <translation id="6507973708545996744">Prisijunkite, kad gautumėte skaitymo sąrašą visuose įrenginiuose.</translation>
 <translation id="6510072653668207258">Priminti vėliau</translation>

@@ -68,7 +68,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich c
 <translation id="1295289763199166823">Personoleiddio Dewislen</translation>
 <translation id="1305822519689023679">I wneud yn siŵr y gallwch bob amser ddefnyddio'r cyfrineiriau yn eich Cyfrif Google, cadarnhewch mai chi sydd yno.</translation>
 <translation id="1312721752506309252">Mae gwell amddiffyniad wedi'i droi ymlaen</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Olrhain y pecyn hwn}zero{Olrhain pob pecyn}two{Olrhain pob pecyn}few{Olrhain pob pecyn}many{Olrhain pob pecyn}other{Olrhain pob pecyn}}</translation>
 <translation id="1321993286294231467">Bu gwall wrth gadw'r llun.</translation>
 <translation id="1322735045095424339">Mae eich sefydliad yn gofyn am y Modd Anhysbys</translation>
 <translation id="1323735185997015385">Dileu</translation>
@@ -655,7 +654,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4489536976005181779">{count,plural, =1{Mae tudalen wedi'i hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}zero{Mae tudalennau wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}two{Mae tudalennau wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}few{Mae tudalennau wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}many{Mae tudalennau wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}other{Mae tudalennau wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}}</translation>
 <translation id="4493604894403585654">Rydych wedi'ch mewngofnodi fel <ph name="USER_EMAIL" />. Gallwch stopio cysoni unrhyw bryd yn y gosodiadau. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>
 <translation id="4502566650163919158">Gwirio Nawr</translation>
-<translation id="4505980578794259603">Gwiriwyd ddiwethaf: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Cau'r anogwr mewngofnodi</translation>
 <translation id="4514889972748124117">Awgrymu Cyfrinair Cryf...</translation>
 <translation id="4520798012560649652">Dysgu rhagor am y modd Anhysbys</translation>
@@ -1059,7 +1057,6 @@ Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd. Rhowch ef i ddefnyddio a c
 
 Ceisiwch ddefnyddio cyfrinair unigryw ar gyfer pob gwefan.</translation>
 <translation id="6497850081273517953">Mae Chrome yn hen, diweddarwch i'r fersiwn ddiweddaraf i aros yn ddiogel.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Dadolrhain y pecyn hwn}zero{Dadolrhain pob pecyn}two{Dadolrhain pob pecyn}few{Dadolrhain pob pecyn}many{Dadolrhain pob pecyn}other{Dadolrhain pob pecyn}}</translation>
 <translation id="650279896687777322">Dysgu Rhagor...</translation>
 <translation id="6507973708545996744">Mewngofnodwch i gael eich rhestr ddarllen ar eich holl ddyfeisiau.</translation>
 <translation id="6510072653668207258">Atgoffa Fi yn Nes Ymlaen</translation>

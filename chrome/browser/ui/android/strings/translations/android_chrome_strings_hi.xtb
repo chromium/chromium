@@ -502,6 +502,7 @@
 <translation id="371230970611282515">नुकसान पहुंचाने वाली घटनाओं का पहले से अंदाज़ा लगाता है. साथ ही, उनके बारे में आपको चेतावनी देता है.</translation>
 <translation id="3714981814255182093">ढूंढें बार खोलें</translation>
 <translation id="3716182511346448902">यह पेज बहुत ज़्यादा स्टोरेज का इस्तेमाल करता है, इसलिए Chrome ने इसे रोक दिया है.</translation>
+<translation id="3720422586473670527">रहने दें</translation>
 <translation id="3721119614952978349">आप और Google</translation>
 <translation id="3737319253362202215">अनुवाद की सेटिंग</translation>
 <translation id="3737402728074743863">इस डिवाइस को सुरक्षा कुंजी के तौर पर इस्तेमाल करने के लिए, स्क्रीन लॉक सेट करें</translation>
@@ -799,6 +800,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{फ़ाइल डाउनलोड हो रही है…}one{# फ़ाइल डाउनलोड हो रही है…}other{# फ़ाइलें डाउनलोड हो रही हैं…}}</translation>
 <translation id="5210286577605176222">सीधे पिछले टैब पर जाएं</translation>
 <translation id="5210365745912300556">टैब बंद करें</translation>
+<translation id="5216863793077689658">पेज इनसाइट की आपकी गतिविधि, आपके <ph name="BEGIN_LINK" />Google खाते<ph name="END_LINK" /> में सेव हो जाती है.</translation>
 <translation id="5222676887888702881">साइन आउट करें</translation>
 <translation id="5226378907213531272">हर बार कार का इस्तेमाल करने पर, आपकी स्क्रीन अनलॉक होगी</translation>
 <translation id="5227554086496586518">खोज नतीजे देखने के लिए टैप करें</translation>

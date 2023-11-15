@@ -845,6 +845,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1641113438599504367">Beskyttet browsing</translation>
 <translation id="1641496881756082050">Flere handlinger for <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 anden adgangskode blev ikke importeret, fordi den er formateret forkert}one{{NUM_PASSWORDS} anden adgangskode blev ikke importeret, fordi den er formateret forkert}other{{NUM_PASSWORDS} andre adgangskoder blev ikke importeret, fordi de er formateret forkert}}</translation>
+<translation id="1642299742557467312">Denne fil kan beskadige din enhed</translation>
 <translation id="1642492862748815878">Der er oprettet forbindelse til <ph name="DEVICE" /> og <ph name="NUMBER_OF_DEVICES" /> andre Bluetooth-enheder</translation>
 <translation id="1642494467033190216">Fjernelse af rootfs-beskyttelse og efterfølgende genstart er påkrævet, før du aktiverer andre fejlretningsfunktioner.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA-signatur med SHA-1</translation>
@@ -4088,6 +4089,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4148195018520464922">Du kan angive begrænsninger, så det kun er bestemte brugere, der kan logge ind. Hvis du gør dette, fjernes valgmuligheden "Tilføj person" på loginskærmen. Du kan også fjerne aktuelle brugere.</translation>
 <translation id="4148957013307229264">Installerer...</translation>
 <translation id="4150201353443180367">Skærm</translation>
+<translation id="4150417452770391330">Tilslut et kamera</translation>
 <translation id="4150569944729499860">Skærmkontekst</translation>
 <translation id="4151449637210235443">Fortæl os om dit seneste gameplay</translation>
 <translation id="4151503145138736576">Der er ingen offlinelagerplads at rydde</translation>
@@ -4188,6 +4190,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4244238649050961491">Find flere apps til styluspenne</translation>
 <translation id="4246980464509998944">Yderligere kommentarer:</translation>
 <translation id="424726838611654458">Åbn altid i Adobe Reader</translation>
+<translation id="4248401726442101648">Der er ikke tilsluttet noget kamera</translation>
 <translation id="4249248555939881673">Venter på netværksforbindelse...</translation>
 <translation id="4249373718504745892">Denne sides adgang til dit kamera og din mikrofon er blevet blokeret.</translation>
 <translation id="424963718355121712">Apps, der styrer et website, kan kun downloades fra det pågældende website</translation>
@@ -4310,6 +4313,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4345457680916430965">Åbn i <ph name="APP" /></translation>
 <translation id="4345587454538109430">Konfigurer...</translation>
 <translation id="4345732373643853732">Serveren kender ikke brugernavnet</translation>
+<translation id="4346159263667201092">Tilføj yderligere oplysninger (valgfrit)</translation>
 <translation id="4348426576195894795">Hvis denne konto fjernes, slettes alle Chrome-profiler, der er logget ind med denne konto</translation>
 <translation id="4348766275249686434">Saml fejl</translation>
 <translation id="4349828822184870497">Nyttig</translation>
@@ -4394,6 +4398,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4406883609789734330">Livetekstning</translation>
 <translation id="4407039574263172582">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse, og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK" />servicevilkår<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">H&amp;jælp</translation>
+<translation id="4408965460206576430">Denne fil indeholder malware eller stammer fra et mistænkeligt website</translation>
 <translation id="4409271659088619928">Dine standardsøgemaskine er <ph name="DSE" />. Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
 <translation id="4409697491990005945">Margener</translation>
 <translation id="4409779593816003679">Adgangskoder og autofyld</translation>
@@ -10256,7 +10261,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="9057354806206861646">Tidsplan for opdateringer</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Ca. 1 notifikation om dagen}one{Ca. {NUM_NOTIFICATION} notifikation om dagen}other{Ca. {NUM_NOTIFICATION} notifikationer om dagen}}</translation>
 <translation id="9058760336383947367">Se PPD-fil for printer</translation>
-<translation id="9060042817356580609">Vælg DNS-udbyder</translation>
 <translation id="9061694916020926968">Du skal være logget ind på en Google-konto for at bruge Steam til Chromebook (beta). Log ind, og prøv igen.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Der er fejl på linje <ph name="ERROR_LINE_START" /> til <ph name="ERROR_LINE_END" /></translation>

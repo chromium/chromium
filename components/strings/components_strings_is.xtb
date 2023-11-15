@@ -533,7 +533,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2025891858974379949">Óöruggt efni</translation>
 <translation id="2027465737841872819">Plast</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Athuga staðgengilsþjóninn og eldvegginn<ph name="END_LINK" /></translation>
-<translation id="2033900728810589426">Flýtileið má ekki vera sú sama og sjálfgefið leitarorð leitarþjónustu sem skilgreint er af <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2033900728810589426">Flýtileiðin má ekki vera sú sama og sjálfgefið leitarorð leitarþjónustu sem skilgreint er af <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Vista samt</translation>
 <translation id="2035400064145347639">Ferðahandbækur og -lýsingar</translation>
 <translation id="2036514476578229158">Þú baðst um að opna þetta vefsvæði. Foreldrar þínir geta svarað í Family Link.</translation>
@@ -1081,7 +1081,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> á <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Getur beðið um að fá að vita hvenær þú ert að nota tækið</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo „Enter“ til að opna stillingar Chrome og stjórna því hvaða upplýsingar þú samstillir</translation>
-<translation id="3203025201812691413">Vefslóð má ekki vera tóm</translation>
+<translation id="3203025201812691413">Vefslóðin má ekki vera tóm</translation>
 <translation id="320323717674993345">Hætta við greiðslu</translation>
 <translation id="3203366800380907218">Af vefnum</translation>
 <translation id="3207960819495026254">Í bókamerkjum</translation>
@@ -2310,7 +2310,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5651323159439184939">Gatapappír</translation>
 <translation id="5653432653077411130">Vatnsból og vatnshreinsun</translation>
 <translation id="5654927323611874862">Auðkenni sendrar hrunskýrslu:</translation>
-<translation id="5654965123204121933">Vefslóð inniheldur ekki nauðsynlegan streng fyrir skipti <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
+<translation id="5654965123204121933">Vefslóðin inniheldur ekki nauðsynlega skiptistrenginn <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Netfang</translation>
 <translation id="5660122698869360728">Ný snjallmappa sem auðveldar þér að vista allar verslunarsíður á einum stað, fylgjast sjálfkrafa með verði, fá upplýsingar um verð og fleira.</translation>
 <translation id="5663955426505430495">Kerfisstjóri þessa tækis hefur sett upp viðbætur fyrir fleiri aðgerðir. Viðbætur hafa aðgang að sumum af gögnunum þínum.</translation>

@@ -68,7 +68,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1295289763199166823">Personnaliser le menu</translation>
 <translation id="1305822519689023679">Pour toujours pouvoir utiliser les mots de passe de votre compte Google, confirmez votre identité.</translation>
 <translation id="1312721752506309252">La protection renforcée est activée</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Suivre ce colis}one{Suivre ce colis}other{Suivre ces colis}}</translation>
 <translation id="1321993286294231467">Erreur lors de l'enregistrement de l'image.</translation>
 <translation id="1322735045095424339">Votre organisation exige d'utiliser le mode navigation privée</translation>
 <translation id="1323735185997015385">Supprimer</translation>
@@ -655,7 +654,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4489536976005181779">{count,plural, =1{Page ajoutée à votre liste de lecture dans votre compte, {email}}one{Page ajoutée à votre liste de lecture dans votre compte, {email}}other{Pages ajoutées à votre liste de lecture dans votre compte, {email}}}</translation>
 <translation id="4493604894403585654">Vous êtes connecté en tant que <ph name="USER_EMAIL" />. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="4502566650163919158">Vérifier maintenant</translation>
-<translation id="4505980578794259603">Dernière vérification <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Fermer la promo de connexion</translation>
 <translation id="4514889972748124117">Suggérer un mot de passe sécurisé</translation>
 <translation id="4520798012560649652">En savoir plus sur le mode navigation privée</translation>
@@ -1059,7 +1057,6 @@ Vos données sont chiffrées avec votre phrase secrète. Saisissez-la pour utili
 
 Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</translation>
 <translation id="6497850081273517953">Chrome est obsolète. Installez la dernière version pour vous protéger.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Annuler le suivi de ce colis}one{Annuler le suivi de ce colis}other{Annuler le suivi de ces colis}}</translation>
 <translation id="650279896687777322">En savoir plus…</translation>
 <translation id="6507973708545996744">Connectez-vous pour accéder à votre liste de lecture sur tous vos appareils.</translation>
 <translation id="6510072653668207258">Me le rappeler plus tard</translation>
@@ -1217,6 +1214,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7367530036083223701">Accédez à vos mots de passe de manière sécurisée depuis l'écran d'accueil avec le widget Gestionnaire de mots de passe.</translation>
 <translation id="7380220816562673297">Pour le moment, vous ne pouvez partager des mots de passe qu'avec des membres de votre famille. <ph name="BEGIN_LINK" />Créez un groupe familial<ph name="END_LINK" /> avec jusqu'à six membres, et profitez pleinement de vos produits et abonnements sur Google.</translation>
 <translation id="7383797227493018512">Liste de lecture</translation>
+<translation id="739101637685146669">Quelle URL souhaitez-vous ajouter à vos favoris ?</translation>
 <translation id="7396331865858820922">Mot de passe non partagé</translation>
 <translation id="7398893703713203428">Créer un lien</translation>
 <translation id="7399802613464275309">Contrôle de sécurité</translation>
@@ -1452,6 +1450,7 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="8591976964826315682">Bloquer les cookies tiers en mode navigation privée</translation>
 <translation id="8593565399399144771">Vous pouvez ouvrir un nouvel onglet ici.</translation>
 <translation id="8605219856220328675">Fermer l'onglet</translation>
+<translation id="8609743333007776886">Ajouter ${url} aux favoris</translation>
 <translation id="8613883225817609844">Masquer "Onglets récents"</translation>
 <translation id="8620640915598389714">Modifier</translation>
 <translation id="8624447588354561276">Numéro de colis</translation>

@@ -844,6 +844,7 @@
 <translation id="1641113438599504367">Бяспечны прагляд</translation>
 <translation id="1641496881756082050">Іншыя дзеянні з сеткай "<ph name="NETWORK_NAME" />"</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Не ўдалося імпартаваць яшчэ 1 пароль, бо ён мае няправільны фармат}one{Не ўдалося імпартаваць яшчэ {NUM_PASSWORDS} пароль, бо яны маюць няправільны фармат}few{Не ўдалося імпартаваць яшчэ {NUM_PASSWORDS} паролі, бо яны маюць няправільны фармат}many{Не ўдалося імпартаваць яшчэ {NUM_PASSWORDS} пароляў, бо яны маюць няправільны фармат}other{Не ўдалося імпартаваць яшчэ {NUM_PASSWORDS} пароля, бо яны маюць няправільны фармат}}</translation>
+<translation id="1642299742557467312">Гэты файл можа прычыніць шкоду прыладзе</translation>
 <translation id="1642492862748815878">Падключана да прылады "<ph name="DEVICE" />" і яшчэ наступнай колькасці прылад з Bluetooth: <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="1642494467033190216">Перад уключэннем іншых функцый адладкі неабходна выдаліць ахову rootfs і выканаць перазапуск.</translation>
 <translation id="1643072738649235303">Подпіс X9.62 ECDSA з SHA-1</translation>
@@ -4071,6 +4072,7 @@
 <translation id="4148195018520464922">Вы можаце дазволіць уваход толькі пэўным карыстальнікам. Пры гэтым будзе выдалены пункт "Дадаць карыстальніка" на экране ўваходу. Таксама можна выдаліць бягучых карыстальнікаў.</translation>
 <translation id="4148957013307229264">Ідзе ўсталяванне...</translation>
 <translation id="4150201353443180367">Дысплэй</translation>
+<translation id="4150417452770391330">Падключыце камеру</translation>
 <translation id="4150569944729499860">Кантэкст экрана</translation>
 <translation id="4151449637210235443">Раскажыце пра нядаўні працэс гульні</translation>
 <translation id="4151503145138736576">Няма пазасеткавага сховішча, у якім можна было б вызваліць месца</translation>
@@ -4171,6 +4173,7 @@
 <translation id="4244238649050961491">Знайсці больш праграм для стыла</translation>
 <translation id="4246980464509998944">Дадатковыя каментарыі:</translation>
 <translation id="424726838611654458">Заўсёды адкрываць у Adobe Reader</translation>
+<translation id="4248401726442101648">Камера не падключана</translation>
 <translation id="4249248555939881673">Чакаецца падключэнне да сеткі...</translation>
 <translation id="4249373718504745892">Гэтай старонцы быў заблакіраваны доступ да вашай камеры і мікрафона.</translation>
 <translation id="424963718355121712">Праграмы павінны ўсталёўвацца з тых хостаў, з якімі яны працуюць</translation>
@@ -4293,6 +4296,7 @@
 <translation id="4345457680916430965">&amp;Адкрыць у праграме "<ph name="APP" />"</translation>
 <translation id="4345587454538109430">Наладзіць...</translation>
 <translation id="4345732373643853732">Імя карыстальніка невядомае серверу</translation>
+<translation id="4346159263667201092">Дадаць падрабязныя звесткі (неабавязкова)</translation>
 <translation id="4348426576195894795">Пры яго выдаленні будуць выдалены таксама ўсе профілі Chrome, у якія быў выкананы ўваход з выкарыстаннем гэтага ўліковага запісу</translation>
 <translation id="4348766275249686434">Збіраць памылкі</translation>
 <translation id="4349828822184870497">Карысна</translation>
@@ -4377,6 +4381,7 @@
 <translation id="4406883609789734330">Аўтаматычныя субцітры</translation>
 <translation id="4407039574263172582">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць ваша імя, адрас электроннай пошты і відарыс профілю з гэтым сайтам. Азнаёмцеся з <ph name="BEGIN_LINK" />умовамі выкарыстання<ph name="END_LINK" /> сайта.</translation>
 <translation id="4408599188496843485">Да&amp;ведка</translation>
+<translation id="4408965460206576430">Гэты файл змяшчае шкодную праграму або атрыманы з падазронага сайта</translation>
 <translation id="4409271659088619928">Ваша пошукавая сістэма – <ph name="DSE" />. Каб выдаліць гісторыю пошуку, выканайце інструкцыі гэтай сістэмы (калі яны даступныя).</translation>
 <translation id="4409697491990005945">Палі</translation>
 <translation id="4409779593816003679">Паролі і аўтазапаўненне</translation>
@@ -10240,7 +10245,6 @@
 <translation id="9057354806206861646">Абнавіць расклад</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Прыкладна 1 апавяшчэнне ў дзень}one{Прыкладна {NUM_NOTIFICATION} апавяшчэнне ў дзень}few{Прыкладна {NUM_NOTIFICATION} апавяшчэнні ў дзень}many{Прыкладна {NUM_NOTIFICATION} апавяшчэнняў у дзень}other{Прыкладна {NUM_NOTIFICATION} апавяшчэння ў дзень}}</translation>
 <translation id="9058760336383947367">Паглядзець файл PPD для прынтара</translation>
-<translation id="9060042817356580609">Выбраць пастаўшчыка паслуг DNS</translation>
 <translation id="9061694916020926968">Каб выкарыстоўваць Steam для Chromebook (бэта), увайдзіце ва Уліковы запіс Google і паўтарыце спробу.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Памылка з радка <ph name="ERROR_LINE_START" /> па <ph name="ERROR_LINE_END" /></translation>

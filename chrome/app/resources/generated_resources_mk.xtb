@@ -845,6 +845,7 @@
 <translation id="1641113438599504367">Безбедно прелистување</translation>
 <translation id="1641496881756082050">Повеќе дејства за <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 друга лозинка не е увезена бидејќи не е форматирана правилно}one{{NUM_PASSWORDS} други лозинки не се увезени бидејќи не се форматирани правилно}other{{NUM_PASSWORDS} други лозинки не се увезени бидејќи не се форматирани правилно}}</translation>
+<translation id="1642299742557467312">Датотекава би можела да му наштети на вашиот уред</translation>
 <translation id="1642492862748815878">Поврзани сте со <ph name="DEVICE" /> и <ph name="NUMBER_OF_DEVICES" /> други уреди со Bluetooth</translation>
 <translation id="1642494467033190216">Потребно е отстранување на заштитата на rootfs и престартување пред да се овозможат другите функции за отстранување грешки.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA потпис со SHA-1</translation>
@@ -4088,6 +4089,7 @@
 <translation id="4148195018520464922">Може да го ограничите најавувањето на конкретни корисници. Со ова ќе се отстрани опцијата „Додај лице“ на екранот за најавување. Може да ги отстраните и тековните корисници.</translation>
 <translation id="4148957013307229264">Се инсталира...</translation>
 <translation id="4150201353443180367">Екран</translation>
+<translation id="4150417452770391330">Поврзете камера</translation>
 <translation id="4150569944729499860">Контекст на екранот</translation>
 <translation id="4151449637210235443">Кажете ни за вашето неодамнешно играње</translation>
 <translation id="4151503145138736576">Нема офлајн простор за подзачистување</translation>
@@ -4188,6 +4190,7 @@
 <translation id="4244238649050961491">Најди други апликации за пенкало</translation>
 <translation id="4246980464509998944">Дополнителни коментари:</translation>
 <translation id="424726838611654458">Секогаш отворај во Adobe Reader</translation>
+<translation id="4248401726442101648">Не е поврзана камера</translation>
 <translation id="4249248555939881673">Се чека за мрежно поврзување...</translation>
 <translation id="4249373718504745892">Пристапот на страницата до камерата и микрофонот е блокиран.</translation>
 <translation id="424963718355121712">Апликациите мора да се послужат од хостот на кој влијаат</translation>
@@ -4310,6 +4313,7 @@
 <translation id="4345457680916430965">Отвори во <ph name="APP" /></translation>
 <translation id="4345587454538109430">Конфигурирај…</translation>
 <translation id="4345732373643853732">Корисничкото име не му е познато на серверот</translation>
+<translation id="4346159263667201092">Додајте незадолжителни детали</translation>
 <translation id="4348426576195894795">Ако ја отстраните сметкава, ќе се избришат и профилите на Chrome најавени со сметкава</translation>
 <translation id="4348766275249686434">Собирај грешки</translation>
 <translation id="4349828822184870497">Корисно</translation>
@@ -4394,6 +4398,7 @@
 <translation id="4406883609789734330">Автоматски титлови</translation>
 <translation id="4407039574263172582">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето име, адресата на е-пошта и профилната слика со сајтов. Погледнете ги <ph name="BEGIN_LINK" />Условите за користење<ph name="END_LINK" /> на сајтов.</translation>
 <translation id="4408599188496843485">П&amp;омош</translation>
+<translation id="4408965460206576430">Датотекава содржи злонамерен софтвер или потекнува од сомнителен сајт</translation>
 <translation id="4409271659088619928">Вашиот пребарувач е <ph name="DSE" />. Погледнете го неговото упатство за бришење на историјата на пребарување ако е применливо.</translation>
 <translation id="4409697491990005945">Маргини</translation>
 <translation id="4409779593816003679">Лозинки и автоматско пополнување</translation>
@@ -10257,7 +10262,6 @@
 <translation id="9057354806206861646">Распоред за ажурирање</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{За 1 известување дневно}one{За {NUM_NOTIFICATION} известување дневно}other{За {NUM_NOTIFICATION} известувања дневно}}</translation>
 <translation id="9058760336383947367">Прегледајте го PPD за печатачот</translation>
-<translation id="9060042817356580609">Изберете давател на услуги на DNS</translation>
 <translation id="9061694916020926968">Треба да бидете најавени на сметка на Google за да користите „Steam за Chromebook“ (Бета). Најавете се и обидете се повторно.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Грешка од ред <ph name="ERROR_LINE_START" /> до <ph name="ERROR_LINE_END" /></translation>

@@ -4207,6 +4207,7 @@
 <translation id="4261429981378979799">Өргөтгөлийн зөвшөөрөл</translation>
 <translation id="4262004481148703251">Сануулгыг хаах</translation>
 <translation id="4263223596040212967">Гарын байршлаа шалгаад, дахин оролдоно уу.</translation>
+<translation id="4265301768135164545">Та мөн eSIM профайлыг <ph name="BEGIN_LINK" />гар аргаар<ph name="END_LINK" /> тохируулах боломжтой</translation>
 <translation id="426564820080660648">Програм шинэчлэгдсэн эсэхийг шалгах тохиолдолд интернет, Wi-Fi эсвэл гар утасныхаа дата эрхийг ашиглана уу.</translation>
 <translation id="426652736638196239">Энэ Олон улсын банк акаунтны дугаарыг зөвхөн энэ төхөөрөмжид хадгална</translation>
 <translation id="4266679478228765574">Фолдерыг хассанаар хуваалцахаа болих хэдий ч файлуудыг устгахгүй.</translation>
@@ -9740,6 +9741,7 @@
 <translation id="8676313779986170923">Санал хүсэлт илгээсэнд баярлалаа.</translation>
 <translation id="8676374126336081632">Оролтыг цэвэрлэх</translation>
 <translation id="8676770494376880701">Цэнэглэгчийг холбосон байна</translation>
+<translation id="8676985325915861058">Алгасаад, шинэ профайл тохируулах</translation>
 <translation id="8677212948402625567">Бүгдийг нуух...</translation>
 <translation id="8678192320753081984">Зорилтот халдлагын эрсдэлтэй хүмүүсийг Google-н хамгийн хүчирхэг бүртгэлийн аюулгүй байдлаар хангана</translation>
 <translation id="8678378565142776698">Дахин эхлүүлж, автомат шинэчлэлт аваарай</translation>
@@ -10246,7 +10248,6 @@
 <translation id="9057354806206861646">Хуваарийг шинэчлэх</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Хоногт ойролцоогоор 1 мэдэгдэл}other{Хоногт ойролцоогоор {NUM_NOTIFICATION} мэдэгдэл}}</translation>
 <translation id="9058760336383947367">Принтерийн PPD харах</translation>
-<translation id="9060042817356580609">DNS-н үйлчилгээ үзүүлэгчийг сонгох</translation>
 <translation id="9061694916020926968">Chromebook-н Steam (Бета)-г ашиглахын тулд та Google Бүртгэлд нэвтэрсэн байх шаардлагатай. Нэвтрээд дахин оролдоно уу.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />-с <ph name="ERROR_LINE_END" /> мөрийн алдаа</translation>

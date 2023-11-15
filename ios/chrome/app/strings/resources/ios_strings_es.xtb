@@ -68,7 +68,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="1295289763199166823">Personalizar menú</translation>
 <translation id="1305822519689023679">Para asegurarte de que siempre puedas usar las contraseñas en tu cuenta de Google, debes verificar que eres tú.</translation>
 <translation id="1312721752506309252">La protección mejorada está activada</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Seguir este paquete}other{Seguir todos los paquetes}}</translation>
 <translation id="1321993286294231467">No se ha podido guardar la imagen.</translation>
 <translation id="1322735045095424339">Tu organización requiere que uses el modo Incógnito</translation>
 <translation id="1323735185997015385">Eliminar</translation>
@@ -655,7 +654,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4489536976005181779">{count,plural, =1{Página añadida a la lista de lectura de tu cuenta ({email})}other{Páginas añadidas a la lista de lectura de tu cuenta ({email})}}</translation>
 <translation id="4493604894403585654">Has iniciado sesión como <ph name="USER_EMAIL" />. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="4502566650163919158">Comprobar ahora</translation>
-<translation id="4505980578794259603">Última comprobación: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Cierra el inicio de sesión en la promoción</translation>
 <translation id="4514889972748124117">Sugerir contraseña segura...</translation>
 <translation id="4520798012560649652">Más información sobre el modo Incógnito</translation>
@@ -1059,7 +1057,6 @@ Tus datos se han cifrado con tu frase de contraseña. Introdúcela para usar y g
 
 Se recomienda usar una contraseña única en cada sitio.</translation>
 <translation id="6497850081273517953">Chrome no está actualizado. Actualízalo a la versión más reciente para protegerte.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Dejar de seguir este paquete}other{Dejar de seguir todos los paquetes}}</translation>
 <translation id="650279896687777322">Más información...</translation>
 <translation id="6507973708545996744">Inicia sesión para consultar tu lista de lectura en todos tus dispositivos.</translation>
 <translation id="6510072653668207258">Recordármelo más tarde</translation>
@@ -1216,6 +1213,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7367530036083223701">Accede de forma segura a tus contraseñas desde la pantalla de inicio con el widget Gestor de contraseñas.</translation>
 <translation id="7380220816562673297">Por ahora, solo puedes compartir contraseñas con miembros de la familia. <ph name="BEGIN_LINK" />Crea un grupo familiar<ph name="END_LINK" /> de hasta 6 miembros y sácales más partido a tus productos y suscripciones de Google.</translation>
 <translation id="7383797227493018512">Lista de lectura</translation>
+<translation id="739101637685146669">¿Qué URL quieres añadir a Marcadores?</translation>
 <translation id="7396331865858820922">No se ha compartido la contraseña</translation>
 <translation id="7398893703713203428">Crear enlace</translation>
 <translation id="7399802613464275309">Comprobación de seguridad</translation>
@@ -1451,6 +1449,7 @@ Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Intr
 <translation id="8591976964826315682">Bloquear cookies de terceros en incógnito</translation>
 <translation id="8593565399399144771">Aquí puedes abrir una nueva pestaña.</translation>
 <translation id="8605219856220328675">Cerrar pestaña.</translation>
+<translation id="8609743333007776886">Añadir ${url} a Marcadores</translation>
 <translation id="8613883225817609844">Ocultar Pestañas recientes</translation>
 <translation id="8620640915598389714">Editar</translation>
 <translation id="8624447588354561276">Número de paquete</translation>

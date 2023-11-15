@@ -3053,6 +3053,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}other{<ph name="PAYMENT_METHOD_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}}</translation>
 <translation id="7153618581592392745">Λιλά</translation>
 <translation id="7156870133441232244">Ο διακομιστής θα πρέπει να αναβαθμιστεί σε έκδοση TLS 1.2 ή μεταγενέστερη.</translation>
+<translation id="715996170234243096">{NUM_FILES,plural, =1{Για να στείλετε αυτό το αρχείο χρησιμοποιώντας την εφαρμογή <ph name="FEATURE_NAME" />, ελευθερώστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}other{Για να στείλετε αυτά τα αρχεία χρησιμοποιώντας την εφαρμογή <ph name="FEATURE_NAME" />, ελευθερώστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}}</translation>
 <translation id="7160999678034985039">Αποθηκεύστε την εργασία σας και ξεκινήστε την ενημέρωση όταν είστε έτοιμοι.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Αντιγραφή εμπιστευτικού αρχείου;}other{Αντιγραφή εμπιστευτικών αρχείων;}}</translation>
 <translation id="717330890047184534">Αναγνωριστικό Gaia:</translation>

@@ -502,6 +502,7 @@
 <translation id="371230970611282515">Аюултай үйл явдлын тухай урьдчилан таамаглаж, тохиолдохоос нь өмнө танд анхааруулга өгдөг.</translation>
 <translation id="3714981814255182093">Find Bar-г нээх</translation>
 <translation id="3716182511346448902">Энэ хуудас хэт их хэмжээний санах ой ашиглаж байгаа тул үүнийг Chrome түр зогсоосон болно.</translation>
+<translation id="3720422586473670527">Үгүй, баярлалаа</translation>
 <translation id="3721119614952978349">Та болон Google</translation>
 <translation id="3737319253362202215">Орчуулгын тохиргоо</translation>
 <translation id="3737402728074743863">Энэ төхөөрөмжийг аюулгүй байдлын түлхүүрээр ашиглахын тулд дэлгэцийн түгжээ тохируулна уу</translation>
@@ -798,6 +799,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Файл татаж байна…}other{# файл татаж байна…}}</translation>
 <translation id="5210286577605176222">Өмнөх табад очих</translation>
 <translation id="5210365745912300556">Цонхыг хаа</translation>
+<translation id="5216863793077689658">Таны Хуудасны статистикийн үйл ажиллагааг <ph name="BEGIN_LINK" />Google Бүртгэлд<ph name="END_LINK" /> тань хадгалсан.</translation>
 <translation id="5222676887888702881">Гарах</translation>
 <translation id="5226378907213531272">Та машиныг ашиглах бүрдээ дэлгэцийнхээ түгжээг тайлна</translation>
 <translation id="5227554086496586518">Хайлтын илэрцүүдийг харахын тулд товшино уу</translation>
