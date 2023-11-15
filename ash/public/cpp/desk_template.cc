@@ -6,6 +6,7 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/window_properties.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -17,6 +18,8 @@
 namespace ash {
 
 namespace {
+
+constexpr char kOsFeedbackAppId[] = "iffgohomcomlpmkfikfffagkkoojjffm";
 
 std::string TabGroupDataToString(const app_restore::RestoreData* restore_data) {
   std::string result = "tab groups:[";
@@ -79,8 +82,14 @@ bool DeskTemplate::IsAppTypeSupported(aura::Window* window) {
     case AppType::ARC_APP:
     case AppType::BROWSER:
     case AppType::CHROME_APP:
-    case AppType::SYSTEM_APP:
-      break;
+      return true;
+    case AppType::SYSTEM_APP: {
+      const auto* app_id = window->GetProperty(kAppIDKey);
+      // Feedback app is not saved, see b/301479278.
+      if (app_id && *app_id == kOsFeedbackAppId) {
+        return false;
+      }
+    } break;
   }
 
   return true;
