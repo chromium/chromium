@@ -161,6 +161,7 @@ source_set("unit_tests") {
 
   sources = [
     "base_grid_mediator_unittest.mm",
+    "grid_item_identifier_unittest.mm",
     "grid_view_controller_unittest.mm",
   ]
 
