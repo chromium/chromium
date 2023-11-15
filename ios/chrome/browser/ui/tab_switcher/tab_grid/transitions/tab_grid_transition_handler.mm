@@ -4,18 +4,20 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_handler.h"
 
+#import "base/check.h"
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/animations/centered_zoom_transition_animation.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/animations/tab_grid_transition_animation.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/animations/tab_grid_transition_animation_group.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_layout_providing.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 @implementation TabGridTransitionHandler {
   TabGridTransitionType _transitionType;
   TabGridTransitionDirection _direction;
 
-  UIViewController* _tabGridViewController;
+  UIViewController<TabGridTransitionLayoutProviding>* _tabGridViewController;
   BVCContainerViewController* _bvcContainerViewController;
 
   id<TabGridTransitionAnimation> _animation;
@@ -25,11 +27,15 @@
 
 - (instancetype)initWithTransitionType:(TabGridTransitionType)transitionType
                              direction:(TabGridTransitionDirection)direction
-                 tabGridViewController:(UIViewController*)tabGridViewController
+                 tabGridViewController:
+                     (UIViewController<TabGridTransitionLayoutProviding>*)
+                         tabGridViewController
             bvcContainerViewController:
                 (BVCContainerViewController*)bvcContainerViewController {
   self = [super init];
   if (self) {
+    CHECK(tabGridViewController.transitionLayout);
+
     _transitionType = transitionType;
     _direction = direction;
     _tabGridViewController = tabGridViewController;
