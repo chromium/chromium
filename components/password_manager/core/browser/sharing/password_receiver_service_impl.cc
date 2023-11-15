@@ -30,35 +30,30 @@ namespace {
 ProcessIncomingPasswordSharingInvitationResult
 GetProcessSharingInvitationResultForIgnoredInvitations(
     const PasswordForm& exsiting_credentials,
-    const sync_pb::IncomingPasswordSharingInvitationSpecifics&
-        incoming_invitation) {
-  const sync_pb::PasswordSharingInvitationData::PasswordData&
-      incoming_credentials =
-          incoming_invitation.client_only_unencrypted_data().password_data();
+    const PasswordForm& incoming_credentials) {
   CHECK_EQ(exsiting_credentials.username_value,
-           base::UTF8ToUTF16(incoming_credentials.username_value()));
+           incoming_credentials.username_value);
 
-  std::u16string incoming_password_value =
-      base::UTF8ToUTF16(incoming_credentials.password_value());
   if (exsiting_credentials.type != PasswordForm::Type::kReceivedViaSharing) {
-    return exsiting_credentials.password_value == incoming_password_value
+    return exsiting_credentials.password_value ==
+                   incoming_credentials.password_value
                ? ProcessIncomingPasswordSharingInvitationResult::
                      kCredentialsExistWithSamePassword
                : ProcessIncomingPasswordSharingInvitationResult::
                      kCredentialsExistWithDifferentPassword;
   }
 
-  if (exsiting_credentials.sender_email ==
-      base::UTF8ToUTF16(
-          incoming_invitation.sender_info().user_display_info().email())) {
-    return exsiting_credentials.password_value == incoming_password_value
+  if (exsiting_credentials.sender_email == incoming_credentials.sender_email) {
+    return exsiting_credentials.password_value ==
+                   incoming_credentials.password_value
                ? ProcessIncomingPasswordSharingInvitationResult::
                      kSharedCredentialsExistWithSameSenderAndSamePassword
                : ProcessIncomingPasswordSharingInvitationResult::
                      kSharedCredentialsExistWithSameSenderAndDifferentPassword;
   }
 
-  return exsiting_credentials.password_value == incoming_password_value
+  return exsiting_credentials.password_value ==
+                 incoming_credentials.password_value
              ? ProcessIncomingPasswordSharingInvitationResult::
                    kSharedCredentialsExistWithDifferentSenderAndSamePassword
              : ProcessIncomingPasswordSharingInvitationResult::
@@ -102,26 +97,18 @@ PasswordForm IncomingSharingInvitationToPasswordForm(
 }  // namespace
 
 ProcessIncomingSharingInvitationTask::ProcessIncomingSharingInvitationTask(
-    sync_pb::IncomingPasswordSharingInvitationSpecifics invitation,
+    PasswordForm incoming_credentials,
     PasswordStoreInterface* password_store,
     base::OnceCallback<void(ProcessIncomingSharingInvitationTask*)>
         done_callback)
-    : invitation_(std::move(invitation)),
+    : incoming_credentials_(std::move(incoming_credentials)),
       password_store_(password_store),
       done_processing_invitation_callback_(std::move(done_callback)) {
-  // Incoming sharing invitation are only accepted if they represent a password
+  // Incoming credentials are only accepted if they represent a password
   // form that doesn't exist in the password store. Query the password store
   // first in order to detect existing credentials.
-  const sync_pb::PasswordSharingInvitationData::PasswordData&
-      incoming_credentials =
-          invitation_.client_only_unencrypted_data().password_data();
-
-  password_store_->GetLogins(
-      PasswordFormDigest(
-          static_cast<PasswordForm::Scheme>(incoming_credentials.scheme()),
-          incoming_credentials.signon_realm(),
-          GURL(incoming_credentials.origin())),
-      weak_ptr_factory_.GetWeakPtr());
+  password_store_->GetLogins(PasswordFormDigest(incoming_credentials_),
+                             weak_ptr_factory_.GetWeakPtr());
 }
 
 ProcessIncomingSharingInvitationTask::~ProcessIncomingSharingInvitationTask() =
@@ -132,28 +119,23 @@ void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResults(
   // TODO(crbug.com/1448235): process PSL and affilated credentials if needed.
   // TODO(crbug.com/1448235): process conflicting passwords differently if
   // necessary.
-  std::u16string incoming_username_value =
-      base::UTF8ToUTF16(invitation_.client_only_unencrypted_data()
-                            .password_data()
-                            .username_value());
   auto credential_with_same_username_it = base::ranges::find_if(
-      results,
-      [&incoming_username_value](const std::unique_ptr<PasswordForm>& result) {
-        return result->username_value == incoming_username_value;
+      results, [this](const std::unique_ptr<PasswordForm>& result) {
+        return result->username_value == incoming_credentials_.username_value;
       });
   if (credential_with_same_username_it == results.end()) {
     metrics_util::LogProcessIncomingPasswordSharingInvitationResult(
         ProcessIncomingPasswordSharingInvitationResult::
             kInvitationAutoApproved);
     password_store_->AddLogin(
-        IncomingSharingInvitationToPasswordForm(invitation_),
+        incoming_credentials_,
         base::BindOnce(std::move(done_processing_invitation_callback_), this));
     return;
   }
 
   ProcessIncomingPasswordSharingInvitationResult processing_result =
       GetProcessSharingInvitationResultForIgnoredInvitations(
-          **credential_with_same_username_it, invitation_);
+          **credential_with_same_username_it, incoming_credentials_);
   metrics_util::LogProcessIncomingPasswordSharingInvitationResult(
       processing_result);
 
@@ -163,7 +145,7 @@ void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResults(
       base::FeatureList::IsEnabled(
           features::kAutoApproveSharedPasswordUpdatesFromSameSender)) {
     password_store_->UpdateLogin(
-        IncomingSharingInvitationToPasswordForm(invitation_),
+        incoming_credentials_,
         base::BindOnce(std::move(done_processing_invitation_callback_), this));
     return;
   }
@@ -228,7 +210,7 @@ void PasswordReceiverServiceImpl::ProcessIncomingSharingInvitation(
   // TODO(crbug.com/1445868): fill in creation date if still relevant and verify
   // incoming invitations.
   auto task = std::make_unique<ProcessIncomingSharingInvitationTask>(
-      std::move(invitation), password_store,
+      IncomingSharingInvitationToPasswordForm(invitation), password_store,
       /*done_callback=*/
       base::BindOnce(&PasswordReceiverServiceImpl::RemoveTaskFromTasksList,
                      base::Unretained(this)));
