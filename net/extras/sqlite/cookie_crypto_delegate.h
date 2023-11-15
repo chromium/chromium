@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 
 namespace net {
 
@@ -15,6 +16,14 @@ namespace net {
 class COMPONENT_EXPORT(NET_EXTRAS) CookieCryptoDelegate {
  public:
   virtual ~CookieCryptoDelegate() = default;
+
+  // Called to initialize the delegate. `EncryptString` and `DecryptString` may
+  // only be called once the `callback` has executed. `callback` executes on the
+  // same sequence as the call to `Init` either synchronously or asynchronously.
+  // Note: `Init` may be called multiple times and implementers should handle
+  // that appropriately by servicing every callback either synchronously or
+  // asynchronously.
+  virtual void Init(base::OnceClosure callback) = 0;
 
   // Encrypt `plaintext` string and store the result in `ciphertext`. Returns
   // true if the encryption succeeded.

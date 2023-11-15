@@ -20,6 +20,7 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -62,14 +63,20 @@ const base::FilePath::CharType kCookieFilename[] = FILE_PATH_LITERAL("Cookies");
 class CookieCryptor : public CookieCryptoDelegate {
  public:
   CookieCryptor();
+  void Init(base::OnceClosure callback) override;
   bool EncryptString(const std::string& plaintext,
                      std::string* ciphertext) override;
   bool DecryptString(const std::string& ciphertext,
                      std::string* plaintext) override;
 
  private:
+  void InitComplete();
+  bool init_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool initing_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  base::OnceClosureList callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<crypto::SymmetricKey> key_;
   crypto::Encryptor encryptor_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 CookieCryptor::CookieCryptor()
@@ -81,6 +88,28 @@ CookieCryptor::CookieCryptor()
           256)) {
   std::string iv("the iv: 16 bytes");
   encryptor_.Init(key_.get(), crypto::Encryptor::CBC, iv);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+void CookieCryptor::Init(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (init_) {
+    std::move(callback).Run();
+    return;
+  }
+
+  // Callbacks here are owned by test fixtures that outlive the CookieCryptor.
+  callbacks_.AddUnsafe(std::move(callback));
+
+  if (initing_) {
+    return;
+  }
+
+  initing_ = true;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&CookieCryptor::InitComplete, base::Unretained(this)),
+      base::Milliseconds(100));
 }
 
 bool CookieCryptor::EncryptString(const std::string& plaintext,
@@ -91,6 +120,12 @@ bool CookieCryptor::EncryptString(const std::string& plaintext,
 bool CookieCryptor::DecryptString(const std::string& ciphertext,
                                   std::string* plaintext) {
   return encryptor_.Decrypt(ciphertext, plaintext);
+}
+
+void CookieCryptor::InitComplete() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  init_ = true;
+  callbacks_.Notify();
 }
 
 }  // namespace
@@ -105,31 +140,37 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
         db_thread_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                          base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
-  void OnLoaded(CanonicalCookieVector cookies) {
-    cookies_.swap(cookies);
-    loaded_event_.Signal();
-  }
+  void SignalLoadedEvent() { loaded_event_.Signal(); }
 
-  void OnKeyLoaded(base::OnceClosure closure, CanonicalCookieVector cookies) {
+  void OnLoaded(base::OnceClosure closure, CanonicalCookieVector cookies) {
     cookies_.swap(cookies);
     std::move(closure).Run();
   }
 
   void Load(CanonicalCookieVector* cookies) {
-    EXPECT_FALSE(loaded_event_.IsSignaled());
-    store_->Load(base::BindOnce(&SQLitePersistentCookieStoreTest::OnLoaded,
-                                base::Unretained(this)),
-                 NetLogWithSource::Make(NetLogSourceType::NONE));
-    loaded_event_.Wait();
-    cookies->swap(cookies_);
+    base::RunLoop run_loop;
+    store_->Load(
+        base::BindLambdaForTesting([&](CanonicalCookieVector obtained_cookies) {
+          cookies->swap(obtained_cookies);
+          run_loop.Quit();
+        }),
+        NetLogWithSource::Make(NetLogSourceType::NONE));
+    run_loop.Run();
+  }
+
+  void LoadAsyncAndSignalEvent() {
+    store_->Load(
+        base::BindOnce(
+            &SQLitePersistentCookieStoreTest::OnLoaded, base::Unretained(this),
+            base::BindOnce(&SQLitePersistentCookieStoreTest::SignalLoadedEvent,
+                           base::Unretained(this))),
+        NetLogWithSource::Make(NetLogSourceType::NONE));
   }
 
   void Flush() {
-    base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                              base::WaitableEvent::InitialState::NOT_SIGNALED);
-    store_->Flush(
-        base::BindOnce(&base::WaitableEvent::Signal, base::Unretained(&event)));
-    event.Wait();
+    base::RunLoop run_loop;
+    store_->Flush(run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   void DestroyStore() {
@@ -375,9 +416,7 @@ TEST_F(SQLitePersistentCookieStoreTest, TestSessionCookiesDeletedOnStartup) {
   background_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SQLitePersistentCookieStoreTest::WaitOnDBEvent,
                                 base::Unretained(this)));
-  store_->Load(base::BindOnce(&SQLitePersistentCookieStoreTest::OnLoaded,
-                              base::Unretained(this)),
-               NetLogWithSource());
+  LoadAsyncAndSignalEvent();
   t += base::Microseconds(10);
   AddCookieWithExpiration("A", "B", "c.com", "/", t, base::Time());
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
@@ -404,18 +443,16 @@ TEST_F(SQLitePersistentCookieStoreTest, TestSessionCookiesDeletedOnStartup) {
   store_ = base::MakeRefCounted<SQLitePersistentCookieStore>(
       temp_dir_.GetPath().Append(kCookieFilename), client_task_runner_,
       background_task_runner_, true, nullptr, false);
-  store_->Load(base::BindOnce(&SQLitePersistentCookieStoreTest::OnLoaded,
-                              base::Unretained(this)),
-               NetLogWithSource());
+  LoadAsyncAndSignalEvent();
   loaded_event_.Wait();
   ASSERT_EQ(4u, cookies_.size());
   cookies_.clear();
 }
 
-// Test that priority load of cookies for a specfic domain key could be
-// completed before the entire store is loaded
+// Test that priority load of cookies for a specific domain key could be
+// completed before the entire store is loaded.
 TEST_F(SQLitePersistentCookieStoreTest, TestLoadCookiesForKey) {
-  InitializeStore(false, false);
+  InitializeStore(/*crypt=*/true, /*restore_old_session_cookies=*/false);
   base::Time t = base::Time::Now();
   AddCookie("A", "B", "foo.bar", "/", t);
   t += base::Microseconds(10);
@@ -433,8 +470,13 @@ TEST_F(SQLitePersistentCookieStoreTest, TestLoadCookiesForKey) {
   // preventing client tasks to run, use
   // base::SingleThreadTaskRunner::GetCurrentDefault() instead of
   // |client_task_runner_| for this test.
-  Create(false /* crypt_cookies */, false /* restore_old_session_cookies */,
-         true /* use_current_thread */, false /* enable_exclusive_access */);
+  auto cookie_crypto_delegate = std::make_unique<CookieCryptor>();
+  store_ = base::MakeRefCounted<SQLitePersistentCookieStore>(
+      temp_dir_.GetPath().Append(kCookieFilename),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      background_task_runner_,
+      /*restore_old_session_cookies=*/false, cookie_crypto_delegate.get(),
+      /*enable_exclusive_access=*/false);
 
   // Posting a blocking task to db_thread_ makes sure that the DB thread waits
   // until both Load and LoadCookiesForKey have been posted to its task queue.
@@ -442,15 +484,23 @@ TEST_F(SQLitePersistentCookieStoreTest, TestLoadCookiesForKey) {
       FROM_HERE, base::BindOnce(&SQLitePersistentCookieStoreTest::WaitOnDBEvent,
                                 base::Unretained(this)));
   RecordingNetLogObserver net_log_observer;
-  store_->Load(base::BindOnce(&SQLitePersistentCookieStoreTest::OnLoaded,
-                              base::Unretained(this)),
-               NetLogWithSource::Make(NetLogSourceType::NONE));
+  LoadAsyncAndSignalEvent();
   base::RunLoop run_loop;
   net_log_observer.SetObserverCaptureMode(NetLogCaptureMode::kDefault);
   store_->LoadCookiesForKey(
       "aaa.com",
-      base::BindOnce(&SQLitePersistentCookieStoreTest::OnKeyLoaded,
+      base::BindOnce(&SQLitePersistentCookieStoreTest::OnLoaded,
                      base::Unretained(this), run_loop.QuitClosure()));
+
+  // Complete the initialization of the cookie crypto delegate. This ensures
+  // that any background tasks from the Load or the LoadCookiesForKey are posted
+  // to the background_task_runner_.
+  base::RunLoop cookie_crypto_loop;
+  cookie_crypto_delegate->Init(cookie_crypto_loop.QuitClosure());
+  cookie_crypto_loop.Run();
+
+  // Post a final blocking task to the background_task_runner_ to ensure no
+  // other cookie loads take place during the test.
   background_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SQLitePersistentCookieStoreTest::WaitOnDBEvent,
                                 base::Unretained(this)));
@@ -1161,7 +1211,9 @@ TEST_F(SQLitePersistentCookieStoreTest, KeyInconsistency) {
   // its PersistentCookieStore on the same thread as its methods are invoked on;
   // so to avoid needing to post every CookieMonster API call, this uses the
   // current thread for SQLitePersistentCookieStore's |client_task_runner|.
-  Create(false, false, true /* use_current_thread */, false);
+  // Note: Cookie encryption is explicitly enabled here to verify threading
+  // model with async initialization functions correctly.
+  Create(/*crypt_cookies=*/true, false, true /* use_current_thread */, false);
 
   // Create a cookie on a scheme that doesn't handle cookies by default,
   // and save it.
@@ -1325,6 +1377,7 @@ TEST_F(SQLitePersistentCookieStoreTest, Coalescing) {
               store_->GetQueueLengthForTesting());
 
     db_thread_event_.Signal();
+    DestroyStore();
   }
 }
 

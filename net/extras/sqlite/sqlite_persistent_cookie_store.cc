@@ -286,8 +286,9 @@ class SQLitePersistentCookieStore::Backend
   // Creates or loads the SQLite database.
   void Load(LoadedCallback loaded_callback);
 
-  // Loads cookies for the domain key (eTLD+1).
-  void LoadCookiesForKey(const std::string& domain,
+  // Loads cookies for the domain key (eTLD+1). If no key is supplied then this
+  // behaves identically to `Load`.
+  void LoadCookiesForKey(base::optional_ref<const std::string> key,
                          LoadedCallback loaded_callback);
 
   // Steps through all results of |statement|, makes a cookie from each, and
@@ -352,6 +353,10 @@ class SQLitePersistentCookieStore::Backend
   // that have been loaded from DB since last IO notification.
   void NotifyLoadCompleteInForeground(LoadedCallback loaded_callback,
                                       bool load_success);
+
+  // Called from Load when crypto gets obtained.
+  void CryptoHasInitFromLoad(base::optional_ref<const std::string> key,
+                             LoadedCallback loaded_callback);
 
   // Initialize the Cookies table.
   bool CreateDatabaseSchema() override;
@@ -655,24 +660,34 @@ bool CreateV19Schema(sql::Database* db) {
 
 void SQLitePersistentCookieStore::Backend::Load(
     LoadedCallback loaded_callback) {
-  PostBackgroundTask(FROM_HERE,
-                     base::BindOnce(&Backend::LoadAndNotifyInBackground, this,
-                                    absl::nullopt, std::move(loaded_callback)));
+  LoadCookiesForKey(absl::nullopt, std::move(loaded_callback));
 }
 
 void SQLitePersistentCookieStore::Backend::LoadCookiesForKey(
-    const std::string& key,
+    base::optional_ref<const std::string> key,
+    LoadedCallback loaded_callback) {
+  if (crypto_) {
+    crypto_->Init(base::BindOnce(&Backend::CryptoHasInitFromLoad, this,
+                                 key.CopyAsOptional(),
+                                 std::move(loaded_callback)));
+  } else {
+    CryptoHasInitFromLoad(key, std::move(loaded_callback));
+  }
+}
+
+void SQLitePersistentCookieStore::Backend::CryptoHasInitFromLoad(
+    base::optional_ref<const std::string> key,
     LoadedCallback loaded_callback) {
   PostBackgroundTask(
-      FROM_HERE, base::BindOnce(&Backend::LoadAndNotifyInBackground, this, key,
-                                std::move(loaded_callback)));
+      FROM_HERE,
+      base::BindOnce(&Backend::LoadAndNotifyInBackground, this,
+                     key.CopyAsOptional(), std::move(loaded_callback)));
 }
 
 void SQLitePersistentCookieStore::Backend::LoadAndNotifyInBackground(
     base::optional_ref<const std::string> key,
     LoadedCallback loaded_callback) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
-
   bool success = false;
 
   if (InitializeDatabase()) {
