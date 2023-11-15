@@ -27,7 +27,7 @@ body {
 }
 
 .dialog h1 {
-  background: -webkit-linear-gradient(white, #F8F8F8);
+  background: linear-gradient(white, #F8F8F8);
   border-bottom: 1px solid rgba(188, 193, 208, .5);
   color: rgb(83, 99, 125);
   font-size: 105%;
