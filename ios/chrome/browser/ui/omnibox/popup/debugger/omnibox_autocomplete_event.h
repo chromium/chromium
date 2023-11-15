@@ -21,9 +21,6 @@ class AutocompleteController;
 @property(nonatomic, strong)
     NSMutableArray<AutocompleteMatchFormatter*>* matches;
 
-// Whether or not the controller is done fetching additional results.
-@property(nonatomic, assign) BOOL autocompleteControllerIsDone;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_DEBUGGER_OMNIBOX_AUTOCOMPLETE_EVENT_H_

@@ -8,15 +8,23 @@
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_event.h"
 
-@implementation OmniboxAutocompleteEvent
+@implementation OmniboxAutocompleteEvent {
+  /// Whether all sync and async providers from the autocomplete controller are
+  /// done.
+  BOOL _autocompleteControllerAsyncPassDone;
+  /// Whether all sync providers from the autocomplete controller are done.
+  BOOL _autocompleteControllerSyncPassDone;
+}
 
 - (OmniboxAutocompleteEvent*)initWithAutocompleteController:
     (AutocompleteController*)controller {
   self = [super init];
 
   if (self) {
+    _autocompleteControllerAsyncPassDone = controller->done();
+    _autocompleteControllerSyncPassDone = controller->sync_pass_done();
+
     self.matches = [[NSMutableArray alloc] init];
-    self.autocompleteControllerIsDone = controller->done();
     for (auto acm : controller->result()) {
       AutocompleteMatchFormatter* matcher =
           [[AutocompleteMatchFormatter alloc] initWithMatch:acm];
@@ -27,10 +35,14 @@
 }
 
 - (NSString*)title {
+  NSString* autocompleteControllerStatus = @"Processing";
+  if (_autocompleteControllerAsyncPassDone) {
+    autocompleteControllerStatus = @"Async Done";
+  } else if (_autocompleteControllerSyncPassDone) {
+    autocompleteControllerStatus = @"Sync Done";
+  }
   return [NSString
-      stringWithFormat:@"Result update %@", self.autocompleteControllerIsDone
-                                                ? @"(Final)"
-                                                : @"(Processing)"];
+      stringWithFormat:@"Result update (%@)", autocompleteControllerStatus];
 }
 
 - (EventType)type {
