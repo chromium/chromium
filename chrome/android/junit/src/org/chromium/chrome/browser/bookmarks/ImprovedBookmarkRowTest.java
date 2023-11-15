@@ -116,9 +116,7 @@ public class ImprovedBookmarkRowTest {
                         .with(ImprovedBookmarkRowProperties.POPUP_LISTENER, mPopupListener)
                         .with(
                                 ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
-                                (v) -> {
-                                    mOpenBookmarkCallback.run();
-                                })
+                                mOpenBookmarkCallback)
                         .with(ImprovedBookmarkRowProperties.EDITABLE, true)
                         .with(
                                 ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY,

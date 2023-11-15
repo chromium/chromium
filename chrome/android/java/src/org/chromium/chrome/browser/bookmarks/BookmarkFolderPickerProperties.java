@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import android.view.View;
-
 import androidx.annotation.IntDef;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -25,9 +23,9 @@ class BookmarkFolderPickerProperties {
 
     static final WritableObjectPropertyKey<String> TOOLBAR_TITLE =
             new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<View.OnClickListener> CANCEL_CLICK_LISTENER =
+    static final WritableObjectPropertyKey<Runnable> CANCEL_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<View.OnClickListener> MOVE_CLICK_LISTENER =
+    static final WritableObjectPropertyKey<Runnable> MOVE_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
     static final WritableBooleanPropertyKey MOVE_BUTTON_ENABLED = new WritableBooleanPropertyKey();
     // Using WritableObjectPropertyKey and skipEquality=true here because the menu button is

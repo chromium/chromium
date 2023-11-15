@@ -297,8 +297,9 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
                 ImprovedBookmarkRowProperties.END_IMAGE_RES, R.drawable.outline_chevron_right_24dp);
         propertyModel.set(
                 ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
-        propertyModel.set(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
-                (v) -> { BookmarkUtils.startFolderPickerActivity(this, mBookmarkId); });
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
+                () -> BookmarkUtils.startFolderPickerActivity(this, mBookmarkId));
 
         mFolderSelectRow =
                 ImprovedBookmarkRow.buildView(this, displayPref == BookmarkRowDisplayPref.VISUAL);

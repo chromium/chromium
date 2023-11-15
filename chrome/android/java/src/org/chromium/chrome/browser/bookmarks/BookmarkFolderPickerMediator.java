@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
 import android.view.MenuItem;
-import android.view.View;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
@@ -118,7 +117,7 @@ class BookmarkFolderPickerMediator {
         mInitialParentId =
                 mAllMovedBookmarksMatchParent ? firstParent : mBookmarkModel.getRootFolderId();
 
-        mModel.set(BookmarkFolderPickerProperties.CANCEL_CLICK_LISTENER, this::onCancelClicked);
+        mModel.set(BookmarkFolderPickerProperties.CANCEL_CLICK_LISTENER, mFinishRunnable);
         mModel.set(BookmarkFolderPickerProperties.MOVE_CLICK_LISTENER, this::onMoveClicked);
 
         mBookmarkModel.finishLoadingBookmarkModel(
@@ -184,15 +183,9 @@ class BookmarkFolderPickerMediator {
                 ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
         propertyModel.set(
                 ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
-                (v) -> {
-                    populateFoldersForParentId(bookmarkId);
-                });
+                () -> populateFoldersForParentId(bookmarkId));
         // Intentionally ignore long clicks to prevent selection.
-        propertyModel.set(
-                ImprovedBookmarkRowProperties.ROW_LONG_CLICK_LISTENER,
-                (v) -> {
-                    return true;
-                });
+        propertyModel.set(ImprovedBookmarkRowProperties.ROW_LONG_CLICK_LISTENER, () -> true);
 
         return new ListItem(FOLDER_ROW, propertyModel);
     }
@@ -257,11 +250,7 @@ class BookmarkFolderPickerMediator {
 
     // Private methods.
 
-    private void onCancelClicked(View v) {
-        mFinishRunnable.run();
-    }
-
-    private void onMoveClicked(View v) {
+    private void onMoveClicked() {
         BookmarkUtils.moveBookmarksToParent(
                 mBookmarkModel, mBookmarkIds, mCurrentParentItem.getId());
         BookmarkUtils.setLastUsedParent(mContext, mCurrentParentItem.getId());

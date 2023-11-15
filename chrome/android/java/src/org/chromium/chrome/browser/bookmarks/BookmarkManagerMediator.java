@@ -1310,10 +1310,10 @@ class BookmarkManagerMediator
 
         propertyModel.set(
                 ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
-                (v) -> bookmarkRowClicked(bookmarkId));
+                () -> bookmarkRowClicked(bookmarkId));
         propertyModel.set(
                 ImprovedBookmarkRowProperties.ROW_LONG_CLICK_LISTENER,
-                (v) -> bookmarkRowLongClicked(bookmarkId));
+                () -> bookmarkRowLongClicked(bookmarkId));
 
         return new ListItem(bookmarkListEntry.getViewType(), propertyModel);
     }
