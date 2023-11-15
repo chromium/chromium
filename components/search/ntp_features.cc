@@ -268,7 +268,7 @@ BASE_FEATURE(kNtpRealboxLensSearch,
 // endpoint instead of uploading to Scotty.
 BASE_FEATURE(kNtpLensDirectUpload,
              "NtpLensDirectUpload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, recipe tasks module will be shown.
 BASE_FEATURE(kNtpRecipeTasksModule,
