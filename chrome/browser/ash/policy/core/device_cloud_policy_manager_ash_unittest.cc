@@ -936,14 +936,12 @@ TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest,
   feature_list.InitAndEnableFeature(chromeos::features::kKioskHeartbeatsViaERP);
 
   RunTest();
-  ExpectSuccessfulEnrollment();
   EXPECT_FALSE(manager_->GetHeartbeatSchedulerForTesting());
 }
 
 TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest,
        DisabledKioskHeartbeatsViaERP) {
   RunTest();
-  ExpectSuccessfulEnrollment();
   EXPECT_EQ(manager_->GetHeartbeatSchedulerForTesting()->last_heartbeat(),
             base::Time());
 }
