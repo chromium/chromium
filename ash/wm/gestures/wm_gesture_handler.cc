@@ -167,13 +167,15 @@ bool Handle3FingerContinuousVerticalScroll(float scroll_y,
     return false;
   }
 
-  // Ignore scrolls beyond the upward threshold. Note that we already clamped
-  // `scroll_y` to `kVerticalThresholdDp`. If the threshold has been met but the
-  // scroll is in progress, we will need to do the final placement before we
-  // mark the scroll as finished.
+  // Consume overscroll after continuous scroll has
+  // completed progress. This prevents the scroll from propagating to another
+  // view and triggering additional behavior.
+  // Note that we already clamped `scroll_y` to `kVerticalThresholdDp`. If the
+  // threshold has been met but the scroll is in progress, we will need to do
+  // the final placement before we mark the scroll as finished.
   if (scroll_y == WmGestureHandler::kVerticalThresholdDp &&
       !overview_controller->is_continuous_scroll_in_progress()) {
-    return false;
+    return true;
   }
 
   // Prevent accidental swipes from triggering the continuous animation.

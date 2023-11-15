@@ -15,6 +15,7 @@
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -23,11 +24,13 @@
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/frame_throttler/mock_frame_throttling_observer.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shell.h"
 #include "ash/style/close_button.h"
@@ -87,7 +90,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/to_vector.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -5842,7 +5844,7 @@ class ContinuousOverviewAnimationTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kContinuousOverviewScrollAnimation,
-                              chromeos::features::kJelly},
+                              features::kDeskButton},
         /*disabled_features=*/{});
     OverviewTestBase::SetUp();
 
@@ -5856,9 +5858,12 @@ class ContinuousOverviewAnimationTest
 
   // If `complete_scroll` is false, end the scroll with the fingers still on the
   // trackpad.
-  void ThreeFingerScroll(float x_offset, float y_offset, bool complete_scroll) {
+  void ThreeFingerScroll(float x_offset,
+                         float y_offset,
+                         bool complete_scroll,
+                         const gfx::Point& start = gfx::Point()) {
     GetEventGenerator()->ScrollSequence(
-        gfx::Point(), base::Milliseconds(5), x_offset, y_offset,
+        start, base::Milliseconds(5), x_offset, y_offset,
         /*steps=*/100, /*fingers=*/3,
         /*end_state=*/
         complete_scroll
@@ -5866,9 +5871,51 @@ class ContinuousOverviewAnimationTest
             : ui::test::EventGenerator::ScrollSequenceType::ScrollOnly);
   }
 
+  void SetShowDeskButton(bool visible) {
+    SetShowDeskButtonInShelfPref(
+        Shell::Get()->session_controller()->GetActivePrefService(), visible);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Verifies that 3 finger scroll while hovering the desk button does not open
+// the app list.
+TEST_P(ContinuousOverviewAnimationTest, ScrollOnDeskButtonDoesNotOpenAppList) {
+  ShelfViewTestAPI test_api(GetPrimaryShelf()->GetShelfViewForTesting());
+
+  SetShowDeskButton(true);
+  // The button should be visible.
+  EXPECT_TRUE(test_api.shelf_view()
+                  ->shelf_widget()
+                  ->desk_button_widget()
+                  ->GetLayer()
+                  ->GetTargetVisibility());
+
+  std::unique_ptr<aura::Window> window1(CreateTestWindow());
+  std::unique_ptr<aura::Window> window2(CreateTestWindow());
+
+  // Perform a very long swipe up gesture from the center of the desk button.
+  const float long_scroll = WmGestureHandler::kVerticalThresholdDp + 200.f;
+  ThreeFingerScroll(0, long_scroll, /*complete_scroll=*/true,
+                    test_api.shelf_view()
+                        ->shelf_widget()
+                        ->desk_button_widget()
+                        ->GetLayer()
+                        ->bounds()
+                        .CenterPoint());
+  // We should be in overview mode.
+  ASSERT_TRUE(InOverviewSession());
+  // Desk button widget should be invisible in overview mode.
+  EXPECT_FALSE(test_api.shelf_view()
+                   ->shelf_widget()
+                   ->desk_button_widget()
+                   ->GetLayer()
+                   ->GetTargetVisibility());
+  // 3 finger scroll from the desk button widget should not show the app list.
+  GetAppListTestHelper()->CheckVisibility(false);
+}
 
 // Tests that continuous scrolls slowly shrink active windows and increase the
 // opacity of minimized windows, regardless of the state of `NaturalScroll`.
