@@ -8721,6 +8721,21 @@
             ]
         }
     ],
+    "IOSMeasurementExperience": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableMeasurementsExperience"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSNewOverflowMenuIPH": [
         {
             "platforms": [
