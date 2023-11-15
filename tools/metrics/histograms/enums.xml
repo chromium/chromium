@@ -2668,7 +2668,9 @@ Unknown properties are collapsed to zero. -->
       label="(Obsolete) Payments integration user setting is disabled (Never
              recorded)."/>
   <int value="8" label="User email is empty"/>
-  <int value="9" label="User is logged into an unsupported domain"/>
+  <int value="9"
+      label="(Obsolete) User is logged into an unsupported domain (Deprecated
+             by an M117 launch)."/>
   <int value="10"
       label="(Obsolete) Card upload feature flag disabled (Deprecated in M96,
              replaced by values 12, 13, and 14)."/>

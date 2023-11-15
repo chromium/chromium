@@ -734,16 +734,6 @@
     "expiry_milestone": 124
   },
   {
-    "name": "autofill-upstream-allow-additional-email-domains",
-    "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 124
-  },
-  {
-    "name": "autofill-upstream-allow-all-email-domains",
-    "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 124
-  },
-  {
     "name": "autofill-use-improved-label-disambiguation",
     "owners": [ "autofill-squad-muc@google.com" ],
     "expiry_milestone": 106

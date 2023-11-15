@@ -143,19 +143,6 @@ const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[] =
     "When enabled, Chrome Settings link directs to GPay Web rather than "
     "Payments Center for payment methods management.";
 
-const char kAutofillUpstreamAllowAdditionalEmailDomainsName[] =
-    "Allow Autofill credit card upload save for select non-Google-based "
-    "accounts";
-const char kAutofillUpstreamAllowAdditionalEmailDomainsDescription[] =
-    "When enabled, credit card upload is offered if the user's logged-in "
-    "account's domain is from a common email provider.";
-
-const char kAutofillUpstreamAllowAllEmailDomainsName[] =
-    "Allow Autofill credit card upload save for all non-Google-based accounts";
-const char kAutofillUpstreamAllowAllEmailDomainsDescription[] =
-    "When enabled, credit card upload is offered without regard to the user's "
-    "logged-in account's domain.";
-
 const char kAutofillUseMobileLabelDisambiguationName[] =
     "Autofill Uses Mobile Label Disambiguation";
 const char kAutofillUseMobileLabelDisambiguationDescription[] =

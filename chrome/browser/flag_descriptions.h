@@ -363,12 +363,6 @@ extern const char kAutofillTouchToFillForCreditCardsAndroidDescription[];
 extern const char kAutofillUpdateChromeSettingsLinkToGPayWebName[];
 extern const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[];
 
-extern const char kAutofillUpstreamAllowAdditionalEmailDomainsName[];
-extern const char kAutofillUpstreamAllowAdditionalEmailDomainsDescription[];
-
-extern const char kAutofillUpstreamAllowAllEmailDomainsName[];
-extern const char kAutofillUpstreamAllowAllEmailDomainsDescription[];
-
 extern const char kAutofillMoreProminentPopupName[];
 extern const char kAutofillMoreProminentPopupDescription[];
 

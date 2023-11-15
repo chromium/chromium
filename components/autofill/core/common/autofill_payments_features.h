@@ -48,8 +48,6 @@ BASE_DECLARE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields);
 BASE_DECLARE_FEATURE(kAutofillSuggestServerCardInsteadOfLocalCard);
 BASE_DECLARE_FEATURE(kAutofillUpdateChromeSettingsLinkToGPayWeb);
 BASE_DECLARE_FEATURE(kAutofillUpstream);
-BASE_DECLARE_FEATURE(kAutofillUpstreamAllowAdditionalEmailDomains);
-BASE_DECLARE_FEATURE(kAutofillUpstreamAllowAllEmailDomains);
 
 #if BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kAutofillUseTwoDotsForLastFourDigits);

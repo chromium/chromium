@@ -975,18 +975,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardProductNameDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardProductName)},
-    {"autofill-upstream-allow-additional-email-domains",
-     flag_descriptions::kAutofillUpstreamAllowAdditionalEmailDomainsName,
-     flag_descriptions::kAutofillUpstreamAllowAdditionalEmailDomainsDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillUpstreamAllowAdditionalEmailDomains)},
-    {"autofill-upstream-allow-all-email-domains",
-     flag_descriptions::kAutofillUpstreamAllowAllEmailDomainsName,
-     flag_descriptions::kAutofillUpstreamAllowAllEmailDomainsDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillUpstreamAllowAllEmailDomains)},
     {"enable-download-service-foreground-session",
      flag_descriptions::kDownloadServiceForegroundSessionName,
      flag_descriptions::kDownloadServiceForegroundSessionDescription,

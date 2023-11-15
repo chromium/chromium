@@ -9964,19 +9964,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableRankingFormulaCreditCards)},
 
-    {"autofill-upstream-allow-additional-email-domains",
-     flag_descriptions::kAutofillUpstreamAllowAdditionalEmailDomainsName,
-     flag_descriptions::kAutofillUpstreamAllowAdditionalEmailDomainsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillUpstreamAllowAdditionalEmailDomains)},
-    {"autofill-upstream-allow-all-email-domains",
-     flag_descriptions::kAutofillUpstreamAllowAllEmailDomainsName,
-     flag_descriptions::kAutofillUpstreamAllowAllEmailDomainsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillUpstreamAllowAllEmailDomains)},
-
     {"safe-browsing-hash-prefix",
      flag_descriptions::kSafeBrowsingHashPrefixRealTimeLookupsName,
      flag_descriptions::kSafeBrowsingHashPrefixRealTimeLookupsDescription,

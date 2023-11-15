@@ -121,16 +121,6 @@ extern const char kAutofillSuggestServerCardInsteadOfLocalCardDescription[];
 extern const char kAutofillUpdateChromeSettingsLinkToGPayWebName[];
 extern const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[];
 
-// Title and description for the flag to control allowing credit card upload
-// save for accounts from common email providers.
-extern const char kAutofillUpstreamAllowAdditionalEmailDomainsName[];
-extern const char kAutofillUpstreamAllowAdditionalEmailDomainsDescription[];
-
-// Title and description for the flag to control allowing credit card upload
-// save for all accounts, regardless of the email domain.
-extern const char kAutofillUpstreamAllowAllEmailDomainsName[];
-extern const char kAutofillUpstreamAllowAllEmailDomainsDescription[];
-
 // Title and description for the flag that controls whether Autofill's
 // suggestions' labels are formatting with a mobile-friendly approach.
 extern const char kAutofillUseMobileLabelDisambiguationName[];
