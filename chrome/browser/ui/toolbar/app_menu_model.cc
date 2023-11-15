@@ -120,8 +120,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "ui/display/screen.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -1688,8 +1688,8 @@ void AppMenuModel::Build() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Always show this option if we're in tablet mode on Chrome OS.
-  if (chromeos::TabletState::Get() &&
-      chromeos::TabletState::Get()->InTabletMode()) {
+  if (display::Screen::GetScreen()->HasScreen() &&
+      display::Screen::GetScreen()->InTabletMode()) {
     if (features::IsChromeRefresh2023()) {
       AddItemWithStringIdAndIcon(
           IDC_TOGGLE_REQUEST_TABLET_SITE, IDS_TOGGLE_REQUEST_TABLET_SITE,

@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/common/url_constants.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/navigation_controller.h"
@@ -34,13 +33,15 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/views/controls/native/native_view_host.h"
 
 namespace {
 
 bool IsTabletModeEnabled() {
-  return chromeos::TabletState::Get() &&
-         chromeos::TabletState::Get()->InTabletMode();
+  return display::Screen::GetScreen()->HasScreen() &&
+         display::Screen::GetScreen()->InTabletMode();
 }
 
 bool IsSpokenFeedbackEnabled() {

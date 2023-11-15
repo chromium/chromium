@@ -5,7 +5,7 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "chromeos/ui/base/tablet_state.h"
+#include "ui/display/screen.h"
 
 namespace chromeos {
 
@@ -16,7 +16,8 @@ constexpr char kActionTypeHistogramNamePrefix[] =
     "Ash.Float.MultitaskMenuActionType";
 
 std::string GetHistogramNameSuffix() {
-  return TabletState::Get()->InTabletMode() ? ".TabletMode" : ".ClamshellMode";
+  return display::Screen::GetScreen()->InTabletMode() ? ".TabletMode"
+                                                      : ".ClamshellMode";
 }
 
 std::string GetEntryTypeHistogramName() {

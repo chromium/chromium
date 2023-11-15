@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -52,7 +53,7 @@ bool InClamshellSplitViewMode(SplitViewController* controller) {
   // have to be active.
   // TODO(sophiewen): Consolidate with `kSnapGroup` flag.
   if (features::IsFasterSplitScreenSetupEnabled()) {
-    return chromeos::TabletState::Get()->state() ==
+    return display::Screen::GetScreen()->GetTabletState() ==
            display::TabletState::kInClamshellMode;
   }
   return controller && controller->InClamshellSplitViewMode() &&

@@ -117,7 +117,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/ui/base/tablet_state.h"
+#include "ui/display/screen.h"
 #endif
 
 namespace {
@@ -484,7 +484,7 @@ gfx::Size OmniboxViewViews::GetMinimumSize() const {
   // Toolbar is supposed to fix this. Remove the temporal solution when
   // Responsive Toolbar is launched.
   const int kMinCharacters =
-      chromeos::TabletState::Get()->InTabletMode() &&
+      display::Screen::GetScreen()->InTabletMode() &&
               !base::FeatureList::IsEnabled(features::kResponsiveToolbar)
           ? 8
           : 20;

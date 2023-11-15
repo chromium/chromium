@@ -9,7 +9,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -23,6 +22,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -254,7 +254,7 @@ bool FrameSizeButton::IsMultitaskMenuShown() const {
 }
 
 void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
-  CHECK(!chromeos::TabletState::Get()->InTabletMode());
+  CHECK(!display::Screen::GetScreen()->InTabletMode());
   RecordMultitaskMenuEntryType(entry_type);
   // Owned by the bubble which contains this view. If there is an existing
   // bubble, it will be deactivated and then close and destroy itself.
@@ -275,7 +275,7 @@ void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
 }
 
 void FrameSizeButton::ToggleMultitaskMenu() {
-  CHECK(!chromeos::TabletState::Get()->InTabletMode());
+  CHECK(!display::Screen::GetScreen()->InTabletMode());
   if (!multitask_menu_widget_) {
     ShowMultitaskMenu(MultitaskMenuEntryType::kAccel);
   } else {
@@ -341,7 +341,7 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
   if (event->type() == ui::ET_GESTURE_TAP_DOWN && delegate_->CanSnap() &&
-      !TabletState::Get()->InTabletMode()) {
+      !display::Screen::GetScreen()->InTabletMode()) {
     StartLongTapDelayTimer(*event);
 
     // Go through FrameCaptionButton's handling so that the button gets pressed.
@@ -444,7 +444,7 @@ void FrameSizeButton::StartLongTapDelayTimer(const ui::LocatedEvent& event) {
 
 void FrameSizeButton::StartPieAnimation(base::TimeDelta duration,
                                         MultitaskMenuEntryType entry_type) {
-  if (chromeos::TabletState::Get()->InTabletMode() || IsMultitaskMenuShown()) {
+  if (display::Screen::GetScreen()->InTabletMode() || IsMultitaskMenuShown()) {
     return;
   }
 
@@ -462,7 +462,7 @@ void FrameSizeButton::AnimateButtonsToSnapMode() {
 
 void FrameSizeButton::SetButtonsToSnapMode(
     FrameSizeButtonDelegate::Animate animate) {
-  DCHECK(!chromeos::TabletState::Get()->InTabletMode());
+  DCHECK(!display::Screen::GetScreen()->InTabletMode());
   in_snap_mode_ = true;
 
   // When using a right-to-left layout the close button is left of the size

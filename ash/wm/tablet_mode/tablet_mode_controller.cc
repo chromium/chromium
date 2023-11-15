@@ -48,6 +48,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/display/util/display_util.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -489,8 +490,9 @@ bool TabletModeController::TriggerRecordLidAngleTimerForTesting() {
 void TabletModeController::MaybeObserveBoundsAnimation(aura::Window* window) {
   StopObservingAnimation(/*record_stats=*/false, /*delete_screenshot=*/false);
 
-  if (tablet_state_.state() != display::TabletState::kEnteringTabletMode &&
-      tablet_state_.state() != display::TabletState::kExitingTabletMode) {
+  display::TabletState state = display::Screen::GetScreen()->GetTabletState();
+  if (state != display::TabletState::kEnteringTabletMode &&
+      state != display::TabletState::kExitingTabletMode) {
     return;
   }
 
@@ -547,7 +549,7 @@ void TabletModeController::RemoveObserver(TabletModeObserver* observer) {
 }
 
 bool TabletModeController::InTabletMode() const {
-  return tablet_state_.InTabletMode();
+  return display::Screen::GetScreen()->InTabletMode();
 }
 
 bool TabletModeController::ForceUiTabletModeState(
@@ -828,9 +830,10 @@ void TabletModeController::OnLayerAnimationScheduled(
   if (!transition_tracker_) {
     transition_tracker_ =
         animating_layer_->GetCompositor()->RequestNewThroughputTracker();
-    transition_tracker_->Start(metrics_util::ForSmoothness(base::BindRepeating(
-        &ReportTrasitionSmoothness,
-        tablet_state_.state() == display::TabletState::kEnteringTabletMode)));
+    transition_tracker_->Start(metrics_util::ForSmoothness(
+        base::BindRepeating(&ReportTrasitionSmoothness,
+                            display::Screen::GetScreen()->GetTabletState() ==
+                                display::TabletState::kEnteringTabletMode)));
     return;
   }
 
@@ -1185,7 +1188,8 @@ void TabletModeController::ResetPauser() {
 }
 
 void TabletModeController::FinishInitTabletMode() {
-  DCHECK_EQ(display::TabletState::kEnteringTabletMode, tablet_state_.state());
+  DCHECK_EQ(display::TabletState::kEnteringTabletMode,
+            display::Screen::GetScreen()->GetTabletState());
 
   for (auto& observer : tablet_mode_observers_)
     observer.OnTabletModeStarting();

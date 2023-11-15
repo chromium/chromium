@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -14,6 +13,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
@@ -94,7 +94,7 @@ int NonClientFrameViewBase::NonClientTopBorderHeight() const {
   // Lacros so that we can remove InTabletMode() && IsMaximized() condition.
   if (frame_->IsFullscreen() || !GetFrameEnabled() ||
       header_view_->in_immersive_mode() ||
-      (chromeos::TabletState::Get()->InTabletMode() && frame_->IsMaximized())) {
+      (display::Screen::GetScreen()->InTabletMode() && frame_->IsMaximized())) {
     return 0;
   }
   return header_view_->GetPreferredHeight();

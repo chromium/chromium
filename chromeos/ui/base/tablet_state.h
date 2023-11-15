@@ -35,11 +35,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState
   TabletState& operator=(const TabletState&) = delete;
   ~TabletState() override;
 
-  // Returns true if the system is in tablet mode.
-  bool InTabletMode() const;
-
-  display::TabletState state() const;
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;

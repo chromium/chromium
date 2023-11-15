@@ -13,13 +13,13 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "ui/display/screen.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -28,7 +28,6 @@
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "ui/display/display_observer.h"
-#include "ui/display/screen.h"
 #endif
 
 namespace {
@@ -97,7 +96,7 @@ class TabletModePageBehaviorTest : public InProcessBrowserTest {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     base::RunLoop run_loop;
     TabletModeWatcher watcher(run_loop.QuitClosure(),
-                              chromeos::TabletState::Get()->state());
+                              display::Screen::GetScreen()->GetTabletState());
     display::Screen::GetScreen()->AddObserver(&watcher);
     auto& test_controller = chromeos::LacrosService::Get()
                                 ->GetRemote<crosapi::mojom::TestController>();
@@ -112,7 +111,7 @@ class TabletModePageBehaviorTest : public InProcessBrowserTest {
   }
 
   bool InTabletMode() const {
-    return chromeos::TabletState::Get()->InTabletMode();
+    return display::Screen::GetScreen()->InTabletMode();
   }
 
   content::WebContents* GetActiveWebContents(Browser* browser) const {

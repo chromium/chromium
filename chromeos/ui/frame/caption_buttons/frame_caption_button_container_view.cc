@@ -17,7 +17,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/display_util.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
@@ -133,13 +132,13 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
     switch (type) {
       case views::CAPTION_BUTTON_ICON_MINIMIZE:
         return frame_->widget_delegate()->CanMinimize() &&
-               !TabletState::Get()->InTabletMode();
+               !display::Screen::GetScreen()->InTabletMode();
       case views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE: {
         if (!frame_->widget_delegate()->CanMaximize()) {
           return false;
         }
 
-        if (!TabletState::Get()->InTabletMode()) {
+        if (!display::Screen::GetScreen()->InTabletMode()) {
           return true;
         }
 
@@ -159,7 +158,7 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
         if (!frame_->IsNativeWidgetInitialized()) {
           return false;
         }
-        if (chromeos::TabletState::Get()->InTabletMode()) {
+        if (display::Screen::GetScreen()->InTabletMode()) {
           return false;
         }
         // Only need to show the float button for apps that normally can't be
@@ -540,7 +539,7 @@ void FrameCaptionButtonContainerView::OnWidgetActivationChanged(
 
   // Tablet nudge is controlled by ash by another class
   // (`::ash::TabletModeMultitaskCueController`).
-  if (TabletState::Get()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return;
   }
 
@@ -677,7 +676,7 @@ void FrameCaptionButtonContainerView::CloseButtonPressed() {
   SetButtonsToNormal(Animate::kNo);
 
   frame_->Close();
-  if (TabletState::Get()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     base::RecordAction(
         base::UserMetricsAction("Tablet_WindowCloseFromCaptionButton"));
   } else {

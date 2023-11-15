@@ -5,7 +5,6 @@
 #include "chromeos/ui/base/tablet_state.h"
 
 #include "base/check_op.h"
-#include "ui/display/screen.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -31,15 +30,6 @@ TabletState::~TabletState() {
   g_instance = nullptr;
 }
 
-bool TabletState::InTabletMode() const {
-  return state() == display::TabletState::kInTabletMode ||
-         state() == display::TabletState::kEnteringTabletMode;
-}
-
-display::TabletState TabletState::state() const {
-  return display::Screen::GetScreen()->GetTabletState();
-}
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void TabletState::OnDisplayTabletStateChanged(display::TabletState state) {
   // TouchUIController is used by Chrome and other apps to determine whether
@@ -55,7 +45,9 @@ void TabletState::OnDisplayTabletStateChanged(display::TabletState state) {
   //
   // TODO(crbug.com/1170013): consolidate all of the tablet/touch state logic
   // into a single place on all platforms (likely display::Screen).
-  ui::TouchUiController::Get()->OnTabletModeToggled(InTabletMode());
+  ui::TouchUiController::Get()->OnTabletModeToggled(
+      state == display::TabletState::kInTabletMode ||
+      state == display::TabletState::kEnteringTabletMode);
 }
 #endif
 

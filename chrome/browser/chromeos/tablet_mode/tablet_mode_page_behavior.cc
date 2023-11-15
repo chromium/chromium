@@ -12,16 +12,16 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 
 TabletModePageBehavior::TabletModePageBehavior() {
   display::Screen::GetScreen()->AddObserver(this);
-  OnTabletModeToggled(chromeos::TabletState::Get()->InTabletMode());
+  OnTabletModeToggled(display::Screen::GetScreen()->InTabletMode());
 }
 
 TabletModePageBehavior::~TabletModePageBehavior() {
@@ -49,7 +49,7 @@ void TabletModePageBehavior::OnDisplayTabletStateChanged(
 }
 
 bool TabletModePageBehavior::ShouldTrackBrowser(Browser* browser) {
-  return chromeos::TabletState::Get()->InTabletMode();
+  return display::Screen::GetScreen()->InTabletMode();
 }
 
 void TabletModePageBehavior::OnTabStripModelChanged(

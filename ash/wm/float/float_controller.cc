@@ -882,7 +882,8 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
   // window changes related with those changes are handled in
   // `OnTabletModeStarting`, `OnTabletModeEnding` or attaching/detaching window
   // states.
-  display::TabletState tablet_state = chromeos::TabletState::Get()->state();
+  display::TabletState tablet_state =
+      display::Screen::GetScreen()->GetTabletState();
   if (tablet_state == display::TabletState::kEnteringTabletMode ||
       tablet_state == display::TabletState::kExitingTabletMode) {
     return;
@@ -902,8 +903,8 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
       // Let the state object handle the display change. This is normally
       // handled by the `WorkspaceLayoutManager`, but the float container does
       // not have one attached.
-      if (metrics & display::DisplayObserver::DISPLAY_METRIC_BOUNDS ||
-          metrics & display::DisplayObserver::DISPLAY_METRIC_WORK_AREA) {
+      if (metrics & DISPLAY_METRIC_BOUNDS ||
+          metrics & DISPLAY_METRIC_WORK_AREA) {
         const DisplayMetricsChangedWMEvent wm_event(metrics);
         WindowState::Get(window)->OnWMEvent(&wm_event);
       }
@@ -915,7 +916,7 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
   // Do not observe the animator in `OnRootWindowAdded` because there is an
   // unittest that overwrites the animator for the root window just before
   // running the animation.
-  if (display::DisplayObserver::DISPLAY_METRIC_ROTATION & metrics) {
+  if (DISPLAY_METRIC_ROTATION & metrics) {
     if (auto* root_controller =
             Shell::GetRootWindowControllerWithDisplayId(display.id())) {
       if (auto* animator = root_controller->GetScreenRotationAnimator();
