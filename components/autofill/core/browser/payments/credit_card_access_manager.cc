@@ -1158,7 +1158,7 @@ void CreditCardAccessManager::FetchLocalOrFullServerCard() {
     // `StartDeviceAuthenticationForFilling()` will asynchronously trigger
     // the re-authentication flow, so we should avoid calling `Reset()`
     // until the re-authentication flow is complete.
-    StartDeviceAuthenticationForFilling(accessor_, card_.get(), card_->cvc());
+    StartDeviceAuthenticationForFilling(accessor_, card_.get());
   } else {
     // Fill immediately if local card or full server card, as we do not need to
     // authenticate the user.
@@ -1330,8 +1330,7 @@ void CreditCardAccessManager::OnNonInteractiveAuthenticationSuccess(
             // calling `Reset()` until the re-authentication flow is
             // complete.
             &CreditCardAccessManager::StartDeviceAuthenticationForFilling,
-            weak_ptr_factory_.GetWeakPtr(), accessor_, card_.get(),
-            card_->cvc()));
+            weak_ptr_factory_.GetWeakPtr(), accessor_, card_.get()));
   } else {
     client_->CloseAutofillProgressDialog(
         /*show_confirmation_before_closing=*/true);
@@ -1556,8 +1555,7 @@ bool CreditCardAccessManager::ShouldLogServerCardUnmaskAttemptMetrics(
 
 void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
     base::WeakPtr<Accessor> accessor,
-    const CreditCard* card,
-    const std::u16string& cvc) {
+    const CreditCard* card) {
   is_authentication_in_progress_ = true;
 
   payments::MandatoryReauthAuthenticationMethod authentication_method =
@@ -1572,8 +1570,8 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
       l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH),
       base::BindOnce(
           &CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling,
-          weak_ptr_factory_.GetWeakPtr(), accessor, authentication_method, card,
-          cvc));
+          weak_ptr_factory_.GetWeakPtr(), accessor, authentication_method,
+          card));
 #elif BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/1427216): Convert this to
   // MandatoryReauthManager::AuthenticateWithMessage() with the correct message
@@ -1581,8 +1579,8 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
   client_->GetOrCreatePaymentsMandatoryReauthManager()->Authenticate(
       base::BindOnce(
           &CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling,
-          weak_ptr_factory_.GetWeakPtr(), accessor, authentication_method, card,
-          cvc));
+          weak_ptr_factory_.GetWeakPtr(), accessor, authentication_method,
+          card));
 #else
   NOTREACHED_NORETURN();
 #endif
@@ -1592,7 +1590,6 @@ void CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling(
     base::WeakPtr<Accessor> accessor,
     payments::MandatoryReauthAuthenticationMethod authentication_method,
     const CreditCard* card,
-    const std::u16string& cvc,
     bool successful_auth) {
   autofill_metrics::LogMandatoryReauthCheckoutFlowUsageEvent(
       card->record_type(), authentication_method,
@@ -1602,12 +1599,10 @@ void CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling(
           : autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
                 kFlowFailed);
   CHECK(card);
-  CreditCard card_with_cvc = *card;
-  card_with_cvc.set_cvc(cvc);
   accessor->OnCreditCardFetched(successful_auth
                                     ? CreditCardFetchResult::kSuccess
                                     : CreditCardFetchResult::kTransientError,
-                                &card_with_cvc);
+                                card);
   // TODO(crbug.com/1427216): Add logging for the payments autofill device
   // authentication flow.
   // `accessor->OnCreditCardFetched()` makes a copy of `card` and `cvc` before

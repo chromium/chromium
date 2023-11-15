@@ -424,22 +424,18 @@ class CreditCardAccessManager
   // `OnDeviceAuthenticationResponseForFilling()` will be invoked when we
   // receive a response from the device authentication. `accessor` will be used
   // to handle the response of the authentication, and possibly fill the card
-  // into the form. `card` is the card that needs to be filled. `cvc` is the CVC
-  // of the card that needs to be filled, and can be empty if we are autofilling
-  // a card that does not have a CVC saved (for example, a local card). This
-  // function should only be called on platforms where DeviceAuthenticator is
-  // present.
+  // into the form. `card` is the card that needs to be filled. This function
+  // should only be called on platforms where DeviceAuthenticator is present.
   // TODO(crbug.com/1447084): Move authentication logic for re-auth into
   // MandatoryReauthManager.
   void StartDeviceAuthenticationForFilling(base::WeakPtr<Accessor> accessor,
-                                           const CreditCard* card,
-                                           const std::u16string& cvc);
+                                           const CreditCard* card);
 
   // Callback function invoked when we receive a response from a mandatory
   // re-auth authentication in a flow where we might fill the card after the
-  // response. If it is successful, we will fill `card` and `cvc` into the form
-  // using `accessor`, otherwise we will handle the error. `successful_auth` is
-  // true if the authentication waas successful, false otherwise. Pass
+  // response. If it is successful, we will fill `card` into the form using
+  // `accessor`, otherwise we will handle the error. `successful_auth` is true
+  // if the authentication was successful, false otherwise. Pass
   // `authenticate_method` for logging purpose.
   // TODO(crbug.com/1447084): Move authentication logic for re-auth into
   // MandatoryReauthManager.
@@ -447,7 +443,6 @@ class CreditCardAccessManager
       base::WeakPtr<Accessor> accessor,
       payments::MandatoryReauthAuthenticationMethod authentication_method,
       const CreditCard* card,
-      const std::u16string& cvc,
       bool successful_auth);
 
   // The current form of authentication in progress.
