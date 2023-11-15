@@ -1226,7 +1226,8 @@ TEST_F(TextFragmentAnchorTest, TargetStaysInView) {
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 }
 
-// Test that overlapping text ranges results in only the first one highlighted
+// Test that overlapping text ranges results in both highlights with
+// a merged highlight.
 TEST_F(TextFragmentAnchorTest, OverlappingTextRanges) {
   SimRequest request(
       "https://example.com/test.html#:~:text=This,test&text=is,page",
@@ -1249,14 +1250,14 @@ TEST_F(TextFragmentAnchorTest, OverlappingTextRanges) {
 
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 
-  // Expect marker on "This is a test".
+  // Expect marker on "This is a test page".
   auto* text = To<Text>(
       GetDocument().getElementById(AtomicString("text"))->firstChild());
   DocumentMarkerVector markers = GetDocument().Markers().MarkersFor(
       *text, DocumentMarker::MarkerTypes::TextFragment());
   ASSERT_EQ(1u, markers.size());
   EXPECT_EQ(0u, markers.at(0)->StartOffset());
-  EXPECT_EQ(14u, markers.at(0)->EndOffset());
+  EXPECT_EQ(19u, markers.at(0)->EndOffset());
 }
 
 // Test matching a space to &nbsp character.
