@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.34](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.33...chromium-bidi-v0.4.34) (2023-11-15)
+
+
+### Features
+
+* abort navigation if network request failed ([#1542](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1542)) ([2f86ba0](https://github.com/GoogleChromeLabs/chromium-bidi/commit/2f86ba0fccf840ea808703fef9055ee50d255a74))
+* context close to support promptUnload ([#1508](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1508)) ([45a2100](https://github.com/GoogleChromeLabs/chromium-bidi/commit/45a2100123cc89ca23e7e841e9dc630201488c04))
+* implement browsingContext.traverseHistory ([#1537](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1537)) ([76ca291](https://github.com/GoogleChromeLabs/chromium-bidi/commit/76ca291c12a3ccf1314b92cf1c31c665edc2b57b))
+* make `internalId` `UUID` ([#1525](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1525)) ([8b108ce](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8b108cefee06ceb704db41ea95bbd4dc359aeffb))
+* **network intercept:** populate "intercepts" in base event params ([#1500](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1500)) ([55d1622](https://github.com/GoogleChromeLabs/chromium-bidi/commit/55d1622f065dad36248977f1fed5ac143f526497))
+
+
+### Bug Fixes
+
+* allow interception for all requests ([#1530](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1530)) ([ec3fce9](https://github.com/GoogleChromeLabs/chromium-bidi/commit/ec3fce915e6016446de601fde6fa707b1c6f1eba))
+* automatically continue ignored events ([#1528](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1528)) ([8d92718](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8d927181d8705210bb31af8dab2fb01abb358a34))
+
 ## [0.4.33](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.32...chromium-bidi-v0.4.33) (2023-10-30)
 
 
