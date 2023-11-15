@@ -1224,6 +1224,13 @@ const base::FeatureParam<bool>
         &kLowPriorityAsyncScriptExecution,
         "low_pri_async_exec_exclude_lcp_influencers", false};
 
+// kLowPriorityAsyncScriptExecution will exclude scripts on pages where LCP
+// element isn't directly embedded in HTML.
+const base::FeatureParam<bool>
+    kLowPriorityAsyncScriptExecutionDisableWhenLcpNotInHtmlParam{
+        &kLowPriorityAsyncScriptExecution,
+        "low_pri_async_exec_disable_when_lcp_not_in_html", false};
+
 BASE_FEATURE(kLowPriorityScriptLoading,
              "LowPriorityScriptLoading",
              base::FEATURE_DISABLED_BY_DEFAULT);

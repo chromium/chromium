@@ -719,6 +719,11 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 // kLowPriorityAsyncScriptExecution.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kLowPriorityAsyncScriptExecutionExcludeLcpInfluencersParam;
+// kLowPriorityAsyncScriptExecution will be disabled when LCP element is
+// not detected in Html. Requires kLCPCriticalPathPredictor experiment to be
+// enabled for this to work.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kLowPriorityAsyncScriptExecutionDisableWhenLcpNotInHtmlParam;
 
 // If enabled, async scripts will be loaded with a lower fetch priority.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowPriorityScriptLoading);
