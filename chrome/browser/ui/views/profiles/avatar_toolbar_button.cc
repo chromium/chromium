@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_delegate.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -163,9 +165,18 @@ void AvatarToolbarButton::UpdateText() {
       }
       break;
     }
-    case State::kAnimatedUserIdentity: {
+    case State::kAnimatedUserIdentity:
       text = delegate_->GetShortProfileName();
       break;
+    case State::kSignInTextShowing: {
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
+      // The signin text is not supported on Lacros.
+      NOTREACHED_NORETURN();
+#else
+      text = l10n_util::GetStringUTF16(
+          IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT);
+      break;
+#endif
     }
     case State::kSyncError:
       color = color_provider->GetColor(kColorAvatarButtonHighlightSyncError);
@@ -246,9 +257,7 @@ absl::optional<SkColor> AvatarToolbarButton::GetHighlightTextColor() const {
             kColorAvatarButtonHighlightNormalForeground);
         break;
       case State::kGuestSession:
-        color = color_provider->GetColor(
-            kColorAvatarButtonHighlightDefaultForeground);
-        break;
+      case State::kSignInTextShowing:
       case State::kAnimatedUserIdentity:
         color = color_provider->GetColor(
             kColorAvatarButtonHighlightDefaultForeground);
@@ -262,9 +271,6 @@ absl::optional<SkColor> AvatarToolbarButton::GetHighlightTextColor() const {
               kColorAvatarButtonHighlightDefaultForeground);
         }
         break;
-      default:
-        // All the states should be defined in this switch statement.
-        NOTREACHED_NORETURN();
     }
 
     return color;
@@ -292,36 +298,22 @@ void AvatarToolbarButton::UpdateInkdrop() {
     switch (delegate_->GetState()) {
       case State::kIncognitoProfile:
         hover_color_id = kColorAvatarButtonIncognitoHover;
-        ripple_color_id = kColorToolbarInkDropRipple;
         break;
       case State::kSyncError:
-        hover_color_id = kColorToolbarInkDropHover;
-        ripple_color_id = kColorToolbarInkDropRipple;
+      case State::kGuestSession:
+      case State::kSignInTextShowing:
+      case State::kAnimatedUserIdentity:
         break;
       case State::kSyncPaused:
-        hover_color_id = kColorToolbarInkDropHover;
         ripple_color_id = kColorAvatarButtonNormalRipple;
         break;
-      case State::kGuestSession:
-        hover_color_id = kColorToolbarInkDropHover;
-        ripple_color_id = kColorToolbarInkDropRipple;
-        break;
-      case State::kAnimatedUserIdentity:
-        hover_color_id = kColorToolbarInkDropHover;
-        ripple_color_id = kColorToolbarInkDropRipple;
-        break;
       case State::kNormal:
-        hover_color_id = kColorToolbarInkDropHover;
-
         if (delegate_->IsHighlightAnimationVisible()) {
           ripple_color_id = kColorAvatarButtonNormalRipple;
         } else {
           ripple_color_id = kColorToolbarInkDropRipple;
         }
         break;
-      default:
-        // All the states should be defined in this switch statement.
-        NOTREACHED_NORETURN();
     }
   }
 
@@ -348,6 +340,16 @@ bool AvatarToolbarButton::ShouldBlendHighlightColor() const {
 void AvatarToolbarButton::ShowAvatarHighlightAnimation() {
   delegate_->ShowHighlightAnimation();
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
+void AvatarToolbarButton::ShowSignInText() {
+  delegate_->ShowSignInText();
+}
+
+void AvatarToolbarButton::HideSignInText() {
+  delegate_->HideSignInText();
+}
+#endif
 
 void AvatarToolbarButton::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
@@ -448,6 +450,7 @@ std::u16string AvatarToolbarButton::GetAvatarTooltipText() const {
           GetAvatarSyncErrorDescription(*error,
                                         delegate_->IsSyncFeatureEnabled()));
     }
+    case State::kSignInTextShowing:
     case State::kNormal:
       return delegate_->GetProfileName();
   }
@@ -489,6 +492,7 @@ ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
                                             icon_color, icon_size);
     case State::kGuestSession:
       return profiles::GetGuestAvatar(icon_size);
+    case State::kSignInTextShowing:
     case State::kAnimatedUserIdentity:
     case State::kSyncError:
     // TODO(crbug.com/1191411): If sync-the-feature is disabled, the icon should

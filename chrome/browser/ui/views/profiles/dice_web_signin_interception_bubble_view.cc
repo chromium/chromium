@@ -44,7 +44,7 @@ constexpr int kInterceptionBubbleBaseHeight = 500;
 constexpr int kInterceptionBubbleWidth = 290;
 constexpr int kInterceptionChromeSigninBubbleWidth = 320;
 
-views::View* GetBubbleAnchorView(const Browser& browser) {
+AvatarToolbarButton* GetAvatarToolbarButton(const Browser& browser) {
   return BrowserView::GetBrowserViewForBrowser(&browser)
       ->toolbar_button_provider()
       ->GetAvatarToolbarButton();
@@ -125,6 +125,13 @@ DiceWebSigninInterceptionBubbleView::CreateBubble(
   // and the final height of the bubble is sent from
   // DiceWebSigninInterceptHandler.
   views::BubbleDialogDelegateView::CreateBubble(std::move(interception_bubble));
+  // If the chrome signin intercept bubble is shown, display a text next to the
+  // avatar icon.
+  if (bubble_parameters.interception_type ==
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
+    GetAvatarToolbarButton(*browser)->ShowSignInText();
+  }
+
   return handle;
 }
 
@@ -265,6 +272,10 @@ void DiceWebSigninInterceptionBubbleView::OnWebUIUserChoice(
   }
 
   RecordInterceptionResult(bubble_parameters_, profile_, result);
+  if (bubble_parameters_.interception_type ==
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
+    GetAvatarToolbarButton(*browser_)->HideSignInText();
+  }
   std::move(callback_).Run(result);
   if (!accepted_) {
     // Only close the dialog when the user declined. If the user accepted the
@@ -286,7 +297,7 @@ bool DiceWebSigninInterceptorDelegate::IsSigninInterceptionSupportedInternal(
     const Browser& browser) {
   // Some browsers, such as web apps, don't have an avatar toolbar button to
   // anchor the bubble.
-  return GetBubbleAnchorView(browser) != nullptr;
+  return GetAvatarToolbarButton(browser) != nullptr;
 }
 
 std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
@@ -296,7 +307,7 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubbleInternal(
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
   DCHECK(browser);
 
-  views::View* anchor_view = GetBubbleAnchorView(*browser);
+  views::View* anchor_view = GetAvatarToolbarButton(*browser);
   DCHECK(anchor_view);
   return DiceWebSigninInterceptionBubbleView::CreateBubble(
       browser, anchor_view, bubble_parameters, std::move(callback));

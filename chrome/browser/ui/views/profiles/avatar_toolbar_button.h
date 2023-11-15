@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
@@ -26,6 +27,7 @@ class AvatarToolbarButton : public ToolbarButton {
   enum class State {
     kIncognitoProfile,
     kGuestSession,
+    kSignInTextShowing,
     kAnimatedUserIdentity,
     kSyncPaused,
     // An error in sync-the-feature or sync-the-transport.
@@ -52,6 +54,13 @@ class AvatarToolbarButton : public ToolbarButton {
   bool ShouldBlendHighlightColor() const override;
 
   void ShowAvatarHighlightAnimation();
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
+  // Expands the pill to show the signin text.
+  void ShowSignInText();
+  // Contracts the pill so that no text is shown.
+  void HideSignInText();
+#endif
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

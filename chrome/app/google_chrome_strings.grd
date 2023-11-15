@@ -1022,6 +1022,9 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT" desc="Label of the Decline button of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
           Use Chrome without an account
         </message>
+        <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT" desc="Text asking the user to sign into Chrome while the Chrome Signin Bubble intercept is shown.">
+          Sign in to Chrome?
+        </message>
       </if>
 
       <if expr="not chromeos_ash and not is_android">
