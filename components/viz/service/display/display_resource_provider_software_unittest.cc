@@ -71,7 +71,8 @@ class DisplayResourceProviderSoftwareTest : public testing::Test {
   DisplayResourceProviderSoftwareTest()
       : shared_bitmap_manager_(std::make_unique<TestSharedBitmapManager>()),
         resource_provider_(std::make_unique<DisplayResourceProviderSoftware>(
-            shared_bitmap_manager_.get())),
+            shared_bitmap_manager_.get(),
+            /*shared_image_manager=*/nullptr)),
         child_resource_provider_(std::make_unique<ClientResourceProvider>()) {}
 
   ~DisplayResourceProviderSoftwareTest() override {

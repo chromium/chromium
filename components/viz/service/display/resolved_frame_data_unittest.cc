@@ -80,7 +80,9 @@ class ResolvedFrameDataTest : public testing::Test {
   }
 
   ServerSharedBitmapManager shared_bitmap_manager_;
-  DisplayResourceProviderSoftware resource_provider_{&shared_bitmap_manager_};
+  DisplayResourceProviderSoftware resource_provider_{
+      &shared_bitmap_manager_,
+      /*shared_image_manager=*/nullptr};
   FrameSinkManagerImpl frame_sink_manager_{
       FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
 

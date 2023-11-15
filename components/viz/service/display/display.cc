@@ -317,6 +317,7 @@ void Display::PresentationGroupTiming::OnPresent(
 
 Display::Display(
     SharedBitmapManager* bitmap_manager,
+    gpu::SharedImageManager* shared_image_manager,
     const RendererSettings& settings,
     const DebugRendererSettings* debug_settings,
     const FrameSinkId& frame_sink_id,
@@ -326,6 +327,7 @@ Display::Display(
     std::unique_ptr<DisplaySchedulerBase> scheduler,
     scoped_refptr<base::SingleThreadTaskRunner> current_task_runner)
     : bitmap_manager_(bitmap_manager),
+      shared_image_manager_(shared_image_manager),
       settings_(settings),
       debug_settings_(debug_settings),
       frame_sink_id_(frame_sink_id),
@@ -550,8 +552,8 @@ void Display::InitializeRenderer(bool enable_shared_images) {
         resource_provider.get(), overlay_processor_.get());
     resource_provider_ = std::move(resource_provider);
   } else {
-    auto resource_provider =
-        std::make_unique<DisplayResourceProviderSoftware>(bitmap_manager_);
+    auto resource_provider = std::make_unique<DisplayResourceProviderSoftware>(
+        bitmap_manager_, shared_image_manager_);
     DCHECK(!overlay_processor_->IsOverlaySupported());
     auto renderer = std::make_unique<SoftwareRenderer>(
         &settings_, debug_settings_, output_surface_.get(),

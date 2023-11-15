@@ -610,6 +610,8 @@ void GpuServiceImpl::InitializeWithHost(
 #if BUILDFLAG(IS_OZONE)
     thread_safe_manager |= features::ShouldUseRealBuffersForPageFlipTest();
 #endif
+    thread_safe_manager |=
+        base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
     owned_shared_image_manager_ = std::make_unique<gpu::SharedImageManager>(
         thread_safe_manager, display_context_on_another_thread);
     shared_image_manager = owned_shared_image_manager_.get();

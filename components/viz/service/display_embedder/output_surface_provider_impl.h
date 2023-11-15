@@ -52,6 +52,8 @@ class VIZ_SERVICE_EXPORT OutputSurfaceProviderImpl
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings) override;
 
+  gpu::SharedImageManager* GetSharedImageManager() override;
+
  private:
   std::unique_ptr<SoftwareOutputDevice> CreateSoftwareOutputDeviceForPlatform(
       gpu::SurfaceHandle surface_handle,

@@ -80,7 +80,7 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
   SurfaceAggregatorPerfTest()
       : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)) {
     resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
-        &shared_bitmap_manager_);
+        &shared_bitmap_manager_, /*shared_image_manager=*/nullptr);
   }
 
   void RunTest(int num_surfaces,

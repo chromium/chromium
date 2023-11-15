@@ -5,13 +5,20 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_RESOURCE_PROVIDER_SOFTWARE_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_RESOURCE_PROVIDER_SOFTWARE_H_
 
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/viz_service_export.h"
+#include "gpu/command_buffer/service/memory_tracking.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+
+namespace gpu {
+class SharedImageManager;
+}
 
 namespace viz {
 
@@ -22,7 +29,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
     : public DisplayResourceProvider {
  public:
   explicit DisplayResourceProviderSoftware(
-      SharedBitmapManager* shared_bitmap_manager);
+      SharedBitmapManager* shared_bitmap_manager,
+      gpu::SharedImageManager* shared_image_manager);
   ~DisplayResourceProviderSoftware() override;
 
   class VIZ_SERVICE_EXPORT ScopedReadLockSkImage {
@@ -64,7 +72,28 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
                                     SkAlphaType alpha_type);
 
   const raw_ptr<SharedBitmapManager> shared_bitmap_manager_;
+  const raw_ptr<gpu::SharedImageManager> shared_image_manager_;
+
   base::flat_map<ResourceId, sk_sp<SkImage>> resource_sk_images_;
+
+  std::unique_ptr<gpu::MemoryTypeTracker> memory_tracker_;
+
+  struct SharedImageAccess {
+    SharedImageAccess();
+    ~SharedImageAccess();
+    SharedImageAccess(SharedImageAccess&& other);
+    SharedImageAccess& operator=(SharedImageAccess&& other);
+
+    SharedImageAccess(const SharedImageAccess&) = delete;
+    SharedImageAccess& operator=(const SharedImageAccess&) = delete;
+
+    std::unique_ptr<gpu::MemoryImageRepresentation> representation;
+    std::unique_ptr<gpu::MemoryImageRepresentation::ScopedReadAccess>
+        read_access;
+  };
+
+  base::flat_map<ResourceId, std::unique_ptr<SharedImageAccess>>
+      resource_shared_images_;
 };
 
 }  // namespace viz

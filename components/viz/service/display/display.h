@@ -46,6 +46,7 @@ class Size;
 namespace gpu {
 class ScopedAllowScheduleGpuTask;
 struct SwapBuffersCompleteParams;
+class SharedImageManager;
 }
 
 namespace viz {
@@ -85,6 +86,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // subclasses are replaced by SkiaRenderer.
   Display(
       SharedBitmapManager* bitmap_manager,
+      gpu::SharedImageManager* shared_image_manager,
       const RendererSettings& settings,
       const DebugRendererSettings* debug_settings,
       const FrameSinkId& frame_sink_id,
@@ -270,6 +272,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   void OnContextLost() override;
 
   const raw_ptr<SharedBitmapManager> bitmap_manager_;
+  const raw_ptr<gpu::SharedImageManager> shared_image_manager_;
   const RendererSettings settings_;
 
   // Points to the viz-global singleton.
